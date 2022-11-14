@@ -4,7 +4,7 @@
   "scripts": {
     "build": "xnft build",
     "start": "xnft watch",
-    "dev": "xnft dev"
+    "dev": "node script.js"
   },
   "devDependencies": {},
   "dependencies": {
@@ -12,6 +12,7 @@
     "@metaplex-foundation/js": "^0.17.5",
     "@project-serum/anchor": "^0.25.0",
     "@solana/spl-token": "^0.3.6",
+    "@solana/wallet-adapter-react": "^0.15.24",
     "debounce": "^1.2.1",
     "node-stdlib-browser": "^1.2.0",
     "react": "^17.0.2",

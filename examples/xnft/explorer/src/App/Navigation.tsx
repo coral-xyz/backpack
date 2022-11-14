@@ -1,8 +1,8 @@
-import { Stack, Text, Image, View } from "react-xnft";
+import { Stack } from "react-xnft";
 import React from "react";
-// import TokenDetails from "./TokenDetails";
 import AppList from "./AppList";
 import AppDetails from "./AppDetails";
+import NewAppReview from "./NewAppReview";
 
 function Navigation() {
   return (
@@ -24,6 +24,11 @@ function Navigation() {
               title: route.props?.app.json.name,
             };
           }
+          case "review": {
+            return {
+              title: "New Review",
+            };
+          }
           default:
             throw new Error("unknown route");
         }
@@ -39,6 +44,10 @@ function Navigation() {
       <Stack.Screen
         name={"details"}
         component={(props) => <AppDetails {...props} />}
+      />
+      <Stack.Screen
+        name={"review"}
+        component={(props) => <NewAppReview {...props} />}
       />
     </Stack.Navigator>
   );

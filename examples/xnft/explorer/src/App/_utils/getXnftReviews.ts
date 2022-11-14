@@ -4,11 +4,12 @@ import { Review } from "../_types/XnftReview";
 import { XnftWithMetadata } from "../_types/XnftWithMetadata";
 import getGatewayUri from "./getGatewayUri";
 import getProgram from "./getProgram";
+import getWorkerApi from "./getWorkerAPI";
 import { Xnft } from "./xnftIDL";
 
 type ReviewAccount = IdlAccounts<Xnft>["review"];
 
-export default async function getInstalledXnfts(
+export default async function getXnftReviews(
   connection: Connection,
   pubkey: PublicKey
 ): Promise<Review[]> {
@@ -37,9 +38,7 @@ export default async function getInstalledXnfts(
 
   const pubkeys = response.map((item) => item?.account?.author?.toString());
   const fetchUsernames = fetch(
-    `https://app-store-api.backpack.workers.dev/api/identity/usernames?pubkeys=${pubkeys.join(
-      ","
-    )}`,
+    `${getWorkerApi()}/api/identity/usernames?pubkeys=${pubkeys.join(",")}`,
     {
       headers: { Accept: "application/json" },
     }

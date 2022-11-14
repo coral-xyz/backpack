@@ -1,29 +1,18 @@
 import { Metaplex, toMetadataAccount } from "@metaplex-foundation/js";
-import {
-  MetadataProgram,
-  Metadata,
-} from "@metaplex-foundation/mpl-token-metadata";
-import {
-  AnchorProvider,
-  BN,
-  Program,
-  type ProgramAccount,
-  type IdlAccounts,
-  type IdlTypes,
-} from "@project-serum/anchor";
-// import { getAssociatedTokenAddress } from '@solana/spl-token';
+import { Metadata } from "@metaplex-foundation/mpl-token-metadata";
 import { Connection, PublicKey } from "@solana/web3.js";
-import { Xnft, IDL } from "./xnftIDL";
 import CustomJsonMetadata from "../_types/CustomJsonMetadata";
 import { XnftWithMetadata } from "../_types/XnftWithMetadata";
 import XnftAccount from "../_types/XnftAccount";
 import getGatewayUri from "./getGatewayUri";
 import getProgram from "./getProgram";
 import getInstalledXnfts from "./getInstalledXnfts";
-
-const XNFT_PROGRAM_ID = new PublicKey(
-  "BaHSGaf883GA3u8qSC5wNigcXyaScJLSBJZbALWvPcjs"
-);
+import {
+  AccountLayout,
+  TOKEN_PROGRAM_ID,
+  // @ts-ignore-next-line
+  ACCOUNT_SIZE,
+} from "@solana/spl-token";
 
 export default async function getAllxNFTs(
   connection: Connection,
@@ -53,9 +42,11 @@ export default async function getAllxNFTs(
     )
   );
 
-  // const tokenAccounts = await Promise.all(
-  //   xnfts.map(x => getTokenDataForMint(program.provider.connection, x.account.masterMint))
-  // );
+  const tokenAccounts = await Promise.all(
+    xnfts.map((x) =>
+      getTokenDataForMint(program.provider.connection, x.account.masterMint)
+    )
+  );
 
   const response: XnftWithMetadata[] = [];
 
@@ -66,9 +57,41 @@ export default async function getAllxNFTs(
       metadata: metadataAccounts[i] as unknown as Metadata,
       publicKey: xnfts[i].publicKey,
       installed: installedXnfts.includes(xnfts[i].publicKey.toString()),
-      // token: tokenAccounts[i]
+      token: tokenAccounts[i],
     });
   }
 
   return response;
+}
+
+async function getTokenDataForMint(
+  connection: Connection,
+  masterMint: PublicKey
+): Promise<XnftWithMetadata["token"]> {
+  const tokenAccs = await connection.getProgramAccounts(TOKEN_PROGRAM_ID, {
+    filters: [
+      {
+        dataSize: ACCOUNT_SIZE,
+      },
+      {
+        memcmp: {
+          offset: 0,
+          bytes: masterMint.toBase58(),
+        },
+      },
+    ],
+  });
+
+  if (tokenAccs.length === 0) {
+    throw new Error(
+      `no token accounts found for mint ${masterMint.toBase58()}`
+    );
+  }
+
+  const data = AccountLayout.decode(tokenAccs[0].account.data);
+
+  return {
+    owner: data.owner,
+    publicKey: tokenAccs[0].pubkey,
+  };
 }

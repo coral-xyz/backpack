@@ -1,23 +1,23 @@
 import {
-  useViewigation,
   View,
   TextField,
   Image,
   Text,
   ScrollBar,
   Button,
+  useNavigation,
 } from "react-xnft";
 import React, { useState } from "react";
 import { useRecoilState, useRecoilValueLoadable } from "recoil";
 import getGatewayUri from "./_utils/getGatewayUri";
 import { XnftWithMetadata } from "./_types/XnftWithMetadata";
 import Rating from "./Rating";
-import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import InstallIcon from "./Icons/InstallIcon";
 import reviewsAtom from "./_atoms/reviewsAtom";
 import CenteredLoader from "./CenteredLoader";
 import { IDL } from "./_utils/xnftIDL";
-import ellipsify from "./_utils/ellipsify";
+import getProgram from "./_utils/getProgram";
 
 const tabs = [
   { name: "Screenshots" },
@@ -29,12 +29,32 @@ const XNFT_L1_OPTIONS = IDL.types[4].type.variants.map((v) => v.name);
 const XNFT_TAG_OPTIONS = IDL.types[5].type.variants.map((v) => v.name);
 
 function AppDetails({ app }: { app: XnftWithMetadata }) {
+  const nav = useNavigation();
   const [selectedTab, setSelectedTab] = useState(tabs[0].name);
   const reviews = useRecoilValueLoadable(reviewsAtom(app.publicKey.toString()));
   const price = app.account.installPrice.toNumber();
   const noReviews =
     reviews.state === "hasValue" && reviews.contents.length === 0;
+  //  @ts-ignore-next-line
+  const collectionDetails = app.metadata.collectionDetails;
+  //  @ts-ignore-next-line
+  const metadataDataUri = app.metadata.data.uri;
 
+  const install = async () => {
+    const program = getProgram(
+      window.xnft.solana.connection,
+      window.xnft.solana
+    );
+    const tx = await program.methods
+      .createInstall()
+      .accounts({
+        xnft: new PublicKey(app.publicKey),
+        installVault: new PublicKey(app.account.installVault),
+      })
+      .transaction();
+
+    return await window.xnft.solana.sendAndConfirm(tx);
+  };
   return (
     <View tw="pb-2">
       <View tw="flex gap-6 py-2 px-4">
@@ -59,16 +79,31 @@ function AppDetails({ app }: { app: XnftWithMetadata }) {
               {app.account.totalInstalls.toNumber()}
             </Text>
           </View>
-          {!app.installed ? (
-            <Button tw="flex items-center gap-2.5 bg-white py-2 text-[#374151] px-3 rounded text-xs font-medium tracking-wide">
-              {price === 0 ? "Free" : `${price / LAMPORTS_PER_SOL} SOL`}
-              {!app.installed && <InstallIcon size={16} color={"#374151"} />}
-            </Button>
-          ) : (
-            <Button tw="rounded bg-[#27272A] px-3 rounded text-xs font-medium tracking-wide">
-              Installed
-            </Button>
-          )}
+          <View tw="flex items-center gap-4">
+            {!app.installed ? (
+              <Button
+                onClick={() => install()}
+                tw="flex items-center gap-2.5 bg-white py-2 text-[#374151] px-3 rounded text-xs font-medium tracking-wide"
+              >
+                {price === 0 ? "Free" : `${price / LAMPORTS_PER_SOL} SOL`}
+                {!app.installed && <InstallIcon size={16} color={"#374151"} />}
+              </Button>
+            ) : (
+              <>
+                <Button tw="rounded bg-[#27272A] px-3 rounded text-xs font-medium tracking-wide">
+                  Installed
+                </Button>
+                <Button
+                  onClick={() => {
+                    nav.push("review", { app });
+                  }}
+                  tw="flex items-center gap-2.5 bg-white py-2 text-[#374151] px-3 rounded text-xs font-medium tracking-wide"
+                >
+                  {"Add Review"}
+                </Button>
+              </>
+            )}
+          </View>
         </View>
       </View>
       <View tw="px-4 py-2 max-w-md text-lg font-medium text-[#99A4B4]">
@@ -148,6 +183,7 @@ function AppDetails({ app }: { app: XnftWithMetadata }) {
       )}
       {selectedTab === "Information" && (
         <View tw="m-4 p-4 mb-2 flex break-words max-w-3xl flex-col gap-4 rounded-2xl bg-[#27272A]">
+          <Item name="Authority" value={app.token.owner.toString()} />
           <Item name="Publisher" value={app.account.publisher.toString()} />
           <Item
             name="L1"
@@ -167,11 +203,8 @@ function AppDetails({ app }: { app: XnftWithMetadata }) {
           <Item
             name="Supply"
             value={
-              app.metadata.collectionDetails ? (
-                parseInt(
-                  app.metadata.collectionDetails.size.toString(),
-                  16
-                ).toLocaleString()
+              collectionDetails ? (
+                parseInt(collectionDetails.size.toString(), 16).toLocaleString()
               ) : (
                 <>&#8734;</>
               )
@@ -183,9 +216,7 @@ function AppDetails({ app }: { app: XnftWithMetadata }) {
               app.account.updatedTs.toNumber() * 1000
             ).toUTCString()}
           />
-          {app.metadata.data.uri && (
-            <Item name="Metadata" value={app.metadata.data.uri} />
-          )}
+          {metadataDataUri && <Item name="Metadata" value={metadataDataUri} />}
         </View>
       )}
     </View>
