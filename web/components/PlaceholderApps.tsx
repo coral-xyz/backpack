@@ -3,7 +3,6 @@ import App from './AppNoLink';
 
 const apps = [
   { iconUrl: '/brands/mango.png', name: 'Mango' },
-  { iconUrl: '/brands/ftx.png', name: 'FTX' },
   { iconUrl: '/brands/Anchor.jpg', name: 'Anchor' },
   { iconUrl: '/brands/degods.png', name: 'DeGods' },
   { iconUrl: '/brands/pyth.jpg', name: 'Pyth' },
