@@ -154,11 +154,6 @@ export type Xnft = {
           isSigner: true;
         },
         {
-          name: "authority";
-          isMut: false;
-          isSigner: true;
-        },
-        {
           name: "systemProgram";
           isMut: false;
           isSigner: false;
@@ -190,15 +185,15 @@ export type Xnft = {
           type: "string";
         },
         {
-          name: "curator";
-          type: {
-            option: "publicKey";
-          };
-        },
-        {
           name: "params";
           type: {
             defined: "CreateXnftParams";
+          };
+        },
+        {
+          name: "updateReviewAuthority";
+          type: {
+            option: "publicKey";
           };
         }
       ];
@@ -227,12 +222,7 @@ export type Xnft = {
           isSigner: false;
         },
         {
-          name: "updateAuthority";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "xnftAuthority";
+          name: "authority";
           isMut: false;
           isSigner: true;
         },
@@ -250,52 +240,6 @@ export type Xnft = {
           };
         }
       ];
-    },
-    {
-      name: "setCurator";
-      docs: ["Assigns a curator public key to the provided xNFT."];
-      accounts: [
-        {
-          name: "xnft";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "masterToken";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "curator";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "authority";
-          isMut: false;
-          isSigner: true;
-        }
-      ];
-      args: [];
-    },
-    {
-      name: "verifyCurator";
-      docs: [
-        "Verifies the assignment of a curator to an xNFT, signed by the curator authority."
-      ];
-      accounts: [
-        {
-          name: "xnft";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "curator";
-          isMut: false;
-          isSigner: true;
-        }
-      ];
-      args: [];
     },
     {
       name: "createReview";
@@ -923,21 +867,19 @@ export type Xnft = {
             };
           },
           {
-            name: "curator";
+            name: "updateReviewAuthority";
             docs: [
-              "Optional pubkey of the global authority required for reviewing xNFT updates (34)."
+              "Optional pubkey of the global authority required for reviewing xNFT updates (33)."
             ];
             type: {
-              option: {
-                defined: "CuratorStatus";
-              };
+              option: "publicKey";
             };
           },
           {
             name: "reserved";
             docs: ["Unused reserved byte space for additive future changes."];
             type: {
-              array: ["u8", 26];
+              array: ["u8", 27];
             };
           }
         ];
@@ -1063,26 +1005,6 @@ export type Xnft = {
             type: {
               option: "string";
             };
-          }
-        ];
-      };
-    },
-    {
-      name: "CuratorStatus";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "pubkey";
-            docs: ["The pubkey of the `Curator` program account (32)."];
-            type: "publicKey";
-          },
-          {
-            name: "verified";
-            docs: [
-              "Whether the curator's authority has verified the assignment (1)."
-            ];
-            type: "bool";
           }
         ];
       };
@@ -1216,68 +1138,53 @@ export type Xnft = {
     },
     {
       code: 6002;
-      name: "CuratorAlreadySet";
-      msg: "There is already a verified curator assigned";
-    },
-    {
-      code: 6003;
-      name: "CuratorAuthorityMismatch";
-      msg: "The expected curator authority did not match expected";
-    },
-    {
-      code: 6004;
-      name: "CuratorMismatch";
-      msg: "The provided curator account did not match the one assigned";
-    },
-    {
-      code: 6005;
       name: "InstallAuthorityMismatch";
       msg: "The provided xNFT install authority did not match";
     },
     {
-      code: 6006;
+      code: 6003;
       name: "InstallOwnerMismatch";
       msg: "The asserted authority/owner did not match that of the Install account";
     },
     {
-      code: 6007;
+      code: 6004;
       name: "InstallExceedsSupply";
       msg: "The max supply has been reached for the xNFT.";
     },
     {
-      code: 6008;
+      code: 6005;
       name: "NameTooLong";
       msg: "The name provided for creating the xNFT exceeded the byte limit";
     },
     {
-      code: 6009;
+      code: 6006;
       name: "RatingOutOfBounds";
       msg: "The rating for a review must be between 0 and 5";
     },
     {
-      code: 6010;
+      code: 6007;
       name: "ReviewInstallMismatch";
       msg: "The installation provided for the review does not match the xNFT";
     },
     {
-      code: 6011;
+      code: 6008;
       name: "SuspendedInstallation";
       msg: "Attempting to install a currently suspended xNFT";
     },
     {
-      code: 6012;
+      code: 6009;
       name: "UnauthorizedInstall";
       msg: "The access account provided is not associated with the wallet";
     },
     {
-      code: 6013;
+      code: 6010;
       name: "UpdateReviewAuthorityMismatch";
       msg: "The signing authority for the xNFT update did not match the review authority";
     }
   ];
 };
 
-const IDL: Xnft = {
+export const IDL: Xnft = {
   version: "0.1.0",
   name: "xnft",
   constants: [
@@ -1433,11 +1340,6 @@ const IDL: Xnft = {
           isSigner: true,
         },
         {
-          name: "authority",
-          isMut: false,
-          isSigner: true,
-        },
-        {
           name: "systemProgram",
           isMut: false,
           isSigner: false,
@@ -1469,15 +1371,15 @@ const IDL: Xnft = {
           type: "string",
         },
         {
-          name: "curator",
-          type: {
-            option: "publicKey",
-          },
-        },
-        {
           name: "params",
           type: {
             defined: "CreateXnftParams",
+          },
+        },
+        {
+          name: "updateReviewAuthority",
+          type: {
+            option: "publicKey",
           },
         },
       ],
@@ -1506,12 +1408,7 @@ const IDL: Xnft = {
           isSigner: false,
         },
         {
-          name: "updateAuthority",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "xnftAuthority",
+          name: "authority",
           isMut: false,
           isSigner: true,
         },
@@ -1529,52 +1426,6 @@ const IDL: Xnft = {
           },
         },
       ],
-    },
-    {
-      name: "setCurator",
-      docs: ["Assigns a curator public key to the provided xNFT."],
-      accounts: [
-        {
-          name: "xnft",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "masterToken",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "curator",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "authority",
-          isMut: false,
-          isSigner: true,
-        },
-      ],
-      args: [],
-    },
-    {
-      name: "verifyCurator",
-      docs: [
-        "Verifies the assignment of a curator to an xNFT, signed by the curator authority.",
-      ],
-      accounts: [
-        {
-          name: "xnft",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "curator",
-          isMut: false,
-          isSigner: true,
-        },
-      ],
-      args: [],
     },
     {
       name: "createReview",
@@ -2202,21 +2053,19 @@ const IDL: Xnft = {
             },
           },
           {
-            name: "curator",
+            name: "updateReviewAuthority",
             docs: [
-              "Optional pubkey of the global authority required for reviewing xNFT updates (34).",
+              "Optional pubkey of the global authority required for reviewing xNFT updates (33).",
             ],
             type: {
-              option: {
-                defined: "CuratorStatus",
-              },
+              option: "publicKey",
             },
           },
           {
             name: "reserved",
             docs: ["Unused reserved byte space for additive future changes."],
             type: {
-              array: ["u8", 26],
+              array: ["u8", 27],
             },
           },
         ],
@@ -2342,26 +2191,6 @@ const IDL: Xnft = {
             type: {
               option: "string",
             },
-          },
-        ],
-      },
-    },
-    {
-      name: "CuratorStatus",
-      type: {
-        kind: "struct",
-        fields: [
-          {
-            name: "pubkey",
-            docs: ["The pubkey of the `Curator` program account (32)."],
-            type: "publicKey",
-          },
-          {
-            name: "verified",
-            docs: [
-              "Whether the curator's authority has verified the assignment (1).",
-            ],
-            type: "bool",
           },
         ],
       },
@@ -2495,65 +2324,48 @@ const IDL: Xnft = {
     },
     {
       code: 6002,
-      name: "CuratorAlreadySet",
-      msg: "There is already a verified curator assigned",
-    },
-    {
-      code: 6003,
-      name: "CuratorAuthorityMismatch",
-      msg: "The expected curator authority did not match expected",
-    },
-    {
-      code: 6004,
-      name: "CuratorMismatch",
-      msg: "The provided curator account did not match the one assigned",
-    },
-    {
-      code: 6005,
       name: "InstallAuthorityMismatch",
       msg: "The provided xNFT install authority did not match",
     },
     {
-      code: 6006,
+      code: 6003,
       name: "InstallOwnerMismatch",
       msg: "The asserted authority/owner did not match that of the Install account",
     },
     {
-      code: 6007,
+      code: 6004,
       name: "InstallExceedsSupply",
       msg: "The max supply has been reached for the xNFT.",
     },
     {
-      code: 6008,
+      code: 6005,
       name: "NameTooLong",
       msg: "The name provided for creating the xNFT exceeded the byte limit",
     },
     {
-      code: 6009,
+      code: 6006,
       name: "RatingOutOfBounds",
       msg: "The rating for a review must be between 0 and 5",
     },
     {
-      code: 6010,
+      code: 6007,
       name: "ReviewInstallMismatch",
       msg: "The installation provided for the review does not match the xNFT",
     },
     {
-      code: 6011,
+      code: 6008,
       name: "SuspendedInstallation",
       msg: "Attempting to install a currently suspended xNFT",
     },
     {
-      code: 6012,
+      code: 6009,
       name: "UnauthorizedInstall",
       msg: "The access account provided is not associated with the wallet",
     },
     {
-      code: 6013,
+      code: 6010,
       name: "UpdateReviewAuthorityMismatch",
       msg: "The signing authority for the xNFT update did not match the review authority",
     },
   ],
 };
-
-export default IDL;

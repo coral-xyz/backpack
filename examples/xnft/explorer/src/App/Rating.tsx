@@ -14,30 +14,44 @@ import { XnftWithMetadata } from "./_types/XnftWithMetadata";
 import StarIcon from "examples/xnft/prices/src/App/StarIcon";
 
 function Rating({
-  app,
+  rating,
+  totalReviews,
+  onClick,
   starSize,
 }: {
-  app: XnftWithMetadata;
+  rating: number;
   starSize: number;
+  totalReviews?: number;
+  onClick?: (rating: number) => void;
 }) {
+  const click = (i: number) => {
+    onClick && onClick(i + 1);
+  };
   return (
     <View tw="flex items-center gap-1">
-      {[...new Array(5)].map((_, idx) =>
-        Math.round(app.account.totalRating.toNumber()) >= idx + 1 ? (
-          <StarIcon key={idx} size={starSize} color="#FC9870" isFilled={true} />
-        ) : (
-          <StarIcon
-            key={idx}
-            size={starSize}
-            color="#FC9870"
-            isFilled={false}
-            strokeWidth={2}
-          />
-        )
-      )}
-      {app.account.numRatings !== undefined && (
+      {[...new Array(5)].map((_, idx) => (
+        <View onClick={() => click(idx)}>
+          {rating >= idx + 1 ? (
+            <StarIcon
+              key={idx}
+              size={starSize}
+              color="#FC9870"
+              isFilled={true}
+            />
+          ) : (
+            <StarIcon
+              key={idx}
+              size={starSize}
+              color="#FC9870"
+              isFilled={false}
+              strokeWidth={2}
+            />
+          )}
+        </View>
+      ))}
+      {totalReviews !== undefined && (
         <Text tw="pl-2 text-xs font-medium text-white">
-          {app.account.numRatings} Reviews
+          {totalReviews} Reviews
         </Text>
       )}
     </View>

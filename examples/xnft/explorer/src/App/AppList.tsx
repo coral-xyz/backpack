@@ -224,7 +224,11 @@ function RenderApp({ app }: { app: XnftWithMetadata }) {
           {app.json.description}
         </View>
         <View tw="py-1">
-          <Rating app={app} starSize={12} />
+          <Rating
+            rating={app.account.totalRating.toNumber()}
+            totalReviews={app.account.numRatings}
+            starSize={12}
+          />
         </View>
       </View>
     </View>

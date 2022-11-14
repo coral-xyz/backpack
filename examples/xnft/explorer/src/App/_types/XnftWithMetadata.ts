@@ -14,4 +14,5 @@ export interface XnftWithMetadata {
   metadata: Metadata;
   publicKey: PublicKey;
   token?: XnftTokenData;
+  installed: boolean;
 }
