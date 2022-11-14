@@ -6,9 +6,6 @@ import { Header, PrimaryButton, SubtextParagraph } from "../../common";
 import { getWaitlistId } from "../../common/WaitingRoom";
 import { TextInput } from "../../common/Inputs";
 
-const MIN_LENGTH = 3;
-const MAX_LENGTH = 15;
-
 export const UsernameForm = ({
   inviteCode,
   onNext,
@@ -28,19 +25,15 @@ export const UsernameForm = ({
     async (e: FormEvent) => {
       e.preventDefault();
 
-      const errorMessage = `Usernames should be between ${MIN_LENGTH}-${MAX_LENGTH} characters and can only contain numbers, letters, and underscores.`;
-
       try {
-        if (username.length < MIN_LENGTH || username.length > MAX_LENGTH) {
-          throw new Error(errorMessage);
-        }
         const res = await fetch(`https://auth.xnfts.dev/users/${username}`, {
           headers: {
             "x-backpack-invite-code": String(inviteCode),
             "x-backpack-waitlist-id": getWaitlistId() || "",
           },
         });
-        if (!res.ok) throw new Error(errorMessage);
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.message || "There was an error");
 
         onNext(username);
       } catch (err: any) {
@@ -94,10 +87,7 @@ export const UsernameForm = ({
             value={username}
             setValue={(e) => {
               setUsername(
-                e.target.value
-                  .toLowerCase()
-                  .replace(/[^a-z0-9_]/g, "")
-                  .substring(0, MAX_LENGTH)
+                e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "")
               );
             }}
             error={error ? true : false}
