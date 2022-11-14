@@ -4,7 +4,7 @@ import * as anchor from "@project-serum/anchor";
 import { AnchorProvider, BN, Spl } from "@project-serum/anchor";
 import type { Provider, Program, SplToken } from "@project-serum/anchor";
 import { metadata } from "@project-serum/token";
-import { externalResourceUri } from "@coral-xyz/common-public";
+import { getLogger, externalResourceUri } from "@coral-xyz/common-public";
 import type {
   SolanaTokenAccount,
   SolanaTokenAccountWithKey,
@@ -29,6 +29,8 @@ export const WSOL_MINT = "So11111111111111111111111111111111111111112";
 // wrapped SOL. We treat native sol in the same way as we do SPL tokens.
 //
 export const SOL_NATIVE_MINT = PublicKey.default.toString();
+
+const logger = getLogger("common/solana/programs/token");
 
 export function associatedTokenAddress(
   mint: PublicKey,
@@ -170,7 +172,10 @@ export async function fetchSplMetadataUri(
         });
         return await resp.json();
       } catch (err) {
-        console.log(`error fetching: ${t.account.data.uri}`, err);
+        logger.debug(
+          `error fetching token metadata: ${t.account.data.uri}`,
+          err
+        );
       }
     })
   );
