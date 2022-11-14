@@ -154,8 +154,8 @@ export function BalancesTableCell({ props }: any) {
   let trim;
   try {
     trim = `${subtitle.split(".")[0]}.${subtitle.split(".")[1].slice(0, 5)}`;
-  } catch (e) {
-    console.error("can't trim the balance");
+  } catch {
+    // pass
   }
 
   return (
