@@ -11,11 +11,16 @@ export function toTitleCase(str: string) {
  * formatUSD(-1234567.89) // "-$1,234,567.89"
  */
 export function formatUSD(amount: number | string) {
-  const amountNumber = typeof amount === "string" ? Number(amount) : amount;
+  let amountNumber: number;
+  if (typeof amount === "string") {
+    amountNumber = Number(amount.replace(",", ""));
+  } else {
+    amountNumber = amount;
+  }
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
-  }).format(Number(String(amountNumber)));
+  }).format(amountNumber);
 }
 
 /**
