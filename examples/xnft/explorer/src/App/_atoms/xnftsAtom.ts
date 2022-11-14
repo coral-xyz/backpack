@@ -8,6 +8,17 @@ const xnftAtom = atom<XnftWithMetadata[]>({
   key: "xnftAtom",
   effects: [
     ({ setSelf, getPromise }) => {
+      const fetchAllXnfts = async () => {
+        console.log("fetch");
+        const xnfts = await getAllxNFTs(
+          window.xnft.solana.connection,
+          window.xnft.solana.publicKey
+        );
+        console.log("fetched");
+        window.xnft.setStorage("xnfts", JSON.stringify(xnfts));
+        setSelf(xnfts);
+      };
+
       window.xnft
         .getStorage("xnfts")
         .then((cache) => {
@@ -18,12 +29,7 @@ const xnftAtom = atom<XnftWithMetadata[]>({
         })
         .then(() => getPromise(solanaConnectionAtom))
         .then(async () => {
-          const xnfts = await getAllxNFTs(
-            window.xnft.solana.connection,
-            window.xnft.solana.publicKey
-          );
-          window.xnft.setStorage("xnfts", JSON.stringify(xnfts));
-          setSelf(xnfts);
+          await fetchAllXnfts();
         });
     },
   ],

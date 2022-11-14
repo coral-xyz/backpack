@@ -30,17 +30,15 @@ function Rating({
   return (
     <View tw="flex items-center gap-1">
       {[...new Array(5)].map((_, idx) => (
-        <View onClick={() => click(idx)} tw={onClick ? "cursor-pointer" : ""}>
+        <View
+          key={idx}
+          onClick={() => click(idx)}
+          tw={onClick ? "cursor-pointer" : ""}
+        >
           {rating >= idx + 1 ? (
-            <StarIcon
-              key={idx}
-              size={starSize}
-              color="#FC9870"
-              isFilled={true}
-            />
+            <StarIcon size={starSize} color="#FC9870" isFilled={true} />
           ) : (
             <StarIcon
-              key={idx}
               size={starSize}
               color="#FC9870"
               isFilled={false}

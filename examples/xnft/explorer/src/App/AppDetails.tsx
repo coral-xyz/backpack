@@ -8,7 +8,13 @@ import {
   useNavigation,
 } from "react-xnft";
 import React, { useState } from "react";
-import { useRecoilState, useRecoilValueLoadable } from "recoil";
+import {
+  useRecoilState,
+  useRecoilStateLoadable,
+  useRecoilValueLoadable,
+  useResetRecoilState,
+  useSetRecoilState,
+} from "recoil";
 import getGatewayUri from "./_utils/getGatewayUri";
 import { XnftWithMetadata } from "./_types/XnftWithMetadata";
 import Rating from "./Rating";
@@ -18,6 +24,9 @@ import reviewsAtom from "./_atoms/reviewsAtom";
 import CenteredLoader from "./CenteredLoader";
 import { IDL } from "./_utils/xnftIDL";
 import getProgram from "./_utils/getProgram";
+import xnftsAtom from "./_atoms/xnftsAtom";
+import getAllxNFTs from "./_utils/getAllXnfts";
+import installedAppAtom from "./_atoms/installedAppAtom";
 
 const tabs = [
   { name: "Screenshots" },
@@ -29,6 +38,8 @@ const XNFT_L1_OPTIONS = IDL.types[4].type.variants.map((v) => v.name);
 const XNFT_TAG_OPTIONS = IDL.types[5].type.variants.map((v) => v.name);
 
 function AppDetails({ app }: { app: XnftWithMetadata }) {
+  const [installedAppsLoadable, setInstalledApps] =
+    useRecoilStateLoadable(installedAppAtom);
   const nav = useNavigation();
   const [selectedTab, setSelectedTab] = useState(tabs[0].name);
   const reviews = useRecoilValueLoadable(reviewsAtom(app.publicKey.toString()));
@@ -39,7 +50,11 @@ function AppDetails({ app }: { app: XnftWithMetadata }) {
   const collectionDetails = app.metadata.collectionDetails;
   //  @ts-ignore-next-line
   const metadataDataUri = app.metadata.data.uri;
-
+  const installedApps =
+    installedAppsLoadable.state === "hasValue"
+      ? installedAppsLoadable.contents
+      : [];
+  const installed = installedApps.includes(app.publicKey.toString());
   const install = async () => {
     const program = getProgram(
       window.xnft.solana.connection,
@@ -52,8 +67,8 @@ function AppDetails({ app }: { app: XnftWithMetadata }) {
         installVault: new PublicKey(app.account.installVault),
       })
       .transaction();
-
-    return await window.xnft.solana.sendAndConfirm(tx);
+    await window.xnft.solana.sendAndConfirm(tx);
+    setInstalledApps([...installedApps, app.publicKey.toString()]);
   };
   return (
     <View tw="pb-2">
@@ -80,27 +95,27 @@ function AppDetails({ app }: { app: XnftWithMetadata }) {
             </Text>
           </View>
           <View tw="flex items-center gap-4">
-            {!app.installed ? (
+            {!installed ? (
               <Button
                 onClick={() => install()}
                 tw="flex items-center gap-2.5 bg-white py-2 text-[#374151] px-3 rounded text-xs font-medium tracking-wide"
               >
                 {price === 0 ? "Free" : `${price / LAMPORTS_PER_SOL} SOL`}
-                {!app.installed && <InstallIcon size={16} color={"#374151"} />}
+                {!installed && <InstallIcon size={16} color={"#374151"} />}
               </Button>
             ) : (
               <>
                 <Button tw="rounded bg-[#27272A] px-3 rounded text-xs font-medium tracking-wide">
                   Installed
                 </Button>
-                <Button
+                {/* <Button
                   onClick={() => {
                     nav.push("review", { app });
                   }}
                   tw="flex items-center gap-2.5 bg-white py-2 text-[#374151] px-3 rounded text-xs font-medium tracking-wide"
                 >
                   {"Add Review"}
-                </Button>
+                </Button> */}
               </>
             )}
           </View>

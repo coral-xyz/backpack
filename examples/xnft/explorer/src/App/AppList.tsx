@@ -30,7 +30,6 @@ function AppList() {
   if (xnfts.state !== "hasValue") {
     return null;
   }
-  console.log("Applist", xnfts.contents);
 
   let filteredList = xnfts.contents;
 
