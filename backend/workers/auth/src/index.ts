@@ -24,13 +24,13 @@ const BaseCreateUser = z.object({
     .string()
     .regex(
       /^[a-z0-9_]{3,15}$/,
-      "Usernames should be between 3-15 characters and can only contain numbers, letters, and underscores."
+      "should be between 3-15 characters and can only contain numbers, letters, and underscores."
     ),
   inviteCode: z
     .string()
     .regex(
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
-      "Invite Code is in an invalid format"
+      "is in an invalid format"
     ),
   waitlistId: z.optional(z.nullable(z.string())),
 });
@@ -116,25 +116,9 @@ app.use("*", async (c, next) => {
   } catch (err) {
     console.error(err);
     if (err instanceof ZodError) {
-      const errorMessage = () => {
-        // flatten the Zod error object into a single string
-        // e.g. "Invite Code is in an invalid format"
-
-        try {
-          return Object.entries((err as ZodError).flatten().fieldErrors)
-            .reduce((acc, [, errorMessages]) => {
-              errorMessages?.forEach((msg) => acc.push(msg));
-              return acc;
-            }, [] as string[])
-            .join(", ");
-        } catch (err) {
-          return "Validation error";
-        }
-      };
-
       return c.json(
         {
-          message: errorMessage(),
+          message: zodErrorToString(err),
         },
         400
       );
@@ -400,5 +384,28 @@ const validateSolanaSignature = (
     return false;
   }
 };
+
+/**
+ * Flattens a Zod error object into a simple error string.
+ * @returns e.g. "Invite Code is in an invalid format"
+ * or if it fails, a standard "Validation error" message is returned
+ */
+const zodErrorToString = (err: ZodError) => {
+  try {
+    return Object.entries((err as ZodError).flatten().fieldErrors)
+      .reduce((acc, [field, errorMessages]) => {
+        errorMessages?.forEach((msg) =>
+          acc.push(`${camelCaseToSentenceCase(field)} ${msg}`)
+        );
+        return acc;
+      }, [] as string[])
+      .join(", ");
+  } catch (err) {
+    return "Validation error";
+  }
+};
+
+const camelCaseToSentenceCase = (str: string) =>
+  str.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase());
 
 export default app;
