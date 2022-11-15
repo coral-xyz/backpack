@@ -3,6 +3,7 @@
   "private": true,
   "workspaces": [
     "backend/workers/*",
+    "examples/clients/*",
     "examples",
     "examples/xnft/*",
     "examples/xnft-program-library/packages/*",
@@ -39,8 +40,12 @@
   },
   "resolutions": {
     "@solana/web3.js": "1.63.1",
+    "@types/react-dom": "^17.0.0",
+    "@types/react": "^17.0.0",
     "parcel": "2.7.0",
     "prettier": "2.7.1",
+    "react-dom": "^17.0.0",
+    "react": "^17.0.0",
     "wrangler": "^2.1.9"
   },
   "engines": {
