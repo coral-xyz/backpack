@@ -32,10 +32,6 @@ export const getVapidHeaders = (
     throw new Error("VAPID audience is not a url. " + audience);
   }
 
-  // validateSubject(subject);
-  // validatePublicKey(publicKey);
-  // validatePrivateKey(privateKey);
-
   privateKey = urlBase64.decode(privateKey);
 
   if (expiration) {
