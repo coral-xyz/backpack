@@ -95,6 +95,42 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
         opacity: 0.5,
       },
     },
+    PushNotificationAccess: {
+      label: "Push notifications",
+      detail: (
+        <SwitchToggle
+          enabled={xnftPreference.pushNotifications}
+          onChange={async () => {
+            const updatedPushNotifications = !xnftPreference.pushNotifications;
+            await background.request({
+              method: UI_RPC_METHOD_SET_XNFT_PREFERENCES,
+              params: [
+                xnft.install.publicKey,
+                {
+                  pushNotifications: updatedPushNotifications,
+                },
+              ],
+            });
+
+            if (updatedPushNotifications) {
+              const result = await window.navigator.permissions.query({
+                //@ts-ignore: camera not part of the typedoc yet
+                name: "notifications",
+              });
+
+              if (result.state !== "granted") {
+                window.open("/permissions.html?notifications=true", "_blank");
+                return;
+              }
+            }
+          }}
+        />
+      ),
+      onClick: () => {},
+      style: {
+        opacity: 0.5,
+      },
+    },
   };
 
   return (
