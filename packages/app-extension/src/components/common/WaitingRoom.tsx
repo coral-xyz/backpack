@@ -38,32 +38,20 @@ const WaitingRoom = ({ onboarded }: { onboarded?: boolean }) => {
   }, []);
 
   return (
-    <WithNav
-      navButtonRight={<SocialNavbarButtons />}
-      navbarStyle={{
-        borderRadius: "12px",
-      }}
-      navContentStyle={{
-        borderRadius: "12px",
+    <iframe
+      style={{
+        border: "none",
+        height: "98%",
+        width: "100%",
         overflow: "hidden",
-        display: "flex",
       }}
-    >
-      <iframe
-        style={{
-          border: "none",
-          height: "98%",
-          width: "100%",
-          overflow: "hidden",
-        }}
-        allow="clipboard-read; clipboard-write"
-        src={`https://beta-waiting-room.vercel.app/?id=${
-          onboarded ? useUsername() : getWaitlistId()
-        }&onboarded=${onboarded ?? false}&theme=${
-          isDarkMode ? "dark" : "light"
-        }&v=2`}
-      />
-    </WithNav>
+      allow="clipboard-read; clipboard-write"
+      src={`https://beta-waiting-room.vercel.app/?id=${
+        onboarded ? useUsername() : getWaitlistId()
+      }&onboarded=${onboarded ?? false}&theme=${
+        isDarkMode ? "dark" : "light"
+      }&v=2`}
+    />
   );
 };
 
