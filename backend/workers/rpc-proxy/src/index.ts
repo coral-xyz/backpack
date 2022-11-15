@@ -5,9 +5,15 @@ export interface Env {
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
-    return await fetch(
-      env.RPC_URL || "https://api.mainnet-beta.solana.com",
-      request
-    );
+    if (request.method === "POST") {
+      return await fetch(
+        env.RPC_URL || "https://api.mainnet-beta.solana.com",
+        request
+      );
+    } else {
+      return new Response("Only POST requests are allowed", {
+        status: 405,
+      });
+    }
   },
 };

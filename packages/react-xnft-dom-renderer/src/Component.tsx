@@ -283,7 +283,9 @@ function Custom({ children, component, props }) {
   const el = React.createElement(
     component,
     { ...props, className: props?.tw + " " + props.className },
-    children.map((c) => <ViewRenderer key={c.id} element={c} />)
+    children && children.length
+      ? children.map((c) => <ViewRenderer key={c.id} element={c} />)
+      : undefined
   );
   return el;
 }

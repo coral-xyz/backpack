@@ -3,10 +3,12 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import { KeyringStoreStateEnum, useKeyringStoreState } from "@coral-xyz/recoil";
 import {
   Header,
+  HeaderIcon,
   SubtextParagraph,
   SecondaryButton,
   DangerButton,
 } from "../../common";
+import { QuestionIcon } from "../../common/Icon";
 import { useNavStack } from "../../common/Layout/NavStack";
 
 export function ResetWelcome({ onClose }: { onClose: () => void }) {
@@ -30,7 +32,8 @@ export function ResetWelcome({ onClose }: { onClose: () => void }) {
         justifyContent: "space-between",
       }}
     >
-      <Box sx={{ margin: "24px" }}>
+      <Box sx={{ margin: "0 24px" }}>
+        <HeaderIcon icon={<QuestionIcon />} />
         <Header text="Forgot your password?" />
         <SubtextParagraph>
           We can’t recover your password as it is only stored on your computer.
@@ -54,7 +57,7 @@ export function ResetWelcome({ onClose }: { onClose: () => void }) {
             }}
           />
         </Box>
-        <DangerButton label="Reset Secret Recovery Phrase" onClick={onNext} />
+        <DangerButton label="Reset Backpack" onClick={onNext} />
       </Box>
     </Box>
   );

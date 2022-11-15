@@ -7,14 +7,6 @@ const data = [
     url: 'https://solana.com/'
   },
   {
-    image: '/brands/ftx.svg',
-    url: 'https://ftx.com/'
-  },
-  {
-    image: '/brands/serum.svg',
-    url: 'https://www.projectserum.com/'
-  },
-  {
     image: '/brands/jump.svg',
     url: 'https://jumpcrypto.com/'
   },

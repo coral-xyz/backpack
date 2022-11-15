@@ -68,5 +68,13 @@ function encodeTransaction(transaction: any) {
   delete transaction.gas;
   // As above
   delete transaction.from;
+  // Set transaction type if fully formed EIP1559
+  if (
+    (transaction.type === 2 || transaction.type == null) &&
+    transaction.maxFeePerGas != null &&
+    transaction.maxPriorityFeePerGas != null
+  ) {
+    transaction.type = 2;
+  }
   return bs58.encode(ethers.utils.serializeTransaction(transaction));
 }
