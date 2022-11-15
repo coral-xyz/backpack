@@ -24,13 +24,13 @@ const BaseCreateUser = z.object({
     .string()
     .regex(
       /^[a-z0-9_]{3,15}$/,
-      "should be between 3-15 characters and can only contain numbers, letters, and underscores."
+      "Usernames should be between 3-15 characters and can only contain numbers, letters, and underscores."
     ),
   inviteCode: z
     .string()
     .regex(
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
-      "invalid format"
+      "Invite Code is in an invalid format"
     ),
   waitlistId: z.optional(z.nullable(z.string())),
 });
@@ -115,7 +115,32 @@ app.use("*", async (c, next) => {
     await next();
   } catch (err) {
     console.error(err);
-    return c.json(err, err instanceof ZodError ? 400 : 500);
+    if (err instanceof ZodError) {
+      const errorMessage = () => {
+        // flatten the Zod error object into a single string
+        // e.g. "Invite Code is in an invalid format"
+
+        try {
+          return Object.entries((err as ZodError).flatten().fieldErrors)
+            .reduce((acc, [, errorMessages]) => {
+              errorMessages?.forEach((msg) => acc.push(msg));
+              return acc;
+            }, [] as string[])
+            .join(", ");
+        } catch (err) {
+          return "Validation error";
+        }
+      };
+
+      return c.json(
+        {
+          message: errorMessage(),
+        },
+        400
+      );
+    } else {
+      return c.json(err, 500);
+    }
   }
 });
 
