@@ -6,13 +6,15 @@ const GlobalsPolyfills = require("@esbuild-plugins/node-globals-polyfill");
 const { Parcel } = require("@parcel/core");
 const { program } = require("commander");
 const { join, resolve } = require("path");
+const native = require("./native");
 const fs = require("fs");
 
 const { SIMULATOR_PORT } = { SIMULATOR_PORT: 9933 }; // TODO: replace with import.
 
-const pkgBuffer = fs.readFileSync(__dirname + "/package.json");
-const pkg = JSON.parse(pkgBuffer.toString());
+const pkg = JSON.parse(fs.readFileSync(__dirname + "/package.json").toString());
 program.version(pkg.version);
+
+native(program.command("native"));
 
 const options = {
   entries: "./src/index.tsx",

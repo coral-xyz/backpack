@@ -1,0 +1,19 @@
+{
+  "name": "@coral-xyz/xnft-explorer-native",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "xnft native build",
+    "start": "xnft native start",
+    "dev": "xnft native watch"
+  },
+  "devDependencies": {},
+  "dependencies": {
+    "@types/react-native": "^0.70.6",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-native": "^0.70.5",
+    "react-native-web": "^0.18.10",
+    "recoil": "0.7.5",
+    "twrnc": "^3.4.1"
+  }
+}

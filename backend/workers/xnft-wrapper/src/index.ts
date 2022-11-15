@@ -93,8 +93,24 @@ export default {
             <meta charset="utf-8"/>
             <link rel="stylesheet" href="https://doof72pbjabye.cloudfront.net/fonts/inter/font.css"></link>
             <script src="https://cdn.tailwindcss.com"></script>
+            <style>
+              html, body {
+                position:relative;
+                margin: 0;
+                padding: 0;
+                height:100%;
+                display:flex;
+                flex-direction: column;
+              }
+              #native-container {
+                display:none;
+                flex-direction: column;
+                flex: 1 0 100%;
+              }
+            </style>
           </head>
           <body>
+            <div id="native-container"></div>
             <div id="container"></div>
             ${innerHTML}
            </body>
