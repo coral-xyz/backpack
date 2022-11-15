@@ -20,6 +20,10 @@
     "react": "^17.0.0",
     "react-reconciler": "^0.26.0"
   },
+  "peerDependencies": {
+    "react-native": "^0.70.6",
+    "react-native-web": "^0.18.10"
+  },
   "devDependencies": {
     "typescript": "^4.6.3"
   },
