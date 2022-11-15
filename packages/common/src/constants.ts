@@ -480,3 +480,5 @@ export const BACKPACK_LINK = "https://backpack.app";
 
 export const ALCHEMY_ETHEREUM_MAINNET_API_KEY =
   "DlJr6QuBC2EaE-L60-iqQQGq9hi9-XSZ";
+
+export const NOTIFICATION_SERVER_URL = "http://localhost:8080";

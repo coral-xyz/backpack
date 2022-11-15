@@ -1,0 +1,3 @@
+table:
+  name: notification_subscriptions
+  schema: auth

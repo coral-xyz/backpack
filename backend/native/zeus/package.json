@@ -1,0 +1,16 @@
+{
+  "name": "@coral-xyz/zeus",
+  "version": "1.0.0",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "description": "",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "zeus": "npx graphql-zeus http://localhost:8112/v1/graphql ./src --header=x-hasura-admin-secret:myadminsecretkey --header=x-hasura-role:auth_worker",
+    "build": "tsc && tsc-alias"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
