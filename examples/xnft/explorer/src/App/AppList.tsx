@@ -19,6 +19,7 @@ import ArrowUpIcon from "./Icons/ArrowUpIcon";
 import CircleUnchecked from "./Icons/CircleUnchecked";
 import CircleChecked from "./Icons/CircleChecked";
 import Rating from "./Rating";
+import InstallIcon from "./Icons/InstallIcon";
 
 function AppList() {
   const xnfts = useRecoilValueLoadable(filteredXnftsAtom);
@@ -56,10 +57,7 @@ function AppList() {
           tw="pl-4 flex justify-center items-center cursor-pointer"
           onClick={() => setDrawerOpen(!drawerOpen)}
         >
-          <FilterIcon
-            size={32}
-            color={drawerOpen ? "rgb(96,165,250)" : "white"}
-          />
+          <FilterIcon size={32} color={drawerOpen ? "#33CCFF" : "white"} />
         </View>
       </View>
       <View
@@ -136,7 +134,7 @@ function AppList() {
             />
           </View>
           <Text tw="mx-2">Include:</Text>
-          <View tw="flex-row">
+          <View tw="flex flex-row items-center justify-start">
             <Button
               onClick={() => {
                 setFilter({ includeSuspended: !filter.includeSuspended });
@@ -153,6 +151,41 @@ function AppList() {
                 <CircleUnchecked tw="m-0 mr-1" size={16} color="#71717A" />
               )}
               {"Suspended"}
+            </Button>
+            <Button
+              onClick={() => {
+                const includePrice =
+                  filter.includePrice === "all"
+                    ? "paidOnly"
+                    : filter.includePrice === "paidOnly"
+                    ? "freeOnly"
+                    : "all";
+                setFilter({ includePrice });
+              }}
+              tw={`text-[#000] font-bold inline-flex flex-row m-2 px-3 justify-center items-center rounded text-xs tracking-wide`}
+            >
+              {filter.includePrice === "all"
+                ? "Paid & Free"
+                : filter.includePrice === "paidOnly"
+                ? "Paid Only"
+                : "Free Only"}
+            </Button>
+            <Button
+              onClick={() => {
+                setFilter({ includeInstalled: !filter.includeInstalled });
+              }}
+              tw={`${
+                filter.includeInstalled
+                  ? "text-[#000] font-bold"
+                  : "font-medium "
+              } inline-flex flex-row m-2 px-3 justify-center items-center rounded text-xs tracking-wide`}
+            >
+              {filter.includeInstalled ? (
+                <CircleChecked tw="m-0 mr-1" size={16} color="black" />
+              ) : (
+                <CircleUnchecked tw="m-0 mr-1" size={16} color="#71717A" />
+              )}
+              {"Installed"}
             </Button>
           </View>
         </View>
@@ -203,7 +236,7 @@ function RenderApp({ app }: { app: XnftWithMetadata }) {
   return (
     <View
       onClick={() => nav.push("details", { app })}
-      tw="flex items-center gap-4 rounded-lg bg-[#27272A] m-4 p-4 shadow-lg transition-all hover:-translate-y-0.1 hover:bg-[#27272A]/40 cursor-pointer"
+      tw="relative flex items-center gap-4 rounded-lg bg-[#27272A] m-4 p-4 shadow-lg transition-all hover:-translate-y-0.1 hover:bg-[#27272A]/40 cursor-pointer"
     >
       <View tw="flex items-center">
         <Image
@@ -222,12 +255,23 @@ function RenderApp({ app }: { app: XnftWithMetadata }) {
         <View tw="truncate text-xs tracking-wide text-[#FAFAFA]/75">
           {app.json.description}
         </View>
-        <View tw="py-1">
+        <View tw="py-1 flex justify-between">
           <Rating
             rating={app.account.totalRating.toNumber()}
             totalReviews={app.account.numRatings}
             starSize={12}
           />
+          <View
+            tw={`flex gap-1.5 ${
+              app.installed ? "text-[#33CCFF]" : "text-white"
+            } text-xs`}
+          >
+            <InstallIcon
+              size={14}
+              color={app.installed ? "#33CCFF" : "white"}
+            />
+            {app.account.totalInstalls.toNumber()}
+          </View>
         </View>
       </View>
     </View>

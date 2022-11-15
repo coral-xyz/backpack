@@ -25,6 +25,7 @@ export function App() {
     return <CenteredLoader />;
   }
   if (xnfts.state === "hasError") {
+    console.error(xnfts);
     return <Text>Error</Text>;
   }
 
