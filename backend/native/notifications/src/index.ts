@@ -1,14 +1,13 @@
 import express from "express";
-import { Chain } from "@coral-xyz/zeus";
-import { sendNotification } from "./web-push";
-import { HASURA_URL, JWT } from "./config";
+import webpush from "web-push";
+import { deleteSubscription, getSubscriptions, insertSubscription } from "./db";
+import {
+  NOTIFICATION_SEND_SECRET,
+  VAPID_PRIVATE_KEY,
+  VAPID_PUBLIC_KEY,
+} from "./config";
 
 const app = express();
-const chain = Chain(HASURA_URL, {
-  headers: {
-    Authorization: `Bearer ${JWT}`,
-  },
-});
 
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
@@ -19,6 +18,16 @@ app.use(bodyParser.json({ type: "application/*+json" }));
 
 // parse some custom thing into a Buffer
 app.use(bodyParser.raw({}));
+const vapidKeys = {
+  publicKey: VAPID_PUBLIC_KEY,
+  privateKey: VAPID_PRIVATE_KEY,
+};
+
+webpush.setVapidDetails(
+  "mailto:admin@200ms.io",
+  vapidKeys.publicKey,
+  vapidKeys.privateKey
+);
 
 app.post("/notifications/register", async (req, res) => {
   const body = req.body;
@@ -27,23 +36,7 @@ app.post("/notifications/register", async (req, res) => {
   const publicKey = req.body.publicKey || "";
   const subscription = req.body.subscription;
 
-  await chain("mutation")({
-    insert_auth_notification_subscriptions_one: [
-      {
-        object: {
-          public_key: publicKey,
-          username,
-          endpoint: subscription.endpoint,
-          p256dh: subscription.keys.p256dh,
-          auth: subscription.keys.auth,
-          expirationTime: subscription.expirationTime || "",
-        },
-      },
-      {
-        id: true,
-      },
-    ],
-  });
+  await insertSubscription(publicKey, username, subscription);
 
   res.json({});
 });
@@ -51,24 +44,14 @@ app.post("/notifications/register", async (req, res) => {
 app.get("/notification/notify", async (req, res) => {
   // TODO: secure this
   const username = req.query.username;
-  console.log(username);
+  const secret = req.query.secret;
 
-  const responses = await chain("query")({
-    auth_notification_subscriptions: [
-      {
-        where: { username: { _eq: (username as string) || "" } },
-        limit: 5,
-      },
-      {
-        username: true,
-        endpoint: true,
-        expirationTime: true,
-        p256dh: true,
-        auth: true,
-      },
-    ],
-  });
-  responses.auth_notification_subscriptions.forEach(async (response) => {
+  if (secret !== NOTIFICATION_SEND_SECRET) {
+    return res.status(411).json({});
+  }
+
+  const responses = await getSubscriptions(username as string);
+  responses.auth_notification_subscriptions.map(async (response) => {
     const subscription = {
       endpoint: response.endpoint,
       expirationTime: response.expirationTime || null,
@@ -77,8 +60,21 @@ app.get("/notification/notify", async (req, res) => {
         auth: response.auth,
       },
     };
-    // @ts-ignore
-    await sendNotification(subscription, "hi there");
+    try {
+      // @ts-ignore
+      await webpush.sendNotification(
+        subscription,
+        JSON.stringify({
+          title: "title1",
+          body: "description1 " + Math.random(),
+        })
+      );
+    } catch (e) {
+      // @ts-ignore
+      if (e?.statusCode === 410 && e.body?.includes("unsubscribed")) {
+        await deleteSubscription(response.id);
+      }
+    }
   });
 
   return res.json({});
