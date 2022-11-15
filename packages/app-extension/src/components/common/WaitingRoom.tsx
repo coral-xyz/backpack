@@ -37,6 +37,25 @@ const WaitingRoom = ({ onboarded }: { onboarded?: boolean }) => {
     };
   }, []);
 
+  const iframe = (
+    <iframe
+      style={{
+        border: "none",
+        height: "98%",
+        width: "100%",
+        overflow: "hidden",
+      }}
+      allow="clipboard-read; clipboard-write"
+      src={`https://beta-waiting-room.vercel.app/?id=${
+        onboarded ? useUsername() : getWaitlistId()
+      }&onboarded=${onboarded ?? false}&theme=${
+        isDarkMode ? "dark" : "light"
+      }&v=2`}
+    />
+  );
+
+  if (onboarded) return iframe;
+
   return (
     <WithNav
       navButtonRight={<SocialNavbarButtons />}
@@ -49,20 +68,7 @@ const WaitingRoom = ({ onboarded }: { onboarded?: boolean }) => {
         display: "flex",
       }}
     >
-      <iframe
-        style={{
-          border: "none",
-          height: "98%",
-          width: "100%",
-          overflow: "hidden",
-        }}
-        allow="clipboard-read; clipboard-write"
-        src={`https://beta-waiting-room.vercel.app/?id=${
-          onboarded ? useUsername() : getWaitlistId()
-        }&onboarded=${onboarded ?? false}&theme=${
-          isDarkMode ? "dark" : "light"
-        }&v=2`}
-      />
+      {iframe}
     </WithNav>
   );
 };
