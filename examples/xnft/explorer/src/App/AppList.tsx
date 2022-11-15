@@ -65,7 +65,12 @@ function AppList() {
           drawerOpen ? "max-h-[10rem]" : "max-h-[0rem]"
         } h-auto overflow-hidden transition-[max-height] duration-300 ease-in-out`}
       >
-        <View tw="p-2 bg-[#27272A]">
+        <View
+          tw="p-2 bg-[#27272A]"
+          style={{
+            boxShadow: "inset 0 0 4px 1px rgba(0,0,0,0.8)",
+          }}
+        >
           <Text tw="mx-2">Sort By:</Text>
           <View tw="flex-row">
             <SortButton
@@ -261,16 +266,13 @@ function RenderApp({ app }: { app: XnftWithMetadata }) {
             totalReviews={app.account.numRatings}
             starSize={12}
           />
-          <View
-            tw={`flex gap-1.5 ${
-              app.installed ? "text-[#33CCFF]" : "text-white"
-            } text-xs`}
-          >
-            <InstallIcon
-              size={14}
-              color={app.installed ? "#33CCFF" : "white"}
-            />
+          <View tw={`flex gap-1 text-white text-xs`}>
             {app.account.totalInstalls.toNumber()}
+            {app.installed ? (
+              <CircleChecked size={14} color={"white"} />
+            ) : (
+              <InstallIcon size={14} color={"white"} />
+            )}
           </View>
         </View>
       </View>
