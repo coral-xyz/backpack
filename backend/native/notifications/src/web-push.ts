@@ -282,6 +282,9 @@ export const sendNotification = function (
   payload: any,
   options: any
 ) {
+  console.log(subscription);
+  console.log(payload);
+  console.log(options);
   let requestDetails: any;
   try {
     requestDetails = generateRequestDetails(subscription, payload, options);

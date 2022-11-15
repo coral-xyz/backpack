@@ -1,5 +1,6 @@
 const ece = require("http_ece");
 const urlBase64 = require("urlsafe-base64");
+import * as crypto from "crypto";
 
 export const encrypt = function (
   userPublicKey: any,

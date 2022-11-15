@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { PermissionsPage } from "./PermissionsPage";
 import { NOTIFICATION_SERVER_URL } from "@coral-xyz/common";
+import { useUsername } from "@coral-xyz/recoil";
 
 const BACKPACK_NOTIFICATION_PUBKEY =
   "BA_9ntbAGy7SAn9oUzkGiWQXqCqc1BQs-7OK6C4fMkC7Y0nWiPqhNPder3-nklzley4IetxjSCd6cI8jHgZ01us";
@@ -8,6 +9,7 @@ const BACKPACK_NOTIFICATION_PUBKEY =
 export const NotificationPermissions = () => {
   const [permissionGranted, setPermissionGranted] = useState(false);
   const [inProgress, setInProgress] = useState(true);
+  const username = useUsername();
 
   const requestNotificationPermission = async () => {
     const permission = await window.Notification.requestPermission();
@@ -39,7 +41,7 @@ export const NotificationPermissions = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ subscription }),
+        body: JSON.stringify({ subscription, username: username || "kira" }),
       }
     );
     return response.json();
