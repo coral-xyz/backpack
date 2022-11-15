@@ -15,10 +15,8 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     name: Build and run tests
-    # https://turborepo.org/docs/ci/github-actions
     env:
-      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-      TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+      RELEASE_PREFIX: "0.2.0"
     steps:
       ##########################################################################
       # Setup environment.
@@ -57,7 +55,7 @@ jobs:
       #
       - name: "build edge"
         env:
-          BACKPACK_CONFIG_VERSION: "latest-edge-${{ github.run_number }}"
+          BACKPACK_CONFIG_VERSION: "${{ env.RELEASE_PREFIX }}-latest-edge-${{ github.run_number }}"
           BACKPACK_CONFIG_LOG_LEVEL: "info"
           BACKPACK_FEATURE_LIGHT_MODE: "true"
           BACKPACK_FEATURE_POP_MODE: "true"
@@ -75,7 +73,7 @@ jobs:
       #
       - name: "build beta"
         env:
-          BACKPACK_CONFIG_VERSION: "latest-beta-${{ github.run_number }}"
+          BACKPACK_CONFIG_VERSION: "${{ env.RELEASE_PREFIX }}-latest-beta-${{ github.run_number }}"
           BACKPACK_CONFIG_LOG_LEVEL: "info"
           BACKPACK_FEATURE_LIGHT_MODE: "true"
           BACKPACK_FEATURE_POP_MODE: "true"
@@ -192,8 +190,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: latest-${{ github.run_number }}
-          release_name: latest-${{ github.run_number }}
+          tag_name: ${{ env.RELEASE_PREFIX }}-latest-${{ github.run_number }}
+          release_name: ${{ env.RELEASE_PREFIX }}-latest-${{ github.run_number }}
           draft: false
           prerelease: false
 
@@ -225,7 +223,7 @@ jobs:
 
       - name: "update npm package version"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        run: ./scripts/npm_release.sh 0.2.0-latest.${{ github.run_number }}
+        run: ./scripts/npm_release.sh ${{ env.RELEASE_PREFIX }}-latest.${{ github.run_number }}
       - name: "publish to npm: common"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: JS-DevTools/npm-publish@v1
