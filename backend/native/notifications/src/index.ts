@@ -49,7 +49,6 @@ app.post("/notifications/register", async (req, res) => {
     ],
   });
 
-  console.log(body.subscription);
   memoryDb.subscription = body.subscription;
   res.json({});
 });
