@@ -4,7 +4,7 @@ import { NOTIFICATION_SERVER_URL } from "@coral-xyz/common";
 import { useUsername } from "@coral-xyz/recoil";
 
 const BACKPACK_NOTIFICATION_PUBKEY =
-  "BA_9ntbAGy7SAn9oUzkGiWQXqCqc1BQs-7OK6C4fMkC7Y0nWiPqhNPder3-nklzley4IetxjSCd6cI8jHgZ01us";
+  "BMmOMZZ6KRLCkXP4YJSDpvgm7s6A79pRAPfnFmi4e9hrPVQjLDmliw_3tVGo0PAzcayRyrR1yXNMveN2pNoR_pA\n";
 
 export const NotificationPermissions = () => {
   const [permissionGranted, setPermissionGranted] = useState(false);
