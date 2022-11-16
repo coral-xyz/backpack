@@ -1,5 +1,4 @@
 import { type FormEvent, useCallback, useEffect, useState } from "react";
-import makeStyles from "@mui/styles/makeStyles";
 import { Box, Typography, InputAdornment, IconButton } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useCustomTheme } from "@coral-xyz/themes";
@@ -7,18 +6,9 @@ import {
   Header,
   SubtextParagraph,
   PrimaryButton,
-  TextField,
   CheckboxForm,
 } from "../../common";
 import { TextInput } from "../Inputs";
-
-const useStyles = makeStyles(() => ({
-  passwordFieldRoot: {
-    margin: 0,
-    width: "100%",
-    marginBottom: "12px",
-  },
-}));
 
 enum PasswordError {
   TOO_SHORT,
@@ -30,7 +20,6 @@ export function CreatePassword({
 }: {
   onNext: (password: string) => void;
 }) {
-  const classes = useStyles();
   const theme = useCustomTheme();
   const [checked, setChecked] = useState(false);
   const [password, setPassword] = useState("");
