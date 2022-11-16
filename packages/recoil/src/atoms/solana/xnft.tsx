@@ -167,23 +167,37 @@ export const xnfts = atom({
     get: async ({ get }) => {
       const _activeWallets = get(activePublicKeys);
       const _connectionUrls = get(connectionUrls);
+      const developerMode = get(isDeveloperMode);
       const provider = get(anchorContext).provider;
       const xnfts = await fetchXnfts(
         provider,
         new PublicKey(get(solanaPublicKey)!)
       );
-      return xnfts.map((xnft) => {
-        return {
-          ...xnft,
-          url: xnftUrl(xnft.metadataBlob.properties.bundle),
-          iconUrl: externalResourceUri(xnft.metadataBlob.image),
-          activeWallet: _activeWallets[Blockchain.SOLANA],
-          activeWallets: _activeWallets,
-          connectionUrl: _connectionUrls[Blockchain.SOLANA],
-          connectionUrls: _connectionUrls,
-          title: xnft.metadataBlob.name,
-        };
-      });
+      return xnfts
+        .map((xnft) => {
+          return {
+            ...xnft,
+            url: xnftUrl(xnft.metadataBlob.properties.bundle),
+            iconUrl: externalResourceUri(xnft.metadataBlob.image),
+            activeWallet: _activeWallets[Blockchain.SOLANA],
+            activeWallets: _activeWallets,
+            connectionUrl: _connectionUrls[Blockchain.SOLANA],
+            connectionUrls: _connectionUrls,
+            title: xnft.metadataBlob.name,
+          };
+        })
+        .filter(
+          (xnft) =>
+            // @ts-ignore
+            // HACK: hide autoinstalled ONE xnft -> entrypoint in collectibles.
+            xnft.install.account.xnft.toString() !==
+              "4ekUZj2TKNoyCwnRDstvViCZYkhnhNoWNQpa5bBLwhq4" &&
+            // HACK: hide autoinstalled Explorer xnft if not in devmode
+            (developerMode ||
+              // @ts-ignore
+              xnft.install.account.xnft.toString() !==
+                "3Db1fHHc2TGrCpBWnu6ZzdQd5pSoyGCmnh6nopNjv4P2")
+        );
     },
   }),
 });
@@ -191,15 +205,8 @@ export const xnfts = atom({
 export const appIcons = selector({
   key: "appIcons",
   get: async ({ get }) => {
-    const _xnftData = get(xnfts);
-    const xnftData = _xnftData.filter(
-      (p) =>
-        // @ts-ignore
-        p.install.account.xnft.toString() !==
-        "4ekUZj2TKNoyCwnRDstvViCZYkhnhNoWNQpa5bBLwhq4"
-    );
+    const xnftData = get(xnfts);
     const pluginData = get(plugins);
-    // HACK: hide autoinstalled ONE xnft -> entrypoint in collectibles.
     return xnftData.concat(pluginData);
   },
 });
