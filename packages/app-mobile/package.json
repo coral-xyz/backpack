@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "eas-build-post-install": "cd ../../ && yarn mobile:build",
+    "eas-build-post-install": "cd ../../ && yarn build:mobile",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
