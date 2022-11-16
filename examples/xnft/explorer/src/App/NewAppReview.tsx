@@ -12,6 +12,8 @@ import { useRecoilState, useRecoilValueLoadable } from "recoil";
 import getGatewayUri from "./_utils/getGatewayUri";
 import { XnftWithMetadata } from "./_types/XnftWithMetadata";
 import Rating from "./Rating";
+import getReviewTransaction from "./_utils/getReviewTransaction";
+import getProgram from "./_utils/getProgram";
 function NewAppReview({ app }: { app: XnftWithMetadata }) {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
@@ -40,7 +42,19 @@ function NewAppReview({ app }: { app: XnftWithMetadata }) {
           </Button>
         ) : (
           <Button
-            onClick={() => {
+            onClick={async () => {
+              const program = getProgram(
+                window.xnft.solana.connection,
+                window.xnft.solana
+              );
+              const tx = await getReviewTransaction(
+                program,
+                window.xnft.solana.publicKey,
+                app,
+                comment,
+                rating
+              );
+              await window.xnft.solana.sendAndConfirm(tx);
               nav.pop();
             }}
             tw="flex items-center gap-2.5 bg-white py-2 text-[#374151] px-3 rounded text-xs font-medium tracking-wide"

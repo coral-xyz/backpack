@@ -108,14 +108,14 @@ function AppDetails({ app }: { app: XnftWithMetadata }) {
                 <Button tw="rounded bg-[#27272A] px-3 rounded text-xs font-medium tracking-wide">
                   Installed
                 </Button>
-                {/* <Button
+                <Button
                   onClick={() => {
                     nav.push("review", { app });
                   }}
                   tw="flex items-center gap-2.5 bg-white py-2 text-[#374151] px-3 rounded text-xs font-medium tracking-wide"
                 >
                   {"Add Review"}
-                </Button> */}
+                </Button>
               </>
             )}
           </View>

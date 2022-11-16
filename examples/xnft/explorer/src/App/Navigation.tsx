@@ -2,6 +2,7 @@ import { Stack } from "react-xnft";
 import React from "react";
 import AppList from "./AppList";
 import AppDetails from "./AppDetails";
+import NewAppReview from "./NewAppReview";
 // import NewAppReview from "./NewAppReview";
 
 function Navigation() {
@@ -45,10 +46,10 @@ function Navigation() {
         name={"details"}
         component={(props) => <AppDetails {...props} />}
       />
-      {/* <Stack.Screen
+      <Stack.Screen
         name={"review"}
         component={(props) => <NewAppReview {...props} />}
-      /> */}
+      />
     </Stack.Navigator>
   );
 }
