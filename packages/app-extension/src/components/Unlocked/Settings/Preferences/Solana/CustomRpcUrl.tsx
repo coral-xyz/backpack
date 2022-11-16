@@ -1,38 +1,15 @@
 import { useEffect, useState } from "react";
-import { TextField, Typography } from "@mui/material";
 import { useBackgroundClient } from "@coral-xyz/recoil";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE } from "@coral-xyz/common";
-import { List, ListItem, PrimaryButton } from "../../../../common";
+import {
+  Blockchain,
+  UI_RPC_METHOD_BLOCKCHAIN_SETTINGS_UPDATE,
+} from "@coral-xyz/common";
+import { PrimaryButton } from "../../../../common";
 import { useDrawerContext } from "../../../../common/Layout/Drawer";
 import { useNavStack } from "../../../../common/Layout/NavStack";
 import { Inputs, InputListItem } from "../../../../common/Inputs";
 
-const useStyles = styles((theme) => ({
-  textFieldRoot: {
-    color: theme.custom.colors.secondary,
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        border: "none",
-        color: theme.custom.colors.secondary,
-      },
-    },
-  },
-  listParent: {
-    border: `2px solid black`,
-    "&:hover": {
-      border: `2px solid red !important`,
-    },
-    "&:focussed": {
-      border: `2px solid yellow !important`,
-    },
-    borderRadius: "10px",
-  },
-}));
-
 export function PreferenceSolanaCustomRpcUrl() {
-  const classes = useStyles();
-  const theme = useCustomTheme();
   const { close } = useDrawerContext();
   const nav = useNavStack();
   const background = useBackgroundClient();
@@ -44,8 +21,13 @@ export function PreferenceSolanaCustomRpcUrl() {
     try {
       background
         .request({
-          method: UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
-          params: [rpcUrl],
+          method: UI_RPC_METHOD_BLOCKCHAIN_SETTINGS_UPDATE,
+          params: [
+            Blockchain.SOLANA,
+            {
+              connectionUrl: rpcUrl,
+            },
+          ],
         })
         .then(close)
         .catch(console.error);

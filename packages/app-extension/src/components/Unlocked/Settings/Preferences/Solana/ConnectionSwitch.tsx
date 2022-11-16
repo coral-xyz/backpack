@@ -2,17 +2,15 @@ import { useEffect } from "react";
 import { Check } from "@mui/icons-material";
 import { useCustomTheme } from "@coral-xyz/themes";
 import {
-  getLogger,
+  Blockchain,
   SolanaCluster,
-  UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
+  UI_RPC_METHOD_BLOCKCHAIN_SETTINGS_UPDATE,
 } from "@coral-xyz/common";
 import { useBackgroundClient, useSolanaConnectionUrl } from "@coral-xyz/recoil";
 import { useDrawerContext } from "../../../../common/Layout/Drawer";
 import { SettingsList } from "../../../../common/Settings/List";
 import { useNavStack } from "../../../../common/Layout/NavStack";
 import { PushDetail } from "../../../../common";
-
-const logger = getLogger("preferences");
 
 export function PreferencesSolanaConnection() {
   const { close } = useDrawerContext();
@@ -55,12 +53,17 @@ export function PreferencesSolanaConnection() {
     },
   };
 
-  const changeNetwork = (url: string) => {
+  const changeNetwork = (connectionUrl: string) => {
     try {
       background
         .request({
-          method: UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
-          params: [url],
+          method: UI_RPC_METHOD_BLOCKCHAIN_SETTINGS_UPDATE,
+          params: [
+            Blockchain.SOLANA,
+            {
+              connectionUrl,
+            },
+          ],
         })
         .then(close)
         .catch(console.error);

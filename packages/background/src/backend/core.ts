@@ -15,18 +15,13 @@ import { makeDefaultNav } from "@coral-xyz/recoil";
 import {
   BACKEND_EVENT,
   Blockchain,
-  EthereumConnectionUrl,
-  EthereumExplorer,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
   NOTIFICATION_BLOCKCHAIN_DISABLED,
   NOTIFICATION_BLOCKCHAIN_ENABLED,
+  NOTIFICATION_BLOCKCHAIN_SETTINGS_UPDATED,
   NOTIFICATION_DARK_MODE_UPDATED,
   NOTIFICATION_DEVELOPER_MODE_UPDATED,
-  NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
-  NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
-  NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
-  NOTIFICATION_ETHEREUM_EXPLORER_UPDATED,
   NOTIFICATION_KEYNAME_UPDATE,
   NOTIFICATION_KEYRING_DERIVED_WALLET,
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
@@ -36,13 +31,7 @@ import {
   NOTIFICATION_KEYRING_STORE_RESET,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
-  NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
-  NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
-  NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
-  NOTIFICATION_SOLANA_EXPLORER_UPDATED,
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
-  SolanaCluster,
-  SolanaExplorer,
   deserializeTransaction,
   FEATURE_GATES_MAP,
   XnftPreferenceStore,
@@ -188,117 +177,6 @@ export class Backend {
     return blockhash;
   }
 
-  async solanaConnectionUrlRead(): Promise<string> {
-    let data = await getWalletData();
-
-    // migrate the old default RPC value, this can be removed in future
-    const OLD_DEFAULT = "https://solana-rpc-nodes.projectserum.com";
-    if (
-      // if the current default RPC does not match the old one
-      SolanaCluster.DEFAULT !== OLD_DEFAULT &&
-      // and the user's RPC URL is that old default value
-      data.solana?.cluster === OLD_DEFAULT
-    ) {
-      // set the user's RPC URL to the new default value
-      data = {
-        ...data,
-        solana: {
-          ...data.solana,
-          cluster: SolanaCluster.DEFAULT,
-        },
-      };
-      await setWalletData(data);
-    }
-
-    return (data.solana && data.solana.cluster) ?? SolanaCluster.DEFAULT;
-  }
-
-  // Returns true if the url changed.
-  async solanaConnectionUrlUpdate(cluster: string): Promise<boolean> {
-    const data = await getWalletData();
-
-    if (data.solana.cluster === cluster) {
-      return false;
-    }
-
-    let keyring: BlockchainKeyring | null;
-    try {
-      keyring = this.keyringStore.keyringForBlockchain(Blockchain.SOLANA);
-    } catch {
-      // Blockchain may be disabled
-      keyring = null;
-    }
-    const activeWallet = keyring ? keyring.getActiveWallet() : null;
-
-    await setWalletData({
-      ...data,
-      solana: {
-        ...data.solana,
-        cluster,
-      },
-    });
-
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
-      data: {
-        activeWallet,
-        url: cluster,
-      },
-    });
-
-    return true;
-  }
-
-  async solanaExplorerRead(): Promise<string> {
-    const data = await store.getWalletData();
-    return data.solana && data.solana.explorer
-      ? data.solana.explorer
-      : SolanaExplorer.DEFAULT;
-  }
-
-  async solanaExplorerUpdate(explorer: string): Promise<string> {
-    const data = await store.getWalletData();
-    await store.setWalletData({
-      ...data,
-      solana: {
-        ...data.solana,
-        explorer,
-      },
-    });
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_SOLANA_EXPLORER_UPDATED,
-      data: {
-        explorer,
-      },
-    });
-    return SUCCESS_RESPONSE;
-  }
-
-  async solanaCommitmentRead(): Promise<Commitment> {
-    const data = await store.getWalletData();
-    return data.solana && data.solana.commitment
-      ? data.solana.commitment
-      : "processed";
-  }
-
-  async solanaCommitmentUpdate(commitment: Commitment): Promise<string> {
-    const data = await store.getWalletData();
-    await store.setWalletData({
-      ...data,
-      solana: {
-        ...data.solana,
-        commitment,
-      },
-    });
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
-      data: {
-        commitment,
-      },
-    });
-    return SUCCESS_RESPONSE;
-  }
-
   ///////////////////////////////////////////////////////////////////////////////
   // Ethereum provider.
   ///////////////////////////////////////////////////////////////////////////////
@@ -330,98 +208,6 @@ export class Backend {
       Blockchain.ETHEREUM
     );
     return await blockchainKeyring.signMessage(msg, walletAddress);
-  }
-
-  ///////////////////////////////////////////////////////////////////////////////
-  // Ethereum.
-  ///////////////////////////////////////////////////////////////////////////////
-
-  async ethereumExplorerRead(): Promise<string> {
-    const data = await store.getWalletData();
-    return data.ethereum && data.ethereum.explorer
-      ? data.ethereum.explorer
-      : EthereumExplorer.DEFAULT;
-  }
-
-  async ethereumExplorerUpdate(explorer: string): Promise<string> {
-    const data = await store.getWalletData();
-    await store.setWalletData({
-      ...data,
-      ethereum: {
-        ...(data.ethereum || {}),
-        explorer,
-      },
-    });
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_ETHEREUM_EXPLORER_UPDATED,
-      data: {
-        explorer,
-      },
-    });
-    return SUCCESS_RESPONSE;
-  }
-
-  async ethereumConnectionUrlRead(): Promise<string> {
-    const data = await store.getWalletData();
-    return data.ethereum && data.ethereum.connectionUrl
-      ? data.ethereum.connectionUrl
-      : EthereumConnectionUrl.DEFAULT;
-  }
-
-  async ethereumConnectionUrlUpdate(connectionUrl: string): Promise<string> {
-    const data = await store.getWalletData();
-
-    await store.setWalletData({
-      ...data,
-      ethereum: {
-        ...(data.ethereum || {}),
-        connectionUrl,
-      },
-    });
-
-    let keyring: BlockchainKeyring | null;
-    try {
-      keyring = this.keyringStore.keyringForBlockchain(Blockchain.ETHEREUM);
-    } catch {
-      // Blockchain may be disabled
-      keyring = null;
-    }
-    const activeWallet = keyring ? keyring.getActiveWallet() : null;
-
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
-      data: {
-        activeWallet,
-        connectionUrl,
-      },
-    });
-    return SUCCESS_RESPONSE;
-  }
-
-  async ethereumChainIdRead(): Promise<string> {
-    const data = await store.getWalletData();
-    return data.ethereum && data.ethereum.chainId
-      ? data.ethereum.chainId
-      : // Default to mainnet
-        "0x1";
-  }
-
-  async ethereumChainIdUpdate(chainId: string): Promise<string> {
-    const data = await store.getWalletData();
-    await store.setWalletData({
-      ...data,
-      ethereum: {
-        ...(data.ethereum || {}),
-        chainId,
-      },
-    });
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
-      data: {
-        chainId,
-      },
-    });
-    return SUCCESS_RESPONSE;
   }
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -788,7 +574,7 @@ export class Backend {
   }
 
   ///////////////////////////////////////////////////////////////////////////////
-  // Preferences.
+  // Backpack Preferences.
   ///////////////////////////////////////////////////////////////////////////////
 
   async darkModeRead(): Promise<boolean> {
@@ -835,14 +621,9 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  async isApprovedOrigin(origin: string): Promise<boolean> {
-    const data = await store.getWalletData();
-    if (!data.approvedOrigins) {
-      return false;
-    }
-    const found = data.approvedOrigins.find((o) => o === origin);
-    return found !== undefined;
-  }
+  ///////////////////////////////////////////////////////////////////////////////
+  // Origins
+  ///////////////////////////////////////////////////////////////////////////////
 
   async approvedOriginsRead(): Promise<Array<string>> {
     const data = await store.getWalletData();
@@ -879,6 +660,15 @@ export class Backend {
       },
     });
     return SUCCESS_RESPONSE;
+  }
+
+  async isApprovedOrigin(origin: string): Promise<boolean> {
+    const data = await store.getWalletData();
+    if (!data.approvedOrigins) {
+      return false;
+    }
+    const found = data.approvedOrigins.find((o) => o === origin);
+    return found !== undefined;
   }
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -976,6 +766,35 @@ export class Backend {
   async enabledBlockchainsRead(): Promise<Array<Blockchain>> {
     const data = await store.getWalletData();
     return data.enabledBlockchains;
+  }
+
+  /**
+   * Read the settings for a blockchain.
+   */
+  async blockchainSettingsRead(blockchain: Blockchain) {
+    const data = await store.getWalletData();
+    return data[blockchain];
+  }
+
+  /**
+   * Update the settings for a blockchain.
+   */
+  async blockchainSettingsUpdate(
+    blockchain: Blockchain,
+    settings: Record<string, string>
+  ) {
+    const data = await store.getWalletData();
+    const prevSettings = { ...(data[blockchain] || {}) };
+    const newSettings = { ...prevSettings, ...settings };
+    await store.setWalletData({
+      ...data,
+      [blockchain]: newSettings,
+    });
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_BLOCKCHAIN_SETTINGS_UPDATED,
+      data: { prevSettings, newSettings },
+    });
+    return SUCCESS_RESPONSE;
   }
 
   async setFeatureGates(gates: FEATURE_GATES_MAP) {

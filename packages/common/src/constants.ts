@@ -106,6 +106,10 @@ export const UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD =
   "ui-rpc-method-blockchain-keyrings-add";
 export const UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ =
   "ui-rpc-method-blockchain-keyrings-read";
+export const UI_RPC_METHOD_BLOCKCHAIN_SETTINGS_READ =
+  "ui-rpc-method-blockchain-settings-read";
+export const UI_RPC_METHOD_BLOCKCHAIN_SETTINGS_UPDATE =
+  "ui-rpc-method-blockchain-settings-update";
 export const UI_RPC_METHOD_KEYNAME_READ = "ui-rpc-method-keyname-read";
 export const UI_RPC_METHOD_KEYNAME_UPDATE = "ui-rpc-method-keyname-update";
 export const UI_RPC_METHOD_KEYRING_ACTIVE_WALLETS =
@@ -240,6 +244,8 @@ export const NOTIFICATION_XNFT_PREFERENCE_UPDATED =
   "notification-xnft-preference-updated";
 export const NOTIFICATION_BLOCKCHAIN_ENABLED =
   "notification-blockchain-enabled";
+export const NOTIFICATION_BLOCKCHAIN_SETTINGS_UPDATED =
+  "notification-blockchain-settings-updated";
 export const NOTIFICATION_DARK_MODE_UPDATED = "notification-dark-mode-updated";
 export const NOTIFICATION_DEVELOPER_MODE_UPDATED =
   "notification-developer-mode-updated";
