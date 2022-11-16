@@ -18,7 +18,7 @@
     "test": "env-cmd --silent turbo run test -- --passWithNoTests --watchAll=false",
     "build": "env-cmd --silent turbo run build",
     "e2e": "env-cmd --silent turbo run e2e",
-    "clean": "npx rimraf {.,backend,examples,packages}/**/{.parcel-cache,.turbo,build,dist,node_modules,yarn-error.log} packages/app-extension/dev",
+    "clean": "npx rimraf {.,backend,examples,packages,scripts}/**/{.parcel-cache,.turbo,build,dist,node_modules,yarn-error.log} packages/app-extension/dev",
     "start:mobile": "env-cmd --silent turbo run start --filter=@coral-xyz/common... --filter=@coral-xyz/recoil... --filter=@coral-xyz/background... --filter=!examples",
     "build:mobile": "env-cmd --silent turbo run build --filter=@coral-xyz/common... --filter=@coral-xyz/recoil... --filter=@coral-xyz/background... --filter=!examples",
     "postinstall": "yarn-deduplicate --scopes @babel @mui @typescript-eslint @types"

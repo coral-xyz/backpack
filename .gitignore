@@ -39,3 +39,4 @@ test-ledger/
 *-e
 
 .yarnrc
+*.key

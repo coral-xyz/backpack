@@ -1,0 +1,11 @@
+{
+  "name": "jwtgen",
+  "private": true,
+  "version": "0.0.1",
+  "dependencies": {
+    "jsonwebtoken": "^8.5.1"
+  },
+  "scripts": {
+    "start": "npx zx script.mjs"
+  }
+}
