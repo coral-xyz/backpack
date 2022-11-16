@@ -1,17 +1,5 @@
-import {
-  useNavigation,
-  View,
-  TextField,
-  Image,
-  Text,
-  ScrollBar,
-  Button,
-} from "react-xnft";
-import React, { useState } from "react";
-import { useRecoilState, useRecoilValueLoadable } from "recoil";
-import getGatewayUri from "./_utils/getGatewayUri";
-import { XnftWithMetadata } from "./_types/XnftWithMetadata";
-import StarIcon from "examples/xnft/prices/src/App/StarIcon";
+import { View, Text } from "react-xnft";
+import StarIcon from "./Icons/StarIcon";
 
 function Rating({
   rating,
