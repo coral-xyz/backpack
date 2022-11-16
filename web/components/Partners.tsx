@@ -24,10 +24,6 @@ const data = [
     url: 'https://multicoin.capital/'
   },
   {
-    image: '/brands/k5.svg',
-    url: 'https://www.k5global.com/'
-  },
-  {
     image: '/brands/anagram.svg',
     url: ''
   }

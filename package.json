@@ -21,7 +21,8 @@
     "e2e": "env-cmd --silent turbo run e2e",
     "clean": "npx rimraf {.,backend,examples,packages}/**/{.parcel-cache,.turbo,build,dist,node_modules,yarn-error.log} packages/app-extension/dev",
     "start:mobile": "env-cmd --silent turbo run start --filter=@coral-xyz/common... --filter=@coral-xyz/recoil... --filter=@coral-xyz/background... --filter=!examples",
-    "build:mobile": "env-cmd --silent turbo run build --filter=@coral-xyz/common... --filter=@coral-xyz/recoil... --filter=@coral-xyz/background... --filter=!examples"
+    "build:mobile": "env-cmd --silent turbo run build --filter=@coral-xyz/common... --filter=@coral-xyz/recoil... --filter=@coral-xyz/background... --filter=!examples",
+    "postinstall": "yarn-deduplicate --scopes @babel @mui @typescript-eslint @types"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.31.0",
@@ -34,19 +35,16 @@
     "lint-staged": "^12.4.1",
     "prettier": "^2.6.2",
     "rimraf": "^3.0.2",
-    "turbo": "^1.6.2"
+    "turbo": "^1.6.2",
+    "yarn-deduplicate": "^6.0.0"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,css,md,json}": "prettier --write"
   },
   "resolutions": {
     "@solana/web3.js": "1.63.1",
-    "@types/react-dom": "^17.0.0",
-    "@types/react": "^17.0.0",
     "parcel": "2.7.0",
     "prettier": "2.7.1",
-    "react-dom": "^17.0.0",
-    "react": "^17.0.0",
     "wrangler": "^2.1.9"
   },
   "engines": {
