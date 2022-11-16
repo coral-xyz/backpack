@@ -38,7 +38,6 @@
     "react-dom": "18.1.0",
     "react-hook-form": "^7.33.1",
     "react-native": "0.70.5",
-    "react-native-codegen": "^0.70.6",
     "react-native-gesture-handler": "~2.8.0",
     "react-native-get-random-values": "^1.8.0",
     "react-native-safe-area-context": "4.4.1",
