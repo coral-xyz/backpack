@@ -100,6 +100,7 @@ export function useDimensions(debounceMs = 0) {
       clearTimeout(timer);
       timer = setTimeout(() => {
         timer = null;
+        // eslint-disable-next-line
         fn.apply(this, arguments);
       }, debounceMs);
     };
