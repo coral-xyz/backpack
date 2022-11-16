@@ -24,13 +24,13 @@ const BaseCreateUser = z.object({
     .string()
     .regex(
       /^[a-z0-9_]{3,15}$/,
-      "must be 3-15 characters, lowercase, and can only contain only letters, numbers and underscores"
+      "should be between 3-15 characters and can only contain numbers, letters, and underscores."
     ),
   inviteCode: z
     .string()
     .regex(
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
-      "invalid format"
+      "is in an invalid format"
     ),
   waitlistId: z.optional(z.nullable(z.string())),
 });
@@ -115,7 +115,16 @@ app.use("*", async (c, next) => {
     await next();
   } catch (err) {
     console.error(err);
-    return c.json(err, err instanceof ZodError ? 400 : 500);
+    if (err instanceof ZodError) {
+      return c.json(
+        {
+          message: zodErrorToString(err),
+        },
+        400
+      );
+    } else {
+      return c.json(err, 500);
+    }
   }
 });
 
@@ -375,5 +384,28 @@ const validateSolanaSignature = (
     return false;
   }
 };
+
+/**
+ * Flattens a Zod error object into a simple error string.
+ * @returns e.g. "Invite Code is in an invalid format"
+ * or if it fails, a standard "Validation error" message is returned
+ */
+const zodErrorToString = (err: ZodError) => {
+  try {
+    return Object.entries((err as ZodError).flatten().fieldErrors)
+      .reduce((acc, [field, errorMessages]) => {
+        errorMessages?.forEach((msg) =>
+          acc.push(`${camelCaseToSentenceCase(field)} ${msg}`)
+        );
+        return acc;
+      }, [] as string[])
+      .join(", ");
+  } catch (err) {
+    return "Validation error";
+  }
+};
+
+const camelCaseToSentenceCase = (str: string) =>
+  str.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase());
 
 export default app;
