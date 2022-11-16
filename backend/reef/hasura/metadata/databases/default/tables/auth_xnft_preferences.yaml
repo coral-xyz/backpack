@@ -12,24 +12,27 @@ insert_permissions:
         - notifications
         - media
         - xnft_id
+        - id
 select_permissions:
   - role: auth_worker
     permission:
       columns:
         - media
         - notifications
-        - xnft_id
+        - id
         - disabled
         - username
         - uuid
+        - xnft_id
       filter: {}
 update_permissions:
   - role: auth_worker
     permission:
       columns:
-        - disabled
         - media
         - notifications
+        - id
+        - disabled
         - username
         - uuid
         - xnft_id
