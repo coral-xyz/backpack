@@ -1,5 +1,6 @@
 import express from "express";
-import { insertSubscription, updatePreference } from "./db";
+import { insertSubscription, updatePreference } from "./db/preference";
+import { getNotifications } from "./db/notifications";
 
 const app = express();
 const bodyParser = require("body-parser");
@@ -31,6 +32,15 @@ app.post("/preference", async (req, res) => {
   await updatePreference(xnftId, username, preferences);
 
   res.json({});
+});
+
+app.get("/notifications", async (req, res) => {
+  // @TODO: secure this
+  const username = req.body.username;
+  const limit = req.body.limit || 10;
+  const offset = req.body.offset || 0;
+  const notifications = await getNotifications(username, offset, limit);
+  res.json({ notifications });
 });
 
 app.listen(process.env.PORT || 8080);

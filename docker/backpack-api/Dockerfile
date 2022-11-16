@@ -15,4 +15,4 @@ RUN cd /base/backend/native/backpack-api && yarn run build
 
 EXPOSE 8080
 
-CMD ["node", "/base/backend/native/preferences/dist/index.js"]
+CMD ["node", "/base/backend/native/backpack-api/dist/index.js"]

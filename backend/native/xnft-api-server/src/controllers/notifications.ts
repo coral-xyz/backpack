@@ -1,8 +1,13 @@
 import webpush from "web-push";
-import { deleteSubscription, getSubscriptions } from "../db";
+import {
+  deleteSubscription,
+  getSubscriptions,
+  hasNotificationAccess,
+  insertNotification,
+} from "../db";
 import { VAPID_PRIVATE_KEY, VAPID_PUBLIC_KEY } from "../config";
 
-interface NotificationProps {
+export interface NotificationProps {
   title: string;
   body: string;
 }
@@ -23,18 +28,22 @@ export const sendNotifications = async (
   usernames: string[],
   { title, body }: NotificationProps
 ) => {
-  const promises = usernames.map((username) =>
-    sendNotification(xnftAddress, username, { title, body })
-  );
+  const promises = usernames.map(async (username) => {
+    await insertNotification(xnftAddress, username, { title, body });
+    await sendPushNotification(xnftAddress, username, { title, body });
+  });
   await Promise.all(promises);
 };
 
-export const sendNotification = async (
+export const sendPushNotification = async (
   xnftAddress: string,
   username: string,
   { title, body }: NotificationProps
 ) => {
-  // TODO: check if this xnft address has access to send push backpack-api to this user.
+  const hasAccess = await hasNotificationAccess(xnftAddress, username);
+  if (!hasAccess) {
+    return;
+  }
   const responses = await getSubscriptions(username);
   await Promise.all(
     responses.auth_notification_subscriptions.map(async (response) => {
@@ -51,8 +60,8 @@ export const sendNotification = async (
         await webpush.sendNotification(
           subscription,
           JSON.stringify({
-            title: "title1",
-            body: "description1 " + Math.random(),
+            title,
+            body,
           })
         );
       } catch (e) {
