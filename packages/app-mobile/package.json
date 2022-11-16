@@ -50,7 +50,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.19.3",
+    "@babel/core": "^7.12.9",
     "@types/react": "~18.0.24",
     "@types/react-native": "~0.70.6",
     "@typescript-eslint/eslint-plugin": "^5.31.0",
