@@ -11,8 +11,8 @@
     "web"
   ],
   "scripts": {
-    "lint": "env-cmd --silent turbo run lint",
-    "lint:fix": "env-cmd --silent turbo run lint:fix",
+    "lint": "turbo run lint -- --cache",
+    "lint:fix": "turbo run lint:fix",
     "prepare": "husky install",
     "start": "env-cmd --silent turbo run start --concurrency=100% --filter=./packages/*",
     "start:fresh": "yarn install && yarn clean && yarn install && yarn start",
