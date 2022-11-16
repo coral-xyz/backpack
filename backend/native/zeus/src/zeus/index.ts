@@ -599,7 +599,6 @@ export const ResolveFromPath = (
   returns: ReturnTypesType,
   ops: Operations
 ) => {
-  //@ts-ignore
   const ResolvePropsType = (mappedParts: Part[]) => {
     const oKey = ops[mappedParts[0].v];
     const propsP1 = oKey ? props[oKey] : props[mappedParts[0].v];
@@ -642,7 +641,6 @@ export const ResolveFromPath = (
       }
     }
   };
-  // @ts-ignore
   const ResolveReturnType = (mappedParts: Part[]) => {
     if (mappedParts.length === 0) {
       return "not";
@@ -998,6 +996,18 @@ export type ScalarCoders = {
 type ZEUS_UNIONS = never;
 
 export type ValueTypes = {
+  /** Boolean expression to compare columns of type "Boolean". All fields are combined with logical 'AND'. */
+  ["Boolean_comparison_exp"]: {
+    _eq?: boolean | undefined | null | Variable<any, string>;
+    _gt?: boolean | undefined | null | Variable<any, string>;
+    _gte?: boolean | undefined | null | Variable<any, string>;
+    _in?: Array<boolean> | undefined | null | Variable<any, string>;
+    _is_null?: boolean | undefined | null | Variable<any, string>;
+    _lt?: boolean | undefined | null | Variable<any, string>;
+    _lte?: boolean | undefined | null | Variable<any, string>;
+    _neq?: boolean | undefined | null | Variable<any, string>;
+    _nin?: Array<boolean> | undefined | null | Variable<any, string>;
+  };
   /** Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'. */
   ["Int_comparison_exp"]: {
     _eq?: number | undefined | null | Variable<any, string>;
@@ -1042,157 +1052,6 @@ export type ValueTypes = {
     /** does the column match the given SQL regular expression */
     _similar?: string | undefined | null | Variable<any, string>;
   };
-  /** columns and relationships of "auth.notification_subscriptions" */
-  ["auth_notification_subscriptions"]: AliasType<{
-    auth?: boolean | `@${string}`;
-    endpoint?: boolean | `@${string}`;
-    expirationTime?: boolean | `@${string}`;
-    id?: boolean | `@${string}`;
-    p256dh?: boolean | `@${string}`;
-    public_key?: boolean | `@${string}`;
-    username?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Boolean expression to filter rows from the table "auth.notification_subscriptions". All fields are combined with a logical 'AND'. */
-  ["auth_notification_subscriptions_bool_exp"]: {
-    _and?:
-      | Array<ValueTypes["auth_notification_subscriptions_bool_exp"]>
-      | undefined
-      | null
-      | Variable<any, string>;
-    _not?:
-      | ValueTypes["auth_notification_subscriptions_bool_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    _or?:
-      | Array<ValueTypes["auth_notification_subscriptions_bool_exp"]>
-      | undefined
-      | null
-      | Variable<any, string>;
-    auth?:
-      | ValueTypes["String_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    endpoint?:
-      | ValueTypes["String_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    expirationTime?:
-      | ValueTypes["String_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    id?:
-      | ValueTypes["Int_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    p256dh?:
-      | ValueTypes["String_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    public_key?:
-      | ValueTypes["String_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    username?:
-      | ValueTypes["String_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-  };
-  /** unique or primary key constraints on table "auth.notification_subscriptions" */
-  ["auth_notification_subscriptions_constraint"]: auth_notification_subscriptions_constraint;
-  /** input type for inserting data into table "auth.notification_subscriptions" */
-  ["auth_notification_subscriptions_insert_input"]: {
-    auth?: string | undefined | null | Variable<any, string>;
-    endpoint?: string | undefined | null | Variable<any, string>;
-    expirationTime?: string | undefined | null | Variable<any, string>;
-    id?: number | undefined | null | Variable<any, string>;
-    p256dh?: string | undefined | null | Variable<any, string>;
-    public_key?: string | undefined | null | Variable<any, string>;
-    username?: string | undefined | null | Variable<any, string>;
-  };
-  /** response of any mutation on the table "auth.notification_subscriptions" */
-  ["auth_notification_subscriptions_mutation_response"]: AliasType<{
-    /** number of rows affected by the mutation */
-    affected_rows?: boolean | `@${string}`;
-    /** data from the rows affected by the mutation */
-    returning?: ValueTypes["auth_notification_subscriptions"];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** on_conflict condition type for table "auth.notification_subscriptions" */
-  ["auth_notification_subscriptions_on_conflict"]: {
-    constraint:
-      | ValueTypes["auth_notification_subscriptions_constraint"]
-      | Variable<any, string>;
-    update_columns:
-      | Array<ValueTypes["auth_notification_subscriptions_update_column"]>
-      | Variable<any, string>;
-    where?:
-      | ValueTypes["auth_notification_subscriptions_bool_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-  };
-  /** Ordering options when selecting data from "auth.notification_subscriptions". */
-  ["auth_notification_subscriptions_order_by"]: {
-    auth?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
-    endpoint?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    expirationTime?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
-    p256dh?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
-    public_key?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    username?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-  };
-  /** select columns of table "auth.notification_subscriptions" */
-  ["auth_notification_subscriptions_select_column"]: auth_notification_subscriptions_select_column;
-  /** Streaming cursor of the table "auth_notification_subscriptions" */
-  ["auth_notification_subscriptions_stream_cursor_input"]: {
-    /** Stream column input with initial value */
-    initial_value:
-      | ValueTypes["auth_notification_subscriptions_stream_cursor_value_input"]
-      | Variable<any, string>;
-    /** cursor ordering */
-    ordering?:
-      | ValueTypes["cursor_ordering"]
-      | undefined
-      | null
-      | Variable<any, string>;
-  };
-  /** Initial value of the column from where the streaming should start */
-  ["auth_notification_subscriptions_stream_cursor_value_input"]: {
-    auth?: string | undefined | null | Variable<any, string>;
-    endpoint?: string | undefined | null | Variable<any, string>;
-    expirationTime?: string | undefined | null | Variable<any, string>;
-    id?: number | undefined | null | Variable<any, string>;
-    p256dh?: string | undefined | null | Variable<any, string>;
-    public_key?: string | undefined | null | Variable<any, string>;
-    username?: string | undefined | null | Variable<any, string>;
-  };
-  /** placeholder for update columns of table "auth.notification_subscriptions" (current role has no relevant permissions) */
-  ["auth_notification_subscriptions_update_column"]: auth_notification_subscriptions_update_column;
   /** columns and relationships of "auth.publickeys" */
   ["auth_publickeys"]: AliasType<{
     blockchain?: boolean | `@${string}`;
@@ -1783,6 +1642,162 @@ export type ValueTypes = {
       | Variable<any, string>;
     where: ValueTypes["auth_users_bool_exp"] | Variable<any, string>;
   };
+  /** columns and relationships of "auth.xnft_preferences" */
+  ["auth_xnft_preferences"]: AliasType<{
+    id?: boolean | `@${string}`;
+    media?: boolean | `@${string}`;
+    notifications?: boolean | `@${string}`;
+    username?: boolean | `@${string}`;
+    uuid?: boolean | `@${string}`;
+    xnft_id?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Boolean expression to filter rows from the table "auth.xnft_preferences". All fields are combined with a logical 'AND'. */
+  ["auth_xnft_preferences_bool_exp"]: {
+    _and?:
+      | Array<ValueTypes["auth_xnft_preferences_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    _not?:
+      | ValueTypes["auth_xnft_preferences_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    _or?:
+      | Array<ValueTypes["auth_xnft_preferences_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    media?:
+      | ValueTypes["Boolean_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    notifications?:
+      | ValueTypes["Boolean_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    username?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    uuid?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    xnft_id?:
+      | ValueTypes["Boolean_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** unique or primary key constraints on table "auth.xnft_preferences" */
+  ["auth_xnft_preferences_constraint"]: auth_xnft_preferences_constraint;
+  /** input type for inserting data into table "auth.xnft_preferences" */
+  ["auth_xnft_preferences_insert_input"]: {
+    id?: string | undefined | null | Variable<any, string>;
+    media?: boolean | undefined | null | Variable<any, string>;
+    notifications?: boolean | undefined | null | Variable<any, string>;
+    username?: string | undefined | null | Variable<any, string>;
+    uuid?: string | undefined | null | Variable<any, string>;
+    xnft_id?: boolean | undefined | null | Variable<any, string>;
+  };
+  /** response of any mutation on the table "auth.xnft_preferences" */
+  ["auth_xnft_preferences_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ValueTypes["auth_xnft_preferences"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "auth.xnft_preferences" */
+  ["auth_xnft_preferences_on_conflict"]: {
+    constraint:
+      | ValueTypes["auth_xnft_preferences_constraint"]
+      | Variable<any, string>;
+    update_columns:
+      | Array<ValueTypes["auth_xnft_preferences_update_column"]>
+      | Variable<any, string>;
+    where?:
+      | ValueTypes["auth_xnft_preferences_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Ordering options when selecting data from "auth.xnft_preferences". */
+  ["auth_xnft_preferences_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    media?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    notifications?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    username?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    uuid?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    xnft_id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** primary key columns input for table: auth_xnft_preferences */
+  ["auth_xnft_preferences_pk_columns_input"]: {
+    id: string | Variable<any, string>;
+  };
+  /** select columns of table "auth.xnft_preferences" */
+  ["auth_xnft_preferences_select_column"]: auth_xnft_preferences_select_column;
+  /** input type for updating data in table "auth.xnft_preferences" */
+  ["auth_xnft_preferences_set_input"]: {
+    id?: string | undefined | null | Variable<any, string>;
+    media?: boolean | undefined | null | Variable<any, string>;
+    notifications?: boolean | undefined | null | Variable<any, string>;
+    username?: string | undefined | null | Variable<any, string>;
+    uuid?: string | undefined | null | Variable<any, string>;
+    xnft_id?: boolean | undefined | null | Variable<any, string>;
+  };
+  /** Streaming cursor of the table "auth_xnft_preferences" */
+  ["auth_xnft_preferences_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value:
+      | ValueTypes["auth_xnft_preferences_stream_cursor_value_input"]
+      | Variable<any, string>;
+    /** cursor ordering */
+    ordering?:
+      | ValueTypes["cursor_ordering"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_xnft_preferences_stream_cursor_value_input"]: {
+    id?: string | undefined | null | Variable<any, string>;
+    media?: boolean | undefined | null | Variable<any, string>;
+    notifications?: boolean | undefined | null | Variable<any, string>;
+    username?: string | undefined | null | Variable<any, string>;
+    uuid?: string | undefined | null | Variable<any, string>;
+    xnft_id?: boolean | undefined | null | Variable<any, string>;
+  };
+  /** update columns of table "auth.xnft_preferences" */
+  ["auth_xnft_preferences_update_column"]: auth_xnft_preferences_update_column;
+  ["auth_xnft_preferences_updates"]: {
+    /** sets the columns of the filtered rows to the given values */
+    _set?:
+      | ValueTypes["auth_xnft_preferences_set_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    where: ValueTypes["auth_xnft_preferences_bool_exp"] | Variable<any, string>;
+  };
   ["citext"]: unknown;
   /** Boolean expression to compare columns of type "citext". All fields are combined with logical 'AND'. */
   ["citext_comparison_exp"]: {
@@ -1930,46 +1945,18 @@ export type ValueTypes = {
   };
   /** mutation root */
   ["mutation_root"]: AliasType<{
-    delete_auth_notification_subscriptions?: [
+    delete_auth_xnft_preferences?: [
       {
         /** filter the rows which have to be deleted */
         where:
-          | ValueTypes["auth_notification_subscriptions_bool_exp"]
+          | ValueTypes["auth_xnft_preferences_bool_exp"]
           | Variable<any, string>;
       },
-      ValueTypes["auth_notification_subscriptions_mutation_response"]
+      ValueTypes["auth_xnft_preferences_mutation_response"]
     ];
-    delete_auth_notification_subscriptions_by_pk?: [
-      { id: number | Variable<any, string> },
-      ValueTypes["auth_notification_subscriptions"]
-    ];
-    insert_auth_notification_subscriptions?: [
-      {
-        /** the rows to be inserted */
-        objects:
-          | Array<ValueTypes["auth_notification_subscriptions_insert_input"]>
-          | Variable<any, string> /** upsert condition */;
-        on_conflict?:
-          | ValueTypes["auth_notification_subscriptions_on_conflict"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_notification_subscriptions_mutation_response"]
-    ];
-    insert_auth_notification_subscriptions_one?: [
-      {
-        /** the row to be inserted */
-        object:
-          | ValueTypes["auth_notification_subscriptions_insert_input"]
-          | Variable<any, string> /** upsert condition */;
-        on_conflict?:
-          | ValueTypes["auth_notification_subscriptions_on_conflict"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_notification_subscriptions"]
+    delete_auth_xnft_preferences_by_pk?: [
+      { id: string | Variable<any, string> },
+      ValueTypes["auth_xnft_preferences"]
     ];
     insert_auth_publickeys_history?: [
       {
@@ -2054,6 +2041,34 @@ export type ValueTypes = {
           | Variable<any, string>;
       },
       ValueTypes["auth_users"]
+    ];
+    insert_auth_xnft_preferences?: [
+      {
+        /** the rows to be inserted */
+        objects:
+          | Array<ValueTypes["auth_xnft_preferences_insert_input"]>
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["auth_xnft_preferences_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_xnft_preferences_mutation_response"]
+    ];
+    insert_auth_xnft_preferences_one?: [
+      {
+        /** the row to be inserted */
+        object:
+          | ValueTypes["auth_xnft_preferences_insert_input"]
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["auth_xnft_preferences_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_xnft_preferences"]
     ];
     update_auth_stripe_onramp?: [
       {
@@ -2149,49 +2164,51 @@ export type ValueTypes = {
       },
       ValueTypes["auth_users_mutation_response"]
     ];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** column ordering options */
-  ["order_by"]: order_by;
-  ["query_root"]: AliasType<{
-    auth_notification_subscriptions?: [
+    update_auth_xnft_preferences?: [
       {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ValueTypes["auth_notification_subscriptions_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string> /** limit the number of rows returned */;
-        limit?:
-          | number
+        /** sets the columns of the filtered rows to the given values */
+        _set?:
+          | ValueTypes["auth_xnft_preferences_set_input"]
           | undefined
           | null
           | Variable<
               any,
               string
-            > /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null
-          | Variable<any, string> /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ValueTypes["auth_notification_subscriptions_order_by"]>
-          | undefined
-          | null
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["auth_notification_subscriptions_bool_exp"]
+            > /** filter the rows which have to be updated */;
+        where:
+          | ValueTypes["auth_xnft_preferences_bool_exp"]
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_xnft_preferences_mutation_response"]
+    ];
+    update_auth_xnft_preferences_by_pk?: [
+      {
+        /** sets the columns of the filtered rows to the given values */
+        _set?:
+          | ValueTypes["auth_xnft_preferences_set_input"]
           | undefined
           | null
           | Variable<any, string>;
+        pk_columns:
+          | ValueTypes["auth_xnft_preferences_pk_columns_input"]
+          | Variable<any, string>;
       },
-      ValueTypes["auth_notification_subscriptions"]
+      ValueTypes["auth_xnft_preferences"]
     ];
-    auth_notification_subscriptions_by_pk?: [
-      { id: number | Variable<any, string> },
-      ValueTypes["auth_notification_subscriptions"]
+    update_auth_xnft_preferences_many?: [
+      {
+        /** updates to execute, in order */
+        updates:
+          | Array<ValueTypes["auth_xnft_preferences_updates"]>
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_xnft_preferences_mutation_response"]
     ];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** column ordering options */
+  ["order_by"]: order_by;
+  ["query_root"]: AliasType<{
     auth_publickeys?: [
       {
         /** distinct select on columns */
@@ -2370,6 +2387,44 @@ export type ValueTypes = {
       { id: ValueTypes["uuid"] | Variable<any, string> },
       ValueTypes["auth_users"]
     ];
+    auth_xnft_preferences?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_xnft_preferences_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_xnft_preferences_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_xnft_preferences_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_xnft_preferences"]
+    ];
+    auth_xnft_preferences_by_pk?: [
+      { id: string | Variable<any, string> },
+      ValueTypes["auth_xnft_preferences"]
+    ];
     invitations?: [
       {
         /** distinct select on columns */
@@ -2441,68 +2496,6 @@ export type ValueTypes = {
     __typename?: boolean | `@${string}`;
   }>;
   ["subscription_root"]: AliasType<{
-    auth_notification_subscriptions?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ValueTypes["auth_notification_subscriptions_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string> /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null
-          | Variable<any, string> /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ValueTypes["auth_notification_subscriptions_order_by"]>
-          | undefined
-          | null
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["auth_notification_subscriptions_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_notification_subscriptions"]
-    ];
-    auth_notification_subscriptions_by_pk?: [
-      { id: number | Variable<any, string> },
-      ValueTypes["auth_notification_subscriptions"]
-    ];
-    auth_notification_subscriptions_stream?: [
-      {
-        /** maximum number of rows returned in a single batch */
-        batch_size:
-          | number
-          | Variable<
-              any,
-              string
-            > /** cursor to stream the results returned by the query */;
-        cursor:
-          | Array<
-              | ValueTypes["auth_notification_subscriptions_stream_cursor_input"]
-              | undefined
-              | null
-            >
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["auth_notification_subscriptions_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_notification_subscriptions"]
-    ];
     auth_publickeys?: [
       {
         /** distinct select on columns */
@@ -2775,6 +2768,68 @@ export type ValueTypes = {
       },
       ValueTypes["auth_users"]
     ];
+    auth_xnft_preferences?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_xnft_preferences_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_xnft_preferences_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_xnft_preferences_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_xnft_preferences"]
+    ];
+    auth_xnft_preferences_by_pk?: [
+      { id: string | Variable<any, string> },
+      ValueTypes["auth_xnft_preferences"]
+    ];
+    auth_xnft_preferences_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size:
+          | number
+          | Variable<
+              any,
+              string
+            > /** cursor to stream the results returned by the query */;
+        cursor:
+          | Array<
+              | ValueTypes["auth_xnft_preferences_stream_cursor_input"]
+              | undefined
+              | null
+            >
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_xnft_preferences_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_xnft_preferences"]
+    ];
     invitations?: [
       {
         /** distinct select on columns */
@@ -2904,6 +2959,18 @@ export type ValueTypes = {
 };
 
 export type ResolverInputTypes = {
+  /** Boolean expression to compare columns of type "Boolean". All fields are combined with logical 'AND'. */
+  ["Boolean_comparison_exp"]: {
+    _eq?: boolean | undefined | null;
+    _gt?: boolean | undefined | null;
+    _gte?: boolean | undefined | null;
+    _in?: Array<boolean> | undefined | null;
+    _is_null?: boolean | undefined | null;
+    _lt?: boolean | undefined | null;
+    _lte?: boolean | undefined | null;
+    _neq?: boolean | undefined | null;
+    _nin?: Array<boolean> | undefined | null;
+  };
   /** Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'. */
   ["Int_comparison_exp"]: {
     _eq?: number | undefined | null;
@@ -2948,104 +3015,6 @@ export type ResolverInputTypes = {
     /** does the column match the given SQL regular expression */
     _similar?: string | undefined | null;
   };
-  /** columns and relationships of "auth.notification_subscriptions" */
-  ["auth_notification_subscriptions"]: AliasType<{
-    auth?: boolean | `@${string}`;
-    endpoint?: boolean | `@${string}`;
-    expirationTime?: boolean | `@${string}`;
-    id?: boolean | `@${string}`;
-    p256dh?: boolean | `@${string}`;
-    public_key?: boolean | `@${string}`;
-    username?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Boolean expression to filter rows from the table "auth.notification_subscriptions". All fields are combined with a logical 'AND'. */
-  ["auth_notification_subscriptions_bool_exp"]: {
-    _and?:
-      | Array<ResolverInputTypes["auth_notification_subscriptions_bool_exp"]>
-      | undefined
-      | null;
-    _not?:
-      | ResolverInputTypes["auth_notification_subscriptions_bool_exp"]
-      | undefined
-      | null;
-    _or?:
-      | Array<ResolverInputTypes["auth_notification_subscriptions_bool_exp"]>
-      | undefined
-      | null;
-    auth?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
-    endpoint?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
-    expirationTime?:
-      | ResolverInputTypes["String_comparison_exp"]
-      | undefined
-      | null;
-    id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
-    p256dh?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
-    public_key?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
-    username?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
-  };
-  /** unique or primary key constraints on table "auth.notification_subscriptions" */
-  ["auth_notification_subscriptions_constraint"]: auth_notification_subscriptions_constraint;
-  /** input type for inserting data into table "auth.notification_subscriptions" */
-  ["auth_notification_subscriptions_insert_input"]: {
-    auth?: string | undefined | null;
-    endpoint?: string | undefined | null;
-    expirationTime?: string | undefined | null;
-    id?: number | undefined | null;
-    p256dh?: string | undefined | null;
-    public_key?: string | undefined | null;
-    username?: string | undefined | null;
-  };
-  /** response of any mutation on the table "auth.notification_subscriptions" */
-  ["auth_notification_subscriptions_mutation_response"]: AliasType<{
-    /** number of rows affected by the mutation */
-    affected_rows?: boolean | `@${string}`;
-    /** data from the rows affected by the mutation */
-    returning?: ResolverInputTypes["auth_notification_subscriptions"];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** on_conflict condition type for table "auth.notification_subscriptions" */
-  ["auth_notification_subscriptions_on_conflict"]: {
-    constraint: ResolverInputTypes["auth_notification_subscriptions_constraint"];
-    update_columns: Array<
-      ResolverInputTypes["auth_notification_subscriptions_update_column"]
-    >;
-    where?:
-      | ResolverInputTypes["auth_notification_subscriptions_bool_exp"]
-      | undefined
-      | null;
-  };
-  /** Ordering options when selecting data from "auth.notification_subscriptions". */
-  ["auth_notification_subscriptions_order_by"]: {
-    auth?: ResolverInputTypes["order_by"] | undefined | null;
-    endpoint?: ResolverInputTypes["order_by"] | undefined | null;
-    expirationTime?: ResolverInputTypes["order_by"] | undefined | null;
-    id?: ResolverInputTypes["order_by"] | undefined | null;
-    p256dh?: ResolverInputTypes["order_by"] | undefined | null;
-    public_key?: ResolverInputTypes["order_by"] | undefined | null;
-    username?: ResolverInputTypes["order_by"] | undefined | null;
-  };
-  /** select columns of table "auth.notification_subscriptions" */
-  ["auth_notification_subscriptions_select_column"]: auth_notification_subscriptions_select_column;
-  /** Streaming cursor of the table "auth_notification_subscriptions" */
-  ["auth_notification_subscriptions_stream_cursor_input"]: {
-    /** Stream column input with initial value */
-    initial_value: ResolverInputTypes["auth_notification_subscriptions_stream_cursor_value_input"];
-    /** cursor ordering */
-    ordering?: ResolverInputTypes["cursor_ordering"] | undefined | null;
-  };
-  /** Initial value of the column from where the streaming should start */
-  ["auth_notification_subscriptions_stream_cursor_value_input"]: {
-    auth?: string | undefined | null;
-    endpoint?: string | undefined | null;
-    expirationTime?: string | undefined | null;
-    id?: number | undefined | null;
-    p256dh?: string | undefined | null;
-    public_key?: string | undefined | null;
-    username?: string | undefined | null;
-  };
-  /** placeholder for update columns of table "auth.notification_subscriptions" (current role has no relevant permissions) */
-  ["auth_notification_subscriptions_update_column"]: auth_notification_subscriptions_update_column;
   /** columns and relationships of "auth.publickeys" */
   ["auth_publickeys"]: AliasType<{
     blockchain?: boolean | `@${string}`;
@@ -3452,6 +3421,120 @@ export type ResolverInputTypes = {
     _set?: ResolverInputTypes["auth_users_set_input"] | undefined | null;
     where: ResolverInputTypes["auth_users_bool_exp"];
   };
+  /** columns and relationships of "auth.xnft_preferences" */
+  ["auth_xnft_preferences"]: AliasType<{
+    id?: boolean | `@${string}`;
+    media?: boolean | `@${string}`;
+    notifications?: boolean | `@${string}`;
+    username?: boolean | `@${string}`;
+    uuid?: boolean | `@${string}`;
+    xnft_id?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Boolean expression to filter rows from the table "auth.xnft_preferences". All fields are combined with a logical 'AND'. */
+  ["auth_xnft_preferences_bool_exp"]: {
+    _and?:
+      | Array<ResolverInputTypes["auth_xnft_preferences_bool_exp"]>
+      | undefined
+      | null;
+    _not?:
+      | ResolverInputTypes["auth_xnft_preferences_bool_exp"]
+      | undefined
+      | null;
+    _or?:
+      | Array<ResolverInputTypes["auth_xnft_preferences_bool_exp"]>
+      | undefined
+      | null;
+    id?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    media?: ResolverInputTypes["Boolean_comparison_exp"] | undefined | null;
+    notifications?:
+      | ResolverInputTypes["Boolean_comparison_exp"]
+      | undefined
+      | null;
+    username?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    uuid?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    xnft_id?: ResolverInputTypes["Boolean_comparison_exp"] | undefined | null;
+  };
+  /** unique or primary key constraints on table "auth.xnft_preferences" */
+  ["auth_xnft_preferences_constraint"]: auth_xnft_preferences_constraint;
+  /** input type for inserting data into table "auth.xnft_preferences" */
+  ["auth_xnft_preferences_insert_input"]: {
+    id?: string | undefined | null;
+    media?: boolean | undefined | null;
+    notifications?: boolean | undefined | null;
+    username?: string | undefined | null;
+    uuid?: string | undefined | null;
+    xnft_id?: boolean | undefined | null;
+  };
+  /** response of any mutation on the table "auth.xnft_preferences" */
+  ["auth_xnft_preferences_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ResolverInputTypes["auth_xnft_preferences"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "auth.xnft_preferences" */
+  ["auth_xnft_preferences_on_conflict"]: {
+    constraint: ResolverInputTypes["auth_xnft_preferences_constraint"];
+    update_columns: Array<
+      ResolverInputTypes["auth_xnft_preferences_update_column"]
+    >;
+    where?:
+      | ResolverInputTypes["auth_xnft_preferences_bool_exp"]
+      | undefined
+      | null;
+  };
+  /** Ordering options when selecting data from "auth.xnft_preferences". */
+  ["auth_xnft_preferences_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    media?: ResolverInputTypes["order_by"] | undefined | null;
+    notifications?: ResolverInputTypes["order_by"] | undefined | null;
+    username?: ResolverInputTypes["order_by"] | undefined | null;
+    uuid?: ResolverInputTypes["order_by"] | undefined | null;
+    xnft_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** primary key columns input for table: auth_xnft_preferences */
+  ["auth_xnft_preferences_pk_columns_input"]: {
+    id: string;
+  };
+  /** select columns of table "auth.xnft_preferences" */
+  ["auth_xnft_preferences_select_column"]: auth_xnft_preferences_select_column;
+  /** input type for updating data in table "auth.xnft_preferences" */
+  ["auth_xnft_preferences_set_input"]: {
+    id?: string | undefined | null;
+    media?: boolean | undefined | null;
+    notifications?: boolean | undefined | null;
+    username?: string | undefined | null;
+    uuid?: string | undefined | null;
+    xnft_id?: boolean | undefined | null;
+  };
+  /** Streaming cursor of the table "auth_xnft_preferences" */
+  ["auth_xnft_preferences_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ResolverInputTypes["auth_xnft_preferences_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ResolverInputTypes["cursor_ordering"] | undefined | null;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_xnft_preferences_stream_cursor_value_input"]: {
+    id?: string | undefined | null;
+    media?: boolean | undefined | null;
+    notifications?: boolean | undefined | null;
+    username?: string | undefined | null;
+    uuid?: string | undefined | null;
+    xnft_id?: boolean | undefined | null;
+  };
+  /** update columns of table "auth.xnft_preferences" */
+  ["auth_xnft_preferences_update_column"]: auth_xnft_preferences_update_column;
+  ["auth_xnft_preferences_updates"]: {
+    /** sets the columns of the filtered rows to the given values */
+    _set?:
+      | ResolverInputTypes["auth_xnft_preferences_set_input"]
+      | undefined
+      | null;
+    where: ResolverInputTypes["auth_xnft_preferences_bool_exp"];
+  };
   ["citext"]: unknown;
   /** Boolean expression to compare columns of type "citext". All fields are combined with logical 'AND'. */
   ["citext_comparison_exp"]: {
@@ -3559,40 +3642,16 @@ export type ResolverInputTypes = {
   };
   /** mutation root */
   ["mutation_root"]: AliasType<{
-    delete_auth_notification_subscriptions?: [
+    delete_auth_xnft_preferences?: [
       {
         /** filter the rows which have to be deleted */
-        where: ResolverInputTypes["auth_notification_subscriptions_bool_exp"];
+        where: ResolverInputTypes["auth_xnft_preferences_bool_exp"];
       },
-      ResolverInputTypes["auth_notification_subscriptions_mutation_response"]
+      ResolverInputTypes["auth_xnft_preferences_mutation_response"]
     ];
-    delete_auth_notification_subscriptions_by_pk?: [
-      { id: number },
-      ResolverInputTypes["auth_notification_subscriptions"]
-    ];
-    insert_auth_notification_subscriptions?: [
-      {
-        /** the rows to be inserted */
-        objects: Array<
-          ResolverInputTypes["auth_notification_subscriptions_insert_input"]
-        > /** upsert condition */;
-        on_conflict?:
-          | ResolverInputTypes["auth_notification_subscriptions_on_conflict"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_notification_subscriptions_mutation_response"]
-    ];
-    insert_auth_notification_subscriptions_one?: [
-      {
-        /** the row to be inserted */
-        object: ResolverInputTypes["auth_notification_subscriptions_insert_input"] /** upsert condition */;
-        on_conflict?:
-          | ResolverInputTypes["auth_notification_subscriptions_on_conflict"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_notification_subscriptions"]
+    delete_auth_xnft_preferences_by_pk?: [
+      { id: string },
+      ResolverInputTypes["auth_xnft_preferences"]
     ];
     insert_auth_publickeys_history?: [
       {
@@ -3666,6 +3725,30 @@ export type ResolverInputTypes = {
       },
       ResolverInputTypes["auth_users"]
     ];
+    insert_auth_xnft_preferences?: [
+      {
+        /** the rows to be inserted */
+        objects: Array<
+          ResolverInputTypes["auth_xnft_preferences_insert_input"]
+        > /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["auth_xnft_preferences_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_xnft_preferences_mutation_response"]
+    ];
+    insert_auth_xnft_preferences_one?: [
+      {
+        /** the row to be inserted */
+        object: ResolverInputTypes["auth_xnft_preferences_insert_input"] /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["auth_xnft_preferences_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_xnft_preferences"]
+    ];
     update_auth_stripe_onramp?: [
       {
         /** increments the numeric columns with given value of the filtered values */
@@ -3729,45 +3812,40 @@ export type ResolverInputTypes = {
       },
       ResolverInputTypes["auth_users_mutation_response"]
     ];
+    update_auth_xnft_preferences?: [
+      {
+        /** sets the columns of the filtered rows to the given values */
+        _set?:
+          | ResolverInputTypes["auth_xnft_preferences_set_input"]
+          | undefined
+          | null /** filter the rows which have to be updated */;
+        where: ResolverInputTypes["auth_xnft_preferences_bool_exp"];
+      },
+      ResolverInputTypes["auth_xnft_preferences_mutation_response"]
+    ];
+    update_auth_xnft_preferences_by_pk?: [
+      {
+        /** sets the columns of the filtered rows to the given values */
+        _set?:
+          | ResolverInputTypes["auth_xnft_preferences_set_input"]
+          | undefined
+          | null;
+        pk_columns: ResolverInputTypes["auth_xnft_preferences_pk_columns_input"];
+      },
+      ResolverInputTypes["auth_xnft_preferences"]
+    ];
+    update_auth_xnft_preferences_many?: [
+      {
+        /** updates to execute, in order */
+        updates: Array<ResolverInputTypes["auth_xnft_preferences_updates"]>;
+      },
+      ResolverInputTypes["auth_xnft_preferences_mutation_response"]
+    ];
     __typename?: boolean | `@${string}`;
   }>;
   /** column ordering options */
   ["order_by"]: order_by;
   ["query_root"]: AliasType<{
-    auth_notification_subscriptions?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<
-              ResolverInputTypes["auth_notification_subscriptions_select_column"]
-            >
-          | undefined
-          | null /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<
-              ResolverInputTypes["auth_notification_subscriptions_order_by"]
-            >
-          | undefined
-          | null /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["auth_notification_subscriptions_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_notification_subscriptions"]
-    ];
-    auth_notification_subscriptions_by_pk?: [
-      { id: number },
-      ResolverInputTypes["auth_notification_subscriptions"]
-    ];
     auth_publickeys?: [
       {
         /** distinct select on columns */
@@ -3900,6 +3978,36 @@ export type ResolverInputTypes = {
       { id: ResolverInputTypes["uuid"] },
       ResolverInputTypes["auth_users"]
     ];
+    auth_xnft_preferences?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_xnft_preferences_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_xnft_preferences_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_xnft_preferences_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_xnft_preferences"]
+    ];
+    auth_xnft_preferences_by_pk?: [
+      { id: string },
+      ResolverInputTypes["auth_xnft_preferences"]
+    ];
     invitations?: [
       {
         /** distinct select on columns */
@@ -3949,56 +4057,6 @@ export type ResolverInputTypes = {
     __typename?: boolean | `@${string}`;
   }>;
   ["subscription_root"]: AliasType<{
-    auth_notification_subscriptions?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<
-              ResolverInputTypes["auth_notification_subscriptions_select_column"]
-            >
-          | undefined
-          | null /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<
-              ResolverInputTypes["auth_notification_subscriptions_order_by"]
-            >
-          | undefined
-          | null /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["auth_notification_subscriptions_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_notification_subscriptions"]
-    ];
-    auth_notification_subscriptions_by_pk?: [
-      { id: number },
-      ResolverInputTypes["auth_notification_subscriptions"]
-    ];
-    auth_notification_subscriptions_stream?: [
-      {
-        /** maximum number of rows returned in a single batch */
-        batch_size: number /** cursor to stream the results returned by the query */;
-        cursor: Array<
-          | ResolverInputTypes["auth_notification_subscriptions_stream_cursor_input"]
-          | undefined
-          | null
-        > /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["auth_notification_subscriptions_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_notification_subscriptions"]
-    ];
     auth_publickeys?: [
       {
         /** distinct select on columns */
@@ -4192,6 +4250,52 @@ export type ResolverInputTypes = {
       },
       ResolverInputTypes["auth_users"]
     ];
+    auth_xnft_preferences?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_xnft_preferences_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_xnft_preferences_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_xnft_preferences_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_xnft_preferences"]
+    ];
+    auth_xnft_preferences_by_pk?: [
+      { id: string },
+      ResolverInputTypes["auth_xnft_preferences"]
+    ];
+    auth_xnft_preferences_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size: number /** cursor to stream the results returned by the query */;
+        cursor: Array<
+          | ResolverInputTypes["auth_xnft_preferences_stream_cursor_input"]
+          | undefined
+          | null
+        > /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_xnft_preferences_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_xnft_preferences"]
+    ];
     invitations?: [
       {
         /** distinct select on columns */
@@ -4282,6 +4386,18 @@ export type ResolverInputTypes = {
 };
 
 export type ModelTypes = {
+  /** Boolean expression to compare columns of type "Boolean". All fields are combined with logical 'AND'. */
+  ["Boolean_comparison_exp"]: {
+    _eq?: boolean | undefined;
+    _gt?: boolean | undefined;
+    _gte?: boolean | undefined;
+    _in?: Array<boolean> | undefined;
+    _is_null?: boolean | undefined;
+    _lt?: boolean | undefined;
+    _lte?: boolean | undefined;
+    _neq?: boolean | undefined;
+    _nin?: Array<boolean> | undefined;
+  };
   /** Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'. */
   ["Int_comparison_exp"]: {
     _eq?: number | undefined;
@@ -4326,88 +4442,6 @@ export type ModelTypes = {
     /** does the column match the given SQL regular expression */
     _similar?: string | undefined;
   };
-  /** columns and relationships of "auth.notification_subscriptions" */
-  ["auth_notification_subscriptions"]: {
-    auth: string;
-    endpoint: string;
-    expirationTime: string;
-    id: number;
-    p256dh: string;
-    public_key: string;
-    username: string;
-  };
-  /** Boolean expression to filter rows from the table "auth.notification_subscriptions". All fields are combined with a logical 'AND'. */
-  ["auth_notification_subscriptions_bool_exp"]: {
-    _and?:
-      | Array<ModelTypes["auth_notification_subscriptions_bool_exp"]>
-      | undefined;
-    _not?: ModelTypes["auth_notification_subscriptions_bool_exp"] | undefined;
-    _or?:
-      | Array<ModelTypes["auth_notification_subscriptions_bool_exp"]>
-      | undefined;
-    auth?: ModelTypes["String_comparison_exp"] | undefined;
-    endpoint?: ModelTypes["String_comparison_exp"] | undefined;
-    expirationTime?: ModelTypes["String_comparison_exp"] | undefined;
-    id?: ModelTypes["Int_comparison_exp"] | undefined;
-    p256dh?: ModelTypes["String_comparison_exp"] | undefined;
-    public_key?: ModelTypes["String_comparison_exp"] | undefined;
-    username?: ModelTypes["String_comparison_exp"] | undefined;
-  };
-  ["auth_notification_subscriptions_constraint"]: auth_notification_subscriptions_constraint;
-  /** input type for inserting data into table "auth.notification_subscriptions" */
-  ["auth_notification_subscriptions_insert_input"]: {
-    auth?: string | undefined;
-    endpoint?: string | undefined;
-    expirationTime?: string | undefined;
-    id?: number | undefined;
-    p256dh?: string | undefined;
-    public_key?: string | undefined;
-    username?: string | undefined;
-  };
-  /** response of any mutation on the table "auth.notification_subscriptions" */
-  ["auth_notification_subscriptions_mutation_response"]: {
-    /** number of rows affected by the mutation */
-    affected_rows: number;
-    /** data from the rows affected by the mutation */
-    returning: Array<ModelTypes["auth_notification_subscriptions"]>;
-  };
-  /** on_conflict condition type for table "auth.notification_subscriptions" */
-  ["auth_notification_subscriptions_on_conflict"]: {
-    constraint: ModelTypes["auth_notification_subscriptions_constraint"];
-    update_columns: Array<
-      ModelTypes["auth_notification_subscriptions_update_column"]
-    >;
-    where?: ModelTypes["auth_notification_subscriptions_bool_exp"] | undefined;
-  };
-  /** Ordering options when selecting data from "auth.notification_subscriptions". */
-  ["auth_notification_subscriptions_order_by"]: {
-    auth?: ModelTypes["order_by"] | undefined;
-    endpoint?: ModelTypes["order_by"] | undefined;
-    expirationTime?: ModelTypes["order_by"] | undefined;
-    id?: ModelTypes["order_by"] | undefined;
-    p256dh?: ModelTypes["order_by"] | undefined;
-    public_key?: ModelTypes["order_by"] | undefined;
-    username?: ModelTypes["order_by"] | undefined;
-  };
-  ["auth_notification_subscriptions_select_column"]: auth_notification_subscriptions_select_column;
-  /** Streaming cursor of the table "auth_notification_subscriptions" */
-  ["auth_notification_subscriptions_stream_cursor_input"]: {
-    /** Stream column input with initial value */
-    initial_value: ModelTypes["auth_notification_subscriptions_stream_cursor_value_input"];
-    /** cursor ordering */
-    ordering?: ModelTypes["cursor_ordering"] | undefined;
-  };
-  /** Initial value of the column from where the streaming should start */
-  ["auth_notification_subscriptions_stream_cursor_value_input"]: {
-    auth?: string | undefined;
-    endpoint?: string | undefined;
-    expirationTime?: string | undefined;
-    id?: number | undefined;
-    p256dh?: string | undefined;
-    public_key?: string | undefined;
-    username?: string | undefined;
-  };
-  ["auth_notification_subscriptions_update_column"]: auth_notification_subscriptions_update_column;
   /** columns and relationships of "auth.publickeys" */
   ["auth_publickeys"]: {
     blockchain?: string | undefined;
@@ -4703,6 +4737,95 @@ export type ModelTypes = {
     _set?: ModelTypes["auth_users_set_input"] | undefined;
     where: ModelTypes["auth_users_bool_exp"];
   };
+  /** columns and relationships of "auth.xnft_preferences" */
+  ["auth_xnft_preferences"]: {
+    id: string;
+    media: boolean;
+    notifications: boolean;
+    username: string;
+    uuid?: string | undefined;
+    xnft_id: boolean;
+  };
+  /** Boolean expression to filter rows from the table "auth.xnft_preferences". All fields are combined with a logical 'AND'. */
+  ["auth_xnft_preferences_bool_exp"]: {
+    _and?: Array<ModelTypes["auth_xnft_preferences_bool_exp"]> | undefined;
+    _not?: ModelTypes["auth_xnft_preferences_bool_exp"] | undefined;
+    _or?: Array<ModelTypes["auth_xnft_preferences_bool_exp"]> | undefined;
+    id?: ModelTypes["String_comparison_exp"] | undefined;
+    media?: ModelTypes["Boolean_comparison_exp"] | undefined;
+    notifications?: ModelTypes["Boolean_comparison_exp"] | undefined;
+    username?: ModelTypes["String_comparison_exp"] | undefined;
+    uuid?: ModelTypes["String_comparison_exp"] | undefined;
+    xnft_id?: ModelTypes["Boolean_comparison_exp"] | undefined;
+  };
+  ["auth_xnft_preferences_constraint"]: auth_xnft_preferences_constraint;
+  /** input type for inserting data into table "auth.xnft_preferences" */
+  ["auth_xnft_preferences_insert_input"]: {
+    id?: string | undefined;
+    media?: boolean | undefined;
+    notifications?: boolean | undefined;
+    username?: string | undefined;
+    uuid?: string | undefined;
+    xnft_id?: boolean | undefined;
+  };
+  /** response of any mutation on the table "auth.xnft_preferences" */
+  ["auth_xnft_preferences_mutation_response"]: {
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<ModelTypes["auth_xnft_preferences"]>;
+  };
+  /** on_conflict condition type for table "auth.xnft_preferences" */
+  ["auth_xnft_preferences_on_conflict"]: {
+    constraint: ModelTypes["auth_xnft_preferences_constraint"];
+    update_columns: Array<ModelTypes["auth_xnft_preferences_update_column"]>;
+    where?: ModelTypes["auth_xnft_preferences_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "auth.xnft_preferences". */
+  ["auth_xnft_preferences_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+    media?: ModelTypes["order_by"] | undefined;
+    notifications?: ModelTypes["order_by"] | undefined;
+    username?: ModelTypes["order_by"] | undefined;
+    uuid?: ModelTypes["order_by"] | undefined;
+    xnft_id?: ModelTypes["order_by"] | undefined;
+  };
+  /** primary key columns input for table: auth_xnft_preferences */
+  ["auth_xnft_preferences_pk_columns_input"]: {
+    id: string;
+  };
+  ["auth_xnft_preferences_select_column"]: auth_xnft_preferences_select_column;
+  /** input type for updating data in table "auth.xnft_preferences" */
+  ["auth_xnft_preferences_set_input"]: {
+    id?: string | undefined;
+    media?: boolean | undefined;
+    notifications?: boolean | undefined;
+    username?: string | undefined;
+    uuid?: string | undefined;
+    xnft_id?: boolean | undefined;
+  };
+  /** Streaming cursor of the table "auth_xnft_preferences" */
+  ["auth_xnft_preferences_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ModelTypes["auth_xnft_preferences_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ModelTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_xnft_preferences_stream_cursor_value_input"]: {
+    id?: string | undefined;
+    media?: boolean | undefined;
+    notifications?: boolean | undefined;
+    username?: string | undefined;
+    uuid?: string | undefined;
+    xnft_id?: boolean | undefined;
+  };
+  ["auth_xnft_preferences_update_column"]: auth_xnft_preferences_update_column;
+  ["auth_xnft_preferences_updates"]: {
+    /** sets the columns of the filtered rows to the given values */
+    _set?: ModelTypes["auth_xnft_preferences_set_input"] | undefined;
+    where: ModelTypes["auth_xnft_preferences_bool_exp"];
+  };
   ["citext"]: any;
   /** Boolean expression to compare columns of type "citext". All fields are combined with logical 'AND'. */
   ["citext_comparison_exp"]: {
@@ -4791,21 +4914,13 @@ export type ModelTypes = {
   };
   /** mutation root */
   ["mutation_root"]: {
-    /** delete data from the table: "auth.notification_subscriptions" */
-    delete_auth_notification_subscriptions?:
-      | ModelTypes["auth_notification_subscriptions_mutation_response"]
+    /** delete data from the table: "auth.xnft_preferences" */
+    delete_auth_xnft_preferences?:
+      | ModelTypes["auth_xnft_preferences_mutation_response"]
       | undefined;
-    /** delete single row from the table: "auth.notification_subscriptions" */
-    delete_auth_notification_subscriptions_by_pk?:
-      | ModelTypes["auth_notification_subscriptions"]
-      | undefined;
-    /** insert data into the table: "auth.notification_subscriptions" */
-    insert_auth_notification_subscriptions?:
-      | ModelTypes["auth_notification_subscriptions_mutation_response"]
-      | undefined;
-    /** insert a single row into the table: "auth.notification_subscriptions" */
-    insert_auth_notification_subscriptions_one?:
-      | ModelTypes["auth_notification_subscriptions"]
+    /** delete single row from the table: "auth.xnft_preferences" */
+    delete_auth_xnft_preferences_by_pk?:
+      | ModelTypes["auth_xnft_preferences"]
       | undefined;
     /** insert data into the table: "auth.publickeys_history" */
     insert_auth_publickeys_history?:
@@ -4827,6 +4942,14 @@ export type ModelTypes = {
     insert_auth_users?: ModelTypes["auth_users_mutation_response"] | undefined;
     /** insert a single row into the table: "auth.users" */
     insert_auth_users_one?: ModelTypes["auth_users"] | undefined;
+    /** insert data into the table: "auth.xnft_preferences" */
+    insert_auth_xnft_preferences?:
+      | ModelTypes["auth_xnft_preferences_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "auth.xnft_preferences" */
+    insert_auth_xnft_preferences_one?:
+      | ModelTypes["auth_xnft_preferences"]
+      | undefined;
     /** update data of the table: "auth.stripe_onramp" */
     update_auth_stripe_onramp?:
       | ModelTypes["auth_stripe_onramp_mutation_response"]
@@ -4847,17 +4970,21 @@ export type ModelTypes = {
     update_auth_users_many?:
       | Array<ModelTypes["auth_users_mutation_response"] | undefined>
       | undefined;
+    /** update data of the table: "auth.xnft_preferences" */
+    update_auth_xnft_preferences?:
+      | ModelTypes["auth_xnft_preferences_mutation_response"]
+      | undefined;
+    /** update single row of the table: "auth.xnft_preferences" */
+    update_auth_xnft_preferences_by_pk?:
+      | ModelTypes["auth_xnft_preferences"]
+      | undefined;
+    /** update multiples rows of table: "auth.xnft_preferences" */
+    update_auth_xnft_preferences_many?:
+      | Array<ModelTypes["auth_xnft_preferences_mutation_response"] | undefined>
+      | undefined;
   };
   ["order_by"]: order_by;
   ["query_root"]: {
-    /** fetch data from the table: "auth.notification_subscriptions" */
-    auth_notification_subscriptions: Array<
-      ModelTypes["auth_notification_subscriptions"]
-    >;
-    /** fetch data from the table: "auth.notification_subscriptions" using primary key columns */
-    auth_notification_subscriptions_by_pk?:
-      | ModelTypes["auth_notification_subscriptions"]
-      | undefined;
     /** fetch data from the table: "auth.publickeys" */
     auth_publickeys: Array<ModelTypes["auth_publickeys"]>;
     /** fetch data from the table: "auth.publickeys_history" */
@@ -4872,24 +4999,18 @@ export type ModelTypes = {
     auth_users_aggregate: ModelTypes["auth_users_aggregate"];
     /** fetch data from the table: "auth.users" using primary key columns */
     auth_users_by_pk?: ModelTypes["auth_users"] | undefined;
+    /** fetch data from the table: "auth.xnft_preferences" */
+    auth_xnft_preferences: Array<ModelTypes["auth_xnft_preferences"]>;
+    /** fetch data from the table: "auth.xnft_preferences" using primary key columns */
+    auth_xnft_preferences_by_pk?:
+      | ModelTypes["auth_xnft_preferences"]
+      | undefined;
     /** fetch data from the table: "invitations" */
     invitations: Array<ModelTypes["invitations"]>;
     /** fetch aggregated fields from the table: "invitations" */
     invitations_aggregate: ModelTypes["invitations_aggregate"];
   };
   ["subscription_root"]: {
-    /** fetch data from the table: "auth.notification_subscriptions" */
-    auth_notification_subscriptions: Array<
-      ModelTypes["auth_notification_subscriptions"]
-    >;
-    /** fetch data from the table: "auth.notification_subscriptions" using primary key columns */
-    auth_notification_subscriptions_by_pk?:
-      | ModelTypes["auth_notification_subscriptions"]
-      | undefined;
-    /** fetch data from the table in a streaming manner : "auth.notification_subscriptions" */
-    auth_notification_subscriptions_stream: Array<
-      ModelTypes["auth_notification_subscriptions"]
-    >;
     /** fetch data from the table: "auth.publickeys" */
     auth_publickeys: Array<ModelTypes["auth_publickeys"]>;
     /** fetch data from the table: "auth.publickeys_history" */
@@ -4914,6 +5035,14 @@ export type ModelTypes = {
     auth_users_by_pk?: ModelTypes["auth_users"] | undefined;
     /** fetch data from the table in a streaming manner : "auth.users" */
     auth_users_stream: Array<ModelTypes["auth_users"]>;
+    /** fetch data from the table: "auth.xnft_preferences" */
+    auth_xnft_preferences: Array<ModelTypes["auth_xnft_preferences"]>;
+    /** fetch data from the table: "auth.xnft_preferences" using primary key columns */
+    auth_xnft_preferences_by_pk?:
+      | ModelTypes["auth_xnft_preferences"]
+      | undefined;
+    /** fetch data from the table in a streaming manner : "auth.xnft_preferences" */
+    auth_xnft_preferences_stream: Array<ModelTypes["auth_xnft_preferences"]>;
     /** fetch data from the table: "invitations" */
     invitations: Array<ModelTypes["invitations"]>;
     /** fetch aggregated fields from the table: "invitations" */
@@ -4950,6 +5079,18 @@ export type ModelTypes = {
 };
 
 export type GraphQLTypes = {
+  /** Boolean expression to compare columns of type "Boolean". All fields are combined with logical 'AND'. */
+  ["Boolean_comparison_exp"]: {
+    _eq?: boolean | undefined;
+    _gt?: boolean | undefined;
+    _gte?: boolean | undefined;
+    _in?: Array<boolean> | undefined;
+    _is_null?: boolean | undefined;
+    _lt?: boolean | undefined;
+    _lte?: boolean | undefined;
+    _neq?: boolean | undefined;
+    _nin?: Array<boolean> | undefined;
+  };
   /** Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'. */
   ["Int_comparison_exp"]: {
     _eq?: number | undefined;
@@ -4994,95 +5135,6 @@ export type GraphQLTypes = {
     /** does the column match the given SQL regular expression */
     _similar?: string | undefined;
   };
-  /** columns and relationships of "auth.notification_subscriptions" */
-  ["auth_notification_subscriptions"]: {
-    __typename: "auth_notification_subscriptions";
-    auth: string;
-    endpoint: string;
-    expirationTime: string;
-    id: number;
-    p256dh: string;
-    public_key: string;
-    username: string;
-  };
-  /** Boolean expression to filter rows from the table "auth.notification_subscriptions". All fields are combined with a logical 'AND'. */
-  ["auth_notification_subscriptions_bool_exp"]: {
-    _and?:
-      | Array<GraphQLTypes["auth_notification_subscriptions_bool_exp"]>
-      | undefined;
-    _not?: GraphQLTypes["auth_notification_subscriptions_bool_exp"] | undefined;
-    _or?:
-      | Array<GraphQLTypes["auth_notification_subscriptions_bool_exp"]>
-      | undefined;
-    auth?: GraphQLTypes["String_comparison_exp"] | undefined;
-    endpoint?: GraphQLTypes["String_comparison_exp"] | undefined;
-    expirationTime?: GraphQLTypes["String_comparison_exp"] | undefined;
-    id?: GraphQLTypes["Int_comparison_exp"] | undefined;
-    p256dh?: GraphQLTypes["String_comparison_exp"] | undefined;
-    public_key?: GraphQLTypes["String_comparison_exp"] | undefined;
-    username?: GraphQLTypes["String_comparison_exp"] | undefined;
-  };
-  /** unique or primary key constraints on table "auth.notification_subscriptions" */
-  ["auth_notification_subscriptions_constraint"]: auth_notification_subscriptions_constraint;
-  /** input type for inserting data into table "auth.notification_subscriptions" */
-  ["auth_notification_subscriptions_insert_input"]: {
-    auth?: string | undefined;
-    endpoint?: string | undefined;
-    expirationTime?: string | undefined;
-    id?: number | undefined;
-    p256dh?: string | undefined;
-    public_key?: string | undefined;
-    username?: string | undefined;
-  };
-  /** response of any mutation on the table "auth.notification_subscriptions" */
-  ["auth_notification_subscriptions_mutation_response"]: {
-    __typename: "auth_notification_subscriptions_mutation_response";
-    /** number of rows affected by the mutation */
-    affected_rows: number;
-    /** data from the rows affected by the mutation */
-    returning: Array<GraphQLTypes["auth_notification_subscriptions"]>;
-  };
-  /** on_conflict condition type for table "auth.notification_subscriptions" */
-  ["auth_notification_subscriptions_on_conflict"]: {
-    constraint: GraphQLTypes["auth_notification_subscriptions_constraint"];
-    update_columns: Array<
-      GraphQLTypes["auth_notification_subscriptions_update_column"]
-    >;
-    where?:
-      | GraphQLTypes["auth_notification_subscriptions_bool_exp"]
-      | undefined;
-  };
-  /** Ordering options when selecting data from "auth.notification_subscriptions". */
-  ["auth_notification_subscriptions_order_by"]: {
-    auth?: GraphQLTypes["order_by"] | undefined;
-    endpoint?: GraphQLTypes["order_by"] | undefined;
-    expirationTime?: GraphQLTypes["order_by"] | undefined;
-    id?: GraphQLTypes["order_by"] | undefined;
-    p256dh?: GraphQLTypes["order_by"] | undefined;
-    public_key?: GraphQLTypes["order_by"] | undefined;
-    username?: GraphQLTypes["order_by"] | undefined;
-  };
-  /** select columns of table "auth.notification_subscriptions" */
-  ["auth_notification_subscriptions_select_column"]: auth_notification_subscriptions_select_column;
-  /** Streaming cursor of the table "auth_notification_subscriptions" */
-  ["auth_notification_subscriptions_stream_cursor_input"]: {
-    /** Stream column input with initial value */
-    initial_value: GraphQLTypes["auth_notification_subscriptions_stream_cursor_value_input"];
-    /** cursor ordering */
-    ordering?: GraphQLTypes["cursor_ordering"] | undefined;
-  };
-  /** Initial value of the column from where the streaming should start */
-  ["auth_notification_subscriptions_stream_cursor_value_input"]: {
-    auth?: string | undefined;
-    endpoint?: string | undefined;
-    expirationTime?: string | undefined;
-    id?: number | undefined;
-    p256dh?: string | undefined;
-    public_key?: string | undefined;
-    username?: string | undefined;
-  };
-  /** placeholder for update columns of table "auth.notification_subscriptions" (current role has no relevant permissions) */
-  ["auth_notification_subscriptions_update_column"]: auth_notification_subscriptions_update_column;
   /** columns and relationships of "auth.publickeys" */
   ["auth_publickeys"]: {
     __typename: "auth_publickeys";
@@ -5403,6 +5455,100 @@ export type GraphQLTypes = {
     _set?: GraphQLTypes["auth_users_set_input"] | undefined;
     where: GraphQLTypes["auth_users_bool_exp"];
   };
+  /** columns and relationships of "auth.xnft_preferences" */
+  ["auth_xnft_preferences"]: {
+    __typename: "auth_xnft_preferences";
+    id: string;
+    media: boolean;
+    notifications: boolean;
+    username: string;
+    uuid?: string | undefined;
+    xnft_id: boolean;
+  };
+  /** Boolean expression to filter rows from the table "auth.xnft_preferences". All fields are combined with a logical 'AND'. */
+  ["auth_xnft_preferences_bool_exp"]: {
+    _and?: Array<GraphQLTypes["auth_xnft_preferences_bool_exp"]> | undefined;
+    _not?: GraphQLTypes["auth_xnft_preferences_bool_exp"] | undefined;
+    _or?: Array<GraphQLTypes["auth_xnft_preferences_bool_exp"]> | undefined;
+    id?: GraphQLTypes["String_comparison_exp"] | undefined;
+    media?: GraphQLTypes["Boolean_comparison_exp"] | undefined;
+    notifications?: GraphQLTypes["Boolean_comparison_exp"] | undefined;
+    username?: GraphQLTypes["String_comparison_exp"] | undefined;
+    uuid?: GraphQLTypes["String_comparison_exp"] | undefined;
+    xnft_id?: GraphQLTypes["Boolean_comparison_exp"] | undefined;
+  };
+  /** unique or primary key constraints on table "auth.xnft_preferences" */
+  ["auth_xnft_preferences_constraint"]: auth_xnft_preferences_constraint;
+  /** input type for inserting data into table "auth.xnft_preferences" */
+  ["auth_xnft_preferences_insert_input"]: {
+    id?: string | undefined;
+    media?: boolean | undefined;
+    notifications?: boolean | undefined;
+    username?: string | undefined;
+    uuid?: string | undefined;
+    xnft_id?: boolean | undefined;
+  };
+  /** response of any mutation on the table "auth.xnft_preferences" */
+  ["auth_xnft_preferences_mutation_response"]: {
+    __typename: "auth_xnft_preferences_mutation_response";
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<GraphQLTypes["auth_xnft_preferences"]>;
+  };
+  /** on_conflict condition type for table "auth.xnft_preferences" */
+  ["auth_xnft_preferences_on_conflict"]: {
+    constraint: GraphQLTypes["auth_xnft_preferences_constraint"];
+    update_columns: Array<GraphQLTypes["auth_xnft_preferences_update_column"]>;
+    where?: GraphQLTypes["auth_xnft_preferences_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "auth.xnft_preferences". */
+  ["auth_xnft_preferences_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+    media?: GraphQLTypes["order_by"] | undefined;
+    notifications?: GraphQLTypes["order_by"] | undefined;
+    username?: GraphQLTypes["order_by"] | undefined;
+    uuid?: GraphQLTypes["order_by"] | undefined;
+    xnft_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** primary key columns input for table: auth_xnft_preferences */
+  ["auth_xnft_preferences_pk_columns_input"]: {
+    id: string;
+  };
+  /** select columns of table "auth.xnft_preferences" */
+  ["auth_xnft_preferences_select_column"]: auth_xnft_preferences_select_column;
+  /** input type for updating data in table "auth.xnft_preferences" */
+  ["auth_xnft_preferences_set_input"]: {
+    id?: string | undefined;
+    media?: boolean | undefined;
+    notifications?: boolean | undefined;
+    username?: string | undefined;
+    uuid?: string | undefined;
+    xnft_id?: boolean | undefined;
+  };
+  /** Streaming cursor of the table "auth_xnft_preferences" */
+  ["auth_xnft_preferences_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: GraphQLTypes["auth_xnft_preferences_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: GraphQLTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_xnft_preferences_stream_cursor_value_input"]: {
+    id?: string | undefined;
+    media?: boolean | undefined;
+    notifications?: boolean | undefined;
+    username?: string | undefined;
+    uuid?: string | undefined;
+    xnft_id?: boolean | undefined;
+  };
+  /** update columns of table "auth.xnft_preferences" */
+  ["auth_xnft_preferences_update_column"]: auth_xnft_preferences_update_column;
+  ["auth_xnft_preferences_updates"]: {
+    /** sets the columns of the filtered rows to the given values */
+    _set?: GraphQLTypes["auth_xnft_preferences_set_input"] | undefined;
+    where: GraphQLTypes["auth_xnft_preferences_bool_exp"];
+  };
   ["citext"]: "scalar" & { name: "citext" };
   /** Boolean expression to compare columns of type "citext". All fields are combined with logical 'AND'. */
   ["citext_comparison_exp"]: {
@@ -5499,21 +5645,13 @@ export type GraphQLTypes = {
   /** mutation root */
   ["mutation_root"]: {
     __typename: "mutation_root";
-    /** delete data from the table: "auth.notification_subscriptions" */
-    delete_auth_notification_subscriptions?:
-      | GraphQLTypes["auth_notification_subscriptions_mutation_response"]
+    /** delete data from the table: "auth.xnft_preferences" */
+    delete_auth_xnft_preferences?:
+      | GraphQLTypes["auth_xnft_preferences_mutation_response"]
       | undefined;
-    /** delete single row from the table: "auth.notification_subscriptions" */
-    delete_auth_notification_subscriptions_by_pk?:
-      | GraphQLTypes["auth_notification_subscriptions"]
-      | undefined;
-    /** insert data into the table: "auth.notification_subscriptions" */
-    insert_auth_notification_subscriptions?:
-      | GraphQLTypes["auth_notification_subscriptions_mutation_response"]
-      | undefined;
-    /** insert a single row into the table: "auth.notification_subscriptions" */
-    insert_auth_notification_subscriptions_one?:
-      | GraphQLTypes["auth_notification_subscriptions"]
+    /** delete single row from the table: "auth.xnft_preferences" */
+    delete_auth_xnft_preferences_by_pk?:
+      | GraphQLTypes["auth_xnft_preferences"]
       | undefined;
     /** insert data into the table: "auth.publickeys_history" */
     insert_auth_publickeys_history?:
@@ -5537,6 +5675,14 @@ export type GraphQLTypes = {
       | undefined;
     /** insert a single row into the table: "auth.users" */
     insert_auth_users_one?: GraphQLTypes["auth_users"] | undefined;
+    /** insert data into the table: "auth.xnft_preferences" */
+    insert_auth_xnft_preferences?:
+      | GraphQLTypes["auth_xnft_preferences_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "auth.xnft_preferences" */
+    insert_auth_xnft_preferences_one?:
+      | GraphQLTypes["auth_xnft_preferences"]
+      | undefined;
     /** update data of the table: "auth.stripe_onramp" */
     update_auth_stripe_onramp?:
       | GraphQLTypes["auth_stripe_onramp_mutation_response"]
@@ -5559,19 +5705,25 @@ export type GraphQLTypes = {
     update_auth_users_many?:
       | Array<GraphQLTypes["auth_users_mutation_response"] | undefined>
       | undefined;
+    /** update data of the table: "auth.xnft_preferences" */
+    update_auth_xnft_preferences?:
+      | GraphQLTypes["auth_xnft_preferences_mutation_response"]
+      | undefined;
+    /** update single row of the table: "auth.xnft_preferences" */
+    update_auth_xnft_preferences_by_pk?:
+      | GraphQLTypes["auth_xnft_preferences"]
+      | undefined;
+    /** update multiples rows of table: "auth.xnft_preferences" */
+    update_auth_xnft_preferences_many?:
+      | Array<
+          GraphQLTypes["auth_xnft_preferences_mutation_response"] | undefined
+        >
+      | undefined;
   };
   /** column ordering options */
   ["order_by"]: order_by;
   ["query_root"]: {
     __typename: "query_root";
-    /** fetch data from the table: "auth.notification_subscriptions" */
-    auth_notification_subscriptions: Array<
-      GraphQLTypes["auth_notification_subscriptions"]
-    >;
-    /** fetch data from the table: "auth.notification_subscriptions" using primary key columns */
-    auth_notification_subscriptions_by_pk?:
-      | GraphQLTypes["auth_notification_subscriptions"]
-      | undefined;
     /** fetch data from the table: "auth.publickeys" */
     auth_publickeys: Array<GraphQLTypes["auth_publickeys"]>;
     /** fetch data from the table: "auth.publickeys_history" */
@@ -5586,6 +5738,12 @@ export type GraphQLTypes = {
     auth_users_aggregate: GraphQLTypes["auth_users_aggregate"];
     /** fetch data from the table: "auth.users" using primary key columns */
     auth_users_by_pk?: GraphQLTypes["auth_users"] | undefined;
+    /** fetch data from the table: "auth.xnft_preferences" */
+    auth_xnft_preferences: Array<GraphQLTypes["auth_xnft_preferences"]>;
+    /** fetch data from the table: "auth.xnft_preferences" using primary key columns */
+    auth_xnft_preferences_by_pk?:
+      | GraphQLTypes["auth_xnft_preferences"]
+      | undefined;
     /** fetch data from the table: "invitations" */
     invitations: Array<GraphQLTypes["invitations"]>;
     /** fetch aggregated fields from the table: "invitations" */
@@ -5593,18 +5751,6 @@ export type GraphQLTypes = {
   };
   ["subscription_root"]: {
     __typename: "subscription_root";
-    /** fetch data from the table: "auth.notification_subscriptions" */
-    auth_notification_subscriptions: Array<
-      GraphQLTypes["auth_notification_subscriptions"]
-    >;
-    /** fetch data from the table: "auth.notification_subscriptions" using primary key columns */
-    auth_notification_subscriptions_by_pk?:
-      | GraphQLTypes["auth_notification_subscriptions"]
-      | undefined;
-    /** fetch data from the table in a streaming manner : "auth.notification_subscriptions" */
-    auth_notification_subscriptions_stream: Array<
-      GraphQLTypes["auth_notification_subscriptions"]
-    >;
     /** fetch data from the table: "auth.publickeys" */
     auth_publickeys: Array<GraphQLTypes["auth_publickeys"]>;
     /** fetch data from the table: "auth.publickeys_history" */
@@ -5629,6 +5775,14 @@ export type GraphQLTypes = {
     auth_users_by_pk?: GraphQLTypes["auth_users"] | undefined;
     /** fetch data from the table in a streaming manner : "auth.users" */
     auth_users_stream: Array<GraphQLTypes["auth_users"]>;
+    /** fetch data from the table: "auth.xnft_preferences" */
+    auth_xnft_preferences: Array<GraphQLTypes["auth_xnft_preferences"]>;
+    /** fetch data from the table: "auth.xnft_preferences" using primary key columns */
+    auth_xnft_preferences_by_pk?:
+      | GraphQLTypes["auth_xnft_preferences"]
+      | undefined;
+    /** fetch data from the table in a streaming manner : "auth.xnft_preferences" */
+    auth_xnft_preferences_stream: Array<GraphQLTypes["auth_xnft_preferences"]>;
     /** fetch data from the table: "invitations" */
     invitations: Array<GraphQLTypes["invitations"]>;
     /** fetch aggregated fields from the table: "invitations" */
@@ -5663,24 +5817,6 @@ export type GraphQLTypes = {
     _nin?: Array<GraphQLTypes["uuid"]> | undefined;
   };
 };
-/** unique or primary key constraints on table "auth.notification_subscriptions" */
-export const enum auth_notification_subscriptions_constraint {
-  notification_subscriptions_pkey = "notification_subscriptions_pkey",
-}
-/** select columns of table "auth.notification_subscriptions" */
-export const enum auth_notification_subscriptions_select_column {
-  auth = "auth",
-  endpoint = "endpoint",
-  expirationTime = "expirationTime",
-  id = "id",
-  p256dh = "p256dh",
-  public_key = "public_key",
-  username = "username",
-}
-/** placeholder for update columns of table "auth.notification_subscriptions" (current role has no relevant permissions) */
-export const enum auth_notification_subscriptions_update_column {
-  _PLACEHOLDER = "_PLACEHOLDER",
-}
 /** unique or primary key constraints on table "auth.publickeys_history" */
 export const enum auth_publickeys_history_constraint {
   publickeys_history_pkey = "publickeys_history_pkey",
@@ -5735,6 +5871,28 @@ export const enum auth_users_select_column {
 export const enum auth_users_update_column {
   updated_at = "updated_at",
 }
+/** unique or primary key constraints on table "auth.xnft_preferences" */
+export const enum auth_xnft_preferences_constraint {
+  xnft_preferences_pkey = "xnft_preferences_pkey",
+}
+/** select columns of table "auth.xnft_preferences" */
+export const enum auth_xnft_preferences_select_column {
+  id = "id",
+  media = "media",
+  notifications = "notifications",
+  username = "username",
+  uuid = "uuid",
+  xnft_id = "xnft_id",
+}
+/** update columns of table "auth.xnft_preferences" */
+export const enum auth_xnft_preferences_update_column {
+  id = "id",
+  media = "media",
+  notifications = "notifications",
+  username = "username",
+  uuid = "uuid",
+  xnft_id = "xnft_id",
+}
 /** ordering argument of a cursor */
 export const enum cursor_ordering {
   ASC = "ASC",
@@ -5756,17 +5914,9 @@ export const enum order_by {
 }
 
 type ZEUS_VARIABLES = {
+  ["Boolean_comparison_exp"]: ValueTypes["Boolean_comparison_exp"];
   ["Int_comparison_exp"]: ValueTypes["Int_comparison_exp"];
   ["String_comparison_exp"]: ValueTypes["String_comparison_exp"];
-  ["auth_notification_subscriptions_bool_exp"]: ValueTypes["auth_notification_subscriptions_bool_exp"];
-  ["auth_notification_subscriptions_constraint"]: ValueTypes["auth_notification_subscriptions_constraint"];
-  ["auth_notification_subscriptions_insert_input"]: ValueTypes["auth_notification_subscriptions_insert_input"];
-  ["auth_notification_subscriptions_on_conflict"]: ValueTypes["auth_notification_subscriptions_on_conflict"];
-  ["auth_notification_subscriptions_order_by"]: ValueTypes["auth_notification_subscriptions_order_by"];
-  ["auth_notification_subscriptions_select_column"]: ValueTypes["auth_notification_subscriptions_select_column"];
-  ["auth_notification_subscriptions_stream_cursor_input"]: ValueTypes["auth_notification_subscriptions_stream_cursor_input"];
-  ["auth_notification_subscriptions_stream_cursor_value_input"]: ValueTypes["auth_notification_subscriptions_stream_cursor_value_input"];
-  ["auth_notification_subscriptions_update_column"]: ValueTypes["auth_notification_subscriptions_update_column"];
   ["auth_publickeys_bool_exp"]: ValueTypes["auth_publickeys_bool_exp"];
   ["auth_publickeys_history_aggregate_order_by"]: ValueTypes["auth_publickeys_history_aggregate_order_by"];
   ["auth_publickeys_history_arr_rel_insert_input"]: ValueTypes["auth_publickeys_history_arr_rel_insert_input"];
@@ -5810,6 +5960,18 @@ type ZEUS_VARIABLES = {
   ["auth_users_stream_cursor_value_input"]: ValueTypes["auth_users_stream_cursor_value_input"];
   ["auth_users_update_column"]: ValueTypes["auth_users_update_column"];
   ["auth_users_updates"]: ValueTypes["auth_users_updates"];
+  ["auth_xnft_preferences_bool_exp"]: ValueTypes["auth_xnft_preferences_bool_exp"];
+  ["auth_xnft_preferences_constraint"]: ValueTypes["auth_xnft_preferences_constraint"];
+  ["auth_xnft_preferences_insert_input"]: ValueTypes["auth_xnft_preferences_insert_input"];
+  ["auth_xnft_preferences_on_conflict"]: ValueTypes["auth_xnft_preferences_on_conflict"];
+  ["auth_xnft_preferences_order_by"]: ValueTypes["auth_xnft_preferences_order_by"];
+  ["auth_xnft_preferences_pk_columns_input"]: ValueTypes["auth_xnft_preferences_pk_columns_input"];
+  ["auth_xnft_preferences_select_column"]: ValueTypes["auth_xnft_preferences_select_column"];
+  ["auth_xnft_preferences_set_input"]: ValueTypes["auth_xnft_preferences_set_input"];
+  ["auth_xnft_preferences_stream_cursor_input"]: ValueTypes["auth_xnft_preferences_stream_cursor_input"];
+  ["auth_xnft_preferences_stream_cursor_value_input"]: ValueTypes["auth_xnft_preferences_stream_cursor_value_input"];
+  ["auth_xnft_preferences_update_column"]: ValueTypes["auth_xnft_preferences_update_column"];
+  ["auth_xnft_preferences_updates"]: ValueTypes["auth_xnft_preferences_updates"];
   ["citext"]: ValueTypes["citext"];
   ["citext_comparison_exp"]: ValueTypes["citext_comparison_exp"];
   ["cursor_ordering"]: ValueTypes["cursor_ordering"];

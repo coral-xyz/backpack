@@ -1,43 +1,9 @@
 /* eslint-disable */
 
 export const AllTypesProps: Record<string, any> = {
+  Boolean_comparison_exp: {},
   Int_comparison_exp: {},
   String_comparison_exp: {},
-  auth_notification_subscriptions_bool_exp: {
-    _and: "auth_notification_subscriptions_bool_exp",
-    _not: "auth_notification_subscriptions_bool_exp",
-    _or: "auth_notification_subscriptions_bool_exp",
-    auth: "String_comparison_exp",
-    endpoint: "String_comparison_exp",
-    expirationTime: "String_comparison_exp",
-    id: "Int_comparison_exp",
-    p256dh: "String_comparison_exp",
-    public_key: "String_comparison_exp",
-    username: "String_comparison_exp",
-  },
-  auth_notification_subscriptions_constraint: "enum" as const,
-  auth_notification_subscriptions_insert_input: {},
-  auth_notification_subscriptions_on_conflict: {
-    constraint: "auth_notification_subscriptions_constraint",
-    update_columns: "auth_notification_subscriptions_update_column",
-    where: "auth_notification_subscriptions_bool_exp",
-  },
-  auth_notification_subscriptions_order_by: {
-    auth: "order_by",
-    endpoint: "order_by",
-    expirationTime: "order_by",
-    id: "order_by",
-    p256dh: "order_by",
-    public_key: "order_by",
-    username: "order_by",
-  },
-  auth_notification_subscriptions_select_column: "enum" as const,
-  auth_notification_subscriptions_stream_cursor_input: {
-    initial_value: "auth_notification_subscriptions_stream_cursor_value_input",
-    ordering: "cursor_ordering",
-  },
-  auth_notification_subscriptions_stream_cursor_value_input: {},
-  auth_notification_subscriptions_update_column: "enum" as const,
   auth_publickeys_bool_exp: {
     _and: "auth_publickeys_bool_exp",
     _not: "auth_publickeys_bool_exp",
@@ -200,6 +166,45 @@ export const AllTypesProps: Record<string, any> = {
     _set: "auth_users_set_input",
     where: "auth_users_bool_exp",
   },
+  auth_xnft_preferences_bool_exp: {
+    _and: "auth_xnft_preferences_bool_exp",
+    _not: "auth_xnft_preferences_bool_exp",
+    _or: "auth_xnft_preferences_bool_exp",
+    id: "String_comparison_exp",
+    media: "Boolean_comparison_exp",
+    notifications: "Boolean_comparison_exp",
+    username: "String_comparison_exp",
+    uuid: "String_comparison_exp",
+    xnft_id: "Boolean_comparison_exp",
+  },
+  auth_xnft_preferences_constraint: "enum" as const,
+  auth_xnft_preferences_insert_input: {},
+  auth_xnft_preferences_on_conflict: {
+    constraint: "auth_xnft_preferences_constraint",
+    update_columns: "auth_xnft_preferences_update_column",
+    where: "auth_xnft_preferences_bool_exp",
+  },
+  auth_xnft_preferences_order_by: {
+    id: "order_by",
+    media: "order_by",
+    notifications: "order_by",
+    username: "order_by",
+    uuid: "order_by",
+    xnft_id: "order_by",
+  },
+  auth_xnft_preferences_pk_columns_input: {},
+  auth_xnft_preferences_select_column: "enum" as const,
+  auth_xnft_preferences_set_input: {},
+  auth_xnft_preferences_stream_cursor_input: {
+    initial_value: "auth_xnft_preferences_stream_cursor_value_input",
+    ordering: "cursor_ordering",
+  },
+  auth_xnft_preferences_stream_cursor_value_input: {},
+  auth_xnft_preferences_update_column: "enum" as const,
+  auth_xnft_preferences_updates: {
+    _set: "auth_xnft_preferences_set_input",
+    where: "auth_xnft_preferences_bool_exp",
+  },
   citext: `scalar.citext` as const,
   citext_comparison_exp: {
     _eq: "citext",
@@ -248,18 +253,10 @@ export const AllTypesProps: Record<string, any> = {
     id: "uuid",
   },
   mutation_root: {
-    delete_auth_notification_subscriptions: {
-      where: "auth_notification_subscriptions_bool_exp",
+    delete_auth_xnft_preferences: {
+      where: "auth_xnft_preferences_bool_exp",
     },
-    delete_auth_notification_subscriptions_by_pk: {},
-    insert_auth_notification_subscriptions: {
-      objects: "auth_notification_subscriptions_insert_input",
-      on_conflict: "auth_notification_subscriptions_on_conflict",
-    },
-    insert_auth_notification_subscriptions_one: {
-      object: "auth_notification_subscriptions_insert_input",
-      on_conflict: "auth_notification_subscriptions_on_conflict",
-    },
+    delete_auth_xnft_preferences_by_pk: {},
     insert_auth_publickeys_history: {
       objects: "auth_publickeys_history_insert_input",
       on_conflict: "auth_publickeys_history_on_conflict",
@@ -283,6 +280,14 @@ export const AllTypesProps: Record<string, any> = {
     insert_auth_users_one: {
       object: "auth_users_insert_input",
       on_conflict: "auth_users_on_conflict",
+    },
+    insert_auth_xnft_preferences: {
+      objects: "auth_xnft_preferences_insert_input",
+      on_conflict: "auth_xnft_preferences_on_conflict",
+    },
+    insert_auth_xnft_preferences_one: {
+      object: "auth_xnft_preferences_insert_input",
+      on_conflict: "auth_xnft_preferences_on_conflict",
     },
     update_auth_stripe_onramp: {
       _inc: "auth_stripe_onramp_inc_input",
@@ -308,15 +313,20 @@ export const AllTypesProps: Record<string, any> = {
     update_auth_users_many: {
       updates: "auth_users_updates",
     },
+    update_auth_xnft_preferences: {
+      _set: "auth_xnft_preferences_set_input",
+      where: "auth_xnft_preferences_bool_exp",
+    },
+    update_auth_xnft_preferences_by_pk: {
+      _set: "auth_xnft_preferences_set_input",
+      pk_columns: "auth_xnft_preferences_pk_columns_input",
+    },
+    update_auth_xnft_preferences_many: {
+      updates: "auth_xnft_preferences_updates",
+    },
   },
   order_by: "enum" as const,
   query_root: {
-    auth_notification_subscriptions: {
-      distinct_on: "auth_notification_subscriptions_select_column",
-      order_by: "auth_notification_subscriptions_order_by",
-      where: "auth_notification_subscriptions_bool_exp",
-    },
-    auth_notification_subscriptions_by_pk: {},
     auth_publickeys: {
       distinct_on: "auth_publickeys_select_column",
       order_by: "auth_publickeys_order_by",
@@ -346,6 +356,12 @@ export const AllTypesProps: Record<string, any> = {
     auth_users_by_pk: {
       id: "uuid",
     },
+    auth_xnft_preferences: {
+      distinct_on: "auth_xnft_preferences_select_column",
+      order_by: "auth_xnft_preferences_order_by",
+      where: "auth_xnft_preferences_bool_exp",
+    },
+    auth_xnft_preferences_by_pk: {},
     invitations: {
       distinct_on: "invitations_select_column",
       order_by: "invitations_order_by",
@@ -358,16 +374,6 @@ export const AllTypesProps: Record<string, any> = {
     },
   },
   subscription_root: {
-    auth_notification_subscriptions: {
-      distinct_on: "auth_notification_subscriptions_select_column",
-      order_by: "auth_notification_subscriptions_order_by",
-      where: "auth_notification_subscriptions_bool_exp",
-    },
-    auth_notification_subscriptions_by_pk: {},
-    auth_notification_subscriptions_stream: {
-      cursor: "auth_notification_subscriptions_stream_cursor_input",
-      where: "auth_notification_subscriptions_bool_exp",
-    },
     auth_publickeys: {
       distinct_on: "auth_publickeys_select_column",
       order_by: "auth_publickeys_order_by",
@@ -413,6 +419,16 @@ export const AllTypesProps: Record<string, any> = {
       cursor: "auth_users_stream_cursor_input",
       where: "auth_users_bool_exp",
     },
+    auth_xnft_preferences: {
+      distinct_on: "auth_xnft_preferences_select_column",
+      order_by: "auth_xnft_preferences_order_by",
+      where: "auth_xnft_preferences_bool_exp",
+    },
+    auth_xnft_preferences_by_pk: {},
+    auth_xnft_preferences_stream: {
+      cursor: "auth_xnft_preferences_stream_cursor_input",
+      where: "auth_xnft_preferences_bool_exp",
+    },
     invitations: {
       distinct_on: "invitations_select_column",
       order_by: "invitations_order_by",
@@ -456,19 +472,6 @@ export const ReturnTypes: Record<string, any> = {
   cached: {
     ttl: "Int",
     refresh: "Boolean",
-  },
-  auth_notification_subscriptions: {
-    auth: "String",
-    endpoint: "String",
-    expirationTime: "String",
-    id: "Int",
-    p256dh: "String",
-    public_key: "String",
-    username: "String",
-  },
-  auth_notification_subscriptions_mutation_response: {
-    affected_rows: "Int",
-    returning: "auth_notification_subscriptions",
   },
   auth_publickeys: {
     blockchain: "String",
@@ -520,6 +523,18 @@ export const ReturnTypes: Record<string, any> = {
     affected_rows: "Int",
     returning: "auth_users",
   },
+  auth_xnft_preferences: {
+    id: "String",
+    media: "Boolean",
+    notifications: "Boolean",
+    username: "String",
+    uuid: "String",
+    xnft_id: "Boolean",
+  },
+  auth_xnft_preferences_mutation_response: {
+    affected_rows: "Int",
+    returning: "auth_xnft_preferences",
+  },
   citext: `scalar.citext` as const,
   invitations: {
     claimed_at: "timestamptz",
@@ -543,30 +558,28 @@ export const ReturnTypes: Record<string, any> = {
     id: "uuid",
   },
   mutation_root: {
-    delete_auth_notification_subscriptions:
-      "auth_notification_subscriptions_mutation_response",
-    delete_auth_notification_subscriptions_by_pk:
-      "auth_notification_subscriptions",
-    insert_auth_notification_subscriptions:
-      "auth_notification_subscriptions_mutation_response",
-    insert_auth_notification_subscriptions_one:
-      "auth_notification_subscriptions",
+    delete_auth_xnft_preferences: "auth_xnft_preferences_mutation_response",
+    delete_auth_xnft_preferences_by_pk: "auth_xnft_preferences",
     insert_auth_publickeys_history: "auth_publickeys_history_mutation_response",
     insert_auth_publickeys_history_one: "auth_publickeys_history",
     insert_auth_stripe_onramp: "auth_stripe_onramp_mutation_response",
     insert_auth_stripe_onramp_one: "auth_stripe_onramp",
     insert_auth_users: "auth_users_mutation_response",
     insert_auth_users_one: "auth_users",
+    insert_auth_xnft_preferences: "auth_xnft_preferences_mutation_response",
+    insert_auth_xnft_preferences_one: "auth_xnft_preferences",
     update_auth_stripe_onramp: "auth_stripe_onramp_mutation_response",
     update_auth_stripe_onramp_by_pk: "auth_stripe_onramp",
     update_auth_stripe_onramp_many: "auth_stripe_onramp_mutation_response",
     update_auth_users: "auth_users_mutation_response",
     update_auth_users_by_pk: "auth_users",
     update_auth_users_many: "auth_users_mutation_response",
+    update_auth_xnft_preferences: "auth_xnft_preferences_mutation_response",
+    update_auth_xnft_preferences_by_pk: "auth_xnft_preferences",
+    update_auth_xnft_preferences_many:
+      "auth_xnft_preferences_mutation_response",
   },
   query_root: {
-    auth_notification_subscriptions: "auth_notification_subscriptions",
-    auth_notification_subscriptions_by_pk: "auth_notification_subscriptions",
     auth_publickeys: "auth_publickeys",
     auth_publickeys_history: "auth_publickeys_history",
     auth_stripe_onramp: "auth_stripe_onramp",
@@ -574,13 +587,12 @@ export const ReturnTypes: Record<string, any> = {
     auth_users: "auth_users",
     auth_users_aggregate: "auth_users_aggregate",
     auth_users_by_pk: "auth_users",
+    auth_xnft_preferences: "auth_xnft_preferences",
+    auth_xnft_preferences_by_pk: "auth_xnft_preferences",
     invitations: "invitations",
     invitations_aggregate: "invitations_aggregate",
   },
   subscription_root: {
-    auth_notification_subscriptions: "auth_notification_subscriptions",
-    auth_notification_subscriptions_by_pk: "auth_notification_subscriptions",
-    auth_notification_subscriptions_stream: "auth_notification_subscriptions",
     auth_publickeys: "auth_publickeys",
     auth_publickeys_history: "auth_publickeys_history",
     auth_publickeys_history_stream: "auth_publickeys_history",
@@ -592,6 +604,9 @@ export const ReturnTypes: Record<string, any> = {
     auth_users_aggregate: "auth_users_aggregate",
     auth_users_by_pk: "auth_users",
     auth_users_stream: "auth_users",
+    auth_xnft_preferences: "auth_xnft_preferences",
+    auth_xnft_preferences_by_pk: "auth_xnft_preferences",
+    auth_xnft_preferences_stream: "auth_xnft_preferences",
     invitations: "invitations",
     invitations_aggregate: "invitations_aggregate",
     invitations_stream: "invitations",
