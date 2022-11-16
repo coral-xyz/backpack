@@ -7,6 +7,11 @@ const chain = Chain(HASURA_URL, {
   },
 });
 
+interface Preference {
+  notifications: boolean;
+  media: boolean;
+}
+
 export const insertSubscription = (
   publicKey: string,
   username: string,
@@ -29,4 +34,55 @@ export const insertSubscription = (
       },
     ],
   });
+};
+
+export const updatePreference = async (
+  xnftId: string,
+  username: string,
+  preferences: Preference
+) => {
+  //TODO: Fix possible race condition (two creates at same time)
+  const currentPreference = await chain("query")({
+    auth_xnft_preferences: [
+      {
+        where: { xnft_id: { _eq: xnftId }, username: { _eq: username } },
+        limit: 1,
+      },
+      {
+        id: true,
+      },
+    ],
+  });
+
+  const preference = currentPreference.auth_xnft_preferences?.[0];
+  if (preference) {
+    await chain("mutation")({
+      update_auth_xnft_preferences: [
+        {
+          _set: {
+            notifications: preferences.notifications || false,
+            media: preferences.media || false,
+          },
+          where: { id: { _eq: preference.id } },
+        },
+        { affected_rows: true },
+      ],
+    });
+  } else {
+    await chain("mutation")({
+      insert_auth_xnft_preferences_one: [
+        {
+          object: {
+            username,
+            xnft_id: xnftId,
+            notifications: preferences.notifications || false,
+            media: preferences.media || false,
+          },
+        },
+        {
+          id: true,
+        },
+      ],
+    });
+  }
 };

@@ -1,5 +1,5 @@
 import express from "express";
-import { insertSubscription } from "./db";
+import { insertSubscription, updatePreference } from "./db";
 
 const app = express();
 const bodyParser = require("body-parser");
@@ -11,13 +11,24 @@ app.use(bodyParser.json({ type: "application/*+json" }));
 app.use(bodyParser.raw({}));
 
 app.post("/notifications/register", async (req, res) => {
-  const body = req.body;
   //TODO: Secure this
   const username = req.body.username || "";
   const publicKey = req.body.publicKey || "";
   const subscription = req.body.subscription;
 
   await insertSubscription(publicKey, username, subscription);
+
+  res.json({});
+});
+
+// TODO: Add validation using zod
+app.post("/preference", async (req, res) => {
+  //TODO: Secure this
+  const username = req.body.username || "";
+  const xnftId = req.body.xnftId;
+  const preferences = req.body.preferences;
+
+  await updatePreference(xnftId, username, preferences);
 
   res.json({});
 });
