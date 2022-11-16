@@ -16,6 +16,7 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.json({ type: "application/*+json" }));
 
+console.log(`public key is ${VAPID_PUBLIC_KEY}`);
 // parse some custom thing into a Buffer
 app.use(bodyParser.raw({}));
 const vapidKeys = {

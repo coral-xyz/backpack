@@ -276,14 +276,3 @@ jobs:
           token: ${{ secrets.NPM_ACCESS_TOKEN }}
           tag: latest
           package: packages/react-xnft-dom-renderer/package.json
-      - name: "Deploy notifications"
-        runs-on: ubuntu-latest
-        steps:
-          - uses: actions/checkout@v2
-          - uses: superfly/flyctl-actions/setup-flyctl@master
-          - run: "flyctl ssh console --command 'sh ./scripts/deploy_notifications.sh'"
-            env:
-              FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-              VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
-              VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
-
