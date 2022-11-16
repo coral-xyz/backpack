@@ -6,7 +6,7 @@ insert_permissions:
     permission:
       check: {}
       columns:
-        - id
+        - disabled
         - username
         - uuid
         - notifications
@@ -19,7 +19,7 @@ select_permissions:
         - media
         - notifications
         - xnft_id
-        - id
+        - disabled
         - username
         - uuid
       filter: {}
@@ -27,7 +27,7 @@ update_permissions:
   - role: auth_worker
     permission:
       columns:
-        - id
+        - disabled
         - media
         - notifications
         - username
