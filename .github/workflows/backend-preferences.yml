@@ -1,11 +1,11 @@
 on:
   push:
     branches: ['master']
-    paths: ['backend/native/notifications/**']
+    paths: ['backend/native/preferences/**']
 
 jobs:
   tests:
-    - name: "Deploy notifications"
+    - name: "Deploy preferences"
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v2

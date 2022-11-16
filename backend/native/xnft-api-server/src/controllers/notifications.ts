@@ -34,7 +34,7 @@ export const sendNotification = async (
   username: string,
   { title, body }: NotificationProps
 ) => {
-  // TODO: check if this xnft address has access to send push notifications to this user.
+  // TODO: check if this xnft address has access to send push preferences to this user.
   const responses = await getSubscriptions(username);
   await Promise.all(
     responses.auth_notification_subscriptions.map(async (response) => {

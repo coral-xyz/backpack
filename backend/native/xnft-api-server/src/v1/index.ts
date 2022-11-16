@@ -2,6 +2,6 @@ import express from "express";
 const router = express.Router();
 import notificationRouter from "./notifications";
 
-router.use("/notifications", notificationRouter);
+router.use("/preferences", notificationRouter);
 
 export default router;
