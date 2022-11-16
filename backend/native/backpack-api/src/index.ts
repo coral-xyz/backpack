@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.json({ type: "application/*+json" }));
 app.use(bodyParser.raw({}));
 
-app.post("/preferences/register", async (req, res) => {
+app.post("/backpack-api/register", async (req, res) => {
   //TODO: Secure this
   const username = req.body.username || "";
   const publicKey = req.body.publicKey || "";
