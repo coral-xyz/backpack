@@ -17,9 +17,6 @@ config.resolver.nodeModulesPaths = [
   path.resolve(workspaceRoot, "node_modules"),
 ];
 
-// Force Metro to resolve (sub)dependencies only from the `nodeModulesPaths`
-config.resolver.disableHierarchicalLookup = true;
-
 config.transformer = {
   ...config.transformer,
   getTransformOptions: async () => ({
@@ -52,5 +49,8 @@ const monorepoPackages = {
 // you can either add symlink support to Metro or set the `extraNodeModules` to avoid the symlinks.
 // See: https://facebook.github.io/metro/docs/configuration/#extranodemodules
 config.resolver.extraNodeModules = monorepoPackages;
+
+// Force Metro to resolve (sub)dependencies only from the `nodeModulesPaths`
+config.resolver.disableHierarchicalLookup = true;
 
 module.exports = config;
