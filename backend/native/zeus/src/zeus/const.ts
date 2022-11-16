@@ -47,6 +47,55 @@ export const AllTypesProps: Record<string, any> = {
     _set: "auth_notification_subscriptions_set_input",
     where: "auth_notification_subscriptions_bool_exp",
   },
+  auth_notifications_bool_exp: {
+    _and: "auth_notifications_bool_exp",
+    _not: "auth_notifications_bool_exp",
+    _or: "auth_notifications_bool_exp",
+    body: "String_comparison_exp",
+    id: "Int_comparison_exp",
+    image: "String_comparison_exp",
+    timestamp: "timestamptz_comparison_exp",
+    title: "String_comparison_exp",
+    username: "String_comparison_exp",
+    uuid: "String_comparison_exp",
+    xnft_id: "String_comparison_exp",
+  },
+  auth_notifications_constraint: "enum" as const,
+  auth_notifications_inc_input: {},
+  auth_notifications_insert_input: {
+    timestamp: "timestamptz",
+  },
+  auth_notifications_on_conflict: {
+    constraint: "auth_notifications_constraint",
+    update_columns: "auth_notifications_update_column",
+    where: "auth_notifications_bool_exp",
+  },
+  auth_notifications_order_by: {
+    body: "order_by",
+    id: "order_by",
+    image: "order_by",
+    timestamp: "order_by",
+    title: "order_by",
+    username: "order_by",
+    uuid: "order_by",
+    xnft_id: "order_by",
+  },
+  auth_notifications_pk_columns_input: {},
+  auth_notifications_select_column: "enum" as const,
+  auth_notifications_set_input: {},
+  auth_notifications_stream_cursor_input: {
+    initial_value: "auth_notifications_stream_cursor_value_input",
+    ordering: "cursor_ordering",
+  },
+  auth_notifications_stream_cursor_value_input: {
+    timestamp: "timestamptz",
+  },
+  auth_notifications_update_column: "enum" as const,
+  auth_notifications_updates: {
+    _inc: "auth_notifications_inc_input",
+    _set: "auth_notifications_set_input",
+    where: "auth_notifications_bool_exp",
+  },
   auth_publickeys_bool_exp: {
     _and: "auth_publickeys_bool_exp",
     _not: "auth_publickeys_bool_exp",
@@ -214,6 +263,7 @@ export const AllTypesProps: Record<string, any> = {
     _not: "auth_xnft_preferences_bool_exp",
     _or: "auth_xnft_preferences_bool_exp",
     disabled: "String_comparison_exp",
+    id: "Int_comparison_exp",
     media: "Boolean_comparison_exp",
     notifications: "Boolean_comparison_exp",
     username: "String_comparison_exp",
@@ -221,6 +271,7 @@ export const AllTypesProps: Record<string, any> = {
     xnft_id: "String_comparison_exp",
   },
   auth_xnft_preferences_constraint: "enum" as const,
+  auth_xnft_preferences_inc_input: {},
   auth_xnft_preferences_insert_input: {},
   auth_xnft_preferences_on_conflict: {
     constraint: "auth_xnft_preferences_constraint",
@@ -229,12 +280,14 @@ export const AllTypesProps: Record<string, any> = {
   },
   auth_xnft_preferences_order_by: {
     disabled: "order_by",
+    id: "order_by",
     media: "order_by",
     notifications: "order_by",
     username: "order_by",
     uuid: "order_by",
     xnft_id: "order_by",
   },
+  auth_xnft_preferences_pk_columns_input: {},
   auth_xnft_preferences_select_column: "enum" as const,
   auth_xnft_preferences_set_input: {},
   auth_xnft_preferences_stream_cursor_input: {
@@ -244,6 +297,7 @@ export const AllTypesProps: Record<string, any> = {
   auth_xnft_preferences_stream_cursor_value_input: {},
   auth_xnft_preferences_update_column: "enum" as const,
   auth_xnft_preferences_updates: {
+    _inc: "auth_xnft_preferences_inc_input",
     _set: "auth_xnft_preferences_set_input",
     where: "auth_xnft_preferences_bool_exp",
   },
@@ -302,6 +356,7 @@ export const AllTypesProps: Record<string, any> = {
     delete_auth_xnft_preferences: {
       where: "auth_xnft_preferences_bool_exp",
     },
+    delete_auth_xnft_preferences_by_pk: {},
     insert_auth_notification_subscriptions: {
       objects: "auth_notification_subscriptions_insert_input",
       on_conflict: "auth_notification_subscriptions_on_conflict",
@@ -309,6 +364,14 @@ export const AllTypesProps: Record<string, any> = {
     insert_auth_notification_subscriptions_one: {
       object: "auth_notification_subscriptions_insert_input",
       on_conflict: "auth_notification_subscriptions_on_conflict",
+    },
+    insert_auth_notifications: {
+      objects: "auth_notifications_insert_input",
+      on_conflict: "auth_notifications_on_conflict",
+    },
+    insert_auth_notifications_one: {
+      object: "auth_notifications_insert_input",
+      on_conflict: "auth_notifications_on_conflict",
     },
     insert_auth_publickeys_history: {
       objects: "auth_publickeys_history_insert_input",
@@ -355,6 +418,19 @@ export const AllTypesProps: Record<string, any> = {
     update_auth_notification_subscriptions_many: {
       updates: "auth_notification_subscriptions_updates",
     },
+    update_auth_notifications: {
+      _inc: "auth_notifications_inc_input",
+      _set: "auth_notifications_set_input",
+      where: "auth_notifications_bool_exp",
+    },
+    update_auth_notifications_by_pk: {
+      _inc: "auth_notifications_inc_input",
+      _set: "auth_notifications_set_input",
+      pk_columns: "auth_notifications_pk_columns_input",
+    },
+    update_auth_notifications_many: {
+      updates: "auth_notifications_updates",
+    },
     update_auth_stripe_onramp: {
       _inc: "auth_stripe_onramp_inc_input",
       _set: "auth_stripe_onramp_set_input",
@@ -380,8 +456,14 @@ export const AllTypesProps: Record<string, any> = {
       updates: "auth_users_updates",
     },
     update_auth_xnft_preferences: {
+      _inc: "auth_xnft_preferences_inc_input",
       _set: "auth_xnft_preferences_set_input",
       where: "auth_xnft_preferences_bool_exp",
+    },
+    update_auth_xnft_preferences_by_pk: {
+      _inc: "auth_xnft_preferences_inc_input",
+      _set: "auth_xnft_preferences_set_input",
+      pk_columns: "auth_xnft_preferences_pk_columns_input",
     },
     update_auth_xnft_preferences_many: {
       updates: "auth_xnft_preferences_updates",
@@ -395,6 +477,12 @@ export const AllTypesProps: Record<string, any> = {
       where: "auth_notification_subscriptions_bool_exp",
     },
     auth_notification_subscriptions_by_pk: {},
+    auth_notifications: {
+      distinct_on: "auth_notifications_select_column",
+      order_by: "auth_notifications_order_by",
+      where: "auth_notifications_bool_exp",
+    },
+    auth_notifications_by_pk: {},
     auth_publickeys: {
       distinct_on: "auth_publickeys_select_column",
       order_by: "auth_publickeys_order_by",
@@ -429,6 +517,7 @@ export const AllTypesProps: Record<string, any> = {
       order_by: "auth_xnft_preferences_order_by",
       where: "auth_xnft_preferences_bool_exp",
     },
+    auth_xnft_preferences_by_pk: {},
     invitations: {
       distinct_on: "invitations_select_column",
       order_by: "invitations_order_by",
@@ -450,6 +539,16 @@ export const AllTypesProps: Record<string, any> = {
     auth_notification_subscriptions_stream: {
       cursor: "auth_notification_subscriptions_stream_cursor_input",
       where: "auth_notification_subscriptions_bool_exp",
+    },
+    auth_notifications: {
+      distinct_on: "auth_notifications_select_column",
+      order_by: "auth_notifications_order_by",
+      where: "auth_notifications_bool_exp",
+    },
+    auth_notifications_by_pk: {},
+    auth_notifications_stream: {
+      cursor: "auth_notifications_stream_cursor_input",
+      where: "auth_notifications_bool_exp",
     },
     auth_publickeys: {
       distinct_on: "auth_publickeys_select_column",
@@ -501,6 +600,7 @@ export const AllTypesProps: Record<string, any> = {
       order_by: "auth_xnft_preferences_order_by",
       where: "auth_xnft_preferences_bool_exp",
     },
+    auth_xnft_preferences_by_pk: {},
     auth_xnft_preferences_stream: {
       cursor: "auth_xnft_preferences_stream_cursor_input",
       where: "auth_xnft_preferences_bool_exp",
@@ -562,6 +662,20 @@ export const ReturnTypes: Record<string, any> = {
     affected_rows: "Int",
     returning: "auth_notification_subscriptions",
   },
+  auth_notifications: {
+    body: "String",
+    id: "Int",
+    image: "String",
+    timestamp: "timestamptz",
+    title: "String",
+    username: "String",
+    uuid: "String",
+    xnft_id: "String",
+  },
+  auth_notifications_mutation_response: {
+    affected_rows: "Int",
+    returning: "auth_notifications",
+  },
   auth_publickeys: {
     blockchain: "String",
     publickey: "String",
@@ -614,6 +728,7 @@ export const ReturnTypes: Record<string, any> = {
   },
   auth_xnft_preferences: {
     disabled: "String",
+    id: "Int",
     media: "Boolean",
     notifications: "Boolean",
     username: "String",
@@ -652,10 +767,13 @@ export const ReturnTypes: Record<string, any> = {
     delete_auth_notification_subscriptions_by_pk:
       "auth_notification_subscriptions",
     delete_auth_xnft_preferences: "auth_xnft_preferences_mutation_response",
+    delete_auth_xnft_preferences_by_pk: "auth_xnft_preferences",
     insert_auth_notification_subscriptions:
       "auth_notification_subscriptions_mutation_response",
     insert_auth_notification_subscriptions_one:
       "auth_notification_subscriptions",
+    insert_auth_notifications: "auth_notifications_mutation_response",
+    insert_auth_notifications_one: "auth_notifications",
     insert_auth_publickeys_history: "auth_publickeys_history_mutation_response",
     insert_auth_publickeys_history_one: "auth_publickeys_history",
     insert_auth_stripe_onramp: "auth_stripe_onramp_mutation_response",
@@ -670,6 +788,9 @@ export const ReturnTypes: Record<string, any> = {
       "auth_notification_subscriptions",
     update_auth_notification_subscriptions_many:
       "auth_notification_subscriptions_mutation_response",
+    update_auth_notifications: "auth_notifications_mutation_response",
+    update_auth_notifications_by_pk: "auth_notifications",
+    update_auth_notifications_many: "auth_notifications_mutation_response",
     update_auth_stripe_onramp: "auth_stripe_onramp_mutation_response",
     update_auth_stripe_onramp_by_pk: "auth_stripe_onramp",
     update_auth_stripe_onramp_many: "auth_stripe_onramp_mutation_response",
@@ -677,12 +798,15 @@ export const ReturnTypes: Record<string, any> = {
     update_auth_users_by_pk: "auth_users",
     update_auth_users_many: "auth_users_mutation_response",
     update_auth_xnft_preferences: "auth_xnft_preferences_mutation_response",
+    update_auth_xnft_preferences_by_pk: "auth_xnft_preferences",
     update_auth_xnft_preferences_many:
       "auth_xnft_preferences_mutation_response",
   },
   query_root: {
     auth_notification_subscriptions: "auth_notification_subscriptions",
     auth_notification_subscriptions_by_pk: "auth_notification_subscriptions",
+    auth_notifications: "auth_notifications",
+    auth_notifications_by_pk: "auth_notifications",
     auth_publickeys: "auth_publickeys",
     auth_publickeys_history: "auth_publickeys_history",
     auth_stripe_onramp: "auth_stripe_onramp",
@@ -691,6 +815,7 @@ export const ReturnTypes: Record<string, any> = {
     auth_users_aggregate: "auth_users_aggregate",
     auth_users_by_pk: "auth_users",
     auth_xnft_preferences: "auth_xnft_preferences",
+    auth_xnft_preferences_by_pk: "auth_xnft_preferences",
     invitations: "invitations",
     invitations_aggregate: "invitations_aggregate",
   },
@@ -698,6 +823,9 @@ export const ReturnTypes: Record<string, any> = {
     auth_notification_subscriptions: "auth_notification_subscriptions",
     auth_notification_subscriptions_by_pk: "auth_notification_subscriptions",
     auth_notification_subscriptions_stream: "auth_notification_subscriptions",
+    auth_notifications: "auth_notifications",
+    auth_notifications_by_pk: "auth_notifications",
+    auth_notifications_stream: "auth_notifications",
     auth_publickeys: "auth_publickeys",
     auth_publickeys_history: "auth_publickeys_history",
     auth_publickeys_history_stream: "auth_publickeys_history",
@@ -710,6 +838,7 @@ export const ReturnTypes: Record<string, any> = {
     auth_users_by_pk: "auth_users",
     auth_users_stream: "auth_users",
     auth_xnft_preferences: "auth_xnft_preferences",
+    auth_xnft_preferences_by_pk: "auth_xnft_preferences",
     auth_xnft_preferences_stream: "auth_xnft_preferences",
     invitations: "invitations",
     invitations_aggregate: "invitations_aggregate",
