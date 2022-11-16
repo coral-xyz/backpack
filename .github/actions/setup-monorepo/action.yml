@@ -1,0 +1,52 @@
+name: Setup Monorepo
+description: Prepare and install everything for the monorepo
+
+inputs:
+  node-version:
+    description: Version of Node to use
+    default: 18.x
+
+  eas-version:
+    description: Version of EAS CLI to use
+    default: latest
+
+  expo-version:
+    description: Version of Expo CLI to use
+    default: latest
+
+  expo-token:
+    description: Expo token to authenticate with
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: 🏗 Setup pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: ${{ inputs.pnpm-version }}
+
+    - name: 🏗 Setup Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: yarn
+
+    - name: 🏗 Setup Expo
+      uses: expo/expo-github-action@v7
+      with:
+        eas-version: ${{ inputs.eas-version }}
+        expo-version: ${{ inputs.expo-version }}
+        token: ${{ inputs.expo-token }}
+
+    - name: 📦 Install dependencies
+      run: yarn install
+      shell: bash
+
+    - name: ♻️ Restore cache
+      uses: actions/cache@v3
+      with:
+        path: node_modules/.cache/turbo
+        key: turbo-${{ runner.os }}-${{ github.job }}-${{ github.sha }}
+        restore-keys: |
+          turbo-${{ runner.os }}-${{ github.job }}

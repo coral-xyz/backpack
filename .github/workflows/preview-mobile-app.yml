@@ -1,0 +1,34 @@
+name: preview
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  mobile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🏗 Setup repository
+        uses: actions/checkout@v3
+
+      - name: 🏗 Setup monorepo
+        uses: ./.github/actions/setup-monorepo
+        with:
+          expo-token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 👷 Build packages
+        run: yarn build
+
+      - name: 🚀 Publish preview
+        working-directory: packages/app-mobile
+        run: expo publish --release-channel=pr-${{ github.event.number }}
+
+      - name: 💬 Comment preview
+        uses: expo/expo-github-action/preview-comment@v7
+        with:
+          project: packages/app-mobile
+          channel: pr-${{ github.event.number }}
