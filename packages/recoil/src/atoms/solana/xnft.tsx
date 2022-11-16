@@ -192,9 +192,9 @@ export const xnfts = atom({
             // HACK: hide autoinstalled ONE xnft -> entrypoint in collectibles.
             xnft.install.account.xnft.toString() !==
               "4ekUZj2TKNoyCwnRDstvViCZYkhnhNoWNQpa5bBLwhq4" &&
-            // @ts-ignore
             // HACK: hide autoinstalled Explorer xnft if not in devmode
             (developerMode ||
+              // @ts-ignore
               xnft.install.account.xnft.toString() !==
                 "3Db1fHHc2TGrCpBWnu6ZzdQd5pSoyGCmnh6nopNjv4P2")
         );
