@@ -28,7 +28,6 @@ export default async function getReviewTransaction(
     throw new Error("Must have an active installation to review an xNFT");
   }
   const uri = await uploadComment(xnftPubkey, author, comment);
-  console.log(uri, rating, install, xnftPubkey, xnft.token.publicKey);
   const tx = await program.methods
     .createReview(uri, rating)
     .accounts({

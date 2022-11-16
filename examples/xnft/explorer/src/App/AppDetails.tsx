@@ -144,14 +144,14 @@ function AppDetails({ app }: { app: XnftWithMetadata }) {
         </View>
       </View>
       {selectedTab === "Screenshots" && (
-        <View tw="flex flex-col items-center gap-6 px-4 py-2 max-w-md text-lg font-medium text-[#99A4B4] ">
+        <View tw="flex flex-row flex-wrap items-center gap-6 px-4 py-2 max-w-md text-lg font-medium text-[#99A4B4] ">
           {app.json.properties.files.map((file) => {
             return (
               <Image
                 key={file.uri}
-                tw="rounded-lg w-full"
+                tw="rounded-lg w-[158px]"
                 style={{
-                  boxShadow: "0 0 8px rgba(255, 255, 255, 0.2)",
+                  boxShadow: "0 0 4px rgba(255, 255, 255, 0.2)",
                 }}
                 src={getGatewayUri(file.uri)}
               />

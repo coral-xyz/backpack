@@ -1,3 +1,4 @@
+import React from "react";
 import { View, Text } from "react-xnft";
 import StarIcon from "./Icons/StarIcon";
 
