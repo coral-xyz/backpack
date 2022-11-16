@@ -21,8 +21,8 @@
     "react-reconciler": "^0.26.0"
   },
   "peerDependencies": {
-    "react-native": "^0.70.6",
-    "react-native-web": "^0.18.10"
+    "react-native": "*",
+    "react-native-web": "*"
   },
   "devDependencies": {
     "typescript": "^4.6.3"
