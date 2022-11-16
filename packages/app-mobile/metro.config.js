@@ -11,9 +11,6 @@ const config = getDefaultConfig(projectRoot);
 // Watch all files in the monorepo
 config.watchFolders = [workspaceRoot];
 
-// Force resolving nested modules to the folders below (which DOES NOT work for us right now)
-// config.resolver.disableHierarchicalLookup = true;
-
 // Try resolving with project modules first, then workspace modules
 config.resolver.nodeModulesPaths = [
   path.resolve(projectRoot, "node_modules"),
