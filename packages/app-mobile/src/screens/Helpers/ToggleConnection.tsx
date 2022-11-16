@@ -1,11 +1,9 @@
 import { UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE } from "@coral-xyz/common";
 import { useBackgroundClient, useSolanaConnectionUrl } from "@coral-xyz/recoil";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-native";
 
 export const ToggleConnection = () => {
   const background = useBackgroundClient();
-  const navigate = useNavigate();
   const connectionUrl = useSolanaConnectionUrl();
 
   useEffect(() => {
@@ -20,7 +18,6 @@ export const ToggleConnection = () => {
       })
       .then(() => {
         console.log({ connectionUrl });
-        navigate("/");
       })
       .catch(console.error);
   }, []);
