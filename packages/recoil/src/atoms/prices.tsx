@@ -32,7 +32,13 @@ export const priceData = atomFamily<TokenDisplay | null, string>({
       },
   }),
 });
-//
+
+// TODO move this to a remote API so it can be updated without updating
+// the app
+const coingeckoIdOverride = {
+  DUSTawucrTsGU8hcqRdHDCbuYhCPADMLM2VcCb8VnFnQ: "dust-protocol",
+};
+
 // Map of SPL mint addresses to Coingecko ID
 export const splMintsToCoingeckoId = equalSelector({
   key: "splMintsToCoingeckoId",
@@ -45,6 +51,11 @@ export const splMintsToCoingeckoId = equalSelector({
     const tokenRegistry = get(splTokenRegistry);
     return [...splTokenAccounts.values()].reduce((acc, splTokenAccount) => {
       const mint = splTokenAccount.mint.toString();
+      // Use override if one is available
+      if (coingeckoIdOverride[mint]) {
+        acc.set(mint, coingeckoIdOverride[mint]);
+        return acc;
+      }
       const tokenInfo = tokenRegistry.get(mint);
       if (
         tokenInfo &&
