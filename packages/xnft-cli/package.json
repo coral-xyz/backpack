@@ -10,7 +10,9 @@
   ],
   "scripts": {
     "prebuild": "cd ../../examples/xnft/iframe && npm run build && cd ../../../packages/common && npm run build && cd ../react-xnft-dom-renderer && npm run build",
-    "build": "shx cp ../../examples/xnft/iframe/dist/index.js iframe.js && shx cp ../react-xnft-dom-renderer/dist/index.js renderer.js"
+    "build": "shx cp ../../examples/xnft/iframe/dist/index.js iframe.js && shx cp ../react-xnft-dom-renderer/dist/index.js renderer.js",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "yarn run lint --fix"
   },
   "browserslist": [
     "last 1 chrome version",

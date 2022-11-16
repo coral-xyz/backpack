@@ -9,6 +9,8 @@
     "build": "tsc",
     "build:html": "parcel build src/service-worker-loader.html --dist-dir build --no-source-maps",
     "dev": "tsc --watch",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "yarn run lint --fix",
     "start": "parcel src/service-worker-loader.html -p 9333"
   },
   "dependencies": {

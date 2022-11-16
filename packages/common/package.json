@@ -9,6 +9,8 @@
   "scripts": {
     "build": "./scripts/config.sh && tsc && tsc-alias && tsc -p tsconfig.rn.json",
     "dev": "tsc --watch",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "yarn run lint --fix",
     "start": "yarn build"
   },
   "dependencies": {

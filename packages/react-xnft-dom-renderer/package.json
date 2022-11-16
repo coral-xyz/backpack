@@ -10,7 +10,9 @@
     "dist"
   ],
   "scripts": {
-    "build": "parcel build src/index.tsx --dist-dir dist"
+    "build": "parcel build src/index.tsx --dist-dir dist",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "yarn run lint --fix"
   },
   "dependencies": {
     "@coral-xyz/common": "*",
