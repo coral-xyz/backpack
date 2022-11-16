@@ -94,31 +94,33 @@ function AppDetails({ app }: { app: XnftWithMetadata }) {
               {app.account.totalInstalls.toNumber()}
             </Text>
           </View>
-          <View tw="flex items-center gap-4">
-            {!installed ? (
-              <Button
-                onClick={() => install()}
-                tw="flex items-center gap-2.5 bg-white py-2 text-[#374151] px-3 rounded text-xs font-medium tracking-wide"
-              >
-                {price === 0 ? "Free" : `${price / LAMPORTS_PER_SOL} SOL`}
-                {!installed && <InstallIcon size={16} color={"#374151"} />}
-              </Button>
-            ) : (
-              <>
-                <Button tw="rounded bg-[#27272A] px-3 rounded text-xs font-medium tracking-wide">
-                  Installed
-                </Button>
+          {!app.account.suspended && (
+            <View tw="flex items-center gap-4">
+              {!installed ? (
                 <Button
-                  onClick={() => {
-                    nav.push("review", { app });
-                  }}
+                  onClick={() => install()}
                   tw="flex items-center gap-2.5 bg-white py-2 text-[#374151] px-3 rounded text-xs font-medium tracking-wide"
                 >
-                  {"Add Review"}
+                  {price === 0 ? "Free" : `${price / LAMPORTS_PER_SOL} SOL`}
+                  {!installed && <InstallIcon size={16} color={"#374151"} />}
                 </Button>
-              </>
-            )}
-          </View>
+              ) : (
+                <>
+                  <Button tw="rounded bg-[#27272A] px-3 rounded text-xs font-medium tracking-wide">
+                    Installed
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      nav.push("review", { app });
+                    }}
+                    tw="flex items-center gap-2.5 bg-white py-2 text-[#374151] px-3 rounded text-xs font-medium tracking-wide"
+                  >
+                    {"Add Review"}
+                  </Button>
+                </>
+              )}
+            </View>
+          )}
         </View>
       </View>
       <View tw="px-4 py-2 max-w-md text-lg font-medium text-[#99A4B4]">
