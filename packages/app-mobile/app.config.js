@@ -1,6 +1,10 @@
 const projectID = "55bf074d-0473-4e61-9d9d-ecf570704635";
 const packageName = "peterpme.coral.backpack";
 
+const WEBWORKER_URL =
+  "https://coral-xyz.github.io/backpack/background-scripts/17e6a436/service-worker-loader.html";
+// process.env.WEBWORKER_URL;
+
 export default {
   name: "Backpack",
   slug: "backpack",
@@ -16,6 +20,10 @@ export default {
   },
   updates: {
     fallbackToCacheTimeout: 0,
+    url: "https://u.expo.dev/" + projectID,
+  },
+  runtimeVersion: {
+    policy: "sdkVersion",
   },
   assetBundlePatterns: ["**/*"],
   ios: {
@@ -36,7 +44,7 @@ export default {
     favicon: "./assets/favicon.png",
   },
   extra: {
-    url: process.env.WEBWORKER_URL,
+    url: WEBWORKER_URL,
     eas: {
       projectId: projectID,
     },
