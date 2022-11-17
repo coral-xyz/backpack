@@ -4,7 +4,7 @@ import { Skeleton, Grid, Button, Typography } from "@mui/material";
 import { styles, useCustomTheme, HOVER_OPACITY } from "@coral-xyz/themes";
 import { Block as BlockIcon } from "@mui/icons-material";
 import {
-  filteredPlugins as pluginsAtom,
+  filteredPlugins,
   useLoader,
   useActiveWallets,
   useBackgroundClient,
@@ -79,7 +79,7 @@ function PluginGrid() {
   const activeWallets = useActiveWallets();
 
   const [plugins, _, isLoading] = useLoader(
-    pluginsAtom,
+    filteredPlugins,
     [],
     // Note this reloads on any change to the active wallets, which reloads
     // NFTs for both blockchains.
