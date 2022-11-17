@@ -11,7 +11,7 @@
     "web"
   ],
   "scripts": {
-    "lint": "turbo run lint -- --cache",
+    "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix",
     "prepare": "husky install",
     "start": "env-cmd --silent turbo run start --concurrency=100% --filter=./packages/*",
