@@ -1,0 +1,50 @@
+name: Setup Monorepo
+description: Prepare and install everything for the monorepo
+
+inputs:
+  eas-version:
+    description: Version of EAS CLI to use
+    default: latest
+
+  expo-token:
+    description: Expo token to authenticate with
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: 🏗 Setup Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+
+    # - uses: actions/cache@v3
+    #   name: yarn-cache
+    #   id: yarn-cache
+    #   with:
+    #     path: |
+    #       **/node_modules
+    #       ${{ steps.yarn-cache-dir-path.outputs.dir }}
+    #       !**/node_modules/.cache
+    #     key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+    #     restore-keys: |
+    #       ${{ runner.os }}-yarn
+
+    - name: 🏗 Setup Expo
+      uses: expo/expo-github-action@v7
+      with:
+        eas-version: ${{ inputs.eas-version }}
+        # expo-version: ${{ inputs.expo-version }}
+        token: ${{ inputs.expo-token }}
+
+    - name: 📦 Install dependencies
+      run: yarn install --frozen-lockfile --prefer-offline
+      shell: bash
+
+    # - name: ♻️ Restore cache
+    #   uses: actions/cache@v3
+    #   with:
+    #     path: node_modules/.cache/turbo
+    #     key: turbo-${{ runner.os }}-${{ github.job }}-${{ github.sha }}
+    #     restore-keys: |
+    #       turbo-${{ runner.os }}-${{ github.job }}

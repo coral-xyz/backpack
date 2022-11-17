@@ -21,18 +21,21 @@ import {
 import { xnftUrl } from "../../atoms/solana/xnft";
 
 export function useAppIcons() {
-  const xnftLoadable = useRecoilValueLoadable(atoms.xnfts);
+  const xnftLoadable = useRecoilValueLoadable(atoms.filteredPlugins);
   const xnftData =
     xnftLoadable.state === "hasValue"
       ? (xnftLoadable.contents as Array<any>)
       : [];
-  const pluginData = useRecoilValue(atoms.plugins);
-  return xnftData.concat(pluginData);
+  return xnftData;
 }
 
 export function usePlugins(): Array<Plugin> {
-  const pluginData = useAppIcons();
-  return pluginData.map((p) => getPlugin(p));
+  const xnftLoadable = useRecoilValueLoadable(atoms.plugins);
+  const xnftData =
+    xnftLoadable.state === "hasValue"
+      ? (xnftLoadable.contents as Array<any>)
+      : [];
+  return xnftData.map((p) => getPlugin(p));
 }
 
 export function usePluginUrl(address?: string) {

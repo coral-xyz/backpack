@@ -27,7 +27,7 @@ export async function fetchXnfts(
     },
   ]);
 
-  /// HACK to get ONE nft installed for everyone
+  /// HACK to get ONE xNft installed for everyone
   xnftInstalls.push({
     // @ts-ignore
     publicKey: "4ekUZj2TKNoyCwnRDstvViCZYkhnhNoWNQpa5bBLwhq4",
@@ -37,6 +37,21 @@ export async function fetchXnfts(
       xnft: new PublicKey("4ekUZj2TKNoyCwnRDstvViCZYkhnhNoWNQpa5bBLwhq4"),
       masterMetadata: new PublicKey(
         "C8ueTF7B2ozbGvAqtqwanEiGspgEeENFMywgLxXd6egB"
+      ),
+      edition: new anchor.BN("00"),
+      reserved: Array(64).fill(0),
+    },
+  });
+  /// HACK to get Explorer xNft installed for everyone
+  xnftInstalls.push({
+    // @ts-ignore
+    publicKey: "3Db1fHHc2TGrCpBWnu6ZzdQd5pSoyGCmnh6nopNjv4P2",
+    // @ts-ignore
+    account: {
+      authority: new PublicKey("HXARdDiJorDgC69UDPUjwyt2XKbpziBFPrJNhf2NSXBe"),
+      xnft: new PublicKey("3Db1fHHc2TGrCpBWnu6ZzdQd5pSoyGCmnh6nopNjv4P2"),
+      masterMetadata: new PublicKey(
+        "Bz634AWvoBUmSkQ3ZJwi3iiLv5HCzgm5LeSFBiB4C3eR"
       ),
       edition: new anchor.BN("00"),
       reserved: Array(64).fill(0),

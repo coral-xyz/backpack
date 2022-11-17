@@ -28,6 +28,7 @@
   },
   "devDependencies": {
     "eslint-config-custom": "*",
+    "@coral-xyz/xnft-cli": "*",
     "typescript": "^4.6.3"
   },
   "peerDependencies": {

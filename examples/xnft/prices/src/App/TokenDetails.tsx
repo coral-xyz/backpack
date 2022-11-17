@@ -224,7 +224,6 @@ function TokenDetails(props: Props & StateProps) {
             display: "flex",
             flexGrow: "1",
             flexDirection: "column",
-            flexStart: "start",
             padding: "8px",
           }}
         >
@@ -246,7 +245,6 @@ function TokenDetails(props: Props & StateProps) {
             display: "flex",
             flexGrow: "1",
             flexDirection: "column",
-            flexStart: "start",
             padding: "8px",
           }}
         >
