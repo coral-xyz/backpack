@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { PermissionsPage } from "./PermissionsPage";
-import { NOTIFICATION_SERVER_URL } from "@coral-xyz/common";
+import { BACKEND_API_URL } from "@coral-xyz/common";
 import { useUsername } from "@coral-xyz/recoil";
 
 const BACKPACK_NOTIFICATION_PUBKEY =
@@ -34,16 +34,13 @@ export const NotificationPermissions = () => {
   };
 
   const saveSubscription = async (subscription: any) => {
-    const response = await fetch(
-      `${NOTIFICATION_SERVER_URL}/notifications/register`,
-      {
-        method: "post",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ subscription, username: username || "kira" }),
-      }
-    );
+    const response = await fetch(`${BACKEND_API_URL}/notifications/register`, {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ subscription, username: username || "kira" }),
+    });
     return response.json();
   };
 

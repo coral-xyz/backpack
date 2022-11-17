@@ -36,10 +36,17 @@ app.post("/preference", async (req, res) => {
 
 app.get("/notifications", async (req, res) => {
   // @TODO: secure this
-  const username = req.body.username;
-  const limit = req.body.limit || 10;
-  const offset = req.body.offset || 0;
-  const notifications = await getNotifications(username, offset, limit);
+  //@ts-ignore
+  const username: string = req.query.username;
+  //@ts-ignore
+  const limit: string = req.query.limit || 10;
+  //@ts-ignore
+  const offset: string = req.query.offset || 0;
+  const notifications = await getNotifications(
+    username,
+    parseInt(offset),
+    parseInt(limit)
+  );
   res.json({ notifications });
 });
 

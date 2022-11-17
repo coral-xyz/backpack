@@ -88,6 +88,7 @@ import { PreferenceSolanaCustomRpcUrl } from "./Preferences/Solana/CustomRpcUrl"
 import { PreferenceEthereumCustomRpcUrl } from "./Preferences/Ethereum/CustomRpcUrl";
 import WaitingRoom from "../../common/WaitingRoom";
 import { TextInput } from "../../common/Inputs";
+import { NotificationButton } from "../Balances/Notifications";
 
 const useStyles = styles((theme) => ({
   addConnectWalletLabel: {
@@ -136,6 +137,7 @@ export function SettingsButton() {
   return (
     <div style={{ display: "flex" }}>
       <RecentActivityButton />
+      <NotificationButton />
       <div style={{ width: "16px" }} />
       <AvatarButton />
     </div>

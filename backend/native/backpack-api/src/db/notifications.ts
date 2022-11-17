@@ -1,5 +1,5 @@
 import { Chain } from "@coral-xyz/zeus";
-import { HASURA_URL, JWT } from "./config";
+import { HASURA_URL, JWT } from "../config";
 
 const chain = Chain(HASURA_URL, {
   headers: {
@@ -15,7 +15,7 @@ export const getNotifications = async (
   const response = await chain("query")({
     auth_notifications: [
       {
-        where: { username: username },
+        where: { username: { _eq: username } },
         limit,
         offset,
       },

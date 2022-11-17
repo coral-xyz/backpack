@@ -1,4 +1,4 @@
-import { NOTIFICATION_SERVER_URL } from "@coral-xyz/common";
+import { BACKEND_API_URL } from "@coral-xyz/common";
 
 export const initPushNotificationHandlers = () => {
   self.addEventListener("push", function (event) {
@@ -12,7 +12,7 @@ export const initPushNotificationHandlers = () => {
   });
 
   self.addEventListener("pushsubscriptionchange", function (event) {
-    const SERVER_URL = `${NOTIFICATION_SERVER_URL}/notifications/register`;
+    const SERVER_URL = `${BACKEND_API_URL}/notifications/register`;
     event.waitUntil(
       fetch(SERVER_URL, {
         method: "post",
