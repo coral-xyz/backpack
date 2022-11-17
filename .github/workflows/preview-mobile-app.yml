@@ -13,7 +13,7 @@ concurrency:
 jobs:
   mobile:
     name: Preview App
-    timeout-minutes: 15
+    timeout-minutes: 40
     runs-on: ubuntu-latest
     steps:
       # Checkout must come before a custom action
