@@ -1,16 +1,12 @@
-import { AppRegistry } from "react-native-web";
+import { AppRegistry } from "react-native";
 
-export function RegisterNativeXnft(
-  name: string,
-  componentProvider: () => () => JSX.Element
-) {
+export function RunNativeXnft(appRegistry: typeof AppRegistry) {
   // hide legacy react-xnft container
-  document.getElementById("container")!.style.display = "none";
+  document.getElementById("container") &&
+    (document.getElementById("container")!.style.display = "none");
   document.getElementById("native-container")!.style.display = "flex";
 
-  AppRegistry.registerComponent(name, componentProvider);
-
-  AppRegistry.runApplication(name, {
+  appRegistry.runApplication("xNFT", {
     rootTag: document.getElementById("native-container"),
   });
 }

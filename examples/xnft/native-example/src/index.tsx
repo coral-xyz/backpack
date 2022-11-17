@@ -1,4 +1,7 @@
 import App from "./App";
-import { RegisterNativeXnft } from "react-xnft";
+import { RunNativeXnft } from "react-xnft";
+import { AppRegistry } from "react-native";
 
-RegisterNativeXnft("xNFT", () => App);
+AppRegistry.registerComponent("xNFT", () => App);
+
+RunNativeXnft(AppRegistry);

@@ -11,9 +11,9 @@
     "@types/react-native": "^0.70.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-xnft": "*",
     "react-native": "^0.70.5",
     "react-native-web": "^0.18.10",
+    "react-xnft": "*",
     "recoil": "0.7.5",
     "twrnc": "^3.4.1"
   }
