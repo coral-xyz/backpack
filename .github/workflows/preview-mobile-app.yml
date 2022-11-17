@@ -1,0 +1,50 @@
+name: preview
+
+on:
+  pull_request:
+    paths:
+      - "packages/app-mobile/**"
+    types: [opened, synchronize]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  mobile:
+    name: Preview App
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout must come before a custom action
+      - name: 🏗 Setup repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: 🏗 Setup monorepo
+        uses: ./.github/actions/setup-monorepo
+        with:
+          expo-token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 👷 Build packages (edge)
+        env:
+          BACKPACK_CONFIG_VERSION: "${{ env.RELEASE_PREFIX }}-latest-edge-${{ github.run_number }}"
+          BACKPACK_CONFIG_LOG_LEVEL: "info"
+          BACKPACK_FEATURE_LIGHT_MODE: "true"
+          BACKPACK_FEATURE_POP_MODE: "true"
+          BACKPACK_FEATURE_MULTICHAIN: "true"
+          BACKPACK_FEATURE_XNFT: "true"
+          # CI!=true so that build warnings aren't treated like errors (for now)
+          CI: ""
+        run: yarn build
+
+      - name: 🚀 Publish preview
+        working-directory: packages/app-mobile
+        run: eas update --branch preview --message=pr-${{ github.event.number }}
+
+      - name: 💬 Comment preview
+        uses: expo/expo-github-action/preview-comment@v7
+        with:
+          project: packages/app-mobile
+          channel: pr-${{ github.event.number }}
