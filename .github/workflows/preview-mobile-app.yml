@@ -32,7 +32,7 @@ jobs:
 
       - name: 🚀 Publish preview
         working-directory: packages/app-mobile
-        run: expo publish --release-channel=pr-${{ github.event.number }}
+        run: eas update --branch preview --message=pr-${{ github.event.number }}
 
       - name: 💬 Comment preview
         uses: expo/expo-github-action/preview-comment@v7

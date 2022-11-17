@@ -6,10 +6,6 @@ inputs:
     description: Version of EAS CLI to use
     default: latest
 
-  expo-version:
-    description: Version of Expo CLI to use
-    default: latest
-
   expo-token:
     description: Expo token to authenticate with
     required: false
@@ -38,7 +34,7 @@ runs:
       uses: expo/expo-github-action@v7
       with:
         eas-version: ${{ inputs.eas-version }}
-        expo-version: ${{ inputs.expo-version }}
+        # expo-version: ${{ inputs.expo-version }}
         token: ${{ inputs.expo-token }}
 
     - name: 📦 Install dependencies
