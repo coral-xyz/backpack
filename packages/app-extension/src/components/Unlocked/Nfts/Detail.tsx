@@ -518,10 +518,10 @@ function BurnConfirmationCard({
   const [error, setError] = useState<Error | null>(null);
   const solanaCtx = useSolanaCtx();
   const blockchain = Blockchain.SOLANA;
+
   const token = {
-    address: nft.publicKey,
-    logo: nft.imageUrl,
-    mint: nft.mint,
+    logo: nft ? nft.imageUrl : "",
+    mint: nft ? nft.mint : "",
     decimals: 0,
   };
 
