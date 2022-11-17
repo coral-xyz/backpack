@@ -35,14 +35,13 @@ export const updateRemotePreference = (
   username: string,
   preferences: { notifications: boolean }
 ) => {
-  return new Promise((resolve) => {
-    fetch(`${BACKEND_API_URL}/preference`, {
-      method: "POST",
-      body: JSON.stringify({
-        username,
-        xnftId: xnftId,
-        preferences,
-      }),
-    });
+  return fetch(`${BACKEND_API_URL}/preference`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      username,
+      xnftId: xnftId,
+      preferences,
+    }),
   });
 };

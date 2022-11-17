@@ -287,7 +287,7 @@ function NotificationListItem({ notification, isFirst, isLast }: any) {
               {notification.body}
             </Typography>
             <Typography className={classes.txDate}>
-              {notification.timestamp.toLocaleDateString()}
+              {new Date(notification.timestamp).toLocaleDateString()}
             </Typography>
           </div>
         </div>

@@ -137,7 +137,8 @@ export function SettingsButton() {
   return (
     <div style={{ display: "flex" }}>
       <RecentActivityButton />
-      <NotificationButton />
+      {/* Enable post designs */}
+      {/*<NotificationButton />*/}
       <div style={{ width: "16px" }} />
       <AvatarButton />
     </div>

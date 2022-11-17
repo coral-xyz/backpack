@@ -2,6 +2,6 @@ import express from "express";
 const router = express.Router();
 import notificationRouter from "./notifications";
 
-router.use("/backpack-api", notificationRouter);
+router.use("/notifications", notificationRouter);
 
 export default router;

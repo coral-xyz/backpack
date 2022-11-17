@@ -12,8 +12,7 @@ const cookieParser = require("cookie-parser");
 
 app.use(cookieParser());
 app.use(bodyParser.json());
-app.use(bodyParser.json({ type: "application/*+json" }));
-app.use(bodyParser.raw({}));
+app.use(bodyParser.json({ type: "application/json" }));
 
 app.post("/notifications/register", async (req, res) => {
   //TODO: Secure this

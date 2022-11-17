@@ -21,6 +21,9 @@ export const getNotifications = async (
       },
       {
         id: true,
+        timestamp: true,
+        title: true,
+        body: true,
       },
     ],
   });
