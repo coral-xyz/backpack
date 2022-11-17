@@ -4,7 +4,7 @@ import { Skeleton, Grid, Button, Typography } from "@mui/material";
 import { styles, useCustomTheme, HOVER_OPACITY } from "@coral-xyz/themes";
 import { Block as BlockIcon } from "@mui/icons-material";
 import {
-  appIcons,
+  filteredPlugins as pluginsAtom,
   useLoader,
   useActiveWallets,
   useBackgroundClient,
@@ -13,10 +13,10 @@ import {
 import {
   Blockchain,
   UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
+  TAB_APPS,
 } from "@coral-xyz/common";
 import { EmptyState } from "../../common/EmptyState";
 import { ProxyImage } from "../../common/ProxyImage";
-import { TAB_APPS } from "@coral-xyz/common";
 
 const ICON_WIDTH = 64;
 
@@ -79,7 +79,7 @@ function PluginGrid() {
   const activeWallets = useActiveWallets();
 
   const [plugins, _, isLoading] = useLoader(
-    appIcons,
+    pluginsAtom,
     [],
     // Note this reloads on any change to the active wallets, which reloads
     // NFTs for both blockchains.
