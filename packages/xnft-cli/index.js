@@ -232,6 +232,64 @@ program
     });
   });
 
+program.command("start").action(async () => {
+  const express = require("express");
+  const fs = require("fs");
+  const app = express();
+
+  const port = SIMULATOR_PORT;
+
+  let js;
+  let rendererScript;
+
+  try {
+    const rendererFileContent = fs.readFileSync(
+      join(__dirname, "renderer.js"),
+      {
+        encoding: "utf-8",
+      }
+    );
+    rendererScript = `<script>${rendererFileContent}</script>`;
+  } catch (e) {
+    console.log("falling back to latest renderer");
+    // fallback to latest version of renderer
+    rendererScript = `<script src="https://unpkg.com/@coral-xyz/react-xnft-dom-renderer@latest/dist/index.js"></script>`;
+  }
+  js = fs.readFileSync("dist/index.js", { encoding: "utf-8" });
+
+  app.get("/", (req, res) => {
+    res.send(`
+        <!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <meta charset="utf-8"/>
+            <link rel="stylesheet" href="https://doof72pbjabye.cloudfront.net/fonts/inter/font.css"></link>
+            <script src="https://cdn.tailwindcss.com"></script>
+            <style>
+              html, body {
+                position:relative;
+                margin: 0;
+                padding: 0;
+                height:100%;
+                display:flex;
+                flex-direction: column;
+              }
+            </style>
+          </head>
+          <title>simulator</title>
+          <body>
+            <div id="container"></div>
+            <script>${js}</script>
+            ${rendererScript}
+          </body>
+        </html>
+      `);
+  });
+
+  app.listen(port, () => {
+    console.log(`listening on port ${port}`);
+  });
+});
 program
   .command("init")
   .argument("<name>", "name of the xnft")
