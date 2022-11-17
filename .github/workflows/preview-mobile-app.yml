@@ -43,8 +43,17 @@ jobs:
         working-directory: packages/app-mobile
         run: eas update --branch preview --message=pr-${{ github.event.number }}
 
-      - name: 💬 Comment preview
-        uses: expo/expo-github-action/preview-comment@v7
-        with:
-          project: packages/app-mobile
-          channel: pr-${{ github.event.number }}
+      # - name: 💬 Comment preview
+      #   uses: expo/expo-github-action/preview-comment@v7
+      #   with:
+      #     comment: false
+      #     project: packages/app-mobile
+      #     channel: pr-${{ github.event.number }}
+
+      # - name: 💬 Comment in Slack
+      #   uses: slackapi/slack-github-action@v1.17.0
+      #   env:
+      #     SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
+      #   with:
+      #     channel-id: mobile-app
+      #     slack-message: 'New deployment is ready!\n- Preview: ${{ steps.preview.outputs.projectQR }}'
