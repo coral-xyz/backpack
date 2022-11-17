@@ -15,7 +15,11 @@ export default {
     backgroundColor: "#ffffff",
   },
   updates: {
+    url: "https://u.expo.dev/" + projectID,
     fallbackToCacheTimeout: 0,
+  },
+  runtimeVersion: {
+    policy: "sdkVersion",
   },
   assetBundlePatterns: ["**/*"],
   ios: {
