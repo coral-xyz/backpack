@@ -10,6 +10,7 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
   UI_RPC_METHOD_GET_XNFT_PREFERENCES,
   UI_RPC_METHOD_SET_XNFT_PREFERENCES,
+  BACKEND_API_URL,
 } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import {
@@ -35,7 +36,7 @@ import { CheckIcon } from "../../../common/Icon";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { Error } from "../../Balances/TokensWidget/Send";
 import { ProxyImage } from "../../../common/ProxyImage";
-
+import { useUsername } from "@coral-xyz/recoil";
 const logger = getLogger("xnft-detail");
 
 export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
@@ -44,12 +45,31 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
   const xnftPreference = useXnftPreference({ xnftId: xnft.install.publicKey });
   const nav = useNavStack();
   const background = useBackgroundClient();
+  const username = useUsername();
 
   const isDisabled = xnft.install.publicKey === PublicKey.default.toString();
 
   useEffect(() => {
     nav.setTitle(xnft.title);
   }, []);
+
+  const updateRemotePreference = (preferences: { notifications: boolean }) => {
+    return new Promise((resolve) => {
+      fetch(`${BACKEND_API_URL}/preference?username=${username}`, {
+        method: "POST",
+        body: JSON.stringify({
+          username,
+          xnftId: xnft.install.publicKey,
+          preferences,
+        }),
+      })
+        .then(async (response) => {
+          const json = await response.json();
+          resolve(json.notifications || []);
+        })
+        .catch((e) => resolve([]));
+    });
+  };
 
   const menuItems = {
     Display: {
@@ -111,6 +131,13 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
                 },
               ],
             });
+            await updateRemotePreference({
+              notifications: updatedPushNotifications,
+            }).catch((e) =>
+              console.error(
+                `Error while updating remote notification state ${e}`
+              )
+            );
 
             if (updatedPushNotifications) {
               const result = await window.navigator.permissions.query({
