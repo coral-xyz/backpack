@@ -32,7 +32,7 @@ export const hasNotificationAccess = async (
   xnftId: string,
   username: string
 ): Promise<boolean> => {
-  const response = chain("query")({
+  const response = await chain("query")({
     auth_xnft_preferences: [
       {
         where: { xnft_id: { _eq: xnftId }, username: { _eq: username } },
@@ -77,6 +77,7 @@ export const insertNotification = (
           xnft_id: xnftId,
           timestamp: new Date(),
           uuid: "",
+          image: "",
         },
       },
       {
