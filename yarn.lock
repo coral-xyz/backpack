@@ -1263,23 +1263,12 @@
     stream-browserify "^3.0.0"
     util "^0.12.4"
 
-"@coral-xyz/xnft-cli@*", "@coral-xyz/xnft-cli@^0.0.1":
+"@coral-xyz/xnft-cli@*":
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/@coral-xyz/xnft-cli/-/xnft-cli-0.0.1.tgz#dfda912320d433743ffa75f0c6146e75c8580c7d"
   integrity sha512-l54B9Ja/lm3fLp8MasH6ap7TnGiIwIVbyVTbEBohRRpPnG7i4S5E/8lVseB3G9RsbJMQq4wK7mj2SA6892n6kg==
   dependencies:
     "@parcel/core" "^2.6.2"
-    commander "^9.3.0"
-    express "^4.18.1"
-
-"@coral-xyz/xnft-cli@latest":
-  version "0.1.0-latest.2443"
-  resolved "https://registry.yarnpkg.com/@coral-xyz/xnft-cli/-/xnft-cli-0.1.0-latest.2443.tgz#d4852c29aa3c2f1f92cb1d52daeb57403dbd97b3"
-  integrity sha512-puo4oHcuLxJVJzZD20KfbcQWdLwCGSTyHzZ4Q/UKWnMDdQQurAu/CECPVUt4WoUpd3z+USOziXPw9rjAAgdk5g==
-  dependencies:
-    "@parcel/config-default" "^2.7.0"
-    "@parcel/core" "^2.7.0"
-    "@parcel/reporter-cli" "^2.7.0"
     commander "^9.3.0"
     express "^4.18.1"
 
