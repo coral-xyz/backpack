@@ -18,17 +18,17 @@ runs:
       with:
         node-version: 18
 
-    - uses: actions/cache@v3
-      name: yarn-cache
-      id: yarn-cache
-      with:
-        path: |
-          **/node_modules
-          ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          !**/node_modules/.cache
-        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-yarn
+    # - uses: actions/cache@v3
+    #   name: yarn-cache
+    #   id: yarn-cache
+    #   with:
+    #     path: |
+    #       **/node_modules
+    #       ${{ steps.yarn-cache-dir-path.outputs.dir }}
+    #       !**/node_modules/.cache
+    #     key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+    #     restore-keys: |
+    #       ${{ runner.os }}-yarn
 
     - name: 🏗 Setup Expo
       uses: expo/expo-github-action@v7
