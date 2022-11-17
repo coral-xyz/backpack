@@ -25,8 +25,8 @@
     "@solana/web3.js": "^1.63.1",
     "framer-motion": "^6.5.1",
     "parcel": "^2.7.0",
-    "react": "^17.0.0",
-    "react-dom": "^18.2.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "react-scrollbars-custom": "^4.1.1",
     "react-xnft": "*"
   },

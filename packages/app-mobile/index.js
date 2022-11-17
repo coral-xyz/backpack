@@ -22,9 +22,9 @@ const LOCALHOST_WEBVIEW_URI = "http://localhost:9333";
 
 const WEBVIEW_URI = (() => {
   if (process.env.NODE_ENV === "production") {
-    return Constants.manifest.extra.url || alert("No WEBVIEW_URI");
+    return Constants.expoConfig.extra.url || alert("No WEBVIEW_URI");
   } else {
-    return Constants.manifest.extra.url || LOCALHOST_WEBVIEW_URI;
+    return Constants.expoConfig.extra.url || LOCALHOST_WEBVIEW_URI;
   }
 })();
 
