@@ -21,7 +21,7 @@
     "clean": "npx rimraf {.,backend,examples,packages}/**/{.parcel-cache,.turbo,build,dist,node_modules,yarn-error.log} packages/app-extension/dev",
     "start:mobile": "env-cmd --silent turbo run start --filter=@coral-xyz/common... --filter=@coral-xyz/recoil... --filter=@coral-xyz/background... --filter=!examples",
     "build:mobile": "env-cmd --silent turbo run build --filter=@coral-xyz/common... --filter=@coral-xyz/recoil... --filter=@coral-xyz/background... --filter=!examples",
-    "postinstall": "yarn-deduplicate --scopes @mui @typescript-eslint @types"
+    "postinstall": "yarn-deduplicate --scopes @babel @mui @typescript-eslint @types"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.31.0",
