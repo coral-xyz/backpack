@@ -44,7 +44,7 @@ export default {
     favicon: "./assets/favicon.png",
   },
   extra: {
-    url: WEBWORKER_URL,
+    url: process.env.WEBWORKER_URL,
     eas: {
       projectId: projectID,
     },
