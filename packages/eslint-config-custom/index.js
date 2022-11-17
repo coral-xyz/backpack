@@ -41,15 +41,15 @@ module.exports = {
     "import/no-named-as-default-member": "off",
     "@typescript-eslint/no-non-null-asserted-optional-chain": "off",
     "no-case-declarations": "off",
-    "@typescript-eslint/consistent-type-imports": "error",
+    "@typescript-eslint/consistent-type-imports": "warn",
     "@typescript-eslint/consistent-type-exports": [
-      "error",
+      "warn",
       {
         fixMixedExportsWithInlineTypeSpecifier: true,
       },
     ],
     "simple-import-sort/imports": [
-      "error",
+      "warn",
       {
         groups: [
           // Packages `react` related packages come first.
@@ -67,7 +67,7 @@ module.exports = {
         ],
       },
     ],
-    "simple-import-sort/exports": "error",
+    "simple-import-sort/exports": "warn",
   },
 
   ignorePatterns: ["dist/*"],
