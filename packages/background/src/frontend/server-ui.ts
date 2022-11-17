@@ -223,10 +223,6 @@ async function handle<T = any>(
       return handleBlockchainsEnabledRemove(ctx, params[0]);
     case UI_RPC_METHOD_BLOCKCHAINS_ENABLED_READ:
       return await handleBlockchainsEnabledRead(ctx);
-    case UI_RPC_METHOD_BLOCKCHAIN_SETINGS_READ:
-      return await handleBlockchainSettingsRead(ctx);
-    case UI_RPC_METHOD_BLOCKCHAIN_SETINGS_UPDATE:
-      return await handleBlockchainSettingsUpdate(ctx);
     case UI_RPC_METHOD_SET_FEATURE_GATES:
       return await handleSetFeatureGates(ctx, params[0]);
     case UI_RPC_METHOD_GET_FEATURE_GATES:
@@ -246,6 +242,12 @@ async function handle<T = any>(
     case UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ:
       return await handleBlockchainKeyringsRead(ctx);
     //
+    // Settings for blockchains.
+    //
+    case UI_RPC_METHOD_BLOCKCHAIN_SETTINGS_READ:
+      return await handleBlockchainSettingsRead(ctx, params[1]);
+    case UI_RPC_METHOD_BLOCKCHAIN_SETTINGS_UPDATE:
+      return await handleBlockchainSettingsUpdate(ctx, params[1], params[2]);
     //
     // Nicknames for keys.
     //

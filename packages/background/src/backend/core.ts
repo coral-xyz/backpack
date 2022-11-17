@@ -34,7 +34,6 @@ import {
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
   deserializeTransaction,
   FEATURE_GATES_MAP,
-  XnftPreferenceStore,
   XnftPreference,
 } from "@coral-xyz/common";
 import type {
@@ -50,6 +49,7 @@ import { KeyringStore } from "./keyring";
 import type { SolanaConnectionBackend } from "./solana-connection";
 import type { EthereumConnectionBackend } from "./ethereum-connection";
 import { getWalletData, setWalletData, DEFAULT_DARK_MODE } from "./store";
+import type { SolanaData } from "./store/preferences";
 
 const { base58: bs58 } = ethers.utils;
 
@@ -94,12 +94,17 @@ export class Backend {
     tx.addSignature(pubkey, Buffer.from(bs58.decode(signature)));
 
     // Send it to the network.
-    const commitment = await this.solanaCommitmentRead();
+    const solanaSettings = (await this.blockchainSettingsRead(
+      Blockchain.SOLANA
+    )) as SolanaData;
+    const preflightCommitment = solanaSettings
+      ? solanaSettings.commitment
+      : "confirmed";
     return await this.solanaConnectionBackend.sendRawTransaction(
       tx.serialize(),
       options ?? {
         skipPreflight: false,
-        preflightCommitment: commitment,
+        preflightCommitment,
       }
     );
   }
@@ -281,15 +286,15 @@ export class Backend {
   ): Promise<string> {
     await this.keyringStore.init(username, password, keyringInit);
 
+    const data = {};
+    for (const blockchain of await this.enabledBlockchainsRead()) {
+      data[blockchain] = await this.blockchainSettingsRead(blockchain);
+    }
+
     // Notify all listeners.
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_STORE_CREATED,
-      data: {
-        blockchainActiveWallets: await this.blockchainActiveWallets(),
-        ethereumConnectionUrl: await this.ethereumConnectionUrlRead(),
-        solanaConnectionUrl: await this.solanaConnectionUrlRead(),
-        solanaCommitment: await this.solanaCommitmentRead(),
-      },
+      data,
     });
 
     return SUCCESS_RESPONSE;
@@ -302,22 +307,14 @@ export class Backend {
   async keyringStoreUnlock(password: string): Promise<string> {
     await this.keyringStore.tryUnlock(password);
 
-    const blockchainActiveWallets = await this.blockchainActiveWallets();
-
-    const ethereumConnectionUrl = await this.ethereumConnectionUrlRead();
-    const ethereumChainId = await this.ethereumChainIdRead();
-    const solanaConnectionUrl = await this.solanaConnectionUrlRead();
-    const solanaCommitment = await this.solanaCommitmentRead();
+    const data = {};
+    for (const blockchain of await this.enabledBlockchainsRead()) {
+      data[blockchain] = await this.blockchainSettingsRead(blockchain);
+    }
 
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_STORE_UNLOCKED,
-      data: {
-        blockchainActiveWallets,
-        ethereumConnectionUrl,
-        ethereumChainId,
-        solanaConnectionUrl,
-        solanaCommitment,
-      },
+      data,
     });
 
     return SUCCESS_RESPONSE;
