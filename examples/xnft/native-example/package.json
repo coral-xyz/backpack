@@ -4,7 +4,7 @@
   "scripts": {
     "build": "xnft native build",
     "start": "xnft native start",
-    "dev": "xnft native watch"
+    "dev": "xnft native dev"
   },
   "devDependencies": {},
   "dependencies": {
