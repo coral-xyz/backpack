@@ -23,17 +23,21 @@ on:
 
 jobs:
   mobile:
+    name: Build App
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
-      - name: 🏗 Setup repository
+      - name: 🏗 Checkout
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
 
       - name: 🏗 Setup monorepo
         uses: ./.github/actions/setup-monorepo
         with:
           expo-token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: 👷 Build packages for mobile
+      - name: 👷 Install packages for mobile
         run: yarn build:mobile
 
       - name: 🚀 Build mobile

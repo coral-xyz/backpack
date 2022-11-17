@@ -2,10 +2,6 @@ name: Setup Monorepo
 description: Prepare and install everything for the monorepo
 
 inputs:
-  node-version:
-    description: Version of Node to use
-    default: 18.x
-
   eas-version:
     description: Version of EAS CLI to use
     default: latest
@@ -24,8 +20,8 @@ runs:
     - name: 🏗 Setup Node
       uses: actions/setup-node@v3
       with:
-        node-version: ${{ inputs.node-version }}
-        cache: yarn
+        node-version: 18
+        cache: "yarn"
 
     - name: 🏗 Setup Expo
       uses: expo/expo-github-action@v7
@@ -38,10 +34,10 @@ runs:
       run: yarn install --frozen-lockfile
       shell: bash
 
-    - name: ♻️ Restore cache
-      uses: actions/cache@v3
-      with:
-        path: node_modules/.cache/turbo
-        key: turbo-${{ runner.os }}-${{ github.job }}-${{ github.sha }}
-        restore-keys: |
-          turbo-${{ runner.os }}-${{ github.job }}
+    # - name: ♻️ Restore cache
+    #   uses: actions/cache@v3
+    #   with:
+    #     path: node_modules/.cache/turbo
+    #     key: turbo-${{ runner.os }}-${{ github.job }}-${{ github.sha }}
+    #     restore-keys: |
+    #       turbo-${{ runner.os }}-${{ github.job }}

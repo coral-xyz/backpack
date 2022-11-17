@@ -2,6 +2,8 @@ name: preview
 
 on:
   pull_request:
+    paths:
+      - "packages/app-mobile/**"
     types: [opened, synchronize]
 
 concurrency:
@@ -10,10 +12,14 @@ concurrency:
 
 jobs:
   mobile:
+    name: Preview App
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - name: 🏗 Setup repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
 
       - name: 🏗 Setup monorepo
         uses: ./.github/actions/setup-monorepo
