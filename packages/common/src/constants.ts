@@ -16,25 +16,15 @@ export const CHANNEL_PLUGIN_CONNECTION_BRIDGE =
 export const CHANNEL_POPUP_RPC = "channel-popup-rpc";
 export const CHANNEL_POPUP_RESPONSE = "channel-popup-response";
 export const CHANNEL_POPUP_NOTIFICATIONS = "channel-popup-notifications";
-export const CHANNEL_SOLANA_RPC_REQUEST = "channel-solana-rpc-request";
-export const CHANNEL_SOLANA_RPC_RESPONSE = "channel-solana-rpc-response";
-export const CHANNEL_SOLANA_NOTIFICATION = "channel-solana-notification";
-export const CHANNEL_SOLANA_CONNECTION_RPC_UI =
-  "channel-solana-connection-rpc-ui";
-export const CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST =
-  "channel-solana-connection-injected-request";
-export const CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE =
-  "channel-solana-connection-injected-response";
-export const CHANNEL_ETHEREUM_RPC_REQUEST = "channel-ethereum-rpc-request";
-export const CHANNEL_ETHEREUM_RPC_RESPONSE = "channel-ethereum-rpc-response";
-export const CHANNEL_ETHEREUM_NOTIFICATION =
-  "channel-ethereum-rpc-notification";
-export const CHANNEL_ETHEREUM_CONNECTION_RPC_UI =
-  "channel-ethereum-connection-rpc-ui";
-export const CHANNEL_ETHEREUM_CONNECTION_INJECTED_REQUEST =
-  "channel-ethereum-connection-injected-request";
-export const CHANNEL_ETHEREUM_CONNECTION_INJECTED_RESPONSE =
-  "channel-ethereum-connection-injected-response";
+export const CHANNEL_BLOCKCHAIN_RPC_REQUEST = "channel-blockchain-rpc-request";
+export const CHANNEL_BLOCKCHAIN_RPC_RESPONSE =
+  "channel-blockchain-rpc-response";
+export const CHANNEL_BLOCKCHAIN_CONNECTION_INJECTED_REQUEST =
+  "channel-blockchain-connection-injected-request";
+export const CHANNEL_BLOCKCHAIN_CONNECTION_INJECTED_RESPONSE =
+  "channel-blockchain-connection-injected-response";
+export const CHANNEL_BLOCKCHAIN_NOTIFICATION =
+  "channel-blockchain-notification";
 
 //
 // Mobile specific webview messaging subsystem channels.
@@ -240,10 +230,12 @@ export const NOTIFICATION_AUTO_LOCK_SECS_UPDATED =
   "notification-auto-lock-secs-updated";
 export const NOTIFICATION_BLOCKCHAIN_DISABLED =
   "notification-blockchain-disabled";
-export const NOTIFICATION_XNFT_PREFERENCE_UPDATED =
-  "notification-xnft-preference-updated";
 export const NOTIFICATION_BLOCKCHAIN_ENABLED =
   "notification-blockchain-enabled";
+export const NOTIFICATION_BLOCKCHAIN_CONNECTED =
+  "notification-blockchain-connected";
+export const NOTIFICATION_BLOCKCHAIN_DISCONNECTED =
+  "notification-blockchain-disconnected";
 export const NOTIFICATION_BLOCKCHAIN_SETTINGS_UPDATED =
   "notification-blockchain-settings-updated";
 export const NOTIFICATION_DARK_MODE_UPDATED = "notification-dark-mode-updated";
@@ -302,6 +294,8 @@ export const NOTIFICATION_SOLANA_EXPLORER_UPDATED =
   "notification-solana-explorer-updated";
 export const NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE =
   "notification-solana-spl-tokens-did-update";
+export const NOTIFICATION_XNFT_PREFERENCE_UPDATED =
+  "notification-xnft-preference-updated";
 //
 // Ethereum web injected provider API.
 //

@@ -48,8 +48,8 @@ import { BlockchainKeyring } from "./keyring/blockchain";
 import { KeyringStore } from "./keyring";
 import type { SolanaConnectionBackend } from "./solana-connection";
 import type { EthereumConnectionBackend } from "./ethereum-connection";
-import { getWalletData, setWalletData, DEFAULT_DARK_MODE } from "./store";
-import type { SolanaData } from "./store/preferences";
+import { DEFAULT_DARK_MODE } from "./store";
+import type { SolanaSettings } from "./store/preferences";
 
 const { base58: bs58 } = ethers.utils;
 
@@ -96,7 +96,7 @@ export class Backend {
     // Send it to the network.
     const solanaSettings = (await this.blockchainSettingsRead(
       Blockchain.SOLANA
-    )) as SolanaData;
+    )) as SolanaSettings;
     const preflightCommitment = solanaSettings
       ? solanaSettings.commitment
       : "confirmed";
@@ -356,52 +356,6 @@ export class Backend {
       }
     }
     return namedPublicKeys;
-  }
-
-  async activeWallets(): Promise<Array<string>> {
-    return await this.keyringStore.activeWallets();
-  }
-
-  async activeWalletUpdate(
-    newActivePublicKey: string,
-    blockchain: Blockchain
-  ): Promise<string> {
-    const keyring = this.keyringStore.keyringForBlockchain(blockchain);
-    const oldActivePublicKey = keyring.getActiveWallet();
-    await this.keyringStore.activeWalletUpdate(newActivePublicKey, blockchain);
-
-    if (newActivePublicKey !== oldActivePublicKey) {
-      // Public key has changed, emit an event
-      // TODO: remove the blockchain specific events in favour of a single event
-      if (blockchain === Blockchain.SOLANA) {
-        this.events.emit(BACKEND_EVENT, {
-          name: NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
-          data: {
-            activeWallet: newActivePublicKey,
-            activeWallets: await this.activeWallets(),
-          },
-        });
-      } else if (blockchain === Blockchain.ETHEREUM) {
-        this.events.emit(BACKEND_EVENT, {
-          name: NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
-          data: {
-            activeWallet: newActivePublicKey,
-            activeWallets: await this.activeWallets(),
-          },
-        });
-      }
-    }
-
-    return SUCCESS_RESPONSE;
-  }
-
-  // Map of blockchain to the active public key for that blockchain.
-  async blockchainActiveWallets() {
-    return Object.fromEntries(
-      (await this.activeWallets()).map((publicKey) => {
-        return [this.keyringStore.blockchainForPublicKey(publicKey), publicKey];
-      })
-    );
   }
 
   async keyringDeriveWallet(blockchain: Blockchain): Promise<string> {
@@ -770,7 +724,10 @@ export class Backend {
    */
   async blockchainSettingsRead(blockchain: Blockchain) {
     const data = await store.getWalletData();
-    return data[blockchain];
+    return {
+      activeWallet: this.blockchainActiveWallets[blockchain],
+      ...data[blockchain],
+    };
   }
 
   /**
@@ -792,6 +749,37 @@ export class Backend {
       data: { prevSettings, newSettings },
     });
     return SUCCESS_RESPONSE;
+  }
+
+  async activeWallets(): Promise<Array<string>> {
+    const data = await store.getWalletData();
+    // TODO remove this when all active wallets are migrated to the blockchain
+    // settings
+    const blockchainActiveWallets = this.blockchainActiveWallets();
+    return (await this.enabledBlockchainsRead()).map((blockchain) => {
+      const blockchainSettings = data[blockchain];
+      if (blockchainSettings && blockchainSettings.activeWallet) {
+        return blockchainSettings.activeWallet;
+      }
+      return blockchainActiveWallets[blockchain];
+    });
+  }
+
+  async activeWalletUpdate(
+    activeWallet: string,
+    blockchain: Blockchain
+  ): Promise<string> {
+    await this.blockchainSettingsUpdate(blockchain, { activeWallet });
+    return SUCCESS_RESPONSE;
+  }
+
+  // Map of blockchain to the active public key for that blockchain.
+  async blockchainActiveWallets() {
+    return Object.fromEntries(
+      (await this.activeWallets()).map((publicKey) => {
+        return [this.keyringStore.blockchainForPublicKey(publicKey), publicKey];
+      })
+    );
   }
 
   async setFeatureGates(gates: FEATURE_GATES_MAP) {

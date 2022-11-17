@@ -22,11 +22,18 @@ import {
   openXnft,
   openOnboarding,
   BrowserRuntimeExtension,
+  BACKEND_EVENT,
+  CHANNEL_BLOCKCHAIN_RPC_REQUEST,
+  CHANNEL_BLOCKCHAIN_NOTIFICATION,
+  CHANNEL_POPUP_RESPONSE,
   ETHEREUM_RPC_METHOD_CONNECT,
   ETHEREUM_RPC_METHOD_DISCONNECT,
   ETHEREUM_RPC_METHOD_SIGN_TX,
   ETHEREUM_RPC_METHOD_SIGN_AND_SEND_TX,
   ETHEREUM_RPC_METHOD_SIGN_MESSAGE,
+  NOTIFICATION_BLOCKCHAIN_CONNECTED,
+  NOTIFICATION_BLOCKCHAIN_DISCONNECTED,
+  NOTIFICATION_BLOCKCHAIN_SETTINGS_UPDATED,
   SOLANA_RPC_METHOD_CONNECT,
   SOLANA_RPC_METHOD_DISCONNECT,
   SOLANA_RPC_METHOD_SIGN_AND_SEND_TX,
@@ -35,21 +42,6 @@ import {
   SOLANA_RPC_METHOD_SIGN_MESSAGE,
   SOLANA_RPC_METHOD_SIMULATE,
   SOLANA_RPC_METHOD_OPEN_XNFT,
-  CHANNEL_ETHEREUM_RPC_REQUEST,
-  CHANNEL_ETHEREUM_NOTIFICATION,
-  CHANNEL_SOLANA_RPC_REQUEST,
-  CHANNEL_SOLANA_NOTIFICATION,
-  CHANNEL_POPUP_RESPONSE,
-  BACKEND_EVENT,
-  NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
-  NOTIFICATION_ETHEREUM_CONNECTED,
-  NOTIFICATION_ETHEREUM_DISCONNECTED,
-  NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
-  NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
-  NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
-  NOTIFICATION_SOLANA_CONNECTED,
-  NOTIFICATION_SOLANA_DISCONNECTED,
-  NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   Blockchain,
 } from "@coral-xyz/common";
 import type { Backend } from "../backend/core";
@@ -68,18 +60,11 @@ export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
   if (cfg.isMobile) {
     return null;
   }
-
-  const solanaRpcServerInjected = ChannelContentScript.server(
-    CHANNEL_SOLANA_RPC_REQUEST
+  const rpcServerInjected = ChannelContentScript.server(
+    CHANNEL_BLOCKCHAIN_RPC_REQUEST
   );
-  const solanaNotificationsInjected = ChannelContentScript.client(
-    CHANNEL_SOLANA_NOTIFICATION
-  );
-  const ethereumRpcServerInjected = ChannelContentScript.server(
-    CHANNEL_ETHEREUM_RPC_REQUEST
-  );
-  const ethereumNotificationsInjected = ChannelContentScript.client(
-    CHANNEL_ETHEREUM_NOTIFICATION
+  const notificationsInjected = ChannelContentScript.client(
+    CHANNEL_BLOCKCHAIN_NOTIFICATION
   );
   const popupUiResponse = ChannelAppUi.server(CHANNEL_POPUP_RESPONSE);
 
@@ -88,48 +73,27 @@ export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
   //
   events.on(BACKEND_EVENT, (notification) => {
     switch (notification.name) {
-      case NOTIFICATION_ETHEREUM_CONNECTED:
-        ethereumNotificationsInjected.sendMessageActiveTab(notification);
+      case NOTIFICATION_BLOCKCHAIN_CONNECTED:
+        notificationsInjected.sendMessageActiveTab(notification);
         break;
-      case NOTIFICATION_ETHEREUM_DISCONNECTED:
-        ethereumNotificationsInjected.sendMessageActiveTab(notification);
+      case NOTIFICATION_BLOCKCHAIN_DISCONNECTED:
+        notificationsInjected.sendMessageActiveTab(notification);
         break;
-      case NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED:
-        ethereumNotificationsInjected.sendMessageActiveTab(notification);
-        break;
-      case NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED:
-        ethereumNotificationsInjected.sendMessageActiveTab(notification);
-        break;
-      case NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED:
-        ethereumNotificationsInjected.sendMessageActiveTab(notification);
-        break;
-      case NOTIFICATION_SOLANA_CONNECTED:
-        solanaNotificationsInjected.sendMessageActiveTab(notification);
-        break;
-      case NOTIFICATION_SOLANA_DISCONNECTED:
-        solanaNotificationsInjected.sendMessageActiveTab(notification);
-        break;
-      case NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED:
-        solanaNotificationsInjected.sendMessageActiveTab(notification);
-        break;
-      case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
-        solanaNotificationsInjected.sendMessageActiveTab(notification);
+      case NOTIFICATION_BLOCKCHAIN_SETTINGS_UPDATED:
+        notificationsInjected.sendMessageActiveTab(notification);
         break;
       default:
         break;
     }
   });
 
-  ethereumRpcServerInjected.handler(withContext(b, events, handle));
-  solanaRpcServerInjected.handler(withContext(b, events, handle));
+  rpcServerInjected.handler(withContext(b, events, handle));
   popupUiResponse.handler(withContextPort(b, events, handlePopupUiResponse));
 
   return {
-    ethereumRpcServerInjected,
-    ethereumNotificationsInjected,
+    rpcServerInjected,
+    notificationsInjected,
     popupUiResponse,
-    solanaRpcServerInjected,
-    solanaNotificationsInjected,
   };
 }
 
@@ -270,27 +234,15 @@ async function handleConnect(
 
   // If the user approved and unlocked, then we're connected.
   if (didApprove) {
-    const activeWallet = (await ctx.backend.blockchainActiveWallets())[
-      blockchain
-    ];
-    if (blockchain === Blockchain.ETHEREUM) {
-      const connectionUrl = await ctx.backend.ethereumConnectionUrlRead();
-      const chainId = await ctx.backend.ethereumChainIdRead();
-      const data = { publicKey: activeWallet, connectionUrl, chainId };
-      ctx.events.emit(BACKEND_EVENT, {
-        name: NOTIFICATION_ETHEREUM_CONNECTED,
-        data,
-      });
-      return [data];
-    } else if (blockchain === Blockchain.SOLANA) {
-      const connectionUrl = await ctx.backend.solanaConnectionUrlRead();
-      const data = { publicKey: activeWallet, connectionUrl };
-      ctx.events.emit(BACKEND_EVENT, {
-        name: NOTIFICATION_SOLANA_CONNECTED,
-        data,
-      });
-      return [data];
-    }
+    const data = {
+      blockchain,
+      ...(await ctx.backend.blockchainSettingsRead(blockchain)),
+    };
+    ctx.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_BLOCKCHAIN_CONNECTED,
+      data,
+    });
+    return data;
   }
 
   throw new Error("user did not approve");
@@ -304,19 +256,12 @@ function handleDisconnect(
   ctx: Context<Backend>,
   blockchain: Blockchain
 ): RpcResponse<string> {
-  let resp;
-  if (blockchain === Blockchain.SOLANA) {
-    resp = ctx.backend.solanaDisconnect();
-    ctx.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_SOLANA_DISCONNECTED,
-    });
-  } else if (blockchain === Blockchain.ETHEREUM) {
-    // resp = ctx.backend.ethereumDisconnect();
-    ctx.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_ETHEREUM_DISCONNECTED,
-    });
-  }
-  return [resp];
+  ctx.events.emit(BACKEND_EVENT, {
+    name: NOTIFICATION_BLOCKCHAIN_DISCONNECTED,
+    data: {
+      blockchain,
+    },
+  });
 }
 
 async function handleSolanaSignAndSendTx(

@@ -25,6 +25,18 @@ import {
 } from "../store";
 import { BlockchainKeyring } from "./blockchain";
 
+const blockchainDefaults = {
+  [Blockchain.SOLANA]: {
+    connectionUrl: SolanaCluster.DEFAULT,
+    explorer: SolanaExplorer.DEFAULT,
+    commitment: "confirmed",
+  },
+  [Blockchain.ETHEREUM]: {
+    connectionUrl: EthereumConnectionUrl.DEFAULT,
+    explorer: EthereumExplorer.DEFAULT,
+  },
+};
+
 /**
  * Keyring API for managing all wallet keys.
  */
@@ -61,19 +73,23 @@ export class KeyringStore {
     this.password = password;
     this.mnemonic = keyringInit.mnemonic;
 
-    for (const blockchainKeyring of keyringInit.blockchainKeyrings) {
-      await this.blockchainKeyringAdd(
-        blockchainKeyring.blockchain,
-        blockchainKeyring.derivationPath,
-        blockchainKeyring.accountIndex,
-        blockchainKeyring.publicKey,
+    const blockchainSettings = {};
+    for (const args of keyringInit.blockchainKeyrings) {
+      const keyring = await this.blockchainKeyringAdd(
+        args.blockchain,
+        args.derivationPath,
+        args.accountIndex,
+        args.publicKey,
         // Don't persist, as we persist manually later
         false
       );
+      blockchainSettings[args.blockchain] = {
+        activeWallet: keyring.getActiveWallet(),
+        ...blockchainDefaults[args.blockchain],
+      };
     }
 
-    // Persist the initial wallet ui metadata.
-    await store.setWalletData({
+    const walletData = {
       username,
       autoLockSecs: store.DEFAULT_LOCK_INTERVAL_SECS,
       approvedOrigins: [],
@@ -82,17 +98,12 @@ export class KeyringStore {
       ),
       darkMode: DEFAULT_DARK_MODE,
       developerMode: DEFAULT_DEVELOPER_MODE,
-      solana: {
-        explorer: SolanaExplorer.DEFAULT,
-        cluster: SolanaCluster.DEFAULT,
-        commitment: "confirmed",
-      },
-      ethereum: {
-        explorer: EthereumExplorer.DEFAULT,
-        connectionUrl: EthereumConnectionUrl.DEFAULT,
-      },
-    });
+      ...blockchainSettings,
+    };
 
+    await store.setWalletData(walletData);
+
+    // Persist the initial wallet ui metadata.
     // Persist the encrypted data to then store.
     await this.persist(true);
 
@@ -109,7 +120,7 @@ export class KeyringStore {
     accountIndex: number,
     publicKey?: string,
     persist = true
-  ): Promise<void> {
+  ): Promise<BlockchainKeyring> {
     const keyring = {
       [Blockchain.SOLANA]: BlockchainKeyring.solana,
       [Blockchain.ETHEREUM]: BlockchainKeyring.ethereum,
@@ -140,6 +151,8 @@ export class KeyringStore {
     if (persist) {
       await this.persist();
     }
+
+    return keyring;
   }
 
   /**

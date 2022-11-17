@@ -14,21 +14,25 @@ export type WalletData = {
   enabledBlockchains: Array<Blockchain>;
   darkMode: boolean;
   developerMode: boolean;
-  solana: SolanaData;
-  ethereum?: EthereumData;
+  solana?: SolanaSettings;
+  ethereum?: EthereumSettings;
 };
 
-type SolanaData = {
+export type BlockchainSettings = {
+  connectionUrl: string;
+  activeWallet: string;
+};
+
+export type SolanaSettings = {
   explorer: string;
   commitment: Commitment;
   cluster: string;
-};
+} & BlockchainSettings;
 
-type EthereumData = {
-  explorer?: string;
-  connectionUrl?: string;
-  chainId?: string;
-};
+export type EthereumSettings = {
+  explorer: string;
+  chainId: string;
+} & BlockchainSettings;
 
 export async function getWalletData(): Promise<WalletData> {
   const data = await LocalStorageDb.get(STORE_KEY_WALLET_DATA);
