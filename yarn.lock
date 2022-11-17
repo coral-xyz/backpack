@@ -1272,17 +1272,6 @@
     commander "^9.3.0"
     express "^4.18.1"
 
-"@coral-xyz/xnft-cli@latest":
-  version "0.1.0-latest.2443"
-  resolved "https://registry.yarnpkg.com/@coral-xyz/xnft-cli/-/xnft-cli-0.1.0-latest.2443.tgz#d4852c29aa3c2f1f92cb1d52daeb57403dbd97b3"
-  integrity sha512-puo4oHcuLxJVJzZD20KfbcQWdLwCGSTyHzZ4Q/UKWnMDdQQurAu/CECPVUt4WoUpd3z+USOziXPw9rjAAgdk5g==
-  dependencies:
-    "@parcel/config-default" "^2.7.0"
-    "@parcel/core" "^2.7.0"
-    "@parcel/reporter-cli" "^2.7.0"
-    commander "^9.3.0"
-    express "^4.18.1"
-
 "@discoveryjs/json-ext@^0.5.0":
   version "0.5.7"
   resolved "https://registry.yarnpkg.com/@discoveryjs/json-ext/-/json-ext-0.5.7.tgz#1d572bfbbe14b7704e0ba0f39b74815b84870d70"

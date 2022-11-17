@@ -28,7 +28,7 @@
     "@solana/web3.js": "^1.63.1"
   },
   "devDependencies": {
-    "@coral-xyz/xnft-cli": "latest",
+    "@coral-xyz/xnft-cli": "*",
     "typescript": "^4.6.3"
   }
 }
