@@ -24,6 +24,7 @@ import {
   useBackgroundClient,
   useEnabledBlockchains,
   useWalletBlockchain,
+  useUsername,
 } from "@coral-xyz/recoil";
 import { Locked } from "../components/Locked";
 import { Unlocked } from "../components/Unlocked";
@@ -36,6 +37,7 @@ import { ApproveMessage } from "../components/Unlocked/Approvals/ApproveMessage"
 import "./App.css";
 import { refreshFeatureGates } from "../gates/FEATURES";
 import { EmptyState } from "../components/common/EmptyState";
+import { refreshXnftPreferences } from "../api/preferences";
 
 const logger = getLogger("router");
 
@@ -273,9 +275,11 @@ function QueryApproveMessage() {
 function FullApp() {
   logger.debug("full app");
   const background = useBackgroundClient();
+  const username = useUsername();
 
   useEffect(() => {
     refreshFeatureGates(background);
+    refreshXnftPreferences(background, username || "");
   }, [background]);
 
   return (

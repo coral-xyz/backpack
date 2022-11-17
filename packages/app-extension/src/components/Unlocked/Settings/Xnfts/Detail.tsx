@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { CircularProgress, Typography, Button, Link } from "@mui/material";
 import { PublicKey } from "@solana/web3.js";
+import { updateRemotePreference } from "../../../../api/preferences";
 import {
   getLogger,
   confirmTransaction,
@@ -52,24 +53,6 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
   useEffect(() => {
     nav.setTitle(xnft.title);
   }, []);
-
-  const updateRemotePreference = (preferences: { notifications: boolean }) => {
-    return new Promise((resolve) => {
-      fetch(`${BACKEND_API_URL}/preference?username=${username}`, {
-        method: "POST",
-        body: JSON.stringify({
-          username,
-          xnftId: xnft.install.publicKey,
-          preferences,
-        }),
-      })
-        .then(async (response) => {
-          const json = await response.json();
-          resolve(json.notifications || []);
-        })
-        .catch((e) => resolve([]));
-    });
-  };
 
   const menuItems = {
     Display: {
@@ -131,9 +114,13 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
                 },
               ],
             });
-            await updateRemotePreference({
-              notifications: updatedPushNotifications,
-            }).catch((e) =>
+            await updateRemotePreference(
+              xnft.install.publicKey,
+              username || "",
+              {
+                notifications: updatedPushNotifications,
+              }
+            ).catch((e) =>
               console.error(
                 `Error while updating remote notification state ${e}`
               )

@@ -1,5 +1,9 @@
 import express from "express";
-import { insertSubscription, updatePreference } from "./db/preference";
+import {
+  getPreferences,
+  insertSubscription,
+  updatePreference,
+} from "./db/preference";
 import { getNotifications } from "./db/notifications";
 
 const app = express();
@@ -11,7 +15,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.json({ type: "application/*+json" }));
 app.use(bodyParser.raw({}));
 
-app.post("/backpack-api/register", async (req, res) => {
+app.post("/notifications/register", async (req, res) => {
   //TODO: Secure this
   const username = req.body.username || "";
   const publicKey = req.body.publicKey || "";
@@ -32,6 +36,15 @@ app.post("/preference", async (req, res) => {
   await updatePreference(xnftId, username, preferences);
 
   res.json({});
+});
+
+app.get("/preferences", async (req, res) => {
+  //TODO: Secure this
+  const username = req.body.username || "";
+
+  const xnftPreferences = await getPreferences(username);
+
+  res.json({ xnftPreferences });
 });
 
 app.get("/notifications", async (req, res) => {

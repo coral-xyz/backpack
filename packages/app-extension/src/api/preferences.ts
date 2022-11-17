@@ -1,0 +1,48 @@
+import {
+  ChannelAppUiClient,
+  BACKEND_API_URL,
+  UI_RPC_METHOD_SET_XNFT_PREFERENCES,
+} from "@coral-xyz/common";
+
+export const refreshXnftPreferences = async (
+  background: ChannelAppUiClient,
+  username: string
+) => {
+  try {
+    const res = await fetch(
+      `${BACKEND_API_URL}/preferences?username=${username}`
+    );
+    const json = await res.json();
+    if (!json.xnftPreferences) throw new Error(json.message);
+    json.xnftPreferences.map(async (xnftPreference: any) => {
+      await background.request({
+        method: UI_RPC_METHOD_SET_XNFT_PREFERENCES,
+        params: [
+          xnftPreference.xnftId,
+          {
+            notifications: xnftPreference.notifications || false,
+          },
+        ],
+      });
+    });
+  } catch (e) {
+    console.warn(`Error while refreshing xnft preferences ${e}`);
+  }
+};
+
+export const updateRemotePreference = (
+  xnftId: string,
+  username: string,
+  preferences: { notifications: boolean }
+) => {
+  return new Promise((resolve) => {
+    fetch(`${BACKEND_API_URL}/preference`, {
+      method: "POST",
+      body: JSON.stringify({
+        username,
+        xnftId: xnftId,
+        preferences,
+      }),
+    });
+  });
+};

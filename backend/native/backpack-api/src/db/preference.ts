@@ -36,6 +36,28 @@ export const insertSubscription = (
   });
 };
 
+export const getPreferences = async (username: string) => {
+  const currentPreferences = await chain("query")({
+    auth_xnft_preferences: [
+      {
+        where: { username: { _eq: username } },
+      },
+      {
+        id: true,
+        xnft_id: true,
+        notifications: true,
+        media: true,
+      },
+    ],
+  });
+
+  return currentPreferences.auth_xnft_preferences.map((x) => ({
+    notifications: x.notifications,
+    media: x.media,
+    xnftId: x.xnft_id,
+  }));
+};
+
 export const updatePreference = async (
   xnftId: string,
   username: string,
