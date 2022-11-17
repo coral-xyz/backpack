@@ -14,7 +14,8 @@
     "jws": "^4.0.0",
     "reequest": "^0.0.1-security",
     "urlsafe-base64": "^1.0.0",
-    "web-push": "^3.5.0"
+    "web-push": "^3.5.0",
+    "@coral-xyz/zeus": "*"
   },
   "scripts": {
     "build": "esbuild ./src/index.js --bundle --platform=node --outfile=dist/index.js",

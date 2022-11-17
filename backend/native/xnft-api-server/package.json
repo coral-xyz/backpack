@@ -9,7 +9,8 @@
     "cookie-parser": "^1.4.6",
     "esbuild": "^0.15.13",
     "express": "^4.18.2",
-    "web-push": "^3.5.0"
+    "web-push": "^3.5.0",
+    "@coral-xyz/zeus": "*"
   },
   "scripts": {
     "build": "esbuild ./src/index.js --bundle --platform=node --outfile=dist/index.js",
