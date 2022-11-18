@@ -1,5 +1,5 @@
-module.exports = (js) => `
-<!DOCTYPE html>
+module.exports = {
+  banner: `<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8"/>
@@ -13,8 +13,8 @@ module.exports = (js) => `
         display:flex;
         flex-direction: column;
       }
-      #native-container {
-        display:none;
+      #container {
+        display:flex;
         flex-direction: column;
         flex: 1 0 100%;
       }
@@ -22,10 +22,11 @@ module.exports = (js) => `
   </head>
   <title>simulator</title>
   <body>
-    <div id="native-container"></div>
     <div id="container"></div>
-    <script>${js}</script>
-    <script src="https://unpkg.com/@coral-xyz/react-xnft-dom-renderer@latest/dist/index.js"></script>
+    <script>`,
+
+  footer: `</script>
   </body>
 </html>
-`;
+`,
+};
