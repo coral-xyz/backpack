@@ -42,18 +42,25 @@ export default {
 
     try {
       let innerHTML;
+      const res = await fetch(bundle);
+      const contentType = res.headers.get("content-type");
+
+      // if this is an new HTML based xNFT return the html directly.
+      if (contentType && contentType.indexOf("text/html") > -1) {
+        const contents = await res.text();
+        return html(contents);
+      }
 
       if (searchParams.has("external")) {
         // TODO: add integrity hash? https://www.srihash.org
         innerHTML = `<script src="${bundle}"></script>`;
       } else {
-        const res = await fetch(bundle);
-        const js = await res.text();
+        const contents = await res.text();
         // TODO: see if possible to check if valid JS without executing it,
         //       because `new Function(js);` is not possible on a worker
         innerHTML = `
         <!-- code loaded from ${bundle} -->
-        <script>${js}</script>`;
+        <script>${contents}</script>`;
       }
 
       innerHTML += `<script src="${PROD_RENDERER_URL}"></script>`;
@@ -65,8 +72,24 @@ export default {
             <meta charset="utf-8"/>
             <link rel="stylesheet" href="https://doof72pbjabye.cloudfront.net/fonts/inter/font.css"></link>
             <script src="https://cdn.tailwindcss.com"></script>
+            <style>
+              html, body {
+                position:relative;
+                margin: 0;
+                padding: 0;
+                height:100%;
+                display:flex;
+                flex-direction: column;
+              }
+              #native-container {
+                display:none;
+                flex-direction: column;
+                flex: 1 0 100%;
+              }
+            </style>
           </head>
           <body>
+            <div id="native-container"></div>
             <div id="container"></div>
             ${innerHTML}
            </body>
