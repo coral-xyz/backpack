@@ -2,17 +2,20 @@ import { Chain, Subscription } from "./zeus/index";
 import { HASURA_URL, HASURA_WS_URL, JWT } from "./config";
 
 interface Message {
-  username: string;
-  uuid: string;
-  message: string;
+  id: number;
+  username?: string;
+  uuid?: string;
+  message?: string;
 }
 
 export class ChatManager {
   private roomId: string;
   private username: string = "kira";
+  private onMessages: (messages: Message[]) => void;
 
   constructor(roomId: string, onMessages: (messages: Message[]) => void) {
     this.roomId = roomId;
+    this.onMessages = onMessages;
     this.subscribeIncomingMessages();
   }
 
@@ -28,11 +31,13 @@ export class ChatManager {
         {},
         {
           id: true,
+          username: true,
+          uuid: true,
+          message: true,
         },
       ],
     }).on(({ chats }) => {
-      console.error("hi there message");
-      console.log(chats);
+      this.onMessages(chats);
     });
   }
 
