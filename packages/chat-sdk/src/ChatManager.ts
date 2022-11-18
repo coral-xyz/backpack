@@ -13,7 +13,7 @@ export class ChatManager {
   private roomId: string;
   private username: string = "kira";
   private onMessages: (messages: Message[]) => void;
-  private subscription?: SubscriptionToGraphQL<any>;
+  private subscription?: SubscriptionToGraphQL<any, any, any>;
 
   constructor(roomId: string, onMessages: (messages: Message[]) => void) {
     this.roomId = roomId;
