@@ -16,18 +16,10 @@ import {
   useNavigation,
 } from "@coral-xyz/recoil";
 import { View, Text, SectionList, Pressable } from "react-native";
-import { useTheme } from "@hooks";
-// import { GridCard } from "./Common";
-// import { EmptyState } from "../../common/EmptyState";
-// import {
-//   BalancesTable,
-//   BalancesTableContent,
-//   BalancesTableHead,
-// } from "../Balances";
-// import EntryONE from "./EntryONE";
-// import { useIsONELive } from "../../../hooks/useIsONELive";
+import { useTheme, useIsONELive } from "@hooks";
+import { Screen } from "@components";
 
-function Header({ title }) {
+function Header({ title }: { title: string }) {
   console.log("title", title);
   return (
     <View
@@ -85,25 +77,15 @@ export default function NftCollectiblesScreen() {
 
   return (
     <Screen>
-      {isONELive && <EntryONE />}
-      {Object.values(collections).flat().length === 0 && !isLoading ? (
-        <EmptyState
-          icon={(props: any) => <ImageIcon {...props} />}
-          title={"No NFTs"}
-          subtitle={"Get started with your first NFT"}
-          buttonText={"Browse Magic Eden"}
-          onClick={() => window.open("https://magiceden.io")}
-          verticallyCentered={!isONELive}
-        />
-      ) : (
-        <SectionList
-          renderItem={({ item }) => <ListItem title={item} />}
-          renderSectionHeader={({ section }) => (
-            <Header title={section.title} />
+      <View style={{ flex: 1, backgroundColor: "orange" }}>
+        <Text>
+          {JSON.stringify(
+            { isONELive, sections, collections, isLoading },
+            null,
+            2
           )}
-          sections={sections}
-        />
-      )}
+        </Text>
+      </View>
     </Screen>
   );
 }
