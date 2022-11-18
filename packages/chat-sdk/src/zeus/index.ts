@@ -4,37 +4,68 @@ import { AllTypesProps, ReturnTypes, Ops } from "./const";
 export const HOST = "http://localhost:8113/v1/graphql";
 
 export const HEADERS = {};
-export const apiSubscription = (options: chainOptions) => (query: string) => {
-  try {
-    const queryString = options[0] + "?query=" + encodeURIComponent(query);
-    const wsString = queryString.replace("http", "ws");
-    const host = (options.length > 1 && options[1]?.websocket?.[0]) || wsString;
-    const webSocketOptions = options[1]?.websocket || [host];
-    const ws = new WebSocket(...webSocketOptions);
+import { createClient, type Sink } from "graphql-ws"; // keep
+
+export const apiSubscription = (options: chainOptions) => {
+  const client = createClient({
+    url: String(options[0]),
+    connectionParams: Object.fromEntries(
+      new Headers(options[1]?.headers).entries()
+    ),
+  });
+
+  const ws = new Proxy(
+    {
+      close: () => client.dispose(),
+    } as WebSocket,
+    {
+      get(target, key) {
+        if (key === "close") return target.close;
+        throw new Error(
+          `Unimplemented property '${String(
+            key
+          )}', only 'close()' is available.`
+        );
+      },
+    }
+  );
+
+  return (query: string) => {
+    let onMessage: ((event: any) => void) | undefined;
+    let onError: Sink["error"] | undefined;
+    let onClose: Sink["complete"] | undefined;
+
+    client.subscribe(
+      { query },
+      {
+        next({ data }) {
+          onMessage && onMessage(data);
+        },
+        error(error) {
+          onError && onError(error);
+        },
+        complete() {
+          onClose && onClose();
+        },
+      }
+    );
+
     return {
       ws,
-      on: (e: (args: any) => void) => {
-        ws.onmessage = (event: any) => {
-          if (event.data) {
-            const parsed = JSON.parse(event.data);
-            const data = parsed.data;
-            return e(data);
-          }
-        };
+      on(listener: typeof onMessage) {
+        onMessage = listener;
       },
-      off: (e: (args: any) => void) => {
-        ws.onclose = e;
+      error(listener: typeof onError) {
+        onError = listener;
       },
-      error: (e: (args: any) => void) => {
-        ws.onerror = e;
+      open(listener: (socket: unknown) => void) {
+        client.on("opened", listener);
       },
-      open: (e: () => void) => {
-        ws.onopen = e;
+      off(listener: typeof onClose) {
+        onClose = listener;
       },
     };
-  } catch {
-    throw new Error("No websockets implemented");
-  }
+  };
 };
 const handleFetchResponse = (response: Response): Promise<GraphQLResponse> => {
   if (!response.ok) {
@@ -599,7 +630,7 @@ export const ResolveFromPath = (
   returns: ReturnTypesType,
   ops: Operations
 ) => {
-  //@ts-ignore
+  // @ts-ignore
   const ResolvePropsType = (mappedParts: Part[]) => {
     const oKey = ops[mappedParts[0].v];
     const propsP1 = oKey ? props[oKey] : props[mappedParts[0].v];
@@ -642,7 +673,7 @@ export const ResolveFromPath = (
       }
     }
   };
-  //@ts-ignore
+  // @ts-ignore
   const ResolveReturnType = (mappedParts: Part[]) => {
     if (mappedParts.length === 0) {
       return "not";

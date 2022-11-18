@@ -1,11 +1,5 @@
-import { Chain } from "./zeus/index";
-import { HASURA_URL, JWT } from "./config";
-
-const chain = Chain(HASURA_URL, {
-  headers: {
-    Authorization: `Bearer ${JWT}`,
-  },
-});
+import { Chain, Subscription } from "./zeus/index";
+import { HASURA_URL, HASURA_WS_URL, JWT } from "./config";
 
 interface Message {
   username: string;
@@ -23,26 +17,32 @@ export class ChatManager {
   }
 
   async subscribeIncomingMessages() {
-    // const res = await chain("subscription")({
-    //   chats: [
-    //     {
-    //       where: {
-    //         room: { _eq: this.roomId },
-    //         username: { _neq: this.username },
-    //       },
-    //       limit: 50,
-    //     },
-    //     {
-    //       username: true,
-    //       message: true,
-    //     },
-    //   ],
-    // });
-    // console.log(res);
+    const wsChain = Subscription(HASURA_WS_URL, {
+      headers: {
+        Authorization: `Bearer ${JWT}`,
+      },
+    });
+
+    wsChain("subscription")({
+      chats: [
+        {},
+        {
+          id: true,
+        },
+      ],
+    }).on(({ chats }) => {
+      console.error("hi there message");
+      console.log(chats);
+    });
   }
 
   async send(message: string) {
-    console.error(`sending`);
+    const chain = Chain(HASURA_URL, {
+      headers: {
+        Authorization: `Bearer ${JWT}`,
+      },
+    });
+
     await chain("mutation")({
       insert_chats_one: [
         {

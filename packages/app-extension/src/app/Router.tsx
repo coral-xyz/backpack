@@ -279,15 +279,6 @@ function FullApp() {
     refreshFeatureGates(background);
   }, [background]);
 
-  useEffect(() => {
-    const chatManager = new ChatManager("room1", (messages) => {
-      console.log("messsage received " + messages);
-    });
-    chatManager.send("hi there");
-    chatManager.send("hello");
-    // await new Promise((resolve) => {});
-  });
-
   return (
     <WithUnlock>
       <Unlocked />

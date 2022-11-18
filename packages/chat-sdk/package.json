@@ -6,11 +6,13 @@
   "types": "dist/esm/index.d.ts",
   "scripts": {
     "zeus": "npx graphql-zeus http://localhost:8113/v1/graphql ./src --header=x-hasura-admin-secret:myadminsecretkey --header=x-hasura-role:chat",
+    "zeus-ws": "npx graphql-zeus http://localhost:8113/v1/graphql ./src --header=x-hasura-admin-secret:myadminsecretkey --header=x-hasura-role:chat  --subscriptions graphql-ws",
     "build": "tsc && tsc-alias",
     "test": "yarn build && node dist/test/index.js"
   },
   "license": "MIT",
   "dependencies": {
+    "graphql-ws": "^5.11.2",
     "tsc": "^2.0.4"
   },
   "devDependencies": {
