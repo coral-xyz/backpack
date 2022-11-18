@@ -2,7 +2,6 @@ import { Suspense, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Block as BlockIcon } from "@mui/icons-material";
 import { styles } from "@coral-xyz/themes";
-import { ChatManager } from "@coral-xyz/chat-sdk";
 import {
   Blockchain,
   getLogger,
