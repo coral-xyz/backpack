@@ -23,25 +23,26 @@ export class ChatManager {
   }
 
   async subscribeIncomingMessages() {
-    const res = await chain("subscription")({
-      chats: [
-        {
-          where: {
-            room: { _eq: this.roomId },
-            username: { _neq: this.username },
-          },
-          limit: 50,
-        },
-        {
-          username: true,
-          message: true,
-        },
-      ],
-    });
-    console.log(res);
+    // const res = await chain("subscription")({
+    //   chats: [
+    //     {
+    //       where: {
+    //         room: { _eq: this.roomId },
+    //         username: { _neq: this.username },
+    //       },
+    //       limit: 50,
+    //     },
+    //     {
+    //       username: true,
+    //       message: true,
+    //     },
+    //   ],
+    // });
+    // console.log(res);
   }
 
   async send(message: string) {
+    console.error(`sending`);
     await chain("mutation")({
       insert_chats_one: [
         {
