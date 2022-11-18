@@ -1,3 +1,11 @@
+import { Chain } from "./zeus/index";
+
+const chain = Chain(HASURA_URL, {
+  headers: {
+    Authorization: `Bearer ${JWT}`,
+  },
+});
+
 interface Message {
   username: string;
   uuid: string;
