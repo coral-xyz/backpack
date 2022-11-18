@@ -1,12 +1,7 @@
 const GlobalsPolyfills = require("@esbuild-plugins/node-globals-polyfill");
 const plugin = require("node-stdlib-browser/helpers/esbuild/plugin");
 const stdLibBrowser = require("node-stdlib-browser");
-const fs = require("fs");
 const getHtmlWrapper = require("./getHtmlWrapper");
-
-const rendererFileContent = fs.readFileSync(`${__dirname}/../renderer.js`, {
-  encoding: "utf-8",
-});
 
 module.exports = {
   entryPoints: ["./src/index.tsx"],
@@ -18,7 +13,7 @@ module.exports = {
     global: "window",
   },
   banner: { js: getHtmlWrapper.banner },
-  footer: { js: getHtmlWrapper.footer(rendererFileContent) },
+  footer: { js: getHtmlWrapper.footer },
   plugins: [
     GlobalsPolyfills.default({
       process: true,

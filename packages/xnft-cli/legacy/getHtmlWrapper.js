@@ -26,8 +26,8 @@ module.exports = {
     <div id="container"></div>
     <script>`,
 
-  footer: (renderer) => `</script>
-      <script>${renderer}</script>
+  footer: `</script>
+    <script src="https://unpkg.com/@coral-xyz/react-xnft-dom-renderer@latest/dist/index.js"></script>
   </body>
 </html>
 `,
