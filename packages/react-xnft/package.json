@@ -26,7 +26,7 @@
     "react-reconciler": "^0.26.0"
   },
   "devDependencies": {
-    "@types/react-native": "^0.70.6",
+    "@types/react-native": "0.70.6",
     "eslint-config-custom": "*",
     "typescript": "^4.6.3"
   }
