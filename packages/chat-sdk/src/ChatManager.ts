@@ -1,4 +1,5 @@
-import { Chain, Subscription } from "./zeus/index";
+import { Subscription } from "./subscriptionManager";
+import { Chain } from "./zeus/index";
 import { HASURA_URL, HASURA_WS_URL, JWT } from "./config";
 
 interface Message {
@@ -21,14 +22,14 @@ export class ChatManager {
 
   async subscribeIncomingMessages() {
     const wsChain = Subscription(HASURA_WS_URL, {
-      headers: {
-        Authorization: `Bearer ${JWT}`,
+      get headers() {
+        return { Authorization: `Bearer ${JWT}` };
       },
     });
 
-    wsChain("subscription")({
+    const onMessage = wsChain("subscription")({
       chats: [
-        {},
+        { limit: 50 },
         {
           id: true,
           username: true,
@@ -36,7 +37,9 @@ export class ChatManager {
           message: true,
         },
       ],
-    }).on(({ chats }) => {
+    });
+
+    onMessage.on(({ chats }) => {
       this.onMessages(chats);
     });
   }
