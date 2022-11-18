@@ -83,7 +83,7 @@ import {
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE,
 } from "@coral-xyz/common";
-import type { CachedValue } from "./types";
+import type { CachedValue } from "../types";
 
 const logger = getLogger("solana-connection-backend");
 
