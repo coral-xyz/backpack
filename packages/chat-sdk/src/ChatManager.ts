@@ -1,5 +1,5 @@
 import { Subscription } from "./subscriptionManager";
-import { Chain } from "./zeus/index";
+import { Chain, SubscriptionToGraphQL } from "./zeus/index";
 import { HASURA_URL, HASURA_WS_URL, JWT } from "./config";
 
 interface Message {
@@ -13,6 +13,7 @@ export class ChatManager {
   private roomId: string;
   private username: string = "kira";
   private onMessages: (messages: Message[]) => void;
+  private subscription?: SubscriptionToGraphQL<any>;
 
   constructor(roomId: string, onMessages: (messages: Message[]) => void) {
     this.roomId = roomId;
@@ -27,7 +28,7 @@ export class ChatManager {
       },
     });
 
-    const onMessage = wsChain("subscription")({
+    const subscription = wsChain("subscription")({
       chats: [
         { limit: 50 },
         {
@@ -39,9 +40,11 @@ export class ChatManager {
       ],
     });
 
-    onMessage.on(({ chats }) => {
+    subscription.on(({ chats }) => {
       this.onMessages(chats);
     });
+
+    this.subscription = subscription;
   }
 
   async send(message: string) {
@@ -66,5 +69,9 @@ export class ChatManager {
         },
       ],
     });
+  }
+
+  destroy() {
+    this.subscription?.ws.close();
   }
 }
