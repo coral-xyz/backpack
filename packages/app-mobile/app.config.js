@@ -15,8 +15,8 @@ export default {
   userInterfaceStyle: "dark",
   splash: {
     image: "./assets/splash.png",
-    resizeMode: "contain",
-    backgroundColor: "#ffffff",
+    resizeMode: "cover",
+    backgroundColor: "#000",
   },
   updates: {
     fallbackToCacheTimeout: 0,
@@ -36,7 +36,7 @@ export default {
   android: {
     adaptiveIcon: {
       foregroundImage: "./assets/adaptive-icon.png",
-      backgroundColor: "#FFFFFF",
+      backgroundColor: "#000",
     },
     package: packageName,
   },
