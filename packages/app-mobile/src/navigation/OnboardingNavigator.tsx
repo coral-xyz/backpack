@@ -51,6 +51,7 @@ import {
   useOnboardingData,
 } from "../lib/OnboardingProvider";
 
+// eslint-disable-next-line
 const Buffer = require("buffer/").Buffer;
 
 // TODO(peter) fn: any
