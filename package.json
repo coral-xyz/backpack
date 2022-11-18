@@ -11,7 +11,8 @@
     "web"
   ],
   "scripts": {
-    "lint:fix": "prettier {examples/xnft,examples/xnft-program-library/packages,packages}/**/*.{ts,tsx,json} --write",
+    "lint": "turbo run lint -- --cache",
+    "lint:fix": "turbo run lint:fix",
     "prepare": "husky install",
     "start": "env-cmd --silent turbo run start --concurrency=100% --filter=./packages/*",
     "start:fresh": "yarn install && yarn clean && yarn install && yarn start",

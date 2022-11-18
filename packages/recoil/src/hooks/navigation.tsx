@@ -1,12 +1,13 @@
-import { useSearchParams, useLocation } from "react-router-dom";
-import { useRecoilValue } from "recoil";
+import { useLocation, useSearchParams } from "react-router-dom";
+import type { Blockchain } from "@coral-xyz/common";
 import {
-  Blockchain,
-  UI_RPC_METHOD_NAVIGATION_TO_ROOT,
-  UI_RPC_METHOD_NAVIGATION_PUSH,
-  UI_RPC_METHOD_NAVIGATION_POP,
   TAB_SET,
+  UI_RPC_METHOD_NAVIGATION_POP,
+  UI_RPC_METHOD_NAVIGATION_PUSH,
+  UI_RPC_METHOD_NAVIGATION_TO_ROOT,
 } from "@coral-xyz/common";
+import { useRecoilValue } from "recoil";
+
 import * as atoms from "../atoms";
 
 type NavigationContext = {
@@ -104,7 +105,9 @@ export function useDecodedSearchParams<
         ob[k as keyof ExtensionSearchParams] = JSON.parse(
           decodeURIComponent(v)
         );
-      } catch {}
+      } catch {
+        // Pass
+      }
     }
   });
   return ob as SearchParamsType;
@@ -130,6 +133,7 @@ function makeParams(ob = {}) {
     .join("&");
 }
 
+// eslint-disable-next-line
 export namespace SearchParamsFor {
   export interface Plugin {
     props: { pluginUrl: string };
