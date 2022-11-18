@@ -168,6 +168,7 @@ export class ProviderRootXnftInjection extends PrivateEventEmitter {
         break;
       case PLUGIN_NOTIFICATION_ETHEREUM_PUBLIC_KEY_UPDATED:
         this.#handleEthereumPublicKeyUpdated(event);
+        break;
       default:
         console.error(event);
         throw new Error("invalid notification");

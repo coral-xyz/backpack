@@ -22,6 +22,12 @@
     },
     "start": {
       "dependsOn": ["^build"]
+    },
+    "lint": {
+      "outputs": []
+    },
+    "lint:fix": {
+      "outputs": []
     }
   }
 }

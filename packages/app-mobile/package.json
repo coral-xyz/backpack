@@ -9,7 +9,8 @@
     "web": "expo start --web",
     "add": "expo add",
     "eject": "expo eject",
-    "lint:fix": "eslint 'src/**/*' --fix --cache",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "yarn run lint --fix",
     "postinstall": "npx patch-package; cd ../../ && patch-package"
   },
   "dependencies": {

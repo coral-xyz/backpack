@@ -1,9 +1,11 @@
-import '../styles/globals.css';
 import type { AppProps } from 'next/app';
-import PlausibleProvider from 'next-plausible';
 import Head from 'next/head';
-import Nav from '../components/Nav';
+import PlausibleProvider from 'next-plausible';
+
 import CoralFooter from '../components/CoralFooter';
+import Nav from '../components/Nav';
+
+import '../styles/globals.css';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (

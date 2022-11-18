@@ -1,5 +1,6 @@
-import { CheckIcon } from '@heroicons/react/outline';
 import { memo, useState } from 'react';
+import { CheckIcon } from '@heroicons/react/outline';
+
 import { subscribe } from '../lib/mailchimp';
 
 function Newsletter() {
@@ -14,7 +15,9 @@ function Newsletter() {
       await subscribe(email);
       setEmail('');
       setSubscribed(true);
-    } catch (error) {}
+    } catch {
+      // Pass
+    }
   }
 
   return (

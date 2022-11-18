@@ -2,19 +2,22 @@
   "name": "@coral-xyz/react-xnft-dom-renderer",
   "version": "1.0.0",
   "description": "",
+  "keywords": [],
+  "license": "ISC",
+  "author": "",
   "main": "index.js",
-  "scripts": {
-    "build": "parcel build src/index.tsx --dist-dir dist"
-  },
   "files": [
     "dist"
   ],
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "scripts": {
+    "build": "parcel build src/index.tsx --dist-dir dist",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "yarn run lint --fix"
+  },
   "dependencies": {
     "@coral-xyz/common": "*",
     "@coral-xyz/common-public": "*",
+    "eslint-config-custom": "*",
     "@coral-xyz/themes": "*",
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
@@ -29,6 +32,9 @@
     "react-dom": "^17.0.2",
     "react-scrollbars-custom": "^4.1.1",
     "react-xnft": "*"
+  },
+  "devDependencies": {
+    "eslint-config-custom": "*"
   },
   "targets": {
     "modern": {
