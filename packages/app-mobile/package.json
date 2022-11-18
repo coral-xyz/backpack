@@ -11,7 +11,7 @@
     "eject": "expo eject",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "yarn run lint --fix",
-    "postinstall": "cd ../../../ && npx patch-package"
+    "postinstall": "cd ../../../ && npx patch-package --patch-dir ./node_modules/@coral-xyz/app-mobile/patches"
   },
   "dependencies": {
     "@cardinal/payment-manager": "^1.7.9",
