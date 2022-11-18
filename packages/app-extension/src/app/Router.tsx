@@ -2,6 +2,7 @@ import { Suspense, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Block as BlockIcon } from "@mui/icons-material";
 import { styles } from "@coral-xyz/themes";
+import { ChatManager } from "@coral-xyz/chat-sdk";
 import {
   Blockchain,
   getLogger,
@@ -277,6 +278,15 @@ function FullApp() {
   useEffect(() => {
     refreshFeatureGates(background);
   }, [background]);
+
+  useEffect(() => {
+    const chatManager = new ChatManager("room1", (messages) => {
+      console.log("messsage received " + messages);
+    });
+    chatManager.send("hi there");
+    chatManager.send("hello");
+    // await new Promise((resolve) => {});
+  });
 
   return (
     <WithUnlock>
