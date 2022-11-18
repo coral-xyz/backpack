@@ -1,0 +1,22 @@
+table:
+  name: chats
+  schema: public
+insert_permissions:
+  - role: user
+    permission:
+      check: {}
+      columns:
+        - message
+        - room
+        - username
+        - uuid
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - id
+        - message
+        - room
+        - username
+        - uuid
+      filter: {}
