@@ -331,7 +331,7 @@ export function DangerButton({
     buttonProps.style
   );
   return (
-    <PrimaryButton
+    <NegativeButton
       style={buttonStyle}
       buttonLabelStyle={buttonLabelStyle}
       label={label}
