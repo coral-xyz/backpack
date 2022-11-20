@@ -179,6 +179,7 @@ export class BlockchainKeyring {
     };
   }
 
+  // ts-ignore
   public fromJson(json): any {
     const {
       hdKeyring,

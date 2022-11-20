@@ -3,12 +3,6 @@ import { Keypair, PublicKey } from "@solana/web3.js";
 import nacl from "tweetnacl";
 import * as bs58 from "bs58";
 import { LedgerKeyringBase } from "@coral-xyz/blockchain-common";
-import {
-  LEDGER_METHOD_SOLANA_SIGN_MESSAGE,
-  LEDGER_METHOD_SOLANA_SIGN_TRANSACTION,
-  DerivationPath,
-} from "@coral-xyz/common";
-import { deriveSolanaKeypairs, deriveSolanaKeypair } from "./util";
 import type {
   Keyring,
   KeyringFactory,
@@ -19,7 +13,14 @@ import type {
   LedgerKeyringJson,
   LedgerKeyring,
   ImportedDerivationPath,
-} from "./types";
+} from "@coral-xyz/blockchain-common";
+
+import {
+  LEDGER_METHOD_SOLANA_SIGN_MESSAGE,
+  LEDGER_METHOD_SOLANA_SIGN_TRANSACTION,
+  DerivationPath,
+} from "@coral-xyz/common";
+import { deriveSolanaKeypairs, deriveSolanaKeypair } from "../util";
 
 export class SolanaKeyringFactory implements KeyringFactory {
   /**
@@ -121,36 +122,17 @@ export class SolanaHdKeyringFactory implements HdKeyringFactory {
     });
   }
 
-  public generate(strength): HdKeyring {
-    const mnemonic = generateMnemonic(strength);
-    const seed = mnemonicToSeedSync(mnemonic);
-    const accountIndices = [0];
-    const derivationPath = DerivationPath.Default;
-    const keypairs = deriveSolanaKeypairs(seed, derivationPath, accountIndices);
-
-    return new SolanaHdKeyring({
-      mnemonic,
-      seed,
-      accountIndices,
-      derivationPath,
-      keypairs,
-    });
-  }
-
   public fromJson(obj: HdKeyringJson): HdKeyring {
     const { mnemonic, seed: seedStr, accountIndices, derivationPath } = obj;
     const seed = Buffer.from(seedStr, "hex");
     const keypairs = deriveSolanaKeypairs(seed, derivationPath, accountIndices);
-
-    const kr = new SolanaHdKeyring({
+    return new SolanaHdKeyring({
       mnemonic,
       seed,
       derivationPath,
       keypairs,
       accountIndices,
     });
-
-    return kr;
   }
 }
 
