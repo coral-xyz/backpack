@@ -121,11 +121,6 @@ export class EthereumHdKeyringFactory implements HdKeyringFactory {
   }
 
   // @ts-ignore
-  public generate(): HdKeyring {
-    // todo
-  }
-
-  // @ts-ignore
   public fromJson(obj: HdKeyringJson): HdKeyring {
     const { mnemonic, seed: seedStr, accountIndices, derivationPath } = obj;
     const seed = Buffer.from(seedStr, "hex");
@@ -146,7 +141,19 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
   private accountIndices: Array<number>;
   private derivationPath: DerivationPath;
 
-  constructor({ mnemonic, seed, accountIndices, wallets, derivationPath }) {
+  constructor({
+    mnemonic,
+    seed,
+    accountIndices,
+    wallets,
+    derivationPath,
+  }: {
+    mnemonic: string;
+    seed: Buffer;
+    accountIndices: Array<number>;
+    wallets: Array<Wallet>;
+    derivationPath: DerivationPath;
+  }) {
     super(wallets);
     this.mnemonic = mnemonic;
     this.seed = seed;

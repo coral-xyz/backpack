@@ -1,3 +1,4 @@
+import { generateMnemonic } from "bip39";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
 import type {
@@ -15,7 +16,7 @@ import {
   BACKEND_EVENT,
 } from "@coral-xyz/common";
 import {
-  hdKeyringForBlockchain,
+  hdFactoryForBlockchain,
   keyringForBlockchain,
   BlockchainKeyring,
 } from "@coral-xyz/blockchain-common";
@@ -207,7 +208,7 @@ export class KeyringStore {
     derivationPath: DerivationPath,
     numberOfAccounts: number
   ): string[] {
-    const factory = hdKeyringForBlockchain(blockchain);
+    const factory = hdFactoryForBlockchain(blockchain);
     const hdKeyring = factory.fromMnemonic(mnemonic, derivationPath, [
       ...Array(numberOfAccounts).keys(),
     ]);
@@ -320,9 +321,8 @@ export class KeyringStore {
   }
 
   public createMnemonic(strength: number): string {
-    const factory = new SolanaHdKeyringFactory();
-    const kr = factory.generate(strength);
-    return kr.mnemonic;
+    const mnemonic = generateMnemonic(strength);
+    return mnemonic;
   }
 
   private toJson(): any {
