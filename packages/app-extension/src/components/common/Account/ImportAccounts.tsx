@@ -272,7 +272,22 @@ export function ImportAccounts({
           DerivationPath.Bip44Change
         ),
       },
-    ],
+    ]
+      // Note: we only allow importing the deprecated sollet derivation path for hot wallets.
+      .concat(
+        mnemonic
+          ? [
+              {
+                path: DerivationPath.SolletDeprecated,
+                label:
+                  derivationPathPrefix(
+                    Blockchain.SOLANA,
+                    DerivationPath.SolletDeprecated
+                  ) + " (deprecated)",
+              },
+            ]
+          : []
+      ),
     [Blockchain.ETHEREUM]: [
       {
         path: DerivationPath.Bip44,
