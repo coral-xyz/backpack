@@ -15,5 +15,8 @@
     "dev": "tsc --watch",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "yarn run lint --fix"
+  },
+  "dependencies": {
+    "@coral-xyz/common": "*"
   }
 }

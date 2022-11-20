@@ -17,6 +17,7 @@
     "lint:fix": "yarn run lint --fix"
   },
   "dependencies": {
+    "@coral-xyz/common": "*",
     "@coral-xyz/blockchain-common": "*"
   }
 }
