@@ -273,9 +273,12 @@ export function ImportAccounts({
         ),
       },
     ]
-      // Note: we only allow importing the deprecated sollet derivation path for hot wallets.
+      // Note: We only allow importing the deprecated sollet derivation path for
+      //       hot wallets. This UI is hidden behind a local storage flag we
+      //       expect people to manually set, since this derivation path was only
+      //       used by mostly technical early Solana users.
       .concat(
-        mnemonic
+        mnemonic && window.localStorage.getItem("sollet")
           ? [
               {
                 path: DerivationPath.SolletDeprecated,
