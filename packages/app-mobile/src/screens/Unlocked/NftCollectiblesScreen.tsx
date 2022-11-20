@@ -1,11 +1,13 @@
 // import { Grid, Skeleton } from "@mui/material";
 // import { Block, Image as ImageIcon } from "@mui/icons-material";
+import React from "react";
+import { FlatList, Image, Pressable, Text, View } from "react-native";
+import { Screen } from "@components";
+import type { Blockchain, NftCollection } from "@coral-xyz/common";
 import {
-  toTitleCase,
-  Blockchain,
-  NftCollection,
-  NAV_COMPONENT_NFT_DETAIL,
   NAV_COMPONENT_NFT_COLLECTION,
+  NAV_COMPONENT_NFT_DETAIL,
+  toTitleCase,
 } from "@coral-xyz/common";
 import {
   nftCollections,
@@ -13,14 +15,191 @@ import {
   useBlockchainLogo,
   useEnabledBlockchains,
   useLoader,
-  useNavigation,
 } from "@coral-xyz/recoil";
-import { View, Text, SectionList, Pressable } from "react-native";
-import { useTheme, useIsONELive } from "@hooks";
-import { Screen } from "@components";
+import { MaterialIcons } from "@expo/vector-icons";
+import { useIsONELive, useTheme } from "@hooks";
 
-function Header({ title }: { title: string }) {
-  console.log("title", title);
+const DEV_COLLECTIONS = {
+  solana: [
+    {
+      id: "Ai trippin mushroom ",
+      name: "Ai trippin mushroom ",
+      symbol: "mushroom",
+      tokenType: "",
+      totalSupply: "",
+      items: [
+        {
+          id: "5ZWJcdubk2hUju6voN8byyFvjDyBZi4k36fRarNTGbtn",
+          blockchain: "solana",
+          publicKey: "5ZWJcdubk2hUju6voN8byyFvjDyBZi4k36fRarNTGbtn",
+          mint: "A2z5PbGfqxoLA4eAynjTesbnkWZurf8oBgVzfjn4kNYq",
+          name: "Ai trippin mushroom #318",
+          description: "333 trippin mushrooms in mushroom lands made by AI.",
+          externalUrl: "",
+          imageUrl:
+            "https://nftstorage.link/ipfs/bafybeierzfo6p7qfw4wyo37fuzyfkhlcyv4srfvtv5rpxnir5pond2syru/318.png",
+          attributes: [],
+        },
+        {
+          id: "HxZ5iaKqCHkXKJpqPkbq6P3pQJdkEAMDFgXEmYc3CfCe",
+          blockchain: "solana",
+          publicKey: "HxZ5iaKqCHkXKJpqPkbq6P3pQJdkEAMDFgXEmYc3CfCe",
+          mint: "EdjyZqGTsJZNSuKvFvqfVf1gjMfPAaEucW3GdRX1Vuct",
+          name: "Ai trippin mushroom #92",
+          description: "333 trippin mushrooms in mushroom lands made by AI.",
+          externalUrl: "",
+          imageUrl:
+            "https://nftstorage.link/ipfs/bafybeierzfo6p7qfw4wyo37fuzyfkhlcyv4srfvtv5rpxnir5pond2syru/92.png",
+          attributes: [],
+        },
+      ],
+    },
+    {
+      id: "DeGods",
+      name: "DeGods",
+      symbol: "DGOD",
+      tokenType: "",
+      totalSupply: "",
+      items: [
+        {
+          id: "Arvwe543tmggWL9ycQbrwZwXHgMGyQ5KewjWyCpqja7G",
+          blockchain: "solana",
+          publicKey: "Arvwe543tmggWL9ycQbrwZwXHgMGyQ5KewjWyCpqja7G",
+          mint: "9QDoTNp5z7htaWu3AJGL9E7RSuwdqyD8TwTj2JocabzQ",
+          name: "DeGod #1764",
+          description:
+            "A collection of 10,000 of the most degenerate gods in the universe.",
+          externalUrl: "https://degods.com",
+          imageUrl:
+            "https://arweave.net/vCLN06ZKU5cCCGz_9FQj_LW9ZCVI5E3gfvHvlhcpo_8?ext=png",
+          attributes: [
+            {
+              traitType: "background",
+              value: "Teal",
+            },
+            {
+              traitType: "skin",
+              value: "Leopard",
+            },
+            {
+              traitType: "specialty",
+              value: "God of War",
+            },
+            {
+              traitType: "clothes",
+              value: "Bleached Tee",
+            },
+            {
+              traitType: "neck",
+              value: "None",
+            },
+            {
+              traitType: "head",
+              value: "God Dome",
+            },
+            {
+              traitType: "eyes",
+              value: "None",
+            },
+            {
+              traitType: "mouth",
+              value: "None",
+            },
+            {
+              traitType: "version",
+              value: "DeadGod",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: "Hypersphere",
+      name: "Hypersphere",
+      symbol: "HYPE",
+      tokenType: "",
+      totalSupply: "",
+      items: [
+        {
+          id: "91tQAnZ6AMrLX3FPPuYWwPLYYHksE5h5vs1WHJN7gmbK",
+          blockchain: "solana",
+          publicKey: "91tQAnZ6AMrLX3FPPuYWwPLYYHksE5h5vs1WHJN7gmbK",
+          mint: "J1YiDsv5p9B2rrKBKrEFxg7MLPweCGDNRq3KexM1righ",
+          name: "Hypersphere",
+          description:
+            "Hyperspace Test NFT. Testing in prod with Cardinal royalty enforcement protection.",
+          imageUrl:
+            "https://arweave.net/w-hu8VClsjDoSkXsi8XvATg7T5vGc8iekZRlz_bh7e0?ext=png",
+          attributes: [
+            {
+              traitType: "rings",
+              value: "single",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: "No Collection",
+      name: "No Collection",
+      symbol: "",
+      tokenType: "",
+      totalSupply: "",
+      items: [
+        {
+          id: "GYqqo3sSHPaeWaZZC6XyrUwqQ9UeYtreFFg6JrQAcFQv",
+          blockchain: "solana",
+          publicKey: "GYqqo3sSHPaeWaZZC6XyrUwqQ9UeYtreFFg6JrQAcFQv",
+          mint: "8Rup8H7JG63DAeLXmdppnTGC1bLtv1keEE6Vuf3WfExy",
+          name: "Degods",
+          description: "View and stake your Degods directly in your Backpack.",
+          externalUrl: "https://stake.deadgods.com/",
+          imageUrl:
+            "https://xnfts.s3.us-west-2.amazonaws.com/i2HP4KaZ2zXKwLZVyTkDK3itCRugt6Npb5Zn7t28yR5/icon/degods.png",
+        },
+      ],
+    },
+  ],
+  ethereum: [
+    {
+      id: "Ai trippin mushroom ",
+      name: "Ai trippin mushroom ",
+      symbol: "mushroom",
+      tokenType: "",
+      totalSupply: "",
+      items: [
+        {
+          id: "6x5ZWJcdubk2hUju6voN8byyFvjDyBZi4k36fRarNTGbtn",
+          blockchain: "solana",
+          publicKey: "6x5ZWJcdubk2hUju6voN8byyFvjDyBZi4k36fRarNTGbtn",
+          mint: "6xA2z5PbGfqxoLA4eAynjTesbnkWZurf8oBgVzfjn4kNYq",
+          name: "Ai trippin mushroom #318",
+          description: "333 trippin mushrooms in mushroom lands made by AI.",
+          externalUrl: "",
+          imageUrl:
+            "https://nftstorage.link/ipfs/bafybeierzfo6p7qfw4wyo37fuzyfkhlcyv4srfvtv5rpxnir5pond2syru/318.png",
+          attributes: [],
+        },
+        {
+          id: "HxZ5iaKqCHkXKJpqPkbq6P3pQJdkEAMDFgXEmYc3CfCe",
+          blockchain: "solana",
+          publicKey: "HxZ5iaKqCHkXKJpqPkbq6P3pQJdkEAMDFgXEmYc3CfCe",
+          mint: "EdjyZqGTsJZNSuKvFvqfVf1gjMfPAaEucW3GdRX1Vuct",
+          name: "Ai trippin mushroom #92",
+          description: "333 trippin mushrooms in mushroom lands made by AI.",
+          externalUrl: "",
+          imageUrl:
+            "https://nftstorage.link/ipfs/bafybeierzfo6p7qfw4wyo37fuzyfkhlcyv4srfvtv5rpxnir5pond2syru/92.png",
+          attributes: [],
+        },
+      ],
+    },
+  ],
+};
+
+function SectionHeader({ section: { title } }: any) {
+  const onPress = () => {};
+  const collapsed = false;
   return (
     <View
       style={{
@@ -29,33 +208,143 @@ function Header({ title }: { title: string }) {
         alignItems: "center",
       }}
     >
-      <View>
+      <View style={{ flexDirection: "row" }}>
         <View
           style={{
-            width: 32,
-            height: 32,
-            backgroundColor: "yellow",
+            width: 12,
+            height: 12,
             marginRight: 12,
           }}
         />
         <Text>{title}</Text>
       </View>
-      <View style={{ width: 32, height: 32, backgroundColor: "orange" }} />
+      <View style={{ width: 32, height: 32 }}>
+        <Pressable onPress={onPress}>
+          <MaterialIcons
+            name={collapsed ? "keyboard-arrow-down" : "keyboard-arrow-up"}
+            size={24}
+            color="#333"
+          />
+        </Pressable>
+      </View>
     </View>
   );
 }
 
-function ListItem({ item }) {
-  console.log("item", item);
-  return <View style={{ backgroundColor: "yellow" }} />;
+// export type NftCollection = {
+//   id: string;
+//   name: string;
+//   symbol: string;
+//   tokenType: string;
+//   totalSupply: string;
+//   items: Nft[];
+// };
+
+// export type Nft = {
+//   id: string;
+//   blockchain: Blockchain;
+//   name: string;
+//   description: string;
+//   externalUrl: string;
+//   imageUrl: string;
+//   imageData?: string;
+//   attributes?: NftAttribute[];
+// };
+
+function EmptyState() {
+  return (
+    <View style={{ backgroundColor: "blue" }}>
+      <Text>NO NFTS go buy some</Text>
+    </View>
+  );
 }
 
-export default function NftCollectiblesScreen() {
-  const isONELive = useIsONELive();
+function TableItem({ id, name, imageUrl, onPress }) {
+  return (
+    <Pressable
+      style={{ flex: 0.5, margin: 8, borderRadius: 8, overflow: "hidden" }}
+      onPress={() => onPress(id)}
+    >
+      <Image source={{ uri: imageUrl }} style={{ aspectRatio: 1 }} />
+      <View
+        style={{
+          position: "absolute",
+          bottom: 8,
+          left: 8,
+          right: 8,
+          backgroundColor: "#FFF",
+          borderRadius: 8,
+          padding: 4,
+        }}
+      >
+        <Text numberOfLines={1}>{name}</Text>
+      </View>
+    </Pressable>
+  );
+}
+
+function TableHeader({ onPress, visible, name }) {
+  return (
+    <Pressable onPress={onPress} style={styles.header}>
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View style={styles.logoContainer}></View>
+        <Text>{name}</Text>
+      </View>
+      <MaterialIcons
+        name={visible ? "keyboard-arrow-up" : "keyboard-arrow-down"}
+        size={24}
+        color="black"
+      />
+    </Pressable>
+  );
+}
+
+function Table({ name, data, initialState, onSelectItem }) {
+  const [visible, setVisible] = React.useState(initialState);
+  const onPress = () => {
+    setVisible(!visible);
+  };
+
+  return (
+    <View style={{ backgroundColor: "#fff", borderRadius: 8 }}>
+      <TableHeader name={name} onPress={onPress} visible={visible} />
+
+      {visible ? (
+        <FlatList
+          style={{ padding: 8 }}
+          initialNumToRender={4}
+          scrollEnabled={false}
+          data={data}
+          numColumns={2}
+          renderItem={({ item }) => {
+            const preview = item.items[0];
+            return (
+              <TableItem
+                id={preview.id}
+                name={preview.name}
+                imageUrl={preview.imageUrl}
+                onPress={onSelectItem}
+              />
+            );
+          }}
+        />
+      ) : null}
+    </View>
+  );
+}
+
+export default function NftCollectiblesScreen({ navigation }) {
+  // const isONELive = useIsONELive();
   const activeWallets = useActiveWallets();
   const enabledBlockchains = useEnabledBlockchains();
 
-  const [collections, _, isLoading] = useLoader(
+  const onSelectItem = (id: string) => {
+    console.log("id", id);
+    // navigate here
+  };
+
+  const collections = DEV_COLLECTIONS;
+  const [_collections, _, isLoading] = useLoader(
     nftCollections,
     Object.fromEntries(
       enabledBlockchains.map((b: Blockchain) => [b, new Array<NftCollection>()])
@@ -66,124 +355,38 @@ export default function NftCollectiblesScreen() {
     [activeWallets]
   );
 
-  const sections = Object.entries(collections).map(
-    ([blockchain, collections]) => {
-      return {
-        title: toTitleCase(blockchain),
-        data: collections,
-      };
-    }
-  );
+  const hasCollections =
+    Object.entries(collections)
+      .map(([_name, data]) => {
+        return data.length > 0;
+      })
+      .filter(Boolean).length > 0;
 
   return (
     <Screen>
-      <View style={{ flex: 1, backgroundColor: "orange" }}>
-        <Text>
-          {JSON.stringify(
-            { isONELive, sections, collections, isLoading },
-            null,
-            2
-          )}
-        </Text>
+      <View style={{ padding: 8, flex: 1 }}>
+        {!hasCollections ? <EmptyState /> : null}
+        {Object.entries(collections).map(([name, data]) => {
+          return (
+            <Margin bottom={8}>
+              <Table
+                name={name}
+                data={data}
+                initialState={true}
+                onSelectItem={onSelectItem}
+              />
+            </Margin>
+          );
+        })}
       </View>
     </Screen>
   );
 }
 
-export function NftTable({
-  blockchain,
-  collections,
-  isLoading,
-}: {
-  blockchain: Blockchain;
-  collections: NftCollection[];
-  isLoading: boolean;
-}) {
-  // const classes = useStyles();
-  const theme = useTheme();
-  const blockchainLogo = useBlockchainLogo(blockchain);
-  const title = toTitleCase(blockchain);
-  if (!isLoading && collections.length === 0) return <></>;
-  // Note: the absolute positioning below is a total hack due to weird
-  //       padding + overlap issues on the table head and its content.
+function Debug({ debug }) {
   return (
-    <BalancesTable style={{ position: "relative" }}>
-      <BalancesTableHead props={{ title, iconUrl: blockchainLogo }} />
-      <div className={classes.cardContentContainer}>
-        <BalancesTableContent>
-          <div>
-            <div
-              style={{
-                backgroundColor: theme.custom.colors.nav,
-                overflow: "hidden",
-                paddingLeft: "12px",
-                paddingRight: "12px",
-                paddingBottom: "12px",
-                flexWrap: "wrap",
-              }}
-            >
-              <Grid container spacing={{ xs: 2, ms: 2, md: 2, lg: 2 }}>
-                {isLoading
-                  ? [...Array(2)].map((_, i) => (
-                      <Grid item xs={6} sm={4} md={3} lg={2} key={i}>
-                        <Skeleton
-                          height={200}
-                          style={{
-                            borderRadius: "10px",
-                            margin: "-20% 0",
-                          }}
-                        />
-                      </Grid>
-                    ))
-                  : collections.map(
-                      (collection: NftCollection, index: number) => (
-                        <Grid item xs={6} sm={4} md={3} lg={2} key={index}>
-                          <NftCollectionCard collection={collection} />
-                        </Grid>
-                      )
-                    )}
-              </Grid>
-            </div>
-          </div>
-        </BalancesTableContent>
-      </div>
-    </BalancesTable>
-  );
-}
-
-function NftCollectionCard({ collection }: { collection: NftCollection }) {
-  const { push } = useNavigation();
-  // Display the first NFT in the collection as the thumbnail in the grid
-  const collectionDisplayNft = collection.items[0];
-
-  const onPress = () => {
-    if (collection.items.length === 1) {
-      if (!collectionDisplayNft.name || !collectionDisplayNft.id) {
-        throw new Error("invalid NFT data");
-      }
-      // If there is only one item in the collection, link straight to its detail page
-      push({
-        title: collectionDisplayNft.name || "",
-        componentId: NAV_COMPONENT_NFT_DETAIL,
-        componentProps: {
-          nftId: collectionDisplayNft.id,
-        },
-      });
-    } else {
-      // Multiple items in connection, display a grid
-      push({
-        title: collection.name,
-        componentId: NAV_COMPONENT_NFT_COLLECTION,
-        componentProps: {
-          id: collection.id,
-        },
-      });
-    }
-  };
-
-  return (
-    <View style={{ width: 150, height: 150, borderRadius: 20 }}>
-      <Pressable onPress={onPress}></Pressable>
+    <View style={{ backgroundColor: "orange" }}>
+      <Text>{JSON.stringify(debug, null, 2)}</Text>
     </View>
   );
 }
