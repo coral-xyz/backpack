@@ -2,12 +2,13 @@ import { validateMnemonic, generateMnemonic, mnemonicToSeedSync } from "bip39";
 import { Keypair, PublicKey } from "@solana/web3.js";
 import nacl from "tweetnacl";
 import * as bs58 from "bs58";
+import { LedgerKeyringBase } from "@coral-xyz/blockchain-common";
 import {
   LEDGER_METHOD_SOLANA_SIGN_MESSAGE,
   LEDGER_METHOD_SOLANA_SIGN_TRANSACTION,
   DerivationPath,
 } from "@coral-xyz/common";
-import { deriveSolanaKeypairs, deriveSolanaKeypair } from "./crypto";
+import { deriveSolanaKeypairs, deriveSolanaKeypair } from "./util";
 import type {
   Keyring,
   KeyringFactory,
@@ -19,9 +20,11 @@ import type {
   LedgerKeyring,
   ImportedDerivationPath,
 } from "./types";
-import { LedgerKeyringBase } from "./ledger";
 
 export class SolanaKeyringFactory implements KeyringFactory {
+  /**
+   *
+   */
   public fromJson(payload: KeyringJson): SolanaKeyring {
     const keypairs = payload.secretKeys.map((secret: string) =>
       Keypair.fromSecretKey(Buffer.from(secret, "hex"))

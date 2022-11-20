@@ -10,18 +10,8 @@ import type {
   LedgerKeyringFactory,
   LedgerKeyring,
 } from "./types";
-import {
-  SolanaKeyringFactory,
-  SolanaHdKeyringFactory,
-  SolanaLedgerKeyringFactory,
-} from "./solana";
-import {
-  EthereumHdKeyringFactory,
-  EthereumKeyringFactory,
-  EthereumLedgerKeyringFactory,
-} from "./ethereum";
-import * as store from "../store";
-import { DefaultKeyname } from "../store";
+import * as store from "@coral-xyz/background/src/backend/store";
+import { DefaultKeyname } from "@coral-xyz/background/src/backend/store";
 
 const logger = getLogger("background/backend/keyring");
 
@@ -44,22 +34,6 @@ export class BlockchainKeyring {
     this.hdKeyringFactory = hdKeyringFactory;
     this.keyringFactory = keyringFactory;
     this.ledgerKeyringFactory = ledgerKeyringFactory;
-  }
-
-  public static solana(): BlockchainKeyring {
-    return new BlockchainKeyring(
-      new SolanaHdKeyringFactory(),
-      new SolanaKeyringFactory(),
-      new SolanaLedgerKeyringFactory()
-    );
-  }
-
-  public static ethereum(): BlockchainKeyring {
-    return new BlockchainKeyring(
-      new EthereumHdKeyringFactory(),
-      new EthereumKeyringFactory(),
-      new EthereumLedgerKeyringFactory()
-    );
   }
 
   public publicKeys(): {

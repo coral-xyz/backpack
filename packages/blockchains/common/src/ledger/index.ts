@@ -3,18 +3,7 @@ import {
   LEDGER_INJECTED_CHANNEL_RESPONSE,
   LEDGER_INJECTED_CHANNEL_REQUEST,
 } from "@coral-xyz/common";
-import type { ImportedDerivationPath, LedgerKeyringJson } from "./types";
-import { postMessageToIframe } from "../../shared";
-
-// This code runs inside a ServiceWorker, so the message listener below must be
-// created immediately. That's why `responseResolvers` is in the file's global scope.
-
-const responseResolvers: {
-  [reqId: string]: {
-    resolve: (value: any) => void;
-    reject: (reason?: string) => void;
-  };
-} = {};
+import type { ImportedDerivationPath, LedgerKeyringJson } from "../types";
 
 export class LedgerKeyringBase {
   protected derivationPaths: Array<ImportedDerivationPath>;
@@ -37,7 +26,7 @@ export class LedgerKeyringBase {
 
   public async ledgerImport(path: string, account: number, publicKey: string) {
     const found = this.derivationPaths.find(
-      ({ path, account, publicKey: pk }) => publicKey === pk
+      ({ publicKey: pk }) => publicKey === pk
     );
     if (found) {
       throw new Error("ledger account already exists");
@@ -87,6 +76,37 @@ export class LedgerKeyringBase {
     });
   }
 }
+
+/**
+ * Send message from service worker to iframe
+ * @param message object with message data
+ */
+export const postMessageToIframe = (
+  message: Record<string, any> & { type: any }
+) => {
+  globalThis.clients
+    .matchAll({
+      frameType: "top-level",
+      includeUncontrolled: true,
+      type: "window",
+      visibilityState: "visible",
+    })
+    .then((clients) => {
+      clients.forEach((client) => {
+        client.postMessage(message);
+      });
+    });
+};
+
+// This code runs inside a ServiceWorker, so the message listener below must be
+// created immediately. That's why `responseResolvers` is in the file's global scope.
+
+const responseResolvers: {
+  [reqId: string]: {
+    resolve: (value: any) => void;
+    reject: (reason?: string) => void;
+  };
+} = {};
 
 // Handle receiving postMessages
 self.addEventListener("message", (msg) => {

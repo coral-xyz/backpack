@@ -1,11 +1,7 @@
 import { ethers } from "ethers";
 import type { Wallet } from "ethers";
 import { validateMnemonic, mnemonicToSeedSync } from "bip39";
-import {
-  LEDGER_METHOD_ETHEREUM_SIGN_MESSAGE,
-  LEDGER_METHOD_ETHEREUM_SIGN_TRANSACTION,
-  DerivationPath,
-} from "@coral-xyz/common";
+import { LedgerKeyringBase } from "@coral-xyz/blockchain-common";
 import type {
   Keyring,
   KeyringFactory,
@@ -16,13 +12,17 @@ import type {
   LedgerKeyring,
   LedgerKeyringJson,
   ImportedDerivationPath,
-} from "./types";
-import { deriveEthereumWallets, deriveEthereumWallet } from "./crypto";
-import { LedgerKeyringBase } from "./ledger";
+} from "@coral-xyz/blockchain-common";
+import {
+  LEDGER_METHOD_ETHEREUM_SIGN_MESSAGE,
+  LEDGER_METHOD_ETHEREUM_SIGN_TRANSACTION,
+  DerivationPath,
+} from "@coral-xyz/common";
+import { deriveEthereumWallets, deriveEthereumWallet } from "../util";
 
 export class EthereumKeyringFactory implements KeyringFactory {
   fromJson(payload: KeyringJson): Keyring {
-    const wallets = payload.secretKeys.map((secret) => {
+    const wallets = payload.secretKeys.map((secret: string) => {
       return new ethers.Wallet(Buffer.from(secret, "hex").toString());
     });
     return new EthereumKeyring(wallets);

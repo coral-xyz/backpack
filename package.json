@@ -6,8 +6,8 @@
     "examples/clients/*",
     "examples",
     "examples/xnft/*",
-    "examples/xnft-program-library/packages/*",
     "packages/*",
+    "packages/blockchains/*",
     "web"
   ],
   "scripts": {

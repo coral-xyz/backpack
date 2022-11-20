@@ -14,16 +14,18 @@ import {
   NOTIFICATION_KEYRING_STORE_LOCKED,
   BACKEND_EVENT,
 } from "@coral-xyz/common";
+import {
+  hdKeyringForBlockchain,
+  keyringForBlockchain,
+  BlockchainKeyring,
+} from "@coral-xyz/blockchain-common";
 import * as crypto from "./crypto";
-import { SolanaHdKeyringFactory } from "./solana";
-import { EthereumHdKeyringFactory } from "./ethereum";
 import * as store from "../store";
 import {
   DefaultKeyname,
   DEFAULT_DARK_MODE,
   DEFAULT_DEVELOPER_MODE,
 } from "../store";
-import { BlockchainKeyring } from "./blockchain";
 
 /**
  * Keyring API for managing all wallet keys.
@@ -110,11 +112,7 @@ export class KeyringStore {
     publicKey?: string,
     persist = true
   ): Promise<void> {
-    const keyring = {
-      [Blockchain.SOLANA]: BlockchainKeyring.solana,
-      [Blockchain.ETHEREUM]: BlockchainKeyring.ethereum,
-    }[blockchain]();
-
+    const keyring = keyringForBlockchain(blockchain);
     if (this.mnemonic) {
       // Initialising using a mnemonic
       await keyring.initFromMnemonic(this.mnemonic, derivationPath, [
@@ -134,9 +132,7 @@ export class KeyringStore {
         },
       ]);
     }
-
     this.blockchains.set(blockchain, keyring);
-
     if (persist) {
       await this.persist();
     }
@@ -211,10 +207,7 @@ export class KeyringStore {
     derivationPath: DerivationPath,
     numberOfAccounts: number
   ): string[] {
-    const factory = {
-      [Blockchain.SOLANA]: new SolanaHdKeyringFactory(),
-      [Blockchain.ETHEREUM]: new EthereumHdKeyringFactory(),
-    }[blockchain];
+    const factory = hdKeyringForBlockchain(blockchain);
     const hdKeyring = factory.fromMnemonic(mnemonic, derivationPath, [
       ...Array(numberOfAccounts).keys(),
     ]);
