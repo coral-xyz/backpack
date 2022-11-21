@@ -18,8 +18,8 @@ import {
 import {
   hdFactoryForBlockchain,
   keyringForBlockchain,
-  BlockchainKeyring,
 } from "@coral-xyz/blockchain-common";
+import { BlockchainKeyring } from "@coral-xyz/blockchain-keyring";
 import * as crypto from "./crypto";
 import * as store from "../store";
 import {
@@ -342,7 +342,9 @@ export class KeyringStore {
     this.mnemonic = mnemonic;
     this.blockchains = new Map(
       Object.entries(blockchains).map(([blockchain, obj]) => {
-        const blockchainKeyring = BlockchainKeyring[blockchain]();
+        const blockchainKeyring = keyringForBlockchain(
+          blockchain as Blockchain
+        );
         blockchainKeyring.fromJson(obj);
         return [blockchain, blockchainKeyring];
       })

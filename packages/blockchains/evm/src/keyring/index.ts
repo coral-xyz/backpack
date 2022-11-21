@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import type { Wallet } from "ethers";
 import { validateMnemonic, mnemonicToSeedSync } from "bip39";
-import { LedgerKeyringBase } from "@coral-xyz/blockchain-common";
+import { LedgerKeyringBase } from "@coral-xyz/blockchain-keyring";
 import type {
   Keyring,
   KeyringFactory,
@@ -12,7 +12,7 @@ import type {
   LedgerKeyring,
   LedgerKeyringJson,
   ImportedDerivationPath,
-} from "@coral-xyz/blockchain-common";
+} from "@coral-xyz/blockchain-keyring";
 import {
   LEDGER_METHOD_ETHEREUM_SIGN_MESSAGE,
   LEDGER_METHOD_ETHEREUM_SIGN_TRANSACTION,

@@ -1,7 +1,6 @@
 import nacl from "tweetnacl";
 import { derivePath } from "ed25519-hd-key";
 import { Keypair } from "@solana/web3.js";
-import { derivePathStr } from "@coral-xyz/blockchain-common";
 import { Blockchain, DerivationPath } from "@coral-xyz/common";
 
 export function deriveSolanaKeypairs(
@@ -24,12 +23,21 @@ export function deriveSolanaKeypair(
   accountIndex: number,
   derivationPath: DerivationPath
 ): Keypair {
-  const pathStr = derivePathStr(
-    Blockchain.SOLANA,
-    derivationPath,
-    accountIndex
-  );
+  const pathStr = derivePathStr(derivationPath, accountIndex);
   const dSeed = derivePath(pathStr, seedHex).key;
   const secret = nacl.sign.keyPair.fromSeed(dSeed).secretKey;
   return Keypair.fromSecretKey(secret);
+}
+
+function derivePathStr(derivationPath: DerivationPath, accountIndex: number) {
+  switch (derivationPath) {
+    case DerivationPath.Bip44:
+      return accountIndex === 0
+        ? `m/44'/501'`
+        : `m/44'/501'/${accountIndex - 1}'`;
+    case DerivationPath.Bip44Change:
+      return `m/44'/501'/${accountIndex}'/0'`;
+    default:
+      throw new Error(`invalid derivation path: ${derivationPath}`);
+  }
 }

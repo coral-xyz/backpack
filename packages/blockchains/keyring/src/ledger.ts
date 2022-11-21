@@ -3,7 +3,7 @@ import {
   LEDGER_INJECTED_CHANNEL_RESPONSE,
   LEDGER_INJECTED_CHANNEL_REQUEST,
 } from "@coral-xyz/common";
-import type { ImportedDerivationPath, LedgerKeyringJson } from "../types";
+import type { ImportedDerivationPath, LedgerKeyringJson } from "./types";
 
 export class LedgerKeyringBase {
   protected derivationPaths: Array<ImportedDerivationPath>;

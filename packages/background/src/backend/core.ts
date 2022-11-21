@@ -12,10 +12,8 @@ import {
 } from "@solana/web3.js";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { makeDefaultNav } from "@coral-xyz/recoil";
-import {
-  keyringForBlockchain,
-  BlockchainKeyring,
-} from "@coral-xyz/blockchain-common";
+import { keyringForBlockchain } from "@coral-xyz/blockchain-common";
+import { BlockchainKeyring } from "@coral-xyz/blockchain-keyring";
 import {
   BACKEND_EVENT,
   Blockchain,

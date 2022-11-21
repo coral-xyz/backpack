@@ -1,7 +1,6 @@
 import { ethers } from "ethers";
 import type { Wallet } from "ethers";
-import { Blockchain, DerivationPath } from "@coral-xyz/common";
-import { derivePathStr } from "@coral-xyz/blockchain-common";
+import { DerivationPath } from "@coral-xyz/common";
 
 export function deriveEthereumWallets(
   seed: Buffer,
@@ -21,7 +20,20 @@ export function deriveEthereumWallet(
   derivationPath: DerivationPath
 ): Wallet {
   const hdNode = ethers.utils.HDNode.fromSeed(seed);
-  const path = derivePathStr(Blockchain.ETHEREUM, derivationPath, accountIndex);
+  const path = derivePathStr(derivationPath, accountIndex);
   const child = hdNode.derivePath(path);
   return new ethers.Wallet(child.privateKey);
+}
+
+function derivePathStr(derivationPath: DerivationPath, accountIndex: number) {
+  switch (derivationPath) {
+    case DerivationPath.Bip44:
+      return accountIndex === 0
+        ? `m/44'/60'`
+        : `m/44'/60'/${accountIndex - 1}'`;
+    case DerivationPath.Bip44Change:
+      return `m/44'/60'/${accountIndex}'/0'`;
+    default:
+      throw new Error(`invalid derivation path: ${derivationPath}`);
+  }
 }

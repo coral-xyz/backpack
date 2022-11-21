@@ -1,8 +1,8 @@
-import { validateMnemonic, generateMnemonic, mnemonicToSeedSync } from "bip39";
+import { validateMnemonic, mnemonicToSeedSync } from "bip39";
 import { Keypair, PublicKey } from "@solana/web3.js";
 import nacl from "tweetnacl";
 import * as bs58 from "bs58";
-import { LedgerKeyringBase } from "@coral-xyz/blockchain-common";
+import { LedgerKeyringBase } from "@coral-xyz/blockchain-keyring";
 import type {
   Keyring,
   KeyringFactory,
@@ -13,8 +13,7 @@ import type {
   LedgerKeyringJson,
   LedgerKeyring,
   ImportedDerivationPath,
-} from "@coral-xyz/blockchain-common";
-
+} from "@coral-xyz/blockchain-keyring";
 import {
   LEDGER_METHOD_SOLANA_SIGN_MESSAGE,
   LEDGER_METHOD_SOLANA_SIGN_TRANSACTION,

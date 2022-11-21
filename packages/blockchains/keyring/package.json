@@ -1,5 +1,5 @@
 {
-  "name": "@coral-xyz/blockchain-evm",
+  "name": "@coral-xyz/blockchain-keyring",
   "version": "0.1.0",
   "description": "",
   "license": "ISC",
@@ -17,8 +17,6 @@
     "lint:fix": "yarn run lint --fix"
   },
   "dependencies": {
-    "@coral-xyz/blockchain-keyring": "*",
-    "@coral-xyz/common": "*",
-    "ethers": "^5.7.2"
+    "@coral-xyz/common": "*"
   }
 }
