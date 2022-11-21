@@ -1,7 +1,7 @@
+import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-// import { Typography } from "@mui/material";
 import { useTheme } from "@hooks";
-import { Text, View } from "react-native";
+import { Text, View, Pressable, StyleSheet } from "react-native";
 import {
   useEnabledBlockchains,
   SwapProvider,
@@ -13,6 +13,7 @@ import {
   ETH_NATIVE_MINT,
   STRIPE_ENABLED,
 } from "@coral-xyz/common";
+import { Margin } from "@components";
 // import { WithHeaderButton } from "./TokensWidget/Token";
 // import { Deposit } from "./TokensWidget/Deposit";
 // import { SendLoader, Send } from "./TokensWidget/Send";
@@ -54,22 +55,6 @@ function StripeRamp() {
   return null;
 }
 
-function Typography({ style, children, ...props }: any) {
-  return (
-    <Text style={style} {...props}>
-      {children}
-    </Text>
-  );
-}
-
-function WithHeaderButton({ children, style, ...props }: any) {
-  return (
-    <View style={style} {...props}>
-      {children}
-    </View>
-  );
-}
-
 function IconPlaceholder(props: any) {
   return (
     <View
@@ -85,8 +70,6 @@ function IconPlaceholder(props: any) {
 }
 
 const Dollar = IconPlaceholder;
-const ArrowUpward = IconPlaceholder;
-const ArrowDownward = IconPlaceholder;
 const SwapHoriz = IconPlaceholder;
 
 export function TransferWidget({
@@ -113,12 +96,7 @@ export function TransferWidget({
       style={{
         flexDirection: "row",
         justifyContent: "center", // TODO could be alignItems
-        width:
-          enableOnramp && renderSwap
-            ? 256
-            : renderSwap || enableOnramp
-            ? 188
-            : 120,
+        alignItems: "center",
       }}
     >
       {enableOnramp && (
@@ -140,6 +118,53 @@ export function TransferWidget({
   );
 }
 
+function TransferButton({
+  icon,
+  label,
+  onPress,
+}: {
+  icon: string;
+  label: string;
+  onPress: () => void;
+}) {
+  const theme = useTheme();
+  return (
+    <Pressable onPress={onPress} style={{ alignItems: "center" }}>
+      <Margin bottom={8}>
+        <View
+          style={{
+            width: 50,
+            height: 50,
+            borderRadius: 100,
+            backgroundColor: theme.custom.colors.backgroundColor,
+            borderColor: theme.custom.colors.borderColor,
+            borderWidth: 1,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <MaterialIcons
+            name={icon}
+            size={24}
+            color={theme.custom.colors.fontColor}
+          />
+        </View>
+      </Margin>
+      <Text
+        style={{
+          color: theme.custom.colors.secondary,
+          fontSize: 14,
+          fontWeight: "500",
+          lineHeight: 20,
+          textAlign: "center",
+        }}
+      >
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
 function SwapButton({
   blockchain,
   address,
@@ -147,118 +172,24 @@ function SwapButton({
   blockchain?: Blockchain;
   address?: string;
 }) {
-  const theme = useTheme();
+  const onPress = () => {};
 
   return (
     <SwapProvider blockchain={Blockchain.SOLANA} tokenAddress={address}>
-      <TransferButton
-        label={"Swap"}
-        labelComponent={
-          <SwapHoriz
-            style={{
-              color: theme.custom.colors.fontColor,
-              marginLeft: "auto",
-              marginRight: "auto",
-            }}
-          />
-        }
-        routes={[
-          {
-            name: "swap",
-            component: (props: any) => <Swap {...props} />,
-            title: `Swap`,
-            props: {
-              blockchain,
-            },
-          },
-          {
-            title: `Select Token`,
-            name: "select-token",
-            component: (props: any) => <SelectToken {...props} />,
-          },
-        ]}
-      />
+      <TransferButton label="Swap" icon="compare-arrows" onPress={onPress} />
     </SwapProvider>
   );
 }
 
-function SendButton({
-  blockchain,
-  address,
-}: {
-  blockchain?: Blockchain;
-  address?: string;
-}) {
-  const theme = useTheme();
-  return (
-    <TransferButton
-      label={"Send"}
-      labelComponent={
-        <ArrowUpward
-          style={{
-            color: theme.custom.colors.fontColor,
-            display: "flex",
-            marginLeft: "auto",
-            marginRight: "auto",
-          }}
-        />
-      }
-      routes={
-        blockchain && address
-          ? [
-              {
-                name: "send",
-                component: (props: any) => <SendLoader {...props} />,
-                title: `Send`,
-                props: {
-                  blockchain,
-                  address,
-                },
-              },
-            ]
-          : [
-              {
-                name: "select-token",
-                component: SendToken,
-                title: "Select token",
-              },
-              {
-                name: "send",
-                component: (props: any) => <Send {...props} />,
-                title: "",
-              },
-            ]
-      }
-    />
-  );
+function SendButton({ blockchain }: { blockchain?: Blockchain }) {
+  const onPress = () => {};
+  return <TransferButton label="Send" icon="arrow-upward" onPress={onPress} />;
 }
 
 function ReceiveButton({ blockchain }: { blockchain?: Blockchain }) {
-  const theme = useTheme();
+  const onPress = () => {};
   return (
-    <TransferButton
-      label={"Receive"}
-      labelComponent={
-        <ArrowDownward
-          style={{
-            color: theme.custom.colors.fontColor,
-            display: "flex",
-            marginLeft: "auto",
-            marginRight: "auto",
-          }}
-        />
-      }
-      routes={[
-        {
-          component: Deposit,
-          title: "Deposit",
-          name: "deposit",
-          props: {
-            blockchain,
-          },
-        },
-      ]}
-    />
+    <TransferButton label="Receive" icon="arrow-downward" onPress={onPress} />
   );
 }
 
@@ -314,60 +245,6 @@ function RampButton({
             ]
       }
     />
-  );
-}
-
-function TransferButton({
-  label,
-  labelComponent,
-  routes,
-}: {
-  label: string;
-  labelComponent: any;
-  routes: Array<{ props?: any; component: any; title: string; name: string }>;
-}) {
-  const theme = useTheme();
-
-  return (
-    <View
-      style={{
-        width: 52,
-        height: 70,
-      }}
-    >
-      <WithHeaderButton
-        style={{
-          padding: 0,
-          width: 42,
-          height: 42,
-          borderRadius: 21,
-          marginBottom: 8,
-          // width: "42px",
-          // height: "42px",
-          // minWidth: "42px",
-          // borderRadius: "21px",
-          // boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.15)",
-          // marginLeft: "auto",
-          // marginRight: "auto",
-          // display: "block",
-          // marginBottom: "8px",
-        }}
-        label={""}
-        labelComponent={labelComponent}
-        routes={routes}
-      />
-      <Typography
-        style={{
-          color: theme.custom.colors.secondary,
-          fontSize: 14,
-          fontWeight: "500",
-          lineHeight: 20,
-          textAlign: "center",
-        }}
-      >
-        {label}
-      </Typography>
-    </View>
   );
 }
 

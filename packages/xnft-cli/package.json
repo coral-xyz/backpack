@@ -4,10 +4,6 @@
   "bin": {
     "xnft": "./index.js"
   },
-  "files": [
-    "index.js",
-    "iframe.js"
-  ],
   "scripts": {
     "prebuild": "cd ../../examples/xnft/iframe && npm run build && cd ../../../packages/common && npm run build && cd ../react-xnft-dom-renderer && npm run build",
     "build": "shx cp ../../examples/xnft/iframe/dist/index.html iframe.html && shx cp ../react-xnft-dom-renderer/dist/index.js renderer.js"

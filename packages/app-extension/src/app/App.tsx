@@ -1,3 +1,4 @@
+import React from "react";
 import { RecoilRoot } from "recoil";
 import { HashRouter } from "react-router-dom";
 import {
@@ -10,6 +11,7 @@ import "./App.css";
 import "@fontsource/inter";
 import "@fontsource/inter/500.css";
 import "@fontsource/inter/600.css";
+import { ErrorBoundary } from "./ErrorBoundary";
 
 export default function App() {
   return (
@@ -34,7 +36,9 @@ function _App() {
   return (
     <WithTheme>
       <NotificationsProvider>
-        <Router />
+        <ErrorBoundary>
+          <Router />
+        </ErrorBoundary>
       </NotificationsProvider>
     </WithTheme>
   );
