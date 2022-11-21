@@ -1,19 +1,20 @@
-import { MaterialIcons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
-import { useTheme } from "@hooks";
-import { Text, View, Pressable, StyleSheet } from "react-native";
-import {
-  useEnabledBlockchains,
-  SwapProvider,
-  useFeatureGates,
-} from "@coral-xyz/recoil";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Margin } from "@components";
 import {
   Blockchain,
-  SOL_NATIVE_MINT,
   ETH_NATIVE_MINT,
+  SOL_NATIVE_MINT,
   STRIPE_ENABLED,
 } from "@coral-xyz/common";
-import { Margin } from "@components";
+import {
+  SwapProvider,
+  useEnabledBlockchains,
+  useFeatureGates,
+} from "@coral-xyz/recoil";
+import { MaterialIcons } from "@expo/vector-icons";
+import { useTheme } from "@hooks";
+import { useNavigation } from "@react-navigation/native";
+
 // import { WithHeaderButton } from "./TokensWidget/Token";
 // import { Deposit } from "./TokensWidget/Deposit";
 // import { SendLoader, Send } from "./TokensWidget/Send";
@@ -70,16 +71,17 @@ function IconPlaceholder(props: any) {
 }
 
 const Dollar = IconPlaceholder;
-const SwapHoriz = IconPlaceholder;
 
 export function TransferWidget({
   blockchain,
   address,
   rampEnabled,
+  onNavigate,
 }: {
   blockchain?: Blockchain;
   address?: string;
   rampEnabled: boolean;
+  onNavigate: (route: string) => void;
 }) {
   const enabledBlockchains = useEnabledBlockchains();
   const featureGates = useFeatureGates();
@@ -91,27 +93,37 @@ export function TransferWidget({
 
   const Spacer = () => <View style={{ width: 16 }} />;
 
+  const onPress = (route: "Send" | "Receive" | "Swap") => onNavigate(route);
+
   return (
     <View
       style={{
         flexDirection: "row",
-        justifyContent: "center", // TODO could be alignItems
+        justifyContent: "center",
         alignItems: "center",
       }}
     >
       {enableOnramp && (
         <>
-          <RampButton blockchain={blockchain} address={address} />
+          <RampButton
+            onPress={onPress}
+            blockchain={blockchain}
+            address={address}
+          />
           <Spacer />
         </>
       )}
-      <ReceiveButton blockchain={blockchain} />
+      <ReceiveButton onPress={onPress} blockchain={blockchain} />
       <Spacer />
-      <SendButton blockchain={blockchain} address={address} />
+      <SendButton onPress={onPress} blockchain={blockchain} address={address} />
       {renderSwap && (
         <>
           <Spacer />
-          <SwapButton blockchain={blockchain} address={address} />
+          <SwapButton
+            onPress={onPress}
+            blockchain={blockchain}
+            address={address}
+          />
         </>
       )}
     </View>
@@ -168,28 +180,52 @@ function TransferButton({
 function SwapButton({
   blockchain,
   address,
+  onPress,
 }: {
   blockchain?: Blockchain;
   address?: string;
+  onPress: (route: string) => void;
 }) {
-  const onPress = () => {};
-
   return (
     <SwapProvider blockchain={Blockchain.SOLANA} tokenAddress={address}>
-      <TransferButton label="Swap" icon="compare-arrows" onPress={onPress} />
+      <TransferButton
+        label="Swap"
+        icon="compare-arrows"
+        onPress={() => onPress("Swap")}
+      />
     </SwapProvider>
   );
 }
 
-function SendButton({ blockchain }: { blockchain?: Blockchain }) {
-  const onPress = () => {};
-  return <TransferButton label="Send" icon="arrow-upward" onPress={onPress} />;
+function SendButton({
+  blockchain,
+  onPress,
+}: {
+  blockchain?: Blockchain;
+  onPress: (route: string) => void;
+}) {
+  return (
+    <TransferButton
+      label="Send"
+      icon="arrow-upward"
+      onPress={() => onPress("Send")}
+    />
+  );
 }
 
-function ReceiveButton({ blockchain }: { blockchain?: Blockchain }) {
-  const onPress = () => {};
+function ReceiveButton({
+  blockchain,
+  onPress,
+}: {
+  blockchain?: Blockchain;
+  onPress: (route: string) => void;
+}) {
   return (
-    <TransferButton label="Receive" icon="arrow-downward" onPress={onPress} />
+    <TransferButton
+      label="Receive"
+      icon="arrow-downward"
+      onPress={() => onPress("Receive")}
+    />
   );
 }
 

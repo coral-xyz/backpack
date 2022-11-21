@@ -9,8 +9,8 @@ import {
   // walletAddressDisplay,
 } from "@coral-xyz/common";
 
-import { BalanceSummaryWidget } from "./components/BalanceSummaryWidget";
 import { TokenTables } from "./components/Balances";
+import { BalanceSummaryWidget } from "./components/BalanceSummaryWidget";
 import type { Token } from "./components/index";
 
 export default function BalancesScreen({ navigation }) {
@@ -23,12 +23,14 @@ export default function BalancesScreen({ navigation }) {
     });
   };
 
+  const onNavigate = (route) => navigation.navigate("ReceiveModal");
+
   return (
     <Screen>
       <Margin vertical={12}>
         <BalanceSummaryWidget />
       </Margin>
-      <TransferWidget rampEnabled={true} />
+      <TransferWidget rampEnabled={false} onNavigate={onNavigate} />
       <TokenTables
         onPressRow={onPressTokenRow}
         customFilter={(token: Token) => {

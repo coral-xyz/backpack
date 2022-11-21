@@ -1,3 +1,4 @@
+import { Button, Text, View } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { getHeaderTitle } from "@react-navigation/elements";
@@ -5,7 +6,6 @@ import { createStackNavigator } from "@react-navigation/stack";
 import AppListScreen from "@screens/Unlocked/AppListScreen";
 import BalancesScreen from "@screens/Unlocked/BalancesScreen";
 import NftCollectiblesScreen from "@screens/Unlocked/NftCollectiblesScreen";
-import { Button, Text, View } from "react-native";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -17,8 +17,17 @@ export default function UnlockedNavigator() {
         <Stack.Screen name="Tabs" component={UnlockedBottomTabNavigator} />
       </Stack.Group>
       <Stack.Group screenOptions={{ presentation: "modal", headerShown: true }}>
-        <Stack.Screen name="AccountSettings" component={AccountSettingsModal} />
-        <Stack.Screen name="RecentActivity" component={RecentActivityModal} />
+        <Stack.Screen
+          name="AccountSettingsModal"
+          component={AccountSettingsModal}
+        />
+        <Stack.Screen
+          name="RecentActivityModal"
+          component={RecentActivityModal}
+        />
+        <Stack.Screen name="ReceiveModal" component={AccountSettingsModal} />
+        <Stack.Screen name="SendModal" component={RecentActivityModal} />
+        <Stack.Screen name="SwapModal" component={RecentActivityModal} />
       </Stack.Group>
     </Stack.Navigator>
   );
@@ -62,11 +71,11 @@ function Header({ title, navigation }: { title: string; navigation: any }) {
       <Text>{title}</Text>
       <View style={{ flexDirection: "row", alignItems: "center" }}>
         <Button
-          onPress={() => navigation.navigate("RecentActivity")}
+          onPress={() => navigation.navigate("RecentActivityModal")}
           title="Activity"
         />
         <Button
-          onPress={() => navigation.navigate("AccountSettings")}
+          onPress={() => navigation.navigate("AccountSettingsModal")}
           title="Account"
         />
       </View>
