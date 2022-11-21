@@ -1,0 +1,22 @@
+export function ethereumTokenData() {
+  const ETH_LOGO_URI =
+    "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png";
+
+  const tokenMap: Map<string, any> = new Map(
+    UniswapTokenList.tokens.map((t: any) => {
+      return [t.address, t];
+    })
+  );
+  tokenMap.set(ETH_NATIVE_MINT, {
+    name: "Ethereum",
+    address: ETH_NATIVE_MINT,
+    chainId: 1,
+    decimals: 18,
+    symbol: "ETH",
+    logoURI: ETH_LOGO_URI,
+    extensions: {
+      coingeckoId: "ethereum",
+    },
+  });
+  return tokenMap;
+}
