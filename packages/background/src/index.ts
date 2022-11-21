@@ -7,6 +7,7 @@ import * as coreBackend from "./backend/core";
 import * as solanaConnectionBackend from "./backend/solana-connection";
 import * as ethereumConnectionBackend from "./backend/ethereum-connection";
 import type { Background, Config } from "./types";
+import { initPushNotificationHandlers } from "./backend/push-notifications";
 
 export * from "./backend/keyring";
 
@@ -27,6 +28,8 @@ export function start(cfg: Config): Background {
   const _serverUi = serverUi.start(cfg, events, coreB);
   const _solanaConnection = solanaConnection.start(cfg, events, solanaB);
   const _ethereumConnection = ethereumConnection.start(cfg, events, ethereumB);
+
+  initPushNotificationHandlers();
 
   return {
     _serverUi,

@@ -1,0 +1,45 @@
+table:
+  name: xnft_preferences
+  schema: auth
+insert_permissions:
+  - role: auth_worker
+    permission:
+      check: {}
+      columns:
+        - disabled
+        - username
+        - uuid
+        - notifications
+        - media
+        - xnft_id
+        - id
+select_permissions:
+  - role: auth_worker
+    permission:
+      columns:
+        - media
+        - notifications
+        - id
+        - disabled
+        - username
+        - uuid
+        - xnft_id
+      filter: {}
+update_permissions:
+  - role: auth_worker
+    permission:
+      columns:
+        - media
+        - notifications
+        - id
+        - disabled
+        - username
+        - uuid
+        - xnft_id
+      filter: {}
+      check: {}
+delete_permissions:
+  - role: auth_worker
+    permission:
+      backend_only: false
+      filter: {}

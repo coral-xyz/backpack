@@ -1,0 +1,42 @@
+table:
+  name: notifications
+  schema: auth
+insert_permissions:
+  - role: auth_worker
+    permission:
+      check: {}
+      columns:
+        - title
+        - id
+        - body
+        - image
+        - xnft_id
+        - username
+        - uuid
+        - timestamp
+select_permissions:
+  - role: auth_worker
+    permission:
+      columns:
+        - id
+        - body
+        - image
+        - title
+        - username
+        - uuid
+        - xnft_id
+        - timestamp
+      filter: {}
+update_permissions:
+  - role: auth_worker
+    permission:
+      columns:
+        - id
+        - body
+        - image
+        - title
+        - username
+        - uuid
+        - xnft_id
+      filter: {}
+      check: null
