@@ -9,13 +9,18 @@ import {
 } from "@coral-xyz/common";
 import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useBlockchainLogo } from "@hooks";
+import { useBlockchainLogo, useTheme } from "@hooks";
 
 // TODO move this
 export type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
 
 export function RowSeparator() {
   return <View style={styles.rowSeparator} />;
+}
+
+// TODO(peter) children: any
+function LeftSide({ children }: any) {
+  return <View style={styles.leftSide}>{children}</View>;
 }
 
 export function TableHeader({
@@ -27,19 +32,22 @@ export function TableHeader({
   visible: boolean;
   onPress: () => void;
 }) {
+  const theme = useTheme();
   const title = toTitleCase(blockchain);
   const logo = useBlockchainLogo(blockchain);
 
   return (
     <Pressable onPress={onPress} style={styles.tableHeader}>
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
+      <LeftSide>
         <Image style={styles.logoContainer} source={logo} />
-        <Text>{title}</Text>
-      </View>
+        <Text style={[styles.title, { color: theme.custom.colors.fontColor }]}>
+          {title}
+        </Text>
+      </LeftSide>
       <MaterialIcons
         name={visible ? "keyboard-arrow-up" : "keyboard-arrow-down"}
         size={24}
-        color="black"
+        color={theme.custom.colors.fontColor}
       />
     </Pressable>
   );
@@ -50,17 +58,24 @@ const styles = StyleSheet.create({
     backgroundColor: "#eee",
     flex: 1,
   },
+  leftSide: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  title: {
+    fontWeight: "500",
+    lineHeight: 24,
+    fontSize: 14,
+  },
   tableHeader: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    height: 30,
     padding: 8,
   },
   logoContainer: {
     width: 12,
     height: 12,
-    backgroundColor: "#000",
     marginRight: 8,
   },
   rowSeparator: {

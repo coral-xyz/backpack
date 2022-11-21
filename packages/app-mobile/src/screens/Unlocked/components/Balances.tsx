@@ -224,7 +224,7 @@ function BalanceTable({
   }, [searchFilter]);
 
   return (
-    <View style={{ backgroundColor: "#fff", borderRadius: 8 }}>
+    <View style={{ backgroundColor: "transparent", borderRadius: 8 }}>
       <TableHeader
         blockchain={blockchain}
         onPress={onPressExpand}
@@ -310,6 +310,8 @@ export function BalanceRow({
   } catch {
     // pass
   }
+
+  console.log({ token, trim, subtitle });
 
   return (
     <Pressable
