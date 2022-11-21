@@ -158,8 +158,6 @@ export function TokenTables({
     blockchains?.filter((b) => enabledBlockchains.includes(b)) ||
     enabledBlockchains;
 
-  console.log("TokenTables", { enabledBlockchains, filteredBlockchains });
-
   return (
     <>
       {filteredBlockchains.map((blockchain: Blockchain) => (
@@ -217,8 +215,6 @@ export function TokenTable({
           t.ticker.toLowerCase().startsWith(searchLower))
     )
     .filter(customFilter);
-
-  console.log("TokenTable", { tokenAccountsFiltered });
 
   useEffect(() => {
     setSearch(searchFilter);
