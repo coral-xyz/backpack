@@ -31,8 +31,8 @@ import {
   ChannelContentScript,
   CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
   CHANNEL_SOLANA_CONNECTION_RPC_UI,
-  SOLANA_CONNECTION_GET_MULTIPLE_ACCOUNTS_INFO,
   SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
+  SOLANA_CONNECTION_GET_MULTIPLE_ACCOUNTS_INFO,
   SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO,
   SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO_AND_CONTEXT,
   SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH,
@@ -41,7 +41,6 @@ import {
   SOLANA_CONNECTION_RPC_SEND_RAW_TRANSACTION,
   SOLANA_CONNECTION_RPC_CONFIRM_TRANSACTION,
   //SOLANA_CONNECTION_RPC_SIMULATE_TRANSACTION,
-  //SOLANA_CONNECTION_RPC_GET_MULTIPLE_ACCOUNTS_INFO,
   SOLANA_CONNECTION_RPC_GET_CONFIRMED_SIGNATURES_FOR_ADDRESS_2,
   SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTIONS,
   SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTION,
@@ -169,6 +168,17 @@ async function handleImpl<T = any>(
 }
 
 messageHandlers.set(
+  SOLANA_CONNECTION_GET_MULTIPLE_ACCOUNTS_INFO,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getMultipleAccountsInfo(
+      params[0].map((p) => new PublicKey(p)),
+      params[1]
+    );
+    return [resp];
+  }
+);
+
+messageHandlers.set(
   SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO,
   async (ctx: Context<SolanaConnectionBackend>, params) => {
     const resp = await ctx.backend.getAccountInfo(
@@ -253,17 +263,6 @@ messageHandlers.set(
     }
 
     const resp = await ctx.backend.confirmTransaction(signature, params[1]);
-    return [resp];
-  }
-);
-
-messageHandlers.set(
-  SOLANA_CONNECTION_GET_MULTIPLE_ACCOUNTS_INFO,
-  async (ctx, params) => {
-    const resp = await ctx.backend.getMultipleAccountsInfo(
-      params[0].map((p) => new PublicKey(p)),
-      params[1]
-    );
     return [resp];
   }
 );

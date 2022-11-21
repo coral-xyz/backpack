@@ -379,7 +379,7 @@ export const SOLANA_CONNECTION_RPC_CONFIRM_TRANSACTION =
   "solana-confirm-transaction";
 export const SOLANA_CONNECTION_RPC_SIMULATE_TRANSACTION =
   "solana-simulate-transaction";
-export const SOLANA_CONNECTION_RPC_GET_MULTIPLE_ACCOUNTS_INFO =
+export const SOLANA_CONNECTION_GET_MULTIPLE_ACCOUNTS_INFO =
   "solana-get-multiple-accounts-info";
 export const SOLANA_CONNECTION_RPC_GET_CONFIRMED_SIGNATURES_FOR_ADDRESS_2 =
   "solana-get-confirmed-signatures-for-address-2";
