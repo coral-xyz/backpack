@@ -1,0 +1,1 @@
+CREATE TABLE "auth"."notification_subscriptions" ("id" serial NOT NULL, "public_key" text NOT NULL, "username" text NOT NULL, "endpoint" text NOT NULL, "p256dh" text NOT NULL, "auth" text NOT NULL, "expirationTime" text NOT NULL, PRIMARY KEY ("id") );

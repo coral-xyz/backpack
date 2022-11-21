@@ -1,4 +1,5 @@
 import { pbkdf2 } from "crypto";
+import * as bip32 from "bip32";
 import nacl, { randomBytes, secretbox } from "tweetnacl";
 import * as bs58 from "bs58";
 import { derivePath } from "ed25519-hd-key";
@@ -43,12 +44,12 @@ export function deriveSolanaKeypair(
   accountIndex: number,
   derivationPath: DerivationPath
 ): Keypair {
-  const pathStr = derivePathStr(
+  let dSeed = deriveSeed(
+    seedHex,
     Blockchain.SOLANA,
     derivationPath,
     accountIndex
   );
-  const dSeed = derivePath(pathStr, seedHex).key;
   const secret = nacl.sign.keyPair.fromSeed(dSeed).secretKey;
   return Keypair.fromSecretKey(secret);
 }
@@ -76,6 +77,25 @@ export function deriveEthereumWallet(
   return new ethers.Wallet(child.privateKey);
 }
 
+function deriveSeed(
+  seedHex: string,
+  blockchain: Blockchain,
+  derivationPath: DerivationPath,
+  accountIndex: number
+): any {
+  if (blockchain !== Blockchain.SOLANA) {
+    throw new Error("invariant violation: blockchain must be Solana");
+  }
+  const pathStr = derivePathStr(blockchain, derivationPath, accountIndex);
+  switch (derivationPath) {
+    case DerivationPath.SolletDeprecated:
+      return bip32.fromSeed(Buffer.from(seedHex, "hex")).derivePath(pathStr)
+        .privateKey;
+    default:
+      return derivePath(pathStr, seedHex).key;
+  }
+}
+
 function derivePathStr(
   blockchain: Blockchain,
   derivationPath: DerivationPath,
@@ -92,6 +112,8 @@ function derivePathStr(
         : `m/44'/${coinType}'/${accountIndex - 1}'`;
     case DerivationPath.Bip44Change:
       return `m/44'/${coinType}'/${accountIndex}'/0'`;
+    case DerivationPath.SolletDeprecated:
+      return `m/${coinType}'/${accountIndex}'/0/0`;
     default:
       throw new Error(`invalid derivation path: ${derivationPath}`);
   }

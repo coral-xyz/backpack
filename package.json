@@ -3,6 +3,7 @@
   "private": true,
   "workspaces": [
     "backend/workers/*",
+    "backend/native/*",
     "examples/clients/*",
     "examples",
     "examples/xnft/*",

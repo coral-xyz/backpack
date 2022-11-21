@@ -1,0 +1,45 @@
+table:
+  name: notification_subscriptions
+  schema: auth
+insert_permissions:
+  - role: auth_worker
+    permission:
+      check: {}
+      columns:
+        - id
+        - auth
+        - endpoint
+        - expirationTime
+        - p256dh
+        - public_key
+        - username
+select_permissions:
+  - role: auth_worker
+    permission:
+      columns:
+        - id
+        - auth
+        - endpoint
+        - expirationTime
+        - p256dh
+        - public_key
+        - username
+      filter: {}
+update_permissions:
+  - role: auth_worker
+    permission:
+      columns:
+        - id
+        - auth
+        - endpoint
+        - expirationTime
+        - p256dh
+        - public_key
+        - username
+      filter: {}
+      check: null
+delete_permissions:
+  - role: auth_worker
+    permission:
+      backend_only: false
+      filter: {}

@@ -1051,6 +1051,11 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
+  async navigationToDefault(): Promise<string> {
+    await store.setNav(defaultNav);
+    return SUCCESS_RESPONSE;
+  }
+
   async navigationToRoot(): Promise<string> {
     let nav = await store.getNav();
     if (!nav) {
