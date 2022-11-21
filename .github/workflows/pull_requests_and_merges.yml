@@ -276,3 +276,10 @@ jobs:
           token: ${{ secrets.NPM_ACCESS_TOKEN }}
           tag: latest
           package: packages/react-xnft-dom-renderer/package.json
+      - name: "publish to npm: chat-sdk"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_ACCESS_TOKEN }}
+          tag: latest
+          package: packages/chat-sdk/package.json

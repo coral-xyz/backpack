@@ -1,6 +1,7 @@
 // Mobile only stub. Might be able to get rid of this completely. TBD(peter)
-import { Blockchain } from "@coral-xyz/common";
+import type { Blockchain } from "@coral-xyz/common";
 
+// eslint-disable-next-line
 export namespace SearchParamsFor {
   export interface Plugin {
     props: { pluginUrl: string };

@@ -1,0 +1,20 @@
+{
+  "name": "deadgods",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "xnft build",
+    "start": "xnft watch",
+    "dev": "xnft dev"
+  },
+  "devDependencies": {
+    "@coral-xyz/xnft-cli": "*"
+  },
+  "dependencies": {
+    "react-xnft": "*",
+    "@coral-xyz/common": "*",
+    "@project-serum/anchor": "^0.25.0",
+    "@project-serum/serum": "^0.13.64",
+    "@solana/web3.js": "^1.36.0",
+    "react": "^17.0.2"
+  }
+}

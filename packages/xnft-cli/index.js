@@ -6,13 +6,15 @@ const GlobalsPolyfills = require("@esbuild-plugins/node-globals-polyfill");
 const { Parcel } = require("@parcel/core");
 const { program } = require("commander");
 const { join, resolve } = require("path");
+const native = require("./native");
 const fs = require("fs");
 
 const { SIMULATOR_PORT } = { SIMULATOR_PORT: 9933 }; // TODO: replace with import.
 
-const pkgBuffer = fs.readFileSync(__dirname + "/package.json");
-const pkg = JSON.parse(pkgBuffer.toString());
+const pkg = JSON.parse(fs.readFileSync(__dirname + "/package.json").toString());
 program.version(pkg.version);
+
+native(program.command("native"));
 
 const options = {
   entries: "./src/index.tsx",
@@ -198,9 +200,25 @@ program
             <meta charset="utf-8"/>
             <link rel="stylesheet" href="https://doof72pbjabye.cloudfront.net/fonts/inter/font.css"></link>
             <script src="https://cdn.tailwindcss.com"></script>
+            <style>
+              html, body {
+                position:relative;
+                margin: 0;
+                padding: 0;
+                height:100%;
+                display:flex;
+                flex-direction: column;
+              }
+              #native-container {
+                display:none;
+                flex-direction: column;
+                flex: 1 0 100%;
+              }
+            </style>
           </head>
           <title>simulator</title>
           <body>
+            <div id="native-container"></div>
             <div id="container"></div>
             <script>${js}</script>
             ${rendererScript}
@@ -214,6 +232,64 @@ program
     });
   });
 
+program.command("start").action(async () => {
+  const express = require("express");
+  const fs = require("fs");
+  const app = express();
+
+  const port = SIMULATOR_PORT;
+
+  let js;
+  let rendererScript;
+
+  try {
+    const rendererFileContent = fs.readFileSync(
+      join(__dirname, "renderer.js"),
+      {
+        encoding: "utf-8",
+      }
+    );
+    rendererScript = `<script>${rendererFileContent}</script>`;
+  } catch (e) {
+    console.log("falling back to latest renderer");
+    // fallback to latest version of renderer
+    rendererScript = `<script src="https://unpkg.com/@coral-xyz/react-xnft-dom-renderer@latest/dist/index.js"></script>`;
+  }
+  js = fs.readFileSync("dist/index.js", { encoding: "utf-8" });
+
+  app.get("/", (req, res) => {
+    res.send(`
+        <!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <meta charset="utf-8"/>
+            <link rel="stylesheet" href="https://doof72pbjabye.cloudfront.net/fonts/inter/font.css"></link>
+            <script src="https://cdn.tailwindcss.com"></script>
+            <style>
+              html, body {
+                position:relative;
+                margin: 0;
+                padding: 0;
+                height:100%;
+                display:flex;
+                flex-direction: column;
+              }
+            </style>
+          </head>
+          <title>simulator</title>
+          <body>
+            <div id="container"></div>
+            <script>${js}</script>
+            ${rendererScript}
+          </body>
+        </html>
+      `);
+  });
+
+  app.listen(port, () => {
+    console.log(`listening on port ${port}`);
+  });
+});
 program
   .command("init")
   .argument("<name>", "name of the xnft")

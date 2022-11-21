@@ -1,6 +1,7 @@
 import { ethers, BigNumber } from "ethers";
 import { Typography } from "@mui/material";
 import { useCustomTheme } from "@coral-xyz/themes";
+import { ProxyImage } from "./ProxyImage";
 
 //
 // Displays token amount header with logo.
@@ -43,13 +44,16 @@ export const TokenAmountHeader: React.FC<{
             marginRight: "8px",
           }}
         >
-          <img
+          <ProxyImage
             src={token.logo}
             style={{
               width: "32px",
               height: "32px",
               borderRadius: "16px",
             }}
+            onError={(event: any) =>
+              (event.currentTarget.style.display = "none")
+            }
           />
         </div>
       )}

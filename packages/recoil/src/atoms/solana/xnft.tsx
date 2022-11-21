@@ -53,113 +53,6 @@ export function xnftUrl(url: string) {
   return [PROXY_URL, uri].join("");
 }
 
-export const plugins = selector({
-  key: "plugins",
-  get: ({ get }: any) => {
-    const developerMode = get(isDeveloperMode);
-    const plugins: Array<any> = [];
-    // Display the simulator if developer mode is enabled
-    if (developerMode) {
-      plugins.push({
-        url: SIMULATOR_URL,
-        iconUrl: "assets/simulator.png",
-        title: "Simulator",
-        activeWallets: get(activePublicKeys),
-        connectionUrls: get(connectionUrls),
-        install: {
-          publicKey: PublicKey.default.toString(),
-          account: {
-            xnft: PublicKey.default.toString(),
-          },
-        },
-      });
-    }
-    return plugins;
-
-    /*
-      {
-        url: DEGODS_TABLE_PLUGIN_URL,
-        iconUrl: "assets/deadgods.png",
-        title: "DeadGods",
-        activeWallets: get(activePublicKeys),
-        connectionUrls: get(connectionUrls),
-        install: {
-          publicKey: Keypair.generate().publicKey.toString(),
-          account: {
-            xnft: Keypair.generate().publicKey.toString(),
-          },
-        },
-      },
-      {
-        url: AURORY_PLUGIN_URL,
-        iconUrl: "assets/aurory.png",
-        title: "Aurory",
-        activeWallets: get(activePublicKeys),
-        connectionUrls: get(connectionUrls),
-        install: {
-          publicKey: Keypair.generate().publicKey.toString(),
-          account: {
-            xnft: Keypair.generate().publicKey.toString(),
-          },
-        },
-      },
-      {
-        url: NETWORK_MONITOR,
-        iconUrl:
-          "https://pbs.twimg.com/profile_images/1472933274209107976/6u-LQfjG_400x400.jpg",
-        title: "Monitor",
-        activeWallets: get(activePublicKeys),
-        connectionUrls: get(connectionUrls),
-        install: {
-          publicKey: Keypair.generate().publicKey.toString(),
-          account: {
-            xnft: Keypair.generate().publicKey.toString(),
-          },
-        },
-      },
-      {
-        url: PRICES_PLUGIN_URL,
-        iconUrl: "assets/prices.png",
-        title: "Prices",
-        activeWallets: get(activePublicKeys),
-        connectionUrls: get(connectionUrls),
-        install: {
-          publicKey: Keypair.generate().publicKey.toString(),
-          account: {
-            xnft: Keypair.generate().publicKey.toString(),
-          },
-        },
-      },
-      {
-        url: MANGO_TABLE_PLUGIN_URL,
-        iconUrl: "assets/mango.png",
-        title: "Mango",
-        activeWallet: get(activePublicKeys),
-        connectionUrls: get(connectionUrls),
-        install: {
-          publicKey: Keypair.generate().publicKey.toString(),
-          account: {
-            xnft: Keypair.generate().publicKey.toString(),
-          },
-        },
-      },
-      {
-        url: PSYFI_PLUGIN_URL,
-        iconUrl: "assets/psyfi.png",
-        title: "Psyfi",
-        activeWallets: get(activePublicKeys),
-        connectionUrls: get(connectionUrls),
-        install: {
-          publicKey: Keypair.generate().publicKey.toString(),
-          account: {
-            xnft: Keypair.generate().publicKey.toString(),
-          },
-        },
-      },
-			*/
-  },
-});
-
 export const xnfts = atom({
   key: "xnfts",
   default: selector({
@@ -188,18 +81,52 @@ export const xnfts = atom({
   }),
 });
 
-export const appIcons = selector({
-  key: "appIcons",
-  get: async ({ get }) => {
-    const _xnftData = get(xnfts);
-    const xnftData = _xnftData.filter(
-      (p) =>
-        // @ts-ignore
-        p.install.account.xnft.toString() !==
-        "4ekUZj2TKNoyCwnRDstvViCZYkhnhNoWNQpa5bBLwhq4"
-    );
-    const pluginData = get(plugins);
-    // HACK: hide autoinstalled ONE xnft -> entrypoint in collectibles.
-    return xnftData.concat(pluginData);
+export const plugins = selector({
+  key: "plugins",
+  get: ({ get }: any) => {
+    const developerMode = get(isDeveloperMode);
+    const _xnfts = get(xnfts);
+    const plugins = [..._xnfts];
+    // Display the simulator if developer mode is enabled
+    if (developerMode) {
+      plugins.push({
+        url: SIMULATOR_URL,
+        iconUrl: "assets/simulator.png",
+        title: "Simulator",
+        activeWallets: get(activePublicKeys),
+        connectionUrls: get(connectionUrls),
+        install: {
+          publicKey: PublicKey.default.toString(),
+          account: {
+            xnft: PublicKey.default.toString(),
+          },
+        },
+      });
+    }
+    return plugins;
   },
+});
+
+export const filteredPlugins = atom({
+  key: "filteredPlugins",
+  default: selector({
+    key: "filteredPluginsDefault",
+    get: async ({ get }) => {
+      const developerMode = get(isDeveloperMode);
+      const _plugins = get(plugins);
+
+      return _plugins.filter(
+        (xnft) =>
+          // @ts-ignore
+          // hide autoinstalled ONE xNft -> entrypoint in collectibles.
+          xnft.install.account.xnft.toString() !==
+            "4ekUZj2TKNoyCwnRDstvViCZYkhnhNoWNQpa5bBLwhq4" &&
+          // hide autoinstalled Explorer xNft if not in devmode
+          (developerMode ||
+            // @ts-ignore
+            xnft.install.account.xnft.toString() !==
+              "3Db1fHHc2TGrCpBWnu6ZzdQd5pSoyGCmnh6nopNjv4P2")
+      );
+    },
+  }),
 });
