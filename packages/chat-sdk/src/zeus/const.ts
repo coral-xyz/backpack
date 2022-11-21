@@ -7,6 +7,8 @@ export const AllTypesProps: Record<string, any> = {
     _and: "chats_bool_exp",
     _not: "chats_bool_exp",
     _or: "chats_bool_exp",
+    client_generated_uuid: "String_comparison_exp",
+    created_at: "timestamptz_comparison_exp",
     id: "Int_comparison_exp",
     message: "String_comparison_exp",
     room: "String_comparison_exp",
@@ -14,13 +16,17 @@ export const AllTypesProps: Record<string, any> = {
     uuid: "String_comparison_exp",
   },
   chats_constraint: "enum" as const,
-  chats_insert_input: {},
+  chats_insert_input: {
+    created_at: "timestamptz",
+  },
   chats_on_conflict: {
     constraint: "chats_constraint",
     update_columns: "chats_update_column",
     where: "chats_bool_exp",
   },
   chats_order_by: {
+    client_generated_uuid: "order_by",
+    created_at: "order_by",
     id: "order_by",
     message: "order_by",
     room: "order_by",
@@ -32,7 +38,9 @@ export const AllTypesProps: Record<string, any> = {
     initial_value: "chats_stream_cursor_value_input",
     ordering: "cursor_ordering",
   },
-  chats_stream_cursor_value_input: {},
+  chats_stream_cursor_value_input: {
+    created_at: "timestamptz",
+  },
   chats_update_column: "enum" as const,
   cursor_ordering: "enum" as const,
   mutation_root: {
@@ -66,6 +74,17 @@ export const AllTypesProps: Record<string, any> = {
       where: "chats_bool_exp",
     },
   },
+  timestamptz: `scalar.timestamptz` as const,
+  timestamptz_comparison_exp: {
+    _eq: "timestamptz",
+    _gt: "timestamptz",
+    _gte: "timestamptz",
+    _in: "timestamptz",
+    _lt: "timestamptz",
+    _lte: "timestamptz",
+    _neq: "timestamptz",
+    _nin: "timestamptz",
+  },
 };
 
 export const ReturnTypes: Record<string, any> = {
@@ -74,6 +93,8 @@ export const ReturnTypes: Record<string, any> = {
     refresh: "Boolean",
   },
   chats: {
+    client_generated_uuid: "String",
+    created_at: "timestamptz",
     id: "Int",
     message: "String",
     room: "String",
@@ -97,6 +118,7 @@ export const ReturnTypes: Record<string, any> = {
     chats_by_pk: "chats",
     chats_stream: "chats",
   },
+  timestamptz: `scalar.timestamptz` as const,
 };
 
 export const Ops = {
