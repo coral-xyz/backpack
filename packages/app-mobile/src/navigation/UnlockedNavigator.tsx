@@ -25,9 +25,21 @@ export default function UnlockedNavigator() {
           name="RecentActivityModal"
           component={RecentActivityModal}
         />
-        <Stack.Screen name="ReceiveModal" component={AccountSettingsModal} />
-        <Stack.Screen name="SendModal" component={RecentActivityModal} />
-        <Stack.Screen name="SwapModal" component={RecentActivityModal} />
+        <Stack.Screen
+          options={{ title: "Deposit" }}
+          name="ReceiveModal"
+          component={AccountSettingsModal}
+        />
+        <Stack.Screen
+          options={{ title: "Send" }}
+          name="SendModal"
+          component={RecentActivityModal}
+        />
+        <Stack.Screen
+          options={{ title: "Swap" }}
+          name="SwapModal"
+          component={RecentActivityModal}
+        />
       </Stack.Group>
     </Stack.Navigator>
   );
