@@ -6,6 +6,8 @@ insert_permissions:
     permission:
       check: {}
       columns:
+        - client_generated_uuid
+        - created_at
         - id
         - message
         - room
@@ -15,6 +17,8 @@ select_permissions:
   - role: chat
     permission:
       columns:
+        - client_generated_uuid
+        - created_at
         - id
         - message
         - room
