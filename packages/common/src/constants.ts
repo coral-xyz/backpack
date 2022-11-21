@@ -362,6 +362,8 @@ export const ETHEREUM_PROVIDER_RPC_WAIT_FOR_TRANSACTION =
 // Solana connection api. These are the methods available for the background
 // connection implementation (which the frontends use via message passing).
 //
+export const SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS =
+  "solana-custom-spl-token-accounts";
 export const SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO = "solana-get-account-info";
 export const SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO_AND_CONTEXT =
   "solana-get-account-info-and-context";
@@ -375,16 +377,16 @@ export const SOLANA_CONNECTION_RPC_SEND_RAW_TRANSACTION =
   "solana-send-raw-transaction";
 export const SOLANA_CONNECTION_RPC_CONFIRM_TRANSACTION =
   "solana-confirm-transaction";
+export const SOLANA_CONNECTION_RPC_SIMULATE_TRANSACTION =
+  "solana-simulate-transaction";
+export const SOLANA_CONNECTION_RPC_GET_MULTIPLE_ACCOUNTS_INFO =
+  "solana-get-multiple-accounts-info";
+export const SOLANA_CONNECTION_RPC_GET_CONFIRMED_SIGNATURES_FOR_ADDRESS_2 =
+  "solana-get-confirmed-signatures-for-address-2";
 export const SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTIONS =
   "solana-get-parsed-transactions";
 export const SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTION =
   "solana-get-parsed-transaction";
-export const SOLANA_CONNECTION_GET_MULTIPLE_ACCOUNTS_INFO =
-  "solana-get-multiple-accounts-info";
-export const SOLANA_CONNECTION_RPC_GET_CONFIRMED_SIGNATURES_FOR_ADDRESS_2 =
-  "solana-get-confirmed-signatures-for-address-2";
-export const SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS =
-  "solana-custom-spl-token-accounts";
 export const SOLANA_CONNECTION_RPC_GET_PROGRAM_ACCOUNTS =
   "solana-get-program-accounts";
 export const SOLANA_CONNECTION_RPC_GET_FEE_FOR_MESSAGE =
@@ -392,7 +394,7 @@ export const SOLANA_CONNECTION_RPC_GET_FEE_FOR_MESSAGE =
 export const SOLANA_CONNECTION_RPC_GET_MINIMUM_BALANCE_FOR_RENT_EXEMPTION =
   "solana-get-minimum-balance-for-rent-exemption";
 export const SOLANA_CONNECTION_RPC_GET_TOKEN_ACCOUNT_BALANCE =
-  "get-token-account-balance";
+  "solana-get-token-account-balance";
 export const SOLANA_CONNECTION_RPC_GET_BALANCE = "solana-get-balance";
 export const SOLANA_CONNECTION_RPC_GET_SLOT = "solana-get-slot";
 export const SOLANA_CONNECTION_RPC_GET_BLOCK_TIME = "solana-get-block-time";
@@ -400,12 +402,101 @@ export const SOLANA_CONNECTION_RPC_GET_PARSED_TOKEN_ACCOUNTS_BY_OWNER =
   "solana-get-parsed-token-accounts-by-owner";
 export const SOLANA_CONNECTION_RPC_GET_TOKEN_LARGEST_ACCOUNTS =
   "solana-get-token-largest-accounts";
-export const SOLANA_CONNECTION_RPC_GET_ADDRESS_LOOKUP_TABLE =
-  "solana-get-address-lookup-table";
 export const SOLANA_CONNECTION_RPC_GET_PARSED_ACCOUNT_INFO =
   "solana-get-parsed-account-info";
 export const SOLANA_CONNECTION_RPC_GET_PARSED_PROGRAM_ACCOUNTS =
   "solana-get-parsed-program-accounts";
+export const SOLANA_CONNECTION_RPC_GET_ADDRESS_LOOKUP_TABLE =
+  "solana-get-address-lookup-table";
+export const SOLANA_CONNECTION_RPC_GET_BALANCE_AND_CONTEXT =
+  "solana-get-balance-and-context";
+export const SOLANA_CONNECTION_RPC_GET_MINIMUM_LEDGER_SLOT =
+  "solana-get-minimum-ledger-slot";
+export const SOLANA_CONNECTION_RPC_GET_FIRST_AVAILABLE_BLOCK =
+  "solana-get-first-available-block";
+export const SOLANA_CONNECTION_RPC_GET_SUPPLY = "solana-get-supply";
+export const SOLANA_CONNECTION_RPC_GET_TOKEN_SUPPLY = "solana-get-token-supply";
+export const SOLANA_CONNECTION_RPC_GET_LARGEST_ACCOUNTS =
+  "solana-get-largest-accounts";
+export const SOLANA_CONNECTION_RPC_GET_MULTIPLE_ACCOUNTS_INFO_AND_CONTEXT =
+  "solana-get-multiple-accounts-info-and-context";
+export const SOLANA_CONNECTION_RPC_GET_STAKE_ACTIVATION =
+  "solana-get-stake-activation";
+export const SOLANA_CONNECTION_RPC_GET_CLUSTER_NODES =
+  "solana-get-cluster-nodes";
+export const SOLANA_CONNECTION_RPC_GET_VOTE_ACCOUNTS =
+  "solana-get-vote-accounts";
+export const SOLANA_CONNECTION_RPC_GET_SLOT_LEADER = "solana-get-slot-leader";
+export const SOLANA_CONNECTION_RPC_GET_SLOT_LEADERS = "solana-get-slot-leaders";
+export const SOLANA_CONNECTION_RPC_GET_SIGNATURE_STATUS =
+  "solana-get-signature-status";
+export const SOLANA_CONNECTION_RPC_GET_SIGNATURE_STATUSES =
+  "solana-get-signature-statuses";
+export const SOLANA_CONNECTION_RPC_GET_TRANSACTION_COUNT =
+  "solana-get-transaction-count";
+export const SOLANA_CONNECTION_RPC_GET_TOTAL_SUPPLY = "solana-get-total-supply";
+export const SOLANA_CONNECTION_RPC_GET_INFLATION_GOVERNOR =
+  "solana-get-inflation-governor";
+export const SOLANA_CONNECTION_RPC_GET_INFLATION_REWARD =
+  "solana-get-inflation-reward";
+export const SOLANA_CONNECTION_RPC_GET_EPOCH_INFO = "solana-get-epoch-info";
+export const SOLANA_CONNECTION_RPC_GET_EPOCH_SCHEDULE =
+  "solana-get-epoch-schedule";
+export const SOLANA_CONNECTION_RPC_GET_LEADER_SCHEDULE =
+  "solana-get-leader-schedule";
+export const SOLANA_CONNECTION_RPC_GET_RECENT_BLOCKHASH_AND_CONTEXT =
+  "solana-get-recent-blockhash-and-context";
+export const SOLANA_CONNECTION_RPC_GET_RECENT_PERFORMANCE_SAMPLES =
+  "solana-get-recent-performance-samples";
+export const SOLANA_CONNECTION_RPC_GET_FEE_CALCULATOR_FOR_BLOCKHASH =
+  "solana-get-fee-calculator-for-blockhash";
+export const SOLANA_CONNECTION_RPC_GET_RECENT_BLOCKHASH =
+  "solana-get-recent-blockhash";
+export const SOLANA_CONNECTION_RPC_GET_VERSION = "solana-get-version";
+export const SOLANA_CONNECTION_RPC_GET_GENESIS_HASH = "solana-get-genesis-hash";
+export const SOLANA_CONNECTION_RPC_GET_BLOCK = "solana-get-block";
+export const SOLANA_CONNECTION_RPC_GET_BLOCK_HEIGHT = "solana-get-block-height";
+export const SOLANA_CONNECTION_RPC_GET_BLOCK_PRODUCTION =
+  "solana-get-block-production";
+export const SOLANA_CONNECTION_RPC_GET_TRANSACTION = "solana-get-transaction";
+export const SOLANA_CONNECTION_RPC_GET_CONFIRMED_BLOCK =
+  "solana-get-confirmed-block";
+export const SOLANA_CONNECTION_RPC_GET_BLOCKS = "solana-get-blocks";
+export const SOLANA_CONNECTION_RPC_GET_BLOCK_SIGNATURES =
+  "solana-get-block-signatures";
+export const SOLANA_CONNECTION_RPC_GET_CONFIRMED_BLOCK_SIGNATURES =
+  "solana-get-confirmed-block-signatures";
+export const SOLANA_CONNECTION_RPC_GET_CONFIRMED_TRANSACTION =
+  "solana-get-confirmed-transaction";
+export const SOLANA_CONNECTION_RPC_GET_PARSED_CONFIRMED_TRANSACTION =
+  "solana-get-parsed-confirmed-transaction";
+export const SOLANA_CONNECTION_RPC_GET_PARSED_CONFIRMED_TRANSACTIONS =
+  "solana-get-parsed-confirmed-transactions";
+export const SOLANA_CONNECTION_RPC_GET_CONFIRMED_SIGNATURES_FOR_ADDRESS =
+  "solana-get-confirmed-signatures-for-address";
+export const SOLANA_CONNECTION_RPC_GET_SIGNATURES_FOR_ADDRESS =
+  "solana-get-signatures-for-address";
+export const SOLANA_CONNECTION_RPC_GET_NONCE_AND_CONTEXT =
+  "solana-get-nonce-and-context";
+export const SOLANA_CONNECTION_RPC_GET_NONCE = "solana-get-nonce";
+export const SOLANA_CONNECTION_RPC_REQUEST_AIRDROP = "solana-request-airdrop";
+export const SOLANA_CONNECTION_RPC_SEND_TRANSACTION = "solana-send-transaction";
+export const SOLANA_CONNECTION_RPC_SEND_ENCODED_TRANSACTION =
+  "solana-send-encoded-transaction";
+export const SOLANA_CONNECTION_RPC_REMOVE_ACCOUNT_CHANGE_LISTENER =
+  "solana-remove-account-change-listener";
+export const SOLANA_CONNECTION_RPC_REMOVE_PROGRAM_ACCOUNT_CHANGE_LISTENER =
+  "solana-remove-program-account-change-listener";
+export const SOLANA_CONNECTION_RPC_REMOVE_ON_LOGS_LISTENER =
+  "solana-remove-on-logs-listener";
+export const SOLANA_CONNECTION_RPC_REMOVE_SLOT_CHANGE_LISTENER =
+  "solana-remove-slot-change-listener";
+export const SOLANA_CONNECTION_RPC_REMOVE_SLOT_UPDATE_LISTENER =
+  "solana-remove-slot-update-listener";
+export const SOLANA_CONNECTION_RPC_REMOVE_SIGNATURE_LISTENER =
+  "solana-remove-signature-listener";
+export const SOLANA_CONNECTION_RPC_REMOVE_ROOT_CHANGE_LISTENER =
+  "solana-remove-root-change-listener";
 
 //
 // Ledger API.
