@@ -984,7 +984,7 @@ export class SolanaConnectionBackend {
   }
 
   async removeSlotUpdateListener(id: number): Promise<void> {
-    return this.connection!.removeSlotUpdateListener(id);
+    return await this.connection!.removeSlotUpdateListener(id);
   }
 
   _buildArgs(
@@ -1025,6 +1025,6 @@ export class SolanaConnectionBackend {
   }
 
   async removeRootChangeListener(id: number): Promise<void> {
-    return this.connection!.removeRootChangeListener(id);
+    return await this.connection!.removeRootChangeListener(id);
   }
 }

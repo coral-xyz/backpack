@@ -56,7 +56,7 @@ import {
   SOLANA_CONNECTION_RPC_GET_PARSED_ACCOUNT_INFO,
   SOLANA_CONNECTION_RPC_GET_PARSED_PROGRAM_ACCOUNTS,
   SOLANA_CONNECTION_RPC_GET_ADDRESS_LOOKUP_TABLE,
-  /*SOLANA_CONNECTION_RPC_GET_BALANCE_AND_CONTEXT,
+  SOLANA_CONNECTION_RPC_GET_BALANCE_AND_CONTEXT,
   SOLANA_CONNECTION_RPC_GET_MINIMUM_LEDGER_SLOT,
   SOLANA_CONNECTION_RPC_GET_FIRST_AVAILABLE_BLOCK,
   SOLANA_CONNECTION_RPC_GET_SUPPLY,
@@ -101,7 +101,6 @@ import {
   SOLANA_CONNECTION_RPC_REQUEST_AIRDROP,
   SOLANA_CONNECTION_RPC_SEND_TRANSACTION,
   SOLANA_CONNECTION_RPC_SEND_ENCODED_TRANSACTION,
-  */
   addressLookupTableAccountParser,
   deserializeTransaction,
 } from "@coral-xyz/common";
@@ -434,6 +433,401 @@ messageHandlers.set(
     );
     // @ts-ignore
     resp.value = addressLookupTableAccountParser.serialize(resp.value);
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_BALANCE_AND_CONTEXT,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getBalanceAndContext(
+      new PublicKey(params[0]),
+      params[1]
+    );
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_MINIMUM_LEDGER_SLOT,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getMinimumLedgerSlot();
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_FIRST_AVAILABLE_BLOCK,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getFirstAvailableBlock();
+    return [resp];
+  }
+);
+
+messageHandlers.set(SOLANA_CONNECTION_RPC_GET_SUPPLY, async (ctx, params) => {
+  const resp = await ctx.backend.getSupply(params[0]);
+  return [resp];
+});
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_TOKEN_SUPPLY,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getTokenSupply(
+      new PublicKey(params[0]),
+      params[1]
+    );
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_LARGEST_ACCOUNTS,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getLargestAccounts(params[0]);
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_MULTIPLE_ACCOUNTS_INFO_AND_CONTEXT,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getMultipleAccountsInfoAndContext(
+      params[0].map((p) => new PublicKey(p)),
+      params[1]
+    );
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_STAKE_ACTIVATION,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getStakeActivation(
+      new PublicKey(params[0]),
+      params[1],
+      params[2]
+    );
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_CLUSTER_NODES,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getClusterNodes();
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_VOTE_ACCOUNTS,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getVoteAccounts(params[1]);
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_SLOT_LEADER,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getSlotLeader(params[1]);
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_SLOT_LEADERS,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getSlotLeaders(params[0], params[1]);
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_SIGNATURE_STATUS,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getSignatureStatus(params[0], params[1]);
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_SIGNATURE_STATUSES,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getSignatureStatuses(params[0], params[1]);
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_TRANSACTION_COUNT,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getTransactionCount(params[1]);
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_TOTAL_SUPPLY,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getTotalSupply(params[1]);
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_INFLATION_GOVERNOR,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getInflationGovernor(params[1]);
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_INFLATION_REWARD,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getInflationReward(
+      params[0].map((p) => new PublicKey(p)),
+      params[1],
+      params[2]
+    );
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_EPOCH_INFO,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getEpochInfo(params[1]);
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_EPOCH_SCHEDULE,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getEpochSchedule();
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_LEADER_SCHEDULE,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getLeaderSchedule();
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_RECENT_BLOCKHASH_AND_CONTEXT,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getRecentBlockhashAndContext(params[1]);
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_RECENT_PERFORMANCE_SAMPLES,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getRecentPerformanceSamples(params[0]);
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_FEE_CALCULATOR_FOR_BLOCKHASH,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getFeeCalculatorForBlockhash(
+      params[0],
+      params[1]
+    );
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_RECENT_BLOCKHASH,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getRecentBlockhash(params[1]);
+    return [resp];
+  }
+);
+
+messageHandlers.set(SOLANA_CONNECTION_RPC_GET_VERSION, async (ctx, params) => {
+  const resp = await ctx.backend.getVersion();
+  return [resp];
+});
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_GENESIS_HASH,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getGenesisHash();
+    return [resp];
+  }
+);
+
+messageHandlers.set(SOLANA_CONNECTION_RPC_GET_BLOCK, async (ctx, params) => {
+  const resp = await ctx.backend.getBlock(params[0], params[1]);
+  return [resp];
+});
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_BLOCK_HEIGHT,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getBlockHeight(params[1]);
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_BLOCK_PRODUCTION,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getBlockProduction(params[0]);
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_TRANSACTION,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getTransaction(params[0], params[1]);
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_CONFIRMED_BLOCK,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getConfirmedBlock(params[0], params[1]);
+    return [resp];
+  }
+);
+
+messageHandlers.set(SOLANA_CONNECTION_RPC_GET_BLOCKS, async (ctx, params) => {
+  const resp = await ctx.backend.getBlocks(params[0], params[1], params[2]);
+  return [resp];
+});
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_BLOCK_SIGNATURES,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getBlockSignatures(params[0], params[1]);
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_CONFIRMED_BLOCK_SIGNATURES,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getConfirmedBlockSignatures(
+      params[0],
+      params[1]
+    );
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_CONFIRMED_TRANSACTION,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getConfirmedTransaction(
+      params[0],
+      params[1]
+    );
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_PARSED_CONFIRMED_TRANSACTION,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getParsedConfirmedTransaction(
+      params[0],
+      params[1]
+    );
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_PARSED_CONFIRMED_TRANSACTIONS,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getParsedConfirmedTransactions(
+      params[0],
+      params[1]
+    );
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_CONFIRMED_SIGNATURES_FOR_ADDRESS,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getConfirmedSignaturesForAddress(
+      new PublicKey(params[0]),
+      params[1],
+      params[2]
+    );
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_SIGNATURES_FOR_ADDRESS,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getSignaturesForAddress(
+      new PublicKey(params[0]),
+      params[1],
+      params[2]
+    );
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_GET_NONCE_AND_CONTEXT,
+  async (ctx, params) => {
+    const resp = await ctx.backend.getNonceAndContext(
+      new PublicKey(params[0]),
+      params[1]
+    );
+    return [resp];
+  }
+);
+
+messageHandlers.set(SOLANA_CONNECTION_RPC_GET_NONCE, async (ctx, params) => {
+  const resp = await ctx.backend.getNonce(new PublicKey(params[0]), params[1]);
+  return [resp];
+});
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_REQUEST_AIRDROP,
+  async (ctx, params) => {
+    const resp = await ctx.backend.requestAirdrop(
+      new PublicKey(params[0]),
+      params[1]
+    );
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_SEND_TRANSACTION,
+  async (ctx, params) => {
+    const resp = await ctx.backend.sendTransaction(
+      params[0],
+      params[1],
+      params[2]
+    );
+    return [resp];
+  }
+);
+
+messageHandlers.set(
+  SOLANA_CONNECTION_RPC_SEND_ENCODED_TRANSACTION,
+  async (ctx, params) => {
+    const resp = await ctx.backend.sendEncodedTransaction(params[0], params[1]);
     return [resp];
   }
 );
