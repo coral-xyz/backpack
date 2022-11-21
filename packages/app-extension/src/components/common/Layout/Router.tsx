@@ -65,6 +65,7 @@ function BalancesPage() {
 }
 
 function NftsPage() {
+  throw new Error("hi there");
   return <NavScreen component={<Nfts />} />;
 }
 
