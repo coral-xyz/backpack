@@ -1,10 +1,12 @@
-import { Button, Text, View } from "react-native";
+import { Button, FlatList, Text, View } from "react-native";
+import { Screen } from "@components";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { getHeaderTitle } from "@react-navigation/elements";
 import { createStackNavigator } from "@react-navigation/stack";
 import AppListScreen from "@screens/Unlocked/AppListScreen";
 import BalancesScreen from "@screens/Unlocked/BalancesScreen";
+import DepositModal from "@screens/Unlocked/DepositScreen";
 import NftCollectiblesScreen from "@screens/Unlocked/NftCollectiblesScreen";
 
 const Tab = createBottomTabNavigator();
@@ -27,8 +29,8 @@ export default function UnlockedNavigator() {
         />
         <Stack.Screen
           options={{ title: "Deposit" }}
-          name="ReceiveModal"
-          component={AccountSettingsModal}
+          name="ReceiveModal" // TODO(peter) DepositModal to be consistent
+          component={DepositModal}
         />
         <Stack.Screen
           options={{ title: "Send" }}
