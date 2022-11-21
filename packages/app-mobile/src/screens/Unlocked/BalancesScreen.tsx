@@ -9,12 +9,9 @@ import {
   // walletAddressDisplay,
 } from "@coral-xyz/common";
 
+import { BalanceSummaryWidget } from "./components/BalanceSummaryWidget";
 import { TokenTables } from "./components/Balances";
 import type { Token } from "./components/index";
-
-function BalanceSummaryWidget() {
-  return null;
-}
 
 export default function BalancesScreen({ navigation }) {
   const onPressTokenRow = (blockchain: Blockchain, token: Token) => {
@@ -28,10 +25,10 @@ export default function BalancesScreen({ navigation }) {
 
   return (
     <Screen>
-      <BalanceSummaryWidget />
-      <Margin vertical={32}>
-        <TransferWidget rampEnabled={true} />
+      <Margin vertical={12}>
+        <BalanceSummaryWidget />
       </Margin>
+      <TransferWidget rampEnabled={true} />
       <TokenTables
         onPressRow={onPressTokenRow}
         customFilter={(token: Token) => {
