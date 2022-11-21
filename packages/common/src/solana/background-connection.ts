@@ -72,17 +72,19 @@ import type {
   BlockheightBasedTransactionConfirmationStrategy,
 } from "@solana/web3.js";
 import {
+  SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
+  SOLANA_CONNECTION_GET_MULTIPLE_ACCOUNTS_INFO,
   SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO,
   SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO_AND_CONTEXT,
   SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH,
+  SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH_AND_CONTEXT,
   SOLANA_CONNECTION_RPC_GET_TOKEN_ACCOUNTS_BY_OWNER,
   SOLANA_CONNECTION_RPC_SEND_RAW_TRANSACTION,
   SOLANA_CONNECTION_RPC_CONFIRM_TRANSACTION,
-  SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTION,
-  SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTIONS,
-  SOLANA_CONNECTION_GET_MULTIPLE_ACCOUNTS_INFO,
+  SOLANA_CONNECTION_RPC_SIMULATE_TRANSACTION,
   SOLANA_CONNECTION_RPC_GET_CONFIRMED_SIGNATURES_FOR_ADDRESS_2,
-  SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
+  SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTIONS,
+  SOLANA_CONNECTION_RPC_GET_PARSED_TRANSACTION,
   SOLANA_CONNECTION_RPC_GET_PROGRAM_ACCOUNTS,
   SOLANA_CONNECTION_RPC_GET_FEE_FOR_MESSAGE,
   SOLANA_CONNECTION_RPC_GET_MINIMUM_BALANCE_FOR_RENT_EXEMPTION,
@@ -94,8 +96,52 @@ import {
   SOLANA_CONNECTION_RPC_GET_TOKEN_LARGEST_ACCOUNTS,
   SOLANA_CONNECTION_RPC_GET_PARSED_ACCOUNT_INFO,
   SOLANA_CONNECTION_RPC_GET_PARSED_PROGRAM_ACCOUNTS,
-  SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH_AND_CONTEXT,
   SOLANA_CONNECTION_RPC_GET_ADDRESS_LOOKUP_TABLE,
+  SOLANA_CONNECTION_RPC_GET_BALANCE_AND_CONTEXT,
+  SOLANA_CONNECTION_RPC_GET_MINIMUM_LEDGER_SLOT,
+  SOLANA_CONNECTION_RPC_GET_FIRST_AVAILABLE_BLOCK,
+  SOLANA_CONNECTION_RPC_GET_SUPPLY,
+  SOLANA_CONNECTION_RPC_GET_TOKEN_SUPPLY,
+  SOLANA_CONNECTION_RPC_GET_LARGEST_ACCOUNTS,
+  SOLANA_CONNECTION_RPC_GET_MULTIPLE_ACCOUNTS_INFO_AND_CONTEXT,
+  SOLANA_CONNECTION_RPC_GET_STAKE_ACTIVATION,
+  SOLANA_CONNECTION_RPC_GET_CLUSTER_NODES,
+  SOLANA_CONNECTION_RPC_GET_VOTE_ACCOUNTS,
+  SOLANA_CONNECTION_RPC_GET_SLOT_LEADER,
+  SOLANA_CONNECTION_RPC_GET_SLOT_LEADERS,
+  SOLANA_CONNECTION_RPC_GET_SIGNATURE_STATUS,
+  SOLANA_CONNECTION_RPC_GET_SIGNATURE_STATUSES,
+  SOLANA_CONNECTION_RPC_GET_TRANSACTION_COUNT,
+  SOLANA_CONNECTION_RPC_GET_TOTAL_SUPPLY,
+  SOLANA_CONNECTION_RPC_GET_INFLATION_GOVERNOR,
+  SOLANA_CONNECTION_RPC_GET_INFLATION_REWARD,
+  SOLANA_CONNECTION_RPC_GET_EPOCH_INFO,
+  SOLANA_CONNECTION_RPC_GET_EPOCH_SCHEDULE,
+  SOLANA_CONNECTION_RPC_GET_LEADER_SCHEDULE,
+  SOLANA_CONNECTION_RPC_GET_RECENT_BLOCKHASH_AND_CONTEXT,
+  SOLANA_CONNECTION_RPC_GET_RECENT_PERFORMANCE_SAMPLES,
+  SOLANA_CONNECTION_RPC_GET_FEE_CALCULATOR_FOR_BLOCKHASH,
+  SOLANA_CONNECTION_RPC_GET_RECENT_BLOCKHASH,
+  SOLANA_CONNECTION_RPC_GET_VERSION,
+  SOLANA_CONNECTION_RPC_GET_GENESIS_HASH,
+  SOLANA_CONNECTION_RPC_GET_BLOCK,
+  SOLANA_CONNECTION_RPC_GET_BLOCK_HEIGHT,
+  SOLANA_CONNECTION_RPC_GET_BLOCK_PRODUCTION,
+  SOLANA_CONNECTION_RPC_GET_TRANSACTION,
+  SOLANA_CONNECTION_RPC_GET_CONFIRMED_BLOCK,
+  SOLANA_CONNECTION_RPC_GET_BLOCKS,
+  SOLANA_CONNECTION_RPC_GET_BLOCK_SIGNATURES,
+  SOLANA_CONNECTION_RPC_GET_CONFIRMED_BLOCK_SIGNATURES,
+  SOLANA_CONNECTION_RPC_GET_CONFIRMED_TRANSACTION,
+  SOLANA_CONNECTION_RPC_GET_PARSED_CONFIRMED_TRANSACTION,
+  SOLANA_CONNECTION_RPC_GET_PARSED_CONFIRMED_TRANSACTIONS,
+  SOLANA_CONNECTION_RPC_GET_CONFIRMED_SIGNATURES_FOR_ADDRESS,
+  SOLANA_CONNECTION_RPC_GET_SIGNATURES_FOR_ADDRESS,
+  SOLANA_CONNECTION_RPC_GET_NONCE_AND_CONTEXT,
+  SOLANA_CONNECTION_RPC_GET_NONCE,
+  SOLANA_CONNECTION_RPC_REQUEST_AIRDROP,
+  SOLANA_CONNECTION_RPC_SEND_TRANSACTION,
+  SOLANA_CONNECTION_RPC_SEND_ENCODED_TRANSACTION,
 } from "../constants";
 import {
   serializeTokenAccountsFilter,
@@ -157,6 +203,24 @@ export class BackgroundSolanaConnection extends Connection {
     };
   }
 
+  async getMultipleAccountsInfo(
+    publicKeys: PublicKey[],
+    commitment?: Commitment
+  ): Promise<(AccountInfo<Buffer> | null)[]> {
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_GET_MULTIPLE_ACCOUNTS_INFO,
+      params: [publicKeys.map((pk) => pk.toString()), commitment],
+    });
+    return resp.map((a: any) => {
+      if (a === null) {
+        return a;
+      }
+      a.data = Buffer.from(a.data);
+      a.owner = new PublicKey(a.owner.toString());
+      return a;
+    });
+  }
+
   async getAccountInfo(
     publicKey: PublicKey,
     commitment?: Commitment
@@ -171,6 +235,16 @@ export class BackgroundSolanaConnection extends Connection {
     resp.data = Buffer.from(resp.data);
     resp.owner = new PublicKey(resp.owner);
     return resp;
+  }
+
+  async getAccountInfoAndContext(
+    publicKey: PublicKey,
+    commitment?: Commitment
+  ): Promise<RpcResponseAndContext<AccountInfo<Buffer> | null>> {
+    return await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO_AND_CONTEXT,
+      params: [publicKey.toString(), commitment],
+    });
   }
 
   async getLatestBlockhash(commitment?: Commitment): Promise<{
@@ -192,16 +266,6 @@ export class BackgroundSolanaConnection extends Connection {
     return await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH_AND_CONTEXT,
       params: [commitment],
-    });
-  }
-
-  async getAccountInfoAndContext(
-    publicKey: PublicKey,
-    commitment?: Commitment
-  ): Promise<RpcResponseAndContext<AccountInfo<Buffer> | null>> {
-    return await this._backgroundClient.request({
-      method: SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO_AND_CONTEXT,
-      params: [publicKey.toString(), commitment],
     });
   }
 
@@ -245,24 +309,6 @@ export class BackgroundSolanaConnection extends Connection {
     return await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_SEND_RAW_TRANSACTION,
       params: [txStr, options],
-    });
-  }
-
-  async getMultipleAccountsInfo(
-    publicKeys: PublicKey[],
-    commitment?: Commitment
-  ): Promise<(AccountInfo<Buffer> | null)[]> {
-    const resp = await this._backgroundClient.request({
-      method: SOLANA_CONNECTION_GET_MULTIPLE_ACCOUNTS_INFO,
-      params: [publicKeys.map((pk) => pk.toString()), commitment],
-    });
-    return resp.map((a: any) => {
-      if (a === null) {
-        return a;
-      }
-      a.data = Buffer.from(a.data);
-      a.owner = new PublicKey(a.owner.toString());
-      return a;
     });
   }
 
@@ -482,57 +528,73 @@ export class BackgroundSolanaConnection extends Connection {
     });
   }
 
-  ///////////////////////////////////////////////////////////////////////////////
-  // Below this not yet implemented.
-  ///////////////////////////////////////////////////////////////////////////////
-
-  async sendTransaction(
-    transaction: VersionedTransaction | Transaction,
-    signersOrOptions?: Array<Signer> | SendOptions,
-    options?: SendOptions
-  ): Promise<TransactionSignature> {
-    throw new Error("not implemented");
-  }
-
   async getBalanceAndContext(
     publicKey: PublicKey,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<number>> {
-    throw new Error("not implemented");
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_BALANCE_AND_CONTEXT,
+      params: [publicKey.toString(), commitment],
+    });
+    return resp;
   }
 
   async getMinimumLedgerSlot(): Promise<number> {
-    throw new Error("not implemented");
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_MINIMUM_LEDGER_SLOT,
+      params: [],
+    });
+    return resp;
   }
 
   async getFirstAvailableBlock(): Promise<number> {
-    throw new Error("not implemented");
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_FIRST_AVAILABLE_BLOCK,
+      params: [],
+    });
+    return resp;
   }
 
   async getSupply(
     config?: GetSupplyConfig | Commitment
   ): Promise<RpcResponseAndContext<Supply>> {
-    throw new Error("not implemented");
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_SUPPLY,
+      params: [config],
+    });
+    return resp;
   }
 
   async getTokenSupply(
     tokenMintAddress: PublicKey,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<TokenAmount>> {
-    throw new Error("not implemented");
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_TOKEN_SUPPLY,
+      params: [tokenMintAddress.toString(), commitment],
+    });
+    return resp;
   }
 
   async getLargestAccounts(
     config?: GetLargestAccountsConfig
   ): Promise<RpcResponseAndContext<Array<AccountBalancePair>>> {
-    throw new Error("not implemented");
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_LARGEST_ACCOUNTS,
+      params: [config],
+    });
+    return resp;
   }
 
   async getMultipleAccountsInfoAndContext(
     publicKeys: PublicKey[],
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<(AccountInfo<Buffer> | null)[]>> {
-    throw new Error("not implemented");
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_MULTIPLE_ACCOUNTS_INFO_AND_CONTEXT,
+      params: [publicKeys.map((k) => k.toString()), commitment],
+    });
+    return resp;
   }
 
   async getStakeActivation(
@@ -540,219 +602,382 @@ export class BackgroundSolanaConnection extends Connection {
     commitment?: Commitment,
     epoch?: number
   ): Promise<StakeActivationData> {
-    throw new Error("not implemented");
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_STAKE_ACTIVATION,
+      params: [publicKey.toString(), commitment, epoch],
+    });
+    return resp;
   }
 
-  getClusterNodes(): Promise<Array<ContactInfo>> {
-    throw new Error("not implemented");
+  async getClusterNodes(): Promise<Array<ContactInfo>> {
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_CLUSTER_NODES,
+      params: [],
+    });
+    return resp;
   }
 
-  getVoteAccounts(commitment?: Commitment): Promise<VoteAccountStatus> {
-    throw new Error("not implemented");
+  async getVoteAccounts(commitment?: Commitment): Promise<VoteAccountStatus> {
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_VOTE_ACCOUNTS,
+      params: [commitment],
+    });
+    return resp;
   }
 
-  getSlotLeader(commitment?: Commitment): Promise<string> {
-    throw new Error("not implemented");
+  async getSlotLeader(commitment?: Commitment): Promise<string> {
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_SLOT_LEADER,
+      params: [commitment],
+    });
+    return resp;
   }
 
-  getSlotLeaders(startSlot: number, limit: number): Promise<Array<PublicKey>> {
-    throw new Error("not implemented");
+  async getSlotLeaders(
+    startSlot: number,
+    limit: number
+  ): Promise<Array<PublicKey>> {
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_SLOT_LEADERS,
+      params: [startSlot, limit],
+    });
+    return resp;
   }
 
-  getSignatureStatus(
+  async getSignatureStatus(
     signature: TransactionSignature,
     config?: SignatureStatusConfig
   ): Promise<RpcResponseAndContext<SignatureStatus | null>> {
-    throw new Error("not implemented");
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_SIGNATURE_STATUS,
+      params: [signature, config],
+    });
+    return resp;
   }
 
-  getSignatureStatuses(
+  async getSignatureStatuses(
     signatures: Array<TransactionSignature>,
     config?: SignatureStatusConfig
   ): Promise<RpcResponseAndContext<Array<SignatureStatus | null>>> {
-    throw new Error("not implemented");
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_SIGNATURE_STATUSES,
+      params: [signatures, config],
+    });
+    return resp;
   }
 
-  getTransactionCount(commitment?: Commitment): Promise<number> {
-    throw new Error("not implemented");
+  async getTransactionCount(commitment?: Commitment): Promise<number> {
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_TRANSACTION_COUNT,
+      params: [commitment],
+    });
+    return resp;
   }
 
-  getTotalSupply(commitment?: Commitment): Promise<number> {
-    throw new Error("not implemented");
+  async getTotalSupply(commitment?: Commitment): Promise<number> {
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_TOTAL_SUPPLY,
+      params: [commitment],
+    });
+    return resp;
   }
 
-  getInflationGovernor(commitment?: Commitment): Promise<InflationGovernor> {
-    throw new Error("not implemented");
+  async getInflationGovernor(
+    commitment?: Commitment
+  ): Promise<InflationGovernor> {
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_INFLATION_GOVERNOR,
+      params: [commitment],
+    });
+    return resp;
   }
 
-  getInflationReward(
+  async getInflationReward(
     addresses: PublicKey[],
     epoch?: number,
     commitment?: Commitment
   ): Promise<(InflationReward | null)[]> {
-    throw new Error("not implemented");
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_INFLATION_REWARD,
+      params: [addresses.map((k) => k.toString()), epoch, commitment],
+    });
+    return resp;
   }
 
-  getEpochInfo(commitment?: Commitment): Promise<EpochInfo> {
-    throw new Error("not implemented");
+  async getEpochInfo(commitment?: Commitment): Promise<EpochInfo> {
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_EPOCH_INFO,
+      params: [commitment],
+    });
+    return resp;
   }
 
-  getEpochSchedule(): Promise<EpochSchedule> {
-    throw new Error("not implemented");
+  async getEpochSchedule(): Promise<EpochSchedule> {
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_EPOCH_SCHEDULE,
+      params: [],
+    });
+    return resp;
   }
 
-  getLeaderSchedule(): Promise<LeaderSchedule> {
-    throw new Error("not implemented");
+  async getLeaderSchedule(): Promise<LeaderSchedule> {
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_LEADER_SCHEDULE,
+      params: [],
+    });
+    return resp;
   }
 
-  getRecentBlockhashAndContext(commitment?: Commitment): Promise<
+  async getRecentBlockhashAndContext(commitment?: Commitment): Promise<
     RpcResponseAndContext<{
       blockhash: Blockhash;
       feeCalculator: FeeCalculator;
     }>
   > {
-    throw new Error("not implemented");
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_RECENT_BLOCKHASH_AND_CONTEXT,
+      params: [commitment],
+    });
+    return resp;
   }
 
-  getRecentPerformanceSamples(limit?: number): Promise<Array<PerfSample>> {
-    throw new Error("not implemented");
+  async getRecentPerformanceSamples(
+    limit?: number
+  ): Promise<Array<PerfSample>> {
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_RECENT_PERFORMANCE_SAMPLES,
+      params: [limit],
+    });
+    return resp;
   }
 
-  getFeeCalculatorForBlockhash(
+  async getFeeCalculatorForBlockhash(
     blockhash: Blockhash,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<FeeCalculator | null>> {
-    throw new Error("not implemented");
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_FEE_CALCULATOR_FOR_BLOCKHASH,
+      params: [blockhash, commitment],
+    });
+    return resp;
   }
 
-  getRecentBlockhash(commitment?: Commitment): Promise<{
+  async getRecentBlockhash(commitment?: Commitment): Promise<{
     blockhash: Blockhash;
     feeCalculator: FeeCalculator;
   }> {
-    throw new Error("not implemented");
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_RECENT_BLOCKHASH,
+      params: [commitment],
+    });
+    return resp;
   }
 
-  getVersion(): Promise<Version> {
-    throw new Error("not implemented");
+  async getVersion(): Promise<Version> {
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_VERSION,
+      params: [],
+    });
+    return resp;
   }
 
-  getGenesisHash(): Promise<string> {
-    throw new Error("not implemented");
+  async getGenesisHash(): Promise<string> {
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_GENESIS_HASH,
+      params: [],
+    });
+    return resp;
   }
 
-  getBlock(
+  async getBlock(
     slot: number,
     opts?: {
       commitment?: Finality;
     }
   ): Promise<BlockResponse | null> {
-    throw new Error("not implemented");
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_BLOCK,
+      params: [slot, opts],
+    });
+    return resp;
   }
 
-  getBlockHeight(commitment?: Commitment): Promise<number> {
-    throw new Error("not implemented");
+  async getBlockHeight(commitment?: Commitment): Promise<number> {
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_BLOCK_HEIGHT,
+      params: [commitment],
+    });
+    return resp;
   }
 
-  getBlockProduction(
+  async getBlockProduction(
     configOrCommitment?: GetBlockProductionConfig | Commitment
   ): Promise<RpcResponseAndContext<BlockProduction>> {
-    throw new Error("not implemented");
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_BLOCK_PRODUCTION,
+      params: [configOrCommitment],
+    });
+    return resp;
   }
 
-  getTransaction(
+  async getTransaction(
     signature: string,
     opts?: {
       commitment?: Finality;
     }
   ): Promise<TransactionResponse | null> {
-    throw new Error("not implemented");
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_TRANSACTION,
+      params: [signature, opts],
+    });
+    return resp;
   }
 
-  getConfirmedBlock(
+  async getConfirmedBlock(
     slot: number,
     commitment?: Finality
   ): Promise<ConfirmedBlock> {
-    throw new Error("not implemented");
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_CONFIRMED_BLOCK,
+      params: [slot, commitment],
+    });
+    return resp;
   }
 
-  getBlocks(
+  async getBlocks(
     startSlot: number,
     endSlot?: number,
     commitment?: Finality
   ): Promise<Array<number>> {
-    throw new Error("not implemented");
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_BLOCKS,
+      params: [startSlot, endSlot, commitment],
+    });
+    return resp;
   }
 
-  getBlockSignatures(
+  async getBlockSignatures(
     slot: number,
     commitment?: Finality
   ): Promise<BlockSignatures> {
-    throw new Error("not implemented");
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_BLOCK_SIGNATURES,
+      params: [slot, commitment],
+    });
+    return resp;
   }
 
-  getConfirmedBlockSignatures(
+  async getConfirmedBlockSignatures(
     slot: number,
     commitment?: Finality
   ): Promise<BlockSignatures> {
-    throw new Error("not implemented");
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_CONFIRMED_BLOCK_SIGNATURES,
+      params: [slot, commitment],
+    });
+    return resp;
   }
 
-  getConfirmedTransaction(
+  async getConfirmedTransaction(
     signature: TransactionSignature,
     commitment?: Finality
   ): Promise<ConfirmedTransaction | null> {
-    throw new Error("not implemented");
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_CONFIRMED_TRANSACTION,
+      params: [signature, commitment],
+    });
+    return resp;
   }
 
-  getParsedConfirmedTransaction(
+  async getParsedConfirmedTransaction(
     signature: TransactionSignature,
     commitment?: Finality
   ): Promise<ParsedConfirmedTransaction | null> {
-    throw new Error("not implemented");
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_PARSED_CONFIRMED_TRANSACTION,
+      params: [signature, commitment],
+    });
+    return resp;
   }
 
-  getParsedConfirmedTransactions(
+  async getParsedConfirmedTransactions(
     signatures: TransactionSignature[],
     commitment?: Finality
   ): Promise<(ParsedConfirmedTransaction | null)[]> {
-    throw new Error("not implemented");
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_PARSED_CONFIRMED_TRANSACTIONS,
+      params: [signatures, commitment],
+    });
+    return resp;
   }
 
-  getConfirmedSignaturesForAddress(
+  async getConfirmedSignaturesForAddress(
     address: PublicKey,
     startSlot: number,
     endSlot: number
   ): Promise<Array<TransactionSignature>> {
-    throw new Error("not implemented");
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_CONFIRMED_SIGNATURES_FOR_ADDRESS,
+      params: [address.toString(), startSlot, endSlot],
+    });
+    return resp;
   }
 
-  getSignaturesForAddress(
+  async getSignaturesForAddress(
     address: PublicKey,
     options?: SignaturesForAddressOptions,
     commitment?: Finality
   ): Promise<Array<ConfirmedSignatureInfo>> {
-    throw new Error("not implemented");
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_SIGNATURES_FOR_ADDRESS,
+      params: [address.toString(), options, commitment],
+    });
+    return resp;
   }
 
-  getNonceAndContext(
+  async getNonceAndContext(
     nonceAccount: PublicKey,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<NonceAccount | null>> {
-    throw new Error("not implemented");
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_NONCE_AND_CONTEXT,
+      params: [nonceAccount.toString(), commitment],
+    });
+    return resp;
   }
 
-  getNonce(
+  async getNonce(
     nonceAccount: PublicKey,
     commitment?: Commitment
   ): Promise<NonceAccount | null> {
-    throw new Error("not implemented");
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_GET_NONCE,
+      params: [nonceAccount.toString(), commitment],
+    });
+    return resp;
   }
 
-  requestAirdrop(
+  async requestAirdrop(
     to: PublicKey,
     lamports: number
   ): Promise<TransactionSignature> {
-    throw new Error("not implemented");
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_REQUEST_AIRDROP,
+      params: [to.toString(), lamports],
+    });
+    return resp;
+  }
+
+  async sendTransaction(
+    transaction: VersionedTransaction | Transaction,
+    signersOrOptions?: Array<Signer> | SendOptions,
+    options?: SendOptions
+  ): Promise<TransactionSignature> {
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_SEND_TRANSACTION,
+      params: [transaction, signersOrOptions, options],
+    });
+    return resp;
   }
 
   async simulateTransaction(
@@ -760,15 +985,27 @@ export class BackgroundSolanaConnection extends Connection {
     configOrSigners?: SimulateTransactionConfig | Array<Signer>,
     includeAccounts?: boolean | Array<PublicKey>
   ): Promise<RpcResponseAndContext<SimulatedTransactionResponse>> {
-    throw new Error("not implemented");
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_SIMULATE_TRANSACTION,
+      params: [transactionOrMessage, configOrSigners, includeAccounts],
+    });
+    return resp;
   }
 
-  sendEncodedTransaction(
+  async sendEncodedTransaction(
     encodedTransaction: string,
     options?: SendOptions
   ): Promise<TransactionSignature> {
-    throw new Error("not implemented");
+    const resp = await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_SEND_ENCODED_TRANSACTION,
+      params: [encodedTransaction, options],
+    });
+    return resp;
   }
+
+  ///////////////////////////////////////////////////////////////////////////////
+  // Below this not yet implemented.
+  ///////////////////////////////////////////////////////////////////////////////
 
   onAccountChange(
     publicKey: PublicKey,
