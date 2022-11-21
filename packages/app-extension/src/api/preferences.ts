@@ -35,7 +35,7 @@ export const updateRemotePreference = (
   username: string,
   preferences: { notifications: boolean }
 ) => {
-  return fetch(`${BACKEND_API_URL}/preference`, {
+  return fetch(`${BACKEND_API_URL}/preferences`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
