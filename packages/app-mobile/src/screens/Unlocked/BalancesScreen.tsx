@@ -1,4 +1,6 @@
-import { Screen } from "@components";
+import React, { useEffect, useState } from "react";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { Margin, Screen } from "@components";
 import { TransferWidget } from "@components/Unlocked/Balances/TransferWidget";
 import type { Blockchain } from "@coral-xyz/common";
 import {
@@ -17,8 +19,7 @@ import {
   useEnabledBlockchains,
   useLoader,
 } from "@coral-xyz/recoil";
-import { useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
 
 // TODO move this
 export type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
@@ -27,13 +28,71 @@ function BalanceSummaryWidget() {
   return null;
 }
 
-export function TokenTable({
+function TableHeader({ onPress, visible, name }) {
+  return (
+    <Pressable onPress={onPress} style={styles.header}>
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View style={styles.logoContainer}></View>
+        <Text>{name}</Text>
+      </View>
+      <MaterialIcons
+        name={visible ? "keyboard-arrow-up" : "keyboard-arrow-down"}
+        size={24}
+        color="black"
+      />
+    </Pressable>
+  );
+}
+
+function BalanceRow({
+  iconUrl,
+  name,
+  subtitle,
+  usdBalance,
+  recentUsdBalanceChange,
+  onPress,
+}) {
+  return (
+    <View
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+      }}
+    >
+      <View style={{ flexDirection: "row" }}>
+        <Image
+          style={{
+            width: 50,
+            height: 50,
+            borderRadius: 100,
+            backgroundColor: "#000",
+            marginRight: 12,
+          }}
+          source={{ uri: iconUrl }}
+        />
+        <View>
+          <Text>{name}</Text>
+          <Text>{subtitle}</Text>
+        </View>
+      </View>
+      <Text>{recentUsdBalanceChange}</Text>
+    </View>
+  );
+}
+
+function RowSeparator() {
+  return <View style={{ height: 12 }} />;
+}
+
+function BalanceTable({
   blockchain,
+  initialState,
   onPressRow,
   tokenAccounts,
   searchFilter = "",
   customFilter = () => true,
-  displayWalletHeader = true,
+  displayWalletHeader,
 }: {
   blockchain: Blockchain;
   onPressRow: (blockchain: Blockchain, token: Token) => void;
@@ -42,14 +101,17 @@ export function TokenTable({
   customFilter?: (token: Token) => boolean;
   displayWalletHeader?: boolean;
 }) {
-  const title = toTitleCase(blockchain);
-  // points to a relative path when it should point to a URL or something different. perhaps @coral-xyz/assets
-  const blockchainLogo = useBlockchainLogo(blockchain);
+  const [visible, setVisible] = React.useState(initialState);
+  const onPress = () => {
+    setVisible(!visible);
+  };
+
+  const title = blockchain;
+  // const title = toTitleCase(blockchain);
+  // const blockchainLogo = useBlockchainLogo(blockchain);
   const connectionUrl = useBlockchainConnectionUrl(blockchain);
   const activeWallets = useActiveWallets();
   const wallet = activeWallets.filter((w) => w.blockchain === blockchain)[0];
-
-  console.log({ title, blockchainLogo, connectionUrl, activeWallets, wallet });
 
   const [_tokenAccounts, _, isLoading] = tokenAccounts
     ? [tokenAccounts, "hasValue"]
@@ -60,7 +122,6 @@ export function TokenTable({
       );
 
   const [search, setSearch] = useState(searchFilter);
-  const [tooltipOpen, setTooltipOpen] = useState(false);
 
   const searchLower = search.toLowerCase();
   const tokenAccountsFiltered = _tokenAccounts
@@ -72,54 +133,40 @@ export function TokenTable({
     )
     .filter(customFilter);
 
-  useEffect(() => {
-    setSearch(searchFilter);
-  }, [searchFilter]);
-
-  const onCopy = () => {
-    setTooltipOpen(true);
-    setTimeout(() => setTooltipOpen(false), 1000);
-    navigator.clipboard.writeText(wallet.publicKey.toString());
-  };
-
-  const useVirtualization = tokenAccountsFiltered.length > 100;
-  // Note: if this fixed height changes in react-xnft-renderer it'll need to be changed here
-  const rowHeight = 68;
-  const headerHeight = 36;
-  // If using virtualization, restrict the table height to 6 rows with an internal scrollbar
-  const tableStyle = useVirtualization
-    ? {
-        height:
-          headerHeight +
-          Math.min(tokenAccountsFiltered.length, 6) * rowHeight +
-          "px",
-      }
-    : {};
-
-  const addressDisplay = walletAddressDisplay(wallet?.publicKey);
-
   return (
-    <View style={{ backgroundColor: "yellow", marginBottom: 12 }}>
-      <Text>
-        {JSON.stringify(
-          {
-            connectionUrl,
-            activeWallets,
-            wallet,
-            blockchainLogo,
-            addressDisplay,
-            tokenAccountsFiltered,
-            blockchain,
-          },
-          null,
-          2
-        )}
-      </Text>
+    <View style={{ backgroundColor: "#fff", borderRadius: 8 }}>
+      <TableHeader name={blockchain} onPress={onPress} visible={visible} />
+
+      {visible ? (
+        <FlatList
+          style={{ padding: 8 }}
+          initialNumToRender={2}
+          scrollEnabled={false}
+          data={tokenAccountsFiltered}
+          ItemSeparatorComponent={RowSeparator}
+          renderItem={({ item }) => {
+            let subtitle = item.ticker;
+            if (item.displayBalance) {
+              subtitle = `${item.displayBalance.toLocaleString()} ${subtitle}`;
+            }
+
+            return (
+              <BalanceRow
+                blockchain={item.name}
+                iconUrl={item.logo}
+                usdBalance={item.usdBalance}
+                recentUsdBalanceChange={item.recentUsdBalanceChange}
+                subtitle={subtitle}
+                onPressRow={onPressRow}
+              />
+            );
+          }}
+        />
+      ) : null}
     </View>
   );
 }
 
-// for each blockchain, render each of the tokens on BalancesScreen
 export function TokenTables({
   blockchains,
   onPressRow,
@@ -136,20 +183,24 @@ export function TokenTables({
     blockchains?.filter((b) => enabledBlockchains.includes(b)) ||
     enabledBlockchains;
 
-  console.log({ enabledBlockchains, filteredBlockchains });
+  console.log("TokenTables", { enabledBlockchains, filteredBlockchains });
 
   return (
-    <>
-      {filteredBlockchains.map((blockchain: Blockchain) => (
-        <TokenTable
-          key={blockchain}
-          blockchain={blockchain}
-          onPressRow={onPressRow}
-          searchFilter={searchFilter}
-          customFilter={customFilter}
-        />
-      ))}
-    </>
+    <View style={{ padding: 8, flex: 1 }}>
+      {filteredBlockchains.map((blockchain: Blockchain) => {
+        return (
+          <Margin key={blockchain} bottom={8}>
+            <BalanceTable
+              blockchain={blockchain}
+              initialState={true}
+              onSelectItem={onPressRow}
+              searchFilter={searchFilter}
+              customFilter={customFilter}
+            />
+          </Margin>
+        );
+      })}
+    </View>
   );
 }
 
@@ -192,3 +243,23 @@ export default function BalancesScreen({ navigation }) {
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: "#eee",
+    flex: 1,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    height: 30,
+    padding: 8,
+  },
+  logoContainer: {
+    width: 12,
+    height: 12,
+    backgroundColor: "#000",
+    marginRight: 8,
+  },
+});

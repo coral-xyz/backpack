@@ -1,8 +1,14 @@
-// import { Grid, Skeleton } from "@mui/material";
-// import { Block, Image as ImageIcon } from "@mui/icons-material";
 import React from "react";
-import { FlatList, Image, Pressable, Text, View } from "react-native";
-import { Screen } from "@components";
+import {
+  ScrollView,
+  StyleSheet,
+  FlatList,
+  Image,
+  Pressable,
+  Text,
+  View,
+} from "react-native";
+import { Screen, Margin } from "@components";
 import type { Blockchain, NftCollection } from "@coral-xyz/common";
 import {
   NAV_COMPONENT_NFT_COLLECTION,
@@ -17,7 +23,7 @@ import {
   useLoader,
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useIsONELive, useTheme } from "@hooks";
+// import { useIsONELive, useTheme } from "@hooks";
 
 const DEV_COLLECTIONS = {
   solana: [
@@ -259,7 +265,23 @@ function EmptyState() {
   );
 }
 
-function TableItem({ id, name, imageUrl, onPress }) {
+function TableHeader({ onPress, visible, name }) {
+  return (
+    <Pressable onPress={onPress} style={styles.header}>
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View style={styles.logoContainer}></View>
+        <Text>{name}</Text>
+      </View>
+      <MaterialIcons
+        name={visible ? "keyboard-arrow-up" : "keyboard-arrow-down"}
+        size={24}
+        color="black"
+      />
+    </Pressable>
+  );
+}
+
+function NFTItem({ id, name, imageUrl, onPress }) {
   return (
     <Pressable
       style={{ flex: 0.5, margin: 8, borderRadius: 8, overflow: "hidden" }}
@@ -283,23 +305,7 @@ function TableItem({ id, name, imageUrl, onPress }) {
   );
 }
 
-function TableHeader({ onPress, visible, name }) {
-  return (
-    <Pressable onPress={onPress} style={styles.header}>
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <View style={styles.logoContainer}></View>
-        <Text>{name}</Text>
-      </View>
-      <MaterialIcons
-        name={visible ? "keyboard-arrow-up" : "keyboard-arrow-down"}
-        size={24}
-        color="black"
-      />
-    </Pressable>
-  );
-}
-
-function Table({ name, data, initialState, onSelectItem }) {
+function NFTTable({ name, data, initialState, onSelectItem }) {
   const [visible, setVisible] = React.useState(initialState);
   const onPress = () => {
     setVisible(!visible);
@@ -319,8 +325,9 @@ function Table({ name, data, initialState, onSelectItem }) {
           renderItem={({ item }) => {
             const preview = item.items[0];
             return (
-              <TableItem
+              <NFTItem
                 id={preview.id}
+                onSelectItem
                 name={preview.name}
                 imageUrl={preview.imageUrl}
                 onPress={onSelectItem}
@@ -339,8 +346,7 @@ export default function NftCollectiblesScreen({ navigation }) {
   const enabledBlockchains = useEnabledBlockchains();
 
   const onSelectItem = (id: string) => {
-    console.log("id", id);
-    // navigate here
+    navigation.push("Detail", { id });
   };
 
   const collections = DEV_COLLECTIONS;
@@ -362,14 +368,15 @@ export default function NftCollectiblesScreen({ navigation }) {
       })
       .filter(Boolean).length > 0;
 
+  // TODO(peter) FlatList inside of a ScrollView error. TBD
   return (
-    <Screen>
+    <ScrollView style={{ flex: 1 }}>
       <View style={{ padding: 8, flex: 1 }}>
         {!hasCollections ? <EmptyState /> : null}
         {Object.entries(collections).map(([name, data]) => {
           return (
-            <Margin bottom={8}>
-              <Table
+            <Margin key={name} bottom={8}>
+              <NFTTable
                 name={name}
                 data={data}
                 initialState={true}
@@ -379,7 +386,7 @@ export default function NftCollectiblesScreen({ navigation }) {
           );
         })}
       </View>
-    </Screen>
+    </ScrollView>
   );
 }
 
@@ -390,3 +397,23 @@ function Debug({ debug }) {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: "#eee",
+    flex: 1,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    height: 30,
+    padding: 8,
+  },
+  logoContainer: {
+    width: 12,
+    height: 12,
+    backgroundColor: "#000",
+    marginRight: 8,
+  },
+});
