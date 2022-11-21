@@ -72,7 +72,8 @@ class ErrorBoundaryWithHooks extends React.Component<Props, State> {
                   method: UI_RPC_METHOD_NAVIGATION_TO_DEFAULT,
                   params: [],
                 });
-                window.location.href = "/balances";
+                window.location.hash = "#/balances";
+                window.location.reload();
               }}
             />
           </div>
@@ -86,8 +87,8 @@ class ErrorBoundaryWithHooks extends React.Component<Props, State> {
 
 export function ErrorBoundary(props: { children: React.ReactNode }) {
   const background = useBackgroundClient();
-  //@ts-ignore
   return (
+    //@ts-ignore
     <ErrorBoundaryWithHooks background={background}>
       {props.children}
     </ErrorBoundaryWithHooks>
