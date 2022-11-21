@@ -20,5 +20,9 @@
     "@coral-xyz/blockchain-keyring": "*",
     "@coral-xyz/common": "*",
     "ethers": "^5.7.2"
+  },
+  "devDependencies": {
+    "eslint-config-custom": "*",
+    "typescript": "^4.6.3"
   }
 }

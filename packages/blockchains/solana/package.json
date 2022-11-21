@@ -19,5 +19,9 @@
   "dependencies": {
     "@coral-xyz/blockchain-keyring": "*",
     "@coral-xyz/common": "*"
+  },
+  "devDependencies": {
+    "eslint-config-custom": "*",
+    "typescript": "^4.6.3"
   }
 }

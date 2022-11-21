@@ -20,5 +20,9 @@
     "@coral-xyz/common": "*",
     "@coral-xyz/blockchain-evm": "*",
     "@coral-xyz/blockchain-solana": "*"
+  },
+  "devDependencies": {
+    "eslint-config-custom": "*",
+    "typescript": "^4.6.3"
   }
 }

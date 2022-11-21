@@ -18,5 +18,9 @@
   },
   "dependencies": {
     "@coral-xyz/common": "*"
+  },
+  "devDependencies": {
+    "eslint-config-custom": "*",
+    "typescript": "^4.6.3"
   }
 }
