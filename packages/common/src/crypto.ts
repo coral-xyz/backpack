@@ -3,10 +3,11 @@ import { Blockchain } from "./types";
 export const DerivationPath: { [key: string]: DerivationPath } = {
   Bip44: "bip44",
   Bip44Change: "bip44-change",
+  SolletDeprecated: "sollet-deprecated",
   Default: "bip44",
 };
 
-export type DerivationPath = "bip44" | "bip44-change";
+export type DerivationPath = "bip44" | "bip44-change" | "sollet-deprecated";
 
 export const derivationPathPrefix = (
   blockchain: Blockchain,
@@ -20,6 +21,7 @@ export const derivationPathPrefix = (
     [Blockchain.SOLANA]: {
       [DerivationPath.Bip44]: "44'/501'",
       [DerivationPath.Bip44Change]: "44'/501'/0'",
+      [DerivationPath.SolletDeprecated]: "501'/0'/0/0",
     },
   };
 
