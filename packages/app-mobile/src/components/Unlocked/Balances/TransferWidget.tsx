@@ -24,27 +24,7 @@ import type { Token } from "../../common/TokenTable";
 // import { Ramp } from "./TokensWidget/Ramp";
 // import { StripeRamp } from "./StripeRamp";
 
-function Deposit() {
-  return null;
-}
-
-function SendLoader() {
-  return null;
-}
-
-function Send() {
-  return null;
-}
-
 function SearchableTokenTables() {
-  return null;
-}
-
-function Swap() {
-  return null;
-}
-
-function SelectToken() {
   return null;
 }
 
