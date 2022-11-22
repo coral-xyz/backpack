@@ -1,15 +1,16 @@
 const fs = require("fs");
 const express = require("express");
 const getHtmlWrapper = require("./getHtmlWrapper");
+const simulatorPort = require("../simulatorPort");
 module.exports = (program) => {
   program.command("start").action(() => {
     const app = express(); // create express app
 
-    const js = fs.readFileSync("dist/index.js", { encoding: "utf-8" });
-    let port = 9933;
+    const html = fs.readFileSync("dist/index.html", { encoding: "utf-8" });
+    let port = simulatorPort;
 
     app.get("/", (req, res) => {
-      res.send(getHtmlWrapper(js));
+      res.send(html);
     });
 
     app.listen(port, () => {

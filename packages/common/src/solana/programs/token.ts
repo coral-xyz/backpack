@@ -5,6 +5,7 @@ import { AnchorProvider, BN, Spl } from "@project-serum/anchor";
 import type { Provider, Program, SplToken } from "@project-serum/anchor";
 import { metadata } from "@project-serum/token";
 import { getLogger, externalResourceUri } from "@coral-xyz/common-public";
+import { BACKEND_API_URL } from "../../constants";
 import type {
   SolanaTokenAccount,
   SolanaTokenAccountWithKey,
@@ -162,12 +163,21 @@ export async function fetchSplMetadataUri(
         const resp = await new Promise<any>(async (resolve, reject) => {
           setTimeout(() => {
             reject(new Error("timeout"));
-          }, 5000);
+          }, 6000);
           try {
-            const resp = await fetch(externalResourceUri(t.account.data.uri));
+            const resp = await fetch(
+              `${BACKEND_API_URL}/proxy/${externalResourceUri(
+                t.account.data.uri
+              )}`
+            );
             resolve(resp);
           } catch (err) {
-            reject(err);
+            try {
+              const resp = await fetch(externalResourceUri(t.account.data.uri));
+              resolve(resp);
+            } catch (e) {
+              reject(err);
+            }
           }
         });
         return await resp.json();

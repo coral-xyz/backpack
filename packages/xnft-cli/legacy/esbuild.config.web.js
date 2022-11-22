@@ -1,18 +1,19 @@
 const GlobalsPolyfills = require("@esbuild-plugins/node-globals-polyfill");
-const fs = require("fs");
 const plugin = require("node-stdlib-browser/helpers/esbuild/plugin");
 const stdLibBrowser = require("node-stdlib-browser");
+const getHtmlWrapper = require("./getHtmlWrapper");
 
-require("esbuild").build({
+module.exports = {
   entryPoints: ["./src/index.tsx"],
-  outfile: "dist/index.js",
+  outfile: "dist/index.html",
+  mainFields: ["browser", "module", "main"],
   bundle: true,
   target: "es2022",
-  minify: true,
   define: {
     global: "window",
   },
-  // inject: ["./scripts/polyfills.js"],
+  banner: { js: getHtmlWrapper.banner },
+  footer: { js: getHtmlWrapper.footer },
   plugins: [
     GlobalsPolyfills.default({
       process: true,
@@ -20,4 +21,4 @@ require("esbuild").build({
     }),
     plugin(stdLibBrowser),
   ],
-});
+};

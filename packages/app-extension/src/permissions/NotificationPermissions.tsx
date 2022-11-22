@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { PermissionsPage } from "./PermissionsPage";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import { useUsername } from "@coral-xyz/recoil";
 import { PermissionsContent } from "./PermissionsContent";
-import { CameraOn } from "./icons/CameraOn";
-import { CameraOff } from "./icons/CameraOff";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import NotificationsOffIcon from "@mui/icons-material/NotificationsOff";
 
 const BACKPACK_NOTIFICATION_PUBKEY =
   "BJ6je9D4-ZJUH1yxTCRT01ILw07-YZcpAEk5hxpnPnEXJJ8WjE9BYf_fTPXNGRM1yw5C1CZQaCFmUX0gujpf67E";
@@ -84,10 +83,14 @@ export const NotificationPermissions = () => {
   if (inProgress) {
     return (
       <PermissionsContent
-        marginTop={35}
         title={"Allow Camera"}
         subtitle1={"Please allow Backpack access to notifications."}
-        icon={<CameraOn fill={"#8F929E"} />}
+        icon={
+          <NotificationsIcon
+            style={{ width: 50, height: 50 }}
+            fill={"#8F929E"}
+          />
+        }
         backgroundColor={"#DFE0E6"}
       />
     );
@@ -99,7 +102,7 @@ export const NotificationPermissions = () => {
         title={"Access Blocked"}
         subtitle1={"To give Backpack notification access,"}
         subtitle2={"check your browser or device settings"}
-        icon={<CameraOff />}
+        icon={<NotificationsOffIcon style={{ width: 50, height: 50 }} />}
         backgroundColor={"#DFE0E6"}
       />
     );
@@ -107,10 +110,13 @@ export const NotificationPermissions = () => {
 
   return (
     <PermissionsContent
-      marginTop={35}
       title={"Access Granted"}
       subtitle1={"You have granted notification access"}
-      icon={<CameraOn fill={"#35A63A"} />}
+      icon={
+        <NotificationsIcon
+          style={{ width: 50, height: 50, color: "#35A63A" }}
+        />
+      }
       backgroundColor={"rgba(53, 166, 58, 0.1)"}
     />
   );

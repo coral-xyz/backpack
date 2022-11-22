@@ -37,7 +37,6 @@ export interface HdKeyringFactory {
     derivationPath?: DerivationPath,
     accountIndices?: Array<number>
   ): HdKeyring;
-  generate(strength: number): HdKeyring;
   fromJson(obj: HdKeyringJson): HdKeyring;
 }
 

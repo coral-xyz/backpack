@@ -10,11 +10,8 @@ import {
 } from "@coral-xyz/common";
 
 import { TokenTables } from "./components/Balances";
+import { BalanceSummaryWidget } from "./components/BalanceSummaryWidget";
 import type { Token } from "./components/index";
-
-function BalanceSummaryWidget() {
-  return null;
-}
 
 export default function BalancesScreen({ navigation }) {
   const onPressTokenRow = (blockchain: Blockchain, token: Token) => {
@@ -26,12 +23,14 @@ export default function BalancesScreen({ navigation }) {
     });
   };
 
+  const onNavigate = (route) => navigation.navigate(route);
+
   return (
     <Screen>
-      <BalanceSummaryWidget />
-      <Margin vertical={32}>
-        <TransferWidget rampEnabled={true} />
+      <Margin vertical={12}>
+        <BalanceSummaryWidget />
       </Margin>
+      <TransferWidget rampEnabled={false} onNavigate={onNavigate} />
       <TokenTables
         onPressRow={onPressTokenRow}
         customFilter={(token: Token) => {
