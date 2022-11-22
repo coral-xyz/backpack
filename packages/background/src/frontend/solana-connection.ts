@@ -363,11 +363,11 @@ async function handleImpl<T = any>(
 
 async function handleGetMultipleAccountsInfo(
   ctx: Context<SolanaConnectionBackend>,
-  publicKeys: string[],
+  pubkeys: string[],
   commitment?: Commitment
 ) {
   const resp = await ctx.backend.getMultipleAccountsInfo(
-    publicKeys.map((k) => new PublicKey(k)),
+    pubkeys.map((k) => new PublicKey(k)),
     commitment
   );
   return [resp];
@@ -375,11 +375,11 @@ async function handleGetMultipleAccountsInfo(
 
 async function handleGetAccountInfo(
   ctx: Context<SolanaConnectionBackend>,
-  publicKey: string,
+  pubkey: string,
   commitment?: Commitment
 ) {
   const resp = await ctx.backend.getAccountInfo(
-    new PublicKey(publicKey),
+    new PublicKey(pubkey),
     commitment
   );
   return [resp];
@@ -387,11 +387,11 @@ async function handleGetAccountInfo(
 
 async function handleGetAccountInfoAndContext(
   ctx: Context<SolanaConnectionBackend>,
-  publicKey: string,
+  pubkey: string,
   commitment?: Commitment
 ) {
   const resp = await ctx.backend.getAccountInfoAndContext(
-    new PublicKey(publicKey),
+    new PublicKey(pubkey),
     commitment
   );
   return [resp];
@@ -584,13 +584,10 @@ async function handleGetTokenAccountBalance(
 
 async function handleGetBalance(
   ctx: Context<SolanaConnectionBackend>,
-  publicKey: string,
+  pubkey: string,
   commitment?: Commitment
 ) {
-  const resp = await ctx.backend.getBalance(
-    new PublicKey(publicKey),
-    commitment
-  );
+  const resp = await ctx.backend.getBalance(new PublicKey(pubkey), commitment);
   return [resp];
 }
 
@@ -638,11 +635,11 @@ async function handleGetTokenLargestAccounts(
 
 async function handleGetParsedAccountInfo(
   ctx: Context<SolanaConnectionBackend>,
-  publicKey: string,
+  pubkey: string,
   commitment?: Commitment
 ) {
   const resp = await ctx.backend.getParsedAccountInfo(
-    new PublicKey(publicKey),
+    new PublicKey(pubkey),
     commitment
   );
   return [resp];
@@ -676,11 +673,11 @@ async function handleGetAddressLookupTable(
 
 async function handleGetBalanceAndContext(
   ctx: Context<SolanaConnectionBackend>,
-  publicKey: string,
+  pubkey: string,
   commitment?: Commitment
 ) {
   const resp = await ctx.backend.getBalanceAndContext(
-    new PublicKey(publicKey),
+    new PublicKey(pubkey),
     commitment
   );
   return [resp];
@@ -730,11 +727,11 @@ async function handleGetLargestAccounts(
 
 async function handleGetMultipleAccountsInfoAndContext(
   ctx: Context<SolanaConnectionBackend>,
-  publicKeys: string[],
+  pubkeys: string[],
   commitment?: Commitment
 ) {
   const resp = await ctx.backend.getMultipleAccountsInfoAndContext(
-    publicKeys.map((k) => new PublicKey(k)),
+    pubkeys.map((k) => new PublicKey(k)),
     commitment
   );
   return [resp];
@@ -742,12 +739,12 @@ async function handleGetMultipleAccountsInfoAndContext(
 
 async function handleGetStakeActivation(
   ctx: Context<SolanaConnectionBackend>,
-  publicKey: string,
+  pubkey: string,
   commitment?: Commitment,
   epoch?: number
 ) {
   const resp = await ctx.backend.getStakeActivation(
-    new PublicKey(publicKey),
+    new PublicKey(pubkey),
     commitment,
     epoch
   );
