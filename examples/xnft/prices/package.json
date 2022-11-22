@@ -5,14 +5,11 @@
   "main": "index.js",
   "scripts": {
     "build": "xnft build",
-    "start": "xnft watch",
+    "start": "xnft start",
     "dev": "xnft dev"
   },
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "@coral-xyz/xnft-cli": "*"
-  },
   "dependencies": {
     "@types/d3": "^7.4.0",
     "d3-scale": "^4.0.2",

@@ -4,6 +4,7 @@ module.exports = {
   <head>
     <meta charset="utf-8"/>
     <link rel="stylesheet" href="https://doof72pbjabye.cloudfront.net/fonts/inter/font.css"></link>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
       html, body {
         position:relative;
@@ -26,6 +27,7 @@ module.exports = {
     <script>`,
 
   footer: `</script>
+    <script src="https://unpkg.com/@coral-xyz/react-xnft-dom-renderer@latest/dist/index.js"></script>
   </body>
 </html>
 `,
