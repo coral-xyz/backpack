@@ -567,6 +567,7 @@ export function BottomCard({
   );
 }
 
+// TODO(peter) share between extension/mobile
 export function useIsValidAddress(
   blockchain: Blockchain,
   address: string,
