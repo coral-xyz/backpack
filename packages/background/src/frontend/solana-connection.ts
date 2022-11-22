@@ -173,9 +173,9 @@ async function handleImpl<T = any>(
     case SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO_AND_CONTEXT:
       return await handleGetAccountInfoAndContext(ctx, params[0], params[1]);
     case SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH:
-      return await handleGetLatestBlockhash(ctx, params[1]);
+      return await handleGetLatestBlockhash(ctx, params[0]);
     case SOLANA_CONNECTION_RPC_GET_LATEST_BLOCKHASH_AND_CONTEXT:
-      return await handleGetLatestBlockhashAndContext(ctx, params[1]);
+      return await handleGetLatestBlockhashAndContext(ctx, params[0]);
     case SOLANA_CONNECTION_RPC_GET_TOKEN_ACCOUNTS_BY_OWNER:
       return await handleGetTokenAccountsByOwner(
         ctx,
