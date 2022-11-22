@@ -84,6 +84,7 @@ export type BlockchainKeyringInit = {
 export interface XnftPreference {
   disabled: boolean;
   mediaPermissions: boolean;
+  pushNotifications: boolean;
 }
 
 export type XnftPreferenceStore = { [key: string]: XnftPreference };

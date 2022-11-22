@@ -157,6 +157,8 @@ export const UI_RPC_METHOD_NAVIGATION_PUSH = "ui-rpc-method-navigation-push";
 export const UI_RPC_METHOD_NAVIGATION_READ = "ui-rpc-method-navigation-read";
 export const UI_RPC_METHOD_NAVIGATION_TO_ROOT =
   "ui-rpc-method-navigation-to-root";
+export const UI_RPC_METHOD_NAVIGATION_TO_DEFAULT =
+  "ui-rpc-method-navigation-to-default";
 export const UI_RPC_METHOD_PASSWORD_UPDATE = "ui-rpc-method-password-update";
 export const UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET =
   "ui-rpc-method-plugin-storage-get";
@@ -480,3 +482,5 @@ export const BACKPACK_LINK = "https://backpack.app";
 
 export const ALCHEMY_ETHEREUM_MAINNET_API_KEY =
   "DlJr6QuBC2EaE-L60-iqQQGq9hi9-XSZ";
+
+export const BACKEND_API_URL = "https://backpack-api.xnfts.dev";

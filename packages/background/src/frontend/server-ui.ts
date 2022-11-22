@@ -90,6 +90,7 @@ import {
   UI_RPC_METHOD_GET_FEATURE_GATES,
   UI_RPC_METHOD_GET_XNFT_PREFERENCES,
   UI_RPC_METHOD_SET_XNFT_PREFERENCES,
+  UI_RPC_METHOD_NAVIGATION_TO_DEFAULT,
 } from "@coral-xyz/common";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import type { Backend } from "../backend/core";
@@ -207,6 +208,8 @@ async function handle<T = any>(
       return await handleNavigationActiveTabUpdate(ctx, params[0]);
     case UI_RPC_METHOD_NAVIGATION_TO_ROOT:
       return await handleNavigationToRoot(ctx);
+    case UI_RPC_METHOD_NAVIGATION_TO_DEFAULT:
+      return await handleNavigationToDefault(ctx);
     //
     // Wallet app settings.
     //
@@ -594,6 +597,13 @@ async function handleNavigationToRoot(
   ctx: Context<Backend>
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.navigationToRoot();
+  return [resp];
+}
+
+async function handleNavigationToDefault(
+  ctx: Context<Backend>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.navigationToDefault();
   return [resp];
 }
 
