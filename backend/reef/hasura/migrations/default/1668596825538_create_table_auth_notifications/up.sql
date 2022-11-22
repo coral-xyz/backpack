@@ -1,0 +1,1 @@
+CREATE TABLE "auth"."notifications" ("title" text NOT NULL, "id" serial NOT NULL, "body" text NOT NULL, "image" text NOT NULL, "xnft_id" text NOT NULL, "username" text NOT NULL, "uuid" text NOT NULL, PRIMARY KEY ("id") );

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { CircularProgress, Typography, Button, Link } from "@mui/material";
 import { PublicKey } from "@solana/web3.js";
+import { updateRemotePreference } from "../../../../api/preferences";
 import {
   getLogger,
   confirmTransaction,
@@ -10,6 +11,7 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
   UI_RPC_METHOD_GET_XNFT_PREFERENCES,
   UI_RPC_METHOD_SET_XNFT_PREFERENCES,
+  BACKEND_API_URL,
 } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import {
@@ -35,7 +37,7 @@ import { CheckIcon } from "../../../common/Icon";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { Error } from "../../Balances/TokensWidget/Send";
 import { ProxyImage } from "../../../common/ProxyImage";
-
+import { useUsername } from "@coral-xyz/recoil";
 const logger = getLogger("xnft-detail");
 
 export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
@@ -44,6 +46,7 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
   const xnftPreference = useXnftPreference({ xnftId: xnft.install.publicKey });
   const nav = useNavStack();
   const background = useBackgroundClient();
+  const username = useUsername();
 
   const isDisabled = xnft.install.publicKey === PublicKey.default.toString();
 
@@ -84,6 +87,53 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
               });
               if (result.state !== "granted") {
                 window.open("/permissions.html", "_blank");
+                return;
+              }
+            }
+          }}
+        />
+      ),
+      onClick: () => {},
+      style: {
+        opacity: 0.5,
+      },
+    },
+    PushNotificationAccess: {
+      label: "Push notifications",
+      detail: (
+        <SwitchToggle
+          enabled={xnftPreference.pushNotifications}
+          onChange={async () => {
+            const updatedPushNotifications = !xnftPreference.pushNotifications;
+            await background.request({
+              method: UI_RPC_METHOD_SET_XNFT_PREFERENCES,
+              params: [
+                xnft.install.publicKey,
+                {
+                  pushNotifications: updatedPushNotifications,
+                },
+              ],
+            });
+            await updateRemotePreference(
+              xnft.install.publicKey,
+              username || "",
+              {
+                notifications: updatedPushNotifications,
+              }
+            ).catch((e) =>
+              console.error(
+                `Error while updating remote notification state ${e}`
+              )
+            );
+
+            if (updatedPushNotifications) {
+              const result = await window.navigator.permissions.query({
+                //@ts-ignore: camera not part of the typedoc yet
+                name: "notifications",
+              });
+
+              if (result.state !== "granted") {
+                window.open("/permissions.html?notifications=true", "_blank");
                 return;
               }
             }
