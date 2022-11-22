@@ -1,3 +1,4 @@
+import { generateMnemonic } from "bip39";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
 import type {
@@ -14,16 +15,18 @@ import {
   NOTIFICATION_KEYRING_STORE_LOCKED,
   BACKEND_EVENT,
 } from "@coral-xyz/common";
+import {
+  hdFactoryForBlockchain,
+  keyringForBlockchain,
+} from "@coral-xyz/blockchain-common";
+import { BlockchainKeyring } from "@coral-xyz/blockchain-keyring";
 import * as crypto from "./crypto";
-import { SolanaHdKeyringFactory } from "./solana";
-import { EthereumHdKeyringFactory } from "./ethereum";
 import * as store from "../store";
 import {
   DefaultKeyname,
   DEFAULT_DARK_MODE,
   DEFAULT_DEVELOPER_MODE,
 } from "../store";
-import { BlockchainKeyring } from "./blockchain";
 
 /**
  * Keyring API for managing all wallet keys.
@@ -110,11 +113,7 @@ export class KeyringStore {
     publicKey?: string,
     persist = true
   ): Promise<void> {
-    const keyring = {
-      [Blockchain.SOLANA]: BlockchainKeyring.solana,
-      [Blockchain.ETHEREUM]: BlockchainKeyring.ethereum,
-    }[blockchain]();
-
+    const keyring = keyringForBlockchain(blockchain);
     if (this.mnemonic) {
       // Initialising using a mnemonic
       await keyring.initFromMnemonic(this.mnemonic, derivationPath, [
@@ -134,9 +133,7 @@ export class KeyringStore {
         },
       ]);
     }
-
     this.blockchains.set(blockchain, keyring);
-
     if (persist) {
       await this.persist();
     }
@@ -211,10 +208,7 @@ export class KeyringStore {
     derivationPath: DerivationPath,
     numberOfAccounts: number
   ): string[] {
-    const factory = {
-      [Blockchain.SOLANA]: new SolanaHdKeyringFactory(),
-      [Blockchain.ETHEREUM]: new EthereumHdKeyringFactory(),
-    }[blockchain];
+    const factory = hdFactoryForBlockchain(blockchain);
     const hdKeyring = factory.fromMnemonic(mnemonic, derivationPath, [
       ...Array(numberOfAccounts).keys(),
     ]);
@@ -327,9 +321,8 @@ export class KeyringStore {
   }
 
   public createMnemonic(strength: number): string {
-    const factory = new SolanaHdKeyringFactory();
-    const kr = factory.generate(strength);
-    return kr.mnemonic;
+    const mnemonic = generateMnemonic(strength);
+    return mnemonic;
   }
 
   private toJson(): any {
@@ -349,7 +342,9 @@ export class KeyringStore {
     this.mnemonic = mnemonic;
     this.blockchains = new Map(
       Object.entries(blockchains).map(([blockchain, obj]) => {
-        const blockchainKeyring = BlockchainKeyring[blockchain]();
+        const blockchainKeyring = keyringForBlockchain(
+          blockchain as Blockchain
+        );
         blockchainKeyring.fromJson(obj);
         return [blockchain, blockchainKeyring];
       })
