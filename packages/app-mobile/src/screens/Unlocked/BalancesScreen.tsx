@@ -23,7 +23,7 @@ export default function BalancesScreen({ navigation }) {
     });
   };
 
-  const onNavigate = (route) => navigation.navigate("ReceiveModal");
+  const onNavigate = (route) => navigation.navigate(route);
 
   return (
     <Screen>

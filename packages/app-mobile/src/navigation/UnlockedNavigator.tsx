@@ -8,6 +8,10 @@ import AppListScreen from "@screens/Unlocked/AppListScreen";
 import BalancesScreen from "@screens/Unlocked/BalancesScreen";
 import DepositModal from "@screens/Unlocked/DepositScreen";
 import NftCollectiblesScreen from "@screens/Unlocked/NftCollectiblesScreen";
+import {
+  SelectSendTokenModal,
+  SendTokenModal,
+} from "@screens/Unlocked/SendTokenScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -33,9 +37,18 @@ export default function UnlockedNavigator() {
           component={DepositModal}
         />
         <Stack.Screen
-          options={{ title: "Send" }}
-          name="SendModal"
-          component={RecentActivityModal}
+          options={{ title: "Select Token" }}
+          name="SendSelectTokenModal"
+          component={SelectSendTokenModal}
+        />
+        <Stack.Screen
+          options={({ route }) => {
+            return {
+              title: route.params.title,
+            };
+          }}
+          name="SendTokenModal"
+          component={SendTokenModal}
         />
         <Stack.Screen
           options={{ title: "Swap" }}
