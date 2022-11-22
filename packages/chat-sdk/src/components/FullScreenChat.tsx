@@ -1,7 +1,9 @@
-import { MessageLeft, MessageRight } from "./Message";
+import { MessageLeft } from "./Message";
 import { SendMessage } from "./SendMessage";
-
+import { ScrollBarImpl } from "./ScrollbarImpl";
+import { useRef } from "react";
 export const FullScreenChat = ({ messageContainerRef, chats }) => {
+  const messageRef = useRef<any>();
   return (
     <div
       style={{
@@ -10,23 +12,26 @@ export const FullScreenChat = ({ messageContainerRef, chats }) => {
         height: "100%",
       }}
     >
-      <div style={{ flex: "1 1 auto", height: "90%", overflow: "scroll" }}>
-        {chats.map((chat) => {
-          if (chat.direction === "recv") {
-            return <MessageLeft key={chat.id} message={chat.message} />;
-          } else {
+      <ScrollBarImpl>
+        <div
+          id={"messageContainer"}
+          ref={messageRef}
+          style={{ overflowY: "scroll", height: "100%", padding: 15 }}
+        >
+          {chats.map((chat) => {
             return (
-              <MessageRight
+              <MessageLeft
+                timestamp={chat.created_at}
                 key={chat.id}
                 message={chat.message}
                 received={chat.received}
               />
             );
-          }
-        })}
-      </div>
-      <div style={{ flex: "0 1 auto" }}>
-        <SendMessage />
+          })}
+        </div>
+      </ScrollBarImpl>
+      <div style={{ position: "absolute", bottom: 0, width: "100%" }}>
+        <SendMessage messageRef={messageRef} />
       </div>
     </div>
   );

@@ -35,18 +35,15 @@ export const ChatRoom = ({
               if (message.uuid !== userId) {
                 return message;
               }
-              console.log(`inside2 for ${message.message}`);
               const receivedMessage = messages.find(
                 (x) => x.client_generated_uuid === message.client_generated_uuid
               );
               if (receivedMessage) {
-                console.log(`inside3 for ${message.message}`);
                 return {
                   ...message,
                   received: true,
                 };
               }
-              console.log(`inside4 for ${message.message}`);
               return message;
             })
           );
