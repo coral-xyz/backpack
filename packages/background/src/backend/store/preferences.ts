@@ -1,5 +1,5 @@
-import type { Commitment } from "@solana/web3.js";
 import type { Blockchain } from "@coral-xyz/common";
+import { NetworkSettings } from "@coral-xyz/blockchain-types";
 import { LocalStorageDb } from "./db";
 
 const STORE_KEY_WALLET_DATA = "wallet-data";
@@ -14,20 +14,10 @@ export type WalletData = {
   enabledBlockchains: Array<Blockchain>;
   darkMode: boolean;
   developerMode: boolean;
-  solana: SolanaData;
-  ethereum?: EthereumData;
-};
+} & BlockchainSettings;
 
-type SolanaData = {
-  explorer: string;
-  commitment: Commitment;
-  cluster: string;
-};
-
-type EthereumData = {
-  explorer?: string;
-  connectionUrl?: string;
-  chainId?: string;
+type BlockchainSettings = {
+  [blockchain in Blockchain]: NetworkSettings;
 };
 
 export async function getWalletData(): Promise<WalletData> {

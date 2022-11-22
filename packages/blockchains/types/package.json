@@ -1,5 +1,5 @@
 {
-  "name": "@coral-xyz/blockchain-solana",
+  "name": "@coral-xyz/blockchain-types",
   "version": "0.1.0",
   "description": "",
   "license": "ISC",
@@ -16,11 +16,7 @@
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "yarn run lint --fix"
   },
-  "dependencies": {
-    "@coral-xyz/blockchain-keyring": "*",
-    "@coral-xyz/common": "*",
-    "@solana/web3.js": "^1.66.2"
-  },
+  "dependencies": {},
   "devDependencies": {
     "eslint-config-custom": "*",
     "typescript": "^4.6.3"
