@@ -12,6 +12,8 @@ import {
 } from "@solana/web3.js";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { makeDefaultNav } from "@coral-xyz/recoil";
+import { keyringForBlockchain } from "@coral-xyz/blockchain-common";
+import { BlockchainKeyring } from "@coral-xyz/blockchain-keyring";
 import {
   BACKEND_EVENT,
   Blockchain,
@@ -45,7 +47,6 @@ import {
   SolanaExplorer,
   deserializeTransaction,
   FEATURE_GATES_MAP,
-  XnftPreferenceStore,
   XnftPreference,
 } from "@coral-xyz/common";
 import type {
@@ -56,7 +57,6 @@ import type {
 } from "@coral-xyz/common";
 import type { Nav } from "./store";
 import * as store from "./store";
-import { BlockchainKeyring } from "./keyring/blockchain";
 import { KeyringStore } from "./keyring";
 import type { SolanaConnectionBackend } from "./solana-connection";
 import type { EthereumConnectionBackend } from "./ethereum-connection";
@@ -438,10 +438,7 @@ export class Backend {
     publicKey: string,
     mnemonic?: string
   ) {
-    const blockchainKeyring = {
-      [Blockchain.SOLANA]: BlockchainKeyring.solana,
-      [Blockchain.ETHEREUM]: BlockchainKeyring.ethereum,
-    }[blockchain]();
+    const blockchainKeyring = keyringForBlockchain(blockchain);
 
     if (mnemonic) {
       blockchainKeyring.initFromMnemonic(mnemonic, derivationPath, [
