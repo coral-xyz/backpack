@@ -1,5 +1,5 @@
-import { View, StyleSheet } from "react-native";
 import { useForm } from "react-hook-form";
+import { Alert, StyleSheet, View } from "react-native";
 import { PrimaryButton, Screen } from "@components";
 import { TextInput } from "@components/TextInput";
 import type { Blockchain } from "@coral-xyz/common";
@@ -25,7 +25,8 @@ export function SendTokenModal({ navigation }) {
   console.log({ errors });
 
   const onSubmit = ({ amount, address }) => {
-    // console.log("onSubmit", { amount, address });
+    Alert.alert(JSON.stringify({ amount, address }));
+    console.log("onSubmit", { amount, address });
     // setOnboardingData({ password });
     // navigation.push("Finished");
   };
