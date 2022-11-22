@@ -13,7 +13,8 @@
     "hono": "^2.2.1",
     "stripe": "^10.15.0",
     "tweetnacl": "^1.0.3",
-    "zod": "^3.19.1"
+    "zod": "^3.19.1",
+    "@coral-xyz/zeus": "*"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^3.16.0",
