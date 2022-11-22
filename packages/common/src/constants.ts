@@ -396,7 +396,7 @@ export const SOLANA_CONNECTION_RPC_GET_FEE_FOR_MESSAGE =
 export const SOLANA_CONNECTION_RPC_GET_MINIMUM_BALANCE_FOR_RENT_EXEMPTION =
   "solana-get-minimum-balance-for-rent-exemption";
 export const SOLANA_CONNECTION_RPC_GET_TOKEN_ACCOUNT_BALANCE =
-  "solana-get-token-account-balance";
+  "get-token-account-balance";
 export const SOLANA_CONNECTION_RPC_GET_BALANCE = "solana-get-balance";
 export const SOLANA_CONNECTION_RPC_GET_SLOT = "solana-get-slot";
 export const SOLANA_CONNECTION_RPC_GET_BLOCK_TIME = "solana-get-block-time";
