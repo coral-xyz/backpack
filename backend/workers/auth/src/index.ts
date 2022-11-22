@@ -16,7 +16,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { sign } from "tweetnacl";
 import { z, ZodError } from "zod";
-import { Chain } from "./zeus";
+import { Chain } from "@coral-xyz/zeus";
 import { registerOnRampHandlers } from "./onramp";
 
 const BaseCreateUser = z.object({
