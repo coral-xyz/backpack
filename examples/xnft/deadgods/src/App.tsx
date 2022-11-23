@@ -1,7 +1,7 @@
 import { View, Tab } from "react-xnft";
 import { DustScreen } from "./Dust";
 import { GodsScreen } from "./Gods";
-import { DegodsIcon, GodsIcon } from "./utils/Icon";
+import { DegodsIcon, GodsIcon } from "./utils/icon";
 import { THEME } from "./utils/theme";
 
 export function App() {
