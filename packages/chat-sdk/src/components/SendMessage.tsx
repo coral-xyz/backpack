@@ -1,4 +1,5 @@
 import { IconButton, TextField } from "@mui/material";
+import GifIcon from "@mui/icons-material/Gif";
 import { createStyles, makeStyles } from "@mui/styles";
 import { useChatContext } from "./ChatContext";
 import { useEffect, useState } from "react";
@@ -7,6 +8,12 @@ import SendIcon from "@mui/icons-material/Send";
 import EmojiPicker, { Theme } from "emoji-picker-react";
 import SentimentVerySatisfiedIcon from "@mui/icons-material/SentimentVerySatisfied";
 import { useDarkMode } from "@coral-xyz/recoil";
+import { Carousel } from "@giphy/react-components";
+import { GiphyFetch } from "@giphy/js-fetch-api";
+
+// use @giphy/js-fetch-api to fetch gifs, instantiate with your api key
+const gf = new GiphyFetch("SjZwwCn1e394TKKjrMJWb2qQRNcqW8ro");
+const fetchGifs = (offset: number) => gf.trending({ offset, limit: 10 });
 
 const useStyles = makeStyles((theme: any) =>
   createStyles({
@@ -74,6 +81,7 @@ export const SendMessage = ({ messageRef }: any) => {
   const classes = useStyles();
   const [messageContent, setMessageContent] = useState("");
   const [emojiPicker, setEmojiPicker] = useState(false);
+  const [gifPicker, setGifPicker] = useState(false);
   const { chatManager, setChats, userId } = useChatContext();
   const isDarkMode = useDarkMode();
 
@@ -108,6 +116,7 @@ export const SendMessage = ({ messageRef }: any) => {
       if (event.key === "Escape") {
         event.preventDefault();
         setEmojiPicker(false);
+        setGifPicker(false);
       }
     }
 
@@ -154,6 +163,13 @@ export const SendMessage = ({ messageRef }: any) => {
               </IconButton>
               <IconButton>
                 {" "}
+                <GifIcon
+                  className={classes.sendIcon}
+                  onClick={() => setGifPicker((x) => !x)}
+                />{" "}
+              </IconButton>
+              <IconButton>
+                {" "}
                 <SendIcon
                   className={classes.sendIcon}
                   onClick={sendMessage}
@@ -171,6 +187,9 @@ export const SendMessage = ({ messageRef }: any) => {
           width={"100%"}
           onEmojiClick={(e) => setMessageContent((x) => x + e.emoji)}
         />
+      )}
+      {gifPicker && (
+        <Carousel gifHeight={250} gutter={6} fetchGifs={fetchGifs} />
       )}
     </div>
   );

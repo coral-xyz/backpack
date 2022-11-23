@@ -13,6 +13,7 @@ export * from "./ethereum";
 export * from "./explorer";
 export * from "./plugin";
 export * from "./feature-gates";
+export * from "./messages";
 
 // Generated pre-build step.
 export * from "./generated-config";

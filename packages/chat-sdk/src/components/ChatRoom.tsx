@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ChatManager, Message } from "../ChatManager";
+import { ChatManager, EnrichedMessage } from "../ChatManager";
 import { useRef } from "react";
 import { FullScreenChat } from "./FullScreenChat";
 import { ChatProvider } from "./ChatContext";
@@ -18,7 +18,7 @@ export const ChatRoom = ({
   const [chatManager, setChatManager] = useState<ChatManager | null>(null);
   const messageContainerRef = useRef(null);
   // TODO: Make state propogte from outside the state since this'll be expensive
-  const [chats, setChats] = useState<Message[]>([]);
+  const [chats, setChats] = useState<EnrichedMessage[]>([]);
 
   useEffect(() => {
     if (roomId) {
@@ -28,6 +28,9 @@ export const ChatRoom = ({
         roomId,
         (messages) => {
           setChats((m) => [...m, ...messages]);
+        },
+        (messages) => {
+          setChats((m) => [...messages, ...m]);
         },
         (messages) => {
           setChats((m) =>

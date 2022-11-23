@@ -1,9 +1,23 @@
 import { MessageLeft } from "./Message";
 import { SendMessage } from "./SendMessage";
 import { ScrollBarImpl } from "./ScrollbarImpl";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
+import { useChatContext } from "./ChatContext";
 export const FullScreenChat = ({ messageContainerRef, chats }) => {
+  const { chatManager } = useChatContext();
   const messageRef = useRef<any>();
+  function scrollHandler() {
+    if (messageRef && messageRef.current) {
+      const elem = messageRef.current;
+      if (elem.scrollHeight - elem.scrollTop === elem.clientHeight) {
+        console.log("bottom");
+      }
+      if (elem.scrollTop === 0) {
+        chatManager?.fetchMoreChats();
+      }
+    }
+  }
+
   return (
     <div
       style={{
@@ -14,9 +28,14 @@ export const FullScreenChat = ({ messageContainerRef, chats }) => {
     >
       <ScrollBarImpl>
         <div
+          onScroll={scrollHandler}
           id={"messageContainer"}
           ref={messageRef}
-          style={{ overflowY: "scroll", height: "100%", padding: 15 }}
+          style={{
+            overflowY: "scroll",
+            height: "calc(100% - 47px)",
+            padding: 15,
+          }}
         >
           {chats.map((chat) => {
             return (

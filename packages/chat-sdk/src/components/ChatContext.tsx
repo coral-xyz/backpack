@@ -1,10 +1,10 @@
 import React, { useContext } from "react";
-import { ChatManager, Message } from "../ChatManager";
+import { ChatManager, EnrichedMessage } from "../ChatManager";
 
 type ChatContext = {
   chatManager: ChatManager | null;
   roomId: string;
-  chats: Message[];
+  chats: EnrichedMessage[];
   setChats: any;
   userId: string;
 };
@@ -14,7 +14,7 @@ export const _ChatContext = React.createContext<ChatContext | null>(null);
 export function ChatProvider(props: {
   chatManager: ChatManager | null;
   roomId: string;
-  chats: Message[];
+  chats: EnrichedMessage[];
   userId: string;
   setChats: any;
   children: any;

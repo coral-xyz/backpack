@@ -1,16 +1,14 @@
-import { Subscription } from "./subscriptionManager";
-import { Chain, SubscriptionToGraphQL } from "./zeus/index";
-import { HASURA_URL, HASURA_WS_URL, JWT } from "./config";
-import { v4 as uuidv4 } from "uuid";
+import { Signaling, SIGNALING_CONNECTED } from "./Signaling";
+import {
+  CHAT_MESSAGES,
+  Message,
+  SUBSCRIBE,
+  SubscriptionType,
+} from "@coral-xyz/common";
 
-export interface Message {
-  id: number;
-  username?: string;
-  uuid?: string;
-  message?: string;
-  received?: boolean;
+export interface EnrichedMessage extends Message {
   direction: "send" | "recv";
-  client_generated_uuid?: string;
+  received?: boolean;
 }
 
 export class ChatManager {
@@ -18,104 +16,140 @@ export class ChatManager {
   private userId: string;
   private username: string;
   private onMessages: (messages: Message[]) => void;
+  private onMessagesPrepend: (messages: Message[]) => void;
   private onLocalMessageReceived: (messages: Message[]) => void;
+  private lastChatId = 1000000000;
   private subscription?: any;
   private sendQueue: { [client_generated_uuid: string]: boolean } = {};
+  private fetchingInProgress = false;
+  private signaling: Signaling;
 
   constructor(
     userId: string,
     username: string,
     roomId: string,
-    onMessages: (messages: Message[]) => void,
-    onLocalMessageReceived: (messages: Message[]) => void
+    onMessages: (messages: EnrichedMessage[]) => void,
+    onMessagesPrepend: (messages: EnrichedMessage[]) => void,
+    onLocalMessageReceived: (messages: EnrichedMessage[]) => void
   ) {
     this.roomId = roomId;
     this.userId = userId;
     this.username = username;
     this.onMessages = onMessages;
+    this.onMessagesPrepend = onMessagesPrepend;
     this.onLocalMessageReceived = onLocalMessageReceived;
-    this.subscribeIncomingMessages();
+    this.signaling = new Signaling();
+    this.init();
   }
 
-  async subscribeIncomingMessages() {
-    const wsChain = Subscription(HASURA_WS_URL, {
-      get headers() {
-        return { Authorization: `Bearer ${JWT}` };
-      },
-    });
+  async fetchMoreChats() {
+    if (this.fetchingInProgress) {
+      return;
+    }
+    this.fetchingInProgress = true;
+    // const response = [{chats: []}];
+    // const response = await chain("query")({
+    //   chats: [
+    //     { limit: 50,
+    //       order_by: [{ id: order_by.desc }],
+    //       where: {
+    //         id: {
+    //           _lt: this.lastChatId
+    //         }
+    //       }
+    //     },
+    //     {
+    //       id: true,
+    //       username: true,
+    //       uuid: true,
+    //       message: true,
+    //       client_generated_uuid: true,
+    //       created_at: true,
+    //     },
+    //   ],
+    // });
 
-    const subscription = wsChain("subscription")({
-      chats: [
-        { limit: 50 },
-        {
-          id: true,
-          username: true,
-          uuid: true,
-          message: true,
-          client_generated_uuid: true,
-          created_at: true,
+    // if (response.chats && response.chats.length !== 0) {
+    //   response.chats.forEach(chat => {
+    //     if (chat.id < this.lastChatId) {
+    //       this.lastChatId = chat.id
+    //     }
+    //   })
+    //   this.onMessagesPrepend(response.chats.map(chat => ({
+    //     ...chat,
+    //     direction: this.userId === chat.uuid ? "send" : "recv",
+    //   })));
+    // }
+
+    this.fetchingInProgress = false;
+  }
+
+  async init() {
+    this.signaling.addListener(SIGNALING_CONNECTED, () => {
+      this.signaling.send({
+        type: SUBSCRIBE,
+        payload: {
+          type: "collection",
+          room: this.roomId,
         },
-      ],
+      });
     });
-
-    let lastChatIndex = -1;
-    subscription.on(({ chats }) => {
-      //TODO: add binary search here?
-      const filteredChats: Message[] = [];
-      const filteredReceived: Message[] = [];
-      for (let i = 0; i < chats.length; i++) {
-        if (chats[i].id > lastChatIndex) {
-          lastChatIndex = chats[i].id;
-          if (this.sendQueue[chats[i].client_generated_uuid || ""]) {
-            delete this.sendQueue[chats[i].client_generated_uuid || ""];
+    this.signaling.addListener(
+      CHAT_MESSAGES,
+      ({
+        messages,
+        type,
+        room,
+      }: {
+        messages: Message[];
+        type: SubscriptionType;
+        room: string;
+      }) => {
+        const filteredChats: EnrichedMessage[] = [];
+        const filteredReceived: EnrichedMessage[] = [];
+        for (let i = 0; i < messages.length; i++) {
+          if (messages[i].id < this.lastChatId) {
+            this.lastChatId = messages[i].id;
+          }
+          if (this.sendQueue[messages[i].client_generated_uuid || ""]) {
+            delete this.sendQueue[messages[i].client_generated_uuid || ""];
             filteredReceived.push({
-              ...chats[i],
-              direction: this.userId === chats[i].uuid ? "send" : "recv",
+              ...messages[i],
+              direction: this.userId === messages[i].uuid ? "send" : "recv",
             });
           } else {
             filteredChats.push({
-              ...chats[i],
-              direction: this.userId === chats[i].uuid ? "send" : "recv",
+              ...messages[i],
+              direction: this.userId === messages[i].uuid ? "send" : "recv",
               received: true,
             });
           }
         }
+        if (filteredChats.length) {
+          this.onMessages(filteredChats);
+        }
+        if (filteredReceived.length) {
+          this.onLocalMessageReceived(filteredReceived);
+        }
       }
-      if (filteredChats.length) {
-        this.onMessages(filteredChats);
-      }
-      if (filteredReceived.length) {
-        this.onLocalMessageReceived(filteredReceived);
-      }
-    });
-
-    this.subscription = subscription;
+    );
   }
 
   async send(message: string, client_generated_uuid: string) {
     this.sendQueue[client_generated_uuid] = true;
-    const chain = Chain(HASURA_URL, {
-      headers: {
-        Authorization: `Bearer ${JWT}`,
-      },
-    });
 
-    await chain("mutation")({
-      insert_chats_one: [
-        {
-          object: {
-            username: this.username,
-            room: this.roomId,
+    this.signaling.send({
+      type: CHAT_MESSAGES,
+      payload: {
+        messages: [
+          {
             message,
-            uuid: "",
             client_generated_uuid,
-            created_at: new Date(),
           },
-        },
-        {
-          id: true,
-        },
-      ],
+        ],
+        type: "collection",
+        room: this.roomId,
+      },
     });
   }
 
