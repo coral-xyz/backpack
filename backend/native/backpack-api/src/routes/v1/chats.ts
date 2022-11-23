@@ -1,0 +1,33 @@
+import express from "express";
+import { getChats } from "../../db/chats";
+import { Message, MessageWithMetadata } from "@coral-xyz/common";
+import { getUsers } from "../../db/users";
+
+const router = express.Router();
+
+router.get("/", async (req, res) => {
+  const room = req.query.room;
+  const type = req.query.type;
+  const lastChatId = req.query.lastChatId || 1000000000;
+  // @ts-ignore
+  const chats = await getChats({ room, type, lastChatId });
+  const enrichedChats = await enrichMessages(chats);
+  res.json({ chats: enrichedChats });
+});
+
+async function enrichMessages(
+  messages: Message[]
+): Promise<MessageWithMetadata[]> {
+  const userIds: string[] = messages.map((m) => m.uuid || "");
+  const uniqueUserIds = userIds.filter(
+    (x, index) => userIds.indexOf(x) === index
+  );
+  const metadatas = await getUsers(uniqueUserIds);
+  return messages.map((message) => ({
+    ...message,
+    username:
+      metadatas.find((x) => x.id === message.uuid || "")?.username || "",
+  }));
+}
+
+export default router;

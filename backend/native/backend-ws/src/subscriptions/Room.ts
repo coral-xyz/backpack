@@ -1,6 +1,7 @@
 import { User } from "../users/User";
 import { CHAT_HASURA_URL, CHAT_JWT } from "../config";
-import { Chain, order_by } from "../zeus/index";
+import { Chain } from "@coral-xyz/chat-zeus";
+
 import {
   CHAT_MESSAGES,
   FromServer,
@@ -38,9 +39,11 @@ export class Room {
       chats: [
         {
           limit: 50,
-          order_by: [{ id: order_by.asc }],
+          //@ts-ignore
+          order_by: [{ id: "asc" }],
           where: {
             room: { _eq: this.room },
+            //@ts-ignore
             type: { _eq: this.type },
           },
         },
@@ -121,7 +124,7 @@ export class Room {
     });
   }
 
-  async enrichMessages(messages: Message[]): MessageWithMetadata[] {
+  async enrichMessages(messages: Message[]): Promise<MessageWithMetadata[]> {
     const userIds: string[] = messages.map((m) => m.uuid || "");
     const uniqueUserIds = userIds
       .filter((x, index) => userIds.indexOf(x) === index)

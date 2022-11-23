@@ -1,5 +1,4 @@
 import { User } from "./User";
-import { Room } from "../subscriptions/Room";
 import WebSocket from "ws";
 
 export class UserManager {

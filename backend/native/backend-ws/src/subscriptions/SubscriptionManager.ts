@@ -1,12 +1,6 @@
 import { Room } from "./Room";
 import { User } from "../users/User";
-import {
-  CHAT_MESSAGES,
-  SUBSCRIBE,
-  SubscriptionMessage,
-  SubscriptionType,
-  ToServer,
-} from "@coral-xyz/common";
+import { CHAT_MESSAGES, SubscriptionType, ToServer } from "@coral-xyz/common";
 
 export class SubscriptionManager {
   private static instance: SubscriptionManager;
