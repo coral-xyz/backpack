@@ -5,11 +5,14 @@ export const UNSUBSCRIBE = "UNSUBSCRIBE";
 
 export interface Message {
   id: number;
-  username?: string;
   uuid?: string;
   message?: string;
   // received?: boolean;
   client_generated_uuid?: string;
+}
+
+export interface MessageWithMetadata extends Message {
+  username: string;
 }
 
 export type ReceiveChat = {

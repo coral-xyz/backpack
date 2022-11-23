@@ -2,11 +2,12 @@ import { Signaling, SIGNALING_CONNECTED } from "./Signaling";
 import {
   CHAT_MESSAGES,
   Message,
+  MessageWithMetadata,
   SUBSCRIBE,
   SubscriptionType,
 } from "@coral-xyz/common";
 
-export interface EnrichedMessage extends Message {
+export interface EnrichedMessage extends MessageWithMetadata {
   direction: "send" | "recv";
   received?: boolean;
 }
@@ -14,7 +15,6 @@ export interface EnrichedMessage extends Message {
 export class ChatManager {
   private roomId: string;
   private userId: string;
-  private username: string;
   private onMessages: (messages: Message[]) => void;
   private onMessagesPrepend: (messages: Message[]) => void;
   private onLocalMessageReceived: (messages: Message[]) => void;
@@ -26,7 +26,6 @@ export class ChatManager {
 
   constructor(
     userId: string,
-    username: string,
     roomId: string,
     onMessages: (messages: EnrichedMessage[]) => void,
     onMessagesPrepend: (messages: EnrichedMessage[]) => void,
@@ -34,7 +33,6 @@ export class ChatManager {
   ) {
     this.roomId = roomId;
     this.userId = userId;
-    this.username = username;
     this.onMessages = onMessages;
     this.onMessagesPrepend = onMessagesPrepend;
     this.onLocalMessageReceived = onLocalMessageReceived;
@@ -51,7 +49,7 @@ export class ChatManager {
     // const response = await chain("query")({
     //   chats: [
     //     { limit: 50,
-    //       order_by: [{ id: order_by.desc }],
+    //       order_by: [{ id: order_by.asc }],
     //       where: {
     //         id: {
     //           _lt: this.lastChatId

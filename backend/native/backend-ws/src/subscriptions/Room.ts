@@ -1,16 +1,18 @@
 import { User } from "../users/User";
-import { HASURA_URL, JWT } from "../config";
+import { CHAT_HASURA_URL, CHAT_JWT } from "../config";
 import { Chain, order_by } from "../zeus/index";
 import {
   CHAT_MESSAGES,
   FromServer,
   Message,
+  MessageWithMetadata,
   SubscriptionType,
 } from "@coral-xyz/common";
+import { getUsers } from "../db/users";
 
-const chain = Chain(HASURA_URL, {
+const chain = Chain(CHAT_HASURA_URL, {
   headers: {
-    Authorization: `Bearer ${JWT}`,
+    Authorization: `Bearer ${CHAT_JWT}`,
   },
 });
 
@@ -19,6 +21,10 @@ export class Room {
   private room: string;
   private type: SubscriptionType;
   private messageHistory: Message[];
+  private userIdMappings: Map<string, { username: string }> = new Map<
+    string,
+    { username: string }
+  >();
 
   constructor(room: string, type: SubscriptionType) {
     this.room = room;
@@ -40,7 +46,6 @@ export class Room {
         },
         {
           id: true,
-          username: true,
           uuid: true,
           message: true,
           client_generated_uuid: true,
@@ -114,6 +119,23 @@ export class Room {
       }
       user.send(msg);
     });
+  }
+
+  async enrichMessages(messages: Message[]): MessageWithMetadata[] {
+    const userIds: string[] = messages.map((m) => m.uuid || "");
+    const uniqueUserIds = userIds
+      .filter((x, index) => userIds.indexOf(x) === index)
+      .filter((x) => !this.userIdMappings.get(x || ""));
+    if (uniqueUserIds.length) {
+      const metadatas = await getUsers(uniqueUserIds);
+      metadatas.forEach(({ id, username }) =>
+        this.userIdMappings.set(id, { username })
+      );
+    }
+    return messages.map((message) => ({
+      ...message,
+      username: this.userIdMappings.get(message.uuid || "")?.username || "",
+    }));
   }
 
   removeUser(user: User) {

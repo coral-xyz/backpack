@@ -24,7 +24,6 @@ export const ChatRoom = ({
     if (roomId) {
       const chatManager = new ChatManager(
         userId,
-        "kira",
         roomId,
         (messages) => {
           setChats((m) => [...m, ...messages]);
