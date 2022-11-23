@@ -2,9 +2,9 @@
   "name": "@coral-xyz/xnft-explorer",
   "version": "0.1.0",
   "scripts": {
-    "build": "node scripts/build.js",
-    "start": "node scripts/start.js",
-    "dev": "node scripts/watch.js"
+    "build": "xnft build",
+    "start": "xnft start",
+    "dev": "xnft dev"
   },
   "devDependencies": {},
   "dependencies": {

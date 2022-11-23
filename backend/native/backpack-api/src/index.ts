@@ -1,10 +1,7 @@
 import express from "express";
-import {
-  getPreferences,
-  insertSubscription,
-  updatePreference,
-} from "./db/preference";
-import { getNotifications } from "./db/notifications";
+import notificationRoutes from "./routes/v1/notifications";
+import preferenceRoutes from "./routes/v1/preferences";
+import proxyRouter from "./routes/v1/proxy";
 
 const app = express();
 const bodyParser = require("body-parser");
@@ -13,53 +10,10 @@ const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.json({ type: "application/json" }));
-
-app.post("/notifications/register", async (req, res) => {
-  //TODO: Secure this
-  const username = req.body.username || "";
-  const publicKey = req.body.publicKey || "";
-  const subscription = req.body.subscription;
-
-  await insertSubscription(publicKey, username, subscription);
-
-  res.json({});
-});
+app.use("/notifications/", notificationRoutes);
+app.use("/preferences", preferenceRoutes);
+app.use("/proxy", proxyRouter);
 
 // TODO: Add validation using zod
-app.post("/preference", async (req, res) => {
-  //TODO: Secure this
-  const username = req.body.username || "";
-  const xnftId = req.body.xnftId;
-  const preferences = req.body.preferences;
-
-  await updatePreference(xnftId, username, preferences);
-
-  res.json({});
-});
-
-app.get("/preferences", async (req, res) => {
-  //TODO: Secure this
-  const username = req.body.username || "";
-
-  const xnftPreferences = await getPreferences(username);
-
-  res.json({ xnftPreferences });
-});
-
-app.get("/notifications", async (req, res) => {
-  // @TODO: secure this
-  //@ts-ignore
-  const username: string = req.query.username;
-  //@ts-ignore
-  const limit: string = req.query.limit || 10;
-  //@ts-ignore
-  const offset: string = req.query.offset || 0;
-  const notifications = await getNotifications(
-    username,
-    parseInt(offset),
-    parseInt(limit)
-  );
-  res.json({ notifications });
-});
 
 app.listen(process.env.PORT || 8080);

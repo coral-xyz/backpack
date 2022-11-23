@@ -1,10 +1,12 @@
 import React from "react";
-import { PrimaryButton } from "../components/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import {
   BackgroundClient,
   UI_RPC_METHOD_NAVIGATION_TO_DEFAULT,
 } from "@coral-xyz/common";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import { EmptyState } from "../components/common/EmptyState";
+import { styles } from "@coral-xyz/themes";
 
 interface State {
   err: boolean;
@@ -13,7 +15,21 @@ interface State {
 interface Props {
   children?: React.ReactNode;
   background: BackgroundClient;
+  classes: any;
 }
+
+const useStyles = styles((theme) => {
+  return {
+    appContainer: {
+      background: theme.custom.colors.backgroundBackdrop,
+      height: "100vh",
+      width: "100vw",
+      display: "flex",
+      justifyContent: "center",
+      flexDirection: "column",
+    },
+  };
+});
 
 class ErrorBoundaryWithHooks extends React.Component<Props, State> {
   state = { err: false };
@@ -30,53 +46,21 @@ class ErrorBoundaryWithHooks extends React.Component<Props, State> {
   render(): React.ReactNode {
     if (this.state.err) {
       return (
-        <div
-          style={{
-            height: "100vh",
-            width: "100vw",
-            display: "flex",
-            justifyContent: "center",
-            flexDirection: "column",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              flexDirection: "row",
+        <div className={this.props.classes.appContainer}>
+          <EmptyState
+            icon={(props: any) => <ErrorOutlineIcon {...props} />}
+            title={"There was an error"}
+            subtitle={"Hang tight while we work to fix it!"}
+            buttonText={"Go back"}
+            onClick={async () => {
+              await this.props.background.request({
+                method: UI_RPC_METHOD_NAVIGATION_TO_DEFAULT,
+                params: [],
+              });
+              window.location.hash = "#/balances";
+              window.location.reload();
             }}
-          >
-            There was an error.
-          </div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              flexDirection: "row",
-            }}
-          >
-            We're working on fixing it!
-          </div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              flexDirection: "row",
-              padding: 5,
-            }}
-          >
-            <PrimaryButton
-              label={"Go back"}
-              onClick={async () => {
-                await this.props.background.request({
-                  method: UI_RPC_METHOD_NAVIGATION_TO_DEFAULT,
-                  params: [],
-                });
-                window.location.hash = "#/balances";
-                window.location.reload();
-              }}
-            />
-          </div>
+          />
         </div>
       );
     }
@@ -87,9 +71,10 @@ class ErrorBoundaryWithHooks extends React.Component<Props, State> {
 
 export function ErrorBoundary(props: { children: React.ReactNode }) {
   const background = useBackgroundClient();
+  const classes = useStyles();
   return (
     //@ts-ignore
-    <ErrorBoundaryWithHooks background={background}>
+    <ErrorBoundaryWithHooks classes={classes} background={background}>
       {props.children}
     </ErrorBoundaryWithHooks>
   );
