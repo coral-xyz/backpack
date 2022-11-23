@@ -1,0 +1,30 @@
+table:
+  name: twitter_users
+  schema: auth
+insert_permissions:
+  - role: one_xnft
+    permission:
+      check: {}
+      columns:
+        - backpack_username
+        - twitter_username
+        - pfp_staked_cumulative
+        - pfp_staked_since
+select_permissions:
+  - role: one_xnft
+    permission:
+      columns:
+        - backpack_username
+        - twitter_username
+        - pfp_staked_cumulative
+        - pfp_staked_since
+      filter: {}
+update_permissions:
+  - role: one_xnft
+    permission:
+      columns:
+        - pfp_staked_cumulative
+        - pfp_staked_since
+        - twitter_username
+      filter: {}
+      check: null
