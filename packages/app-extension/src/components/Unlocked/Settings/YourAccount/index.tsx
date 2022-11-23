@@ -1,4 +1,6 @@
 import { useEffect } from "react";
+import { useKeyringType } from "@coral-xyz/recoil";
+
 import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { useNavStack } from "../../../common/Layout/NavStack";
 import { SettingsList } from "../../../common/Settings/List";
@@ -6,6 +8,7 @@ import { SettingsList } from "../../../common/Settings/List";
 export function YourAccount() {
   const { close } = useDrawerContext();
   const nav = useNavStack();
+  const keyringType = useKeyringType();
 
   const menuItems = {
     "Change Password": {
@@ -14,9 +17,13 @@ export function YourAccount() {
     "Edit Wallets": {
       onClick: () => nav.push("edit-wallets"),
     },
-    "Show Secret Recovery Phrase": {
-      onClick: () => nav.push("show-secret-phrase-warning"),
-    },
+    ...(keyringType === "mnemonic"
+      ? {
+          "Show Secret Recovery Phrase": {
+            onClick: () => nav.push("show-secret-phrase-warning"),
+          },
+        }
+      : {}),
     "Reset Wallet": {
       onClick: () => nav.push("reset-warning", { onClose: () => close() }),
     },
