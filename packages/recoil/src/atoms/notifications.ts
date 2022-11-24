@@ -24,51 +24,8 @@ export const recentNotifications = atomFamily<
       async ({ get }: any) => {
         try {
           const provider = get(anchorContext).provider;
-          // const notificaitons = await fetchNotifications("kira", offset, limit) || [];
-          const notificaitons: DbNotification[] = [
-            {
-              xnftId: "6nZuvye5PZo6zFeWEZaM5nP2QN9s891M1roMepS9CtPC",
-              title: "This is a notification",
-              body: "this is the second notification",
-              //@ts-ignore
-              timestamp: new Date().getTime() - 5000000000,
-            },
-            {
-              xnftId: "6nZuvye5PZo6zFeWEZaM5nP2QN9s891M1roMepS9CtPC",
-              title: "This is a notification",
-              body: "this is the second notification",
-              //@ts-ignore
-              timestamp: new Date().getTime(),
-            },
-            {
-              xnftId: "6nZuvye5PZo6zFeWEZaM5nP2QN9s891M1roMepS9CtPC",
-              title: "This is a notification",
-              body: "this is the second notification",
-              //@ts-ignore
-              timestamp: new Date().getTime(),
-            },
-            {
-              xnftId: "6nZuvye5PZo6zFeWEZaM5nP2QN9s891M1roMepS9CtPC",
-              title: "This is a notification",
-              body: "this is the second notification",
-              //@ts-ignore
-              timestamp: new Date().getTime() - 2000000000,
-            },
-            {
-              xnftId: "6nZuvye5PZo6zFeWEZaM5nP2QN9s891M1roMepS9CtPC",
-              title: "This is a notification",
-              body: "this is the second notification",
-              //@ts-ignore
-              timestamp: new Date().getTime() - 2000000000,
-            },
-            {
-              xnftId: "6nZuvye5PZo6zFeWEZaM5nP2QN9s891M1roMepS9CtPC",
-              title: "This is a notification",
-              body: "this is the second notification",
-              //@ts-ignore
-              timestamp: new Date().getTime() - 4000000000,
-            },
-          ];
+          const notificaitons =
+            (await fetchNotifications("kira", offset, limit)) || [];
           const xnftIds = notificaitons.map((x) => x.xnftId);
           const uniqueXnftIds = xnftIds.filter(
             (x, index) => xnftIds.indexOf(x) === index
