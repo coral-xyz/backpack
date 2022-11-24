@@ -10,11 +10,13 @@ insert_permissions:
         - twitter_username
         - pfp_staked_cumulative
         - pfp_staked_since
+        - twitter_id
 select_permissions:
   - role: one_xnft
     permission:
       columns:
         - backpack_username
+        - twitter_id
         - twitter_username
         - pfp_staked_cumulative
         - pfp_staked_since
