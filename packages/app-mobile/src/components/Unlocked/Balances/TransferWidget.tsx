@@ -1,19 +1,20 @@
-import { MaterialIcons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
-import { useTheme } from "@hooks";
-import { Text, View, Pressable, StyleSheet } from "react-native";
-import {
-  useEnabledBlockchains,
-  SwapProvider,
-  useFeatureGates,
-} from "@coral-xyz/recoil";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Margin } from "@components";
 import {
   Blockchain,
-  SOL_NATIVE_MINT,
   ETH_NATIVE_MINT,
+  SOL_NATIVE_MINT,
   STRIPE_ENABLED,
 } from "@coral-xyz/common";
-import { Margin } from "@components";
+import {
+  SwapProvider,
+  useEnabledBlockchains,
+  useFeatureGates,
+} from "@coral-xyz/recoil";
+import { MaterialIcons } from "@expo/vector-icons";
+import { useTheme } from "@hooks";
+import { useNavigation } from "@react-navigation/native";
+
 // import { WithHeaderButton } from "./TokensWidget/Token";
 // import { Deposit } from "./TokensWidget/Deposit";
 // import { SendLoader, Send } from "./TokensWidget/Send";
@@ -23,63 +24,18 @@ import type { Token } from "../../common/TokenTable";
 // import { Ramp } from "./TokensWidget/Ramp";
 // import { StripeRamp } from "./StripeRamp";
 
-function Deposit() {
-  return null;
-}
-
-function SendLoader() {
-  return null;
-}
-
-function Send() {
-  return null;
-}
-
-function SearchableTokenTables() {
-  return null;
-}
-
-function Swap() {
-  return null;
-}
-
-function SelectToken() {
-  return null;
-}
-
-function Ramp() {
-  return null;
-}
-
-function StripeRamp() {
-  return null;
-}
-
-function IconPlaceholder(props: any) {
-  return (
-    <View
-      style={{
-        width: 40,
-        height: 40,
-        backgroundColor: "orange",
-        borderRadius: 80,
-      }}
-      {...props}
-    />
-  );
-}
-
-const Dollar = IconPlaceholder;
-const SwapHoriz = IconPlaceholder;
+type ModalRoutes = "Send" | "Receive" | "Swap";
 
 export function TransferWidget({
   blockchain,
   address,
   rampEnabled,
+  onNavigate,
 }: {
   blockchain?: Blockchain;
   address?: string;
   rampEnabled: boolean;
+  onNavigate: (route: string) => void;
 }) {
   const enabledBlockchains = useEnabledBlockchains();
   const featureGates = useFeatureGates();
@@ -91,27 +47,37 @@ export function TransferWidget({
 
   const Spacer = () => <View style={{ width: 16 }} />;
 
+  const onPress = (route: string) => onNavigate(route);
+
   return (
     <View
       style={{
         flexDirection: "row",
-        justifyContent: "center", // TODO could be alignItems
+        justifyContent: "center",
         alignItems: "center",
       }}
     >
       {enableOnramp && (
         <>
-          <RampButton blockchain={blockchain} address={address} />
+          <RampButton
+            onPress={onPress}
+            blockchain={blockchain}
+            address={address}
+          />
           <Spacer />
         </>
       )}
-      <ReceiveButton blockchain={blockchain} />
+      <ReceiveButton onPress={onPress} blockchain={blockchain} />
       <Spacer />
-      <SendButton blockchain={blockchain} address={address} />
+      <SendButton onPress={onPress} blockchain={blockchain} address={address} />
       {renderSwap && (
         <>
           <Spacer />
-          <SwapButton blockchain={blockchain} address={address} />
+          <SwapButton
+            onPress={onPress}
+            blockchain={blockchain}
+            address={address}
+          />
         </>
       )}
     </View>
@@ -168,28 +134,52 @@ function TransferButton({
 function SwapButton({
   blockchain,
   address,
+  onPress,
 }: {
   blockchain?: Blockchain;
   address?: string;
+  onPress: (route: string) => void;
 }) {
-  const onPress = () => {};
-
   return (
     <SwapProvider blockchain={Blockchain.SOLANA} tokenAddress={address}>
-      <TransferButton label="Swap" icon="compare-arrows" onPress={onPress} />
+      <TransferButton
+        label="Swap"
+        icon="compare-arrows"
+        onPress={() => onPress("SwapModal")}
+      />
     </SwapProvider>
   );
 }
 
-function SendButton({ blockchain }: { blockchain?: Blockchain }) {
-  const onPress = () => {};
-  return <TransferButton label="Send" icon="arrow-upward" onPress={onPress} />;
+function SendButton({
+  blockchain,
+  onPress,
+}: {
+  blockchain?: Blockchain;
+  onPress: (route: string) => void;
+}) {
+  return (
+    <TransferButton
+      label="Send"
+      icon="arrow-upward"
+      onPress={() => onPress("SendSelectTokenModal")}
+    />
+  );
 }
 
-function ReceiveButton({ blockchain }: { blockchain?: Blockchain }) {
-  const onPress = () => {};
+function ReceiveButton({
+  blockchain,
+  onPress,
+}: {
+  blockchain?: Blockchain;
+  onPress: (route: string) => void;
+}) {
   return (
-    <TransferButton label="Receive" icon="arrow-downward" onPress={onPress} />
+    <TransferButton
+      label="Receive"
+      icon="arrow-downward"
+      onPress={() => onPress("ReceiveModal")}
+    />
   );
 }
 
@@ -200,73 +190,5 @@ function RampButton({
   blockchain?: Blockchain;
   address?: string;
 }) {
-  const theme = useTheme();
-  return (
-    <TransferButton
-      label={"Buy"}
-      labelComponent={
-        <Dollar
-          fill={theme.custom.colors.fontColor}
-          style={{
-            display: "flex",
-            marginLeft: "auto",
-            marginRight: "auto",
-          }}
-        />
-      }
-      routes={
-        blockchain && address
-          ? [
-              {
-                name: "stripe",
-                component: (props: any) => <StripeRamp {...props} />,
-                title: "Buy",
-                props: {
-                  blockchain,
-                  publicKey: address,
-                },
-              },
-            ]
-          : [
-              {
-                component: Ramp,
-                title: "Buy",
-                name: "onramp",
-                props: {
-                  blockchain,
-                  publicKey: address,
-                },
-              },
-              {
-                component: (props: any) => <StripeRamp {...props} />,
-                title: "Buy using Link",
-                name: "stripe",
-              },
-            ]
-      }
-    />
-  );
-}
-
-function SendToken() {
-  const navigation = useNavigation();
-
-  const onPressRow = (blockchain: Blockchain, token: Token) => {
-    navigation.push("SendScreenTODO", { blockchain, token });
-  };
-
-  return (
-    <SearchableTokenTables
-      onPressRow={onPressRow}
-      customFilter={(token: Token) => {
-        if (token.mint && token.mint === SOL_NATIVE_MINT) {
-          return true;
-        }
-        if (token.address && token.address === ETH_NATIVE_MINT) {
-          return true;
-        }
-        return !token.nativeBalance.isZero();
-      }}
-    />
-  );
+  return null;
 }

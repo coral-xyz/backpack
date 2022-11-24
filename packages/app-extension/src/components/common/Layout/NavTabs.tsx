@@ -3,6 +3,8 @@ import { ApproveTransactionRequest } from "../../Unlocked/ApproveTransactionRequ
 import { Router } from "./Router";
 import { DisplayPlugin } from "../../Unlocked/DisplayPlugin";
 
+// TODO(peter) figure out ApproveTransactionRequest functionality and whether we need to do the same thign
+
 //
 // The main nav persistent stack.
 //
