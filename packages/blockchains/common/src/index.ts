@@ -1,9 +1,11 @@
+import type { EvmSettings } from "@coral-xyz/blockchain-evm";
 import {
   EthereumHdKeyringFactory,
   EthereumKeyringFactory,
   EthereumLedgerKeyringFactory,
 } from "@coral-xyz/blockchain-evm";
 import { BlockchainKeyring } from "@coral-xyz/blockchain-keyring";
+import type { SolanaSettings } from "@coral-xyz/blockchain-solana";
 import {
   SolanaHdKeyringFactory,
   SolanaKeyringFactory,
@@ -34,3 +36,5 @@ export function keyringForBlockchain(
     ),
   }[blockchain];
 }
+
+export type BlockchainSettings = EvmSettings | SolanaSettings;

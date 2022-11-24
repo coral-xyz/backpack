@@ -1,4 +1,4 @@
-export type NetworkSettings = {
+export type NetworkBaseSettings = {
   explorer: string;
   connectionUrl: string;
 };

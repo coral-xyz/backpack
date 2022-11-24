@@ -1,10 +1,6 @@
 import { validateMnemonic as _validateMnemonic } from "bip39";
 import { ethers } from "ethers";
-import type {
-  Commitment,
-  SendOptions,
-  SimulateTransactionConfig,
-} from "@solana/web3.js";
+import type { SendOptions, SimulateTransactionConfig } from "@solana/web3.js";
 import {
   PublicKey,
   Transaction,
@@ -17,18 +13,14 @@ import { BlockchainKeyring } from "@coral-xyz/blockchain-keyring";
 import {
   BACKEND_EVENT,
   Blockchain,
-  EthereumConnectionUrl,
-  EthereumExplorer,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
   NOTIFICATION_BLOCKCHAIN_DISABLED,
   NOTIFICATION_BLOCKCHAIN_ENABLED,
+  NOTIFICATION_BLOCKCHAIN_SETTINGS_UPDATED,
   NOTIFICATION_DARK_MODE_UPDATED,
   NOTIFICATION_DEVELOPER_MODE_UPDATED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
-  NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
-  NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
-  NOTIFICATION_ETHEREUM_EXPLORER_UPDATED,
   NOTIFICATION_KEYNAME_UPDATE,
   NOTIFICATION_KEYRING_DERIVED_WALLET,
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
@@ -39,12 +31,8 @@ import {
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
   NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
-  NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
-  NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
-  NOTIFICATION_SOLANA_EXPLORER_UPDATED,
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
   SolanaCluster,
-  SolanaExplorer,
   deserializeTransaction,
   FEATURE_GATES_MAP,
   XnftPreference,
@@ -105,7 +93,9 @@ export class Backend {
     tx.addSignature(pubkey, Buffer.from(bs58.decode(signature)));
 
     // Send it to the network.
-    const commitment = await this.solanaCommitmentRead();
+    const commitment =
+      (await this.blockchainSettingsRead(Blockchain.SOLANA)).commitment ||
+      "confirmed";
     return await this.solanaConnectionBackend.sendRawTransaction(
       tx.serialize(),
       options ?? {
@@ -178,128 +168,6 @@ export class Backend {
   }
 
   ///////////////////////////////////////////////////////////////////////////////
-  // Solana.
-  ///////////////////////////////////////////////////////////////////////////////
-
-  async solanaRecentBlockhash(commitment?: Commitment): Promise<string> {
-    const { blockhash } = await this.solanaConnectionBackend.getLatestBlockhash(
-      commitment
-    );
-    return blockhash;
-  }
-
-  async solanaConnectionUrlRead(): Promise<string> {
-    let data = await getWalletData();
-
-    // migrate the old default RPC value, this can be removed in future
-    const OLD_DEFAULT = "https://solana-rpc-nodes.projectserum.com";
-    if (
-      // if the current default RPC does not match the old one
-      SolanaCluster.DEFAULT !== OLD_DEFAULT &&
-      // and the user's RPC URL is that old default value
-      data.solana?.cluster === OLD_DEFAULT
-    ) {
-      // set the user's RPC URL to the new default value
-      data = {
-        ...data,
-        solana: {
-          ...data.solana,
-          cluster: SolanaCluster.DEFAULT,
-        },
-      };
-      await setWalletData(data);
-    }
-
-    return (data.solana && data.solana.cluster) ?? SolanaCluster.DEFAULT;
-  }
-
-  // Returns true if the url changed.
-  async solanaConnectionUrlUpdate(cluster: string): Promise<boolean> {
-    const data = await getWalletData();
-
-    if (data.solana.cluster === cluster) {
-      return false;
-    }
-
-    let keyring: BlockchainKeyring | null;
-    try {
-      keyring = this.keyringStore.keyringForBlockchain(Blockchain.SOLANA);
-    } catch {
-      // Blockchain may be disabled
-      keyring = null;
-    }
-    const activeWallet = keyring ? keyring.getActiveWallet() : null;
-
-    await setWalletData({
-      ...data,
-      solana: {
-        ...data.solana,
-        cluster,
-      },
-    });
-
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
-      data: {
-        activeWallet,
-        url: cluster,
-      },
-    });
-
-    return true;
-  }
-
-  async solanaExplorerRead(): Promise<string> {
-    const data = await store.getWalletData();
-    return data.solana && data.solana.explorer
-      ? data.solana.explorer
-      : SolanaExplorer.DEFAULT;
-  }
-
-  async solanaExplorerUpdate(explorer: string): Promise<string> {
-    const data = await store.getWalletData();
-    await store.setWalletData({
-      ...data,
-      solana: {
-        ...data.solana,
-        explorer,
-      },
-    });
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_SOLANA_EXPLORER_UPDATED,
-      data: {
-        explorer,
-      },
-    });
-    return SUCCESS_RESPONSE;
-  }
-
-  async solanaCommitmentRead(): Promise<Commitment> {
-    const data = await store.getWalletData();
-    return data.solana && data.solana.commitment
-      ? data.solana.commitment
-      : "processed";
-  }
-
-  async solanaCommitmentUpdate(commitment: Commitment): Promise<string> {
-    const data = await store.getWalletData();
-    await store.setWalletData({
-      ...data,
-      solana: {
-        ...data.solana,
-        commitment,
-      },
-    });
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
-      data: {
-        commitment,
-      },
-    });
-    return SUCCESS_RESPONSE;
-  }
-
-  ///////////////////////////////////////////////////////////////////////////////
   // Ethereum provider.
   ///////////////////////////////////////////////////////////////////////////////
 
@@ -333,94 +201,40 @@ export class Backend {
   }
 
   ///////////////////////////////////////////////////////////////////////////////
-  // Ethereum.
+  // Blockchain settings
   ///////////////////////////////////////////////////////////////////////////////
 
-  async ethereumExplorerRead(): Promise<string> {
-    const data = await store.getWalletData();
-    return data.ethereum && data.ethereum.explorer
-      ? data.ethereum.explorer
-      : EthereumExplorer.DEFAULT;
+  async blockchainSettingsRead(blockchain: Blockchain) {
+    let data = await getWalletData();
+    return data[blockchain];
   }
 
-  async ethereumExplorerUpdate(explorer: string): Promise<string> {
-    const data = await store.getWalletData();
-    await store.setWalletData({
-      ...data,
-      ethereum: {
-        ...(data.ethereum || {}),
-        explorer,
-      },
-    });
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_ETHEREUM_EXPLORER_UPDATED,
-      data: {
-        explorer,
-      },
-    });
-    return SUCCESS_RESPONSE;
-  }
-
-  async ethereumConnectionUrlRead(): Promise<string> {
-    const data = await store.getWalletData();
-    return data.ethereum && data.ethereum.connectionUrl
-      ? data.ethereum.connectionUrl
-      : EthereumConnectionUrl.DEFAULT;
-  }
-
-  async ethereumConnectionUrlUpdate(connectionUrl: string): Promise<string> {
-    const data = await store.getWalletData();
-
-    await store.setWalletData({
-      ...data,
-      ethereum: {
-        ...(data.ethereum || {}),
-        connectionUrl,
-      },
-    });
-
-    let keyring: BlockchainKeyring | null;
-    try {
-      keyring = this.keyringStore.keyringForBlockchain(Blockchain.ETHEREUM);
-    } catch {
-      // Blockchain may be disabled
-      keyring = null;
+  async blockchainSettingsUpdate(
+    blockchain: Blockchain,
+    updatedSettings: Record<string, string>
+  ) {
+    let data = await getWalletData();
+    const prevSettings = { ...data[blockchain] };
+    const newSettings = { ...prevSettings, ...updatedSettings };
+    // Migrate the old default Solana RPC value, this can be removed in future
+    const OLD_DEFAULT = "https://solana-rpc-nodes.projectserum.com";
+    if (newSettings.cluster && newSettings.cluster === OLD_DEFAULT) {
+      newSettings.cluster = SolanaCluster.DEFAULT;
     }
-    const activeWallet = keyring ? keyring.getActiveWallet() : null;
-
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
-      data: {
-        activeWallet,
-        connectionUrl,
-      },
-    });
-    return SUCCESS_RESPONSE;
-  }
-
-  async ethereumChainIdRead(): Promise<string> {
-    const data = await store.getWalletData();
-    return data.ethereum && data.ethereum.chainId
-      ? data.ethereum.chainId
-      : // Default to mainnet
-        "0x1";
-  }
-
-  async ethereumChainIdUpdate(chainId: string): Promise<string> {
-    const data = await store.getWalletData();
-    await store.setWalletData({
+    await setWalletData({
       ...data,
-      ethereum: {
-        ...(data.ethereum || {}),
-        chainId,
-      },
+      [blockchain]: newSettings,
     });
+
     this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
+      name: NOTIFICATION_BLOCKCHAIN_SETTINGS_UPDATED,
       data: {
-        chainId,
+        blockchain,
+        prevSettings,
+        newSettings,
       },
     });
+
     return SUCCESS_RESPONSE;
   }
 

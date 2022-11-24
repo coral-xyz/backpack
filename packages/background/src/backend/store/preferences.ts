@@ -1,5 +1,6 @@
+import type { BlockchainSettings } from "@coral-xyz/blockchain-common";
 import type { Blockchain } from "@coral-xyz/common";
-import { NetworkSettings } from "@coral-xyz/blockchain-types";
+
 import { LocalStorageDb } from "./db";
 
 const STORE_KEY_WALLET_DATA = "wallet-data";
@@ -14,10 +15,8 @@ export type WalletData = {
   enabledBlockchains: Array<Blockchain>;
   darkMode: boolean;
   developerMode: boolean;
-} & BlockchainSettings;
-
-type BlockchainSettings = {
-  [blockchain in Blockchain]: NetworkSettings;
+} & {
+  [key in Blockchain]: BlockchainSettings;
 };
 
 export async function getWalletData(): Promise<WalletData> {

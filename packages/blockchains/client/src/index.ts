@@ -48,21 +48,19 @@ export default abstract class BlockchainClient<T, N extends Network = Network> {
   public abstract getBlockByHash(
     blockHash: string,
     includeTx?: boolean
-  ): Promise<Block>;
+  ): Promise<any>;
 
   public abstract getBlockByNumber(
     blockNumber?: number,
     includeTx?: boolean
-  ): Promise<Block>;
+  ): Promise<any>;
 
   /**
    * Get the block height of the blockchain.
    */
   public abstract getBlockHeight(): Promise<number>;
 
-  public abstract getTransactionByHash(
-    transactionHash: string
-  ): Promise<Transaction>;
+  public abstract getTransactionByHash(transactionHash: string): Promise<any>;
 
   /**
    * Broadcast a signed transaction to the blockchain.
