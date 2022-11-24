@@ -7,25 +7,28 @@ insert_permissions:
       check: {}
       columns:
         - backpack_username
+        - pfp_staked_hash
+        - twitter_id
         - twitter_username
         - pfp_staked_cumulative
         - pfp_staked_since
-        - twitter_id
 select_permissions:
   - role: one_xnft
     permission:
       columns:
         - backpack_username
+        - pfp_staked_cumulative
+        - pfp_staked_hash
+        - pfp_staked_since
         - twitter_id
         - twitter_username
-        - pfp_staked_cumulative
-        - pfp_staked_since
       filter: {}
 update_permissions:
   - role: one_xnft
     permission:
       columns:
         - pfp_staked_cumulative
+        - pfp_staked_hash
         - pfp_staked_since
         - twitter_username
       filter: {}
