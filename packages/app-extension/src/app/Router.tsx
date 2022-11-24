@@ -332,7 +332,7 @@ function WithUnlock({ children }: { children: React.ReactNode }) {
 
     const ensureUserHasJWT = async () => {
       const res = await fetch(
-        `http://localhost:8787/authenticate/${username}`,
+        `https://auth.xnfts.dev/authenticate/${username}`,
         {
           method: "POST",
           headers: {
@@ -354,7 +354,7 @@ function WithUnlock({ children }: { children: React.ReactNode }) {
             body.publickeys,
           ],
         });
-        await fetch(`http://localhost:8787/authenticate`, {
+        await fetch(`https://auth.xnfts.dev/authenticate`, {
           body: JSON.stringify(signatureBundle),
           method: "POST",
           headers: {

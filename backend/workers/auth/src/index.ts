@@ -12,6 +12,7 @@ import {
 } from "@solana/web3.js";
 import { decode } from "bs58";
 import { ethers } from "ethers";
+import type { Context } from "hono";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { importPKCS8, importSPKI, jwtVerify, SignJWT } from "jose";
@@ -319,9 +320,13 @@ app.post("/users", async (c) => {
       },
       {
         id: true,
+        username: true,
       },
     ],
   });
+
+  if (!res.insert_auth_users_one)
+    throw new Error("Error creating user account");
 
   if (c.env.SLACK_WEBHOOK_URL) {
     try {
@@ -343,7 +348,7 @@ app.post("/users", async (c) => {
     }
   }
 
-  return c.json(res);
+  return jwt(c, res.insert_auth_users_one);
 });
 
 registerOnRampHandlers(app);
@@ -423,6 +428,44 @@ const cookieDomain = (url: string) => {
   return hostname === "localhost" ? hostname : `.${hostname}`;
 };
 
+const clearCookie = (c: Context<any>, cookieName: string) => {
+  c.res.headers.set(
+    "set-cookie",
+    `${cookieName}=; path=/; domain=${cookieDomain(
+      c.req.url
+    )}; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT`
+  );
+};
+
+const jwt = async (c: Context, user: { id: unknown; username: unknown }) => {
+  const secret = await importPKCS8(c.env.AUTH_JWT_PRIVATE_KEY, alg);
+
+  const jwt = await new SignJWT({
+    sub: String(user.id),
+    username: user.username,
+  })
+    .setProtectedHeader({ alg })
+    .setIssuer("auth.xnfts.dev")
+    .setAudience("backpack")
+    .setIssuedAt()
+    // .setExpirationTime("2h")
+    .sign(secret);
+
+  c.cookie("jwt", jwt, {
+    secure: true,
+    httpOnly: true,
+    sameSite: "Strict",
+    domain: cookieDomain(c.req.url),
+  });
+
+  return c.json({ jwt });
+};
+
+app.delete("/authenticate", async (c) => {
+  clearCookie(c, "jwt");
+  return c.status(200);
+});
+
 app.post("/authenticate", async (c) => {
   const body = await c.req.json();
   const sig = body.signature;
@@ -466,27 +509,7 @@ app.post("/authenticate", async (c) => {
   const [user] = res.auth_users;
   if (!user) throw new Error("user not found");
 
-  const secret = await importPKCS8(c.env.AUTH_JWT_PRIVATE_KEY, alg);
-
-  const jwt = await new SignJWT({
-    sub: String(user.id),
-    username: user.username,
-  })
-    .setProtectedHeader({ alg })
-    .setIssuer("auth.xnfts.dev")
-    .setAudience("backpack")
-    .setIssuedAt()
-    // .setExpirationTime("2h")
-    .sign(secret);
-
-  c.cookie("jwt", jwt, {
-    secure: true,
-    httpOnly: true,
-    sameSite: "Strict",
-    domain: cookieDomain(c.req.url),
-  });
-
-  return c.json({ jwt });
+  return jwt(c, user);
 });
 
 app.post("/authenticate/:username", async (c) => {
@@ -507,15 +530,7 @@ app.post("/authenticate/:username", async (c) => {
       }
     } catch (err) {
       console.error(err);
-
-      // delete the cookie
-      c.res.headers.set(
-        "set-cookie",
-        `jwt=; path=/; domain=${cookieDomain(
-          c.req.url
-        )}; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT`
-      );
-
+      clearCookie(c, "jwt");
       return c.json({ msg: "invalid jwt cookie" }, 401);
     }
   } else {
