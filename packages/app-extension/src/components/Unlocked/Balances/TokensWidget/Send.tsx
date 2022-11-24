@@ -620,7 +620,7 @@ export function useIsValidAddress(
           }
         }
 
-        // ANS Domain
+        // ANS by ONSOL
         if (!pubkey && address.split(".").length === 2) {
           try {
             // address would be e.g. miester.poor
