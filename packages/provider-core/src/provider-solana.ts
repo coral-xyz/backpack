@@ -13,6 +13,7 @@ import type { Event } from "@coral-xyz/common";
 import {
   getLogger,
   BackgroundSolanaConnection,
+  Blockchain,
   DEFAULT_SOLANA_CLUSTER,
   CHANNEL_SOLANA_RPC_REQUEST,
   CHANNEL_SOLANA_RPC_RESPONSE,
@@ -24,8 +25,8 @@ import {
   SOLANA_RPC_METHOD_OPEN_XNFT,
   NOTIFICATION_SOLANA_CONNECTED,
   NOTIFICATION_SOLANA_DISCONNECTED,
-  NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
+  NOTIFICATION_BLOCKCHAIN_SETTINGS_UPDATED,
 } from "@coral-xyz/common";
 import * as cmn from "./common/solana";
 import { RequestManager } from "./request-manager";
@@ -37,8 +38,6 @@ export class ProviderSolanaInjection
   extends PrivateEventEmitter
   implements Provider
 {
-  #options?: ConfirmOptions;
-
   //
   // Channel to send extension specific RPC requests to the extension.
   //
@@ -58,7 +57,6 @@ export class ProviderSolanaInjection
     if (new.target === ProviderSolanaInjection) {
       Object.freeze(this);
     }
-    this.#options = undefined;
     this.#requestManager = new RequestManager(
       CHANNEL_SOLANA_RPC_REQUEST,
       CHANNEL_SOLANA_RPC_RESPONSE
@@ -93,25 +91,23 @@ export class ProviderSolanaInjection
 
     switch (event.data.detail.name) {
       case NOTIFICATION_SOLANA_CONNECTED:
-        this.#handleNotificationConnected(event);
+        this.emit("connect");
         break;
       case NOTIFICATION_SOLANA_DISCONNECTED:
-        this.#handleNotificationDisconnected(event);
+        this.#handleNotificationDisconnected();
+        this.emit("disconnect");
         break;
-      case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
-        this.#handleNotificationConnectionUrlUpdated(event);
+      case NOTIFICATION_BLOCKCHAIN_SETTINGS_UPDATED:
+        this.#handleBlockchainSettingsUpdated(event);
         break;
       case NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED:
         this.#handleNotificationActiveWalletUpdated(event);
+        this.emit("activeWalletDidChange");
         break;
       default:
         throw new Error(`unexpected notification ${event.data.detail.name}`);
     }
-
-    this.emit(_mapNotificationName(event.data.detail.name));
   }
-
-  #handleNotificationConnected(event: Event) {}
 
   #connect(publicKey: string, connectionUrl: string) {
     this.#isConnected = true;
@@ -122,16 +118,21 @@ export class ProviderSolanaInjection
     );
   }
 
-  #handleNotificationDisconnected(event: Event) {
+  #handleNotificationDisconnected() {
     this.#isConnected = false;
     this.#connection = this.defaultConnection();
   }
 
-  #handleNotificationConnectionUrlUpdated(event: Event) {
-    this.#connection = new BackgroundSolanaConnection(
-      this.#connectionRequestManager,
-      event.data.detail.data.url
-    );
+  #handleBlockchainSettingsUpdated(event: Event) {
+    const { blockchain, prevSettings, newSettings } = event.data.detail.data;
+    if (blockchain !== Blockchain.SOLANA) return;
+    if (newSettings.connectionUrl !== prevSettings.connectionUrl) {
+      this.#connection = new BackgroundSolanaConnection(
+        this.#connectionRequestManager,
+        newSettings.connectionUrl
+      );
+      this.emit("connectionDidChange");
+    }
   }
 
   #handleNotificationActiveWalletUpdated(event: Event) {
@@ -297,21 +298,5 @@ export class ProviderSolanaInjection
 
   public get connection() {
     return this.#connection;
-  }
-}
-
-// Maps the notification name (internal) to the event name.
-function _mapNotificationName(notificationName: string) {
-  switch (notificationName) {
-    case NOTIFICATION_SOLANA_CONNECTED:
-      return "connect";
-    case NOTIFICATION_SOLANA_DISCONNECTED:
-      return "disconnect";
-    case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
-      return "connectionDidChange";
-    case NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED:
-      return "activeWalletDidChange";
-    default:
-      throw new Error(`unexpected notification name ${notificationName}`);
   }
 }
