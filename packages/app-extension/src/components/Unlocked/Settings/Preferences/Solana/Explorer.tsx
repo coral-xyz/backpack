@@ -1,16 +1,19 @@
 import { useEffect } from "react";
 import {
+  Blockchain,
   SolanaExplorer,
-  UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE,
+  UI_RPC_METHOD_BLOCKCHAIN_SETTINGS_UPDATE,
 } from "@coral-xyz/common";
-import { useSolanaExplorer, useBackgroundClient } from "@coral-xyz/recoil";
-import { SettingsList } from "../../../../common/Settings/List";
+import { useBackgroundClient, useBlockchainExplorer } from "@coral-xyz/recoil";
+
 import { useNavStack } from "../../../../common/Layout/NavStack";
+import { SettingsList } from "../../../../common/Settings/List";
+
 import { Checkmark } from "./ConnectionSwitch";
 
 export function PreferencesSolanaExplorer() {
   const background = useBackgroundClient();
-  const explorer = useSolanaExplorer();
+  const explorer = useBlockchainExplorer(Blockchain.SOLANA);
   const nav = useNavStack();
 
   useEffect(() => {
@@ -41,8 +44,8 @@ export function PreferencesSolanaExplorer() {
     try {
       background
         .request({
-          method: UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE,
-          params: [explorer],
+          method: UI_RPC_METHOD_BLOCKCHAIN_SETTINGS_UPDATE,
+          params: [Blockchain.SOLANA, { explorer }],
         })
         .catch(console.error);
     } catch (err) {

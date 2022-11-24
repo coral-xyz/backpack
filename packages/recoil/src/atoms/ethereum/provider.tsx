@@ -1,24 +1,22 @@
 import { atom, selector } from "recoil";
 import type { FeeData } from "@ethersproject/abstract-provider";
-import { BackgroundEthereumProvider } from "@coral-xyz/common";
+import { Blockchain, BackgroundEthereumProvider } from "@coral-xyz/common";
+import { blockchainSettings } from "../blockchain";
 import { providerBackgroundClient } from "../client";
-import { ethereumConnectionUrl } from "./preferences";
-import { ethereumChainId } from "./preferences";
 
 export const ethersContext = selector({
   key: "ethersContext",
   get: ({ get }) => {
-    const connectionUrl = get(ethereumConnectionUrl);
-    const chainId = get(ethereumChainId);
     const _providerBackgroundClient = get(providerBackgroundClient);
+    const ethereumSettings = get(blockchainSettings(Blockchain.ETHEREUM));
     const provider = new BackgroundEthereumProvider(
       _providerBackgroundClient,
-      connectionUrl,
-      chainId
+      ethereumSettings.connectionUrl
+      // TODO
+      // ethereumSettings.chainId
     );
     return {
-      chainId,
-      connectionUrl,
+      ...ethereumSettings,
       provider,
     };
   },

@@ -1,43 +1,40 @@
-import { useState, useEffect } from "react";
-import { CircularProgress, Typography, Button, Link } from "@mui/material";
-import { PublicKey } from "@solana/web3.js";
-import { updateRemotePreference } from "../../../../api/preferences";
+import { useEffect, useState } from "react";
 import {
-  getLogger,
+  Blockchain,
   confirmTransaction,
   explorerUrl,
-  Blockchain,
+  getLogger,
   Solana,
-  UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-  UI_RPC_METHOD_GET_XNFT_PREFERENCES,
   UI_RPC_METHOD_SET_XNFT_PREFERENCES,
-  BACKEND_API_URL,
 } from "@coral-xyz/common";
-import { useCustomTheme } from "@coral-xyz/themes";
 import {
-  useSolanaCtx,
-  useSolanaExplorer,
-  useSolanaConnectionUrl,
-  useNavigation,
-  useXnftPreference,
   useBackgroundClient,
+  useBlockchainConnectionUrl,
+  useBlockchainExplorer,
+  useNavigation,
+  useSolanaCtx,
+  useUsername,
+  useXnftPreference,
 } from "@coral-xyz/recoil";
-import { SwitchToggle } from "../Preferences";
-import { SettingsList } from "../../../common/Settings/List";
-import { useNavStack } from "../../../common/Layout/NavStack";
+import { useCustomTheme } from "@coral-xyz/themes";
+import { Button, Typography } from "@mui/material";
+import { PublicKey } from "@solana/web3.js";
+
+import { updateRemotePreference } from "../../../../api/preferences";
 import {
-  PrimaryButton,
-  SecondaryButton,
-  NegativeButton,
   LaunchDetail,
   Loading,
+  NegativeButton,
+  SecondaryButton,
 } from "../../../common";
 import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
 import { CheckIcon } from "../../../common/Icon";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
-import { Error } from "../../Balances/TokensWidget/Send";
+import { useNavStack } from "../../../common/Layout/NavStack";
 import { ProxyImage } from "../../../common/ProxyImage";
-import { useUsername } from "@coral-xyz/recoil";
+import { SettingsList } from "../../../common/Settings/List";
+import { Error } from "../../Balances/TokensWidget/Send";
+import { SwitchToggle } from "../Preferences";
 const logger = getLogger("xnft-detail");
 
 export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
@@ -351,8 +348,8 @@ function Sending({
   isComplete: boolean;
 }) {
   const theme = useCustomTheme();
-  const solanaExplorer = useSolanaExplorer();
-  const connectionUrl = useSolanaConnectionUrl();
+  const explorer = useBlockchainExplorer(Blockchain.SOLANA);
+  const connectionUrl = useBlockchainConnectionUrl(Blockchain.SOLANA);
   const nav = useNavigation();
   const drawer = useDrawerContext();
   return (
@@ -412,9 +409,7 @@ function Sending({
               nav.toRoot();
               drawer.close();
             } else {
-              window.open(
-                explorerUrl(solanaExplorer, signature, connectionUrl)
-              );
+              window.open(explorerUrl(explorer!, signature, connectionUrl!));
             }
           }}
           label={isComplete ? "View Balances" : "View Explorer"}

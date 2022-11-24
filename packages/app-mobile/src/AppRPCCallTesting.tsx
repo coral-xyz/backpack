@@ -1,11 +1,10 @@
+import { useEffect, useState } from "react";
+import { Text, View } from "react-native";
 import { Blockchain, DerivationPath } from "@coral-xyz/common";
 import {
   useBackgroundClient,
-  useSolanaConnectionUrl,
   // useTotal,
 } from "@coral-xyz/recoil";
-import { useEffect, useState } from "react";
-import { Text, View } from "react-native";
 
 import {
   req_UI_RPC_METHOD_BLOCKCHAINS_ENABLED_ADD,
@@ -31,7 +30,6 @@ const TEST_MNEMONIC =
 
 export default function AppRPCCallTesting() {
   const background = useBackgroundClient();
-  const connectionUrl = useSolanaConnectionUrl();
   const [res, setRes] = useState("");
   const [responses, setResponses] = useState(new Map());
 

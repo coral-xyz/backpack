@@ -11,12 +11,10 @@ import {
   useDecodedSearchParams,
   useAnchorContext,
   useLoader,
-  useEthereumConnectionUrl,
-  useEthereumExplorer,
   useSolanaCtx,
   useEthereumCtx,
-  useSolanaConnectionUrl,
-  useSolanaExplorer,
+  useBlockchainExplorer,
+  useBlockchainConnectionUrl,
 } from "@coral-xyz/recoil";
 import {
   explorerNftUrl,
@@ -386,14 +384,8 @@ export function NftOptionsButton() {
 
   // @ts-ignore
   const nft: any = nfts.get(searchParams.props.nftId);
-
-  const isEthereum = nft && nft.contractAddress;
-
-  const explorer = isEthereum ? useEthereumExplorer() : useSolanaExplorer();
-
-  const connectionUrl = isEthereum
-    ? useEthereumConnectionUrl()
-    : useSolanaConnectionUrl();
+  const explorer = useBlockchainExplorer(nft.blockchain);
+  const connectionUrl = useBlockchainConnectionUrl(nft.blockchain);
 
   const onClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -453,7 +445,7 @@ export function NftOptionsButton() {
                 height: "30px",
               }}
               isFirst={true}
-              isLast={isEthereum}
+              isLast={nft.blockchain === Blockchain.ETHEREUM}
               onClick={() => {
                 const url = explorerNftUrl(explorer, nft, connectionUrl);
                 window.open(url, "_blank");
@@ -472,7 +464,7 @@ export function NftOptionsButton() {
                 }}
               />
             </ListItem>
-            {!isEthereum && (
+            {nft.blockchain === Blockchain.ETHEREUM && (
               <ListItem
                 style={{
                   width: "100%",

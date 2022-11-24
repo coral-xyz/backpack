@@ -1,15 +1,15 @@
-import { useRecoilValue, useRecoilValueLoadable, Loadable } from "recoil";
-import { PublicKey, Connection } from "@solana/web3.js";
-import { SolanaContext, BackgroundClient } from "@coral-xyz/common";
-import * as atoms from "../../atoms";
-import { useSplTokenRegistry } from "./useSplTokenRegistry";
-import { useActiveSolanaWallet } from "../wallet";
-import { useBackgroundClient } from "../client";
-import { useSolanaCommitment } from "./";
+import type { BackgroundClient, SolanaContext } from "@coral-xyz/common";
+import type { Connection } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
+import type { Loadable } from "recoil";
+import { useRecoilValue, useRecoilValueLoadable } from "recoil";
 
-export function useSolanaConnectionUrl(): string {
-  return useRecoilValue(atoms.solanaConnectionUrl)!;
-}
+import * as atoms from "../../atoms";
+import { useBackgroundClient } from "../client";
+import { useActiveSolanaWallet } from "../wallet";
+
+import { useSplTokenRegistry } from "./useSplTokenRegistry";
+import { useSolanaCommitment } from "./";
 
 export function useAnchorContext(): any {
   return useRecoilValue(atoms.anchorContext);

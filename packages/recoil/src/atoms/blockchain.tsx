@@ -1,9 +1,12 @@
-import { atom, selector } from "recoil";
+import type { BlockchainSettings } from "@coral-xyz/blockchain-common";
 import {
   Blockchain,
-  UI_RPC_METHOD_BLOCKCHAINS_ENABLED_READ,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
+  UI_RPC_METHOD_BLOCKCHAIN_SETTINGS_READ,
+  UI_RPC_METHOD_BLOCKCHAINS_ENABLED_READ,
 } from "@coral-xyz/common";
+import { atom, atomFamily, selector, selectorFamily } from "recoil";
+
 import { backgroundClient } from "./client";
 
 export const availableBlockchains = atom({
@@ -11,6 +14,9 @@ export const availableBlockchains = atom({
   default: [Blockchain.SOLANA, Blockchain.ETHEREUM],
 });
 
+/**
+ *
+ */
 export const enabledBlockchains = atom({
   key: "enabledBlockchains",
   default: selector({
@@ -25,6 +31,9 @@ export const enabledBlockchains = atom({
   }),
 });
 
+/**
+ *
+ */
 export const blockchainKeyrings = atom({
   key: "blockchainKeyrings",
   default: selector({
@@ -36,5 +45,24 @@ export const blockchainKeyrings = atom({
         params: [],
       });
     },
+  }),
+});
+
+/**
+ *
+ */
+export const blockchainSettings = atomFamily<BlockchainSettings, Blockchain>({
+  key: "blockchainSettings",
+  default: selectorFamily({
+    key: "blockchainSettingsDefault",
+    get:
+      (blockchain: Blockchain) =>
+      ({ get }: any) => {
+        const background = get(backgroundClient);
+        return background.request({
+          method: UI_RPC_METHOD_BLOCKCHAIN_SETTINGS_READ,
+          params: [blockchain],
+        }) as BlockchainSettings;
+      },
   }),
 });

@@ -1,13 +1,17 @@
 import { atom, atomFamily, selector, selectorFamily } from "recoil";
 import { ethers, BigNumber } from "ethers";
-import { TokenInfo } from "@solana/spl-token-registry";
-import { fetchEthereumTokenBalances, ETH_NATIVE_MINT } from "@coral-xyz/common";
-import { TokenData, TokenNativeData } from "../../types";
+import type { TokenInfo } from "@solana/spl-token-registry";
+import {
+  Blockchain,
+  fetchEthereumTokenBalances,
+  ETH_NATIVE_MINT,
+} from "@coral-xyz/common";
+import type { TokenData, TokenNativeData } from "../../types";
 import { priceData } from "../prices";
 import { ethereumPublicKey } from "../wallet";
 import { ethersContext } from "./provider";
+import { blockchainSettings } from "../blockchain";
 import { ethereumTokenMetadata } from "./token-metadata";
-import { ethereumConnectionUrl } from "./preferences";
 
 // Map of ETH native balance and all ERC20 balances
 // We use a dummy address for the ETH balance (zero address) so it can be
@@ -72,7 +76,7 @@ export const ethereumTokenNativeBalance = selectorFamily<
     (contractAddress: string) =>
     ({ get }) => {
       const publicKey = get(ethereumPublicKey);
-      const connectionUrl = get(ethereumConnectionUrl);
+      const { connectionUrl } = get(blockchainSettings(Blockchain.ETHEREUM));
       const ethTokenMetadata = get(ethereumTokenMetadata)();
       const ethTokenBalances: Map<String, BigNumber> = get(
         ethereumBalances({ connectionUrl, publicKey: publicKey! })

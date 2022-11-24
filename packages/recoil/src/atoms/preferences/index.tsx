@@ -1,15 +1,14 @@
 import { atom, selector } from "recoil";
+import type { Blockchain } from "@coral-xyz/common";
 import {
-  Blockchain,
   UI_RPC_METHOD_KEYRING_AUTOLOCK_READ,
   UI_RPC_METHOD_APPROVED_ORIGINS_READ,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_READ,
   UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_READ,
   UI_RPC_METHOD_USERNAME_READ,
 } from "@coral-xyz/common";
-import { solanaConnectionUrl } from "../solana";
-import { ethereumConnectionUrl } from "../ethereum";
 import { backgroundClient } from "../client";
+import { enabledBlockchains, blockchainSettings } from "../blockchain";
 
 export const isDarkMode = atom<boolean | null>({
   key: "isDarkMode",
@@ -72,10 +71,14 @@ export const connectionUrls = atom<{ [key: string]: string | null }>({
   default: selector({
     key: "connectionUrlsDefault",
     get: async ({ get }) => {
-      return {
-        [Blockchain.SOLANA as string]: get(solanaConnectionUrl),
-        [Blockchain.ETHEREUM as string]: get(ethereumConnectionUrl),
-      };
+      return Object.fromEntries(
+        get(enabledBlockchains).map((blockchain: Blockchain) => {
+          return [
+            blockchain,
+            get(blockchainSettings(blockchain)).connectionUrl,
+          ];
+        })
+      );
     },
   }),
 });

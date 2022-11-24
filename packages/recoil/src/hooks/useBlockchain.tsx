@@ -1,7 +1,7 @@
 import { useRecoilValue } from "recoil";
 import { Blockchain } from "@coral-xyz/common";
 import * as atoms from "../atoms";
-import { TokenData } from "../types";
+import type { TokenData } from "../types";
 
 export function useBlockchainKeyrings() {
   return useRecoilValue(atoms.blockchainKeyrings);
@@ -16,25 +16,17 @@ export function useAvailableBlockchains() {
 }
 
 export function useBlockchainExplorer(blockchain: Blockchain) {
-  switch (blockchain) {
-    case Blockchain.ETHEREUM:
-      return useRecoilValue(atoms.ethereumExplorer);
-    case Blockchain.SOLANA:
-      return useRecoilValue(atoms.solanaExplorer);
-    default:
-      throw new Error(`invalid blockchain ${blockchain}`);
-  }
+  const blockchainSettings = useRecoilValue(
+    atoms.blockchainSettings(blockchain)
+  );
+  return blockchainSettings.explorer;
 }
 
 export function useBlockchainConnectionUrl(blockchain: Blockchain) {
-  switch (blockchain) {
-    case Blockchain.ETHEREUM:
-      return useRecoilValue(atoms.ethereumConnectionUrl);
-    case Blockchain.SOLANA:
-      return useRecoilValue(atoms.solanaConnectionUrl);
-    default:
-      throw new Error(`invalid blockchain ${blockchain}`);
-  }
+  const blockchainSettings = useRecoilValue(
+    atoms.blockchainSettings(blockchain)
+  );
+  return blockchainSettings.connectionUrl;
 }
 
 // TODO(peter) consolidate between extension/mobile-app or just live on S3
