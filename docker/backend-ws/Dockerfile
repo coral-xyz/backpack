@@ -5,6 +5,7 @@ COPY ["turbo.json", "./turbo.json"]
 COPY ["yarn.lock", "./yarn.lock"]
 COPY ["tsconfig.json", "./tsconfig.json"]
 COPY ["backend/native/backend-ws", "./backend/native/backend-ws"]
+COPY ["packages/common", "./packages/common"]
 COPY ["backend/native/zeus", "./backend/native/zeus"]
 COPY ["backend/native/chat-zeus", "./backend/native/chat-zeus"]
 COPY ["backend/native/tsconfig.json", "./backend/native/tsconfig.json"]
@@ -12,8 +13,8 @@ COPY ["backend/native/tsconfig.json", "./backend/native/tsconfig.json"]
 RUN cd /base
 RUN yarn install
 RUN yarn run build
-RUN cd /base/backend/native/backpack-api && yarn run build
+RUN cd /base/backend/native/backend-ws && yarn run build
 
 EXPOSE 8080
 
-CMD ["node", "/base/backend/native/backpack-api/dist/index.js"]
+CMD ["node", "/base/backend/native/backend-ws/dist/index.js"]
