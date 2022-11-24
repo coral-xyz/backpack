@@ -5,6 +5,7 @@ import type { Event } from "@coral-xyz/common";
 import {
   getLogger,
   BackgroundEthereumProvider,
+  Blockchain,
   CHANNEL_ETHEREUM_RPC_REQUEST,
   CHANNEL_ETHEREUM_RPC_RESPONSE,
   CHANNEL_ETHEREUM_NOTIFICATION,
@@ -13,9 +14,7 @@ import {
   ETHEREUM_RPC_METHOD_CONNECT,
   NOTIFICATION_ETHEREUM_CONNECTED,
   NOTIFICATION_ETHEREUM_DISCONNECTED,
-  NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
-  NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
-  NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
+  NOTIFICATION_BLOCKCHAIN_SETTINGS_UPDATED,
 } from "@coral-xyz/common";
 import * as cmn from "./common/ethereum";
 import { RequestManager } from "./request-manager";
@@ -339,14 +338,8 @@ export class ProviderEthereumInjection extends EventEmitter {
       case NOTIFICATION_ETHEREUM_DISCONNECTED:
         this._handleNotificationDisconnected();
         break;
-      case NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED:
-        this._handleNotificationConnectionUrlUpdated(event);
-        break;
-      case NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED:
-        this._handleNotificationChainIdUpdated(event);
-        break;
-      case NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED:
-        this._handleNotificationActiveWalletUpdated(event);
+      case NOTIFICATION_BLOCKCHAIN_SETTINGS_UPDATED:
+        this._handleBlockchainSettingsUpdated(event);
         break;
       default:
         throw new Error(`unexpected notification ${event.data.detail.name}`);
@@ -391,17 +384,23 @@ export class ProviderEthereumInjection extends EventEmitter {
    * Handle a change of the RPC connection URL in Backpack. This may also be a change
    * of the chainId/network if the change was to a different network RPC.
    */
-  _handleNotificationConnectionUrlUpdated = async (event: any) => {
-    const { connectionUrl } = event.data.detail.data;
-    this.provider = new BackgroundEthereumProvider(
-      this.connectionRequestManager,
-      connectionUrl
-    );
-  };
+  _handleBlockchainSettingsUpdated = async (event: any) => {
+    const { blockchain, prevSettings, newSettings } = event.data.detail.data;
+    // Nothing to do if change was not Ethereum related
+    if (blockchain !== Blockchain.ETHEREUM) return;
 
-  _handleNotificationChainIdUpdated = async (event: any) => {
-    const { chainId } = event.data.detail.data;
-    this.handleChainChanged(chainId);
+    // Connection URL changed
+    if (newSettings.connectionUrl !== prevSettings.connectionUrl) {
+      this.provider = new BackgroundEthereumProvider(
+        this.connectionRequestManager,
+        newSettings.connectionUrl
+      );
+    }
+
+    // Chain ID changed
+    if (newSettings.chainId !== prevSettings.chainId) {
+      this.handleChainChanged(newSettings.chainId);
+    }
   };
 
   /**
