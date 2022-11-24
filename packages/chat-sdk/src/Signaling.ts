@@ -47,6 +47,10 @@ export class Signaling extends EventEmitter {
     }
   }
 
+  destroy() {
+    this.ws.close();
+  }
+
   send(message: ToServer) {
     this.ws.send(
       JSON.stringify({

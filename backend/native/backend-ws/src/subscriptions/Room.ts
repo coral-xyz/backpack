@@ -129,16 +129,24 @@ export class Room {
     const uniqueUserIds = userIds
       .filter((x, index) => userIds.indexOf(x) === index)
       .filter((x) => !this.userIdMappings.get(x || ""));
+
     if (uniqueUserIds.length) {
       const metadatas = await getUsers(uniqueUserIds);
       metadatas.forEach(({ id, username }) =>
         this.userIdMappings.set(id, { username })
       );
     }
-    return messages.map((message) => ({
-      ...message,
-      username: this.userIdMappings.get(message.uuid || "")?.username || "",
-    }));
+
+    return messages.map((message) => {
+      const username =
+        this.userIdMappings.get(message.uuid || "")?.username || "";
+      const image = `https://avatars.xnfts.dev/v1/${username}`;
+      return {
+        ...message,
+        username,
+        image,
+      };
+    });
   }
 
   removeUser(user: User) {

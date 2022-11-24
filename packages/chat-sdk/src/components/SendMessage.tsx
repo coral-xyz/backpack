@@ -99,11 +99,6 @@ export const SendMessage = ({ messageRef }: any) => {
         },
       ]);
       setMessageContent("");
-      console.log("avoce");
-      if (messageRef.current) {
-        console.log("sent current message");
-        messageRef.current.scrollTop = messageRef.current.scrollHeight;
-      }
     }
   };
 

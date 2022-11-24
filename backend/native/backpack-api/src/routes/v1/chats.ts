@@ -23,11 +23,16 @@ async function enrichMessages(
     (x, index) => userIds.indexOf(x) === index
   );
   const metadatas = await getUsers(uniqueUserIds);
-  return messages.map((message) => ({
-    ...message,
-    username:
-      metadatas.find((x) => x.id === message.uuid || "")?.username || "",
-  }));
+  return messages.map((message) => {
+    const username =
+      metadatas.find((x) => x.id === message.uuid || "")?.username || "";
+    const image = `https://avatars.xnfts.dev/v1/${username}`;
+    return {
+      ...message,
+      username,
+      image,
+    };
+  });
 }
 
 export default router;

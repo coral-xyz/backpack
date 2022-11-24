@@ -52,11 +52,12 @@ const useStyles = makeStyles((theme: any) =>
 export const MessageLeft = (props) => {
   const message = props.message ? props.message : "";
   const timestamp = props.timestamp ? new Date(props.timestamp) : new Date();
-  const photoURL = props.photoURL
-    ? props.photoURL
-    : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSYU3l2Xh_TvhuYraxr8HILzhActNrm6Ja63jjO5I&s";
-  const displayName = props.displayName ? props.displayName : "-";
+  const photoURL =
+    props.image ||
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSYU3l2Xh_TvhuYraxr8HILzhActNrm6Ja63jjO5I&s";
+  const displayName = props.username || "-";
   const classes = useStyles();
+
   function formatAMPM(date) {
     let hours = date.getHours();
     let minutes = date.getMinutes();

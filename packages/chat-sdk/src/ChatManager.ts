@@ -1,5 +1,6 @@
 import { Signaling, SIGNALING_CONNECTED } from "./Signaling";
 import {
+  BACKEND_API_URL,
   CHAT_MESSAGES,
   Message,
   MessageWithMetadata,
@@ -19,7 +20,6 @@ export class ChatManager {
   private onMessagesPrepend: (messages: Message[]) => void;
   private onLocalMessageReceived: (messages: Message[]) => void;
   private lastChatId = 1000000000;
-  private subscription?: any;
   private sendQueue: { [client_generated_uuid: string]: boolean } = {};
   private fetchingInProgress = false;
   private signaling: Signaling;
@@ -44,42 +44,36 @@ export class ChatManager {
     if (this.fetchingInProgress) {
       return;
     }
+
     this.fetchingInProgress = true;
-    // const response = [{chats: []}];
-    // const response = await chain("query")({
-    //   chats: [
-    //     { limit: 50,
-    //       order_by: [{ id: order_by.asc }],
-    //       where: {
-    //         id: {
-    //           _lt: this.lastChatId
-    //         }
-    //       }
-    //     },
-    //     {
-    //       id: true,
-    //       username: true,
-    //       uuid: true,
-    //       message: true,
-    //       client_generated_uuid: true,
-    //       created_at: true,
-    //     },
-    //   ],
-    // });
-
-    // if (response.chats && response.chats.length !== 0) {
-    //   response.chats.forEach(chat => {
-    //     if (chat.id < this.lastChatId) {
-    //       this.lastChatId = chat.id
-    //     }
-    //   })
-    //   this.onMessagesPrepend(response.chats.map(chat => ({
-    //     ...chat,
-    //     direction: this.userId === chat.uuid ? "send" : "recv",
-    //   })));
-    // }
-
-    this.fetchingInProgress = false;
+    fetch(
+      `${BACKEND_API_URL}/chat?room=${this.roomId}&type=collection&lastChatId=${this.lastChatId}`,
+      {
+        method: "GET",
+      }
+    )
+      .then(async (response) => {
+        const json = await response.json();
+        const chats: MessageWithMetadata[] = json.chats;
+        if (chats && chats.length !== 0) {
+          chats.forEach((chat) => {
+            if (chat.id < this.lastChatId) {
+              this.lastChatId = chat.id;
+            }
+          });
+          this.onMessagesPrepend(
+            chats.map((chat) => ({
+              ...chat,
+              direction: this.userId === chat.uuid ? "send" : "recv",
+            }))
+          );
+        }
+        this.fetchingInProgress = false;
+      })
+      .catch((e) => {
+        console.error(`Error while fetching data from chat ${e}`);
+        this.fetchingInProgress = false;
+      });
   }
 
   async init() {
@@ -99,7 +93,7 @@ export class ChatManager {
         type,
         room,
       }: {
-        messages: Message[];
+        messages: MessageWithMetadata[];
         type: SubscriptionType;
         room: string;
       }) => {
@@ -153,7 +147,7 @@ export class ChatManager {
 
   destroy() {
     try {
-      this.subscription?.ws.close();
+      this.signaling.destroy();
     } catch (e) {
       console.log(`Error while updating subscription`);
     }

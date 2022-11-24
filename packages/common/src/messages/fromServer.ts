@@ -13,6 +13,7 @@ export interface Message {
 
 export interface MessageWithMetadata extends Message {
   username: string;
+  image: string;
 }
 
 export type ReceiveChat = {
