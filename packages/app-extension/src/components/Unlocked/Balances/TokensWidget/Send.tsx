@@ -45,6 +45,7 @@ import {
   getNameAccountKey,
   NameRegistryState,
 } from "@bonfida/spl-name-service";
+import { TldParser } from "@onsol/tldparser";
 
 const useStyles = styles((theme) => ({
   container: {
@@ -613,6 +614,24 @@ export function useIsValidAddress(
             );
 
             pubkey = owner.registry.owner;
+          } catch (e) {
+            setAddressError(true);
+            return;
+          }
+        }
+
+        // ANS Domain
+        if (!pubkey && address.split(".").length === 2) {
+          try {
+            // address would be e.g. miester.poor
+            const parser = new TldParser(solanaConnection);
+            const owner = await parser.getOwnerFromDomainTld(address);
+            if (!owner) {
+              setAddressError(true);
+              // Not a valid domain don't bother continuing since it has a dot in it.
+              return;
+            }
+            pubkey = owner;
           } catch (e) {
             setAddressError(true);
             return;
