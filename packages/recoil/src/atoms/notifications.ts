@@ -24,9 +24,10 @@ export const recentNotifications = atomFamily<
       async ({ get }: any) => {
         try {
           const provider = get(anchorContext).provider;
-          const notificaitons =
+          //TODO: Add JWT auth here
+          const notifications =
             (await fetchNotifications("kira", offset, limit)) || [];
-          const xnftIds = notificaitons.map((x) => x.xnftId);
+          const xnftIds = notifications.map((x) => x.xnftId);
           const uniqueXnftIds = xnftIds.filter(
             (x, index) => xnftIds.indexOf(x) === index
           );
@@ -34,7 +35,7 @@ export const recentNotifications = atomFamily<
             provider,
             uniqueXnftIds
           );
-          return notificaitons.map((notificaiton) => {
+          return notifications.map((notificaiton) => {
             const metadata = xnftMetadata.find(
               (x) => x.xnftId === notificaiton.xnftId
             );
