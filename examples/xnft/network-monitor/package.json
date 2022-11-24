@@ -13,7 +13,7 @@
   "devDependencies": {
     "@coral-xyz/xnft-cli": "^0.0.1",
     "@parcel/config-default": "^2.7.0",
-    "prettier": "2.7.1"
+    "prettier": "^2.7.1"
   },
   "dependencies": {
     "react": "^17.0.2",
