@@ -14,7 +14,6 @@ export async function fetchXnfts(
   wallet: PublicKey
 ): Promise<Array<{ publicKey: PublicKey; medtadata: any; metadataBlob: any }>> {
   const client = xnftClient(provider);
-
   //
   // Fetch all xnfts installed by this user.
   //
@@ -102,6 +101,69 @@ export async function fetchXnfts(
   });
 
   return xnfts;
+}
+
+export async function fetchXnftsFromPubkey(
+  provider: Provider,
+  xnfts: string[]
+): Promise<{ xnftId: string; image?: string; title?: string }[]> {
+  console.error("fetchXnftsFromPubkey");
+  console.error(xnfts);
+  const client = xnftClient(provider);
+  const accounts = await Promise.all(
+    xnfts.map(async (xnft) => ({
+      xnftId: xnft,
+      account: await client.account.xnft.fetch(xnft),
+    }))
+  );
+  console.error(accounts);
+
+  const metadataAccounts = (
+    await anchor.utils.rpc.getMultipleAccounts(
+      provider.connection,
+      accounts.map((x) => x.account.masterMetadata)
+    )
+  ).map((t, index) => {
+    if (!t) {
+      return null;
+    }
+    console.error(t.publicKey.toString());
+
+    return {
+      xnftMetadata: metadata.decodeMetadata(t.account.data),
+      xnftId: accounts[index].xnftId,
+    };
+  });
+  console.error(metadataAccounts);
+
+  const xnftMetadataBlobs = await Promise.all(
+    metadataAccounts.map(async (blob) => {
+      if (blob?.xnftMetadata) {
+        return {
+          externalMetadata: await fetch(
+            externalResourceUri(blob.xnftMetadata.data.uri)
+          ).then((r) => r.json()),
+          xnftId: blob.xnftId,
+        };
+      }
+      return {
+        xnftId: blob?.xnftId,
+        externalMetadata: {}, // TODO: Add default image here?
+      };
+    })
+  );
+  console.error(xnftMetadataBlobs);
+
+  return xnfts.map((xnftId) => {
+    const metadataBlob = xnftMetadataBlobs.find(
+      (blob) => blob.xnftId === xnftId
+    )?.externalMetadata;
+    return {
+      xnftId,
+      image: metadataBlob.image,
+      title: metadataBlob.name,
+    };
+  });
 }
 
 export async function fetchXnft(
