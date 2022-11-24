@@ -91,6 +91,7 @@ import {
   UI_RPC_METHOD_GET_XNFT_PREFERENCES,
   UI_RPC_METHOD_SET_XNFT_PREFERENCES,
   UI_RPC_METHOD_NAVIGATION_TO_DEFAULT,
+  UI_RPC_METHOD_TRY_TO_SIGN_MESSAGE,
 } from "@coral-xyz/common";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import type { Backend } from "../backend/core";
@@ -341,6 +342,8 @@ async function handle<T = any>(
       );
     case UI_RPC_METHOD_ETHEREUM_SIGN_MESSAGE:
       return await handleEthereumSignMessage(ctx, params[0], params[1]);
+    case UI_RPC_METHOD_TRY_TO_SIGN_MESSAGE:
+      return await tryToSignMessage(ctx, params[0], params[1]);
     case UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET:
       return await handleSignMessageForWallet(
         ctx,
@@ -809,6 +812,14 @@ async function handleEthereumSignMessage(
   walletAddress: string
 ) {
   const resp = await ctx.backend.ethereumSignMessage(msg, walletAddress);
+  return [resp];
+}
+
+async function tryToSignMessage(
+  ctx: Context<Backend>,
+  ...args: Parameters<Backend["tryToSignMessage"]>
+) {
+  const resp = await ctx.backend.tryToSignMessage(...args);
   return [resp];
 }
 
