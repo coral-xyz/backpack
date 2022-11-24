@@ -17,8 +17,8 @@
         "tsc": "tsc --build --verbose tsconfig.root.json",
         "package": "shx echo '{ \"type\": \"commonjs\" }' > lib/cjs/package.json",
         "fmt": "prettier --write '{*,**/*}.{ts,tsx,js,jsx,json}'",
-        "lint": "prettier --check '{*,**/*}.{ts,tsx,js,jsx,json}' && eslint .",
-        "lint:fix": "yarn run fmt && eslint --fix ."
+        "lint": "prettier --check '{*,**/*}.{ts,tsx,js,jsx,json}' && eslint . --cache",
+        "lint:fix": "yarn run fmt && eslint --fix . --cache"
     },
     "dependencies": {
         "@coral-xyz/provider-core": "*",
