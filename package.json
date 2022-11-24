@@ -34,13 +34,13 @@
     "eslint-plugin-react": "^7.30.1",
     "husky": "^8.0.1",
     "lint-staged": "^12.4.1",
-    "prettier": "^2.6.2",
+    "prettier": "^2.7.1",
     "rimraf": "^3.0.2",
     "turbo": "^1.6.2",
     "yarn-deduplicate": "^6.0.0"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx,css,md,json}": "prettier --write"
+    "*.{ts,tsx,js,jsx,css,md,json}": "prettier --write --cache"
   },
   "resolutions": {
     "@solana/web3.js": "1.63.1",
