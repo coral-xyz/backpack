@@ -15,6 +15,7 @@ export const AllTypesProps: Record<string, any> = {
     p256dh: "String_comparison_exp",
     public_key: "String_comparison_exp",
     username: "String_comparison_exp",
+    uuid: "String_comparison_exp",
   },
   auth_notification_subscriptions_constraint: "enum" as const,
   auth_notification_subscriptions_inc_input: {},
@@ -32,6 +33,7 @@ export const AllTypesProps: Record<string, any> = {
     p256dh: "order_by",
     public_key: "order_by",
     username: "order_by",
+    uuid: "order_by",
   },
   auth_notification_subscriptions_pk_columns_input: {},
   auth_notification_subscriptions_select_column: "enum" as const,
@@ -657,6 +659,7 @@ export const ReturnTypes: Record<string, any> = {
     p256dh: "String",
     public_key: "String",
     username: "String",
+    uuid: "String",
   },
   auth_notification_subscriptions_mutation_response: {
     affected_rows: "Int",

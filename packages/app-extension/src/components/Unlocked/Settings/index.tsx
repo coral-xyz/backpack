@@ -22,6 +22,7 @@ import {
   useUsername,
   useAvatarUrl,
   WalletPublicKeys,
+  useFeatureGates,
 } from "@coral-xyz/recoil";
 import {
   openPopupWindow,
@@ -32,6 +33,7 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
   DISCORD_INVITE_LINK,
+  NOTIFICATIONS_ENABLED,
 } from "@coral-xyz/common";
 import {
   Header,
@@ -134,11 +136,11 @@ const useStyles = styles((theme) => ({
 }));
 
 export function SettingsButton() {
+  const featureGates = useFeatureGates();
   return (
     <div style={{ display: "flex" }}>
       <RecentActivityButton />
-      {/* Enable post designs */}
-      {/*<NotificationButton />*/}
+      {featureGates[NOTIFICATIONS_ENABLED] && <NotificationButton />}
       <div style={{ width: "16px" }} />
       <AvatarButton />
     </div>

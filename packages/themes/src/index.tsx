@@ -20,6 +20,8 @@ const BORDER_COLOR_1 = "#52525B";
 const POSITIVE_COLOR = "#35A63A";
 const NEGATIVE_COLOR = "#E95050";
 const SCROLLBAR_THUMB_COLOR = "rgb(153 164 180)";
+const LIGHT_TEXT_SMALL_COLOR = "#4E5768";
+const DARK_TEXT_SMALL_COLOR = "#8F929E";
 
 export const LIGHT_TEXT_COLOR = FONT_COLOR_1;
 const LIGHT_BACKGROUND_BACKDROP_COLOR =
@@ -108,6 +110,7 @@ export const darkTheme: any = {
   components: darkComponentOverrides,
   custom: {
     colors: {
+      smallTextColor: DARK_TEXT_SMALL_COLOR,
       brandColor: BRAND_COLOR,
       background: BACKGROUND_COLOR_0,
       backgroundBackdrop: BACKGROUND_BACKDROP_COLOR,
@@ -218,6 +221,7 @@ export const lightTheme: any = {
   components: lightComponentOverrides,
   custom: {
     colors: {
+      smallTextColor: LIGHT_TEXT_SMALL_COLOR,
       brandColor: LIGHT_BRAND_COLOR,
       backgroundBackdrop: LIGHT_BACKGROUND_BACKDROP_COLOR,
       background: LIGHT_BACKGROUND_COLOR_0,
