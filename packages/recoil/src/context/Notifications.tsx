@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
-import { useSetRecoilState } from "recoil";
+import { useRecoilCallback, useSetRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
+import type { Notification } from "@coral-xyz/common";
 import {
   getLogger,
+  Blockchain,
   ChannelAppUi,
-  Notification,
   BackgroundSolanaConnection,
   CHANNEL_POPUP_NOTIFICATIONS,
   NOTIFICATION_BLOCKCHAIN_ENABLED,
@@ -24,15 +25,11 @@ import {
   NOTIFICATION_DEVELOPER_MODE_UPDATED,
   NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE,
-  NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
-  NOTIFICATION_SOLANA_EXPLORER_UPDATED,
-  NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
-  NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
-  NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
   NOTIFICATION_ETHEREUM_FEE_DATA_DID_UPDATE,
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
+  NOTIFICATION_BLOCKCHAIN_SETTINGS_UPDATED,
 } from "@coral-xyz/common";
 import {
   KeyringStoreStateEnum,
@@ -41,7 +38,7 @@ import {
 } from "../";
 import * as atoms from "../atoms";
 import { allPlugins } from "../hooks";
-import { WalletPublicKeys } from "../types";
+import type { WalletPublicKeys } from "../types";
 
 const logger = getLogger("notifications-provider");
 
@@ -61,17 +58,17 @@ export function NotificationsProvider(props: any) {
   const setIsDeveloperMode = useSetRecoilState(atoms.isDeveloperMode);
   const setEnabledBlockchains = useSetRecoilState(atoms.enabledBlockchains);
   // Solana
-  const setSolanaConnectionUrl = useSetRecoilState(atoms.solanaConnectionUrl);
-  const setSolanaExplorer = useSetRecoilState(atoms.solanaExplorer);
-  const setSolanaCommitment = useSetRecoilState(atoms.solanaCommitment);
   const updateAllSplTokenAccounts = useUpdateAllSplTokenAccounts();
   // Ethereum
-  const setEthereumConnectionUrl = useSetRecoilState(
-    atoms.ethereumConnectionUrl
-  );
-  const setEthereumChainId = useSetRecoilState(atoms.ethereumChainId);
   const setEthereumFeeData = useSetRecoilState(atoms.ethereumFeeData);
   const updateEthereumBalances = useUpdateEthereumBalances();
+  // Blockchain settings
+  const updateBlockchainSettings = useRecoilCallback(
+    ({ set }: any) =>
+      async (blockchain: Blockchain, settings: any) => {
+        set(atoms.blockchainSettings(blockchain), settings);
+      }
+  );
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -87,16 +84,16 @@ export function NotificationsProvider(props: any) {
 
       switch (notif.name) {
         case NOTIFICATION_KEYRING_STORE_CREATED:
-          handleKeyringStoreCreated(notif);
+          handleKeyringStoreCreated();
           break;
         case NOTIFICATION_KEYRING_STORE_LOCKED:
-          handleKeyringStoreLocked(notif);
+          handleKeyringStoreLocked();
           break;
         case NOTIFICATION_KEYRING_STORE_UNLOCKED:
-          handleKeyringStoreUnlocked(notif);
+          handleKeyringStoreUnlocked();
           break;
         case NOTIFICATION_KEYRING_STORE_RESET:
-          handleReset(notif);
+          handleReset();
           break;
         case NOTIFICATION_KEYRING_KEY_DELETE:
           handleKeyringKeyDelete(notif);
@@ -128,29 +125,14 @@ export function NotificationsProvider(props: any) {
         case NOTIFICATION_DEVELOPER_MODE_UPDATED:
           handleIsDeveloperModeUpdated(notif);
           break;
-        case NOTIFICATION_SOLANA_EXPLORER_UPDATED:
-          handleSolanaExplorerUpdated(notif);
-          break;
-        case NOTIFICATION_SOLANA_COMMITMENT_UPDATED:
-          handleSolanaCommitmentUpdated(notif);
+        case NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED:
+          handleSolanaActiveWalletUpdated(notif);
           break;
         case NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE:
           handleSolanaSplTokensDidUpdate(notif);
           break;
-        case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
-          handleSolanaConnectionUrlUpdated(notif);
-          break;
-        case NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED:
-          handleSolanaActiveWalletUpdated(notif);
-          break;
         case NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED:
           handleEthereumActiveWalletUpdated(notif);
-          break;
-        case NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED:
-          handleEthereumConnectionUrlUpdated(notif);
-          break;
-        case NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED:
-          handleEthereumChainIdUpdated(notif);
           break;
         case NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE:
           handleEthereumTokensDidUpdate(notif);
@@ -164,6 +146,9 @@ export function NotificationsProvider(props: any) {
         case NOTIFICATION_BLOCKCHAIN_DISABLED:
           handleBlockchainDisabled(notif);
           break;
+        case NOTIFICATION_BLOCKCHAIN_SETTINGS_UPDATED:
+          handleBlockchainSettingsUpdated(notif);
+          break;
         default:
           break;
       }
@@ -172,15 +157,15 @@ export function NotificationsProvider(props: any) {
     //
     // Notification handlers.
     //
-    const handleKeyringStoreCreated = (_notif: Notification) => {
+    const handleKeyringStoreCreated = () => {
       setKeyringStoreState(KeyringStoreStateEnum.Unlocked);
     };
 
-    const handleKeyringStoreLocked = (_notif: Notification) => {
+    const handleKeyringStoreLocked = () => {
       setKeyringStoreState(KeyringStoreStateEnum.Locked);
     };
 
-    const handleKeyringStoreUnlocked = (_notif: Notification) => {
+    const handleKeyringStoreUnlocked = () => {
       setKeyringStoreState(KeyringStoreStateEnum.Unlocked);
     };
 
@@ -301,7 +286,7 @@ export function NotificationsProvider(props: any) {
       setActiveWallets(notif.data.activeWallets);
     };
 
-    const handleReset = (_notif: Notification) => {
+    const handleReset = () => {
       setKeyringStoreState(KeyringStoreStateEnum.NeedsOnboarding);
     };
 
@@ -327,21 +312,6 @@ export function NotificationsProvider(props: any) {
 
     const handleIsDeveloperModeUpdated = (notif: Notification) => {
       setIsDeveloperMode(notif.data.developerMode);
-    };
-
-    const handleSolanaExplorerUpdated = (notif: Notification) => {
-      setSolanaExplorer(notif.data.explorer);
-    };
-
-    const handleSolanaCommitmentUpdated = (notif: Notification) => {
-      setSolanaCommitment(notif.data.commitment);
-    };
-
-    const handleSolanaConnectionUrlUpdated = (notif: Notification) => {
-      setSolanaConnectionUrl(notif.data.url);
-      allPlugins().forEach((p) => {
-        p.pushSolanaConnectionChangedNotification(notif.data.url);
-      });
     };
 
     const handleSolanaSplTokensDidUpdate = (notif: Notification) => {
@@ -383,23 +353,31 @@ export function NotificationsProvider(props: any) {
       setEthereumFeeData(notif.data.feeData);
     };
 
-    const handleEthereumConnectionUrlUpdated = (notif: Notification) => {
-      setEthereumConnectionUrl(notif.data.connectionUrl);
-      allPlugins().forEach((p) => {
-        p.pushEthereumConnectionChangedNotification(notif.data.connectionUrl);
-      });
-    };
-
-    const handleEthereumChainIdUpdated = (notif: Notification) => {
-      setEthereumChainId(notif.data.chainId);
-    };
-
     const handleBlockchainEnabled = (notif: Notification) => {
       setEnabledBlockchains(notif.data.enabledBlockchains);
     };
 
     const handleBlockchainDisabled = (notif: Notification) => {
       setEnabledBlockchains(notif.data.enabledBlockchains);
+    };
+
+    const handleBlockchainSettingsUpdated = (notif: Notification) => {
+      const { blockchain, prevSettings, newSettings } = notif.data;
+      updateBlockchainSettings(blockchain, newSettings);
+      if (prevSettings.connectionUrl !== newSettings.connectionUrl) {
+        if (blockchain === Blockchain.SOLANA) {
+          allPlugins().forEach((p) => {
+            p.pushSolanaConnectionChangedNotification(notif.data.url);
+          });
+        }
+        if (blockchain === Blockchain.ETHEREUM) {
+          allPlugins().forEach((p) => {
+            p.pushEthereumConnectionChangedNotification(
+              notif.data.connectionUrl
+            );
+          });
+        }
+      }
     };
 
     //

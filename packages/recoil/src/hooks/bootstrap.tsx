@@ -1,7 +1,6 @@
 import { useRecoilValue } from "recoil";
 import * as atoms from "../atoms";
 import { useNavigation, useTab } from "./navigation";
-import { useSolanaCommitment } from "./solana";
 import { useKeyringStoreState } from "./keyring";
 
 export function useBootstrapFast() {
@@ -12,7 +11,6 @@ export function useBootstrapFast() {
   useTab();
   useNavigation();
   useKeyringStoreState();
-  useSolanaCommitment();
 }
 
 export function useRedirectUrl(): string {

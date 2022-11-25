@@ -1,13 +1,13 @@
 import { atomFamily, selector, selectorFamily } from "recoil";
 import { ethers } from "ethers";
-import { ETH_NATIVE_MINT } from "@coral-xyz/common";
-import { TokenDisplay } from "../types";
+import { Blockchain, ETH_NATIVE_MINT } from "@coral-xyz/common";
+import type { TokenDisplay } from "../types";
 import { customSplTokenAccounts } from "./solana/token";
 import { splTokenRegistry } from "./solana/token-registry";
 import { erc20Balances } from "./ethereum/token";
 import { equalSelector } from "../equals";
-import { solanaConnectionUrl } from "./solana/preferences";
 import { solanaPublicKey } from "./wallet";
+import { blockchainSettings } from "./blockchain";
 
 const baseCoingeckoParams = {
   vs_currencies: "usd",
@@ -43,7 +43,8 @@ const coingeckoIdOverride = {
 export const splMintsToCoingeckoId = equalSelector({
   key: "splMintsToCoingeckoId",
   get: ({ get }: any) => {
-    const connectionUrl = get(solanaConnectionUrl);
+    const connectionUrl = get(blockchainSettings(Blockchain.SOLANA))
+      .connectionUrl!;
     const publicKey = get(solanaPublicKey);
     const { splTokenAccounts } = get(
       customSplTokenAccounts({ connectionUrl, publicKey })

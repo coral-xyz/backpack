@@ -44,12 +44,9 @@ import {
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_ETHEREUM_CONNECTED,
   NOTIFICATION_ETHEREUM_DISCONNECTED,
-  NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
-  NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_SOLANA_CONNECTED,
   NOTIFICATION_SOLANA_DISCONNECTED,
-  NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   Blockchain,
 } from "@coral-xyz/common";
 import type { Backend } from "../backend/core";
@@ -97,12 +94,6 @@ export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
       case NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED:
         ethereumNotificationsInjected.sendMessageActiveTab(notification);
         break;
-      case NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED:
-        ethereumNotificationsInjected.sendMessageActiveTab(notification);
-        break;
-      case NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED:
-        ethereumNotificationsInjected.sendMessageActiveTab(notification);
-        break;
       case NOTIFICATION_SOLANA_CONNECTED:
         solanaNotificationsInjected.sendMessageActiveTab(notification);
         break;
@@ -110,9 +101,6 @@ export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
         solanaNotificationsInjected.sendMessageActiveTab(notification);
         break;
       case NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED:
-        solanaNotificationsInjected.sendMessageActiveTab(notification);
-        break;
-      case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
         solanaNotificationsInjected.sendMessageActiveTab(notification);
         break;
       default:
@@ -273,18 +261,16 @@ async function handleConnect(
     const activeWallet = (await ctx.backend.blockchainActiveWallets())[
       blockchain
     ];
+    const settings = (await ctx.backend.blockchainSettings())[blockchain];
     if (blockchain === Blockchain.ETHEREUM) {
-      const connectionUrl = await ctx.backend.ethereumConnectionUrlRead();
-      const chainId = await ctx.backend.ethereumChainIdRead();
-      const data = { publicKey: activeWallet, connectionUrl, chainId };
+      const data = { publicKey: activeWallet, ...settings };
       ctx.events.emit(BACKEND_EVENT, {
         name: NOTIFICATION_ETHEREUM_CONNECTED,
         data,
       });
       return [data];
     } else if (blockchain === Blockchain.SOLANA) {
-      const connectionUrl = await ctx.backend.solanaConnectionUrlRead();
-      const data = { publicKey: activeWallet, connectionUrl };
+      const data = { publicKey: activeWallet, ...settings };
       ctx.events.emit(BACKEND_EVENT, {
         name: NOTIFICATION_SOLANA_CONNECTED,
         data,

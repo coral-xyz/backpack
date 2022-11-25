@@ -43,4 +43,10 @@ export function keyringForBlockchain(
 
 export type BlockchainSettings = EvmSettings | SolanaSettings;
 
-export { BlockchainKeyring } from "@coral-xyz/blockchain-keyring";
+// Exports
+export type { EvmSettings } from "@coral-xyz/blockchain-evm";
+export {
+  DefaultKeyname,
+  BlockchainKeyring,
+} from "@coral-xyz/blockchain-keyring";
+export type { SolanaSettings } from "@coral-xyz/blockchain-solana";

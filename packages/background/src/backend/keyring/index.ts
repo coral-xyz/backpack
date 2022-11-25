@@ -19,14 +19,11 @@ import {
   hdFactoryForBlockchain,
   keyringForBlockchain,
   BlockchainKeyring,
+  DefaultKeyname,
 } from "@coral-xyz/blockchain-common";
 import * as crypto from "./crypto";
 import * as store from "../store";
-import {
-  DefaultKeyname,
-  DEFAULT_DARK_MODE,
-  DEFAULT_DEVELOPER_MODE,
-} from "../store";
+import { DEFAULT_DARK_MODE, DEFAULT_DEVELOPER_MODE } from "../store";
 
 /**
  * Keyring API for managing all wallet keys.
@@ -87,7 +84,7 @@ export class KeyringStore {
       developerMode: DEFAULT_DEVELOPER_MODE,
       solana: {
         explorer: SolanaExplorer.DEFAULT,
-        cluster: SolanaCluster.DEFAULT,
+        connectionUrl: SolanaCluster.DEFAULT,
         commitment: "confirmed",
       },
       ethereum: {

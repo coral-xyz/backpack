@@ -9,8 +9,8 @@ import type {
   EventEmitter,
   Blockchain,
   XnftPreference,
+  FEATURE_GATES_MAP,
 } from "@coral-xyz/common";
-import type { Commitment } from "@solana/web3.js";
 import {
   getLogger,
   withContextPort,
@@ -20,6 +20,8 @@ import {
   UI_RPC_METHOD_BLOCKCHAINS_ENABLED_READ,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
+  UI_RPC_METHOD_BLOCKCHAIN_SETTINGS_READ,
+  UI_RPC_METHOD_BLOCKCHAIN_SETTINGS_UPDATE,
   UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
@@ -58,25 +60,13 @@ import {
   UI_RPC_METHOD_APPROVED_ORIGINS_DELETE,
   UI_RPC_METHOD_LEDGER_IMPORT,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
-  UI_RPC_METHOD_SOLANA_EXPLORER_READ,
-  UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE,
   UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET,
   UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT,
-  UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ,
-  UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
-  UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
-  UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
   UI_RPC_METHOD_SOLANA_SIMULATE,
   UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION,
   UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS,
   UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
   UI_RPC_METHOD_SOLANA_SIGN_MESSAGE,
-  UI_RPC_METHOD_ETHEREUM_EXPLORER_READ,
-  UI_RPC_METHOD_ETHEREUM_EXPLORER_UPDATE,
-  UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_READ,
-  UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE,
-  UI_RPC_METHOD_ETHEREUM_CHAIN_ID_READ,
-  UI_RPC_METHOD_ETHEREUM_CHAIN_ID_UPDATE,
   UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION,
   UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
   UI_RPC_METHOD_ETHEREUM_SIGN_MESSAGE,
@@ -86,7 +76,6 @@ import {
   CHANNEL_POPUP_RPC,
   CHANNEL_POPUP_NOTIFICATIONS,
   UI_RPC_METHOD_SET_FEATURE_GATES,
-  FEATURE_GATES_MAP,
   UI_RPC_METHOD_GET_FEATURE_GATES,
   UI_RPC_METHOD_GET_XNFT_PREFERENCES,
   UI_RPC_METHOD_SET_XNFT_PREFERENCES,
@@ -237,14 +226,6 @@ async function handle<T = any>(
       return handleBlockchainsEnabledRemove(ctx, params[0]);
     case UI_RPC_METHOD_BLOCKCHAINS_ENABLED_READ:
       return await handleBlockchainsEnabledRead(ctx);
-    case UI_RPC_METHOD_SET_FEATURE_GATES:
-      return await handleSetFeatureGates(ctx, params[0]);
-    case UI_RPC_METHOD_GET_FEATURE_GATES:
-      return await handleGetFeatureGates(ctx);
-    case UI_RPC_METHOD_GET_XNFT_PREFERENCES:
-      return await handleGetXnftPreferences(ctx);
-    case UI_RPC_METHOD_SET_XNFT_PREFERENCES:
-      return await handleSetXnftPreferences(ctx, params[0], params[1]);
     case UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD:
       return await handleBlockchainKeyringsAdd(
         ctx,
@@ -255,6 +236,18 @@ async function handle<T = any>(
       );
     case UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ:
       return await handleBlockchainKeyringsRead(ctx);
+    case UI_RPC_METHOD_BLOCKCHAIN_SETTINGS_READ:
+      return await handleBlockchainSettingsRead(ctx, params[0]);
+    case UI_RPC_METHOD_BLOCKCHAIN_SETTINGS_UPDATE:
+      return await handleBlockchainSettingsUpdate(ctx, params[0], params[1]);
+    case UI_RPC_METHOD_SET_FEATURE_GATES:
+      return await handleSetFeatureGates(ctx, params[0]);
+    case UI_RPC_METHOD_GET_FEATURE_GATES:
+      return await handleGetFeatureGates(ctx);
+    case UI_RPC_METHOD_GET_XNFT_PREFERENCES:
+      return await handleGetXnftPreferences(ctx);
+    case UI_RPC_METHOD_SET_XNFT_PREFERENCES:
+      return await handleSetXnftPreferences(ctx, params[0], params[1]);
     //
     //
     // Nicknames for keys.
@@ -304,33 +297,9 @@ async function handle<T = any>(
       );
     case UI_RPC_METHOD_SOLANA_SIGN_MESSAGE:
       return await handleSolanaSignMessage(ctx, params[0], params[1]);
-    case UI_RPC_METHOD_SOLANA_COMMITMENT_READ:
-      return await handleSolanaCommitmentRead(ctx);
-    case UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE:
-      return await handleSolanaCommitmentUpdate(ctx, params[0]);
-    case UI_RPC_METHOD_SOLANA_EXPLORER_READ:
-      return await handleSolanaExplorerRead(ctx);
-    case UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE:
-      return await handleSolanaExplorerUpdate(ctx, params[0]);
-    case UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ:
-      return await handleSolanaConnectionUrlRead(ctx);
-    case UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE:
-      return await handleSolanaConnectionUrlUpdate(ctx, params[0]);
     //
     // Ethereum
     //
-    case UI_RPC_METHOD_ETHEREUM_EXPLORER_READ:
-      return await handleEthereumExplorerRead(ctx);
-    case UI_RPC_METHOD_ETHEREUM_EXPLORER_UPDATE:
-      return await handleEthereumExplorerUpdate(ctx, params[0]);
-    case UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_READ:
-      return await handleEthereumConnectionUrlRead(ctx);
-    case UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE:
-      return await handleEthereumConnectionUrlUpdate(ctx, params[0]);
-    case UI_RPC_METHOD_ETHEREUM_CHAIN_ID_READ:
-      return await handleEthereumChainIdRead(ctx);
-    case UI_RPC_METHOD_ETHEREUM_CHAIN_ID_UPDATE:
-      return await handleEthereumChainIdUpdate(ctx, params[0]);
     case UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION:
       return await handleEthereumSignTransaction(ctx, params[0], params[1]);
     case UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION:
@@ -637,53 +606,6 @@ async function handleDeveloperModeUpdate(
   return [resp];
 }
 
-async function handleSolanaConnectionUrlRead(
-  ctx: Context<Backend>
-): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.solanaConnectionUrlRead();
-  return [resp];
-}
-
-async function handleSolanaConnectionUrlUpdate(
-  ctx: Context<Backend>,
-  url: string
-): Promise<RpcResponse<boolean>> {
-  const didChange = await ctx.backend.solanaConnectionUrlUpdate(url);
-  return [didChange];
-}
-
-async function handleSolanaCommitmentRead(
-  ctx: Context<Backend>
-): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.solanaCommitmentRead();
-  return [resp];
-}
-
-async function handleSolanaCommitmentUpdate(
-  ctx: Context<Backend>,
-  commitment: string
-): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.solanaCommitmentUpdate(
-    commitment as Commitment
-  );
-  return [resp];
-}
-
-async function handleSolanaExplorerRead(
-  ctx: Context<Backend>
-): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.solanaExplorerRead();
-  return [resp];
-}
-
-async function handleSolanaExplorerUpdate(
-  ctx: Context<Backend>,
-  url: string
-): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.solanaExplorerUpdate(url);
-  return [resp];
-}
-
 async function handleSolanaSimulate(
   ctx: Context<Backend>,
   txStr: string,
@@ -731,51 +653,6 @@ async function handleSolanaSignAndSendTransaction(
   walletAddress: string
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.solanaSignAndSendTx(tx, walletAddress);
-  return [resp];
-}
-
-async function handleEthereumExplorerRead(
-  ctx: Context<Backend>
-): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.ethereumExplorerRead();
-  return [resp];
-}
-
-async function handleEthereumExplorerUpdate(
-  ctx: Context<Backend>,
-  url: string
-): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.ethereumExplorerUpdate(url);
-  return [resp];
-}
-
-async function handleEthereumConnectionUrlRead(
-  ctx: Context<Backend>
-): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.ethereumConnectionUrlRead();
-  return [resp];
-}
-
-async function handleEthereumConnectionUrlUpdate(
-  ctx: Context<Backend>,
-  url: string
-): Promise<RpcResponse<boolean>> {
-  const resp = await ctx.backend.ethereumConnectionUrlUpdate(url);
-  return [resp];
-}
-
-async function handleEthereumChainIdRead(
-  ctx: Context<Backend>
-): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.ethereumChainIdRead();
-  return [resp];
-}
-
-async function handleEthereumChainIdUpdate(
-  ctx: Context<Backend>,
-  chainId: string
-): Promise<RpcResponse<boolean>> {
-  const resp = await ctx.backend.ethereumChainIdUpdate(chainId);
   return [resp];
 }
 
@@ -925,6 +802,23 @@ async function handleBlockchainKeyringsRead(
   ctx: Context<Backend>
 ): Promise<RpcResponse<Array<string>>> {
   const resp = await ctx.backend.blockchainKeyringsRead();
+  return [resp];
+}
+
+async function handleBlockchainSettingsRead(
+  ctx: Context<Backend>,
+  blockchain: Blockchain
+): Promise<RpcResponse<Record<string, string>>> {
+  const resp = await ctx.backend.blockchainSettingsRead(blockchain);
+  return [resp];
+}
+
+async function handleBlockchainSettingsUpdate(
+  ctx: Context<Backend>,
+  blockchain: Blockchain,
+  settings: Record<string, string>
+): Promise<RpcResponse<Record<string, string>>> {
+  const resp = await ctx.backend.blockchainSettingsUpdate(blockchain, settings);
   return [resp];
 }
 

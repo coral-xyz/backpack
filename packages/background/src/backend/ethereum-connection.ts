@@ -8,12 +8,11 @@ import {
   BACKEND_EVENT,
   NOTIFICATION_BLOCKCHAIN_DISABLED,
   NOTIFICATION_BLOCKCHAIN_ENABLED,
+  NOTIFICATION_BLOCKCHAIN_SETTINGS_UPDATED,
   NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
-  NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
-  NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
   NOTIFICATION_ETHEREUM_FEE_DATA_DID_UPDATE,
 } from "@coral-xyz/common";
@@ -32,7 +31,7 @@ export function start(events: EventEmitter): EthereumConnectionBackend {
 
 export class EthereumConnectionBackend {
   private cache = new Map<string, CachedValue<any>>();
-  private url?: string;
+  private connectionUrl?: string;
   private chainId?: string;
   private pollIntervals: Array<any>;
   private events: EventEmitter;
@@ -64,22 +63,19 @@ export class EthereumConnectionBackend {
           handleKeyringStoreUnlocked(notif);
           break;
         case NOTIFICATION_KEYRING_STORE_LOCKED:
-          handleKeyringStoreLocked(notif);
+          handleKeyringStoreLocked();
           break;
         case NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED:
           handleActiveWalletUpdated(notif);
-          break;
-        case NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED:
-          handleConnectionUrlUpdated(notif);
-          break;
-        case NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED:
-          handleChainIdUpdated(notif);
           break;
         case NOTIFICATION_BLOCKCHAIN_ENABLED:
           handleBlockchainEnabled(notif);
           break;
         case NOTIFICATION_BLOCKCHAIN_DISABLED:
           handleBlockchainDisabled(notif);
+          break;
+        case NOTIFICATION_BLOCKCHAIN_SETTINGS_UPDATED:
+          handleBlockchainSettingsUpdated(notif);
           break;
         default:
           break;
@@ -91,23 +87,20 @@ export class EthereumConnectionBackend {
     };
 
     const handleKeyringStoreUnlocked = async (notif: Notification) => {
-      const {
-        blockchainActiveWallets,
-        ethereumConnectionUrl,
-        ethereumChainId,
-      } = notif.data;
-      this.provider = new ethers.providers.JsonRpcProvider(
-        ethereumConnectionUrl
-      );
-      this.url = ethereumConnectionUrl;
-      this.chainId = ethereumChainId;
+      const { blockchainActiveWallets, blockchainSettings } = notif.data;
       const activeWallet = blockchainActiveWallets[Blockchain.ETHEREUM];
+      const settings = blockchainSettings[Blockchain.ETHEREUM];
+      this.provider = new ethers.providers.JsonRpcProvider(
+        settings.connectionUrl
+      );
+      this.connectionUrl = settings.connectionUrl;
+      this.chainId = settings.chainId;
       if (activeWallet) {
         this.startPolling(activeWallet);
       }
     };
 
-    const handleKeyringStoreLocked = (_notif: Notification) => {
+    const handleKeyringStoreLocked = () => {
       this.stopPolling();
     };
 
@@ -115,21 +108,6 @@ export class EthereumConnectionBackend {
       const { activeWallet } = notif.data;
       this.stopPolling();
       this.startPolling(activeWallet);
-    };
-
-    const handleConnectionUrlUpdated = (notif: Notification) => {
-      const { connectionUrl } = notif.data;
-      this.provider = new ethers.providers.JsonRpcProvider(connectionUrl);
-      this.url = connectionUrl;
-    };
-
-    const handleChainIdUpdated = (notif: Notification) => {
-      const { chainId } = notif.data;
-      this.provider = new ethers.providers.JsonRpcProvider(
-        this.url,
-        parseInt(chainId)
-      );
-      this.chainId = chainId;
     };
 
     const handleBlockchainEnabled = (notif: Notification) => {
@@ -147,6 +125,26 @@ export class EthereumConnectionBackend {
         this.stopPolling();
       }
     };
+
+    const handleBlockchainSettingsUpdated = (notif: Notification) => {
+      const { blockchain, prevSettings, newSettings } = notif.data;
+      if (blockchain !== Blockchain.ETHEREUM) return;
+      // Check for connection URL change
+      if (prevSettings.connectionUrl !== newSettings.connectionUrl) {
+        this.provider = new ethers.providers.JsonRpcProvider(
+          newSettings.connectionUrl
+        );
+        this.connectionUrl = newSettings.connectionUrl;
+      }
+      // Check for chain ID change
+      if (prevSettings.chainId !== newSettings.chainId) {
+        this.provider = new ethers.providers.JsonRpcProvider(
+          this.connectionUrl,
+          parseInt(newSettings.chainId)
+        );
+        this.chainId = newSettings.chainId;
+      }
+    };
   }
 
   //
@@ -161,7 +159,7 @@ export class EthereumConnectionBackend {
         }
         const data = await fetchEthereumBalances(this.provider, activeWallet);
         const key = JSON.stringify({
-          url: this.url,
+          url: this.connectionUrl,
           method: "ethereumTokens",
           args: [activeWallet],
         });
@@ -185,7 +183,7 @@ export class EthereumConnectionBackend {
         }
         const feeData = await this.provider.getFeeData();
         const key = JSON.stringify({
-          url: this.url,
+          url: this.connectionUrl,
           chainId: this.chainId,
           method: "ethereumFeeData",
         });

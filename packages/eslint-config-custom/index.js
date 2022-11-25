@@ -1,5 +1,3 @@
-const [IGNORE, WARNING, ERROR] = [0, 1, 2];
-
 module.exports = {
   root: true,
   extends: [
@@ -35,7 +33,6 @@ module.exports = {
     "import/no-unresolved": "off",
     "no-async-promise-executor": "off",
     "no-undef": "off",
-    "no-unused-vars": "off",
     "prefer-const": "off",
     "import/no-named-as-default": "off",
     "import/no-named-as-default-member": "off",

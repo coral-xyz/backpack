@@ -67,7 +67,6 @@ import type {
   VersionedMessage,
 } from "@solana/web3.js";
 import type { Notification, EventEmitter } from "@coral-xyz/common";
-import { encode } from "bs58";
 import {
   getLogger,
   customSplTokenAccounts,
@@ -76,11 +75,11 @@ import {
   BACKEND_EVENT,
   NOTIFICATION_BLOCKCHAIN_DISABLED,
   NOTIFICATION_BLOCKCHAIN_ENABLED,
+  NOTIFICATION_BLOCKCHAIN_SETTINGS_UPDATED,
   NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
-  NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE,
 } from "@coral-xyz/common";
 import type { CachedValue } from "../types";
@@ -101,9 +100,10 @@ export function start(events: EventEmitter): SolanaConnectionBackend {
 export class SolanaConnectionBackend {
   private cache = new Map<string, CachedValue<any>>();
   private connection?: Connection;
-  private url?: string;
+  private connectionUrl?: string;
   private pollIntervals: Array<any>;
   private events: EventEmitter;
+  private activeWallet: string;
 
   constructor(events: EventEmitter) {
     this.pollIntervals = [];
@@ -131,19 +131,19 @@ export class SolanaConnectionBackend {
           handleKeyringStoreUnlocked(notif);
           break;
         case NOTIFICATION_KEYRING_STORE_LOCKED:
-          handleKeyringStoreLocked(notif);
+          handleKeyringStoreLocked();
           break;
         case NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED:
           handleActiveWalletUpdated(notif);
-          break;
-        case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
-          handleConnectionUrlUpdated(notif);
           break;
         case NOTIFICATION_BLOCKCHAIN_ENABLED:
           handleBlockchainEnabled(notif);
           break;
         case NOTIFICATION_BLOCKCHAIN_DISABLED:
           handleBlockchainDisabled(notif);
+          break;
+        case NOTIFICATION_BLOCKCHAIN_SETTINGS_UPDATED:
+          handleBlockchainSettingsUpdated(notif);
           break;
         default:
           break;
@@ -155,41 +155,33 @@ export class SolanaConnectionBackend {
     };
 
     const handleKeyringStoreUnlocked = (notif: Notification) => {
-      const { blockchainActiveWallets, solanaConnectionUrl, solanaCommitment } =
-        notif.data;
-
-      this.connection = new Connection(solanaConnectionUrl, solanaCommitment);
-      this.url = solanaConnectionUrl;
-
-      this.hookRpcRequest();
+      const { blockchainActiveWallets, blockchainSettings } = notif.data;
 
       const activeWallet = blockchainActiveWallets[Blockchain.SOLANA];
+      const settings = blockchainSettings[Blockchain.SOLANA];
+
+      this.connection = new Connection(
+        settings.connectionUrl,
+        settings.commitment
+      );
+      this.connectionUrl = settings.connectionUrl;
+      this.activeWallet = activeWallet;
+
+      this.hookRpcRequest();
       if (activeWallet) {
         this.startPolling(new PublicKey(activeWallet));
       }
     };
 
-    const handleKeyringStoreLocked = (_notif: Notification) => {
+    const handleKeyringStoreLocked = () => {
       this.stopPolling();
     };
 
     const handleActiveWalletUpdated = (notif: Notification) => {
       const { activeWallet } = notif.data;
+      this.activeWallet = activeWallet;
       this.stopPolling();
       this.startPolling(new PublicKey(activeWallet));
-    };
-
-    const handleConnectionUrlUpdated = (notif: Notification) => {
-      const { activeWallet, url } = notif.data;
-      this.connection = new Connection(url, this.connection!.commitment);
-      this.url = url;
-      // activeWallet can be null if the blockchain is disabled, in that case
-      // we don't want to start polling
-      if (activeWallet) {
-        this.stopPolling();
-        this.hookRpcRequest();
-        this.startPolling(new PublicKey(activeWallet));
-      }
     };
 
     const handleBlockchainEnabled = (notif: Notification) => {
@@ -205,6 +197,21 @@ export class SolanaConnectionBackend {
       if (blockchain === Blockchain.SOLANA) {
         // Stop polling if Solana was disabled in wallet settings
         this.stopPolling();
+      }
+    };
+
+    const handleBlockchainSettingsUpdated = (notif: Notification) => {
+      const { blockchain, prevSettings, newSettings } = notif.data;
+      if (blockchain !== Blockchain.SOLANA) return;
+      // Check for connection URL change
+      if (prevSettings.connectionUrl !== newSettings.connectionUrl) {
+        this.connection = new Connection(
+          newSettings.connectionUrl,
+          this.connection!.commitment
+        );
+        this.stopPolling();
+        this.hookRpcRequest();
+        this.startPolling(new PublicKey(this.activeWallet));
       }
     };
   }
@@ -233,7 +240,7 @@ export class SolanaConnectionBackend {
           }),
         };
         const key = JSON.stringify({
-          url: this.url,
+          url: this.connectionUrl,
           method: "customSplTokenAccounts",
           args: [activeWallet.toString()],
         });
@@ -244,7 +251,7 @@ export class SolanaConnectionBackend {
         this.events.emit(BACKEND_EVENT, {
           name: NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE,
           data: {
-            connectionUrl: this.url,
+            connectionUrl: this.connectionUrl,
             publicKey: activeWallet.toString(),
             customSplTokenAccounts: {
               ...data,
@@ -256,10 +263,10 @@ export class SolanaConnectionBackend {
 
     this.pollIntervals.push(
       setInterval(async () => {
-        const conn = new Connection(this.url!); // Unhooked connection.
+        const conn = new Connection(this.connectionUrl!); // Unhooked connection.
         const data = await conn.getLatestBlockhash();
         const key = JSON.stringify({
-          url: this.url,
+          url: this.connectionUrl,
           method: "getLatestBlockhash",
           args: [],
         });
@@ -283,7 +290,7 @@ export class SolanaConnectionBackend {
     // @ts-ignore
     this.connection._rpcRequest = async (method: string, args: any[]) => {
       const key = JSON.stringify({
-        url: this.url,
+        url: this.connectionUrl,
         method,
         args,
       });
@@ -308,7 +315,7 @@ export class SolanaConnectionBackend {
 
   async customSplTokenAccounts(publicKey: PublicKey): Promise<any> {
     const key = JSON.stringify({
-      url: this.url,
+      url: this.connectionUrl,
       method: "customSplTokenAccounts",
       args: [publicKey.toString()],
     });
@@ -474,7 +481,7 @@ export class SolanaConnectionBackend {
     signature: TransactionSignature,
     commitment?: Finality
   ): Promise<ParsedConfirmedTransaction | null> {
-    const conn = new Connection(this.url!); // Unhooked connection.
+    const conn = new Connection(this.connectionUrl!); // Unhooked connection.
     return await conn.getParsedTransaction(
       signature,
       commitment ?? "confirmed"

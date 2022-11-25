@@ -3,29 +3,36 @@ import { Blockchain } from "@coral-xyz/common";
 import * as atoms from "../atoms";
 import type { TokenData } from "../types";
 
-export function useBlockchainKeyrings() {
-  return useRecoilValue(atoms.blockchainKeyrings);
-}
-
+/**
+ * Enabled blockchains are blockchains that are currently active in the wallet.
+ */
 export function useEnabledBlockchains() {
   return useRecoilValue(atoms.enabledBlockchains);
 }
 
+/**
+ * Available blockchains are blockchains thate can be used but may or may not be
+ * enabled.
+ */
 export function useAvailableBlockchains() {
   return useRecoilValue(atoms.availableBlockchains);
 }
 
+export function useBlockchainKeyrings() {
+  return useRecoilValue(atoms.blockchainKeyrings);
+}
+
+export function useBlockchainSettings(blockchain: Blockchain) {
+  return useRecoilValue(atoms.blockchainSettings(blockchain));
+}
+
 export function useBlockchainExplorer(blockchain: Blockchain) {
-  const blockchainSettings = useRecoilValue(
-    atoms.blockchainSettings(blockchain)
-  );
+  const blockchainSettings = useBlockchainSettings(blockchain);
   return blockchainSettings.explorer;
 }
 
 export function useBlockchainConnectionUrl(blockchain: Blockchain) {
-  const blockchainSettings = useRecoilValue(
-    atoms.blockchainSettings(blockchain)
-  );
+  const blockchainSettings = useBlockchainSettings(blockchain);
   return blockchainSettings.connectionUrl;
 }
 

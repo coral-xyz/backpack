@@ -1,20 +1,20 @@
-import { validateMnemonic as _validateMnemonic } from "bip39";
-import { ethers } from "ethers";
-import type { SendOptions, SimulateTransactionConfig } from "@solana/web3.js";
+import type { BlockchainKeyring } from "@coral-xyz/blockchain-common";
 import {
-  PublicKey,
-  Transaction,
-  TransactionInstruction,
-} from "@solana/web3.js";
-import type { KeyringStoreState } from "@coral-xyz/recoil";
-import { makeDefaultNav } from "@coral-xyz/recoil";
-import {
+  SolanaSettings,
   keyringForBlockchain,
-  BlockchainKeyring,
 } from "@coral-xyz/blockchain-common";
+import type {
+  DerivationPath,
+  EventEmitter,
+  FEATURE_GATES_MAP,
+  KeyringInit,
+  KeyringType,
+  XnftPreference,
+} from "@coral-xyz/common";
 import {
   BACKEND_EVENT,
   Blockchain,
+  deserializeTransaction,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
   NOTIFICATION_BLOCKCHAIN_DISABLED,
@@ -35,22 +35,24 @@ import {
   NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
   SolanaCluster,
-  deserializeTransaction,
-  FEATURE_GATES_MAP,
-  XnftPreference,
 } from "@coral-xyz/common";
-import type {
-  KeyringInit,
-  DerivationPath,
-  EventEmitter,
-  KeyringType,
-} from "@coral-xyz/common";
-import type { Nav } from "./store";
-import * as store from "./store";
+import type { KeyringStoreState } from "@coral-xyz/recoil";
+import { makeDefaultNav } from "@coral-xyz/recoil";
+import type { SendOptions, SimulateTransactionConfig } from "@solana/web3.js";
+import {
+  PublicKey,
+  Transaction,
+  TransactionInstruction,
+} from "@solana/web3.js";
+import { validateMnemonic as _validateMnemonic } from "bip39";
+import { ethers } from "ethers";
+
+import type { EthereumConnectionBackend } from "./ethereum-connection";
 import { KeyringStore } from "./keyring";
 import type { SolanaConnectionBackend } from "./solana-connection";
-import type { EthereumConnectionBackend } from "./ethereum-connection";
-import { getWalletData, setWalletData, DEFAULT_DARK_MODE } from "./store";
+import type { Nav } from "./store";
+import * as store from "./store";
+import { DEFAULT_DARK_MODE, getWalletData, setWalletData } from "./store";
 
 const { base58: bs58 } = ethers.utils;
 
@@ -96,8 +98,8 @@ export class Backend {
 
     // Send it to the network.
     const commitment =
-      (await this.blockchainSettingsRead(Blockchain.SOLANA)).commitment ||
-      "confirmed";
+      ((await this.blockchainSettingsRead(Blockchain.SOLANA)) as SolanaSettings)
+        .commitment || "confirmed";
     return await this.solanaConnectionBackend.sendRawTransaction(
       tx.serialize(),
       options ?? {
@@ -218,11 +220,18 @@ export class Backend {
     let data = await getWalletData();
     const prevSettings = { ...data[blockchain] };
     const newSettings = { ...prevSettings, ...updatedSettings };
-    // Migrate the old default Solana RPC value, this can be removed in future
-    const OLD_DEFAULT = "https://solana-rpc-nodes.projectserum.com";
-    if (newSettings.cluster && newSettings.cluster === OLD_DEFAULT) {
-      newSettings.cluster = SolanaCluster.DEFAULT;
+
+    // TODO remove eventually
+    if ("cluster" in prevSettings) {
+      const OLD_DEFAULT = "https://solana-rpc-nodes.projectserum.com";
+      // Migrate the old cluster if it was the previous default and move
+      // from cluster to connectionUrl
+      newSettings.connectionUrl =
+        prevSettings.cluster === OLD_DEFAULT
+          ? SolanaCluster.DEFAULT
+          : prevSettings.cluster;
     }
+
     await setWalletData({
       ...data,
       [blockchain]: newSettings,
@@ -307,15 +316,11 @@ export class Backend {
     keyringInit: KeyringInit
   ): Promise<string> {
     await this.keyringStore.init(username, password, keyringInit);
-
-    // Notify all listeners.
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_STORE_CREATED,
       data: {
         blockchainActiveWallets: await this.blockchainActiveWallets(),
-        ethereumConnectionUrl: await this.ethereumConnectionUrlRead(),
-        solanaConnectionUrl: await this.solanaConnectionUrlRead(),
-        solanaCommitment: await this.solanaCommitmentRead(),
+        blockchainSettings: await this.blockchainSettings(),
       },
     });
 
@@ -328,22 +333,11 @@ export class Backend {
 
   async keyringStoreUnlock(password: string): Promise<string> {
     await this.keyringStore.tryUnlock(password);
-
-    const blockchainActiveWallets = await this.blockchainActiveWallets();
-
-    const ethereumConnectionUrl = await this.ethereumConnectionUrlRead();
-    const ethereumChainId = await this.ethereumChainIdRead();
-    const solanaConnectionUrl = await this.solanaConnectionUrlRead();
-    const solanaCommitment = await this.solanaCommitmentRead();
-
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_STORE_UNLOCKED,
       data: {
-        blockchainActiveWallets,
-        ethereumConnectionUrl,
-        ethereumChainId,
-        solanaConnectionUrl,
-        solanaCommitment,
+        blockchainActiveWallets: await this.blockchainActiveWallets(),
+        blockchainSettings: await this.blockchainSettings(),
       },
     });
 
@@ -425,11 +419,23 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  // Map of blockchain to the active public key for that blockchain.
+  // Object mapping blockchain to the active public key for that blockchain.
   async blockchainActiveWallets() {
     return Object.fromEntries(
       (await this.activeWallets()).map((publicKey) => {
         return [this.keyringStore.blockchainForPublicKey(publicKey), publicKey];
+      })
+    );
+  }
+
+  // Object mapping blockchains to the settings for that blockchain.
+  async blockchainSettings() {
+    const data = await store.getWalletData();
+    return Object.fromEntries(
+      (await this.activeWallets()).map((publicKey) => {
+        const blockchain = this.keyringStore.blockchainForPublicKey(publicKey);
+        const settings = data[blockchain] || {};
+        return [blockchain, settings];
       })
     );
   }

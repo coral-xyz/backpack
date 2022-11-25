@@ -1,19 +1,19 @@
 import { atomFamily, selector, selectorFamily } from "recoil";
 import { ethers, BigNumber } from "ethers";
-import { TokenInfo } from "@solana/spl-token-registry";
+import type { TokenInfo } from "@solana/spl-token-registry";
 import { priceData } from "../prices";
 import { splTokenRegistry } from "./token-registry";
-import { TokenData, TokenNativeData } from "../../types";
+import type { TokenData, TokenNativeData } from "../../types";
 import { anchorContext } from "./wallet";
 import { solanaPublicKey } from "../wallet";
-import { solanaConnectionUrl } from "./preferences";
 import { PublicKey } from "@solana/web3.js";
-import { SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
+import { Blockchain, SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
 import type {
   SolanaTokenAccountWithKeyString,
   SplNftMetadataString,
   TokenMetadataString,
 } from "@coral-xyz/common";
+import { blockchainSettings } from "../blockchain";
 
 export const customSplTokenAccounts = atomFamily({
   key: "customSplTokenAccounts",
@@ -72,7 +72,8 @@ export const solanaTokenAccountsMap = atomFamily<
     get:
       ({ tokenAddress }: { tokenAddress: string }) =>
       ({ get }) => {
-        const connectionUrl = get(solanaConnectionUrl)!;
+        const connectionUrl = get(blockchainSettings(Blockchain.SOLANA))
+          .connectionUrl!;
         const publicKey = get(solanaPublicKey)!;
         const { splTokenAccounts } = get(
           customSplTokenAccounts({ connectionUrl, publicKey })
@@ -88,7 +89,8 @@ export const solanaTokenAccountsMap = atomFamily<
 export const solanaTokenAccountKeys = selector({
   key: "solanaTokenAccountKeys",
   get: ({ get }) => {
-    const connectionUrl = get(solanaConnectionUrl)!;
+    const connectionUrl = get(blockchainSettings(Blockchain.SOLANA))
+      .connectionUrl!;
     const publicKey = get(solanaPublicKey)!;
     const { splTokenAccounts } = get(
       customSplTokenAccounts({ connectionUrl, publicKey })
