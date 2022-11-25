@@ -12,7 +12,7 @@
   "scripts": {
     "build": "./scripts/config.sh && tsc && tsc-alias && tsc -p tsconfig.rn.json",
     "dev": "tsc --watch",
-    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
     "lint:fix": "yarn run lint --fix",
     "start": "yarn build"
   },

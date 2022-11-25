@@ -14,6 +14,7 @@ export * from "./explorer";
 export * from "./plugin";
 export * from "./feature-gates";
 export * from "./messages";
+export * from "./notifications";
 
 // Generated pre-build step.
 export * from "./generated-config";
