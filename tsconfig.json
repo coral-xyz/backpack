@@ -19,5 +19,21 @@
     "strictNullChecks": true,
     "target": "es2019"
   },
-  "exclude": ["**/*.js", "**/dist/**/*"]
+  "files": [],
+  "exclude": ["**/node_modules", "**/.*/", "**/*.js", "**/dist/**/*"],
+  "references": [
+    { "path": "./packages/app-extension" },
+    { "path": "./packages/app-mobile" },
+    { "path": "./packages/background" },
+    { "path": "./packages/common" },
+    { "path": "./packages/common-public" },
+    { "path": "./packages/provider-injection" },
+    { "path": "./packages/provider-core" },
+    { "path": "./packages/ledger-injection" },
+    { "path": "./packages/react-xnft" },
+    { "path": "./packages/react-xnft-dom-renderer" },
+    { "path": "./packages/recoil" },
+    { "path": "./packages/themes" },
+    { "path": "./packages/wallet-standard" }
+  ]
 }

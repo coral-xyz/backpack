@@ -32,7 +32,7 @@
     "@types/serviceworker": "^0.0.47",
     "eslint-config-custom": "*",
     "parcel": "^2.7.0",
-    "typescript": "^4.6.3"
+    "typescript": "^4.8.4"
   },
   "targets": {
     "module": false,

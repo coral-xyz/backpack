@@ -1,7 +1,12 @@
 {
   "extends": "../../tsconfig.json",
+  "files": ["src/index.ts"],
+  "include": ["src"],
+  "exclude": ["**/node_modules", "**/.*/"],
   "compilerOptions": {
+    "composite": true,
     "outDir": "dist/rn/",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "baseUrl": "src"
   }
 }

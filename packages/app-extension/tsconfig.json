@@ -15,7 +15,24 @@
     "isolatedModules": true,
     "noEmit": true,
     "downlevelIteration": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "composite": true,
+    "paths": {
+      "@coral-xyz/background": ["../background"],
+      "@coral-xyz/common": ["../common"],
+      "@coral-xyz/react-xnft-dom-renderer": ["../react-xnft-dom-renderer"],
+      "@coral-xyz/recoil": ["../recoil"],
+      "@coral-xyz/themes": ["../themes"]
+    }
   },
-  "include": ["src"]
+  "references": [
+    { "path": "../background" },
+    { "path": "../common" },
+    { "path": "../react-xnft-dom-renderer" },
+    { "path": "../recoil" },
+    { "path": "../themes" }
+  ],
+  "files": ["src/index.tsx"],
+  "include": ["src"],
+  "exclude": ["**/node_modules", "**/.*/"]
 }
