@@ -11,7 +11,7 @@ import {
 } from "./ethereum/token";
 import { ethereumTokenMetadata } from "./ethereum/token-metadata";
 import { TokenData, TokenNativeData } from "../types";
-import { enabledBlockchains } from "./blockchain";
+import { enabledBlockchains } from "./preferences";
 
 /**
  * Return token balances sorted by usd notional balances.

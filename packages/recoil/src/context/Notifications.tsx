@@ -33,7 +33,11 @@ import {
   NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
   NOTIFICATION_ETHEREUM_FEE_DATA_DID_UPDATE,
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
+  NOTIFICATION_KEYRING_STORE_USERNAME_ACCOUNT_CREATED,
+  NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED,
 } from "@coral-xyz/common";
+import type { Blockchain } from "@coral-xyz/common";
+import type { Commitment } from "@solana/web3.js";
 import {
   KeyringStoreStateEnum,
   useUpdateEthereumBalances,
@@ -51,27 +55,130 @@ const logger = getLogger("notifications-provider");
 // a unidirectional data flow: app -> background script -> notifications.
 //
 export function NotificationsProvider(props: any) {
-  const setWalletPublicKeys = useSetRecoilState(atoms.walletPublicKeys);
+  const setWalletData = useSetRecoilState(atoms.walletPublicKeyData);
+  const setWalletPublicKeys = (publicKeys) => {
+    setWalletData((current) => {
+      return {
+        ...current,
+        publicKeys,
+      };
+    });
+  };
+  const setActiveWallets = (activePublicKeys) => {
+    setWalletData((current) => {
+      return {
+        ...current,
+        activePublicKeys,
+      };
+    });
+  };
   const setKeyringStoreState = useSetRecoilState(atoms.keyringStoreState);
-  const setActiveWallets = useSetRecoilState(atoms.activeWallets);
-  const setApprovedOrigins = useSetRecoilState(atoms.approvedOrigins);
-  const setAutoLockSecs = useSetRecoilState(atoms.autoLockSecs);
+  const setActiveUser = useSetRecoilState(atoms.user);
+  // Preferences.
+  const setPreferences = useSetRecoilState(atoms.preferences);
+  const setAutoLockSecs = (autoLockSecs: number) => {
+    setPreferences((current) => {
+      return {
+        ...current,
+        autoLockSecs,
+      };
+    });
+  };
+  const setIsDarkMode = (darkMode: boolean) => {
+    setPreferences((current) => {
+      return {
+        ...current,
+        darkMode,
+      };
+    });
+  };
+  const setIsDeveloperMode = (developerMode: boolean) => {
+    setPreferences((current) => {
+      return {
+        ...current,
+        developerMode,
+      };
+    });
+  };
+  const setEnabledBlockchains = (enabledBlockchains: Blockchain) => {
+    setPreferences((current) => {
+      return {
+        ...current,
+        enabledBlockchains,
+      };
+    });
+  };
+  const setApprovedOrigins = (approvedOrigins: Array<string>) => {
+    setPreferences((current) => {
+      return {
+        ...current,
+        approvedOrigins,
+      };
+    });
+  };
   const setXnftPreferences = useSetRecoilState(atoms.xnftPreferences);
-  const setIsDarkMode = useSetRecoilState(atoms.isDarkMode);
-  const setIsDeveloperMode = useSetRecoilState(atoms.isDeveloperMode);
-  const setEnabledBlockchains = useSetRecoilState(atoms.enabledBlockchains);
   // Solana
-  const setSolanaConnectionUrl = useSetRecoilState(atoms.solanaConnectionUrl);
-  const setSolanaExplorer = useSetRecoilState(atoms.solanaExplorer);
-  const setSolanaCommitment = useSetRecoilState(atoms.solanaCommitment);
-  const updateAllSplTokenAccounts = useUpdateAllSplTokenAccounts();
+  const setSolanaConnectionUrl = (cluster) => {
+    setPreferences((current) => {
+      return {
+        ...current,
+        solana: {
+          ...current.solana,
+          cluster,
+        },
+      };
+    });
+  };
+  const setSolanaExplorer = (explorer: string) => {
+    setPreferences((current) => {
+      return {
+        ...current,
+        solana: {
+          ...current.solana,
+          explorer,
+        },
+      };
+    });
+  };
+  const setSolanaCommitment = (commitment: Commitment) => {
+    setPreferences((current) => {
+      return {
+        ...current,
+        solana: {
+          ...current.solana,
+          commitment,
+        },
+      };
+    });
+  };
   // Ethereum
-  const setEthereumConnectionUrl = useSetRecoilState(
-    atoms.ethereumConnectionUrl
-  );
-  const setEthereumChainId = useSetRecoilState(atoms.ethereumChainId);
+  const setEthereumConnectionUrl = (connectionUrl: string) => {
+    setPreferences((current) => {
+      return {
+        ...current,
+        ethereum: {
+          ...current.ethereum,
+          connectionUrl,
+        },
+      };
+    });
+  };
+  const setEthereumChainId = (chainId: string) => {
+    setPreferences((current) => {
+      return {
+        ...current,
+        ethereum: {
+          ...current.ethereum,
+          chainId,
+        },
+      };
+    });
+  };
   const setEthereumFeeData = useSetRecoilState(atoms.ethereumFeeData);
+  // Balance update.
+  const updateAllSplTokenAccounts = useUpdateAllSplTokenAccounts();
   const updateEthereumBalances = useUpdateEthereumBalances();
+  // URL navigation.
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -164,6 +271,12 @@ export function NotificationsProvider(props: any) {
         case NOTIFICATION_BLOCKCHAIN_DISABLED:
           handleBlockchainDisabled(notif);
           break;
+        case NOTIFICATION_KEYRING_STORE_USERNAME_ACCOUNT_CREATED:
+          handleUsernameAccountCreated(notif);
+          break;
+        case NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED:
+          handleActiveUserUpdated(notif);
+          break;
         default:
           break;
       }
@@ -172,7 +285,8 @@ export function NotificationsProvider(props: any) {
     //
     // Notification handlers.
     //
-    const handleKeyringStoreCreated = (_notif: Notification) => {
+    const handleKeyringStoreCreated = (notif: Notification) => {
+      setPreferences(notif.data.preferences);
       setKeyringStoreState(KeyringStoreStateEnum.Unlocked);
     };
 
@@ -187,26 +301,31 @@ export function NotificationsProvider(props: any) {
     const handleKeyringKeyDelete = (notif: Notification) => {
       const { blockchain, deletedPublicKey } = notif.data;
       // Remove the deleted key from the key list.
-      setWalletPublicKeys((current) => {
+      setWalletData((current) => {
+        const publicKeys = current.publicKeys;
+        publicKeys[blockchain] = {
+          hdPublicKeys: [
+            ...publicKeys[blockchain].hdPublicKeys.filter(
+              (key) => key.publicKey !== deletedPublicKey
+            ),
+          ],
+          importedPublicKeys: [
+            ...publicKeys[blockchain].importedPublicKeys.filter(
+              (key) => key.publicKey !== deletedPublicKey
+            ),
+          ],
+          ledgerPublicKeys: [
+            ...publicKeys[blockchain].ledgerPublicKeys.filter(
+              (key) => key.publicKey !== deletedPublicKey
+            ),
+          ],
+        };
+        const activePublicKeys = current.activePublicKeys.filter(
+          (key) => key !== deletedPublicKey
+        );
         return {
-          ...current,
-          [blockchain]: {
-            hdPublicKeys: [
-              ...current[blockchain].hdPublicKeys.filter(
-                (key) => key.publicKey !== deletedPublicKey
-              ),
-            ],
-            importedPublicKeys: [
-              ...current[blockchain].importedPublicKeys.filter(
-                (key) => key.publicKey !== deletedPublicKey
-              ),
-            ],
-            ledgerPublicKeys: [
-              ...current[blockchain].ledgerPublicKeys.filter(
-                (key) => key.publicKey !== deletedPublicKey
-              ),
-            ],
-          },
+          activePublicKeys,
+          publicKeys,
         };
       });
     };
@@ -230,12 +349,16 @@ export function NotificationsProvider(props: any) {
 
     const handleKeyringDerivedWallet = (notif: Notification) => {
       const { blockchain, publicKey, name } = notif.data;
-      setWalletPublicKeys((current: any) => {
+      setWalletData((current: any) => {
+        const publicKeys = current.publicKeys;
+
         // Deriving a new wallet can result in the initialisation of this
         // keyring so no guarantee the keyrings exist
-        const blockchainKeyrings = {
+        publicKeys[blockchain] = {
           hdPublicKeys: [
-            ...(current[blockchain] ? current[blockchain].hdPublicKeys : []),
+            ...(publicKeys[blockchain]
+              ? publicKeys[blockchain].hdPublicKeys
+              : []),
             // Add newly derived key
             {
               publicKey,
@@ -243,37 +366,41 @@ export function NotificationsProvider(props: any) {
             },
           ],
           importedPublicKeys: [
-            ...(current[blockchain]
-              ? current[blockchain].importedPublicKeys
+            ...(publicKeys[blockchain]
+              ? publicKeys[blockchain].importedPublicKeys
               : []),
           ],
           ledgerPublicKeys: [
-            ...(current[blockchain]
-              ? current[blockchain].ledgerPublicKeys
+            ...(publicKeys[blockchain]
+              ? publicKeys[blockchain].ledgerPublicKeys
               : []),
           ],
         };
-
+        const activePublicKeys = current.activePublicKeys.concat([publicKey]);
         return {
-          ...current,
-          [blockchain]: blockchainKeyrings,
+          activePublicKeys,
+          publicKeys,
         };
       });
     };
 
     const handleKeyringImportedSecretKey = (notif: Notification) => {
       const { blockchain, publicKey, name } = notif.data;
-      setWalletPublicKeys((current: any) => {
+      setWalletData((current: any) => {
+        const publicKeys = current.publicKeys;
+
         // Although not possible to initialise a new keyring by importing
         // a secret key, it may be possible in the future so this is handled
         // the same way as deriving
-        const blockchainKeyrings = {
+        publicKeys[blockchain] = {
           hdPublicKeys: [
-            ...(current[blockchain] ? current[blockchain].hdPublicKeys : []),
+            ...(publicKeys[blockchain]
+              ? publicKeys[blockchain].hdPublicKeys
+              : []),
           ],
           importedPublicKeys: [
-            ...(current[blockchain]
-              ? current[blockchain].importedPublicKeys
+            ...(publicKeys[blockchain]
+              ? publicKeys[blockchain].importedPublicKeys
               : []),
             // Add newly imported key
             {
@@ -282,14 +409,15 @@ export function NotificationsProvider(props: any) {
             },
           ],
           ledgerPublicKeys: [
-            ...(current[blockchain]
-              ? current[blockchain].ledgerPublicKeys
+            ...(publicKeys[blockchain]
+              ? publicKeys[blockchain].ledgerPublicKeys
               : []),
           ],
         };
+        const activePublicKeys = current.activePublicKeys.concat([publicKey]);
         return {
-          ...current,
-          [blockchain]: blockchainKeyrings,
+          activePublicKeys,
+          publicKeys,
         };
       });
     };
@@ -396,10 +524,28 @@ export function NotificationsProvider(props: any) {
 
     const handleBlockchainEnabled = (notif: Notification) => {
       setEnabledBlockchains(notif.data.enabledBlockchains);
+      setWalletData(notif.data.publicKeyData);
     };
 
     const handleBlockchainDisabled = (notif: Notification) => {
       setEnabledBlockchains(notif.data.enabledBlockchains);
+      setWalletData(notif.data.publicKeyData);
+    };
+
+    const handleUsernameAccountCreated = (notif: Notification) => {
+      // Order of each setter matters here.
+      setPreferences(notif.data.preferences);
+      setXnftPreferences(notif.data.xnftPreferences);
+      setWalletData(notif.data.walletData);
+      setActiveUser(notif.data.user);
+    };
+
+    const handleActiveUserUpdated = (notif: Notification) => {
+      // Order of each setter matters here.
+      setPreferences(notif.data.preferences);
+      setXnftPreferences(notif.data.xnftPreferences);
+      setWalletData(notif.data.walletData);
+      setActiveUser(notif.data.user);
     };
 
     //

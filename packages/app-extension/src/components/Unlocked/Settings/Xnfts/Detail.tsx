@@ -37,7 +37,7 @@ import { CheckIcon } from "../../../common/Icon";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { Error } from "../../Balances/TokensWidget/Send";
 import { ProxyImage } from "../../../common/ProxyImage";
-import { useUsername } from "@coral-xyz/recoil";
+import { useUser } from "@coral-xyz/recoil";
 const logger = getLogger("xnft-detail");
 
 export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
@@ -48,7 +48,7 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
   });
   const nav = useNavStack();
   const background = useBackgroundClient();
-  const username = useUsername();
+  const { username } = useUser();
 
   const isDisabled = xnft.install.publicKey === PublicKey.default.toString();
 

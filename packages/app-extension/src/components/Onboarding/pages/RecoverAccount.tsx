@@ -23,9 +23,11 @@ import { useSteps } from "../../../hooks/useSteps";
 export const RecoverAccount = ({
   onClose,
   navProps,
+  isAddingAccount,
 }: {
   onClose: () => void;
   navProps: any;
+  isAddingAccount?: boolean;
 }) => {
   const { step, nextStep, prevStep } = useSteps();
   const [username, setUsername] = useState<string | null>(null);
@@ -160,12 +162,16 @@ export const RecoverAccount = ({
             onRetry={prevStep}
           />,
         ]),
-    <CreatePassword
-      onNext={(password) => {
-        setPassword(password);
-        nextStep();
-      }}
-    />,
+    ...(!isAddingAccount
+      ? [
+          <CreatePassword
+            onNext={(password) => {
+              setPassword(password);
+              nextStep();
+            }}
+          />,
+        ]
+      : []),
     <Finish
       inviteCode={undefined}
       username={username}

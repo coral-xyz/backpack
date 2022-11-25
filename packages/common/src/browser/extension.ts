@@ -9,6 +9,7 @@ import {
   QUERY_APPROVE_ALL_TRANSACTIONS,
   QUERY_CONNECT_HARDWARE,
   QUERY_ONBOARDING,
+  QUERY_ADD_USER_ACCOUNT,
 } from "../constants";
 import type { Blockchain } from "../types";
 
@@ -225,6 +226,13 @@ export async function openPopupWindow(
 
 export function openOnboarding() {
   const url = `${EXPANDED_HTML}?${QUERY_ONBOARDING}`;
+  BrowserRuntimeExtension.openTab({
+    url: chrome.runtime.getURL(url),
+  });
+}
+
+export function openAddUserAccount() {
+  const url = `${EXPANDED_HTML}?${QUERY_ADD_USER_ACCOUNT}`;
   BrowserRuntimeExtension.openTab({
     url: chrome.runtime.getURL(url),
   });

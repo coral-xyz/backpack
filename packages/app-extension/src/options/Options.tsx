@@ -3,6 +3,7 @@ import {
   Blockchain,
   QUERY_CONNECT_HARDWARE,
   QUERY_ONBOARDING,
+  QUERY_ADD_USER_ACCOUNT,
 } from "@coral-xyz/common";
 import {
   useBackgroundKeepAlive,
@@ -67,6 +68,8 @@ function Router() {
       );
     case QUERY_ONBOARDING:
       return <Onboarding />;
+    case QUERY_ADD_USER_ACCOUNT:
+      return <Onboarding isAddingAccount={true} />;
     default:
       throw new Error("invalid query param");
   }

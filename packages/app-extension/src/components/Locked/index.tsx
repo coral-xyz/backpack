@@ -3,7 +3,7 @@ import { Box, Typography, InputAdornment, IconButton } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
-import { useBackgroundClient, useUsername } from "@coral-xyz/recoil";
+import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { TextField, PrimaryButton } from "../common";
 import { RedBackpack, Backpack } from "../common/Icon";
 import { LockedMenu } from "./LockedMenu";
@@ -14,7 +14,7 @@ export const NAV_BAR_HEIGHT = 56;
 export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
   const theme = useCustomTheme();
   const background = useBackgroundClient();
-  const username = useUsername();
+  const user = useUser();
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [password, setPassword] = useState("");
@@ -26,7 +26,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
     try {
       await background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-        params: [password, username],
+        params: [password, user.uuid, user.username],
       });
 
       if (onUnlock) {

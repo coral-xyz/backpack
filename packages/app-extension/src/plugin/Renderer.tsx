@@ -3,7 +3,7 @@ import { Loading } from "../components/common";
 import {
   useAvatarUrl,
   useDarkMode,
-  useUsername,
+  useUser,
   useXnftPreference,
 } from "@coral-xyz/recoil";
 import { XnftPreference } from "@coral-xyz/common";
@@ -17,7 +17,7 @@ export function PluginRenderer({
 }) {
   const ref = useRef<any>();
   const [loaded, setLoaded] = useState(false);
-  const username = useUsername();
+  const { username } = useUser();
   const isDarkMode = useDarkMode();
   const avatarUrl = useAvatarUrl(100);
 

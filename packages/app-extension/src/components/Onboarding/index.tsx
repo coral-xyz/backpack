@@ -23,7 +23,11 @@ import WaitingRoom from "../common/WaitingRoom";
 import { OnboardAccount } from "./pages/OnboardAccount";
 import { RecoverAccount } from "./pages/RecoverAccount";
 
-export const Onboarding = () => {
+export const Onboarding = ({
+  isAddingAccount,
+}: {
+  isAddingAccount?: boolean;
+}) => {
   const containerRef = useRef();
   const [menuOpen, setMenuOpen] = useState(false);
   const [action, setAction] = useState<"onboard" | "recover" | "waiting">(
@@ -58,6 +62,7 @@ export const Onboarding = () => {
         <OnboardAccount
           onRecover={() => setAction("recover")}
           onWaiting={() => setAction("waiting")}
+          isAddingAccount={isAddingAccount}
           {...defaultProps}
         />
       )}
@@ -65,6 +70,7 @@ export const Onboarding = () => {
       {action === "recover" && (
         <RecoverAccount
           onClose={() => setAction("onboard")}
+          isAddingAccount={isAddingAccount}
           {...defaultProps}
         />
       )}

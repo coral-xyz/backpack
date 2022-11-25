@@ -3,9 +3,12 @@ import {
   BrowserRuntimeExtension,
   KeyringInit,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
+  UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
+  BACKPACK_FEATURE_USERNAMES,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import { Loading } from "../../common";
 import { SetupComplete } from "../../common/Account/SetupComplete";
 import { getWaitlistId } from "../../common/WaitingRoom";
@@ -15,11 +18,13 @@ export const Finish = ({
   password,
   keyringInit,
   inviteCode,
+  isAddingAccount,
 }: {
   username: string | null;
   password: string;
   keyringInit: KeyringInit;
   inviteCode?: string;
+  isAddingAccount?: boolean;
 }) => {
   const [isValid, setIsValid] = useState(false);
   const background = useBackgroundClient();
@@ -69,10 +74,26 @@ export const Finish = ({
   //
   async function createStore() {
     try {
-      await background.request({
-        method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
-        params: [username, password, keyringInit],
-      });
+      // TODO: this needs to be returned by the worker when it's created.
+      let uuid = "";
+      //
+      // If usernames are disabled, use a default one for developing.
+      //
+      if (!BACKPACK_FEATURE_USERNAMES) {
+        username = uuidv4().split("-")[0];
+        uuid = uuidv4();
+      }
+      if (isAddingAccount) {
+        await background.request({
+          method: UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
+          params: [username, keyringInit, uuid],
+        });
+      } else {
+        await background.request({
+          method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
+          params: [username, password, keyringInit, uuid],
+        });
+      }
       setIsValid(true);
     } catch (err) {
       console.log("account setup error", err);
