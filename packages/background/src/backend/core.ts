@@ -222,14 +222,11 @@ export class Backend {
     const newSettings = { ...prevSettings, ...updatedSettings };
 
     // TODO remove eventually
-    if ("cluster" in prevSettings) {
-      const OLD_DEFAULT = "https://solana-rpc-nodes.projectserum.com";
-      // Migrate the old cluster if it was the previous default and move
-      // from cluster to connectionUrl
-      newSettings.connectionUrl =
-        prevSettings.cluster === OLD_DEFAULT
-          ? SolanaCluster.DEFAULT
-          : prevSettings.cluster;
+    const OLD_DEFAULT = "https://solana-rpc-nodes.projectserum.com";
+    // Migrate the old cluster if it was the previous default and move
+    // from cluster to connectionUrl
+    if (prevSettings.connectionUrl === OLD_DEFAULT) {
+      newSettings.connectionUrl = SolanaCluster.DEFAULT;
     }
 
     await setWalletData({

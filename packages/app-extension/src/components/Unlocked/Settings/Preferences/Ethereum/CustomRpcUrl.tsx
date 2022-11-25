@@ -1,28 +1,14 @@
 import { useEffect, useState } from "react";
-import { TextField, Typography } from "@mui/material";
 import { useBackgroundClient } from "@coral-xyz/recoil";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { List, ListItem, PrimaryButton } from "../../../../common";
+
+import { PrimaryButton } from "../../../../common";
+import { InputListItem, Inputs } from "../../../../common/Inputs";
 import { useDrawerContext } from "../../../../common/Layout/Drawer";
 import { useNavStack } from "../../../../common/Layout/NavStack";
-import { changeNetwork } from "./common";
-import { Inputs, InputListItem } from "../../../../common/Inputs";
 
-const useStyles = styles((theme) => ({
-  textFieldRoot: {
-    color: theme.custom.colors.secondary,
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        border: "none",
-        color: theme.custom.colors.secondary,
-      },
-    },
-  },
-}));
+import { changeNetwork } from "./common";
 
 export function PreferenceEthereumCustomRpcUrl() {
-  const classes = useStyles();
-  const theme = useCustomTheme();
   const { close } = useDrawerContext();
   const nav = useNavStack();
   const background = useBackgroundClient();

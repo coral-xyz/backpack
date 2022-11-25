@@ -1,29 +1,24 @@
+import type { ChannelAppUiClient } from "@coral-xyz/common";
 import {
-  ChannelAppUiClient,
-  UI_RPC_METHOD_ETHEREUM_CHAIN_ID_UPDATE,
-  UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE,
+  Blockchain,
+  UI_RPC_METHOD_BLOCKCHAIN_SETTINGS_UPDATE,
 } from "@coral-xyz/common";
 import { ethers } from "ethers";
 const { hexlify } = ethers.utils;
 
 export const changeNetwork = async (
   background: ChannelAppUiClient,
-  url: string,
+  connectionUrl: string,
   chainId?: string
 ) => {
-  await background.request({
-    method: UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE,
-    params: [url],
-  });
-
   if (!chainId) {
-    const provider = ethers.getDefaultProvider(url);
+    const provider = ethers.getDefaultProvider(connectionUrl);
     const network = await provider.getNetwork();
     chainId = hexlify(network.chainId);
   }
 
   await background.request({
-    method: UI_RPC_METHOD_ETHEREUM_CHAIN_ID_UPDATE,
-    params: [chainId],
+    method: UI_RPC_METHOD_BLOCKCHAIN_SETTINGS_UPDATE,
+    params: [Blockchain.ETHEREUM, { connectionUrl, chainId }],
   });
 };

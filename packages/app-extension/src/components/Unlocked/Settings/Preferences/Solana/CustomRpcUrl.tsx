@@ -1,51 +1,29 @@
 import { useEffect, useState } from "react";
-import { TextField, Typography } from "@mui/material";
+import {
+  Blockchain,
+  UI_RPC_METHOD_BLOCKCHAIN_SETTINGS_UPDATE,
+} from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE } from "@coral-xyz/common";
-import { List, ListItem, PrimaryButton } from "../../../../common";
+
+import { PrimaryButton } from "../../../../common";
+import { InputListItem, Inputs } from "../../../../common/Inputs";
 import { useDrawerContext } from "../../../../common/Layout/Drawer";
 import { useNavStack } from "../../../../common/Layout/NavStack";
-import { Inputs, InputListItem } from "../../../../common/Inputs";
-
-const useStyles = styles((theme) => ({
-  textFieldRoot: {
-    color: theme.custom.colors.secondary,
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        border: "none",
-        color: theme.custom.colors.secondary,
-      },
-    },
-  },
-  listParent: {
-    border: `2px solid black`,
-    "&:hover": {
-      border: `2px solid red !important`,
-    },
-    "&:focussed": {
-      border: `2px solid yellow !important`,
-    },
-    borderRadius: "10px",
-  },
-}));
 
 export function PreferenceSolanaCustomRpcUrl() {
-  const classes = useStyles();
-  const theme = useCustomTheme();
   const { close } = useDrawerContext();
   const nav = useNavStack();
   const background = useBackgroundClient();
-  const [rpcUrl, setRpcUrl] = useState("");
+  const [connectionUrl, setConnectionUrl] = useState("");
 
-  const [rpcUrlError, setRpcUrlError] = useState(false);
+  const [connectionUrlError, setConnectionUrlError] = useState(false);
 
   const changeNetwork = () => {
     try {
       background
         .request({
-          method: UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
-          params: [rpcUrl],
+          method: UI_RPC_METHOD_BLOCKCHAIN_SETTINGS_UPDATE,
+          params: [Blockchain.SOLANA, { connectionUrl }],
         })
         .then(close)
         .catch(console.error);
@@ -63,17 +41,17 @@ export function PreferenceSolanaCustomRpcUrl() {
   }, []);
 
   useEffect(() => {
-    if (!rpcUrl) {
-      setRpcUrlError(false);
+    if (!connectionUrl) {
+      setConnectionUrlError(false);
       return;
     }
     try {
-      new URL(rpcUrl.trim());
-      setRpcUrlError(false);
+      new URL(connectionUrl.trim());
+      setConnectionUrlError(false);
     } catch (e: any) {
-      setRpcUrlError(true);
+      setConnectionUrlError(true);
     }
-  }, [rpcUrl]);
+  }, [connectionUrl]);
 
   return (
     <div style={{ paddingTop: "16px", height: "100%" }}>
@@ -82,23 +60,23 @@ export function PreferenceSolanaCustomRpcUrl() {
         style={{ display: "flex", height: "100%", flexDirection: "column" }}
       >
         <div style={{ flex: 1, flexGrow: 1 }}>
-          <Inputs error={rpcUrlError}>
+          <Inputs error={connectionUrlError}>
             <InputListItem
               isFirst={true}
               isLast={true}
               button={false}
               title={"RPC"}
               placeholder={"RPC URL"}
-              value={rpcUrl}
+              value={connectionUrl}
               onChange={(e) => {
-                setRpcUrl(e.target.value);
+                setConnectionUrl(e.target.value);
               }}
             />
           </Inputs>
         </div>
         <div style={{ padding: 16 }}>
           <PrimaryButton
-            disabled={!rpcUrl || rpcUrlError}
+            disabled={!connectionUrl || connectionUrlError}
             label="Switch"
             type="submit"
           />

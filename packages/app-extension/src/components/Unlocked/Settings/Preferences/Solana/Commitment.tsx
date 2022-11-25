@@ -1,14 +1,19 @@
 import { useEffect } from "react";
-import { Commitment } from "@solana/web3.js";
-import { UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE } from "@coral-xyz/common";
-import { useBackgroundClient, useSolanaCommitment } from "@coral-xyz/recoil";
+import {
+  Blockchain,
+  UI_RPC_METHOD_BLOCKCHAIN_SETTINGS_UPDATE,
+} from "@coral-xyz/common";
+import { useBackgroundClient, useBlockchainSettings } from "@coral-xyz/recoil";
+import type { Commitment } from "@solana/web3.js";
+
 import { useNavStack } from "../../../../common/Layout/NavStack";
 import { SettingsList } from "../../../../common/Settings/List";
+
 import { Checkmark } from "./ConnectionSwitch";
 
 export function PreferencesSolanaCommitment() {
   const nav = useNavStack();
-  const commitment = useSolanaCommitment();
+  const { commitment } = useBlockchainSettings(Blockchain.SOLANA);
   const background = useBackgroundClient();
 
   useEffect(() => {
@@ -33,8 +38,8 @@ export function PreferencesSolanaCommitment() {
   const changeCommitment = (commitment: Commitment) => {
     background
       .request({
-        method: UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
-        params: [commitment],
+        method: UI_RPC_METHOD_BLOCKCHAIN_SETTINGS_UPDATE,
+        params: [Blockchain.SOLANA, { commitment }],
       })
       .catch(console.error);
   };

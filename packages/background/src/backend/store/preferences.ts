@@ -24,6 +24,10 @@ export async function getWalletData(): Promise<WalletData> {
   if (data === undefined) {
     throw new Error("wallet data is undefined");
   }
+  if (data.solana && "cluster" in data.solana) {
+    data.solana.connectionUrl = data.solana.cluster;
+    delete data.cluster;
+  }
   return data;
 }
 

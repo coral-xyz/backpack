@@ -1,21 +1,22 @@
 import { useEffect } from "react";
-import { Check } from "@mui/icons-material";
+import { Blockchain, EthereumConnectionUrl } from "@coral-xyz/common";
+import { useBackgroundClient, useBlockchainSettings } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { EthereumConnectionUrl } from "@coral-xyz/common";
-import {
-  useBackgroundClient,
-  useEthereumConnectionUrl,
-} from "@coral-xyz/recoil";
-import { useDrawerContext } from "../../../../common/Layout/Drawer";
-import { SettingsList } from "../../../../common/Settings/List";
-import { useNavStack } from "../../../../common/Layout/NavStack";
+import { Check } from "@mui/icons-material";
+
 import { PushDetail } from "../../../../common";
+import { useDrawerContext } from "../../../../common/Layout/Drawer";
+import { useNavStack } from "../../../../common/Layout/NavStack";
+import { SettingsList } from "../../../../common/Settings/List";
+
 import { changeNetwork } from "./common";
 
 export function PreferencesEthereumConnection() {
   const { close } = useDrawerContext();
   const background = useBackgroundClient();
-  const currentUrl = useEthereumConnectionUrl();
+  const { connectionUrl: currentUrl } = useBlockchainSettings(
+    Blockchain.ETHEREUM
+  );
   const nav = useNavStack();
 
   useEffect(() => {
