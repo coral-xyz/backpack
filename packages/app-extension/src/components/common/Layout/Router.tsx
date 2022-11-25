@@ -70,11 +70,13 @@ function NftsPage() {
 
 function NftsCollectionPage() {
   const { props } = useDecodedSearchParams();
+  // @ts-expect-error TS2322: Property 'id' is missing in type '{}' but required in type '{ id: string; }'
   return <NavScreen component={<NftsCollection {...props} />} />;
 }
 
 function NftsDetailPage() {
   const { props } = useDecodedSearchParams();
+  // @ts-expect-error TS2322: Property 'nftId' is missing in type '{}' but required in type '{ nftId: string; }'.
   return <NavScreen component={<NftsDetail {...props} />} />;
 }
 
