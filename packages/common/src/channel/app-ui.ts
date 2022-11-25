@@ -35,8 +35,11 @@ export class ChannelAppUiServer {
 
   public handler(handlerFn: (req: RpcRequest) => Promise<RpcResponse>) {
     BrowserRuntimeCommon.addEventListenerFromBackground(
-      (msg: any, _sender: any, sendResponse: any) => {
+      (msg: any, sender: any, sendResponse: any) => {
         if (msg.channel !== this.name) {
+          return;
+        }
+        if (sender.id !== chrome.runtime.id) {
           return;
         }
         const id = msg.data.id;
