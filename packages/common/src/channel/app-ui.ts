@@ -62,8 +62,11 @@ export class ChannelAppUiNotifications {
 
   public onNotification(handlerFn: (notif: Notification) => void) {
     BrowserRuntimeCommon.addEventListenerFromAppUi(
-      (msg: any, _sender: any, sendResponse: any) => {
+      (msg: any, sender: any, sendResponse: any) => {
         if (msg.channel !== this.name) {
+          return;
+        }
+        if (sender.id !== chrome.runtime.id) {
           return;
         }
         handlerFn(msg.data);
