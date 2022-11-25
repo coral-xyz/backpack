@@ -160,7 +160,7 @@ const pricesForIds = selector({
       );
     } catch (err) {
       console.error("error querying all Coingecko IDs", err);
-      return;
+      return new Map();
     }
   },
 });
