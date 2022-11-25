@@ -18,8 +18,7 @@
   },
   "dependencies": {
     "@coral-xyz/blockchain-evm": "*",
-    "@coral-xyz/blockchain-solana": "*",
-    "@coral-xyz/common": "*"
+    "@coral-xyz/blockchain-solana": "*"
   },
   "devDependencies": {
     "eslint-config-custom": "*",

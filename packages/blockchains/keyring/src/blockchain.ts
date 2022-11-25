@@ -10,8 +10,7 @@ import type {
   LedgerKeyringFactory,
   LedgerKeyring,
 } from "./types";
-import * as store from "@coral-xyz/background/src/backend/store";
-import { DefaultKeyname } from "@coral-xyz/background/src/backend/store";
+import { DefaultKeyname } from "./util";
 
 const logger = getLogger("background/backend/keyring");
 
@@ -78,7 +77,6 @@ export class BlockchainKeyring {
     for (const index of accountIndices) {
       const name = DefaultKeyname.defaultDerived(index);
       const pubkey = this.hdKeyring.getPublicKey(index);
-      await store.setKeyname(pubkey, name);
       newAccounts.push([pubkey, name]);
     }
     return newAccounts;
@@ -98,7 +96,6 @@ export class BlockchainKeyring {
     const newAccounts: Array<[string, string]> = [];
     for (const account of accounts) {
       const name = DefaultKeyname.defaultLedger(account.account);
-      await store.setKeyname(account.publicKey, name);
       newAccounts.push([account.publicKey, name]);
     }
     return newAccounts;
@@ -122,11 +119,7 @@ export class BlockchainKeyring {
 
   public deriveNextKey(): [string, string, number] {
     const [pubkey, accountIndex] = this.hdKeyring!.deriveNext();
-
-    // Save a default name.
     const name = DefaultKeyname.defaultDerived(accountIndex);
-    store.setKeyname(pubkey, name);
-
     return [pubkey, name, accountIndex];
   }
 
@@ -140,7 +133,6 @@ export class BlockchainKeyring {
         this.importedKeyring!.publicKeys().length
       );
     }
-    await store.setKeyname(pubkey, name);
     return [pubkey, name];
   }
 

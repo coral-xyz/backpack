@@ -11,7 +11,11 @@ import {
   SolanaKeyringFactory,
   SolanaLedgerKeyringFactory,
 } from "@coral-xyz/blockchain-solana";
-import { Blockchain } from "@coral-xyz/common";
+
+enum Blockchain {
+  SOLANA = "solana",
+  ETHEREUM = "ethereum",
+}
 
 export function hdFactoryForBlockchain(blockchain: Blockchain) {
   return {
@@ -38,3 +42,5 @@ export function keyringForBlockchain(
 }
 
 export type BlockchainSettings = EvmSettings | SolanaSettings;
+
+export { BlockchainKeyring } from "@coral-xyz/blockchain-keyring";

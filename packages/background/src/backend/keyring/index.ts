@@ -18,8 +18,8 @@ import {
 import {
   hdFactoryForBlockchain,
   keyringForBlockchain,
+  BlockchainKeyring,
 } from "@coral-xyz/blockchain-common";
-import { BlockchainKeyring } from "@coral-xyz/blockchain-keyring";
 import * as crypto from "./crypto";
 import * as store from "../store";
 import {
@@ -114,18 +114,21 @@ export class KeyringStore {
     persist = true
   ): Promise<void> {
     const keyring = keyringForBlockchain(blockchain);
+    let newAccounts: Array<[string, string]>;
     if (this.mnemonic) {
       // Initialising using a mnemonic
-      await keyring.initFromMnemonic(this.mnemonic, derivationPath, [
-        accountIndex,
-      ]);
+      newAccounts = await keyring.initFromMnemonic(
+        this.mnemonic,
+        derivationPath,
+        [accountIndex]
+      );
     } else {
       if (!publicKey)
         throw new Error(
           "initialising keyring with hardware wallet requires publickey"
         );
       // Initialising using a hardware wallet
-      await keyring.initFromLedger([
+      newAccounts = await keyring.initFromLedger([
         {
           path: derivationPath,
           account: accountIndex,
@@ -134,6 +137,12 @@ export class KeyringStore {
       ]);
     }
     this.blockchains.set(blockchain, keyring);
+    // Set the publickey <-> name associations in the store
+    await Promise.all(
+      newAccounts.map(
+        async ([publicKey, name]) => await store.setKeyname(publicKey, name)
+      )
+    );
     if (persist) {
       await this.persist();
     }
@@ -227,15 +236,15 @@ export class KeyringStore {
         throw new Error("blockchain keyring not initialised");
       } else {
         // Derive the next key.
-        const [pubkey, name] = blockchainKeyring.deriveNextKey();
+        const [publicKey, name] = blockchainKeyring.deriveNextKey();
         this.persist();
-        return [pubkey, name];
+        await store.setKeyname(publicKey, name);
+        return [publicKey, name];
       }
     });
   }
 
   // Import a secret key for the given blockchain.
-  // TODO handle initialisation, allow init blockchain without mnemonic?
   public async importSecretKey(
     blockchain: Blockchain,
     secretKey: string,
@@ -245,6 +254,7 @@ export class KeyringStore {
       const keyring = this.keyringForBlockchain(blockchain);
       const [publicKey, _name] = await keyring.importSecretKey(secretKey, name);
       this.persist();
+      await store.setKeyname(publicKey, _name);
       return [publicKey, _name];
     });
   }
