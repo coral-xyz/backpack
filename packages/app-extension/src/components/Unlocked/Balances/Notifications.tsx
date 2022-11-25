@@ -1,24 +1,17 @@
 import { Suspense, useEffect, useState } from "react";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 import { Typography, List, ListItem, IconButton } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { CallMade, Check, Clear, Bolt } from "@mui/icons-material";
-import { Blockchain, BACKEND_API_URL } from "@coral-xyz/common";
+import { EnrichedNotification } from "@coral-xyz/common";
 import { Loading } from "../../common";
 import { WithDrawer, CloseButton } from "../../common/Layout/Drawer";
-import { useUsername } from "@coral-xyz/recoil";
+import { useRecentNotifications } from "@coral-xyz/recoil";
 import {
   NavStackEphemeral,
   NavStackScreen,
 } from "../../common/Layout/NavStack";
 import { isFirstLastListItemStyle } from "../../common/List";
 import { EmptyState } from "../../common/EmptyState";
-
-interface NotificationType {
-  title: string;
-  body: string;
-  xnftId: string;
-  timestamp: number;
-}
 
 const useStyles = styles((theme) => ({
   recentActivityLabel: {
@@ -39,19 +32,12 @@ const useStyles = styles((theme) => ({
     textAlign: "center",
     color: theme.custom.colors.secondary,
   },
-  recentActivityListItemIconContainer: {
+  recentActivityListItemIcon: {
     width: "44px",
     height: "44px",
     borderRadius: "22px",
     marginRight: "12px",
-    display: "flex",
-    justifyContent: "center",
-    flexDirection: "column",
-  },
-  recentActivityListItemIcon: {
     color: theme.custom.colors.positive,
-    marginLeft: "auto",
-    marginRight: "auto",
   },
   recentActivityListItemIconNegative: {
     color: theme.custom.colors.negative,
@@ -64,9 +50,15 @@ const useStyles = styles((theme) => ({
     fontWeight: 500,
     lineHeight: "24px",
   },
-  txDate: {
-    color: theme.custom.colors.secondary,
-    fontSize: "12px",
+  txBody: {
+    color: theme.custom.colors.smallTextColor,
+    fontSize: "14px",
+    fontWeight: 500,
+    lineHeight: "24px",
+  },
+  time: {
+    color: theme.custom.colors.smallTextColor,
+    fontSize: "14px",
     fontWeight: 500,
     lineHeight: "24px",
   },
@@ -100,13 +92,13 @@ export function NotificationButton() {
         onClick={() => setOpenDrawer(true)}
         size="large"
       >
-        <Bolt className={classes.networkSettingsIcon} />
+        <NotificationsIcon className={classes.networkSettingsIcon} />
       </IconButton>
       <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
         <div style={{ height: "100%" }}>
           <NavStackEphemeral
             initialRoute={{ name: "root" }}
-            options={(_args) => ({ title: "Xnft Notifications" })}
+            options={(_args) => ({ title: "Notifications" })}
             navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
           >
             <NavStackScreen
@@ -120,53 +112,83 @@ export function NotificationButton() {
   );
 }
 
-const fetchNotifications = (
-  username: string,
-  offset: number,
-  limit: number
-): Promise<NotificationType[]> => {
-  return new Promise((resolve) => {
-    fetch(
-      `${BACKEND_API_URL}/notifications?username=${username}&limit=${limit}&offset=${offset}`,
-      {
-        method: "GET",
-      }
-    )
-      .then(async (response) => {
-        const json = await response.json();
-        resolve(json.notifications || []);
-      })
-      .catch((e) => resolve([]));
-  });
+const formatDate = (date: Date) => {
+  const months = [
+    "Jan",
+    "Feb",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "Aug",
+    "Sept",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const mm = months[date.getMonth()];
+  const dd = date.getDate();
+  const yyyy = date.getFullYear();
+  return `${dd} ${mm} ${yyyy}`;
+};
+
+const getGroupedNotifications = (notifications: EnrichedNotification[]) => {
+  const groupedNotifications: {
+    date: string;
+    notifications: EnrichedNotification[];
+  }[] = [];
+
+  const sortedNotifications = notifications
+    .slice()
+    .sort((a, b) => (a.timestamp < b.timestamp ? 1 : -1));
+  for (let i = 0; i < sortedNotifications.length; i++) {
+    const date = formatDate(new Date(sortedNotifications[i].timestamp));
+    if (
+      groupedNotifications.length === 0 ||
+      groupedNotifications[groupedNotifications.length - 1].date !== date
+    ) {
+      groupedNotifications.push({
+        date,
+        notifications: [sortedNotifications[i]],
+      });
+    } else {
+      groupedNotifications[groupedNotifications.length - 1].notifications.push(
+        sortedNotifications[i]
+      );
+    }
+  }
+  return groupedNotifications;
 };
 
 export function Notifications() {
-  const [notifications, setNotifications] = useState<NotificationType[]>([]);
-  const username = useUsername();
-  const getNotifications = async () => {
-    const notifications = await fetchNotifications(username || "", 0, 20);
-    setNotifications(notifications);
-  };
-
-  useEffect(() => {
-    getNotifications();
-  }, [username]);
-
+  const notifications: EnrichedNotification[] = useRecentNotifications({
+    limit: 50,
+    offset: 0,
+  });
+  const groupedNotifications: {
+    date: string;
+    notifications: EnrichedNotification[];
+  }[] = getGroupedNotifications(notifications);
+  console.error(groupedNotifications);
   return (
     <Suspense fallback={<NotificationsLoader />}>
-      <NotificationList notifications={notifications} />
+      <NotificationList groupedNotifications={groupedNotifications} />
     </Suspense>
   );
 }
 
 export function RecentActivityList({
-  notifications,
+  groupedNotifications,
 }: {
-  notifications: NotificationType[];
+  groupedNotifications: {
+    date: string;
+    notifications: EnrichedNotification[];
+  }[];
 }) {
   return (
     <Suspense fallback={<NotificationsLoader />}>
-      <NotificationList notifications={notifications} />
+      <NotificationList groupedNotifications={groupedNotifications} />
     </Suspense>
   );
 }
@@ -195,45 +217,95 @@ function NotificationsLoader() {
 }
 
 export function NotificationList({
-  notifications,
+  groupedNotifications,
 }: {
-  notifications: NotificationType[];
+  groupedNotifications: {
+    date: string;
+    notifications: EnrichedNotification[];
+  }[];
 }) {
   const theme = useCustomTheme();
 
-  return notifications.length > 0 ? (
+  return groupedNotifications.length > 0 ? (
     <div
       style={{
         paddingBottom: "16px",
       }}
     >
-      <List
-        style={{
-          marginTop: "16px",
-          paddingTop: 0,
-          paddingBottom: 0,
-          marginLeft: "16px",
-          marginRight: "16px",
-          borderRadius: "14px",
-          border: `${theme.custom.colors.borderFull}`,
-        }}
-      >
-        {notifications.map((notification: any, idx: number) => (
-          <NotificationListItem
-            key={idx}
-            notification={notification}
-            isFirst={idx === 0}
-            isLast={idx === notifications.length - 1}
-          />
-        ))}
-      </List>
+      {groupedNotifications.map(({ date, notifications }) => (
+        <div
+          style={{
+            marginLeft: "16px",
+            marginRight: "16px",
+            marginTop: "16px",
+          }}
+        >
+          <div style={{ color: "#99A4B4", padding: 10 }}>{date}</div>
+          <List
+            style={{
+              paddingTop: 0,
+              paddingBottom: 0,
+              borderRadius: "14px",
+              border: `${theme.custom.colors.borderFull}`,
+            }}
+          >
+            <div>
+              {notifications.map((notification: any, idx: number) => (
+                <NotificationListItem
+                  key={idx}
+                  notification={notification}
+                  isFirst={idx === 0}
+                  isLast={idx === notifications.length - 1}
+                />
+              ))}
+            </div>
+          </List>
+        </div>
+      ))}
     </div>
   ) : (
     <NoNotificationsLabel minimize={false} />
   );
 }
 
-function NotificationListItem({ notification, isFirst, isLast }: any) {
+const getTimeStr = (timestamp: number) => {
+  const elapsedTimeSeconds = (new Date().getTime() - timestamp) / 1000;
+  if (elapsedTimeSeconds < 60) {
+    return "now";
+  }
+  if (elapsedTimeSeconds / 60 < 60) {
+    const min = Math.floor(elapsedTimeSeconds / 60);
+    if (min === 1) {
+      return "1 minute ago";
+    } else {
+      return `${min} minutes ago`;
+    }
+  }
+
+  if (elapsedTimeSeconds / 3600 < 24) {
+    const hours = Math.floor(elapsedTimeSeconds / 3600);
+    if (hours === 1) {
+      return "1 hour ago";
+    } else {
+      return `${hours} hours ago`;
+    }
+  }
+  const days = Math.floor(elapsedTimeSeconds / 3600 / 24);
+  if (days === 1) {
+    return `1 day ago`;
+  }
+  return `${days} day ago`;
+};
+
+function NotificationListItem({
+  notification,
+  isFirst,
+  isLast,
+}: {
+  notification: EnrichedNotification;
+  isFirst: boolean;
+  isLast: boolean;
+}) {
   const classes = useStyles();
   const theme = useCustomTheme();
 
@@ -271,43 +343,26 @@ function NotificationListItem({ notification, isFirst, isLast }: any) {
               justifyContent: "center",
             }}
           >
-            <NotificationListItemIcon xnftId={notification.xnftId} />
+            <NotificationListItemIcon image={notification.xnftImage} />
           </div>
           <div>
             <Typography className={classes.txSig}>
-              <img
-                style={{
-                  width: "12px",
-                  borderRadius: "2px",
-                  marginRight: "10px",
-                }}
-                src={``}
-              />
-              {notification.title}
-              {notification.body}
+              {notification.xnftTitle}
             </Typography>
-            <Typography className={classes.txDate}>
-              {new Date(notification.timestamp).toLocaleDateString()}
+            <Typography className={classes.txBody}>
+              {notification.body}
             </Typography>
           </div>
         </div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-          }}
-        >
-          <CallMade style={{ color: theme.custom.colors.icon }} />
-        </div>
+        <div className={classes.time}>{getTimeStr(notification.timestamp)}</div>
       </div>
     </ListItem>
   );
 }
 
-function NotificationListItemIcon({ xnftId }: any) {
+function NotificationListItemIcon({ image }: any) {
   const classes = useStyles();
-  return <Check className={classes.recentActivityListItemIcon} />;
+  return <img src={image} className={classes.recentActivityListItemIcon} />;
 }
 
 function NoNotificationsLabel({ minimize }: { minimize: boolean }) {
@@ -320,7 +375,7 @@ function NoNotificationsLabel({ minimize }: { minimize: boolean }) {
       }}
     >
       <EmptyState
-        icon={(props: any) => <Bolt {...props} />}
+        icon={(props: any) => <NotificationsIcon {...props} />}
         title={"No Notifications"}
         subtitle={"Install xnfts to receive notifications"}
         buttonText={"Browse the xNFT Library"}
