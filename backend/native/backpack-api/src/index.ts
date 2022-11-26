@@ -19,3 +19,7 @@ app.use("/chat", chatRouter);
 // TODO: Add validation using zod
 
 app.listen(process.env.PORT || 8080);
+
+process.on("uncaughtException", function (err) {
+  console.log("Caught exception: " + err);
+});

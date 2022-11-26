@@ -25,8 +25,7 @@ export const recentNotifications = atomFamily<
         try {
           const provider = get(anchorContext).provider;
           //TODO: Add JWT auth here
-          const notifications =
-            (await fetchNotifications("kira", offset, limit)) || [];
+          const notifications = (await fetchNotifications(offset, limit)) || [];
           const xnftIds = notifications.map((x) => x.xnftId);
           const uniqueXnftIds = xnftIds.filter(
             (x, index) => xnftIds.indexOf(x) === index
@@ -54,17 +53,13 @@ export const recentNotifications = atomFamily<
 });
 
 const fetchNotifications = (
-  username: string,
   offset: number,
   limit: number
 ): Promise<DbNotification[]> => {
   return new Promise((resolve) => {
-    fetch(
-      `${BACKEND_API_URL}/notifications?username=${username}&limit=${limit}&offset=${offset}`,
-      {
-        method: "GET",
-      }
-    )
+    fetch(`${BACKEND_API_URL}/notifications&limit=${limit}&offset=${offset}`, {
+      method: "GET",
+    })
       .then(async (response) => {
         const json = await response.json();
         resolve(json.notifications || []);

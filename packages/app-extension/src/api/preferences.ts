@@ -5,13 +5,10 @@ import {
 } from "@coral-xyz/common";
 
 export const refreshXnftPreferences = async (
-  background: ChannelAppUiClient,
-  username: string
+  background: ChannelAppUiClient
 ) => {
   try {
-    const res = await fetch(
-      `${BACKEND_API_URL}/preferences?username=${username}`
-    );
+    const res = await fetch(`${BACKEND_API_URL}/preferences`);
     const json = await res.json();
     if (!json.xnftPreferences) throw new Error(json.message);
     json.xnftPreferences.map(async (xnftPreference: any) => {
