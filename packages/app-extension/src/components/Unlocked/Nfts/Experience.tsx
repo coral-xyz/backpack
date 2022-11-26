@@ -30,7 +30,7 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-export const NftsExperience = ({ id }: { id: string }) => {
+export const NftsExperience = ({ id }: any) => {
   return (
     <div
       style={{
@@ -42,8 +42,8 @@ export const NftsExperience = ({ id }: { id: string }) => {
   );
 };
 
-export function NftChat() {
-  return <ChatRoom roomId={"asd"} userId={"asdadsas"} />;
+export function NftChat({ id }: any) {
+  return <ChatRoom roomId={id} userId={"asdadsas"} />;
 }
 
 function MainScreen({ id }: { id: string }) {
