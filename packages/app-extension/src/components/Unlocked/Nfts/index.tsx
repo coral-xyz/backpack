@@ -143,14 +143,6 @@ function NftCollectionCard({ collection }: { collection: NftCollection }) {
   const collectionDisplayNft = collection.items[0];
 
   const onClick = () => {
-    push({
-      title: collectionDisplayNft.name || "",
-      componentId: NAV_COMPONENT_NFT_EXPERIENCE,
-      componentProps: {
-        nftId: collectionDisplayNft.id,
-      },
-    });
-    return;
     if (collection.items.length === 1) {
       if (!collectionDisplayNft.name || !collectionDisplayNft.id) {
         throw new Error("invalid NFT data");
