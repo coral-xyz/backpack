@@ -4,68 +4,37 @@ import { AllTypesProps, ReturnTypes, Ops } from "./const";
 export const HOST = "http://localhost:8113/v1/graphql";
 
 export const HEADERS = {};
-import { createClient, type Sink } from "graphql-ws"; // keep
-
-export const apiSubscription = (options: chainOptions) => {
-  const client = createClient({
-    url: String(options[0]),
-    connectionParams: Object.fromEntries(
-      new Headers(options[1]?.headers).entries()
-    ),
-  });
-
-  const ws = new Proxy(
-    {
-      close: () => client.dispose(),
-    } as WebSocket,
-    {
-      get(target, key) {
-        if (key === "close") return target.close;
-        throw new Error(
-          `Unimplemented property '${String(
-            key
-          )}', only 'close()' is available.`
-        );
-      },
-    }
-  );
-
-  return (query: string) => {
-    let onMessage: ((event: any) => void) | undefined;
-    let onError: Sink["error"] | undefined;
-    let onClose: Sink["complete"] | undefined;
-
-    client.subscribe(
-      { query },
-      {
-        next({ data }) {
-          onMessage && onMessage(data);
-        },
-        error(error) {
-          onError && onError(error);
-        },
-        complete() {
-          onClose && onClose();
-        },
-      }
-    );
-
+export const apiSubscription = (options: chainOptions) => (query: string) => {
+  try {
+    const queryString = options[0] + "?query=" + encodeURIComponent(query);
+    const wsString = queryString.replace("http", "ws");
+    const host = (options.length > 1 && options[1]?.websocket?.[0]) || wsString;
+    const webSocketOptions = options[1]?.websocket || [host];
+    const ws = new WebSocket(...webSocketOptions);
     return {
       ws,
-      on(listener: typeof onMessage) {
-        onMessage = listener;
+      on: (e: (args: any) => void) => {
+        ws.onmessage = (event: any) => {
+          if (event.data) {
+            const parsed = JSON.parse(event.data);
+            const data = parsed.data;
+            return e(data);
+          }
+        };
       },
-      error(listener: typeof onError) {
-        onError = listener;
+      off: (e: (args: any) => void) => {
+        ws.onclose = e;
       },
-      open(listener: (socket: unknown) => void) {
-        client.on("opened", listener);
+      error: (e: (args: any) => void) => {
+        ws.onerror = e;
       },
-      off(listener: typeof onClose) {
-        onClose = listener;
+      open: (e: () => void) => {
+        ws.onopen = e;
       },
     };
-  };
+  } catch {
+    throw new Error("No websockets implemented");
+  }
 };
 const handleFetchResponse = (response: Response): Promise<GraphQLResponse> => {
   if (!response.ok) {
@@ -673,7 +642,7 @@ export const ResolveFromPath = (
       }
     }
   };
-  //@ts-ignore
+  // @ts-ignore
   const ResolveReturnType = (mappedParts: Part[]) => {
     if (mappedParts.length === 0) {
       return "not";
@@ -1077,7 +1046,9 @@ export type ValueTypes = {
     created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
     message?: boolean | `@${string}`;
+    message_kind?: boolean | `@${string}`;
     room?: boolean | `@${string}`;
+    type?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
     uuid?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
@@ -1119,7 +1090,17 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    message_kind?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     room?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    type?:
       | ValueTypes["String_comparison_exp"]
       | undefined
       | null
@@ -1147,7 +1128,9 @@ export type ValueTypes = {
       | Variable<any, string>;
     id?: number | undefined | null | Variable<any, string>;
     message?: string | undefined | null | Variable<any, string>;
+    message_kind?: string | undefined | null | Variable<any, string>;
     room?: string | undefined | null | Variable<any, string>;
+    type?: string | undefined | null | Variable<any, string>;
     username?: string | undefined | null | Variable<any, string>;
     uuid?: string | undefined | null | Variable<any, string>;
   };
@@ -1185,7 +1168,13 @@ export type ValueTypes = {
       | Variable<any, string>;
     id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     message?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    message_kind?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     room?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    type?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     username?:
       | ValueTypes["order_by"]
       | undefined
@@ -1218,7 +1207,9 @@ export type ValueTypes = {
       | Variable<any, string>;
     id?: number | undefined | null | Variable<any, string>;
     message?: string | undefined | null | Variable<any, string>;
+    message_kind?: string | undefined | null | Variable<any, string>;
     room?: string | undefined | null | Variable<any, string>;
+    type?: string | undefined | null | Variable<any, string>;
     username?: string | undefined | null | Variable<any, string>;
     uuid?: string | undefined | null | Variable<any, string>;
   };
@@ -1430,7 +1421,9 @@ export type ResolverInputTypes = {
     created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
     message?: boolean | `@${string}`;
+    message_kind?: boolean | `@${string}`;
     room?: boolean | `@${string}`;
+    type?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
     uuid?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
@@ -1450,7 +1443,12 @@ export type ResolverInputTypes = {
       | null;
     id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
     message?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    message_kind?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
     room?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    type?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     username?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     uuid?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
   };
@@ -1462,7 +1460,9 @@ export type ResolverInputTypes = {
     created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
     id?: number | undefined | null;
     message?: string | undefined | null;
+    message_kind?: string | undefined | null;
     room?: string | undefined | null;
+    type?: string | undefined | null;
     username?: string | undefined | null;
     uuid?: string | undefined | null;
   };
@@ -1486,7 +1486,9 @@ export type ResolverInputTypes = {
     created_at?: ResolverInputTypes["order_by"] | undefined | null;
     id?: ResolverInputTypes["order_by"] | undefined | null;
     message?: ResolverInputTypes["order_by"] | undefined | null;
+    message_kind?: ResolverInputTypes["order_by"] | undefined | null;
     room?: ResolverInputTypes["order_by"] | undefined | null;
+    type?: ResolverInputTypes["order_by"] | undefined | null;
     username?: ResolverInputTypes["order_by"] | undefined | null;
     uuid?: ResolverInputTypes["order_by"] | undefined | null;
   };
@@ -1505,7 +1507,9 @@ export type ResolverInputTypes = {
     created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
     id?: number | undefined | null;
     message?: string | undefined | null;
+    message_kind?: string | undefined | null;
     room?: string | undefined | null;
+    type?: string | undefined | null;
     username?: string | undefined | null;
     uuid?: string | undefined | null;
   };
@@ -1674,7 +1678,9 @@ export type ModelTypes = {
     created_at?: ModelTypes["timestamptz"] | undefined;
     id: number;
     message: string;
+    message_kind?: string | undefined;
     room?: string | undefined;
+    type: string;
     username?: string | undefined;
     uuid?: string | undefined;
   };
@@ -1687,7 +1693,9 @@ export type ModelTypes = {
     created_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
     id?: ModelTypes["Int_comparison_exp"] | undefined;
     message?: ModelTypes["String_comparison_exp"] | undefined;
+    message_kind?: ModelTypes["String_comparison_exp"] | undefined;
     room?: ModelTypes["String_comparison_exp"] | undefined;
+    type?: ModelTypes["String_comparison_exp"] | undefined;
     username?: ModelTypes["String_comparison_exp"] | undefined;
     uuid?: ModelTypes["String_comparison_exp"] | undefined;
   };
@@ -1698,7 +1706,9 @@ export type ModelTypes = {
     created_at?: ModelTypes["timestamptz"] | undefined;
     id?: number | undefined;
     message?: string | undefined;
+    message_kind?: string | undefined;
     room?: string | undefined;
+    type?: string | undefined;
     username?: string | undefined;
     uuid?: string | undefined;
   };
@@ -1721,7 +1731,9 @@ export type ModelTypes = {
     created_at?: ModelTypes["order_by"] | undefined;
     id?: ModelTypes["order_by"] | undefined;
     message?: ModelTypes["order_by"] | undefined;
+    message_kind?: ModelTypes["order_by"] | undefined;
     room?: ModelTypes["order_by"] | undefined;
+    type?: ModelTypes["order_by"] | undefined;
     username?: ModelTypes["order_by"] | undefined;
     uuid?: ModelTypes["order_by"] | undefined;
   };
@@ -1739,7 +1751,9 @@ export type ModelTypes = {
     created_at?: ModelTypes["timestamptz"] | undefined;
     id?: number | undefined;
     message?: string | undefined;
+    message_kind?: string | undefined;
     room?: string | undefined;
+    type?: string | undefined;
     username?: string | undefined;
     uuid?: string | undefined;
   };
@@ -1834,7 +1848,9 @@ export type GraphQLTypes = {
     created_at?: GraphQLTypes["timestamptz"] | undefined;
     id: number;
     message: string;
+    message_kind?: string | undefined;
     room?: string | undefined;
+    type: string;
     username?: string | undefined;
     uuid?: string | undefined;
   };
@@ -1847,7 +1863,9 @@ export type GraphQLTypes = {
     created_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
     id?: GraphQLTypes["Int_comparison_exp"] | undefined;
     message?: GraphQLTypes["String_comparison_exp"] | undefined;
+    message_kind?: GraphQLTypes["String_comparison_exp"] | undefined;
     room?: GraphQLTypes["String_comparison_exp"] | undefined;
+    type?: GraphQLTypes["String_comparison_exp"] | undefined;
     username?: GraphQLTypes["String_comparison_exp"] | undefined;
     uuid?: GraphQLTypes["String_comparison_exp"] | undefined;
   };
@@ -1859,7 +1877,9 @@ export type GraphQLTypes = {
     created_at?: GraphQLTypes["timestamptz"] | undefined;
     id?: number | undefined;
     message?: string | undefined;
+    message_kind?: string | undefined;
     room?: string | undefined;
+    type?: string | undefined;
     username?: string | undefined;
     uuid?: string | undefined;
   };
@@ -1883,7 +1903,9 @@ export type GraphQLTypes = {
     created_at?: GraphQLTypes["order_by"] | undefined;
     id?: GraphQLTypes["order_by"] | undefined;
     message?: GraphQLTypes["order_by"] | undefined;
+    message_kind?: GraphQLTypes["order_by"] | undefined;
     room?: GraphQLTypes["order_by"] | undefined;
+    type?: GraphQLTypes["order_by"] | undefined;
     username?: GraphQLTypes["order_by"] | undefined;
     uuid?: GraphQLTypes["order_by"] | undefined;
   };
@@ -1902,7 +1924,9 @@ export type GraphQLTypes = {
     created_at?: GraphQLTypes["timestamptz"] | undefined;
     id?: number | undefined;
     message?: string | undefined;
+    message_kind?: string | undefined;
     room?: string | undefined;
+    type?: string | undefined;
     username?: string | undefined;
     uuid?: string | undefined;
   };
@@ -1960,7 +1984,9 @@ export const enum chats_select_column {
   created_at = "created_at",
   id = "id",
   message = "message",
+  message_kind = "message_kind",
   room = "room",
+  type = "type",
   username = "username",
   uuid = "uuid",
 }
