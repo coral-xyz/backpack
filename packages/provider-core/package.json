@@ -6,7 +6,7 @@
   "types": "dist/esm/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
     "lint:fix": "yarn run lint --fix"
   },
   "dependencies": {
@@ -20,6 +20,6 @@
   },
   "devDependencies": {
     "eslint-config-custom": "*",
-    "typescript": "^4.6.3"
+    "typescript": "~4.9.3"
   }
 }

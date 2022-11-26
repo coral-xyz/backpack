@@ -16,3 +16,4 @@ export * from "./useTransactionData";
 export * from "./avatar";
 export * from "./useFeatureGates";
 export * from "./useXnftPreferences";
+export * from "./useRecentNotifications";

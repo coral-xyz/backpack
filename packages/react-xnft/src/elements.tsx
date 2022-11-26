@@ -26,6 +26,7 @@ import {
 const c =
   <T,>(name: string) =>
   (props: T) =>
+    // @ts-expect-error Argument of type 'T' is not assignable to parameter of type 'Attributes | null | undefined'.
     React.createElement(name, props);
 
 export const Text = c<TextProps>("Text");

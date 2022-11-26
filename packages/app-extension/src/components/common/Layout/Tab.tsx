@@ -10,6 +10,7 @@ import {
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
 } from "@coral-xyz/common";
 import { BalancesIcon, GridIcon, ImageIcon } from "../../common/Icon";
+import { useLocation } from "react-router-dom";
 
 const TAB_HEIGHT = 64;
 
@@ -56,12 +57,15 @@ const useStyles = styles((theme) => ({
 
 export function WithTabs(props: any) {
   const classes = useStyles();
+  const location = useLocation();
+
   return (
     <div className={classes.container}>
       <div style={{ position: "relative", width: "100%", height: "100%" }}>
         {props.children}
       </div>
-      <TabBar />
+      {location.pathname !== "/nfts/experience" &&
+        location.pathname !== "/nfts/chat" && <TabBar />}
     </div>
   );
 }

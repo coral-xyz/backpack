@@ -35,7 +35,7 @@ export class ChannelAppUiServer {
 
   public handler(handlerFn: (req: RpcRequest) => Promise<RpcResponse>) {
     BrowserRuntimeCommon.addEventListenerFromBackground(
-      (msg: any, _sender: any, sendResponse: any) => {
+      (msg: any, sender: any, sendResponse: any) => {
         if (msg.channel !== this.name) {
           return;
         }
@@ -67,7 +67,7 @@ export class ChannelAppUiNotifications {
 
   public onNotification(handlerFn: (notif: Notification) => void) {
     BrowserRuntimeCommon.addEventListenerFromAppUi(
-      (msg: any, _sender: any, sendResponse: any) => {
+      (msg: any, sender: any, sendResponse: any) => {
         if (msg.channel !== this.name) {
           return;
         }

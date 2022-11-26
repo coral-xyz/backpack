@@ -6,6 +6,7 @@ import {
   NftCollection,
   NAV_COMPONENT_NFT_DETAIL,
   NAV_COMPONENT_NFT_COLLECTION,
+  NAV_COMPONENT_NFT_EXPERIENCE,
 } from "@coral-xyz/common";
 import {
   nftCollections,

@@ -1,4 +1,5 @@
 import { v1 } from "uuid";
+
 import { IMAGE_PROXY_URL } from "./constants";
 
 export function toTitleCase(str: string) {
