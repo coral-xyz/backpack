@@ -109,7 +109,7 @@ export class Room {
       message_kind: msg.message_kind,
     };
     this.messageHistory.push(emittedMessage);
-    this.messageHistory = this.messageHistory.slice(-50);
+    this.messageHistory = this.messageHistory.slice(-10);
     this.broadcast(null, {
       type: CHAT_MESSAGES,
       payload: {
