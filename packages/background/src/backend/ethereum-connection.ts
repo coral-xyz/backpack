@@ -33,6 +33,7 @@ export class EthereumConnectionBackend {
   private cache = new Map<string, CachedValue<any>>();
   private connectionUrl?: string;
   private chainId?: string;
+  private activeWallet: string;
   private pollIntervals: Array<any>;
   private events: EventEmitter;
   public provider?: ethers.providers.JsonRpcProvider;
@@ -96,6 +97,7 @@ export class EthereumConnectionBackend {
       this.connectionUrl = settings.connectionUrl;
       this.chainId = settings.chainId;
       if (activeWallet) {
+        this.activeWallet = activeWallet;
         this.startPolling(activeWallet);
       }
     };
@@ -106,12 +108,14 @@ export class EthereumConnectionBackend {
 
     const handleActiveWalletUpdated = (notif: Notification) => {
       const { activeWallet } = notif.data;
+      this.activeWallet = activeWallet;
       this.stopPolling();
       this.startPolling(activeWallet);
     };
 
     const handleBlockchainEnabled = (notif: Notification) => {
       const { blockchain, activeWallet } = notif.data;
+      this.activeWallet = activeWallet;
       if (blockchain === Blockchain.ETHEREUM) {
         // Start polling if Ethereum was enabled in wallet settings
         this.startPolling(activeWallet);
@@ -129,6 +133,8 @@ export class EthereumConnectionBackend {
     const handleBlockchainSettingsUpdated = (notif: Notification) => {
       const { blockchain, prevSettings, newSettings } = notif.data;
       if (blockchain !== Blockchain.ETHEREUM) return;
+
+      let didChange = false;
       // Check for connection URL change
       if (prevSettings.connectionUrl !== newSettings.connectionUrl) {
         logger.debug("ethereum connection url changed");
@@ -136,6 +142,7 @@ export class EthereumConnectionBackend {
           newSettings.connectionUrl
         );
         this.connectionUrl = newSettings.connectionUrl;
+        didChange = true;
       }
       // Check for chain ID change
       if (prevSettings.chainId !== newSettings.chainId) {
@@ -145,6 +152,13 @@ export class EthereumConnectionBackend {
           parseInt(newSettings.chainId)
         );
         this.chainId = newSettings.chainId;
+        didChange = true;
+      }
+
+      // Restart polling if something changed to trigger an immediate update
+      if (didChange) {
+        this.stopPolling();
+        this.startPolling(this.activeWallet);
       }
     };
   }
