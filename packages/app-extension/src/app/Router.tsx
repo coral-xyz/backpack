@@ -23,7 +23,6 @@ import {
   useBackgroundResponder,
   useBackgroundClient,
   useEnabledBlockchains,
-  useWalletBlockchain,
   useUsername,
 } from "@coral-xyz/recoil";
 import { Locked } from "../components/Locked";
@@ -318,6 +317,7 @@ function WithUnlock({ children }: { children: React.ReactNode }) {
     keyringStoreState === KeyringStoreStateEnum.NeedsOnboarding;
   const isLocked =
     !needsOnboarding && keyringStoreState === KeyringStoreStateEnum.Locked;
+
   return (
     <AnimatePresence initial={false}>
       <WithLockMotion id={isLocked ? "locked" : "unlocked"}>

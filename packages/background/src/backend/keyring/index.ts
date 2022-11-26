@@ -273,6 +273,10 @@ export class KeyringStore {
   public reset() {
     // First lock to clear the keyring memory.
     this.lock();
+    // clear the jwt cookie if it exists
+    fetch("https://auth.xnfts.dev/authenticate", {
+      method: "DELETE",
+    });
     // Then reset persistent disk storage.
     return store.reset();
   }
