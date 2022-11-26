@@ -24,9 +24,9 @@ export const getChats = async ({
         //@ts-ignore
         order_by: [{ id: "asc" }],
         where: {
-          room: { _eq: this.room },
+          room: { _eq: room },
           //@ts-ignore
-          type: { _eq: this.type },
+          type: { _eq: type },
           id: {
             _lt: lastChatId,
           },
@@ -37,6 +37,7 @@ export const getChats = async ({
         uuid: true,
         message: true,
         client_generated_uuid: true,
+        message_kind: true,
         created_at: true,
       },
     ],
