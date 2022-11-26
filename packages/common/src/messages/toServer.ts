@@ -13,6 +13,7 @@ export type ToServer =
         messages: {
           client_generated_uuid: string;
           message: string;
+          message_kind: string;
         }[];
         type: SubscriptionType;
         room: string;

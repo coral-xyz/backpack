@@ -127,7 +127,11 @@ export class ChatManager {
     );
   }
 
-  async send(message: string, client_generated_uuid: string) {
+  async send(
+    message: string,
+    client_generated_uuid: string,
+    messageKind: "text" | "gif"
+  ) {
     this.sendQueue[client_generated_uuid] = true;
 
     this.signaling.send({
@@ -137,6 +141,7 @@ export class ChatManager {
           {
             message,
             client_generated_uuid,
+            message_kind,
           },
         ],
         type: "collection",

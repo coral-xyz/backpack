@@ -77,7 +77,13 @@ export const MessageLeft = (props) => {
             <div className={classes.displayName}>@{displayName}</div>
             <div className={classes.messageContainer}>
               <div>
-                <p className={classes.messageContent}>{message}</p>
+                <p className={classes.messageContent}>
+                  {message.startsWith("https://giphy.com") ? (
+                    <img style={{ height: 150 }} src={message} />
+                  ) : (
+                    message
+                  )}
+                </p>
               </div>
             </div>
           </div>

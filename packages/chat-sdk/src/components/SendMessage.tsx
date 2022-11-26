@@ -85,17 +85,18 @@ export const SendMessage = ({ messageRef }: any) => {
   const { chatManager, setChats, userId } = useChatContext();
   const isDarkMode = useDarkMode();
 
-  const sendMessage = () => {
-    if (chatManager && messageContent) {
+  const sendMessage = (messageTxt, messageKind: "text" | "gif" = "text") => {
+    if (chatManager && messageTxt) {
       const client_generated_uuid = uuidv4();
-      chatManager?.send(messageContent, client_generated_uuid);
+      chatManager?.send(messageTxt, client_generated_uuid, messageKind);
       setChats((x) => [
         ...x,
         {
-          message: messageContent,
+          message: messageTxt,
           client_generated_uuid,
           received: false,
           uuid: userId,
+          message_kind: messageKind,
         },
       ]);
       setMessageContent("");
@@ -106,7 +107,7 @@ export const SendMessage = ({ messageRef }: any) => {
     function keyDownTextField(event) {
       if (event.key === "Enter") {
         event.preventDefault();
-        sendMessage();
+        sendMessage(messageContent);
       }
       if (event.key === "Escape") {
         event.preventDefault();
@@ -184,7 +185,20 @@ export const SendMessage = ({ messageRef }: any) => {
         />
       )}
       {gifPicker && (
-        <Carousel gifHeight={250} gutter={6} fetchGifs={fetchGifs} />
+        <>
+          {/*
+             //@ts-ignore*/}
+          <Carousel
+            onGifClick={(x) => {
+              console.log(x);
+              sendMessage(x.id, "gif");
+              setGifPicker(false);
+            }}
+            gifHeight={200}
+            gutter={6}
+            fetchGifs={fetchGifs}
+          />
+        </>
       )}
     </div>
   );

@@ -57,7 +57,7 @@ export class Room {
       ],
     });
 
-    this.messageHistory = response.chats;
+    this.messageHistory = response.chats || [];
   }
 
   addUser(user: User) {
@@ -75,7 +75,11 @@ export class Room {
   async addChatMessage(
     id: string,
     userId: string,
-    msg: { client_generated_uuid: string; message: string }
+    msg: {
+      client_generated_uuid: string;
+      message: string;
+      message_kind: string;
+    }
   ) {
     const response = await chain("mutation")({
       insert_chats_one: [
@@ -85,6 +89,7 @@ export class Room {
             room: this.room,
             message: msg.message,
             uuid: userId,
+            message_kind: msg.message_kind,
             client_generated_uuid: msg.client_generated_uuid,
             type: this.type,
             created_at: new Date(),
@@ -101,9 +106,9 @@ export class Room {
       uuid: userId,
       message: msg.message,
       client_generated_uuid: msg.client_generated_uuid,
+      message_kind: msg.message_kind,
     };
     this.messageHistory.push(emittedMessage);
-    //splice here?
     this.messageHistory = this.messageHistory.slice(-50);
     this.broadcast(null, {
       type: CHAT_MESSAGES,
