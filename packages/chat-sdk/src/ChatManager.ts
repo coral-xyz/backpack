@@ -141,7 +141,7 @@ export class ChatManager {
           {
             message,
             client_generated_uuid,
-            message_kind,
+            message_kind: messageKind,
           },
         ],
         type: "collection",
