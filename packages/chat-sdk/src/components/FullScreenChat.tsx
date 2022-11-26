@@ -58,6 +58,7 @@ export const FullScreenChat = ({ messageContainerRef, chats }) => {
                 key={chat.id}
                 message={chat.message}
                 received={chat.received}
+                messageKind={chat.message_kind}
               />
             );
           })}

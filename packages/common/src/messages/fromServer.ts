@@ -9,6 +9,7 @@ export interface Message {
   message?: string;
   // received?: boolean;
   client_generated_uuid?: string;
+  message_kind: "gif" | "text";
 }
 
 export interface MessageWithMetadata extends Message {
