@@ -205,6 +205,7 @@ export class SolanaConnectionBackend {
       if (blockchain !== Blockchain.SOLANA) return;
       // Check for connection URL change
       if (prevSettings.connectionUrl !== newSettings.connectionUrl) {
+        logger.debug("solana connection url changed");
         this.connection = new Connection(
           newSettings.connectionUrl,
           this.connection!.commitment

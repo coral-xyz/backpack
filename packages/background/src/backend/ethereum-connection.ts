@@ -131,6 +131,7 @@ export class EthereumConnectionBackend {
       if (blockchain !== Blockchain.ETHEREUM) return;
       // Check for connection URL change
       if (prevSettings.connectionUrl !== newSettings.connectionUrl) {
+        logger.debug("ethereum connection url changed");
         this.provider = new ethers.providers.JsonRpcProvider(
           newSettings.connectionUrl
         );
@@ -138,6 +139,7 @@ export class EthereumConnectionBackend {
       }
       // Check for chain ID change
       if (prevSettings.chainId !== newSettings.chainId) {
+        logger.debug("ethereum chain id changed");
         this.provider = new ethers.providers.JsonRpcProvider(
           this.connectionUrl,
           parseInt(newSettings.chainId)
