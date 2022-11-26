@@ -15,3 +15,7 @@ wss.on("connection", async (ws, req) => {
     userId || ""
   );
 });
+
+process.on("uncaughtException", function (err) {
+  console.log("Caught exception: " + err);
+});

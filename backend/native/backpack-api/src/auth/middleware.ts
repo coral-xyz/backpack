@@ -7,23 +7,27 @@ export const extractUserId = async (req, res, next) => {
     headers: { cookie },
   } = req;
   if (cookie) {
-    let jwt;
-    cookie.split(";").forEach((item) => {
-      const cookie = item.trim().split("=");
-      if (cookie[0] === "jwt") {
-        jwt = cookie[1];
+    try {
+      let jwt = "";
+      cookie.split(";").forEach((item) => {
+        const cookie = item.trim().split("=");
+        if (cookie[0] === "jwt") {
+          jwt = cookie[1];
+        }
+      });
+      const publicKey = await importSPKI(AUTH_JWT_PUBLIC_KEY, alg);
+      const payloadRes = await jwtVerify(jwt, publicKey, {
+        issuer: "auth.xnfts.dev",
+        audience: "backpack",
+      });
+      if (payloadRes.payload.id) {
+        req.id = payloadRes.payload.id;
+        next();
+      } else {
+        return res.status(403).json({ msg: "No id found" });
       }
-    });
-    const publicKey = await importSPKI(AUTH_JWT_PUBLIC_KEY, alg);
-    const payloadRes = await jwtVerify(jwt, publicKey, {
-      issuer: "auth.xnfts.dev",
-      audience: "backpack",
-    });
-    if (payloadRes.payload.id) {
-      req.id = payloadRes.payload.id;
-      next();
-    } else {
-      return res.status(403).json({ msg: "No id found" });
+    } catch (e) {
+      return res.status(403).json({ msg: "Auth error" });
     }
   } else {
     return res.status(403).json({ msg: "No cookie present" });

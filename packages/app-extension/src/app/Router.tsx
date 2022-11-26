@@ -275,11 +275,10 @@ function QueryApproveMessage() {
 function FullApp() {
   logger.debug("full app");
   const background = useBackgroundClient();
-  const username = useUsername();
 
   useEffect(() => {
     refreshFeatureGates(background);
-    refreshXnftPreferences(background, username || "");
+    refreshXnftPreferences(background);
   }, [background]);
 
   return (
