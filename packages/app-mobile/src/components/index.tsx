@@ -1,11 +1,12 @@
 import type { StyleProp, TextStyle, ViewStyle } from "react-native";
 import { Image, Pressable, Text, View } from "react-native";
-import { proxyImageUrl } from "@coral-xyz/common";
+import { useAvatarUrl } from "@coral-xyz/recoil";
+import { proxyImageUrl, walletAddressDisplay } from "@coral-xyz/common";
 // probably should put all the components in here as an index
 import { useTheme } from "@hooks";
 
-export { TokenInputField } from "./TokenInputField";
 export { MnemonicInputFields } from "./MnemonicInputFields";
+export { TokenInputField } from "./TokenInputField";
 //
 // function getRandomColor() { var letters = "0123456789ABCDEF";
 //   var color = "#";
@@ -371,4 +372,47 @@ export function Margin({
   }
 
   return <View style={style}>{children}</View>;
+}
+
+// TODO(peter): any
+export function WalletAddressLabel({ publicKey, name, style, nameStyle }: any) {
+  const theme = useTheme();
+  return (
+    <View style={[{ flexDirection: "row", alignItems: "center" }, style]}>
+      <Margin right={8}>
+        <Text style={nameStyle}>{name}</Text>
+      </Margin>
+      <Text style={{ color: theme.custom.colors.secondary }}>
+        ({walletAddressDisplay(publicKey)})
+      </Text>
+    </View>
+  );
+}
+
+export function Avatar({ size = 64 }: { size?: number }) {
+  const avatarUrl = useAvatarUrl(size);
+  const theme = useTheme();
+
+  const outerSize = size + 6;
+
+  return (
+    <View
+      style={{
+        backgroundColor: theme.custom.colors.avatarIconBackground,
+        borderRadius: outerSize / 2,
+        padding: 3,
+        width: outerSize,
+        height: outerSize,
+      }}
+    >
+      <Image
+        source={{ uri: avatarUrl }}
+        style={{
+          width: size,
+          height: size,
+          borderRadius: size / 2,
+        }}
+      />
+    </View>
+  );
 }
