@@ -108,6 +108,7 @@ export const SendMessage = ({ messageRef }: any) => {
       if (event.key === "Enter") {
         event.preventDefault();
         sendMessage(messageContent);
+        setEmojiPicker(false);
       }
       if (event.key === "Escape") {
         event.preventDefault();
