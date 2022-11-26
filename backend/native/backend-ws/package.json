@@ -8,6 +8,7 @@
     "@coral-xyz/zeus": "*",
     "@types/ws": "^8.5.3",
     "graphql": "^16.6.0",
+    "jose": "^4.11.1",
     "ws": "^8.11.0"
   },
   "scripts": {
