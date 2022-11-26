@@ -32,6 +32,7 @@ export class Room {
     this.type = type;
     this.users = new Map<string, User>();
     this.messageHistory = [];
+    console.log(`Room ${room} ${type} created`);
   }
 
   async init() {
@@ -109,7 +110,11 @@ export class Room {
       message_kind: msg.message_kind,
     };
     this.messageHistory.push(emittedMessage);
+    console.log("before slice, after push");
+    console.log(this.messageHistory);
     this.messageHistory = this.messageHistory.slice(-10);
+    console.log("after slice");
+    console.log(this.messageHistory);
     this.broadcast(null, {
       type: CHAT_MESSAGES,
       payload: {
