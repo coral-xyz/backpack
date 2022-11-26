@@ -551,6 +551,9 @@ app.post("/authenticate/:username", async (c) => {
         },
       ],
     });
-    return c.json(res.auth_users?.[0]);
+    const user = res.auth_users?.[0];
+    return user
+      ? c.json(user)
+      : c.json({ message: `username (${username}) not found` }, 404);
   }
 });
