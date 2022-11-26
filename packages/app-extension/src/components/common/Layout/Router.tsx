@@ -30,6 +30,7 @@ import { SettingsButton } from "../../Unlocked/Settings";
 import { WithNav, NavBackButton } from "./Nav";
 import { WithMotion } from "./NavStack";
 import { WithDrawer } from "../../common/Layout/Drawer";
+import { NftChat, NftsExperience } from "../../Unlocked/Nfts/Experience";
 
 export function Router() {
   const location = useLocation();
@@ -42,6 +43,8 @@ export function Router() {
         <Route path="/nfts" element={<NftsPage />} />
         {/*<Route path="/swap" element={<SwapPage />} />*/}
         <Route path="/nfts/collection" element={<NftsCollectionPage />} />
+        <Route path="/nfts/experience" element={<NftsExperiencePage />} />
+        <Route path="/nfts/chat" element={<NftsChatPage />} />
         <Route path="/nfts/detail" element={<NftsDetailPage />} />
         <Route path="*" element={<Redirect />} />
       </Routes>
@@ -66,6 +69,16 @@ function BalancesPage() {
 
 function NftsPage() {
   return <NavScreen component={<Nfts />} />;
+}
+
+function NftsChatPage() {
+  const { props } = useDecodedSearchParams();
+  return <NavScreen component={<NftChat {...props} />} />;
+}
+
+function NftsExperiencePage() {
+  const { props } = useDecodedSearchParams();
+  return <NavScreen component={<NftsExperience {...props} />} />;
 }
 
 function NftsCollectionPage() {
