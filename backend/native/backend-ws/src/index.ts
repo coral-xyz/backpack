@@ -6,6 +6,7 @@ const wss = new WebSocketServer({ port: PORT });
 
 wss.on("connection", async (ws, req) => {
   const cookie = req.headers.cookie;
+  console.log(`cookie is ${cookie}`);
   const userId = await extractUserId(cookie || "");
 
   UserManager.getInstance().addUser(
