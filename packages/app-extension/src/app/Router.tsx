@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Block as BlockIcon } from "@mui/icons-material";
 import { styles } from "@coral-xyz/themes";
@@ -14,7 +14,6 @@ import {
   QUERY_APPROVE_TRANSACTION,
   QUERY_APPROVE_ALL_TRANSACTIONS,
   QUERY_APPROVE_MESSAGE,
-  BACKPACK_FEATURE_JWT,
 } from "@coral-xyz/common";
 import {
   KeyringStoreStateEnum,
@@ -24,7 +23,6 @@ import {
   useBackgroundResponder,
   useBackgroundClient,
   useEnabledBlockchains,
-  useWalletBlockchain,
   useUsername,
 } from "@coral-xyz/recoil";
 import { Locked } from "../components/Locked";
@@ -39,8 +37,6 @@ import "./App.css";
 import { refreshFeatureGates } from "../gates/FEATURES";
 import { EmptyState } from "../components/common/EmptyState";
 import { refreshXnftPreferences } from "../api/preferences";
-import { UI_RPC_METHOD_TRY_TO_SIGN_MESSAGE } from "@coral-xyz/common/src/constants";
-import { encode } from "bs58";
 
 const logger = getLogger("router");
 
@@ -317,65 +313,17 @@ function WithEnabledBlockchain({
 }
 
 function WithUnlock({ children }: { children: React.ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const keyringStoreState = useKeyringStoreState();
   const needsOnboarding =
     keyringStoreState === KeyringStoreStateEnum.NeedsOnboarding;
   const isLocked =
     !needsOnboarding && keyringStoreState === KeyringStoreStateEnum.Locked;
 
-  const username = useUsername();
-  const background = useBackgroundClient();
-
-  useEffect(() => {
-    if (!username || isLocked) return;
-
-    const ensureUserHasJWT = async () => {
-      const res = await fetch(
-        `https://auth.xnfts.dev/authenticate/${username}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (res.status !== 200) throw new Error("failed to authenticate");
-
-      const body = await res.json();
-      if (body.id && body.publickeys?.length) {
-        const signatureBundle = await background.request({
-          method: UI_RPC_METHOD_TRY_TO_SIGN_MESSAGE,
-          params: [
-            JSON.stringify({
-              id: body.id,
-              username,
-            }),
-            body.publickeys,
-          ],
-        });
-        await fetch(`https://auth.xnfts.dev/authenticate`, {
-          body: JSON.stringify(signatureBundle),
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-      }
-    };
-
-    if (BACKPACK_FEATURE_JWT) {
-      ensureUserHasJWT().then(() => setIsAuthenticated(true));
-    } else {
-      setIsAuthenticated(true);
-    }
-  }, [isLocked]);
-
   return (
     <AnimatePresence initial={false}>
-      <WithLockMotion id={isLocked || !isAuthenticated ? "locked" : "unlocked"}>
+      <WithLockMotion id={isLocked ? "locked" : "unlocked"}>
         <Suspense fallback={<div style={{ display: "none" }}></div>}>
-          {isLocked || !isAuthenticated ? <Locked /> : children}
+          {isLocked ? <Locked /> : children}
         </Suspense>
       </WithLockMotion>
     </AnimatePresence>

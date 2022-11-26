@@ -48,6 +48,8 @@ import {
   deserializeTransaction,
   FEATURE_GATES_MAP,
   XnftPreference,
+  BACKPACK_FEATURE_USERNAMES,
+  BACKPACK_FEATURE_JWT,
 } from "@coral-xyz/common";
 import type {
   KeyringInit,
@@ -513,8 +515,7 @@ export class Backend {
         ...match,
       };
     } catch (err) {
-      console.error({ err });
-      return new Error(`unable to sign - ${err.message}`);
+      throw new Error(`unable to sign - ${err.message}`);
     }
   }
 
@@ -600,8 +601,50 @@ export class Backend {
     return await this.keyringStore.checkPassword(password);
   }
 
-  async keyringStoreUnlock(password: string): Promise<string> {
+  async keyringStoreUnlock(
+    password: string,
+    username?: string
+  ): Promise<string> {
     await this.keyringStore.tryUnlock(password);
+
+    if (BACKPACK_FEATURE_USERNAMES && BACKPACK_FEATURE_JWT && username) {
+      // ensure the user has a JSON Web Token stored in their cookies
+      try {
+        const res = await fetch(
+          `https://auth.xnfts.dev/authenticate/${username}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        if (res.status !== 200)
+          throw new Error(`failed to authenticate (${username})`);
+        const { id, publickeys } = await res.json();
+        if (id && publickeys?.length) {
+          const signatureBundle = await this.tryToSignMessage(
+            JSON.stringify({
+              id,
+              username,
+            }),
+            publickeys
+          );
+          await fetch(`https://auth.xnfts.dev/authenticate`, {
+            body: JSON.stringify(signatureBundle),
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+          if (res.status !== 200)
+            throw new Error("failed to verify signed message");
+        }
+      } catch (err) {
+        this.keyringStore.lock();
+        throw new Error(err.message);
+      }
+    }
 
     const blockchainActiveWallets = await this.blockchainActiveWallets();
 
