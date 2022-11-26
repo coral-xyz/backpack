@@ -41,7 +41,7 @@ export class Room {
         {
           limit: 50,
           //@ts-ignore
-          order_by: [{ id: "asc" }],
+          order_by: [{ created_at: "desc" }],
           where: {
             room: { _eq: this.room },
             //@ts-ignore
@@ -54,6 +54,7 @@ export class Room {
           message: true,
           client_generated_uuid: true,
           created_at: true,
+          message_kind: true,
         },
       ],
     });

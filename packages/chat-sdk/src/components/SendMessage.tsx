@@ -161,7 +161,9 @@ export const SendMessage = ({ messageRef }: any) => {
                 {" "}
                 <GifIcon
                   className={classes.sendIcon}
-                  onClick={() => setGifPicker((x) => !x)}
+                  onClick={(e) => {
+                    setGifPicker((x) => !x);
+                  }}
                 />{" "}
               </IconButton>
               <IconButton>
@@ -189,10 +191,10 @@ export const SendMessage = ({ messageRef }: any) => {
           {/*
              //@ts-ignore*/}
           <Carousel
-            onGifClick={(x) => {
-              console.log(x);
+            onGifClick={(x, e) => {
               sendMessage(x.id, "gif");
               setGifPicker(false);
+              e.preventDefault();
             }}
             gifHeight={200}
             gutter={6}

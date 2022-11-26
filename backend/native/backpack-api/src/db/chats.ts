@@ -22,7 +22,7 @@ export const getChats = async ({
       {
         limit: 50,
         //@ts-ignore
-        order_by: [{ id: "asc" }],
+        order_by: [{ created_at: "desc" }],
         where: {
           room: { _eq: room },
           //@ts-ignore

@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { createStyles, makeStyles } from "@mui/styles";
-import Avatar from "@mui/material/Avatar";
+import { Gif as GifComponent } from "@giphy/react-components";
+import { GiphyFetch } from "@giphy/js-fetch-api";
+
+// use @giphy/js-fetch-api to fetch gifs, instantiate with your api key
+const gf = new GiphyFetch("SjZwwCn1e394TKKjrMJWb2qQRNcqW8ro");
 
 const useStyles = makeStyles((theme: any) =>
   createStyles({
@@ -49,6 +53,42 @@ const useStyles = makeStyles((theme: any) =>
   })
 );
 
+const GifDemo = ({
+  id,
+  width,
+  height,
+  noLink,
+  borderRadius,
+  overlay,
+  ...other
+}: any) => {
+  const [gif, setGif] = useState<any>();
+
+  const fetch = useCallback(async () => {
+    const { data: gif } = await gf.gif(id);
+    setGif(gif);
+  }, [id]);
+
+  useEffect(() => {
+    fetch();
+  }, [fetch, id]);
+
+  return gif ? (
+    <GifComponent
+      onGifClick={(_, e) => e.preventDefault()}
+      key={`gif-${noLink}`}
+      tabIndex={1}
+      borderRadius={borderRadius}
+      gif={gif}
+      width={width}
+      height={height}
+      noLink={noLink}
+      overlay={overlay}
+      {...other}
+    />
+  ) : null;
+};
+
 export const MessageLeft = (props) => {
   const message = props.message ? props.message : "";
   const timestamp = props.timestamp ? new Date(props.timestamp) : new Date();
@@ -78,8 +118,8 @@ export const MessageLeft = (props) => {
             <div className={classes.messageContainer}>
               <div>
                 <p className={classes.messageContent}>
-                  {message.startsWith("https://giphy.com") ? (
-                    <img style={{ height: 150 }} src={message} />
+                  {props.messageKind === "gif" ? (
+                    <GifDemo id={message} width={300} />
                   ) : (
                     message
                   )}
