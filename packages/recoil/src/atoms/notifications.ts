@@ -24,7 +24,6 @@ export const recentNotifications = atomFamily<
       async ({ get }: any) => {
         try {
           const provider = get(anchorContext).provider;
-          //TODO: Add JWT auth here
           const notifications = (await fetchNotifications(offset, limit)) || [];
           const xnftIds = notifications.map((x) => x.xnftId);
           const uniqueXnftIds = xnftIds.filter(
