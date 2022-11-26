@@ -159,6 +159,7 @@ export class Room {
   }
 
   destroy() {
+    console.log(`Room ${this.room} ${this.type} destroyed`);
     this.messageHistory = [];
   }
 
