@@ -425,7 +425,7 @@ const cookieDomain = (url: string) => {
   const { hostname } = new URL(url);
   // note:  the leading . below is significant, as it
   //        enables us to use the cookie on subdomains
-  return hostname === "localhost" ? hostname : `.${hostname}`;
+  return hostname === "localhost" ? hostname : ".xnfts.dev";
 };
 
 const clearCookie = (c: Context<any>, cookieName: string) => {
