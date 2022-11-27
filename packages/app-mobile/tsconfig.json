@@ -3,23 +3,24 @@
   "baseUrl": "./",
   "include": ["src"],
   "exclude": ["**/node_modules", "**/.*/"],
-  "paths": {
-    "@components/*": ["src/components/*"],
-    "@hooks/*": ["src/hooks/*"],
-    "@lib/*": ["src/lib/*"],
-    "@screens/*": ["src/screens/*"],
-    "@coral-xyz/recoil": ["../packages/recoil"],
-    "@coral-xyz/common": ["../packages/common"],
-    "@coral-xyz/background": ["../packages/background"],
-    "@coral-xyz/themes": ["../packages/themes"]
-  },
   "compilerOptions": {
     "strict": true,
-    "references": [
-      { "path": "../packages/recoil" },
-      { "path": "../packages/common" },
-      { "path": "../packages/background" },
-      { "path": "../packages/themes" }
-    ]
-  }
+    "paths": {
+      "@navigation/*": ["src/navigation/*"],
+      "@components/*": ["src/components/*"],
+      "@hooks/*": ["src/hooks/*"],
+      "@lib/*": ["src/lib/*"],
+      "@screens/*": ["src/screens/*"],
+      "@coral-xyz/recoil": ["../packages/recoil"],
+      "@coral-xyz/common": ["../packages/common"],
+      "@coral-xyz/background": ["../packages/background"],
+      "@coral-xyz/themes": ["../packages/themes"]
+    }
+  },
+  "references": [
+    { "path": "../packages/recoil" },
+    { "path": "../packages/common" },
+    { "path": "../packages/background" },
+    { "path": "../packages/themes" }
+  ]
 }

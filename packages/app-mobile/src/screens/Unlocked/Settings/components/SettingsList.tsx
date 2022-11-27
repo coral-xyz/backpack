@@ -1,28 +1,28 @@
-import { useBackgroundClient } from "@coral-xyz/recoil";
+import { Margin } from "@components";
 import {
-  Blockchain,
   BACKPACK_FEATURE_XNFT,
+  Blockchain,
+  DISCORD_INVITE_LINK,
+  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
-  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-  DISCORD_INVITE_LINK,
 } from "@coral-xyz/common";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useTheme } from "@hooks";
-import { Linking } from "expo-linking";
 import { useNavigation } from "@react-navigation/native";
+import { Linking } from "expo-linking";
+
 import {
-  RoundedContainer,
-  SettingsRow,
-  IconPushDetail,
   IconLaunchDetail,
   IconLeft,
+  IconPushDetail,
+  RoundedContainer,
+  SettingsRow,
 } from "./SettingsRow";
-import { Margin } from "@components";
 
-export function SettingsList({}) {
+export function SettingsList() {
   const background = useBackgroundClient();
   const navigation = useNavigation();
-  // const theme = useTheme();
 
   const lockWallet = () => {
     background
@@ -36,13 +36,13 @@ export function SettingsList({}) {
   const settingsMenu = [
     {
       label: "Your Account",
-      onPress: () => navigation.push("your-account"),
+      onPress: () => navigation.push("YourAccount"),
       icon: <IconLeft name="person" />,
       detailIcon: <IconPushDetail />,
     },
     {
       label: "Preferences",
-      onPress: () => navigation.push("preferences"),
+      onPress: () => navigation.push("Preferences"),
       icon: <IconLeft name="settings" />,
       detailIcon: <IconPushDetail />,
     },
@@ -51,7 +51,7 @@ export function SettingsList({}) {
   if (BACKPACK_FEATURE_XNFT) {
     settingsMenu.push({
       label: "xNFTs",
-      onPress: () => navigation.push("xnfts"),
+      onPress: () => navigation.push("xNFTSettings"),
       icon: <IconLeft name="apps" />,
       detailIcon: <IconPushDetail />,
     });
@@ -67,13 +67,13 @@ export function SettingsList({}) {
   const discordList = [
     {
       label: "Waiting Room",
-      onPress: () => navigation.push("waiting-room"),
+      onPress: () => navigation.push("WaitingRoom"),
       icon: <IconLeft name="people" />,
       detailIcon: <IconPushDetail />,
     },
     {
       label: "Need help? Hop into Discord",
-      onPress: () => Linking.openURL(DISCORD_INVITE_LINK, "_blank"),
+      onPress: () => Linking.openURL(DISCORD_INVITE_LINK),
       icon: <IconLeft name="people" />,
       detailIcon: <IconLaunchDetail />,
     },
@@ -86,10 +86,11 @@ export function SettingsList({}) {
           {settingsMenu.map((item) => {
             return (
               <SettingsRow
+                key={item.label}
+                label={item.label}
                 onPress={item.onPress}
                 icon={item.icon}
                 detailIcon={item.detailIcon}
-                label={item.label}
               />
             );
           })}
