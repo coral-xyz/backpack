@@ -1,6 +1,10 @@
-import type { BlockchainKeyring } from "@coral-xyz/blockchain-common";
-import {
+import type {
+  BlockchainKeyring,
+  BlockchainSettings,
   SolanaSettings,
+} from "@coral-xyz/blockchain-common";
+import {
+  defaultSettingsForBlockchain,
   keyringForBlockchain,
 } from "@coral-xyz/blockchain-common";
 import type {
@@ -208,6 +212,16 @@ export class Backend {
   // Blockchain settings
   ///////////////////////////////////////////////////////////////////////////////
 
+  // Object mapping blockchains to the settings for that blockchain.
+  async blockchainSettings() {
+    const data = await store.getWalletData();
+    return Object.fromEntries(
+      data.enabledBlockchains.map((blockchain) => {
+        return [blockchain, data[blockchain]];
+      })
+    );
+  }
+
   async blockchainSettingsRead(blockchain: Blockchain) {
     let data = await getWalletData();
     return data[blockchain];
@@ -218,7 +232,9 @@ export class Backend {
     updatedSettings: Record<string, string>
   ) {
     let data = await getWalletData();
-    const prevSettings = { ...data[blockchain] };
+
+    // Spread to copy
+    const prevSettings = { ...data[blockchain] } as BlockchainSettings;
     const newSettings = { ...prevSettings, ...updatedSettings };
 
     // TODO remove eventually
@@ -421,18 +437,6 @@ export class Backend {
     return Object.fromEntries(
       (await this.activeWallets()).map((publicKey) => {
         return [this.keyringStore.blockchainForPublicKey(publicKey), publicKey];
-      })
-    );
-  }
-
-  // Object mapping blockchains to the settings for that blockchain.
-  async blockchainSettings() {
-    const data = await store.getWalletData();
-    return Object.fromEntries(
-      (await this.activeWallets()).map((publicKey) => {
-        const blockchain = this.keyringStore.blockchainForPublicKey(publicKey);
-        const settings = data[blockchain] || {};
-        return [blockchain, settings];
       })
     );
   }
@@ -985,6 +989,7 @@ export class Backend {
 }
 
 export const SUCCESS_RESPONSE = "success";
+
 const defaultNav = makeDefaultNav();
 
 function setSearchParam(url: string, key: string, value: string): string {

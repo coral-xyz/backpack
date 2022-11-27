@@ -1,5 +1,6 @@
 import type { EvmSettings } from "@coral-xyz/blockchain-evm";
 import {
+  DefaultSettings as EthereumDefaultSettings,
   EthereumHdKeyringFactory,
   EthereumKeyringFactory,
   EthereumLedgerKeyringFactory,
@@ -7,6 +8,7 @@ import {
 import { BlockchainKeyring } from "@coral-xyz/blockchain-keyring";
 import type { SolanaSettings } from "@coral-xyz/blockchain-solana";
 import {
+  DefaultSettings as SolanaDefaultSettings,
   SolanaHdKeyringFactory,
   SolanaKeyringFactory,
   SolanaLedgerKeyringFactory,
@@ -16,6 +18,8 @@ enum Blockchain {
   SOLANA = "solana",
   ETHEREUM = "ethereum",
 }
+
+// TODO we can clean these up with a common interface in the blockchain specific packages
 
 export function hdFactoryForBlockchain(blockchain: Blockchain) {
   return {
@@ -41,12 +45,19 @@ export function keyringForBlockchain(
   }[blockchain];
 }
 
+export function defaultSettingsForBlockchain(blockchain: Blockchain) {
+  return {
+    [Blockchain.SOLANA]: SolanaDefaultSettings,
+    [Blockchain.ETHEREUM]: EthereumDefaultSettings,
+  }[blockchain];
+}
+
 export type BlockchainSettings = EvmSettings | SolanaSettings;
 
 // Exports
 export type { EvmSettings } from "@coral-xyz/blockchain-evm";
 export {
-  DefaultKeyname,
   BlockchainKeyring,
+  DefaultKeyname,
 } from "@coral-xyz/blockchain-keyring";
 export type { SolanaSettings } from "@coral-xyz/blockchain-solana";

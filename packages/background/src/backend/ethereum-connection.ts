@@ -1,21 +1,22 @@
-import type { BigNumber } from "ethers";
-import { ethers } from "ethers";
-import type { Notification, EventEmitter } from "@coral-xyz/common";
+import type { EventEmitter, Notification } from "@coral-xyz/common";
 import {
+  BACKEND_EVENT,
+  Blockchain,
   fetchEthereumBalances,
   getLogger,
-  Blockchain,
-  BACKEND_EVENT,
   NOTIFICATION_BLOCKCHAIN_DISABLED,
   NOTIFICATION_BLOCKCHAIN_ENABLED,
   NOTIFICATION_BLOCKCHAIN_SETTINGS_UPDATED,
-  NOTIFICATION_KEYRING_STORE_CREATED,
-  NOTIFICATION_KEYRING_STORE_UNLOCKED,
-  NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
-  NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
   NOTIFICATION_ETHEREUM_FEE_DATA_DID_UPDATE,
+  NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
+  NOTIFICATION_KEYRING_STORE_CREATED,
+  NOTIFICATION_KEYRING_STORE_LOCKED,
+  NOTIFICATION_KEYRING_STORE_UNLOCKED,
 } from "@coral-xyz/common";
+import type { BigNumber } from "ethers";
+import { ethers } from "ethers";
+
 import type { CachedValue } from "../types";
 
 const logger = getLogger("ethereum-connection-backend");
@@ -137,16 +138,20 @@ export class EthereumConnectionBackend {
       let didChange = false;
       // Check for connection URL change
       if (prevSettings.connectionUrl !== newSettings.connectionUrl) {
-        logger.debug("ethereum connection url changed");
+        logger.debug(
+          "ethereum connection url changed",
+          newSettings.connectionUrl
+        );
         this.provider = new ethers.providers.JsonRpcProvider(
           newSettings.connectionUrl
         );
         this.connectionUrl = newSettings.connectionUrl;
+
         didChange = true;
       }
       // Check for chain ID change
       if (prevSettings.chainId !== newSettings.chainId) {
-        logger.debug("ethereum chain id changed");
+        logger.debug("ethereum chain id changed", newSettings.chainId);
         this.provider = new ethers.providers.JsonRpcProvider(
           this.connectionUrl,
           parseInt(newSettings.chainId)

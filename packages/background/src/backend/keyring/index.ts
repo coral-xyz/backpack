@@ -1,29 +1,28 @@
-import { generateMnemonic } from "bip39";
-import type { KeyringStoreState } from "@coral-xyz/recoil";
-import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
+import type { BlockchainKeyring } from "@coral-xyz/blockchain-common";
+import {
+  DefaultKeyname,
+  defaultSettingsForBlockchain,
+  hdFactoryForBlockchain,
+  keyringForBlockchain,
+} from "@coral-xyz/blockchain-common";
 import type {
-  EventEmitter,
+  Blockchain,
   DerivationPath,
+  EventEmitter,
   KeyringInit,
 } from "@coral-xyz/common";
 import {
-  Blockchain,
-  EthereumExplorer,
-  EthereumConnectionUrl,
-  SolanaExplorer,
-  SolanaCluster,
-  NOTIFICATION_KEYRING_STORE_LOCKED,
   BACKEND_EVENT,
+  NOTIFICATION_KEYRING_STORE_LOCKED,
 } from "@coral-xyz/common";
-import {
-  hdFactoryForBlockchain,
-  keyringForBlockchain,
-  BlockchainKeyring,
-  DefaultKeyname,
-} from "@coral-xyz/blockchain-common";
-import * as crypto from "./crypto";
+import type { KeyringStoreState } from "@coral-xyz/recoil";
+import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
+import { generateMnemonic } from "bip39";
+
 import * as store from "../store";
 import { DEFAULT_DARK_MODE, DEFAULT_DEVELOPER_MODE } from "../store";
+
+import * as crypto from "./crypto";
 
 /**
  * Keyring API for managing all wallet keys.
@@ -72,25 +71,21 @@ export class KeyringStore {
       );
     }
 
+    const enabledBlockchains = keyringInit.blockchainKeyrings.map(
+      (k) => k.blockchain
+    );
+
     // Persist the initial wallet ui metadata.
     await store.setWalletData({
       username,
       autoLockSecs: store.DEFAULT_LOCK_INTERVAL_SECS,
       approvedOrigins: [],
-      enabledBlockchains: keyringInit.blockchainKeyrings.map(
-        (k) => k.blockchain
-      ),
+      enabledBlockchains,
       darkMode: DEFAULT_DARK_MODE,
       developerMode: DEFAULT_DEVELOPER_MODE,
-      solana: {
-        explorer: SolanaExplorer.DEFAULT,
-        connectionUrl: SolanaCluster.DEFAULT,
-        commitment: "confirmed",
-      },
-      ethereum: {
-        explorer: EthereumExplorer.DEFAULT,
-        connectionUrl: EthereumConnectionUrl.DEFAULT,
-      },
+      ...Object.fromEntries(
+        enabledBlockchains.map((b) => [b, defaultSettingsForBlockchain(b)])
+      ),
     });
 
     // Persist the encrypted data to then store.

@@ -1,51 +1,52 @@
-import { useState, useEffect } from "react";
-import { BigNumber } from "ethers";
-import { PublicKey } from "@solana/web3.js";
-import { Typography, IconButton, Popover } from "@mui/material";
-import { Whatshot, CallMade } from "@mui/icons-material";
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import { useCustomTheme } from "@coral-xyz/themes";
+import { useEffect, useState } from "react";
 import {
-  nftMetadata,
-  useBackgroundClient,
-  useDecodedSearchParams,
-  useAnchorContext,
-  useLoader,
-  useSolanaCtx,
-  useEthereumCtx,
-  useBlockchainExplorer,
-  useBlockchainConnectionUrl,
-} from "@coral-xyz/recoil";
-import {
-  explorerNftUrl,
-  toTitleCase,
   Blockchain,
-  Solana,
   confirmTransaction,
+  explorerNftUrl,
   getLogger,
+  Solana,
+  toTitleCase,
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
 } from "@coral-xyz/common";
-import { PrimaryButton, SecondaryButton, NegativeButton } from "../../common";
 import {
+  nftMetadata,
+  useAnchorContext,
+  useBackgroundClient,
+  useBlockchainConnectionUrl,
+  useBlockchainExplorer,
+  useDecodedSearchParams,
+  useEthereumCtx,
+  useLoader,
+  useSolanaCtx,
+} from "@coral-xyz/recoil";
+import { useCustomTheme } from "@coral-xyz/themes";
+import { CallMade, Whatshot } from "@mui/icons-material";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import { IconButton, Popover, Typography } from "@mui/material";
+import { PublicKey } from "@solana/web3.js";
+import { BigNumber } from "ethers";
+
+import { NegativeButton, PrimaryButton, SecondaryButton } from "../../common";
+import { ApproveTransactionDrawer } from "../../common/ApproveTransactionDrawer";
+import { TextInput } from "../../common/Inputs";
+import {
+  CloseButton,
   useDrawerContext,
   WithDrawer,
-  CloseButton,
 } from "../../common/Layout/Drawer";
 import {
   NavStackEphemeral,
   NavStackScreen,
 } from "../../common/Layout/NavStack";
-import { SendSolanaConfirmationCard } from "../Balances/TokensWidget/Solana";
-import { SendEthereumConfirmationCard } from "../Balances/TokensWidget/Ethereum";
-import {
-  useIsValidAddress,
-  Sending,
-  Error as ErrorConfirmation,
-} from "../Balances/TokensWidget/Send";
-import { ApproveTransactionDrawer } from "../../common/ApproveTransactionDrawer";
 import { List, ListItem } from "../../common/List";
 import { ProxyImage } from "../../common/ProxyImage";
-import { TextInput } from "../../common/Inputs";
+import { SendEthereumConfirmationCard } from "../Balances/TokensWidget/Ethereum";
+import {
+  Error as ErrorConfirmation,
+  Sending,
+  useIsValidAddress,
+} from "../Balances/TokensWidget/Send";
+import { SendSolanaConfirmationCard } from "../Balances/TokensWidget/Solana";
 
 const logger = getLogger("app-extension/nft-detail");
 
@@ -383,9 +384,13 @@ export function NftOptionsButton() {
   }, [openDrawer, wasBurnt, background]);
 
   // @ts-ignore
-  const nft: any = nfts.get(searchParams.props.nftId);
-  const explorer = useBlockchainExplorer(nft.blockchain);
-  const connectionUrl = useBlockchainConnectionUrl(nft.blockchain);
+  const nft: any = nfts.get(searchParams.props.nftId); // TODO this can be undefined?
+  // Use a default because `nft` can be undefined for a few renders
+  const blockchain = nft ? nft.blockchain : Blockchain.SOLANA;
+  const canBurn = blockchain === Blockchain.SOLANA;
+
+  const explorer = useBlockchainExplorer(blockchain);
+  const connectionUrl = useBlockchainConnectionUrl(blockchain);
 
   const onClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -445,7 +450,7 @@ export function NftOptionsButton() {
                 height: "30px",
               }}
               isFirst={true}
-              isLast={nft.blockchain === Blockchain.ETHEREUM}
+              isLast={!canBurn}
               onClick={() => {
                 const url = explorerNftUrl(explorer, nft, connectionUrl);
                 window.open(url, "_blank");
@@ -464,7 +469,7 @@ export function NftOptionsButton() {
                 }}
               />
             </ListItem>
-            {nft.blockchain === Blockchain.ETHEREUM && (
+            {canBurn && (
               <ListItem
                 style={{
                   width: "100%",

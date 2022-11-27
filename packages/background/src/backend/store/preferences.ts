@@ -1,4 +1,5 @@
 import type { BlockchainSettings } from "@coral-xyz/blockchain-common";
+import { defaultSettingsForBlockchain } from "@coral-xyz/blockchain-common";
 import type { Blockchain } from "@coral-xyz/common";
 
 import { LocalStorageDb } from "./db";
@@ -16,7 +17,7 @@ export type WalletData = {
   darkMode: boolean;
   developerMode: boolean;
 } & {
-  [key in Blockchain]: BlockchainSettings;
+  [key in Blockchain]?: BlockchainSettings;
 };
 
 export async function getWalletData(): Promise<WalletData> {
@@ -24,9 +25,19 @@ export async function getWalletData(): Promise<WalletData> {
   if (data === undefined) {
     throw new Error("wallet data is undefined");
   }
+  // Migrating Solana `cluster` to `connectionUrl`
   if (data.solana && "cluster" in data.solana) {
     data.solana.connectionUrl = data.solana.cluster;
     delete data.cluster;
+  }
+  // Ensure default settings exist for all enabled blockchains
+  if (data.enabledBlockchains) {
+    for (const blockchain of data.enabledBlockchains) {
+      if (!data[blockchain])
+        data[blockchain] = defaultSettingsForBlockchain(
+          blockchain as Blockchain
+        );
+    }
   }
   return data;
 }
