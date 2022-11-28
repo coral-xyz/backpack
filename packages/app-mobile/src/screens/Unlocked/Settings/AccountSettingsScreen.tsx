@@ -1,31 +1,14 @@
-import { Image, Text, View } from "react-native";
-import {
-  useAvatarUrl,
-  // useBackgroundClient,
-  useWalletPublicKeys,
-  // useActiveWallets,
-  // useBlockchainLogo,
-  useUsername,
-  // WalletPublicKeys,
-} from "@coral-xyz/recoil";
-import {
-  // openPopupWindow,
-  Blockchain,
-  // BACKPACK_FEATURE_POP_MODE,
-  // BACKPACK_FEATURE_XNFT,
-  // UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
-  // UI_RPC_METHOD_KEYRING_STORE_LOCK,
-  // UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-  // DISCORD_INVITE_LINK,
-} from "@coral-xyz/common";
+import { StyleSheet, Text, View } from "react-native";
+import { Avatar, Margin, Screen } from "@components";
+import { useUsername } from "@coral-xyz/recoil";
 import { useTheme } from "@hooks";
-import { WalletLists } from "./components/WalletList";
+
 import { SettingsList } from "./components/SettingsList";
-import { Margin, Screen, Avatar } from "@components";
+import { WalletLists } from "./components/WalletList";
 
 export default function AccountSettingsModal() {
   return (
-    <Screen style={{ padding: 12 }}>
+    <Screen>
       <Margin bottom={24}>
         <AvatarHeader />
       </Margin>
@@ -45,15 +28,12 @@ function AvatarHeader() {
       <Avatar />
       {username && (
         <Text
-          style={{
-            textAlign: "center",
-            color: theme.custom.colors.fontColor,
-            fontWeight: "500",
-            fontSize: 18,
-            lineHeight: 28,
-            marginTop: 8,
-            marginBottom: 12,
-          }}
+          style={[
+            styles.usernameText,
+            {
+              color: theme.custom.colors.fontColor,
+            },
+          ]}
         >
           @{username}
         </Text>
@@ -61,3 +41,14 @@ function AvatarHeader() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  usernameText: {
+    textAlign: "center",
+    fontWeight: "500",
+    fontSize: 18,
+    lineHeight: 28,
+    marginTop: 8,
+    marginBottom: 12,
+  },
+});
