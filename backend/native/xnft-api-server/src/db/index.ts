@@ -9,11 +9,11 @@ const chain = Chain(HASURA_URL, {
   },
 });
 
-export const getSubscriptions = async (username: string) => {
+export const getSubscriptions = async (uuid: string) => {
   return chain("query")({
     auth_notification_subscriptions: [
       {
-        where: { username: { _eq: (username as string) || "" } },
+        where: { uuid: { _eq: (uuid as string) || "" } },
         limit: 5,
       },
       {
@@ -30,12 +30,12 @@ export const getSubscriptions = async (username: string) => {
 
 export const hasNotificationAccess = async (
   xnftId: string,
-  username: string
+  uuid: string
 ): Promise<boolean> => {
   const response = await chain("query")({
     auth_xnft_preferences: [
       {
-        where: { xnft_id: { _eq: xnftId }, username: { _eq: username } },
+        where: { xnft_id: { _eq: xnftId }, uuid: { _eq: uuid } },
         limit: 1,
       },
       {

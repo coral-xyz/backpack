@@ -25,26 +25,26 @@ webpush.setVapidDetails(
 
 export const sendNotifications = async (
   xnftAddress: string,
-  usernames: string[],
+  userIds: string[],
   { title, body }: NotificationProps
 ) => {
-  const promises = usernames.map(async (username) => {
-    await insertNotification(xnftAddress, username, { title, body });
-    await sendPushNotification(xnftAddress, username, { title, body });
+  const promises = userIds.map(async (uuid) => {
+    await insertNotification(xnftAddress, uuid, { title, body });
+    await sendPushNotification(xnftAddress, uuid, { title, body });
   });
   await Promise.all(promises);
 };
 
 export const sendPushNotification = async (
   xnftAddress: string,
-  username: string,
+  uuid: string,
   { title, body }: NotificationProps
 ) => {
-  const hasAccess = await hasNotificationAccess(xnftAddress, username);
+  const hasAccess = await hasNotificationAccess(xnftAddress, uuid);
   if (!hasAccess) {
     return;
   }
-  const responses = await getSubscriptions(username);
+  const responses = await getSubscriptions(uuid);
   await Promise.all(
     responses.auth_notification_subscriptions.map(async (response) => {
       const subscription = {

@@ -23,6 +23,7 @@ export const insertSubscription = (
         object: {
           public_key: publicKey,
           uuid,
+          username: "",
           endpoint: subscription.endpoint,
           p256dh: subscription.keys.p256dh,
           auth: subscription.keys.auth,
@@ -97,6 +98,7 @@ export const updatePreference = async (
           object: {
             uuid,
             xnft_id: xnftId,
+            username: "",
             notifications: preferences.notifications || false,
             media: preferences.media || false,
           },

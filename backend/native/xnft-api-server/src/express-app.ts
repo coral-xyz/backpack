@@ -13,3 +13,7 @@ app.use(bodyParser.raw({}));
 app.use("/v1", v1Routes);
 
 export default app;
+
+process.on("uncaughtException", function (err) {
+  console.log("Caught exception: " + err);
+});
