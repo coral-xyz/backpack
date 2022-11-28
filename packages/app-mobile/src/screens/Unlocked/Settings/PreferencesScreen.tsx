@@ -53,7 +53,7 @@ export function PreferencesScreen({ navigation }) {
           />
           <SettingsRow
             label="Trusted Sites"
-            onPress={() => navigation.push("Preferences")}
+            onPress={() => navigation.push("PreferencesTrustedSites")}
             detailIcon={<IconPushDetail />}
           />
           <SettingsRowSwitch

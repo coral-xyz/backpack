@@ -281,7 +281,14 @@ export function EmptyState({
 }) {
   const theme = useTheme();
   return (
-    <View>
+    <View style={{ alignItems: "center", justifyContent: "center" }}>
+      {icon({
+        size: 56,
+        style: {
+          color: theme.custom.colors.secondary,
+          marginBottom: 16,
+        },
+      })}
       <Typography
         style={{
           fontSize: 24,
@@ -307,7 +314,9 @@ export function EmptyState({
           {subtitle}
         </Typography>
       )}
-      <PrimaryButton label={buttonText} onPress={onPress} />
+      {minimize !== true && buttonText && (
+        <PrimaryButton label={buttonText} onPress={onPress} />
+      )}
     </View>
   );
 }

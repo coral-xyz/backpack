@@ -2,6 +2,7 @@ import { View } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import AccountSettingsScreen from "@screens/Unlocked/Settings/AccountSettingsScreen";
 import { PreferencesScreen } from "@screens/Unlocked/Settings/PreferencesScreen";
+import { PreferencesTrustedSitesScreen } from "@screens/Unlocked/Settings/PreferencesTrustedSitesScreen";
 
 const Stack = createStackNavigator();
 
@@ -26,6 +27,11 @@ export default function AccountSettingsNavigator() {
         options={{ title: "Preferences" }}
         name="Preferences"
         component={PreferencesScreen}
+      />
+      <Stack.Screen
+        options={{ title: "Trusted Sites" }}
+        name="PreferencesTrustedSites"
+        component={PreferencesTrustedSitesScreen}
       />
       <Stack.Screen
         options={{ title: "xNFTs" }}
