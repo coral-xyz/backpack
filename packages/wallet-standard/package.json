@@ -16,9 +16,9 @@
         "clean": "shx mkdir -p lib && shx rm -rf lib",
         "tsc": "tsc --build --verbose tsconfig.root.json",
         "package": "shx echo '{ \"type\": \"commonjs\" }' > lib/cjs/package.json",
-        "fmt": "prettier --write '{*,**/*}.{ts,tsx,js,jsx,json}'",
-        "lint": "prettier --check '{*,**/*}.{ts,tsx,js,jsx,json}' && eslint .",
-        "lint:fix": "yarn run fmt && eslint --fix ."
+        "fmt": "prettier --write '{*,**/*}.{ts,tsx,js,jsx,json}' --cache",
+        "lint": "prettier --check '{*,**/*}.{ts,tsx,js,jsx,json}' && eslint . --cache",
+        "lint:fix": "yarn run fmt && eslint --fix . --cache"
     },
     "dependencies": {
         "@coral-xyz/provider-core": "*",
@@ -35,10 +35,9 @@
         "@wallet-standard/features": "^1.0.0",
         "eslint": "8.22.0",
         "eslint-config-prettier": "^8.5.0",
-        "eslint-plugin-prettier": "^4.2.1",
         "eslint-plugin-require-extensions": "^0.1.1",
         "prettier": "^2.7.1",
         "shx": "^0.3.4",
-        "typescript": "~4.7.4"
+        "typescript": "~4.9.3"
     }
 }

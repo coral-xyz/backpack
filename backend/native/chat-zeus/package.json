@@ -1,0 +1,22 @@
+{
+  "name": "@coral-xyz/chat-zeus",
+  "version": "1.0.0",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "description": "",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "zeus-ws": "npx graphql-zeus http://localhost:8113/v1/graphql ./src --header=x-hasura-admin-secret:myadminsecretkey --header=x-hasura-role:chat  --subscriptions graphql-ws",
+    "zeus": "npx graphql-zeus http://localhost:8113/v1/graphql ./src --header=x-hasura-admin-secret:myadminsecretkey --header=x-hasura-role:chat  --subscriptions",
+    "build": "tsc && tsc-alias"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "graphql-ws": "^5.11.2",
+    "tsc-alias": "^1.7.1",
+    "typescript": "~4.9.3"
+  }
+}

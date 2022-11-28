@@ -1,4 +1,5 @@
 import type { DerivationPath } from "@coral-xyz/common";
+
 import type { LedgerKeyringBase } from "./ledger";
 
 export type KeyringJson = {
@@ -12,11 +13,11 @@ export interface KeyringFactory {
 
 export interface Keyring {
   publicKeys(): Array<string>;
+  deletePublicKey(publicKey: string): void;
   signTransaction(tx: Buffer, address: string): Promise<string>;
   signMessage(tx: Buffer, address: string): Promise<string>;
   exportSecretKey(address: string): string | null;
   importSecretKey(secretKey: string): string;
-  deleteKeyIfNeeded(pubkey: string): number;
   toJson(): any;
 }
 

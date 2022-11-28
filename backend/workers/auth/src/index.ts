@@ -10,14 +10,17 @@ import {
   Transaction,
   TransactionInstruction,
 } from "@solana/web3.js";
-import { ethers } from "ethers";
 import { decode } from "bs58";
+import { ethers } from "ethers";
+import type { Context } from "hono";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { importPKCS8, importSPKI, jwtVerify, SignJWT } from "jose";
 import { sign } from "tweetnacl";
 import { z, ZodError } from "zod";
-import { Chain } from "./zeus";
+
 import { registerOnRampHandlers } from "./onramp";
+import { Chain } from "./zeus";
 
 const BaseCreateUser = z.object({
   username: z
@@ -317,9 +320,13 @@ app.post("/users", async (c) => {
       },
       {
         id: true,
+        username: true,
       },
     ],
   });
+
+  if (!res.insert_auth_users_one)
+    throw new Error("Error creating user account");
 
   if (c.env.SLACK_WEBHOOK_URL) {
     try {
@@ -341,7 +348,7 @@ app.post("/users", async (c) => {
     }
   }
 
-  return c.json(res);
+  return jwt(c, res.insert_auth_users_one);
 });
 
 registerOnRampHandlers(app);
@@ -409,3 +416,144 @@ const camelCaseToSentenceCase = (str: string) =>
   str.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase());
 
 export default app;
+
+// JWT Auth --------------------------
+
+const alg = "RS256";
+
+const cookieDomain = (url: string) => {
+  const { hostname } = new URL(url);
+  // note:  the leading . below is significant, as it
+  //        enables us to use the cookie on subdomains
+  return hostname === "localhost" ? hostname : ".xnfts.dev";
+};
+
+const clearCookie = (c: Context<any>, cookieName: string) => {
+  c.res.headers.set(
+    "set-cookie",
+    `${cookieName}=; path=/; domain=${cookieDomain(
+      c.req.url
+    )}; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT`
+  );
+};
+
+const jwt = async (c: Context, user: { id: unknown; username: unknown }) => {
+  const secret = await importPKCS8(c.env.AUTH_JWT_PRIVATE_KEY, alg);
+
+  const jwt = await new SignJWT({
+    sub: String(user.id),
+    username: user.username,
+  })
+    .setProtectedHeader({ alg })
+    .setIssuer("auth.xnfts.dev")
+    .setAudience("backpack")
+    .setIssuedAt()
+    // .setExpirationTime("2h")
+    .sign(secret);
+
+  c.cookie("jwt", jwt, {
+    secure: true,
+    httpOnly: true,
+    sameSite: "Strict",
+    domain: cookieDomain(c.req.url),
+  });
+
+  return c.json({ jwt });
+};
+
+app.delete("/authenticate", async (c) => {
+  clearCookie(c, "jwt");
+  return c.status(200);
+});
+
+app.post("/authenticate", async (c) => {
+  const body = await c.req.json();
+  const sig = body.signature;
+  const pk = body.publickey;
+  const message = Buffer.from(decode(body.encodedMessage));
+  const { id, username } = JSON.parse(body.message);
+
+  let valid = false;
+  if (body.blockchain === "solana") {
+    valid = validateSolanaSignature(message, decode(sig), decode(pk));
+  } else if (body.blockchain === "ethereum") {
+    valid = validateEthereumSignature(message, sig, pk);
+  }
+  if (!valid) throw new Error("Invalid signature");
+
+  const chain = Chain(c.env.HASURA_URL, {
+    headers: {
+      Authorization: `Bearer ${c.env.JWT}`,
+    },
+  });
+
+  const res = await chain("query")({
+    auth_users: [
+      {
+        where: {
+          id: { _eq: id },
+          username: { _eq: username },
+          publickeys: {
+            publickey: { _eq: body.publickey },
+            blockchain: { _eq: body.blockchain },
+          },
+        },
+        limit: 1,
+      },
+      {
+        id: true,
+        username: true,
+      },
+    ],
+  });
+  const [user] = res.auth_users;
+  if (!user) throw new Error("user not found");
+
+  return jwt(c, user);
+});
+
+app.post("/authenticate/:username", async (c) => {
+  const username = c.req.param("username");
+  const jwt = c.req.cookie("jwt");
+
+  if (jwt) {
+    try {
+      const publicKey = await importSPKI(c.env.AUTH_JWT_PUBLIC_KEY, alg);
+      const res = await jwtVerify(jwt, publicKey, {
+        issuer: "auth.xnfts.dev",
+        audience: "backpack",
+      });
+      if (res.payload.username === username) {
+        return c.json({ msg: "valid jwt cookie" }, 200);
+      } else {
+        throw new Error(`invalid username (${username})`);
+      }
+    } catch (err) {
+      console.error(err);
+      clearCookie(c, "jwt");
+      return c.json({ msg: "invalid jwt cookie" }, 401);
+    }
+  } else {
+    const chain = Chain(c.env.HASURA_URL, {
+      headers: {
+        Authorization: `Bearer ${c.env.JWT}`,
+      },
+    });
+    const res = await chain("query")({
+      auth_users: [
+        {
+          where: { username: { _eq: username } },
+          limit: 1,
+        },
+        {
+          id: true,
+          publickeys: [{}, { blockchain: true, publickey: true }],
+        },
+      ],
+    });
+    const user = res.auth_users?.[0];
+    return user
+      ? c.json(user)
+      : c.json({ message: `username (${username}) not found` }, 404);
+  }
+});

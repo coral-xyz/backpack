@@ -26,7 +26,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
     try {
       await background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-        params: [password],
+        params: [password, username],
       });
 
       if (onUnlock) {

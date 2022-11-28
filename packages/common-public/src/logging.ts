@@ -1,7 +1,7 @@
-import { vanillaStore } from "./zustand-store";
-import { isServiceWorker, IS_MOBILE } from "./utils";
 import { MOBILE_CHANNEL_LOGS } from "./constants";
 import * as cfg from "./generated-config";
+import { IS_MOBILE, isServiceWorker } from "./utils";
+import { vanillaStore } from "./zustand-store";
 
 export function getLogger(mod: string) {
   if (_LOG_LEVEL === undefined) {

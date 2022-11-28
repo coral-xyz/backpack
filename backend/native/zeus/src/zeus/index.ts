@@ -1063,6 +1063,7 @@ export type ValueTypes = {
     p256dh?: boolean | `@${string}`;
     public_key?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
+    uuid?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
   /** Boolean expression to filter rows from the table "auth.notification_subscriptions". All fields are combined with a logical 'AND'. */
@@ -1117,6 +1118,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    uuid?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
   };
   /** unique or primary key constraints on table "auth.notification_subscriptions" */
   ["auth_notification_subscriptions_constraint"]: auth_notification_subscriptions_constraint;
@@ -1133,6 +1139,7 @@ export type ValueTypes = {
     p256dh?: string | undefined | null | Variable<any, string>;
     public_key?: string | undefined | null | Variable<any, string>;
     username?: string | undefined | null | Variable<any, string>;
+    uuid?: string | undefined | null | Variable<any, string>;
   };
   /** response of any mutation on the table "auth.notification_subscriptions" */
   ["auth_notification_subscriptions_mutation_response"]: AliasType<{
@@ -1181,6 +1188,7 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    uuid?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
   };
   /** primary key columns input for table: auth_notification_subscriptions */
   ["auth_notification_subscriptions_pk_columns_input"]: {
@@ -1220,6 +1228,7 @@ export type ValueTypes = {
     p256dh?: string | undefined | null | Variable<any, string>;
     public_key?: string | undefined | null | Variable<any, string>;
     username?: string | undefined | null | Variable<any, string>;
+    uuid?: string | undefined | null | Variable<any, string>;
   };
   /** update columns of table "auth.notification_subscriptions" */
   ["auth_notification_subscriptions_update_column"]: auth_notification_subscriptions_update_column;
@@ -3826,6 +3835,7 @@ export type ResolverInputTypes = {
     p256dh?: boolean | `@${string}`;
     public_key?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
+    uuid?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
   /** Boolean expression to filter rows from the table "auth.notification_subscriptions". All fields are combined with a logical 'AND'. */
@@ -3852,6 +3862,7 @@ export type ResolverInputTypes = {
     p256dh?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     public_key?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     username?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    uuid?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
   };
   /** unique or primary key constraints on table "auth.notification_subscriptions" */
   ["auth_notification_subscriptions_constraint"]: auth_notification_subscriptions_constraint;
@@ -3868,6 +3879,7 @@ export type ResolverInputTypes = {
     p256dh?: string | undefined | null;
     public_key?: string | undefined | null;
     username?: string | undefined | null;
+    uuid?: string | undefined | null;
   };
   /** response of any mutation on the table "auth.notification_subscriptions" */
   ["auth_notification_subscriptions_mutation_response"]: AliasType<{
@@ -3897,6 +3909,7 @@ export type ResolverInputTypes = {
     p256dh?: ResolverInputTypes["order_by"] | undefined | null;
     public_key?: ResolverInputTypes["order_by"] | undefined | null;
     username?: ResolverInputTypes["order_by"] | undefined | null;
+    uuid?: ResolverInputTypes["order_by"] | undefined | null;
   };
   /** primary key columns input for table: auth_notification_subscriptions */
   ["auth_notification_subscriptions_pk_columns_input"]: {
@@ -3930,6 +3943,7 @@ export type ResolverInputTypes = {
     p256dh?: string | undefined | null;
     public_key?: string | undefined | null;
     username?: string | undefined | null;
+    uuid?: string | undefined | null;
   };
   /** update columns of table "auth.notification_subscriptions" */
   ["auth_notification_subscriptions_update_column"]: auth_notification_subscriptions_update_column;
@@ -5831,6 +5845,7 @@ export type ModelTypes = {
     p256dh: string;
     public_key: string;
     username: string;
+    uuid: string;
   };
   /** Boolean expression to filter rows from the table "auth.notification_subscriptions". All fields are combined with a logical 'AND'. */
   ["auth_notification_subscriptions_bool_exp"]: {
@@ -5848,6 +5863,7 @@ export type ModelTypes = {
     p256dh?: ModelTypes["String_comparison_exp"] | undefined;
     public_key?: ModelTypes["String_comparison_exp"] | undefined;
     username?: ModelTypes["String_comparison_exp"] | undefined;
+    uuid?: ModelTypes["String_comparison_exp"] | undefined;
   };
   ["auth_notification_subscriptions_constraint"]: auth_notification_subscriptions_constraint;
   /** input type for incrementing numeric columns in table "auth.notification_subscriptions" */
@@ -5863,6 +5879,7 @@ export type ModelTypes = {
     p256dh?: string | undefined;
     public_key?: string | undefined;
     username?: string | undefined;
+    uuid?: string | undefined;
   };
   /** response of any mutation on the table "auth.notification_subscriptions" */
   ["auth_notification_subscriptions_mutation_response"]: {
@@ -5888,6 +5905,7 @@ export type ModelTypes = {
     p256dh?: ModelTypes["order_by"] | undefined;
     public_key?: ModelTypes["order_by"] | undefined;
     username?: ModelTypes["order_by"] | undefined;
+    uuid?: ModelTypes["order_by"] | undefined;
   };
   /** primary key columns input for table: auth_notification_subscriptions */
   ["auth_notification_subscriptions_pk_columns_input"]: {
@@ -5920,6 +5938,7 @@ export type ModelTypes = {
     p256dh?: string | undefined;
     public_key?: string | undefined;
     username?: string | undefined;
+    uuid?: string | undefined;
   };
   ["auth_notification_subscriptions_update_column"]: auth_notification_subscriptions_update_column;
   ["auth_notification_subscriptions_updates"]: {
@@ -6831,6 +6850,7 @@ export type GraphQLTypes = {
     p256dh: string;
     public_key: string;
     username: string;
+    uuid: string;
   };
   /** Boolean expression to filter rows from the table "auth.notification_subscriptions". All fields are combined with a logical 'AND'. */
   ["auth_notification_subscriptions_bool_exp"]: {
@@ -6848,6 +6868,7 @@ export type GraphQLTypes = {
     p256dh?: GraphQLTypes["String_comparison_exp"] | undefined;
     public_key?: GraphQLTypes["String_comparison_exp"] | undefined;
     username?: GraphQLTypes["String_comparison_exp"] | undefined;
+    uuid?: GraphQLTypes["String_comparison_exp"] | undefined;
   };
   /** unique or primary key constraints on table "auth.notification_subscriptions" */
   ["auth_notification_subscriptions_constraint"]: auth_notification_subscriptions_constraint;
@@ -6864,6 +6885,7 @@ export type GraphQLTypes = {
     p256dh?: string | undefined;
     public_key?: string | undefined;
     username?: string | undefined;
+    uuid?: string | undefined;
   };
   /** response of any mutation on the table "auth.notification_subscriptions" */
   ["auth_notification_subscriptions_mutation_response"]: {
@@ -6892,6 +6914,7 @@ export type GraphQLTypes = {
     p256dh?: GraphQLTypes["order_by"] | undefined;
     public_key?: GraphQLTypes["order_by"] | undefined;
     username?: GraphQLTypes["order_by"] | undefined;
+    uuid?: GraphQLTypes["order_by"] | undefined;
   };
   /** primary key columns input for table: auth_notification_subscriptions */
   ["auth_notification_subscriptions_pk_columns_input"]: {
@@ -6925,6 +6948,7 @@ export type GraphQLTypes = {
     p256dh?: string | undefined;
     public_key?: string | undefined;
     username?: string | undefined;
+    uuid?: string | undefined;
   };
   /** update columns of table "auth.notification_subscriptions" */
   ["auth_notification_subscriptions_update_column"]: auth_notification_subscriptions_update_column;
@@ -7838,6 +7862,7 @@ export const enum auth_notification_subscriptions_select_column {
   p256dh = "p256dh",
   public_key = "public_key",
   username = "username",
+  uuid = "uuid",
 }
 /** update columns of table "auth.notification_subscriptions" */
 export const enum auth_notification_subscriptions_update_column {

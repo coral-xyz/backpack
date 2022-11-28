@@ -12,6 +12,7 @@ import {
   SelectSendTokenModal,
   SendTokenModal,
 } from "@screens/Unlocked/SendTokenScreen";
+import AccountSettingsScreen from "@screens/Unlocked/Settings/AccountSettingsScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -24,8 +25,9 @@ export default function UnlockedNavigator() {
       </Stack.Group>
       <Stack.Group screenOptions={{ presentation: "modal", headerShown: true }}>
         <Stack.Screen
+          options={{ title: "Profile" }}
           name="AccountSettingsModal"
-          component={AccountSettingsModal}
+          component={AccountSettingsScreen}
         />
         <Stack.Screen
           name="RecentActivityModal"
@@ -57,14 +59,6 @@ export default function UnlockedNavigator() {
         />
       </Stack.Group>
     </Stack.Navigator>
-  );
-}
-
-function AccountSettingsModal() {
-  return (
-    <View style={{ flex: 1, backgroundColor: "green", alignItems: "center" }}>
-      <Text>Account Settings</Text>
-    </View>
   );
 }
 
