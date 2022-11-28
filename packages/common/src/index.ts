@@ -9,6 +9,8 @@ export * from "./constants";
 export * from "./crypto";
 export * from "./ethereum";
 export * from "./feature-gates";
+export * from "./messages";
+export * from "./notifications";
 export * from "./plugin";
 export * from "./solana";
 export * from "./types";

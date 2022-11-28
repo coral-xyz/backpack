@@ -14,7 +14,7 @@ interface Preference {
 
 export const insertSubscription = (
   publicKey: string,
-  username: string,
+  uuid: string,
   subscription: any
 ) => {
   return chain("mutation")({
@@ -22,7 +22,7 @@ export const insertSubscription = (
       {
         object: {
           public_key: publicKey,
-          username,
+          uuid,
           endpoint: subscription.endpoint,
           p256dh: subscription.keys.p256dh,
           auth: subscription.keys.auth,
@@ -36,11 +36,11 @@ export const insertSubscription = (
   });
 };
 
-export const getPreferences = async (username: string) => {
+export const getPreferences = async (uuid: string) => {
   const currentPreferences = await chain("query")({
     auth_xnft_preferences: [
       {
-        where: { username: { _eq: username } },
+        where: { uuid: { _eq: uuid } },
       },
       {
         id: true,
@@ -60,14 +60,14 @@ export const getPreferences = async (username: string) => {
 
 export const updatePreference = async (
   xnftId: string,
-  username: string,
+  uuid: string,
   preferences: Preference
 ) => {
   //TODO: Fix possible race condition (two creates at same time)
   const currentPreference = await chain("query")({
     auth_xnft_preferences: [
       {
-        where: { xnft_id: { _eq: xnftId }, username: { _eq: username } },
+        where: { xnft_id: { _eq: xnftId }, uuid: { _eq: uuid } },
         limit: 1,
       },
       {
@@ -95,7 +95,7 @@ export const updatePreference = async (
       insert_auth_xnft_preferences_one: [
         {
           object: {
-            username,
+            uuid,
             xnft_id: xnftId,
             notifications: preferences.notifications || false,
             media: preferences.media || false,

@@ -1,5 +1,4 @@
-import { Chain } from "auth/src/zeus";
-import { BlockChain } from "./zodTypes";
+import { Chain } from "../zeus";
 
 export const createSession = async (
   HASURA_URL: string,

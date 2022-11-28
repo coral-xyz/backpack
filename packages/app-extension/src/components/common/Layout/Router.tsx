@@ -27,6 +27,7 @@ import { Token } from "../../Unlocked/Balances/TokensWidget/Token";
 import { Nfts } from "../../Unlocked/Nfts";
 import { NftsCollection } from "../../Unlocked/Nfts/Collection";
 import { NftOptionsButtonLoader, NftsDetail } from "../../Unlocked/Nfts/Detail";
+import { NftChat, NftsExperience } from "../../Unlocked/Nfts/Experience";
 import { SettingsButton } from "../../Unlocked/Settings";
 
 import { NavBackButton, WithNav } from "./Nav";
@@ -43,6 +44,8 @@ export function Router() {
         <Route path="/nfts" element={<NftsPage />} />
         {/*<Route path="/swap" element={<SwapPage />} />*/}
         <Route path="/nfts/collection" element={<NftsCollectionPage />} />
+        <Route path="/nfts/experience" element={<NftsExperiencePage />} />
+        <Route path="/nfts/chat" element={<NftsChatPage />} />
         <Route path="/nfts/detail" element={<NftsDetailPage />} />
         <Route path="*" element={<Redirect />} />
       </Routes>
@@ -69,13 +72,25 @@ function NftsPage() {
   return <NavScreen component={<Nfts />} />;
 }
 
+function NftsChatPage() {
+  const { props } = useDecodedSearchParams();
+  return <NavScreen component={<NftChat {...props} />} />;
+}
+
+function NftsExperiencePage() {
+  const { props } = useDecodedSearchParams();
+  return <NavScreen component={<NftsExperience {...props} />} />;
+}
+
 function NftsCollectionPage() {
   const { props } = useDecodedSearchParams();
+  // @ts-expect-error TS2322: Property 'id' is missing in type '{}' but required in type '{ id: string; }'
   return <NavScreen component={<NftsCollection {...props} />} />;
 }
 
 function NftsDetailPage() {
   const { props } = useDecodedSearchParams();
+  // @ts-expect-error TS2322: Property 'nftId' is missing in type '{}' but required in type '{ nftId: string; }'.
   return <NavScreen component={<NftsDetail {...props} />} />;
 }
 

@@ -6,24 +6,26 @@ insert_permissions:
     permission:
       check: {}
       columns:
-        - id
         - auth
         - endpoint
         - expirationTime
+        - id
         - p256dh
         - public_key
         - username
+        - uuid
 select_permissions:
   - role: auth_worker
     permission:
       columns:
-        - id
         - auth
         - endpoint
         - expirationTime
+        - id
         - p256dh
         - public_key
         - username
+        - uuid
       filter: {}
 update_permissions:
   - role: auth_worker

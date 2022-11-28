@@ -146,15 +146,23 @@ const pricesForIds = selector({
       ids,
     };
     const queryString = new URLSearchParams(params).toString();
-    const resp = await fetch(
-      `https://api.coingecko.com/api/v3/simple/price?${queryString}`
-    );
-    const json = await resp.json();
-    const coingeckoIdToAddressMap = get(coingeckoIdToAddress);
-    return new Map(
-      // Transform the response from id -> price data to addresss -> price data
-      Object.keys(json).map((id) => [coingeckoIdToAddressMap.get(id), json[id]])
-    );
+    try {
+      const resp = await fetch(
+        `https://api.coingecko.com/api/v3/simple/price?${queryString}`
+      );
+      const json = await resp.json();
+      const coingeckoIdToAddressMap = get(coingeckoIdToAddress);
+      return new Map(
+        // Transform the response from id -> price data to addresss -> price data
+        Object.keys(json).map((id) => [
+          coingeckoIdToAddressMap.get(id),
+          json[id],
+        ])
+      );
+    } catch (err) {
+      console.error("error querying all Coingecko IDs", err);
+      return new Map();
+    }
   },
 });
 
@@ -172,17 +180,22 @@ const pricesForErc20Addresses = selector({
       contract_addresses: contractAddresses,
     };
     const queryString = new URLSearchParams(params).toString();
-    const resp = await fetch(
-      `https://api.coingecko.com/api/v3/simple/token_price/ethereum?${queryString}`
-    );
-    const json = await resp.json();
-    return new Map(
-      // Transform the response from id -> price data to addresss -> price data
-      Object.keys(json).map((address) => [
-        ethers.utils.getAddress(address),
-        json[address],
-      ])
-    );
+    try {
+      const resp = await fetch(
+        `https://api.coingecko.com/api/v3/simple/token_price/ethereum?${queryString}`
+      );
+      const json = await resp.json();
+      return new Map(
+        // Transform the response from id -> price data to addresss -> price data
+        Object.keys(json).map((address) => [
+          ethers.utils.getAddress(address),
+          json[address],
+        ])
+      );
+    } catch (err) {
+      console.error("error querying all ER20 tokens", err);
+      return new Map();
+    }
   },
 });
 
@@ -196,10 +209,15 @@ export const ethereumPrice = selector({
       ids: "ethereum",
     };
     const queryString = new URLSearchParams(params).toString();
-    const resp = await fetch(
-      `https://api.coingecko.com/api/v3/simple/price?${queryString}`
-    );
-    const json = await resp.json();
-    return json["ethereum"];
+    try {
+      const resp = await fetch(
+        `https://api.coingecko.com/api/v3/simple/price?${queryString}`
+      );
+      const json = await resp.json();
+      return json["ethereum"];
+    } catch (err) {
+      console.error("error fetching ethereum price:", err);
+      return;
+    }
   },
 });

@@ -189,6 +189,8 @@ export const UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_UPDATE =
   "ui-rpc-method-settings-developer-mode-update";
 export const UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET =
   "ui-rpc-method-sign-message-for-wallet";
+export const UI_RPC_METHOD_TRY_TO_SIGN_MESSAGE =
+  "ui-rpc-method-try-to-sign-message";
 export const UI_RPC_METHOD_USERNAME_READ = "ui-rpc-method-username-read";
 // Solana
 export const UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS =
@@ -426,6 +428,8 @@ export const TAB_SET = new Set([TAB_BALANCES, TAB_SWAP, TAB_NFTS, TAB_APPS]);
 export const NAV_COMPONENT_TOKEN = "balances/token";
 export const NAV_COMPONENT_NFT_DETAIL = "nfts/detail";
 export const NAV_COMPONENT_NFT_COLLECTION = "nfts/collection";
+export const NAV_COMPONENT_NFT_EXPERIENCE = "nfts/experience";
+export const NAV_COMPONENT_NFT_CHAT = "nfts/chat";
 
 export const BACKEND_EVENT = "backend-event";
 

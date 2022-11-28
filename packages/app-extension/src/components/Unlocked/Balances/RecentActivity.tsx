@@ -13,6 +13,7 @@ import {
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Bolt, CallMade, Check, Clear } from "@mui/icons-material";
+import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import { IconButton, List, ListItem, Typography } from "@mui/material";
 
 import { Loading } from "../../common";
@@ -104,7 +105,7 @@ export function RecentActivityButton() {
         onClick={() => setOpenDrawer(true)}
         size="large"
       >
-        <Bolt className={classes.networkSettingsIcon} />
+        <FormatListBulletedIcon className={classes.networkSettingsIcon} />
       </IconButton>
       <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
         <div style={{ height: "100%" }}>

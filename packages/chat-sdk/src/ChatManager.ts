@@ -1,77 +1,160 @@
-import { Subscription } from "./subscriptionManager";
-import { Chain, SubscriptionToGraphQL } from "./zeus/index";
-import { HASURA_URL, HASURA_WS_URL, JWT } from "./config";
+import { Signaling, SIGNALING_CONNECTED } from "./Signaling";
+import {
+  BACKEND_API_URL,
+  CHAT_MESSAGES,
+  Message,
+  MessageWithMetadata,
+  SUBSCRIBE,
+  SubscriptionType,
+} from "@coral-xyz/common";
 
-interface Message {
-  id: number;
-  username?: string;
-  uuid?: string;
-  message?: string;
+export interface EnrichedMessage extends MessageWithMetadata {
+  direction: "send" | "recv";
+  received?: boolean;
 }
 
 export class ChatManager {
   private roomId: string;
-  private username: string = "kira";
+  private userId: string;
   private onMessages: (messages: Message[]) => void;
-  private subscription?: any;
+  private onMessagesPrepend: (messages: Message[]) => void;
+  private onLocalMessageReceived: (messages: Message[]) => void;
+  private lastChatId = 1000000000;
+  private sendQueue: { [client_generated_uuid: string]: boolean } = {};
+  private fetchingInProgress = false;
+  private signaling: Signaling;
 
-  constructor(roomId: string, onMessages: (messages: Message[]) => void) {
+  constructor(
+    userId: string,
+    roomId: string,
+    onMessages: (messages: EnrichedMessage[]) => void,
+    onMessagesPrepend: (messages: EnrichedMessage[]) => void,
+    onLocalMessageReceived: (messages: EnrichedMessage[]) => void
+  ) {
     this.roomId = roomId;
+    this.userId = userId;
     this.onMessages = onMessages;
-    this.subscribeIncomingMessages();
+    this.onMessagesPrepend = onMessagesPrepend;
+    this.onLocalMessageReceived = onLocalMessageReceived;
+    this.signaling = new Signaling();
+    this.init();
   }
 
-  async subscribeIncomingMessages() {
-    const wsChain = Subscription(HASURA_WS_URL, {
-      get headers() {
-        return { Authorization: `Bearer ${JWT}` };
-      },
-    });
+  async fetchMoreChats() {
+    if (this.fetchingInProgress) {
+      return;
+    }
 
-    const subscription = wsChain("subscription")({
-      chats: [
-        { limit: 50 },
-        {
-          id: true,
-          username: true,
-          uuid: true,
-          message: true,
+    this.fetchingInProgress = true;
+    fetch(
+      `${BACKEND_API_URL}/chat?room=${this.roomId}&type=collection&lastChatId=${this.lastChatId}`,
+      {
+        method: "GET",
+      }
+    )
+      .then(async (response) => {
+        const json = await response.json();
+        const chats: MessageWithMetadata[] = json.chats;
+        if (chats && chats.length !== 0) {
+          chats.forEach((chat) => {
+            if (chat.id < this.lastChatId) {
+              this.lastChatId = chat.id;
+            }
+          });
+          this.onMessagesPrepend(
+            chats.map((chat) => ({
+              ...chat,
+              direction: this.userId === chat.uuid ? "send" : "recv",
+            }))
+          );
+        }
+        this.fetchingInProgress = false;
+      })
+      .catch((e) => {
+        console.error(`Error while fetching data from chat ${e}`);
+        this.fetchingInProgress = false;
+      });
+  }
+
+  async init() {
+    this.signaling.addListener(SIGNALING_CONNECTED, () => {
+      this.signaling.send({
+        type: SUBSCRIBE,
+        payload: {
+          type: "collection",
+          room: this.roomId,
         },
-      ],
+      });
     });
-
-    subscription.on(({ chats }) => {
-      this.onMessages(chats);
-    });
-
-    this.subscription = subscription;
+    this.signaling.addListener(
+      CHAT_MESSAGES,
+      ({
+        messages,
+        type,
+        room,
+      }: {
+        messages: MessageWithMetadata[];
+        type: SubscriptionType;
+        room: string;
+      }) => {
+        const filteredChats: EnrichedMessage[] = [];
+        const filteredReceived: EnrichedMessage[] = [];
+        for (let i = 0; i < messages.length; i++) {
+          if (messages[i].id < this.lastChatId) {
+            this.lastChatId = messages[i].id;
+          }
+          if (this.sendQueue[messages[i].client_generated_uuid || ""]) {
+            delete this.sendQueue[messages[i].client_generated_uuid || ""];
+            filteredReceived.push({
+              ...messages[i],
+              direction: this.userId === messages[i].uuid ? "send" : "recv",
+            });
+          } else {
+            filteredChats.push({
+              ...messages[i],
+              direction: this.userId === messages[i].uuid ? "send" : "recv",
+              received: true,
+            });
+          }
+        }
+        if (filteredChats.length) {
+          this.onMessages(filteredChats);
+        }
+        if (filteredReceived.length) {
+          this.onLocalMessageReceived(filteredReceived);
+        }
+      }
+    );
   }
 
-  async send(message: string) {
-    const chain = Chain(HASURA_URL, {
-      headers: {
-        Authorization: `Bearer ${JWT}`,
-      },
-    });
+  async send(
+    message: string,
+    client_generated_uuid: string,
+    messageKind: "text" | "gif"
+  ) {
+    this.sendQueue[client_generated_uuid] = true;
 
-    await chain("mutation")({
-      insert_chats_one: [
-        {
-          object: {
-            username: this.username,
-            room: this.roomId,
+    this.signaling.send({
+      type: CHAT_MESSAGES,
+      payload: {
+        messages: [
+          {
             message,
-            uuid: "",
+            client_generated_uuid,
+            message_kind: messageKind,
           },
-        },
-        {
-          id: true,
-        },
-      ],
+        ],
+        type: "collection",
+        room: this.roomId,
+      },
     });
   }
 
   destroy() {
-    this.subscription?.ws.close();
+    try {
+      this.signaling.destroy();
+    } catch (e) {
+      console.log(`Error while updating subscription`);
+    }
   }
 }

@@ -35,10 +35,18 @@ export class ChannelAppUiServer {
 
   public handler(handlerFn: (req: RpcRequest) => Promise<RpcResponse>) {
     BrowserRuntimeCommon.addEventListenerFromBackground(
-      (msg: any, _sender: any, sendResponse: any) => {
+      (msg: any, sender: any, sendResponse: any) => {
         if (msg.channel !== this.name) {
           return;
         }
+
+        // TODO(peter/armani): chrome.runtime.id doesn't work in react-native since it uses Hermes/JavascriptCore under the hood. We'll need to figure out the equivalent (eventually?)
+        // if (chrome && chrome?.runtime?.id) {
+        //   if (sender.id !== chrome.runtime.id) {
+        //     return;
+        //   }
+        // }
+
         const id = msg.data.id;
         handlerFn(msg.data)
           .then((resp) => {
@@ -59,10 +67,18 @@ export class ChannelAppUiNotifications {
 
   public onNotification(handlerFn: (notif: Notification) => void) {
     BrowserRuntimeCommon.addEventListenerFromAppUi(
-      (msg: any, _sender: any, sendResponse: any) => {
+      (msg: any, sender: any, sendResponse: any) => {
         if (msg.channel !== this.name) {
           return;
         }
+
+        // TODO(peter/armani): chrome.runtime.id doesn't work in react-native since it uses Hermes/JavascriptCore under the hood. We'll need to figure out the equivalent (eventually?)
+        // if (chrome && chrome?.runtime?.id) {
+        //   if (sender.id !== chrome.runtime.id) {
+        //     return;
+        //   }
+        // }
+
         handlerFn(msg.data);
         sendResponse({ result: "success" });
       }

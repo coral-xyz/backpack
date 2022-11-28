@@ -235,7 +235,7 @@ export function PrimaryButton({
   ...buttonProps
 }: {
   buttonLabelStyle?: React.CSSProperties;
-  label?: string;
+  label?: string | React.ReactNode;
 } & React.ComponentProps<typeof Button>) {
   const theme = useCustomTheme();
   const classes = useStyles();
