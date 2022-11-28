@@ -12,8 +12,8 @@
     "web"
   ],
   "scripts": {
-    "lint": "turbo run lint",
-    "lint:fix": "turbo run lint:fix",
+    "lint": "turbo run lint --filter=!@coral-xyz/app-mobile",
+    "lint:fix": "turbo run lint:fix --filter=!@coral-xyz/app-mobile",
     "prepare": "husky install",
     "start": "env-cmd --silent turbo run start --concurrency=100% --filter=./packages/*",
     "start:fresh": "yarn install && yarn clean && yarn install && yarn start",
