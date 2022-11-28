@@ -57,7 +57,7 @@ jobs:
       ##########################################################################
 
       - name: cleanup packages
-        run: rm -rf examples && git checkout examples/xnft/iframe && rm -rf web
+        run: rm -rf examples && git checkout examples/xnft/iframe && git checkout examples/xnft/explorer && rm -rf web
 
       ##########################################################################
       # Build extension.
