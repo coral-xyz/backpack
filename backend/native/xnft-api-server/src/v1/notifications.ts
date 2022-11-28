@@ -23,6 +23,7 @@ router.post("/", xnftMiddleware, async (req, res) => {
   })
     .then(() => res.status(200).json({ msg: "success" }))
     .catch((e) => {
+      console.log(e);
       res.status(411).json({ msg: "Failed to send notification" });
     });
 });
