@@ -64,7 +64,7 @@ export const deleteSubscription = (id: number) => {
 
 export const insertNotification = (
   xnftId: string,
-  username: string,
+  uuid: string,
   { title, body }: NotificationProps
 ) => {
   return chain("mutation")({
@@ -73,10 +73,10 @@ export const insertNotification = (
         object: {
           title,
           body,
-          username,
+          uuid,
           xnft_id: xnftId,
           timestamp: new Date(),
-          uuid: "",
+          username: "",
           image: "",
         },
       },

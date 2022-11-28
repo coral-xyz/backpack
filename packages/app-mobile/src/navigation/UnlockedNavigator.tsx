@@ -1,6 +1,7 @@
 import { Button, FlatList, Text, View } from "react-native";
 import { Screen } from "@components";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import AccountSettingsNavigator from "@navigation/AccountSettingsNavigator";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { getHeaderTitle } from "@react-navigation/elements";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -12,7 +13,7 @@ import {
   SelectSendTokenModal,
   SendTokenModal,
 } from "@screens/Unlocked/SendTokenScreen";
-import AccountSettingsScreen from "@screens/Unlocked/Settings/AccountSettingsScreen";
+import { RecentActivityScreen } from "@screens/Unlocked/RecentActivityScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -25,13 +26,13 @@ export default function UnlockedNavigator() {
       </Stack.Group>
       <Stack.Group screenOptions={{ presentation: "modal", headerShown: true }}>
         <Stack.Screen
-          options={{ title: "Profile" }}
           name="AccountSettingsModal"
-          component={AccountSettingsScreen}
+          component={AccountSettingsNavigator}
         />
         <Stack.Screen
           name="RecentActivityModal"
-          component={RecentActivityModal}
+          options={{ title: "Recent Activity" }}
+          component={RecentActivityScreen}
         />
         <Stack.Screen
           options={{ title: "Deposit" }}
