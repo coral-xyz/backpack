@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Blockchain, UI_RPC_METHOD_KEYNAME_READ } from "@coral-xyz/common";
+import type { Blockchain } from "@coral-xyz/common";
+import { UI_RPC_METHOD_KEYNAME_READ } from "@coral-xyz/common";
+import { useBackgroundClient, useWalletPublicKeys } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { useWalletPublicKeys, useBackgroundClient } from "@coral-xyz/recoil";
 import { ContentCopy } from "@mui/icons-material";
-import { SettingsList } from "../../../../common/Settings/List";
+
 import { useNavStack } from "../../../../common/Layout/NavStack";
+import { SettingsList } from "../../../../common/Settings/List";
 import { WithCopyTooltip } from "../../../../common/WithCopyTooltip";
 
 export const WalletDetail: React.FC<{
@@ -20,6 +22,8 @@ export const WalletDetail: React.FC<{
   const [walletName, setWalletName] = useState(name);
   const blockchainKeyrings = useWalletPublicKeys();
   const keyring = blockchainKeyrings[blockchain];
+
+  const publicKeyCount = Object.values(keyring).flat().length;
 
   useEffect(() => {
     (async () => {
@@ -42,14 +46,14 @@ export const WalletDetail: React.FC<{
   };
 
   const menuItems = {
-    "Rename wallet": {
+    "Rename Wallet": {
       onClick: () =>
         nav.push("edit-wallets-rename", {
           publicKey,
           name: walletName,
         }),
     },
-    "Copy address": {
+    "Copy Address": {
       onClick: () => copyAddress(),
       detail: <ContentCopy style={{ color: theme.custom.colors.secondary }} />,
     },
@@ -62,7 +66,7 @@ export const WalletDetail: React.FC<{
   };
 
   const removeWallet = {
-    "Remove wallet": {
+    "Remove Wallet": {
       onClick: () =>
         nav.push("edit-wallets-remove", {
           blockchain,
@@ -84,9 +88,7 @@ export const WalletDetail: React.FC<{
         </div>
       </WithCopyTooltip>
       {type !== "ledger" && <SettingsList menuItems={secrets} />}
-      {(type !== "derived" || keyring.hdPublicKeys.length > 1) && (
-        <SettingsList menuItems={removeWallet} />
-      )}
+      {publicKeyCount > 1 && <SettingsList menuItems={removeWallet} />}
     </div>
   );
 };
