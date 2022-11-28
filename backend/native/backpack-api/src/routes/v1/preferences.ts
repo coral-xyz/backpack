@@ -13,7 +13,6 @@ router.post("/", extractUserId, async (req, res) => {
   updatePreference(xnftId, uuid, preferences)
     .then(() => res.json({}))
     .catch((e) => {
-      console.log(e);
       res.status(503).json({ msg: "Internal server error" });
     });
 });
@@ -25,7 +24,6 @@ router.get("/", extractUserId, async (req, res) => {
   getPreferences(uuid)
     .then((xnftPreferences) => res.json({ xnftPreferences }))
     .catch((e) => {
-      console.log(e);
       res.status(502).json({ msg: "Internal server error" });
     });
 });
