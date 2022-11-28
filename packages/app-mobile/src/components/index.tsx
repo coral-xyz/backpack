@@ -1,7 +1,7 @@
 import type { StyleProp, TextStyle, ViewStyle } from "react-native";
 import { Image, Pressable, Text, View } from "react-native";
-import { useAvatarUrl } from "@coral-xyz/recoil";
 import { proxyImageUrl, walletAddressDisplay } from "@coral-xyz/common";
+import { useAvatarUrl } from "@coral-xyz/recoil";
 // probably should put all the components in here as an index
 import { useTheme } from "@hooks";
 
@@ -44,7 +44,11 @@ export function Screen({
   return (
     <View
       style={[
-        { flex: 1, backgroundColor: theme.custom.colors.background },
+        {
+          flex: 1,
+          backgroundColor: theme.custom.colors.background,
+          padding: 16,
+        },
         style,
       ]}
     >
@@ -374,13 +378,24 @@ export function Margin({
   return <View style={style}>{children}</View>;
 }
 
-// TODO(peter): any
-export function WalletAddressLabel({ publicKey, name, style, nameStyle }: any) {
+export function WalletAddressLabel({
+  publicKey,
+  name,
+  style,
+  nameStyle,
+}: {
+  publicKey: string;
+  name: string;
+  style: StyleProp<ViewStyle>;
+  nameStyle: StyleProp<TextStyle>;
+}) {
   const theme = useTheme();
   return (
     <View style={[{ flexDirection: "row", alignItems: "center" }, style]}>
       <Margin right={8}>
-        <Text style={nameStyle}>{name}</Text>
+        <Text style={[{ color: theme.custom.colors.fontColor }, nameStyle]}>
+          {name}
+        </Text>
       </Margin>
       <Text style={{ color: theme.custom.colors.secondary }}>
         ({walletAddressDisplay(publicKey)})

@@ -1,4 +1,4 @@
-import { Margin } from "@components";
+import { Screen, Margin } from "@components";
 import {
   BACKPACK_CONFIG_VERSION,
   BACKPACK_FEATURE_LIGHT_MODE,
@@ -42,23 +42,8 @@ export function PreferencesScreen({ navigation }) {
     });
   };
 
-  const toggleMenus = [
-    {
-      value: isDarkMode,
-      label: "Dark Mode",
-      onPress: (value: boolean) => onDarkModeSwitch(value),
-      // icon: <IconLeft name="settings" />,
-    },
-    {
-      value: isDeveloperMode,
-      label: "Developer Mode",
-      onPress: (value: boolean) => onDeveloperModeSwitch(value),
-      // icon: <IconLeft name="settings" />,
-    },
-  ];
-
   return (
-    <>
+    <Screen>
       <Margin vertical={12}>
         <RoundedContainer>
           <SettingsRow
@@ -111,6 +96,6 @@ export function PreferencesScreen({ navigation }) {
           />
         </RoundedContainer>
       </Margin>
-    </>
+    </Screen>
   );
 }
