@@ -13,6 +13,7 @@ import {
   SelectSendTokenModal,
   SendTokenModal,
 } from "@screens/Unlocked/SendTokenScreen";
+import { RecentActivityScreen } from "@screens/Unlocked/RecentActivityScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -30,7 +31,7 @@ export default function UnlockedNavigator() {
         />
         <Stack.Screen
           name="RecentActivityModal"
-          component={RecentActivityModal}
+          component={RecentActivityScreen}
         />
         <Stack.Screen
           options={{ title: "Deposit" }}

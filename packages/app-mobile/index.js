@@ -18,6 +18,23 @@ import { RecoilRoot } from "recoil";
 
 import App from "./src/App";
 
+Promise.allSettled =
+  Promise.allSettled ||
+  ((promises) =>
+    Promise.all(
+      promises.map((p) =>
+        p
+          .then((value) => ({
+            status: "fulfilled",
+            value,
+          }))
+          .catch((reason) => ({
+            status: "rejected",
+            reason,
+          }))
+      )
+    ));
+
 const LOCALHOST_WEBVIEW_URI = "http://localhost:9333";
 
 const WEBVIEW_URI = (() => {
