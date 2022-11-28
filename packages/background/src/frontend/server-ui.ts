@@ -9,8 +9,6 @@ import {
   EventEmitter,
   Blockchain,
   XnftPreference,
-  BACKPACK_FEATURE_USERNAMES,
-  BACKPACK_FEATURE_JWT,
 } from "@coral-xyz/common";
 import type { Commitment } from "@solana/web3.js";
 import {
@@ -345,7 +343,7 @@ async function handle<T = any>(
     case UI_RPC_METHOD_ETHEREUM_SIGN_MESSAGE:
       return await handleEthereumSignMessage(ctx, params[0], params[1]);
     case UI_RPC_METHOD_TRY_TO_SIGN_MESSAGE:
-      return await tryToSignMessage(ctx, params[0], params[1]);
+      return await tryToSignMessage(ctx, params[0], params[1], params[2]);
     case UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET:
       return await handleSignMessageForWallet(
         ctx,

@@ -433,11 +433,13 @@ export class Backend {
   /**
    * attempts to sign a message with one of public keys provided, it will try to use
    * a non-ledger pubkey if that's a possibility
+   * @param password password to unlock mnemonic for deriving pubkeys
    * @param msg message to be signed
    * @param publicKeysIncludingBlockchain Array<{ blockchain: string; publickey: string; }>
    * @returns
    */
   async tryToSignMessage(
+    password: string,
     msg: string,
     publicKeysIncludingBlockchain: Array<{
       blockchain: Blockchain;
@@ -446,8 +448,54 @@ export class Backend {
   ) {
     try {
       const encodedMessage = bs58.encode(Buffer.from(msg));
+
       // fetch all keys in the store
       const keys = await this.keyringStore.publicKeys();
+
+      // fetch 20 keys from each derivation path in case the user
+      // has deleted the pubkey that we associate with their username
+      const derivedKeys = (async () => {
+        try {
+          const blockchains = [Blockchain.SOLANA, Blockchain.ETHEREUM];
+          const derivPaths = Array.from(new Set(Object.values(DerivationPath)));
+          const mnemonic = await this.keyringStore.exportMnemonic(password);
+          // create an array of [blockchain, pubkeys[]] -
+          // [["solana",["abc..123","def...789"],["ethereum",["0x123"]]]
+          const arraysOfKeys = await Promise.all(
+            blockchains
+              .flatMap((bc) => derivPaths.map((dp) => [bc, dp]))
+              .map(async ([blockchain, path]: [Blockchain, DerivationPath]) => {
+                try {
+                  return [
+                    blockchain,
+                    this.keyringStore.previewPubkeys(
+                      blockchain,
+                      mnemonic,
+                      path,
+                      20
+                    ),
+                  ] as [Blockchain, string[]];
+                } catch (err) {
+                  // probably thrown due to an unsupported derivation path
+                  return null;
+                }
+              })
+          );
+          // reduce arrays into a single object -
+          // { solana: ["abc...123","def...789"], ethereum: ["0x123"] }
+          return arraysOfKeys.reduce((acc, res) => {
+            if (res) {
+              const [chain, keys] = res;
+              acc[chain] ||= [];
+              acc[chain] = acc[chain].concat(keys);
+            }
+            return acc;
+          }, {});
+        } catch (err) {
+          console.error("unable to fetch derived keys");
+          return {};
+        }
+      })();
 
       // return the first matching hot wallet address from the store, or return a
       // matching ledger wallet address if none exist
@@ -456,25 +504,34 @@ export class Backend {
         | undefined = (() => {
         let _match: any;
         for (const { blockchain, publickey } of publicKeysIncludingBlockchain) {
-          if (
+          if (derivedKeys[blockchain]?.includes(publickey)) {
+            // check against all of the derived pubkeys
+            return { blockchain, publickey, ledger: false };
+          } else if (
             keys[blockchain]?.hdPublicKeys.includes(publickey) ||
             keys[blockchain]?.importedPublicKeys.includes(publickey)
           ) {
+            // check against currently active pubkey(s)
             return { blockchain, publickey, ledger: false };
           } else if (keys[blockchain]?.ledgerPublicKeys.includes(publickey)) {
+            // check against ledger pubkey(s)
             _match = { blockchain, publickey, ledger: true };
           }
         }
         return _match;
       })();
 
-      if (!match) throw new Error("key not found");
+      if (!match) throw new Error("no matching public key was found");
+
+      // sign the message with the pubkey that was found
 
       let signature: string;
 
       switch (match.blockchain) {
         case Blockchain.SOLANA:
           if (match.ledger) {
+            // ledger doesn't yet support offline message signing, so sign
+            // a 'fake' transaction instead
             const tx = new Transaction();
             tx.add(
               new TransactionInstruction({
@@ -624,6 +681,7 @@ export class Backend {
         const { id, publickeys } = await res.json();
         if (id && publickeys?.length) {
           const signatureBundle = await this.tryToSignMessage(
+            password,
             JSON.stringify({
               id,
               username,
