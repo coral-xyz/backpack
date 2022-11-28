@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
+import { explorerResolverForBlockchain } from "@coral-xyz/blockchain-common";
 import {
   Blockchain,
   confirmTransaction,
-  explorerNftUrl,
   getLogger,
   Solana,
   toTitleCase,
@@ -360,13 +360,18 @@ function Attributes({ nft }: { nft: any }) {
   );
 }
 
-export function NftOptionsButton() {
+export function NftOptionsButtonLoader() {
+  const [nfts] = useLoader(nftMetadata, new Map());
+  if (nfts.size == 0) return <></>;
+  return <NftOptionsButton nfts={nfts} />;
+}
+
+export function NftOptionsButton({ nfts }: any) {
   const theme = useCustomTheme();
   const background = useBackgroundClient();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [openDrawer, setOpenDrawer] = useState(false);
   const searchParams = useDecodedSearchParams();
-  const [nfts] = useLoader(nftMetadata, new Map());
   const [wasBurnt, setWasBurnt] = useState(false);
 
   useEffect(() => {
@@ -384,13 +389,12 @@ export function NftOptionsButton() {
   }, [openDrawer, wasBurnt, background]);
 
   // @ts-ignore
-  const nft: any = nfts.get(searchParams.props.nftId); // TODO this can be undefined?
-  // Use a default because `nft` can be undefined for a few renders
-  const blockchain = nft ? nft.blockchain : Blockchain.SOLANA;
-  const canBurn = blockchain === Blockchain.SOLANA;
-
-  const explorer = useBlockchainExplorer(blockchain);
-  const connectionUrl = useBlockchainConnectionUrl(blockchain);
+  const nft: any = nfts.get(searchParams.props.nftId);
+  const canBurn = nft.blockchain === Blockchain.SOLANA;
+  const connectionUrl = useBlockchainConnectionUrl(nft.blockchain);
+  const explorer = useBlockchainExplorer(nft.blockchain);
+  const explorerResolver = explorerResolverForBlockchain(nft.blockchain);
+  const explorerUrl = explorerResolver(explorer, nft, connectionUrl);
 
   const onClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -452,8 +456,7 @@ export function NftOptionsButton() {
               isFirst={true}
               isLast={!canBurn}
               onClick={() => {
-                const url = explorerNftUrl(explorer, nft, connectionUrl);
-                window.open(url, "_blank");
+                window.open(explorerUrl, "_blank");
               }}
             >
               <Typography

@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import { Blockchain, EthereumConnectionUrl } from "@coral-xyz/common";
+import { EthereumConnectionUrl } from "@coral-xyz/blockchain-common";
+import { Blockchain } from "@coral-xyz/common";
 import { useBackgroundClient, useBlockchainSettings } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Check } from "@mui/icons-material";

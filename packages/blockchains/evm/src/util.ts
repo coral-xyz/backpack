@@ -1,6 +1,11 @@
-import { ethers } from "ethers";
-import type { Wallet } from "ethers";
+import type { EthereumNft } from "@coral-xyz/common";
 import { DerivationPath } from "@coral-xyz/common";
+import type { Wallet } from "ethers";
+import { ethers } from "ethers";
+
+import { EthereumExplorer } from "./settings";
+
+const join = (...args: Array<string>) => args.join("/");
 
 export function deriveEthereumWallets(
   seed: Buffer,
@@ -36,4 +41,21 @@ function derivePathStr(derivationPath: DerivationPath, accountIndex: number) {
     default:
       throw new Error(`invalid derivation path: ${derivationPath}`);
   }
+}
+
+export function resolveExplorerUrl(
+  base: string,
+  transactionOrNft: string | EthereumNft
+) {
+  switch (base) {
+    case EthereumExplorer.ETHERSCAN:
+      let suffix: string;
+      if (typeof transactionOrNft === "string") {
+        suffix = `tx/${transactionOrNft}`;
+      } else {
+        suffix = `address/${transactionOrNft.contractAddress.toString()}`;
+      }
+      return join(EthereumExplorer.ETHERSCAN, suffix);
+  }
+  throw new Error("unknown Ethereum explorer base");
 }

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
+import { explorerResolverForBlockchain } from "@coral-xyz/blockchain-common";
 import {
   Blockchain,
   confirmTransaction,
-  explorerUrl,
   getLogger,
   Solana,
   UI_RPC_METHOD_SET_XNFT_PREFERENCES,
@@ -349,6 +349,7 @@ function Sending({
 }) {
   const theme = useCustomTheme();
   const explorer = useBlockchainExplorer(Blockchain.SOLANA);
+  const explorerUrl = explorerResolverForBlockchain(Blockchain.SOLANA);
   const connectionUrl = useBlockchainConnectionUrl(Blockchain.SOLANA);
   const nav = useNavigation();
   const drawer = useDrawerContext();

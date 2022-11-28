@@ -1,7 +1,7 @@
 import { useEffect } from "react";
+import { SolanaExplorer } from "@coral-xyz/blockchain-common";
 import {
   Blockchain,
-  SolanaExplorer,
   UI_RPC_METHOD_BLOCKCHAIN_SETTINGS_UPDATE,
 } from "@coral-xyz/common";
 import { useBackgroundClient, useBlockchainExplorer } from "@coral-xyz/recoil";

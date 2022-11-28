@@ -1,12 +1,12 @@
-import { ethers, BigNumber } from "ethers";
-import type { UnsignedTransaction } from "@ethersproject/transactions";
 import type { FeeData } from "@ethersproject/abstract-provider";
+import type { UnsignedTransaction } from "@ethersproject/transactions";
+import { BigNumber, ethers } from "ethers";
+
 import type { BackgroundClient } from "../";
+
 import { EthereumProvider } from "./provider";
 
 export * from "./background-provider";
-export * from "./explorer";
-export * from "./connection-url";
 export * from "./token";
 export * from "./tokens-uniswap";
 
@@ -70,7 +70,7 @@ export class Ethereum {
         gasPrice: req.gasPrice ?? null,
         maxFeePerGas: req.maxFeePerGas ?? null,
         maxPriorityFeePerGas: req.maxPriorityFeePerGas ?? null,
-      }).filter(([_, v]) => v != null)
+      }).filter(([, v]) => v != null)
     ) as UnsignedTransaction;
   }
 

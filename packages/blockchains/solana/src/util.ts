@@ -1,8 +1,13 @@
-import nacl from "tweetnacl";
+import type { SolanaNft } from "@coral-xyz/common";
+import { DerivationPath } from "@coral-xyz/common";
+import { Keypair } from "@solana/web3.js";
 import * as bip32 from "bip32";
 import { derivePath } from "ed25519-hd-key";
-import { Keypair } from "@solana/web3.js";
-import { DerivationPath } from "@coral-xyz/common";
+import nacl from "tweetnacl";
+
+import { SolanaCluster, SolanaExplorer } from "./settings";
+
+const join = (...args: Array<string>) => args.join("/");
 
 export function deriveSolanaKeypairs(
   seed: Buffer,
@@ -56,5 +61,76 @@ function derivePathStr(derivationPath: DerivationPath, accountIndex: number) {
       return `m/501'/${accountIndex}'/0/0`;
     default:
       throw new Error(`invalid derivation path: ${derivationPath}`);
+  }
+}
+
+export function resolveExplorerUrl(
+  base: string,
+  transactionOrNft: string | SolanaNft,
+  connectionUrl: string
+) {
+  return join(
+    base,
+    `${transactionOrNftQuery(base, transactionOrNft)}${clusterSuffix(
+      base,
+      connectionUrl
+    )}`
+  );
+}
+
+/**
+ * Returns query string to view a transaction or NFT required by each explorer.
+ */
+function transactionOrNftQuery(
+  base: String,
+  transactionOrNft: string | SolanaNft
+) {
+  const isTransaction = typeof transactionOrNft === "string";
+  if (!isTransaction) {
+    return `address/${transactionOrNft.mint.toString()}`;
+  }
+  switch (base) {
+    case SolanaExplorer.SOLANA_EXPLORER:
+    case SolanaExplorer.SOLSCAN:
+    case SolanaExplorer.SOLANA_FM:
+      return `tx/${transactionOrNft}`;
+    case SolanaExplorer.SOLANA_BEACH:
+      return `transaction/${transactionOrNft}`;
+    default:
+      throw new Error("unknown Solana explorer base");
+  }
+}
+
+/**
+ * Returns the cluster search params required by each explorer.
+ */
+function clusterSuffix(base: string, connectionUrl: string): string {
+  switch (base) {
+    case SolanaExplorer.SOLANA_FM:
+      switch (connectionUrl) {
+        case SolanaCluster.MAINNET:
+          return "?cluster=mainnet";
+        case SolanaCluster.DEVNET:
+          return "?cluster=devnet";
+        case SolanaCluster.LOCALNET:
+          return "?cluster=localnet";
+        default:
+          return "?cluster=custom";
+      }
+    case SolanaExplorer.SOLANA_EXPLORER:
+    case SolanaExplorer.SOLSCAN:
+    case SolanaExplorer.SOLANA_BEACH:
+      switch (connectionUrl) {
+        case SolanaCluster.MAINNET:
+          return "?cluster=mainnet";
+        case SolanaCluster.DEVNET:
+          return "?cluster=devnet";
+        case SolanaCluster.LOCALNET:
+          return "?cluster=localnet";
+        default:
+          return "";
+      }
+    default:
+      throw new Error("unknown Solana explorer base");
   }
 }

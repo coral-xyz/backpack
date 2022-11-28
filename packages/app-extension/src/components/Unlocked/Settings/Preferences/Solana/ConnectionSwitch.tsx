@@ -1,7 +1,7 @@
 import { useEffect } from "react";
+import { SolanaCluster } from "@coral-xyz/blockchain-common";
 import {
   Blockchain,
-  SolanaCluster,
   UI_RPC_METHOD_BLOCKCHAIN_SETTINGS_UPDATE,
 } from "@coral-xyz/common";
 import {

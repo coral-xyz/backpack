@@ -4,8 +4,8 @@ import type {
   SolanaSettings,
 } from "@coral-xyz/blockchain-common";
 import {
-  defaultSettingsForBlockchain,
   keyringForBlockchain,
+  SolanaCluster,
 } from "@coral-xyz/blockchain-common";
 import type {
   DerivationPath,
@@ -38,7 +38,6 @@ import {
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
   NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
-  SolanaCluster,
 } from "@coral-xyz/common";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { makeDefaultNav } from "@coral-xyz/recoil";
