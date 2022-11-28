@@ -116,7 +116,7 @@ export function _RecentActivityList({
   style?: any;
   minimize?: boolean;
 }) {
-  const theme = useTheme();
+  // const theme = useTheme();
   // Load transactions if not passed in as a prop
   const transactions = _transactions
     ? _transactions
@@ -128,9 +128,13 @@ export function _RecentActivityList({
 
   return (
     <FlatList
+      contentContainerStyle={{
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+      }}
       data={transactions}
       ListEmptyComponent={<NoRecentActivityLabel minimize={!!minimize} />}
-      ItemSeparatorComponent={<View style={{ height: 10 }} />}
       renderItem={({ item }) => {
         return <RecentActivityListItem transaction={item} />;
       }}
@@ -238,21 +242,16 @@ function NoRecentActivityLabel({ minimize }: { minimize: boolean }) {
   return (
     <View
       style={{
-        flex: 1,
         display: minimize ? "none" : undefined,
       }}
     >
       <EmptyState
+        minimize={minimize}
         icon={(props: any) => <MaterialIcons name="bolt" {...props} />}
         title={"No Recent Activity"}
         subtitle={"Get started by adding your first xNFT"}
         buttonText={"Browse the xNFT Library"}
         onPress={() => Linking.openURL("https://xnft.gg")}
-        minimize={minimize}
-        contentStyle={{
-          marginBottom: minimize !== true ? 64 : 0, // Tab height offset.
-          color: minimize ? theme.custom.colors.secondary : "inherit",
-        }}
       />
     </View>
   );

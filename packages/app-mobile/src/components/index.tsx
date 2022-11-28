@@ -80,6 +80,7 @@ export function BaseButton({
         {
           backgroundColor: theme.custom.colors.primaryButton,
           height: 48,
+          paddingHorizontal: 12,
           borderRadius: 12,
           justifyContent: "center",
           alignItems: "center",
@@ -281,7 +282,7 @@ export function EmptyState({
 }) {
   const theme = useTheme();
   return (
-    <View style={{ alignItems: "center", justifyContent: "center" }}>
+    <View style={{ alignItems: "center" }}>
       {icon({
         size: 56,
         style: {
@@ -315,7 +316,9 @@ export function EmptyState({
         </Typography>
       )}
       {minimize !== true && buttonText && (
-        <PrimaryButton label={buttonText} onPress={onPress} />
+        <Margin top={12}>
+          <PrimaryButton label={buttonText} onPress={() => onPress()} />
+        </Margin>
       )}
     </View>
   );

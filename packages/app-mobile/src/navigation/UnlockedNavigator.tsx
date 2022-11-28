@@ -31,6 +31,7 @@ export default function UnlockedNavigator() {
         />
         <Stack.Screen
           name="RecentActivityModal"
+          options={{ title: "Recent Activity" }}
           component={RecentActivityScreen}
         />
         <Stack.Screen
