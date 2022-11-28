@@ -51,7 +51,7 @@ import {
   BACKPACK_FEATURE_USERNAMES,
   BACKPACK_FEATURE_JWT,
 } from "@coral-xyz/common";
-import type {
+import {
   KeyringInit,
   DerivationPath,
   EventEmitter,
