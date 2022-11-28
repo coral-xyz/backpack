@@ -5,21 +5,21 @@
  *    { username:string; publicKey:PublicKeyString; inviteCode: uuid; waitlistId?: string; }
  */
 
-import {
-  PublicKey,
-  Transaction,
-  TransactionInstruction,
-} from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 import { decode } from "bs58";
 import { ethers } from "ethers";
-import type { Context } from "hono";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { importPKCS8, importSPKI, jwtVerify, SignJWT } from "jose";
-import { sign } from "tweetnacl";
+import { importSPKI, jwtVerify } from "jose";
 import { z, ZodError } from "zod";
 
+import { alg, clearCookie, jwt } from "./jwt";
 import { registerOnRampHandlers } from "./onramp";
+import { zodErrorToString } from "./util";
+import {
+  validateEthereumSignature,
+  validateSolanaSignature,
+} from "./validation";
 import { Chain } from "./zeus";
 
 const BaseCreateUser = z.object({
@@ -226,6 +226,9 @@ app.get("/users/:username", async (c) => {
   }
 });
 
+/**
+ * Create a user.
+ */
 app.post("/users", async (c) => {
   const body = await c.req.json();
 
@@ -351,116 +354,6 @@ app.post("/users", async (c) => {
   return jwt(c, res.insert_auth_users_one);
 });
 
-registerOnRampHandlers(app);
-
-const validateEthereumSignature = (
-  msg: Buffer,
-  signature: string,
-  publicKey: string
-) => {
-  return ethers.utils.verifyMessage(msg, signature) === publicKey;
-};
-
-const validateSolanaSignature = (
-  msg: Buffer,
-  signature: Uint8Array,
-  publicKey: Uint8Array
-) => {
-  if (sign.detached.verify(msg, signature, publicKey)) {
-    return true;
-  }
-
-  try {
-    // This might be a Solana transaction because that is used for Ledger which
-    // does not support signMessage
-    const tx = new Transaction();
-    tx.add(
-      new TransactionInstruction({
-        programId: new PublicKey(publicKey),
-        keys: [],
-        data: msg,
-      })
-    );
-    tx.feePayer = new PublicKey(publicKey);
-    // Not actually needed as it's not transmitted to the network
-    tx.recentBlockhash = tx.feePayer.toString();
-    tx.addSignature(new PublicKey(publicKey), Buffer.from(signature));
-    return tx.verifySignatures();
-  } catch (err) {
-    console.error("dummy solana transaction error", err);
-    return false;
-  }
-};
-
-/**
- * Flattens a Zod error object into a simple error string.
- * @returns e.g. "Invite Code is in an invalid format"
- * or if it fails, a standard "Validation error" message is returned
- */
-const zodErrorToString = (err: ZodError) => {
-  try {
-    return Object.entries((err as ZodError).flatten().fieldErrors)
-      .reduce((acc, [field, errorMessages]) => {
-        errorMessages?.forEach((msg) =>
-          acc.push(`${camelCaseToSentenceCase(field)} ${msg}`)
-        );
-        return acc;
-      }, [] as string[])
-      .join(", ");
-  } catch (err) {
-    return "Validation error";
-  }
-};
-
-const camelCaseToSentenceCase = (str: string) =>
-  str.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase());
-
-export default app;
-
-// JWT Auth --------------------------
-
-const alg = "RS256";
-
-const cookieDomain = (url: string) => {
-  const { hostname } = new URL(url);
-  // note:  the leading . below is significant, as it
-  //        enables us to use the cookie on subdomains
-  return hostname === "localhost" ? hostname : ".xnfts.dev";
-};
-
-const clearCookie = (c: Context<any>, cookieName: string) => {
-  c.res.headers.set(
-    "set-cookie",
-    `${cookieName}=; path=/; domain=${cookieDomain(
-      c.req.url
-    )}; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT`
-  );
-};
-
-const jwt = async (c: Context, user: { id: unknown; username: unknown }) => {
-  const secret = await importPKCS8(c.env.AUTH_JWT_PRIVATE_KEY, alg);
-
-  const jwt = await new SignJWT({
-    sub: String(user.id),
-    username: user.username,
-  })
-    .setProtectedHeader({ alg })
-    .setIssuer("auth.xnfts.dev")
-    .setAudience("backpack")
-    .setIssuedAt()
-    // .setExpirationTime("2h")
-    .sign(secret);
-
-  c.cookie("jwt", jwt, {
-    secure: true,
-    httpOnly: true,
-    sameSite: "Strict",
-    domain: cookieDomain(c.req.url),
-  });
-
-  return c.json({ jwt });
-};
-
 app.delete("/authenticate", async (c) => {
   clearCookie(c, "jwt");
   return c.status(200);
@@ -557,3 +450,7 @@ app.post("/authenticate/:username", async (c) => {
       : c.json({ message: `username (${username}) not found` }, 404);
   }
 });
+
+registerOnRampHandlers(app);
+
+export default app;
