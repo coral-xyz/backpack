@@ -23,6 +23,7 @@ export const insertSubscription = (
         object: {
           public_key: publicKey,
           uuid,
+          username: "",
           endpoint: subscription.endpoint,
           p256dh: subscription.keys.p256dh,
           auth: subscription.keys.auth,
