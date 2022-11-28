@@ -1,25 +1,26 @@
-import { validateMnemonic, mnemonicToSeedSync } from "bip39";
-import { Keypair, PublicKey } from "@solana/web3.js";
-import nacl from "tweetnacl";
-import * as bs58 from "bs58";
-import { LedgerKeyringBase } from "@coral-xyz/blockchain-keyring";
 import type {
-  Keyring,
-  KeyringFactory,
-  KeyringJson,
   HdKeyring,
   HdKeyringFactory,
   HdKeyringJson,
-  LedgerKeyringJson,
-  LedgerKeyring,
   ImportedDerivationPath,
+  Keyring,
+  KeyringFactory,
+  KeyringJson,
+  LedgerKeyring,
+  LedgerKeyringJson,
 } from "@coral-xyz/blockchain-keyring";
+import { LedgerKeyringBase } from "@coral-xyz/blockchain-keyring";
 import {
+  DerivationPath,
   LEDGER_METHOD_SOLANA_SIGN_MESSAGE,
   LEDGER_METHOD_SOLANA_SIGN_TRANSACTION,
-  DerivationPath,
 } from "@coral-xyz/common";
-import { deriveSolanaKeypairs, deriveSolanaKeypair } from "../util";
+import { Keypair, PublicKey } from "@solana/web3.js";
+import { mnemonicToSeedSync, validateMnemonic } from "bip39";
+import * as bs58 from "bs58";
+import nacl from "tweetnacl";
+
+import { deriveSolanaKeypair, deriveSolanaKeypairs } from "../util";
 
 export class SolanaKeyringFactory implements KeyringFactory {
   /**
@@ -47,14 +48,10 @@ class SolanaKeyring implements Keyring {
     return this.keypairs.map((kp) => kp.publicKey.toString());
   }
 
-  public deleteKeyIfNeeded(pubkey: string): number {
-    const index = this.keypairs.findIndex(
-      (kp) => kp.publicKey.toString() === pubkey
-    );
+  public deletePublicKey(publicKey: string) {
     this.keypairs = this.keypairs.filter(
-      (kp) => kp.publicKey.toString() !== pubkey
+      (kp) => kp.publicKey.toString() !== publicKey
     );
-    return index;
   }
 
   // `address` is the key on the keyring to use for signing.
@@ -163,17 +160,17 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
     this.accountIndices = accountIndices;
   }
 
-  public deleteKeyIfNeeded(pubkey: string): number {
+  public deleteKeyIfNeeded(publicKey: string) {
     const idx = this.keypairs.findIndex(
-      (kp) => kp.publicKey.toString() === pubkey
+      (kp) => kp.publicKey.toString() === publicKey
     );
     if (idx < 0) {
-      return idx;
+      return;
     }
     if (this.keypairs.length <= 1) {
       throw new Error("cannot delete the last key in the hd keyring");
     }
-    super.deleteKeyIfNeeded(pubkey);
+    super.deletePublicKey(publicKey);
     this.accountIndices = this.accountIndices
       .slice(0, idx)
       .concat(this.accountIndices.slice(idx + 1));

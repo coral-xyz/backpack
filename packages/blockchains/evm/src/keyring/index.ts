@@ -1,24 +1,25 @@
-import { ethers } from "ethers";
-import type { Wallet } from "ethers";
-import { validateMnemonic, mnemonicToSeedSync } from "bip39";
-import { LedgerKeyringBase } from "@coral-xyz/blockchain-keyring";
 import type {
-  Keyring,
-  KeyringFactory,
-  KeyringJson,
   HdKeyring,
   HdKeyringFactory,
   HdKeyringJson,
+  ImportedDerivationPath,
+  Keyring,
+  KeyringFactory,
+  KeyringJson,
   LedgerKeyring,
   LedgerKeyringJson,
-  ImportedDerivationPath,
 } from "@coral-xyz/blockchain-keyring";
+import { LedgerKeyringBase } from "@coral-xyz/blockchain-keyring";
 import {
+  DerivationPath,
   LEDGER_METHOD_ETHEREUM_SIGN_MESSAGE,
   LEDGER_METHOD_ETHEREUM_SIGN_TRANSACTION,
-  DerivationPath,
 } from "@coral-xyz/common";
-import { deriveEthereumWallets, deriveEthereumWallet } from "../util";
+import { mnemonicToSeedSync, validateMnemonic } from "bip39";
+import type { Wallet } from "ethers";
+import { ethers } from "ethers";
+
+import { deriveEthereumWallet, deriveEthereumWallets } from "../util";
 
 export class EthereumKeyringFactory implements KeyringFactory {
   fromJson(payload: KeyringJson): Keyring {
@@ -43,10 +44,8 @@ export class EthereumKeyring implements Keyring {
     return this.wallets.map((w) => w.address);
   }
 
-  public deleteKeyIfNeeded(pubkey: string): number {
-    const index = this.wallets.findIndex((w) => w.address === pubkey);
-    this.wallets = this.wallets.filter((w) => w.address !== pubkey);
-    return index;
+  public deletePublicKey(publicKey: string) {
+    this.wallets = this.wallets.filter((w) => w.address !== publicKey);
   }
 
   public importSecretKey(secretKey: string): string {
@@ -233,12 +232,6 @@ export class EthereumLedgerKeyring
     return await this.request({
       method: LEDGER_METHOD_ETHEREUM_SIGN_MESSAGE,
       params: [msg, path.path, path.account],
-    });
-  }
-
-  public toString(): string {
-    return JSON.stringify({
-      derivationPath: this.derivationPaths,
     });
   }
 
