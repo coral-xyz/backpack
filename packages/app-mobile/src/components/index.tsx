@@ -5,6 +5,7 @@ import { useAvatarUrl } from "@coral-xyz/recoil";
 // probably should put all the components in here as an index
 import { useTheme } from "@hooks";
 
+export { NavHeader } from "./NavHeader";
 export { MnemonicInputFields } from "./MnemonicInputFields";
 export { TokenInputField } from "./TokenInputField";
 //
