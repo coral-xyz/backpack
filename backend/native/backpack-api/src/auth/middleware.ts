@@ -20,8 +20,9 @@ export const extractUserId = async (req, res, next) => {
         issuer: "auth.xnfts.dev",
         audience: "backpack",
       });
-      if (payloadRes.payload.id) {
-        req.id = payloadRes.payload.id;
+      console.log(payloadRes);
+      if (payloadRes.payload.sub) {
+        req.id = payloadRes.payload.sub;
         next();
       } else {
         return res.status(403).json({ msg: "No id found" });

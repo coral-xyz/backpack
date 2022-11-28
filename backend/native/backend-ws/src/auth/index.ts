@@ -16,8 +16,8 @@ export const extractUserId = async (cookie: string): string | null => {
       issuer: "auth.xnfts.dev",
       audience: "backpack",
     });
-    if (payloadRes.payload.id) {
-      return payloadRes.payload.id as string;
+    if (payloadRes.payload.sub) {
+      return payloadRes.payload.sub as string;
     } else {
       return null;
     }
