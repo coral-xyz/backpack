@@ -11,9 +11,12 @@ router.post("/", extractUserId, async (req, res) => {
   const xnftId = req.body.xnftId;
   const preferences = req.body.preferences;
 
-  await updatePreference(xnftId, uuid, preferences);
-
-  res.json({});
+  updatePreference(xnftId, uuid, preferences)
+    .then(() => res.json({}))
+    .catch((e) => {
+      console.log(e);
+      res.status(503).json({ msg: "Internal server error" });
+    });
 });
 
 router.get("/", extractUserId, async (req, res) => {
