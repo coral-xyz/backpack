@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@coral-xyz/blockchain-keyring": "*",
+    "@coral-xyz/blockchain-types": "*",
     "@coral-xyz/common": "*",
     "ethers": "^5.7.2"
   },
