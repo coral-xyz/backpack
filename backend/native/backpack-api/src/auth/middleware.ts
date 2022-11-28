@@ -20,7 +20,6 @@ export const extractUserId = async (req, res, next) => {
         issuer: "auth.xnfts.dev",
         audience: "backpack",
       });
-      console.log(payloadRes);
       if (payloadRes.payload.sub) {
         req.id = payloadRes.payload.sub;
         next();

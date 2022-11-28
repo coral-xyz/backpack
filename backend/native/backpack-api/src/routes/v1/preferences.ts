@@ -2,6 +2,7 @@ import { getPreferences, updatePreference } from "../../db/preference";
 
 import express from "express";
 import { extractUserId } from "../../auth/middleware";
+import { xnftPreferences } from "@coral-xyz/recoil";
 const router = express.Router();
 
 router.post("/", extractUserId, async (req, res) => {
@@ -19,9 +20,12 @@ router.get("/", extractUserId, async (req, res) => {
   // @ts-ignore
   const uuid = req.id || "";
 
-  const xnftPreferences = await getPreferences(uuid);
-
-  res.json({ xnftPreferences });
+  getPreferences(uuid)
+    .then((xnftPreferences) => res.json({ xnftPreferences }))
+    .catch((e) => {
+      console.log(e);
+      res.status(502).json({ msg: "Internal server error" });
+    });
 });
 
 export default router;
