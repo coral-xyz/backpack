@@ -2,7 +2,6 @@ import { getPreferences, updatePreference } from "../../db/preference";
 
 import express from "express";
 import { extractUserId } from "../../auth/middleware";
-import { xnftPreferences } from "@coral-xyz/recoil";
 const router = express.Router();
 
 router.post("/", extractUserId, async (req, res) => {
