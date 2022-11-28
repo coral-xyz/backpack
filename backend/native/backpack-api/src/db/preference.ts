@@ -97,6 +97,7 @@ export const updatePreference = async (
           object: {
             uuid,
             xnft_id: xnftId,
+            username: "",
             notifications: preferences.notifications || false,
             media: preferences.media || false,
           },
