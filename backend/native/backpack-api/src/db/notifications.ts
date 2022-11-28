@@ -24,6 +24,7 @@ export const getNotifications = async (
         timestamp: true,
         title: true,
         body: true,
+        xnft_id: true,
       },
     ],
   });
