@@ -83,7 +83,7 @@ export const NotificationPermissions = () => {
   if (inProgress) {
     return (
       <PermissionsContent
-        title={"Allow Camera"}
+        title={"Allow Notifications"}
         subtitle1={"Please allow Backpack access to notifications."}
         icon={
           <NotificationsIcon

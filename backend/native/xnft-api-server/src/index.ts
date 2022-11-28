@@ -22,3 +22,7 @@ if (cluster.isMaster) {
 } else {
   app.listen(process.env.PORT || 8080);
 }
+
+process.on("uncaughtException", function (err) {
+  console.log("Caught exception: " + err);
+});
