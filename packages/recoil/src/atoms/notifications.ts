@@ -25,7 +25,7 @@ export const recentNotifications = atomFamily<
         try {
           const provider = get(anchorContext).provider;
           const notifications = (await fetchNotifications(offset, limit)) || [];
-          const xnftIds = notifications.map((x) => x.xnftId);
+          const xnftIds = notifications.map((x) => x.xnft_id);
           const uniqueXnftIds = xnftIds.filter(
             (x, index) => xnftIds.indexOf(x) === index
           );
@@ -35,7 +35,7 @@ export const recentNotifications = atomFamily<
           );
           return notifications.map((notificaiton) => {
             const metadata = xnftMetadata.find(
-              (x) => x.xnftId === notificaiton.xnftId
+              (x) => x.xnftId === notificaiton.xnft_id
             );
             return {
               ...notificaiton,
@@ -56,7 +56,7 @@ const fetchNotifications = (
   limit: number
 ): Promise<DbNotification[]> => {
   return new Promise((resolve) => {
-    fetch(`${BACKEND_API_URL}/notifications&limit=${limit}&offset=${offset}`, {
+    fetch(`${BACKEND_API_URL}/notifications?limit=${limit}&offset=${offset}`, {
       method: "GET",
     })
       .then(async (response) => {

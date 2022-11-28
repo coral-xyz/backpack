@@ -12,6 +12,7 @@ import {
 } from "../../common/Layout/NavStack";
 import { isFirstLastListItemStyle } from "../../common/List";
 import { EmptyState } from "../../common/EmptyState";
+import { ProxyImage } from "../../common/ProxyImage";
 
 const useStyles = styles((theme) => ({
   recentActivityLabel: {
@@ -362,7 +363,9 @@ function NotificationListItem({
 
 function NotificationListItemIcon({ image }: any) {
   const classes = useStyles();
-  return <img src={image} className={classes.recentActivityListItemIcon} />;
+  return (
+    <ProxyImage src={image} className={classes.recentActivityListItemIcon} />
+  );
 }
 
 function NoNotificationsLabel({ minimize }: { minimize: boolean }) {
