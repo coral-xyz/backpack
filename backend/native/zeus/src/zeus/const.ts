@@ -4,6 +4,82 @@ export const AllTypesProps: Record<string, any> = {
   Boolean_comparison_exp: {},
   Int_comparison_exp: {},
   String_comparison_exp: {},
+  auth_friend_requests_bool_exp: {
+    _and: "auth_friend_requests_bool_exp",
+    _not: "auth_friend_requests_bool_exp",
+    _or: "auth_friend_requests_bool_exp",
+    from: "String_comparison_exp",
+    id: "Int_comparison_exp",
+    to: "String_comparison_exp",
+  },
+  auth_friend_requests_constraint: "enum" as const,
+  auth_friend_requests_insert_input: {},
+  auth_friend_requests_on_conflict: {
+    constraint: "auth_friend_requests_constraint",
+    update_columns: "auth_friend_requests_update_column",
+    where: "auth_friend_requests_bool_exp",
+  },
+  auth_friend_requests_order_by: {
+    from: "order_by",
+    id: "order_by",
+    to: "order_by",
+  },
+  auth_friend_requests_select_column: "enum" as const,
+  auth_friend_requests_stream_cursor_input: {
+    initial_value: "auth_friend_requests_stream_cursor_value_input",
+    ordering: "cursor_ordering",
+  },
+  auth_friend_requests_stream_cursor_value_input: {},
+  auth_friend_requests_update_column: "enum" as const,
+  auth_friendships_bool_exp: {
+    _and: "auth_friendships_bool_exp",
+    _not: "auth_friendships_bool_exp",
+    _or: "auth_friendships_bool_exp",
+    are_friends: "Boolean_comparison_exp",
+    id: "Int_comparison_exp",
+    last_message: "String_comparison_exp",
+    last_message_sender: "String_comparison_exp",
+    last_message_timestamp: "timestamptz_comparison_exp",
+    user1: "String_comparison_exp",
+    user2: "String_comparison_exp",
+  },
+  auth_friendships_constraint: "enum" as const,
+  auth_friendships_inc_input: {},
+  auth_friendships_insert_input: {
+    last_message_timestamp: "timestamptz",
+  },
+  auth_friendships_on_conflict: {
+    constraint: "auth_friendships_constraint",
+    update_columns: "auth_friendships_update_column",
+    where: "auth_friendships_bool_exp",
+  },
+  auth_friendships_order_by: {
+    are_friends: "order_by",
+    id: "order_by",
+    last_message: "order_by",
+    last_message_sender: "order_by",
+    last_message_timestamp: "order_by",
+    user1: "order_by",
+    user2: "order_by",
+  },
+  auth_friendships_pk_columns_input: {},
+  auth_friendships_select_column: "enum" as const,
+  auth_friendships_set_input: {
+    last_message_timestamp: "timestamptz",
+  },
+  auth_friendships_stream_cursor_input: {
+    initial_value: "auth_friendships_stream_cursor_value_input",
+    ordering: "cursor_ordering",
+  },
+  auth_friendships_stream_cursor_value_input: {
+    last_message_timestamp: "timestamptz",
+  },
+  auth_friendships_update_column: "enum" as const,
+  auth_friendships_updates: {
+    _inc: "auth_friendships_inc_input",
+    _set: "auth_friendships_set_input",
+    where: "auth_friendships_bool_exp",
+  },
   auth_notification_subscriptions_bool_exp: {
     _and: "auth_notification_subscriptions_bool_exp",
     _not: "auth_notification_subscriptions_bool_exp",
@@ -351,6 +427,14 @@ export const AllTypesProps: Record<string, any> = {
     id: "uuid",
   },
   mutation_root: {
+    delete_auth_friend_requests: {
+      where: "auth_friend_requests_bool_exp",
+    },
+    delete_auth_friend_requests_by_pk: {},
+    delete_auth_friendships: {
+      where: "auth_friendships_bool_exp",
+    },
+    delete_auth_friendships_by_pk: {},
     delete_auth_notification_subscriptions: {
       where: "auth_notification_subscriptions_bool_exp",
     },
@@ -359,6 +443,22 @@ export const AllTypesProps: Record<string, any> = {
       where: "auth_xnft_preferences_bool_exp",
     },
     delete_auth_xnft_preferences_by_pk: {},
+    insert_auth_friend_requests: {
+      objects: "auth_friend_requests_insert_input",
+      on_conflict: "auth_friend_requests_on_conflict",
+    },
+    insert_auth_friend_requests_one: {
+      object: "auth_friend_requests_insert_input",
+      on_conflict: "auth_friend_requests_on_conflict",
+    },
+    insert_auth_friendships: {
+      objects: "auth_friendships_insert_input",
+      on_conflict: "auth_friendships_on_conflict",
+    },
+    insert_auth_friendships_one: {
+      object: "auth_friendships_insert_input",
+      on_conflict: "auth_friendships_on_conflict",
+    },
     insert_auth_notification_subscriptions: {
       objects: "auth_notification_subscriptions_insert_input",
       on_conflict: "auth_notification_subscriptions_on_conflict",
@@ -406,6 +506,19 @@ export const AllTypesProps: Record<string, any> = {
     insert_auth_xnft_preferences_one: {
       object: "auth_xnft_preferences_insert_input",
       on_conflict: "auth_xnft_preferences_on_conflict",
+    },
+    update_auth_friendships: {
+      _inc: "auth_friendships_inc_input",
+      _set: "auth_friendships_set_input",
+      where: "auth_friendships_bool_exp",
+    },
+    update_auth_friendships_by_pk: {
+      _inc: "auth_friendships_inc_input",
+      _set: "auth_friendships_set_input",
+      pk_columns: "auth_friendships_pk_columns_input",
+    },
+    update_auth_friendships_many: {
+      updates: "auth_friendships_updates",
     },
     update_auth_notification_subscriptions: {
       _inc: "auth_notification_subscriptions_inc_input",
@@ -473,6 +586,18 @@ export const AllTypesProps: Record<string, any> = {
   },
   order_by: "enum" as const,
   query_root: {
+    auth_friend_requests: {
+      distinct_on: "auth_friend_requests_select_column",
+      order_by: "auth_friend_requests_order_by",
+      where: "auth_friend_requests_bool_exp",
+    },
+    auth_friend_requests_by_pk: {},
+    auth_friendships: {
+      distinct_on: "auth_friendships_select_column",
+      order_by: "auth_friendships_order_by",
+      where: "auth_friendships_bool_exp",
+    },
+    auth_friendships_by_pk: {},
     auth_notification_subscriptions: {
       distinct_on: "auth_notification_subscriptions_select_column",
       order_by: "auth_notification_subscriptions_order_by",
@@ -532,6 +657,26 @@ export const AllTypesProps: Record<string, any> = {
     },
   },
   subscription_root: {
+    auth_friend_requests: {
+      distinct_on: "auth_friend_requests_select_column",
+      order_by: "auth_friend_requests_order_by",
+      where: "auth_friend_requests_bool_exp",
+    },
+    auth_friend_requests_by_pk: {},
+    auth_friend_requests_stream: {
+      cursor: "auth_friend_requests_stream_cursor_input",
+      where: "auth_friend_requests_bool_exp",
+    },
+    auth_friendships: {
+      distinct_on: "auth_friendships_select_column",
+      order_by: "auth_friendships_order_by",
+      where: "auth_friendships_bool_exp",
+    },
+    auth_friendships_by_pk: {},
+    auth_friendships_stream: {
+      cursor: "auth_friendships_stream_cursor_input",
+      where: "auth_friendships_bool_exp",
+    },
     auth_notification_subscriptions: {
       distinct_on: "auth_notification_subscriptions_select_column",
       order_by: "auth_notification_subscriptions_order_by",
@@ -651,6 +796,28 @@ export const ReturnTypes: Record<string, any> = {
     ttl: "Int",
     refresh: "Boolean",
   },
+  auth_friend_requests: {
+    from: "String",
+    id: "Int",
+    to: "String",
+  },
+  auth_friend_requests_mutation_response: {
+    affected_rows: "Int",
+    returning: "auth_friend_requests",
+  },
+  auth_friendships: {
+    are_friends: "Boolean",
+    id: "Int",
+    last_message: "String",
+    last_message_sender: "String",
+    last_message_timestamp: "timestamptz",
+    user1: "String",
+    user2: "String",
+  },
+  auth_friendships_mutation_response: {
+    affected_rows: "Int",
+    returning: "auth_friendships",
+  },
   auth_notification_subscriptions: {
     auth: "String",
     endpoint: "String",
@@ -765,12 +932,20 @@ export const ReturnTypes: Record<string, any> = {
     id: "uuid",
   },
   mutation_root: {
+    delete_auth_friend_requests: "auth_friend_requests_mutation_response",
+    delete_auth_friend_requests_by_pk: "auth_friend_requests",
+    delete_auth_friendships: "auth_friendships_mutation_response",
+    delete_auth_friendships_by_pk: "auth_friendships",
     delete_auth_notification_subscriptions:
       "auth_notification_subscriptions_mutation_response",
     delete_auth_notification_subscriptions_by_pk:
       "auth_notification_subscriptions",
     delete_auth_xnft_preferences: "auth_xnft_preferences_mutation_response",
     delete_auth_xnft_preferences_by_pk: "auth_xnft_preferences",
+    insert_auth_friend_requests: "auth_friend_requests_mutation_response",
+    insert_auth_friend_requests_one: "auth_friend_requests",
+    insert_auth_friendships: "auth_friendships_mutation_response",
+    insert_auth_friendships_one: "auth_friendships",
     insert_auth_notification_subscriptions:
       "auth_notification_subscriptions_mutation_response",
     insert_auth_notification_subscriptions_one:
@@ -785,6 +960,9 @@ export const ReturnTypes: Record<string, any> = {
     insert_auth_users_one: "auth_users",
     insert_auth_xnft_preferences: "auth_xnft_preferences_mutation_response",
     insert_auth_xnft_preferences_one: "auth_xnft_preferences",
+    update_auth_friendships: "auth_friendships_mutation_response",
+    update_auth_friendships_by_pk: "auth_friendships",
+    update_auth_friendships_many: "auth_friendships_mutation_response",
     update_auth_notification_subscriptions:
       "auth_notification_subscriptions_mutation_response",
     update_auth_notification_subscriptions_by_pk:
@@ -806,6 +984,10 @@ export const ReturnTypes: Record<string, any> = {
       "auth_xnft_preferences_mutation_response",
   },
   query_root: {
+    auth_friend_requests: "auth_friend_requests",
+    auth_friend_requests_by_pk: "auth_friend_requests",
+    auth_friendships: "auth_friendships",
+    auth_friendships_by_pk: "auth_friendships",
     auth_notification_subscriptions: "auth_notification_subscriptions",
     auth_notification_subscriptions_by_pk: "auth_notification_subscriptions",
     auth_notifications: "auth_notifications",
@@ -823,6 +1005,12 @@ export const ReturnTypes: Record<string, any> = {
     invitations_aggregate: "invitations_aggregate",
   },
   subscription_root: {
+    auth_friend_requests: "auth_friend_requests",
+    auth_friend_requests_by_pk: "auth_friend_requests",
+    auth_friend_requests_stream: "auth_friend_requests",
+    auth_friendships: "auth_friendships",
+    auth_friendships_by_pk: "auth_friendships",
+    auth_friendships_stream: "auth_friendships",
     auth_notification_subscriptions: "auth_notification_subscriptions",
     auth_notification_subscriptions_by_pk: "auth_notification_subscriptions",
     auth_notification_subscriptions_stream: "auth_notification_subscriptions",
