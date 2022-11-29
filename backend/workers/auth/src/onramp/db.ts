@@ -1,4 +1,4 @@
-import { Chain } from "../zeus";
+import { Chain } from "@coral-xyz/zeus";
 
 export const createSession = async (
   HASURA_URL: string,
