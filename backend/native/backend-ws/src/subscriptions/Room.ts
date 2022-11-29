@@ -10,6 +10,7 @@ import {
   SubscriptionType,
 } from "@coral-xyz/common";
 import { getUsers } from "../db/users";
+import { updateLatestMessage } from "../db/friendships";
 
 const chain = Chain(CHAT_HASURA_URL, {
   headers: {
@@ -102,6 +103,11 @@ export class Room {
         },
       ],
     });
+
+    if (this.type === "individual") {
+      updateLatestMessage(parseInt(this.room), msg.message, userId);
+    }
+
     const emittedMessage = {
       id: response.insert_chats_one?.id || 100000000,
       username: "",

@@ -36,3 +36,23 @@ export const validateRoom = async (uuid: string, roomId: number) => {
 
   return false;
 };
+
+export const updateLatestMessage = async (
+  roomId: number,
+  message: string,
+  sender: string
+) => {
+  await chain("mutation")({
+    update_auth_friendships: [
+      {
+        _set: {
+          last_message_timestamp: new Date(),
+          last_message: message,
+          last_message_sender: sender,
+        },
+        where: { id: { _eq: roomId } },
+      },
+      { affected_rows: true },
+    ],
+  });
+};

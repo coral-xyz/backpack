@@ -13,7 +13,7 @@ export const getUsers = async (
   const response = await chain("query")({
     auth_users: [
       {
-        where: { username: { _in: userIds } },
+        where: { id: { _in: userIds } },
       },
       {
         id: true,

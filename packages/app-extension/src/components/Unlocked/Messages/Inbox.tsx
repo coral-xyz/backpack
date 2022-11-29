@@ -42,7 +42,7 @@ export function Inbox() {
           },
         }}
       />
-      <div style={{ display: "flex" }}>
+      <div style={{ display: "flex", marginBottom: 5 }}>
         <div>New Message</div>{" "}
         <div
           className={classes.roundBtn}

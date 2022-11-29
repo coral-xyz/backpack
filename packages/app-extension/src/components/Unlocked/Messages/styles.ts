@@ -38,6 +38,13 @@ export const useStyles = styles((theme) => ({
     marginRight: "8px",
     color: theme.custom.colors.positive,
   },
+  iconCircularBig: {
+    width: "40px",
+    height: "40px",
+    borderRadius: "16px",
+    marginRight: "8px",
+    color: theme.custom.colors.positive,
+  },
   hoverParent: {
     "&:hover $hoverChild, & .Mui-focused $hoverChild": {
       visibility: "visible",
@@ -49,5 +56,14 @@ export const useStyles = styles((theme) => ({
   userText: {
     fontSize: 16,
     marginTop: 4,
+    color: theme.custom.colors.fontColor2,
+  },
+  userTextSmall: {
+    fontSize: 14,
+    color: theme.custom.colors.fontColor2,
+  },
+  timestamp: {
+    fontSize: 14,
+    minWidth: 60,
   },
 }));
