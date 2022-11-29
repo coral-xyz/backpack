@@ -103,6 +103,15 @@ export const AllTypesProps: Record<string, any> = {
       columns: "auth_public_keys_select_column",
     },
   },
+  auth_public_keys_aggregate_order_by: {
+    count: "order_by",
+    max: "auth_public_keys_max_order_by",
+    min: "auth_public_keys_min_order_by",
+  },
+  auth_public_keys_arr_rel_insert_input: {
+    data: "auth_public_keys_insert_input",
+    on_conflict: "auth_public_keys_on_conflict",
+  },
   auth_public_keys_bool_exp: {
     _and: "auth_public_keys_bool_exp",
     _not: "auth_public_keys_bool_exp",
@@ -114,6 +123,14 @@ export const AllTypesProps: Record<string, any> = {
   auth_public_keys_constraint: "enum" as const,
   auth_public_keys_insert_input: {
     user: "auth_users_obj_rel_insert_input",
+  },
+  auth_public_keys_max_order_by: {
+    blockchain: "order_by",
+    public_key: "order_by",
+  },
+  auth_public_keys_min_order_by: {
+    blockchain: "order_by",
+    public_key: "order_by",
   },
   auth_public_keys_on_conflict: {
     constraint: "auth_public_keys_constraint",
@@ -171,6 +188,18 @@ export const AllTypesProps: Record<string, any> = {
     _set: "auth_stripe_onramp_set_input",
     where: "auth_stripe_onramp_bool_exp",
   },
+  auth_users: {
+    public_keys: {
+      distinct_on: "auth_public_keys_select_column",
+      order_by: "auth_public_keys_order_by",
+      where: "auth_public_keys_bool_exp",
+    },
+    public_keys_aggregate: {
+      distinct_on: "auth_public_keys_select_column",
+      order_by: "auth_public_keys_order_by",
+      where: "auth_public_keys_bool_exp",
+    },
+  },
   auth_users_aggregate_fields: {
     count: {
       columns: "auth_users_select_column",
@@ -181,11 +210,13 @@ export const AllTypesProps: Record<string, any> = {
     _not: "auth_users_bool_exp",
     _or: "auth_users_bool_exp",
     id: "uuid_comparison_exp",
+    public_keys: "auth_public_keys_bool_exp",
     username: "citext_comparison_exp",
   },
   auth_users_constraint: "enum" as const,
   auth_users_insert_input: {
     invitation_id: "uuid",
+    public_keys: "auth_public_keys_arr_rel_insert_input",
     username: "citext",
   },
   auth_users_obj_rel_insert_input: {
@@ -199,6 +230,7 @@ export const AllTypesProps: Record<string, any> = {
   },
   auth_users_order_by: {
     id: "order_by",
+    public_keys_aggregate: "auth_public_keys_aggregate_order_by",
     username: "order_by",
   },
   auth_users_pk_columns_input: {
@@ -678,6 +710,8 @@ export const ReturnTypes: Record<string, any> = {
   },
   auth_users: {
     id: "uuid",
+    public_keys: "auth_public_keys",
+    public_keys_aggregate: "auth_public_keys_aggregate",
     username: "citext",
   },
   auth_users_aggregate: {
