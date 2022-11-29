@@ -9,7 +9,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { importSPKI, jwtVerify } from "jose";
 import { z, ZodError } from "zod";
-
+import { Chain } from "@coral-xyz/zeus";
 import { alg, clearCookie, jwt } from "./jwt";
 import { registerOnRampHandlers } from "./onramp";
 import { zodErrorToString } from "./util";
@@ -17,7 +17,6 @@ import {
   validateEthereumSignature,
   validateSolanaSignature,
 } from "./validation";
-import { Chain } from "./zeus";
 
 const BaseCreateUser = z.object({
   username: z

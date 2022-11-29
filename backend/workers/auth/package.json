@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "wrangler dev --local --env development",
-    "deploy": "wrangler publish",
-    "zeus": "npx graphql-zeus http://localhost:8112/v1/graphql ./src --header=x-hasura-admin-secret:myadminsecretkey --header=x-hasura-role:auth_worker && prettier src/zeus/*.ts --write"
+    "deploy": "wrangler publish"
   },
   "dependencies": {
+    "@coral-xyz/zeus": "*",
     "@solana/web3.js": "^1.63.1",
     "bs58": "^5.0.0",
     "ethers": "^5.7.1",
