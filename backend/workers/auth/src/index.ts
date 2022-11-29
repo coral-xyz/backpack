@@ -383,10 +383,10 @@ app.post("/authenticate/:username", async (c) => {
 
 /**
  * returns information about the user associated with the jwt that's
- * provided either by a 'jwt' cookie or ?jwt= querystring parameter
+ * provided either by a ?jwt= querystring parameter or 'jwt' cookie
  */
 app.get("/me", async (c) => {
-  const jwt = c.req.cookie("jwt") || c.req.query("jwt");
+  const jwt = c.req.query("jwt") || c.req.cookie("jwt");
   try {
     const publicKey = await importSPKI(c.env.AUTH_JWT_PUBLIC_KEY, alg);
     const { payload } = await jwtVerify(jwt, publicKey, {
