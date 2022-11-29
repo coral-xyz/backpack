@@ -599,7 +599,6 @@ export const ResolveFromPath = (
   returns: ReturnTypesType,
   ops: Operations
 ) => {
-  // @ts-ignore
   const ResolvePropsType = (mappedParts: Part[]) => {
     const oKey = ops[mappedParts[0].v];
     const propsP1 = oKey ? props[oKey] : props[mappedParts[0].v];
@@ -642,7 +641,6 @@ export const ResolveFromPath = (
       }
     }
   };
-  // @ts-ignore
   const ResolveReturnType = (mappedParts: Part[]) => {
     if (mappedParts.length === 0) {
       return "not";
@@ -1442,26 +1440,49 @@ export type ValueTypes = {
       | Variable<any, string>;
     where: ValueTypes["auth_notifications_bool_exp"] | Variable<any, string>;
   };
-  /** columns and relationships of "auth.publickeys" */
-  ["auth_publickeys"]: AliasType<{
+  /** columns and relationships of "auth.public_keys" */
+  ["auth_public_keys"]: AliasType<{
     blockchain?: boolean | `@${string}`;
-    publickey?: boolean | `@${string}`;
+    public_key?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
-  /** Boolean expression to filter rows from the table "auth.publickeys". All fields are combined with a logical 'AND'. */
-  ["auth_publickeys_bool_exp"]: {
+  /** aggregated selection of "auth.public_keys" */
+  ["auth_public_keys_aggregate"]: AliasType<{
+    aggregate?: ValueTypes["auth_public_keys_aggregate_fields"];
+    nodes?: ValueTypes["auth_public_keys"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** aggregate fields of "auth.public_keys" */
+  ["auth_public_keys_aggregate_fields"]: AliasType<{
+    count?: [
+      {
+        columns?:
+          | Array<ValueTypes["auth_public_keys_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string>;
+        distinct?: boolean | undefined | null | Variable<any, string>;
+      },
+      boolean | `@${string}`
+    ];
+    max?: ValueTypes["auth_public_keys_max_fields"];
+    min?: ValueTypes["auth_public_keys_min_fields"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Boolean expression to filter rows from the table "auth.public_keys". All fields are combined with a logical 'AND'. */
+  ["auth_public_keys_bool_exp"]: {
     _and?:
-      | Array<ValueTypes["auth_publickeys_bool_exp"]>
+      | Array<ValueTypes["auth_public_keys_bool_exp"]>
       | undefined
       | null
       | Variable<any, string>;
     _not?:
-      | ValueTypes["auth_publickeys_bool_exp"]
+      | ValueTypes["auth_public_keys_bool_exp"]
       | undefined
       | null
       | Variable<any, string>;
     _or?:
-      | Array<ValueTypes["auth_publickeys_bool_exp"]>
+      | Array<ValueTypes["auth_public_keys_bool_exp"]>
       | undefined
       | null
       | Variable<any, string>;
@@ -1470,12 +1491,89 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
-    publickey?:
+    public_key?:
       | ValueTypes["String_comparison_exp"]
       | undefined
       | null
       | Variable<any, string>;
   };
+  /** unique or primary key constraints on table "auth.public_keys" */
+  ["auth_public_keys_constraint"]: auth_public_keys_constraint;
+  /** input type for inserting data into table "auth.public_keys" */
+  ["auth_public_keys_insert_input"]: {
+    blockchain?: string | undefined | null | Variable<any, string>;
+    public_key?: string | undefined | null | Variable<any, string>;
+    user_id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
+  };
+  /** aggregate max on columns */
+  ["auth_public_keys_max_fields"]: AliasType<{
+    blockchain?: boolean | `@${string}`;
+    public_key?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** aggregate min on columns */
+  ["auth_public_keys_min_fields"]: AliasType<{
+    blockchain?: boolean | `@${string}`;
+    public_key?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** response of any mutation on the table "auth.public_keys" */
+  ["auth_public_keys_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ValueTypes["auth_public_keys"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "auth.public_keys" */
+  ["auth_public_keys_on_conflict"]: {
+    constraint:
+      | ValueTypes["auth_public_keys_constraint"]
+      | Variable<any, string>;
+    update_columns:
+      | Array<ValueTypes["auth_public_keys_update_column"]>
+      | Variable<any, string>;
+    where?:
+      | ValueTypes["auth_public_keys_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Ordering options when selecting data from "auth.public_keys". */
+  ["auth_public_keys_order_by"]: {
+    blockchain?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    public_key?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** select columns of table "auth.public_keys" */
+  ["auth_public_keys_select_column"]: auth_public_keys_select_column;
+  /** Streaming cursor of the table "auth_public_keys" */
+  ["auth_public_keys_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value:
+      | ValueTypes["auth_public_keys_stream_cursor_value_input"]
+      | Variable<any, string>;
+    /** cursor ordering */
+    ordering?:
+      | ValueTypes["cursor_ordering"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_public_keys_stream_cursor_value_input"]: {
+    blockchain?: string | undefined | null | Variable<any, string>;
+    public_key?: string | undefined | null | Variable<any, string>;
+  };
+  /** placeholder for update columns of table "auth.public_keys" (current role has no relevant permissions) */
+  ["auth_public_keys_update_column"]: auth_public_keys_update_column;
   /** columns and relationships of "auth.publickeys_history" */
   ["auth_publickeys_history"]: AliasType<{
     blockchain?: boolean | `@${string}`;
@@ -1637,39 +1735,6 @@ export type ValueTypes = {
   };
   /** placeholder for update columns of table "auth.publickeys_history" (current role has no relevant permissions) */
   ["auth_publickeys_history_update_column"]: auth_publickeys_history_update_column;
-  /** Ordering options when selecting data from "auth.publickeys". */
-  ["auth_publickeys_order_by"]: {
-    blockchain?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    publickey?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-  };
-  /** select columns of table "auth.publickeys" */
-  ["auth_publickeys_select_column"]: auth_publickeys_select_column;
-  /** Streaming cursor of the table "auth_publickeys" */
-  ["auth_publickeys_stream_cursor_input"]: {
-    /** Stream column input with initial value */
-    initial_value:
-      | ValueTypes["auth_publickeys_stream_cursor_value_input"]
-      | Variable<any, string>;
-    /** cursor ordering */
-    ordering?:
-      | ValueTypes["cursor_ordering"]
-      | undefined
-      | null
-      | Variable<any, string>;
-  };
-  /** Initial value of the column from where the streaming should start */
-  ["auth_publickeys_stream_cursor_value_input"]: {
-    blockchain?: string | undefined | null | Variable<any, string>;
-    publickey?: string | undefined | null | Variable<any, string>;
-  };
   /** columns and relationships of "auth.stripe_onramp" */
   ["auth_stripe_onramp"]: AliasType<{
     client_secret?: boolean | `@${string}`;
@@ -2372,6 +2437,13 @@ export type ValueTypes = {
       { id: number | Variable<any, string> },
       ValueTypes["auth_notification_subscriptions"]
     ];
+    delete_auth_public_keys?: [
+      {
+        /** filter the rows which have to be deleted */
+        where: ValueTypes["auth_public_keys_bool_exp"] | Variable<any, string>;
+      },
+      ValueTypes["auth_public_keys_mutation_response"]
+    ];
     delete_auth_xnft_preferences?: [
       {
         /** filter the rows which have to be deleted */
@@ -2440,6 +2512,34 @@ export type ValueTypes = {
           | Variable<any, string>;
       },
       ValueTypes["auth_notifications"]
+    ];
+    insert_auth_public_keys?: [
+      {
+        /** the rows to be inserted */
+        objects:
+          | Array<ValueTypes["auth_public_keys_insert_input"]>
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["auth_public_keys_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_public_keys_mutation_response"]
+    ];
+    insert_auth_public_keys_one?: [
+      {
+        /** the row to be inserted */
+        object:
+          | ValueTypes["auth_public_keys_insert_input"]
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["auth_public_keys_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_public_keys"]
     ];
     insert_auth_publickeys_history?: [
       {
@@ -2896,11 +2996,11 @@ export type ValueTypes = {
       { id: number | Variable<any, string> },
       ValueTypes["auth_notifications"]
     ];
-    auth_publickeys?: [
+    auth_public_keys?: [
       {
         /** distinct select on columns */
         distinct_on?:
-          | Array<ValueTypes["auth_publickeys_select_column"]>
+          | Array<ValueTypes["auth_public_keys_select_column"]>
           | undefined
           | null
           | Variable<any, string> /** limit the number of rows returned */;
@@ -2918,17 +3018,51 @@ export type ValueTypes = {
           | null
           | Variable<any, string> /** sort the rows by one or more columns */;
         order_by?:
-          | Array<ValueTypes["auth_publickeys_order_by"]>
+          | Array<ValueTypes["auth_public_keys_order_by"]>
           | undefined
           | null
           | Variable<any, string> /** filter the rows returned */;
         where?:
-          | ValueTypes["auth_publickeys_bool_exp"]
+          | ValueTypes["auth_public_keys_bool_exp"]
           | undefined
           | null
           | Variable<any, string>;
       },
-      ValueTypes["auth_publickeys"]
+      ValueTypes["auth_public_keys"]
+    ];
+    auth_public_keys_aggregate?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_public_keys_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_public_keys_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_public_keys_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_public_keys_aggregate"]
     ];
     auth_publickeys_history?: [
       {
@@ -3307,11 +3441,11 @@ export type ValueTypes = {
       },
       ValueTypes["auth_notifications"]
     ];
-    auth_publickeys?: [
+    auth_public_keys?: [
       {
         /** distinct select on columns */
         distinct_on?:
-          | Array<ValueTypes["auth_publickeys_select_column"]>
+          | Array<ValueTypes["auth_public_keys_select_column"]>
           | undefined
           | null
           | Variable<any, string> /** limit the number of rows returned */;
@@ -3329,17 +3463,75 @@ export type ValueTypes = {
           | null
           | Variable<any, string> /** sort the rows by one or more columns */;
         order_by?:
-          | Array<ValueTypes["auth_publickeys_order_by"]>
+          | Array<ValueTypes["auth_public_keys_order_by"]>
           | undefined
           | null
           | Variable<any, string> /** filter the rows returned */;
         where?:
-          | ValueTypes["auth_publickeys_bool_exp"]
+          | ValueTypes["auth_public_keys_bool_exp"]
           | undefined
           | null
           | Variable<any, string>;
       },
-      ValueTypes["auth_publickeys"]
+      ValueTypes["auth_public_keys"]
+    ];
+    auth_public_keys_aggregate?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_public_keys_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_public_keys_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_public_keys_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_public_keys_aggregate"]
+    ];
+    auth_public_keys_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size:
+          | number
+          | Variable<
+              any,
+              string
+            > /** cursor to stream the results returned by the query */;
+        cursor:
+          | Array<
+              | ValueTypes["auth_public_keys_stream_cursor_input"]
+              | undefined
+              | null
+            >
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_public_keys_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_public_keys"]
     ];
     auth_publickeys_history?: [
       {
@@ -3398,30 +3590,6 @@ export type ValueTypes = {
           | Variable<any, string>;
       },
       ValueTypes["auth_publickeys_history"]
-    ];
-    auth_publickeys_stream?: [
-      {
-        /** maximum number of rows returned in a single batch */
-        batch_size:
-          | number
-          | Variable<
-              any,
-              string
-            > /** cursor to stream the results returned by the query */;
-        cursor:
-          | Array<
-              | ValueTypes["auth_publickeys_stream_cursor_input"]
-              | undefined
-              | null
-            >
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["auth_publickeys_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_publickeys"]
     ];
     auth_stripe_onramp?: [
       {
@@ -4091,26 +4259,103 @@ export type ResolverInputTypes = {
       | null;
     where: ResolverInputTypes["auth_notifications_bool_exp"];
   };
-  /** columns and relationships of "auth.publickeys" */
-  ["auth_publickeys"]: AliasType<{
+  /** columns and relationships of "auth.public_keys" */
+  ["auth_public_keys"]: AliasType<{
     blockchain?: boolean | `@${string}`;
-    publickey?: boolean | `@${string}`;
+    public_key?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
-  /** Boolean expression to filter rows from the table "auth.publickeys". All fields are combined with a logical 'AND'. */
-  ["auth_publickeys_bool_exp"]: {
+  /** aggregated selection of "auth.public_keys" */
+  ["auth_public_keys_aggregate"]: AliasType<{
+    aggregate?: ResolverInputTypes["auth_public_keys_aggregate_fields"];
+    nodes?: ResolverInputTypes["auth_public_keys"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** aggregate fields of "auth.public_keys" */
+  ["auth_public_keys_aggregate_fields"]: AliasType<{
+    count?: [
+      {
+        columns?:
+          | Array<ResolverInputTypes["auth_public_keys_select_column"]>
+          | undefined
+          | null;
+        distinct?: boolean | undefined | null;
+      },
+      boolean | `@${string}`
+    ];
+    max?: ResolverInputTypes["auth_public_keys_max_fields"];
+    min?: ResolverInputTypes["auth_public_keys_min_fields"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Boolean expression to filter rows from the table "auth.public_keys". All fields are combined with a logical 'AND'. */
+  ["auth_public_keys_bool_exp"]: {
     _and?:
-      | Array<ResolverInputTypes["auth_publickeys_bool_exp"]>
+      | Array<ResolverInputTypes["auth_public_keys_bool_exp"]>
       | undefined
       | null;
-    _not?: ResolverInputTypes["auth_publickeys_bool_exp"] | undefined | null;
+    _not?: ResolverInputTypes["auth_public_keys_bool_exp"] | undefined | null;
     _or?:
-      | Array<ResolverInputTypes["auth_publickeys_bool_exp"]>
+      | Array<ResolverInputTypes["auth_public_keys_bool_exp"]>
       | undefined
       | null;
     blockchain?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
-    publickey?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    public_key?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
   };
+  /** unique or primary key constraints on table "auth.public_keys" */
+  ["auth_public_keys_constraint"]: auth_public_keys_constraint;
+  /** input type for inserting data into table "auth.public_keys" */
+  ["auth_public_keys_insert_input"]: {
+    blockchain?: string | undefined | null;
+    public_key?: string | undefined | null;
+    user_id?: ResolverInputTypes["uuid"] | undefined | null;
+  };
+  /** aggregate max on columns */
+  ["auth_public_keys_max_fields"]: AliasType<{
+    blockchain?: boolean | `@${string}`;
+    public_key?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** aggregate min on columns */
+  ["auth_public_keys_min_fields"]: AliasType<{
+    blockchain?: boolean | `@${string}`;
+    public_key?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** response of any mutation on the table "auth.public_keys" */
+  ["auth_public_keys_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ResolverInputTypes["auth_public_keys"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "auth.public_keys" */
+  ["auth_public_keys_on_conflict"]: {
+    constraint: ResolverInputTypes["auth_public_keys_constraint"];
+    update_columns: Array<ResolverInputTypes["auth_public_keys_update_column"]>;
+    where?: ResolverInputTypes["auth_public_keys_bool_exp"] | undefined | null;
+  };
+  /** Ordering options when selecting data from "auth.public_keys". */
+  ["auth_public_keys_order_by"]: {
+    blockchain?: ResolverInputTypes["order_by"] | undefined | null;
+    public_key?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** select columns of table "auth.public_keys" */
+  ["auth_public_keys_select_column"]: auth_public_keys_select_column;
+  /** Streaming cursor of the table "auth_public_keys" */
+  ["auth_public_keys_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ResolverInputTypes["auth_public_keys_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ResolverInputTypes["cursor_ordering"] | undefined | null;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_public_keys_stream_cursor_value_input"]: {
+    blockchain?: string | undefined | null;
+    public_key?: string | undefined | null;
+  };
+  /** placeholder for update columns of table "auth.public_keys" (current role has no relevant permissions) */
+  ["auth_public_keys_update_column"]: auth_public_keys_update_column;
   /** columns and relationships of "auth.publickeys_history" */
   ["auth_publickeys_history"]: AliasType<{
     blockchain?: boolean | `@${string}`;
@@ -4219,25 +4464,6 @@ export type ResolverInputTypes = {
   };
   /** placeholder for update columns of table "auth.publickeys_history" (current role has no relevant permissions) */
   ["auth_publickeys_history_update_column"]: auth_publickeys_history_update_column;
-  /** Ordering options when selecting data from "auth.publickeys". */
-  ["auth_publickeys_order_by"]: {
-    blockchain?: ResolverInputTypes["order_by"] | undefined | null;
-    publickey?: ResolverInputTypes["order_by"] | undefined | null;
-  };
-  /** select columns of table "auth.publickeys" */
-  ["auth_publickeys_select_column"]: auth_publickeys_select_column;
-  /** Streaming cursor of the table "auth_publickeys" */
-  ["auth_publickeys_stream_cursor_input"]: {
-    /** Stream column input with initial value */
-    initial_value: ResolverInputTypes["auth_publickeys_stream_cursor_value_input"];
-    /** cursor ordering */
-    ordering?: ResolverInputTypes["cursor_ordering"] | undefined | null;
-  };
-  /** Initial value of the column from where the streaming should start */
-  ["auth_publickeys_stream_cursor_value_input"]: {
-    blockchain?: string | undefined | null;
-    publickey?: string | undefined | null;
-  };
   /** columns and relationships of "auth.stripe_onramp" */
   ["auth_stripe_onramp"]: AliasType<{
     client_secret?: boolean | `@${string}`;
@@ -4744,6 +4970,13 @@ export type ResolverInputTypes = {
       { id: number },
       ResolverInputTypes["auth_notification_subscriptions"]
     ];
+    delete_auth_public_keys?: [
+      {
+        /** filter the rows which have to be deleted */
+        where: ResolverInputTypes["auth_public_keys_bool_exp"];
+      },
+      ResolverInputTypes["auth_public_keys_mutation_response"]
+    ];
     delete_auth_xnft_preferences?: [
       {
         /** filter the rows which have to be deleted */
@@ -4802,6 +5035,30 @@ export type ResolverInputTypes = {
           | null;
       },
       ResolverInputTypes["auth_notifications"]
+    ];
+    insert_auth_public_keys?: [
+      {
+        /** the rows to be inserted */
+        objects: Array<
+          ResolverInputTypes["auth_public_keys_insert_input"]
+        > /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["auth_public_keys_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_public_keys_mutation_response"]
+    ];
+    insert_auth_public_keys_one?: [
+      {
+        /** the row to be inserted */
+        object: ResolverInputTypes["auth_public_keys_insert_input"] /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["auth_public_keys_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_public_keys"]
     ];
     insert_auth_publickeys_history?: [
       {
@@ -5144,11 +5401,11 @@ export type ResolverInputTypes = {
       { id: number },
       ResolverInputTypes["auth_notifications"]
     ];
-    auth_publickeys?: [
+    auth_public_keys?: [
       {
         /** distinct select on columns */
         distinct_on?:
-          | Array<ResolverInputTypes["auth_publickeys_select_column"]>
+          | Array<ResolverInputTypes["auth_public_keys_select_column"]>
           | undefined
           | null /** limit the number of rows returned */;
         limit?:
@@ -5160,15 +5417,41 @@ export type ResolverInputTypes = {
           | undefined
           | null /** sort the rows by one or more columns */;
         order_by?:
-          | Array<ResolverInputTypes["auth_publickeys_order_by"]>
+          | Array<ResolverInputTypes["auth_public_keys_order_by"]>
           | undefined
           | null /** filter the rows returned */;
         where?:
-          | ResolverInputTypes["auth_publickeys_bool_exp"]
+          | ResolverInputTypes["auth_public_keys_bool_exp"]
           | undefined
           | null;
       },
-      ResolverInputTypes["auth_publickeys"]
+      ResolverInputTypes["auth_public_keys"]
+    ];
+    auth_public_keys_aggregate?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_public_keys_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_public_keys_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_public_keys_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_public_keys_aggregate"]
     ];
     auth_publickeys_history?: [
       {
@@ -5451,11 +5734,11 @@ export type ResolverInputTypes = {
       },
       ResolverInputTypes["auth_notifications"]
     ];
-    auth_publickeys?: [
+    auth_public_keys?: [
       {
         /** distinct select on columns */
         distinct_on?:
-          | Array<ResolverInputTypes["auth_publickeys_select_column"]>
+          | Array<ResolverInputTypes["auth_public_keys_select_column"]>
           | undefined
           | null /** limit the number of rows returned */;
         limit?:
@@ -5467,15 +5750,57 @@ export type ResolverInputTypes = {
           | undefined
           | null /** sort the rows by one or more columns */;
         order_by?:
-          | Array<ResolverInputTypes["auth_publickeys_order_by"]>
+          | Array<ResolverInputTypes["auth_public_keys_order_by"]>
           | undefined
           | null /** filter the rows returned */;
         where?:
-          | ResolverInputTypes["auth_publickeys_bool_exp"]
+          | ResolverInputTypes["auth_public_keys_bool_exp"]
           | undefined
           | null;
       },
-      ResolverInputTypes["auth_publickeys"]
+      ResolverInputTypes["auth_public_keys"]
+    ];
+    auth_public_keys_aggregate?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_public_keys_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_public_keys_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_public_keys_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_public_keys_aggregate"]
+    ];
+    auth_public_keys_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size: number /** cursor to stream the results returned by the query */;
+        cursor: Array<
+          | ResolverInputTypes["auth_public_keys_stream_cursor_input"]
+          | undefined
+          | null
+        > /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_public_keys_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_public_keys"]
     ];
     auth_publickeys_history?: [
       {
@@ -5518,22 +5843,6 @@ export type ResolverInputTypes = {
           | null;
       },
       ResolverInputTypes["auth_publickeys_history"]
-    ];
-    auth_publickeys_stream?: [
-      {
-        /** maximum number of rows returned in a single batch */
-        batch_size: number /** cursor to stream the results returned by the query */;
-        cursor: Array<
-          | ResolverInputTypes["auth_publickeys_stream_cursor_input"]
-          | undefined
-          | null
-        > /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["auth_publickeys_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_publickeys"]
     ];
     auth_stripe_onramp?: [
       {
@@ -6054,19 +6363,79 @@ export type ModelTypes = {
     _set?: ModelTypes["auth_notifications_set_input"] | undefined;
     where: ModelTypes["auth_notifications_bool_exp"];
   };
-  /** columns and relationships of "auth.publickeys" */
-  ["auth_publickeys"]: {
-    blockchain?: string | undefined;
-    publickey?: string | undefined;
+  /** columns and relationships of "auth.public_keys" */
+  ["auth_public_keys"]: {
+    blockchain: string;
+    public_key: string;
   };
-  /** Boolean expression to filter rows from the table "auth.publickeys". All fields are combined with a logical 'AND'. */
-  ["auth_publickeys_bool_exp"]: {
-    _and?: Array<ModelTypes["auth_publickeys_bool_exp"]> | undefined;
-    _not?: ModelTypes["auth_publickeys_bool_exp"] | undefined;
-    _or?: Array<ModelTypes["auth_publickeys_bool_exp"]> | undefined;
+  /** aggregated selection of "auth.public_keys" */
+  ["auth_public_keys_aggregate"]: {
+    aggregate?: ModelTypes["auth_public_keys_aggregate_fields"] | undefined;
+    nodes: Array<ModelTypes["auth_public_keys"]>;
+  };
+  /** aggregate fields of "auth.public_keys" */
+  ["auth_public_keys_aggregate_fields"]: {
+    count: number;
+    max?: ModelTypes["auth_public_keys_max_fields"] | undefined;
+    min?: ModelTypes["auth_public_keys_min_fields"] | undefined;
+  };
+  /** Boolean expression to filter rows from the table "auth.public_keys". All fields are combined with a logical 'AND'. */
+  ["auth_public_keys_bool_exp"]: {
+    _and?: Array<ModelTypes["auth_public_keys_bool_exp"]> | undefined;
+    _not?: ModelTypes["auth_public_keys_bool_exp"] | undefined;
+    _or?: Array<ModelTypes["auth_public_keys_bool_exp"]> | undefined;
     blockchain?: ModelTypes["String_comparison_exp"] | undefined;
-    publickey?: ModelTypes["String_comparison_exp"] | undefined;
+    public_key?: ModelTypes["String_comparison_exp"] | undefined;
   };
+  ["auth_public_keys_constraint"]: auth_public_keys_constraint;
+  /** input type for inserting data into table "auth.public_keys" */
+  ["auth_public_keys_insert_input"]: {
+    blockchain?: string | undefined;
+    public_key?: string | undefined;
+    user_id?: ModelTypes["uuid"] | undefined;
+  };
+  /** aggregate max on columns */
+  ["auth_public_keys_max_fields"]: {
+    blockchain?: string | undefined;
+    public_key?: string | undefined;
+  };
+  /** aggregate min on columns */
+  ["auth_public_keys_min_fields"]: {
+    blockchain?: string | undefined;
+    public_key?: string | undefined;
+  };
+  /** response of any mutation on the table "auth.public_keys" */
+  ["auth_public_keys_mutation_response"]: {
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<ModelTypes["auth_public_keys"]>;
+  };
+  /** on_conflict condition type for table "auth.public_keys" */
+  ["auth_public_keys_on_conflict"]: {
+    constraint: ModelTypes["auth_public_keys_constraint"];
+    update_columns: Array<ModelTypes["auth_public_keys_update_column"]>;
+    where?: ModelTypes["auth_public_keys_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "auth.public_keys". */
+  ["auth_public_keys_order_by"]: {
+    blockchain?: ModelTypes["order_by"] | undefined;
+    public_key?: ModelTypes["order_by"] | undefined;
+  };
+  ["auth_public_keys_select_column"]: auth_public_keys_select_column;
+  /** Streaming cursor of the table "auth_public_keys" */
+  ["auth_public_keys_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ModelTypes["auth_public_keys_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ModelTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_public_keys_stream_cursor_value_input"]: {
+    blockchain?: string | undefined;
+    public_key?: string | undefined;
+  };
+  ["auth_public_keys_update_column"]: auth_public_keys_update_column;
   /** columns and relationships of "auth.publickeys_history" */
   ["auth_publickeys_history"]: {
     blockchain: string;
@@ -6147,24 +6516,6 @@ export type ModelTypes = {
     user_id?: ModelTypes["uuid"] | undefined;
   };
   ["auth_publickeys_history_update_column"]: auth_publickeys_history_update_column;
-  /** Ordering options when selecting data from "auth.publickeys". */
-  ["auth_publickeys_order_by"]: {
-    blockchain?: ModelTypes["order_by"] | undefined;
-    publickey?: ModelTypes["order_by"] | undefined;
-  };
-  ["auth_publickeys_select_column"]: auth_publickeys_select_column;
-  /** Streaming cursor of the table "auth_publickeys" */
-  ["auth_publickeys_stream_cursor_input"]: {
-    /** Stream column input with initial value */
-    initial_value: ModelTypes["auth_publickeys_stream_cursor_value_input"];
-    /** cursor ordering */
-    ordering?: ModelTypes["cursor_ordering"] | undefined;
-  };
-  /** Initial value of the column from where the streaming should start */
-  ["auth_publickeys_stream_cursor_value_input"]: {
-    blockchain?: string | undefined;
-    publickey?: string | undefined;
-  };
   /** columns and relationships of "auth.stripe_onramp" */
   ["auth_stripe_onramp"]: {
     client_secret: string;
@@ -6546,6 +6897,10 @@ export type ModelTypes = {
     delete_auth_notification_subscriptions_by_pk?:
       | ModelTypes["auth_notification_subscriptions"]
       | undefined;
+    /** delete data from the table: "auth.public_keys" */
+    delete_auth_public_keys?:
+      | ModelTypes["auth_public_keys_mutation_response"]
+      | undefined;
     /** delete data from the table: "auth.xnft_preferences" */
     delete_auth_xnft_preferences?:
       | ModelTypes["auth_xnft_preferences_mutation_response"]
@@ -6570,6 +6925,12 @@ export type ModelTypes = {
     insert_auth_notifications_one?:
       | ModelTypes["auth_notifications"]
       | undefined;
+    /** insert data into the table: "auth.public_keys" */
+    insert_auth_public_keys?:
+      | ModelTypes["auth_public_keys_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "auth.public_keys" */
+    insert_auth_public_keys_one?: ModelTypes["auth_public_keys"] | undefined;
     /** insert data into the table: "auth.publickeys_history" */
     insert_auth_publickeys_history?:
       | ModelTypes["auth_publickeys_history_mutation_response"]
@@ -6672,8 +7033,10 @@ export type ModelTypes = {
     auth_notifications: Array<ModelTypes["auth_notifications"]>;
     /** fetch data from the table: "auth.notifications" using primary key columns */
     auth_notifications_by_pk?: ModelTypes["auth_notifications"] | undefined;
-    /** fetch data from the table: "auth.publickeys" */
-    auth_publickeys: Array<ModelTypes["auth_publickeys"]>;
+    /** fetch data from the table: "auth.public_keys" */
+    auth_public_keys: Array<ModelTypes["auth_public_keys"]>;
+    /** fetch aggregated fields from the table: "auth.public_keys" */
+    auth_public_keys_aggregate: ModelTypes["auth_public_keys_aggregate"];
     /** fetch data from the table: "auth.publickeys_history" */
     auth_publickeys_history: Array<ModelTypes["auth_publickeys_history"]>;
     /** fetch data from the table: "auth.stripe_onramp" */
@@ -6716,16 +7079,18 @@ export type ModelTypes = {
     auth_notifications_by_pk?: ModelTypes["auth_notifications"] | undefined;
     /** fetch data from the table in a streaming manner : "auth.notifications" */
     auth_notifications_stream: Array<ModelTypes["auth_notifications"]>;
-    /** fetch data from the table: "auth.publickeys" */
-    auth_publickeys: Array<ModelTypes["auth_publickeys"]>;
+    /** fetch data from the table: "auth.public_keys" */
+    auth_public_keys: Array<ModelTypes["auth_public_keys"]>;
+    /** fetch aggregated fields from the table: "auth.public_keys" */
+    auth_public_keys_aggregate: ModelTypes["auth_public_keys_aggregate"];
+    /** fetch data from the table in a streaming manner : "auth.public_keys" */
+    auth_public_keys_stream: Array<ModelTypes["auth_public_keys"]>;
     /** fetch data from the table: "auth.publickeys_history" */
     auth_publickeys_history: Array<ModelTypes["auth_publickeys_history"]>;
     /** fetch data from the table in a streaming manner : "auth.publickeys_history" */
     auth_publickeys_history_stream: Array<
       ModelTypes["auth_publickeys_history"]
     >;
-    /** fetch data from the table in a streaming manner : "auth.publickeys" */
-    auth_publickeys_stream: Array<ModelTypes["auth_publickeys"]>;
     /** fetch data from the table: "auth.stripe_onramp" */
     auth_stripe_onramp: Array<ModelTypes["auth_stripe_onramp"]>;
     /** fetch data from the table: "auth.stripe_onramp" using primary key columns */
@@ -7074,20 +7439,88 @@ export type GraphQLTypes = {
     _set?: GraphQLTypes["auth_notifications_set_input"] | undefined;
     where: GraphQLTypes["auth_notifications_bool_exp"];
   };
-  /** columns and relationships of "auth.publickeys" */
-  ["auth_publickeys"]: {
-    __typename: "auth_publickeys";
-    blockchain?: string | undefined;
-    publickey?: string | undefined;
+  /** columns and relationships of "auth.public_keys" */
+  ["auth_public_keys"]: {
+    __typename: "auth_public_keys";
+    blockchain: string;
+    public_key: string;
   };
-  /** Boolean expression to filter rows from the table "auth.publickeys". All fields are combined with a logical 'AND'. */
-  ["auth_publickeys_bool_exp"]: {
-    _and?: Array<GraphQLTypes["auth_publickeys_bool_exp"]> | undefined;
-    _not?: GraphQLTypes["auth_publickeys_bool_exp"] | undefined;
-    _or?: Array<GraphQLTypes["auth_publickeys_bool_exp"]> | undefined;
+  /** aggregated selection of "auth.public_keys" */
+  ["auth_public_keys_aggregate"]: {
+    __typename: "auth_public_keys_aggregate";
+    aggregate?: GraphQLTypes["auth_public_keys_aggregate_fields"] | undefined;
+    nodes: Array<GraphQLTypes["auth_public_keys"]>;
+  };
+  /** aggregate fields of "auth.public_keys" */
+  ["auth_public_keys_aggregate_fields"]: {
+    __typename: "auth_public_keys_aggregate_fields";
+    count: number;
+    max?: GraphQLTypes["auth_public_keys_max_fields"] | undefined;
+    min?: GraphQLTypes["auth_public_keys_min_fields"] | undefined;
+  };
+  /** Boolean expression to filter rows from the table "auth.public_keys". All fields are combined with a logical 'AND'. */
+  ["auth_public_keys_bool_exp"]: {
+    _and?: Array<GraphQLTypes["auth_public_keys_bool_exp"]> | undefined;
+    _not?: GraphQLTypes["auth_public_keys_bool_exp"] | undefined;
+    _or?: Array<GraphQLTypes["auth_public_keys_bool_exp"]> | undefined;
     blockchain?: GraphQLTypes["String_comparison_exp"] | undefined;
-    publickey?: GraphQLTypes["String_comparison_exp"] | undefined;
+    public_key?: GraphQLTypes["String_comparison_exp"] | undefined;
   };
+  /** unique or primary key constraints on table "auth.public_keys" */
+  ["auth_public_keys_constraint"]: auth_public_keys_constraint;
+  /** input type for inserting data into table "auth.public_keys" */
+  ["auth_public_keys_insert_input"]: {
+    blockchain?: string | undefined;
+    public_key?: string | undefined;
+    user_id?: GraphQLTypes["uuid"] | undefined;
+  };
+  /** aggregate max on columns */
+  ["auth_public_keys_max_fields"]: {
+    __typename: "auth_public_keys_max_fields";
+    blockchain?: string | undefined;
+    public_key?: string | undefined;
+  };
+  /** aggregate min on columns */
+  ["auth_public_keys_min_fields"]: {
+    __typename: "auth_public_keys_min_fields";
+    blockchain?: string | undefined;
+    public_key?: string | undefined;
+  };
+  /** response of any mutation on the table "auth.public_keys" */
+  ["auth_public_keys_mutation_response"]: {
+    __typename: "auth_public_keys_mutation_response";
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<GraphQLTypes["auth_public_keys"]>;
+  };
+  /** on_conflict condition type for table "auth.public_keys" */
+  ["auth_public_keys_on_conflict"]: {
+    constraint: GraphQLTypes["auth_public_keys_constraint"];
+    update_columns: Array<GraphQLTypes["auth_public_keys_update_column"]>;
+    where?: GraphQLTypes["auth_public_keys_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "auth.public_keys". */
+  ["auth_public_keys_order_by"]: {
+    blockchain?: GraphQLTypes["order_by"] | undefined;
+    public_key?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** select columns of table "auth.public_keys" */
+  ["auth_public_keys_select_column"]: auth_public_keys_select_column;
+  /** Streaming cursor of the table "auth_public_keys" */
+  ["auth_public_keys_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: GraphQLTypes["auth_public_keys_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: GraphQLTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_public_keys_stream_cursor_value_input"]: {
+    blockchain?: string | undefined;
+    public_key?: string | undefined;
+  };
+  /** placeholder for update columns of table "auth.public_keys" (current role has no relevant permissions) */
+  ["auth_public_keys_update_column"]: auth_public_keys_update_column;
   /** columns and relationships of "auth.publickeys_history" */
   ["auth_publickeys_history"]: {
     __typename: "auth_publickeys_history";
@@ -7177,25 +7610,6 @@ export type GraphQLTypes = {
   };
   /** placeholder for update columns of table "auth.publickeys_history" (current role has no relevant permissions) */
   ["auth_publickeys_history_update_column"]: auth_publickeys_history_update_column;
-  /** Ordering options when selecting data from "auth.publickeys". */
-  ["auth_publickeys_order_by"]: {
-    blockchain?: GraphQLTypes["order_by"] | undefined;
-    publickey?: GraphQLTypes["order_by"] | undefined;
-  };
-  /** select columns of table "auth.publickeys" */
-  ["auth_publickeys_select_column"]: auth_publickeys_select_column;
-  /** Streaming cursor of the table "auth_publickeys" */
-  ["auth_publickeys_stream_cursor_input"]: {
-    /** Stream column input with initial value */
-    initial_value: GraphQLTypes["auth_publickeys_stream_cursor_value_input"];
-    /** cursor ordering */
-    ordering?: GraphQLTypes["cursor_ordering"] | undefined;
-  };
-  /** Initial value of the column from where the streaming should start */
-  ["auth_publickeys_stream_cursor_value_input"]: {
-    blockchain?: string | undefined;
-    publickey?: string | undefined;
-  };
   /** columns and relationships of "auth.stripe_onramp" */
   ["auth_stripe_onramp"]: {
     __typename: "auth_stripe_onramp";
@@ -7604,6 +8018,10 @@ export type GraphQLTypes = {
     delete_auth_notification_subscriptions_by_pk?:
       | GraphQLTypes["auth_notification_subscriptions"]
       | undefined;
+    /** delete data from the table: "auth.public_keys" */
+    delete_auth_public_keys?:
+      | GraphQLTypes["auth_public_keys_mutation_response"]
+      | undefined;
     /** delete data from the table: "auth.xnft_preferences" */
     delete_auth_xnft_preferences?:
       | GraphQLTypes["auth_xnft_preferences_mutation_response"]
@@ -7628,6 +8046,12 @@ export type GraphQLTypes = {
     insert_auth_notifications_one?:
       | GraphQLTypes["auth_notifications"]
       | undefined;
+    /** insert data into the table: "auth.public_keys" */
+    insert_auth_public_keys?:
+      | GraphQLTypes["auth_public_keys_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "auth.public_keys" */
+    insert_auth_public_keys_one?: GraphQLTypes["auth_public_keys"] | undefined;
     /** insert data into the table: "auth.publickeys_history" */
     insert_auth_publickeys_history?:
       | GraphQLTypes["auth_publickeys_history_mutation_response"]
@@ -7738,8 +8162,10 @@ export type GraphQLTypes = {
     auth_notifications: Array<GraphQLTypes["auth_notifications"]>;
     /** fetch data from the table: "auth.notifications" using primary key columns */
     auth_notifications_by_pk?: GraphQLTypes["auth_notifications"] | undefined;
-    /** fetch data from the table: "auth.publickeys" */
-    auth_publickeys: Array<GraphQLTypes["auth_publickeys"]>;
+    /** fetch data from the table: "auth.public_keys" */
+    auth_public_keys: Array<GraphQLTypes["auth_public_keys"]>;
+    /** fetch aggregated fields from the table: "auth.public_keys" */
+    auth_public_keys_aggregate: GraphQLTypes["auth_public_keys_aggregate"];
     /** fetch data from the table: "auth.publickeys_history" */
     auth_publickeys_history: Array<GraphQLTypes["auth_publickeys_history"]>;
     /** fetch data from the table: "auth.stripe_onramp" */
@@ -7783,16 +8209,18 @@ export type GraphQLTypes = {
     auth_notifications_by_pk?: GraphQLTypes["auth_notifications"] | undefined;
     /** fetch data from the table in a streaming manner : "auth.notifications" */
     auth_notifications_stream: Array<GraphQLTypes["auth_notifications"]>;
-    /** fetch data from the table: "auth.publickeys" */
-    auth_publickeys: Array<GraphQLTypes["auth_publickeys"]>;
+    /** fetch data from the table: "auth.public_keys" */
+    auth_public_keys: Array<GraphQLTypes["auth_public_keys"]>;
+    /** fetch aggregated fields from the table: "auth.public_keys" */
+    auth_public_keys_aggregate: GraphQLTypes["auth_public_keys_aggregate"];
+    /** fetch data from the table in a streaming manner : "auth.public_keys" */
+    auth_public_keys_stream: Array<GraphQLTypes["auth_public_keys"]>;
     /** fetch data from the table: "auth.publickeys_history" */
     auth_publickeys_history: Array<GraphQLTypes["auth_publickeys_history"]>;
     /** fetch data from the table in a streaming manner : "auth.publickeys_history" */
     auth_publickeys_history_stream: Array<
       GraphQLTypes["auth_publickeys_history"]
     >;
-    /** fetch data from the table in a streaming manner : "auth.publickeys" */
-    auth_publickeys_stream: Array<GraphQLTypes["auth_publickeys"]>;
     /** fetch data from the table: "auth.stripe_onramp" */
     auth_stripe_onramp: Array<GraphQLTypes["auth_stripe_onramp"]>;
     /** fetch data from the table: "auth.stripe_onramp" using primary key columns */
@@ -7899,6 +8327,19 @@ export const enum auth_notifications_update_column {
   uuid = "uuid",
   xnft_id = "xnft_id",
 }
+/** unique or primary key constraints on table "auth.public_keys" */
+export const enum auth_public_keys_constraint {
+  public_keys_pkey = "public_keys_pkey",
+}
+/** select columns of table "auth.public_keys" */
+export const enum auth_public_keys_select_column {
+  blockchain = "blockchain",
+  public_key = "public_key",
+}
+/** placeholder for update columns of table "auth.public_keys" (current role has no relevant permissions) */
+export const enum auth_public_keys_update_column {
+  _PLACEHOLDER = "_PLACEHOLDER",
+}
 /** unique or primary key constraints on table "auth.publickeys_history" */
 export const enum auth_publickeys_history_constraint {
   publickeys_history_pkey = "publickeys_history_pkey",
@@ -7912,11 +8353,6 @@ export const enum auth_publickeys_history_select_column {
 /** placeholder for update columns of table "auth.publickeys_history" (current role has no relevant permissions) */
 export const enum auth_publickeys_history_update_column {
   _PLACEHOLDER = "_PLACEHOLDER",
-}
-/** select columns of table "auth.publickeys" */
-export const enum auth_publickeys_select_column {
-  blockchain = "blockchain",
-  publickey = "publickey",
 }
 /** unique or primary key constraints on table "auth.stripe_onramp" */
 export const enum auth_stripe_onramp_constraint {
@@ -8027,7 +8463,15 @@ type ZEUS_VARIABLES = {
   ["auth_notifications_stream_cursor_value_input"]: ValueTypes["auth_notifications_stream_cursor_value_input"];
   ["auth_notifications_update_column"]: ValueTypes["auth_notifications_update_column"];
   ["auth_notifications_updates"]: ValueTypes["auth_notifications_updates"];
-  ["auth_publickeys_bool_exp"]: ValueTypes["auth_publickeys_bool_exp"];
+  ["auth_public_keys_bool_exp"]: ValueTypes["auth_public_keys_bool_exp"];
+  ["auth_public_keys_constraint"]: ValueTypes["auth_public_keys_constraint"];
+  ["auth_public_keys_insert_input"]: ValueTypes["auth_public_keys_insert_input"];
+  ["auth_public_keys_on_conflict"]: ValueTypes["auth_public_keys_on_conflict"];
+  ["auth_public_keys_order_by"]: ValueTypes["auth_public_keys_order_by"];
+  ["auth_public_keys_select_column"]: ValueTypes["auth_public_keys_select_column"];
+  ["auth_public_keys_stream_cursor_input"]: ValueTypes["auth_public_keys_stream_cursor_input"];
+  ["auth_public_keys_stream_cursor_value_input"]: ValueTypes["auth_public_keys_stream_cursor_value_input"];
+  ["auth_public_keys_update_column"]: ValueTypes["auth_public_keys_update_column"];
   ["auth_publickeys_history_aggregate_order_by"]: ValueTypes["auth_publickeys_history_aggregate_order_by"];
   ["auth_publickeys_history_arr_rel_insert_input"]: ValueTypes["auth_publickeys_history_arr_rel_insert_input"];
   ["auth_publickeys_history_bool_exp"]: ValueTypes["auth_publickeys_history_bool_exp"];
@@ -8041,10 +8485,6 @@ type ZEUS_VARIABLES = {
   ["auth_publickeys_history_stream_cursor_input"]: ValueTypes["auth_publickeys_history_stream_cursor_input"];
   ["auth_publickeys_history_stream_cursor_value_input"]: ValueTypes["auth_publickeys_history_stream_cursor_value_input"];
   ["auth_publickeys_history_update_column"]: ValueTypes["auth_publickeys_history_update_column"];
-  ["auth_publickeys_order_by"]: ValueTypes["auth_publickeys_order_by"];
-  ["auth_publickeys_select_column"]: ValueTypes["auth_publickeys_select_column"];
-  ["auth_publickeys_stream_cursor_input"]: ValueTypes["auth_publickeys_stream_cursor_input"];
-  ["auth_publickeys_stream_cursor_value_input"]: ValueTypes["auth_publickeys_stream_cursor_value_input"];
   ["auth_stripe_onramp_bool_exp"]: ValueTypes["auth_stripe_onramp_bool_exp"];
   ["auth_stripe_onramp_constraint"]: ValueTypes["auth_stripe_onramp_constraint"];
   ["auth_stripe_onramp_inc_input"]: ValueTypes["auth_stripe_onramp_inc_input"];
