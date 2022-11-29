@@ -1,0 +1,33 @@
+import { SubscriptionType } from "./toServer";
+export const CHAT_MESSAGES = "CHAT_MESSAGEES";
+export const SUBSCRIBE = "SUBSCRIBE";
+export const UNSUBSCRIBE = "UNSUBSCRIBE";
+
+export interface Message {
+  id: number;
+  uuid?: string;
+  message?: string;
+  // received?: boolean;
+  client_generated_uuid?: string;
+  message_kind: "gif" | "text";
+}
+
+export interface MessageWithMetadata extends Message {
+  username: string;
+  image: string;
+}
+
+export type ReceiveChat = {
+  type: SubscriptionType;
+  room: string;
+  message: string;
+};
+
+export type FromServer = {
+  type: typeof CHAT_MESSAGES;
+  payload: {
+    messages: Message[];
+    type: SubscriptionType;
+    room: string;
+  };
+};

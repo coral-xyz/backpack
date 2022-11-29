@@ -21,6 +21,7 @@ import {
 } from "../../common/Layout/NavStack";
 import { isFirstLastListItemStyle } from "../../common/List";
 import { EmptyState } from "../../common/EmptyState";
+import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 
 const useStyles = styles((theme) => ({
   recentActivityLabel: {
@@ -102,7 +103,7 @@ export function RecentActivityButton() {
         onClick={() => setOpenDrawer(true)}
         size="large"
       >
-        <Bolt className={classes.networkSettingsIcon} />
+        <FormatListBulletedIcon className={classes.networkSettingsIcon} />
       </IconButton>
       <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
         <div style={{ height: "100%" }}>

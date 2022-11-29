@@ -14,7 +14,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
     "lint:fix": "yarn run lint --fix"
   },
   "dependencies": {
@@ -28,6 +28,6 @@
   "devDependencies": {
     "@types/react-native": "0.70.6",
     "eslint-config-custom": "*",
-    "typescript": "^4.6.3"
+    "typescript": "~4.9.3"
   }
 }

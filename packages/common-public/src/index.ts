@@ -2,8 +2,8 @@
 // publicly. We should remove this eventually.
 
 export * from "./constants";
-export * from "./types";
 export * from "./logging";
+export * from "./types";
 export * from "./utils";
 export * from "./zustand-store";
 

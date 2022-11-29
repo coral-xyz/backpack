@@ -1,9 +1,11 @@
 export type FEATURE_GATES_MAP = { [feature: string]: boolean };
 
 export const STRIPE_ENABLED = "STRIPE_ENABLED";
+export const NOTIFICATIONS_ENABLED = "NOTIFICATIONS_ENABLED";
 
 export const DEFAULT_FEATURE_GATES: FEATURE_GATES_MAP = {
   STRIPE_ENABLED: false,
+  NOTIFICATIONS_ENABLED: false,
 };
 
 /*

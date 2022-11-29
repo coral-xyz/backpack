@@ -1,10 +1,13 @@
-import { proxyImageUrl } from "@coral-xyz/common";
-// probably should put all the components in here as an index
-import { useTheme } from "@hooks";
 import type { StyleProp, TextStyle, ViewStyle } from "react-native";
 import { Image, Pressable, Text, View } from "react-native";
+import { proxyImageUrl, walletAddressDisplay } from "@coral-xyz/common";
+import { useAvatarUrl } from "@coral-xyz/recoil";
+// probably should put all the components in here as an index
+import { useTheme } from "@hooks";
 
+export { NavHeader } from "./NavHeader";
 export { MnemonicInputFields } from "./MnemonicInputFields";
+export { TokenInputField } from "./TokenInputField";
 //
 // function getRandomColor() { var letters = "0123456789ABCDEF";
 //   var color = "#";
@@ -42,7 +45,11 @@ export function Screen({
   return (
     <View
       style={[
-        { flex: 1, backgroundColor: theme.custom.colors.background },
+        {
+          flex: 1,
+          backgroundColor: theme.custom.colors.background,
+          padding: 16,
+        },
         style,
       ]}
     >
@@ -51,16 +58,18 @@ export function Screen({
   );
 }
 
-export function PrimaryButton({
+export function BaseButton({
   label,
-  style,
+  buttonStyle,
+  labelStyle,
   onPress,
   disabled,
   loading,
   ...props
 }: {
   label: string;
-  style?: StyleProp<ViewStyle>;
+  buttonStyle?: StyleProp<ViewStyle>;
+  labelStyle?: StyleProp<TextStyle>;
   onPress: () => void;
   disabled: boolean;
   loading?: boolean;
@@ -68,30 +77,121 @@ export function PrimaryButton({
   const theme = useTheme();
   return (
     <Pressable
-      style={{
-        backgroundColor: theme.custom.colors.primaryButton,
-        height: 48,
-        borderRadius: 12,
-        justifyContent: "center",
-        alignItems: "center",
-        width: "100%",
-        opacity: disabled ? 80 : 100, // TODO(peter)
-      }}
+      style={[
+        {
+          backgroundColor: theme.custom.colors.primaryButton,
+          height: 48,
+          paddingHorizontal: 12,
+          borderRadius: 12,
+          justifyContent: "center",
+          alignItems: "center",
+          width: "100%",
+          opacity: disabled ? 80 : 100, // TODO(peter)
+        },
+        buttonStyle,
+      ]}
       disabled={disabled}
       onPress={onPress}
       {...props}
     >
       <Text
-        style={{
-          fontWeight: "500",
-          fontSize: 16,
-          lineHeight: 24,
-          color: theme.custom.colors.primaryButtonTextColor,
-        }}
+        style={[
+          {
+            fontWeight: "500",
+            fontSize: 16,
+            lineHeight: 24,
+            color: theme.custom.colors.primaryButtonTextColor,
+          },
+          labelStyle,
+        ]}
       >
         {loading ? "loading.." : label} {disabled ? "(disabled)" : ""}
       </Text>
     </Pressable>
+  );
+}
+
+export function PrimaryButton({
+  label,
+  onPress,
+  disabled,
+  loading,
+  ...props
+}: {
+  label: string;
+  onPress: () => void;
+  disabled: boolean;
+  loading?: boolean;
+}) {
+  const theme = useTheme();
+  return (
+    <BaseButton
+      label={label}
+      onPress={onPress}
+      disabled={disabled}
+      loading={loading}
+      buttonStyle={{ backgroundColor: theme.custom.colors.primaryButton }}
+      labelStyle={{
+        color: theme.custom.colors.primaryButtonTextColor,
+      }}
+      {...props}
+    />
+  );
+}
+
+export function SecondaryButton({
+  label,
+  onPress,
+  disabled,
+  loading,
+  ...props
+}: {
+  label: string;
+  onPress: () => void;
+  disabled: boolean;
+  loading?: boolean;
+}) {
+  const theme = useTheme();
+  return (
+    <BaseButton
+      label={label}
+      onPress={onPress}
+      disabled={disabled}
+      loading={loading}
+      buttonStyle={{ backgroundColor: theme.custom.colors.secondaryButton }}
+      labelStyle={{
+        color: theme.custom.colors.secondaryButtonTextColor,
+      }}
+      {...props}
+    />
+  );
+}
+
+export function DangerButton({
+  label,
+  onPress,
+  disabled,
+  loading,
+  ...props
+}: {
+  label: string;
+  onPress: () => void;
+  disabled: boolean;
+  loading?: boolean;
+}) {
+  const theme = useTheme();
+  return (
+    <BaseButton
+      label={label}
+      onPress={onPress}
+      disabled={disabled}
+      loading={loading}
+      buttonStyle={{ backgroundColor: theme.custom.colors.negative }}
+      labelStyle={{
+        color: theme.custom.colors.fontColor,
+      }}
+      {...props}
+    />
   );
 }
 
@@ -183,7 +283,14 @@ export function EmptyState({
 }) {
   const theme = useTheme();
   return (
-    <View>
+    <View style={{ alignItems: "center" }}>
+      {icon({
+        size: 56,
+        style: {
+          color: theme.custom.colors.secondary,
+          marginBottom: 16,
+        },
+      })}
       <Typography
         style={{
           fontSize: 24,
@@ -209,7 +316,11 @@ export function EmptyState({
           {subtitle}
         </Typography>
       )}
-      <PrimaryButton label={buttonText} onPress={onPress} />
+      {minimize !== true && buttonText && (
+        <Margin top={12}>
+          <PrimaryButton label={buttonText} onPress={() => onPress()} />
+        </Margin>
+      )}
     </View>
   );
 }
@@ -278,4 +389,58 @@ export function Margin({
   }
 
   return <View style={style}>{children}</View>;
+}
+
+export function WalletAddressLabel({
+  publicKey,
+  name,
+  style,
+  nameStyle,
+}: {
+  publicKey: string;
+  name: string;
+  style: StyleProp<ViewStyle>;
+  nameStyle: StyleProp<TextStyle>;
+}) {
+  const theme = useTheme();
+  return (
+    <View style={[{ flexDirection: "row", alignItems: "center" }, style]}>
+      <Margin right={8}>
+        <Text style={[{ color: theme.custom.colors.fontColor }, nameStyle]}>
+          {name}
+        </Text>
+      </Margin>
+      <Text style={{ color: theme.custom.colors.secondary }}>
+        ({walletAddressDisplay(publicKey)})
+      </Text>
+    </View>
+  );
+}
+
+export function Avatar({ size = 64 }: { size?: number }) {
+  const avatarUrl = useAvatarUrl(size);
+  const theme = useTheme();
+
+  const outerSize = size + 6;
+
+  return (
+    <View
+      style={{
+        backgroundColor: theme.custom.colors.avatarIconBackground,
+        borderRadius: outerSize / 2,
+        padding: 3,
+        width: outerSize,
+        height: outerSize,
+      }}
+    >
+      <Image
+        source={{ uri: avatarUrl }}
+        style={{
+          width: size,
+          height: size,
+          borderRadius: size / 2,
+        }}
+      />
+    </View>
+  );
 }

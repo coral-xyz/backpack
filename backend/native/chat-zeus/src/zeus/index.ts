@@ -4,68 +4,37 @@ import { AllTypesProps, ReturnTypes, Ops } from "./const";
 export const HOST = "http://localhost:8113/v1/graphql";
 
 export const HEADERS = {};
-import { createClient, type Sink } from "graphql-ws"; // keep
-
-export const apiSubscription = (options: chainOptions) => {
-  const client = createClient({
-    url: String(options[0]),
-    connectionParams: Object.fromEntries(
-      new Headers(options[1]?.headers).entries()
-    ),
-  });
-
-  const ws = new Proxy(
-    {
-      close: () => client.dispose(),
-    } as WebSocket,
-    {
-      get(target, key) {
-        if (key === "close") return target.close;
-        throw new Error(
-          `Unimplemented property '${String(
-            key
-          )}', only 'close()' is available.`
-        );
-      },
-    }
-  );
-
-  return (query: string) => {
-    let onMessage: ((event: any) => void) | undefined;
-    let onError: Sink["error"] | undefined;
-    let onClose: Sink["complete"] | undefined;
-
-    client.subscribe(
-      { query },
-      {
-        next({ data }) {
-          onMessage && onMessage(data);
-        },
-        error(error) {
-          onError && onError(error);
-        },
-        complete() {
-          onClose && onClose();
-        },
-      }
-    );
-
+export const apiSubscription = (options: chainOptions) => (query: string) => {
+  try {
+    const queryString = options[0] + "?query=" + encodeURIComponent(query);
+    const wsString = queryString.replace("http", "ws");
+    const host = (options.length > 1 && options[1]?.websocket?.[0]) || wsString;
+    const webSocketOptions = options[1]?.websocket || [host];
+    const ws = new WebSocket(...webSocketOptions);
     return {
       ws,
-      on(listener: typeof onMessage) {
-        onMessage = listener;
+      on: (e: (args: any) => void) => {
+        ws.onmessage = (event: any) => {
+          if (event.data) {
+            const parsed = JSON.parse(event.data);
+            const data = parsed.data;
+            return e(data);
+          }
+        };
       },
-      error(listener: typeof onError) {
-        onError = listener;
+      off: (e: (args: any) => void) => {
+        ws.onclose = e;
       },
-      open(listener: (socket: unknown) => void) {
-        client.on("opened", listener);
+      error: (e: (args: any) => void) => {
+        ws.onerror = e;
       },
-      off(listener: typeof onClose) {
-        onClose = listener;
+      open: (e: () => void) => {
+        ws.onopen = e;
       },
     };
-  };
+  } catch {
+    throw new Error("No websockets implemented");
+  }
 };
 const handleFetchResponse = (response: Response): Promise<GraphQLResponse> => {
   if (!response.ok) {
@@ -1021,7 +990,9 @@ export const $ = <Type extends GraphQLVariableType, Name extends string>(
     graphqlType) as unknown as Variable<Type, Name>;
 };
 type ZEUS_INTERFACES = never;
-export type ScalarCoders = {};
+export type ScalarCoders = {
+  timestamptz?: ScalarResolver;
+};
 type ZEUS_UNIONS = never;
 
 export type ValueTypes = {
@@ -1071,9 +1042,13 @@ export type ValueTypes = {
   };
   /** columns and relationships of "chats" */
   ["chats"]: AliasType<{
+    client_generated_uuid?: boolean | `@${string}`;
+    created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
     message?: boolean | `@${string}`;
+    message_kind?: boolean | `@${string}`;
     room?: boolean | `@${string}`;
+    type?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
     uuid?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
@@ -1095,6 +1070,16 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    client_generated_uuid?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    created_at?:
+      | ValueTypes["timestamptz_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     id?:
       | ValueTypes["Int_comparison_exp"]
       | undefined
@@ -1105,7 +1090,17 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    message_kind?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     room?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    type?:
       | ValueTypes["String_comparison_exp"]
       | undefined
       | null
@@ -1125,9 +1120,17 @@ export type ValueTypes = {
   ["chats_constraint"]: chats_constraint;
   /** input type for inserting data into table "chats" */
   ["chats_insert_input"]: {
+    client_generated_uuid?: string | undefined | null | Variable<any, string>;
+    created_at?:
+      | ValueTypes["timestamptz"]
+      | undefined
+      | null
+      | Variable<any, string>;
     id?: number | undefined | null | Variable<any, string>;
     message?: string | undefined | null | Variable<any, string>;
+    message_kind?: string | undefined | null | Variable<any, string>;
     room?: string | undefined | null | Variable<any, string>;
+    type?: string | undefined | null | Variable<any, string>;
     username?: string | undefined | null | Variable<any, string>;
     uuid?: string | undefined | null | Variable<any, string>;
   };
@@ -1153,9 +1156,25 @@ export type ValueTypes = {
   };
   /** Ordering options when selecting data from "chats". */
   ["chats_order_by"]: {
+    client_generated_uuid?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    created_at?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     message?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    message_kind?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     room?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    type?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     username?:
       | ValueTypes["order_by"]
       | undefined
@@ -1180,9 +1199,17 @@ export type ValueTypes = {
   };
   /** Initial value of the column from where the streaming should start */
   ["chats_stream_cursor_value_input"]: {
+    client_generated_uuid?: string | undefined | null | Variable<any, string>;
+    created_at?:
+      | ValueTypes["timestamptz"]
+      | undefined
+      | null
+      | Variable<any, string>;
     id?: number | undefined | null | Variable<any, string>;
     message?: string | undefined | null | Variable<any, string>;
+    message_kind?: string | undefined | null | Variable<any, string>;
     room?: string | undefined | null | Variable<any, string>;
+    type?: string | undefined | null | Variable<any, string>;
     username?: string | undefined | null | Variable<any, string>;
     uuid?: string | undefined | null | Variable<any, string>;
   };
@@ -1320,6 +1347,27 @@ export type ValueTypes = {
     ];
     __typename?: boolean | `@${string}`;
   }>;
+  ["timestamptz"]: unknown;
+  /** Boolean expression to compare columns of type "timestamptz". All fields are combined with logical 'AND'. */
+  ["timestamptz_comparison_exp"]: {
+    _eq?: ValueTypes["timestamptz"] | undefined | null | Variable<any, string>;
+    _gt?: ValueTypes["timestamptz"] | undefined | null | Variable<any, string>;
+    _gte?: ValueTypes["timestamptz"] | undefined | null | Variable<any, string>;
+    _in?:
+      | Array<ValueTypes["timestamptz"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    _is_null?: boolean | undefined | null | Variable<any, string>;
+    _lt?: ValueTypes["timestamptz"] | undefined | null | Variable<any, string>;
+    _lte?: ValueTypes["timestamptz"] | undefined | null | Variable<any, string>;
+    _neq?: ValueTypes["timestamptz"] | undefined | null | Variable<any, string>;
+    _nin?:
+      | Array<ValueTypes["timestamptz"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
 };
 
 export type ResolverInputTypes = {
@@ -1369,9 +1417,13 @@ export type ResolverInputTypes = {
   };
   /** columns and relationships of "chats" */
   ["chats"]: AliasType<{
+    client_generated_uuid?: boolean | `@${string}`;
+    created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
     message?: boolean | `@${string}`;
+    message_kind?: boolean | `@${string}`;
     room?: boolean | `@${string}`;
+    type?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
     uuid?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
@@ -1381,9 +1433,22 @@ export type ResolverInputTypes = {
     _and?: Array<ResolverInputTypes["chats_bool_exp"]> | undefined | null;
     _not?: ResolverInputTypes["chats_bool_exp"] | undefined | null;
     _or?: Array<ResolverInputTypes["chats_bool_exp"]> | undefined | null;
+    client_generated_uuid?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
+    created_at?:
+      | ResolverInputTypes["timestamptz_comparison_exp"]
+      | undefined
+      | null;
     id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
     message?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    message_kind?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
     room?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    type?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     username?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     uuid?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
   };
@@ -1391,9 +1456,13 @@ export type ResolverInputTypes = {
   ["chats_constraint"]: chats_constraint;
   /** input type for inserting data into table "chats" */
   ["chats_insert_input"]: {
+    client_generated_uuid?: string | undefined | null;
+    created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
     id?: number | undefined | null;
     message?: string | undefined | null;
+    message_kind?: string | undefined | null;
     room?: string | undefined | null;
+    type?: string | undefined | null;
     username?: string | undefined | null;
     uuid?: string | undefined | null;
   };
@@ -1413,9 +1482,13 @@ export type ResolverInputTypes = {
   };
   /** Ordering options when selecting data from "chats". */
   ["chats_order_by"]: {
+    client_generated_uuid?: ResolverInputTypes["order_by"] | undefined | null;
+    created_at?: ResolverInputTypes["order_by"] | undefined | null;
     id?: ResolverInputTypes["order_by"] | undefined | null;
     message?: ResolverInputTypes["order_by"] | undefined | null;
+    message_kind?: ResolverInputTypes["order_by"] | undefined | null;
     room?: ResolverInputTypes["order_by"] | undefined | null;
+    type?: ResolverInputTypes["order_by"] | undefined | null;
     username?: ResolverInputTypes["order_by"] | undefined | null;
     uuid?: ResolverInputTypes["order_by"] | undefined | null;
   };
@@ -1430,9 +1503,13 @@ export type ResolverInputTypes = {
   };
   /** Initial value of the column from where the streaming should start */
   ["chats_stream_cursor_value_input"]: {
+    client_generated_uuid?: string | undefined | null;
+    created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
     id?: number | undefined | null;
     message?: string | undefined | null;
+    message_kind?: string | undefined | null;
     room?: string | undefined | null;
+    type?: string | undefined | null;
     username?: string | undefined | null;
     uuid?: string | undefined | null;
   };
@@ -1535,6 +1612,19 @@ export type ResolverInputTypes = {
     ];
     __typename?: boolean | `@${string}`;
   }>;
+  ["timestamptz"]: unknown;
+  /** Boolean expression to compare columns of type "timestamptz". All fields are combined with logical 'AND'. */
+  ["timestamptz_comparison_exp"]: {
+    _eq?: ResolverInputTypes["timestamptz"] | undefined | null;
+    _gt?: ResolverInputTypes["timestamptz"] | undefined | null;
+    _gte?: ResolverInputTypes["timestamptz"] | undefined | null;
+    _in?: Array<ResolverInputTypes["timestamptz"]> | undefined | null;
+    _is_null?: boolean | undefined | null;
+    _lt?: ResolverInputTypes["timestamptz"] | undefined | null;
+    _lte?: ResolverInputTypes["timestamptz"] | undefined | null;
+    _neq?: ResolverInputTypes["timestamptz"] | undefined | null;
+    _nin?: Array<ResolverInputTypes["timestamptz"]> | undefined | null;
+  };
 };
 
 export type ModelTypes = {
@@ -1584,9 +1674,13 @@ export type ModelTypes = {
   };
   /** columns and relationships of "chats" */
   ["chats"]: {
+    client_generated_uuid: string;
+    created_at?: ModelTypes["timestamptz"] | undefined;
     id: number;
     message: string;
+    message_kind?: string | undefined;
     room?: string | undefined;
+    type: string;
     username?: string | undefined;
     uuid?: string | undefined;
   };
@@ -1595,18 +1689,26 @@ export type ModelTypes = {
     _and?: Array<ModelTypes["chats_bool_exp"]> | undefined;
     _not?: ModelTypes["chats_bool_exp"] | undefined;
     _or?: Array<ModelTypes["chats_bool_exp"]> | undefined;
+    client_generated_uuid?: ModelTypes["String_comparison_exp"] | undefined;
+    created_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
     id?: ModelTypes["Int_comparison_exp"] | undefined;
     message?: ModelTypes["String_comparison_exp"] | undefined;
+    message_kind?: ModelTypes["String_comparison_exp"] | undefined;
     room?: ModelTypes["String_comparison_exp"] | undefined;
+    type?: ModelTypes["String_comparison_exp"] | undefined;
     username?: ModelTypes["String_comparison_exp"] | undefined;
     uuid?: ModelTypes["String_comparison_exp"] | undefined;
   };
   ["chats_constraint"]: chats_constraint;
   /** input type for inserting data into table "chats" */
   ["chats_insert_input"]: {
+    client_generated_uuid?: string | undefined;
+    created_at?: ModelTypes["timestamptz"] | undefined;
     id?: number | undefined;
     message?: string | undefined;
+    message_kind?: string | undefined;
     room?: string | undefined;
+    type?: string | undefined;
     username?: string | undefined;
     uuid?: string | undefined;
   };
@@ -1625,9 +1727,13 @@ export type ModelTypes = {
   };
   /** Ordering options when selecting data from "chats". */
   ["chats_order_by"]: {
+    client_generated_uuid?: ModelTypes["order_by"] | undefined;
+    created_at?: ModelTypes["order_by"] | undefined;
     id?: ModelTypes["order_by"] | undefined;
     message?: ModelTypes["order_by"] | undefined;
+    message_kind?: ModelTypes["order_by"] | undefined;
     room?: ModelTypes["order_by"] | undefined;
+    type?: ModelTypes["order_by"] | undefined;
     username?: ModelTypes["order_by"] | undefined;
     uuid?: ModelTypes["order_by"] | undefined;
   };
@@ -1641,9 +1747,13 @@ export type ModelTypes = {
   };
   /** Initial value of the column from where the streaming should start */
   ["chats_stream_cursor_value_input"]: {
+    client_generated_uuid?: string | undefined;
+    created_at?: ModelTypes["timestamptz"] | undefined;
     id?: number | undefined;
     message?: string | undefined;
+    message_kind?: string | undefined;
     room?: string | undefined;
+    type?: string | undefined;
     username?: string | undefined;
     uuid?: string | undefined;
   };
@@ -1670,6 +1780,19 @@ export type ModelTypes = {
     chats_by_pk?: ModelTypes["chats"] | undefined;
     /** fetch data from the table in a streaming manner : "chats" */
     chats_stream: Array<ModelTypes["chats"]>;
+  };
+  ["timestamptz"]: any;
+  /** Boolean expression to compare columns of type "timestamptz". All fields are combined with logical 'AND'. */
+  ["timestamptz_comparison_exp"]: {
+    _eq?: ModelTypes["timestamptz"] | undefined;
+    _gt?: ModelTypes["timestamptz"] | undefined;
+    _gte?: ModelTypes["timestamptz"] | undefined;
+    _in?: Array<ModelTypes["timestamptz"]> | undefined;
+    _is_null?: boolean | undefined;
+    _lt?: ModelTypes["timestamptz"] | undefined;
+    _lte?: ModelTypes["timestamptz"] | undefined;
+    _neq?: ModelTypes["timestamptz"] | undefined;
+    _nin?: Array<ModelTypes["timestamptz"]> | undefined;
   };
 };
 
@@ -1721,9 +1844,13 @@ export type GraphQLTypes = {
   /** columns and relationships of "chats" */
   ["chats"]: {
     __typename: "chats";
+    client_generated_uuid: string;
+    created_at?: GraphQLTypes["timestamptz"] | undefined;
     id: number;
     message: string;
+    message_kind?: string | undefined;
     room?: string | undefined;
+    type: string;
     username?: string | undefined;
     uuid?: string | undefined;
   };
@@ -1732,9 +1859,13 @@ export type GraphQLTypes = {
     _and?: Array<GraphQLTypes["chats_bool_exp"]> | undefined;
     _not?: GraphQLTypes["chats_bool_exp"] | undefined;
     _or?: Array<GraphQLTypes["chats_bool_exp"]> | undefined;
+    client_generated_uuid?: GraphQLTypes["String_comparison_exp"] | undefined;
+    created_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
     id?: GraphQLTypes["Int_comparison_exp"] | undefined;
     message?: GraphQLTypes["String_comparison_exp"] | undefined;
+    message_kind?: GraphQLTypes["String_comparison_exp"] | undefined;
     room?: GraphQLTypes["String_comparison_exp"] | undefined;
+    type?: GraphQLTypes["String_comparison_exp"] | undefined;
     username?: GraphQLTypes["String_comparison_exp"] | undefined;
     uuid?: GraphQLTypes["String_comparison_exp"] | undefined;
   };
@@ -1742,9 +1873,13 @@ export type GraphQLTypes = {
   ["chats_constraint"]: chats_constraint;
   /** input type for inserting data into table "chats" */
   ["chats_insert_input"]: {
+    client_generated_uuid?: string | undefined;
+    created_at?: GraphQLTypes["timestamptz"] | undefined;
     id?: number | undefined;
     message?: string | undefined;
+    message_kind?: string | undefined;
     room?: string | undefined;
+    type?: string | undefined;
     username?: string | undefined;
     uuid?: string | undefined;
   };
@@ -1764,9 +1899,13 @@ export type GraphQLTypes = {
   };
   /** Ordering options when selecting data from "chats". */
   ["chats_order_by"]: {
+    client_generated_uuid?: GraphQLTypes["order_by"] | undefined;
+    created_at?: GraphQLTypes["order_by"] | undefined;
     id?: GraphQLTypes["order_by"] | undefined;
     message?: GraphQLTypes["order_by"] | undefined;
+    message_kind?: GraphQLTypes["order_by"] | undefined;
     room?: GraphQLTypes["order_by"] | undefined;
+    type?: GraphQLTypes["order_by"] | undefined;
     username?: GraphQLTypes["order_by"] | undefined;
     uuid?: GraphQLTypes["order_by"] | undefined;
   };
@@ -1781,9 +1920,13 @@ export type GraphQLTypes = {
   };
   /** Initial value of the column from where the streaming should start */
   ["chats_stream_cursor_value_input"]: {
+    client_generated_uuid?: string | undefined;
+    created_at?: GraphQLTypes["timestamptz"] | undefined;
     id?: number | undefined;
     message?: string | undefined;
+    message_kind?: string | undefined;
     room?: string | undefined;
+    type?: string | undefined;
     username?: string | undefined;
     uuid?: string | undefined;
   };
@@ -1817,6 +1960,19 @@ export type GraphQLTypes = {
     /** fetch data from the table in a streaming manner : "chats" */
     chats_stream: Array<GraphQLTypes["chats"]>;
   };
+  ["timestamptz"]: "scalar" & { name: "timestamptz" };
+  /** Boolean expression to compare columns of type "timestamptz". All fields are combined with logical 'AND'. */
+  ["timestamptz_comparison_exp"]: {
+    _eq?: GraphQLTypes["timestamptz"] | undefined;
+    _gt?: GraphQLTypes["timestamptz"] | undefined;
+    _gte?: GraphQLTypes["timestamptz"] | undefined;
+    _in?: Array<GraphQLTypes["timestamptz"]> | undefined;
+    _is_null?: boolean | undefined;
+    _lt?: GraphQLTypes["timestamptz"] | undefined;
+    _lte?: GraphQLTypes["timestamptz"] | undefined;
+    _neq?: GraphQLTypes["timestamptz"] | undefined;
+    _nin?: Array<GraphQLTypes["timestamptz"]> | undefined;
+  };
 };
 /** unique or primary key constraints on table "chats" */
 export const enum chats_constraint {
@@ -1824,9 +1980,13 @@ export const enum chats_constraint {
 }
 /** select columns of table "chats" */
 export const enum chats_select_column {
+  client_generated_uuid = "client_generated_uuid",
+  created_at = "created_at",
   id = "id",
   message = "message",
+  message_kind = "message_kind",
   room = "room",
+  type = "type",
   username = "username",
   uuid = "uuid",
 }
@@ -1863,4 +2023,6 @@ type ZEUS_VARIABLES = {
   ["chats_update_column"]: ValueTypes["chats_update_column"];
   ["cursor_ordering"]: ValueTypes["cursor_ordering"];
   ["order_by"]: ValueTypes["order_by"];
+  ["timestamptz"]: ValueTypes["timestamptz"];
+  ["timestamptz_comparison_exp"]: ValueTypes["timestamptz_comparison_exp"];
 };

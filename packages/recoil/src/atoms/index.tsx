@@ -12,3 +12,4 @@ export * from "./recent-transactions";
 export * from "./nft";
 export * from "./blockchain";
 export * from "./feature-gates";
+export * from "./notifications";

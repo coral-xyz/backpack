@@ -48,6 +48,8 @@ import {
   deserializeTransaction,
   FEATURE_GATES_MAP,
   XnftPreference,
+  BACKPACK_FEATURE_USERNAMES,
+  BACKPACK_FEATURE_JWT,
 } from "@coral-xyz/common";
 import type {
   KeyringInit,
@@ -428,6 +430,95 @@ export class Backend {
   // Misc
   ///////////////////////////////////////////////////////////////////////////////
 
+  /**
+   * attempts to sign a message with one of public keys provided, it will try to use
+   * a non-ledger pubkey if that's a possibility
+   * @param msg message to be signed
+   * @param publicKeysIncludingBlockchain Array<{ blockchain: string; publickey: string; }>
+   * @returns
+   */
+  async tryToSignMessage(
+    msg: string,
+    publicKeysIncludingBlockchain: Array<{
+      blockchain: Blockchain;
+      publickey: string;
+    }>
+  ) {
+    try {
+      const encodedMessage = bs58.encode(Buffer.from(msg));
+      // fetch all keys in the store
+      const keys = await this.keyringStore.publicKeys();
+
+      // return the first matching hot wallet address from the store, or return a
+      // matching ledger wallet address if none exist
+      const match:
+        | { blockchain: Blockchain; publickey: string; ledger: boolean }
+        | undefined = (() => {
+        let _match: any;
+        for (const { blockchain, publickey } of publicKeysIncludingBlockchain) {
+          if (
+            keys[blockchain]?.hdPublicKeys.includes(publickey) ||
+            keys[blockchain]?.importedPublicKeys.includes(publickey)
+          ) {
+            return { blockchain, publickey, ledger: false };
+          } else if (keys[blockchain]?.ledgerPublicKeys.includes(publickey)) {
+            _match = { blockchain, publickey, ledger: true };
+          }
+        }
+        return _match;
+      })();
+
+      if (!match) throw new Error("key not found");
+
+      let signature: string;
+
+      switch (match.blockchain) {
+        case Blockchain.SOLANA:
+          if (match.ledger) {
+            const tx = new Transaction();
+            tx.add(
+              new TransactionInstruction({
+                programId: new PublicKey(match.publickey),
+                keys: [],
+                data: Buffer.from(bs58.decode(encodedMessage)),
+              })
+            );
+            tx.feePayer = new PublicKey(match.publickey);
+            tx.recentBlockhash = tx.feePayer.toString();
+            const blockchainKeyring = this.keyringStore.keyringForBlockchain(
+              Blockchain.SOLANA
+            );
+            signature = await blockchainKeyring.signTransaction(
+              bs58.encode(tx.serializeMessage()),
+              match?.publickey
+            );
+          } else {
+            // sign a message with a hot wallet
+            signature = await this.solanaSignMessage(
+              encodedMessage,
+              match.publickey
+            );
+          }
+          break;
+        case Blockchain.ETHEREUM:
+          signature = await this.solanaSignMessage(
+            encodedMessage,
+            match.publickey
+          );
+          break;
+      }
+
+      return {
+        message: msg,
+        encodedMessage,
+        signature,
+        ...match,
+      };
+    } catch (err) {
+      throw new Error(`unable to sign - ${err.message}`);
+    }
+  }
+
   // Method for signing messages from a specific wallet for a specific blockchain
   // without the requirement to initialise a keystore. Used during onboarding.
   async signMessageForWallet(
@@ -510,8 +601,50 @@ export class Backend {
     return await this.keyringStore.checkPassword(password);
   }
 
-  async keyringStoreUnlock(password: string): Promise<string> {
+  async keyringStoreUnlock(
+    password: string,
+    username?: string
+  ): Promise<string> {
     await this.keyringStore.tryUnlock(password);
+
+    if (BACKPACK_FEATURE_USERNAMES && BACKPACK_FEATURE_JWT && username) {
+      // ensure the user has a JSON Web Token stored in their cookies
+      try {
+        const res = await fetch(
+          `https://auth.xnfts.dev/authenticate/${username}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        if (res.status !== 200)
+          throw new Error(`failed to authenticate (${username})`);
+        const { id, publickeys } = await res.json();
+        if (id && publickeys?.length) {
+          const signatureBundle = await this.tryToSignMessage(
+            JSON.stringify({
+              id,
+              username,
+            }),
+            publickeys
+          );
+          await fetch(`https://auth.xnfts.dev/authenticate`, {
+            body: JSON.stringify(signatureBundle),
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+          if (res.status !== 200)
+            throw new Error("failed to verify signed message");
+        }
+      } catch (err) {
+        this.keyringStore.lock();
+        throw new Error(err.message);
+      }
+    }
 
     const blockchainActiveWallets = await this.blockchainActiveWallets();
 

@@ -70,7 +70,8 @@ module.exports = {
     "simple-import-sort/exports": "warn",
   },
 
-  ignorePatterns: ["dist/*"],
+  // https://eslint.org/docs/latest/user-guide/configuring/ignoring-code#the-eslintignore-file
+  ignorePatterns: ["dist/*", "build/*", "dev/*", "node_modules/**"],
   parserOptions: {
     ecmaVersion: 2020,
     // "sourceType": "module",

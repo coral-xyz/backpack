@@ -1,20 +1,23 @@
 import React, { useState } from "react";
 import {
-  Text,
-  View,
   Image,
+  ScrollBar,
+  Text,
   TextField,
   useNavigation,
-  ScrollBar,
+  View,
 } from "react-xnft";
-import { connect, StateType } from "../state";
 import { createSelector } from "reselect";
-import CenteredLoader from "./CenteredLoader";
+
+import type { StateType } from "../state";
+import { connect } from "../state";
+
 import { green, red } from "./_helpers/color";
 import formatPrice from "./_helpers/formatPrice";
-import { TokenInfoType } from "./_types/TokenInfoType";
-import ArrowUpIcon from "./ArrowUpIcon";
+import type { TokenInfoType } from "./_types/TokenInfoType";
 import ArrowDownIcon from "./ArrowDownIcon";
+import ArrowUpIcon from "./ArrowUpIcon";
+import CenteredLoader from "./CenteredLoader";
 import InlineGraph from "./InlineGraph";
 
 type Props = {};
@@ -213,7 +216,7 @@ function renderToken(
           style={{
             position: "absolute",
             right: "0px",
-            top: "24px",
+            top: "32px",
           }}
         >
           {Arrow}

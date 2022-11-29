@@ -8,14 +8,14 @@ const chain = Chain(HASURA_URL, {
 });
 
 export const getNotifications = async (
-  username: string,
+  uuid: string,
   offset?: number,
   limit?: number
 ) => {
   const response = await chain("query")({
     auth_notifications: [
       {
-        where: { username: { _eq: username } },
+        where: { uuid: { _eq: uuid } },
         limit,
         offset,
       },
@@ -24,6 +24,7 @@ export const getNotifications = async (
         timestamp: true,
         title: true,
         body: true,
+        xnft_id: true,
       },
     ],
   });

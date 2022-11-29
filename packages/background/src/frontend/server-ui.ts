@@ -1,7 +1,7 @@
 // All RPC request handlers for requests that can be sent from the trusted
 // extension UI to the background script.
 
-import type {
+import {
   RpcRequest,
   RpcResponse,
   DerivationPath,
@@ -9,6 +9,8 @@ import type {
   EventEmitter,
   Blockchain,
   XnftPreference,
+  BACKPACK_FEATURE_USERNAMES,
+  BACKPACK_FEATURE_JWT,
 } from "@coral-xyz/common";
 import type { Commitment } from "@solana/web3.js";
 import {
@@ -91,6 +93,7 @@ import {
   UI_RPC_METHOD_GET_XNFT_PREFERENCES,
   UI_RPC_METHOD_SET_XNFT_PREFERENCES,
   UI_RPC_METHOD_NAVIGATION_TO_DEFAULT,
+  UI_RPC_METHOD_TRY_TO_SIGN_MESSAGE,
 } from "@coral-xyz/common";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import type { Backend } from "../backend/core";
@@ -138,7 +141,7 @@ async function handle<T = any>(
         ...params
       );
     case UI_RPC_METHOD_KEYRING_STORE_UNLOCK:
-      return await handleKeyringStoreUnlock(ctx, params[0]);
+      return await handleKeyringStoreUnlock(ctx, params[0], params[1]);
     case UI_RPC_METHOD_KEYRING_STORE_LOCK:
       return await handleKeyringStoreLock(ctx);
     case UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS:
@@ -341,6 +344,8 @@ async function handle<T = any>(
       );
     case UI_RPC_METHOD_ETHEREUM_SIGN_MESSAGE:
       return await handleEthereumSignMessage(ctx, params[0], params[1]);
+    case UI_RPC_METHOD_TRY_TO_SIGN_MESSAGE:
+      return await tryToSignMessage(ctx, params[0], params[1]);
     case UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET:
       return await handleSignMessageForWallet(
         ctx,
@@ -378,10 +383,10 @@ async function handleKeyringStoreCheckPassword(
 
 async function handleKeyringStoreUnlock(
   ctx: Context<Backend>,
-  password: string
+  ...args: Parameters<Backend["keyringStoreUnlock"]>
 ) {
   try {
-    const resp = await ctx.backend.keyringStoreUnlock(password);
+    const resp = await ctx.backend.keyringStoreUnlock(...args);
     return [resp];
   } catch (err) {
     return [undefined, String(err)];
@@ -809,6 +814,14 @@ async function handleEthereumSignMessage(
   walletAddress: string
 ) {
   const resp = await ctx.backend.ethereumSignMessage(msg, walletAddress);
+  return [resp];
+}
+
+async function tryToSignMessage(
+  ctx: Context<Backend>,
+  ...args: Parameters<Backend["tryToSignMessage"]>
+) {
+  const resp = await ctx.backend.tryToSignMessage(...args);
   return [resp];
 }
 
