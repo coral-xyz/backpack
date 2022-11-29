@@ -124,7 +124,13 @@ app.get("/users/:username/info", async (c) => {
   });
 
   if (res.auth_users[0]?.publickeys) {
-    return c.json(res.auth_users[0]);
+    return c.json({
+      ...res.auth_users[0],
+      // TODO remove
+      // This is to not break legacy recovery flows
+      pubkey: res.auth_users[0].publickeys[0].publickey,
+      blockchain: res.auth_users[0].publickeys[0].blockchain,
+    });
   } else {
     return c.json({ message: "user not found" }, 404);
   }
