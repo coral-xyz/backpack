@@ -7,6 +7,7 @@
     "deploy": "wrangler publish"
   },
   "dependencies": {
+    "@coral-xyz/zeus": "*",
     "@solana/web3.js": "^1.63.1",
     "bs58": "^5.0.0",
     "ethers": "^5.7.1",
