@@ -1,0 +1,24 @@
+table:
+  name: friend_requests
+  schema: auth
+insert_permissions:
+  - role: auth_worker
+    permission:
+      check: {}
+      columns:
+        - from
+        - id
+        - to
+select_permissions:
+  - role: auth_worker
+    permission:
+      columns:
+        - id
+        - from
+        - to
+      filter: {}
+delete_permissions:
+  - role: auth_worker
+    permission:
+      backend_only: false
+      filter: {}

@@ -31,6 +31,7 @@ import { WithNav, NavBackButton } from "./Nav";
 import { WithMotion } from "./NavStack";
 import { WithDrawer } from "../../common/Layout/Drawer";
 import { NftChat, NftsExperience } from "../../Unlocked/Nfts/Experience";
+import { Inbox } from "../../Unlocked/Messages/Inbox";
 
 export function Router() {
   const location = useLocation();
@@ -95,7 +96,7 @@ function NftsDetailPage() {
 }
 
 function MessagesPage() {
-  return <NavScreen component={<Apps />} />;
+  return <NavScreen component={<Inbox />} />;
 }
 
 function AppsPage() {
