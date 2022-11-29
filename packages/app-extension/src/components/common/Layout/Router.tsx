@@ -39,6 +39,7 @@ export function Router() {
       <Routes location={location} key={location.pathname}>
         <Route path="/balances" element={<BalancesPage />} />
         <Route path="/balances/token" element={<TokenPage />} />
+        <Route path="/messages" element={<MessagesPage />} />
         <Route path="/apps" element={<AppsPage />} />
         <Route path="/nfts" element={<NftsPage />} />
         {/*<Route path="/swap" element={<SwapPage />} />*/}
@@ -91,6 +92,10 @@ function NftsDetailPage() {
   const { props } = useDecodedSearchParams();
   // @ts-expect-error TS2322: Property 'nftId' is missing in type '{}' but required in type '{ nftId: string; }'.
   return <NavScreen component={<NftsDetail {...props} />} />;
+}
+
+function MessagesPage() {
+  return <NavScreen component={<Apps />} />;
 }
 
 function AppsPage() {
@@ -226,6 +231,8 @@ function useNavBar() {
       ? "💰"
       : pathname.startsWith("/apps")
       ? "👾"
+      : pathname.startsWith("/messages")
+      ? "💬"
       : "🎨";
     navButtonRight = <SettingsButton />;
     navButtonLeft = (
@@ -252,6 +259,8 @@ function useNavBar() {
             ? "Balances"
             : pathname.startsWith("/apps")
             ? "Applications"
+            : pathname.startsWith("/messages")
+            ? "Messages"
             : "Collectibles"}
         </Typography>
       </div>
