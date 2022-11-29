@@ -43,7 +43,7 @@ export class Room {
           //@ts-ignore
           order_by: [{ created_at: "desc" }],
           where: {
-            room: { _eq: this.room },
+            room: { _eq: this.room.toString() },
             //@ts-ignore
             type: { _eq: this.type },
           },
@@ -88,7 +88,7 @@ export class Room {
         {
           object: {
             username: "",
-            room: this.room,
+            room: this.room.toString(),
             message: msg.message,
             uuid: userId,
             message_kind: msg.message_kind,
