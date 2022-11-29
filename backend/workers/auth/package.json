@@ -4,8 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "wrangler dev --local --env development",
-    "deploy": "wrangler publish",
-    "zeus": "npx graphql-zeus http://localhost:8112/v1/graphql ./src --header=x-hasura-admin-secret:myadminsecretkey --header=x-hasura-role:auth_worker"
+    "deploy": "wrangler publish"
   },
   "dependencies": {
     "@solana/web3.js": "^1.63.1",
