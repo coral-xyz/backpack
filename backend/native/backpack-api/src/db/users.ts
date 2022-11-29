@@ -24,3 +24,23 @@ export const getUsers = async (
 
   return response.auth_users;
 };
+
+export async function getUsersByPrefix({
+  usernamePrefix,
+}: {
+  usernamePrefix: string;
+}) {
+  const response = await chain("query")({
+    auth_users: [
+      {
+        where: { username: { _like: `${usernamePrefix}%` } },
+      },
+      {
+        id: true,
+        username: true,
+      },
+    ],
+  });
+
+  return response.auth_users || [];
+}

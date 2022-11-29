@@ -1285,7 +1285,8 @@ export type ValueTypes = {
   };
   /** primary key columns input for table: auth_friendships */
   ["auth_friendships_pk_columns_input"]: {
-    id: number | Variable<any, string>;
+    user1: string | Variable<any, string>;
+    user2: string | Variable<any, string>;
   };
   /** select columns of table "auth.friendships" */
   ["auth_friendships_select_column"]: auth_friendships_select_column;
@@ -2662,7 +2663,10 @@ export type ValueTypes = {
       ValueTypes["auth_friend_requests_mutation_response"]
     ];
     delete_auth_friend_requests_by_pk?: [
-      { id: number | Variable<any, string> },
+      {
+        from: string | Variable<any, string>;
+        to: string | Variable<any, string>;
+      },
       ValueTypes["auth_friend_requests"]
     ];
     delete_auth_friendships?: [
@@ -2673,7 +2677,10 @@ export type ValueTypes = {
       ValueTypes["auth_friendships_mutation_response"]
     ];
     delete_auth_friendships_by_pk?: [
-      { id: number | Variable<any, string> },
+      {
+        user1: string | Variable<any, string>;
+        user2: string | Variable<any, string>;
+      },
       ValueTypes["auth_friendships"]
     ];
     delete_auth_notification_subscriptions?: [
@@ -3282,7 +3289,10 @@ export type ValueTypes = {
       ValueTypes["auth_friend_requests"]
     ];
     auth_friend_requests_by_pk?: [
-      { id: number | Variable<any, string> },
+      {
+        from: string | Variable<any, string>;
+        to: string | Variable<any, string>;
+      },
       ValueTypes["auth_friend_requests"]
     ];
     auth_friendships?: [
@@ -3320,7 +3330,10 @@ export type ValueTypes = {
       ValueTypes["auth_friendships"]
     ];
     auth_friendships_by_pk?: [
-      { id: number | Variable<any, string> },
+      {
+        user1: string | Variable<any, string>;
+        user2: string | Variable<any, string>;
+      },
       ValueTypes["auth_friendships"]
     ];
     auth_notification_subscriptions?: [
@@ -3721,7 +3734,10 @@ export type ValueTypes = {
       ValueTypes["auth_friend_requests"]
     ];
     auth_friend_requests_by_pk?: [
-      { id: number | Variable<any, string> },
+      {
+        from: string | Variable<any, string>;
+        to: string | Variable<any, string>;
+      },
       ValueTypes["auth_friend_requests"]
     ];
     auth_friend_requests_stream?: [
@@ -3783,7 +3799,10 @@ export type ValueTypes = {
       ValueTypes["auth_friendships"]
     ];
     auth_friendships_by_pk?: [
-      { id: number | Variable<any, string> },
+      {
+        user1: string | Variable<any, string>;
+        user2: string | Variable<any, string>;
+      },
       ValueTypes["auth_friendships"]
     ];
     auth_friendships_stream?: [
@@ -4615,7 +4634,8 @@ export type ResolverInputTypes = {
   };
   /** primary key columns input for table: auth_friendships */
   ["auth_friendships_pk_columns_input"]: {
-    id: number;
+    user1: string;
+    user2: string;
   };
   /** select columns of table "auth.friendships" */
   ["auth_friendships_select_column"]: auth_friendships_select_column;
@@ -5576,7 +5596,7 @@ export type ResolverInputTypes = {
       ResolverInputTypes["auth_friend_requests_mutation_response"]
     ];
     delete_auth_friend_requests_by_pk?: [
-      { id: number },
+      { from: string; to: string },
       ResolverInputTypes["auth_friend_requests"]
     ];
     delete_auth_friendships?: [
@@ -5587,7 +5607,7 @@ export type ResolverInputTypes = {
       ResolverInputTypes["auth_friendships_mutation_response"]
     ];
     delete_auth_friendships_by_pk?: [
-      { id: number },
+      { user1: string; user2: string },
       ResolverInputTypes["auth_friendships"]
     ];
     delete_auth_notification_subscriptions?: [
@@ -6049,7 +6069,7 @@ export type ResolverInputTypes = {
       ResolverInputTypes["auth_friend_requests"]
     ];
     auth_friend_requests_by_pk?: [
-      { id: number },
+      { from: string; to: string },
       ResolverInputTypes["auth_friend_requests"]
     ];
     auth_friendships?: [
@@ -6079,7 +6099,7 @@ export type ResolverInputTypes = {
       ResolverInputTypes["auth_friendships"]
     ];
     auth_friendships_by_pk?: [
-      { id: number },
+      { user1: string; user2: string },
       ResolverInputTypes["auth_friendships"]
     ];
     auth_notification_subscriptions?: [
@@ -6384,7 +6404,7 @@ export type ResolverInputTypes = {
       ResolverInputTypes["auth_friend_requests"]
     ];
     auth_friend_requests_by_pk?: [
-      { id: number },
+      { from: string; to: string },
       ResolverInputTypes["auth_friend_requests"]
     ];
     auth_friend_requests_stream?: [
@@ -6430,7 +6450,7 @@ export type ResolverInputTypes = {
       ResolverInputTypes["auth_friendships"]
     ];
     auth_friendships_by_pk?: [
-      { id: number },
+      { user1: string; user2: string },
       ResolverInputTypes["auth_friendships"]
     ];
     auth_friendships_stream?: [
@@ -6990,9 +7010,9 @@ export type ModelTypes = {
   ["auth_friendships"]: {
     are_friends: boolean;
     id: number;
-    last_message: string;
-    last_message_sender: string;
-    last_message_timestamp: ModelTypes["timestamptz"];
+    last_message?: string | undefined;
+    last_message_sender?: string | undefined;
+    last_message_timestamp?: ModelTypes["timestamptz"] | undefined;
     user1: string;
     user2: string;
   };
@@ -7051,7 +7071,8 @@ export type ModelTypes = {
   };
   /** primary key columns input for table: auth_friendships */
   ["auth_friendships_pk_columns_input"]: {
-    id: number;
+    user1: string;
+    user2: string;
   };
   ["auth_friendships_select_column"]: auth_friendships_select_column;
   /** input type for updating data in table "auth.friendships" */
@@ -8217,9 +8238,9 @@ export type GraphQLTypes = {
     __typename: "auth_friendships";
     are_friends: boolean;
     id: number;
-    last_message: string;
-    last_message_sender: string;
-    last_message_timestamp: GraphQLTypes["timestamptz"];
+    last_message?: string | undefined;
+    last_message_sender?: string | undefined;
+    last_message_timestamp?: GraphQLTypes["timestamptz"] | undefined;
     user1: string;
     user2: string;
   };
@@ -8280,7 +8301,8 @@ export type GraphQLTypes = {
   };
   /** primary key columns input for table: auth_friendships */
   ["auth_friendships_pk_columns_input"]: {
-    id: number;
+    user1: string;
+    user2: string;
   };
   /** select columns of table "auth.friendships" */
   ["auth_friendships_select_column"]: auth_friendships_select_column;
