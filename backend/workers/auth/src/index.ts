@@ -284,6 +284,11 @@ app.post("/users", async (c) => {
   return jwt(c, res.insert_auth_users_one);
 });
 
+app.delete("/authenticate", async (c) => {
+  clearCookie(c, "jwt");
+  return c.status(200);
+});
+
 app.post("/authenticate", async (c) => {
   const body = await c.req.json();
   const sig = body.signature;
@@ -328,11 +333,6 @@ app.post("/authenticate", async (c) => {
   if (!user) throw new Error("user not found");
 
   return jwt(c, user);
-});
-
-app.delete("/authenticate", async (c) => {
-  clearCookie(c, "jwt");
-  return c.status(200);
 });
 
 app.post("/authenticate/:username", async (c) => {
