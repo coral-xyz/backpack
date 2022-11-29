@@ -118,7 +118,7 @@ app.get("/users/:username/info", async (c) => {
         limit: 1,
       },
       {
-        publickeys: [{}, { blockchain: true, publickey: true }],
+        public_keys: [{}, { blockchain: true, public_key: true }],
       },
     ],
   });
@@ -128,8 +128,8 @@ app.get("/users/:username/info", async (c) => {
       ...res.auth_users[0],
       // TODO remove
       // This is to not break legacy recovery flows
-      pubkey: res.auth_users[0].publickeys[0].publickey,
-      blockchain: res.auth_users[0].publickeys[0].blockchain,
+      pubkey: res.auth_users[0].public_keys[0].public_key,
+      blockchain: res.auth_users[0].public_keys[0].blockchain,
     });
   } else {
     return c.json({ message: "user not found" }, 404);
@@ -236,7 +236,7 @@ app.post("/users", async (c) => {
   ({ username, inviteCode, waitlistId } = data);
   publicKeys = data.blockchainPublicKeys.map((b) => ({
     blockchain: b.blockchain,
-    publickey: b.publicKey,
+    public_key: b.publicKey,
   }));
 
   const chain = Chain(c.env.HASURA_URL, {
@@ -252,7 +252,7 @@ app.post("/users", async (c) => {
           username: username,
           invitation_id: inviteCode,
           waitlist_id: waitlistId,
-          publickeys: {
+          public_keys: {
             data: publicKeys!,
           },
         },
@@ -322,8 +322,8 @@ app.post("/authenticate", async (c) => {
         where: {
           id: { _eq: id },
           username: { _eq: username },
-          publickeys: {
-            publickey: { _eq: body.publickey },
+          public_keys: {
+            public_key: { _eq: body.publickey },
             blockchain: { _eq: body.blockchain },
           },
         },
@@ -377,7 +377,7 @@ app.post("/authenticate/:username", async (c) => {
         },
         {
           id: true,
-          publickeys: [{}, { blockchain: true, publickey: true }],
+          public_keys: [{}, { blockchain: true, public_key: true }],
         },
       ],
     });
@@ -413,7 +413,7 @@ app.get("/me", async (c) => {
         {
           id: true,
           username: true,
-          publickeys: [{}, { blockchain: true, publickey: true }],
+          public_keys: [{}, { blockchain: true, public_key: true }],
         },
       ],
     });
