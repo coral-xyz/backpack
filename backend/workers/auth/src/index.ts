@@ -17,7 +17,6 @@ import {
   validateEthereumSignature,
   validateSolanaSignature,
 } from "./validation";
-import { Chain } from "./zeus";
 
 const BaseCreateUser = z.object({
   username: z
