@@ -2,9 +2,22 @@ import express from "express";
 import { InboxDb, EnrichedInboxDb } from "@coral-xyz/common";
 import { getUsers } from "../../db/users";
 import { extractUserId } from "../../auth/middleware";
-import { getFriendships } from "../../db/friendships";
+import { getFriendships, getOrCreateFriendship } from "../../db/friendships";
 
 const router = express.Router();
+
+router.post("/", extractUserId, async (req, res) => {
+  // @ts-ignore
+  const from: string = req.id;
+  // @ts-ignore
+  const to: string = req.body.to;
+  const friendshipId = await getOrCreateFriendship({ from, to });
+
+  res.json({
+    id: from,
+    friendshipId,
+  });
+});
 
 router.get("/", extractUserId, async (req, res) => {
   //@ts-ignore

@@ -1,3 +1,9 @@
-export const MessageList = () => {
-  return <div></div>;
+import { EnrichedInboxDb } from "@coral-xyz/common";
+
+export const MessageList = ({
+  activeChats,
+}: {
+  activeChats: EnrichedInboxDb[];
+}) => {
+  return <div>{JSON.stringify(activeChats)}</div>;
 };

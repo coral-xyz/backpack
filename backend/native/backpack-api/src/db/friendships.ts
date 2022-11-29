@@ -8,6 +8,52 @@ const chain = Chain(HASURA_URL, {
   },
 });
 
+export const getOrCreateFriendship = async ({
+  from,
+  to,
+}: {
+  from: string;
+  to: string;
+}) => {
+  const { user1, user2 } = getSortedUsers(from, to);
+  console.log({ user1, user2 });
+  const existingFriendship = await chain("query")({
+    auth_friendships: [
+      {
+        where: { user1: { _eq: user1 }, user2: { _eq: user2 } },
+        limit: 1,
+      },
+      {
+        id: true,
+      },
+    ],
+  });
+
+  if (existingFriendship.auth_friendships[0]?.id) {
+    return existingFriendship.auth_friendships[0]?.id;
+  } else {
+    const repsonse = await chain("mutation")({
+      insert_auth_friendships_one: [
+        {
+          object: {
+            user1,
+            user2,
+            are_friends: false,
+          },
+          on_conflict: {
+            //@ts-ignore
+            update_columns: ["are_friends"],
+            //@ts-ignore
+            constraint: "friendships_pkey",
+          },
+        },
+        { id: true },
+      ],
+    });
+    return repsonse.insert_auth_friendships_one?.id;
+  }
+};
+
 export const getFriendships = async ({
   uuid,
   limit,

@@ -3,16 +3,19 @@ import { ChatManager, EnrichedMessage } from "../ChatManager";
 import { useRef } from "react";
 import { FullScreenChat } from "./FullScreenChat";
 import { ChatProvider } from "./ChatContext";
+import { SubscriptionType } from "@coral-xyz/common";
 
 interface ChatRoomProps {
   roomId: string;
   userId: string;
   mode?: "fullscreen" | "minimized";
+  type: SubscriptionType;
 }
 
 export const ChatRoom = ({
   roomId,
   userId,
+  type = "collection",
   mode = "fullscreen",
 }: ChatRoomProps) => {
   const [chatManager, setChatManager] = useState<ChatManager | null>(null);
@@ -25,6 +28,7 @@ export const ChatRoom = ({
       const chatManager = new ChatManager(
         userId,
         roomId,
+        type,
         (messages) => {
           setChats((m) => [...m, ...messages]);
         },
@@ -55,7 +59,6 @@ export const ChatRoom = ({
       setChatManager(chatManager);
 
       return () => {
-        console.error("unmounted");
         chatManager.destroy();
       };
     }

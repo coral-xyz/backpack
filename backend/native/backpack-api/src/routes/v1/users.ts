@@ -11,7 +11,12 @@ router.get("/", async (req, res) => {
 
   await getUsersByPrefix({ usernamePrefix })
     .then((users) => {
-      res.json({ users });
+      res.json({
+        users: users.map((user) => ({
+          ...user,
+          image: `https://avatars.xnfts.dev/v1/${user.username}`,
+        })),
+      });
     })
     .catch((e) => {
       res.status(511).json({ msg: "Error while fetching users" });

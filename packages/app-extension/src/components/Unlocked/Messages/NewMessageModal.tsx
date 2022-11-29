@@ -1,0 +1,40 @@
+import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
+import {
+  NavStackEphemeral,
+  NavStackScreen,
+} from "../../common/Layout/NavStack";
+import { SearchUsers } from "./SearchUsers";
+import { ChatScreen } from "./ChatScreen";
+
+export const NewMessageModal = ({
+  newSettingsModal,
+  setNewSettingsModal,
+}: any) => {
+  return (
+    <>
+      <WithDrawer
+        openDrawer={newSettingsModal}
+        setOpenDrawer={setNewSettingsModal}
+      >
+        <div style={{ height: "100%" }}>
+          <NavStackEphemeral
+            initialRoute={{ name: "root", title: "New message" }}
+            options={() => ({ title: "" })}
+            navButtonLeft={
+              <CloseButton onClick={() => setNewSettingsModal(false)} />
+            }
+          >
+            <NavStackScreen
+              name={"root"}
+              component={(props: any) => <SearchUsers {...props} />}
+            />
+            <NavStackScreen
+              name={"chat-screen"}
+              component={(props: any) => <ChatScreen {...props} />}
+            />
+          </NavStackEphemeral>
+        </div>
+      </WithDrawer>
+    </>
+  );
+};
