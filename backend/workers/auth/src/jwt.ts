@@ -20,12 +20,12 @@ export const clearCookie = (c: Context<any>, cookieName: string) => {
 };
 
 export const jwt = async (
-  c: Context,
+  c: Context<any>,
   user: { id: unknown; username: unknown }
 ) => {
   const secret = await importPKCS8(c.env.AUTH_JWT_PRIVATE_KEY, alg);
 
-  const jwt = await new SignJWT({
+  const _jwt = await new SignJWT({
     sub: String(user.id),
     username: user.username,
   })
@@ -35,12 +35,14 @@ export const jwt = async (
     .setIssuedAt()
     .sign(secret);
 
-  c.cookie("jwt", jwt, {
+  c.cookie("jwt", _jwt, {
     secure: true,
     httpOnly: true,
     sameSite: "Strict",
     domain: cookieDomain(c.req.url),
+    path: "/",
+    maxAge: 60 * 60 * 24 * 365, // approx 1 year
   });
 
-  return c.json({ jwt });
+  return c.json({ msg: "ok" });
 };

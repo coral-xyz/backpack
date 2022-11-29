@@ -2,6 +2,7 @@
  *  Auth worker
  */
 
+import { Chain } from "@coral-xyz/zeus";
 import { PublicKey } from "@solana/web3.js";
 import { decode } from "bs58";
 import { ethers } from "ethers";
@@ -9,7 +10,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { importSPKI, jwtVerify } from "jose";
 import { z, ZodError } from "zod";
-import { Chain } from "@coral-xyz/zeus";
+
 import { alg, clearCookie, jwt } from "./jwt";
 import { registerOnRampHandlers } from "./onramp";
 import { zodErrorToString } from "./util";
@@ -123,7 +124,13 @@ app.get("/users/:username/info", async (c) => {
   });
 
   if (res.auth_users[0]?.publickeys) {
-    return c.json(res.auth_users[0]);
+    return c.json({
+      ...res.auth_users[0],
+      // TODO remove
+      // This is to not break legacy recovery flows
+      pubkey: res.auth_users[0].publickeys[0].publickey,
+      blockchain: res.auth_users[0].publickeys[0].blockchain,
+    });
   } else {
     return c.json({ message: "user not found" }, 404);
   }
@@ -283,9 +290,9 @@ app.post("/users", async (c) => {
   return jwt(c, res.insert_auth_users_one);
 });
 
-app.delete("/authenticate", async (c) => {
+app.delete("/authenticate", (c) => {
   clearCookie(c, "jwt");
-  return c.status(200);
+  return c.json({ msg: "ok" });
 });
 
 app.post("/authenticate", async (c) => {
@@ -336,17 +343,18 @@ app.post("/authenticate", async (c) => {
 
 app.post("/authenticate/:username", async (c) => {
   const username = c.req.param("username");
-  const jwt = c.req.cookie("jwt");
+  const _jwt = c.req.cookie("jwt");
 
-  if (jwt) {
+  if (_jwt) {
     try {
       const publicKey = await importSPKI(c.env.AUTH_JWT_PUBLIC_KEY, alg);
-      const res = await jwtVerify(jwt, publicKey, {
+      const res = await jwtVerify(_jwt, publicKey, {
         issuer: "auth.xnfts.dev",
         audience: "backpack",
       });
       if (res.payload.username === username) {
-        return c.json({ msg: "valid jwt cookie" }, 200);
+        // update jwt cookie to push expiration date further into the future
+        return jwt(c, { id: res.payload.sub, username });
       } else {
         throw new Error(`invalid username (${username})`);
       }
@@ -377,6 +385,44 @@ app.post("/authenticate/:username", async (c) => {
     return user
       ? c.json(user)
       : c.json({ message: `username (${username}) not found` }, 404);
+  }
+});
+
+/**
+ * returns information about the user associated with the jwt that's
+ * provided either by a ?jwt= querystring parameter or 'jwt' cookie
+ */
+app.get("/me", async (c) => {
+  const jwt = c.req.query("jwt") || c.req.cookie("jwt");
+  try {
+    const publicKey = await importSPKI(c.env.AUTH_JWT_PUBLIC_KEY, alg);
+    const { payload } = await jwtVerify(jwt, publicKey, {
+      issuer: "auth.xnfts.dev",
+      audience: "backpack",
+    });
+    const chain = Chain(c.env.HASURA_URL, {
+      headers: {
+        Authorization: `Bearer ${c.env.JWT}`,
+      },
+    });
+    const res = await chain("query")({
+      auth_users_by_pk: [
+        {
+          id: payload.sub,
+        },
+        {
+          id: true,
+          username: true,
+          publickeys: [{}, { blockchain: true, publickey: true }],
+        },
+      ],
+    });
+    const user = res.auth_users_by_pk;
+    if (!user) return c.json({ msg: `user not found (${payload.sub})` }, 404);
+    return c.json(user);
+  } catch (err) {
+    console.error(err);
+    return c.json({ msg: "invalid or missing jwt" }, 401);
   }
 });
 
