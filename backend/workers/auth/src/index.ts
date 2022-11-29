@@ -1,26 +1,23 @@
 /**
  *  Auth worker
- *
- *  POST /users - Creates a new user if all of the required data is valid
- *    { username:string; publicKey:PublicKeyString; inviteCode: uuid; waitlistId?: string; }
  */
 
-import {
-  PublicKey,
-  Transaction,
-  TransactionInstruction,
-} from "@solana/web3.js";
+import { Chain } from "@coral-xyz/zeus";
+import { PublicKey } from "@solana/web3.js";
 import { decode } from "bs58";
 import { ethers } from "ethers";
-import type { Context } from "hono";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { importPKCS8, importSPKI, jwtVerify, SignJWT } from "jose";
-import { sign } from "tweetnacl";
+import { importSPKI, jwtVerify } from "jose";
 import { z, ZodError } from "zod";
 
+import { alg, clearCookie, jwt } from "./jwt";
 import { registerOnRampHandlers } from "./onramp";
-import { Chain } from "./zeus";
+import { zodErrorToString } from "./util";
+import {
+  validateEthereumSignature,
+  validateSolanaSignature,
+} from "./validation";
 
 const BaseCreateUser = z.object({
   username: z
@@ -39,7 +36,7 @@ const BaseCreateUser = z.object({
 });
 
 //
-// New user creation, with multiple blockchains and public keys
+// User creation, with multiple blockchains and public keys
 //
 
 const CreateEthereumKeyring = z.object({
@@ -47,7 +44,9 @@ const CreateEthereumKeyring = z.object({
     try {
       ethers.utils.getAddress(str);
       return true;
-    } catch (err) {}
+    } catch {
+      // Pass
+    }
     return false;
   }, "must be a valid Ethereum public key"),
   blockchain: z.literal("ethereum"),
@@ -59,7 +58,9 @@ const CreateSolanaKeyring = z.object({
     try {
       new PublicKey(str);
       return true;
-    } catch (err) {}
+    } catch {
+      // Pass
+    }
     return false;
   }, "must be a valid Solana public key"),
   blockchain: z.literal("solana"),
@@ -76,38 +77,8 @@ const CreateUserWithKeyrings = BaseCreateUser.extend({
 });
 
 //
-// Legacy user creation, with one publicKey and blockchain per user.
-// TODO
+// Routing
 //
-
-const CreateEthereumUser = BaseCreateUser.extend({
-  publicKey: z.string().refine((str) => {
-    try {
-      ethers.utils.getAddress(str);
-      return true;
-    } catch (err) {}
-    return false;
-  }, "must be a valid Ethereum public key"),
-  blockchain: z.literal("ethereum"),
-});
-
-const CreateSolanaUser = BaseCreateUser.extend({
-  publicKey: z.string().refine((str) => {
-    try {
-      new PublicKey(str);
-      return true;
-    } catch (err) {}
-    return false;
-  }, "must be a valid Solana public key"),
-  blockchain: z.literal("solana"),
-});
-
-const LegacyCreateUser = z.discriminatedUnion("blockchain", [
-  CreateEthereumUser,
-  CreateSolanaUser,
-]);
-
-// ----- routing -----
 
 const app = new Hono();
 
@@ -226,6 +197,9 @@ app.get("/users/:username", async (c) => {
   }
 });
 
+/**
+ * Create a user.
+ */
 app.post("/users", async (c) => {
   const body = await c.req.json();
 
@@ -234,16 +208,14 @@ app.post("/users", async (c) => {
     waitlistId: string | null | undefined,
     publicKeys: Array<{ blockchain: "ethereum" | "solana"; publickey: string }>;
 
-  // Try legacy onboarding
-  const result = LegacyCreateUser.safeParse(body);
-  if (result.success) {
-    if (result.data.blockchain === "solana") {
+  const data = CreateUserWithKeyrings.parse(body);
+  for (const blockchainPublicKey of data.blockchainPublicKeys) {
+    if (blockchainPublicKey.blockchain === "solana") {
       if (
         !validateSolanaSignature(
-          // Legacy onboarding signs the whole body
-          Buffer.from(JSON.stringify(body), "utf8"),
-          decode(c.req.header("x-backpack-signature")),
-          decode(result.data.publicKey)
+          Buffer.from(data.inviteCode, "utf8"),
+          decode(blockchainPublicKey.signature),
+          decode(blockchainPublicKey.publicKey)
         )
       ) {
         throw new Error("Invalid Solana signature");
@@ -251,54 +223,21 @@ app.post("/users", async (c) => {
     } else {
       if (
         !validateEthereumSignature(
-          // Legacy onboarding signs the whole body
-          Buffer.from(JSON.stringify(body), "utf8"),
-          c.req.header("x-backpack-signature"),
-          result.data.publicKey
+          Buffer.from(data.inviteCode, "utf8"),
+          blockchainPublicKey.signature,
+          blockchainPublicKey.publicKey
         )
       ) {
         throw new Error("Invalid Ethereum signature");
       }
     }
-    // Legacy onboarding was successfully parsed
-    ({ username, inviteCode, waitlistId } = result.data);
-    // A single blockchain
-    publicKeys = [
-      { blockchain: result.data.blockchain, publickey: result.data.publicKey },
-    ];
-  } else {
-    // New multichain onboarding
-    const data = CreateUserWithKeyrings.parse(body);
-    for (const blockchainPublicKey of data.blockchainPublicKeys) {
-      if (blockchainPublicKey.blockchain === "solana") {
-        if (
-          !validateSolanaSignature(
-            Buffer.from(data.inviteCode, "utf8"),
-            decode(blockchainPublicKey.signature),
-            decode(blockchainPublicKey.publicKey)
-          )
-        ) {
-          throw new Error("Invalid Solana signature");
-        }
-      } else {
-        if (
-          !validateEthereumSignature(
-            Buffer.from(data.inviteCode, "utf8"),
-            blockchainPublicKey.signature,
-            blockchainPublicKey.publicKey
-          )
-        ) {
-          throw new Error("Invalid Ethereum signature");
-        }
-      }
-    }
-
-    ({ username, inviteCode, waitlistId } = data);
-    publicKeys = data.blockchainPublicKeys.map((b) => ({
-      blockchain: b.blockchain,
-      publickey: b.publicKey,
-    }));
   }
+
+  ({ username, inviteCode, waitlistId } = data);
+  publicKeys = data.blockchainPublicKeys.map((b) => ({
+    blockchain: b.blockchain,
+    publickey: b.publicKey,
+  }));
 
   const chain = Chain(c.env.HASURA_URL, {
     headers: {
@@ -351,119 +290,9 @@ app.post("/users", async (c) => {
   return jwt(c, res.insert_auth_users_one);
 });
 
-registerOnRampHandlers(app);
-
-const validateEthereumSignature = (
-  msg: Buffer,
-  signature: string,
-  publicKey: string
-) => {
-  return ethers.utils.verifyMessage(msg, signature) === publicKey;
-};
-
-const validateSolanaSignature = (
-  msg: Buffer,
-  signature: Uint8Array,
-  publicKey: Uint8Array
-) => {
-  if (sign.detached.verify(msg, signature, publicKey)) {
-    return true;
-  }
-
-  try {
-    // This might be a Solana transaction because that is used for Ledger which
-    // does not support signMessage
-    const tx = new Transaction();
-    tx.add(
-      new TransactionInstruction({
-        programId: new PublicKey(publicKey),
-        keys: [],
-        data: msg,
-      })
-    );
-    tx.feePayer = new PublicKey(publicKey);
-    // Not actually needed as it's not transmitted to the network
-    tx.recentBlockhash = tx.feePayer.toString();
-    tx.addSignature(new PublicKey(publicKey), Buffer.from(signature));
-    return tx.verifySignatures();
-  } catch (err) {
-    console.error("dummy solana transaction error", err);
-    return false;
-  }
-};
-
-/**
- * Flattens a Zod error object into a simple error string.
- * @returns e.g. "Invite Code is in an invalid format"
- * or if it fails, a standard "Validation error" message is returned
- */
-const zodErrorToString = (err: ZodError) => {
-  try {
-    return Object.entries((err as ZodError).flatten().fieldErrors)
-      .reduce((acc, [field, errorMessages]) => {
-        errorMessages?.forEach((msg) =>
-          acc.push(`${camelCaseToSentenceCase(field)} ${msg}`)
-        );
-        return acc;
-      }, [] as string[])
-      .join(", ");
-  } catch (err) {
-    return "Validation error";
-  }
-};
-
-const camelCaseToSentenceCase = (str: string) =>
-  str.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase());
-
-export default app;
-
-// JWT Auth --------------------------
-
-const alg = "RS256";
-
-const cookieDomain = (url: string) => {
-  const { hostname } = new URL(url);
-  // note:  the leading . below is significant, as it
-  //        enables us to use the cookie on subdomains
-  return hostname === "localhost" ? hostname : ".xnfts.dev";
-};
-
-const clearCookie = (c: Context<any>, cookieName: string) => {
-  c.res.headers.set(
-    "set-cookie",
-    `${cookieName}=; path=/; domain=${cookieDomain(
-      c.req.url
-    )}; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT`
-  );
-};
-
-const jwt = async (c: Context, user: { id: unknown; username: unknown }) => {
-  const secret = await importPKCS8(c.env.AUTH_JWT_PRIVATE_KEY, alg);
-
-  const jwt = await new SignJWT({
-    sub: String(user.id),
-    username: user.username,
-  })
-    .setProtectedHeader({ alg })
-    .setIssuer("auth.xnfts.dev")
-    .setAudience("backpack")
-    .setIssuedAt()
-    // .setExpirationTime("2h")
-    .sign(secret);
-
-  c.cookie("jwt", jwt, {
-    secure: true,
-    httpOnly: true,
-    sameSite: "Strict",
-    domain: cookieDomain(c.req.url),
-  });
-
-  return c.json({ jwt });
-};
-
-app.delete("/authenticate", async (c) => {
+app.delete("/authenticate", (c) => {
   clearCookie(c, "jwt");
-  return c.status(200);
+  return c.json({ msg: "ok" });
 });
 
 app.post("/authenticate", async (c) => {
@@ -514,17 +343,18 @@ app.post("/authenticate", async (c) => {
 
 app.post("/authenticate/:username", async (c) => {
   const username = c.req.param("username");
-  const jwt = c.req.cookie("jwt");
+  const _jwt = c.req.cookie("jwt");
 
-  if (jwt) {
+  if (_jwt) {
     try {
       const publicKey = await importSPKI(c.env.AUTH_JWT_PUBLIC_KEY, alg);
-      const res = await jwtVerify(jwt, publicKey, {
+      const res = await jwtVerify(_jwt, publicKey, {
         issuer: "auth.xnfts.dev",
         audience: "backpack",
       });
       if (res.payload.username === username) {
-        return c.json({ msg: "valid jwt cookie" }, 200);
+        // update jwt cookie to push expiration date further into the future
+        return jwt(c, { id: res.payload.sub, username });
       } else {
         throw new Error(`invalid username (${username})`);
       }
@@ -557,3 +387,45 @@ app.post("/authenticate/:username", async (c) => {
       : c.json({ message: `username (${username}) not found` }, 404);
   }
 });
+
+/**
+ * returns information about the user associated with the jwt that's
+ * provided either by a ?jwt= querystring parameter or 'jwt' cookie
+ */
+app.get("/me", async (c) => {
+  const jwt = c.req.query("jwt") || c.req.cookie("jwt");
+  try {
+    const publicKey = await importSPKI(c.env.AUTH_JWT_PUBLIC_KEY, alg);
+    const { payload } = await jwtVerify(jwt, publicKey, {
+      issuer: "auth.xnfts.dev",
+      audience: "backpack",
+    });
+    const chain = Chain(c.env.HASURA_URL, {
+      headers: {
+        Authorization: `Bearer ${c.env.JWT}`,
+      },
+    });
+    const res = await chain("query")({
+      auth_users_by_pk: [
+        {
+          id: payload.sub,
+        },
+        {
+          id: true,
+          username: true,
+          publickeys: [{}, { blockchain: true, publickey: true }],
+        },
+      ],
+    });
+    const user = res.auth_users_by_pk;
+    if (!user) return c.json({ msg: `user not found (${payload.sub})` }, 404);
+    return c.json(user);
+  } catch (err) {
+    console.error(err);
+    return c.json({ msg: "invalid or missing jwt" }, 401);
+  }
+});
+
+registerOnRampHandlers(app);
+
+export default app;

@@ -107,8 +107,6 @@ export async function fetchXnftsFromPubkey(
   provider: Provider,
   xnfts: string[]
 ): Promise<{ xnftId: string; image?: string; title?: string }[]> {
-  console.error("fetchXnftsFromPubkey");
-  console.error(xnfts);
   const client = xnftClient(provider);
   const accounts = await Promise.all(
     xnfts.map(async (xnft) => ({
@@ -116,7 +114,6 @@ export async function fetchXnftsFromPubkey(
       account: await client.account.xnft.fetch(xnft),
     }))
   );
-  console.error(accounts);
 
   const metadataAccounts = (
     await anchor.utils.rpc.getMultipleAccounts(
@@ -127,14 +124,12 @@ export async function fetchXnftsFromPubkey(
     if (!t) {
       return null;
     }
-    console.error(t.publicKey.toString());
 
     return {
       xnftMetadata: metadata.decodeMetadata(t.account.data),
       xnftId: accounts[index].xnftId,
     };
   });
-  console.error(metadataAccounts);
 
   const xnftMetadataBlobs = await Promise.all(
     metadataAccounts.map(async (blob) => {
@@ -152,7 +147,6 @@ export async function fetchXnftsFromPubkey(
       };
     })
   );
-  console.error(xnftMetadataBlobs);
 
   return xnfts.map((xnftId) => {
     const metadataBlob = xnftMetadataBlobs.find(
@@ -160,7 +154,7 @@ export async function fetchXnftsFromPubkey(
     )?.externalMetadata;
     return {
       xnftId,
-      image: metadataBlob.image,
+      image: externalResourceUri(metadataBlob.image),
       title: metadataBlob.name,
     };
   });
