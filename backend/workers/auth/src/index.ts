@@ -284,9 +284,9 @@ app.post("/users", async (c) => {
   return jwt(c, res.insert_auth_users_one);
 });
 
-app.delete("/authenticate", async (c) => {
+app.delete("/authenticate", (c) => {
   clearCookie(c, "jwt");
-  return c.status(200);
+  return c.json({ msg: "ok" });
 });
 
 app.post("/authenticate", async (c) => {
@@ -337,17 +337,18 @@ app.post("/authenticate", async (c) => {
 
 app.post("/authenticate/:username", async (c) => {
   const username = c.req.param("username");
-  const jwt = c.req.cookie("jwt");
+  const _jwt = c.req.cookie("jwt");
 
-  if (jwt) {
+  if (_jwt) {
     try {
       const publicKey = await importSPKI(c.env.AUTH_JWT_PUBLIC_KEY, alg);
-      const res = await jwtVerify(jwt, publicKey, {
+      const res = await jwtVerify(_jwt, publicKey, {
         issuer: "auth.xnfts.dev",
         audience: "backpack",
       });
       if (res.payload.username === username) {
-        return c.json({ msg: "valid jwt cookie" }, 200);
+        // update jwt cookie to push expiration date further into the future
+        return jwt(c, { id: res.payload.sub, username });
       } else {
         throw new Error(`invalid username (${username})`);
       }
