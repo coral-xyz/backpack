@@ -5,6 +5,7 @@
 - "!include auth_publickeys.yaml"
 - "!include auth_publickeys_history.yaml"
 - "!include auth_stripe_onramp.yaml"
+- "!include auth_twitter_users.yaml"
 - "!include auth_users.yaml"
 - "!include auth_waolist_tokens.yaml"
 - "!include auth_xnft_preferences.yaml"
