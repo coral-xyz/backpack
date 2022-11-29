@@ -6,6 +6,6 @@ export interface EnrichedNotification extends DbNotification {
 export interface DbNotification {
   title: string;
   body: string;
-  xnftId: string;
+  xnft_id: string;
   timestamp: number;
 }

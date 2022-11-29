@@ -1,17 +1,18 @@
-import * as bs58 from "bs58";
-import type { DerivationPath } from "@coral-xyz/common";
-import { getLogger } from "@coral-xyz/common";
-import type {
-  HdKeyringFactory,
-  HdKeyring,
-  KeyringFactory,
-  Keyring,
-  ImportedDerivationPath,
-  LedgerKeyringFactory,
-  LedgerKeyring,
-} from "./types";
 import * as store from "@coral-xyz/background/src/backend/store";
 import { DefaultKeyname } from "@coral-xyz/background/src/backend/store";
+import type { DerivationPath } from "@coral-xyz/common";
+import { getLogger } from "@coral-xyz/common";
+import * as bs58 from "bs58";
+
+import type {
+  HdKeyring,
+  HdKeyringFactory,
+  ImportedDerivationPath,
+  Keyring,
+  KeyringFactory,
+  LedgerKeyring,
+  LedgerKeyringFactory,
+} from "./types";
 
 const logger = getLogger("background/backend/keyring");
 
@@ -152,18 +153,16 @@ export class BlockchainKeyring {
     this.activeWallet = newWallet;
   }
 
-  public async keyDelete(pubkey: string) {
-    if (this.hdKeyring!.deleteKeyIfNeeded(pubkey) >= 0) {
-      return;
+  public async keyDelete(publicKey: string) {
+    const keyring = this.getKeyring(publicKey);
+    if (!keyring) {
+      logger.error(
+        `unable to find key to delete in keyring store: ${publicKey}`
+      );
+      throw new Error("public key not found");
     }
-    if (this.importedKeyring!.deleteKeyIfNeeded(pubkey) >= 0) {
-      return;
-    }
-    if (this.ledgerKeyring!.deleteKeyIfNeeded(pubkey) >= 0) {
-      return;
-    }
-    logger.error(`unable to find key to delete in keyring store: ${pubkey}`);
-    throw new Error("key not found");
+
+    keyring.deletePublicKey(publicKey);
   }
 
   public toJson(): any {

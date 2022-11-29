@@ -1,11 +1,13 @@
 import type { StyleProp, TextStyle, ViewStyle } from "react-native";
 import { Image, Pressable, Text, View } from "react-native";
-import { proxyImageUrl } from "@coral-xyz/common";
+import { proxyImageUrl, walletAddressDisplay } from "@coral-xyz/common";
+import { useAvatarUrl } from "@coral-xyz/recoil";
 // probably should put all the components in here as an index
 import { useTheme } from "@hooks";
 
-export { TokenInputField } from "./TokenInputField";
+export { NavHeader } from "./NavHeader";
 export { MnemonicInputFields } from "./MnemonicInputFields";
+export { TokenInputField } from "./TokenInputField";
 //
 // function getRandomColor() { var letters = "0123456789ABCDEF";
 //   var color = "#";
@@ -43,7 +45,11 @@ export function Screen({
   return (
     <View
       style={[
-        { flex: 1, backgroundColor: theme.custom.colors.background },
+        {
+          flex: 1,
+          backgroundColor: theme.custom.colors.background,
+          padding: 16,
+        },
         style,
       ]}
     >
@@ -75,6 +81,7 @@ export function BaseButton({
         {
           backgroundColor: theme.custom.colors.primaryButton,
           height: 48,
+          paddingHorizontal: 12,
           borderRadius: 12,
           justifyContent: "center",
           alignItems: "center",
@@ -276,7 +283,14 @@ export function EmptyState({
 }) {
   const theme = useTheme();
   return (
-    <View>
+    <View style={{ alignItems: "center" }}>
+      {icon({
+        size: 56,
+        style: {
+          color: theme.custom.colors.secondary,
+          marginBottom: 16,
+        },
+      })}
       <Typography
         style={{
           fontSize: 24,
@@ -302,7 +316,11 @@ export function EmptyState({
           {subtitle}
         </Typography>
       )}
-      <PrimaryButton label={buttonText} onPress={onPress} />
+      {minimize !== true && buttonText && (
+        <Margin top={12}>
+          <PrimaryButton label={buttonText} onPress={() => onPress()} />
+        </Margin>
+      )}
     </View>
   );
 }
@@ -371,4 +389,58 @@ export function Margin({
   }
 
   return <View style={style}>{children}</View>;
+}
+
+export function WalletAddressLabel({
+  publicKey,
+  name,
+  style,
+  nameStyle,
+}: {
+  publicKey: string;
+  name: string;
+  style: StyleProp<ViewStyle>;
+  nameStyle: StyleProp<TextStyle>;
+}) {
+  const theme = useTheme();
+  return (
+    <View style={[{ flexDirection: "row", alignItems: "center" }, style]}>
+      <Margin right={8}>
+        <Text style={[{ color: theme.custom.colors.fontColor }, nameStyle]}>
+          {name}
+        </Text>
+      </Margin>
+      <Text style={{ color: theme.custom.colors.secondary }}>
+        ({walletAddressDisplay(publicKey)})
+      </Text>
+    </View>
+  );
+}
+
+export function Avatar({ size = 64 }: { size?: number }) {
+  const avatarUrl = useAvatarUrl(size);
+  const theme = useTheme();
+
+  const outerSize = size + 6;
+
+  return (
+    <View
+      style={{
+        backgroundColor: theme.custom.colors.avatarIconBackground,
+        borderRadius: outerSize / 2,
+        padding: 3,
+        width: outerSize,
+        height: outerSize,
+      }}
+    >
+      <Image
+        source={{ uri: avatarUrl }}
+        style={{
+          width: size,
+          height: size,
+          borderRadius: size / 2,
+        }}
+      />
+    </View>
+  );
 }

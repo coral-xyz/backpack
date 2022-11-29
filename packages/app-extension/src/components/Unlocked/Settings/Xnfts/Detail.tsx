@@ -43,7 +43,9 @@ const logger = getLogger("xnft-detail");
 export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
   const theme = useCustomTheme();
   const [openConfirm, setOpenConfirm] = useState(false);
-  const xnftPreference = useXnftPreference({ xnftId: xnft.install.publicKey });
+  const xnftPreference = useXnftPreference({
+    xnftId: xnft.install.account.xnft.toString(),
+  });
   const nav = useNavStack();
   const background = useBackgroundClient();
   const username = useUsername();
@@ -74,7 +76,7 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
             await background.request({
               method: UI_RPC_METHOD_SET_XNFT_PREFERENCES,
               params: [
-                xnft.install.publicKey,
+                xnft.install.account.xnft.toString(),
                 {
                   mediaPermissions: updatedMediaPermissions,
                 },
@@ -108,14 +110,14 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
             await background.request({
               method: UI_RPC_METHOD_SET_XNFT_PREFERENCES,
               params: [
-                xnft.install.publicKey,
+                xnft.install.account.xnft.toString(),
                 {
                   pushNotifications: updatedPushNotifications,
                 },
               ],
             });
             await updateRemotePreference(
-              xnft.install.publicKey,
+              xnft.install.account.xnft.toString(),
               username || "",
               {
                 notifications: updatedPushNotifications,

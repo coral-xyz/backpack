@@ -10,18 +10,22 @@ router.post("/", extractUserId, async (req, res) => {
   const xnftId = req.body.xnftId;
   const preferences = req.body.preferences;
 
-  await updatePreference(xnftId, uuid, preferences);
-
-  res.json({});
+  updatePreference(xnftId, uuid, preferences)
+    .then(() => res.json({}))
+    .catch((e) => {
+      res.status(503).json({ msg: "Internal server error" });
+    });
 });
 
 router.get("/", extractUserId, async (req, res) => {
   // @ts-ignore
   const uuid = req.id || "";
 
-  const xnftPreferences = await getPreferences(uuid);
-
-  res.json({ xnftPreferences });
+  getPreferences(uuid)
+    .then((xnftPreferences) => res.json({ xnftPreferences }))
+    .catch((e) => {
+      res.status(502).json({ msg: "Internal server error" });
+    });
 });
 
 export default router;
