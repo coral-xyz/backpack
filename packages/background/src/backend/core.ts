@@ -748,6 +748,12 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
+  keyringUpdateLastUsed() {
+    this.keyringStore.updateLastUsed();
+    console.log("update keyring last used function");
+    return SUCCESS_RESPONSE;
+  }
+
   async ledgerImport(
     blockchain: Blockchain,
     dPath: string,

@@ -550,6 +550,7 @@ async function handleMnemonicCreate(
 }
 
 async function handleKeyringTypeRead(ctx: Context<Backend>) {
+  ctx.backend.keyringUpdateLastUsed(); //auto-lock update
   const resp = ctx.backend.keyringTypeRead();
   return [resp];
 }
@@ -558,6 +559,7 @@ async function handleNavigationPush(
   ctx: Context<Backend>,
   url: string
 ): Promise<RpcResponse<string>> {
+  ctx.backend.keyringUpdateLastUsed(); //auto-lock update
   const resp = await ctx.backend.navigationPush(url);
   return [resp];
 }
@@ -565,6 +567,7 @@ async function handleNavigationPush(
 async function handleNavigationPop(
   ctx: Context<Backend>
 ): Promise<RpcResponse<string>> {
+  ctx.backend.keyringUpdateLastUsed(); //auto-lock update
   const resp = await ctx.backend.navigationPop();
   return [resp];
 }
@@ -581,6 +584,7 @@ async function handleNavigationCurrentUrlUpdate(
 async function handleNavRead(
   ctx: Context<Backend>
 ): Promise<RpcResponse<string>> {
+  ctx.backend.keyringUpdateLastUsed(); //auto-lock update
   const resp = await ctx.backend.navRead();
   return [resp];
 }
@@ -589,6 +593,7 @@ async function handleNavigationActiveTabUpdate(
   ctx: Context<Backend>,
   tabKey: string
 ): Promise<RpcResponse<string>> {
+  ctx.backend.keyringUpdateLastUsed(); //auto-lock update
   const resp = await ctx.backend.navigationActiveTabUpdate(tabKey);
   return [resp];
 }
@@ -596,6 +601,7 @@ async function handleNavigationActiveTabUpdate(
 async function handleNavigationToRoot(
   ctx: Context<Backend>
 ): Promise<RpcResponse<string>> {
+  ctx.backend.keyringUpdateLastUsed(); //auto-lock update
   const resp = await ctx.backend.navigationToRoot();
   return [resp];
 }
@@ -603,6 +609,7 @@ async function handleNavigationToRoot(
 async function handleNavigationToDefault(
   ctx: Context<Backend>
 ): Promise<RpcResponse<string>> {
+  ctx.backend.keyringUpdateLastUsed(); //auto-lock update
   const resp = await ctx.backend.navigationToDefault();
   return [resp];
 }
@@ -610,6 +617,7 @@ async function handleNavigationToDefault(
 async function handleDarkModeRead(
   ctx: Context<Backend>
 ): Promise<RpcResponse<boolean>> {
+  ctx.backend.keyringUpdateLastUsed(); //auto-lock update
   const resp = await ctx.backend.darkModeRead();
   return [resp];
 }
@@ -625,6 +633,7 @@ async function handleDarkModeUpdate(
 async function handleDeveloperModeRead(
   ctx: Context<Backend>
 ): Promise<RpcResponse<boolean>> {
+  ctx.backend.keyringUpdateLastUsed(); //auto-lock update
   const resp = await ctx.backend.developerModeRead();
   return [resp];
 }

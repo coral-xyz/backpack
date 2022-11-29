@@ -423,7 +423,7 @@ export class KeyringStore {
     });
   }
 
-  private updateLastUsed() {
+  public updateLastUsed() {
     this.lastUsedTs = Date.now() / 1000;
   }
 
