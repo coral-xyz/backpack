@@ -2,6 +2,7 @@
  *  Auth worker
  */
 
+import { Chain } from "@coral-xyz/zeus";
 import { PublicKey } from "@solana/web3.js";
 import { decode } from "bs58";
 import { ethers } from "ethers";
@@ -9,7 +10,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { importSPKI, jwtVerify } from "jose";
 import { z, ZodError } from "zod";
-import { Chain } from "@coral-xyz/zeus";
+
 import { alg, clearCookie, jwt } from "./jwt";
 import { registerOnRampHandlers } from "./onramp";
 import { zodErrorToString } from "./util";
@@ -377,6 +378,44 @@ app.post("/authenticate/:username", async (c) => {
     return user
       ? c.json(user)
       : c.json({ message: `username (${username}) not found` }, 404);
+  }
+});
+
+/**
+ * returns information about the user associated with the jwt that's
+ * provided either by a 'jwt' cookie or ?jwt= querystring parameter
+ */
+app.get("/me", async (c) => {
+  const jwt = c.req.cookie("jwt") || c.req.query("jwt");
+  try {
+    const publicKey = await importSPKI(c.env.AUTH_JWT_PUBLIC_KEY, alg);
+    const { payload } = await jwtVerify(jwt, publicKey, {
+      issuer: "auth.xnfts.dev",
+      audience: "backpack",
+    });
+    const chain = Chain(c.env.HASURA_URL, {
+      headers: {
+        Authorization: `Bearer ${c.env.JWT}`,
+      },
+    });
+    const res = await chain("query")({
+      auth_users_by_pk: [
+        {
+          id: payload.sub,
+        },
+        {
+          id: true,
+          username: true,
+          publickeys: [{}, { blockchain: true, publickey: true }],
+        },
+      ],
+    });
+    const user = res.auth_users_by_pk;
+    if (!user) return c.json({ msg: `user not found (${payload.sub})` }, 404);
+    return c.json(user);
+  } catch (err) {
+    console.error(err);
+    return c.json({ msg: "invalid or missing jwt" }, 401);
   }
 });
 
