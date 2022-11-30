@@ -2,8 +2,9 @@ import { Button, Image, Text } from "react-native";
 import * as Linking from "expo-linking";
 import { atom, useRecoilState } from "recoil";
 
-import { Section } from "../components/Section";
 import { Screen } from "../components/Screen";
+import { Section } from "../components/Section";
+import { useTheme } from "../hooks/useTheme";
 
 const testAtom = atom<"native" | "bright">({
   key: "testAtom",
@@ -15,6 +16,7 @@ function LearnMoreLink({ url }: { url: string }) {
 }
 
 export function ExamplesScreens() {
+  const { theme, colorScheme } = useTheme();
   const [future, setFuture] = useRecoilState(testAtom);
 
   return (
@@ -47,6 +49,16 @@ export function ExamplesScreens() {
           title="Open xNFT.gg"
         />
         <LearnMoreLink url="https://docs.expo.dev/versions/latest/sdk/linking/#linkingopenurlurl" />
+      </Section>
+      <Section title="Light / Dark Theme hook">
+        <Text
+          style={{
+            color: theme.fontColor,
+            backgroundColor: theme.backgroundColor,
+          }}
+        >
+          This is {colorScheme} mode
+        </Text>
       </Section>
     </Screen>
   );
