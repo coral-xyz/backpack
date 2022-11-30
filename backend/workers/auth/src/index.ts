@@ -348,6 +348,12 @@ app.post("/authenticate/:username", async (c) => {
   const username = c.req.param("username");
   const _jwt = c.req.cookie("jwt");
 
+  const chain = Chain(c.env.HASURA_URL, {
+    headers: {
+      Authorization: `Bearer ${c.env.JWT}`,
+    },
+  });
+
   if (_jwt) {
     try {
       const publicKey = await importSPKI(c.env.AUTH_JWT_PUBLIC_KEY, alg);
@@ -355,7 +361,24 @@ app.post("/authenticate/:username", async (c) => {
         issuer: "auth.xnfts.dev",
         audience: "backpack",
       });
-      if (res.payload.username === username) {
+
+      const query = await chain("query")({
+        auth_users_by_pk: [
+          {
+            id: res.payload.sub,
+          },
+          {
+            username: true,
+          },
+        ],
+      });
+      const user = query.auth_users_by_pk;
+
+      if (!user) {
+        throw new Error(`invalid user id (${res.payload.sub})`);
+      }
+
+      if (user.username === username) {
         // update jwt cookie to push expiration date further into the future
         return jwt(c, { id: res.payload.sub, username });
       } else {
@@ -367,11 +390,6 @@ app.post("/authenticate/:username", async (c) => {
       return c.json({ msg: "invalid jwt cookie" }, 401);
     }
   } else {
-    const chain = Chain(c.env.HASURA_URL, {
-      headers: {
-        Authorization: `Bearer ${c.env.JWT}`,
-      },
-    });
     const res = await chain("query")({
       auth_users: [
         {
@@ -392,7 +410,7 @@ app.post("/authenticate/:username", async (c) => {
 });
 
 /**
- * returns information about the user associated with the jwt that's
+ * Returns information about the user associated with the jwt that's
  * provided either by a ?jwt= querystring parameter or 'jwt' cookie
  */
 app.get("/me", async (c) => {

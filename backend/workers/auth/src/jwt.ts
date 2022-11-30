@@ -27,7 +27,6 @@ export const jwt = async (
 
   const _jwt = await new SignJWT({
     sub: String(user.id),
-    username: user.username,
   })
     .setProtectedHeader({ alg })
     .setIssuer("auth.xnfts.dev")
