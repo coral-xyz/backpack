@@ -1,0 +1,1 @@
+CREATE TABLE "auth"."friendships" ("id" serial NOT NULL, "user1" text NOT NULL, "user2" text NOT NULL, "last_message" text NOT NULL, "last_message_timestamp" timestamptz NOT NULL, "last_message_sender" text NOT NULL, "are_friends" boolean NOT NULL, PRIMARY KEY ("id") );

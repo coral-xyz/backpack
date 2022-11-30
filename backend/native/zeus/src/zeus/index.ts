@@ -1052,6 +1052,302 @@ export type ValueTypes = {
     /** does the column match the given SQL regular expression */
     _similar?: string | undefined | null | Variable<any, string>;
   };
+  /** columns and relationships of "auth.friend_requests" */
+  ["auth_friend_requests"]: AliasType<{
+    from?: boolean | `@${string}`;
+    id?: boolean | `@${string}`;
+    to?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Boolean expression to filter rows from the table "auth.friend_requests". All fields are combined with a logical 'AND'. */
+  ["auth_friend_requests_bool_exp"]: {
+    _and?:
+      | Array<ValueTypes["auth_friend_requests_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    _not?:
+      | ValueTypes["auth_friend_requests_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    _or?:
+      | Array<ValueTypes["auth_friend_requests_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    from?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?:
+      | ValueTypes["Int_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    to?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** unique or primary key constraints on table "auth.friend_requests" */
+  ["auth_friend_requests_constraint"]: auth_friend_requests_constraint;
+  /** input type for inserting data into table "auth.friend_requests" */
+  ["auth_friend_requests_insert_input"]: {
+    from?: string | undefined | null | Variable<any, string>;
+    id?: number | undefined | null | Variable<any, string>;
+    to?: string | undefined | null | Variable<any, string>;
+  };
+  /** response of any mutation on the table "auth.friend_requests" */
+  ["auth_friend_requests_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ValueTypes["auth_friend_requests"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "auth.friend_requests" */
+  ["auth_friend_requests_on_conflict"]: {
+    constraint:
+      | ValueTypes["auth_friend_requests_constraint"]
+      | Variable<any, string>;
+    update_columns:
+      | Array<ValueTypes["auth_friend_requests_update_column"]>
+      | Variable<any, string>;
+    where?:
+      | ValueTypes["auth_friend_requests_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Ordering options when selecting data from "auth.friend_requests". */
+  ["auth_friend_requests_order_by"]: {
+    from?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    to?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** select columns of table "auth.friend_requests" */
+  ["auth_friend_requests_select_column"]: auth_friend_requests_select_column;
+  /** Streaming cursor of the table "auth_friend_requests" */
+  ["auth_friend_requests_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value:
+      | ValueTypes["auth_friend_requests_stream_cursor_value_input"]
+      | Variable<any, string>;
+    /** cursor ordering */
+    ordering?:
+      | ValueTypes["cursor_ordering"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_friend_requests_stream_cursor_value_input"]: {
+    from?: string | undefined | null | Variable<any, string>;
+    id?: number | undefined | null | Variable<any, string>;
+    to?: string | undefined | null | Variable<any, string>;
+  };
+  /** placeholder for update columns of table "auth.friend_requests" (current role has no relevant permissions) */
+  ["auth_friend_requests_update_column"]: auth_friend_requests_update_column;
+  /** columns and relationships of "auth.friendships" */
+  ["auth_friendships"]: AliasType<{
+    are_friends?: boolean | `@${string}`;
+    id?: boolean | `@${string}`;
+    last_message?: boolean | `@${string}`;
+    last_message_sender?: boolean | `@${string}`;
+    last_message_timestamp?: boolean | `@${string}`;
+    user1?: boolean | `@${string}`;
+    user2?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Boolean expression to filter rows from the table "auth.friendships". All fields are combined with a logical 'AND'. */
+  ["auth_friendships_bool_exp"]: {
+    _and?:
+      | Array<ValueTypes["auth_friendships_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    _not?:
+      | ValueTypes["auth_friendships_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    _or?:
+      | Array<ValueTypes["auth_friendships_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    are_friends?:
+      | ValueTypes["Boolean_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?:
+      | ValueTypes["Int_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    last_message?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    last_message_sender?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    last_message_timestamp?:
+      | ValueTypes["timestamptz_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    user1?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    user2?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** unique or primary key constraints on table "auth.friendships" */
+  ["auth_friendships_constraint"]: auth_friendships_constraint;
+  /** input type for incrementing numeric columns in table "auth.friendships" */
+  ["auth_friendships_inc_input"]: {
+    id?: number | undefined | null | Variable<any, string>;
+  };
+  /** input type for inserting data into table "auth.friendships" */
+  ["auth_friendships_insert_input"]: {
+    are_friends?: boolean | undefined | null | Variable<any, string>;
+    id?: number | undefined | null | Variable<any, string>;
+    last_message?: string | undefined | null | Variable<any, string>;
+    last_message_sender?: string | undefined | null | Variable<any, string>;
+    last_message_timestamp?:
+      | ValueTypes["timestamptz"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    user1?: string | undefined | null | Variable<any, string>;
+    user2?: string | undefined | null | Variable<any, string>;
+  };
+  /** response of any mutation on the table "auth.friendships" */
+  ["auth_friendships_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ValueTypes["auth_friendships"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "auth.friendships" */
+  ["auth_friendships_on_conflict"]: {
+    constraint:
+      | ValueTypes["auth_friendships_constraint"]
+      | Variable<any, string>;
+    update_columns:
+      | Array<ValueTypes["auth_friendships_update_column"]>
+      | Variable<any, string>;
+    where?:
+      | ValueTypes["auth_friendships_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Ordering options when selecting data from "auth.friendships". */
+  ["auth_friendships_order_by"]: {
+    are_friends?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    last_message?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    last_message_sender?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    last_message_timestamp?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    user1?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    user2?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** primary key columns input for table: auth_friendships */
+  ["auth_friendships_pk_columns_input"]: {
+    user1: string | Variable<any, string>;
+    user2: string | Variable<any, string>;
+  };
+  /** select columns of table "auth.friendships" */
+  ["auth_friendships_select_column"]: auth_friendships_select_column;
+  /** input type for updating data in table "auth.friendships" */
+  ["auth_friendships_set_input"]: {
+    are_friends?: boolean | undefined | null | Variable<any, string>;
+    id?: number | undefined | null | Variable<any, string>;
+    last_message?: string | undefined | null | Variable<any, string>;
+    last_message_sender?: string | undefined | null | Variable<any, string>;
+    last_message_timestamp?:
+      | ValueTypes["timestamptz"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    user1?: string | undefined | null | Variable<any, string>;
+    user2?: string | undefined | null | Variable<any, string>;
+  };
+  /** Streaming cursor of the table "auth_friendships" */
+  ["auth_friendships_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value:
+      | ValueTypes["auth_friendships_stream_cursor_value_input"]
+      | Variable<any, string>;
+    /** cursor ordering */
+    ordering?:
+      | ValueTypes["cursor_ordering"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_friendships_stream_cursor_value_input"]: {
+    are_friends?: boolean | undefined | null | Variable<any, string>;
+    id?: number | undefined | null | Variable<any, string>;
+    last_message?: string | undefined | null | Variable<any, string>;
+    last_message_sender?: string | undefined | null | Variable<any, string>;
+    last_message_timestamp?:
+      | ValueTypes["timestamptz"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    user1?: string | undefined | null | Variable<any, string>;
+    user2?: string | undefined | null | Variable<any, string>;
+  };
+  /** update columns of table "auth.friendships" */
+  ["auth_friendships_update_column"]: auth_friendships_update_column;
+  ["auth_friendships_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?:
+      | ValueTypes["auth_friendships_inc_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    /** sets the columns of the filtered rows to the given values */
+    _set?:
+      | ValueTypes["auth_friendships_set_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    where: ValueTypes["auth_friendships_bool_exp"] | Variable<any, string>;
+  };
   /** columns and relationships of "auth.notification_subscriptions" */
   ["auth_notification_subscriptions"]: AliasType<{
     auth?: boolean | `@${string}`;
@@ -2375,6 +2671,36 @@ export type ValueTypes = {
   };
   /** mutation root */
   ["mutation_root"]: AliasType<{
+    delete_auth_friend_requests?: [
+      {
+        /** filter the rows which have to be deleted */
+        where:
+          | ValueTypes["auth_friend_requests_bool_exp"]
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_friend_requests_mutation_response"]
+    ];
+    delete_auth_friend_requests_by_pk?: [
+      {
+        from: string | Variable<any, string>;
+        to: string | Variable<any, string>;
+      },
+      ValueTypes["auth_friend_requests"]
+    ];
+    delete_auth_friendships?: [
+      {
+        /** filter the rows which have to be deleted */
+        where: ValueTypes["auth_friendships_bool_exp"] | Variable<any, string>;
+      },
+      ValueTypes["auth_friendships_mutation_response"]
+    ];
+    delete_auth_friendships_by_pk?: [
+      {
+        user1: string | Variable<any, string>;
+        user2: string | Variable<any, string>;
+      },
+      ValueTypes["auth_friendships"]
+    ];
     delete_auth_notification_subscriptions?: [
       {
         /** filter the rows which have to be deleted */
@@ -2407,6 +2733,62 @@ export type ValueTypes = {
     delete_auth_xnft_preferences_by_pk?: [
       { id: number | Variable<any, string> },
       ValueTypes["auth_xnft_preferences"]
+    ];
+    insert_auth_friend_requests?: [
+      {
+        /** the rows to be inserted */
+        objects:
+          | Array<ValueTypes["auth_friend_requests_insert_input"]>
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["auth_friend_requests_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_friend_requests_mutation_response"]
+    ];
+    insert_auth_friend_requests_one?: [
+      {
+        /** the row to be inserted */
+        object:
+          | ValueTypes["auth_friend_requests_insert_input"]
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["auth_friend_requests_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_friend_requests"]
+    ];
+    insert_auth_friendships?: [
+      {
+        /** the rows to be inserted */
+        objects:
+          | Array<ValueTypes["auth_friendships_insert_input"]>
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["auth_friendships_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_friendships_mutation_response"]
+    ];
+    insert_auth_friendships_one?: [
+      {
+        /** the row to be inserted */
+        object:
+          | ValueTypes["auth_friendships_insert_input"]
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["auth_friendships_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_friendships"]
     ];
     insert_auth_notification_subscriptions?: [
       {
@@ -2575,6 +2957,60 @@ export type ValueTypes = {
           | Variable<any, string>;
       },
       ValueTypes["auth_xnft_preferences"]
+    ];
+    update_auth_friendships?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ValueTypes["auth_friendships_inc_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ValueTypes["auth_friendships_set_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** filter the rows which have to be updated */;
+        where: ValueTypes["auth_friendships_bool_exp"] | Variable<any, string>;
+      },
+      ValueTypes["auth_friendships_mutation_response"]
+    ];
+    update_auth_friendships_by_pk?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ValueTypes["auth_friendships_inc_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ValueTypes["auth_friendships_set_input"]
+          | undefined
+          | null
+          | Variable<any, string>;
+        pk_columns:
+          | ValueTypes["auth_friendships_pk_columns_input"]
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_friendships"]
+    ];
+    update_auth_friendships_many?: [
+      {
+        /** updates to execute, in order */
+        updates:
+          | Array<ValueTypes["auth_friendships_updates"]>
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_friendships_mutation_response"]
     ];
     update_auth_notification_subscriptions?: [
       {
@@ -2843,6 +3279,88 @@ export type ValueTypes = {
   /** column ordering options */
   ["order_by"]: order_by;
   ["query_root"]: AliasType<{
+    auth_friend_requests?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_friend_requests_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_friend_requests_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_friend_requests_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_friend_requests"]
+    ];
+    auth_friend_requests_by_pk?: [
+      {
+        from: string | Variable<any, string>;
+        to: string | Variable<any, string>;
+      },
+      ValueTypes["auth_friend_requests"]
+    ];
+    auth_friendships?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_friendships_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_friendships_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_friendships_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_friendships"]
+    ];
+    auth_friendships_by_pk?: [
+      {
+        user1: string | Variable<any, string>;
+        user2: string | Variable<any, string>;
+      },
+      ValueTypes["auth_friendships"]
+    ];
     auth_notification_subscriptions?: [
       {
         /** distinct select on columns */
@@ -3206,6 +3724,136 @@ export type ValueTypes = {
     __typename?: boolean | `@${string}`;
   }>;
   ["subscription_root"]: AliasType<{
+    auth_friend_requests?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_friend_requests_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_friend_requests_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_friend_requests_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_friend_requests"]
+    ];
+    auth_friend_requests_by_pk?: [
+      {
+        from: string | Variable<any, string>;
+        to: string | Variable<any, string>;
+      },
+      ValueTypes["auth_friend_requests"]
+    ];
+    auth_friend_requests_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size:
+          | number
+          | Variable<
+              any,
+              string
+            > /** cursor to stream the results returned by the query */;
+        cursor:
+          | Array<
+              | ValueTypes["auth_friend_requests_stream_cursor_input"]
+              | undefined
+              | null
+            >
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_friend_requests_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_friend_requests"]
+    ];
+    auth_friendships?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_friendships_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_friendships_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_friendships_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_friendships"]
+    ];
+    auth_friendships_by_pk?: [
+      {
+        user1: string | Variable<any, string>;
+        user2: string | Variable<any, string>;
+      },
+      ValueTypes["auth_friendships"]
+    ];
+    auth_friendships_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size:
+          | number
+          | Variable<
+              any,
+              string
+            > /** cursor to stream the results returned by the query */;
+        cursor:
+          | Array<
+              | ValueTypes["auth_friendships_stream_cursor_input"]
+              | undefined
+              | null
+            >
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_friendships_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_friendships"]
+    ];
     auth_notification_subscriptions?: [
       {
         /** distinct select on columns */
@@ -3824,6 +4472,215 @@ export type ResolverInputTypes = {
     _regex?: string | undefined | null;
     /** does the column match the given SQL regular expression */
     _similar?: string | undefined | null;
+  };
+  /** columns and relationships of "auth.friend_requests" */
+  ["auth_friend_requests"]: AliasType<{
+    from?: boolean | `@${string}`;
+    id?: boolean | `@${string}`;
+    to?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Boolean expression to filter rows from the table "auth.friend_requests". All fields are combined with a logical 'AND'. */
+  ["auth_friend_requests_bool_exp"]: {
+    _and?:
+      | Array<ResolverInputTypes["auth_friend_requests_bool_exp"]>
+      | undefined
+      | null;
+    _not?:
+      | ResolverInputTypes["auth_friend_requests_bool_exp"]
+      | undefined
+      | null;
+    _or?:
+      | Array<ResolverInputTypes["auth_friend_requests_bool_exp"]>
+      | undefined
+      | null;
+    from?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
+    to?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+  };
+  /** unique or primary key constraints on table "auth.friend_requests" */
+  ["auth_friend_requests_constraint"]: auth_friend_requests_constraint;
+  /** input type for inserting data into table "auth.friend_requests" */
+  ["auth_friend_requests_insert_input"]: {
+    from?: string | undefined | null;
+    id?: number | undefined | null;
+    to?: string | undefined | null;
+  };
+  /** response of any mutation on the table "auth.friend_requests" */
+  ["auth_friend_requests_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ResolverInputTypes["auth_friend_requests"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "auth.friend_requests" */
+  ["auth_friend_requests_on_conflict"]: {
+    constraint: ResolverInputTypes["auth_friend_requests_constraint"];
+    update_columns: Array<
+      ResolverInputTypes["auth_friend_requests_update_column"]
+    >;
+    where?:
+      | ResolverInputTypes["auth_friend_requests_bool_exp"]
+      | undefined
+      | null;
+  };
+  /** Ordering options when selecting data from "auth.friend_requests". */
+  ["auth_friend_requests_order_by"]: {
+    from?: ResolverInputTypes["order_by"] | undefined | null;
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    to?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** select columns of table "auth.friend_requests" */
+  ["auth_friend_requests_select_column"]: auth_friend_requests_select_column;
+  /** Streaming cursor of the table "auth_friend_requests" */
+  ["auth_friend_requests_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ResolverInputTypes["auth_friend_requests_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ResolverInputTypes["cursor_ordering"] | undefined | null;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_friend_requests_stream_cursor_value_input"]: {
+    from?: string | undefined | null;
+    id?: number | undefined | null;
+    to?: string | undefined | null;
+  };
+  /** placeholder for update columns of table "auth.friend_requests" (current role has no relevant permissions) */
+  ["auth_friend_requests_update_column"]: auth_friend_requests_update_column;
+  /** columns and relationships of "auth.friendships" */
+  ["auth_friendships"]: AliasType<{
+    are_friends?: boolean | `@${string}`;
+    id?: boolean | `@${string}`;
+    last_message?: boolean | `@${string}`;
+    last_message_sender?: boolean | `@${string}`;
+    last_message_timestamp?: boolean | `@${string}`;
+    user1?: boolean | `@${string}`;
+    user2?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Boolean expression to filter rows from the table "auth.friendships". All fields are combined with a logical 'AND'. */
+  ["auth_friendships_bool_exp"]: {
+    _and?:
+      | Array<ResolverInputTypes["auth_friendships_bool_exp"]>
+      | undefined
+      | null;
+    _not?: ResolverInputTypes["auth_friendships_bool_exp"] | undefined | null;
+    _or?:
+      | Array<ResolverInputTypes["auth_friendships_bool_exp"]>
+      | undefined
+      | null;
+    are_friends?:
+      | ResolverInputTypes["Boolean_comparison_exp"]
+      | undefined
+      | null;
+    id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
+    last_message?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
+    last_message_sender?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
+    last_message_timestamp?:
+      | ResolverInputTypes["timestamptz_comparison_exp"]
+      | undefined
+      | null;
+    user1?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    user2?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+  };
+  /** unique or primary key constraints on table "auth.friendships" */
+  ["auth_friendships_constraint"]: auth_friendships_constraint;
+  /** input type for incrementing numeric columns in table "auth.friendships" */
+  ["auth_friendships_inc_input"]: {
+    id?: number | undefined | null;
+  };
+  /** input type for inserting data into table "auth.friendships" */
+  ["auth_friendships_insert_input"]: {
+    are_friends?: boolean | undefined | null;
+    id?: number | undefined | null;
+    last_message?: string | undefined | null;
+    last_message_sender?: string | undefined | null;
+    last_message_timestamp?:
+      | ResolverInputTypes["timestamptz"]
+      | undefined
+      | null;
+    user1?: string | undefined | null;
+    user2?: string | undefined | null;
+  };
+  /** response of any mutation on the table "auth.friendships" */
+  ["auth_friendships_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ResolverInputTypes["auth_friendships"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "auth.friendships" */
+  ["auth_friendships_on_conflict"]: {
+    constraint: ResolverInputTypes["auth_friendships_constraint"];
+    update_columns: Array<ResolverInputTypes["auth_friendships_update_column"]>;
+    where?: ResolverInputTypes["auth_friendships_bool_exp"] | undefined | null;
+  };
+  /** Ordering options when selecting data from "auth.friendships". */
+  ["auth_friendships_order_by"]: {
+    are_friends?: ResolverInputTypes["order_by"] | undefined | null;
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    last_message?: ResolverInputTypes["order_by"] | undefined | null;
+    last_message_sender?: ResolverInputTypes["order_by"] | undefined | null;
+    last_message_timestamp?: ResolverInputTypes["order_by"] | undefined | null;
+    user1?: ResolverInputTypes["order_by"] | undefined | null;
+    user2?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** primary key columns input for table: auth_friendships */
+  ["auth_friendships_pk_columns_input"]: {
+    user1: string;
+    user2: string;
+  };
+  /** select columns of table "auth.friendships" */
+  ["auth_friendships_select_column"]: auth_friendships_select_column;
+  /** input type for updating data in table "auth.friendships" */
+  ["auth_friendships_set_input"]: {
+    are_friends?: boolean | undefined | null;
+    id?: number | undefined | null;
+    last_message?: string | undefined | null;
+    last_message_sender?: string | undefined | null;
+    last_message_timestamp?:
+      | ResolverInputTypes["timestamptz"]
+      | undefined
+      | null;
+    user1?: string | undefined | null;
+    user2?: string | undefined | null;
+  };
+  /** Streaming cursor of the table "auth_friendships" */
+  ["auth_friendships_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ResolverInputTypes["auth_friendships_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ResolverInputTypes["cursor_ordering"] | undefined | null;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_friendships_stream_cursor_value_input"]: {
+    are_friends?: boolean | undefined | null;
+    id?: number | undefined | null;
+    last_message?: string | undefined | null;
+    last_message_sender?: string | undefined | null;
+    last_message_timestamp?:
+      | ResolverInputTypes["timestamptz"]
+      | undefined
+      | null;
+    user1?: string | undefined | null;
+    user2?: string | undefined | null;
+  };
+  /** update columns of table "auth.friendships" */
+  ["auth_friendships_update_column"]: auth_friendships_update_column;
+  ["auth_friendships_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: ResolverInputTypes["auth_friendships_inc_input"] | undefined | null;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: ResolverInputTypes["auth_friendships_set_input"] | undefined | null;
+    where: ResolverInputTypes["auth_friendships_bool_exp"];
   };
   /** columns and relationships of "auth.notification_subscriptions" */
   ["auth_notification_subscriptions"]: AliasType<{
@@ -4755,6 +5612,28 @@ export type ResolverInputTypes = {
   };
   /** mutation root */
   ["mutation_root"]: AliasType<{
+    delete_auth_friend_requests?: [
+      {
+        /** filter the rows which have to be deleted */
+        where: ResolverInputTypes["auth_friend_requests_bool_exp"];
+      },
+      ResolverInputTypes["auth_friend_requests_mutation_response"]
+    ];
+    delete_auth_friend_requests_by_pk?: [
+      { from: string; to: string },
+      ResolverInputTypes["auth_friend_requests"]
+    ];
+    delete_auth_friendships?: [
+      {
+        /** filter the rows which have to be deleted */
+        where: ResolverInputTypes["auth_friendships_bool_exp"];
+      },
+      ResolverInputTypes["auth_friendships_mutation_response"]
+    ];
+    delete_auth_friendships_by_pk?: [
+      { user1: string; user2: string },
+      ResolverInputTypes["auth_friendships"]
+    ];
     delete_auth_notification_subscriptions?: [
       {
         /** filter the rows which have to be deleted */
@@ -4783,6 +5662,54 @@ export type ResolverInputTypes = {
     delete_auth_xnft_preferences_by_pk?: [
       { id: number },
       ResolverInputTypes["auth_xnft_preferences"]
+    ];
+    insert_auth_friend_requests?: [
+      {
+        /** the rows to be inserted */
+        objects: Array<
+          ResolverInputTypes["auth_friend_requests_insert_input"]
+        > /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["auth_friend_requests_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_friend_requests_mutation_response"]
+    ];
+    insert_auth_friend_requests_one?: [
+      {
+        /** the row to be inserted */
+        object: ResolverInputTypes["auth_friend_requests_insert_input"] /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["auth_friend_requests_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_friend_requests"]
+    ];
+    insert_auth_friendships?: [
+      {
+        /** the rows to be inserted */
+        objects: Array<
+          ResolverInputTypes["auth_friendships_insert_input"]
+        > /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["auth_friendships_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_friendships_mutation_response"]
+    ];
+    insert_auth_friendships_one?: [
+      {
+        /** the row to be inserted */
+        object: ResolverInputTypes["auth_friendships_insert_input"] /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["auth_friendships_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_friendships"]
     ];
     insert_auth_notification_subscriptions?: [
       {
@@ -4927,6 +5854,43 @@ export type ResolverInputTypes = {
           | null;
       },
       ResolverInputTypes["auth_xnft_preferences"]
+    ];
+    update_auth_friendships?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ResolverInputTypes["auth_friendships_inc_input"]
+          | undefined
+          | null /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ResolverInputTypes["auth_friendships_set_input"]
+          | undefined
+          | null /** filter the rows which have to be updated */;
+        where: ResolverInputTypes["auth_friendships_bool_exp"];
+      },
+      ResolverInputTypes["auth_friendships_mutation_response"]
+    ];
+    update_auth_friendships_by_pk?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ResolverInputTypes["auth_friendships_inc_input"]
+          | undefined
+          | null /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ResolverInputTypes["auth_friendships_set_input"]
+          | undefined
+          | null;
+        pk_columns: ResolverInputTypes["auth_friendships_pk_columns_input"];
+      },
+      ResolverInputTypes["auth_friendships"]
+    ];
+    update_auth_friendships_many?: [
+      {
+        /** updates to execute, in order */
+        updates: Array<ResolverInputTypes["auth_friendships_updates"]>;
+      },
+      ResolverInputTypes["auth_friendships_mutation_response"]
     ];
     update_auth_notification_subscriptions?: [
       {
@@ -5109,6 +6073,66 @@ export type ResolverInputTypes = {
   /** column ordering options */
   ["order_by"]: order_by;
   ["query_root"]: AliasType<{
+    auth_friend_requests?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_friend_requests_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_friend_requests_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_friend_requests_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_friend_requests"]
+    ];
+    auth_friend_requests_by_pk?: [
+      { from: string; to: string },
+      ResolverInputTypes["auth_friend_requests"]
+    ];
+    auth_friendships?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_friendships_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_friendships_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_friendships_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_friendships"]
+    ];
+    auth_friendships_by_pk?: [
+      { user1: string; user2: string },
+      ResolverInputTypes["auth_friendships"]
+    ];
     auth_notification_subscriptions?: [
       {
         /** distinct select on columns */
@@ -5384,6 +6408,98 @@ export type ResolverInputTypes = {
     __typename?: boolean | `@${string}`;
   }>;
   ["subscription_root"]: AliasType<{
+    auth_friend_requests?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_friend_requests_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_friend_requests_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_friend_requests_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_friend_requests"]
+    ];
+    auth_friend_requests_by_pk?: [
+      { from: string; to: string },
+      ResolverInputTypes["auth_friend_requests"]
+    ];
+    auth_friend_requests_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size: number /** cursor to stream the results returned by the query */;
+        cursor: Array<
+          | ResolverInputTypes["auth_friend_requests_stream_cursor_input"]
+          | undefined
+          | null
+        > /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_friend_requests_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_friend_requests"]
+    ];
+    auth_friendships?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_friendships_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_friendships_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_friendships_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_friendships"]
+    ];
+    auth_friendships_by_pk?: [
+      { user1: string; user2: string },
+      ResolverInputTypes["auth_friendships"]
+    ];
+    auth_friendships_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size: number /** cursor to stream the results returned by the query */;
+        cursor: Array<
+          | ResolverInputTypes["auth_friendships_stream_cursor_input"]
+          | undefined
+          | null
+        > /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_friendships_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_friendships"]
+    ];
     auth_notification_subscriptions?: [
       {
         /** distinct select on columns */
@@ -5848,6 +6964,166 @@ export type ModelTypes = {
     _regex?: string | undefined;
     /** does the column match the given SQL regular expression */
     _similar?: string | undefined;
+  };
+  /** columns and relationships of "auth.friend_requests" */
+  ["auth_friend_requests"]: {
+    from: string;
+    id: number;
+    to: string;
+  };
+  /** Boolean expression to filter rows from the table "auth.friend_requests". All fields are combined with a logical 'AND'. */
+  ["auth_friend_requests_bool_exp"]: {
+    _and?: Array<ModelTypes["auth_friend_requests_bool_exp"]> | undefined;
+    _not?: ModelTypes["auth_friend_requests_bool_exp"] | undefined;
+    _or?: Array<ModelTypes["auth_friend_requests_bool_exp"]> | undefined;
+    from?: ModelTypes["String_comparison_exp"] | undefined;
+    id?: ModelTypes["Int_comparison_exp"] | undefined;
+    to?: ModelTypes["String_comparison_exp"] | undefined;
+  };
+  ["auth_friend_requests_constraint"]: auth_friend_requests_constraint;
+  /** input type for inserting data into table "auth.friend_requests" */
+  ["auth_friend_requests_insert_input"]: {
+    from?: string | undefined;
+    id?: number | undefined;
+    to?: string | undefined;
+  };
+  /** response of any mutation on the table "auth.friend_requests" */
+  ["auth_friend_requests_mutation_response"]: {
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<ModelTypes["auth_friend_requests"]>;
+  };
+  /** on_conflict condition type for table "auth.friend_requests" */
+  ["auth_friend_requests_on_conflict"]: {
+    constraint: ModelTypes["auth_friend_requests_constraint"];
+    update_columns: Array<ModelTypes["auth_friend_requests_update_column"]>;
+    where?: ModelTypes["auth_friend_requests_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "auth.friend_requests". */
+  ["auth_friend_requests_order_by"]: {
+    from?: ModelTypes["order_by"] | undefined;
+    id?: ModelTypes["order_by"] | undefined;
+    to?: ModelTypes["order_by"] | undefined;
+  };
+  ["auth_friend_requests_select_column"]: auth_friend_requests_select_column;
+  /** Streaming cursor of the table "auth_friend_requests" */
+  ["auth_friend_requests_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ModelTypes["auth_friend_requests_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ModelTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_friend_requests_stream_cursor_value_input"]: {
+    from?: string | undefined;
+    id?: number | undefined;
+    to?: string | undefined;
+  };
+  ["auth_friend_requests_update_column"]: auth_friend_requests_update_column;
+  /** columns and relationships of "auth.friendships" */
+  ["auth_friendships"]: {
+    are_friends: boolean;
+    id: number;
+    last_message?: string | undefined;
+    last_message_sender?: string | undefined;
+    last_message_timestamp?: ModelTypes["timestamptz"] | undefined;
+    user1: string;
+    user2: string;
+  };
+  /** Boolean expression to filter rows from the table "auth.friendships". All fields are combined with a logical 'AND'. */
+  ["auth_friendships_bool_exp"]: {
+    _and?: Array<ModelTypes["auth_friendships_bool_exp"]> | undefined;
+    _not?: ModelTypes["auth_friendships_bool_exp"] | undefined;
+    _or?: Array<ModelTypes["auth_friendships_bool_exp"]> | undefined;
+    are_friends?: ModelTypes["Boolean_comparison_exp"] | undefined;
+    id?: ModelTypes["Int_comparison_exp"] | undefined;
+    last_message?: ModelTypes["String_comparison_exp"] | undefined;
+    last_message_sender?: ModelTypes["String_comparison_exp"] | undefined;
+    last_message_timestamp?:
+      | ModelTypes["timestamptz_comparison_exp"]
+      | undefined;
+    user1?: ModelTypes["String_comparison_exp"] | undefined;
+    user2?: ModelTypes["String_comparison_exp"] | undefined;
+  };
+  ["auth_friendships_constraint"]: auth_friendships_constraint;
+  /** input type for incrementing numeric columns in table "auth.friendships" */
+  ["auth_friendships_inc_input"]: {
+    id?: number | undefined;
+  };
+  /** input type for inserting data into table "auth.friendships" */
+  ["auth_friendships_insert_input"]: {
+    are_friends?: boolean | undefined;
+    id?: number | undefined;
+    last_message?: string | undefined;
+    last_message_sender?: string | undefined;
+    last_message_timestamp?: ModelTypes["timestamptz"] | undefined;
+    user1?: string | undefined;
+    user2?: string | undefined;
+  };
+  /** response of any mutation on the table "auth.friendships" */
+  ["auth_friendships_mutation_response"]: {
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<ModelTypes["auth_friendships"]>;
+  };
+  /** on_conflict condition type for table "auth.friendships" */
+  ["auth_friendships_on_conflict"]: {
+    constraint: ModelTypes["auth_friendships_constraint"];
+    update_columns: Array<ModelTypes["auth_friendships_update_column"]>;
+    where?: ModelTypes["auth_friendships_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "auth.friendships". */
+  ["auth_friendships_order_by"]: {
+    are_friends?: ModelTypes["order_by"] | undefined;
+    id?: ModelTypes["order_by"] | undefined;
+    last_message?: ModelTypes["order_by"] | undefined;
+    last_message_sender?: ModelTypes["order_by"] | undefined;
+    last_message_timestamp?: ModelTypes["order_by"] | undefined;
+    user1?: ModelTypes["order_by"] | undefined;
+    user2?: ModelTypes["order_by"] | undefined;
+  };
+  /** primary key columns input for table: auth_friendships */
+  ["auth_friendships_pk_columns_input"]: {
+    user1: string;
+    user2: string;
+  };
+  ["auth_friendships_select_column"]: auth_friendships_select_column;
+  /** input type for updating data in table "auth.friendships" */
+  ["auth_friendships_set_input"]: {
+    are_friends?: boolean | undefined;
+    id?: number | undefined;
+    last_message?: string | undefined;
+    last_message_sender?: string | undefined;
+    last_message_timestamp?: ModelTypes["timestamptz"] | undefined;
+    user1?: string | undefined;
+    user2?: string | undefined;
+  };
+  /** Streaming cursor of the table "auth_friendships" */
+  ["auth_friendships_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ModelTypes["auth_friendships_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ModelTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_friendships_stream_cursor_value_input"]: {
+    are_friends?: boolean | undefined;
+    id?: number | undefined;
+    last_message?: string | undefined;
+    last_message_sender?: string | undefined;
+    last_message_timestamp?: ModelTypes["timestamptz"] | undefined;
+    user1?: string | undefined;
+    user2?: string | undefined;
+  };
+  ["auth_friendships_update_column"]: auth_friendships_update_column;
+  ["auth_friendships_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: ModelTypes["auth_friendships_inc_input"] | undefined;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: ModelTypes["auth_friendships_set_input"] | undefined;
+    where: ModelTypes["auth_friendships_bool_exp"];
   };
   /** columns and relationships of "auth.notification_subscriptions" */
   ["auth_notification_subscriptions"]: {
@@ -6547,6 +7823,20 @@ export type ModelTypes = {
   };
   /** mutation root */
   ["mutation_root"]: {
+    /** delete data from the table: "auth.friend_requests" */
+    delete_auth_friend_requests?:
+      | ModelTypes["auth_friend_requests_mutation_response"]
+      | undefined;
+    /** delete single row from the table: "auth.friend_requests" */
+    delete_auth_friend_requests_by_pk?:
+      | ModelTypes["auth_friend_requests"]
+      | undefined;
+    /** delete data from the table: "auth.friendships" */
+    delete_auth_friendships?:
+      | ModelTypes["auth_friendships_mutation_response"]
+      | undefined;
+    /** delete single row from the table: "auth.friendships" */
+    delete_auth_friendships_by_pk?: ModelTypes["auth_friendships"] | undefined;
     /** delete data from the table: "auth.notification_subscriptions" */
     delete_auth_notification_subscriptions?:
       | ModelTypes["auth_notification_subscriptions_mutation_response"]
@@ -6567,6 +7857,20 @@ export type ModelTypes = {
     delete_auth_xnft_preferences_by_pk?:
       | ModelTypes["auth_xnft_preferences"]
       | undefined;
+    /** insert data into the table: "auth.friend_requests" */
+    insert_auth_friend_requests?:
+      | ModelTypes["auth_friend_requests_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "auth.friend_requests" */
+    insert_auth_friend_requests_one?:
+      | ModelTypes["auth_friend_requests"]
+      | undefined;
+    /** insert data into the table: "auth.friendships" */
+    insert_auth_friendships?:
+      | ModelTypes["auth_friendships_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "auth.friendships" */
+    insert_auth_friendships_one?: ModelTypes["auth_friendships"] | undefined;
     /** insert data into the table: "auth.notification_subscriptions" */
     insert_auth_notification_subscriptions?:
       | ModelTypes["auth_notification_subscriptions_mutation_response"]
@@ -6608,6 +7912,16 @@ export type ModelTypes = {
     /** insert a single row into the table: "auth.xnft_preferences" */
     insert_auth_xnft_preferences_one?:
       | ModelTypes["auth_xnft_preferences"]
+      | undefined;
+    /** update data of the table: "auth.friendships" */
+    update_auth_friendships?:
+      | ModelTypes["auth_friendships_mutation_response"]
+      | undefined;
+    /** update single row of the table: "auth.friendships" */
+    update_auth_friendships_by_pk?: ModelTypes["auth_friendships"] | undefined;
+    /** update multiples rows of table: "auth.friendships" */
+    update_auth_friendships_many?:
+      | Array<ModelTypes["auth_friendships_mutation_response"] | undefined>
       | undefined;
     /** update data of the table: "auth.notification_subscriptions" */
     update_auth_notification_subscriptions?:
@@ -6671,6 +7985,14 @@ export type ModelTypes = {
   };
   ["order_by"]: order_by;
   ["query_root"]: {
+    /** fetch data from the table: "auth.friend_requests" */
+    auth_friend_requests: Array<ModelTypes["auth_friend_requests"]>;
+    /** fetch data from the table: "auth.friend_requests" using primary key columns */
+    auth_friend_requests_by_pk?: ModelTypes["auth_friend_requests"] | undefined;
+    /** fetch data from the table: "auth.friendships" */
+    auth_friendships: Array<ModelTypes["auth_friendships"]>;
+    /** fetch data from the table: "auth.friendships" using primary key columns */
+    auth_friendships_by_pk?: ModelTypes["auth_friendships"] | undefined;
     /** fetch data from the table: "auth.notification_subscriptions" */
     auth_notification_subscriptions: Array<
       ModelTypes["auth_notification_subscriptions"]
@@ -6709,6 +8031,18 @@ export type ModelTypes = {
     invitations_aggregate: ModelTypes["invitations_aggregate"];
   };
   ["subscription_root"]: {
+    /** fetch data from the table: "auth.friend_requests" */
+    auth_friend_requests: Array<ModelTypes["auth_friend_requests"]>;
+    /** fetch data from the table: "auth.friend_requests" using primary key columns */
+    auth_friend_requests_by_pk?: ModelTypes["auth_friend_requests"] | undefined;
+    /** fetch data from the table in a streaming manner : "auth.friend_requests" */
+    auth_friend_requests_stream: Array<ModelTypes["auth_friend_requests"]>;
+    /** fetch data from the table: "auth.friendships" */
+    auth_friendships: Array<ModelTypes["auth_friendships"]>;
+    /** fetch data from the table: "auth.friendships" using primary key columns */
+    auth_friendships_by_pk?: ModelTypes["auth_friendships"] | undefined;
+    /** fetch data from the table in a streaming manner : "auth.friendships" */
+    auth_friendships_stream: Array<ModelTypes["auth_friendships"]>;
     /** fetch data from the table: "auth.notification_subscriptions" */
     auth_notification_subscriptions: Array<
       ModelTypes["auth_notification_subscriptions"]
@@ -6846,6 +8180,176 @@ export type GraphQLTypes = {
     _regex?: string | undefined;
     /** does the column match the given SQL regular expression */
     _similar?: string | undefined;
+  };
+  /** columns and relationships of "auth.friend_requests" */
+  ["auth_friend_requests"]: {
+    __typename: "auth_friend_requests";
+    from: string;
+    id: number;
+    to: string;
+  };
+  /** Boolean expression to filter rows from the table "auth.friend_requests". All fields are combined with a logical 'AND'. */
+  ["auth_friend_requests_bool_exp"]: {
+    _and?: Array<GraphQLTypes["auth_friend_requests_bool_exp"]> | undefined;
+    _not?: GraphQLTypes["auth_friend_requests_bool_exp"] | undefined;
+    _or?: Array<GraphQLTypes["auth_friend_requests_bool_exp"]> | undefined;
+    from?: GraphQLTypes["String_comparison_exp"] | undefined;
+    id?: GraphQLTypes["Int_comparison_exp"] | undefined;
+    to?: GraphQLTypes["String_comparison_exp"] | undefined;
+  };
+  /** unique or primary key constraints on table "auth.friend_requests" */
+  ["auth_friend_requests_constraint"]: auth_friend_requests_constraint;
+  /** input type for inserting data into table "auth.friend_requests" */
+  ["auth_friend_requests_insert_input"]: {
+    from?: string | undefined;
+    id?: number | undefined;
+    to?: string | undefined;
+  };
+  /** response of any mutation on the table "auth.friend_requests" */
+  ["auth_friend_requests_mutation_response"]: {
+    __typename: "auth_friend_requests_mutation_response";
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<GraphQLTypes["auth_friend_requests"]>;
+  };
+  /** on_conflict condition type for table "auth.friend_requests" */
+  ["auth_friend_requests_on_conflict"]: {
+    constraint: GraphQLTypes["auth_friend_requests_constraint"];
+    update_columns: Array<GraphQLTypes["auth_friend_requests_update_column"]>;
+    where?: GraphQLTypes["auth_friend_requests_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "auth.friend_requests". */
+  ["auth_friend_requests_order_by"]: {
+    from?: GraphQLTypes["order_by"] | undefined;
+    id?: GraphQLTypes["order_by"] | undefined;
+    to?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** select columns of table "auth.friend_requests" */
+  ["auth_friend_requests_select_column"]: auth_friend_requests_select_column;
+  /** Streaming cursor of the table "auth_friend_requests" */
+  ["auth_friend_requests_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: GraphQLTypes["auth_friend_requests_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: GraphQLTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_friend_requests_stream_cursor_value_input"]: {
+    from?: string | undefined;
+    id?: number | undefined;
+    to?: string | undefined;
+  };
+  /** placeholder for update columns of table "auth.friend_requests" (current role has no relevant permissions) */
+  ["auth_friend_requests_update_column"]: auth_friend_requests_update_column;
+  /** columns and relationships of "auth.friendships" */
+  ["auth_friendships"]: {
+    __typename: "auth_friendships";
+    are_friends: boolean;
+    id: number;
+    last_message?: string | undefined;
+    last_message_sender?: string | undefined;
+    last_message_timestamp?: GraphQLTypes["timestamptz"] | undefined;
+    user1: string;
+    user2: string;
+  };
+  /** Boolean expression to filter rows from the table "auth.friendships". All fields are combined with a logical 'AND'. */
+  ["auth_friendships_bool_exp"]: {
+    _and?: Array<GraphQLTypes["auth_friendships_bool_exp"]> | undefined;
+    _not?: GraphQLTypes["auth_friendships_bool_exp"] | undefined;
+    _or?: Array<GraphQLTypes["auth_friendships_bool_exp"]> | undefined;
+    are_friends?: GraphQLTypes["Boolean_comparison_exp"] | undefined;
+    id?: GraphQLTypes["Int_comparison_exp"] | undefined;
+    last_message?: GraphQLTypes["String_comparison_exp"] | undefined;
+    last_message_sender?: GraphQLTypes["String_comparison_exp"] | undefined;
+    last_message_timestamp?:
+      | GraphQLTypes["timestamptz_comparison_exp"]
+      | undefined;
+    user1?: GraphQLTypes["String_comparison_exp"] | undefined;
+    user2?: GraphQLTypes["String_comparison_exp"] | undefined;
+  };
+  /** unique or primary key constraints on table "auth.friendships" */
+  ["auth_friendships_constraint"]: auth_friendships_constraint;
+  /** input type for incrementing numeric columns in table "auth.friendships" */
+  ["auth_friendships_inc_input"]: {
+    id?: number | undefined;
+  };
+  /** input type for inserting data into table "auth.friendships" */
+  ["auth_friendships_insert_input"]: {
+    are_friends?: boolean | undefined;
+    id?: number | undefined;
+    last_message?: string | undefined;
+    last_message_sender?: string | undefined;
+    last_message_timestamp?: GraphQLTypes["timestamptz"] | undefined;
+    user1?: string | undefined;
+    user2?: string | undefined;
+  };
+  /** response of any mutation on the table "auth.friendships" */
+  ["auth_friendships_mutation_response"]: {
+    __typename: "auth_friendships_mutation_response";
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<GraphQLTypes["auth_friendships"]>;
+  };
+  /** on_conflict condition type for table "auth.friendships" */
+  ["auth_friendships_on_conflict"]: {
+    constraint: GraphQLTypes["auth_friendships_constraint"];
+    update_columns: Array<GraphQLTypes["auth_friendships_update_column"]>;
+    where?: GraphQLTypes["auth_friendships_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "auth.friendships". */
+  ["auth_friendships_order_by"]: {
+    are_friends?: GraphQLTypes["order_by"] | undefined;
+    id?: GraphQLTypes["order_by"] | undefined;
+    last_message?: GraphQLTypes["order_by"] | undefined;
+    last_message_sender?: GraphQLTypes["order_by"] | undefined;
+    last_message_timestamp?: GraphQLTypes["order_by"] | undefined;
+    user1?: GraphQLTypes["order_by"] | undefined;
+    user2?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** primary key columns input for table: auth_friendships */
+  ["auth_friendships_pk_columns_input"]: {
+    user1: string;
+    user2: string;
+  };
+  /** select columns of table "auth.friendships" */
+  ["auth_friendships_select_column"]: auth_friendships_select_column;
+  /** input type for updating data in table "auth.friendships" */
+  ["auth_friendships_set_input"]: {
+    are_friends?: boolean | undefined;
+    id?: number | undefined;
+    last_message?: string | undefined;
+    last_message_sender?: string | undefined;
+    last_message_timestamp?: GraphQLTypes["timestamptz"] | undefined;
+    user1?: string | undefined;
+    user2?: string | undefined;
+  };
+  /** Streaming cursor of the table "auth_friendships" */
+  ["auth_friendships_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: GraphQLTypes["auth_friendships_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: GraphQLTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_friendships_stream_cursor_value_input"]: {
+    are_friends?: boolean | undefined;
+    id?: number | undefined;
+    last_message?: string | undefined;
+    last_message_sender?: string | undefined;
+    last_message_timestamp?: GraphQLTypes["timestamptz"] | undefined;
+    user1?: string | undefined;
+    user2?: string | undefined;
+  };
+  /** update columns of table "auth.friendships" */
+  ["auth_friendships_update_column"]: auth_friendships_update_column;
+  ["auth_friendships_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: GraphQLTypes["auth_friendships_inc_input"] | undefined;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: GraphQLTypes["auth_friendships_set_input"] | undefined;
+    where: GraphQLTypes["auth_friendships_bool_exp"];
   };
   /** columns and relationships of "auth.notification_subscriptions" */
   ["auth_notification_subscriptions"]: {
@@ -7597,6 +9101,22 @@ export type GraphQLTypes = {
   /** mutation root */
   ["mutation_root"]: {
     __typename: "mutation_root";
+    /** delete data from the table: "auth.friend_requests" */
+    delete_auth_friend_requests?:
+      | GraphQLTypes["auth_friend_requests_mutation_response"]
+      | undefined;
+    /** delete single row from the table: "auth.friend_requests" */
+    delete_auth_friend_requests_by_pk?:
+      | GraphQLTypes["auth_friend_requests"]
+      | undefined;
+    /** delete data from the table: "auth.friendships" */
+    delete_auth_friendships?:
+      | GraphQLTypes["auth_friendships_mutation_response"]
+      | undefined;
+    /** delete single row from the table: "auth.friendships" */
+    delete_auth_friendships_by_pk?:
+      | GraphQLTypes["auth_friendships"]
+      | undefined;
     /** delete data from the table: "auth.notification_subscriptions" */
     delete_auth_notification_subscriptions?:
       | GraphQLTypes["auth_notification_subscriptions_mutation_response"]
@@ -7617,6 +9137,20 @@ export type GraphQLTypes = {
     delete_auth_xnft_preferences_by_pk?:
       | GraphQLTypes["auth_xnft_preferences"]
       | undefined;
+    /** insert data into the table: "auth.friend_requests" */
+    insert_auth_friend_requests?:
+      | GraphQLTypes["auth_friend_requests_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "auth.friend_requests" */
+    insert_auth_friend_requests_one?:
+      | GraphQLTypes["auth_friend_requests"]
+      | undefined;
+    /** insert data into the table: "auth.friendships" */
+    insert_auth_friendships?:
+      | GraphQLTypes["auth_friendships_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "auth.friendships" */
+    insert_auth_friendships_one?: GraphQLTypes["auth_friendships"] | undefined;
     /** insert data into the table: "auth.notification_subscriptions" */
     insert_auth_notification_subscriptions?:
       | GraphQLTypes["auth_notification_subscriptions_mutation_response"]
@@ -7660,6 +9194,18 @@ export type GraphQLTypes = {
     /** insert a single row into the table: "auth.xnft_preferences" */
     insert_auth_xnft_preferences_one?:
       | GraphQLTypes["auth_xnft_preferences"]
+      | undefined;
+    /** update data of the table: "auth.friendships" */
+    update_auth_friendships?:
+      | GraphQLTypes["auth_friendships_mutation_response"]
+      | undefined;
+    /** update single row of the table: "auth.friendships" */
+    update_auth_friendships_by_pk?:
+      | GraphQLTypes["auth_friendships"]
+      | undefined;
+    /** update multiples rows of table: "auth.friendships" */
+    update_auth_friendships_many?:
+      | Array<GraphQLTypes["auth_friendships_mutation_response"] | undefined>
       | undefined;
     /** update data of the table: "auth.notification_subscriptions" */
     update_auth_notification_subscriptions?:
@@ -7729,6 +9275,16 @@ export type GraphQLTypes = {
   ["order_by"]: order_by;
   ["query_root"]: {
     __typename: "query_root";
+    /** fetch data from the table: "auth.friend_requests" */
+    auth_friend_requests: Array<GraphQLTypes["auth_friend_requests"]>;
+    /** fetch data from the table: "auth.friend_requests" using primary key columns */
+    auth_friend_requests_by_pk?:
+      | GraphQLTypes["auth_friend_requests"]
+      | undefined;
+    /** fetch data from the table: "auth.friendships" */
+    auth_friendships: Array<GraphQLTypes["auth_friendships"]>;
+    /** fetch data from the table: "auth.friendships" using primary key columns */
+    auth_friendships_by_pk?: GraphQLTypes["auth_friendships"] | undefined;
     /** fetch data from the table: "auth.notification_subscriptions" */
     auth_notification_subscriptions: Array<
       GraphQLTypes["auth_notification_subscriptions"]
@@ -7768,6 +9324,20 @@ export type GraphQLTypes = {
   };
   ["subscription_root"]: {
     __typename: "subscription_root";
+    /** fetch data from the table: "auth.friend_requests" */
+    auth_friend_requests: Array<GraphQLTypes["auth_friend_requests"]>;
+    /** fetch data from the table: "auth.friend_requests" using primary key columns */
+    auth_friend_requests_by_pk?:
+      | GraphQLTypes["auth_friend_requests"]
+      | undefined;
+    /** fetch data from the table in a streaming manner : "auth.friend_requests" */
+    auth_friend_requests_stream: Array<GraphQLTypes["auth_friend_requests"]>;
+    /** fetch data from the table: "auth.friendships" */
+    auth_friendships: Array<GraphQLTypes["auth_friendships"]>;
+    /** fetch data from the table: "auth.friendships" using primary key columns */
+    auth_friendships_by_pk?: GraphQLTypes["auth_friendships"] | undefined;
+    /** fetch data from the table in a streaming manner : "auth.friendships" */
+    auth_friendships_stream: Array<GraphQLTypes["auth_friendships"]>;
     /** fetch data from the table: "auth.notification_subscriptions" */
     auth_notification_subscriptions: Array<
       GraphQLTypes["auth_notification_subscriptions"]
@@ -7848,6 +9418,44 @@ export type GraphQLTypes = {
     _nin?: Array<GraphQLTypes["uuid"]> | undefined;
   };
 };
+/** unique or primary key constraints on table "auth.friend_requests" */
+export const enum auth_friend_requests_constraint {
+  friend_requests_pkey = "friend_requests_pkey",
+}
+/** select columns of table "auth.friend_requests" */
+export const enum auth_friend_requests_select_column {
+  from = "from",
+  id = "id",
+  to = "to",
+}
+/** placeholder for update columns of table "auth.friend_requests" (current role has no relevant permissions) */
+export const enum auth_friend_requests_update_column {
+  _PLACEHOLDER = "_PLACEHOLDER",
+}
+/** unique or primary key constraints on table "auth.friendships" */
+export const enum auth_friendships_constraint {
+  friendships_pkey = "friendships_pkey",
+}
+/** select columns of table "auth.friendships" */
+export const enum auth_friendships_select_column {
+  are_friends = "are_friends",
+  id = "id",
+  last_message = "last_message",
+  last_message_sender = "last_message_sender",
+  last_message_timestamp = "last_message_timestamp",
+  user1 = "user1",
+  user2 = "user2",
+}
+/** update columns of table "auth.friendships" */
+export const enum auth_friendships_update_column {
+  are_friends = "are_friends",
+  id = "id",
+  last_message = "last_message",
+  last_message_sender = "last_message_sender",
+  last_message_timestamp = "last_message_timestamp",
+  user1 = "user1",
+  user2 = "user2",
+}
 /** unique or primary key constraints on table "auth.notification_subscriptions" */
 export const enum auth_notification_subscriptions_constraint {
   notification_subscriptions_pkey = "notification_subscriptions_pkey",
@@ -7994,6 +9602,28 @@ type ZEUS_VARIABLES = {
   ["Boolean_comparison_exp"]: ValueTypes["Boolean_comparison_exp"];
   ["Int_comparison_exp"]: ValueTypes["Int_comparison_exp"];
   ["String_comparison_exp"]: ValueTypes["String_comparison_exp"];
+  ["auth_friend_requests_bool_exp"]: ValueTypes["auth_friend_requests_bool_exp"];
+  ["auth_friend_requests_constraint"]: ValueTypes["auth_friend_requests_constraint"];
+  ["auth_friend_requests_insert_input"]: ValueTypes["auth_friend_requests_insert_input"];
+  ["auth_friend_requests_on_conflict"]: ValueTypes["auth_friend_requests_on_conflict"];
+  ["auth_friend_requests_order_by"]: ValueTypes["auth_friend_requests_order_by"];
+  ["auth_friend_requests_select_column"]: ValueTypes["auth_friend_requests_select_column"];
+  ["auth_friend_requests_stream_cursor_input"]: ValueTypes["auth_friend_requests_stream_cursor_input"];
+  ["auth_friend_requests_stream_cursor_value_input"]: ValueTypes["auth_friend_requests_stream_cursor_value_input"];
+  ["auth_friend_requests_update_column"]: ValueTypes["auth_friend_requests_update_column"];
+  ["auth_friendships_bool_exp"]: ValueTypes["auth_friendships_bool_exp"];
+  ["auth_friendships_constraint"]: ValueTypes["auth_friendships_constraint"];
+  ["auth_friendships_inc_input"]: ValueTypes["auth_friendships_inc_input"];
+  ["auth_friendships_insert_input"]: ValueTypes["auth_friendships_insert_input"];
+  ["auth_friendships_on_conflict"]: ValueTypes["auth_friendships_on_conflict"];
+  ["auth_friendships_order_by"]: ValueTypes["auth_friendships_order_by"];
+  ["auth_friendships_pk_columns_input"]: ValueTypes["auth_friendships_pk_columns_input"];
+  ["auth_friendships_select_column"]: ValueTypes["auth_friendships_select_column"];
+  ["auth_friendships_set_input"]: ValueTypes["auth_friendships_set_input"];
+  ["auth_friendships_stream_cursor_input"]: ValueTypes["auth_friendships_stream_cursor_input"];
+  ["auth_friendships_stream_cursor_value_input"]: ValueTypes["auth_friendships_stream_cursor_value_input"];
+  ["auth_friendships_update_column"]: ValueTypes["auth_friendships_update_column"];
+  ["auth_friendships_updates"]: ValueTypes["auth_friendships_updates"];
   ["auth_notification_subscriptions_bool_exp"]: ValueTypes["auth_notification_subscriptions_bool_exp"];
   ["auth_notification_subscriptions_constraint"]: ValueTypes["auth_notification_subscriptions_constraint"];
   ["auth_notification_subscriptions_inc_input"]: ValueTypes["auth_notification_subscriptions_inc_input"];

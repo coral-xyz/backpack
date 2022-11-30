@@ -11,7 +11,7 @@ import {
   TransactionInstruction,
 } from "@solana/web3.js";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
-import { makeDefaultNav } from "@coral-xyz/recoil";
+import { makeDefaultNav, makeUrl } from "@coral-xyz/recoil";
 import { keyringForBlockchain } from "@coral-xyz/blockchain-common";
 import { BlockchainKeyring } from "@coral-xyz/blockchain-keyring";
 import {
@@ -1230,7 +1230,17 @@ export class Backend {
       ...currNav,
       activeTab,
     };
+
+    // Newly introduced messages tab needs to be added to the
+    // store for backward compatability
+    if (activeTab === "messages" && !nav.data[activeTab]) {
+      nav.data[activeTab] = {
+        id: "messages",
+        urls: [makeUrl("messages", { title: "Messages", props: {} })],
+      };
+    }
     await store.setNav(nav);
+
     const navData = nav.data[activeTab];
     let url = navData.urls[navData.urls.length - 1];
     url = setSearchParam(url, "nav", "tab");

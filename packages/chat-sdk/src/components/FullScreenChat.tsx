@@ -3,9 +3,11 @@ import { SendMessage } from "./SendMessage";
 import { ScrollBarImpl } from "./ScrollbarImpl";
 import { useEffect, useRef, useState } from "react";
 import { useChatContext } from "./ChatContext";
+import { MessagesSkeleton } from "./MessagesSkeleton";
+import { EmptyChat } from "./EmptyChat";
 export const FullScreenChat = ({ messageContainerRef, chats }) => {
-  const { chatManager } = useChatContext();
-  const [autoScroll, setAutoScroll] = useState(false);
+  const { chatManager, loading } = useChatContext();
+  const [autoScroll, setAutoScroll] = useState(true);
 
   const messageRef = useRef<any>();
 
@@ -51,17 +53,21 @@ export const FullScreenChat = ({ messageContainerRef, chats }) => {
             padding: 15,
           }}
         >
-          {chats.map((chat) => {
-            return (
-              <MessageLeft
-                timestamp={chat.created_at}
-                key={chat.id}
-                message={chat.message}
-                received={chat.received}
-                messageKind={chat.message_kind}
-              />
-            );
-          })}
+          {loading && <MessagesSkeleton />}
+          {!loading &&
+            chats.length !== 0 &&
+            chats.map((chat) => {
+              return (
+                <MessageLeft
+                  timestamp={chat.created_at}
+                  key={chat.id}
+                  message={chat.message}
+                  received={chat.received}
+                  messageKind={chat.message_kind}
+                />
+              );
+            })}
+          {!loading && chats.length === 0 && <EmptyChat />}
         </div>
       </ScrollBarImpl>
       <div style={{ position: "absolute", bottom: 0, width: "100%" }}>

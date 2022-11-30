@@ -23,10 +23,13 @@ export class ChatManager {
   private sendQueue: { [client_generated_uuid: string]: boolean } = {};
   private fetchingInProgress = false;
   private signaling: Signaling;
+  private type: SubscriptionType;
+  private initCallbackCalled = false;
 
   constructor(
     userId: string,
     roomId: string,
+    type: SubscriptionType,
     onMessages: (messages: EnrichedMessage[]) => void,
     onMessagesPrepend: (messages: EnrichedMessage[]) => void,
     onLocalMessageReceived: (messages: EnrichedMessage[]) => void
@@ -38,6 +41,7 @@ export class ChatManager {
     this.onLocalMessageReceived = onLocalMessageReceived;
     this.signaling = new Signaling();
     this.init();
+    this.type = type;
   }
 
   async fetchMoreChats() {
@@ -47,7 +51,7 @@ export class ChatManager {
 
     this.fetchingInProgress = true;
     fetch(
-      `${BACKEND_API_URL}/chat?room=${this.roomId}&type=collection&lastChatId=${this.lastChatId}`,
+      `${BACKEND_API_URL}/chat?room=${this.roomId}&type=${this.type}&lastChatId=${this.lastChatId}`,
       {
         method: "GET",
       }
@@ -81,7 +85,7 @@ export class ChatManager {
       this.signaling.send({
         type: SUBSCRIBE,
         payload: {
-          type: "collection",
+          type: this.type,
           room: this.roomId,
         },
       });
@@ -117,7 +121,8 @@ export class ChatManager {
             });
           }
         }
-        if (filteredChats.length) {
+        if (filteredChats.length || !this.initCallbackCalled) {
+          this.initCallbackCalled = true;
           this.onMessages(filteredChats);
         }
         if (filteredReceived.length) {
@@ -144,7 +149,7 @@ export class ChatManager {
             message_kind: messageKind,
           },
         ],
-        type: "collection",
+        type: this.type,
         room: this.roomId,
       },
     });

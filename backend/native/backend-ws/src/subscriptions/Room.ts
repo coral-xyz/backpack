@@ -10,6 +10,7 @@ import {
   SubscriptionType,
 } from "@coral-xyz/common";
 import { getUsers } from "../db/users";
+import { updateLatestMessage } from "../db/friendships";
 
 const chain = Chain(CHAT_HASURA_URL, {
   headers: {
@@ -43,7 +44,7 @@ export class Room {
           //@ts-ignore
           order_by: [{ created_at: "desc" }],
           where: {
-            room: { _eq: this.room },
+            room: { _eq: this.room.toString() },
             //@ts-ignore
             type: { _eq: this.type },
           },
@@ -88,7 +89,7 @@ export class Room {
         {
           object: {
             username: "",
-            room: this.room,
+            room: this.room.toString(),
             message: msg.message,
             uuid: userId,
             message_kind: msg.message_kind,
@@ -102,6 +103,11 @@ export class Room {
         },
       ],
     });
+
+    if (this.type === "individual") {
+      updateLatestMessage(parseInt(this.room), msg.message, userId);
+    }
+
     const emittedMessage = {
       id: response.insert_chats_one?.id || 100000000,
       username: "",

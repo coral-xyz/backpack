@@ -3,6 +3,9 @@ import notificationRoutes from "./routes/v1/notifications";
 import preferenceRoutes from "./routes/v1/preferences";
 import proxyRouter from "./routes/v1/proxy";
 import chatRouter from "./routes/v1/chats";
+import inboxRouter from "./routes/v1/inbox";
+import friendsRouter from "./routes/v1/friends";
+import usersRouter from "./routes/v1/users";
 
 const app = express();
 const bodyParser = require("body-parser");
@@ -15,6 +18,9 @@ app.use("/notifications/", notificationRoutes);
 app.use("/preferences", preferenceRoutes);
 app.use("/proxy", proxyRouter);
 app.use("/chat", chatRouter);
+app.use("/inbox", inboxRouter);
+app.use("/friends", friendsRouter);
+app.use("/users", usersRouter);
 
 // TODO: Add validation using zod
 

@@ -3,29 +3,35 @@ import { ChatManager, EnrichedMessage } from "../ChatManager";
 import { useRef } from "react";
 import { FullScreenChat } from "./FullScreenChat";
 import { ChatProvider } from "./ChatContext";
+import { SubscriptionType } from "@coral-xyz/common";
 
 interface ChatRoomProps {
   roomId: string;
   userId: string;
   mode?: "fullscreen" | "minimized";
+  type: SubscriptionType;
 }
 
 export const ChatRoom = ({
   roomId,
   userId,
+  type = "collection",
   mode = "fullscreen",
 }: ChatRoomProps) => {
   const [chatManager, setChatManager] = useState<ChatManager | null>(null);
   const messageContainerRef = useRef(null);
   // TODO: Make state propogte from outside the state since this'll be expensive
   const [chats, setChats] = useState<EnrichedMessage[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (roomId) {
       const chatManager = new ChatManager(
         userId,
         roomId,
+        type,
         (messages) => {
+          setLoading(false);
           setChats((m) => [...m, ...messages]);
         },
         (messages) => {
@@ -55,7 +61,6 @@ export const ChatRoom = ({
       setChatManager(chatManager);
 
       return () => {
-        console.error("unmounted");
         chatManager.destroy();
       };
     }
@@ -64,6 +69,7 @@ export const ChatRoom = ({
 
   return (
     <ChatProvider
+      loading={loading}
       chatManager={chatManager}
       roomId={roomId}
       chats={chats}
