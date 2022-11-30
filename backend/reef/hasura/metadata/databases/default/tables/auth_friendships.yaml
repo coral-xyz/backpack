@@ -1,0 +1,45 @@
+table:
+  name: friendships
+  schema: auth
+insert_permissions:
+  - role: auth_worker
+    permission:
+      check: {}
+      columns:
+        - are_friends
+        - id
+        - last_message
+        - last_message_sender
+        - user1
+        - user2
+        - last_message_timestamp
+select_permissions:
+  - role: auth_worker
+    permission:
+      columns:
+        - are_friends
+        - id
+        - last_message
+        - last_message_sender
+        - user1
+        - user2
+        - last_message_timestamp
+      filter: {}
+update_permissions:
+  - role: auth_worker
+    permission:
+      columns:
+        - are_friends
+        - id
+        - last_message
+        - last_message_sender
+        - user1
+        - user2
+        - last_message_timestamp
+      filter: {}
+      check: {}
+delete_permissions:
+  - role: auth_worker
+    permission:
+      backend_only: false
+      filter: {}

@@ -2,7 +2,12 @@ import express from "express";
 import { ethers } from "ethers";
 import { optionallyExtractUserId } from "../../auth/middleware";
 import { setCookie } from "../../auth/util";
-import { createUser, getUserById, getUserByUsername } from "../../db/users";
+import {
+  createUser,
+  getUser,
+  getUsersByPrefix,
+  getUserByUsername,
+} from "../../db/users";
 import {
   CreateUserWithKeyrings,
   validateSolanaSignature,
@@ -13,10 +18,28 @@ const { base58 } = ethers.utils;
 
 const router = express.Router();
 
+router.get("/", async (req, res) => {
+  // @ts-ignore
+  const usernamePrefix: string = req.query.usernamePrefix;
+
+  await getUsersByPrefix({ usernamePrefix })
+    .then((users) => {
+      res.json({
+        users: users.map((user) => ({
+          ...user,
+          image: `https://avatars.xnfts.dev/v1/${user.username}`,
+        })),
+      });
+    })
+    .catch(() => {
+      res.status(511).json({ msg: "Error while fetching users" });
+    });
+});
+
 /**
  * Create a new user.
  */
-router.post("/user", async (req, res) => {
+router.post("/", async (req, res) => {
   const { username, inviteCode, waitlistId, blockchainPublicKeys } =
     CreateUserWithKeyrings.parse(req.body);
 
@@ -82,12 +105,12 @@ router.post("/user", async (req, res) => {
  * Get an existing user. Checks authenticated status if a JWT cookie is passed
  * with the request.
  */
-router.get("/user/:username", optionallyExtractUserId, async (req, res) => {
+router.get("/:username", optionallyExtractUserId, async (req, res) => {
   const username = "tom";
   let user;
 
   if (req.id) {
-    const userFromId = await getUserById(req.id);
+    const userFromId = await getUser(req.id);
     if (userFromId && userFromId.username === username) {
       // User is authenticated as username
       user = userFromId;

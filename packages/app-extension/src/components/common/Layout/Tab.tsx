@@ -8,8 +8,14 @@ import {
   TAB_BALANCES,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
+  TAB_MESSAGES,
 } from "@coral-xyz/common";
-import { BalancesIcon, GridIcon, ImageIcon } from "../../common/Icon";
+import {
+  BalancesIcon,
+  GridIcon,
+  ImageIcon,
+  MessageIcon,
+} from "../../common/Icon";
 import { useLocation } from "react-router-dom";
 
 const TAB_HEIGHT = 64;
@@ -65,7 +71,9 @@ export function WithTabs(props: any) {
         {props.children}
       </div>
       {location.pathname !== "/nfts/experience" &&
-        location.pathname !== "/nfts/chat" && <TabBar />}
+        location.pathname !== "/nfts/chat" &&
+        location.pathname !== "/messages/chat" &&
+        location.pathname !== "/messages/profile" && <TabBar />}
     </div>
   );
 }
@@ -157,6 +165,27 @@ function TabBar() {
           <ImageIcon
             fill={
               tab === TAB_NFTS
+                ? theme.custom.colors.brandColor
+                : theme.custom.colors.icon
+            }
+            style={{
+              width: "20px",
+              height: "20px",
+            }}
+          />
+        }
+      />
+      <Tab
+        onClick={() => onTabClick(TAB_MESSAGES)}
+        value={TAB_MESSAGES}
+        disableRipple
+        className={`${classes.tab} ${
+          tab === TAB_MESSAGES ? classes.activeTab : ""
+        }`}
+        icon={
+          <MessageIcon
+            fill={
+              tab === TAB_MESSAGES
                 ? theme.custom.colors.brandColor
                 : theme.custom.colors.icon
             }

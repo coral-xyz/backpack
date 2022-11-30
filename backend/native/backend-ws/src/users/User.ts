@@ -8,6 +8,7 @@ import {
 } from "@coral-xyz/common";
 import { SubscriptionManager } from "../subscriptions/SubscriptionManager";
 import { SubscriptionType } from "@coral-xyz/common/dist/esm/messages/toServer";
+import { validateRoom } from "../db/friendships";
 
 export class User {
   id: string;
@@ -47,6 +48,21 @@ export class User {
         );
         break;
       case SUBSCRIBE:
+        if (message.payload.type === "individual") {
+          // @ts-ignore
+          const hasAccess = await validateRoom(
+            this.userId,
+            message.payload.room as number
+          );
+          if (!hasAccess) {
+            return;
+          }
+        }
+
+        if (message.payload.type === "collection") {
+          // TODO: auth check for collection post #1589
+        }
+
         this.subscriptions.push(message.payload);
         await SubscriptionManager.getInstance().subscribe(
           this,

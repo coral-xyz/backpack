@@ -82,7 +82,7 @@ import { EditWallets } from "./YourAccount/EditWallets";
 import { RemoveWallet } from "./YourAccount/EditWallets/RemoveWallet";
 import { RenameWallet } from "./YourAccount/EditWallets/RenameWallet";
 import { WalletDetail } from "./YourAccount/EditWallets/WalletDetail";
-import { DiscordIcon, GridIcon } from "../../common/Icon";
+import { ContactsIcon, DiscordIcon, GridIcon } from "../../common/Icon";
 import { XnftSettings } from "./Xnfts";
 import { XnftDetail } from "./Xnfts/Detail";
 import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
@@ -91,6 +91,7 @@ import { PreferenceEthereumCustomRpcUrl } from "./Preferences/Ethereum/CustomRpc
 import WaitingRoom from "../../common/WaitingRoom";
 import { TextInput } from "../../common/Inputs";
 import { NotificationButton } from "../Balances/Notifications";
+import { Contacts } from "../Messages/Contacts";
 
 const useStyles = styles((theme) => ({
   addConnectWalletLabel: {
@@ -198,6 +199,10 @@ function AvatarButton() {
             <NavStackScreen
               name={"waiting-room"}
               component={(props: any) => <WaitingRoom onboarded {...props} />}
+            />
+            <NavStackScreen
+              name={"contacts-list"}
+              component={(props: any) => <Contacts {...props} />}
             />
             <NavStackScreen
               name={"preferences"}
@@ -851,6 +856,15 @@ function SettingsList() {
     },
   ];
 
+  const contactList = [
+    {
+      label: "Contacts",
+      onClick: () => nav.push("contacts-list"),
+      icon: (props: any) => <ContactsIcon {...props} />,
+      detailIcon: <PushDetail />,
+    },
+  ];
+
   return (
     <>
       <List
@@ -904,6 +918,59 @@ function SettingsList() {
           );
         })}
       </List>
+
+      <List
+        style={{
+          marginTop: "24px",
+          marginBottom: "16px",
+          border: `${theme.custom.colors.borderFull}`,
+          borderRadius: "10px",
+        }}
+      >
+        {contactList.map((s, idx) => {
+          return (
+            <ListItem
+              key={s.label}
+              isFirst={idx === 0}
+              isLast={idx === discordList.length - 1}
+              onClick={s.onClick}
+              id={s.label}
+              style={{
+                height: "44px",
+                padding: "12px",
+              }}
+              detail={s.detailIcon}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  flex: 1,
+                }}
+              >
+                {s.icon({
+                  style: {
+                    color: theme.custom.colors.icon,
+                    height: "24px",
+                    width: "24px",
+                  },
+                  fill: theme.custom.colors.icon,
+                })}
+                <Typography
+                  style={{
+                    marginLeft: "8px",
+                    fontWeight: 500,
+                    fontSize: "16px",
+                    lineHeight: "24px",
+                  }}
+                >
+                  {s.label}
+                </Typography>
+              </div>
+            </ListItem>
+          );
+        })}
+      </List>
+
       <List
         style={{
           marginTop: "24px",

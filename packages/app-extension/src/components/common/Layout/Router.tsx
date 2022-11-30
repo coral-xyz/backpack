@@ -31,6 +31,9 @@ import { WithNav, NavBackButton } from "./Nav";
 import { WithMotion } from "./NavStack";
 import { WithDrawer } from "../../common/Layout/Drawer";
 import { NftChat, NftsExperience } from "../../Unlocked/Nfts/Experience";
+import { Inbox } from "../../Unlocked/Messages/Inbox";
+import { ChatScreen } from "../../Unlocked/Messages/ChatScreen";
+import { ProfileScreen } from "../../Unlocked/Messages/ProfileScreen";
 
 export function Router() {
   const location = useLocation();
@@ -39,6 +42,9 @@ export function Router() {
       <Routes location={location} key={location.pathname}>
         <Route path="/balances" element={<BalancesPage />} />
         <Route path="/balances/token" element={<TokenPage />} />
+        <Route path="/messages" element={<MessagesPage />} />
+        <Route path="/messages/chat" element={<ChatPage />} />
+        <Route path="/messages/profile" element={<ProfilePage />} />
         <Route path="/apps" element={<AppsPage />} />
         <Route path="/nfts" element={<NftsPage />} />
         {/*<Route path="/swap" element={<SwapPage />} />*/}
@@ -91,6 +97,22 @@ function NftsDetailPage() {
   const { props } = useDecodedSearchParams();
   // @ts-expect-error TS2322: Property 'nftId' is missing in type '{}' but required in type '{ nftId: string; }'.
   return <NavScreen component={<NftsDetail {...props} />} />;
+}
+
+function MessagesPage() {
+  return <NavScreen component={<Inbox />} />;
+}
+
+function ChatPage() {
+  const { props } = useDecodedSearchParams();
+  // @ts-ignore
+  return <NavScreen component={<ChatScreen userId={props.userId} />} />;
+}
+
+function ProfilePage() {
+  const { props } = useDecodedSearchParams();
+  // @ts-ignore
+  return <NavScreen component={<ProfileScreen userId={props.userId} />} />;
 }
 
 function AppsPage() {
@@ -226,6 +248,8 @@ function useNavBar() {
       ? "💰"
       : pathname.startsWith("/apps")
       ? "👾"
+      : pathname.startsWith("/messages")
+      ? "💬"
       : "🎨";
     navButtonRight = <SettingsButton />;
     navButtonLeft = (
@@ -252,6 +276,8 @@ function useNavBar() {
             ? "Balances"
             : pathname.startsWith("/apps")
             ? "Applications"
+            : pathname.startsWith("/messages")
+            ? "Messages"
             : "Collectibles"}
         </Typography>
       </div>

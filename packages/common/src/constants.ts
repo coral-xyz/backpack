@@ -452,14 +452,23 @@ export const EXTENSION_HEIGHT = 600;
 export const TAB_BALANCES = "balances";
 export const TAB_SWAP = "swap";
 export const TAB_NFTS = "nfts";
+export const TAB_MESSAGES = "messages";
 export const TAB_APPS = "apps";
-export const TAB_SET = new Set([TAB_BALANCES, TAB_SWAP, TAB_NFTS, TAB_APPS]);
+export const TAB_SET = new Set([
+  TAB_BALANCES,
+  TAB_SWAP,
+  TAB_NFTS,
+  TAB_APPS,
+  TAB_MESSAGES,
+]);
 
 export const NAV_COMPONENT_TOKEN = "balances/token";
 export const NAV_COMPONENT_NFT_DETAIL = "nfts/detail";
 export const NAV_COMPONENT_NFT_COLLECTION = "nfts/collection";
 export const NAV_COMPONENT_NFT_EXPERIENCE = "nfts/experience";
 export const NAV_COMPONENT_NFT_CHAT = "nfts/chat";
+export const NAV_COMPONENT_MESSAGE_CHAT = "messages/chat";
+export const NAV_COMPONENT_MESSAGE_PROFILE = "messages/profile";
 
 export const BACKEND_EVENT = "backend-event";
 

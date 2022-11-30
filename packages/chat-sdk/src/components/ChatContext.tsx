@@ -7,6 +7,7 @@ type ChatContext = {
   chats: EnrichedMessage[];
   setChats: any;
   userId: string;
+  loading: boolean;
 };
 
 export const _ChatContext = React.createContext<ChatContext | null>(null);
@@ -18,6 +19,7 @@ export function ChatProvider(props: {
   userId: string;
   setChats: any;
   children: any;
+  loading: boolean;
 }) {
   return (
     <_ChatContext.Provider
@@ -27,6 +29,7 @@ export function ChatProvider(props: {
         chats: props.chats,
         setChats: props.setChats,
         userId: props.userId,
+        loading: props.loading,
       }}
     >
       {props.children}

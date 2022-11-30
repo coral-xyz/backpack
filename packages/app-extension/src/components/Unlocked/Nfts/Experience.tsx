@@ -43,7 +43,7 @@ export const NftsExperience = ({ id }: any) => {
 };
 
 export function NftChat({ id }: any) {
-  return <ChatRoom roomId={id} userId={"asdadsas"} />;
+  return <ChatRoom type={"collection"} roomId={id} userId={"asdadsas"} />;
 }
 
 function MainScreen({ id }: { id: string }) {

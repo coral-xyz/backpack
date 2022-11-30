@@ -46,7 +46,7 @@ export const getUserByUsername = async (username: string) => {
 /**
  * Get a user by their id.
  */
-export const getUserById = async (id: string) => {
+export const getUser = async (id: string) => {
   const response = await chain("query")({
     auth_users_by_pk: [
       {
@@ -80,6 +80,7 @@ const transformUser = (user: {
       ...k,
       publicKey: k.public_key,
     })),
+    image: `https://avatars.xnfts.dev/v1/${user.username}`,
   };
 };
 
@@ -116,3 +117,26 @@ export const createUser = async (
 
   return response.insert_auth_users_one;
 };
+
+/**
+ * Search for users by prefix.
+ */
+export async function getUsersByPrefix({
+  usernamePrefix,
+}: {
+  usernamePrefix: string;
+}) {
+  const response = await chain("query")({
+    auth_users: [
+      {
+        where: { username: { _like: `${usernamePrefix}%` } },
+      },
+      {
+        id: true,
+        username: true,
+      },
+    ],
+  });
+
+  return response.auth_users || [];
+}
