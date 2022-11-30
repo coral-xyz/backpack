@@ -13,6 +13,7 @@ export function HomeScreen() {
     "Image for both remote & local images",
     "custom fonts",
     "sign a transaction / message",
+    "theme hook with light/dark support",
   ];
 
   return (
