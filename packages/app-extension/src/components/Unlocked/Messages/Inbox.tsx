@@ -55,10 +55,8 @@ export function Inbox() {
       {messagesLoading && <MessagesSkeleton />}
       {!messagesLoading && (
         <MessageList
-          activeChats={activeChats.filter(
-            (x) =>
-              x.user2Username.includes(searchFilter) ||
-              x.user1Username.includes(searchFilter)
+          activeChats={activeChats.filter((x) =>
+            x.remoteUsername.includes(searchFilter)
           )}
         />
       )}

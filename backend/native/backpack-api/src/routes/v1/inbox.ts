@@ -26,13 +26,20 @@ router.get("/", extractUserId, async (req, res) => {
   const limit: number = req.query.limit || 50;
   //@ts-ignore
   const offset: number = req.query.limit || 0;
-  const friendships = await getFriendships({ uuid, limit, offset });
-  const enrichedFriendships = await enrichFriendships(friendships);
+  const are_friends: boolean = req.query.areFriends ?? true;
+  const friendships = await getFriendships({
+    uuid,
+    limit,
+    offset,
+    are_friends,
+  });
+  const enrichedFriendships = await enrichFriendships(friendships, uuid);
   res.json({ chats: enrichedFriendships });
 });
 
 async function enrichFriendships(
-  friendships: InboxDb[]
+  friendships: InboxDb[],
+  uuid: string
 ): Promise<EnrichedInboxDb[]> {
   const userIds: string[] = [
     ...friendships.map((m) => m.user1 || ""),
@@ -43,17 +50,16 @@ async function enrichFriendships(
   );
   const metadatas = await getUsers(uniqueUserIds);
   return friendships.map((friendship) => {
-    const user1Username =
-      metadatas.find((x) => x.id === friendship.user1)?.username || "";
-    const user2Username =
-      metadatas.find((x) => x.id === friendship.user2)?.username || "";
+    const remoteUserId =
+      friendship.user1 === uuid ? friendship.user2 : friendship.user1;
+    const remoteUsername =
+      metadatas.find((x) => x.id === remoteUserId)?.username || "";
 
     return {
       ...friendship,
-      user1Username,
-      user2Username,
-      user1Image: `https://avatars.xnfts.dev/v1/${user1Username}`,
-      user2Image: `https://avatars.xnfts.dev/v1/${user2Username}`,
+      remoteUserId,
+      remoteUsername,
+      remoteUserImage: `https://avatars.xnfts.dev/v1/${remoteUsername}`,
     };
   });
 }

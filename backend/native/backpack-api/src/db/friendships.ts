@@ -58,10 +58,12 @@ export const getFriendships = async ({
   uuid,
   limit,
   offset,
+  are_friends,
 }: {
   uuid: string;
   limit: number;
   offset: number;
+  are_friends: bolean;
 }): Promise<InboxDb[]> => {
   const response = await chain("query")({
     auth_friendships: [
@@ -74,9 +76,11 @@ export const getFriendships = async ({
           _or: [
             {
               user1: { _eq: uuid },
+              are_friends: { _eq: are_friends },
             },
             {
               user2: { _eq: uuid },
+              are_friends: { _eq: are_friends },
             },
           ],
         },

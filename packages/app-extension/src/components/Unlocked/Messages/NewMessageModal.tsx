@@ -27,7 +27,13 @@ export const NewMessageModal = ({
           >
             <NavStackScreen
               name={"root"}
-              component={(props: any) => <SearchUsers {...props} />}
+              component={(props: any) => (
+                <SearchUsers
+                  title={"Send to"}
+                  onlyContacts={false}
+                  {...props}
+                />
+              )}
             />
           </NavStackEphemeral>
         </div>

@@ -17,7 +17,6 @@ export const MessageList = ({
   activeChats: EnrichedInboxDb[];
 }) => {
   const theme = useCustomTheme();
-  const [chatModal, setChatModal] = useState(false);
 
   return (
     <>
@@ -31,21 +30,9 @@ export const MessageList = ({
       >
         {activeChats.map((activeChat, index) => (
           <ChatListItem
-            image={
-              activeChat.last_message_sender === activeChat.user1
-                ? activeChat.user1Image
-                : activeChat.user2Image
-            }
-            username={
-              activeChat.last_message_sender === activeChat.user1
-                ? activeChat.user1Username
-                : activeChat.user2Username
-            }
-            userId={
-              activeChat.last_message_sender === activeChat.user1
-                ? activeChat.user1
-                : activeChat.user2
-            }
+            image={activeChat.remoteUserImage}
+            username={activeChat.remoteUsername}
+            userId={activeChat.remoteUserId}
             message={activeChat.last_message}
             timestamp={activeChat.last_message_timestamp}
             isFirst={index === 0}

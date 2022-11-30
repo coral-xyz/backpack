@@ -8,8 +8,7 @@ export interface InboxDb {
 }
 
 export interface EnrichedInboxDb extends InboxDb {
-  user1Username: string;
-  user2Username: string;
-  user1Image: string;
-  user2Image: string;
+  remoteUsername: string;
+  remoteUserImage: string;
+  remoteUserId: string;
 }
