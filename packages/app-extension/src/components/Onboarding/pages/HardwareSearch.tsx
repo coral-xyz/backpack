@@ -1,16 +1,13 @@
-// This component searches a hardware wallet for a publickey and displays
+// This component searches a hardware wallet for a public key and displays
 // a loading indicator until it is found (or an error if it not found).
 
 import { useEffect, useState } from "react";
 import { Box } from "@mui/material";
 import Ethereum from "@ledgerhq/hw-app-eth";
 import Solana from "@ledgerhq/hw-app-solana";
-import Transport from "@ledgerhq/hw-transport";
-import {
-  accountDerivationPath,
-  Blockchain,
-  DerivationPath,
-} from "@coral-xyz/common";
+import type Transport from "@ledgerhq/hw-transport";
+import type { DerivationPath } from "@coral-xyz/common";
+import { accountDerivationPath, Blockchain } from "@coral-xyz/common";
 import { Header, Loading, PrimaryButton, SubtextParagraph } from "../../common";
 import { DERIVATION_PATHS, LOAD_PUBKEY_AMOUNT } from "./MnemonicSearch";
 

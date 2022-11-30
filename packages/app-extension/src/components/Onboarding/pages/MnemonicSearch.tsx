@@ -1,4 +1,4 @@
-// This component searches a given mnemonic for a publickey and displays
+// This component searches a given mnemonic for a public key and displays
 // a loading indicator until it is found (or an error if it not found).
 
 import { useEffect, useState } from "react";

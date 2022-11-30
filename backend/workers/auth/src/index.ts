@@ -118,22 +118,30 @@ app.get("/users/:username/info", async (c) => {
         limit: 1,
       },
       {
-        publickeys: [{}, { blockchain: true, publickey: true }],
+        public_keys: [{}, { blockchain: true, public_key: true }],
       },
     ],
   });
 
-  if (res.auth_users[0]?.publickeys) {
-    return c.json({
-      ...res.auth_users[0],
-      // TODO remove
-      // This is to not break legacy recovery flows
-      pubkey: res.auth_users[0].publickeys[0].publickey,
-      blockchain: res.auth_users[0].publickeys[0].blockchain,
-    });
-  } else {
+  if (!res.auth_users[0]?.public_keys) {
     return c.json({ message: "user not found" }, 404);
   }
+
+  // Camelcase the response
+  const response = {
+    publicKeys: res.auth_users[0].public_keys.map((k) => ({
+      ...k,
+      publicKey: k.public_key,
+    })),
+  };
+
+  // TODO remove the below after 0.4.0 is superceded in store
+  // Add compatibility for 0.4.0 in response
+  response["pubkey"] = res.auth_users[0].public_keys[0].public_key;
+  response["blockchain"] = res.auth_users[0].public_keys[0].blockchain;
+  response["publickeys"] = response.publicKeys;
+
+  return c.json(response);
 });
 
 app.get("/users/:username", async (c) => {
@@ -203,17 +211,15 @@ app.get("/users/:username", async (c) => {
 app.post("/users", async (c) => {
   const body = await c.req.json();
 
-  let username: string,
-    inviteCode: string,
-    waitlistId: string | null | undefined,
-    publicKeys: Array<{ blockchain: "ethereum" | "solana"; publickey: string }>;
+  const { username, inviteCode, waitlistId, blockchainPublicKeys } =
+    CreateUserWithKeyrings.parse(body);
 
-  const data = CreateUserWithKeyrings.parse(body);
-  for (const blockchainPublicKey of data.blockchainPublicKeys) {
+  // Validate all the signatures
+  for (const blockchainPublicKey of blockchainPublicKeys) {
     if (blockchainPublicKey.blockchain === "solana") {
       if (
         !validateSolanaSignature(
-          Buffer.from(data.inviteCode, "utf8"),
+          Buffer.from(inviteCode, "utf8"),
           decode(blockchainPublicKey.signature),
           decode(blockchainPublicKey.publicKey)
         )
@@ -223,7 +229,7 @@ app.post("/users", async (c) => {
     } else {
       if (
         !validateEthereumSignature(
-          Buffer.from(data.inviteCode, "utf8"),
+          Buffer.from(inviteCode, "utf8"),
           blockchainPublicKey.signature,
           blockchainPublicKey.publicKey
         )
@@ -232,12 +238,6 @@ app.post("/users", async (c) => {
       }
     }
   }
-
-  ({ username, inviteCode, waitlistId } = data);
-  publicKeys = data.blockchainPublicKeys.map((b) => ({
-    blockchain: b.blockchain,
-    publickey: b.publicKey,
-  }));
 
   const chain = Chain(c.env.HASURA_URL, {
     headers: {
@@ -252,8 +252,11 @@ app.post("/users", async (c) => {
           username: username,
           invitation_id: inviteCode,
           waitlist_id: waitlistId,
-          publickeys: {
-            data: publicKeys!,
+          public_keys: {
+            data: blockchainPublicKeys.map((b) => ({
+              blockchain: b.blockchain,
+              public_key: b.publicKey,
+            })),
           },
         },
       },
@@ -269,8 +272,8 @@ app.post("/users", async (c) => {
 
   if (c.env.SLACK_WEBHOOK_URL) {
     try {
-      const publicKeyStr = publicKeys!
-        .map((b) => `${b.blockchain.substring(0, 3)}: ${b.publickey}`)
+      const publicKeyStr = blockchainPublicKeys
+        .map((b) => `${b.blockchain.substring(0, 3)}: ${b.publicKey}`)
         .join(", ");
       await fetch(c.env.SLACK_WEBHOOK_URL, {
         method: "POST",
@@ -322,8 +325,8 @@ app.post("/authenticate", async (c) => {
         where: {
           id: { _eq: id },
           username: { _eq: username },
-          publickeys: {
-            publickey: { _eq: body.publickey },
+          public_keys: {
+            public_key: { _eq: body.publickey },
             blockchain: { _eq: body.blockchain },
           },
         },
@@ -377,7 +380,7 @@ app.post("/authenticate/:username", async (c) => {
         },
         {
           id: true,
-          publickeys: [{}, { blockchain: true, publickey: true }],
+          public_keys: [{}, { blockchain: true, public_key: true }],
         },
       ],
     });
@@ -413,7 +416,7 @@ app.get("/me", async (c) => {
         {
           id: true,
           username: true,
-          publickeys: [{}, { blockchain: true, publickey: true }],
+          public_keys: [{}, { blockchain: true, public_key: true }],
         },
       ],
     });
