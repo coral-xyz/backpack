@@ -1,14 +1,6 @@
 import { useState, useEffect } from "react";
-import Transport from "@ledgerhq/hw-transport";
-import {
-  Header,
-  PrimaryButton,
-  SubtextParagraph,
-  TextField,
-} from "../../common";
-import { getWaitlistId } from "../../common/WaitingRoom";
-import { TextInput } from "../../common/Inputs";
-import {
+import type Transport from "@ledgerhq/hw-transport";
+import type {
   Blockchain,
   BlockchainKeyringInit,
   DerivationPath,
@@ -17,7 +9,7 @@ import {
 import { NavBackButton, WithNav } from "../../common/Layout/Nav";
 import { RecoverAccountUsernameForm } from "./RecoverAccountUsernameForm";
 import { KeyringTypeSelector } from "./KeyringTypeSelector";
-import { BlockchainSelector } from "./BlockchainSelector";
+// import { BlockchainSelector } from "./BlockchainSelector";
 import { MnemonicInput } from "../../common/Account/MnemonicInput";
 import { MnemonicSearch } from "./MnemonicSearch";
 import { HardwareSearch } from "./HardwareSearch";
@@ -42,10 +34,8 @@ export const RecoverAccount = ({
   const [blockchain, setBlockchain] = useState<Blockchain | null>(null);
   const [mnemonic, setMnemonic] = useState<string | undefined>(undefined);
   const [transport, setTransport] = useState<Transport | null>(null);
-  const [transportError, setTransportError] = useState(false);
-  const [onboardedBlockchains, setOnboardedBlockchains] = useState<
-    Array<Blockchain>
-  >([]);
+  const [transportError] = useState(false);
+  const [, setOnboardedBlockchains] = useState<Array<Blockchain>>([]);
   const [blockchainKeyrings, setBlockchainKeyrings] = useState<
     Array<BlockchainKeyringInit>
   >([]);
@@ -58,18 +48,18 @@ export const RecoverAccount = ({
         );
         const json = await response.json();
         if (response.ok) {
-          if (json.publickeys.length > 0) {
+          if (json.publicKeys.length > 0) {
             setOnboardedBlockchains(
-              json.publickeys.map(
+              json.publicKeys.map(
                 (b: { blockchain: Blockchain }) => b.blockchain
               )
             );
             // Default to first available blockchain. For mnemonic keyrings we
-            // can do this and search all available publickeys for the mnemonic
+            // can do this and search all available public keys for the mnemonic
             // to find a match. For ledger keyrings we need to prompt them to open
             // a specific app on the ledger so we'll allow them to select which
             // blockchain they want to use as part of the flow.
-            setBlockchain(json.publickeys[0].blockchain);
+            setBlockchain(json.publicKeys[0].blockchain);
           }
         }
       }
@@ -83,9 +73,9 @@ export const RecoverAccount = ({
 
   const steps = [
     <RecoverAccountUsernameForm
-      onNext={(username: string, publickey: string) => {
+      onNext={(username: string, publicKey: string) => {
         setUsername(username);
-        setPublicKey(publickey);
+        setPublicKey(publicKey);
         nextStep();
       }}
     />,
