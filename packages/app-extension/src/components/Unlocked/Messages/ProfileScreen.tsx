@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BACKEND_API_URL } from "@coral-xyz/common";
+import { BACKEND_API_URL, NAV_COMPONENT_MESSAGE_CHAT } from "@coral-xyz/common";
 import { useNavStack } from "../../common/Layout/NavStack";
 import { ProxyImage } from "../../common/ProxyImage";
 import { IconButton } from "@mui/material";
@@ -10,6 +10,7 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import LockIcon from "@mui/icons-material/Lock";
 import { PrimaryButton, SecondaryButton } from "../../common";
+import { useNavigation } from "@coral-xyz/recoil";
 
 export const ProfileScreen = ({ userId }: { userId: string }) => {
   const [friendship, setFriendship] = useState(false);
@@ -20,21 +21,9 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
     id?: string;
   }>({});
   const [loading, setLoading] = useState(true);
-  const { title, setTitle } = useNavStack();
-  const nav = useNavStack();
   const classes = useStyles();
   const theme = useCustomTheme();
-
-  useEffect(() => {
-    if (!user.username) {
-      return () => {};
-    }
-    const prev = title;
-    setTitle(`@${user.username}`);
-    return () => {
-      setTitle(prev);
-    };
-  }, [user.username]);
+  const { push } = useNavigation();
 
   async function getChatRoom() {
     const res = await fetch(`${BACKEND_API_URL}/friends?userId=${userId}`);
@@ -82,15 +71,17 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
         </div>
         <br />
         <div className={classes.horizontalCenter}>
-          <div>
+          <div style={{ marginRight: 25 }}>
             <IconButton
-              style={{ marginRight: 25 }}
+              size={"large"}
               className={classes.icon}
               onClick={() => {
-                nav.push("chat-screen", {
-                  userId: user.id,
-                  username: user.username,
-                  image: user.image,
+                push({
+                  title: `@${user.username}`,
+                  componentId: NAV_COMPONENT_MESSAGE_CHAT,
+                  componentProps: {
+                    userId: user.id,
+                  },
                 });
               }}
             >
@@ -99,16 +90,34 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
                 fill={theme.custom.colors.fontColor}
               />
             </IconButton>
-            <div className={classes.text}>Message</div>
+            <div
+              className={classes.smallText}
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginTop: 8,
+              }}
+            >
+              Message
+            </div>
           </div>
           <div>
-            <IconButton className={classes.icon}>
+            <IconButton size={"large"} className={classes.icon}>
               <ArrowUpwardIcon
                 style={{ color: theme.custom.colors.fontColor }}
               />
             </IconButton>
+            <div
+              className={classes.smallText}
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginTop: 8,
+              }}
+            >
+              Send
+            </div>
           </div>
-          <div className={classes.text}>Send</div>
         </div>
         <br />
         {friendship && (
@@ -141,13 +150,20 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
           />
         )}
         {!friendship && requestSent && (
-          <div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
             <SecondaryButton
               label={"Cancel"}
+              style={{ margin: 3 }}
               onClick={() => sendFriendRequest(false)}
             />
             <PrimaryButton
               disabled
+              style={{ margin: 3 }}
               label={"Requested"}
               onClick={() => sendFriendRequest(true)}
             />

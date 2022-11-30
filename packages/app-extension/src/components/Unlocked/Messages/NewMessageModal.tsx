@@ -5,6 +5,7 @@ import {
 } from "../../common/Layout/NavStack";
 import { SearchUsers } from "./SearchUsers";
 import { ChatScreen } from "./ChatScreen";
+import { ProfileScreen } from "./ProfileScreen";
 
 export const NewMessageModal = ({
   newSettingsModal,
@@ -27,10 +28,6 @@ export const NewMessageModal = ({
             <NavStackScreen
               name={"root"}
               component={(props: any) => <SearchUsers {...props} />}
-            />
-            <NavStackScreen
-              name={"chat-screen"}
-              component={(props: any) => <ChatScreen {...props} />}
             />
           </NavStackEphemeral>
         </div>

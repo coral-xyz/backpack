@@ -13,7 +13,7 @@ export const SearchUsers = () => {
 
   return (
     <div className={classes.container}>
-      Send to
+      <div className={classes.text}>Send to</div>
       <TextInput
         className={classes.searchField}
         placeholder={"Search"}

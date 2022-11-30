@@ -1,11 +1,15 @@
-import { EnrichedInboxDb } from "@coral-xyz/common";
+import {
+  EnrichedInboxDb,
+  NAV_COMPONENT_MESSAGE_CHAT,
+  NAV_COMPONENT_MESSAGE_PROFILE,
+} from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { List, ListItem } from "@mui/material";
 import { isFirstLastListItemStyle } from "../../common";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useState } from "react";
 import { useStyles } from "./styles";
 import { ProxyImage } from "../../common/ProxyImage";
+import { useNavigation } from "@coral-xyz/recoil";
 
 export const MessageList = ({
   activeChats,
@@ -37,6 +41,11 @@ export const MessageList = ({
                 ? activeChat.user1Username
                 : activeChat.user2Username
             }
+            userId={
+              activeChat.last_message_sender === activeChat.user1
+                ? activeChat.user1
+                : activeChat.user2
+            }
             message={activeChat.last_message}
             timestamp={activeChat.last_message_timestamp}
             isFirst={index === 0}
@@ -55,9 +64,11 @@ function ChatListItem({
   timestamp,
   isFirst,
   isLast,
+  userId,
 }: any) {
   const classes = useStyles();
   const theme = useCustomTheme();
+  const { push } = useNavigation();
 
   function formatAMPM(date: Date) {
     let hours = date.getHours();
@@ -73,7 +84,15 @@ function ChatListItem({
     <ListItem
       button
       disableRipple
-      onClick={() => {}}
+      onClick={() => {
+        push({
+          title: `@${username}`,
+          componentId: NAV_COMPONENT_MESSAGE_CHAT,
+          componentProps: {
+            userId,
+          },
+        });
+      }}
       style={{
         padding: "10px",
         paddingLeft: "16px",
@@ -105,12 +124,23 @@ function ChatListItem({
                 justifyContent: "center",
               }}
             >
-              <UserIcon image={image} />
+              <UserIcon
+                onClick={() => {
+                  push({
+                    title: `@${username}`,
+                    componentId: NAV_COMPONENT_MESSAGE_PROFILE,
+                    componentProps: {
+                      userId,
+                    },
+                  });
+                }}
+                image={image}
+              />
             </div>
             <div>
               <div className={classes.userTextSmall}>@{username}</div>
               <div className={classes.userTextSmall}>
-                {message.substr(0, 50)}
+                {message?.substr(0, 50) || ""}
               </div>
             </div>
           </div>

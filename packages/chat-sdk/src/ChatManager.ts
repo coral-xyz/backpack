@@ -24,6 +24,7 @@ export class ChatManager {
   private fetchingInProgress = false;
   private signaling: Signaling;
   private type: SubscriptionType;
+  private initCallbackCalled = false;
 
   constructor(
     userId: string,
@@ -120,7 +121,8 @@ export class ChatManager {
             });
           }
         }
-        if (filteredChats.length) {
+        if (filteredChats.length || !this.initCallbackCalled) {
+          this.initCallbackCalled = true;
           this.onMessages(filteredChats);
         }
         if (filteredReceived.length) {

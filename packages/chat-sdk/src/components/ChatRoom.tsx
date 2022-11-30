@@ -22,6 +22,7 @@ export const ChatRoom = ({
   const messageContainerRef = useRef(null);
   // TODO: Make state propogte from outside the state since this'll be expensive
   const [chats, setChats] = useState<EnrichedMessage[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (roomId) {
@@ -30,6 +31,7 @@ export const ChatRoom = ({
         roomId,
         type,
         (messages) => {
+          setLoading(false);
           setChats((m) => [...m, ...messages]);
         },
         (messages) => {
@@ -67,6 +69,7 @@ export const ChatRoom = ({
 
   return (
     <ChatProvider
+      loading={loading}
       chatManager={chatManager}
       roomId={roomId}
       chats={chats}

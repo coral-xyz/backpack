@@ -1,8 +1,8 @@
 import { TextInput } from "../../common/Inputs";
+import { MessagesSkeleton } from "./MessagesSkeleton";
 import { styles } from "@coral-xyz/themes";
 import { NewMessageModal } from "./NewMessageModal";
 import { useEffect, useState } from "react";
-import { MessagesSkeleton } from "./MessagesSkeleton";
 import { MessageList } from "./MessageList";
 import { BACKEND_API_URL, EnrichedInboxDb } from "@coral-xyz/common";
 import AddIcon from "@mui/icons-material/Add";
@@ -43,7 +43,7 @@ export function Inbox() {
         }}
       />
       <div style={{ display: "flex", marginBottom: 5 }}>
-        <div>New Message</div>{" "}
+        <div className={classes.text}>New Message</div>{" "}
         <div
           className={classes.roundBtn}
           onClick={() => setNewSettingsModal(true)}

@@ -221,3 +221,35 @@ function getSortedUsers(from: string, to: string) {
   }
   return { user1, user2 };
 }
+
+export const getFriendship = async ({
+  from,
+  to,
+}: {
+  from: string;
+  to: string;
+}): Promise<{ are_friends: boolean; request_sent: boolean }> => {
+  const { user1, user2 } = getSortedUsers(from, to);
+  const existingFriendship = await chain("query")({
+    auth_friendships: [
+      {
+        where: { user1: { _eq: user1 }, user2: { _eq: user2 } },
+        limit: 1,
+      },
+      {
+        are_friends: true,
+      },
+    ],
+    auth_friend_requests: [
+      {
+        where: { from: { _eq: from }, to: { _eq: to } },
+      },
+      { id: true },
+    ],
+  });
+
+  return {
+    are_friends: existingFriendship.auth_friendships[0]?.are_friends ?? false,
+    request_sent: existingFriendship.auth_friend_requests[0] ? true : false,
+  };
+};

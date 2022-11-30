@@ -4,8 +4,9 @@ import { isFirstLastListItemStyle } from "../../common";
 import { ProxyImage } from "../../common/ProxyImage";
 import { useStyles } from "./styles";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { NAV_COMPONENT_NFT_COLLECTION } from "@coral-xyz/common";
+import { NAV_COMPONENT_MESSAGE_PROFILE } from "@coral-xyz/common";
 import { useNavStack } from "../../common/Layout/NavStack";
+import { useNavigation } from "@coral-xyz/recoil";
 
 export const UserList = ({
   users,
@@ -44,17 +45,19 @@ function UserListItem({
   isLast: boolean;
 }) {
   const theme = useCustomTheme();
-  const nav = useNavStack();
+  const { push } = useNavigation();
   const classes = useStyles();
   return (
     <ListItem
       button
       disableRipple
       onClick={() => {
-        nav.push("chat-screen", {
-          userId: user.id,
-          username: user.username,
-          image: user.image,
+        push({
+          title: `@${user.username}`,
+          componentId: NAV_COMPONENT_MESSAGE_PROFILE,
+          componentProps: {
+            userId: user.id,
+          },
         });
       }}
       style={{
@@ -95,7 +98,10 @@ function UserListItem({
             <div className={classes.userText}>{user.username}</div>
           </div>
           <div className={classes.hoverChild}>
-            <ArrowForwardIcon fontSize={"small"} style={{ marginTop: 4 }} />
+            <ArrowForwardIcon
+              fontSize={"small"}
+              style={{ marginTop: 4, color: theme.custom.colors.fontColor }}
+            />
           </div>
         </div>
       </div>

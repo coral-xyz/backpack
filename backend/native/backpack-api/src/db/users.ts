@@ -25,6 +25,37 @@ export const getUsers = async (
   return response.auth_users;
 };
 
+export const getUser = async (
+  userId: string
+): Promise<{ username: string; id: string; image: string }> => {
+  const response = await chain("query")({
+    auth_users: [
+      {
+        where: { id: { _eq: userId } },
+      },
+      {
+        id: true,
+        username: true,
+      },
+    ],
+  });
+
+  const user = response.auth_users[0];
+  if (!user) {
+    throw new Error("user not found");
+  }
+
+  return {
+    username: user.username,
+    id: user.id,
+    image: `https://avatars.xnfts.dev/v1/${user.username}`,
+  } as {
+    username: string;
+    id: string;
+    image: string;
+  };
+};
+
 export async function getUsersByPrefix({
   usernamePrefix,
 }: {
