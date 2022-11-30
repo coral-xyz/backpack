@@ -2,14 +2,12 @@ table:
   name: users
   schema: auth
 array_relationships:
-  - name: publickeys
+  - name: public_keys
     using:
-      manual_configuration:
-        column_mapping:
-          id: user_id
-        insertion_order: null
-        remote_table:
-          name: publickeys_history
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          name: public_keys
           schema: auth
 insert_permissions:
   - role: auth_worker
