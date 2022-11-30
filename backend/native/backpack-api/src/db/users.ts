@@ -9,7 +9,7 @@ const chain = Chain(HASURA_URL, {
 
 export const getUsers = async (
   userIds: string[]
-): Promise<{ username: string; id: string }[]> => {
+): Promise<{ username: unknown; id: unknown }[]> => {
   const response = await chain("query")({
     auth_users: [
       {
@@ -21,6 +21,98 @@ export const getUsers = async (
       },
     ],
   });
-
   return response.auth_users;
+};
+
+/**
+ * Get a user by their username.
+ */
+export const getUserByUsername = async (username: string) => {
+  const response = await chain("query")({
+    auth_users: [
+      {
+        where: { username: { _eq: username } },
+      },
+      {
+        id: true,
+        username: true,
+        public_keys: [{}, { blockchain: true, public_key: true }],
+      },
+    ],
+  });
+  return response.auth_users[0] ? transformUser(response.auth_users[0]) : false;
+};
+
+/**
+ * Get a user by their id.
+ */
+export const getUserById = async (id: string) => {
+  const response = await chain("query")({
+    auth_users_by_pk: [
+      {
+        id,
+      },
+      {
+        id: true,
+        username: true,
+        public_keys: [{}, { blockchain: true, public_key: true }],
+      },
+    ],
+  });
+  return response.auth_users_by_pk
+    ? transformUser(response.auth_users_by_pk)
+    : false;
+};
+
+/**
+ * Utility method to format a user for responses from a raw user object.
+ */
+const transformUser = (user: {
+  id: unknown;
+  username: unknown;
+  public_keys: Array<{ blockchain: string; public_key: string }>;
+}) => {
+  return {
+    id: user.id,
+    username: user.username,
+    // Camelcase public keys for response
+    publicKeys: user.public_keys.map((k) => ({
+      ...k,
+      publicKey: k.public_key,
+    })),
+  };
+};
+
+/**
+ * Create a user
+ */
+export const createUser = async (
+  username: string,
+  blockchainPublicKeys: Array<{ blockchain: string; publicKey: string }>,
+  inviteCode?: string,
+  waitlistId?: string | null
+) => {
+  const response = await chain("mutation")({
+    insert_auth_users_one: [
+      {
+        object: {
+          username: username,
+          public_keys: {
+            data: blockchainPublicKeys.map((b) => ({
+              blockchain: b.blockchain,
+              public_key: b.publicKey,
+            })),
+          },
+          invitation_id: inviteCode,
+          waitlist_id: waitlistId,
+        },
+      },
+      {
+        id: true,
+        username: true,
+      },
+    ],
+  });
+
+  return response.insert_auth_users_one;
 };
