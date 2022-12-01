@@ -10,7 +10,7 @@ export const RequestsScreen = () => {
   const classes = useStyles();
 
   const init = async () => {
-    const res = await fetch(`${BACKEND_API_URL}/inbox?areFriends=false`);
+    const res = await fetch(`${BACKEND_API_URL}/inbox?areConnected=false`);
     const json = await res.json();
     setMessagesLoading(false);
     setActiveChats(json.chats || []);
@@ -36,7 +36,9 @@ export const RequestsScreen = () => {
       </div>
       <br />
       {messagesLoading && <MessagesSkeleton />}
-      {!messagesLoading && <MessageList activeChats={activeChats} />}
+      {!messagesLoading && activeChats.length !== 0 && (
+        <MessageList activeChats={activeChats} />
+      )}
     </div>
   );
 };

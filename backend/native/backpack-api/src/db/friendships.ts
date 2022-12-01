@@ -58,13 +58,53 @@ export const getFriendships = async ({
   uuid,
   limit,
   offset,
-  are_friends,
+  areConnected,
 }: {
   uuid: string;
   limit: number;
   offset: number;
-  are_friends: boolean;
+  areConnected: boolean;
 }): Promise<InboxDb[]> => {
+  let where = {};
+  if (areConnected) {
+    where = {
+      _or: [
+        {
+          user1: { _eq: uuid },
+          _or: [
+            { are_friends: { _eq: true } },
+            { user1_interacted: { _eq: true } },
+          ],
+          user1_blocked_user2: { _eq: false },
+        },
+        {
+          user2: { _eq: uuid },
+          _or: [
+            { are_friends: { _eq: true } },
+            { user2_interacted: { _eq: true } },
+          ],
+          user2_blocked_user1: { _eq: false },
+        },
+      ],
+    };
+  } else {
+    where = {
+      _or: [
+        {
+          user1: { _eq: uuid },
+          are_friends: { _eq: false },
+          user1_interacted: { _eq: false },
+          user1_blocked_user2: { _eq: false },
+        },
+        {
+          user2: { _eq: uuid },
+          are_friends: { _eq: false },
+          user2_interacted: { _eq: false },
+          user2_blocked_user1: { _eq: false },
+        },
+      ],
+    };
+  }
   const response = await chain("query")({
     auth_friendships: [
       {
@@ -72,18 +112,7 @@ export const getFriendships = async ({
         offset,
         //@ts-ignore
         order_by: [{ last_message_timestamp: "desc" }],
-        where: {
-          _or: [
-            {
-              user1: { _eq: uuid },
-              are_friends: { _eq: are_friends },
-            },
-            {
-              user2: { _eq: uuid },
-              are_friends: { _eq: are_friends },
-            },
-          ],
-        },
+        where,
       },
       {
         id: true,

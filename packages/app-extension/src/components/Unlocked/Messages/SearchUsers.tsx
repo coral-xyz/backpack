@@ -27,7 +27,7 @@ export const SearchUsers = ({
     }));
 
   const fetchFriends = async () => {
-    const res = await fetch(`${BACKEND_API_URL}/inbox?areFriends=true`);
+    const res = await fetch(`${BACKEND_API_URL}/inbox?areConnected=true`);
     const json = await res.json();
     setContactsLoading(false);
     const chats: EnrichedInboxDb[] = json.chats;

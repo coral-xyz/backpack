@@ -22,7 +22,8 @@ export class SubscriptionManager {
     payload: {
       type: SubscriptionType;
       room: string;
-    }
+    },
+    roomValidation: { user1: string; user2: string } | null
   ) {
     const roomId = this.subscriptionToRoomMapping(
       user.userId,
@@ -30,7 +31,7 @@ export class SubscriptionManager {
       payload.room
     );
     if (!this.subscriptions.get(roomId)) {
-      const room = new Room(payload.room, payload.type);
+      const room = new Room(payload.room, payload.type, roomValidation);
       this.subscriptions.set(roomId, room);
     }
     const room = this.subscriptions.get(roomId);

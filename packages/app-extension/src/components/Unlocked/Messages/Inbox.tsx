@@ -23,7 +23,7 @@ export function Inbox() {
   const { push } = useNavigation();
 
   const init = async () => {
-    const res = await fetch(`${BACKEND_API_URL}/inbox`);
+    const res = await fetch(`${BACKEND_API_URL}/inbox?areConnected=true`);
     const json = await res.json();
     setMessagesLoading(false);
     setActiveChats(json.chats || []);
