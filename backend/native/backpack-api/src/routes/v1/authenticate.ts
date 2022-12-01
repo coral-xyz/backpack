@@ -1,22 +1,23 @@
-import express from "express";
 import { ethers } from "ethers";
+import express from "express";
+
+import { clearCookie, setCookie } from "../../auth/util";
 import { getUser } from "../../db/users";
-import { setCookie, clearCookie } from "../../auth/util";
 import {
-  validateSolanaSignature,
   validateEthereumSignature,
+  validateSolanaSignature,
 } from "../../validation/user";
 
 const { base58 } = ethers.utils;
 
 const router = express.Router();
 
-router.delete("/authenticate", async (req, res) => {
+router.delete("/", async (req, res) => {
   clearCookie(res, "jwt");
   return res.json({ msg: "ok" });
 });
 
-router.post("/authenticate", async (req, res) => {
+router.post("/", async (req, res) => {
   const { blockchain, signature, publicKey, encodedMessage, message } =
     req.body;
   const { id } = JSON.parse(message);
