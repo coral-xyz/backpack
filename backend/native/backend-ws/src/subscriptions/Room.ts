@@ -22,17 +22,27 @@ export class Room {
   private users: Map<string, User>;
   private room: string;
   private type: SubscriptionType;
-  private messageHistory: Message[];
+  private messageHistory: MessageWithMetadata[];
   private userIdMappings: Map<string, { username: string }> = new Map<
     string,
     { username: string }
   >();
+  public roomCreationPromise: any;
+  // Only applicable for `individual` rooms. User for storing
+  // The users that are part of the room.
+  private roomValidation: { user1: string; user2: string } | null;
 
-  constructor(room: string, type: SubscriptionType) {
+  constructor(
+    room: string,
+    type: SubscriptionType,
+    roomValidation: { user1: string; user2: string } | null
+  ) {
     this.room = room;
     this.type = type;
+    this.roomValidation = roomValidation;
     this.users = new Map<string, User>();
     this.messageHistory = [];
+    this.roomCreationPromise = this.init();
     console.log(`Room ${room} ${type} created`);
   }
 
@@ -41,6 +51,7 @@ export class Room {
       chats: [
         {
           limit: 50,
+          offset: 0,
           //@ts-ignore
           order_by: [{ created_at: "desc" }],
           where: {
@@ -60,7 +71,10 @@ export class Room {
       ],
     });
 
-    this.messageHistory = response.chats || [];
+    this.messageHistory = await this.enrichMessages(
+      response.chats?.sort((a, b) => (a.created_at < b.created_at ? -1 : 1)) ||
+        []
+    );
   }
 
   addUser(user: User) {
@@ -84,7 +98,8 @@ export class Room {
       message_kind: string;
     }
   ) {
-    const response = await chain("mutation")({
+    //TODO: bulkify this
+    chain("mutation")({
       insert_chats_one: [
         {
           object: {
@@ -102,22 +117,30 @@ export class Room {
           id: true,
         },
       ],
-    });
+    }).catch((e) => console.log(`Error while adding chat msg to DB ${e}`));
 
     if (this.type === "individual") {
-      updateLatestMessage(parseInt(this.room), msg.message, userId);
+      updateLatestMessage(
+        parseInt(this.room),
+        msg.message_kind === "gif" ? "GIF" : msg.message,
+        userId,
+        this.roomValidation
+      );
     }
 
-    const emittedMessage = {
-      id: response.insert_chats_one?.id || 100000000,
-      username: "",
-      uuid: userId,
-      message: msg.message,
-      client_generated_uuid: msg.client_generated_uuid,
-      message_kind: msg.message_kind,
-    };
+    const emittedMessage = (
+      await this.enrichMessages([
+        {
+          id: 100000000,
+          uuid: userId,
+          message: msg.message,
+          client_generated_uuid: msg.client_generated_uuid,
+          message_kind: msg.message_kind,
+        },
+      ])
+    )[0];
     this.messageHistory.push(emittedMessage);
-    this.messageHistory = this.messageHistory.slice(-10);
+    this.messageHistory = this.messageHistory.slice(-50);
     this.broadcast(null, {
       type: CHAT_MESSAGES,
       payload: {

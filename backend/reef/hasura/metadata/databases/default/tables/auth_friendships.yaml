@@ -10,14 +10,22 @@ insert_permissions:
         - id
         - last_message
         - last_message_sender
-        - user1
-        - user2
         - last_message_timestamp
+        - user1
+        - user1_blocked_user2
+        - user1_interacted
+        - user2
+        - user2_blocked_user1
+        - user2_interacted
 select_permissions:
   - role: auth_worker
     permission:
       columns:
         - are_friends
+        - user1_blocked_user2
+        - user1_interacted
+        - user2_blocked_user1
+        - user2_interacted
         - id
         - last_message
         - last_message_sender
@@ -30,6 +38,10 @@ update_permissions:
     permission:
       columns:
         - are_friends
+        - user1_blocked_user2
+        - user1_interacted
+        - user2_blocked_user1
+        - user2_interacted
         - id
         - last_message
         - last_message_sender

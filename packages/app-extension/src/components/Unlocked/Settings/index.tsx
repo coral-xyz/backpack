@@ -34,6 +34,7 @@ import {
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
   DISCORD_INVITE_LINK,
   NOTIFICATIONS_ENABLED,
+  MESSAGES_ENABLED,
 } from "@coral-xyz/common";
 import {
   Header,
@@ -778,6 +779,7 @@ function SettingsList() {
   const theme = useCustomTheme();
   const nav = useNavStack();
   const background = useBackgroundClient();
+  const featureGates = useFeatureGates();
 
   const lockWallet = () => {
     background
@@ -919,57 +921,59 @@ function SettingsList() {
         })}
       </List>
 
-      <List
-        style={{
-          marginTop: "24px",
-          marginBottom: "16px",
-          border: `${theme.custom.colors.borderFull}`,
-          borderRadius: "10px",
-        }}
-      >
-        {contactList.map((s, idx) => {
-          return (
-            <ListItem
-              key={s.label}
-              isFirst={idx === 0}
-              isLast={idx === discordList.length - 1}
-              onClick={s.onClick}
-              id={s.label}
-              style={{
-                height: "44px",
-                padding: "12px",
-              }}
-              detail={s.detailIcon}
-            >
-              <div
+      {featureGates[MESSAGES_ENABLED] && (
+        <List
+          style={{
+            marginTop: "24px",
+            marginBottom: "16px",
+            border: `${theme.custom.colors.borderFull}`,
+            borderRadius: "10px",
+          }}
+        >
+          {contactList.map((s, idx) => {
+            return (
+              <ListItem
+                key={s.label}
+                isFirst={idx === 0}
+                isLast={idx === discordList.length - 1}
+                onClick={s.onClick}
+                id={s.label}
                 style={{
-                  display: "flex",
-                  flex: 1,
+                  height: "44px",
+                  padding: "12px",
                 }}
+                detail={s.detailIcon}
               >
-                {s.icon({
-                  style: {
-                    color: theme.custom.colors.icon,
-                    height: "24px",
-                    width: "24px",
-                  },
-                  fill: theme.custom.colors.icon,
-                })}
-                <Typography
+                <div
                   style={{
-                    marginLeft: "8px",
-                    fontWeight: 500,
-                    fontSize: "16px",
-                    lineHeight: "24px",
+                    display: "flex",
+                    flex: 1,
                   }}
                 >
-                  {s.label}
-                </Typography>
-              </div>
-            </ListItem>
-          );
-        })}
-      </List>
+                  {s.icon({
+                    style: {
+                      color: theme.custom.colors.icon,
+                      height: "24px",
+                      width: "24px",
+                    },
+                    fill: theme.custom.colors.icon,
+                  })}
+                  <Typography
+                    style={{
+                      marginLeft: "8px",
+                      fontWeight: 500,
+                      fontSize: "16px",
+                      lineHeight: "24px",
+                    }}
+                  >
+                    {s.label}
+                  </Typography>
+                </div>
+              </ListItem>
+            );
+          })}
+        </List>
+      )}
 
       <List
         style={{

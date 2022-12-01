@@ -26,22 +26,29 @@ export const validateRoom = async (uuid: string, roomId: number) => {
       },
       {
         id: true,
+        user1: true,
+        user2: true,
       },
     ],
   });
 
-  if (response.auth_friendships) {
-    return true;
+  if (response.auth_friendships[0]) {
+    return {
+      user1: response.auth_friendships[0].user1,
+      user2: response.auth_friendships[0].user2,
+    };
   }
 
-  return false;
+  return null;
 };
 
 export const updateLatestMessage = async (
   roomId: number,
   message: string,
-  sender: string
+  sender: string,
+  roomValidation: { user1: string; user2: string } | null
 ) => {
+  const interactedProps = getInteractedProps(sender, roomValidation);
   await chain("mutation")({
     update_auth_friendships: [
       {
@@ -49,10 +56,28 @@ export const updateLatestMessage = async (
           last_message_timestamp: new Date(),
           last_message: message,
           last_message_sender: sender,
+          ...interactedProps,
         },
         where: { id: { _eq: roomId } },
       },
       { affected_rows: true },
     ],
-  });
+  }).catch((e) => console.log(`Error while updating latest ${e}`));
 };
+
+function getInteractedProps(
+  sender: string,
+  roomValidation: { user1: string; user2: string } | null
+) {
+  if (sender === roomValidation?.user1) {
+    return {
+      user1_interacted: true,
+    };
+  }
+  if (sender === roomValidation?.user2) {
+    return {
+      user2_interacted: true,
+    };
+  }
+  return {};
+}

@@ -1,6 +1,23 @@
 import { importPKCS8, importSPKI, jwtVerify, SignJWT } from "jose";
 import { AUTH_JWT_PUBLIC_KEY } from "../config";
+import { validateRoom } from "../db/friendships";
 const alg = "RS256";
+
+export const ensureHasRoomAccess = async (req, res, next) => {
+  const room = req.query.room;
+  const type = req.query.type;
+  if (type === "individual") {
+    const hasAccess = await validateRoom(req.id, room);
+    if (hasAccess) {
+      next();
+    } else {
+      return res.status(403).json({ msg: "you dont have access" });
+    }
+  } else {
+    // TODO: auth check for collection post #1589
+    next();
+  }
+};
 
 export const extractUserId = async (req, res, next) => {
   const {

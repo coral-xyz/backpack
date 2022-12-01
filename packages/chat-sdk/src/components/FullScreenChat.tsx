@@ -1,12 +1,15 @@
 import { MessageLeft } from "./Message";
 import { SendMessage } from "./SendMessage";
+import InfoIcon from "@mui/icons-material/Info";
 import { ScrollBarImpl } from "./ScrollbarImpl";
 import { useEffect, useRef, useState } from "react";
 import { useChatContext } from "./ChatContext";
 import { MessagesSkeleton } from "./MessagesSkeleton";
 import { EmptyChat } from "./EmptyChat";
+import { useStyles } from "./styles";
+import { useCustomTheme } from "@coral-xyz/themes";
 export const FullScreenChat = ({ messageContainerRef, chats }) => {
-  const { chatManager, loading } = useChatContext();
+  const { chatManager, loading, areFriends, requested } = useChatContext();
   const [autoScroll, setAutoScroll] = useState(true);
 
   const messageRef = useRef<any>();
@@ -53,7 +56,14 @@ export const FullScreenChat = ({ messageContainerRef, chats }) => {
             padding: 15,
           }}
         >
+          {!areFriends && !requested && (
+            <Banner title={"This account is not a friend."} />
+          )}
+          {!areFriends && requested && (
+            <Banner title={"Contact pending request"} />
+          )}
           {loading && <MessagesSkeleton />}
+          {!loading && chats.length === 0 && <EmptyChat />}
           {!loading &&
             chats.length !== 0 &&
             chats.map((chat) => {
@@ -64,10 +74,11 @@ export const FullScreenChat = ({ messageContainerRef, chats }) => {
                   message={chat.message}
                   received={chat.received}
                   messageKind={chat.message_kind}
+                  image={chat.image}
+                  username={chat.username}
                 />
               );
             })}
-          {!loading && chats.length === 0 && <EmptyChat />}
         </div>
       </ScrollBarImpl>
       <div style={{ position: "absolute", bottom: 0, width: "100%" }}>
@@ -76,3 +87,22 @@ export const FullScreenChat = ({ messageContainerRef, chats }) => {
     </div>
   );
 };
+
+function Banner({ title }: { title: String }) {
+  const theme = useCustomTheme();
+  const classes = useStyles();
+  return (
+    <div>
+      <div
+        className={`${classes.noContactBanner} ${classes.horizontalCenter} ${classes.text}`}
+      >
+        {" "}
+        <InfoIcon
+          style={{ color: theme.custom.colors.fontColor, marginRight: 5 }}
+        />{" "}
+        {title}
+      </div>
+      <br />
+    </div>
+  );
+}

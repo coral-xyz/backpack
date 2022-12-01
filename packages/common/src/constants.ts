@@ -469,6 +469,7 @@ export const NAV_COMPONENT_NFT_EXPERIENCE = "nfts/experience";
 export const NAV_COMPONENT_NFT_CHAT = "nfts/chat";
 export const NAV_COMPONENT_MESSAGE_CHAT = "messages/chat";
 export const NAV_COMPONENT_MESSAGE_PROFILE = "messages/profile";
+export const NAV_COMPONENT_MESSAGE_REQUESTS = "messages/requests";
 
 export const BACKEND_EVENT = "backend-event";
 
