@@ -1,5 +1,5 @@
 export function useNavigate() {
-  return function () {
-    console.log("mobile navigation stub");
+  return function (args: any) {
+    console.log("TODO(peter)", args);
   };
 }
