@@ -34,9 +34,18 @@ router.post("/authenticate", async (req, res) => {
   }
   if (!valid) throw new Error("Invalid signature");
 
-  const user = await getUser(id);
-
-  if (!user) return res.status(403);
+  let user;
+  try {
+    user = await getUser(id);
+    // Make sure the user has the signing public key
+    const hasPublicKey = user.publicKeys.find(
+      ({ blockchain: b, publicKey: p }) => b === blockchain && p === publicKey
+    );
+    if (!hasPublicKey) throw new Error("Signing public key not found for user");
+  } catch {
+    // User not found
+    return res.status(403);
+  }
 
   setCookie(req, res, user.id as string);
 
