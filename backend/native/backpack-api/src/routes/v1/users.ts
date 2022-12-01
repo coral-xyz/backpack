@@ -1,17 +1,19 @@
-import express, { Request, Response } from "express";
 import { ethers } from "ethers";
+import type { Request, Response } from "express";
+import express from "express";
+
 import { optionallyExtractUserId } from "../../auth/middleware";
 import { setCookie } from "../../auth/util";
 import {
   createUser,
   getUser,
-  getUsersByPrefix,
   getUserByUsername,
+  getUsersByPrefix,
 } from "../../db/users";
 import {
   CreateUserWithKeyrings,
-  validateSolanaSignature,
   validateEthereumSignature,
+  validateSolanaSignature,
 } from "../../validation/user";
 
 const { base58 } = ethers.utils;
@@ -76,8 +78,11 @@ router.post("/", async (req, res) => {
     inviteCode,
     waitlistId
   );
+
   if (user) {
     setCookie(req, res, user.id as string);
+  } else {
+    throw new Error("Error creating user account");
   }
 
   if (process.env.SLACK_WEBHOOK_URL) {
