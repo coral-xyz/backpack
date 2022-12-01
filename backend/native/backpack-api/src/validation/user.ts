@@ -1,11 +1,11 @@
-import { z, ZodError } from "zod";
-import { ethers } from "ethers";
 import {
   PublicKey,
   Transaction,
   TransactionInstruction,
 } from "@solana/web3.js";
+import { ethers } from "ethers";
 import { sign } from "tweetnacl";
+import { z } from "zod";
 
 export const BaseCreateUser = z.object({
   username: z
