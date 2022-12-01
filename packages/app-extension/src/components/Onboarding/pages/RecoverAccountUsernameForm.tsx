@@ -1,6 +1,7 @@
 import { useCustomTheme } from "@coral-xyz/themes";
 import { AlternateEmail } from "@mui/icons-material";
 import { Box, InputAdornment } from "@mui/material";
+import { BACKEND_API_URL } from "@coral-xyz/common";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { Header, PrimaryButton, SubtextParagraph } from "../../common";
 import { getWaitlistId } from "../../common/WaitingRoom";
@@ -22,16 +23,12 @@ export const RecoverAccountUsernameForm = ({
   const handleSubmit = useCallback(
     async (e: FormEvent) => {
       e.preventDefault();
-
       try {
-        const res = await fetch(
-          `https://auth.xnfts.dev/users/${username}/info`,
-          {
-            headers: {
-              "x-backpack-waitlist-id": getWaitlistId() || "",
-            },
-          }
-        );
+        const res = await fetch(`${BACKEND_API_URL}users/${username}`, {
+          headers: {
+            "x-backpack-waitlist-id": getWaitlistId() || "",
+          },
+        });
         const json = await res.json();
         // Use the first found public key
         onNext(username, json.publicKeys[0].publicKey);

@@ -1,4 +1,6 @@
 import express from "express";
+import type { ZodError } from "zod";
+import { zodErrorToString } from "./util";
 import authenticateRouter from "./routes/v1/authenticate";
 import notificationRoutes from "./routes/v1/notifications";
 import preferenceRoutes from "./routes/v1/preferences";
@@ -26,7 +28,16 @@ app.use("/inbox", inboxRouter);
 app.use("/friends", friendsRouter);
 app.use("/users", usersRouter);
 
-// TODO: Add validation using zod
+app.use((err, req, res, next) => {
+  console.error(err);
+  if (err instanceof ZodError) {
+    return res.status(400).json({
+      message: zodErrorToString(err),
+    });
+  } else {
+    return res.status(500).json(err);
+  }
+});
 
 app.listen(process.env.PORT || 8080);
 

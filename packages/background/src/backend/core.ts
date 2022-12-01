@@ -10,6 +10,7 @@ import {
   Transaction,
   TransactionInstruction,
 } from "@solana/web3.js";
+import { BACKEND_API_URL } from "@coral-xyz/common";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { makeDefaultNav, makeUrl } from "@coral-xyz/recoil";
 import { keyringForBlockchain } from "@coral-xyz/blockchain-common";
@@ -610,15 +611,12 @@ export class Backend {
     if (BACKPACK_FEATURE_USERNAMES && BACKPACK_FEATURE_JWT && username) {
       // ensure the user has a JSON Web Token stored in their cookies
       try {
-        const res = await fetch(
-          `https://auth.xnfts.dev/authenticate/${username}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const res = await fetch(`${BACKEND_API_URL}/users/${username}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
         if (res.status !== 200)
           throw new Error(`failed to authenticate (${username})`);
         const { id, publickeys } = await res.json();
@@ -630,7 +628,7 @@ export class Backend {
             }),
             publickeys
           );
-          await fetch(`https://auth.xnfts.dev/authenticate`, {
+          await fetch(`${BACKEND_API_URL}/authenticate`, {
             body: JSON.stringify(signatureBundle),
             method: "POST",
             headers: {

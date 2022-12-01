@@ -20,6 +20,7 @@ import type {
   KeyringInit,
 } from "@coral-xyz/common";
 import {
+  BACKEND_API_URL,
   DerivationPath,
   KeyringType,
   toTitleCase,
@@ -625,7 +626,7 @@ function OnboardingFinishedScreen() {
       });
 
       try {
-        const res = await fetch("https://auth.xnfts.dev/users", {
+        const res = await fetch(`${BACKEND_API_URL}/users`, {
           method: "POST",
           body,
           headers: {

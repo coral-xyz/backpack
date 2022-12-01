@@ -1,7 +1,7 @@
 import express from "express";
 import { ethers } from "ethers";
 import { getUser } from "../../db/users";
-import { setCookie } from "../../auth/util";
+import { setCookie, clearCookie } from "../../auth/util";
 import {
   validateSolanaSignature,
   validateEthereumSignature,
@@ -10,6 +10,11 @@ import {
 const { base58 } = ethers.utils;
 
 const router = express.Router();
+
+router.delete("/authenticate", async (req, res) => {
+  clearCookie(res, "jwt");
+  return res.json({ msg: "ok" });
+});
 
 router.post("/authenticate", async (req, res) => {
   const { blockchain, signature, publicKey, encodedMessage, message } =

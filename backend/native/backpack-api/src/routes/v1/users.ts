@@ -107,7 +107,7 @@ router.post("/", async (req, res) => {
  */
 router.get(
   "/:username",
-  optionallyExtractUserId,
+  optionallyExtractUserId(false),
   async (req: Request, res: Response) => {
     const username = "tom";
     let user;
@@ -133,6 +133,20 @@ router.get(
           isAuthenticated,
         })
       : res.status(403).json({ msg: "User not found" });
+  }
+);
+
+/**
+ * Returns the user that is associated with the JWT in the cookie or query string.
+ */
+router.get(
+  "/me",
+  optionallyExtractUserId(true),
+  async (req: Request, res: Response) => {
+    if (req.id) {
+      return res.json(await getUser(req.id));
+    }
+    return res.status(404).json({ msg: "user not found" });
   }
 );
 

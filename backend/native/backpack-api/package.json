@@ -22,7 +22,8 @@
     "request": "^2.88.2",
     "tweetnacl": "^1.0.3",
     "urlsafe-base64": "^1.0.0",
-    "web-push": "^3.5.0"
+    "web-push": "^3.5.0",
+    "zod": "^3.19.1"
   },
   "scripts": {
     "build": "esbuild ./src/index.js --bundle --platform=node --outfile=dist/index.js",
