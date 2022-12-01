@@ -21,7 +21,7 @@ export const extractUserId = async (
       const payloadRes = await validateJwt(jwt);
       if (payloadRes.payload.sub) {
         // Extend cookie
-        setCookie(c, payloadRes.payload.sub);
+        setCookie(req, res, payloadRes.payload.sub);
         // Set id on request
         req.id = payloadRes.payload.sub;
         next();
@@ -29,7 +29,7 @@ export const extractUserId = async (
         return res.status(403).json({ msg: "No id found" });
       }
     } catch (e) {
-      clearCookie(c, "jwt");
+      clearCookie(res, "jwt");
       return res.status(403).json({ msg: "Auth error" });
     }
   } else {
@@ -57,12 +57,12 @@ export const optionallyExtractUserId = async (
       const payloadRes = await validateJwt(jwt);
       if (payloadRes.payload.sub) {
         // Extend cookie
-        setCookie(c, payloadRes.payload.sub);
+        setCookie(req, res, payloadRes.payload.sub);
         // Set id on request
         req.id = payloadRes.payload.sub;
       }
     } catch {
-      clearCookie(c, "jwt");
+      clearCookie(res, "jwt");
     }
   }
   next();

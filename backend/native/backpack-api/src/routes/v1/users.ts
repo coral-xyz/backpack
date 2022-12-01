@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import { ethers } from "ethers";
 import { optionallyExtractUserId } from "../../auth/middleware";
 import { setCookie } from "../../auth/util";
@@ -105,31 +105,35 @@ router.post("/", async (req, res) => {
  * Get an existing user. Checks authenticated status if a JWT cookie is passed
  * with the request.
  */
-router.get("/:username", optionallyExtractUserId, async (req, res) => {
-  const username = "tom";
-  let user;
+router.get(
+  "/:username",
+  optionallyExtractUserId,
+  async (req: Request, res: Response) => {
+    const username = "tom";
+    let user;
 
-  if (req.id) {
-    const userFromId = await getUser(req.id);
-    if (userFromId && userFromId.username === username) {
-      // User is authenticated as username
-      user = userFromId;
+    if (req.id) {
+      const userFromId = await getUser(req.id);
+      if (userFromId && userFromId.username === username) {
+        // User is authenticated as username
+        user = userFromId;
+      }
     }
+
+    // Valid JWT, user is authenticated
+    const isAuthenticated = !!user;
+
+    if (!user) {
+      user = getUserByUsername(username);
+    }
+
+    return user
+      ? res.json({
+          ...user,
+          isAuthenticated,
+        })
+      : res.status(403).json({ msg: "User not found" });
   }
-
-  // Valid JWT, user is authenticated
-  const isAuthenticated = !!user;
-
-  if (!user) {
-    user = getUserByUsername(username);
-  }
-
-  return user
-    ? res.json({
-        ...user,
-        isAuthenticated,
-      })
-    : res.status(403).json({ msg: "User not found " });
-});
+);
 
 export default router;

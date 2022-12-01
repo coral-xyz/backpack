@@ -1,6 +1,6 @@
 import express from "express";
 import { ethers } from "ethers";
-import { getUserById } from "../../db/users";
+import { getUser } from "../../db/users";
 import { setCookie } from "../../auth/util";
 import {
   validateSolanaSignature,
@@ -29,7 +29,7 @@ router.post("/authenticate", async (req, res) => {
   }
   if (!valid) throw new Error("Invalid signature");
 
-  const user = await getUserById(id);
+  const user = await getUser(id);
 
   if (!user) return res.status(403);
 
