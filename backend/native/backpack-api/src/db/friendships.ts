@@ -28,12 +28,20 @@ export const getOrCreateFriendship = async ({
         are_friends: true,
       },
     ],
+    auth_friend_requests: [
+      {
+        where: { from: { _eq: from }, to: { _eq: to } },
+        limit: 1,
+      },
+      { id: true },
+    ],
   });
 
   if (existingFriendship.auth_friendships[0]?.id) {
     return {
       id: existingFriendship.auth_friendships[0]?.id,
       are_friends: existingFriendship.auth_friendships[0]?.are_friends,
+      requested: existingFriendship.auth_friend_requests[0] ? true : false,
     };
   } else {
     const response = await chain("mutation")({

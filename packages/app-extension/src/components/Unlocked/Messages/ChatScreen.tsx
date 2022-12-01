@@ -8,6 +8,7 @@ export const ChatScreen = ({ userId }: { userId: string }) => {
   const [uuid, setUuid] = useState("");
   const [fetchingRoom, setFetchingRoom] = useState(true);
   const [areFriends, setAreFriends] = useState(false);
+  const [requested, setRequested] = useState(false);
   const username = useUsername();
 
   async function getChatRoom(userId?: string) {
@@ -23,6 +24,7 @@ export const ChatScreen = ({ userId }: { userId: string }) => {
     setRoomId(json.friendshipId);
     setUuid(json.id);
     setAreFriends(json.areFriends);
+    setRequested(json.requested);
     setFetchingRoom(false);
   }
 
@@ -39,6 +41,8 @@ export const ChatScreen = ({ userId }: { userId: string }) => {
           roomId={roomId}
           userId={uuid}
           areFriends={areFriends}
+          requested={requested}
+          remoteUserId={userId}
         />
       )}
     </div>

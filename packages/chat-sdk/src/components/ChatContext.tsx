@@ -10,6 +10,8 @@ type ChatContext = {
   loading: boolean;
   username: string;
   areFriends: boolean;
+  requested: boolean;
+  remoteUserId: string;
 };
 
 export const _ChatContext = React.createContext<ChatContext | null>(null);
@@ -24,6 +26,8 @@ export function ChatProvider(props: {
   loading: boolean;
   username: string;
   areFriends: boolean;
+  requested: boolean;
+  remoteUserId: string;
 }) {
   return (
     <_ChatContext.Provider
@@ -36,6 +40,8 @@ export function ChatProvider(props: {
         loading: props.loading,
         username: props.username,
         areFriends: props.areFriends,
+        requested: props.requested,
+        remoteUserId: props.remoteUserId,
       }}
     >
       {props.children}

@@ -20,6 +20,7 @@ router.post("/", extractUserId, async (req, res) => {
     id: from,
     friendshipId: friendship.id,
     areFriends: friendship.are_friends,
+    requested: friendship.requested,
   });
 });
 
