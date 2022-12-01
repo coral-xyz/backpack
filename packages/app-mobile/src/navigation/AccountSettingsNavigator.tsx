@@ -4,6 +4,7 @@ import type { Blockchain, ChannelAppUiClient } from "@coral-xyz/common";
 import {
   DerivationPath,
   EthereumConnectionUrl,
+  SolanaCluster,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
   UI_RPC_METHOD_BLOCKCHAINS_ENABLED_ADD,
@@ -16,6 +17,7 @@ import {
   useEnabledBlockchains,
   useEthereumConnectionUrl,
   useKeyringType,
+  useSolanaConnectionUrl,
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -34,7 +36,7 @@ const { hexlify } = ethers.utils;
 const Stack = createStackNavigator();
 
 function IconCheckmark() {
-  return <MaterialIcons name="checkmark" size={32} />;
+  return <MaterialIcons name="check" size={32} />;
 }
 
 function DummyScreen() {
@@ -75,6 +77,11 @@ export default function AccountSettingsNavigator() {
         component={PreferencesSolana}
       />
       <Stack.Screen
+        options={{ title: "Preferences" }}
+        name="PreferencesSolanaConnection"
+        component={PreferencesSolanaConnection}
+      />
+      <Stack.Screen
         options={{ title: "Trusted Sites" }}
         name="PreferencesTrustedSites"
         component={PreferencesTrustedSitesScreen}
@@ -93,16 +100,76 @@ export default function AccountSettingsNavigator() {
   );
 }
 
+function PreferencesSolanaConnection({ navigation }) {
+  const background = useBackgroundClient();
+  const currentUrl = useSolanaConnectionUrl();
+  const menuItems = {
+    "Mainnet (Beta)": {
+      onPress: () => changeNetwork(SolanaCluster.MAINNET),
+      detail: currentUrl === SolanaCluster.MAINNET ? <Checkmark /> : <></>,
+    },
+    Devnet: {
+      onPress: () => changeNetwork(SolanaCluster.DEVNET),
+      detail: currentUrl === SolanaCluster.DEVNET ? <Checkmark /> : <></>,
+    },
+    Localnet: {
+      onPress: () => changeNetwork(SolanaCluster.LOCALNET),
+      detail: currentUrl === SolanaCluster.LOCALNET ? <Checkmark /> : <></>,
+    },
+    Custom: {
+      onPress: () => {
+        navigation.push("preferences-solana-edit-rpc-connection");
+      },
+      detail:
+        currentUrl !== SolanaCluster.MAINNET &&
+        currentUrl !== SolanaCluster.DEVNET &&
+        currentUrl !== SolanaCluster.LOCALNET ? (
+          <>
+            <IconCheckmark />
+            <IconPushDetail />
+          </>
+        ) : (
+          <IconPushDetail />
+        ),
+    },
+  };
+
+  const changeNetwork = (url: string) => {
+    try {
+      background
+        .request({
+          method: UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
+          params: [url],
+        })
+        .then(close)
+        .catch(console.error);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  return <SettingsList menuItems={menuItems} />;
+}
+
 function PreferencesSolana({ route, navigation }) {
   const { blockchain } = route.params;
+
+  const menuItems = {
+    "RPC Connection": {
+      onPress: () => navigation.push("preferences-solana-rpc-connection"),
+    },
+    "Confirmation Commitment": {
+      onPress: () => navigation.push("preferences-solana-commitment"),
+    },
+    Explorer: {
+      onPress: () => navigation.push("preferences-solana-explorer"),
+    },
+  };
+
   return (
     <Screen>
       <PreferencesBlockchain blockchain={blockchain} />
-      <SettingsRow
-        label="RPC Connection"
-        onPress={() => navigation.push("PreferencesSolanaConnection")}
-        detailIcon={<IconPushDetail />}
-      />
+      <SettingsList menuItems={menuItems} />;
     </Screen>
   );
 }
