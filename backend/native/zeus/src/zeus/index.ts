@@ -1159,7 +1159,11 @@ export type ValueTypes = {
     last_message_sender?: boolean | `@${string}`;
     last_message_timestamp?: boolean | `@${string}`;
     user1?: boolean | `@${string}`;
+    user1_blocked_user2?: boolean | `@${string}`;
+    user1_interacted?: boolean | `@${string}`;
     user2?: boolean | `@${string}`;
+    user2_blocked_user1?: boolean | `@${string}`;
+    user2_interacted?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
   /** Boolean expression to filter rows from the table "auth.friendships". All fields are combined with a logical 'AND'. */
@@ -1209,8 +1213,28 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    user1_blocked_user2?:
+      | ValueTypes["Boolean_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    user1_interacted?:
+      | ValueTypes["Boolean_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     user2?:
       | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    user2_blocked_user1?:
+      | ValueTypes["Boolean_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    user2_interacted?:
+      | ValueTypes["Boolean_comparison_exp"]
       | undefined
       | null
       | Variable<any, string>;
@@ -1233,7 +1257,11 @@ export type ValueTypes = {
       | null
       | Variable<any, string>;
     user1?: string | undefined | null | Variable<any, string>;
+    user1_blocked_user2?: boolean | undefined | null | Variable<any, string>;
+    user1_interacted?: boolean | undefined | null | Variable<any, string>;
     user2?: string | undefined | null | Variable<any, string>;
+    user2_blocked_user1?: boolean | undefined | null | Variable<any, string>;
+    user2_interacted?: boolean | undefined | null | Variable<any, string>;
   };
   /** response of any mutation on the table "auth.friendships" */
   ["auth_friendships_mutation_response"]: AliasType<{
@@ -1281,7 +1309,27 @@ export type ValueTypes = {
       | null
       | Variable<any, string>;
     user1?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    user1_blocked_user2?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    user1_interacted?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     user2?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    user2_blocked_user1?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    user2_interacted?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
   };
   /** primary key columns input for table: auth_friendships */
   ["auth_friendships_pk_columns_input"]: {
@@ -1302,7 +1350,11 @@ export type ValueTypes = {
       | null
       | Variable<any, string>;
     user1?: string | undefined | null | Variable<any, string>;
+    user1_blocked_user2?: boolean | undefined | null | Variable<any, string>;
+    user1_interacted?: boolean | undefined | null | Variable<any, string>;
     user2?: string | undefined | null | Variable<any, string>;
+    user2_blocked_user1?: boolean | undefined | null | Variable<any, string>;
+    user2_interacted?: boolean | undefined | null | Variable<any, string>;
   };
   /** Streaming cursor of the table "auth_friendships" */
   ["auth_friendships_stream_cursor_input"]: {
@@ -1329,7 +1381,11 @@ export type ValueTypes = {
       | null
       | Variable<any, string>;
     user1?: string | undefined | null | Variable<any, string>;
+    user1_blocked_user2?: boolean | undefined | null | Variable<any, string>;
+    user1_interacted?: boolean | undefined | null | Variable<any, string>;
     user2?: string | undefined | null | Variable<any, string>;
+    user2_blocked_user1?: boolean | undefined | null | Variable<any, string>;
+    user2_interacted?: boolean | undefined | null | Variable<any, string>;
   };
   /** update columns of table "auth.friendships" */
   ["auth_friendships_update_column"]: auth_friendships_update_column;
@@ -4555,7 +4611,11 @@ export type ResolverInputTypes = {
     last_message_sender?: boolean | `@${string}`;
     last_message_timestamp?: boolean | `@${string}`;
     user1?: boolean | `@${string}`;
+    user1_blocked_user2?: boolean | `@${string}`;
+    user1_interacted?: boolean | `@${string}`;
     user2?: boolean | `@${string}`;
+    user2_blocked_user1?: boolean | `@${string}`;
+    user2_interacted?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
   /** Boolean expression to filter rows from the table "auth.friendships". All fields are combined with a logical 'AND'. */
@@ -4587,7 +4647,23 @@ export type ResolverInputTypes = {
       | undefined
       | null;
     user1?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    user1_blocked_user2?:
+      | ResolverInputTypes["Boolean_comparison_exp"]
+      | undefined
+      | null;
+    user1_interacted?:
+      | ResolverInputTypes["Boolean_comparison_exp"]
+      | undefined
+      | null;
     user2?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    user2_blocked_user1?:
+      | ResolverInputTypes["Boolean_comparison_exp"]
+      | undefined
+      | null;
+    user2_interacted?:
+      | ResolverInputTypes["Boolean_comparison_exp"]
+      | undefined
+      | null;
   };
   /** unique or primary key constraints on table "auth.friendships" */
   ["auth_friendships_constraint"]: auth_friendships_constraint;
@@ -4606,7 +4682,11 @@ export type ResolverInputTypes = {
       | undefined
       | null;
     user1?: string | undefined | null;
+    user1_blocked_user2?: boolean | undefined | null;
+    user1_interacted?: boolean | undefined | null;
     user2?: string | undefined | null;
+    user2_blocked_user1?: boolean | undefined | null;
+    user2_interacted?: boolean | undefined | null;
   };
   /** response of any mutation on the table "auth.friendships" */
   ["auth_friendships_mutation_response"]: AliasType<{
@@ -4630,7 +4710,11 @@ export type ResolverInputTypes = {
     last_message_sender?: ResolverInputTypes["order_by"] | undefined | null;
     last_message_timestamp?: ResolverInputTypes["order_by"] | undefined | null;
     user1?: ResolverInputTypes["order_by"] | undefined | null;
+    user1_blocked_user2?: ResolverInputTypes["order_by"] | undefined | null;
+    user1_interacted?: ResolverInputTypes["order_by"] | undefined | null;
     user2?: ResolverInputTypes["order_by"] | undefined | null;
+    user2_blocked_user1?: ResolverInputTypes["order_by"] | undefined | null;
+    user2_interacted?: ResolverInputTypes["order_by"] | undefined | null;
   };
   /** primary key columns input for table: auth_friendships */
   ["auth_friendships_pk_columns_input"]: {
@@ -4650,7 +4734,11 @@ export type ResolverInputTypes = {
       | undefined
       | null;
     user1?: string | undefined | null;
+    user1_blocked_user2?: boolean | undefined | null;
+    user1_interacted?: boolean | undefined | null;
     user2?: string | undefined | null;
+    user2_blocked_user1?: boolean | undefined | null;
+    user2_interacted?: boolean | undefined | null;
   };
   /** Streaming cursor of the table "auth_friendships" */
   ["auth_friendships_stream_cursor_input"]: {
@@ -4670,7 +4758,11 @@ export type ResolverInputTypes = {
       | undefined
       | null;
     user1?: string | undefined | null;
+    user1_blocked_user2?: boolean | undefined | null;
+    user1_interacted?: boolean | undefined | null;
     user2?: string | undefined | null;
+    user2_blocked_user1?: boolean | undefined | null;
+    user2_interacted?: boolean | undefined | null;
   };
   /** update columns of table "auth.friendships" */
   ["auth_friendships_update_column"]: auth_friendships_update_column;
@@ -7014,7 +7106,11 @@ export type ModelTypes = {
     last_message_sender?: string | undefined;
     last_message_timestamp?: ModelTypes["timestamptz"] | undefined;
     user1: string;
+    user1_blocked_user2: boolean;
+    user1_interacted: boolean;
     user2: string;
+    user2_blocked_user1: boolean;
+    user2_interacted: boolean;
   };
   /** Boolean expression to filter rows from the table "auth.friendships". All fields are combined with a logical 'AND'. */
   ["auth_friendships_bool_exp"]: {
@@ -7029,7 +7125,11 @@ export type ModelTypes = {
       | ModelTypes["timestamptz_comparison_exp"]
       | undefined;
     user1?: ModelTypes["String_comparison_exp"] | undefined;
+    user1_blocked_user2?: ModelTypes["Boolean_comparison_exp"] | undefined;
+    user1_interacted?: ModelTypes["Boolean_comparison_exp"] | undefined;
     user2?: ModelTypes["String_comparison_exp"] | undefined;
+    user2_blocked_user1?: ModelTypes["Boolean_comparison_exp"] | undefined;
+    user2_interacted?: ModelTypes["Boolean_comparison_exp"] | undefined;
   };
   ["auth_friendships_constraint"]: auth_friendships_constraint;
   /** input type for incrementing numeric columns in table "auth.friendships" */
@@ -7044,7 +7144,11 @@ export type ModelTypes = {
     last_message_sender?: string | undefined;
     last_message_timestamp?: ModelTypes["timestamptz"] | undefined;
     user1?: string | undefined;
+    user1_blocked_user2?: boolean | undefined;
+    user1_interacted?: boolean | undefined;
     user2?: string | undefined;
+    user2_blocked_user1?: boolean | undefined;
+    user2_interacted?: boolean | undefined;
   };
   /** response of any mutation on the table "auth.friendships" */
   ["auth_friendships_mutation_response"]: {
@@ -7067,7 +7171,11 @@ export type ModelTypes = {
     last_message_sender?: ModelTypes["order_by"] | undefined;
     last_message_timestamp?: ModelTypes["order_by"] | undefined;
     user1?: ModelTypes["order_by"] | undefined;
+    user1_blocked_user2?: ModelTypes["order_by"] | undefined;
+    user1_interacted?: ModelTypes["order_by"] | undefined;
     user2?: ModelTypes["order_by"] | undefined;
+    user2_blocked_user1?: ModelTypes["order_by"] | undefined;
+    user2_interacted?: ModelTypes["order_by"] | undefined;
   };
   /** primary key columns input for table: auth_friendships */
   ["auth_friendships_pk_columns_input"]: {
@@ -7083,7 +7191,11 @@ export type ModelTypes = {
     last_message_sender?: string | undefined;
     last_message_timestamp?: ModelTypes["timestamptz"] | undefined;
     user1?: string | undefined;
+    user1_blocked_user2?: boolean | undefined;
+    user1_interacted?: boolean | undefined;
     user2?: string | undefined;
+    user2_blocked_user1?: boolean | undefined;
+    user2_interacted?: boolean | undefined;
   };
   /** Streaming cursor of the table "auth_friendships" */
   ["auth_friendships_stream_cursor_input"]: {
@@ -7100,7 +7212,11 @@ export type ModelTypes = {
     last_message_sender?: string | undefined;
     last_message_timestamp?: ModelTypes["timestamptz"] | undefined;
     user1?: string | undefined;
+    user1_blocked_user2?: boolean | undefined;
+    user1_interacted?: boolean | undefined;
     user2?: string | undefined;
+    user2_blocked_user1?: boolean | undefined;
+    user2_interacted?: boolean | undefined;
   };
   ["auth_friendships_update_column"]: auth_friendships_update_column;
   ["auth_friendships_updates"]: {
@@ -8242,7 +8358,11 @@ export type GraphQLTypes = {
     last_message_sender?: string | undefined;
     last_message_timestamp?: GraphQLTypes["timestamptz"] | undefined;
     user1: string;
+    user1_blocked_user2: boolean;
+    user1_interacted: boolean;
     user2: string;
+    user2_blocked_user1: boolean;
+    user2_interacted: boolean;
   };
   /** Boolean expression to filter rows from the table "auth.friendships". All fields are combined with a logical 'AND'. */
   ["auth_friendships_bool_exp"]: {
@@ -8257,7 +8377,11 @@ export type GraphQLTypes = {
       | GraphQLTypes["timestamptz_comparison_exp"]
       | undefined;
     user1?: GraphQLTypes["String_comparison_exp"] | undefined;
+    user1_blocked_user2?: GraphQLTypes["Boolean_comparison_exp"] | undefined;
+    user1_interacted?: GraphQLTypes["Boolean_comparison_exp"] | undefined;
     user2?: GraphQLTypes["String_comparison_exp"] | undefined;
+    user2_blocked_user1?: GraphQLTypes["Boolean_comparison_exp"] | undefined;
+    user2_interacted?: GraphQLTypes["Boolean_comparison_exp"] | undefined;
   };
   /** unique or primary key constraints on table "auth.friendships" */
   ["auth_friendships_constraint"]: auth_friendships_constraint;
@@ -8273,7 +8397,11 @@ export type GraphQLTypes = {
     last_message_sender?: string | undefined;
     last_message_timestamp?: GraphQLTypes["timestamptz"] | undefined;
     user1?: string | undefined;
+    user1_blocked_user2?: boolean | undefined;
+    user1_interacted?: boolean | undefined;
     user2?: string | undefined;
+    user2_blocked_user1?: boolean | undefined;
+    user2_interacted?: boolean | undefined;
   };
   /** response of any mutation on the table "auth.friendships" */
   ["auth_friendships_mutation_response"]: {
@@ -8297,7 +8425,11 @@ export type GraphQLTypes = {
     last_message_sender?: GraphQLTypes["order_by"] | undefined;
     last_message_timestamp?: GraphQLTypes["order_by"] | undefined;
     user1?: GraphQLTypes["order_by"] | undefined;
+    user1_blocked_user2?: GraphQLTypes["order_by"] | undefined;
+    user1_interacted?: GraphQLTypes["order_by"] | undefined;
     user2?: GraphQLTypes["order_by"] | undefined;
+    user2_blocked_user1?: GraphQLTypes["order_by"] | undefined;
+    user2_interacted?: GraphQLTypes["order_by"] | undefined;
   };
   /** primary key columns input for table: auth_friendships */
   ["auth_friendships_pk_columns_input"]: {
@@ -8314,7 +8446,11 @@ export type GraphQLTypes = {
     last_message_sender?: string | undefined;
     last_message_timestamp?: GraphQLTypes["timestamptz"] | undefined;
     user1?: string | undefined;
+    user1_blocked_user2?: boolean | undefined;
+    user1_interacted?: boolean | undefined;
     user2?: string | undefined;
+    user2_blocked_user1?: boolean | undefined;
+    user2_interacted?: boolean | undefined;
   };
   /** Streaming cursor of the table "auth_friendships" */
   ["auth_friendships_stream_cursor_input"]: {
@@ -8331,7 +8467,11 @@ export type GraphQLTypes = {
     last_message_sender?: string | undefined;
     last_message_timestamp?: GraphQLTypes["timestamptz"] | undefined;
     user1?: string | undefined;
+    user1_blocked_user2?: boolean | undefined;
+    user1_interacted?: boolean | undefined;
     user2?: string | undefined;
+    user2_blocked_user1?: boolean | undefined;
+    user2_interacted?: boolean | undefined;
   };
   /** update columns of table "auth.friendships" */
   ["auth_friendships_update_column"]: auth_friendships_update_column;
@@ -9443,7 +9583,11 @@ export const enum auth_friendships_select_column {
   last_message_sender = "last_message_sender",
   last_message_timestamp = "last_message_timestamp",
   user1 = "user1",
+  user1_blocked_user2 = "user1_blocked_user2",
+  user1_interacted = "user1_interacted",
   user2 = "user2",
+  user2_blocked_user1 = "user2_blocked_user1",
+  user2_interacted = "user2_interacted",
 }
 /** update columns of table "auth.friendships" */
 export const enum auth_friendships_update_column {
@@ -9453,7 +9597,11 @@ export const enum auth_friendships_update_column {
   last_message_sender = "last_message_sender",
   last_message_timestamp = "last_message_timestamp",
   user1 = "user1",
+  user1_blocked_user2 = "user1_blocked_user2",
+  user1_interacted = "user1_interacted",
   user2 = "user2",
+  user2_blocked_user1 = "user2_blocked_user1",
+  user2_interacted = "user2_interacted",
 }
 /** unique or primary key constraints on table "auth.notification_subscriptions" */
 export const enum auth_notification_subscriptions_constraint {
