@@ -1,4 +1,5 @@
 import { Chain } from "@coral-xyz/zeus";
+
 import { HASURA_URL, JWT } from "../config";
 
 const chain = Chain(HASURA_URL, {
@@ -13,7 +14,7 @@ export const getUsers = async (
   const response = await chain("query")({
     auth_users: [
       {
-        where: { username: { _in: userIds } },
+        where: { id: { _in: userIds } },
       },
       {
         id: true,
