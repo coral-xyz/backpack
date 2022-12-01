@@ -1,5 +1,5 @@
-import express from "express";
-import type { ZodError } from "zod";
+import express, { Request, Response, NextFunction } from "express";
+import { ZodError } from "zod";
 import { zodErrorToString } from "./util";
 import authenticateRouter from "./routes/v1/authenticate";
 import notificationRoutes from "./routes/v1/notifications";
@@ -28,7 +28,7 @@ app.use("/inbox", inboxRouter);
 app.use("/friends", friendsRouter);
 app.use("/users", usersRouter);
 
-app.use((err, req, res, next) => {
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
   console.error(err);
   if (err instanceof ZodError) {
     return res.status(400).json({

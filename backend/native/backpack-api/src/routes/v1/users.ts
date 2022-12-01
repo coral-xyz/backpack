@@ -109,7 +109,8 @@ router.get(
   "/:username",
   optionallyExtractUserId(false),
   async (req: Request, res: Response) => {
-    const username = "tom";
+    const username = req.params.username;
+
     let user;
 
     if (req.id) {
@@ -124,7 +125,7 @@ router.get(
     const isAuthenticated = !!user;
 
     if (!user) {
-      user = getUserByUsername(username);
+      user = await getUserByUsername(username);
     }
 
     return user
@@ -132,7 +133,7 @@ router.get(
           ...user,
           isAuthenticated,
         })
-      : res.status(403).json({ msg: "User not found" });
+      : res.status(404).json({ msg: "User not found" });
   }
 );
 

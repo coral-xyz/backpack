@@ -24,7 +24,7 @@ export const RecoverAccountUsernameForm = ({
     async (e: FormEvent) => {
       e.preventDefault();
       try {
-        const res = await fetch(`${BACKEND_API_URL}users/${username}`, {
+        const res = await fetch(`${BACKEND_API_URL}/users/${username}`, {
           headers: {
             "x-backpack-waitlist-id": getWaitlistId() || "",
           },
