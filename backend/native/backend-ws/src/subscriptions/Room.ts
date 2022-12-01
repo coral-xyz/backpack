@@ -112,7 +112,11 @@ export class Room {
     }).catch((e) => console.log(`Error while adding chat msg to DB ${e}`));
 
     if (this.type === "individual") {
-      updateLatestMessage(parseInt(this.room), msg.message, userId);
+      updateLatestMessage(
+        parseInt(this.room),
+        msg.message_kind === "gif" ? "GIF" : msg.message,
+        userId
+      );
     }
 
     const emittedMessage = (

@@ -11,6 +11,9 @@ router.post("/", extractUserId, async (req, res) => {
   const from: string = req.id;
   // @ts-ignore
   const to: string = req.body.to;
+  if (!from || !to) {
+    return res.status(411).json({ msg: "incorrect input" });
+  }
   const friendshipId = await getOrCreateFriendship({ from, to });
 
   res.json({

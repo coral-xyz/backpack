@@ -63,7 +63,7 @@ export const getFriendships = async ({
   uuid: string;
   limit: number;
   offset: number;
-  are_friends: bolean;
+  are_friends: boolean;
 }): Promise<InboxDb[]> => {
   const response = await chain("query")({
     auth_friendships: [
