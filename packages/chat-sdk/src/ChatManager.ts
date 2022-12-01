@@ -81,6 +81,7 @@ export class ChatManager {
   }
 
   async init() {
+    await this.signaling.initWs();
     this.signaling.addListener(SIGNALING_CONNECTED, () => {
       this.signaling.send({
         type: SUBSCRIBE,

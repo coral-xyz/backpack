@@ -1,6 +1,10 @@
 import { Tabs, Tab } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { useTab, useBackgroundClient } from "@coral-xyz/recoil";
+import {
+  useTab,
+  useBackgroundClient,
+  useFeatureGates,
+} from "@coral-xyz/recoil";
 import {
   BACKPACK_FEATURE_XNFT,
   TAB_NFTS,
@@ -9,6 +13,7 @@ import {
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
   TAB_MESSAGES,
+  MESSAGES_ENABLED,
 } from "@coral-xyz/common";
 import {
   BalancesIcon,
@@ -83,6 +88,7 @@ function TabBar() {
   const theme = useCustomTheme();
   const tab = useTab();
   const background = useBackgroundClient();
+  const featureGates = useFeatureGates();
 
   const onTabClick = (tabValue: string) => {
     if (tabValue === tab) {
@@ -175,27 +181,29 @@ function TabBar() {
           />
         }
       />
-      <Tab
-        onClick={() => onTabClick(TAB_MESSAGES)}
-        value={TAB_MESSAGES}
-        disableRipple
-        className={`${classes.tab} ${
-          tab === TAB_MESSAGES ? classes.activeTab : ""
-        }`}
-        icon={
-          <MessageIcon
-            fill={
-              tab === TAB_MESSAGES
-                ? theme.custom.colors.brandColor
-                : theme.custom.colors.icon
-            }
-            style={{
-              width: "20px",
-              height: "20px",
-            }}
-          />
-        }
-      />
+      {featureGates[MESSAGES_ENABLED] && (
+        <Tab
+          onClick={() => onTabClick(TAB_MESSAGES)}
+          value={TAB_MESSAGES}
+          disableRipple
+          className={`${classes.tab} ${
+            tab === TAB_MESSAGES ? classes.activeTab : ""
+          }`}
+          icon={
+            <MessageIcon
+              fill={
+                tab === TAB_MESSAGES
+                  ? theme.custom.colors.brandColor
+                  : theme.custom.colors.icon
+              }
+              style={{
+                width: "20px",
+                height: "20px",
+              }}
+            />
+          }
+        />
+      )}
     </Tabs>
   );
 }

@@ -128,13 +128,18 @@ export const createUser = async (
  */
 export async function getUsersByPrefix({
   usernamePrefix,
+  uuid,
 }: {
   usernamePrefix: string;
+  uuid: string;
 }) {
   const response = await chain("query")({
     auth_users: [
       {
-        where: { username: { _like: `${usernamePrefix}%` } },
+        where: {
+          username: { _like: `${usernamePrefix}%` },
+          id: { _neq: uuid },
+        },
       },
       {
         id: true,

@@ -4,19 +4,28 @@ import { useRef } from "react";
 import { FullScreenChat } from "./FullScreenChat";
 import { ChatProvider } from "./ChatContext";
 import { SubscriptionType } from "@coral-xyz/common";
+import { useUsername } from "@coral-xyz/recoil";
 
 interface ChatRoomProps {
   roomId: string;
   userId: string;
   mode?: "fullscreen" | "minimized";
   type: SubscriptionType;
+  username: string;
+  areFriends?: boolean;
+  requested?: boolean;
+  remoteUserId?: string;
 }
 
 export const ChatRoom = ({
   roomId,
   userId,
+  username,
   type = "collection",
   mode = "fullscreen",
+  areFriends = true,
+  requested = false,
+  remoteUserId,
 }: ChatRoomProps) => {
   const [chatManager, setChatManager] = useState<ChatManager | null>(null);
   const messageContainerRef = useRef(null);
@@ -75,6 +84,10 @@ export const ChatRoom = ({
       chats={chats}
       setChats={setChats}
       userId={userId}
+      username={username}
+      areFriends={areFriends}
+      requested={requested}
+      remoteUserId={remoteUserId || ""}
     >
       <FullScreenChat chats={chats} messageContainerRef={messageContainerRef} />
     </ChatProvider>

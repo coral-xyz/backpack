@@ -2,6 +2,7 @@ import { SubscriptionType } from "./toServer";
 export const CHAT_MESSAGES = "CHAT_MESSAGEES";
 export const SUBSCRIBE = "SUBSCRIBE";
 export const UNSUBSCRIBE = "UNSUBSCRIBE";
+export const WS_READY = "WS_READY";
 
 export interface Message {
   id: number;
@@ -23,11 +24,16 @@ export type ReceiveChat = {
   message: string;
 };
 
-export type FromServer = {
-  type: typeof CHAT_MESSAGES;
-  payload: {
-    messages: Message[];
-    type: SubscriptionType;
-    room: string;
-  };
-};
+export type FromServer =
+  | {
+      type: typeof CHAT_MESSAGES;
+      payload: {
+        messages: Message[];
+        type: SubscriptionType;
+        room: string;
+      };
+    }
+  | {
+      type: typeof WS_READY;
+      payload: {};
+    };

@@ -2,13 +2,14 @@ import express from "express";
 import { getChats } from "../../db/chats";
 import { Message, MessageWithMetadata } from "@coral-xyz/common";
 import { getUsers } from "../../db/users";
+import { ensureHasRoomAccess, extractUserId } from "../../auth/middleware";
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get("/", extractUserId, ensureHasRoomAccess, async (req, res) => {
   const room = req.query.room;
   const type = req.query.type;
-  const lastChatId = req.query.lastChatId || 1000000000;
+  const lastChatId = req.query.lastChatId || 10000000000;
   // @ts-ignore
   const chats = await getChats({ room, type, lastChatId });
   const enrichedChats = await enrichMessages(chats);

@@ -34,6 +34,7 @@ import { NftChat, NftsExperience } from "../../Unlocked/Nfts/Experience";
 import { Inbox } from "../../Unlocked/Messages/Inbox";
 import { ChatScreen } from "../../Unlocked/Messages/ChatScreen";
 import { ProfileScreen } from "../../Unlocked/Messages/ProfileScreen";
+import { RequestsScreen } from "../../Unlocked/Messages/RequestsScreen";
 
 export function Router() {
   const location = useLocation();
@@ -45,6 +46,7 @@ export function Router() {
         <Route path="/messages" element={<MessagesPage />} />
         <Route path="/messages/chat" element={<ChatPage />} />
         <Route path="/messages/profile" element={<ProfilePage />} />
+        <Route path="/messages/requests" element={<RequestsPage />} />
         <Route path="/apps" element={<AppsPage />} />
         <Route path="/nfts" element={<NftsPage />} />
         {/*<Route path="/swap" element={<SwapPage />} />*/}
@@ -107,6 +109,11 @@ function ChatPage() {
   const { props } = useDecodedSearchParams();
   // @ts-ignore
   return <NavScreen component={<ChatScreen userId={props.userId} />} />;
+}
+
+function RequestsPage() {
+  // @ts-ignore
+  return <NavScreen component={<RequestsScreen />} />;
 }
 
 function ProfilePage() {

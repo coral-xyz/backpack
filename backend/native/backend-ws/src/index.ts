@@ -2,13 +2,43 @@ import { WebSocketServer } from "ws";
 import { PORT } from "./config";
 import { UserManager } from "./users/UserManager";
 import { extractUserId } from "./auth";
-const wss = new WebSocketServer({ port: PORT });
+import express from "express";
+import http from "http";
+import url from "url";
+
+const app = express();
+const port = PORT || 3000;
+
+const server = http.createServer(app);
+
+const wss = new WebSocketServer({ server });
+app.get("/cookie", (req, res) => {
+  const cookie = req.headers.cookie || "";
+  if (cookie) {
+    try {
+      let jwt = "";
+      cookie.split(";").forEach((item) => {
+        const cookie = item.trim().split("=");
+        if (cookie[0] === "jwt") {
+          jwt = cookie[1];
+        }
+      });
+      res.json({ jwt });
+    } catch (e) {
+      res.json({ jwt: "" });
+    }
+  }
+});
 
 wss.on("connection", async (ws, req) => {
-  const cookie = req.headers.cookie;
-  console.log(`cookie is ${cookie}`);
-  const userId = await extractUserId(cookie || "");
+  const url_parts = url.parse(req.url || "", true);
+  const query = url_parts.query;
+  const jwt = query.jwt;
+  const userId = await extractUserId(jwt || "");
   console.log(`userid is ${userId}`);
+  if (!userId) {
+    ws.close();
+  }
   UserManager.getInstance().addUser(
     ws,
     Math.floor(Math.random() * 10000000).toString(),
@@ -19,3 +49,5 @@ wss.on("connection", async (ws, req) => {
 process.on("uncaughtException", function (err) {
   console.log("Caught exception: " + err);
 });
+
+server.listen(port);

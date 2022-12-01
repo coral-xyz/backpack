@@ -1,11 +1,13 @@
 import express from "express";
 import { extractUserId } from "../../auth/middleware";
 import {
+  getAllFriends,
   getFriendship,
   getFriendships,
   setFriendship,
 } from "../../db/friendships";
 import { getUser } from "../../db/users";
+import { enrichFriendships } from "./inbox";
 
 const router = express.Router();
 
@@ -26,6 +28,22 @@ router.post("/request", extractUserId, async (req, res) => {
 
   await setFriendship({ from: uuid, to, sendRequest });
   res.json({});
+});
+
+router.get("/all", extractUserId, async (req, res) => {
+  //@ts-ignore
+  const uuid = req.id; // TODO from from
+
+  try {
+    const friends = await getAllFriends({
+      from: uuid,
+    });
+    const enrichedFriendships = await enrichFriendships(friends, uuid);
+    res.json({ chats: enrichedFriendships });
+  } catch (e) {
+    console.log(e);
+    res.status(503).json({ msg: "Internal server error" });
+  }
 });
 
 router.get("/", extractUserId, async (req, res) => {

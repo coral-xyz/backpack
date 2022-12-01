@@ -18,11 +18,13 @@ const { base58 } = ethers.utils;
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get("/", extractUserId, async (req, res) => {
   // @ts-ignore
   const usernamePrefix: string = req.query.usernamePrefix;
+  // @ts-ignore
+  const uuid = req.id;
 
-  await getUsersByPrefix({ usernamePrefix })
+  await getUsersByPrefix({ usernamePrefix, uuid })
     .then((users) => {
       res.json({
         users: users.map((user) => ({

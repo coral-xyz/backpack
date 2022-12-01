@@ -11,11 +11,16 @@ router.post("/", extractUserId, async (req, res) => {
   const from: string = req.id;
   // @ts-ignore
   const to: string = req.body.to;
-  const friendshipId = await getOrCreateFriendship({ from, to });
+  if (!from || !to) {
+    return res.status(411).json({ msg: "incorrect input" });
+  }
+  const friendship = await getOrCreateFriendship({ from, to });
 
   res.json({
     id: from,
-    friendshipId,
+    friendshipId: friendship.id,
+    areFriends: friendship.are_friends,
+    requested: friendship.requested,
   });
 });
 
@@ -26,18 +31,21 @@ router.get("/", extractUserId, async (req, res) => {
   const limit: number = req.query.limit || 50;
   //@ts-ignore
   const offset: number = req.query.limit || 0;
-  const are_friends: boolean = req.query.areFriends ?? true;
+  const areConnected: boolean =
+    req.query.areConnected === "true" || req.query.areConnected === "true"
+      ? true
+      : false;
   const friendships = await getFriendships({
     uuid,
     limit,
     offset,
-    are_friends,
+    areConnected,
   });
   const enrichedFriendships = await enrichFriendships(friendships, uuid);
   res.json({ chats: enrichedFriendships });
 });
 
-async function enrichFriendships(
+export async function enrichFriendships(
   friendships: InboxDb[],
   uuid: string
 ): Promise<EnrichedInboxDb[]> {

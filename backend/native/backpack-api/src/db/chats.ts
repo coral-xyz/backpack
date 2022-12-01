@@ -20,7 +20,7 @@ export const getChats = async ({
   const response = await chain("query")({
     chats: [
       {
-        limit: 50,
+        limit: 10,
         //@ts-ignore
         order_by: [{ created_at: "desc" }],
         where: {
@@ -43,5 +43,7 @@ export const getChats = async ({
     ],
   });
 
-  return response.chats || [];
+  return (
+    response.chats.sort((a, b) => (a.created_at < b.created_at ? -1 : 1)) || []
+  );
 };

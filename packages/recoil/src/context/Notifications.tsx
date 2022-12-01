@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useSetRecoilState } from "recoil";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "./useNavigatePolyfill";
 import {
   getLogger,
   ChannelAppUi,

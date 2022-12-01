@@ -5,6 +5,7 @@ import {
   UNSUBSCRIBE,
   FromServer,
   ToServer,
+  WS_READY,
 } from "@coral-xyz/common";
 import { SubscriptionManager } from "../subscriptions/SubscriptionManager";
 import { SubscriptionType } from "@coral-xyz/common/dist/esm/messages/toServer";
@@ -28,7 +29,6 @@ export class User {
 
   private initHandlers() {
     this.ws.on("message", (data: string) => {
-      console.log(data);
       try {
         const message = JSON.parse(data);
         this.handleMessage(message);
@@ -36,6 +36,7 @@ export class User {
         console.log("Could not parse message " + e);
       }
     });
+    this.send({ type: WS_READY, payload: {} });
   }
 
   private async handleMessage(message: ToServer) {
@@ -48,13 +49,17 @@ export class User {
         );
         break;
       case SUBSCRIBE:
+        let roomValidation = null;
         if (message.payload.type === "individual") {
           // @ts-ignore
-          const hasAccess = await validateRoom(
+          roomValidation = await validateRoom(
             this.userId,
             message.payload.room as number
           );
-          if (!hasAccess) {
+          if (!roomValidation) {
+            console.log(
+              `User ${this.userId} doesn't have access to room ${message.payload.room} `
+            );
             return;
           }
         }
@@ -66,7 +71,8 @@ export class User {
         this.subscriptions.push(message.payload);
         await SubscriptionManager.getInstance().subscribe(
           this,
-          message.payload
+          message.payload,
+          roomValidation
         );
         break;
       case UNSUBSCRIBE:
