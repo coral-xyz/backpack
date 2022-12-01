@@ -2,7 +2,7 @@ export const PORT = 8080;
 export const CHAT_HASURA_URL =
   process.env.CHAT_HASURA_URL || "https://chat-reef-hasura.fly.dev/v1/graphql";
 export const AUTH_HASURA_URL =
-  process.env.AUTH_HASURA_URL || "https://chat-reef-hasura.fly.dev/v1/graphql";
+  process.env.AUTH_HASURA_URL || "https://reef-hasura.fly.dev/v1/graphql";
 
 export const CHAT_JWT = process.env.CHAT_JWT || "";
 export const AUTH_JWT =
