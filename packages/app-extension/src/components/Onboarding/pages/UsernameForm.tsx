@@ -1,9 +1,9 @@
+import { type FormEvent, useCallback, useEffect, useState } from "react";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { AlternateEmail } from "@mui/icons-material";
 import { Box, InputAdornment } from "@mui/material";
-import { useCallback, useEffect, useState, type FormEvent } from "react";
+
 import { Header, PrimaryButton, SubtextParagraph } from "../../common";
-import { getWaitlistId } from "../../common/WaitingRoom";
 import { TextInput } from "../../common/Inputs";
 
 export const UsernameForm = ({
@@ -29,7 +29,6 @@ export const UsernameForm = ({
         const res = await fetch(`https://auth.xnfts.dev/users/${username}`, {
           headers: {
             "x-backpack-invite-code": String(inviteCode),
-            "x-backpack-waitlist-id": getWaitlistId() || "",
           },
         });
         const json = await res.json();

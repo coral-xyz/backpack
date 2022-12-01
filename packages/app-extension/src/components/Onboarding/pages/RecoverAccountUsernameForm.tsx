@@ -24,11 +24,7 @@ export const RecoverAccountUsernameForm = ({
     async (e: FormEvent) => {
       e.preventDefault();
       try {
-        const response = await fetch(`${BACKEND_API_URL}/users/${username}`, {
-          headers: {
-            "x-backpack-waitlist-id": getWaitlistId() || "",
-          },
-        });
+        const response = await fetch(`${BACKEND_API_URL}/users/${username}`);
         const json = await response.json();
         if (!response.ok) throw new Error(json.msg);
         // Use the first found public key
