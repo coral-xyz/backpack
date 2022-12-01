@@ -42,5 +42,6 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
 app.listen(process.env.PORT || 8080);
 
 process.on("uncaughtException", function (err) {
+  console.error(err);
   console.log("Caught exception: " + err);
 });

@@ -13,13 +13,6 @@ export const validateJwt = async (jwt: string) => {
   });
 };
 
-const cookieDomain = (url: string) => {
-  const { hostname } = new URL(url);
-  // Note: the leading . below is significant, as it enables us to use the
-  // cookie on subdomains
-  return hostname === "localhost" ? hostname : ".xnfts.dev";
-};
-
 export const clearCookie = (res: Response, cookieName: string) => {
   res.clearCookie(cookieName);
 };
@@ -31,7 +24,7 @@ export const setCookie = async (
 ) => {
   const secret = await importPKCS8(AUTH_JWT_PRIVATE_KEY, alg);
 
-  const _jwt = await new SignJWT({
+  const jwt = await new SignJWT({
     sub: userId,
   })
     .setProtectedHeader({ alg })
@@ -40,11 +33,13 @@ export const setCookie = async (
     .setIssuedAt()
     .sign(secret);
 
-  res.cookie("jwt", _jwt, {
+  res.cookie("jwt", jwt, {
     secure: true,
     httpOnly: true,
     sameSite: "strict",
-    domain: cookieDomain(req.url),
+    // Note: the leading . below is significant, as it enables us to use the
+    // cookie on subdomains
+    domain: req.hostname.includes("localhost") ? "localhost" : ".xnfts.dev",
     path: "/",
     maxAge: 60 * 60 * 24 * 365, // approx 1 year
   });

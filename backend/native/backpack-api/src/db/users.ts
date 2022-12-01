@@ -77,7 +77,7 @@ const transformUser = (user: {
     username: user.username,
     // Camelcase public keys for response
     publicKeys: user.public_keys.map((k) => ({
-      ...k,
+      blockchain: k.blockchain,
       publicKey: k.public_key,
     })),
     image: `https://avatars.xnfts.dev/v1/${user.username}`,
