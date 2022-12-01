@@ -49,13 +49,14 @@ export class User {
         );
         break;
       case SUBSCRIBE:
+        let roomValidation = null;
         if (message.payload.type === "individual") {
           // @ts-ignore
-          const hasAccess = await validateRoom(
+          roomValidation = await validateRoom(
             this.userId,
             message.payload.room as number
           );
-          if (!hasAccess) {
+          if (!roomValidation) {
             console.log(
               `User ${this.userId} doesn't have access to room ${message.payload.room} `
             );
@@ -70,7 +71,8 @@ export class User {
         this.subscriptions.push(message.payload);
         await SubscriptionManager.getInstance().subscribe(
           this,
-          message.payload
+          message.payload,
+          roomValidation
         );
         break;
       case UNSUBSCRIBE:

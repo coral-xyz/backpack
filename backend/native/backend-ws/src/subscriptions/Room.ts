@@ -28,10 +28,18 @@ export class Room {
     { username: string }
   >();
   public roomCreationPromise: any;
+  // Only applicable for `individual` rooms. User for storing
+  // The users that are part of the room.
+  private roomValidation: { user1: string; user2: string } | null;
 
-  constructor(room: string, type: SubscriptionType) {
+  constructor(
+    room: string,
+    type: SubscriptionType,
+    roomValidation: { user1: string; user2: string } | null
+  ) {
     this.room = room;
     this.type = type;
+    this.roomValidation = roomValidation;
     this.users = new Map<string, User>();
     this.messageHistory = [];
     this.roomCreationPromise = this.init();
@@ -115,7 +123,8 @@ export class Room {
       updateLatestMessage(
         parseInt(this.room),
         msg.message_kind === "gif" ? "GIF" : msg.message,
-        userId
+        userId,
+        this.roomValidation
       );
     }
 

@@ -16,7 +16,7 @@ export const getOrCreateFriendship = async ({
   to: string;
 }) => {
   const { user1, user2 } = getSortedUsers(from, to);
-  console.log({ user1, user2 });
+
   const existingFriendship = await chain("query")({
     auth_friendships: [
       {
@@ -32,7 +32,7 @@ export const getOrCreateFriendship = async ({
   if (existingFriendship.auth_friendships[0]?.id) {
     return existingFriendship.auth_friendships[0]?.id;
   } else {
-    const repsonse = await chain("mutation")({
+    const response = await chain("mutation")({
       insert_auth_friendships_one: [
         {
           object: {
@@ -50,7 +50,7 @@ export const getOrCreateFriendship = async ({
         { id: true },
       ],
     });
-    return repsonse.insert_auth_friendships_one?.id;
+    return response.insert_auth_friendships_one?.id;
   }
 };
 
