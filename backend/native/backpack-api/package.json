@@ -25,8 +25,13 @@
     "web-push": "^3.5.0",
     "zod": "^3.19.1"
   },
+  "devDependencies": {
+    "eslint-config-custom": "*"
+  },
   "scripts": {
     "build": "esbuild ./src/index.js --bundle --platform=node --outfile=dist/index.js",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
+    "lint:fix": "yarn run lint --fix",
     "start": "npm run build && node dist/index.js"
   }
 }

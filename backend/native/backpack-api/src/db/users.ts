@@ -40,7 +40,10 @@ export const getUserByUsername = async (username: string) => {
       },
     ],
   });
-  return response.auth_users[0] ? transformUser(response.auth_users[0]) : false;
+  if (!response.auth_users[0]) {
+    throw new Error("user not found");
+  }
+  return transformUser(response.auth_users[0]);
 };
 
 /**
@@ -59,9 +62,10 @@ export const getUser = async (id: string) => {
       },
     ],
   });
-  return response.auth_users_by_pk
-    ? transformUser(response.auth_users_by_pk)
-    : false;
+  if (!response.auth_users_by_pk) {
+    throw new Error("user not found");
+  }
+  return transformUser(response.auth_users_by_pk);
 };
 
 /**

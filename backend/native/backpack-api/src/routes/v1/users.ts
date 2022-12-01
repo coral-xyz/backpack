@@ -114,10 +114,14 @@ router.get(
     let user;
 
     if (req.id) {
-      const userFromId = await getUser(req.id);
-      if (userFromId && userFromId.username === username) {
-        // User is authenticated as username
-        user = userFromId;
+      try {
+        const userFromId = await getUser(req.id);
+        if (userFromId && userFromId.username === username) {
+          // User is authenticated as username
+          user = userFromId;
+        }
+      } catch {
+        // User not found or username did not match
       }
     }
 
@@ -145,7 +149,11 @@ router.get(
   optionallyExtractUserId(true),
   async (req: Request, res: Response) => {
     if (req.id) {
-      return res.json(await getUser(req.id));
+      try {
+        return res.json(await getUser(req.id));
+      } catch {
+        // User not found
+      }
     }
     return res.status(404).json({ msg: "user not found" });
   }
