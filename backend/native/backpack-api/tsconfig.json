@@ -11,5 +11,6 @@
     "esModuleInterop": true,
     "resolveJsonModule": true
   },
+  "include": ["src/types/express/index.d.ts"],
   "files": ["src/index.ts"]
 }

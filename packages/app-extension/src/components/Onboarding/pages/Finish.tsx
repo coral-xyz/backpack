@@ -1,4 +1,5 @@
 import {
+  BACKEND_API_URL,
   BrowserRuntimeExtension,
   KeyringInit,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
@@ -47,7 +48,7 @@ export const Finish = ({
       });
 
       try {
-        const res = await fetch("https://auth.xnfts.dev/users", {
+        const res = await fetch(`${BACKEND_API_URL}/users`, {
           method: "POST",
           body,
           headers: {

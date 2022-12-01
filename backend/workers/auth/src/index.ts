@@ -8,10 +8,9 @@ import { decode } from "bs58";
 import { ethers } from "ethers";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { importSPKI, jwtVerify } from "jose";
 import { z, ZodError } from "zod";
 
-import { alg, clearCookie, jwt } from "./jwt";
+import { jwt } from "./jwt";
 import { registerOnRampHandlers } from "./onramp";
 import { zodErrorToString } from "./util";
 import {
@@ -291,142 +290,6 @@ app.post("/users", async (c) => {
   }
 
   return jwt(c, res.insert_auth_users_one);
-});
-
-app.delete("/authenticate", (c) => {
-  clearCookie(c, "jwt");
-  return c.json({ msg: "ok" });
-});
-
-app.post("/authenticate", async (c) => {
-  const body = await c.req.json();
-  const sig = body.signature;
-  const pk = body.publickey;
-  const message = Buffer.from(decode(body.encodedMessage));
-  const { id, username } = JSON.parse(body.message);
-
-  let valid = false;
-  if (body.blockchain === "solana") {
-    valid = validateSolanaSignature(message, decode(sig), decode(pk));
-  } else if (body.blockchain === "ethereum") {
-    valid = validateEthereumSignature(message, sig, pk);
-  }
-  if (!valid) throw new Error("Invalid signature");
-
-  const chain = Chain(c.env.HASURA_URL, {
-    headers: {
-      Authorization: `Bearer ${c.env.JWT}`,
-    },
-  });
-
-  const res = await chain("query")({
-    auth_users: [
-      {
-        where: {
-          id: { _eq: id },
-          username: { _eq: username },
-          public_keys: {
-            public_key: { _eq: body.publickey },
-            blockchain: { _eq: body.blockchain },
-          },
-        },
-        limit: 1,
-      },
-      {
-        id: true,
-        username: true,
-      },
-    ],
-  });
-  const [user] = res.auth_users;
-  if (!user) throw new Error("user not found");
-
-  return jwt(c, user);
-});
-
-app.post("/authenticate/:username", async (c) => {
-  const username = c.req.param("username");
-  const _jwt = c.req.cookie("jwt");
-
-  if (_jwt) {
-    try {
-      const publicKey = await importSPKI(c.env.AUTH_JWT_PUBLIC_KEY, alg);
-      const res = await jwtVerify(_jwt, publicKey, {
-        issuer: "auth.xnfts.dev",
-        audience: "backpack",
-      });
-      if (res.payload.username === username) {
-        // update jwt cookie to push expiration date further into the future
-        return jwt(c, { id: res.payload.sub, username });
-      } else {
-        throw new Error(`invalid username (${username})`);
-      }
-    } catch (err) {
-      console.error(err);
-      clearCookie(c, "jwt");
-      return c.json({ msg: "invalid jwt cookie" }, 401);
-    }
-  } else {
-    const chain = Chain(c.env.HASURA_URL, {
-      headers: {
-        Authorization: `Bearer ${c.env.JWT}`,
-      },
-    });
-    const res = await chain("query")({
-      auth_users: [
-        {
-          where: { username: { _eq: username } },
-          limit: 1,
-        },
-        {
-          id: true,
-          public_keys: [{}, { blockchain: true, public_key: true }],
-        },
-      ],
-    });
-    const user = res.auth_users?.[0];
-    return user
-      ? c.json(user)
-      : c.json({ message: `username (${username}) not found` }, 404);
-  }
-});
-
-/**
- * returns information about the user associated with the jwt that's
- * provided either by a ?jwt= querystring parameter or 'jwt' cookie
- */
-app.get("/me", async (c) => {
-  const jwt = c.req.query("jwt") || c.req.cookie("jwt");
-  try {
-    const publicKey = await importSPKI(c.env.AUTH_JWT_PUBLIC_KEY, alg);
-    const { payload } = await jwtVerify(jwt, publicKey, {
-      issuer: "auth.xnfts.dev",
-      audience: "backpack",
-    });
-    const chain = Chain(c.env.HASURA_URL, {
-      headers: {
-        Authorization: `Bearer ${c.env.JWT}`,
-      },
-    });
-    const res = await chain("query")({
-      auth_users_by_pk: [
-        {
-          id: payload.sub,
-        },
-        {
-          id: true,
-          username: true,
-          public_keys: [{}, { blockchain: true, public_key: true }],
-        },
-      ],
-    });
-    const user = res.auth_users_by_pk;
-    if (!user) return c.json({ msg: `user not found (${payload.sub})` }, 404);
-    return c.json(user);
-  } catch (err) {
-    console.error(err);
-    return c.json({ msg: "invalid or missing jwt" }, 401);
-  }
 });
 
 registerOnRampHandlers(app);

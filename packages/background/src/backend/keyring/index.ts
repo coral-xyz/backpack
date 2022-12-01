@@ -1,6 +1,7 @@
 import { generateMnemonic } from "bip39";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
+import { BACKEND_API_URL } from "@coral-xyz/common";
 import type {
   EventEmitter,
   DerivationPath,
@@ -274,7 +275,7 @@ export class KeyringStore {
     // First lock to clear the keyring memory.
     this.lock();
     // clear the jwt cookie if it exists
-    fetch("https://auth.xnfts.dev/authenticate", {
+    fetch(`${BACKEND_API_URL}/authenticate`, {
       method: "DELETE",
     });
     // Then reset persistent disk storage.

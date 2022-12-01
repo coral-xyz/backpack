@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import type Transport from "@ledgerhq/hw-transport";
+import { BACKEND_API_URL } from "@coral-xyz/common";
 import type {
   Blockchain,
   BlockchainKeyringInit,
@@ -43,9 +44,7 @@ export const RecoverAccount = ({
   useEffect(() => {
     (async () => {
       if (username) {
-        const response = await fetch(
-          `https://auth.xnfts.dev/users/${username}/info`
-        );
+        const response = await fetch(`${BACKEND_API_URL}/users/${username}`);
         const json = await response.json();
         if (response.ok) {
           if (json.publicKeys.length > 0) {

@@ -1,13 +1,13 @@
-import { useCustomTheme, styles } from "@coral-xyz/themes";
+import { type FormEvent, useCallback, useEffect, useState } from "react";
+import { styles } from "@coral-xyz/themes";
 import { ArrowForward } from "@mui/icons-material";
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import { createPopup } from "@typeform/embed";
-import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+
 import { PrimaryButton, SubtextParagraph } from "../../common";
-import { BackpackHeader } from "../../Locked";
-import { getWaitlistId, setWaitlistId } from "../../common/WaitingRoom";
 import { TextInput } from "../../common/Inputs";
+import { getWaitlistId, setWaitlistId } from "../../common/WaitingRoom";
+import { BackpackHeader } from "../../Locked";
 
 const useStyles = styles(() => ({
   inviteCodeBox: {
@@ -31,7 +31,6 @@ export const InviteCodeForm = ({
   const [waitlistResponseId, setWaitlistResponseId] = useState(
     getWaitlistId() || ""
   );
-  const theme = useCustomTheme();
   const classes = useStyles();
 
   useEffect(() => {
@@ -60,13 +59,7 @@ export const InviteCodeForm = ({
           throw new Error("Invite code is not valid");
         }
         const res = await fetch(
-          `https://invites.xnfts.dev/check/${inviteCode}`,
-          {
-            headers: {
-              "x-backpack-invite-code": inviteCode,
-              "x-backpack-waitlist-id": getWaitlistId() || "",
-            },
-          }
+          `https://invites.xnfts.dev/check/${inviteCode}`
         );
         const json = await res.json();
         if (!res.ok) throw new Error(json.message);
