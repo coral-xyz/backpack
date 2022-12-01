@@ -41,8 +41,6 @@ function TextPercentChange({ isLoading, totalChange, percentChange }) {
     ? theme.custom.colors.balanceChangeNegative
     : theme.custom.colors.balanceChangePositive;
 
-  console.log("backgroundColor", backgroundColor);
-
   return (
     <Text style={[styles.percentChangeText, { backgroundColor, color }]}>
       {totalChange > 0 ? "+" : ""}
