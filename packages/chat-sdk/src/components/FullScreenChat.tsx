@@ -6,7 +6,7 @@ import { useChatContext } from "./ChatContext";
 import { MessagesSkeleton } from "./MessagesSkeleton";
 import { EmptyChat } from "./EmptyChat";
 export const FullScreenChat = ({ messageContainerRef, chats }) => {
-  const { chatManager, loading } = useChatContext();
+  const { chatManager, loading, areFriends } = useChatContext();
   const [autoScroll, setAutoScroll] = useState(true);
 
   const messageRef = useRef<any>();
@@ -42,6 +42,7 @@ export const FullScreenChat = ({ messageContainerRef, chats }) => {
         height: "100%",
       }}
     >
+      {!areFriends && <NoContactBanner />}
       <ScrollBarImpl>
         <div
           onScroll={scrollHandler}
@@ -78,3 +79,7 @@ export const FullScreenChat = ({ messageContainerRef, chats }) => {
     </div>
   );
 };
+
+function NoContactBanner() {
+  return <div>This account is not a friend.</div>;
+}

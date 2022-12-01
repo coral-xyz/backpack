@@ -12,6 +12,7 @@ interface ChatRoomProps {
   mode?: "fullscreen" | "minimized";
   type: SubscriptionType;
   username: string;
+  areFriends?: boolean;
 }
 
 export const ChatRoom = ({
@@ -20,6 +21,7 @@ export const ChatRoom = ({
   username,
   type = "collection",
   mode = "fullscreen",
+  areFriends = true,
 }: ChatRoomProps) => {
   const [chatManager, setChatManager] = useState<ChatManager | null>(null);
   const messageContainerRef = useRef(null);
@@ -79,6 +81,7 @@ export const ChatRoom = ({
       setChats={setChats}
       userId={userId}
       username={username}
+      areFriends={areFriends}
     >
       <FullScreenChat chats={chats} messageContainerRef={messageContainerRef} />
     </ChatProvider>

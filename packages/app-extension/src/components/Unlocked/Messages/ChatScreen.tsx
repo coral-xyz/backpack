@@ -7,9 +7,13 @@ export const ChatScreen = ({ userId }: { userId: string }) => {
   const [roomId, setRoomId] = useState("");
   const [uuid, setUuid] = useState("");
   const [fetchingRoom, setFetchingRoom] = useState(true);
+  const [areFriends, setAreFriends] = useState(false);
   const username = useUsername();
 
-  async function getChatRoom() {
+  async function getChatRoom(userId?: string) {
+    if (!userId) {
+      return;
+    }
     const res = await fetch(`${BACKEND_API_URL}/inbox`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -18,12 +22,13 @@ export const ChatScreen = ({ userId }: { userId: string }) => {
     const json = await res.json();
     setRoomId(json.friendshipId);
     setUuid(json.id);
+    setAreFriends(json.areFriends);
     setFetchingRoom(false);
   }
 
   useEffect(() => {
-    getChatRoom();
-  }, []);
+    getChatRoom(userId);
+  }, [userId]);
 
   return (
     <div>
@@ -33,6 +38,7 @@ export const ChatScreen = ({ userId }: { userId: string }) => {
           username={username || ""}
           roomId={roomId}
           userId={uuid}
+          areFriends={areFriends}
         />
       )}
     </div>

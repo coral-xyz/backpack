@@ -14,11 +14,12 @@ router.post("/", extractUserId, async (req, res) => {
   if (!from || !to) {
     return res.status(411).json({ msg: "incorrect input" });
   }
-  const friendshipId = await getOrCreateFriendship({ from, to });
+  const friendship = await getOrCreateFriendship({ from, to });
 
   res.json({
     id: from,
-    friendshipId,
+    friendshipId: friendship.id,
+    areFriends: friendship.are_friends,
   });
 });
 
@@ -43,7 +44,7 @@ router.get("/", extractUserId, async (req, res) => {
   res.json({ chats: enrichedFriendships });
 });
 
-async function enrichFriendships(
+export async function enrichFriendships(
   friendships: InboxDb[],
   uuid: string
 ): Promise<EnrichedInboxDb[]> {

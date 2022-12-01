@@ -25,12 +25,16 @@ export const getOrCreateFriendship = async ({
       },
       {
         id: true,
+        are_friends: true,
       },
     ],
   });
 
   if (existingFriendship.auth_friendships[0]?.id) {
-    return existingFriendship.auth_friendships[0]?.id;
+    return {
+      id: existingFriendship.auth_friendships[0]?.id,
+      are_friends: existingFriendship.auth_friendships[0]?.are_friends,
+    };
   } else {
     const response = await chain("mutation")({
       insert_auth_friendships_one: [
@@ -50,7 +54,7 @@ export const getOrCreateFriendship = async ({
         { id: true },
       ],
     });
-    return response.insert_auth_friendships_one?.id;
+    return { id: response.insert_auth_friendships_one?.id, are_friends: false };
   }
 };
 
@@ -254,6 +258,43 @@ function getSortedUsers(from: string, to: string) {
   }
   return { user1, user2 };
 }
+
+export const getAllFriends = async ({
+  from,
+}: {
+  from: string;
+}): Promise<InboxDb[]> => {
+  const friends = await chain("query")({
+    auth_friendships: [
+      {
+        where: {
+          _or: [
+            {
+              user1: { _eq: from },
+              are_friends: { _eq: true },
+              user2_blocked_user1: { _neq: true },
+            },
+            {
+              user2: { _eq: from },
+              are_friends: { _eq: true },
+              user1_blocked_user2: { _neq: true },
+            },
+          ],
+        },
+      },
+      {
+        id: true,
+        are_friends: true,
+        user1: true,
+        user2: true,
+        last_message_timestamp: true,
+        last_message: true,
+        last_message_sender: true,
+      },
+    ],
+  });
+  return friends.auth_friendships || [];
+};
 
 export const getFriendship = async ({
   from,
