@@ -257,3 +257,33 @@ export const getFriendship = async ({
     request_sent: existingFriendship.auth_friend_requests[0] ? true : false,
   };
 };
+
+export const validateRoom = async (uuid: string, roomId: number) => {
+  const response = await chain("query")({
+    auth_friendships: [
+      {
+        where: {
+          _or: [
+            {
+              id: { _eq: roomId },
+              user1: { _eq: uuid },
+            },
+            {
+              id: { _eq: roomId },
+              user2: { _eq: uuid },
+            },
+          ],
+        },
+      },
+      {
+        id: true,
+      },
+    ],
+  });
+
+  if (response.auth_friendships) {
+    return true;
+  }
+
+  return false;
+};

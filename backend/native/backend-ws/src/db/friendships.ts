@@ -54,5 +54,5 @@ export const updateLatestMessage = async (
       },
       { affected_rows: true },
     ],
-  });
+  }).catch((e) => console.log(`Error while updating latest ${e}`));
 };

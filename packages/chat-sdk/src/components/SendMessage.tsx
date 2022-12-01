@@ -82,7 +82,7 @@ export const SendMessage = ({ messageRef }: any) => {
   const [messageContent, setMessageContent] = useState("");
   const [emojiPicker, setEmojiPicker] = useState(false);
   const [gifPicker, setGifPicker] = useState(false);
-  const { chatManager, setChats, userId } = useChatContext();
+  const { chatManager, setChats, userId, username } = useChatContext();
   const isDarkMode = useDarkMode();
 
   const sendMessage = (messageTxt, messageKind: "text" | "gif" = "text") => {
@@ -97,6 +97,8 @@ export const SendMessage = ({ messageRef }: any) => {
           received: false,
           uuid: userId,
           message_kind: messageKind,
+          username,
+          image: `https://avatars.xnfts.dev/v1/${username}`,
         },
       ]);
       setMessageContent("");

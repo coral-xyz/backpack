@@ -31,10 +31,10 @@ export class SubscriptionManager {
     );
     if (!this.subscriptions.get(roomId)) {
       const room = new Room(payload.room, payload.type);
-      await room.init();
       this.subscriptions.set(roomId, room);
     }
     const room = this.subscriptions.get(roomId);
+    await room?.roomCreationPromise;
     room?.addUser(user);
   }
 
@@ -83,9 +83,6 @@ export class SubscriptionManager {
     if (type === "collection") {
       return `COLLECTION_${room}`;
     }
-    if (userId < room) {
-      return `INDIVIDUAL_${userId}_${room}`;
-    }
-    return `INDIVIDUAL_${room}_${userId}`;
+    return `INDIVIDUAL_${room}`;
   }
 }

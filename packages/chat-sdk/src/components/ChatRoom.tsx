@@ -4,17 +4,20 @@ import { useRef } from "react";
 import { FullScreenChat } from "./FullScreenChat";
 import { ChatProvider } from "./ChatContext";
 import { SubscriptionType } from "@coral-xyz/common";
+import { useUsername } from "@coral-xyz/recoil";
 
 interface ChatRoomProps {
   roomId: string;
   userId: string;
   mode?: "fullscreen" | "minimized";
   type: SubscriptionType;
+  username: string;
 }
 
 export const ChatRoom = ({
   roomId,
   userId,
+  username,
   type = "collection",
   mode = "fullscreen",
 }: ChatRoomProps) => {
@@ -75,6 +78,7 @@ export const ChatRoom = ({
       chats={chats}
       setChats={setChats}
       userId={userId}
+      username={username}
     >
       <FullScreenChat chats={chats} messageContainerRef={messageContainerRef} />
     </ChatProvider>

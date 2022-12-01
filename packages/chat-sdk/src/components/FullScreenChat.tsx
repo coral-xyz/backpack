@@ -64,6 +64,8 @@ export const FullScreenChat = ({ messageContainerRef, chats }) => {
                   message={chat.message}
                   received={chat.received}
                   messageKind={chat.message_kind}
+                  image={chat.image}
+                  username={chat.username}
                 />
               );
             })}
