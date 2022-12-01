@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import type { Request, Response } from "express";
 import express from "express";
 
-import { optionallyExtractUserId } from "../../auth/middleware";
+import { extractUserId, optionallyExtractUserId } from "../../auth/middleware";
 import { setCookie } from "../../auth/util";
 import {
   createUser,
