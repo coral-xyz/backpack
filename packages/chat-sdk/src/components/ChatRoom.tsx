@@ -4,7 +4,6 @@ import { useRef } from "react";
 import { FullScreenChat } from "./FullScreenChat";
 import { ChatProvider } from "./ChatContext";
 import { SubscriptionType } from "@coral-xyz/common";
-import { useUsername } from "@coral-xyz/recoil";
 
 interface ChatRoomProps {
   roomId: string;
