@@ -40,7 +40,11 @@
     "yarn-deduplicate": "^6.0.0"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx,css,md,json}": "prettier --write --cache"
+    "*.{css,md,json}": "prettier --write --cache",
+    "*.{ts,tsx,js,jsx}": [
+      "prettier --write --cache",
+      "eslint --fix"
+    ]
   },
   "resolutions": {
     "@solana/web3.js": "1.63.1",
