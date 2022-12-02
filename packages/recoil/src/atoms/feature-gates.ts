@@ -1,10 +1,11 @@
-import { atom, selector } from "recoil";
-import { backgroundClient } from "./client";
+import type { FEATURE_GATES_MAP } from "@coral-xyz/common";
 import {
-  UI_RPC_METHOD_GET_FEATURE_GATES,
-  FEATURE_GATES_MAP,
   buildFullFeatureGatesMap,
+  UI_RPC_METHOD_GET_FEATURE_GATES,
 } from "@coral-xyz/common";
+import { atom, selector } from "recoil";
+
+import { backgroundClient } from "./client";
 
 export const featureGates = selector<FEATURE_GATES_MAP>({
   key: "featureGates",

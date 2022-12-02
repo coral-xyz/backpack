@@ -1,9 +1,10 @@
-import { atom, selector } from "recoil";
 import {
   Blockchain,
-  UI_RPC_METHOD_BLOCKCHAINS_ENABLED_READ,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
+  UI_RPC_METHOD_BLOCKCHAINS_ENABLED_READ,
 } from "@coral-xyz/common";
+import { atom, selector } from "recoil";
+
 import { backgroundClient } from "./client";
 
 export const availableBlockchains = atom({

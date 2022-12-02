@@ -1,12 +1,9 @@
-import { Grid, Skeleton } from "@mui/material";
-import { Block, Image as ImageIcon } from "@mui/icons-material";
+import type { Blockchain, NftCollection } from "@coral-xyz/common";
 import {
-  toTitleCase,
-  Blockchain,
-  NftCollection,
-  NAV_COMPONENT_NFT_DETAIL,
   NAV_COMPONENT_NFT_COLLECTION,
+  NAV_COMPONENT_NFT_DETAIL,
   NAV_COMPONENT_NFT_EXPERIENCE,
+  toTitleCase,
 } from "@coral-xyz/common";
 import {
   nftCollections,
@@ -16,16 +13,20 @@ import {
   useLoader,
   useNavigation,
 } from "@coral-xyz/recoil";
-import { useCustomTheme, styles } from "@coral-xyz/themes";
-import { GridCard } from "./Common";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { Block, Image as ImageIcon } from "@mui/icons-material";
+import { Grid, Skeleton } from "@mui/material";
+
+import { useIsONELive } from "../../../hooks/useIsONELive";
 import { EmptyState } from "../../common/EmptyState";
 import {
   BalancesTable,
   BalancesTableContent,
   BalancesTableHead,
 } from "../Balances";
+
+import { GridCard } from "./Common";
 import EntryONE from "./EntryONE";
-import { useIsONELive } from "../../../hooks/useIsONELive";
 
 const useStyles = styles(() => ({
   cardContentContainer: {

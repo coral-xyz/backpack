@@ -1,20 +1,21 @@
-import { Typography, Box, Grid } from "@mui/material";
-import { useCustomTheme } from "@coral-xyz/themes";
 import {
-  XNFT_GG_LINK,
-  TWITTER_LINK,
-  DISCORD_INVITE_LINK,
   BACKPACK_FEATURE_XNFT,
+  DISCORD_INVITE_LINK,
+  TWITTER_LINK,
+  XNFT_GG_LINK,
 } from "@coral-xyz/common";
-import { Header, SubtextParagraph, PrimaryButton } from "../../common";
-import { ActionCard } from "../../common/Layout/ActionCard";
+import { useCustomTheme } from "@coral-xyz/themes";
+import { Box, Grid, Typography } from "@mui/material";
+
+import { Header, PrimaryButton, SubtextParagraph } from "../../common";
 import {
-  PinIcon,
-  ExtensionIcon,
-  WidgetIcon,
-  TwitterIcon,
   DiscordIcon,
+  ExtensionIcon,
+  PinIcon,
+  TwitterIcon,
+  WidgetIcon,
 } from "../../common/Icon";
+import { ActionCard } from "../../common/Layout/ActionCard";
 
 export function SetupComplete({ onClose }: { onClose: () => void }) {
   const theme = useCustomTheme();

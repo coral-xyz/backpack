@@ -1,50 +1,53 @@
-import { useState, useEffect } from "react";
-import { ethers, BigNumber } from "ethers";
-import { Typography } from "@mui/material";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { Connection, SystemProgram, PublicKey } from "@solana/web3.js";
-import {
-  blockchainTokenData,
-  useAnchorContext,
-  useBlockchainTokenAccount,
-  useBlockchainExplorer,
-  useBlockchainConnectionUrl,
-  useEthereumCtx,
-  useLoader,
-  useNavigation,
-  TokenData,
-} from "@coral-xyz/recoil";
-import {
-  Blockchain,
-  explorerUrl,
-  toTitleCase,
-  SOL_NATIVE_MINT,
-  ETH_NATIVE_MINT,
-  NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
-} from "@coral-xyz/common";
-import { WithHeaderButton } from "./Token";
-import { SendEthereumConfirmationCard } from "./Ethereum";
-import { SendSolanaConfirmationCard } from "./Solana";
-import {
-  TextFieldLabel,
-  PrimaryButton,
-  SecondaryButton,
-  DangerButton,
-  Loading,
-} from "../../../common";
-import { TokenInputField } from "../../../common/TokenInput";
-import { useDrawerContext } from "../../../common/Layout/Drawer";
-import { useNavStack } from "../../../common/Layout/NavStack";
-import { MaxLabel } from "../../../common/MaxLabel";
-import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
-import { TokenAmountHeader } from "../../../common/TokenAmountHeader";
-import { CheckIcon, CrossIcon } from "../../../common/Icon";
-import { TextInput } from "../../../common/Inputs";
+import { useEffect, useState } from "react";
 import {
   getHashedName,
   getNameAccountKey,
   NameRegistryState,
 } from "@bonfida/spl-name-service";
+import {
+  Blockchain,
+  ETH_NATIVE_MINT,
+  explorerUrl,
+  NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
+  SOL_NATIVE_MINT,
+  toTitleCase,
+} from "@coral-xyz/common";
+import type { TokenData } from "@coral-xyz/recoil";
+import {
+  blockchainTokenData,
+  useAnchorContext,
+  useBlockchainConnectionUrl,
+  useBlockchainExplorer,
+  useBlockchainTokenAccount,
+  useEthereumCtx,
+  useLoader,
+  useNavigation,
+} from "@coral-xyz/recoil";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { Typography } from "@mui/material";
+import type { Connection } from "@solana/web3.js";
+import { PublicKey, SystemProgram } from "@solana/web3.js";
+import { BigNumber, ethers } from "ethers";
+
+import {
+  DangerButton,
+  Loading,
+  PrimaryButton,
+  SecondaryButton,
+  TextFieldLabel,
+} from "../../../common";
+import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
+import { CheckIcon, CrossIcon } from "../../../common/Icon";
+import { TextInput } from "../../../common/Inputs";
+import { useDrawerContext } from "../../../common/Layout/Drawer";
+import { useNavStack } from "../../../common/Layout/NavStack";
+import { MaxLabel } from "../../../common/MaxLabel";
+import { TokenAmountHeader } from "../../../common/TokenAmountHeader";
+import { TokenInputField } from "../../../common/TokenInput";
+
+import { SendEthereumConfirmationCard } from "./Ethereum";
+import { SendSolanaConfirmationCard } from "./Solana";
+import { WithHeaderButton } from "./Token";
 
 const useStyles = styles((theme) => ({
   container: {

@@ -1,13 +1,14 @@
+import type { SendTransactionOptions } from "@solana/wallet-adapter-base";
 import type {
+  Connection,
   PublicKey,
   Signer,
   Transaction,
-  Connection,
   TransactionSignature,
 } from "@solana/web3.js";
-import type { SendTransactionOptions } from "@solana/wallet-adapter-base";
-import { SolanaProvider } from "./provider";
+
 import type { SolanaContext } from ".";
+import { SolanaProvider } from "./provider";
 
 // Exposes a variant of the `@solana/wallet-adapter` interface (for jupiter).
 export class SolanaWalletAdapter {

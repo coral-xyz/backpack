@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { Loading } from "../components/common";
+import type { XnftPreference } from "@coral-xyz/common";
 import {
   useAvatarUrl,
   useDarkMode,
   useUsername,
   useXnftPreference,
 } from "@coral-xyz/recoil";
-import { XnftPreference } from "@coral-xyz/common";
+
+import { Loading } from "../components/common";
 
 export function PluginRenderer({
   plugin,

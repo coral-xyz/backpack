@@ -1,18 +1,19 @@
 import { useEffect } from "react";
-import { Box } from "@mui/material";
+import { UI_RPC_METHOD_KEYRING_RESET } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { UI_RPC_METHOD_KEYRING_RESET } from "@coral-xyz/common";
+import { Box } from "@mui/material";
+
 import {
+  DangerButton,
   Header,
   HeaderIcon,
-  SubtextParagraph,
-  DangerButton,
   SecondaryButton,
+  SubtextParagraph,
 } from "../../common";
 import { WarningIcon } from "../../common/Icon";
-import { useNavStack } from "../../common/Layout/NavStack";
 import { useDrawerContext } from "../../common/Layout/Drawer";
+import { useNavStack } from "../../common/Layout/NavStack";
 
 export function ResetWarning() {
   const theme = useCustomTheme();

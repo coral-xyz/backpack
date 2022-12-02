@@ -4,14 +4,13 @@
 // See https://github.com/facebookexperimental/Recoil/issues/1416 for discussion.
 //
 
-import {
-  atom,
-  selector,
+import type {
   AtomOptions,
   ReadOnlySelectorOptions,
   RecoilState,
   RecoilValueReadOnly,
 } from "recoil";
+import { atom, selector } from "recoil";
 
 type EqualAtomOptions<T> = AtomOptions<T> & {
   equals: (a: T, b: T) => boolean;

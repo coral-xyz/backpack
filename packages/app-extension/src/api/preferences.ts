@@ -1,5 +1,5 @@
+import type { ChannelAppUiClient } from "@coral-xyz/common";
 import {
-  ChannelAppUiClient,
   BACKEND_API_URL,
   UI_RPC_METHOD_SET_XNFT_PREFERENCES,
 } from "@coral-xyz/common";

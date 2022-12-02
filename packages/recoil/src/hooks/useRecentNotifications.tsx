@@ -1,6 +1,7 @@
-import { recentNotifications } from "../atoms/notifications";
 import { useRecoilValue } from "recoil";
+
 import * as atoms from "../atoms";
+import { recentNotifications } from "../atoms/notifications";
 
 export const useRecentNotifications = ({
   limit,

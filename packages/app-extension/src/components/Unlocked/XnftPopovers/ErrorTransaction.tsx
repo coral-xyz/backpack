@@ -1,12 +1,14 @@
-import { Blockchain, explorerUrl } from "@coral-xyz/common";
+import type { Blockchain } from "@coral-xyz/common";
+import { explorerUrl } from "@coral-xyz/common";
 import {
   useBlockchainConnectionUrl,
   useBlockchainExplorer,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
-import { CrossIcon } from "../../common/Icon";
+
 import { PrimaryButton, SecondaryButton } from "../../common";
+import { CrossIcon } from "../../common/Icon";
 
 export function ErrorTransaction({
   blockchain,

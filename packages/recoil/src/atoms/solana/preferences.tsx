@@ -1,11 +1,11 @@
-import { atom, selector } from "recoil";
-
-import { Commitment } from "@solana/web3.js";
 import {
+  UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
   UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ,
   UI_RPC_METHOD_SOLANA_EXPLORER_READ,
-  UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
 } from "@coral-xyz/common";
+import type { Commitment } from "@solana/web3.js";
+import { atom, selector } from "recoil";
+
 import { backgroundClient } from "../client";
 
 export const solanaExplorer = atom<string | null>({

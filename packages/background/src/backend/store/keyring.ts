@@ -1,4 +1,5 @@
 import type { SecretPayload } from "../keyring/crypto";
+
 import { LocalStorageDb } from "./db";
 
 const KEY_KEYRING_STORE = "keyring-store";

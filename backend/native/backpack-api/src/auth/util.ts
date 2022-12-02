@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { importPKCS8, importSPKI, jwtVerify, SignJWT } from "jose";
 
-import { AUTH_JWT_PUBLIC_KEY, AUTH_JWT_PRIVATE_KEY } from "../config";
+import { AUTH_JWT_PRIVATE_KEY, AUTH_JWT_PUBLIC_KEY } from "../config";
 
 export const alg = "RS256";
 

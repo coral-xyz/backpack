@@ -1,15 +1,16 @@
-import { atom, selector } from "recoil";
 import {
   Blockchain,
-  UI_RPC_METHOD_KEYRING_AUTOLOCK_READ,
   UI_RPC_METHOD_APPROVED_ORIGINS_READ,
+  UI_RPC_METHOD_KEYRING_AUTOLOCK_READ,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_READ,
   UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_READ,
   UI_RPC_METHOD_USERNAME_READ,
 } from "@coral-xyz/common";
-import { solanaConnectionUrl } from "../solana";
-import { ethereumConnectionUrl } from "../ethereum";
+import { atom, selector } from "recoil";
+
 import { backgroundClient } from "../client";
+import { ethereumConnectionUrl } from "../ethereum";
+import { solanaConnectionUrl } from "../solana";
 
 export const isDarkMode = atom<boolean | null>({
   key: "isDarkMode",

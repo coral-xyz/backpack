@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
-import { ethers, BigNumber } from "ethers";
-import { UnsignedTransaction } from "@ethersproject/transactions";
-import { TransactionRequest } from "@ethersproject/abstract-provider";
-import { Message, PublicKey } from "@solana/web3.js";
-import { AccountLayout, u64, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import {
   Blockchain,
   deserializeTransaction,
   UI_RPC_METHOD_SOLANA_SIMULATE,
 } from "@coral-xyz/common";
+import type { TransactionRequest } from "@ethersproject/abstract-provider";
+import type { UnsignedTransaction } from "@ethersproject/transactions";
+import { AccountLayout, TOKEN_PROGRAM_ID, u64 } from "@solana/spl-token";
+import type { Message } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
+import { BigNumber, ethers } from "ethers";
+
 import {
   useBackgroundClient,
   useBlockchainNativeTokens,

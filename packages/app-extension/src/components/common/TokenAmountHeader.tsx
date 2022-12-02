@@ -1,6 +1,8 @@
-import { ethers, BigNumber } from "ethers";
-import { Typography } from "@mui/material";
 import { useCustomTheme } from "@coral-xyz/themes";
+import { Typography } from "@mui/material";
+import type { BigNumber } from "ethers";
+import { ethers } from "ethers";
+
 import { ProxyImage } from "./ProxyImage";
 
 //

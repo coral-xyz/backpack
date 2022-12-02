@@ -1,13 +1,15 @@
+import { ETH_NATIVE_MINT, fetchEthereumTokenBalances } from "@coral-xyz/common";
+import type { TokenInfo } from "@solana/spl-token-registry";
+import { BigNumber, ethers } from "ethers";
 import { atom, atomFamily, selector, selectorFamily } from "recoil";
-import { ethers, BigNumber } from "ethers";
-import { TokenInfo } from "@solana/spl-token-registry";
-import { fetchEthereumTokenBalances, ETH_NATIVE_MINT } from "@coral-xyz/common";
-import { TokenData, TokenNativeData } from "../../types";
+
+import type { TokenData, TokenNativeData } from "../../types";
 import { priceData } from "../prices";
 import { ethereumPublicKey } from "../wallet";
+
+import { ethereumConnectionUrl } from "./preferences";
 import { ethersContext } from "./provider";
 import { ethereumTokenMetadata } from "./token-metadata";
-import { ethereumConnectionUrl } from "./preferences";
 
 // Map of ETH native balance and all ERC20 balances
 // We use a dummy address for the ETH balance (zero address) so it can be

@@ -1,24 +1,26 @@
-import { useState, useEffect } from "react";
-import type Transport from "@ledgerhq/hw-transport";
-import { BACKEND_API_URL } from "@coral-xyz/common";
+import { useEffect, useState } from "react";
 import type {
   Blockchain,
   BlockchainKeyringInit,
   DerivationPath,
   KeyringType,
 } from "@coral-xyz/common";
-import { NavBackButton, WithNav } from "../../common/Layout/Nav";
-import { RecoverAccountUsernameForm } from "./RecoverAccountUsernameForm";
-import { KeyringTypeSelector } from "./KeyringTypeSelector";
+import { BACKEND_API_URL } from "@coral-xyz/common";
+import type Transport from "@ledgerhq/hw-transport";
+
+import { useSteps } from "../../../hooks/useSteps";
+import { CreatePassword } from "../../common/Account/CreatePassword";
 // import { BlockchainSelector } from "./BlockchainSelector";
 import { MnemonicInput } from "../../common/Account/MnemonicInput";
-import { MnemonicSearch } from "./MnemonicSearch";
-import { HardwareSearch } from "./HardwareSearch";
-import { Finish } from "./Finish";
-import { CreatePassword } from "../../common/Account/CreatePassword";
-import { ConnectHardwareWelcome } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareWelcome";
+import { NavBackButton, WithNav } from "../../common/Layout/Nav";
 import { ConnectHardwareSearching } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareSearching";
-import { useSteps } from "../../../hooks/useSteps";
+import { ConnectHardwareWelcome } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareWelcome";
+
+import { Finish } from "./Finish";
+import { HardwareSearch } from "./HardwareSearch";
+import { KeyringTypeSelector } from "./KeyringTypeSelector";
+import { MnemonicSearch } from "./MnemonicSearch";
+import { RecoverAccountUsernameForm } from "./RecoverAccountUsernameForm";
 
 export const RecoverAccount = ({
   onClose,

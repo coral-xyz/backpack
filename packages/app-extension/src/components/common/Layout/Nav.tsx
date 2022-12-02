@@ -1,9 +1,11 @@
 import { Suspense } from "react";
-import { Typography, IconButton } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ArrowBack } from "@mui/icons-material";
-import { Scrollbar } from "./Scrollbar";
+import { IconButton, Typography } from "@mui/material";
+
 import { Loading } from "../";
+
+import { Scrollbar } from "./Scrollbar";
 
 export const NAV_BAR_HEIGHT = 56;
 export const NAV_BUTTON_WIDTH = 38;

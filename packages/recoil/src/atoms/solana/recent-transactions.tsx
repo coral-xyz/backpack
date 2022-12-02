@@ -1,6 +1,6 @@
-import {
-  ParsedTransactionWithMeta,
+import type {
   Connection,
+  ParsedTransactionWithMeta,
   PublicKey,
 } from "@solana/web3.js";
 

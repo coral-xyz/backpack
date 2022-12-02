@@ -1,9 +1,7 @@
+import type { XnftPreference, XnftPreferenceStore } from "@coral-xyz/common";
+import { UI_RPC_METHOD_GET_XNFT_PREFERENCES } from "@coral-xyz/common";
 import { atom, atomFamily, selector, selectorFamily } from "recoil";
-import {
-  UI_RPC_METHOD_GET_XNFT_PREFERENCES,
-  XnftPreferenceStore,
-  XnftPreference,
-} from "@coral-xyz/common";
+
 import { backgroundClient } from "../client";
 
 export const xnftPreferences = atom<XnftPreferenceStore>({

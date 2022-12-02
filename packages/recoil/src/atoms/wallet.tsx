@@ -1,12 +1,14 @@
-import { atom, selector, selectorFamily } from "recoil";
 import {
   Blockchain,
-  UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLETS,
+  UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
 } from "@coral-xyz/common";
-import { WalletPublicKeys } from "../types";
-import { backgroundClient } from "./client";
+import { atom, selector, selectorFamily } from "recoil";
+
+import type { WalletPublicKeys } from "../types";
+
 import { enabledBlockchains } from "./blockchain";
+import { backgroundClient } from "./client";
 
 /**
  * Augment a public key with the name and blockchain and return as an object.

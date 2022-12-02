@@ -1,21 +1,22 @@
 import { useState } from "react";
-import Transport from "@ledgerhq/hw-transport";
+import type { Blockchain, DerivationPath } from "@coral-xyz/common";
 import {
-  Blockchain,
-  DerivationPath,
-  UI_RPC_METHOD_LEDGER_IMPORT,
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
+  UI_RPC_METHOD_LEDGER_IMPORT,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { ConnectHardwareWelcome } from "./ConnectHardwareWelcome";
+import type Transport from "@ledgerhq/hw-transport";
+
+import type { SelectedAccount } from "../../../../common/Account/ImportAccounts";
+import { ImportAccounts } from "../../../../common/Account/ImportAccounts";
+import { CloseButton } from "../../../../common/Layout/Drawer";
+import { NavBackButton, WithNav } from "../../../../common/Layout/Nav";
+import { OptionsContainer } from "../../../../Onboarding";
+
 import { ConnectHardwareSearching } from "./ConnectHardwareSearching";
 import { ConnectHardwareSuccess } from "./ConnectHardwareSuccess";
-import { ImportAccounts } from "../../../../common/Account/ImportAccounts";
-import type { SelectedAccount } from "../../../../common/Account/ImportAccounts";
-import { WithNav, NavBackButton } from "../../../../common/Layout/Nav";
-import { CloseButton } from "../../../../common/Layout/Drawer";
-import { OptionsContainer } from "../../../../Onboarding";
+import { ConnectHardwareWelcome } from "./ConnectHardwareWelcome";
 
 export function ConnectHardware({
   blockchain,

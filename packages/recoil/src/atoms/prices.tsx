@@ -1,12 +1,14 @@
-import { atomFamily, selector, selectorFamily } from "recoil";
-import { ethers } from "ethers";
 import { ETH_NATIVE_MINT } from "@coral-xyz/common";
-import { TokenDisplay } from "../types";
+import { ethers } from "ethers";
+import { atomFamily, selector, selectorFamily } from "recoil";
+
+import { equalSelector } from "../equals";
+import type { TokenDisplay } from "../types";
+
+import { erc20Balances } from "./ethereum/token";
+import { solanaConnectionUrl } from "./solana/preferences";
 import { customSplTokenAccounts } from "./solana/token";
 import { splTokenRegistry } from "./solana/token-registry";
-import { erc20Balances } from "./ethereum/token";
-import { equalSelector } from "../equals";
-import { solanaConnectionUrl } from "./solana/preferences";
 import { solanaPublicKey } from "./wallet";
 
 const baseCoingeckoParams = {

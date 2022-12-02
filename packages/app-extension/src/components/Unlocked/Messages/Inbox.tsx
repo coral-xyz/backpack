@@ -1,18 +1,20 @@
-import { TextInput } from "../../common/Inputs";
-import { MessagesSkeleton } from "./MessagesSkeleton";
-import { styles } from "@coral-xyz/themes";
-import { NewMessageModal } from "./NewMessageModal";
 import { useEffect, useState } from "react";
-import { MessageList } from "./MessageList";
+import type { EnrichedInboxDb } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
-  EnrichedInboxDb,
   NAV_COMPONENT_MESSAGE_PROFILE,
   NAV_COMPONENT_MESSAGE_REQUESTS,
 } from "@coral-xyz/common";
-import AddIcon from "@mui/icons-material/Add";
-import { useStyles } from "./styles";
 import { useNavigation } from "@coral-xyz/recoil";
+import { styles } from "@coral-xyz/themes";
+import AddIcon from "@mui/icons-material/Add";
+
+import { TextInput } from "../../common/Inputs";
+
+import { MessageList } from "./MessageList";
+import { MessagesSkeleton } from "./MessagesSkeleton";
+import { NewMessageModal } from "./NewMessageModal";
+import { useStyles } from "./styles";
 
 export function Inbox() {
   const classes = useStyles();

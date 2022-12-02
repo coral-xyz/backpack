@@ -1,5 +1,6 @@
-import type { Commitment } from "@solana/web3.js";
 import type { Blockchain } from "@coral-xyz/common";
+import type { Commitment } from "@solana/web3.js";
+
 import { LocalStorageDb } from "./db";
 
 const STORE_KEY_WALLET_DATA = "wallet-data";

@@ -1,7 +1,8 @@
-import { useRecoilValue, useRecoilState } from "recoil";
 import { UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE } from "@coral-xyz/common";
-import { useBackgroundClient } from "../client";
+import { useRecoilState, useRecoilValue } from "recoil";
+
 import * as atoms from "../../atoms";
+import { useBackgroundClient } from "../client";
 
 export function useApprovedOrigins(): Array<string> {
   return useRecoilValue(atoms.approvedOrigins)!;

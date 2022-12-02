@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { Box } from "@mui/material";
-import Transport from "@ledgerhq/hw-transport";
+import type { Blockchain } from "@coral-xyz/common";
+import type Transport from "@ledgerhq/hw-transport";
 import TransportWebHid from "@ledgerhq/hw-transport-webhid";
-import { Blockchain } from "@coral-xyz/common";
+import { Box } from "@mui/material";
+
 import {
   Header,
   HeaderIcon,
@@ -10,8 +11,9 @@ import {
   SubtextParagraph,
 } from "../../../../common";
 import { HardwareWalletIcon } from "../../../../common/Icon";
-import { ConnectHardwareFailure } from "./ConnectHardwareFailure";
+
 import { ConnectHardwareApp } from "./ConnectHardwareApp";
+import { ConnectHardwareFailure } from "./ConnectHardwareFailure";
 
 export function ConnectHardwareSearching({
   blockchain,

@@ -1,8 +1,10 @@
 import { useRecoilValue } from "recoil";
+
 import * as atoms from "../atoms";
+
+import { useKeyringStoreState } from "./keyring";
 import { useNavigation, useTab } from "./navigation";
 import { useSolanaCommitment } from "./solana";
-import { useKeyringStoreState } from "./keyring";
 
 export function useBootstrapFast() {
   useRecoilValue(atoms.bootstrapFast);

@@ -1,5 +1,6 @@
+import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import { Button, Typography } from "@mui/material";
-import { styles, useCustomTheme, HOVER_OPACITY } from "@coral-xyz/themes";
+
 import { ProxyImage } from "../../common/ProxyImage";
 
 const useStyles = styles((theme) => ({

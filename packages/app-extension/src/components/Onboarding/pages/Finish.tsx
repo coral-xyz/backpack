@@ -1,11 +1,12 @@
+import { useEffect, useState } from "react";
+import type { KeyringInit } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
   BrowserRuntimeExtension,
-  KeyringInit,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
-import { useEffect, useState } from "react";
+
 import { Loading } from "../../common";
 import { SetupComplete } from "../../common/Account/SetupComplete";
 import { getWaitlistId } from "../../common/WaitingRoom";

@@ -1,7 +1,8 @@
+import type { Blockchain } from "@coral-xyz/common";
 import { useRecoilValue } from "recoil";
-import { Blockchain } from "@coral-xyz/common";
-import { WalletPublicKeys } from "../types";
+
 import * as atoms from "../atoms";
+import type { WalletPublicKeys } from "../types";
 
 export function useActiveEthereumWallet(): {
   publicKey: string;

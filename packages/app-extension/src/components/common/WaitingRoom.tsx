@@ -1,8 +1,10 @@
-import { useDarkMode, useUsername } from "@coral-xyz/recoil";
 import { useEffect } from "react";
+import { useDarkMode, useUsername } from "@coral-xyz/recoil";
+
+import { WithNav } from "../common/Layout/Nav";
+
 import { useNavStack } from "./Layout/NavStack";
 import SocialNavbarButtons from "./SocialNavbarButtons";
-import { WithNav } from "../common/Layout/Nav";
 
 const WAITLIST_RES_ID_KEY = "waitlist-form-res-id";
 

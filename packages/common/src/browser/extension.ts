@@ -1,16 +1,17 @@
-import { BrowserRuntimeCommon } from "./common";
 import {
-  EXTENSION_WIDTH,
   EXTENSION_HEIGHT,
-  QUERY_LOCKED,
+  EXTENSION_WIDTH,
   QUERY_APPROVAL,
+  QUERY_APPROVE_ALL_TRANSACTIONS,
   QUERY_APPROVE_MESSAGE,
   QUERY_APPROVE_TRANSACTION,
-  QUERY_APPROVE_ALL_TRANSACTIONS,
   QUERY_CONNECT_HARDWARE,
+  QUERY_LOCKED,
   QUERY_ONBOARDING,
 } from "../constants";
 import type { Blockchain } from "../types";
+
+import { BrowserRuntimeCommon } from "./common";
 
 //
 // Browser apis that can be used on extension only.

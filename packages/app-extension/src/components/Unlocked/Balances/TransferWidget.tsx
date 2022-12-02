@@ -1,26 +1,28 @@
-import { Typography } from "@mui/material";
-import { ArrowUpward, ArrowDownward, SwapHoriz } from "@mui/icons-material";
-import { useCustomTheme } from "@coral-xyz/themes";
-import {
-  useEnabledBlockchains,
-  SwapProvider,
-  useFeatureGates,
-} from "@coral-xyz/recoil";
 import {
   Blockchain,
-  SOL_NATIVE_MINT,
   ETH_NATIVE_MINT,
+  SOL_NATIVE_MINT,
   STRIPE_ENABLED,
 } from "@coral-xyz/common";
-import { WithHeaderButton } from "./TokensWidget/Token";
-import { Deposit } from "./TokensWidget/Deposit";
-import { SendLoader, Send } from "./TokensWidget/Send";
+import {
+  SwapProvider,
+  useEnabledBlockchains,
+  useFeatureGates,
+} from "@coral-xyz/recoil";
+import { useCustomTheme } from "@coral-xyz/themes";
+import { ArrowDownward, ArrowUpward, SwapHoriz } from "@mui/icons-material";
+import { Typography } from "@mui/material";
+
+import { Dollar } from "../../common/Icon";
 import { useNavStack } from "../../common/Layout/NavStack";
 import type { Token } from "../../common/TokenTable";
 import { SearchableTokenTables } from "../../common/TokenTable";
-import { Dollar } from "../../common/Icon";
-import { Swap, SelectToken } from "../../Unlocked/Swap";
+import { SelectToken, Swap } from "../../Unlocked/Swap";
+
+import { Deposit } from "./TokensWidget/Deposit";
 import { Ramp } from "./TokensWidget/Ramp";
+import { Send, SendLoader } from "./TokensWidget/Send";
+import { WithHeaderButton } from "./TokensWidget/Token";
 import { StripeRamp } from "./StripeRamp";
 
 export function TransferWidget({

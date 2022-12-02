@@ -1,13 +1,15 @@
 import { useState } from "react";
-import { Box, Typography, InputAdornment, IconButton } from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { useCustomTheme } from "@coral-xyz/themes";
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
 import { useBackgroundClient, useUsername } from "@coral-xyz/recoil";
+import { useCustomTheme } from "@coral-xyz/themes";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
+
 import { PrimaryButton } from "../common";
-import { RedBackpack, Backpack } from "../common/Icon";
-import { LockedMenu } from "./LockedMenu";
+import { Backpack, RedBackpack } from "../common/Icon";
 import { TextInput } from "../common/Inputs";
+
+import { LockedMenu } from "./LockedMenu";
 
 export const NAV_BAR_HEIGHT = 56;
 

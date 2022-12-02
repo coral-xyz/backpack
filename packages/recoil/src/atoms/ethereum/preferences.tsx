@@ -1,9 +1,10 @@
-import { atom, selector } from "recoil";
 import {
   UI_RPC_METHOD_ETHEREUM_CHAIN_ID_READ,
   UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_READ,
   UI_RPC_METHOD_ETHEREUM_EXPLORER_READ,
 } from "@coral-xyz/common";
+import { atom, selector } from "recoil";
+
 import { backgroundClient } from "../client";
 
 export const ethereumExplorer = atom<string | null>({
