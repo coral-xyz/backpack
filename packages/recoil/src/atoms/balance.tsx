@@ -1,6 +1,8 @@
 import { Blockchain } from "@coral-xyz/common";
 import { selector, selectorFamily } from "recoil";
 
+import type { TokenData, TokenNativeData } from "../types";
+
 import {
   ethereumTokenBalance,
   ethereumTokenNativeBalance,
@@ -11,7 +13,6 @@ import {
   solanaTokenBalance,
   solanaTokenNativeBalance,
 } from "./solana/token";
-import { TokenData, TokenNativeData } from "../types";
 import { enabledBlockchains } from "./preferences";
 
 /**

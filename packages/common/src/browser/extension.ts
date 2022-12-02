@@ -1,6 +1,7 @@
 import {
   EXTENSION_HEIGHT,
   EXTENSION_WIDTH,
+  QUERY_ADD_USER_ACCOUNT,
   QUERY_APPROVAL,
   QUERY_APPROVE_ALL_TRANSACTIONS,
   QUERY_APPROVE_MESSAGE,
@@ -8,7 +9,6 @@ import {
   QUERY_CONNECT_HARDWARE,
   QUERY_LOCKED,
   QUERY_ONBOARDING,
-  QUERY_ADD_USER_ACCOUNT,
 } from "../constants";
 import type { Blockchain } from "../types";
 

@@ -1,5 +1,6 @@
 import type { Commitment } from "@solana/web3.js";
 import { selector } from "recoil";
+
 import { preferences } from "../preferences";
 
 export const solanaExplorer = selector<string>({

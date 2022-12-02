@@ -1,11 +1,13 @@
 import {
   Blockchain,
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLETS,
+  UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEY_DATA,
 } from "@coral-xyz/common";
 import { atom, selector, selectorFamily } from "recoil";
+
+import type { WalletPublicKeys } from "../types";
+
 import { backgroundClient } from "./client";
-import { UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEY_DATA } from "@coral-xyz/common";
-import { WalletPublicKeys } from "../types";
 
 /**
  * All public key data associated with the currently active username.

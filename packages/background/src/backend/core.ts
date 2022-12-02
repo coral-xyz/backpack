@@ -28,6 +28,7 @@ import {
   NOTIFICATION_KEYRING_DERIVED_WALLET,
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
   NOTIFICATION_KEYRING_KEY_DELETE,
+  NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED,
   NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_KEYRING_STORE_RESET,
@@ -39,7 +40,6 @@ import {
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
-  NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED,
   SolanaCluster,
   SolanaExplorer,
 } from "@coral-xyz/common";
@@ -63,15 +63,14 @@ import { validateMnemonic as _validateMnemonic } from "bip39";
 import { ethers } from "ethers";
 
 import type { EthereumConnectionBackend } from "./ethereum-connection";
-import { KeyringStore } from "./keyring";
+import { defaultPreferences, KeyringStore } from "./keyring";
 import type { SolanaConnectionBackend } from "./solana-connection";
 import type { Nav, User } from "./store";
 import * as store from "./store";
-import { defaultPreferences } from "./keyring";
 import {
+  DEFAULT_DARK_MODE,
   getWalletDataForUser,
   setWalletDataForUser,
-  DEFAULT_DARK_MODE,
 } from "./store";
 
 const { base58: bs58 } = ethers.utils;
@@ -426,7 +425,7 @@ export class Backend {
 
   async ethereumChainIdRead(): Promise<string> {
     const data = await store.getWalletDataForUser(
-      this.keyringStore.activeUsernameKeyring.username
+      this.keyringStore.activeUsernameKeyring.uuid
     );
     return data.ethereum && data.ethereum.chainId
       ? data.ethereum.chainId
@@ -630,6 +629,7 @@ export class Backend {
     if (!username) {
       throw new Error("invariant violation: username not found");
     }
+
     await this.keyringStore.tryUnlock(password);
 
     const blockchainActiveWallets = await this.blockchainActiveWallets();
@@ -1159,7 +1159,7 @@ export class Backend {
   }
 
   async setXnftPreferences(xnftId: string, preference: XnftPreference) {
-    const uuid = this.keyringStore.activeUsernameKeyring.username; // todo
+    const uuid = this.keyringStore.activeUsernameKeyring.uuid;
     const currentPreferences =
       (await store.getXnftPreferencesForUser(uuid)) || {};
     const updatedPreferences = {
@@ -1177,7 +1177,7 @@ export class Backend {
   }
 
   async getXnftPreferences() {
-    const uuid = this.keyringStore.activeUsernameKeyring.username; // todo
+    const uuid = this.keyringStore.activeUsernameKeyring.uuid;
     return await store.getXnftPreferencesForUser(uuid);
   }
 

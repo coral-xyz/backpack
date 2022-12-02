@@ -1,17 +1,3 @@
-import { decode, encode } from "bs58";
-import type {
-  Connection,
-  PublicKey,
-  Transaction,
-  Signer,
-  Commitment,
-  SendOptions,
-  ConfirmOptions,
-  TransactionSignature,
-  SimulatedTransactionResponse,
-  Version,
-} from "@solana/web3.js";
-import type { RequestManager } from "../request-manager";
 import {
   isVersionedTransaction,
   SOLANA_RPC_METHOD_SIGN_ALL_TXS,
@@ -20,8 +6,23 @@ import {
   SOLANA_RPC_METHOD_SIGN_TX,
   SOLANA_RPC_METHOD_SIMULATE,
 } from "@coral-xyz/common";
-import { VersionedTransaction } from "@solana/web3.js";
-import { ChainedRequestManager } from "../chained-request-manager";
+import type {
+  Commitment,
+  ConfirmOptions,
+  Connection,
+  PublicKey,
+  SendOptions,
+  Signer,
+  SimulatedTransactionResponse,
+  Transaction,
+  TransactionSignature,
+  Version,
+  VersionedTransaction,
+} from "@solana/web3.js";
+import { decode, encode } from "bs58";
+
+import type { ChainedRequestManager } from "../chained-request-manager";
+import type { RequestManager } from "../request-manager";
 
 export async function sendAndConfirm<
   T extends Transaction | VersionedTransaction

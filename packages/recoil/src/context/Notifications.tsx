@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
-import type { Notification } from "@coral-xyz/common";
+import type { Blockchain, Notification } from "@coral-xyz/common";
 import {
-  Blockchain,
   BackgroundSolanaConnection,
   CHANNEL_POPUP_NOTIFICATIONS,
   ChannelAppUi,
@@ -21,10 +20,12 @@ import {
   NOTIFICATION_KEYRING_DERIVED_WALLET,
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
   NOTIFICATION_KEYRING_KEY_DELETE,
+  NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED,
   NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_KEYRING_STORE_RESET,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
+  NOTIFICATION_KEYRING_STORE_USERNAME_ACCOUNT_CREATED,
   NOTIFICATION_NAVIGATION_URL_DID_CHANGE,
   NOTIFICATION_SOLANA_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
@@ -32,15 +33,13 @@ import {
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
   NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE,
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
-  NOTIFICATION_KEYRING_STORE_USERNAME_ACCOUNT_CREATED,
-  NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED,
 } from "@coral-xyz/common";
+import type { Commitment } from "@solana/web3.js";
 import { useSetRecoilState } from "recoil";
 
 import * as atoms from "../atoms";
 import { allPlugins } from "../hooks";
 import type { WalletPublicKeys } from "../types";
-import type { Commitment } from "@solana/web3.js";
 import {
   KeyringStoreStateEnum,
   useUpdateAllSplTokenAccounts,

@@ -1,9 +1,9 @@
-import { DomProvider } from "./Context";
-import { WithTheme } from "./WithTheme";
 import { useEffect, useState } from "react";
-import { Event } from "@coral-xyz/common-public";
+import type { Event, XnftMetadata } from "@coral-xyz/common-public";
+
+import { DomProvider } from "./Context";
 import { RootRenderer } from "./Renderer";
-import { XnftMetadata } from "@coral-xyz/common-public";
+import { WithTheme } from "./WithTheme";
 
 const DEFAULT_METADATA: XnftMetadata = {
   isDarkMode: false,

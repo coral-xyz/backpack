@@ -1,15 +1,16 @@
+name: Deploy xnft-api-server
 on:
   push:
-    branches: ['master']
-    paths: ['backend/native/xnft-api-server/**']
+    branches: ["master"]
+    paths: ["backend/native/xnft-api-server/**"]
+
+env:
+  FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
 jobs:
-  tests:
-    - name: "Deploy xnft api server"
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v2
-        - uses: superfly/flyctl-actions/setup-flyctl@master
-        - run: "flyctl ssh console --command 'sh ./scripts/deploy_xnft_api_server.sh'"
-          env:
-            FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: "flyctl ssh console --command 'sh ./scripts/deploy_xnft_api_server.sh'"

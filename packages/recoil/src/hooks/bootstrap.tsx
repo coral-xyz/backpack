@@ -4,8 +4,8 @@ import * as atoms from "../atoms";
 
 import { useKeyringStoreState } from "./keyring";
 import { useNavigation, useTab } from "./navigation";
-import { useSolanaCommitment } from "./solana";
 import { useAllUsers } from "./preferences";
+import { useSolanaCommitment } from "./solana";
 
 export function useBootstrapFast() {
   useRecoilValue(atoms.bootstrapFast);

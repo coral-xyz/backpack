@@ -22,12 +22,12 @@ import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
 import { generateMnemonic } from "bip39";
 
+import type { User } from "../store";
 import * as store from "../store";
 import {
-  DefaultKeyname,
-  User,
   DEFAULT_DARK_MODE,
   DEFAULT_DEVELOPER_MODE,
+  DefaultKeyname,
 } from "../store";
 
 import * as crypto from "./crypto";

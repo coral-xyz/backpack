@@ -1,4 +1,4 @@
-import { Svg, Path } from "../elements";
+import { Path, Svg } from "../elements";
 
 export function ArrowBack({ fill = "#99A4B4" }) {
   return (

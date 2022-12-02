@@ -1,9 +1,9 @@
 import {
   Blockchain,
-  UI_RPC_METHOD_USERNAME_READ,
+  UI_RPC_METHOD_ALL_USERS_READ,
   UI_RPC_METHOD_PREFERENCES_READ,
   UI_RPC_METHOD_USER_READ,
-  UI_RPC_METHOD_ALL_USERS_READ,
+  UI_RPC_METHOD_USERNAME_READ,
 } from "@coral-xyz/common";
 import { atom, selector } from "recoil";
 

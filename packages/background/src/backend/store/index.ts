@@ -9,8 +9,8 @@ export * from "./keyname";
 export * from "./keyring";
 export * from "./navigation";
 export * from "./preferences";
-export * from "./xnft-preferences";
 export * from "./usernames";
+export * from "./xnft-preferences";
 
 export function reset() {
   return LocalStorageDb.reset();
