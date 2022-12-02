@@ -58,9 +58,7 @@ const {
     }
   : {
       dir: "build",
-      plugins: [
-        // new BundleAnalyzerPlugin(),
-      ],
+      plugins: [new ForkTsCheckerWebpackPlugin()],
     };
 
 const options = {
