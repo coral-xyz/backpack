@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
-import { encode } from "bs58";
+import type { Blockchain, DerivationPath } from "@coral-xyz/common";
 import {
   toTitleCase,
-  Blockchain,
-  DerivationPath,
-  UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET,
+  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { Box } from "@mui/material";
+import { encode } from "bs58";
+
 import {
   Header,
   HeaderIcon,
   PrimaryButton,
   SubtextParagraph,
 } from "../../common";
+import type { SelectedAccount } from "../../common/Account/ImportAccounts";
 import { HardwareWalletIcon } from "../../common/Icon";
-import { SelectedAccount } from "../../common/Account/ImportAccounts";
 
 export function HardwareSign({
   blockchain,
@@ -39,15 +39,17 @@ export function HardwareSign({
     (async () => {
       if (account) {
         const signature = await background.request({
-          method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET,
+          method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
           params: [
             blockchain,
             // Sign the invite code, or an empty string if no invite code
             // TODO setup a nonce based system
             encode(Buffer.from(inviteCode ? inviteCode : "", "utf-8")),
-            derivationPath,
-            account.index,
             account.publicKey,
+            {
+              derivationPath,
+              accountIndex: account.index,
+            },
           ],
         });
         setSignature(signature);

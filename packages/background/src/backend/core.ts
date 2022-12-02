@@ -1,23 +1,17 @@
-import { validateMnemonic as _validateMnemonic } from "bip39";
-import { ethers } from "ethers";
-import type {
-  Commitment,
-  SendOptions,
-  SimulateTransactionConfig,
-} from "@solana/web3.js";
-import {
-  PublicKey,
-  Transaction,
-  TransactionInstruction,
-} from "@solana/web3.js";
-import { BACKEND_API_URL } from "@coral-xyz/common";
-import type { KeyringStoreState } from "@coral-xyz/recoil";
-import { makeDefaultNav, makeUrl } from "@coral-xyz/recoil";
 import { keyringForBlockchain } from "@coral-xyz/blockchain-common";
-import { BlockchainKeyring } from "@coral-xyz/blockchain-keyring";
+import type { BlockchainKeyring } from "@coral-xyz/blockchain-keyring";
+import type {
+  DerivationPath,
+  EventEmitter,
+  FEATURE_GATES_MAP,
+  KeyringInit,
+  KeyringType,
+  XnftPreference,
+} from "@coral-xyz/common";
 import {
   BACKEND_EVENT,
   Blockchain,
+  deserializeTransaction,
   EthereumConnectionUrl,
   EthereumExplorer,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
@@ -46,24 +40,32 @@ import {
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
   SolanaCluster,
   SolanaExplorer,
-  deserializeTransaction,
-  FEATURE_GATES_MAP,
-  XnftPreference,
-  BACKPACK_FEATURE_USERNAMES,
-  BACKPACK_FEATURE_JWT,
 } from "@coral-xyz/common";
+import type { KeyringStoreState } from "@coral-xyz/recoil";
+import {
+  KeyringStoreStateEnum,
+  makeDefaultNav,
+  makeUrl,
+} from "@coral-xyz/recoil";
 import type {
-  KeyringInit,
-  DerivationPath,
-  EventEmitter,
-  KeyringType,
-} from "@coral-xyz/common";
-import type { Nav } from "./store";
-import * as store from "./store";
+  Commitment,
+  SendOptions,
+  SimulateTransactionConfig,
+} from "@solana/web3.js";
+import {
+  PublicKey,
+  Transaction,
+  TransactionInstruction,
+} from "@solana/web3.js";
+import { validateMnemonic as _validateMnemonic } from "bip39";
+import { ethers } from "ethers";
+
+import type { EthereumConnectionBackend } from "./ethereum-connection";
 import { KeyringStore } from "./keyring";
 import type { SolanaConnectionBackend } from "./solana-connection";
-import type { EthereumConnectionBackend } from "./ethereum-connection";
-import { getWalletData, setWalletData, DEFAULT_DARK_MODE } from "./store";
+import type { Nav } from "./store";
+import * as store from "./store";
+import { DEFAULT_DARK_MODE, getWalletData, setWalletData } from "./store";
 
 const { base58: bs58 } = ethers.utils;
 
@@ -432,141 +434,78 @@ export class Backend {
   ///////////////////////////////////////////////////////////////////////////////
 
   /**
-   * attempts to sign a message with one of public keys provided, it will try to use
-   * a non-ledger pubkey if that's a possibility
-   * @param msg message to be signed
-   * @param publicKeysIncludingBlockchain Array<{ blockchain: string; publickey: string; }>
-   * @returns
+   * Sign a message using a given public key. If the keyring store is not unlocked
+   * keyring initialisation parameters must be provided that will initialise a
+   * keyring to contain the given public key.
+   *
+   * This is used during onboarding to sign messages prior to the store being initialised.
    */
-  async tryToSignMessage(
-    msg: string,
-    publicKeysIncludingBlockchain: Array<{
-      blockchain: Blockchain;
-      publickey: string;
-    }>
-  ) {
-    try {
-      const encodedMessage = bs58.encode(Buffer.from(msg));
-      // fetch all keys in the store
-      const keys = await this.keyringStore.publicKeys();
-
-      // return the first matching hot wallet address from the store, or return a
-      // matching ledger wallet address if none exist
-      const match:
-        | { blockchain: Blockchain; publickey: string; ledger: boolean }
-        | undefined = (() => {
-        let _match: any;
-        for (const { blockchain, publickey } of publicKeysIncludingBlockchain) {
-          if (
-            keys[blockchain]?.hdPublicKeys.includes(publickey) ||
-            keys[blockchain]?.importedPublicKeys.includes(publickey)
-          ) {
-            return { blockchain, publickey, ledger: false };
-          } else if (keys[blockchain]?.ledgerPublicKeys.includes(publickey)) {
-            _match = { blockchain, publickey, ledger: true };
-          }
-        }
-        return _match;
-      })();
-
-      if (!match) throw new Error("key not found");
-
-      let signature: string;
-
-      switch (match.blockchain) {
-        case Blockchain.SOLANA:
-          if (match.ledger) {
-            const tx = new Transaction();
-            tx.add(
-              new TransactionInstruction({
-                programId: new PublicKey(match.publickey),
-                keys: [],
-                data: Buffer.from(bs58.decode(encodedMessage)),
-              })
-            );
-            tx.feePayer = new PublicKey(match.publickey);
-            tx.recentBlockhash = tx.feePayer.toString();
-            const blockchainKeyring = this.keyringStore.keyringForBlockchain(
-              Blockchain.SOLANA
-            );
-            signature = await blockchainKeyring.signTransaction(
-              bs58.encode(tx.serializeMessage()),
-              match?.publickey
-            );
-          } else {
-            // sign a message with a hot wallet
-            signature = await this.solanaSignMessage(
-              encodedMessage,
-              match.publickey
-            );
-          }
-          break;
-        case Blockchain.ETHEREUM:
-          signature = await this.solanaSignMessage(
-            encodedMessage,
-            match.publickey
-          );
-          break;
-      }
-
-      return {
-        message: msg,
-        encodedMessage,
-        signature,
-        ...match,
-      };
-    } catch (err) {
-      throw new Error(`unable to sign - ${err.message}`);
-    }
-  }
-
-  // Method for signing messages from a specific wallet for a specific blockchain
-  // without the requirement to initialise a keystore. Used during onboarding.
-  async signMessageForWallet(
+  async signMessageForPublicKey(
     blockchain: Blockchain,
     msg: string,
-    derivationPath: DerivationPath,
-    accountIndex: number,
     publicKey: string,
-    mnemonic?: string
+    keyringInit?: {
+      derivationPath: DerivationPath;
+      accountIndex: number;
+      mnemonic?: string;
+    }
   ) {
     const blockchainKeyring = keyringForBlockchain(blockchain);
 
-    if (mnemonic) {
-      blockchainKeyring.initFromMnemonic(mnemonic, derivationPath, [
-        accountIndex,
-      ]);
-    } else {
-      if (!publicKey) {
-        throw new Error("missing public key");
-      }
-      blockchainKeyring.initFromLedger([
-        {
-          path: derivationPath,
-          account: accountIndex,
-          publicKey,
-        },
-      ]);
-      if (blockchain === Blockchain.SOLANA) {
-        // Setup a dummy transaction using the memo program for signing. This is
-        // necessary because the Solana Ledger app does not support signMessage.
-        const tx = new Transaction();
-        tx.add(
-          new TransactionInstruction({
-            programId: new PublicKey(publicKey),
-            keys: [],
-            data: Buffer.from(bs58.decode(msg)),
-          })
+    if (
+      !keyringInit &&
+      (await this.keyringStoreState()) !== KeyringStoreStateEnum.Unlocked
+    ) {
+      throw new Error(
+        "provide a keyring init or unlock keyring to sign message"
+      );
+    }
+
+    // If keyring init parameters were provided then init the keyring
+    if (keyringInit) {
+      if (keyringInit.mnemonic) {
+        // Using a mnemonic
+        blockchainKeyring.initFromMnemonic(
+          keyringInit.mnemonic,
+          keyringInit.derivationPath,
+          [keyringInit.accountIndex]
         );
-        tx.feePayer = new PublicKey(publicKey);
-        // Not actually needed as it's not transmitted to the network
-        tx.recentBlockhash = tx.feePayer.toString();
-        // Call the signTransaction method on Ledger
-        return await blockchainKeyring.signTransaction(
-          bs58.encode(tx.serializeMessage()),
-          publicKey
-        );
+      } else {
+        // Using a ledger
+        blockchainKeyring.initFromLedger([
+          {
+            path: keyringInit.derivationPath,
+            account: keyringInit.accountIndex,
+            publicKey,
+          },
+        ]);
       }
+    }
+
+    // Check if the keyring was initialised properly or if the existing stored
+    // keyring has the correct public key
+    if (!blockchainKeyring.hasPublicKey(publicKey)) {
+      throw new Error("invalid public key or keyring init");
+    }
+
+    if (blockchain === Blockchain.SOLANA) {
+      // Setup a dummy transaction using the memo program for signing. This is
+      // necessary because the Solana Ledger app does not support signMessage.
+      const tx = new Transaction();
+      tx.add(
+        new TransactionInstruction({
+          programId: new PublicKey(publicKey),
+          keys: [],
+          data: Buffer.from(bs58.decode(msg)),
+        })
+      );
+      tx.feePayer = new PublicKey(publicKey);
+      // Not actually needed as it's not transmitted to the network
+      tx.recentBlockhash = tx.feePayer.toString();
+      return await blockchainKeyring.signTransaction(
+        bs58.encode(tx.serializeMessage()),
+        publicKey
+      );
     }
 
     return await blockchainKeyring.signMessage(msg, publicKey);
@@ -602,47 +541,8 @@ export class Backend {
     return await this.keyringStore.checkPassword(password);
   }
 
-  async keyringStoreUnlock(
-    password: string,
-    username?: string
-  ): Promise<string> {
+  async keyringStoreUnlock(password: string): Promise<string> {
     await this.keyringStore.tryUnlock(password);
-
-    if (BACKPACK_FEATURE_USERNAMES && BACKPACK_FEATURE_JWT && username) {
-      // ensure the user has a JSON Web Token stored in their cookies
-      try {
-        const res = await fetch(`${BACKEND_API_URL}/users/${username}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        if (res.status !== 200)
-          throw new Error(`failed to authenticate (${username})`);
-        const { id, publickeys } = await res.json();
-        if (id && publickeys?.length) {
-          const signatureBundle = await this.tryToSignMessage(
-            JSON.stringify({
-              id,
-              username,
-            }),
-            publickeys
-          );
-          await fetch(`${BACKEND_API_URL}/authenticate`, {
-            body: JSON.stringify(signatureBundle),
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
-          if (res.status !== 200)
-            throw new Error("failed to verify signed message");
-        }
-      } catch (err) {
-        this.keyringStore.lock();
-        throw new Error(err.message);
-      }
-    }
 
     const blockchainActiveWallets = await this.blockchainActiveWallets();
 
