@@ -16,6 +16,7 @@ import { getWaitlistId } from "../../common/WaitingRoom";
 
 export const Finish = ({
   username,
+  userId,
   password,
   keyringInit,
   inviteCode,
@@ -25,6 +26,7 @@ export const Finish = ({
   password: string;
   keyringInit: KeyringInit;
   inviteCode?: string;
+  userId?: string;
   isAddingAccount?: boolean;
 }) => {
   const [isValid, setIsValid] = useState(false);
@@ -40,11 +42,20 @@ export const Finish = ({
   //
   // Create the user in the backend
   //
-  async function createUser(): Promise<{ id: string; msg: string }> {
+  async function createUser(): Promise<{ id: string }> {
+    // If userId is provided, then we are onboarding via the recover flow.
+    if (userId) {
+      return { id: userId };
+    }
+    // If userId is not provided and an invite code is not provided, then
+    // this is dev mode.
     if (!inviteCode) {
-      return { id: uuidv4(), msg: "ok" };
+      return { id: uuidv4() };
     }
 
+    //
+    // If we're down here, then we are creating a user for the first time.
+    //
     const body = JSON.stringify({
       username,
       inviteCode,
