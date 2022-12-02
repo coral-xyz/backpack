@@ -105,7 +105,7 @@ router.post("/", async (req, res) => {
     }
   }
 
-  return res.json({ msg: "ok" });
+  return res.json({ id: user.id, msg: "ok" });
 });
 
 /**
