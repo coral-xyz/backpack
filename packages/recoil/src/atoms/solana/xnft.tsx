@@ -9,7 +9,7 @@ import { PublicKey } from "@solana/web3.js";
 import { atom, selector } from "recoil";
 
 import { isDeveloperMode } from "../preferences";
-import { connectionUrls } from "../preferences/connection-urls:";
+import { connectionUrls } from "../preferences/connection-urls";
 import { activePublicKeys, solanaPublicKey } from "../wallet";
 
 import { anchorContext } from "./wallet";
