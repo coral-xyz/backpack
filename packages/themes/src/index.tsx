@@ -166,6 +166,7 @@ export const darkTheme: any = {
       tabBarBoxShadow: "0px -4px 4px rgba(3, 10, 25, 0.02)",
       coralGradient:
         "linear-gradient(113.94deg, #3EECB8 15.93%, #A372FE 58.23%, #FE7D4A 98.98%)",
+      miniDrawerBackdrop: "#000000",
     },
   },
 };
@@ -277,6 +278,7 @@ export const lightTheme: any = {
       tabBarBoxShadow: "0px -4px 4px rgba(3, 10, 25, 0.02)",
       coralGradient:
         "linear-gradient(113.94deg, #3EECB8 15.93%, #A372FE 58.23%, #FE7D4A 98.98%)",
+      miniDrawerBackdrop: "#18181b",
     },
   },
 };

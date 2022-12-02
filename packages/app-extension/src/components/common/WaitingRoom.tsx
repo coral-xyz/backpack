@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useDarkMode, useUsername } from "@coral-xyz/recoil";
+import { useDarkMode, useUser } from "@coral-xyz/recoil";
 
 import { WithNav } from "../common/Layout/Nav";
 
@@ -49,7 +49,7 @@ const WaitingRoom = ({ onboarded }: { onboarded?: boolean }) => {
       }}
       allow="clipboard-read; clipboard-write"
       src={`https://beta-waiting-room.vercel.app/?id=${
-        onboarded ? useUsername() : getWaitlistId()
+        onboarded ? useUser().username : getWaitlistId()
       }&onboarded=${onboarded ?? false}&theme=${
         isDarkMode ? "dark" : "light"
       }&v=2`}

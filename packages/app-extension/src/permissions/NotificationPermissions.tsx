@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { BACKEND_API_URL } from "@coral-xyz/common";
-import { useUsername } from "@coral-xyz/recoil";
+import { useUser } from "@coral-xyz/recoil";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import NotificationsOffIcon from "@mui/icons-material/NotificationsOff";
 
@@ -12,7 +12,7 @@ const BACKPACK_NOTIFICATION_PUBKEY =
 export const NotificationPermissions = () => {
   const [permissionGranted, setPermissionGranted] = useState(false);
   const [inProgress, setInProgress] = useState(true);
-  const username = useUsername();
+  const { username } = useUser();
 
   const requestNotificationPermission = async () => {
     const permission = await window.Notification.requestPermission();

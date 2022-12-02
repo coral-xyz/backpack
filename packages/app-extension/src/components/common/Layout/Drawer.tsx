@@ -46,6 +46,10 @@ const useStyles = styles((theme) => ({
     background: "transparent",
     zIndex: "1301 !important" as any,
     flex: 1,
+    "& .MuiBackdrop-root": {
+      opacity: 0.8,
+      background: `${theme.custom.colors.miniDrawerBackdrop} !important`,
+    },
   },
   miniDrawerPaper: {
     backgroundColor: "transparent",

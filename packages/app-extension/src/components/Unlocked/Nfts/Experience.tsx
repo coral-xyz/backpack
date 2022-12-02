@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ChatRoom } from "@coral-xyz/chat-sdk";
 import { NAV_COMPONENT_NFT_CHAT } from "@coral-xyz/common";
-import { useNavigation, useUsername } from "@coral-xyz/recoil";
+import { useNavigation, useUser } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 
@@ -44,7 +44,7 @@ export const NftsExperience = ({ id }: any) => {
 };
 
 export function NftChat({ id }: any) {
-  const username = useUsername();
+  const { username } = useUser();
   return (
     <ChatRoom
       username={username || ""}

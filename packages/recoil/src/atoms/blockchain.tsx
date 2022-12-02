@@ -12,20 +12,6 @@ export const availableBlockchains = atom({
   default: [Blockchain.SOLANA, Blockchain.ETHEREUM],
 });
 
-export const enabledBlockchains = atom({
-  key: "enabledBlockchains",
-  default: selector({
-    key: "enabledBlockchainsDefault",
-    get: ({ get }) => {
-      const background = get(backgroundClient);
-      return background.request({
-        method: UI_RPC_METHOD_BLOCKCHAINS_ENABLED_READ,
-        params: [],
-      });
-    },
-  }),
-});
-
 export const blockchainKeyrings = atom({
   key: "blockchainKeyrings",
   default: selector({

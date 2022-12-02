@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ChatRoom } from "@coral-xyz/chat-sdk";
 import { BACKEND_API_URL } from "@coral-xyz/common";
-import { useUsername } from "@coral-xyz/recoil";
+import { useUser } from "@coral-xyz/recoil";
 
 export const ChatScreen = ({ userId }: { userId: string }) => {
   const [roomId, setRoomId] = useState("");
@@ -9,7 +9,7 @@ export const ChatScreen = ({ userId }: { userId: string }) => {
   const [fetchingRoom, setFetchingRoom] = useState(true);
   const [areFriends, setAreFriends] = useState(false);
   const [requested, setRequested] = useState(false);
-  const username = useUsername();
+  const { username } = useUser();
 
   async function getChatRoom(userId?: string) {
     if (!userId) {

@@ -16,7 +16,7 @@ import {
   useSolanaConnectionUrl,
   useSolanaCtx,
   useSolanaExplorer,
-  useUsername,
+  useUser,
   useXnftPreference,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
@@ -49,7 +49,7 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
   });
   const nav = useNavStack();
   const background = useBackgroundClient();
-  const username = useUsername();
+  const { username } = useUser();
 
   const isDisabled = xnft.install.publicKey === PublicKey.default.toString();
 

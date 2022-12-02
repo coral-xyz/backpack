@@ -192,6 +192,9 @@ function CenterDisplay({ title }: { title: string }) {
 
 export function NavTitleLabel({ title }: any) {
   const classes = useStyles();
+  if (typeof title !== "string") {
+    return title;
+  }
   const slashTitleComponents = title.split("/");
   const parenComponents = title.split("(");
   return slashTitleComponents.length === 2 ? (
