@@ -1,10 +1,5 @@
 import type { Plugin } from "@coral-xyz/common";
-import {
-  useDarkMode,
-  usePlugins,
-  useXnftPreference,
-  useXnftPreferences,
-} from "@coral-xyz/recoil";
+import { useDarkMode, usePlugins, useXnftPreference } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Button, Divider } from "@mui/material";
 import { PublicKey } from "@solana/web3.js";
@@ -39,31 +34,20 @@ export function PluginDisplay({
   const plugins: Array<Plugin> = usePlugins();
   const p = plugins.find((p) => p.xnftAddress.toString() === xnft);
 
-  // Hack: This is hit due to the framer-motion animation.
-  if (!xnft) {
-    return <></>;
-  }
-
-  // Hack.
-  if (p === undefined) {
-    console.error("plugin not found");
-    return <Redirect />;
-  }
-
-  return <_PluginDisplay plugin={p!} closePlugin={closePlugin} />;
+  return <_PluginDisplay plugin={p} closePlugin={closePlugin} />;
 }
 
 export function _PluginDisplay({
   plugin,
   closePlugin,
 }: {
-  plugin: Plugin;
+  plugin?: Plugin;
   closePlugin: () => void;
 }) {
   const theme = useCustomTheme();
-  const xnftPreference = useXnftPreference({
-    xnftId: plugin.xnftInstallAddress?.toString(),
-  });
+  const xnftPreference = useXnftPreference(
+    plugin?.xnftInstallAddress?.toString()
+  );
 
   // TODO: splash loading page.
   return (
@@ -74,11 +58,13 @@ export function _PluginDisplay({
       }}
     >
       <PluginControl closePlugin={closePlugin} />
-      <PluginRenderer
-        key={plugin.iframeRootUrl}
-        plugin={plugin}
-        xnftPreference={xnftPreference}
-      />
+      {plugin && (
+        <PluginRenderer
+          key={plugin.iframeRootUrl}
+          plugin={plugin}
+          xnftPreference={xnftPreference}
+        />
+      )}
     </div>
   );
 }

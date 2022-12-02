@@ -44,9 +44,9 @@ const logger = getLogger("xnft-detail");
 export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
   const theme = useCustomTheme();
   const [openConfirm, setOpenConfirm] = useState(false);
-  const xnftPreference = useXnftPreference({
-    xnftId: xnft.install.account.xnft.toString(),
-  });
+  const xnftPreference = useXnftPreference(
+    xnft.install.account.xnft.toString()
+  );
   const nav = useNavStack();
   const background = useBackgroundClient();
   const { username } = useUser();
