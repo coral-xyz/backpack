@@ -1,8 +1,8 @@
 import Card from "@mui/material/Card";
 import { styles } from "@coral-xyz/themes";
-import { Skeleton, Typography } from "@mui/material";
+import { Skeleton } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useBackgroundClient, useUsername } from "@coral-xyz/recoil";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 import { UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE } from "@coral-xyz/common";
 import { useLocation } from "react-router-dom";
 import { useIsONELive } from "../../../hooks/useIsONELive";
