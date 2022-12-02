@@ -8,6 +8,7 @@ import { useTheme } from "@hooks";
 export { NavHeader } from "./NavHeader";
 export { MnemonicInputFields } from "./MnemonicInputFields";
 export { TokenInputField } from "./TokenInputField";
+export { TokenAmountHeader } from "./TokenAmountHeader";
 //
 // function getRandomColor() { var letters = "0123456789ABCDEF";
 //   var color = "#";
