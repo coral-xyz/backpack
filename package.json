@@ -12,7 +12,7 @@
       "packages/blockchains/*",
       "web"
     ],
-    "nohoist": ["examples/**"]
+    "nohoist": ["examples/**", "packages/app-mobile"]
   },
   "scripts": {
     "lint": "turbo run lint --filter=!@coral-xyz/app-mobile",
