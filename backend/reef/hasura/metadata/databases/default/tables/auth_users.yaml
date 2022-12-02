@@ -33,6 +33,12 @@ select_permissions:
         - username
       filter: {}
       allow_aggregations: true
+  - role: one_xnft
+    permission:
+      columns:
+        - id
+        - username
+      filter: {}
 update_permissions:
   - role: auth_worker
     permission:
