@@ -5,7 +5,7 @@ import { atom, selector, selectorFamily } from "recoil";
 import { backgroundClient } from "../client";
 
 type xNftId = string;
-export const xnftPreferences = atom<XnftPreferenceStore>({
+export const xnftPreferences = atom<XnftPreferenceStore | null>({
   key: "xnftPreferences",
   default: selector({
     key: "xnftPreferencesDefault",
@@ -15,17 +15,23 @@ export const xnftPreferences = atom<XnftPreferenceStore>({
         method: UI_RPC_METHOD_GET_XNFT_PREFERENCES,
         params: [],
       });
-      return response || {};
+      return response ?? null;
     },
   }),
 });
 
-export const xnftPreference = selectorFamily<XnftPreference, xNftId>({
+export const xnftPreference = selectorFamily<
+  XnftPreference | null,
+  xNftId | undefined
+>({
   key: "xnftPreference",
   get:
     (xnftId) =>
     async ({ get }) => {
+      if (!xnftId) {
+        return null;
+      }
       const preferences = get(xnftPreferences);
-      return preferences[xnftId] ?? null;
+      return preferences?.[xnftId] ?? null;
     },
 });

@@ -17,11 +17,12 @@ import {
   useSolanaCtx,
   useSolanaExplorer,
   useUser,
-  useXnftPreference,
+  xnftPreference as xnftPreferenceAtom,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Button, CircularProgress, Link, Typography } from "@mui/material";
 import { PublicKey } from "@solana/web3.js";
+import { useRecoilValue } from "recoil";
 
 import { updateRemotePreference } from "../../../../api/preferences";
 import {
@@ -44,9 +45,10 @@ const logger = getLogger("xnft-detail");
 export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
   const theme = useCustomTheme();
   const [openConfirm, setOpenConfirm] = useState(false);
-  const xnftPreference = useXnftPreference(
-    xnft.install.account.xnft.toString()
+  const xnftPreference = useRecoilValue(
+    xnftPreferenceAtom(xnft.install.account.xnft.toString())
   );
+
   const nav = useNavStack();
   const background = useBackgroundClient();
   const { username } = useUser();
@@ -60,7 +62,7 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
   const menuItems = {
     Display: {
       detail: (
-        <SwitchToggle enabled={!xnftPreference.disabled} onChange={() => {}} />
+        <SwitchToggle enabled={!xnftPreference?.disabled} onChange={() => {}} />
       ),
       onClick: () => {},
       style: {
@@ -71,9 +73,9 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
       label: "Cam/Mic/Display access",
       detail: (
         <SwitchToggle
-          enabled={xnftPreference.mediaPermissions}
+          enabled={!!xnftPreference?.mediaPermissions}
           onChange={async () => {
-            const updatedMediaPermissions = !xnftPreference.mediaPermissions;
+            const updatedMediaPermissions = !xnftPreference?.mediaPermissions;
             await background.request({
               method: UI_RPC_METHOD_SET_XNFT_PREFERENCES,
               params: [
@@ -105,9 +107,9 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
       label: "Push notifications",
       detail: (
         <SwitchToggle
-          enabled={xnftPreference.pushNotifications}
+          enabled={!!xnftPreference?.pushNotifications}
           onChange={async () => {
-            const updatedPushNotifications = !xnftPreference.pushNotifications;
+            const updatedPushNotifications = !xnftPreference?.pushNotifications;
             await background.request({
               method: UI_RPC_METHOD_SET_XNFT_PREFERENCES,
               params: [

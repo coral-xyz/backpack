@@ -1,8 +1,13 @@
 import type { Plugin } from "@coral-xyz/common";
-import { useDarkMode, usePlugins, useXnftPreference } from "@coral-xyz/recoil";
+import {
+  useDarkMode,
+  usePlugins,
+  xnftPreference as xnftPreferenceAtom,
+} from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Button, Divider } from "@mui/material";
 import { PublicKey } from "@solana/web3.js";
+import { useRecoilValue } from "recoil";
 
 import { PluginRenderer } from "../../../plugin/Renderer";
 import { MoreIcon, PowerIcon } from "../../common/Icon";
@@ -45,8 +50,8 @@ export function _PluginDisplay({
   closePlugin: () => void;
 }) {
   const theme = useCustomTheme();
-  const xnftPreference = useXnftPreference(
-    plugin?.xnftInstallAddress?.toString()
+  const xnftPreference = useRecoilValue(
+    xnftPreferenceAtom(plugin?.xnftInstallAddress?.toString())
   );
 
   // TODO: splash loading page.
