@@ -253,7 +253,7 @@ function BalanceTable({
   );
 }
 
-function TextPercentChanged({ percentChange }) {
+function TextPercentChanged({ percentChange }: { percentChange: number }) {
   const theme = useTheme();
   const positive = percentChange && percentChange > 0 ? true : false;
   const negative = percentChange && percentChange < 0 ? true : false;
