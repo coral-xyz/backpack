@@ -8,9 +8,8 @@ env:
 
 jobs:
   deploy:
-    - name: Deploy backpack-api
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v2
-        - uses: superfly/flyctl-actions/setup-flyctl@master
-        - run: "flyctl ssh console --command 'sh ./scripts/deploy_backpack_api.sh'"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: "flyctl ssh console --command 'sh ./scripts/deploy_backpack_api.sh'"
