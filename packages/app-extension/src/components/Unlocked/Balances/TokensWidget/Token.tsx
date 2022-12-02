@@ -1,22 +1,23 @@
 import { useState } from "react";
-import { Typography } from "@mui/material";
 import { Blockchain } from "@coral-xyz/common";
-import { styles } from "@coral-xyz/themes";
-import { Button } from "../../../../plugin/Component";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import {
   blockchainTokenData,
   useActiveEthereumWallet,
   useLoader,
 } from "@coral-xyz/recoil";
-import { RecentActivityList } from "../RecentActivity";
+import { styles } from "@coral-xyz/themes";
+import { Typography } from "@mui/material";
+
+import { Button } from "../../../../plugin/Component";
 import { CloseButton, WithDrawer } from "../../../common/Layout/Drawer";
 import {
   NavStackEphemeral,
   NavStackScreen,
 } from "../../../common/Layout/NavStack";
-import { TransferWidget } from "../TransferWidget";
 import { TokenAmountHeader } from "../../../common/TokenAmountHeader";
+import { RecentActivityList } from "../RecentActivity";
+import { TransferWidget } from "../TransferWidget";
 
 const useStyles = styles((theme) => ({
   tokenHeaderButtonContainer: {

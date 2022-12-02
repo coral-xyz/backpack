@@ -1,10 +1,10 @@
-import { useMemo, Suspense } from "react";
+import { Suspense, useMemo } from "react";
+import { EXTENSION_HEIGHT, EXTENSION_WIDTH } from "@coral-xyz/common";
+import { useDarkMode } from "@coral-xyz/recoil";
+import { darkTheme, lightTheme } from "@coral-xyz/themes";
 import { CssBaseline, StyledEngineProvider } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { ThemeProvider as OldThemeProvider } from "@mui/styles";
-import { darkTheme, lightTheme } from "@coral-xyz/themes";
-import { EXTENSION_WIDTH, EXTENSION_HEIGHT } from "@coral-xyz/common";
-import { useDarkMode } from "@coral-xyz/recoil";
 
 export const WithTheme: React.FC = ({ children }) => {
   return (

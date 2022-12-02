@@ -1,15 +1,17 @@
+import { useState } from "react";
+import type { EnrichedInboxDb } from "@coral-xyz/common";
 import {
-  EnrichedInboxDb,
   NAV_COMPONENT_MESSAGE_CHAT,
   NAV_COMPONENT_MESSAGE_PROFILE,
 } from "@coral-xyz/common";
+import { useNavigation } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { List, ListItem } from "@mui/material";
+
 import { isFirstLastListItemStyle } from "../../common";
-import { useState } from "react";
-import { useStyles } from "./styles";
 import { ProxyImage } from "../../common/ProxyImage";
-import { useNavigation } from "@coral-xyz/recoil";
+
+import { useStyles } from "./styles";
 
 export const MessageList = ({
   activeChats,

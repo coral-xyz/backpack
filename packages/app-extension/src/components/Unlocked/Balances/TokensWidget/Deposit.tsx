@@ -1,18 +1,19 @@
-import { useState, useEffect } from "react";
-import { IconButton, Typography, Modal } from "@mui/material";
+import { useEffect, useState } from "react";
+import { Blockchain } from "@coral-xyz/common";
+import { useActiveWallets, useBlockchainLogo } from "@coral-xyz/recoil";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import QrCodeIcon from "@mui/icons-material/QrCode";
-import { useCustomTheme, styles } from "@coral-xyz/themes";
-import { useActiveWallets, useBlockchainLogo } from "@coral-xyz/recoil";
-import { Blockchain } from "@coral-xyz/common";
+import { IconButton, Modal, Typography } from "@mui/material";
+
 import {
-  walletAddressDisplay,
   SecondaryButton,
   TextField,
+  walletAddressDisplay,
 } from "../../../common";
-import { useDrawerContext, CloseButton } from "../../../common/Layout/Drawer";
-import { WithCopyTooltip } from "../../../common/WithCopyTooltip";
+import { CloseButton, useDrawerContext } from "../../../common/Layout/Drawer";
 import { useNavStack } from "../../../common/Layout/NavStack";
+import { WithCopyTooltip } from "../../../common/WithCopyTooltip";
 
 export function Deposit({ ...props }: any) {
   if (props.blockchain) {

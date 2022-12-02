@@ -1,27 +1,28 @@
-import { Tabs, Tab } from "@mui/material";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
-import {
-  useTab,
-  useBackgroundClient,
-  useFeatureGates,
-} from "@coral-xyz/recoil";
+import { useLocation } from "react-router-dom";
 import {
   BACKPACK_FEATURE_XNFT,
-  TAB_NFTS,
+  MESSAGES_ENABLED,
   TAB_APPS,
   TAB_BALANCES,
+  TAB_MESSAGES,
+  TAB_NFTS,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
-  TAB_MESSAGES,
-  MESSAGES_ENABLED,
 } from "@coral-xyz/common";
+import {
+  useBackgroundClient,
+  useFeatureGates,
+  useTab,
+} from "@coral-xyz/recoil";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { Tab, Tabs } from "@mui/material";
+
 import {
   BalancesIcon,
   GridIcon,
   ImageIcon,
   MessageIcon,
 } from "../../common/Icon";
-import { useLocation } from "react-router-dom";
 
 const TAB_HEIGHT = 64;
 

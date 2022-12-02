@@ -1,10 +1,8 @@
-import { Grid } from "@mui/material";
-import {
-  Blockchain,
-  NftCollection,
-  NAV_COMPONENT_NFT_DETAIL,
-} from "@coral-xyz/common";
+import type { NftCollection } from "@coral-xyz/common";
+import { Blockchain, NAV_COMPONENT_NFT_DETAIL } from "@coral-xyz/common";
 import { nftCollections, useLoader, useNavigation } from "@coral-xyz/recoil";
+import { Grid } from "@mui/material";
+
 import { GridCard } from "./Common";
 
 export function NftsCollection({ id }: { id: string }) {

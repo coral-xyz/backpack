@@ -1,4 +1,21 @@
-import { useEffect, useState, Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
+import {
+  Blockchain,
+  PLUGIN_REQUEST_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
+  PLUGIN_REQUEST_ETHEREUM_SIGN_MESSAGE,
+  PLUGIN_REQUEST_ETHEREUM_SIGN_TRANSACTION,
+  PLUGIN_REQUEST_SOLANA_SIGN_ALL_TRANSACTIONS,
+  PLUGIN_REQUEST_SOLANA_SIGN_AND_SEND_TRANSACTION,
+  PLUGIN_REQUEST_SOLANA_SIGN_MESSAGE,
+  PLUGIN_REQUEST_SOLANA_SIGN_TRANSACTION,
+  UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
+  UI_RPC_METHOD_ETHEREUM_SIGN_MESSAGE,
+  UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION,
+  UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS,
+  UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
+  UI_RPC_METHOD_SOLANA_SIGN_MESSAGE,
+  UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION,
+} from "@coral-xyz/common";
 import {
   useActivePublicKeys,
   useBackgroundClient,
@@ -7,39 +24,24 @@ import {
   useTransactionData,
   useTransactionRequest,
 } from "@coral-xyz/recoil";
-import {
-  Blockchain,
-  PLUGIN_REQUEST_ETHEREUM_SIGN_TRANSACTION,
-  PLUGIN_REQUEST_ETHEREUM_SIGN_MESSAGE,
-  PLUGIN_REQUEST_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
-  PLUGIN_REQUEST_SOLANA_SIGN_TRANSACTION,
-  PLUGIN_REQUEST_SOLANA_SIGN_ALL_TRANSACTIONS,
-  PLUGIN_REQUEST_SOLANA_SIGN_MESSAGE,
-  PLUGIN_REQUEST_SOLANA_SIGN_AND_SEND_TRANSACTION,
-  UI_RPC_METHOD_ETHEREUM_SIGN_MESSAGE,
-  UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION,
-  UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
-  UI_RPC_METHOD_SOLANA_SIGN_MESSAGE,
-  UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION,
-  UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
-  UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS,
-} from "@coral-xyz/common";
-import { Typography } from "@mui/material";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { Typography } from "@mui/material";
 import * as anchor from "@project-serum/anchor";
+import { useConnection } from "@solana/wallet-adapter-react";
+import type { ConfirmOptions, SendOptions } from "@solana/web3.js";
+
 import {
-  walletAddressDisplay,
   Loading,
   PrimaryButton,
   SecondaryButton,
+  walletAddressDisplay,
 } from "../common";
-import { Scrollbar } from "../common/Layout/Scrollbar";
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
+import { Scrollbar } from "../common/Layout/Scrollbar";
 import { TransactionData } from "../common/TransactionData";
-import { useConnection } from "@solana/wallet-adapter-react";
-import { Sending } from "./XnftPopovers/Sending";
+
 import { ErrorTransaction } from "./XnftPopovers/ErrorTransaction";
-import { ConfirmOptions, SendOptions } from "@solana/web3.js";
+import { Sending } from "./XnftPopovers/Sending";
 import { Success } from "./XnftPopovers/Success";
 
 const useStyles = styles((theme) => ({

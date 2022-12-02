@@ -1,20 +1,21 @@
 import { useLocation } from "react-router-dom";
-import { getSvgPath } from "figma-squircle";
-import { Skeleton, Grid, Button, Typography } from "@mui/material";
-import { styles, useCustomTheme, HOVER_OPACITY } from "@coral-xyz/themes";
-import { Block as BlockIcon } from "@mui/icons-material";
+import {
+  Blockchain,
+  TAB_APPS,
+  UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
+} from "@coral-xyz/common";
 import {
   filteredPlugins,
-  useLoader,
   useActiveWallets,
   useBackgroundClient,
   useEnabledBlockchains,
+  useLoader,
 } from "@coral-xyz/recoil";
-import {
-  Blockchain,
-  UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
-  TAB_APPS,
-} from "@coral-xyz/common";
+import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
+import { Block as BlockIcon } from "@mui/icons-material";
+import { Button, Grid, Skeleton, Typography } from "@mui/material";
+import { getSvgPath } from "figma-squircle";
+
 import { EmptyState } from "../../common/EmptyState";
 import { ProxyImage } from "../../common/ProxyImage";
 

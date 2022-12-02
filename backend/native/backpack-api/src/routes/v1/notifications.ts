@@ -1,7 +1,8 @@
 import express from "express";
-import { insertSubscription } from "../../db/preference";
-import { getNotifications } from "../../db/notifications";
+
 import { extractUserId } from "../../auth/middleware";
+import { getNotifications } from "../../db/notifications";
+import { insertSubscription } from "../../db/preference";
 const router = express.Router();
 
 router.post("/register", extractUserId, async (req, res) => {

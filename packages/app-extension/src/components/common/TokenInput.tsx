@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react";
-import { ethers, BigNumber } from "ethers";
-import { TextField } from "./";
+import { useEffect, useState } from "react";
+import type { BigNumber } from "ethers";
+import { ethers } from "ethers";
+
+import type { TextField } from "./";
 import { TextInput } from "./Inputs";
 
 export function TokenInputField({

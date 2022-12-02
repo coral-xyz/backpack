@@ -1,11 +1,12 @@
+import { type FormEvent, useCallback, useEffect, useState } from "react";
+import { BACKEND_API_URL } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { AlternateEmail } from "@mui/icons-material";
 import { Box, InputAdornment } from "@mui/material";
-import { BACKEND_API_URL } from "@coral-xyz/common";
-import { useCallback, useEffect, useState, type FormEvent } from "react";
+
 import { Header, PrimaryButton, SubtextParagraph } from "../../common";
-import { getWaitlistId } from "../../common/WaitingRoom";
 import { TextInput } from "../../common/Inputs";
+import { getWaitlistId } from "../../common/WaitingRoom";
 
 export const RecoverAccountUsernameForm = ({
   onNext,

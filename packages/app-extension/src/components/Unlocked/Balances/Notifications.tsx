@@ -1,17 +1,18 @@
 import { Suspense, useEffect, useState } from "react";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import { Typography, List, ListItem, IconButton } from "@mui/material";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { EnrichedNotification } from "@coral-xyz/common";
-import { Loading } from "../../common";
-import { WithDrawer, CloseButton } from "../../common/Layout/Drawer";
+import type { EnrichedNotification } from "@coral-xyz/common";
 import { useRecentNotifications } from "@coral-xyz/recoil";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import { IconButton, List, ListItem, Typography } from "@mui/material";
+
+import { Loading } from "../../common";
+import { EmptyState } from "../../common/EmptyState";
+import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
 import {
   NavStackEphemeral,
   NavStackScreen,
 } from "../../common/Layout/NavStack";
 import { isFirstLastListItemStyle } from "../../common/List";
-import { EmptyState } from "../../common/EmptyState";
 import { ProxyImage } from "../../common/ProxyImage";
 
 const useStyles = styles((theme) => ({

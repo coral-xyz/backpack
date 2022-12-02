@@ -1,8 +1,9 @@
+import type { EnrichedInboxDb, InboxDb } from "@coral-xyz/common";
 import express from "express";
-import { InboxDb, EnrichedInboxDb } from "@coral-xyz/common";
-import { getUsers } from "../../db/users";
+
 import { extractUserId } from "../../auth/middleware";
 import { getFriendships, getOrCreateFriendship } from "../../db/friendships";
+import { getUsers } from "../../db/users";
 
 const router = express.Router();
 

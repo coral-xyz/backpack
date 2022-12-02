@@ -1,10 +1,12 @@
-import { Blockchain, explorerUrl } from "@coral-xyz/common";
-import { useCustomTheme } from "@coral-xyz/themes";
+import type { Blockchain } from "@coral-xyz/common";
+import { explorerUrl } from "@coral-xyz/common";
 import {
   useBlockchainConnectionUrl,
   useBlockchainExplorer,
 } from "@coral-xyz/recoil";
+import { useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
+
 import { Loading, SecondaryButton } from "../../common";
 
 export function Sending({

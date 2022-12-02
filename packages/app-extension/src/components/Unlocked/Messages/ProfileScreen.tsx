@@ -1,16 +1,18 @@
 import { useEffect, useState } from "react";
 import { BACKEND_API_URL, NAV_COMPONENT_MESSAGE_CHAT } from "@coral-xyz/common";
+import { useNavigation } from "@coral-xyz/recoil";
+import { useCustomTheme } from "@coral-xyz/themes";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import LockIcon from "@mui/icons-material/Lock";
+import VerifiedIcon from "@mui/icons-material/Verified";
+import { IconButton } from "@mui/material";
+
+import { PrimaryButton, SecondaryButton } from "../../common";
+import { MessageIcon } from "../../common/Icon";
 import { useNavStack } from "../../common/Layout/NavStack";
 import { ProxyImage } from "../../common/ProxyImage";
-import { IconButton } from "@mui/material";
-import { MessageIcon } from "../../common/Icon";
-import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+
 import { useStyles } from "./styles";
-import { useCustomTheme } from "@coral-xyz/themes";
-import VerifiedIcon from "@mui/icons-material/Verified";
-import LockIcon from "@mui/icons-material/Lock";
-import { PrimaryButton, SecondaryButton } from "../../common";
-import { useNavigation } from "@coral-xyz/recoil";
 
 export const ProfileScreen = ({ userId }: { userId: string }) => {
   const [friendship, setFriendship] = useState(false);

@@ -1,5 +1,6 @@
-import { Box, Grid, Typography } from "@mui/material";
 import { Blockchain } from "@coral-xyz/common";
+import { Box, Grid, Typography } from "@mui/material";
+
 import { Header, PrimaryButton, SubtextParagraph } from "../../common";
 import { ActionCard } from "../../common/Layout/ActionCard";
 

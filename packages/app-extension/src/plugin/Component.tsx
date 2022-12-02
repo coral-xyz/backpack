@@ -1,11 +1,12 @@
-import { TextareaAutosize as MuiTextArea } from "@mui/base";
-import { Button as MuiButton, TextField as MuiTextField } from "@mui/material";
 import React from "react";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { proxyImageUrl } from "@coral-xyz/common";
 //TODO: We should remove this dependency somehow
 import { Scrollbars } from "react-custom-scrollbars";
+import { proxyImageUrl } from "@coral-xyz/common";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { TextareaAutosize as MuiTextArea } from "@mui/base";
+import { Button as MuiButton, TextField as MuiTextField } from "@mui/material";
 import { motion } from "framer-motion";
+
 import { MOTION_VARIANTS } from "../app/Router";
 
 const useStyles = styles((theme) => ({

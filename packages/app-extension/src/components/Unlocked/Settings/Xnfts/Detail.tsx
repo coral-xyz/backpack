@@ -1,43 +1,44 @@
-import { useState, useEffect } from "react";
-import { CircularProgress, Typography, Button, Link } from "@mui/material";
-import { PublicKey } from "@solana/web3.js";
-import { updateRemotePreference } from "../../../../api/preferences";
+import { useEffect, useState } from "react";
 import {
-  getLogger,
+  BACKEND_API_URL,
+  Blockchain,
   confirmTransaction,
   explorerUrl,
-  Blockchain,
+  getLogger,
   Solana,
-  UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
   UI_RPC_METHOD_GET_XNFT_PREFERENCES,
+  UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
   UI_RPC_METHOD_SET_XNFT_PREFERENCES,
-  BACKEND_API_URL,
 } from "@coral-xyz/common";
-import { useCustomTheme } from "@coral-xyz/themes";
 import {
+  useBackgroundClient,
+  useNavigation,
+  useSolanaConnectionUrl,
   useSolanaCtx,
   useSolanaExplorer,
-  useSolanaConnectionUrl,
-  useNavigation,
+  useUser,
   useXnftPreference,
-  useBackgroundClient,
 } from "@coral-xyz/recoil";
-import { SwitchToggle } from "../Preferences";
-import { SettingsList } from "../../../common/Settings/List";
-import { useNavStack } from "../../../common/Layout/NavStack";
+import { useCustomTheme } from "@coral-xyz/themes";
+import { Button, CircularProgress, Link, Typography } from "@mui/material";
+import { PublicKey } from "@solana/web3.js";
+
+import { updateRemotePreference } from "../../../../api/preferences";
 import {
-  PrimaryButton,
-  SecondaryButton,
-  NegativeButton,
   LaunchDetail,
   Loading,
+  NegativeButton,
+  PrimaryButton,
+  SecondaryButton,
 } from "../../../common";
 import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
 import { CheckIcon } from "../../../common/Icon";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
-import { Error } from "../../Balances/TokensWidget/Send";
+import { useNavStack } from "../../../common/Layout/NavStack";
 import { ProxyImage } from "../../../common/ProxyImage";
-import { useUser } from "@coral-xyz/recoil";
+import { SettingsList } from "../../../common/Settings/List";
+import { Error } from "../../Balances/TokensWidget/Send";
+import { SwitchToggle } from "../Preferences";
 const logger = getLogger("xnft-detail");
 
 export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {

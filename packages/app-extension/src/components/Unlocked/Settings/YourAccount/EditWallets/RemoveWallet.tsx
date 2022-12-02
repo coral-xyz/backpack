@@ -1,20 +1,21 @@
-import React, { useState, useEffect } from "react";
-import { Typography } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import type { Blockchain } from "@coral-xyz/common";
 import {
-  Blockchain,
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_KEYRING_KEY_DELETE,
 } from "@coral-xyz/common";
-import { useCustomTheme } from "@coral-xyz/themes";
 import {
   useActiveWallets,
   useBackgroundClient,
   useWalletPublicKeys,
 } from "@coral-xyz/recoil";
-import { useNavStack } from "../../../../common/Layout/NavStack";
-import { WithMiniDrawer } from "../../../../common/Layout/Drawer";
+import { useCustomTheme } from "@coral-xyz/themes";
+import { Typography } from "@mui/material";
+
+import { PrimaryButton, SecondaryButton } from "../../../../common";
 import { CheckIcon, WarningIcon } from "../../../../common/Icon";
-import { SecondaryButton, PrimaryButton } from "../../../../common";
+import { WithMiniDrawer } from "../../../../common/Layout/Drawer";
+import { useNavStack } from "../../../../common/Layout/NavStack";
 
 export const RemoveWallet: React.FC<{
   blockchain: Blockchain;

@@ -1,27 +1,29 @@
 import { Suspense, useState } from "react";
-import { Typography, List, ListItem, IconButton } from "@mui/material";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { CallMade, Check, Clear, Bolt } from "@mui/icons-material";
-import { explorerUrl, Blockchain } from "@coral-xyz/common";
+import type { Blockchain } from "@coral-xyz/common";
+import { explorerUrl } from "@coral-xyz/common";
 import {
   useActiveEthereumWallet,
   useActiveSolanaWallet,
-  useRecentTransactions,
-  useRecentSolanaTransactions,
-  useRecentEthereumTransactions,
   useBlockchainConnectionUrl,
   useBlockchainExplorer,
   useBlockchainLogo,
+  useRecentEthereumTransactions,
+  useRecentSolanaTransactions,
+  useRecentTransactions,
 } from "@coral-xyz/recoil";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { Bolt, CallMade, Check, Clear } from "@mui/icons-material";
+import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
+import { IconButton, List, ListItem, Typography } from "@mui/material";
+
 import { Loading } from "../../common";
-import { WithDrawer, CloseButton } from "../../common/Layout/Drawer";
+import { EmptyState } from "../../common/EmptyState";
+import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
 import {
   NavStackEphemeral,
   NavStackScreen,
 } from "../../common/Layout/NavStack";
 import { isFirstLastListItemStyle } from "../../common/List";
-import { EmptyState } from "../../common/EmptyState";
-import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 
 const useStyles = styles((theme) => ({
   recentActivityLabel: {

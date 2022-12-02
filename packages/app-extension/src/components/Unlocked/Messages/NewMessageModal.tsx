@@ -3,9 +3,10 @@ import {
   NavStackEphemeral,
   NavStackScreen,
 } from "../../common/Layout/NavStack";
-import { SearchUsers } from "./SearchUsers";
+
 import { ChatScreen } from "./ChatScreen";
 import { ProfileScreen } from "./ProfileScreen";
+import { SearchUsers } from "./SearchUsers";
 
 export const NewMessageModal = ({
   newSettingsModal,

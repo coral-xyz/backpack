@@ -1,13 +1,14 @@
-import { useEffect, useState, FormEvent } from "react";
-import { Box, List, ListItem, ListItemIcon } from "@mui/material";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import ChatIcon from "@mui/icons-material/Chat";
-import WebIcon from "@mui/icons-material/Web";
-import LockOpenIcon from "@mui/icons-material/LockOpen";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { useBackgroundClient } from "@coral-xyz/recoil";
+import type { FormEvent } from "react";
+import { useEffect, useState } from "react";
 import { UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY } from "@coral-xyz/common";
-import { CopyButton } from "../../../common/Account/MnemonicInput";
+import { useBackgroundClient } from "@coral-xyz/recoil";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
+import ChatIcon from "@mui/icons-material/Chat";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import LockOpenIcon from "@mui/icons-material/LockOpen";
+import WebIcon from "@mui/icons-material/Web";
+import { Box, List, ListItem, ListItemIcon } from "@mui/material";
+
 import {
   DangerButton,
   Header,
@@ -16,10 +17,11 @@ import {
   SubtextParagraph,
   TextField,
 } from "../../../common";
+import { CopyButton } from "../../../common/Account/MnemonicInput";
 import { EyeIcon, WarningIcon } from "../../../common/Icon";
-import { useNavStack } from "../../../common/Layout/NavStack";
-import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { TextInput } from "../../../common/Inputs";
+import { useDrawerContext } from "../../../common/Layout/Drawer";
+import { useNavStack } from "../../../common/Layout/NavStack";
 
 const useStyles = styles((theme: any) => ({
   passwordField: {

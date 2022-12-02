@@ -1,6 +1,7 @@
-import { useCustomTheme, styles } from "@coral-xyz/themes";
-import { IconButton } from "@mui/material";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Close } from "@mui/icons-material";
+import { IconButton } from "@mui/material";
+
 import { WithMiniDrawer } from "./Layout/Drawer";
 
 const useStyles = styles((theme) => ({

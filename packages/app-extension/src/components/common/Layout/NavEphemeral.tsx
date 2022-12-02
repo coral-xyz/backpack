@@ -1,6 +1,7 @@
-import { useCustomTheme } from "@coral-xyz/themes";
 import { NavEphemeralProvider, useEphemeralNav } from "@coral-xyz/recoil";
-import { WithNav, NavBackButton } from "./Nav";
+import { useCustomTheme } from "@coral-xyz/themes";
+
+import { NavBackButton, WithNav } from "./Nav";
 
 export function WithEphemeralNav({
   title,
