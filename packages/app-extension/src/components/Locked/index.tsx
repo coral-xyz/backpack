@@ -63,7 +63,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
         </Box>
 
         <Box style={{ marginBottom: 84 }}>
-          {username && (
+          {user.username && (
             <Box
               style={{
                 flex: 1,
