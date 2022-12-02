@@ -1,22 +1,13 @@
 import { useState } from "react";
-import {
-  BACKEND_API_URL,
-  BACKPACK_FEATURE_JWT,
-  BACKPACK_FEATURE_USERNAMES,
-  UI_RPC_METHOD_KEYRING_STORE_LOCK,
-  UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
-  UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-} from "@coral-xyz/common";
-import { useBackgroundClient, useUsername } from "@coral-xyz/recoil";
-import { useCustomTheme } from "@coral-xyz/themes";
+import { Box, Typography, InputAdornment, IconButton } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
-
+import { useCustomTheme } from "@coral-xyz/themes";
+import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
+import { useBackgroundClient, useUsername } from "@coral-xyz/recoil";
 import { PrimaryButton } from "../common";
-import { Backpack, RedBackpack } from "../common/Icon";
-import { TextInput } from "../common/Inputs";
-
+import { RedBackpack, Backpack } from "../common/Icon";
 import { LockedMenu } from "./LockedMenu";
+import { TextInput } from "../common/Inputs";
 
 export const NAV_BAR_HEIGHT = 56;
 
@@ -35,127 +26,15 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
     try {
       await background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-        params: [password],
+        params: [password, username],
       });
 
-      if (BACKPACK_FEATURE_USERNAMES && BACKPACK_FEATURE_JWT && username) {
-        // Make sure the user is authenticated
-        ensureAuthentication();
-      } else if (onUnlock) {
-        //  Usernames or JWT disabled, just unlock
+      if (onUnlock) {
         onUnlock();
       }
     } catch (err) {
-      console.error("unlock error", err);
       setError(true);
     }
-  };
-
-  /**
-   * Query the server and see if the user has a valid JWT.
-   */
-  const ensureAuthentication = async () => {
-    try {
-      const response = await fetch(`${BACKEND_API_URL}/authenticate`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.status !== 200)
-        throw new Error(`could not fetch authentication status`);
-      const { id, publicKeys, isAuthenticated } = await response.json();
-      if (!isAuthenticated) {
-        login(id, publicKeys);
-      }
-    } catch (err) {
-      // Relock if authentication failed
-      await background.request({
-        method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
-        params: [],
-      });
-    }
-  };
-
-  /**
-   * Determine the signatures that are required for authentication and for
-   * ensuring all client side public keys are stored on the Backpack account.
-   */
-  const requiredSignatures = async (
-    userId: string,
-    isAuthenticated: boolean,
-    serverPublicKeys: Array<string>
-  ) => {
-    const clientPublicKeys = await background.request({
-      method: UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
-      params: [],
-    });
-
-    // Public keys that exist on the client that don't exist on the server
-    const publicKeysToAdd = Object.values(clientPublicKeys)
-      .flat()
-      .filter((k) => !serverPublicKeys.includes(k as string));
-
-    // JWT is set and there is no public keys to sync to the server
-    if (isAuthenticated && publicKeysToAdd.length === 0) return [];
-
-    // Transparent signers are those signers that Backpack can sign with on its
-    // own, without needing to prompt the user (like for a Ledger signature)
-    const transparentSigners = [
-      ...clientPublicKeys.hdKeyring,
-      ...clientPublicKeys.importedKeyring,
-    ];
-
-    let jwtAuthSigner;
-    if (!isAuthenticated) {
-      // Not authenticated, attempt to auth using a public key that we can sign
-      // with transparently
-
-      // First, check if theres a transparent signer that we need a signature
-      // for anyway to potentially reduce the number of signing RPC requests
-      const signers = transparentSigners.filter((k) =>
-        publicKeysToAdd.includes(k)
-      );
-      if (signers) {
-        jwtAuthSigner = signers[0];
-      } else if (transparentSigners.length > 0) {
-        // Next best choice is any of the transparent signers
-        jwtAuthSigner = transparentSigners[0];
-      } else {
-        // Ledger is the only option, and the least preferred since it
-        // requires user intervention
-        jwtAuthSigner = clientPublicKeys.ledgerKeyring[0];
-      }
-    }
-
-    // List of public keys that require signatures
-    const publicKeysForSigning = [new Set([...publicKeysToAdd, jwtAuthSigner])];
-    for (const publicKey in publicKeysForSigning) {
-      const signature = await background.request({
-        method: UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
-        params: [],
-      });
-    }
-  };
-
-  /**
-   * Login the user.
-   */
-  const login = async (id: string, serverPublicKeys: Array<string>) => {
-    const clientPublicKeys = await background.request({
-      method: UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
-      params: [],
-    });
-    console.log(clientPublicKeys);
-    /**
-    const response = await fetch(`http://localhost:8787/authenticate`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    **/
   };
 
   return (

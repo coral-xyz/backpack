@@ -183,8 +183,8 @@ export const UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_READ =
   "ui-rpc-method-settings-developer-mode-read";
 export const UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_UPDATE =
   "ui-rpc-method-settings-developer-mode-update";
-export const UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET =
-  "ui-rpc-method-sign-message-for-wallet";
+export const UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY =
+  "ui-rpc-method-sign-message-for-public-key";
 export const UI_RPC_METHOD_TRY_TO_SIGN_MESSAGE =
   "ui-rpc-method-try-to-sign-message";
 export const UI_RPC_METHOD_USERNAME_READ = "ui-rpc-method-username-read";

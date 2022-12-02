@@ -23,7 +23,6 @@ import {
   useBackgroundResponder,
   useBackgroundClient,
   useEnabledBlockchains,
-  useUsername,
 } from "@coral-xyz/recoil";
 import { Locked } from "../components/Locked";
 import { Unlocked } from "../components/Unlocked";
@@ -37,6 +36,7 @@ import "./App.css";
 import { refreshFeatureGates } from "../gates/FEATURES";
 import { EmptyState } from "../components/common/EmptyState";
 import { refreshXnftPreferences } from "../api/preferences";
+import { AuthGuard } from "../components/Unlocked/AuthGuard";
 
 const logger = getLogger("router");
 
@@ -313,6 +313,7 @@ function WithEnabledBlockchain({
 
 function WithUnlock({ children }: { children: React.ReactNode }) {
   const keyringStoreState = useKeyringStoreState();
+  console.log(keyringStoreState);
   const needsOnboarding =
     keyringStoreState === KeyringStoreStateEnum.NeedsOnboarding;
   const isLocked =
@@ -322,7 +323,7 @@ function WithUnlock({ children }: { children: React.ReactNode }) {
     <AnimatePresence initial={false}>
       <WithLockMotion id={isLocked ? "locked" : "unlocked"}>
         <Suspense fallback={<div style={{ display: "none" }}></div>}>
-          {isLocked ? <Locked /> : children}
+          {isLocked ? <Locked /> : <AuthGuard>{children}</AuthGuard>}
         </Suspense>
       </WithLockMotion>
     </AnimatePresence>
