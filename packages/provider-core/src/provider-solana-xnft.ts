@@ -1,38 +1,39 @@
-import type {
-  Connection,
-  Transaction,
-  Signer,
-  SendOptions,
-  TransactionSignature,
-  ConfirmOptions,
-  Commitment,
-  SimulatedTransactionResponse,
-  VersionedTransaction,
-} from "@solana/web3.js";
-import { PublicKey } from "@solana/web3.js";
-import type { Provider } from "@project-serum/anchor";
 import type { Event } from "@coral-xyz/common";
 import {
-  getLogger,
   BackgroundSolanaConnection,
   Blockchain,
+  CHANNEL_PLUGIN_NOTIFICATION,
   CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
   CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE,
-  CHANNEL_PLUGIN_NOTIFICATION,
+  getLogger,
   PLUGIN_NOTIFICATION_CONNECT,
   PLUGIN_NOTIFICATION_MOUNT,
-  PLUGIN_NOTIFICATION_UNMOUNT,
   PLUGIN_NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   PLUGIN_NOTIFICATION_SOLANA_PUBLIC_KEY_UPDATED,
+  PLUGIN_NOTIFICATION_UNMOUNT,
+  PLUGIN_NOTIFICATION_UPDATE_METADATA,
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET,
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT,
   PLUGIN_RPC_METHOD_WINDOW_OPEN,
-  PLUGIN_NOTIFICATION_UPDATE_METADATA,
 } from "@coral-xyz/common";
-import * as cmn from "./common/solana";
-import { RequestManager } from "./request-manager";
+import type { Provider } from "@project-serum/anchor";
+import type {
+  Commitment,
+  ConfirmOptions,
+  Connection,
+  SendOptions,
+  Signer,
+  SimulatedTransactionResponse,
+  Transaction,
+  TransactionSignature,
+  VersionedTransaction,
+} from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
+
 import { PrivateEventEmitter } from "./common/PrivateEventEmitter";
-import { ChainedRequestManager } from "./chained-request-manager";
+import * as cmn from "./common/solana";
+import type { ChainedRequestManager } from "./chained-request-manager";
+import { RequestManager } from "./request-manager";
 
 const logger = getLogger("provider-xnft-injection");
 

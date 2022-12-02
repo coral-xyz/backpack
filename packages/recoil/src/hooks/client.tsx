@@ -1,10 +1,11 @@
-import {
+import { useEffect } from "react";
+import type {
   ChannelAppUiClient,
   ChannelAppUiResponder,
-  UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
 } from "@coral-xyz/common";
-import { useEffect } from "react";
+import { UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE } from "@coral-xyz/common";
 import { useRecoilValue } from "recoil";
+
 import { backgroundClient, backgroundResponder } from "../atoms";
 
 export function useBackgroundClient(): ChannelAppUiClient {

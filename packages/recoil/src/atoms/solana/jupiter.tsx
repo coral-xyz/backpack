@@ -1,9 +1,10 @@
-import { selector, selectorFamily } from "recoil";
-import { TokenInfo } from "@solana/spl-token-registry";
 import { Blockchain, SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
-import { splTokenRegistry } from "./token-registry";
-import { SOL_LOGO_URI } from "./token-registry";
+import type { TokenInfo } from "@solana/spl-token-registry";
+import { selector, selectorFamily } from "recoil";
+
 import { blockchainBalancesSorted } from "../balance";
+
+import { SOL_LOGO_URI, splTokenRegistry } from "./token-registry";
 
 export const JUPITER_BASE_URL = "https://quote-api.jup.ag/v1/";
 

@@ -1,24 +1,26 @@
-import { useState, useEffect } from "react";
-import {
-  useRecoilValue,
-  useSetRecoilState,
-  useRecoilValueLoadable,
-} from "recoil";
-import { PublicKey } from "@solana/web3.js";
+import { useEffect, useState } from "react";
+import { fetchXnft } from "@coral-xyz/common";
 // XXX: this full path is currently necessary as it avoids loading the jsx in
 //      react-xnft-renderer/src/Component.tsx in the background service worker
 import { Plugin } from "@coral-xyz/common/dist/esm/plugin";
-import { fetchXnft } from "@coral-xyz/common";
-import * as atoms from "../../atoms";
-import { useAnchorContext } from "./useSolanaConnection";
-import { useConnectionUrls } from "../preferences";
-import { useActivePublicKeys } from "../";
+import { PublicKey } from "@solana/web3.js";
 import {
-  useNavigationSegue,
-  useConnectionBackgroundClient,
-  useBackgroundClient,
-} from "../";
+  useRecoilValue,
+  useRecoilValueLoadable,
+  useSetRecoilState,
+} from "recoil";
+
+import * as atoms from "../../atoms";
 import { xnftUrl } from "../../atoms/solana/xnft";
+import { useConnectionUrls } from "../preferences";
+import {
+  useActivePublicKeys,
+  useBackgroundClient,
+  useConnectionBackgroundClient,
+  useNavigationSegue,
+} from "../";
+
+import { useAnchorContext } from "./useSolanaConnection";
 
 export function useAppIcons() {
   const xnftLoadable = useRecoilValueLoadable(atoms.filteredPlugins);

@@ -1,5 +1,5 @@
-import { useCustomTheme } from "@coral-xyz/themes";
 import { NodeKind } from "react-xnft";
+import { useCustomTheme } from "@coral-xyz/themes";
 
 export const useDefaultClasses = () => {
   const theme = useCustomTheme();

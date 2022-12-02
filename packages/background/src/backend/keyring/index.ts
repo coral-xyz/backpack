@@ -1,34 +1,36 @@
-import { generateMnemonic } from "bip39";
-import type { KeyringStoreState } from "@coral-xyz/recoil";
-import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
-import { BACKEND_API_URL } from "@coral-xyz/common";
-import type {
-  EventEmitter,
-  DerivationPath,
-  KeyringInit,
-} from "@coral-xyz/common";
-import {
-  Blockchain,
-  EthereumExplorer,
-  EthereumConnectionUrl,
-  SolanaExplorer,
-  SolanaCluster,
-  NOTIFICATION_KEYRING_STORE_LOCKED,
-  BACKEND_EVENT,
-} from "@coral-xyz/common";
 import {
   hdFactoryForBlockchain,
   keyringForBlockchain,
 } from "@coral-xyz/blockchain-common";
-import { BlockchainKeyring } from "@coral-xyz/blockchain-keyring";
-import * as crypto from "./crypto";
+import type { BlockchainKeyring } from "@coral-xyz/blockchain-keyring";
+import type {
+  Blockchain,
+  DerivationPath,
+  EventEmitter,
+  KeyringInit,
+} from "@coral-xyz/common";
+import {
+  BACKEND_API_URL,
+  BACKEND_EVENT,
+  EthereumConnectionUrl,
+  EthereumExplorer,
+  NOTIFICATION_KEYRING_STORE_LOCKED,
+  SolanaCluster,
+  SolanaExplorer,
+} from "@coral-xyz/common";
+import type { KeyringStoreState } from "@coral-xyz/recoil";
+import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
+import { generateMnemonic } from "bip39";
+
+import type { User } from "../store";
 import * as store from "../store";
 import {
-  DefaultKeyname,
-  User,
   DEFAULT_DARK_MODE,
   DEFAULT_DEVELOPER_MODE,
+  DefaultKeyname,
 } from "../store";
+
+import * as crypto from "./crypto";
 
 /**
  * KeyringStore API for managing all wallet keys .

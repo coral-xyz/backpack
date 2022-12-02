@@ -1,11 +1,11 @@
-import { selector } from "recoil";
+import type { EthereumNft, NftCollection } from "@coral-xyz/common";
 import {
-  externalResourceUri,
-  Blockchain,
-  NftCollection,
-  EthereumNft,
   ALCHEMY_ETHEREUM_MAINNET_API_KEY,
+  Blockchain,
+  externalResourceUri,
 } from "@coral-xyz/common";
+import { selector } from "recoil";
+
 import { activeEthereumWallet } from "../wallet";
 
 export const ethereumNftCollections = selector<NftCollection[]>({

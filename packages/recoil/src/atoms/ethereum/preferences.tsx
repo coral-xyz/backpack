@@ -1,4 +1,5 @@
 import { selector } from "recoil";
+
 import { preferences } from "../preferences";
 
 export const ethereumExplorer = selector<string>({

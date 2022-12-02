@@ -1,8 +1,8 @@
-import nacl from "tweetnacl";
+import { DerivationPath } from "@coral-xyz/common";
+import { Keypair } from "@solana/web3.js";
 import * as bip32 from "bip32";
 import { derivePath } from "ed25519-hd-key";
-import { Keypair } from "@solana/web3.js";
-import { DerivationPath } from "@coral-xyz/common";
+import nacl from "tweetnacl";
 
 export function deriveSolanaKeypairs(
   seed: Buffer,

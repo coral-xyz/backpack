@@ -1,4 +1,4 @@
-import { SubscriptionType } from "./toServer";
+import type { SubscriptionType } from "./toServer";
 export const CHAT_MESSAGES = "CHAT_MESSAGEES";
 export const SUBSCRIBE = "SUBSCRIBE";
 export const UNSUBSCRIBE = "UNSUBSCRIBE";
