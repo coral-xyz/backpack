@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
-import { Pressable, Text, TouchableOpacity, View } from "react-native";
-import { ActionCard, Margin, Screen } from "@components";
+import { Pressable, Text, View } from "react-native";
+import {
+  ActionCard,
+  Header,
+  Margin,
+  Screen,
+  SubtextParagraph,
+} from "@components";
 import type { Blockchain } from "@coral-xyz/common";
 import {
   openConnectHardware,
@@ -20,18 +26,6 @@ import {
 import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@hooks";
 import { useNavigation } from "@react-navigation/native";
-// import { AddCircle, ArrowCircleDown } from "@mui/icons-material";
-// import { Box, Grid, Typography } from "@mui/material";
-//
-// import { Header, SubtextParagraph } from "../../../common";
-// import { CheckIcon, HardwareWalletIcon } from "../../../common/Icon";
-// import { ActionCard } from "../../../common/Layout/ActionCard";
-// import {
-//   useDrawerContext,
-//   WithMiniDrawer,
-// } from "../../../common/Layout/Drawer";
-// import { useNavStack } from "../../../common/Layout/NavStack";
-// import { WalletListItem } from "../YourAccount/EditWallets";
 
 export function AddConnectWalletScreen({
   blockchain,
@@ -47,9 +41,9 @@ export function AddConnectWalletScreen({
 
   return (
     <Screen>
-      <Margin vertical={24} horizontal={24}>
-        <Text>Add or connect a wallet</Text>
-        <Text>Add new wallets to Backpack</Text>
+      <Margin vertical={24}>
+        <Header text="Add or connect a wallet" />
+        <SubtextParagraph>Add new wallets to Backpack</SubtextParagraph>
       </Margin>
       <View
         style={{
