@@ -33,6 +33,7 @@ export const RecoverAccount = ({
 }) => {
   const { step, nextStep, prevStep } = useSteps();
   const [username, setUsername] = useState<string | null>(null);
+  const [uuid, setUuid] = useState<string | null>(null);
   const [password, setPassword] = useState<string | null>(null);
   const [publicKey, setPublicKey] = useState<string | null>(null);
   const [keyringType, setKeyringType] = useState<KeyringType | null>(null);
@@ -76,8 +77,9 @@ export const RecoverAccount = ({
 
   const steps = [
     <RecoverAccountUsernameForm
-      onNext={(username: string, publicKey: string) => {
+      onNext={(username: string, uuid: string, publicKey: string) => {
         setUsername(username);
+        setUuid(uuid);
         setPublicKey(publicKey);
         nextStep();
       }}
@@ -175,10 +177,11 @@ export const RecoverAccount = ({
         ]
       : []),
     <Finish
-      inviteCode={undefined}
       username={username}
       password={password!}
       keyringInit={keyringInit!}
+      uuid={uuid}
+      inviteCode={undefined}
     />,
   ];
 

@@ -18,6 +18,7 @@ export const Finish = ({
   username,
   password,
   keyringInit,
+  uuid,
   inviteCode,
   isAddingAccount,
 }: {
@@ -76,23 +77,23 @@ export const Finish = ({
   async function createStore() {
     try {
       // TODO: this needs to be returned by the worker when it's created.
-      let uuid = "";
+      let _uuid = uuid;
       //
       // If usernames are disabled, use a default one for developing.
       //
-      if (!BACKPACK_FEATURE_USERNAMES) {
+      if (!uuid && !BACKPACK_FEATURE_USERNAMES) {
         username = uuidv4().split("-")[0];
-        uuid = uuidv4();
+        _uuid = uuidv4();
       }
       if (isAddingAccount) {
         await background.request({
           method: UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
-          params: [username, keyringInit, uuid],
+          params: [username, keyringInit, _uuid],
         });
       } else {
         await background.request({
           method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
-          params: [username, password, keyringInit, uuid],
+          params: [username, password, keyringInit, _uuid],
         });
       }
       setIsValid(true);

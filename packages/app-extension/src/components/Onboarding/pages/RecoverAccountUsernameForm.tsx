@@ -6,12 +6,11 @@ import { Box, InputAdornment } from "@mui/material";
 
 import { Header, PrimaryButton, SubtextParagraph } from "../../common";
 import { TextInput } from "../../common/Inputs";
-import { getWaitlistId } from "../../common/WaitingRoom";
 
 export const RecoverAccountUsernameForm = ({
   onNext,
 }: {
-  onNext: (username: string, publicKey: string) => void;
+  onNext: (username: string, uuid: string, publicKey: string) => void;
 }) => {
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
@@ -29,7 +28,7 @@ export const RecoverAccountUsernameForm = ({
         const json = await response.json();
         if (!response.ok) throw new Error(json.msg);
         // Use the first found public key
-        onNext(username, json.publicKeys[0].publicKey);
+        onNext(username, json.id, json.publicKeys[0].publicKey);
       } catch (err: any) {
         setError(err.message || "Something went wrong");
       }
