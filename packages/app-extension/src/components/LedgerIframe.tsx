@@ -1,9 +1,9 @@
+import { useEffect, useRef } from "react";
 import {
   getLogger,
   LEDGER_IFRAME_URL,
   LEDGER_INJECTED_CHANNEL_RESPONSE,
 } from "@coral-xyz/common";
-import { useEffect, useRef } from "react";
 
 const logger = getLogger("app-extension/ledger-iframe");
 

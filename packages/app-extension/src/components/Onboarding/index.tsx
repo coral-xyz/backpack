@@ -1,10 +1,5 @@
-import {
-  useRef,
-  useState,
-  Dispatch,
-  MutableRefObject,
-  SetStateAction,
-} from "react";
+import type { Dispatch, MutableRefObject, SetStateAction } from "react";
+import { useRef, useState } from "react";
 import {
   BACKPACK_LINK,
   DISCORD_INVITE_LINK,
@@ -15,11 +10,13 @@ import {
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { CallMade, Lock, Menu, Twitter } from "@mui/icons-material";
 import { Box, IconButton, ListItemText, Toolbar } from "@mui/material";
+
 import { DiscordIcon } from "../common/Icon";
 import { WithContaineredDrawer } from "../common/Layout/Drawer";
 import { NAV_BAR_HEIGHT } from "../common/Layout/Nav";
 import { List, ListItem } from "../common/List";
 import WaitingRoom from "../common/WaitingRoom";
+
 import { OnboardAccount } from "./pages/OnboardAccount";
 import { RecoverAccount } from "./pages/RecoverAccount";
 

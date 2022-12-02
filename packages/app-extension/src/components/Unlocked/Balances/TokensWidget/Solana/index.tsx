@@ -1,21 +1,23 @@
 import { useState } from "react";
-import { BigNumber } from "ethers";
-import { PublicKey, Connection } from "@solana/web3.js";
-import { Typography } from "@mui/material";
-import { useSolanaCtx } from "@coral-xyz/recoil";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { programs, tryGetAccount } from "@cardinal/token-manager";
 import {
+  Blockchain,
   confirmTransaction,
   getLogger,
-  Blockchain,
-  Solana,
   SOL_NATIVE_MINT,
+  Solana,
 } from "@coral-xyz/common";
-import { walletAddressDisplay, PrimaryButton } from "../../../../common";
+import { useSolanaCtx } from "@coral-xyz/recoil";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { Typography } from "@mui/material";
+import type { Connection } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
+import type { BigNumber } from "ethers";
+
+import { PrimaryButton, walletAddressDisplay } from "../../../../common";
 import { SettingsList } from "../../../../common/Settings/List";
-import { Sending, Error } from "../Send";
 import { TokenAmountHeader } from "../../../../common/TokenAmountHeader";
-import { programs, tryGetAccount } from "@cardinal/token-manager";
+import { Error, Sending } from "../Send";
 
 const logger = getLogger("send-solana-confirmation-card");
 

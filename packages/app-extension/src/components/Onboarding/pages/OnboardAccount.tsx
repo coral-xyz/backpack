@@ -1,31 +1,33 @@
 import { useEffect, useState } from "react";
-import {
+import type {
   Blockchain,
   BlockchainKeyringInit,
-  DerivationPath,
   KeyringType,
+} from "@coral-xyz/common";
+import {
   BACKPACK_FEATURE_USERNAMES,
+  DerivationPath,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { encode } from "bs58";
-import { KeyringTypeSelector } from "./KeyringTypeSelector";
-import { BlockchainSelector } from "./BlockchainSelector";
-import { HardwareOnboard } from "./HardwareOnboard";
-import { CreateOrImportWallet } from "./CreateOrImportWallet";
-import { Finish } from "./Finish";
-import { InviteCodeForm } from "./InviteCodeForm";
-import { UsernameForm } from "./UsernameForm";
-import { MnemonicInput } from "../../common/Account/MnemonicInput";
+
+import { useSteps } from "../../../hooks/useSteps";
 import { CreatePassword } from "../../common/Account/CreatePassword";
-import {
-  ImportAccounts,
-  SelectedAccount,
-} from "../../common/Account/ImportAccounts";
+import type { SelectedAccount } from "../../common/Account/ImportAccounts";
+import { ImportAccounts } from "../../common/Account/ImportAccounts";
+import { MnemonicInput } from "../../common/Account/MnemonicInput";
 import { WithContaineredDrawer } from "../../common/Layout/Drawer";
 import { NavBackButton, WithNav } from "../../common/Layout/Nav";
-import { useSteps } from "../../../hooks/useSteps";
+
+import { BlockchainSelector } from "./BlockchainSelector";
+import { CreateOrImportWallet } from "./CreateOrImportWallet";
+import { Finish } from "./Finish";
+import { HardwareOnboard } from "./HardwareOnboard";
+import { InviteCodeForm } from "./InviteCodeForm";
+import { KeyringTypeSelector } from "./KeyringTypeSelector";
+import { UsernameForm } from "./UsernameForm";
 
 export const OnboardAccount = ({
   onWaiting,

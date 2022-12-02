@@ -1,5 +1,6 @@
-import router from "./preferences";
 import request from "request";
+
+import router from "./preferences";
 
 router.get("/*", async (req, res) => {
   const url = (req.path || "")?.slice(1);

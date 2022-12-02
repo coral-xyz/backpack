@@ -1,8 +1,9 @@
+import type { Message, MessageWithMetadata } from "@coral-xyz/common";
 import express from "express";
-import { getChats } from "../../db/chats";
-import { Message, MessageWithMetadata } from "@coral-xyz/common";
-import { getUsers } from "../../db/users";
+
 import { ensureHasRoomAccess, extractUserId } from "../../auth/middleware";
+import { getChats } from "../../db/chats";
+import { getUsers } from "../../db/users";
 
 const router = express.Router();
 

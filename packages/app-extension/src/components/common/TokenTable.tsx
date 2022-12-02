@@ -1,25 +1,22 @@
-import { useState, useEffect } from "react";
-import { FixedSizeList as WindowedList } from "react-window";
+import { useEffect, useState } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
-import { Button as MuiButton, Skeleton } from "@mui/material";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import { styles } from "@coral-xyz/themes";
-import {
-  Blockchain,
-  toTitleCase,
-  walletAddressDisplay,
-} from "@coral-xyz/common";
+import { FixedSizeList as WindowedList } from "react-window";
+import type { Blockchain } from "@coral-xyz/common";
+import { toTitleCase, walletAddressDisplay } from "@coral-xyz/common";
+import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
 import {
   blockchainBalancesSorted,
   useActiveWallets,
   useBlockchainConnectionUrl,
   useBlockchainLogo,
-  useBlockchainTokensSorted,
   useEnabledBlockchains,
   useLoader,
 } from "@coral-xyz/recoil";
+import { styles } from "@coral-xyz/themes";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import { Button as MuiButton, Skeleton } from "@mui/material";
+
 import { TextField } from "../../plugin/Component";
-import { WithCopyTooltip } from "./WithCopyTooltip";
 import {
   BalancesTable,
   BalancesTableCell,
@@ -27,7 +24,9 @@ import {
   BalancesTableHead,
   BalancesTableRow,
 } from "../Unlocked/Balances";
+
 import { TextInput } from "./Inputs";
+import { WithCopyTooltip } from "./WithCopyTooltip";
 
 export type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
 

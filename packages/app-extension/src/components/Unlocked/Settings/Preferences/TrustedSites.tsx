@@ -1,12 +1,13 @@
 import { useEffect } from "react";
-import { ListItemText } from "@mui/material";
-import { GppBad } from "@mui/icons-material";
 import { UI_RPC_METHOD_APPROVED_ORIGINS_DELETE } from "@coral-xyz/common";
+import { useApprovedOrigins, useBackgroundClient } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { useBackgroundClient, useApprovedOrigins } from "@coral-xyz/recoil";
-import { useNavStack } from "../../../common/Layout/NavStack";
+import { GppBad } from "@mui/icons-material";
+import { ListItemText } from "@mui/material";
+
 import { List, ListItem, PrimaryButton } from "../../../common";
 import { EmptyState } from "../../../common/EmptyState";
+import { useNavStack } from "../../../common/Layout/NavStack";
 
 export function PreferencesTrustedSites() {
   const theme = useCustomTheme();

@@ -2,13 +2,15 @@
 // a loading indicator until it is found (or an error if it not found).
 
 import { useEffect, useState } from "react";
-import { Box } from "@mui/material";
+import type { DerivationPath } from "@coral-xyz/common";
+import { accountDerivationPath, Blockchain } from "@coral-xyz/common";
 import Ethereum from "@ledgerhq/hw-app-eth";
 import Solana from "@ledgerhq/hw-app-solana";
 import type Transport from "@ledgerhq/hw-transport";
-import type { DerivationPath } from "@coral-xyz/common";
-import { accountDerivationPath, Blockchain } from "@coral-xyz/common";
+import { Box } from "@mui/material";
+
 import { Header, Loading, PrimaryButton, SubtextParagraph } from "../../common";
+
 import { DERIVATION_PATHS, LOAD_PUBKEY_AMOUNT } from "./MnemonicSearch";
 
 export const HardwareSearch = ({

@@ -1,14 +1,16 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
-import { useBackgroundClient } from "@coral-xyz/recoil";
 import {
   TAB_SET,
   UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
 } from "@coral-xyz/common";
-import { WithDrawer } from "../common/Layout/Drawer";
-import { PluginApp } from "./Apps/Plugin";
-import { useRecoilValue } from "recoil";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 import * as atoms from "@coral-xyz/recoil/dist/esm/atoms";
+import { useRecoilValue } from "recoil";
+
+import { WithDrawer } from "../common/Layout/Drawer";
+
+import { PluginApp } from "./Apps/Plugin";
 
 const ICON_WIDTH = 64;
 

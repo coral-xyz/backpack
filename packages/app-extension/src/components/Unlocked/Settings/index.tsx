@@ -1,96 +1,98 @@
-import { useEffect, useState, Suspense } from "react";
-import * as bs58 from "bs58";
-import { ethers } from "ethers";
-import { Box, Typography, IconButton } from "@mui/material";
+import { Suspense, useEffect, useState } from "react";
 import {
-  ExpandMore,
-  ExpandLess,
-  Add,
-  Lock,
-  AccountCircleOutlined,
-  Tab as WindowIcon,
-  Settings,
-} from "@mui/icons-material";
-import { Keypair } from "@solana/web3.js";
-import { styles, useCustomTheme, HOVER_OPACITY } from "@coral-xyz/themes";
-import {
-  useBackgroundClient,
-  useWalletPublicKeys,
-  useActiveWallets,
-  useBlockchainLogo,
-  useAvatarUrl,
-  WalletPublicKeys,
-  useFeatureGates,
-} from "@coral-xyz/recoil";
-import {
-  openPopupWindow,
-  Blockchain,
   BACKPACK_FEATURE_POP_MODE,
   BACKPACK_FEATURE_XNFT,
+  Blockchain,
+  DISCORD_INVITE_LINK,
+  MESSAGES_ENABLED,
+  NOTIFICATIONS_ENABLED,
+  openPopupWindow,
+  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
-  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-  DISCORD_INVITE_LINK,
-  NOTIFICATIONS_ENABLED,
-  MESSAGES_ENABLED,
 } from "@coral-xyz/common";
+import type { WalletPublicKeys } from "@coral-xyz/recoil";
+import {
+  useActiveWallets,
+  useAvatarUrl,
+  useBackgroundClient,
+  useBlockchainLogo,
+  useFeatureGates,
+  useWalletPublicKeys,
+} from "@coral-xyz/recoil";
+import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
+import {
+  AccountCircleOutlined,
+  Add,
+  ExpandLess,
+  ExpandMore,
+  Lock,
+  Settings,
+  Tab as WindowIcon,
+} from "@mui/icons-material";
+import { Box, IconButton, Typography } from "@mui/material";
+import { Keypair } from "@solana/web3.js";
+import * as bs58 from "bs58";
+import { ethers } from "ethers";
+
 import {
   Header,
+  LaunchDetail,
   List,
   ListItem,
-  PushDetail,
-  LaunchDetail,
   PrimaryButton,
+  PushDetail,
   SubtextParagraph,
   WalletAddress,
 } from "../../../components/common";
+import { ContactsIcon, DiscordIcon, GridIcon } from "../../common/Icon";
+import { TextInput } from "../../common/Inputs";
 import {
-  WithDrawer,
   CloseButton,
   useDrawerContext,
+  WithDrawer,
   WithMiniDrawer,
 } from "../../common/Layout/Drawer";
 import {
-  useNavStack,
   NavStackEphemeral,
   NavStackScreen,
+  useNavStack,
 } from "../../common/Layout/NavStack";
-import {
-  ShowPrivateKeyWarning,
-  ShowPrivateKey,
-} from "./YourAccount/ShowPrivateKey";
-import {
-  ShowRecoveryPhraseWarning,
-  ShowRecoveryPhrase,
-} from "./YourAccount/ShowRecoveryPhrase";
-import { Preferences } from "./Preferences";
-import { PreferencesSolana } from "./Preferences/Solana";
-import { PreferencesEthereum } from "./Preferences/Ethereum";
-import { PreferencesAutoLock } from "./Preferences/AutoLock";
-import { PreferencesTrustedSites } from "./Preferences/TrustedSites";
-import { PreferencesSolanaConnection } from "./Preferences/Solana/ConnectionSwitch";
-import { PreferencesSolanaCommitment } from "./Preferences/Solana/Commitment";
-import { PreferencesSolanaExplorer } from "./Preferences/Solana/Explorer";
-import { PreferencesEthereumConnection } from "./Preferences/Ethereum/Connection";
-import { ChangePassword } from "./YourAccount/ChangePassword";
-import { ResetWarning } from "../../Locked/Reset/ResetWarning";
 import { Reset } from "../../Locked/Reset";
-import { AddConnectWalletMenu, ConfirmCreateWallet } from "./AddConnectWallet";
-import { YourAccount } from "./YourAccount";
+import { ResetWarning } from "../../Locked/Reset/ResetWarning";
+import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
+import { NotificationButton } from "../Balances/Notifications";
+import { Contacts } from "../Messages/Contacts";
+
+import { PreferencesAutoLock } from "./Preferences/AutoLock";
+import { PreferencesEthereum } from "./Preferences/Ethereum";
+import { PreferencesEthereumConnection } from "./Preferences/Ethereum/Connection";
+import { PreferenceEthereumCustomRpcUrl } from "./Preferences/Ethereum/CustomRpcUrl";
+import { PreferencesSolana } from "./Preferences/Solana";
+import { PreferencesSolanaCommitment } from "./Preferences/Solana/Commitment";
+import { PreferencesSolanaConnection } from "./Preferences/Solana/ConnectionSwitch";
+import { PreferenceSolanaCustomRpcUrl } from "./Preferences/Solana/CustomRpcUrl";
+import { PreferencesSolanaExplorer } from "./Preferences/Solana/Explorer";
+import { PreferencesTrustedSites } from "./Preferences/TrustedSites";
+import { XnftDetail } from "./Xnfts/Detail";
+import { ChangePassword } from "./YourAccount/ChangePassword";
 import { EditWallets } from "./YourAccount/EditWallets";
 import { RemoveWallet } from "./YourAccount/EditWallets/RemoveWallet";
 import { RenameWallet } from "./YourAccount/EditWallets/RenameWallet";
 import { WalletDetail } from "./YourAccount/EditWallets/WalletDetail";
-import { ContactsIcon, DiscordIcon, GridIcon } from "../../common/Icon";
-import { XnftSettings } from "./Xnfts";
-import { XnftDetail } from "./Xnfts/Detail";
-import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
-import { PreferenceSolanaCustomRpcUrl } from "./Preferences/Solana/CustomRpcUrl";
-import { PreferenceEthereumCustomRpcUrl } from "./Preferences/Ethereum/CustomRpcUrl";
-import { TextInput } from "../../common/Inputs";
-import { NotificationButton } from "../Balances/Notifications";
-import { Contacts } from "../Messages/Contacts";
+import {
+  ShowPrivateKey,
+  ShowPrivateKeyWarning,
+} from "./YourAccount/ShowPrivateKey";
+import {
+  ShowRecoveryPhrase,
+  ShowRecoveryPhraseWarning,
+} from "./YourAccount/ShowRecoveryPhrase";
+import { AddConnectWalletMenu, ConfirmCreateWallet } from "./AddConnectWallet";
+import { Preferences } from "./Preferences";
 import { UserAccountsMenuButton } from "./UsernamesMenu";
+import { XnftSettings } from "./Xnfts";
+import { YourAccount } from "./YourAccount";
 
 const useStyles = styles((theme) => ({
   addConnectWalletLabel: {

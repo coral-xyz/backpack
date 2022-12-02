@@ -1,9 +1,11 @@
-import { toTitleCase, Blockchain } from "@coral-xyz/common";
+import { useEffect } from "react";
+import type { Blockchain } from "@coral-xyz/common";
+import { toTitleCase } from "@coral-xyz/common";
 import { useWalletPublicKeys } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { MoreHoriz } from "@mui/icons-material";
 import { Typography } from "@mui/material";
-import { useEffect } from "react";
+
 import { List, ListItem, WalletAddress } from "../../../../common";
 import { useNavStack } from "../../../../common/Layout/NavStack";
 import { AddConnectWalletButton, ImportTypeBadge } from "../..";

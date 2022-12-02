@@ -1,14 +1,17 @@
+import type { Blockchain } from "@coral-xyz/common";
 import {
-  toTitleCase,
-  Blockchain,
+  ETH_NATIVE_MINT,
   NAV_COMPONENT_TOKEN,
   SOL_NATIVE_MINT,
-  ETH_NATIVE_MINT,
+  toTitleCase,
 } from "@coral-xyz/common";
-import { useNavigation, useBlockchainTokensSorted } from "@coral-xyz/recoil";
-import { TransferWidget } from "./TransferWidget";
-import { BalanceSummaryWidget } from "./BalanceSummaryWidget";
+import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
+import { useNavigation } from "@coral-xyz/recoil";
+
 import { TokenTables } from "../../common/TokenTable";
+
+import { BalanceSummaryWidget } from "./BalanceSummaryWidget";
+import { TransferWidget } from "./TransferWidget";
 
 export type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
 

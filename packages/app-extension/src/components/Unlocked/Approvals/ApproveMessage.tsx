@@ -1,9 +1,11 @@
-import { Typography } from "@mui/material";
-import _CheckIcon from "@mui/icons-material/Check";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { WithApproval } from ".";
-import { TextField } from "../../../plugin/Component";
+import _CheckIcon from "@mui/icons-material/Check";
+import { Typography } from "@mui/material";
 import * as anchor from "@project-serum/anchor";
+
+import { TextField } from "../../../plugin/Component";
+
+import { WithApproval } from ".";
 
 const useStyles = styles((theme) => ({
   title: {

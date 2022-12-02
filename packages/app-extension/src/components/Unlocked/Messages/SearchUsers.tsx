@@ -1,7 +1,10 @@
-import { BACKEND_API_URL, EnrichedInboxDb } from "@coral-xyz/common";
-import { TextInput } from "../../common/Inputs";
-import { useStyles } from "./styles";
 import { useEffect, useState } from "react";
+import type { EnrichedInboxDb } from "@coral-xyz/common";
+import { BACKEND_API_URL } from "@coral-xyz/common";
+
+import { TextInput } from "../../common/Inputs";
+
+import { useStyles } from "./styles";
 import { UserList } from "./UserList";
 
 export const SearchUsers = ({

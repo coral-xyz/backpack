@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
-import { encode } from "bs58";
+import type { Blockchain, DerivationPath } from "@coral-xyz/common";
 import {
   toTitleCase,
-  Blockchain,
-  DerivationPath,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { Box } from "@mui/material";
+import { encode } from "bs58";
+
 import {
   Header,
   HeaderIcon,
   PrimaryButton,
   SubtextParagraph,
 } from "../../common";
+import type { SelectedAccount } from "../../common/Account/ImportAccounts";
 import { HardwareWalletIcon } from "../../common/Icon";
-import { SelectedAccount } from "../../common/Account/ImportAccounts";
 
 export function HardwareSign({
   blockchain,

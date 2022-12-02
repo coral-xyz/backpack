@@ -1,4 +1,5 @@
 import { Box } from "@mui/material";
+
 import { PrimaryButton, SubtextParagraph } from "../../common";
 import { BackpackHeader } from "../../Locked";
 

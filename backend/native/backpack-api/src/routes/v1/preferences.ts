@@ -1,7 +1,7 @@
-import { getPreferences, updatePreference } from "../../db/preference";
-
 import express from "express";
+
 import { extractUserId } from "../../auth/middleware";
+import { getPreferences, updatePreference } from "../../db/preference";
 const router = express.Router();
 
 router.post("/", extractUserId, async (req, res) => {

@@ -1,19 +1,17 @@
-import { ethers, BigNumber } from "ethers";
+import { walletAddressDisplay } from "@coral-xyz/common";
+import type { CustomTheme } from "@coral-xyz/themes";
+import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import {
   Box,
-  Typography,
   Button,
-  CircularProgress,
   Checkbox as _Checkbox,
+  CircularProgress,
+  Typography,
 } from "@mui/material";
-import {
-  styles,
-  useCustomTheme,
-  CustomTheme,
-  HOVER_OPACITY,
-} from "@coral-xyz/themes";
+import type { BigNumber } from "ethers";
+import { ethers } from "ethers";
+
 import { TextField } from "../../plugin/Component";
-import { walletAddressDisplay } from "@coral-xyz/common";
 
 export * from "./List";
 export { TextField };

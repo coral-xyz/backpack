@@ -1,6 +1,7 @@
+import type { InboxDb } from "@coral-xyz/common";
 import { Chain } from "@coral-xyz/zeus";
+
 import { HASURA_URL, JWT } from "../config";
-import { InboxDb } from "@coral-xyz/common";
 
 const chain = Chain(HASURA_URL, {
   headers: {

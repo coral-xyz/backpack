@@ -1,5 +1,5 @@
-import { Tooltip } from "@mui/material";
 import { useCustomTheme } from "@coral-xyz/themes";
+import { Tooltip } from "@mui/material";
 
 export function WithCopyTooltip({ children, tooltipOpen, title }: any) {
   const theme = useCustomTheme();

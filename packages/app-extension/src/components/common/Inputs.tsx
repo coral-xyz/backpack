@@ -1,6 +1,7 @@
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { List, ListItem } from "./List";
 import { TextField, Typography } from "@mui/material";
+
+import { List, ListItem } from "./List";
 
 function overrideErrBorder(originalBorder: string, err: boolean, theme: any) {
   if (err) {

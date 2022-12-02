@@ -1,5 +1,6 @@
-import { Box } from "@mui/material";
 import { DISCORD_INVITE_LINK } from "@coral-xyz/common";
+import { Box } from "@mui/material";
+
 import {
   Header,
   HeaderIcon,

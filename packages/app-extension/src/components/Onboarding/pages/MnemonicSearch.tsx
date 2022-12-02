@@ -2,13 +2,14 @@
 // a loading indicator until it is found (or an error if it not found).
 
 import { useEffect, useState } from "react";
-import { Box } from "@mui/material";
+import type { Blockchain } from "@coral-xyz/common";
 import {
-  Blockchain,
   DerivationPath,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
+import { Box } from "@mui/material";
+
 import { Header, Loading, PrimaryButton, SubtextParagraph } from "../../common";
 
 export const DERIVATION_PATHS = [

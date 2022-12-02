@@ -1,14 +1,15 @@
 import { useEffect } from "react";
-import { Typography } from "@mui/material";
-import { Apps } from "@mui/icons-material";
-import { useCustomTheme } from "@coral-xyz/themes";
-import { useAppIcons } from "@coral-xyz/recoil";
 import { XNFT_GG_LINK } from "@coral-xyz/common";
-import { SettingsList } from "../../../common/Settings/List";
+import { useAppIcons } from "@coral-xyz/recoil";
+import { useCustomTheme } from "@coral-xyz/themes";
+import { Apps } from "@mui/icons-material";
+import { Typography } from "@mui/material";
+
 import { PushDetail } from "../../../common";
-import { useNavStack } from "../../../common/Layout/NavStack";
 import { EmptyState } from "../../../common/EmptyState";
+import { useNavStack } from "../../../common/Layout/NavStack";
 import { ProxyImage } from "../../../common/ProxyImage";
+import { SettingsList } from "../../../common/Settings/List";
 
 export function XnftSettings() {
   const nav = useNavStack();

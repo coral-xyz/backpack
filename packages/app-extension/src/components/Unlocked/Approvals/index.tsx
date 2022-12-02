@@ -1,11 +1,12 @@
+import { useAvatarUrl, useWalletName } from "@coral-xyz/recoil";
+import { styles } from "@coral-xyz/themes";
 import _CheckIcon from "@mui/icons-material/Check";
 import _CloseIcon from "@mui/icons-material/Close";
-import { styles } from "@coral-xyz/themes";
-import { useWalletName, useAvatarUrl } from "@coral-xyz/recoil";
+
 import {
-  walletAddressDisplay,
   PrimaryButton,
   SecondaryButton,
+  walletAddressDisplay,
 } from "../../../components/common";
 import { ProxyImage } from "../../common/ProxyImage";
 

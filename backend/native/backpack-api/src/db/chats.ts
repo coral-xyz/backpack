@@ -1,6 +1,7 @@
 import { Chain } from "@coral-xyz/chat-zeus";
-import { CHAT_JWT, CHAT_HASURA_URL } from "../config";
-import { Message, SubscriptionType } from "@coral-xyz/common";
+import type { Message, SubscriptionType } from "@coral-xyz/common";
+
+import { CHAT_HASURA_URL, CHAT_JWT } from "../config";
 
 const chain = Chain(CHAT_HASURA_URL, {
   headers: {

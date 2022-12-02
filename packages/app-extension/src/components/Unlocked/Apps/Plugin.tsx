@@ -1,7 +1,4 @@
-import { Button, Divider } from "@mui/material";
-import { PublicKey } from "@solana/web3.js";
-import { Plugin } from "@coral-xyz/common";
-import { PluginRenderer } from "../../../plugin/Renderer";
+import type { Plugin } from "@coral-xyz/common";
 import {
   useDarkMode,
   usePlugins,
@@ -9,9 +6,14 @@ import {
   useXnftPreferences,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { PowerIcon, MoreIcon } from "../../common/Icon";
-import { Simulator } from "./Simulator";
+import { Button, Divider } from "@mui/material";
+import { PublicKey } from "@solana/web3.js";
+
+import { PluginRenderer } from "../../../plugin/Renderer";
+import { MoreIcon, PowerIcon } from "../../common/Icon";
 import { Redirect } from "../../common/Layout/Router";
+
+import { Simulator } from "./Simulator";
 
 export function PluginApp({
   xnftAddress,

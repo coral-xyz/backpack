@@ -1,7 +1,9 @@
-import { BACKEND_API_URL, EnrichedInboxDb } from "@coral-xyz/common";
 import { useEffect, useState } from "react";
-import { MessagesSkeleton } from "./MessagesSkeleton";
+import type { EnrichedInboxDb } from "@coral-xyz/common";
+import { BACKEND_API_URL } from "@coral-xyz/common";
+
 import { MessageList } from "./MessageList";
+import { MessagesSkeleton } from "./MessagesSkeleton";
 import { useStyles } from "./styles";
 
 export const RequestsScreen = () => {
