@@ -8,7 +8,8 @@ import { externalResourceUri } from "@coral-xyz/common-public";
 import { PublicKey } from "@solana/web3.js";
 import { atom, selector } from "recoil";
 
-import { connectionUrls, isDeveloperMode } from "../preferences";
+import { isDeveloperMode } from "../preferences";
+import { connectionUrls } from "../preferences/connection-urls:";
 import { activePublicKeys, solanaPublicKey } from "../wallet";
 
 import { anchorContext } from "./wallet";

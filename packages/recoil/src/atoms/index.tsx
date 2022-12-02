@@ -8,6 +8,7 @@ export * from "./keyring";
 export * from "./nft";
 export * from "./notifications";
 export * from "./preferences";
+export * from "./preferences/connection-urls";
 export * from "./prices";
 export * from "./recent-transactions";
 export * from "./solana";
