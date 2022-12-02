@@ -32,11 +32,13 @@ export const OnboardAccount = ({
   onRecover,
   containerRef,
   navProps,
+  isAddingAccount,
 }: {
   onWaiting: () => void;
   onRecover: () => void;
   containerRef: any;
   navProps: any;
+  isAddingAccount?: boolean;
 }) => {
   const { step, nextStep, prevStep } = useSteps();
   const background = useBackgroundClient();
@@ -182,17 +184,22 @@ export const OnboardAccount = ({
       onClick={handleBlockchainClick}
       onNext={nextStep}
     />,
-    <CreatePassword
-      onNext={(password) => {
-        setPassword(password);
-        nextStep();
-      }}
-    />,
+    ...(!isAddingAccount
+      ? [
+          <CreatePassword
+            onNext={(password) => {
+              setPassword(password);
+              nextStep();
+            }}
+          />,
+        ]
+      : []),
     <Finish
       inviteCode={inviteCode}
       username={username}
       password={password!}
       keyringInit={keyringInit!}
+      isAddingAccount={isAddingAccount}
     />,
   ];
 

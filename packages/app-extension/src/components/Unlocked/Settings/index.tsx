@@ -10,7 +10,6 @@ import {
   AccountCircleOutlined,
   Tab as WindowIcon,
   Settings,
-  People,
 } from "@mui/icons-material";
 import { Keypair } from "@solana/web3.js";
 import { styles, useCustomTheme, HOVER_OPACITY } from "@coral-xyz/themes";
@@ -19,7 +18,6 @@ import {
   useWalletPublicKeys,
   useActiveWallets,
   useBlockchainLogo,
-  useUsername,
   useAvatarUrl,
   WalletPublicKeys,
   useFeatureGates,
@@ -89,10 +87,10 @@ import { XnftDetail } from "./Xnfts/Detail";
 import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
 import { PreferenceSolanaCustomRpcUrl } from "./Preferences/Solana/CustomRpcUrl";
 import { PreferenceEthereumCustomRpcUrl } from "./Preferences/Ethereum/CustomRpcUrl";
-import WaitingRoom from "../../common/WaitingRoom";
 import { TextInput } from "../../common/Inputs";
 import { NotificationButton } from "../Balances/Notifications";
 import { Contacts } from "../Messages/Contacts";
+import { UserAccountsMenuButton } from "./UsernamesMenu";
 
 const useStyles = styles((theme) => ({
   addConnectWalletLabel: {
@@ -196,10 +194,6 @@ function AvatarButton() {
             <NavStackScreen
               name={"your-account"}
               component={(props: any) => <YourAccount {...props} />}
-            />
-            <NavStackScreen
-              name={"waiting-room"}
-              component={(props: any) => <WaitingRoom onboarded {...props} />}
             />
             <NavStackScreen
               name={"contacts-list"}
@@ -326,7 +320,7 @@ function SettingsMenu() {
   const { setTitle } = useNavStack();
 
   useEffect(() => {
-    setTitle("Profile");
+    setTitle(<UserAccountsMenuButton />);
   }, [setTitle]);
 
   return (
@@ -348,11 +342,10 @@ function _SettingsContent() {
 }
 
 function AvatarHeader() {
-  const username = useUsername();
   const theme = useCustomTheme();
   const avatarUrl = useAvatarUrl(64);
   return (
-    <div style={{ marginBottom: "40px" }}>
+    <div style={{ marginTop: "16px", marginBottom: "36px" }}>
       <div
         style={{
           background: theme.custom.colors.avatarIconBackground,
@@ -377,21 +370,6 @@ function AvatarHeader() {
           }}
         />
       </div>
-      {username && (
-        <Typography
-          style={{
-            textAlign: "center",
-            color: theme.custom.colors.fontColor,
-            fontWeight: 500,
-            fontSize: "18px",
-            lineHeight: "28px",
-            marginTop: "8px",
-            marginBottom: "12px",
-          }}
-        >
-          @{username}
-        </Typography>
-      )}
     </div>
   );
 }
@@ -845,12 +823,6 @@ function SettingsList() {
 
   const discordList = [
     {
-      label: "Waiting Room",
-      onClick: () => nav.push("waiting-room"),
-      icon: (props: any) => <People {...props} />,
-      detailIcon: <PushDetail />,
-    },
-    {
       label: "Need help? Hop into Discord",
       onClick: () => window.open(DISCORD_INVITE_LINK, "_blank"),
       icon: (props: any) => <DiscordIcon {...props} />,
@@ -1144,16 +1116,7 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
           />
         </Box>
       </form>
-      <WithMiniDrawer
-        openDrawer={openDrawer}
-        setOpenDrawer={setOpenDrawer}
-        backdropProps={{
-          style: {
-            opacity: 0.8,
-            background: "#18181b",
-          },
-        }}
-      >
+      <WithMiniDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
         <ConfirmCreateWallet
           blockchain={blockchain}
           publicKey={newPublicKey}

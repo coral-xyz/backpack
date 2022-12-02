@@ -10,7 +10,7 @@ export type Keyname = {
 };
 
 export async function setKeyname(pubkey: string, name: string) {
-  let keynames = await LocalStorageDb.get(KEY_KEYNAME_STORE);
+  let keynames = await LocalStorageDb.get(key());
   if (!keynames) {
     keynames = {};
   }
@@ -19,12 +19,16 @@ export async function setKeyname(pubkey: string, name: string) {
 }
 
 export async function getKeyname(pubkey: string): Promise<string> {
-  const names = await LocalStorageDb.get(KEY_KEYNAME_STORE);
+  const names = await LocalStorageDb.get(key());
   const name = names[pubkey];
   if (!name) {
     throw new Error(`unable to find name for key: ${pubkey.toString()}`);
   }
   return name;
+}
+
+function key() {
+  return `${KEY_KEYNAME_STORE}`;
 }
 
 export const DefaultKeyname = {

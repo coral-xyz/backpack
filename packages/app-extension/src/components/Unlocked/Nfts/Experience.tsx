@@ -8,7 +8,7 @@ import {
   NavStackEphemeral,
   NavStackScreen,
 } from "../../common/Layout/NavStack";
-import { useNavigation, useUsername } from "@coral-xyz/recoil";
+import { useNavigation, useUser } from "@coral-xyz/recoil";
 import { CloseButton } from "../../common/Layout/Drawer";
 import { NAV_COMPONENT_NFT_CHAT } from "@coral-xyz/common";
 
@@ -43,7 +43,7 @@ export const NftsExperience = ({ id }: any) => {
 };
 
 export function NftChat({ id }: any) {
-  const username = useUsername();
+  const { username } = useUser();
   return (
     <ChatRoom
       username={username || ""}
