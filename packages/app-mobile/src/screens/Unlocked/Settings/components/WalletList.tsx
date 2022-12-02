@@ -1,6 +1,18 @@
-import { Margin } from "@components";
-import { View, Text, StyleSheet } from "react-native";
 import { useState } from "react";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import { Margin, WalletAddress } from "@components";
+import type {
+  // openPopupWindow,
+  Blockchain,
+} from "@coral-xyz/common";
+import {
+  BACKPACK_FEATURE_POP_MODE,
+  BACKPACK_FEATURE_XNFT,
+  DISCORD_INVITE_LINK,
+  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
+  UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
+  UI_RPC_METHOD_KEYRING_STORE_LOCK,
+} from "@coral-xyz/common";
 // import { Box, Typography, IconButton } from "@mui/material";
 // import {
 //   ExpandMore,
@@ -14,26 +26,19 @@ import { useState } from "react";
 // } from "@mui/icons-material";
 // import { HOVER_OPACITY } from "@coral-xyz/themes";
 import {
+  useActiveWallets,
   useBackgroundClient,
   useWalletPublicKeys,
-  useActiveWallets,
   // useBlockchainLogo,
   // useUsername,
   // useAvatarUrl,
   // WalletPublicKeys,
 } from "@coral-xyz/recoil";
-import {
-  // openPopupWindow,
-  Blockchain,
-  BACKPACK_FEATURE_POP_MODE,
-  BACKPACK_FEATURE_XNFT,
-  UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
-  UI_RPC_METHOD_KEYRING_STORE_LOCK,
-  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-  DISCORD_INVITE_LINK,
-} from "@coral-xyz/common";
+import { MaterialIcons } from "@expo/vector-icons";
 import { useBlockchainLogo, useTheme } from "@hooks";
-import { SettingsWalletRow, RoundedContainer } from "./SettingsRow";
+import { useNavigation } from "@react-navigation/native";
+
+import { RoundedContainer, SettingsWalletRow } from "./SettingsRow";
 
 export function WalletLists({ close }: { close: () => void }) {
   const blockchainKeyrings = useWalletPublicKeys();
@@ -66,7 +71,7 @@ export function WalletList({
   const blockchainLogo = useBlockchainLogo(blockchain);
   const [showAll, setShowAll] = useState(false);
 
-  const clickWallet = (publicKey: string) => {
+  const onPressWallet = (publicKey: string) => {
     background
       .request({
         method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
@@ -112,10 +117,80 @@ export function WalletList({
           name={name}
           publicKey={publicKey}
           onPress={() => {
+            Alert.alert("pressed");
             setShowAll(!showAll);
           }}
         />
       </RoundedContainer>
+      {showAll ? <AllWallets keys={keys} /> : null}
+      {showAll ? <AddConnectWalletButton blockchain={blockchain} /> : null}
     </Margin>
   );
 }
+
+function AllWallets({ keys }) {
+  return (
+    <>
+      {keys.map(({ name, publicKey, type }) => {
+        return (
+          <View key={publicKey.toString()}>
+            <Text>{JSON.stringify({ name, publicKey, type }, null, 2)}</Text>
+            <WalletAddress
+              name={name}
+              publicKey={publicKey}
+              style={{
+                fontWeight: "500",
+                lineHeight: 24,
+                fontSize: 16,
+              }}
+              nameStyle={{
+                maxWidth: 75,
+              }}
+            />
+          </View>
+        );
+      })}
+    </>
+  );
+}
+
+export const AddConnectWalletButton = ({
+  blockchain,
+}: {
+  blockchain: Blockchain;
+}) => {
+  const navigation = useNavigation();
+  const theme = useTheme();
+  const onPress = (blockchain: Blockchain) => {
+    navigation.push("AddConnectWallet", { blockchain });
+  };
+
+  return (
+    <Pressable
+      onPress={() => {
+        onPress(blockchain);
+      }}
+      style={{
+        padding: 12,
+        flexDirection: "row",
+        alignItems: "center",
+      }}
+    >
+      <Margin right={12}>
+        <MaterialIcons
+          name="add"
+          size={24}
+          color={theme.custom.colors.secondary}
+        />
+      </Margin>
+      <Text
+        style={{
+          fontSize: 16,
+          color: theme.custom.colors.secondary,
+        }}
+      >
+        Add / Connect Wallet
+      </Text>
+    </Pressable>
+  );
+};
