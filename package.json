@@ -42,8 +42,7 @@
   "lint-staged": {
     "*.{css,md,json}": "prettier --write --cache",
     "*.{ts,tsx,js,jsx}": [
-      "prettier --write --cache",
-      "eslint --fix"
+      "prettier --write --cache"
     ]
   },
   "resolutions": {
