@@ -5,10 +5,11 @@ import { useAvatarUrl } from "@coral-xyz/recoil";
 // probably should put all the components in here as an index
 import { useTheme } from "@hooks";
 
-export { NavHeader } from "./NavHeader";
+export { ActionCard } from "./ActionCard";
 export { MnemonicInputFields } from "./MnemonicInputFields";
-export { TokenInputField } from "./TokenInputField";
+export { NavHeader } from "./NavHeader";
 export { TokenAmountHeader } from "./TokenAmountHeader";
+export { TokenInputField } from "./TokenInputField";
 //
 // function getRandomColor() { var letters = "0123456789ABCDEF";
 //   var color = "#";

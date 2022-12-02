@@ -29,6 +29,7 @@ import {
 import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import AccountSettingsScreen from "@screens/Unlocked/Settings/AccountSettingsScreen";
+import { AddConnectWalletScreen } from "@screens/Unlocked/Settings/AddConnectWalletScreen";
 import { SettingsList } from "@screens/Unlocked/Settings/components/SettingsMenuList";
 import {
   IconPushDetail,
@@ -118,6 +119,11 @@ export default function AccountSettingsNavigator() {
         options={{ title: "xNFTs" }}
         name="xNFTSettings"
         component={DummyScreen}
+      />
+      <Stack.Screen
+        options={{ title: "Add / Connect Wallet" }}
+        name="AddConnectWallet"
+        component={AddConnectWalletScreen}
       />
       <Stack.Screen
         options={{ title: "Waiting Room" }}

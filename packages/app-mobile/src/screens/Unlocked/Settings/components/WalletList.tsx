@@ -162,7 +162,7 @@ export const AddConnectWalletButton = ({
   const navigation = useNavigation();
   const theme = useTheme();
   const onPress = (blockchain: Blockchain) => {
-    navigation.push("AddConnectWallet", { blockchain });
+    navigation.navigate("AddConnectWallet", { blockchain });
   };
 
   return (
