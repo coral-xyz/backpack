@@ -4,7 +4,6 @@ import { extractUserId } from "../../auth/middleware";
 import {
   getAllFriends,
   getFriendship,
-  getFriendships,
   setFriendship,
 } from "../../db/friendships";
 import { getUser } from "../../db/users";
