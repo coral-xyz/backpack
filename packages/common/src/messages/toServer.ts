@@ -1,4 +1,5 @@
-import { CHAT_MESSAGES, Message, SUBSCRIBE, UNSUBSCRIBE } from "./fromServer";
+import type { CHAT_MESSAGES, SUBSCRIBE, UNSUBSCRIBE } from "./fromServer";
+import { Message } from "./fromServer";
 
 export type SubscriptionType = "collection" | "individual";
 export type SubscriptionMessage = {

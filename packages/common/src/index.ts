@@ -1,20 +1,21 @@
-import type { PublicKey } from "@solana/web3.js";
 import type { RpcRequest } from "@coral-xyz/common-public";
-import type { Context, RpcResponse, EventEmitter } from "./types";
+import type { PublicKey } from "@solana/web3.js";
 
-export * from "@coral-xyz/common-public";
+import type { Context, EventEmitter, RpcResponse } from "./types";
+
+export * from "./browser";
+export * from "./channel";
 export * from "./constants";
 export * from "./crypto";
-export * from "./channel";
-export * from "./browser";
-export * from "./types";
-export * from "./solana";
 export * from "./ethereum";
 export * from "./explorer";
-export * from "./plugin";
 export * from "./feature-gates";
 export * from "./messages";
 export * from "./notifications";
+export * from "./plugin";
+export * from "./solana";
+export * from "./types";
+export * from "@coral-xyz/common-public";
 
 // Generated pre-build step.
 export * from "./generated-config";

@@ -1,9 +1,11 @@
-import { atom, selector, selectorFamily } from "recoil";
 import {
   Blockchain,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEY_DATA,
 } from "@coral-xyz/common";
-import { WalletPublicKeys } from "../types";
+import { atom, selector, selectorFamily } from "recoil";
+
+import type { WalletPublicKeys } from "../types";
+
 import { backgroundClient } from "./client";
 
 /**

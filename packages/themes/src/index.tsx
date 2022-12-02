@@ -1,6 +1,6 @@
+import createStyles from "@mui/styles/createStyles";
 import _makeStyles from "@mui/styles/makeStyles";
 import useTheme from "@mui/styles/useTheme";
-import createStyles from "@mui/styles/createStyles";
 
 export const HOVER_OPACITY = 0.8;
 

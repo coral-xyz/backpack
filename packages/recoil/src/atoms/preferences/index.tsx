@@ -1,13 +1,14 @@
-import { atom, selector } from "recoil";
 import {
   Blockchain,
+  UI_RPC_METHOD_ALL_USERS_READ,
   UI_RPC_METHOD_PREFERENCES_READ,
   UI_RPC_METHOD_USER_READ,
-  UI_RPC_METHOD_ALL_USERS_READ,
 } from "@coral-xyz/common";
-import { solanaConnectionUrl } from "../solana";
-import { ethereumConnectionUrl } from "../ethereum";
+import { atom, selector } from "recoil";
+
 import { backgroundClient } from "../client";
+import { ethereumConnectionUrl } from "../ethereum";
+import { solanaConnectionUrl } from "../solana";
 
 export const preferences = atom<any>({
   key: "preferences",

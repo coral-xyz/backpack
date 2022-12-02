@@ -1,6 +1,7 @@
-import React, { useState, useContext } from "react";
-import { View, Button, ScrollBar } from "../elements";
+import React, { useContext, useState } from "react";
+
 import { useTheme } from "../Context";
+import { Button, ScrollBar, View } from "../elements";
 
 export const Tab = {
   Navigator,

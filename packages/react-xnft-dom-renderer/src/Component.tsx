@@ -1,9 +1,9 @@
 import React, { LegacyRef, useEffect, useRef, useState } from "react";
 import type { Element } from "react-xnft";
 import { NodeKind } from "react-xnft";
-import { AnimatePresence, motion } from "framer-motion";
 import { formatUSD, proxyImageUrl } from "@coral-xyz/common";
 import { styles } from "@coral-xyz/themes";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import {
   Card,
   CardContent,
@@ -14,10 +14,11 @@ import {
   ListItemIcon,
   Typography,
 } from "@mui/material";
-import { ExpandLess, ExpandMore } from "@mui/icons-material";
-import { ViewRenderer } from "./ViewRenderer";
+import { AnimatePresence, motion } from "framer-motion";
+
 import { ScrollbarNew } from "./components/Scrollbar";
 import { useDefaultClasses } from "./theme/defaults";
+import { ViewRenderer } from "./ViewRenderer";
 
 const useStyles = styles((theme) => ({
   blockchainLogo: {

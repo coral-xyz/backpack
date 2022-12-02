@@ -1,6 +1,7 @@
 import { useRecoilState } from "recoil";
+
 import * as atoms from "../atoms";
-import { TransactionRequest } from "../atoms/transaction-request";
+import type { TransactionRequest } from "../atoms/transaction-request";
 
 export function useTransactionRequest(): [
   TransactionRequest | undefined,

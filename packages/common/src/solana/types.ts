@@ -1,5 +1,5 @@
-import { IdlAccounts, SplToken } from "@project-serum/anchor";
-import { metadata } from "@project-serum/token";
+import type { IdlAccounts, SplToken } from "@project-serum/anchor";
+import type { metadata } from "@project-serum/token";
 import type { TokenAccountsFilter } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
 

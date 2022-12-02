@@ -1,9 +1,10 @@
-import { atom, selector } from "recoil";
-import type { FeeData } from "@ethersproject/abstract-provider";
 import { BackgroundEthereumProvider } from "@coral-xyz/common";
+import type { FeeData } from "@ethersproject/abstract-provider";
+import { atom, selector } from "recoil";
+
 import { providerBackgroundClient } from "../client";
-import { ethereumConnectionUrl } from "./preferences";
-import { ethereumChainId } from "./preferences";
+
+import { ethereumChainId, ethereumConnectionUrl } from "./preferences";
 
 export const ethersContext = selector({
   key: "ethersContext",

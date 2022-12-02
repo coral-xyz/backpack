@@ -1,6 +1,7 @@
-import { selector } from "recoil";
+import type { Nft, NftCollection } from "@coral-xyz/common";
 import { Blockchain } from "@coral-xyz/common";
-import { Nft, NftCollection } from "@coral-xyz/common";
+import { selector } from "recoil";
+
 import { ethereumNftCollections } from "./ethereum/nft";
 import { solanaNftCollections } from "./solana/nft";
 

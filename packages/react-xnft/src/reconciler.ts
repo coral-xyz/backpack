@@ -1,10 +1,13 @@
-import ReactReconciler, { HostConfig, OpaqueHandle } from "react-reconciler";
+import type { ReactNode } from "react";
+import type { OpaqueHandle } from "react-reconciler";
+import ReactReconciler, { HostConfig } from "react-reconciler";
+import type { Event } from "@coral-xyz/common-public";
+import { getLogger } from "@coral-xyz/common-public";
 import { EventEmitter } from "eventemitter3";
-import { ReactDom } from "./ReactDom";
-import { ReactNode } from "react";
-import { getLogger, Event } from "@coral-xyz/common-public";
+
 import { NAV_STACK } from "./Context";
 import { CONNECT, ETHEREUM_CONNECT, SOLANA_CONNECT } from "./EVENTS";
+import { ReactDom } from "./ReactDom";
 
 const logger = getLogger("react-xnft/reconciler");
 const events = new EventEmitter();

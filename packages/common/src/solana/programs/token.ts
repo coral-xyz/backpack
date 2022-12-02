@@ -1,10 +1,11 @@
-import { PublicKey } from "@solana/web3.js";
-import type { Connection } from "@solana/web3.js";
+import { externalResourceUri, getLogger } from "@coral-xyz/common-public";
+import type { Program, Provider, SplToken } from "@project-serum/anchor";
 import * as anchor from "@project-serum/anchor";
 import { AnchorProvider, BN, Spl } from "@project-serum/anchor";
-import type { Provider, Program, SplToken } from "@project-serum/anchor";
 import { metadata } from "@project-serum/token";
-import { getLogger, externalResourceUri } from "@coral-xyz/common-public";
+import type { Connection } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
+
 import { BACKEND_API_URL } from "../../constants";
 import type {
   SolanaTokenAccount,

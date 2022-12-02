@@ -1,13 +1,14 @@
-import { ethers } from "ethers";
-import type { UnsignedTransaction } from "@ethersproject/transactions";
-import type { TransactionRequest } from "@ethersproject/abstract-provider";
-import type { RequestManager } from "../request-manager";
 import {
-  ETHEREUM_RPC_METHOD_SIGN_TX,
   ETHEREUM_RPC_METHOD_SIGN_AND_SEND_TX,
   ETHEREUM_RPC_METHOD_SIGN_MESSAGE,
+  ETHEREUM_RPC_METHOD_SIGN_TX,
 } from "@coral-xyz/common";
-import { ChainedRequestManager } from "../chained-request-manager";
+import type { TransactionRequest } from "@ethersproject/abstract-provider";
+import type { UnsignedTransaction } from "@ethersproject/transactions";
+import { ethers } from "ethers";
+
+import type { ChainedRequestManager } from "../chained-request-manager";
+import type { RequestManager } from "../request-manager";
 
 const { base58: bs58 } = ethers.utils;
 

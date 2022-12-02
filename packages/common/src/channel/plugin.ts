@@ -3,6 +3,7 @@
 //
 
 import type { Event } from "@coral-xyz/common-public";
+
 import type { RpcResponse } from "../types";
 
 export class PluginServer {

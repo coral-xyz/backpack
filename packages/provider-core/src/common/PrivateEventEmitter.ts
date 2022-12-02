@@ -1,4 +1,5 @@
-import { EventEmitter, EventListener, EventArgs } from "eventemitter3";
+import type { EventArgs, EventListener } from "eventemitter3";
+import { EventEmitter } from "eventemitter3";
 
 type EventTypes = symbol | string;
 /*

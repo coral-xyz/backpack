@@ -1,8 +1,11 @@
 import React from "react";
+
 import { useTheme } from "../../Context";
-import { View, Text, Button, ScrollBar, NavAnimation } from "../../elements";
-import { useNavigation, NavStackProvider, NavStackOptions } from "./Context";
+import { Button, NavAnimation, ScrollBar, Text, View } from "../../elements";
 import { ArrowBack } from "../Icons";
+
+import type { NavStackOptions } from "./Context";
+import { NavStackProvider, useNavigation } from "./Context";
 
 // TODO: share this with the main app.
 const NAV_BAR_HEIGHT = 56;

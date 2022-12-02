@@ -1,9 +1,10 @@
-import { useRecoilValue, useRecoilCallback } from "recoil";
 import type {
   SolanaTokenAccountWithKey,
   SplNftMetadata,
   TokenMetadata,
 } from "@coral-xyz/common";
+import { useRecoilCallback, useRecoilValue } from "recoil";
+
 import * as atoms from "../../atoms";
 
 export const useUpdateAllSplTokenAccounts = () =>

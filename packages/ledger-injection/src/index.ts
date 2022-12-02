@@ -1,22 +1,22 @@
-import Transport from "@ledgerhq/hw-transport";
-import TransportWebHid from "@ledgerhq/hw-transport-webhid";
-import Solana from "@ledgerhq/hw-app-solana";
-import Ethereum from "@ledgerhq/hw-app-eth";
-import { ethers } from "ethers";
-import { UnsignedTransaction } from "@ethersproject/transactions";
+import type { DerivationPath } from "@coral-xyz/common";
 import {
   accountDerivationPath,
-  getLogger,
   Blockchain,
-  DerivationPath,
+  getLogger,
   LEDGER_INJECTED_CHANNEL_REQUEST,
   LEDGER_INJECTED_CHANNEL_RESPONSE,
-  LEDGER_METHOD_ETHEREUM_SIGN_TRANSACTION,
-  LEDGER_METHOD_ETHEREUM_SIGN_MESSAGE,
   LEDGER_METHOD_ETHEREUM_SIGN_EIP712_MESSAGE,
-  LEDGER_METHOD_SOLANA_SIGN_TRANSACTION,
+  LEDGER_METHOD_ETHEREUM_SIGN_MESSAGE,
+  LEDGER_METHOD_ETHEREUM_SIGN_TRANSACTION,
   LEDGER_METHOD_SOLANA_SIGN_MESSAGE,
+  LEDGER_METHOD_SOLANA_SIGN_TRANSACTION,
 } from "@coral-xyz/common";
+import type { UnsignedTransaction } from "@ethersproject/transactions";
+import Ethereum from "@ledgerhq/hw-app-eth";
+import Solana from "@ledgerhq/hw-app-solana";
+import type Transport from "@ledgerhq/hw-transport";
+import TransportWebHid from "@ledgerhq/hw-transport-webhid";
+import { ethers } from "ethers";
 
 const logger = getLogger("ledger-injection");
 const { base58: bs58 } = ethers.utils;

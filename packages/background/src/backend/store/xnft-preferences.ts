@@ -1,5 +1,6 @@
+import type { XnftPreferenceStore } from "@coral-xyz/common";
+
 import { LocalStorageDb } from "./db";
-import { XnftPreferenceStore } from "@coral-xyz/common";
 
 const KEY_XNFT_PREFERENCES_STORE = "xnft-preferences-store";
 

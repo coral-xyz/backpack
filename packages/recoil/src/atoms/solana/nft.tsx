@@ -1,13 +1,11 @@
+import type { Nft, NftCollection } from "@coral-xyz/common";
+import { Blockchain, externalResourceUri } from "@coral-xyz/common";
 import { selector } from "recoil";
-import {
-  Blockchain,
-  externalResourceUri,
-  NftCollection,
-  Nft,
-} from "@coral-xyz/common";
-import { customSplTokenAccounts } from "./token";
-import { solanaConnectionUrl } from "./preferences";
+
 import { solanaPublicKey } from "../wallet";
+
+import { solanaConnectionUrl } from "./preferences";
+import { customSplTokenAccounts } from "./token";
 
 interface SolanaCollection extends NftCollection {
   items: (Nft & { publicKey: string; mint: string })[];

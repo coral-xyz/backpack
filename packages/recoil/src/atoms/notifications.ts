@@ -1,10 +1,7 @@
+import type { DbNotification, EnrichedNotification } from "@coral-xyz/common";
+import { BACKEND_API_URL, fetchXnftsFromPubkey } from "@coral-xyz/common";
 import { atomFamily, selectorFamily } from "recoil";
-import {
-  BACKEND_API_URL,
-  fetchXnftsFromPubkey,
-  EnrichedNotification,
-  DbNotification,
-} from "@coral-xyz/common";
+
 import { anchorContext } from "./solana/wallet";
 
 export const recentNotifications = selectorFamily<
