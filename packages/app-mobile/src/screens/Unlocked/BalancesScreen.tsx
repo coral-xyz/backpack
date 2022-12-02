@@ -51,7 +51,6 @@ export function BalancesNavigator() {
 
 function BalanceDetailScreen({ route, navigation }) {
   const { blockchain, token } = route.params;
-  console.log("BalancesDetailScreen", { blockchain, token });
   const { address } = token;
 
   // We only use ethereumWallet here, even though its shared on the Solana side too.
@@ -80,6 +79,7 @@ function BalanceDetailScreen({ route, navigation }) {
   );
 }
 
+// TODO(peter) figure out if token == null
 function TokenHeader({ blockchain, address }: SearchParamsFor.Token["props"]) {
   const [token] = useLoader(blockchainTokenData({ blockchain, address }), null);
 
@@ -112,12 +112,12 @@ function TokenHeader({ blockchain, address }: SearchParamsFor.Token["props"]) {
       </View>
       <View style={styles.tokenHeaderButtonContainer}>
         <TransferWidget
+          blockchain={blockchain}
+          address={address}
           rampEnabled={
             (blockchain === Blockchain.SOLANA && token.ticker === "SOL") ||
             (blockchain === Blockchain.ETHEREUM && token.ticker === "ETH")
           }
-          blockchain={blockchain}
-          address={address}
         />
       </View>
     </View>
