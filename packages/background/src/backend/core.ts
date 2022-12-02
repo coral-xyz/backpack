@@ -1,23 +1,18 @@
-import { validateMnemonic as _validateMnemonic } from "bip39";
-import { ethers } from "ethers";
-import type {
-  Commitment,
-  SendOptions,
-  SimulateTransactionConfig,
-} from "@solana/web3.js";
-import {
-  PublicKey,
-  Transaction,
-  TransactionInstruction,
-} from "@solana/web3.js";
-import { BACKEND_API_URL } from "@coral-xyz/common";
-import type { KeyringStoreState } from "@coral-xyz/recoil";
-import { makeDefaultNav, makeUrl } from "@coral-xyz/recoil";
 import { keyringForBlockchain } from "@coral-xyz/blockchain-common";
-import { BlockchainKeyring } from "@coral-xyz/blockchain-keyring";
-import {
+import type { BlockchainKeyring } from "@coral-xyz/blockchain-keyring";
+import type {
+  DerivationPath,
+  EventEmitter,
+  FEATURE_GATES_MAP,
+  KeyringInit,
+  KeyringType,
+  XnftPreference} from "@coral-xyz/common";
+import { BACKEND_API_URL ,
   BACKEND_EVENT,
+  BACKPACK_FEATURE_JWT,
+  BACKPACK_FEATURE_USERNAMES,
   Blockchain,
+  deserializeTransaction,
   EthereumConnectionUrl,
   EthereumExplorer,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
@@ -34,6 +29,7 @@ import {
   NOTIFICATION_KEYRING_DERIVED_WALLET,
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
   NOTIFICATION_KEYRING_KEY_DELETE,
+  NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED,
   NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_KEYRING_STORE_RESET,
@@ -45,30 +41,33 @@ import {
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
-  NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED,
   SolanaCluster,
-  SolanaExplorer,
-  deserializeTransaction,
-  FEATURE_GATES_MAP,
-  XnftPreference,
-  BACKPACK_FEATURE_USERNAMES,
-  BACKPACK_FEATURE_JWT,
+  SolanaExplorer
 } from "@coral-xyz/common";
+import type { KeyringStoreState } from "@coral-xyz/recoil";
+import { makeDefaultNav, makeUrl } from "@coral-xyz/recoil";
 import type {
-  KeyringInit,
-  DerivationPath,
-  EventEmitter,
-  KeyringType,
-} from "@coral-xyz/common";
-import type { Nav, User } from "./store";
-import * as store from "./store";
+  Commitment,
+  SendOptions,
+  SimulateTransactionConfig,
+} from "@solana/web3.js";
+import {
+  PublicKey,
+  Transaction,
+  TransactionInstruction,
+} from "@solana/web3.js";
+import { validateMnemonic as _validateMnemonic } from "bip39";
+import { ethers } from "ethers";
+
+import type { EthereumConnectionBackend } from "./ethereum-connection";
 import { defaultPreferences, KeyringStore } from "./keyring";
 import type { SolanaConnectionBackend } from "./solana-connection";
-import type { EthereumConnectionBackend } from "./ethereum-connection";
+import type { Nav, User } from "./store";
+import * as store from "./store";
 import {
+  DEFAULT_DARK_MODE,
   getWalletDataForUser,
   setWalletDataForUser,
-  DEFAULT_DARK_MODE,
 } from "./store";
 
 const { base58: bs58 } = ethers.utils;
@@ -423,7 +422,7 @@ export class Backend {
 
   async ethereumChainIdRead(): Promise<string> {
     const data = await store.getWalletDataForUser(
-      this.keyringStore.activeUsernameKeyring.username
+      this.keyringStore.activeUsernameKeyring.uuid
     );
     return data.ethereum && data.ethereum.chainId
       ? data.ethereum.chainId
@@ -691,6 +690,7 @@ export class Backend {
     if (!username) {
       throw new Error("invariant violation: username not found");
     }
+
     await this.keyringStore.tryUnlock(password);
 
     if (BACKPACK_FEATURE_USERNAMES && BACKPACK_FEATURE_JWT) {
@@ -1256,7 +1256,7 @@ export class Backend {
   }
 
   async setXnftPreferences(xnftId: string, preference: XnftPreference) {
-    const uuid = this.keyringStore.activeUsernameKeyring.username; // todo
+    const uuid = this.keyringStore.activeUsernameKeyring.uuid;
     const currentPreferences =
       (await store.getXnftPreferencesForUser(uuid)) || {};
     const updatedPreferences = {
@@ -1274,7 +1274,7 @@ export class Backend {
   }
 
   async getXnftPreferences() {
-    const uuid = this.keyringStore.activeUsernameKeyring.username; // todo
+    const uuid = this.keyringStore.activeUsernameKeyring.uuid;
     return await store.getXnftPreferencesForUser(uuid);
   }
 
