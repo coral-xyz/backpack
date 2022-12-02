@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Box, Typography, InputAdornment, IconButton } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { useCustomTheme, styles } from "@coral-xyz/themes";
+import { useCustomTheme } from "@coral-xyz/themes";
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
-import { TextField, PrimaryButton } from "../common";
+import { PrimaryButton } from "../common";
 import { RedBackpack, Backpack } from "../common/Icon";
 import { LockedMenu } from "./LockedMenu";
 import { TextInput } from "../common/Inputs";
@@ -63,7 +63,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
         </Box>
 
         <Box style={{ marginBottom: 84 }}>
-          {username && (
+          {user.username && (
             <Box
               style={{
                 flex: 1,
@@ -73,7 +73,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
               }}
             >
               <Typography style={{ color: theme.custom.colors.fontColor }}>
-                gm @{username}
+                gm @{user.username}
               </Typography>
             </Box>
           )}

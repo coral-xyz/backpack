@@ -23,7 +23,6 @@ import {
   useBackgroundResponder,
   useBackgroundClient,
   useEnabledBlockchains,
-  useUsername,
 } from "@coral-xyz/recoil";
 import { Locked } from "../components/Locked";
 import { Unlocked } from "../components/Unlocked";
