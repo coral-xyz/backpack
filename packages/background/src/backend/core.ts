@@ -6,8 +6,10 @@ import type {
   FEATURE_GATES_MAP,
   KeyringInit,
   KeyringType,
-  XnftPreference} from "@coral-xyz/common";
-import { BACKEND_API_URL ,
+  XnftPreference,
+} from "@coral-xyz/common";
+import {
+  BACKEND_API_URL,
   BACKEND_EVENT,
   BACKPACK_FEATURE_JWT,
   BACKPACK_FEATURE_USERNAMES,
@@ -25,6 +27,7 @@ import { BACKEND_API_URL ,
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
   NOTIFICATION_ETHEREUM_EXPLORER_UPDATED,
+  NOTIFICATION_FEATURE_GATES_UPDATED,
   NOTIFICATION_KEYNAME_UPDATE,
   NOTIFICATION_KEYRING_DERIVED_WALLET,
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
@@ -42,7 +45,7 @@ import { BACKEND_API_URL ,
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
   SolanaCluster,
-  SolanaExplorer
+  SolanaExplorer,
 } from "@coral-xyz/common";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { makeDefaultNav, makeUrl } from "@coral-xyz/recoil";
@@ -1249,6 +1252,12 @@ export class Backend {
 
   async setFeatureGates(gates: FEATURE_GATES_MAP) {
     await store.setFeatureGates(gates);
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_FEATURE_GATES_UPDATED,
+      data: {
+        gates,
+      },
+    });
   }
 
   async getFeatureGates() {
