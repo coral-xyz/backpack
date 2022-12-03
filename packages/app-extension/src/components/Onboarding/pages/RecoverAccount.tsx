@@ -182,6 +182,7 @@ export const RecoverAccount = ({
       username={username}
       password={password!}
       keyringInit={keyringInit!}
+      isAddingAccount={isAddingAccount}
     />,
   ];
 
