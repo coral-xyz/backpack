@@ -1,5 +1,5 @@
 export const FEATURE_GATES = {
   STRIPE_ENABLED: true,
   NOTIFICATIONS_ENABLED: false,
-  MESSAGES_ENABLED: false,
+  MESSAGES_ENABLED: true,
 };
