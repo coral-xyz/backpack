@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import type { DerivationPath } from "@coral-xyz/common";
 import { accountDerivationPath, Blockchain } from "@coral-xyz/common";
+import * as anchor from "@project-serum/anchor";
 import Ethereum from "@ledgerhq/hw-app-eth";
 import Solana from "@ledgerhq/hw-app-solana";
 import type Transport from "@ledgerhq/hw-transport";
@@ -45,8 +46,11 @@ export const HardwareSearch = ({
             derivationPath,
             accountIndex
           );
-          const ledgerAddress = (await ledger.getAddress(path)).address;
-          if (ledgerAddress === publicKey) {
+          const ledgerAddress = (await ledger.getAddress(path))
+            .address as Buffer;
+          const ledgerAddressStr =
+            anchor.utils.bytes.bs58.encode(ledgerAddress);
+          if (ledgerAddressStr === publicKey) {
             onNext(derivationPath, accountIndex);
             return;
           }
