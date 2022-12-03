@@ -182,73 +182,6 @@ export const AllTypesProps: Record<string, any> = {
     _set: "auth_notifications_set_input",
     where: "auth_notifications_bool_exp",
   },
-  auth_publickeys_bool_exp: {
-    _and: "auth_publickeys_bool_exp",
-    _not: "auth_publickeys_bool_exp",
-    _or: "auth_publickeys_bool_exp",
-    blockchain: "String_comparison_exp",
-    publickey: "String_comparison_exp",
-  },
-  auth_publickeys_history_aggregate_order_by: {
-    count: "order_by",
-    max: "auth_publickeys_history_max_order_by",
-    min: "auth_publickeys_history_min_order_by",
-  },
-  auth_publickeys_history_arr_rel_insert_input: {
-    data: "auth_publickeys_history_insert_input",
-    on_conflict: "auth_publickeys_history_on_conflict",
-  },
-  auth_publickeys_history_bool_exp: {
-    _and: "auth_publickeys_history_bool_exp",
-    _not: "auth_publickeys_history_bool_exp",
-    _or: "auth_publickeys_history_bool_exp",
-    blockchain: "String_comparison_exp",
-    publickey: "String_comparison_exp",
-    user_id: "uuid_comparison_exp",
-  },
-  auth_publickeys_history_constraint: "enum" as const,
-  auth_publickeys_history_insert_input: {
-    user_id: "uuid",
-  },
-  auth_publickeys_history_max_order_by: {
-    blockchain: "order_by",
-    publickey: "order_by",
-    user_id: "order_by",
-  },
-  auth_publickeys_history_min_order_by: {
-    blockchain: "order_by",
-    publickey: "order_by",
-    user_id: "order_by",
-  },
-  auth_publickeys_history_on_conflict: {
-    constraint: "auth_publickeys_history_constraint",
-    update_columns: "auth_publickeys_history_update_column",
-    where: "auth_publickeys_history_bool_exp",
-  },
-  auth_publickeys_history_order_by: {
-    blockchain: "order_by",
-    publickey: "order_by",
-    user_id: "order_by",
-  },
-  auth_publickeys_history_select_column: "enum" as const,
-  auth_publickeys_history_stream_cursor_input: {
-    initial_value: "auth_publickeys_history_stream_cursor_value_input",
-    ordering: "cursor_ordering",
-  },
-  auth_publickeys_history_stream_cursor_value_input: {
-    user_id: "uuid",
-  },
-  auth_publickeys_history_update_column: "enum" as const,
-  auth_publickeys_order_by: {
-    blockchain: "order_by",
-    publickey: "order_by",
-  },
-  auth_publickeys_select_column: "enum" as const,
-  auth_publickeys_stream_cursor_input: {
-    initial_value: "auth_publickeys_stream_cursor_value_input",
-    ordering: "cursor_ordering",
-  },
-  auth_publickeys_stream_cursor_value_input: {},
   auth_stripe_onramp_bool_exp: {
     _and: "auth_stripe_onramp_bool_exp",
     _not: "auth_stripe_onramp_bool_exp",
@@ -288,13 +221,6 @@ export const AllTypesProps: Record<string, any> = {
     _set: "auth_stripe_onramp_set_input",
     where: "auth_stripe_onramp_bool_exp",
   },
-  auth_users: {
-    publickeys: {
-      distinct_on: "auth_publickeys_history_select_column",
-      order_by: "auth_publickeys_history_order_by",
-      where: "auth_publickeys_history_bool_exp",
-    },
-  },
   auth_users_aggregate_fields: {
     count: {
       columns: "auth_users_select_column",
@@ -305,13 +231,11 @@ export const AllTypesProps: Record<string, any> = {
     _not: "auth_users_bool_exp",
     _or: "auth_users_bool_exp",
     id: "uuid_comparison_exp",
-    publickeys: "auth_publickeys_history_bool_exp",
     username: "citext_comparison_exp",
   },
   auth_users_constraint: "enum" as const,
   auth_users_insert_input: {
     invitation_id: "uuid",
-    publickeys: "auth_publickeys_history_arr_rel_insert_input",
     username: "citext",
   },
   auth_users_on_conflict: {
@@ -321,7 +245,6 @@ export const AllTypesProps: Record<string, any> = {
   },
   auth_users_order_by: {
     id: "order_by",
-    publickeys_aggregate: "auth_publickeys_history_aggregate_order_by",
     username: "order_by",
   },
   auth_users_pk_columns_input: {
@@ -483,14 +406,6 @@ export const AllTypesProps: Record<string, any> = {
       object: "auth_notifications_insert_input",
       on_conflict: "auth_notifications_on_conflict",
     },
-    insert_auth_publickeys_history: {
-      objects: "auth_publickeys_history_insert_input",
-      on_conflict: "auth_publickeys_history_on_conflict",
-    },
-    insert_auth_publickeys_history_one: {
-      object: "auth_publickeys_history_insert_input",
-      on_conflict: "auth_publickeys_history_on_conflict",
-    },
     insert_auth_stripe_onramp: {
       objects: "auth_stripe_onramp_insert_input",
       on_conflict: "auth_stripe_onramp_on_conflict",
@@ -618,16 +533,6 @@ export const AllTypesProps: Record<string, any> = {
       where: "auth_notifications_bool_exp",
     },
     auth_notifications_by_pk: {},
-    auth_publickeys: {
-      distinct_on: "auth_publickeys_select_column",
-      order_by: "auth_publickeys_order_by",
-      where: "auth_publickeys_bool_exp",
-    },
-    auth_publickeys_history: {
-      distinct_on: "auth_publickeys_history_select_column",
-      order_by: "auth_publickeys_history_order_by",
-      where: "auth_publickeys_history_bool_exp",
-    },
     auth_stripe_onramp: {
       distinct_on: "auth_stripe_onramp_select_column",
       order_by: "auth_stripe_onramp_order_by",
@@ -704,24 +609,6 @@ export const AllTypesProps: Record<string, any> = {
     auth_notifications_stream: {
       cursor: "auth_notifications_stream_cursor_input",
       where: "auth_notifications_bool_exp",
-    },
-    auth_publickeys: {
-      distinct_on: "auth_publickeys_select_column",
-      order_by: "auth_publickeys_order_by",
-      where: "auth_publickeys_bool_exp",
-    },
-    auth_publickeys_history: {
-      distinct_on: "auth_publickeys_history_select_column",
-      order_by: "auth_publickeys_history_order_by",
-      where: "auth_publickeys_history_bool_exp",
-    },
-    auth_publickeys_history_stream: {
-      cursor: "auth_publickeys_history_stream_cursor_input",
-      where: "auth_publickeys_history_bool_exp",
-    },
-    auth_publickeys_stream: {
-      cursor: "auth_publickeys_stream_cursor_input",
-      where: "auth_publickeys_bool_exp",
     },
     auth_stripe_onramp: {
       distinct_on: "auth_stripe_onramp_select_column",
@@ -858,19 +745,6 @@ export const ReturnTypes: Record<string, any> = {
     affected_rows: "Int",
     returning: "auth_notifications",
   },
-  auth_publickeys: {
-    blockchain: "String",
-    publickey: "String",
-  },
-  auth_publickeys_history: {
-    blockchain: "String",
-    publickey: "String",
-    user_id: "uuid",
-  },
-  auth_publickeys_history_mutation_response: {
-    affected_rows: "Int",
-    returning: "auth_publickeys_history",
-  },
   auth_stripe_onramp: {
     client_secret: "String",
     id: "Int",
@@ -884,7 +758,6 @@ export const ReturnTypes: Record<string, any> = {
   },
   auth_users: {
     id: "uuid",
-    publickeys: "auth_publickeys_history",
     username: "citext",
   },
   auth_users_aggregate: {
@@ -964,8 +837,6 @@ export const ReturnTypes: Record<string, any> = {
       "auth_notification_subscriptions",
     insert_auth_notifications: "auth_notifications_mutation_response",
     insert_auth_notifications_one: "auth_notifications",
-    insert_auth_publickeys_history: "auth_publickeys_history_mutation_response",
-    insert_auth_publickeys_history_one: "auth_publickeys_history",
     insert_auth_stripe_onramp: "auth_stripe_onramp_mutation_response",
     insert_auth_stripe_onramp_one: "auth_stripe_onramp",
     insert_auth_users: "auth_users_mutation_response",
@@ -1004,8 +875,6 @@ export const ReturnTypes: Record<string, any> = {
     auth_notification_subscriptions_by_pk: "auth_notification_subscriptions",
     auth_notifications: "auth_notifications",
     auth_notifications_by_pk: "auth_notifications",
-    auth_publickeys: "auth_publickeys",
-    auth_publickeys_history: "auth_publickeys_history",
     auth_stripe_onramp: "auth_stripe_onramp",
     auth_stripe_onramp_by_pk: "auth_stripe_onramp",
     auth_users: "auth_users",
@@ -1029,10 +898,6 @@ export const ReturnTypes: Record<string, any> = {
     auth_notifications: "auth_notifications",
     auth_notifications_by_pk: "auth_notifications",
     auth_notifications_stream: "auth_notifications",
-    auth_publickeys: "auth_publickeys",
-    auth_publickeys_history: "auth_publickeys_history",
-    auth_publickeys_history_stream: "auth_publickeys_history",
-    auth_publickeys_stream: "auth_publickeys",
     auth_stripe_onramp: "auth_stripe_onramp",
     auth_stripe_onramp_by_pk: "auth_stripe_onramp",
     auth_stripe_onramp_stream: "auth_stripe_onramp",
