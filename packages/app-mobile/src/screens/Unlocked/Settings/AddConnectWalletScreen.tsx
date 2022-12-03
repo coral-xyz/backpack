@@ -90,7 +90,7 @@ export function AddConnectWalletScreen({
               />
             }
             text="Import a private key"
-            onPress={() => navigation.push("import-secret-key", { blockchain })}
+            onPress={() => navigation.push("ImportSecretKey", { blockchain })}
           />
         </View>
       </View>
