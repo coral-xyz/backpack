@@ -1,4 +1,4 @@
-name: Deploy backpack-api
+name: Deploy backpack-ws
 on:
   push:
     branches: ["master"]
