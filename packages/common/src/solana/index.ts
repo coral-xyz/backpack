@@ -1,3 +1,9 @@
+import {
+  createTransferInstruction as createCCSTransferInstruction,
+  findMintManagerId,
+  findMintMetadataId,
+  MintManager,
+} from "@cardinal/creator-standard";
 import { withSend } from "@cardinal/token-manager";
 import type { Program, SplToken } from "@project-serum/anchor";
 import * as anchor from "@project-serum/anchor";
@@ -20,6 +26,7 @@ import {
   Keypair,
   PublicKey,
   SystemProgram,
+  SYSVAR_INSTRUCTIONS_PUBKEY,
   Transaction,
 } from "@solana/web3.js";
 import BN from "bn.js";
@@ -184,7 +191,89 @@ export class Solana {
     });
   }
 
-  public static async transferCardinalToken(
+  // see github.com/cardinal-labs/cardinal-creator-standard
+  public static async transferCreatorStandardToken(
+    ctx: SolanaContext,
+    req: TransferTokenRequest
+  ): Promise<string> {
+    const { walletPublicKey, tokenClient, commitment } = ctx;
+    const { mint, destination } = req;
+
+    const destinationAta = associatedTokenAddress(mint, destination);
+    const sourceAta = associatedTokenAddress(mint, walletPublicKey);
+
+    const [destinationAccount, destinationAtaAccount] =
+      await anchor.utils.rpc.getMultipleAccounts(
+        tokenClient.provider.connection,
+        [destination, destinationAta],
+        commitment
+      );
+
+    //
+    // Require the account to either be a system program account or a brand new
+    // account.
+    //
+    if (
+      destinationAccount &&
+      !destinationAccount.account.owner.equals(SystemProgram.programId)
+    ) {
+      throw new Error("invalid account");
+    }
+
+    // Instructions to execute prior to the transfer.
+    const transaction: Transaction = new Transaction();
+
+    const mintManagerId = findMintManagerId(mint);
+    const mintMetadataId = findMintMetadataId(mint);
+    const mintManagerData = await MintManager.fromAccountAddress(
+      ctx.connection,
+      mintManagerId
+    );
+
+    if (!destinationAtaAccount) {
+      transaction.add(
+        assertOwner.assertOwnerInstruction({
+          account: destination,
+          owner: SystemProgram.programId,
+        })
+      );
+      transaction.add(
+        createAssociatedTokenAccountInstruction(
+          walletPublicKey,
+          destinationAta,
+          destination,
+          mint
+        )
+      );
+    }
+
+    transaction.add(
+      createCCSTransferInstruction({
+        mintManager: mintManagerId,
+        mint: mintManagerData.mint,
+        mintMetadata: mintMetadataId,
+        ruleset: mintManagerData.ruleset,
+        from: sourceAta,
+        to: destinationAta,
+        authority: walletPublicKey,
+        instructions: SYSVAR_INSTRUCTIONS_PUBKEY,
+      })
+    );
+    transaction.feePayer = walletPublicKey;
+    transaction.recentBlockhash = (
+      await tokenClient.provider.connection.getLatestBlockhash(commitment)
+    ).blockhash;
+
+    const signedTx = await SolanaProvider.signTransaction(ctx, transaction);
+    const rawTx = signedTx.serialize();
+
+    return await tokenClient.provider.connection.sendRawTransaction(rawTx, {
+      skipPreflight: false,
+      preflightCommitment: commitment,
+    });
+  }
+
+  public static async transferCardinalManagedToken(
     ctx: SolanaContext,
     req: TransferTokenRequest
   ): Promise<string> {
