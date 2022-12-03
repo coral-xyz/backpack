@@ -77,6 +77,7 @@ export const ChatRoom = ({
 
   return (
     <ChatProvider
+      type={type}
       loading={loading}
       chatManager={chatManager}
       roomId={roomId}
@@ -88,7 +89,7 @@ export const ChatRoom = ({
       requested={requested}
       remoteUserId={remoteUserId || ""}
     >
-      <FullScreenChat chats={chats} messageContainerRef={messageContainerRef} />
+      <FullScreenChat />
     </ChatProvider>
   );
 };

@@ -11,6 +11,7 @@ export interface Message {
   // received?: boolean;
   client_generated_uuid?: string;
   message_kind: "gif" | "text";
+  created_at: string;
 }
 
 export interface MessageWithMetadata extends Message {
@@ -31,6 +32,7 @@ export type FromServer =
         messages: Message[];
         type: SubscriptionType;
         room: string;
+        message_kind: "text" | "gif";
       };
     }
   | {
