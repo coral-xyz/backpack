@@ -4,6 +4,7 @@ import {
   BackgroundSolanaConnection,
   CHANNEL_POPUP_NOTIFICATIONS,
   ChannelAppUi,
+  FEATURE_GATES_MAP,
   getLogger,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
@@ -16,6 +17,7 @@ import {
   NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
   NOTIFICATION_ETHEREUM_FEE_DATA_DID_UPDATE,
   NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
+  NOTIFICATION_FEATURE_GATES_UPDATED,
   NOTIFICATION_KEYNAME_UPDATE,
   NOTIFICATION_KEYRING_DERIVED_WALLET,
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
@@ -47,6 +49,7 @@ import {
 } from "../";
 
 import { useNavigate } from "./useNavigatePolyfill";
+import { featureGates } from "../atoms";
 
 const logger = getLogger("notifications-provider");
 
@@ -77,6 +80,8 @@ export function NotificationsProvider(props: any) {
   const setActiveUser = useSetRecoilState(atoms.user);
   // Preferences.
   const setPreferences = useSetRecoilState(atoms.preferences);
+  const setFeatureGates = useSetRecoilState(atoms.featureGates);
+
   const setAutoLockSecs = (autoLockSecs: number) => {
     setPreferences((current) => {
       return {
@@ -100,6 +105,12 @@ export function NotificationsProvider(props: any) {
         developerMode,
       };
     });
+  };
+  const handleSetFeatureGates = (featureGates: FEATURE_GATES_MAP) => {
+    setFeatureGates((current) => ({
+      ...current,
+      ...featureGates,
+    }));
   };
   const setEnabledBlockchains = (enabledBlockchains: Blockchain) => {
     setPreferences((current) => {
@@ -268,6 +279,9 @@ export function NotificationsProvider(props: any) {
           break;
         case NOTIFICATION_BLOCKCHAIN_ENABLED:
           handleBlockchainEnabled(notif);
+          break;
+        case NOTIFICATION_FEATURE_GATES_UPDATED:
+          handleSetFeatureGates(notif.data.gates);
           break;
         case NOTIFICATION_BLOCKCHAIN_DISABLED:
           handleBlockchainDisabled(notif);
