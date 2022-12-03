@@ -6,7 +6,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { getHeaderTitle } from "@react-navigation/elements";
 import { createStackNavigator } from "@react-navigation/stack";
 import AppListScreen from "@screens/Unlocked/AppListScreen";
-import BalancesScreen from "@screens/Unlocked/BalancesScreen";
+import { BalancesNavigator } from "@screens/Unlocked/BalancesScreen";
 import DepositModal from "@screens/Unlocked/DepositScreen";
 import NftCollectiblesScreen from "@screens/Unlocked/NftCollectiblesScreen";
 import { RecentActivityScreen } from "@screens/Unlocked/RecentActivityScreen";
@@ -107,7 +107,7 @@ function UnlockedBottomTabNavigator() {
         tabBarInactiveTintColor: "gray",
       })}
     >
-      <Tab.Screen name="Balances" component={BalancesScreen} />
+      <Tab.Screen name="Balances" component={BalancesNavigator} />
       <Tab.Screen name="Applications" component={AppListScreen} />
       <Tab.Screen name="Collectibles" component={NftCollectiblesScreen} />
     </Tab.Navigator>

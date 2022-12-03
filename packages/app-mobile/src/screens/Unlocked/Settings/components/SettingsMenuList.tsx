@@ -38,7 +38,7 @@ export function SettingsList({
           onPress={() => val.onPress()}
           // style={{
           //   height: "44px",
-          //   padding: "10px",
+          //   padding: 10,
           //   ...val.style,
           // }}
           // button={val.button === undefined ? true : val.button}
