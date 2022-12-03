@@ -1,8 +1,8 @@
-name: Deploy xnft-api-server
+name: Deploy backpack-api
 on:
   push:
     branches: ["master"]
-    paths: ["backend/native/xnft-api-server/**"]
+    paths: ["backend/native/backend-ws/**"]
 
 env:
   FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
@@ -13,4 +13,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: "mv docker/xnft-api-server/fly.toml . && flyctl deploy --remote-only"
+      - run: "mv docker/backend-ws/fly.toml . && flyctl deploy --remote-only"
