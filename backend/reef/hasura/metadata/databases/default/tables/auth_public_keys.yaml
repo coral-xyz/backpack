@@ -14,6 +14,14 @@ insert_permissions:
         - public_key
         - user_id
 select_permissions:
+  - role: appstore
+    permission:
+      columns:
+        - blockchain
+        - id
+        - public_key
+        - user_id
+      filter: {}
   - role: auth_worker
     permission:
       columns:
@@ -22,4 +30,9 @@ select_permissions:
         - public_key
         - created_at
         - user_id
+      filter: {}
+delete_permissions:
+  - role: auth_worker
+    permission:
+      backend_only: false
       filter: {}
