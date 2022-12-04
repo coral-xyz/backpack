@@ -22,6 +22,7 @@ select_permissions:
         - public_key
         - user_id
       filter: {}
+      allow_aggregations: true
   - role: auth_worker
     permission:
       columns:
@@ -31,6 +32,7 @@ select_permissions:
         - created_at
         - user_id
       filter: {}
+      allow_aggregations: true
 delete_permissions:
   - role: auth_worker
     permission:
