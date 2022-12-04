@@ -11,7 +11,6 @@ export interface Message {
   // received?: boolean;
   client_generated_uuid?: string;
   message_kind: "gif" | "text";
-  created_at: string;
 }
 
 export interface MessageWithMetadata extends Message {
