@@ -117,7 +117,6 @@ export function WalletList({
           name={name}
           publicKey={publicKey}
           onPress={() => {
-            Alert.alert("pressed");
             setShowAll(!showAll);
           }}
         />

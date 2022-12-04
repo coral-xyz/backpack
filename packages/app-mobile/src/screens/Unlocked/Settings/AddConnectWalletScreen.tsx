@@ -36,8 +36,8 @@ export function AddConnectWalletScreen({
   const background = useBackgroundClient();
   const keyringType = useKeyringType();
   const theme = useTheme();
-  const [openDrawer, setOpenDrawer] = useState(false);
-  const [newPublicKey, setNewPublicKey] = useState("");
+  // const [openDrawer, setOpenDrawer] = useState(false);
+  const [newPublicKey, setNewPublicKey] = useState(null);
 
   return (
     <Screen>
@@ -75,7 +75,7 @@ export function AddConnectWalletScreen({
                 });
 
                 setNewPublicKey(newPubkey);
-                setOpenDrawer(true);
+                // setOpenDrawer(true);
               }}
             />
           </View>
@@ -96,6 +96,7 @@ export function AddConnectWalletScreen({
       </View>
       <View style={{ flex: 0.5, width: "48%", marginTop: 12 }}>
         <ActionCard
+          disabled={true}
           icon={
             <MaterialIcons
               size={24}
@@ -105,11 +106,11 @@ export function AddConnectWalletScreen({
           }
           text="Import from hardware wallet"
           onPress={() => {
-            openConnectHardware(blockchain);
-            window.close();
+            // openConnectHardware(blockchain);
           }}
         />
       </View>
+      {newPublicKey ? <Text>{JSON.stringify({ newPublicKey })}</Text> : null}
     </Screen>
   );
 }
@@ -128,7 +129,6 @@ export const ConfirmCreateWallet: React.FC<{
   const theme = useTheme();
   const walletName = useWalletName(publicKey);
   const background = useBackgroundClient();
-  // const tab = useTab();
 
   return (
     <View
@@ -156,23 +156,10 @@ export const ConfirmCreateWallet: React.FC<{
       <View>
         <Pressable
           onPress={() => {
-            if (tab === TAB_BALANCES) {
-              // Experience won't go back to TAB_BALANCES so we poke it
-              background.request({
-                method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
-                params: [TAB_APPS],
-              });
-            }
-
-            background.request({
-              method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
-              params: [TAB_BALANCES],
-            });
-
             // Close mini drawer.
-            setOpenDrawer(false);
+            // setOpenDrawer(false);
             // Close main drawer.
-            close();
+            // close();
           }}
         >
           <Text>
