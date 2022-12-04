@@ -1,10 +1,11 @@
-import "react-native-gesture-handler";
-import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
-
-import { NotificationsProvider, useBackgroundClient } from "@coral-xyz/recoil";
-import { useColorScheme } from "react-native";
 import { useEffect } from "react";
+import { useColorScheme } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
+import { NotificationsProvider, useBackgroundClient } from "@coral-xyz/recoil";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+
+import "react-native-gesture-handler";
 
 import { useLoadedAssets } from "./hooks/useLoadedAssets";
 import Navigation from "./navigation";
@@ -12,7 +13,9 @@ import Navigation from "./navigation";
 function Providers({ children }: { children: JSX.Element }) {
   return (
     <NotificationsProvider>
-      <SafeAreaProvider>{children}</SafeAreaProvider>
+      <SafeAreaProvider>
+        <BottomSheetModalProvider>{children}</BottomSheetModalProvider>
+      </SafeAreaProvider>
     </NotificationsProvider>
   );
 }
