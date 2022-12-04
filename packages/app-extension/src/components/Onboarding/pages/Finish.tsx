@@ -16,6 +16,7 @@ import { getWaitlistId } from "../../common/WaitingRoom";
 
 export const Finish = ({
   username,
+  userId,
   password,
   keyringInit,
   inviteCode,
@@ -25,6 +26,7 @@ export const Finish = ({
   password: string;
   keyringInit: KeyringInit;
   inviteCode?: string;
+  userId?: string;
   isAddingAccount?: boolean;
 }) => {
   const [isValid, setIsValid] = useState(false);
@@ -32,57 +34,67 @@ export const Finish = ({
 
   useEffect(() => {
     (async () => {
-      await createUser();
-      createStore();
+      const { id } = await createUser();
+      createStore(id);
     })();
   }, []);
 
   //
   // Create the user in the backend
   //
-  async function createUser() {
-    if (inviteCode) {
-      const body = JSON.stringify({
-        username,
-        inviteCode,
-        waitlistId: getWaitlistId?.(),
-        blockchainPublicKeys: keyringInit.blockchainKeyrings.map((b) => ({
-          blockchain: b.blockchain,
-          publicKey: b.publicKey,
-          signature: b.signature,
-        })),
+  async function createUser(): Promise<{ id: string }> {
+    // If userId is provided, then we are onboarding via the recover flow.
+    if (userId) {
+      return { id: userId };
+    }
+    // If userId is not provided and an invite code is not provided, then
+    // this is dev mode.
+    if (!inviteCode) {
+      return { id: uuidv4() };
+    }
+
+    //
+    // If we're down here, then we are creating a user for the first time.
+    //
+    const body = JSON.stringify({
+      username,
+      inviteCode,
+      waitlistId: getWaitlistId?.(),
+      blockchainPublicKeys: keyringInit.blockchainKeyrings.map((b) => ({
+        blockchain: b.blockchain,
+        publicKey: b.publicKey,
+        signature: b.signature,
+      })),
+    });
+
+    try {
+      const res = await fetch(`${BACKEND_API_URL}/users`, {
+        method: "POST",
+        body,
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
 
-      try {
-        const res = await fetch(`${BACKEND_API_URL}/users`, {
-          method: "POST",
-          body,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        if (!res.ok) {
-          throw new Error(await res.json());
-        }
-      } catch (err) {
-        throw new Error("error creating account");
+      if (!res.ok) {
+        throw new Error(await res.json());
       }
+      return await res.json();
+    } catch (err) {
+      throw new Error("error creating account");
     }
   }
 
   //
   // Create the local store for the wallets
   //
-  async function createStore() {
+  async function createStore(uuid: string) {
     try {
-      // TODO: this needs to be returned by the worker when it's created.
-      let uuid = "";
       //
       // If usernames are disabled, use a default one for developing.
       //
       if (!BACKPACK_FEATURE_USERNAMES) {
         username = uuidv4().split("-")[0];
-        uuid = uuidv4();
       }
       if (isAddingAccount) {
         await background.request({

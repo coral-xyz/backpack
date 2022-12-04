@@ -9,7 +9,7 @@ export function PluginRenderer({
   xnftPreference,
 }: {
   plugin: any;
-  xnftPreference: XnftPreference;
+  xnftPreference: XnftPreference | null;
 }) {
   const ref = useRef<any>();
   const [loaded, setLoaded] = useState(false);

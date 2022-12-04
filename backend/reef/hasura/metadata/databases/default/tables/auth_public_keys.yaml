@@ -12,21 +12,25 @@ insert_permissions:
       columns:
         - blockchain
         - public_key
+        - user_id
 select_permissions:
   - role: appstore
-    permission: 
+    permission:
       columns:
         - blockchain
-        - public_key
         - id
+        - public_key
         - user_id
       filter: {}
       allow_aggregations: true
   - role: auth_worker
     permission:
       columns:
+        - id
         - blockchain
         - public_key
+        - created_at
+        - user_id
       filter: {}
       allow_aggregations: true
 delete_permissions:

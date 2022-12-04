@@ -44,5 +44,5 @@ export const jwt = async (
     maxAge: 60 * 60 * 24 * 365, // approx 1 year
   });
 
-  return c.json({ msg: "ok" });
+  return c.json({ id: user.id, msg: "ok" });
 };

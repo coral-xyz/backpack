@@ -250,6 +250,8 @@ export const NOTIFICATION_XNFT_PREFERENCE_UPDATED =
   "notification-xnft-preference-updated";
 export const NOTIFICATION_BLOCKCHAIN_ENABLED =
   "notification-blockchain-enabled";
+export const NOTIFICATION_FEATURE_GATES_UPDATED =
+  "notification-feature-gates-updated";
 export const NOTIFICATION_DARK_MODE_UPDATED = "notification-dark-mode-updated";
 export const NOTIFICATION_DEVELOPER_MODE_UPDATED =
   "notification-developer-mode-updated";
