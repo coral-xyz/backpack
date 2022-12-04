@@ -239,7 +239,13 @@ function BalanceTable({
           data={tokenAccountsFiltered}
           ItemSeparatorComponent={RowSeparator}
           renderItem={({ item: token }) => {
-            return <BalanceRow onPressRow={onPressRow} token={token} />;
+            return (
+              <BalanceRow
+                onPressRow={onPressRow}
+                blockchain={blockchain}
+                token={token}
+              />
+            );
           }}
         />
       ) : null}
@@ -247,7 +253,7 @@ function BalanceTable({
   );
 }
 
-function TextPercentChanged({ percentChange }) {
+function TextPercentChanged({ percentChange }: { percentChange: number }) {
   const theme = useTheme();
   const positive = percentChange && percentChange > 0 ? true : false;
   const negative = percentChange && percentChange < 0 ? true : false;
@@ -292,9 +298,11 @@ function TextPercentChanged({ percentChange }) {
 export function BalanceRow({
   onPressRow,
   token,
+  blockchain,
 }: {
   onPressRow: (blockchain: Blockchain, token: Token) => void;
   token: Token;
+  blockchain: Blockchain;
 }) {
   const theme = useTheme();
   const { name, recentUsdBalanceChange, logo: iconUrl } = token;
@@ -315,7 +323,7 @@ export function BalanceRow({
 
   return (
     <Pressable
-      onPress={() => onPressRow(name, token)}
+      onPress={() => onPressRow(blockchain, token)}
       style={styles.rowContainer}
     >
       <View style={{ flexDirection: "row" }}>

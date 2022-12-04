@@ -129,7 +129,7 @@ export class Plugin {
   //
   // Loads the plugin javascript code inside the iframe.
   //
-  public createIframe(preference: XnftPreference) {
+  public createIframe(preference?: XnftPreference) {
     logger.debug("creating iframe element");
 
     this._nextRenderId = 0;
@@ -138,7 +138,7 @@ export class Plugin {
     this.iframeRoot.style.height = "100vh";
     this.iframeRoot.style.border = "none";
 
-    if (preference.mediaPermissions) {
+    if (preference?.mediaPermissions) {
       this.iframeRoot.setAttribute(
         "allow",
         "camera;microphone;display-capture"
@@ -223,7 +223,7 @@ export class Plugin {
   // Rendering.
   //////////////////////////////////////////////////////////////////////////////
 
-  public mount(preference: XnftPreference) {
+  public mount(preference?: XnftPreference) {
     this.createIframe(preference);
     this.didFinishSetup!.then(() => {
       this.pushMountNotification();
