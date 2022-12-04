@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
 import { ChatManager, EnrichedMessage } from "../ChatManager";
-import { SubscriptionType } from "@coral-xyz/common";
 
 type ChatContext = {
   chatManager: ChatManager | null;
@@ -13,7 +12,6 @@ type ChatContext = {
   areFriends: boolean;
   requested: boolean;
   remoteUserId: string;
-  type: SubscriptionType;
 };
 
 export const _ChatContext = React.createContext<ChatContext | null>(null);
