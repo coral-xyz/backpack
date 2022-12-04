@@ -1151,259 +1151,6 @@ export type ValueTypes = {
   };
   /** placeholder for update columns of table "auth.friend_requests" (current role has no relevant permissions) */
   ["auth_friend_requests_update_column"]: auth_friend_requests_update_column;
-  /** columns and relationships of "auth.friendships" */
-  ["auth_friendships"]: AliasType<{
-    are_friends?: boolean | `@${string}`;
-    id?: boolean | `@${string}`;
-    last_message?: boolean | `@${string}`;
-    last_message_sender?: boolean | `@${string}`;
-    last_message_timestamp?: boolean | `@${string}`;
-    user1?: boolean | `@${string}`;
-    user1_blocked_user2?: boolean | `@${string}`;
-    user1_interacted?: boolean | `@${string}`;
-    user2?: boolean | `@${string}`;
-    user2_blocked_user1?: boolean | `@${string}`;
-    user2_interacted?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Boolean expression to filter rows from the table "auth.friendships". All fields are combined with a logical 'AND'. */
-  ["auth_friendships_bool_exp"]: {
-    _and?:
-      | Array<ValueTypes["auth_friendships_bool_exp"]>
-      | undefined
-      | null
-      | Variable<any, string>;
-    _not?:
-      | ValueTypes["auth_friendships_bool_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    _or?:
-      | Array<ValueTypes["auth_friendships_bool_exp"]>
-      | undefined
-      | null
-      | Variable<any, string>;
-    are_friends?:
-      | ValueTypes["Boolean_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    id?:
-      | ValueTypes["Int_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    last_message?:
-      | ValueTypes["String_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    last_message_sender?:
-      | ValueTypes["String_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    last_message_timestamp?:
-      | ValueTypes["timestamptz_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    user1?:
-      | ValueTypes["String_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    user1_blocked_user2?:
-      | ValueTypes["Boolean_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    user1_interacted?:
-      | ValueTypes["Boolean_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    user2?:
-      | ValueTypes["String_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    user2_blocked_user1?:
-      | ValueTypes["Boolean_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    user2_interacted?:
-      | ValueTypes["Boolean_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-  };
-  /** unique or primary key constraints on table "auth.friendships" */
-  ["auth_friendships_constraint"]: auth_friendships_constraint;
-  /** input type for incrementing numeric columns in table "auth.friendships" */
-  ["auth_friendships_inc_input"]: {
-    id?: number | undefined | null | Variable<any, string>;
-  };
-  /** input type for inserting data into table "auth.friendships" */
-  ["auth_friendships_insert_input"]: {
-    are_friends?: boolean | undefined | null | Variable<any, string>;
-    id?: number | undefined | null | Variable<any, string>;
-    last_message?: string | undefined | null | Variable<any, string>;
-    last_message_sender?: string | undefined | null | Variable<any, string>;
-    last_message_timestamp?:
-      | ValueTypes["timestamptz"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    user1?: string | undefined | null | Variable<any, string>;
-    user1_blocked_user2?: boolean | undefined | null | Variable<any, string>;
-    user1_interacted?: boolean | undefined | null | Variable<any, string>;
-    user2?: string | undefined | null | Variable<any, string>;
-    user2_blocked_user1?: boolean | undefined | null | Variable<any, string>;
-    user2_interacted?: boolean | undefined | null | Variable<any, string>;
-  };
-  /** response of any mutation on the table "auth.friendships" */
-  ["auth_friendships_mutation_response"]: AliasType<{
-    /** number of rows affected by the mutation */
-    affected_rows?: boolean | `@${string}`;
-    /** data from the rows affected by the mutation */
-    returning?: ValueTypes["auth_friendships"];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** on_conflict condition type for table "auth.friendships" */
-  ["auth_friendships_on_conflict"]: {
-    constraint:
-      | ValueTypes["auth_friendships_constraint"]
-      | Variable<any, string>;
-    update_columns:
-      | Array<ValueTypes["auth_friendships_update_column"]>
-      | Variable<any, string>;
-    where?:
-      | ValueTypes["auth_friendships_bool_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-  };
-  /** Ordering options when selecting data from "auth.friendships". */
-  ["auth_friendships_order_by"]: {
-    are_friends?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
-    last_message?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    last_message_sender?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    last_message_timestamp?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    user1?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
-    user1_blocked_user2?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    user1_interacted?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    user2?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
-    user2_blocked_user1?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    user2_interacted?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-  };
-  /** primary key columns input for table: auth_friendships */
-  ["auth_friendships_pk_columns_input"]: {
-    user1: string | Variable<any, string>;
-    user2: string | Variable<any, string>;
-  };
-  /** select columns of table "auth.friendships" */
-  ["auth_friendships_select_column"]: auth_friendships_select_column;
-  /** input type for updating data in table "auth.friendships" */
-  ["auth_friendships_set_input"]: {
-    are_friends?: boolean | undefined | null | Variable<any, string>;
-    id?: number | undefined | null | Variable<any, string>;
-    last_message?: string | undefined | null | Variable<any, string>;
-    last_message_sender?: string | undefined | null | Variable<any, string>;
-    last_message_timestamp?:
-      | ValueTypes["timestamptz"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    user1?: string | undefined | null | Variable<any, string>;
-    user1_blocked_user2?: boolean | undefined | null | Variable<any, string>;
-    user1_interacted?: boolean | undefined | null | Variable<any, string>;
-    user2?: string | undefined | null | Variable<any, string>;
-    user2_blocked_user1?: boolean | undefined | null | Variable<any, string>;
-    user2_interacted?: boolean | undefined | null | Variable<any, string>;
-  };
-  /** Streaming cursor of the table "auth_friendships" */
-  ["auth_friendships_stream_cursor_input"]: {
-    /** Stream column input with initial value */
-    initial_value:
-      | ValueTypes["auth_friendships_stream_cursor_value_input"]
-      | Variable<any, string>;
-    /** cursor ordering */
-    ordering?:
-      | ValueTypes["cursor_ordering"]
-      | undefined
-      | null
-      | Variable<any, string>;
-  };
-  /** Initial value of the column from where the streaming should start */
-  ["auth_friendships_stream_cursor_value_input"]: {
-    are_friends?: boolean | undefined | null | Variable<any, string>;
-    id?: number | undefined | null | Variable<any, string>;
-    last_message?: string | undefined | null | Variable<any, string>;
-    last_message_sender?: string | undefined | null | Variable<any, string>;
-    last_message_timestamp?:
-      | ValueTypes["timestamptz"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    user1?: string | undefined | null | Variable<any, string>;
-    user1_blocked_user2?: boolean | undefined | null | Variable<any, string>;
-    user1_interacted?: boolean | undefined | null | Variable<any, string>;
-    user2?: string | undefined | null | Variable<any, string>;
-    user2_blocked_user1?: boolean | undefined | null | Variable<any, string>;
-    user2_interacted?: boolean | undefined | null | Variable<any, string>;
-  };
-  /** update columns of table "auth.friendships" */
-  ["auth_friendships_update_column"]: auth_friendships_update_column;
-  ["auth_friendships_updates"]: {
-    /** increments the numeric columns with given value of the filtered values */
-    _inc?:
-      | ValueTypes["auth_friendships_inc_input"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    /** sets the columns of the filtered rows to the given values */
-    _set?:
-      | ValueTypes["auth_friendships_set_input"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    where: ValueTypes["auth_friendships_bool_exp"] | Variable<any, string>;
-  };
   /** columns and relationships of "auth.notification_subscriptions" */
   ["auth_notification_subscriptions"]: AliasType<{
     auth?: boolean | `@${string}`;
@@ -1792,87 +1539,101 @@ export type ValueTypes = {
       | Variable<any, string>;
     where: ValueTypes["auth_notifications_bool_exp"] | Variable<any, string>;
   };
-  /** columns and relationships of "auth.publickeys" */
-  ["auth_publickeys"]: AliasType<{
+  /** columns and relationships of "auth.public_keys" */
+  ["auth_public_keys"]: AliasType<{
     blockchain?: boolean | `@${string}`;
-    publickey?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Boolean expression to filter rows from the table "auth.publickeys". All fields are combined with a logical 'AND'. */
-  ["auth_publickeys_bool_exp"]: {
-    _and?:
-      | Array<ValueTypes["auth_publickeys_bool_exp"]>
-      | undefined
-      | null
-      | Variable<any, string>;
-    _not?:
-      | ValueTypes["auth_publickeys_bool_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    _or?:
-      | Array<ValueTypes["auth_publickeys_bool_exp"]>
-      | undefined
-      | null
-      | Variable<any, string>;
-    blockchain?:
-      | ValueTypes["String_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    publickey?:
-      | ValueTypes["String_comparison_exp"]
-      | undefined
-      | null
-      | Variable<any, string>;
-  };
-  /** columns and relationships of "auth.publickeys_history" */
-  ["auth_publickeys_history"]: AliasType<{
-    blockchain?: boolean | `@${string}`;
-    publickey?: boolean | `@${string}`;
+    created_at?: boolean | `@${string}`;
+    id?: boolean | `@${string}`;
+    public_key?: boolean | `@${string}`;
+    /** An object relationship */
+    user?: ValueTypes["auth_users"];
     user_id?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
-  /** order by aggregate values of table "auth.publickeys_history" */
-  ["auth_publickeys_history_aggregate_order_by"]: {
+  /** order by aggregate values of table "auth.public_keys" */
+  ["auth_public_keys_aggregate_order_by"]: {
+    avg?:
+      | ValueTypes["auth_public_keys_avg_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     count?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     max?:
-      | ValueTypes["auth_publickeys_history_max_order_by"]
+      | ValueTypes["auth_public_keys_max_order_by"]
       | undefined
       | null
       | Variable<any, string>;
     min?:
-      | ValueTypes["auth_publickeys_history_min_order_by"]
+      | ValueTypes["auth_public_keys_min_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev?:
+      | ValueTypes["auth_public_keys_stddev_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev_pop?:
+      | ValueTypes["auth_public_keys_stddev_pop_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev_samp?:
+      | ValueTypes["auth_public_keys_stddev_samp_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    sum?:
+      | ValueTypes["auth_public_keys_sum_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    var_pop?:
+      | ValueTypes["auth_public_keys_var_pop_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    var_samp?:
+      | ValueTypes["auth_public_keys_var_samp_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    variance?:
+      | ValueTypes["auth_public_keys_variance_order_by"]
       | undefined
       | null
       | Variable<any, string>;
   };
-  /** input type for inserting array relation for remote table "auth.publickeys_history" */
-  ["auth_publickeys_history_arr_rel_insert_input"]: {
+  /** input type for inserting array relation for remote table "auth.public_keys" */
+  ["auth_public_keys_arr_rel_insert_input"]: {
     data:
-      | Array<ValueTypes["auth_publickeys_history_insert_input"]>
+      | Array<ValueTypes["auth_public_keys_insert_input"]>
       | Variable<any, string>;
     /** upsert condition */
     on_conflict?:
-      | ValueTypes["auth_publickeys_history_on_conflict"]
+      | ValueTypes["auth_public_keys_on_conflict"]
       | undefined
       | null
       | Variable<any, string>;
   };
-  /** Boolean expression to filter rows from the table "auth.publickeys_history". All fields are combined with a logical 'AND'. */
-  ["auth_publickeys_history_bool_exp"]: {
+  /** order by avg() on columns of table "auth.public_keys" */
+  ["auth_public_keys_avg_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** Boolean expression to filter rows from the table "auth.public_keys". All fields are combined with a logical 'AND'. */
+  ["auth_public_keys_bool_exp"]: {
     _and?:
-      | Array<ValueTypes["auth_publickeys_history_bool_exp"]>
+      | Array<ValueTypes["auth_public_keys_bool_exp"]>
       | undefined
       | null
       | Variable<any, string>;
     _not?:
-      | ValueTypes["auth_publickeys_history_bool_exp"]
+      | ValueTypes["auth_public_keys_bool_exp"]
       | undefined
       | null
       | Variable<any, string>;
     _or?:
-      | Array<ValueTypes["auth_publickeys_history_bool_exp"]>
+      | Array<ValueTypes["auth_public_keys_bool_exp"]>
       | undefined
       | null
       | Variable<any, string>;
@@ -1881,8 +1642,23 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
-    publickey?:
+    created_at?:
+      | ValueTypes["timestamptz_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?:
+      | ValueTypes["Int_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    public_key?:
       | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    user?:
+      | ValueTypes["auth_users_bool_exp"]
       | undefined
       | null
       | Variable<any, string>;
@@ -1892,85 +1668,125 @@ export type ValueTypes = {
       | null
       | Variable<any, string>;
   };
-  /** unique or primary key constraints on table "auth.publickeys_history" */
-  ["auth_publickeys_history_constraint"]: auth_publickeys_history_constraint;
-  /** input type for inserting data into table "auth.publickeys_history" */
-  ["auth_publickeys_history_insert_input"]: {
+  /** unique or primary key constraints on table "auth.public_keys" */
+  ["auth_public_keys_constraint"]: auth_public_keys_constraint;
+  /** input type for inserting data into table "auth.public_keys" */
+  ["auth_public_keys_insert_input"]: {
     blockchain?: string | undefined | null | Variable<any, string>;
-    publickey?: string | undefined | null | Variable<any, string>;
+    public_key?: string | undefined | null | Variable<any, string>;
+    user?:
+      | ValueTypes["auth_users_obj_rel_insert_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
     user_id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
   };
-  /** order by max() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_max_order_by"]: {
+  /** order by max() on columns of table "auth.public_keys" */
+  ["auth_public_keys_max_order_by"]: {
     blockchain?:
       | ValueTypes["order_by"]
       | undefined
       | null
       | Variable<any, string>;
-    publickey?:
+    created_at?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    public_key?:
       | ValueTypes["order_by"]
       | undefined
       | null
       | Variable<any, string>;
     user_id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
   };
-  /** order by min() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_min_order_by"]: {
+  /** order by min() on columns of table "auth.public_keys" */
+  ["auth_public_keys_min_order_by"]: {
     blockchain?:
       | ValueTypes["order_by"]
       | undefined
       | null
       | Variable<any, string>;
-    publickey?:
+    created_at?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    public_key?:
       | ValueTypes["order_by"]
       | undefined
       | null
       | Variable<any, string>;
     user_id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
   };
-  /** response of any mutation on the table "auth.publickeys_history" */
-  ["auth_publickeys_history_mutation_response"]: AliasType<{
+  /** response of any mutation on the table "auth.public_keys" */
+  ["auth_public_keys_mutation_response"]: AliasType<{
     /** number of rows affected by the mutation */
     affected_rows?: boolean | `@${string}`;
     /** data from the rows affected by the mutation */
-    returning?: ValueTypes["auth_publickeys_history"];
+    returning?: ValueTypes["auth_public_keys"];
     __typename?: boolean | `@${string}`;
   }>;
-  /** on_conflict condition type for table "auth.publickeys_history" */
-  ["auth_publickeys_history_on_conflict"]: {
+  /** on_conflict condition type for table "auth.public_keys" */
+  ["auth_public_keys_on_conflict"]: {
     constraint:
-      | ValueTypes["auth_publickeys_history_constraint"]
+      | ValueTypes["auth_public_keys_constraint"]
       | Variable<any, string>;
     update_columns:
-      | Array<ValueTypes["auth_publickeys_history_update_column"]>
+      | Array<ValueTypes["auth_public_keys_update_column"]>
       | Variable<any, string>;
     where?:
-      | ValueTypes["auth_publickeys_history_bool_exp"]
+      | ValueTypes["auth_public_keys_bool_exp"]
       | undefined
       | null
       | Variable<any, string>;
   };
-  /** Ordering options when selecting data from "auth.publickeys_history". */
-  ["auth_publickeys_history_order_by"]: {
+  /** Ordering options when selecting data from "auth.public_keys". */
+  ["auth_public_keys_order_by"]: {
     blockchain?:
       | ValueTypes["order_by"]
       | undefined
       | null
       | Variable<any, string>;
-    publickey?:
+    created_at?:
       | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    public_key?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    user?:
+      | ValueTypes["auth_users_order_by"]
       | undefined
       | null
       | Variable<any, string>;
     user_id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
   };
-  /** select columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_select_column"]: auth_publickeys_history_select_column;
-  /** Streaming cursor of the table "auth_publickeys_history" */
-  ["auth_publickeys_history_stream_cursor_input"]: {
+  /** select columns of table "auth.public_keys" */
+  ["auth_public_keys_select_column"]: auth_public_keys_select_column;
+  /** order by stddev() on columns of table "auth.public_keys" */
+  ["auth_public_keys_stddev_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** order by stddev_pop() on columns of table "auth.public_keys" */
+  ["auth_public_keys_stddev_pop_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** order by stddev_samp() on columns of table "auth.public_keys" */
+  ["auth_public_keys_stddev_samp_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** Streaming cursor of the table "auth_public_keys" */
+  ["auth_public_keys_stream_cursor_input"]: {
     /** Stream column input with initial value */
     initial_value:
-      | ValueTypes["auth_publickeys_history_stream_cursor_value_input"]
+      | ValueTypes["auth_public_keys_stream_cursor_value_input"]
       | Variable<any, string>;
     /** cursor ordering */
     ordering?:
@@ -1980,45 +1796,34 @@ export type ValueTypes = {
       | Variable<any, string>;
   };
   /** Initial value of the column from where the streaming should start */
-  ["auth_publickeys_history_stream_cursor_value_input"]: {
+  ["auth_public_keys_stream_cursor_value_input"]: {
     blockchain?: string | undefined | null | Variable<any, string>;
-    publickey?: string | undefined | null | Variable<any, string>;
+    created_at?:
+      | ValueTypes["timestamptz"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?: number | undefined | null | Variable<any, string>;
+    public_key?: string | undefined | null | Variable<any, string>;
     user_id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
   };
-  /** placeholder for update columns of table "auth.publickeys_history" (current role has no relevant permissions) */
-  ["auth_publickeys_history_update_column"]: auth_publickeys_history_update_column;
-  /** Ordering options when selecting data from "auth.publickeys". */
-  ["auth_publickeys_order_by"]: {
-    blockchain?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
-    publickey?:
-      | ValueTypes["order_by"]
-      | undefined
-      | null
-      | Variable<any, string>;
+  /** order by sum() on columns of table "auth.public_keys" */
+  ["auth_public_keys_sum_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
   };
-  /** select columns of table "auth.publickeys" */
-  ["auth_publickeys_select_column"]: auth_publickeys_select_column;
-  /** Streaming cursor of the table "auth_publickeys" */
-  ["auth_publickeys_stream_cursor_input"]: {
-    /** Stream column input with initial value */
-    initial_value:
-      | ValueTypes["auth_publickeys_stream_cursor_value_input"]
-      | Variable<any, string>;
-    /** cursor ordering */
-    ordering?:
-      | ValueTypes["cursor_ordering"]
-      | undefined
-      | null
-      | Variable<any, string>;
+  /** placeholder for update columns of table "auth.public_keys" (current role has no relevant permissions) */
+  ["auth_public_keys_update_column"]: auth_public_keys_update_column;
+  /** order by var_pop() on columns of table "auth.public_keys" */
+  ["auth_public_keys_var_pop_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
   };
-  /** Initial value of the column from where the streaming should start */
-  ["auth_publickeys_stream_cursor_value_input"]: {
-    blockchain?: string | undefined | null | Variable<any, string>;
-    publickey?: string | undefined | null | Variable<any, string>;
+  /** order by var_samp() on columns of table "auth.public_keys" */
+  ["auth_public_keys_var_samp_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** order by variance() on columns of table "auth.public_keys" */
+  ["auth_public_keys_variance_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
   };
   /** columns and relationships of "auth.stripe_onramp" */
   ["auth_stripe_onramp"]: AliasType<{
@@ -2183,11 +1988,11 @@ export type ValueTypes = {
   /** columns and relationships of "auth.users" */
   ["auth_users"]: AliasType<{
     id?: boolean | `@${string}`;
-    publickeys?: [
+    public_keys?: [
       {
         /** distinct select on columns */
         distinct_on?:
-          | Array<ValueTypes["auth_publickeys_history_select_column"]>
+          | Array<ValueTypes["auth_public_keys_select_column"]>
           | undefined
           | null
           | Variable<any, string> /** limit the number of rows returned */;
@@ -2205,17 +2010,17 @@ export type ValueTypes = {
           | null
           | Variable<any, string> /** sort the rows by one or more columns */;
         order_by?:
-          | Array<ValueTypes["auth_publickeys_history_order_by"]>
+          | Array<ValueTypes["auth_public_keys_order_by"]>
           | undefined
           | null
           | Variable<any, string> /** filter the rows returned */;
         where?:
-          | ValueTypes["auth_publickeys_history_bool_exp"]
+          | ValueTypes["auth_public_keys_bool_exp"]
           | undefined
           | null
           | Variable<any, string>;
       },
-      ValueTypes["auth_publickeys_history"]
+      ValueTypes["auth_public_keys"]
     ];
     username?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
@@ -2265,8 +2070,8 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
-    publickeys?:
-      | ValueTypes["auth_publickeys_history_bool_exp"]
+    public_keys?:
+      | ValueTypes["auth_public_keys_bool_exp"]
       | undefined
       | null
       | Variable<any, string>;
@@ -2285,8 +2090,8 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
-    publickeys?:
-      | ValueTypes["auth_publickeys_history_arr_rel_insert_input"]
+    public_keys?:
+      | ValueTypes["auth_public_keys_arr_rel_insert_input"]
       | undefined
       | null
       | Variable<any, string>;
@@ -2313,6 +2118,16 @@ export type ValueTypes = {
     returning?: ValueTypes["auth_users"];
     __typename?: boolean | `@${string}`;
   }>;
+  /** input type for inserting object relation for remote table "auth.users" */
+  ["auth_users_obj_rel_insert_input"]: {
+    data: ValueTypes["auth_users_insert_input"] | Variable<any, string>;
+    /** upsert condition */
+    on_conflict?:
+      | ValueTypes["auth_users_on_conflict"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
   /** on_conflict condition type for table "auth.users" */
   ["auth_users_on_conflict"]: {
     constraint: ValueTypes["auth_users_constraint"] | Variable<any, string>;
@@ -2328,8 +2143,8 @@ export type ValueTypes = {
   /** Ordering options when selecting data from "auth.users". */
   ["auth_users_order_by"]: {
     id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
-    publickeys_aggregate?:
-      | ValueTypes["auth_publickeys_history_aggregate_order_by"]
+    public_keys_aggregate?:
+      | ValueTypes["auth_public_keys_aggregate_order_by"]
       | undefined
       | null
       | Variable<any, string>;
@@ -2725,20 +2540,6 @@ export type ValueTypes = {
       },
       ValueTypes["auth_friend_requests"]
     ];
-    delete_auth_friendships?: [
-      {
-        /** filter the rows which have to be deleted */
-        where: ValueTypes["auth_friendships_bool_exp"] | Variable<any, string>;
-      },
-      ValueTypes["auth_friendships_mutation_response"]
-    ];
-    delete_auth_friendships_by_pk?: [
-      {
-        user1: string | Variable<any, string>;
-        user2: string | Variable<any, string>;
-      },
-      ValueTypes["auth_friendships"]
-    ];
     delete_auth_notification_subscriptions?: [
       {
         /** filter the rows which have to be deleted */
@@ -2792,34 +2593,6 @@ export type ValueTypes = {
           | Variable<any, string>;
       },
       ValueTypes["auth_friend_requests"]
-    ];
-    insert_auth_friendships?: [
-      {
-        /** the rows to be inserted */
-        objects:
-          | Array<ValueTypes["auth_friendships_insert_input"]>
-          | Variable<any, string> /** upsert condition */;
-        on_conflict?:
-          | ValueTypes["auth_friendships_on_conflict"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_friendships_mutation_response"]
-    ];
-    insert_auth_friendships_one?: [
-      {
-        /** the row to be inserted */
-        object:
-          | ValueTypes["auth_friendships_insert_input"]
-          | Variable<any, string> /** upsert condition */;
-        on_conflict?:
-          | ValueTypes["auth_friendships_on_conflict"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_friendships"]
     ];
     insert_auth_notification_subscriptions?: [
       {
@@ -2877,33 +2650,33 @@ export type ValueTypes = {
       },
       ValueTypes["auth_notifications"]
     ];
-    insert_auth_publickeys_history?: [
+    insert_auth_public_keys?: [
       {
         /** the rows to be inserted */
         objects:
-          | Array<ValueTypes["auth_publickeys_history_insert_input"]>
+          | Array<ValueTypes["auth_public_keys_insert_input"]>
           | Variable<any, string> /** upsert condition */;
         on_conflict?:
-          | ValueTypes["auth_publickeys_history_on_conflict"]
+          | ValueTypes["auth_public_keys_on_conflict"]
           | undefined
           | null
           | Variable<any, string>;
       },
-      ValueTypes["auth_publickeys_history_mutation_response"]
+      ValueTypes["auth_public_keys_mutation_response"]
     ];
-    insert_auth_publickeys_history_one?: [
+    insert_auth_public_keys_one?: [
       {
         /** the row to be inserted */
         object:
-          | ValueTypes["auth_publickeys_history_insert_input"]
+          | ValueTypes["auth_public_keys_insert_input"]
           | Variable<any, string> /** upsert condition */;
         on_conflict?:
-          | ValueTypes["auth_publickeys_history_on_conflict"]
+          | ValueTypes["auth_public_keys_on_conflict"]
           | undefined
           | null
           | Variable<any, string>;
       },
-      ValueTypes["auth_publickeys_history"]
+      ValueTypes["auth_public_keys"]
     ];
     insert_auth_stripe_onramp?: [
       {
@@ -2988,60 +2761,6 @@ export type ValueTypes = {
           | Variable<any, string>;
       },
       ValueTypes["auth_xnft_preferences"]
-    ];
-    update_auth_friendships?: [
-      {
-        /** increments the numeric columns with given value of the filtered values */
-        _inc?:
-          | ValueTypes["auth_friendships_inc_input"]
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** sets the columns of the filtered rows to the given values */;
-        _set?:
-          | ValueTypes["auth_friendships_set_input"]
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** filter the rows which have to be updated */;
-        where: ValueTypes["auth_friendships_bool_exp"] | Variable<any, string>;
-      },
-      ValueTypes["auth_friendships_mutation_response"]
-    ];
-    update_auth_friendships_by_pk?: [
-      {
-        /** increments the numeric columns with given value of the filtered values */
-        _inc?:
-          | ValueTypes["auth_friendships_inc_input"]
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** sets the columns of the filtered rows to the given values */;
-        _set?:
-          | ValueTypes["auth_friendships_set_input"]
-          | undefined
-          | null
-          | Variable<any, string>;
-        pk_columns:
-          | ValueTypes["auth_friendships_pk_columns_input"]
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_friendships"]
-    ];
-    update_auth_friendships_many?: [
-      {
-        /** updates to execute, in order */
-        updates:
-          | Array<ValueTypes["auth_friendships_updates"]>
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_friendships_mutation_response"]
     ];
     update_auth_notification_subscriptions?: [
       {
@@ -3351,47 +3070,6 @@ export type ValueTypes = {
       },
       ValueTypes["auth_friend_requests"]
     ];
-    auth_friendships?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ValueTypes["auth_friendships_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string> /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null
-          | Variable<any, string> /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ValueTypes["auth_friendships_order_by"]>
-          | undefined
-          | null
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["auth_friendships_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_friendships"]
-    ];
-    auth_friendships_by_pk?: [
-      {
-        user1: string | Variable<any, string>;
-        user2: string | Variable<any, string>;
-      },
-      ValueTypes["auth_friendships"]
-    ];
     auth_notification_subscriptions?: [
       {
         /** distinct select on columns */
@@ -3468,11 +3146,11 @@ export type ValueTypes = {
       { id: number | Variable<any, string> },
       ValueTypes["auth_notifications"]
     ];
-    auth_publickeys?: [
+    auth_public_keys?: [
       {
         /** distinct select on columns */
         distinct_on?:
-          | Array<ValueTypes["auth_publickeys_select_column"]>
+          | Array<ValueTypes["auth_public_keys_select_column"]>
           | undefined
           | null
           | Variable<any, string> /** limit the number of rows returned */;
@@ -3490,51 +3168,21 @@ export type ValueTypes = {
           | null
           | Variable<any, string> /** sort the rows by one or more columns */;
         order_by?:
-          | Array<ValueTypes["auth_publickeys_order_by"]>
+          | Array<ValueTypes["auth_public_keys_order_by"]>
           | undefined
           | null
           | Variable<any, string> /** filter the rows returned */;
         where?:
-          | ValueTypes["auth_publickeys_bool_exp"]
+          | ValueTypes["auth_public_keys_bool_exp"]
           | undefined
           | null
           | Variable<any, string>;
       },
-      ValueTypes["auth_publickeys"]
+      ValueTypes["auth_public_keys"]
     ];
-    auth_publickeys_history?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ValueTypes["auth_publickeys_history_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string> /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null
-          | Variable<any, string> /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ValueTypes["auth_publickeys_history_order_by"]>
-          | undefined
-          | null
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["auth_publickeys_history_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_publickeys_history"]
+    auth_public_keys_by_pk?: [
+      { id: number | Variable<any, string> },
+      ValueTypes["auth_public_keys"]
     ];
     auth_stripe_onramp?: [
       {
@@ -3820,71 +3468,6 @@ export type ValueTypes = {
       },
       ValueTypes["auth_friend_requests"]
     ];
-    auth_friendships?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ValueTypes["auth_friendships_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string> /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null
-          | Variable<any, string> /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ValueTypes["auth_friendships_order_by"]>
-          | undefined
-          | null
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["auth_friendships_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_friendships"]
-    ];
-    auth_friendships_by_pk?: [
-      {
-        user1: string | Variable<any, string>;
-        user2: string | Variable<any, string>;
-      },
-      ValueTypes["auth_friendships"]
-    ];
-    auth_friendships_stream?: [
-      {
-        /** maximum number of rows returned in a single batch */
-        batch_size:
-          | number
-          | Variable<
-              any,
-              string
-            > /** cursor to stream the results returned by the query */;
-        cursor:
-          | Array<
-              | ValueTypes["auth_friendships_stream_cursor_input"]
-              | undefined
-              | null
-            >
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["auth_friendships_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_friendships"]
-    ];
     auth_notification_subscriptions?: [
       {
         /** distinct select on columns */
@@ -4009,11 +3592,11 @@ export type ValueTypes = {
       },
       ValueTypes["auth_notifications"]
     ];
-    auth_publickeys?: [
+    auth_public_keys?: [
       {
         /** distinct select on columns */
         distinct_on?:
-          | Array<ValueTypes["auth_publickeys_select_column"]>
+          | Array<ValueTypes["auth_public_keys_select_column"]>
           | undefined
           | null
           | Variable<any, string> /** limit the number of rows returned */;
@@ -4031,53 +3614,23 @@ export type ValueTypes = {
           | null
           | Variable<any, string> /** sort the rows by one or more columns */;
         order_by?:
-          | Array<ValueTypes["auth_publickeys_order_by"]>
+          | Array<ValueTypes["auth_public_keys_order_by"]>
           | undefined
           | null
           | Variable<any, string> /** filter the rows returned */;
         where?:
-          | ValueTypes["auth_publickeys_bool_exp"]
+          | ValueTypes["auth_public_keys_bool_exp"]
           | undefined
           | null
           | Variable<any, string>;
       },
-      ValueTypes["auth_publickeys"]
+      ValueTypes["auth_public_keys"]
     ];
-    auth_publickeys_history?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ValueTypes["auth_publickeys_history_select_column"]>
-          | undefined
-          | null
-          | Variable<any, string> /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null
-          | Variable<
-              any,
-              string
-            > /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null
-          | Variable<any, string> /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ValueTypes["auth_publickeys_history_order_by"]>
-          | undefined
-          | null
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["auth_publickeys_history_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_publickeys_history"]
+    auth_public_keys_by_pk?: [
+      { id: number | Variable<any, string> },
+      ValueTypes["auth_public_keys"]
     ];
-    auth_publickeys_history_stream?: [
+    auth_public_keys_stream?: [
       {
         /** maximum number of rows returned in a single batch */
         batch_size:
@@ -4088,42 +3641,18 @@ export type ValueTypes = {
             > /** cursor to stream the results returned by the query */;
         cursor:
           | Array<
-              | ValueTypes["auth_publickeys_history_stream_cursor_input"]
+              | ValueTypes["auth_public_keys_stream_cursor_input"]
               | undefined
               | null
             >
           | Variable<any, string> /** filter the rows returned */;
         where?:
-          | ValueTypes["auth_publickeys_history_bool_exp"]
+          | ValueTypes["auth_public_keys_bool_exp"]
           | undefined
           | null
           | Variable<any, string>;
       },
-      ValueTypes["auth_publickeys_history"]
-    ];
-    auth_publickeys_stream?: [
-      {
-        /** maximum number of rows returned in a single batch */
-        batch_size:
-          | number
-          | Variable<
-              any,
-              string
-            > /** cursor to stream the results returned by the query */;
-        cursor:
-          | Array<
-              | ValueTypes["auth_publickeys_stream_cursor_input"]
-              | undefined
-              | null
-            >
-          | Variable<any, string> /** filter the rows returned */;
-        where?:
-          | ValueTypes["auth_publickeys_bool_exp"]
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes["auth_publickeys"]
+      ValueTypes["auth_public_keys"]
     ];
     auth_stripe_onramp?: [
       {
@@ -4603,176 +4132,6 @@ export type ResolverInputTypes = {
   };
   /** placeholder for update columns of table "auth.friend_requests" (current role has no relevant permissions) */
   ["auth_friend_requests_update_column"]: auth_friend_requests_update_column;
-  /** columns and relationships of "auth.friendships" */
-  ["auth_friendships"]: AliasType<{
-    are_friends?: boolean | `@${string}`;
-    id?: boolean | `@${string}`;
-    last_message?: boolean | `@${string}`;
-    last_message_sender?: boolean | `@${string}`;
-    last_message_timestamp?: boolean | `@${string}`;
-    user1?: boolean | `@${string}`;
-    user1_blocked_user2?: boolean | `@${string}`;
-    user1_interacted?: boolean | `@${string}`;
-    user2?: boolean | `@${string}`;
-    user2_blocked_user1?: boolean | `@${string}`;
-    user2_interacted?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Boolean expression to filter rows from the table "auth.friendships". All fields are combined with a logical 'AND'. */
-  ["auth_friendships_bool_exp"]: {
-    _and?:
-      | Array<ResolverInputTypes["auth_friendships_bool_exp"]>
-      | undefined
-      | null;
-    _not?: ResolverInputTypes["auth_friendships_bool_exp"] | undefined | null;
-    _or?:
-      | Array<ResolverInputTypes["auth_friendships_bool_exp"]>
-      | undefined
-      | null;
-    are_friends?:
-      | ResolverInputTypes["Boolean_comparison_exp"]
-      | undefined
-      | null;
-    id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
-    last_message?:
-      | ResolverInputTypes["String_comparison_exp"]
-      | undefined
-      | null;
-    last_message_sender?:
-      | ResolverInputTypes["String_comparison_exp"]
-      | undefined
-      | null;
-    last_message_timestamp?:
-      | ResolverInputTypes["timestamptz_comparison_exp"]
-      | undefined
-      | null;
-    user1?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
-    user1_blocked_user2?:
-      | ResolverInputTypes["Boolean_comparison_exp"]
-      | undefined
-      | null;
-    user1_interacted?:
-      | ResolverInputTypes["Boolean_comparison_exp"]
-      | undefined
-      | null;
-    user2?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
-    user2_blocked_user1?:
-      | ResolverInputTypes["Boolean_comparison_exp"]
-      | undefined
-      | null;
-    user2_interacted?:
-      | ResolverInputTypes["Boolean_comparison_exp"]
-      | undefined
-      | null;
-  };
-  /** unique or primary key constraints on table "auth.friendships" */
-  ["auth_friendships_constraint"]: auth_friendships_constraint;
-  /** input type for incrementing numeric columns in table "auth.friendships" */
-  ["auth_friendships_inc_input"]: {
-    id?: number | undefined | null;
-  };
-  /** input type for inserting data into table "auth.friendships" */
-  ["auth_friendships_insert_input"]: {
-    are_friends?: boolean | undefined | null;
-    id?: number | undefined | null;
-    last_message?: string | undefined | null;
-    last_message_sender?: string | undefined | null;
-    last_message_timestamp?:
-      | ResolverInputTypes["timestamptz"]
-      | undefined
-      | null;
-    user1?: string | undefined | null;
-    user1_blocked_user2?: boolean | undefined | null;
-    user1_interacted?: boolean | undefined | null;
-    user2?: string | undefined | null;
-    user2_blocked_user1?: boolean | undefined | null;
-    user2_interacted?: boolean | undefined | null;
-  };
-  /** response of any mutation on the table "auth.friendships" */
-  ["auth_friendships_mutation_response"]: AliasType<{
-    /** number of rows affected by the mutation */
-    affected_rows?: boolean | `@${string}`;
-    /** data from the rows affected by the mutation */
-    returning?: ResolverInputTypes["auth_friendships"];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** on_conflict condition type for table "auth.friendships" */
-  ["auth_friendships_on_conflict"]: {
-    constraint: ResolverInputTypes["auth_friendships_constraint"];
-    update_columns: Array<ResolverInputTypes["auth_friendships_update_column"]>;
-    where?: ResolverInputTypes["auth_friendships_bool_exp"] | undefined | null;
-  };
-  /** Ordering options when selecting data from "auth.friendships". */
-  ["auth_friendships_order_by"]: {
-    are_friends?: ResolverInputTypes["order_by"] | undefined | null;
-    id?: ResolverInputTypes["order_by"] | undefined | null;
-    last_message?: ResolverInputTypes["order_by"] | undefined | null;
-    last_message_sender?: ResolverInputTypes["order_by"] | undefined | null;
-    last_message_timestamp?: ResolverInputTypes["order_by"] | undefined | null;
-    user1?: ResolverInputTypes["order_by"] | undefined | null;
-    user1_blocked_user2?: ResolverInputTypes["order_by"] | undefined | null;
-    user1_interacted?: ResolverInputTypes["order_by"] | undefined | null;
-    user2?: ResolverInputTypes["order_by"] | undefined | null;
-    user2_blocked_user1?: ResolverInputTypes["order_by"] | undefined | null;
-    user2_interacted?: ResolverInputTypes["order_by"] | undefined | null;
-  };
-  /** primary key columns input for table: auth_friendships */
-  ["auth_friendships_pk_columns_input"]: {
-    user1: string;
-    user2: string;
-  };
-  /** select columns of table "auth.friendships" */
-  ["auth_friendships_select_column"]: auth_friendships_select_column;
-  /** input type for updating data in table "auth.friendships" */
-  ["auth_friendships_set_input"]: {
-    are_friends?: boolean | undefined | null;
-    id?: number | undefined | null;
-    last_message?: string | undefined | null;
-    last_message_sender?: string | undefined | null;
-    last_message_timestamp?:
-      | ResolverInputTypes["timestamptz"]
-      | undefined
-      | null;
-    user1?: string | undefined | null;
-    user1_blocked_user2?: boolean | undefined | null;
-    user1_interacted?: boolean | undefined | null;
-    user2?: string | undefined | null;
-    user2_blocked_user1?: boolean | undefined | null;
-    user2_interacted?: boolean | undefined | null;
-  };
-  /** Streaming cursor of the table "auth_friendships" */
-  ["auth_friendships_stream_cursor_input"]: {
-    /** Stream column input with initial value */
-    initial_value: ResolverInputTypes["auth_friendships_stream_cursor_value_input"];
-    /** cursor ordering */
-    ordering?: ResolverInputTypes["cursor_ordering"] | undefined | null;
-  };
-  /** Initial value of the column from where the streaming should start */
-  ["auth_friendships_stream_cursor_value_input"]: {
-    are_friends?: boolean | undefined | null;
-    id?: number | undefined | null;
-    last_message?: string | undefined | null;
-    last_message_sender?: string | undefined | null;
-    last_message_timestamp?:
-      | ResolverInputTypes["timestamptz"]
-      | undefined
-      | null;
-    user1?: string | undefined | null;
-    user1_blocked_user2?: boolean | undefined | null;
-    user1_interacted?: boolean | undefined | null;
-    user2?: string | undefined | null;
-    user2_blocked_user1?: boolean | undefined | null;
-    user2_interacted?: boolean | undefined | null;
-  };
-  /** update columns of table "auth.friendships" */
-  ["auth_friendships_update_column"]: auth_friendships_update_column;
-  ["auth_friendships_updates"]: {
-    /** increments the numeric columns with given value of the filtered values */
-    _inc?: ResolverInputTypes["auth_friendships_inc_input"] | undefined | null;
-    /** sets the columns of the filtered rows to the given values */
-    _set?: ResolverInputTypes["auth_friendships_set_input"] | undefined | null;
-    where: ResolverInputTypes["auth_friendships_bool_exp"];
-  };
   /** columns and relationships of "auth.notification_subscriptions" */
   ["auth_notification_subscriptions"]: AliasType<{
     auth?: boolean | `@${string}`;
@@ -5038,152 +4397,192 @@ export type ResolverInputTypes = {
       | null;
     where: ResolverInputTypes["auth_notifications_bool_exp"];
   };
-  /** columns and relationships of "auth.publickeys" */
-  ["auth_publickeys"]: AliasType<{
+  /** columns and relationships of "auth.public_keys" */
+  ["auth_public_keys"]: AliasType<{
     blockchain?: boolean | `@${string}`;
-    publickey?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Boolean expression to filter rows from the table "auth.publickeys". All fields are combined with a logical 'AND'. */
-  ["auth_publickeys_bool_exp"]: {
-    _and?:
-      | Array<ResolverInputTypes["auth_publickeys_bool_exp"]>
-      | undefined
-      | null;
-    _not?: ResolverInputTypes["auth_publickeys_bool_exp"] | undefined | null;
-    _or?:
-      | Array<ResolverInputTypes["auth_publickeys_bool_exp"]>
-      | undefined
-      | null;
-    blockchain?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
-    publickey?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
-  };
-  /** columns and relationships of "auth.publickeys_history" */
-  ["auth_publickeys_history"]: AliasType<{
-    blockchain?: boolean | `@${string}`;
-    publickey?: boolean | `@${string}`;
+    created_at?: boolean | `@${string}`;
+    id?: boolean | `@${string}`;
+    public_key?: boolean | `@${string}`;
+    /** An object relationship */
+    user?: ResolverInputTypes["auth_users"];
     user_id?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
-  /** order by aggregate values of table "auth.publickeys_history" */
-  ["auth_publickeys_history_aggregate_order_by"]: {
+  /** order by aggregate values of table "auth.public_keys" */
+  ["auth_public_keys_aggregate_order_by"]: {
+    avg?:
+      | ResolverInputTypes["auth_public_keys_avg_order_by"]
+      | undefined
+      | null;
     count?: ResolverInputTypes["order_by"] | undefined | null;
     max?:
-      | ResolverInputTypes["auth_publickeys_history_max_order_by"]
+      | ResolverInputTypes["auth_public_keys_max_order_by"]
       | undefined
       | null;
     min?:
-      | ResolverInputTypes["auth_publickeys_history_min_order_by"]
+      | ResolverInputTypes["auth_public_keys_min_order_by"]
+      | undefined
+      | null;
+    stddev?:
+      | ResolverInputTypes["auth_public_keys_stddev_order_by"]
+      | undefined
+      | null;
+    stddev_pop?:
+      | ResolverInputTypes["auth_public_keys_stddev_pop_order_by"]
+      | undefined
+      | null;
+    stddev_samp?:
+      | ResolverInputTypes["auth_public_keys_stddev_samp_order_by"]
+      | undefined
+      | null;
+    sum?:
+      | ResolverInputTypes["auth_public_keys_sum_order_by"]
+      | undefined
+      | null;
+    var_pop?:
+      | ResolverInputTypes["auth_public_keys_var_pop_order_by"]
+      | undefined
+      | null;
+    var_samp?:
+      | ResolverInputTypes["auth_public_keys_var_samp_order_by"]
+      | undefined
+      | null;
+    variance?:
+      | ResolverInputTypes["auth_public_keys_variance_order_by"]
       | undefined
       | null;
   };
-  /** input type for inserting array relation for remote table "auth.publickeys_history" */
-  ["auth_publickeys_history_arr_rel_insert_input"]: {
-    data: Array<ResolverInputTypes["auth_publickeys_history_insert_input"]>;
+  /** input type for inserting array relation for remote table "auth.public_keys" */
+  ["auth_public_keys_arr_rel_insert_input"]: {
+    data: Array<ResolverInputTypes["auth_public_keys_insert_input"]>;
     /** upsert condition */
     on_conflict?:
-      | ResolverInputTypes["auth_publickeys_history_on_conflict"]
+      | ResolverInputTypes["auth_public_keys_on_conflict"]
       | undefined
       | null;
   };
-  /** Boolean expression to filter rows from the table "auth.publickeys_history". All fields are combined with a logical 'AND'. */
-  ["auth_publickeys_history_bool_exp"]: {
+  /** order by avg() on columns of table "auth.public_keys" */
+  ["auth_public_keys_avg_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** Boolean expression to filter rows from the table "auth.public_keys". All fields are combined with a logical 'AND'. */
+  ["auth_public_keys_bool_exp"]: {
     _and?:
-      | Array<ResolverInputTypes["auth_publickeys_history_bool_exp"]>
+      | Array<ResolverInputTypes["auth_public_keys_bool_exp"]>
       | undefined
       | null;
-    _not?:
-      | ResolverInputTypes["auth_publickeys_history_bool_exp"]
-      | undefined
-      | null;
+    _not?: ResolverInputTypes["auth_public_keys_bool_exp"] | undefined | null;
     _or?:
-      | Array<ResolverInputTypes["auth_publickeys_history_bool_exp"]>
+      | Array<ResolverInputTypes["auth_public_keys_bool_exp"]>
       | undefined
       | null;
     blockchain?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
-    publickey?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    created_at?:
+      | ResolverInputTypes["timestamptz_comparison_exp"]
+      | undefined
+      | null;
+    id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
+    public_key?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    user?: ResolverInputTypes["auth_users_bool_exp"] | undefined | null;
     user_id?: ResolverInputTypes["uuid_comparison_exp"] | undefined | null;
   };
-  /** unique or primary key constraints on table "auth.publickeys_history" */
-  ["auth_publickeys_history_constraint"]: auth_publickeys_history_constraint;
-  /** input type for inserting data into table "auth.publickeys_history" */
-  ["auth_publickeys_history_insert_input"]: {
+  /** unique or primary key constraints on table "auth.public_keys" */
+  ["auth_public_keys_constraint"]: auth_public_keys_constraint;
+  /** input type for inserting data into table "auth.public_keys" */
+  ["auth_public_keys_insert_input"]: {
     blockchain?: string | undefined | null;
-    publickey?: string | undefined | null;
+    public_key?: string | undefined | null;
+    user?:
+      | ResolverInputTypes["auth_users_obj_rel_insert_input"]
+      | undefined
+      | null;
     user_id?: ResolverInputTypes["uuid"] | undefined | null;
   };
-  /** order by max() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_max_order_by"]: {
+  /** order by max() on columns of table "auth.public_keys" */
+  ["auth_public_keys_max_order_by"]: {
     blockchain?: ResolverInputTypes["order_by"] | undefined | null;
-    publickey?: ResolverInputTypes["order_by"] | undefined | null;
+    created_at?: ResolverInputTypes["order_by"] | undefined | null;
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    public_key?: ResolverInputTypes["order_by"] | undefined | null;
     user_id?: ResolverInputTypes["order_by"] | undefined | null;
   };
-  /** order by min() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_min_order_by"]: {
+  /** order by min() on columns of table "auth.public_keys" */
+  ["auth_public_keys_min_order_by"]: {
     blockchain?: ResolverInputTypes["order_by"] | undefined | null;
-    publickey?: ResolverInputTypes["order_by"] | undefined | null;
+    created_at?: ResolverInputTypes["order_by"] | undefined | null;
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    public_key?: ResolverInputTypes["order_by"] | undefined | null;
     user_id?: ResolverInputTypes["order_by"] | undefined | null;
   };
-  /** response of any mutation on the table "auth.publickeys_history" */
-  ["auth_publickeys_history_mutation_response"]: AliasType<{
+  /** response of any mutation on the table "auth.public_keys" */
+  ["auth_public_keys_mutation_response"]: AliasType<{
     /** number of rows affected by the mutation */
     affected_rows?: boolean | `@${string}`;
     /** data from the rows affected by the mutation */
-    returning?: ResolverInputTypes["auth_publickeys_history"];
+    returning?: ResolverInputTypes["auth_public_keys"];
     __typename?: boolean | `@${string}`;
   }>;
-  /** on_conflict condition type for table "auth.publickeys_history" */
-  ["auth_publickeys_history_on_conflict"]: {
-    constraint: ResolverInputTypes["auth_publickeys_history_constraint"];
-    update_columns: Array<
-      ResolverInputTypes["auth_publickeys_history_update_column"]
-    >;
-    where?:
-      | ResolverInputTypes["auth_publickeys_history_bool_exp"]
-      | undefined
-      | null;
+  /** on_conflict condition type for table "auth.public_keys" */
+  ["auth_public_keys_on_conflict"]: {
+    constraint: ResolverInputTypes["auth_public_keys_constraint"];
+    update_columns: Array<ResolverInputTypes["auth_public_keys_update_column"]>;
+    where?: ResolverInputTypes["auth_public_keys_bool_exp"] | undefined | null;
   };
-  /** Ordering options when selecting data from "auth.publickeys_history". */
-  ["auth_publickeys_history_order_by"]: {
+  /** Ordering options when selecting data from "auth.public_keys". */
+  ["auth_public_keys_order_by"]: {
     blockchain?: ResolverInputTypes["order_by"] | undefined | null;
-    publickey?: ResolverInputTypes["order_by"] | undefined | null;
+    created_at?: ResolverInputTypes["order_by"] | undefined | null;
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    public_key?: ResolverInputTypes["order_by"] | undefined | null;
+    user?: ResolverInputTypes["auth_users_order_by"] | undefined | null;
     user_id?: ResolverInputTypes["order_by"] | undefined | null;
   };
-  /** select columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_select_column"]: auth_publickeys_history_select_column;
-  /** Streaming cursor of the table "auth_publickeys_history" */
-  ["auth_publickeys_history_stream_cursor_input"]: {
+  /** select columns of table "auth.public_keys" */
+  ["auth_public_keys_select_column"]: auth_public_keys_select_column;
+  /** order by stddev() on columns of table "auth.public_keys" */
+  ["auth_public_keys_stddev_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by stddev_pop() on columns of table "auth.public_keys" */
+  ["auth_public_keys_stddev_pop_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by stddev_samp() on columns of table "auth.public_keys" */
+  ["auth_public_keys_stddev_samp_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** Streaming cursor of the table "auth_public_keys" */
+  ["auth_public_keys_stream_cursor_input"]: {
     /** Stream column input with initial value */
-    initial_value: ResolverInputTypes["auth_publickeys_history_stream_cursor_value_input"];
+    initial_value: ResolverInputTypes["auth_public_keys_stream_cursor_value_input"];
     /** cursor ordering */
     ordering?: ResolverInputTypes["cursor_ordering"] | undefined | null;
   };
   /** Initial value of the column from where the streaming should start */
-  ["auth_publickeys_history_stream_cursor_value_input"]: {
+  ["auth_public_keys_stream_cursor_value_input"]: {
     blockchain?: string | undefined | null;
-    publickey?: string | undefined | null;
+    created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
+    id?: number | undefined | null;
+    public_key?: string | undefined | null;
     user_id?: ResolverInputTypes["uuid"] | undefined | null;
   };
-  /** placeholder for update columns of table "auth.publickeys_history" (current role has no relevant permissions) */
-  ["auth_publickeys_history_update_column"]: auth_publickeys_history_update_column;
-  /** Ordering options when selecting data from "auth.publickeys". */
-  ["auth_publickeys_order_by"]: {
-    blockchain?: ResolverInputTypes["order_by"] | undefined | null;
-    publickey?: ResolverInputTypes["order_by"] | undefined | null;
+  /** order by sum() on columns of table "auth.public_keys" */
+  ["auth_public_keys_sum_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
   };
-  /** select columns of table "auth.publickeys" */
-  ["auth_publickeys_select_column"]: auth_publickeys_select_column;
-  /** Streaming cursor of the table "auth_publickeys" */
-  ["auth_publickeys_stream_cursor_input"]: {
-    /** Stream column input with initial value */
-    initial_value: ResolverInputTypes["auth_publickeys_stream_cursor_value_input"];
-    /** cursor ordering */
-    ordering?: ResolverInputTypes["cursor_ordering"] | undefined | null;
+  /** placeholder for update columns of table "auth.public_keys" (current role has no relevant permissions) */
+  ["auth_public_keys_update_column"]: auth_public_keys_update_column;
+  /** order by var_pop() on columns of table "auth.public_keys" */
+  ["auth_public_keys_var_pop_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
   };
-  /** Initial value of the column from where the streaming should start */
-  ["auth_publickeys_stream_cursor_value_input"]: {
-    blockchain?: string | undefined | null;
-    publickey?: string | undefined | null;
+  /** order by var_samp() on columns of table "auth.public_keys" */
+  ["auth_public_keys_var_samp_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by variance() on columns of table "auth.public_keys" */
+  ["auth_public_keys_variance_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
   };
   /** columns and relationships of "auth.stripe_onramp" */
   ["auth_stripe_onramp"]: AliasType<{
@@ -5305,11 +4704,11 @@ export type ResolverInputTypes = {
   /** columns and relationships of "auth.users" */
   ["auth_users"]: AliasType<{
     id?: boolean | `@${string}`;
-    publickeys?: [
+    public_keys?: [
       {
         /** distinct select on columns */
         distinct_on?:
-          | Array<ResolverInputTypes["auth_publickeys_history_select_column"]>
+          | Array<ResolverInputTypes["auth_public_keys_select_column"]>
           | undefined
           | null /** limit the number of rows returned */;
         limit?:
@@ -5321,15 +4720,15 @@ export type ResolverInputTypes = {
           | undefined
           | null /** sort the rows by one or more columns */;
         order_by?:
-          | Array<ResolverInputTypes["auth_publickeys_history_order_by"]>
+          | Array<ResolverInputTypes["auth_public_keys_order_by"]>
           | undefined
           | null /** filter the rows returned */;
         where?:
-          | ResolverInputTypes["auth_publickeys_history_bool_exp"]
+          | ResolverInputTypes["auth_public_keys_bool_exp"]
           | undefined
           | null;
       },
-      ResolverInputTypes["auth_publickeys_history"]
+      ResolverInputTypes["auth_public_keys"]
     ];
     username?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
@@ -5362,8 +4761,8 @@ export type ResolverInputTypes = {
     _not?: ResolverInputTypes["auth_users_bool_exp"] | undefined | null;
     _or?: Array<ResolverInputTypes["auth_users_bool_exp"]> | undefined | null;
     id?: ResolverInputTypes["uuid_comparison_exp"] | undefined | null;
-    publickeys?:
-      | ResolverInputTypes["auth_publickeys_history_bool_exp"]
+    public_keys?:
+      | ResolverInputTypes["auth_public_keys_bool_exp"]
       | undefined
       | null;
     username?: ResolverInputTypes["citext_comparison_exp"] | undefined | null;
@@ -5373,8 +4772,8 @@ export type ResolverInputTypes = {
   /** input type for inserting data into table "auth.users" */
   ["auth_users_insert_input"]: {
     invitation_id?: ResolverInputTypes["uuid"] | undefined | null;
-    publickeys?:
-      | ResolverInputTypes["auth_publickeys_history_arr_rel_insert_input"]
+    public_keys?:
+      | ResolverInputTypes["auth_public_keys_arr_rel_insert_input"]
       | undefined
       | null;
     username?: ResolverInputTypes["citext"] | undefined | null;
@@ -5400,6 +4799,15 @@ export type ResolverInputTypes = {
     returning?: ResolverInputTypes["auth_users"];
     __typename?: boolean | `@${string}`;
   }>;
+  /** input type for inserting object relation for remote table "auth.users" */
+  ["auth_users_obj_rel_insert_input"]: {
+    data: ResolverInputTypes["auth_users_insert_input"];
+    /** upsert condition */
+    on_conflict?:
+      | ResolverInputTypes["auth_users_on_conflict"]
+      | undefined
+      | null;
+  };
   /** on_conflict condition type for table "auth.users" */
   ["auth_users_on_conflict"]: {
     constraint: ResolverInputTypes["auth_users_constraint"];
@@ -5409,8 +4817,8 @@ export type ResolverInputTypes = {
   /** Ordering options when selecting data from "auth.users". */
   ["auth_users_order_by"]: {
     id?: ResolverInputTypes["order_by"] | undefined | null;
-    publickeys_aggregate?:
-      | ResolverInputTypes["auth_publickeys_history_aggregate_order_by"]
+    public_keys_aggregate?:
+      | ResolverInputTypes["auth_public_keys_aggregate_order_by"]
       | undefined
       | null;
     username?: ResolverInputTypes["order_by"] | undefined | null;
@@ -5691,17 +5099,6 @@ export type ResolverInputTypes = {
       { from: string; to: string },
       ResolverInputTypes["auth_friend_requests"]
     ];
-    delete_auth_friendships?: [
-      {
-        /** filter the rows which have to be deleted */
-        where: ResolverInputTypes["auth_friendships_bool_exp"];
-      },
-      ResolverInputTypes["auth_friendships_mutation_response"]
-    ];
-    delete_auth_friendships_by_pk?: [
-      { user1: string; user2: string },
-      ResolverInputTypes["auth_friendships"]
-    ];
     delete_auth_notification_subscriptions?: [
       {
         /** filter the rows which have to be deleted */
@@ -5747,30 +5144,6 @@ export type ResolverInputTypes = {
           | null;
       },
       ResolverInputTypes["auth_friend_requests"]
-    ];
-    insert_auth_friendships?: [
-      {
-        /** the rows to be inserted */
-        objects: Array<
-          ResolverInputTypes["auth_friendships_insert_input"]
-        > /** upsert condition */;
-        on_conflict?:
-          | ResolverInputTypes["auth_friendships_on_conflict"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_friendships_mutation_response"]
-    ];
-    insert_auth_friendships_one?: [
-      {
-        /** the row to be inserted */
-        object: ResolverInputTypes["auth_friendships_insert_input"] /** upsert condition */;
-        on_conflict?:
-          | ResolverInputTypes["auth_friendships_on_conflict"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_friendships"]
     ];
     insert_auth_notification_subscriptions?: [
       {
@@ -5820,29 +5193,29 @@ export type ResolverInputTypes = {
       },
       ResolverInputTypes["auth_notifications"]
     ];
-    insert_auth_publickeys_history?: [
+    insert_auth_public_keys?: [
       {
         /** the rows to be inserted */
         objects: Array<
-          ResolverInputTypes["auth_publickeys_history_insert_input"]
+          ResolverInputTypes["auth_public_keys_insert_input"]
         > /** upsert condition */;
         on_conflict?:
-          | ResolverInputTypes["auth_publickeys_history_on_conflict"]
+          | ResolverInputTypes["auth_public_keys_on_conflict"]
           | undefined
           | null;
       },
-      ResolverInputTypes["auth_publickeys_history_mutation_response"]
+      ResolverInputTypes["auth_public_keys_mutation_response"]
     ];
-    insert_auth_publickeys_history_one?: [
+    insert_auth_public_keys_one?: [
       {
         /** the row to be inserted */
-        object: ResolverInputTypes["auth_publickeys_history_insert_input"] /** upsert condition */;
+        object: ResolverInputTypes["auth_public_keys_insert_input"] /** upsert condition */;
         on_conflict?:
-          | ResolverInputTypes["auth_publickeys_history_on_conflict"]
+          | ResolverInputTypes["auth_public_keys_on_conflict"]
           | undefined
           | null;
       },
-      ResolverInputTypes["auth_publickeys_history"]
+      ResolverInputTypes["auth_public_keys"]
     ];
     insert_auth_stripe_onramp?: [
       {
@@ -5915,43 +5288,6 @@ export type ResolverInputTypes = {
           | null;
       },
       ResolverInputTypes["auth_xnft_preferences"]
-    ];
-    update_auth_friendships?: [
-      {
-        /** increments the numeric columns with given value of the filtered values */
-        _inc?:
-          | ResolverInputTypes["auth_friendships_inc_input"]
-          | undefined
-          | null /** sets the columns of the filtered rows to the given values */;
-        _set?:
-          | ResolverInputTypes["auth_friendships_set_input"]
-          | undefined
-          | null /** filter the rows which have to be updated */;
-        where: ResolverInputTypes["auth_friendships_bool_exp"];
-      },
-      ResolverInputTypes["auth_friendships_mutation_response"]
-    ];
-    update_auth_friendships_by_pk?: [
-      {
-        /** increments the numeric columns with given value of the filtered values */
-        _inc?:
-          | ResolverInputTypes["auth_friendships_inc_input"]
-          | undefined
-          | null /** sets the columns of the filtered rows to the given values */;
-        _set?:
-          | ResolverInputTypes["auth_friendships_set_input"]
-          | undefined
-          | null;
-        pk_columns: ResolverInputTypes["auth_friendships_pk_columns_input"];
-      },
-      ResolverInputTypes["auth_friendships"]
-    ];
-    update_auth_friendships_many?: [
-      {
-        /** updates to execute, in order */
-        updates: Array<ResolverInputTypes["auth_friendships_updates"]>;
-      },
-      ResolverInputTypes["auth_friendships_mutation_response"]
     ];
     update_auth_notification_subscriptions?: [
       {
@@ -6164,36 +5500,6 @@ export type ResolverInputTypes = {
       { from: string; to: string },
       ResolverInputTypes["auth_friend_requests"]
     ];
-    auth_friendships?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ResolverInputTypes["auth_friendships_select_column"]>
-          | undefined
-          | null /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ResolverInputTypes["auth_friendships_order_by"]>
-          | undefined
-          | null /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["auth_friendships_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_friendships"]
-    ];
-    auth_friendships_by_pk?: [
-      { user1: string; user2: string },
-      ResolverInputTypes["auth_friendships"]
-    ];
     auth_notification_subscriptions?: [
       {
         /** distinct select on columns */
@@ -6258,11 +5564,11 @@ export type ResolverInputTypes = {
       { id: number },
       ResolverInputTypes["auth_notifications"]
     ];
-    auth_publickeys?: [
+    auth_public_keys?: [
       {
         /** distinct select on columns */
         distinct_on?:
-          | Array<ResolverInputTypes["auth_publickeys_select_column"]>
+          | Array<ResolverInputTypes["auth_public_keys_select_column"]>
           | undefined
           | null /** limit the number of rows returned */;
         limit?:
@@ -6274,41 +5580,19 @@ export type ResolverInputTypes = {
           | undefined
           | null /** sort the rows by one or more columns */;
         order_by?:
-          | Array<ResolverInputTypes["auth_publickeys_order_by"]>
+          | Array<ResolverInputTypes["auth_public_keys_order_by"]>
           | undefined
           | null /** filter the rows returned */;
         where?:
-          | ResolverInputTypes["auth_publickeys_bool_exp"]
+          | ResolverInputTypes["auth_public_keys_bool_exp"]
           | undefined
           | null;
       },
-      ResolverInputTypes["auth_publickeys"]
+      ResolverInputTypes["auth_public_keys"]
     ];
-    auth_publickeys_history?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ResolverInputTypes["auth_publickeys_history_select_column"]>
-          | undefined
-          | null /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ResolverInputTypes["auth_publickeys_history_order_by"]>
-          | undefined
-          | null /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["auth_publickeys_history_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_publickeys_history"]
+    auth_public_keys_by_pk?: [
+      { id: number },
+      ResolverInputTypes["auth_public_keys"]
     ];
     auth_stripe_onramp?: [
       {
@@ -6515,52 +5799,6 @@ export type ResolverInputTypes = {
       },
       ResolverInputTypes["auth_friend_requests"]
     ];
-    auth_friendships?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ResolverInputTypes["auth_friendships_select_column"]>
-          | undefined
-          | null /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ResolverInputTypes["auth_friendships_order_by"]>
-          | undefined
-          | null /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["auth_friendships_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_friendships"]
-    ];
-    auth_friendships_by_pk?: [
-      { user1: string; user2: string },
-      ResolverInputTypes["auth_friendships"]
-    ];
-    auth_friendships_stream?: [
-      {
-        /** maximum number of rows returned in a single batch */
-        batch_size: number /** cursor to stream the results returned by the query */;
-        cursor: Array<
-          | ResolverInputTypes["auth_friendships_stream_cursor_input"]
-          | undefined
-          | null
-        > /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["auth_friendships_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_friendships"]
-    ];
     auth_notification_subscriptions?: [
       {
         /** distinct select on columns */
@@ -6657,11 +5895,11 @@ export type ResolverInputTypes = {
       },
       ResolverInputTypes["auth_notifications"]
     ];
-    auth_publickeys?: [
+    auth_public_keys?: [
       {
         /** distinct select on columns */
         distinct_on?:
-          | Array<ResolverInputTypes["auth_publickeys_select_column"]>
+          | Array<ResolverInputTypes["auth_public_keys_select_column"]>
           | undefined
           | null /** limit the number of rows returned */;
         limit?:
@@ -6673,73 +5911,35 @@ export type ResolverInputTypes = {
           | undefined
           | null /** sort the rows by one or more columns */;
         order_by?:
-          | Array<ResolverInputTypes["auth_publickeys_order_by"]>
+          | Array<ResolverInputTypes["auth_public_keys_order_by"]>
           | undefined
           | null /** filter the rows returned */;
         where?:
-          | ResolverInputTypes["auth_publickeys_bool_exp"]
+          | ResolverInputTypes["auth_public_keys_bool_exp"]
           | undefined
           | null;
       },
-      ResolverInputTypes["auth_publickeys"]
+      ResolverInputTypes["auth_public_keys"]
     ];
-    auth_publickeys_history?: [
-      {
-        /** distinct select on columns */
-        distinct_on?:
-          | Array<ResolverInputTypes["auth_publickeys_history_select_column"]>
-          | undefined
-          | null /** limit the number of rows returned */;
-        limit?:
-          | number
-          | undefined
-          | null /** skip the first n rows. Use only with order_by */;
-        offset?:
-          | number
-          | undefined
-          | null /** sort the rows by one or more columns */;
-        order_by?:
-          | Array<ResolverInputTypes["auth_publickeys_history_order_by"]>
-          | undefined
-          | null /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["auth_publickeys_history_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_publickeys_history"]
+    auth_public_keys_by_pk?: [
+      { id: number },
+      ResolverInputTypes["auth_public_keys"]
     ];
-    auth_publickeys_history_stream?: [
+    auth_public_keys_stream?: [
       {
         /** maximum number of rows returned in a single batch */
         batch_size: number /** cursor to stream the results returned by the query */;
         cursor: Array<
-          | ResolverInputTypes["auth_publickeys_history_stream_cursor_input"]
+          | ResolverInputTypes["auth_public_keys_stream_cursor_input"]
           | undefined
           | null
         > /** filter the rows returned */;
         where?:
-          | ResolverInputTypes["auth_publickeys_history_bool_exp"]
+          | ResolverInputTypes["auth_public_keys_bool_exp"]
           | undefined
           | null;
       },
-      ResolverInputTypes["auth_publickeys_history"]
-    ];
-    auth_publickeys_stream?: [
-      {
-        /** maximum number of rows returned in a single batch */
-        batch_size: number /** cursor to stream the results returned by the query */;
-        cursor: Array<
-          | ResolverInputTypes["auth_publickeys_stream_cursor_input"]
-          | undefined
-          | null
-        > /** filter the rows returned */;
-        where?:
-          | ResolverInputTypes["auth_publickeys_bool_exp"]
-          | undefined
-          | null;
-      },
-      ResolverInputTypes["auth_publickeys"]
+      ResolverInputTypes["auth_public_keys"]
     ];
     auth_stripe_onramp?: [
       {
@@ -7098,134 +6298,6 @@ export type ModelTypes = {
     to?: string | undefined;
   };
   ["auth_friend_requests_update_column"]: auth_friend_requests_update_column;
-  /** columns and relationships of "auth.friendships" */
-  ["auth_friendships"]: {
-    are_friends: boolean;
-    id: number;
-    last_message?: string | undefined;
-    last_message_sender?: string | undefined;
-    last_message_timestamp?: ModelTypes["timestamptz"] | undefined;
-    user1: string;
-    user1_blocked_user2: boolean;
-    user1_interacted: boolean;
-    user2: string;
-    user2_blocked_user1: boolean;
-    user2_interacted: boolean;
-  };
-  /** Boolean expression to filter rows from the table "auth.friendships". All fields are combined with a logical 'AND'. */
-  ["auth_friendships_bool_exp"]: {
-    _and?: Array<ModelTypes["auth_friendships_bool_exp"]> | undefined;
-    _not?: ModelTypes["auth_friendships_bool_exp"] | undefined;
-    _or?: Array<ModelTypes["auth_friendships_bool_exp"]> | undefined;
-    are_friends?: ModelTypes["Boolean_comparison_exp"] | undefined;
-    id?: ModelTypes["Int_comparison_exp"] | undefined;
-    last_message?: ModelTypes["String_comparison_exp"] | undefined;
-    last_message_sender?: ModelTypes["String_comparison_exp"] | undefined;
-    last_message_timestamp?:
-      | ModelTypes["timestamptz_comparison_exp"]
-      | undefined;
-    user1?: ModelTypes["String_comparison_exp"] | undefined;
-    user1_blocked_user2?: ModelTypes["Boolean_comparison_exp"] | undefined;
-    user1_interacted?: ModelTypes["Boolean_comparison_exp"] | undefined;
-    user2?: ModelTypes["String_comparison_exp"] | undefined;
-    user2_blocked_user1?: ModelTypes["Boolean_comparison_exp"] | undefined;
-    user2_interacted?: ModelTypes["Boolean_comparison_exp"] | undefined;
-  };
-  ["auth_friendships_constraint"]: auth_friendships_constraint;
-  /** input type for incrementing numeric columns in table "auth.friendships" */
-  ["auth_friendships_inc_input"]: {
-    id?: number | undefined;
-  };
-  /** input type for inserting data into table "auth.friendships" */
-  ["auth_friendships_insert_input"]: {
-    are_friends?: boolean | undefined;
-    id?: number | undefined;
-    last_message?: string | undefined;
-    last_message_sender?: string | undefined;
-    last_message_timestamp?: ModelTypes["timestamptz"] | undefined;
-    user1?: string | undefined;
-    user1_blocked_user2?: boolean | undefined;
-    user1_interacted?: boolean | undefined;
-    user2?: string | undefined;
-    user2_blocked_user1?: boolean | undefined;
-    user2_interacted?: boolean | undefined;
-  };
-  /** response of any mutation on the table "auth.friendships" */
-  ["auth_friendships_mutation_response"]: {
-    /** number of rows affected by the mutation */
-    affected_rows: number;
-    /** data from the rows affected by the mutation */
-    returning: Array<ModelTypes["auth_friendships"]>;
-  };
-  /** on_conflict condition type for table "auth.friendships" */
-  ["auth_friendships_on_conflict"]: {
-    constraint: ModelTypes["auth_friendships_constraint"];
-    update_columns: Array<ModelTypes["auth_friendships_update_column"]>;
-    where?: ModelTypes["auth_friendships_bool_exp"] | undefined;
-  };
-  /** Ordering options when selecting data from "auth.friendships". */
-  ["auth_friendships_order_by"]: {
-    are_friends?: ModelTypes["order_by"] | undefined;
-    id?: ModelTypes["order_by"] | undefined;
-    last_message?: ModelTypes["order_by"] | undefined;
-    last_message_sender?: ModelTypes["order_by"] | undefined;
-    last_message_timestamp?: ModelTypes["order_by"] | undefined;
-    user1?: ModelTypes["order_by"] | undefined;
-    user1_blocked_user2?: ModelTypes["order_by"] | undefined;
-    user1_interacted?: ModelTypes["order_by"] | undefined;
-    user2?: ModelTypes["order_by"] | undefined;
-    user2_blocked_user1?: ModelTypes["order_by"] | undefined;
-    user2_interacted?: ModelTypes["order_by"] | undefined;
-  };
-  /** primary key columns input for table: auth_friendships */
-  ["auth_friendships_pk_columns_input"]: {
-    user1: string;
-    user2: string;
-  };
-  ["auth_friendships_select_column"]: auth_friendships_select_column;
-  /** input type for updating data in table "auth.friendships" */
-  ["auth_friendships_set_input"]: {
-    are_friends?: boolean | undefined;
-    id?: number | undefined;
-    last_message?: string | undefined;
-    last_message_sender?: string | undefined;
-    last_message_timestamp?: ModelTypes["timestamptz"] | undefined;
-    user1?: string | undefined;
-    user1_blocked_user2?: boolean | undefined;
-    user1_interacted?: boolean | undefined;
-    user2?: string | undefined;
-    user2_blocked_user1?: boolean | undefined;
-    user2_interacted?: boolean | undefined;
-  };
-  /** Streaming cursor of the table "auth_friendships" */
-  ["auth_friendships_stream_cursor_input"]: {
-    /** Stream column input with initial value */
-    initial_value: ModelTypes["auth_friendships_stream_cursor_value_input"];
-    /** cursor ordering */
-    ordering?: ModelTypes["cursor_ordering"] | undefined;
-  };
-  /** Initial value of the column from where the streaming should start */
-  ["auth_friendships_stream_cursor_value_input"]: {
-    are_friends?: boolean | undefined;
-    id?: number | undefined;
-    last_message?: string | undefined;
-    last_message_sender?: string | undefined;
-    last_message_timestamp?: ModelTypes["timestamptz"] | undefined;
-    user1?: string | undefined;
-    user1_blocked_user2?: boolean | undefined;
-    user1_interacted?: boolean | undefined;
-    user2?: string | undefined;
-    user2_blocked_user1?: boolean | undefined;
-    user2_interacted?: boolean | undefined;
-  };
-  ["auth_friendships_update_column"]: auth_friendships_update_column;
-  ["auth_friendships_updates"]: {
-    /** increments the numeric columns with given value of the filtered values */
-    _inc?: ModelTypes["auth_friendships_inc_input"] | undefined;
-    /** sets the columns of the filtered rows to the given values */
-    _set?: ModelTypes["auth_friendships_set_input"] | undefined;
-    where: ModelTypes["auth_friendships_bool_exp"];
-  };
   /** columns and relationships of "auth.notification_subscriptions" */
   ["auth_notification_subscriptions"]: {
     auth: string;
@@ -7444,116 +6516,144 @@ export type ModelTypes = {
     _set?: ModelTypes["auth_notifications_set_input"] | undefined;
     where: ModelTypes["auth_notifications_bool_exp"];
   };
-  /** columns and relationships of "auth.publickeys" */
-  ["auth_publickeys"]: {
-    blockchain?: string | undefined;
-    publickey?: string | undefined;
-  };
-  /** Boolean expression to filter rows from the table "auth.publickeys". All fields are combined with a logical 'AND'. */
-  ["auth_publickeys_bool_exp"]: {
-    _and?: Array<ModelTypes["auth_publickeys_bool_exp"]> | undefined;
-    _not?: ModelTypes["auth_publickeys_bool_exp"] | undefined;
-    _or?: Array<ModelTypes["auth_publickeys_bool_exp"]> | undefined;
-    blockchain?: ModelTypes["String_comparison_exp"] | undefined;
-    publickey?: ModelTypes["String_comparison_exp"] | undefined;
-  };
-  /** columns and relationships of "auth.publickeys_history" */
-  ["auth_publickeys_history"]: {
+  /** columns and relationships of "auth.public_keys" */
+  ["auth_public_keys"]: {
     blockchain: string;
-    publickey: string;
+    created_at: ModelTypes["timestamptz"];
+    id: number;
+    public_key: string;
+    /** An object relationship */
+    user?: ModelTypes["auth_users"] | undefined;
     user_id?: ModelTypes["uuid"] | undefined;
   };
-  /** order by aggregate values of table "auth.publickeys_history" */
-  ["auth_publickeys_history_aggregate_order_by"]: {
+  /** order by aggregate values of table "auth.public_keys" */
+  ["auth_public_keys_aggregate_order_by"]: {
+    avg?: ModelTypes["auth_public_keys_avg_order_by"] | undefined;
     count?: ModelTypes["order_by"] | undefined;
-    max?: ModelTypes["auth_publickeys_history_max_order_by"] | undefined;
-    min?: ModelTypes["auth_publickeys_history_min_order_by"] | undefined;
+    max?: ModelTypes["auth_public_keys_max_order_by"] | undefined;
+    min?: ModelTypes["auth_public_keys_min_order_by"] | undefined;
+    stddev?: ModelTypes["auth_public_keys_stddev_order_by"] | undefined;
+    stddev_pop?: ModelTypes["auth_public_keys_stddev_pop_order_by"] | undefined;
+    stddev_samp?:
+      | ModelTypes["auth_public_keys_stddev_samp_order_by"]
+      | undefined;
+    sum?: ModelTypes["auth_public_keys_sum_order_by"] | undefined;
+    var_pop?: ModelTypes["auth_public_keys_var_pop_order_by"] | undefined;
+    var_samp?: ModelTypes["auth_public_keys_var_samp_order_by"] | undefined;
+    variance?: ModelTypes["auth_public_keys_variance_order_by"] | undefined;
   };
-  /** input type for inserting array relation for remote table "auth.publickeys_history" */
-  ["auth_publickeys_history_arr_rel_insert_input"]: {
-    data: Array<ModelTypes["auth_publickeys_history_insert_input"]>;
+  /** input type for inserting array relation for remote table "auth.public_keys" */
+  ["auth_public_keys_arr_rel_insert_input"]: {
+    data: Array<ModelTypes["auth_public_keys_insert_input"]>;
     /** upsert condition */
-    on_conflict?: ModelTypes["auth_publickeys_history_on_conflict"] | undefined;
+    on_conflict?: ModelTypes["auth_public_keys_on_conflict"] | undefined;
   };
-  /** Boolean expression to filter rows from the table "auth.publickeys_history". All fields are combined with a logical 'AND'. */
-  ["auth_publickeys_history_bool_exp"]: {
-    _and?: Array<ModelTypes["auth_publickeys_history_bool_exp"]> | undefined;
-    _not?: ModelTypes["auth_publickeys_history_bool_exp"] | undefined;
-    _or?: Array<ModelTypes["auth_publickeys_history_bool_exp"]> | undefined;
+  /** order by avg() on columns of table "auth.public_keys" */
+  ["auth_public_keys_avg_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  /** Boolean expression to filter rows from the table "auth.public_keys". All fields are combined with a logical 'AND'. */
+  ["auth_public_keys_bool_exp"]: {
+    _and?: Array<ModelTypes["auth_public_keys_bool_exp"]> | undefined;
+    _not?: ModelTypes["auth_public_keys_bool_exp"] | undefined;
+    _or?: Array<ModelTypes["auth_public_keys_bool_exp"]> | undefined;
     blockchain?: ModelTypes["String_comparison_exp"] | undefined;
-    publickey?: ModelTypes["String_comparison_exp"] | undefined;
+    created_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
+    id?: ModelTypes["Int_comparison_exp"] | undefined;
+    public_key?: ModelTypes["String_comparison_exp"] | undefined;
+    user?: ModelTypes["auth_users_bool_exp"] | undefined;
     user_id?: ModelTypes["uuid_comparison_exp"] | undefined;
   };
-  ["auth_publickeys_history_constraint"]: auth_publickeys_history_constraint;
-  /** input type for inserting data into table "auth.publickeys_history" */
-  ["auth_publickeys_history_insert_input"]: {
+  ["auth_public_keys_constraint"]: auth_public_keys_constraint;
+  /** input type for inserting data into table "auth.public_keys" */
+  ["auth_public_keys_insert_input"]: {
     blockchain?: string | undefined;
-    publickey?: string | undefined;
+    public_key?: string | undefined;
+    user?: ModelTypes["auth_users_obj_rel_insert_input"] | undefined;
     user_id?: ModelTypes["uuid"] | undefined;
   };
-  /** order by max() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_max_order_by"]: {
+  /** order by max() on columns of table "auth.public_keys" */
+  ["auth_public_keys_max_order_by"]: {
     blockchain?: ModelTypes["order_by"] | undefined;
-    publickey?: ModelTypes["order_by"] | undefined;
+    created_at?: ModelTypes["order_by"] | undefined;
+    id?: ModelTypes["order_by"] | undefined;
+    public_key?: ModelTypes["order_by"] | undefined;
     user_id?: ModelTypes["order_by"] | undefined;
   };
-  /** order by min() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_min_order_by"]: {
+  /** order by min() on columns of table "auth.public_keys" */
+  ["auth_public_keys_min_order_by"]: {
     blockchain?: ModelTypes["order_by"] | undefined;
-    publickey?: ModelTypes["order_by"] | undefined;
+    created_at?: ModelTypes["order_by"] | undefined;
+    id?: ModelTypes["order_by"] | undefined;
+    public_key?: ModelTypes["order_by"] | undefined;
     user_id?: ModelTypes["order_by"] | undefined;
   };
-  /** response of any mutation on the table "auth.publickeys_history" */
-  ["auth_publickeys_history_mutation_response"]: {
+  /** response of any mutation on the table "auth.public_keys" */
+  ["auth_public_keys_mutation_response"]: {
     /** number of rows affected by the mutation */
     affected_rows: number;
     /** data from the rows affected by the mutation */
-    returning: Array<ModelTypes["auth_publickeys_history"]>;
+    returning: Array<ModelTypes["auth_public_keys"]>;
   };
-  /** on_conflict condition type for table "auth.publickeys_history" */
-  ["auth_publickeys_history_on_conflict"]: {
-    constraint: ModelTypes["auth_publickeys_history_constraint"];
-    update_columns: Array<ModelTypes["auth_publickeys_history_update_column"]>;
-    where?: ModelTypes["auth_publickeys_history_bool_exp"] | undefined;
+  /** on_conflict condition type for table "auth.public_keys" */
+  ["auth_public_keys_on_conflict"]: {
+    constraint: ModelTypes["auth_public_keys_constraint"];
+    update_columns: Array<ModelTypes["auth_public_keys_update_column"]>;
+    where?: ModelTypes["auth_public_keys_bool_exp"] | undefined;
   };
-  /** Ordering options when selecting data from "auth.publickeys_history". */
-  ["auth_publickeys_history_order_by"]: {
+  /** Ordering options when selecting data from "auth.public_keys". */
+  ["auth_public_keys_order_by"]: {
     blockchain?: ModelTypes["order_by"] | undefined;
-    publickey?: ModelTypes["order_by"] | undefined;
+    created_at?: ModelTypes["order_by"] | undefined;
+    id?: ModelTypes["order_by"] | undefined;
+    public_key?: ModelTypes["order_by"] | undefined;
+    user?: ModelTypes["auth_users_order_by"] | undefined;
     user_id?: ModelTypes["order_by"] | undefined;
   };
-  ["auth_publickeys_history_select_column"]: auth_publickeys_history_select_column;
-  /** Streaming cursor of the table "auth_publickeys_history" */
-  ["auth_publickeys_history_stream_cursor_input"]: {
+  ["auth_public_keys_select_column"]: auth_public_keys_select_column;
+  /** order by stddev() on columns of table "auth.public_keys" */
+  ["auth_public_keys_stddev_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by stddev_pop() on columns of table "auth.public_keys" */
+  ["auth_public_keys_stddev_pop_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by stddev_samp() on columns of table "auth.public_keys" */
+  ["auth_public_keys_stddev_samp_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  /** Streaming cursor of the table "auth_public_keys" */
+  ["auth_public_keys_stream_cursor_input"]: {
     /** Stream column input with initial value */
-    initial_value: ModelTypes["auth_publickeys_history_stream_cursor_value_input"];
+    initial_value: ModelTypes["auth_public_keys_stream_cursor_value_input"];
     /** cursor ordering */
     ordering?: ModelTypes["cursor_ordering"] | undefined;
   };
   /** Initial value of the column from where the streaming should start */
-  ["auth_publickeys_history_stream_cursor_value_input"]: {
+  ["auth_public_keys_stream_cursor_value_input"]: {
     blockchain?: string | undefined;
-    publickey?: string | undefined;
+    created_at?: ModelTypes["timestamptz"] | undefined;
+    id?: number | undefined;
+    public_key?: string | undefined;
     user_id?: ModelTypes["uuid"] | undefined;
   };
-  ["auth_publickeys_history_update_column"]: auth_publickeys_history_update_column;
-  /** Ordering options when selecting data from "auth.publickeys". */
-  ["auth_publickeys_order_by"]: {
-    blockchain?: ModelTypes["order_by"] | undefined;
-    publickey?: ModelTypes["order_by"] | undefined;
+  /** order by sum() on columns of table "auth.public_keys" */
+  ["auth_public_keys_sum_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
   };
-  ["auth_publickeys_select_column"]: auth_publickeys_select_column;
-  /** Streaming cursor of the table "auth_publickeys" */
-  ["auth_publickeys_stream_cursor_input"]: {
-    /** Stream column input with initial value */
-    initial_value: ModelTypes["auth_publickeys_stream_cursor_value_input"];
-    /** cursor ordering */
-    ordering?: ModelTypes["cursor_ordering"] | undefined;
+  ["auth_public_keys_update_column"]: auth_public_keys_update_column;
+  /** order by var_pop() on columns of table "auth.public_keys" */
+  ["auth_public_keys_var_pop_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
   };
-  /** Initial value of the column from where the streaming should start */
-  ["auth_publickeys_stream_cursor_value_input"]: {
-    blockchain?: string | undefined;
-    publickey?: string | undefined;
+  /** order by var_samp() on columns of table "auth.public_keys" */
+  ["auth_public_keys_var_samp_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by variance() on columns of table "auth.public_keys" */
+  ["auth_public_keys_variance_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
   };
   /** columns and relationships of "auth.stripe_onramp" */
   ["auth_stripe_onramp"]: {
@@ -7648,7 +6748,7 @@ export type ModelTypes = {
   ["auth_users"]: {
     id: ModelTypes["uuid"];
     /** An array relationship */
-    publickeys: Array<ModelTypes["auth_publickeys_history"]>;
+    public_keys: Array<ModelTypes["auth_public_keys"]>;
     username: ModelTypes["citext"];
   };
   /** aggregated selection of "auth.users" */
@@ -7668,15 +6768,15 @@ export type ModelTypes = {
     _not?: ModelTypes["auth_users_bool_exp"] | undefined;
     _or?: Array<ModelTypes["auth_users_bool_exp"]> | undefined;
     id?: ModelTypes["uuid_comparison_exp"] | undefined;
-    publickeys?: ModelTypes["auth_publickeys_history_bool_exp"] | undefined;
+    public_keys?: ModelTypes["auth_public_keys_bool_exp"] | undefined;
     username?: ModelTypes["citext_comparison_exp"] | undefined;
   };
   ["auth_users_constraint"]: auth_users_constraint;
   /** input type for inserting data into table "auth.users" */
   ["auth_users_insert_input"]: {
     invitation_id?: ModelTypes["uuid"] | undefined;
-    publickeys?:
-      | ModelTypes["auth_publickeys_history_arr_rel_insert_input"]
+    public_keys?:
+      | ModelTypes["auth_public_keys_arr_rel_insert_input"]
       | undefined;
     username?: ModelTypes["citext"] | undefined;
     waitlist_id?: string | undefined;
@@ -7698,6 +6798,12 @@ export type ModelTypes = {
     /** data from the rows affected by the mutation */
     returning: Array<ModelTypes["auth_users"]>;
   };
+  /** input type for inserting object relation for remote table "auth.users" */
+  ["auth_users_obj_rel_insert_input"]: {
+    data: ModelTypes["auth_users_insert_input"];
+    /** upsert condition */
+    on_conflict?: ModelTypes["auth_users_on_conflict"] | undefined;
+  };
   /** on_conflict condition type for table "auth.users" */
   ["auth_users_on_conflict"]: {
     constraint: ModelTypes["auth_users_constraint"];
@@ -7707,8 +6813,8 @@ export type ModelTypes = {
   /** Ordering options when selecting data from "auth.users". */
   ["auth_users_order_by"]: {
     id?: ModelTypes["order_by"] | undefined;
-    publickeys_aggregate?:
-      | ModelTypes["auth_publickeys_history_aggregate_order_by"]
+    public_keys_aggregate?:
+      | ModelTypes["auth_public_keys_aggregate_order_by"]
       | undefined;
     username?: ModelTypes["order_by"] | undefined;
   };
@@ -7936,12 +7042,6 @@ export type ModelTypes = {
     delete_auth_friend_requests_by_pk?:
       | ModelTypes["auth_friend_requests"]
       | undefined;
-    /** delete data from the table: "auth.friendships" */
-    delete_auth_friendships?:
-      | ModelTypes["auth_friendships_mutation_response"]
-      | undefined;
-    /** delete single row from the table: "auth.friendships" */
-    delete_auth_friendships_by_pk?: ModelTypes["auth_friendships"] | undefined;
     /** delete data from the table: "auth.notification_subscriptions" */
     delete_auth_notification_subscriptions?:
       | ModelTypes["auth_notification_subscriptions_mutation_response"]
@@ -7966,12 +7066,6 @@ export type ModelTypes = {
     insert_auth_friend_requests_one?:
       | ModelTypes["auth_friend_requests"]
       | undefined;
-    /** insert data into the table: "auth.friendships" */
-    insert_auth_friendships?:
-      | ModelTypes["auth_friendships_mutation_response"]
-      | undefined;
-    /** insert a single row into the table: "auth.friendships" */
-    insert_auth_friendships_one?: ModelTypes["auth_friendships"] | undefined;
     /** insert data into the table: "auth.notification_subscriptions" */
     insert_auth_notification_subscriptions?:
       | ModelTypes["auth_notification_subscriptions_mutation_response"]
@@ -7988,14 +7082,12 @@ export type ModelTypes = {
     insert_auth_notifications_one?:
       | ModelTypes["auth_notifications"]
       | undefined;
-    /** insert data into the table: "auth.publickeys_history" */
-    insert_auth_publickeys_history?:
-      | ModelTypes["auth_publickeys_history_mutation_response"]
+    /** insert data into the table: "auth.public_keys" */
+    insert_auth_public_keys?:
+      | ModelTypes["auth_public_keys_mutation_response"]
       | undefined;
-    /** insert a single row into the table: "auth.publickeys_history" */
-    insert_auth_publickeys_history_one?:
-      | ModelTypes["auth_publickeys_history"]
-      | undefined;
+    /** insert a single row into the table: "auth.public_keys" */
+    insert_auth_public_keys_one?: ModelTypes["auth_public_keys"] | undefined;
     /** insert data into the table: "auth.stripe_onramp" */
     insert_auth_stripe_onramp?:
       | ModelTypes["auth_stripe_onramp_mutation_response"]
@@ -8015,16 +7107,6 @@ export type ModelTypes = {
     /** insert a single row into the table: "auth.xnft_preferences" */
     insert_auth_xnft_preferences_one?:
       | ModelTypes["auth_xnft_preferences"]
-      | undefined;
-    /** update data of the table: "auth.friendships" */
-    update_auth_friendships?:
-      | ModelTypes["auth_friendships_mutation_response"]
-      | undefined;
-    /** update single row of the table: "auth.friendships" */
-    update_auth_friendships_by_pk?: ModelTypes["auth_friendships"] | undefined;
-    /** update multiples rows of table: "auth.friendships" */
-    update_auth_friendships_many?:
-      | Array<ModelTypes["auth_friendships_mutation_response"] | undefined>
       | undefined;
     /** update data of the table: "auth.notification_subscriptions" */
     update_auth_notification_subscriptions?:
@@ -8092,10 +7174,6 @@ export type ModelTypes = {
     auth_friend_requests: Array<ModelTypes["auth_friend_requests"]>;
     /** fetch data from the table: "auth.friend_requests" using primary key columns */
     auth_friend_requests_by_pk?: ModelTypes["auth_friend_requests"] | undefined;
-    /** fetch data from the table: "auth.friendships" */
-    auth_friendships: Array<ModelTypes["auth_friendships"]>;
-    /** fetch data from the table: "auth.friendships" using primary key columns */
-    auth_friendships_by_pk?: ModelTypes["auth_friendships"] | undefined;
     /** fetch data from the table: "auth.notification_subscriptions" */
     auth_notification_subscriptions: Array<
       ModelTypes["auth_notification_subscriptions"]
@@ -8108,10 +7186,10 @@ export type ModelTypes = {
     auth_notifications: Array<ModelTypes["auth_notifications"]>;
     /** fetch data from the table: "auth.notifications" using primary key columns */
     auth_notifications_by_pk?: ModelTypes["auth_notifications"] | undefined;
-    /** fetch data from the table: "auth.publickeys" */
-    auth_publickeys: Array<ModelTypes["auth_publickeys"]>;
-    /** fetch data from the table: "auth.publickeys_history" */
-    auth_publickeys_history: Array<ModelTypes["auth_publickeys_history"]>;
+    /** fetch data from the table: "auth.public_keys" */
+    auth_public_keys: Array<ModelTypes["auth_public_keys"]>;
+    /** fetch data from the table: "auth.public_keys" using primary key columns */
+    auth_public_keys_by_pk?: ModelTypes["auth_public_keys"] | undefined;
     /** fetch data from the table: "auth.stripe_onramp" */
     auth_stripe_onramp: Array<ModelTypes["auth_stripe_onramp"]>;
     /** fetch data from the table: "auth.stripe_onramp" using primary key columns */
@@ -8140,12 +7218,6 @@ export type ModelTypes = {
     auth_friend_requests_by_pk?: ModelTypes["auth_friend_requests"] | undefined;
     /** fetch data from the table in a streaming manner : "auth.friend_requests" */
     auth_friend_requests_stream: Array<ModelTypes["auth_friend_requests"]>;
-    /** fetch data from the table: "auth.friendships" */
-    auth_friendships: Array<ModelTypes["auth_friendships"]>;
-    /** fetch data from the table: "auth.friendships" using primary key columns */
-    auth_friendships_by_pk?: ModelTypes["auth_friendships"] | undefined;
-    /** fetch data from the table in a streaming manner : "auth.friendships" */
-    auth_friendships_stream: Array<ModelTypes["auth_friendships"]>;
     /** fetch data from the table: "auth.notification_subscriptions" */
     auth_notification_subscriptions: Array<
       ModelTypes["auth_notification_subscriptions"]
@@ -8164,16 +7236,12 @@ export type ModelTypes = {
     auth_notifications_by_pk?: ModelTypes["auth_notifications"] | undefined;
     /** fetch data from the table in a streaming manner : "auth.notifications" */
     auth_notifications_stream: Array<ModelTypes["auth_notifications"]>;
-    /** fetch data from the table: "auth.publickeys" */
-    auth_publickeys: Array<ModelTypes["auth_publickeys"]>;
-    /** fetch data from the table: "auth.publickeys_history" */
-    auth_publickeys_history: Array<ModelTypes["auth_publickeys_history"]>;
-    /** fetch data from the table in a streaming manner : "auth.publickeys_history" */
-    auth_publickeys_history_stream: Array<
-      ModelTypes["auth_publickeys_history"]
-    >;
-    /** fetch data from the table in a streaming manner : "auth.publickeys" */
-    auth_publickeys_stream: Array<ModelTypes["auth_publickeys"]>;
+    /** fetch data from the table: "auth.public_keys" */
+    auth_public_keys: Array<ModelTypes["auth_public_keys"]>;
+    /** fetch data from the table: "auth.public_keys" using primary key columns */
+    auth_public_keys_by_pk?: ModelTypes["auth_public_keys"] | undefined;
+    /** fetch data from the table in a streaming manner : "auth.public_keys" */
+    auth_public_keys_stream: Array<ModelTypes["auth_public_keys"]>;
     /** fetch data from the table: "auth.stripe_onramp" */
     auth_stripe_onramp: Array<ModelTypes["auth_stripe_onramp"]>;
     /** fetch data from the table: "auth.stripe_onramp" using primary key columns */
@@ -8349,139 +7417,6 @@ export type GraphQLTypes = {
   };
   /** placeholder for update columns of table "auth.friend_requests" (current role has no relevant permissions) */
   ["auth_friend_requests_update_column"]: auth_friend_requests_update_column;
-  /** columns and relationships of "auth.friendships" */
-  ["auth_friendships"]: {
-    __typename: "auth_friendships";
-    are_friends: boolean;
-    id: number;
-    last_message?: string | undefined;
-    last_message_sender?: string | undefined;
-    last_message_timestamp?: GraphQLTypes["timestamptz"] | undefined;
-    user1: string;
-    user1_blocked_user2: boolean;
-    user1_interacted: boolean;
-    user2: string;
-    user2_blocked_user1: boolean;
-    user2_interacted: boolean;
-  };
-  /** Boolean expression to filter rows from the table "auth.friendships". All fields are combined with a logical 'AND'. */
-  ["auth_friendships_bool_exp"]: {
-    _and?: Array<GraphQLTypes["auth_friendships_bool_exp"]> | undefined;
-    _not?: GraphQLTypes["auth_friendships_bool_exp"] | undefined;
-    _or?: Array<GraphQLTypes["auth_friendships_bool_exp"]> | undefined;
-    are_friends?: GraphQLTypes["Boolean_comparison_exp"] | undefined;
-    id?: GraphQLTypes["Int_comparison_exp"] | undefined;
-    last_message?: GraphQLTypes["String_comparison_exp"] | undefined;
-    last_message_sender?: GraphQLTypes["String_comparison_exp"] | undefined;
-    last_message_timestamp?:
-      | GraphQLTypes["timestamptz_comparison_exp"]
-      | undefined;
-    user1?: GraphQLTypes["String_comparison_exp"] | undefined;
-    user1_blocked_user2?: GraphQLTypes["Boolean_comparison_exp"] | undefined;
-    user1_interacted?: GraphQLTypes["Boolean_comparison_exp"] | undefined;
-    user2?: GraphQLTypes["String_comparison_exp"] | undefined;
-    user2_blocked_user1?: GraphQLTypes["Boolean_comparison_exp"] | undefined;
-    user2_interacted?: GraphQLTypes["Boolean_comparison_exp"] | undefined;
-  };
-  /** unique or primary key constraints on table "auth.friendships" */
-  ["auth_friendships_constraint"]: auth_friendships_constraint;
-  /** input type for incrementing numeric columns in table "auth.friendships" */
-  ["auth_friendships_inc_input"]: {
-    id?: number | undefined;
-  };
-  /** input type for inserting data into table "auth.friendships" */
-  ["auth_friendships_insert_input"]: {
-    are_friends?: boolean | undefined;
-    id?: number | undefined;
-    last_message?: string | undefined;
-    last_message_sender?: string | undefined;
-    last_message_timestamp?: GraphQLTypes["timestamptz"] | undefined;
-    user1?: string | undefined;
-    user1_blocked_user2?: boolean | undefined;
-    user1_interacted?: boolean | undefined;
-    user2?: string | undefined;
-    user2_blocked_user1?: boolean | undefined;
-    user2_interacted?: boolean | undefined;
-  };
-  /** response of any mutation on the table "auth.friendships" */
-  ["auth_friendships_mutation_response"]: {
-    __typename: "auth_friendships_mutation_response";
-    /** number of rows affected by the mutation */
-    affected_rows: number;
-    /** data from the rows affected by the mutation */
-    returning: Array<GraphQLTypes["auth_friendships"]>;
-  };
-  /** on_conflict condition type for table "auth.friendships" */
-  ["auth_friendships_on_conflict"]: {
-    constraint: GraphQLTypes["auth_friendships_constraint"];
-    update_columns: Array<GraphQLTypes["auth_friendships_update_column"]>;
-    where?: GraphQLTypes["auth_friendships_bool_exp"] | undefined;
-  };
-  /** Ordering options when selecting data from "auth.friendships". */
-  ["auth_friendships_order_by"]: {
-    are_friends?: GraphQLTypes["order_by"] | undefined;
-    id?: GraphQLTypes["order_by"] | undefined;
-    last_message?: GraphQLTypes["order_by"] | undefined;
-    last_message_sender?: GraphQLTypes["order_by"] | undefined;
-    last_message_timestamp?: GraphQLTypes["order_by"] | undefined;
-    user1?: GraphQLTypes["order_by"] | undefined;
-    user1_blocked_user2?: GraphQLTypes["order_by"] | undefined;
-    user1_interacted?: GraphQLTypes["order_by"] | undefined;
-    user2?: GraphQLTypes["order_by"] | undefined;
-    user2_blocked_user1?: GraphQLTypes["order_by"] | undefined;
-    user2_interacted?: GraphQLTypes["order_by"] | undefined;
-  };
-  /** primary key columns input for table: auth_friendships */
-  ["auth_friendships_pk_columns_input"]: {
-    user1: string;
-    user2: string;
-  };
-  /** select columns of table "auth.friendships" */
-  ["auth_friendships_select_column"]: auth_friendships_select_column;
-  /** input type for updating data in table "auth.friendships" */
-  ["auth_friendships_set_input"]: {
-    are_friends?: boolean | undefined;
-    id?: number | undefined;
-    last_message?: string | undefined;
-    last_message_sender?: string | undefined;
-    last_message_timestamp?: GraphQLTypes["timestamptz"] | undefined;
-    user1?: string | undefined;
-    user1_blocked_user2?: boolean | undefined;
-    user1_interacted?: boolean | undefined;
-    user2?: string | undefined;
-    user2_blocked_user1?: boolean | undefined;
-    user2_interacted?: boolean | undefined;
-  };
-  /** Streaming cursor of the table "auth_friendships" */
-  ["auth_friendships_stream_cursor_input"]: {
-    /** Stream column input with initial value */
-    initial_value: GraphQLTypes["auth_friendships_stream_cursor_value_input"];
-    /** cursor ordering */
-    ordering?: GraphQLTypes["cursor_ordering"] | undefined;
-  };
-  /** Initial value of the column from where the streaming should start */
-  ["auth_friendships_stream_cursor_value_input"]: {
-    are_friends?: boolean | undefined;
-    id?: number | undefined;
-    last_message?: string | undefined;
-    last_message_sender?: string | undefined;
-    last_message_timestamp?: GraphQLTypes["timestamptz"] | undefined;
-    user1?: string | undefined;
-    user1_blocked_user2?: boolean | undefined;
-    user1_interacted?: boolean | undefined;
-    user2?: string | undefined;
-    user2_blocked_user1?: boolean | undefined;
-    user2_interacted?: boolean | undefined;
-  };
-  /** update columns of table "auth.friendships" */
-  ["auth_friendships_update_column"]: auth_friendships_update_column;
-  ["auth_friendships_updates"]: {
-    /** increments the numeric columns with given value of the filtered values */
-    _inc?: GraphQLTypes["auth_friendships_inc_input"] | undefined;
-    /** sets the columns of the filtered rows to the given values */
-    _set?: GraphQLTypes["auth_friendships_set_input"] | undefined;
-    where: GraphQLTypes["auth_friendships_bool_exp"];
-  };
   /** columns and relationships of "auth.notification_subscriptions" */
   ["auth_notification_subscriptions"]: {
     __typename: "auth_notification_subscriptions";
@@ -8716,127 +7651,151 @@ export type GraphQLTypes = {
     _set?: GraphQLTypes["auth_notifications_set_input"] | undefined;
     where: GraphQLTypes["auth_notifications_bool_exp"];
   };
-  /** columns and relationships of "auth.publickeys" */
-  ["auth_publickeys"]: {
-    __typename: "auth_publickeys";
-    blockchain?: string | undefined;
-    publickey?: string | undefined;
-  };
-  /** Boolean expression to filter rows from the table "auth.publickeys". All fields are combined with a logical 'AND'. */
-  ["auth_publickeys_bool_exp"]: {
-    _and?: Array<GraphQLTypes["auth_publickeys_bool_exp"]> | undefined;
-    _not?: GraphQLTypes["auth_publickeys_bool_exp"] | undefined;
-    _or?: Array<GraphQLTypes["auth_publickeys_bool_exp"]> | undefined;
-    blockchain?: GraphQLTypes["String_comparison_exp"] | undefined;
-    publickey?: GraphQLTypes["String_comparison_exp"] | undefined;
-  };
-  /** columns and relationships of "auth.publickeys_history" */
-  ["auth_publickeys_history"]: {
-    __typename: "auth_publickeys_history";
+  /** columns and relationships of "auth.public_keys" */
+  ["auth_public_keys"]: {
+    __typename: "auth_public_keys";
     blockchain: string;
-    publickey: string;
+    created_at: GraphQLTypes["timestamptz"];
+    id: number;
+    public_key: string;
+    /** An object relationship */
+    user?: GraphQLTypes["auth_users"] | undefined;
     user_id?: GraphQLTypes["uuid"] | undefined;
   };
-  /** order by aggregate values of table "auth.publickeys_history" */
-  ["auth_publickeys_history_aggregate_order_by"]: {
+  /** order by aggregate values of table "auth.public_keys" */
+  ["auth_public_keys_aggregate_order_by"]: {
+    avg?: GraphQLTypes["auth_public_keys_avg_order_by"] | undefined;
     count?: GraphQLTypes["order_by"] | undefined;
-    max?: GraphQLTypes["auth_publickeys_history_max_order_by"] | undefined;
-    min?: GraphQLTypes["auth_publickeys_history_min_order_by"] | undefined;
-  };
-  /** input type for inserting array relation for remote table "auth.publickeys_history" */
-  ["auth_publickeys_history_arr_rel_insert_input"]: {
-    data: Array<GraphQLTypes["auth_publickeys_history_insert_input"]>;
-    /** upsert condition */
-    on_conflict?:
-      | GraphQLTypes["auth_publickeys_history_on_conflict"]
+    max?: GraphQLTypes["auth_public_keys_max_order_by"] | undefined;
+    min?: GraphQLTypes["auth_public_keys_min_order_by"] | undefined;
+    stddev?: GraphQLTypes["auth_public_keys_stddev_order_by"] | undefined;
+    stddev_pop?:
+      | GraphQLTypes["auth_public_keys_stddev_pop_order_by"]
       | undefined;
+    stddev_samp?:
+      | GraphQLTypes["auth_public_keys_stddev_samp_order_by"]
+      | undefined;
+    sum?: GraphQLTypes["auth_public_keys_sum_order_by"] | undefined;
+    var_pop?: GraphQLTypes["auth_public_keys_var_pop_order_by"] | undefined;
+    var_samp?: GraphQLTypes["auth_public_keys_var_samp_order_by"] | undefined;
+    variance?: GraphQLTypes["auth_public_keys_variance_order_by"] | undefined;
   };
-  /** Boolean expression to filter rows from the table "auth.publickeys_history". All fields are combined with a logical 'AND'. */
-  ["auth_publickeys_history_bool_exp"]: {
-    _and?: Array<GraphQLTypes["auth_publickeys_history_bool_exp"]> | undefined;
-    _not?: GraphQLTypes["auth_publickeys_history_bool_exp"] | undefined;
-    _or?: Array<GraphQLTypes["auth_publickeys_history_bool_exp"]> | undefined;
+  /** input type for inserting array relation for remote table "auth.public_keys" */
+  ["auth_public_keys_arr_rel_insert_input"]: {
+    data: Array<GraphQLTypes["auth_public_keys_insert_input"]>;
+    /** upsert condition */
+    on_conflict?: GraphQLTypes["auth_public_keys_on_conflict"] | undefined;
+  };
+  /** order by avg() on columns of table "auth.public_keys" */
+  ["auth_public_keys_avg_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** Boolean expression to filter rows from the table "auth.public_keys". All fields are combined with a logical 'AND'. */
+  ["auth_public_keys_bool_exp"]: {
+    _and?: Array<GraphQLTypes["auth_public_keys_bool_exp"]> | undefined;
+    _not?: GraphQLTypes["auth_public_keys_bool_exp"] | undefined;
+    _or?: Array<GraphQLTypes["auth_public_keys_bool_exp"]> | undefined;
     blockchain?: GraphQLTypes["String_comparison_exp"] | undefined;
-    publickey?: GraphQLTypes["String_comparison_exp"] | undefined;
+    created_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
+    id?: GraphQLTypes["Int_comparison_exp"] | undefined;
+    public_key?: GraphQLTypes["String_comparison_exp"] | undefined;
+    user?: GraphQLTypes["auth_users_bool_exp"] | undefined;
     user_id?: GraphQLTypes["uuid_comparison_exp"] | undefined;
   };
-  /** unique or primary key constraints on table "auth.publickeys_history" */
-  ["auth_publickeys_history_constraint"]: auth_publickeys_history_constraint;
-  /** input type for inserting data into table "auth.publickeys_history" */
-  ["auth_publickeys_history_insert_input"]: {
+  /** unique or primary key constraints on table "auth.public_keys" */
+  ["auth_public_keys_constraint"]: auth_public_keys_constraint;
+  /** input type for inserting data into table "auth.public_keys" */
+  ["auth_public_keys_insert_input"]: {
     blockchain?: string | undefined;
-    publickey?: string | undefined;
+    public_key?: string | undefined;
+    user?: GraphQLTypes["auth_users_obj_rel_insert_input"] | undefined;
     user_id?: GraphQLTypes["uuid"] | undefined;
   };
-  /** order by max() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_max_order_by"]: {
+  /** order by max() on columns of table "auth.public_keys" */
+  ["auth_public_keys_max_order_by"]: {
     blockchain?: GraphQLTypes["order_by"] | undefined;
-    publickey?: GraphQLTypes["order_by"] | undefined;
+    created_at?: GraphQLTypes["order_by"] | undefined;
+    id?: GraphQLTypes["order_by"] | undefined;
+    public_key?: GraphQLTypes["order_by"] | undefined;
     user_id?: GraphQLTypes["order_by"] | undefined;
   };
-  /** order by min() on columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_min_order_by"]: {
+  /** order by min() on columns of table "auth.public_keys" */
+  ["auth_public_keys_min_order_by"]: {
     blockchain?: GraphQLTypes["order_by"] | undefined;
-    publickey?: GraphQLTypes["order_by"] | undefined;
+    created_at?: GraphQLTypes["order_by"] | undefined;
+    id?: GraphQLTypes["order_by"] | undefined;
+    public_key?: GraphQLTypes["order_by"] | undefined;
     user_id?: GraphQLTypes["order_by"] | undefined;
   };
-  /** response of any mutation on the table "auth.publickeys_history" */
-  ["auth_publickeys_history_mutation_response"]: {
-    __typename: "auth_publickeys_history_mutation_response";
+  /** response of any mutation on the table "auth.public_keys" */
+  ["auth_public_keys_mutation_response"]: {
+    __typename: "auth_public_keys_mutation_response";
     /** number of rows affected by the mutation */
     affected_rows: number;
     /** data from the rows affected by the mutation */
-    returning: Array<GraphQLTypes["auth_publickeys_history"]>;
+    returning: Array<GraphQLTypes["auth_public_keys"]>;
   };
-  /** on_conflict condition type for table "auth.publickeys_history" */
-  ["auth_publickeys_history_on_conflict"]: {
-    constraint: GraphQLTypes["auth_publickeys_history_constraint"];
-    update_columns: Array<
-      GraphQLTypes["auth_publickeys_history_update_column"]
-    >;
-    where?: GraphQLTypes["auth_publickeys_history_bool_exp"] | undefined;
+  /** on_conflict condition type for table "auth.public_keys" */
+  ["auth_public_keys_on_conflict"]: {
+    constraint: GraphQLTypes["auth_public_keys_constraint"];
+    update_columns: Array<GraphQLTypes["auth_public_keys_update_column"]>;
+    where?: GraphQLTypes["auth_public_keys_bool_exp"] | undefined;
   };
-  /** Ordering options when selecting data from "auth.publickeys_history". */
-  ["auth_publickeys_history_order_by"]: {
+  /** Ordering options when selecting data from "auth.public_keys". */
+  ["auth_public_keys_order_by"]: {
     blockchain?: GraphQLTypes["order_by"] | undefined;
-    publickey?: GraphQLTypes["order_by"] | undefined;
+    created_at?: GraphQLTypes["order_by"] | undefined;
+    id?: GraphQLTypes["order_by"] | undefined;
+    public_key?: GraphQLTypes["order_by"] | undefined;
+    user?: GraphQLTypes["auth_users_order_by"] | undefined;
     user_id?: GraphQLTypes["order_by"] | undefined;
   };
-  /** select columns of table "auth.publickeys_history" */
-  ["auth_publickeys_history_select_column"]: auth_publickeys_history_select_column;
-  /** Streaming cursor of the table "auth_publickeys_history" */
-  ["auth_publickeys_history_stream_cursor_input"]: {
+  /** select columns of table "auth.public_keys" */
+  ["auth_public_keys_select_column"]: auth_public_keys_select_column;
+  /** order by stddev() on columns of table "auth.public_keys" */
+  ["auth_public_keys_stddev_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by stddev_pop() on columns of table "auth.public_keys" */
+  ["auth_public_keys_stddev_pop_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by stddev_samp() on columns of table "auth.public_keys" */
+  ["auth_public_keys_stddev_samp_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** Streaming cursor of the table "auth_public_keys" */
+  ["auth_public_keys_stream_cursor_input"]: {
     /** Stream column input with initial value */
-    initial_value: GraphQLTypes["auth_publickeys_history_stream_cursor_value_input"];
+    initial_value: GraphQLTypes["auth_public_keys_stream_cursor_value_input"];
     /** cursor ordering */
     ordering?: GraphQLTypes["cursor_ordering"] | undefined;
   };
   /** Initial value of the column from where the streaming should start */
-  ["auth_publickeys_history_stream_cursor_value_input"]: {
+  ["auth_public_keys_stream_cursor_value_input"]: {
     blockchain?: string | undefined;
-    publickey?: string | undefined;
+    created_at?: GraphQLTypes["timestamptz"] | undefined;
+    id?: number | undefined;
+    public_key?: string | undefined;
     user_id?: GraphQLTypes["uuid"] | undefined;
   };
-  /** placeholder for update columns of table "auth.publickeys_history" (current role has no relevant permissions) */
-  ["auth_publickeys_history_update_column"]: auth_publickeys_history_update_column;
-  /** Ordering options when selecting data from "auth.publickeys". */
-  ["auth_publickeys_order_by"]: {
-    blockchain?: GraphQLTypes["order_by"] | undefined;
-    publickey?: GraphQLTypes["order_by"] | undefined;
+  /** order by sum() on columns of table "auth.public_keys" */
+  ["auth_public_keys_sum_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
   };
-  /** select columns of table "auth.publickeys" */
-  ["auth_publickeys_select_column"]: auth_publickeys_select_column;
-  /** Streaming cursor of the table "auth_publickeys" */
-  ["auth_publickeys_stream_cursor_input"]: {
-    /** Stream column input with initial value */
-    initial_value: GraphQLTypes["auth_publickeys_stream_cursor_value_input"];
-    /** cursor ordering */
-    ordering?: GraphQLTypes["cursor_ordering"] | undefined;
+  /** placeholder for update columns of table "auth.public_keys" (current role has no relevant permissions) */
+  ["auth_public_keys_update_column"]: auth_public_keys_update_column;
+  /** order by var_pop() on columns of table "auth.public_keys" */
+  ["auth_public_keys_var_pop_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
   };
-  /** Initial value of the column from where the streaming should start */
-  ["auth_publickeys_stream_cursor_value_input"]: {
-    blockchain?: string | undefined;
-    publickey?: string | undefined;
+  /** order by var_samp() on columns of table "auth.public_keys" */
+  ["auth_public_keys_var_samp_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by variance() on columns of table "auth.public_keys" */
+  ["auth_public_keys_variance_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
   };
   /** columns and relationships of "auth.stripe_onramp" */
   ["auth_stripe_onramp"]: {
@@ -8937,7 +7896,7 @@ export type GraphQLTypes = {
     __typename: "auth_users";
     id: GraphQLTypes["uuid"];
     /** An array relationship */
-    publickeys: Array<GraphQLTypes["auth_publickeys_history"]>;
+    public_keys: Array<GraphQLTypes["auth_public_keys"]>;
     username: GraphQLTypes["citext"];
   };
   /** aggregated selection of "auth.users" */
@@ -8959,7 +7918,7 @@ export type GraphQLTypes = {
     _not?: GraphQLTypes["auth_users_bool_exp"] | undefined;
     _or?: Array<GraphQLTypes["auth_users_bool_exp"]> | undefined;
     id?: GraphQLTypes["uuid_comparison_exp"] | undefined;
-    publickeys?: GraphQLTypes["auth_publickeys_history_bool_exp"] | undefined;
+    public_keys?: GraphQLTypes["auth_public_keys_bool_exp"] | undefined;
     username?: GraphQLTypes["citext_comparison_exp"] | undefined;
   };
   /** unique or primary key constraints on table "auth.users" */
@@ -8967,8 +7926,8 @@ export type GraphQLTypes = {
   /** input type for inserting data into table "auth.users" */
   ["auth_users_insert_input"]: {
     invitation_id?: GraphQLTypes["uuid"] | undefined;
-    publickeys?:
-      | GraphQLTypes["auth_publickeys_history_arr_rel_insert_input"]
+    public_keys?:
+      | GraphQLTypes["auth_public_keys_arr_rel_insert_input"]
       | undefined;
     username?: GraphQLTypes["citext"] | undefined;
     waitlist_id?: string | undefined;
@@ -8993,6 +7952,12 @@ export type GraphQLTypes = {
     /** data from the rows affected by the mutation */
     returning: Array<GraphQLTypes["auth_users"]>;
   };
+  /** input type for inserting object relation for remote table "auth.users" */
+  ["auth_users_obj_rel_insert_input"]: {
+    data: GraphQLTypes["auth_users_insert_input"];
+    /** upsert condition */
+    on_conflict?: GraphQLTypes["auth_users_on_conflict"] | undefined;
+  };
   /** on_conflict condition type for table "auth.users" */
   ["auth_users_on_conflict"]: {
     constraint: GraphQLTypes["auth_users_constraint"];
@@ -9002,8 +7967,8 @@ export type GraphQLTypes = {
   /** Ordering options when selecting data from "auth.users". */
   ["auth_users_order_by"]: {
     id?: GraphQLTypes["order_by"] | undefined;
-    publickeys_aggregate?:
-      | GraphQLTypes["auth_publickeys_history_aggregate_order_by"]
+    public_keys_aggregate?:
+      | GraphQLTypes["auth_public_keys_aggregate_order_by"]
       | undefined;
     username?: GraphQLTypes["order_by"] | undefined;
   };
@@ -9246,14 +8211,6 @@ export type GraphQLTypes = {
     delete_auth_friend_requests_by_pk?:
       | GraphQLTypes["auth_friend_requests"]
       | undefined;
-    /** delete data from the table: "auth.friendships" */
-    delete_auth_friendships?:
-      | GraphQLTypes["auth_friendships_mutation_response"]
-      | undefined;
-    /** delete single row from the table: "auth.friendships" */
-    delete_auth_friendships_by_pk?:
-      | GraphQLTypes["auth_friendships"]
-      | undefined;
     /** delete data from the table: "auth.notification_subscriptions" */
     delete_auth_notification_subscriptions?:
       | GraphQLTypes["auth_notification_subscriptions_mutation_response"]
@@ -9278,12 +8235,6 @@ export type GraphQLTypes = {
     insert_auth_friend_requests_one?:
       | GraphQLTypes["auth_friend_requests"]
       | undefined;
-    /** insert data into the table: "auth.friendships" */
-    insert_auth_friendships?:
-      | GraphQLTypes["auth_friendships_mutation_response"]
-      | undefined;
-    /** insert a single row into the table: "auth.friendships" */
-    insert_auth_friendships_one?: GraphQLTypes["auth_friendships"] | undefined;
     /** insert data into the table: "auth.notification_subscriptions" */
     insert_auth_notification_subscriptions?:
       | GraphQLTypes["auth_notification_subscriptions_mutation_response"]
@@ -9300,14 +8251,12 @@ export type GraphQLTypes = {
     insert_auth_notifications_one?:
       | GraphQLTypes["auth_notifications"]
       | undefined;
-    /** insert data into the table: "auth.publickeys_history" */
-    insert_auth_publickeys_history?:
-      | GraphQLTypes["auth_publickeys_history_mutation_response"]
+    /** insert data into the table: "auth.public_keys" */
+    insert_auth_public_keys?:
+      | GraphQLTypes["auth_public_keys_mutation_response"]
       | undefined;
-    /** insert a single row into the table: "auth.publickeys_history" */
-    insert_auth_publickeys_history_one?:
-      | GraphQLTypes["auth_publickeys_history"]
-      | undefined;
+    /** insert a single row into the table: "auth.public_keys" */
+    insert_auth_public_keys_one?: GraphQLTypes["auth_public_keys"] | undefined;
     /** insert data into the table: "auth.stripe_onramp" */
     insert_auth_stripe_onramp?:
       | GraphQLTypes["auth_stripe_onramp_mutation_response"]
@@ -9329,18 +8278,6 @@ export type GraphQLTypes = {
     /** insert a single row into the table: "auth.xnft_preferences" */
     insert_auth_xnft_preferences_one?:
       | GraphQLTypes["auth_xnft_preferences"]
-      | undefined;
-    /** update data of the table: "auth.friendships" */
-    update_auth_friendships?:
-      | GraphQLTypes["auth_friendships_mutation_response"]
-      | undefined;
-    /** update single row of the table: "auth.friendships" */
-    update_auth_friendships_by_pk?:
-      | GraphQLTypes["auth_friendships"]
-      | undefined;
-    /** update multiples rows of table: "auth.friendships" */
-    update_auth_friendships_many?:
-      | Array<GraphQLTypes["auth_friendships_mutation_response"] | undefined>
       | undefined;
     /** update data of the table: "auth.notification_subscriptions" */
     update_auth_notification_subscriptions?:
@@ -9416,10 +8353,6 @@ export type GraphQLTypes = {
     auth_friend_requests_by_pk?:
       | GraphQLTypes["auth_friend_requests"]
       | undefined;
-    /** fetch data from the table: "auth.friendships" */
-    auth_friendships: Array<GraphQLTypes["auth_friendships"]>;
-    /** fetch data from the table: "auth.friendships" using primary key columns */
-    auth_friendships_by_pk?: GraphQLTypes["auth_friendships"] | undefined;
     /** fetch data from the table: "auth.notification_subscriptions" */
     auth_notification_subscriptions: Array<
       GraphQLTypes["auth_notification_subscriptions"]
@@ -9432,10 +8365,10 @@ export type GraphQLTypes = {
     auth_notifications: Array<GraphQLTypes["auth_notifications"]>;
     /** fetch data from the table: "auth.notifications" using primary key columns */
     auth_notifications_by_pk?: GraphQLTypes["auth_notifications"] | undefined;
-    /** fetch data from the table: "auth.publickeys" */
-    auth_publickeys: Array<GraphQLTypes["auth_publickeys"]>;
-    /** fetch data from the table: "auth.publickeys_history" */
-    auth_publickeys_history: Array<GraphQLTypes["auth_publickeys_history"]>;
+    /** fetch data from the table: "auth.public_keys" */
+    auth_public_keys: Array<GraphQLTypes["auth_public_keys"]>;
+    /** fetch data from the table: "auth.public_keys" using primary key columns */
+    auth_public_keys_by_pk?: GraphQLTypes["auth_public_keys"] | undefined;
     /** fetch data from the table: "auth.stripe_onramp" */
     auth_stripe_onramp: Array<GraphQLTypes["auth_stripe_onramp"]>;
     /** fetch data from the table: "auth.stripe_onramp" using primary key columns */
@@ -9467,12 +8400,6 @@ export type GraphQLTypes = {
       | undefined;
     /** fetch data from the table in a streaming manner : "auth.friend_requests" */
     auth_friend_requests_stream: Array<GraphQLTypes["auth_friend_requests"]>;
-    /** fetch data from the table: "auth.friendships" */
-    auth_friendships: Array<GraphQLTypes["auth_friendships"]>;
-    /** fetch data from the table: "auth.friendships" using primary key columns */
-    auth_friendships_by_pk?: GraphQLTypes["auth_friendships"] | undefined;
-    /** fetch data from the table in a streaming manner : "auth.friendships" */
-    auth_friendships_stream: Array<GraphQLTypes["auth_friendships"]>;
     /** fetch data from the table: "auth.notification_subscriptions" */
     auth_notification_subscriptions: Array<
       GraphQLTypes["auth_notification_subscriptions"]
@@ -9491,16 +8418,12 @@ export type GraphQLTypes = {
     auth_notifications_by_pk?: GraphQLTypes["auth_notifications"] | undefined;
     /** fetch data from the table in a streaming manner : "auth.notifications" */
     auth_notifications_stream: Array<GraphQLTypes["auth_notifications"]>;
-    /** fetch data from the table: "auth.publickeys" */
-    auth_publickeys: Array<GraphQLTypes["auth_publickeys"]>;
-    /** fetch data from the table: "auth.publickeys_history" */
-    auth_publickeys_history: Array<GraphQLTypes["auth_publickeys_history"]>;
-    /** fetch data from the table in a streaming manner : "auth.publickeys_history" */
-    auth_publickeys_history_stream: Array<
-      GraphQLTypes["auth_publickeys_history"]
-    >;
-    /** fetch data from the table in a streaming manner : "auth.publickeys" */
-    auth_publickeys_stream: Array<GraphQLTypes["auth_publickeys"]>;
+    /** fetch data from the table: "auth.public_keys" */
+    auth_public_keys: Array<GraphQLTypes["auth_public_keys"]>;
+    /** fetch data from the table: "auth.public_keys" using primary key columns */
+    auth_public_keys_by_pk?: GraphQLTypes["auth_public_keys"] | undefined;
+    /** fetch data from the table in a streaming manner : "auth.public_keys" */
+    auth_public_keys_stream: Array<GraphQLTypes["auth_public_keys"]>;
     /** fetch data from the table: "auth.stripe_onramp" */
     auth_stripe_onramp: Array<GraphQLTypes["auth_stripe_onramp"]>;
     /** fetch data from the table: "auth.stripe_onramp" using primary key columns */
@@ -9571,38 +8494,6 @@ export const enum auth_friend_requests_select_column {
 export const enum auth_friend_requests_update_column {
   _PLACEHOLDER = "_PLACEHOLDER",
 }
-/** unique or primary key constraints on table "auth.friendships" */
-export const enum auth_friendships_constraint {
-  friendships_pkey = "friendships_pkey",
-}
-/** select columns of table "auth.friendships" */
-export const enum auth_friendships_select_column {
-  are_friends = "are_friends",
-  id = "id",
-  last_message = "last_message",
-  last_message_sender = "last_message_sender",
-  last_message_timestamp = "last_message_timestamp",
-  user1 = "user1",
-  user1_blocked_user2 = "user1_blocked_user2",
-  user1_interacted = "user1_interacted",
-  user2 = "user2",
-  user2_blocked_user1 = "user2_blocked_user1",
-  user2_interacted = "user2_interacted",
-}
-/** update columns of table "auth.friendships" */
-export const enum auth_friendships_update_column {
-  are_friends = "are_friends",
-  id = "id",
-  last_message = "last_message",
-  last_message_sender = "last_message_sender",
-  last_message_timestamp = "last_message_timestamp",
-  user1 = "user1",
-  user1_blocked_user2 = "user1_blocked_user2",
-  user1_interacted = "user1_interacted",
-  user2 = "user2",
-  user2_blocked_user1 = "user2_blocked_user1",
-  user2_interacted = "user2_interacted",
-}
 /** unique or primary key constraints on table "auth.notification_subscriptions" */
 export const enum auth_notification_subscriptions_constraint {
   notification_subscriptions_pkey = "notification_subscriptions_pkey",
@@ -9653,24 +8544,21 @@ export const enum auth_notifications_update_column {
   uuid = "uuid",
   xnft_id = "xnft_id",
 }
-/** unique or primary key constraints on table "auth.publickeys_history" */
-export const enum auth_publickeys_history_constraint {
-  publickeys_history_pkey = "publickeys_history_pkey",
+/** unique or primary key constraints on table "auth.public_keys" */
+export const enum auth_public_keys_constraint {
+  public_keys_pkey = "public_keys_pkey",
 }
-/** select columns of table "auth.publickeys_history" */
-export const enum auth_publickeys_history_select_column {
+/** select columns of table "auth.public_keys" */
+export const enum auth_public_keys_select_column {
   blockchain = "blockchain",
-  publickey = "publickey",
+  created_at = "created_at",
+  id = "id",
+  public_key = "public_key",
   user_id = "user_id",
 }
-/** placeholder for update columns of table "auth.publickeys_history" (current role has no relevant permissions) */
-export const enum auth_publickeys_history_update_column {
+/** placeholder for update columns of table "auth.public_keys" (current role has no relevant permissions) */
+export const enum auth_public_keys_update_column {
   _PLACEHOLDER = "_PLACEHOLDER",
-}
-/** select columns of table "auth.publickeys" */
-export const enum auth_publickeys_select_column {
-  blockchain = "blockchain",
-  publickey = "publickey",
 }
 /** unique or primary key constraints on table "auth.stripe_onramp" */
 export const enum auth_stripe_onramp_constraint {
@@ -9764,19 +8652,6 @@ type ZEUS_VARIABLES = {
   ["auth_friend_requests_stream_cursor_input"]: ValueTypes["auth_friend_requests_stream_cursor_input"];
   ["auth_friend_requests_stream_cursor_value_input"]: ValueTypes["auth_friend_requests_stream_cursor_value_input"];
   ["auth_friend_requests_update_column"]: ValueTypes["auth_friend_requests_update_column"];
-  ["auth_friendships_bool_exp"]: ValueTypes["auth_friendships_bool_exp"];
-  ["auth_friendships_constraint"]: ValueTypes["auth_friendships_constraint"];
-  ["auth_friendships_inc_input"]: ValueTypes["auth_friendships_inc_input"];
-  ["auth_friendships_insert_input"]: ValueTypes["auth_friendships_insert_input"];
-  ["auth_friendships_on_conflict"]: ValueTypes["auth_friendships_on_conflict"];
-  ["auth_friendships_order_by"]: ValueTypes["auth_friendships_order_by"];
-  ["auth_friendships_pk_columns_input"]: ValueTypes["auth_friendships_pk_columns_input"];
-  ["auth_friendships_select_column"]: ValueTypes["auth_friendships_select_column"];
-  ["auth_friendships_set_input"]: ValueTypes["auth_friendships_set_input"];
-  ["auth_friendships_stream_cursor_input"]: ValueTypes["auth_friendships_stream_cursor_input"];
-  ["auth_friendships_stream_cursor_value_input"]: ValueTypes["auth_friendships_stream_cursor_value_input"];
-  ["auth_friendships_update_column"]: ValueTypes["auth_friendships_update_column"];
-  ["auth_friendships_updates"]: ValueTypes["auth_friendships_updates"];
   ["auth_notification_subscriptions_bool_exp"]: ValueTypes["auth_notification_subscriptions_bool_exp"];
   ["auth_notification_subscriptions_constraint"]: ValueTypes["auth_notification_subscriptions_constraint"];
   ["auth_notification_subscriptions_inc_input"]: ValueTypes["auth_notification_subscriptions_inc_input"];
@@ -9803,24 +8678,27 @@ type ZEUS_VARIABLES = {
   ["auth_notifications_stream_cursor_value_input"]: ValueTypes["auth_notifications_stream_cursor_value_input"];
   ["auth_notifications_update_column"]: ValueTypes["auth_notifications_update_column"];
   ["auth_notifications_updates"]: ValueTypes["auth_notifications_updates"];
-  ["auth_publickeys_bool_exp"]: ValueTypes["auth_publickeys_bool_exp"];
-  ["auth_publickeys_history_aggregate_order_by"]: ValueTypes["auth_publickeys_history_aggregate_order_by"];
-  ["auth_publickeys_history_arr_rel_insert_input"]: ValueTypes["auth_publickeys_history_arr_rel_insert_input"];
-  ["auth_publickeys_history_bool_exp"]: ValueTypes["auth_publickeys_history_bool_exp"];
-  ["auth_publickeys_history_constraint"]: ValueTypes["auth_publickeys_history_constraint"];
-  ["auth_publickeys_history_insert_input"]: ValueTypes["auth_publickeys_history_insert_input"];
-  ["auth_publickeys_history_max_order_by"]: ValueTypes["auth_publickeys_history_max_order_by"];
-  ["auth_publickeys_history_min_order_by"]: ValueTypes["auth_publickeys_history_min_order_by"];
-  ["auth_publickeys_history_on_conflict"]: ValueTypes["auth_publickeys_history_on_conflict"];
-  ["auth_publickeys_history_order_by"]: ValueTypes["auth_publickeys_history_order_by"];
-  ["auth_publickeys_history_select_column"]: ValueTypes["auth_publickeys_history_select_column"];
-  ["auth_publickeys_history_stream_cursor_input"]: ValueTypes["auth_publickeys_history_stream_cursor_input"];
-  ["auth_publickeys_history_stream_cursor_value_input"]: ValueTypes["auth_publickeys_history_stream_cursor_value_input"];
-  ["auth_publickeys_history_update_column"]: ValueTypes["auth_publickeys_history_update_column"];
-  ["auth_publickeys_order_by"]: ValueTypes["auth_publickeys_order_by"];
-  ["auth_publickeys_select_column"]: ValueTypes["auth_publickeys_select_column"];
-  ["auth_publickeys_stream_cursor_input"]: ValueTypes["auth_publickeys_stream_cursor_input"];
-  ["auth_publickeys_stream_cursor_value_input"]: ValueTypes["auth_publickeys_stream_cursor_value_input"];
+  ["auth_public_keys_aggregate_order_by"]: ValueTypes["auth_public_keys_aggregate_order_by"];
+  ["auth_public_keys_arr_rel_insert_input"]: ValueTypes["auth_public_keys_arr_rel_insert_input"];
+  ["auth_public_keys_avg_order_by"]: ValueTypes["auth_public_keys_avg_order_by"];
+  ["auth_public_keys_bool_exp"]: ValueTypes["auth_public_keys_bool_exp"];
+  ["auth_public_keys_constraint"]: ValueTypes["auth_public_keys_constraint"];
+  ["auth_public_keys_insert_input"]: ValueTypes["auth_public_keys_insert_input"];
+  ["auth_public_keys_max_order_by"]: ValueTypes["auth_public_keys_max_order_by"];
+  ["auth_public_keys_min_order_by"]: ValueTypes["auth_public_keys_min_order_by"];
+  ["auth_public_keys_on_conflict"]: ValueTypes["auth_public_keys_on_conflict"];
+  ["auth_public_keys_order_by"]: ValueTypes["auth_public_keys_order_by"];
+  ["auth_public_keys_select_column"]: ValueTypes["auth_public_keys_select_column"];
+  ["auth_public_keys_stddev_order_by"]: ValueTypes["auth_public_keys_stddev_order_by"];
+  ["auth_public_keys_stddev_pop_order_by"]: ValueTypes["auth_public_keys_stddev_pop_order_by"];
+  ["auth_public_keys_stddev_samp_order_by"]: ValueTypes["auth_public_keys_stddev_samp_order_by"];
+  ["auth_public_keys_stream_cursor_input"]: ValueTypes["auth_public_keys_stream_cursor_input"];
+  ["auth_public_keys_stream_cursor_value_input"]: ValueTypes["auth_public_keys_stream_cursor_value_input"];
+  ["auth_public_keys_sum_order_by"]: ValueTypes["auth_public_keys_sum_order_by"];
+  ["auth_public_keys_update_column"]: ValueTypes["auth_public_keys_update_column"];
+  ["auth_public_keys_var_pop_order_by"]: ValueTypes["auth_public_keys_var_pop_order_by"];
+  ["auth_public_keys_var_samp_order_by"]: ValueTypes["auth_public_keys_var_samp_order_by"];
+  ["auth_public_keys_variance_order_by"]: ValueTypes["auth_public_keys_variance_order_by"];
   ["auth_stripe_onramp_bool_exp"]: ValueTypes["auth_stripe_onramp_bool_exp"];
   ["auth_stripe_onramp_constraint"]: ValueTypes["auth_stripe_onramp_constraint"];
   ["auth_stripe_onramp_inc_input"]: ValueTypes["auth_stripe_onramp_inc_input"];
@@ -9837,6 +8715,7 @@ type ZEUS_VARIABLES = {
   ["auth_users_bool_exp"]: ValueTypes["auth_users_bool_exp"];
   ["auth_users_constraint"]: ValueTypes["auth_users_constraint"];
   ["auth_users_insert_input"]: ValueTypes["auth_users_insert_input"];
+  ["auth_users_obj_rel_insert_input"]: ValueTypes["auth_users_obj_rel_insert_input"];
   ["auth_users_on_conflict"]: ValueTypes["auth_users_on_conflict"];
   ["auth_users_order_by"]: ValueTypes["auth_users_order_by"];
   ["auth_users_pk_columns_input"]: ValueTypes["auth_users_pk_columns_input"];
