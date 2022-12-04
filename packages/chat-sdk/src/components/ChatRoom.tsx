@@ -77,7 +77,6 @@ export const ChatRoom = ({
 
   return (
     <ChatProvider
-      type={type}
       loading={loading}
       chatManager={chatManager}
       roomId={roomId}

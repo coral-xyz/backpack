@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import { createStyles, makeStyles } from "@mui/styles";
 import { Gif as GifComponent } from "@giphy/react-components";
 import { GiphyFetch } from "@giphy/js-fetch-api";
-import { useChatContext } from "./ChatContext";
 
 // use @giphy/js-fetch-api to fetch gifs, instantiate with your api key
 const gf = new GiphyFetch("SjZwwCn1e394TKKjrMJWb2qQRNcqW8ro");
