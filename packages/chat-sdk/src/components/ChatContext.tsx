@@ -28,7 +28,6 @@ export function ChatProvider(props: {
   areFriends: boolean;
   requested: boolean;
   remoteUserId: string;
-  type: SubscriptionType;
 }) {
   return (
     <_ChatContext.Provider
@@ -43,7 +42,6 @@ export function ChatProvider(props: {
         areFriends: props.areFriends,
         requested: props.requested,
         remoteUserId: props.remoteUserId,
-        type: props.type,
       }}
     >
       {props.children}
