@@ -43,6 +43,7 @@ select_permissions:
         - last_active_at
         - username
       filter: {}
+      allow_aggregations: true
   - role: auth_worker
     permission:
       columns:
