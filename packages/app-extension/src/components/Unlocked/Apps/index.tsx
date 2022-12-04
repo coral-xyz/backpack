@@ -100,7 +100,9 @@ function PluginGrid() {
     //
     const newUrl = `${location.pathname}${
       location.search
-    }&plugin=${encodeURIComponent(p.install.account.xnft.toString())}`;
+    }&pluginProps=${encodeURIComponent(
+      JSON.stringify({ xnftAddress: p.install.account.xnft.toString() })
+    )}`;
     background
       .request({
         method: UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,

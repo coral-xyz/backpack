@@ -39,7 +39,7 @@ export function DisplayPlugin() {
       ? location.pathname.slice(1)
       : null;
     setTimeout(() => {
-      searchParams.delete("plugin");
+      searchParams.delete("pluginProps");
       const newUrl = `${location.pathname}?${searchParams.toString()}`;
       background
         .request({

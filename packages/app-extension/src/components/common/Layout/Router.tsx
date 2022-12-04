@@ -7,9 +7,14 @@ import {
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
+import {
+  TAB_SET,
+  UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
+} from "@coral-xyz/common/src/constants";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import {
   PluginManager,
+  useBackgroundClient,
   useDecodedSearchParams,
   useFreshPlugin,
   useNavigation,
@@ -21,7 +26,7 @@ import { AnimatePresence } from "framer-motion";
 
 import { WithDrawer } from "../../common/Layout/Drawer";
 import { Apps } from "../../Unlocked/Apps";
-import { _PluginDisplay } from "../../Unlocked/Apps/Plugin";
+import { _PluginDisplay, PluginApp } from "../../Unlocked/Apps/Plugin";
 import { Balances } from "../../Unlocked/Balances";
 import { Token } from "../../Unlocked/Balances/TokensWidget/Token";
 import { ChatScreen } from "../../Unlocked/Messages/ChatScreen";
@@ -198,28 +203,38 @@ function NavScreenComponent({ component }: { component: React.ReactNode }) {
 function PluginDrawer() {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [searchParams] = useSearchParams();
+  const background = useBackgroundClient();
+  const location = useLocation();
   const pluginProps = searchParams.get("pluginProps");
   const { xnftAddress } = JSON.parse(decodeURIComponent(pluginProps!));
-  const xnftPlugin = useFreshPlugin(xnftAddress);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    if (!openDrawer && xnftPlugin.state) {
+    if (xnftAddress) {
       setOpenDrawer(true);
     }
-  }, [xnftPlugin.state]);
+  }, [xnftAddress]);
 
   return (
     <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-      {xnftPlugin.result && (
-        <_PluginDisplay
-          plugin={xnftPlugin.result!}
+      {xnftAddress && (
+        <PluginApp
+          xnftAddress={xnftAddress}
           closePlugin={() => {
             setOpenDrawer(false);
             setTimeout(() => {
+              const activeTab = TAB_SET.has(location.pathname)
+                ? location.pathname.slice(1)
+                : null;
               searchParams.delete("pluginProps");
               const newUrl = `${location.pathname}?${searchParams.toString()}`;
-              navigate(newUrl);
+              console.log("navigate", newUrl);
+              background
+                .request({
+                  method: UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
+                  params: [newUrl, activeTab],
+                })
+                .catch(console.error);
+              // navigate(newUrl);
             }, 100);
           }}
         />
