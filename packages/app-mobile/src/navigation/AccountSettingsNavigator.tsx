@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { Alert, Text, TextInput, View } from "react-native";
+import { Alert, Text, View } from "react-native";
 import {
   Header,
   Margin,
   PrimaryButton,
   Screen,
+  StyledTextInput,
   SubtextParagraph,
 } from "@components";
 import type { ChannelAppUiClient } from "@coral-xyz/common";
@@ -649,12 +650,8 @@ export function ImportSecretKeyScreen({
   };
 
   return (
-    <>
-      <View
-        style={{
-          justifyContent: "space-between",
-        }}
-      >
+    <Screen style={{ justifyContent: "space-between" }}>
+      <View>
         <Header text="Import private key" />
         <Margin bottom={32}>
           <SubtextParagraph>
@@ -662,13 +659,17 @@ export function ImportSecretKeyScreen({
             device.
           </SubtextParagraph>
         </Margin>
-        <TextInput
-          autoFocus={true}
-          placeholder="Name"
-          value={name}
-          onChangeText={(text) => setName(text)}
-        />
-        <TextInput
+        <Margin bottom={16}>
+          <StyledTextInput
+            autoFocus={true}
+            placeholder="Name"
+            value={name}
+            onChangeText={(text) => setName(text)}
+          />
+        </Margin>
+        <StyledTextInput
+          height={140}
+          multiline={true}
           placeholder="Enter private key"
           value={secretKey}
           onChangeText={(text) => {
@@ -683,13 +684,13 @@ export function ImportSecretKeyScreen({
           // error={error ? true : false}
           // errorMessage={error || ""}
         />
-        <PrimaryButton
-          onPress={() => save()}
-          label="Import"
-          disabled={secretKey.length === 0}
-        />
       </View>
-    </>
+      <PrimaryButton
+        onPress={() => save()}
+        label="Import"
+        disabled={secretKey.length === 0}
+      />
+    </Screen>
   );
 }
 

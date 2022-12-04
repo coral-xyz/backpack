@@ -8,6 +8,7 @@ import { useTheme } from "@hooks";
 export { ActionCard } from "./ActionCard";
 export { MnemonicInputFields } from "./MnemonicInputFields";
 export { NavHeader } from "./NavHeader";
+export { StyledTextInput } from "./StyledTextInput";
 export { TokenAmountHeader } from "./TokenAmountHeader";
 export { TokenInputField } from "./TokenInputField";
 //
@@ -88,7 +89,7 @@ export function BaseButton({
           justifyContent: "center",
           alignItems: "center",
           width: "100%",
-          opacity: disabled ? 80 : 100, // TODO(peter)
+          opacity: disabled ? 50 : 100, // TODO(peter)
         },
         buttonStyle,
       ]}
@@ -103,11 +104,12 @@ export function BaseButton({
             fontSize: 16,
             lineHeight: 24,
             color: theme.custom.colors.primaryButtonTextColor,
+            opacity: disabled ? 50 : 100, // TODO(peter)
           },
           labelStyle,
         ]}
       >
-        {loading ? "loading.." : label} {disabled ? "(disabled)" : ""}
+        {loading ? "loading..." : label} {disabled ? "(disabled)" : ""}
       </Text>
     </Pressable>
   );
