@@ -31,7 +31,6 @@ export type FromServer =
         messages: Message[];
         type: SubscriptionType;
         room: string;
-        message_kind: "text" | "gif";
       };
     }
   | {
