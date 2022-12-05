@@ -7,6 +7,9 @@ processes = []
 
 [env]
 
+[build]
+  dockerfile = "./docker/backend-ws/Dockerfile"
+
 [experimental]
   allowed_public_ports = []
   auto_rollback = true

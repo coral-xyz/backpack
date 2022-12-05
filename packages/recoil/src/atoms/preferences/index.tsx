@@ -8,8 +8,6 @@ import {
 import { atom, selector } from "recoil";
 
 import { backgroundClient } from "../client";
-import { ethereumConnectionUrl } from "../ethereum";
-import { solanaConnectionUrl } from "../solana";
 
 export const preferences = atom<any>({
   key: "preferences",
@@ -64,19 +62,6 @@ export const approvedOrigins = selector<Array<string>>({
     const p = get(preferences);
     return p.approvedOrigins;
   },
-});
-
-export const connectionUrls = atom<{ [key: string]: string | null }>({
-  key: "connectionUrls",
-  default: selector({
-    key: "connectionUrlsDefault",
-    get: async ({ get }) => {
-      return {
-        [Blockchain.SOLANA as string]: get(solanaConnectionUrl),
-        [Blockchain.ETHEREUM as string]: get(ethereumConnectionUrl),
-      };
-    },
-  }),
 });
 
 // This is the *active* username.

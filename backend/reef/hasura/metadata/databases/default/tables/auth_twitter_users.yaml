@@ -1,6 +1,10 @@
 table:
   name: twitter_users
   schema: auth
+object_relationships:
+  - name: user
+    using:
+      foreign_key_constraint_on: backpack_username
 insert_permissions:
   - role: one_xnft
     permission:

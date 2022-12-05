@@ -24,6 +24,7 @@ import {
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
   NOTIFICATION_ETHEREUM_EXPLORER_UPDATED,
+  NOTIFICATION_FEATURE_GATES_UPDATED,
   NOTIFICATION_KEYNAME_UPDATE,
   NOTIFICATION_KEYRING_DERIVED_WALLET,
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
@@ -1152,6 +1153,12 @@ export class Backend {
 
   async setFeatureGates(gates: FEATURE_GATES_MAP) {
     await store.setFeatureGates(gates);
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_FEATURE_GATES_UPDATED,
+      data: {
+        gates,
+      },
+    });
   }
 
   async getFeatureGates() {

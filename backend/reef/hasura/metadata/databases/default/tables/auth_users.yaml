@@ -1,15 +1,31 @@
 table:
   name: users
   schema: auth
-array_relationships:
-  - name: publickeys
+object_relationships:
+  - name: invitation
     using:
-      manual_configuration:
-        column_mapping:
-          id: user_id
-        insertion_order: null
-        remote_table:
-          name: publickeys_history
+      foreign_key_constraint_on: invitation_id
+  - name: twitter_user
+    using:
+      foreign_key_constraint_on:
+        column: backpack_username
+        table:
+          name: twitter_users
+          schema: auth
+  - name: waolist_token
+    using:
+      foreign_key_constraint_on:
+        column: username
+        table:
+          name: waolist_tokens
+          schema: auth
+array_relationships:
+  - name: public_keys
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          name: public_keys
           schema: auth
 insert_permissions:
   - role: auth_worker
@@ -24,8 +40,10 @@ select_permissions:
     permission:
       columns:
         - created_at
+        - last_active_at
         - username
       filter: {}
+      allow_aggregations: true
   - role: auth_worker
     permission:
       columns:

@@ -13,4 +13,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: "flyctl ssh console --command 'sh ./scripts/deploy_xnft_api_server.sh'"
+      - run: "mv docker/xnft-api-server/fly.toml . && flyctl deploy --remote-only"

@@ -40,6 +40,7 @@ export const RecoverAccount = ({
   const [mnemonic, setMnemonic] = useState<string | undefined>(undefined);
   const [transport, setTransport] = useState<Transport | null>(null);
   const [transportError] = useState(false);
+  const [userId, setUserId] = useState<string | undefined>(undefined);
   const [, setOnboardedBlockchains] = useState<Array<Blockchain>>([]);
   const [blockchainKeyrings, setBlockchainKeyrings] = useState<
     Array<BlockchainKeyringInit>
@@ -51,6 +52,7 @@ export const RecoverAccount = ({
         const response = await fetch(`${BACKEND_API_URL}/users/${username}`);
         const json = await response.json();
         if (response.ok) {
+          setUserId(json.id);
           if (json.publicKeys.length > 0) {
             setOnboardedBlockchains(
               json.publicKeys.map(
@@ -176,9 +178,11 @@ export const RecoverAccount = ({
       : []),
     <Finish
       inviteCode={undefined}
+      userId={userId}
       username={username}
       password={password!}
       keyringInit={keyringInit!}
+      isAddingAccount={isAddingAccount}
     />,
   ];
 
