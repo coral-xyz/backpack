@@ -1,34 +1,39 @@
-import { useState, useEffect } from "react";
-
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Text, Alert, StyleSheet, View, TextInput } from "react-native";
-import { PrimaryButton, Screen, TokenInputField } from "@components";
-// import { TextInput } from "@components/TextInput";
-import { ethers, BigNumber } from "ethers";
-
-import { TokenTables } from "./components/Balances";
-import type { Token } from "./components/index";
-
-import { Connection, SystemProgram, PublicKey } from "@solana/web3.js";
+import { Alert, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  Margin,
+  PrimaryButton,
+  Screen,
+  StyledTextInput,
+  TokenInputField,
+} from "@components";
+import {
+  Blockchain,
+  ETH_NATIVE_MINT,
+  explorerUrl,
+  NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
+  SOL_NATIVE_MINT,
+  toTitleCase,
+} from "@coral-xyz/common";
 import {
   blockchainTokenData,
+  TokenData,
   useAnchorContext,
-  useBlockchainTokenAccount,
-  useBlockchainExplorer,
   useBlockchainConnectionUrl,
+  useBlockchainExplorer,
+  useBlockchainTokenAccount,
   useEthereumCtx,
   useLoader,
   useNavigation,
-  TokenData,
 } from "@coral-xyz/recoil";
-import {
-  Blockchain,
-  explorerUrl,
-  toTitleCase,
-  SOL_NATIVE_MINT,
-  ETH_NATIVE_MINT,
-  NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
-} from "@coral-xyz/common";
+import type { Connection } from "@solana/web3.js";
+import { PublicKey, SystemProgram } from "@solana/web3.js";
+// import { TextInput } from "@components/TextInput";
+import { BigNumber, ethers } from "ethers";
+
+import { TokenTables } from "./components/Balances";
+import type { Token } from "./components/index";
 
 export function SendTokenModal({ route }) {
   const { blockchain, token } = route.params;
@@ -106,18 +111,12 @@ export function SendTokenModal({ route }) {
   return (
     <Screen style={styles.container}>
       <View>
-        <TextInput
-          autoCorrect={false}
-          autoCapitalize="none"
-          placeholder="Wallet address"
-          onChangeText={(address) => setAddress(address)}
-          style={{
-            borderRadius: 8,
-            padding: 8,
-            borderWidth: 1,
-            borderColor: "#333",
-          }}
-        />
+        <Margin bottom={12}>
+          <StyledTextInput
+            placeholder="Wallet address"
+            onChangeText={(address) => setAddress(address)}
+          />
+        </Margin>
         <TokenInputField
           decimals={token.decimals}
           placeholder="Amount"
@@ -131,7 +130,7 @@ export function SendTokenModal({ route }) {
           }}
         />
       </View>
-      <Text>
+      <Text style={{ color: "#FFF" }}>
         {JSON.stringify(
           {
             destinationAddress,
