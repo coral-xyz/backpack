@@ -37,4 +37,3 @@ export function PluginManager(props: any) {
 }
 
 // type PluginsContext = {};
-// const _PluginsContext = React.createContext<PluginsContext | null>(null);
