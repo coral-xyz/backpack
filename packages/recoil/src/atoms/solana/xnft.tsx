@@ -1,15 +1,18 @@
-import { atom, selector } from "recoil";
-import { PublicKey } from "@solana/web3.js";
 import {
-  fetchXnfts,
-  Blockchain,
   BACKPACK_CONFIG_XNFT_PROXY,
+  Blockchain,
+  fetchXnfts,
   SIMULATOR_PORT,
 } from "@coral-xyz/common";
 import { externalResourceUri } from "@coral-xyz/common-public";
+import { PublicKey } from "@solana/web3.js";
+import { atom, selector } from "recoil";
+
+import { isDeveloperMode } from "../preferences";
+import { connectionUrls } from "../preferences/connection-urls";
+import { activePublicKeys, solanaPublicKey } from "../wallet";
+
 import { anchorContext } from "./wallet";
-import { solanaPublicKey, activePublicKeys } from "../wallet";
-import { connectionUrls, isDeveloperMode } from "../preferences";
 
 //
 // Private dev plugins.

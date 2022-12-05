@@ -1,23 +1,19 @@
 import { useEffect, useRef, useState } from "react";
+import type { XnftPreference } from "@coral-xyz/common";
+import { useAvatarUrl, useDarkMode, useUser } from "@coral-xyz/recoil";
+
 import { Loading } from "../components/common";
-import {
-  useAvatarUrl,
-  useDarkMode,
-  useUsername,
-  useXnftPreference,
-} from "@coral-xyz/recoil";
-import { XnftPreference } from "@coral-xyz/common";
 
 export function PluginRenderer({
   plugin,
   xnftPreference,
 }: {
   plugin: any;
-  xnftPreference: XnftPreference;
+  xnftPreference: XnftPreference | null;
 }) {
   const ref = useRef<any>();
   const [loaded, setLoaded] = useState(false);
-  const username = useUsername();
+  const { username } = useUser();
   const isDarkMode = useDarkMode();
   const avatarUrl = useAvatarUrl(100);
 

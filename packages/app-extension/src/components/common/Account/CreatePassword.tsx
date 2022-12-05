@@ -1,12 +1,13 @@
 import { type FormEvent, useCallback, useEffect, useState } from "react";
-import { Box, Typography, InputAdornment, IconButton } from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useCustomTheme } from "@coral-xyz/themes";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
+
 import {
-  Header,
-  SubtextParagraph,
-  PrimaryButton,
   CheckboxForm,
+  Header,
+  PrimaryButton,
+  SubtextParagraph,
 } from "../../common";
 import { TextInput } from "../Inputs";
 

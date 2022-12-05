@@ -1,5 +1,6 @@
-import { Box } from "@mui/material";
 import { Blockchain } from "@coral-xyz/common";
+import { Box } from "@mui/material";
+
 import {
   Header,
   HeaderIcon,

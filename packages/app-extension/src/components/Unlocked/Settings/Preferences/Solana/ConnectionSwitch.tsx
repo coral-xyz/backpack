@@ -1,16 +1,17 @@
 import { useEffect } from "react";
-import { Check } from "@mui/icons-material";
-import { useCustomTheme } from "@coral-xyz/themes";
 import {
   getLogger,
   SolanaCluster,
   UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
 } from "@coral-xyz/common";
 import { useBackgroundClient, useSolanaConnectionUrl } from "@coral-xyz/recoil";
-import { useDrawerContext } from "../../../../common/Layout/Drawer";
-import { SettingsList } from "../../../../common/Settings/List";
-import { useNavStack } from "../../../../common/Layout/NavStack";
+import { useCustomTheme } from "@coral-xyz/themes";
+import { Check } from "@mui/icons-material";
+
 import { PushDetail } from "../../../../common";
+import { useDrawerContext } from "../../../../common/Layout/Drawer";
+import { useNavStack } from "../../../../common/Layout/NavStack";
+import { SettingsList } from "../../../../common/Settings/List";
 
 const logger = getLogger("preferences");
 

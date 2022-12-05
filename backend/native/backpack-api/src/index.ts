@@ -13,7 +13,9 @@ import usersRouter from "./routes/v1/users";
 import { zodErrorToString } from "./util";
 
 const app = express();
+// eslint-disable-next-line
 const bodyParser = require("body-parser");
+// eslint-disable-next-line
 const cookieParser = require("cookie-parser");
 
 app.use(cookieParser());
@@ -29,7 +31,7 @@ app.use("/inbox", inboxRouter);
 app.use("/friends", friendsRouter);
 app.use("/users", usersRouter);
 
-app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+app.use((err: any, _req: Request, res: Response) => {
   console.error(err);
   if (err instanceof ZodError) {
     return res.status(400).json({

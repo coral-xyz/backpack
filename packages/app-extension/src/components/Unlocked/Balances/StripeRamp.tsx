@@ -1,9 +1,11 @@
-import { Blockchain } from "@coral-xyz/common";
 import { useEffect, useState } from "react";
+import type { Blockchain } from "@coral-xyz/common";
+import type { CustomTheme } from "@coral-xyz/themes";
+import { styles } from "@coral-xyz/themes";
+import { Typography } from "@mui/material";
+
 import { Loading, PrimaryButton } from "../../common";
 import { useNavStack } from "../../common/Layout/NavStack";
-import { Typography } from "@mui/material";
-import { CustomTheme, styles } from "@coral-xyz/themes";
 
 const STRIP_RAMP_URL = "https://auth.xnfts.dev";
 

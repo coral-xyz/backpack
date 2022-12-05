@@ -1,4 +1,4 @@
-import { SubscriptionType } from "./toServer";
+import type { SubscriptionType } from "./toServer";
 export const CHAT_MESSAGES = "CHAT_MESSAGEES";
 export const SUBSCRIBE = "SUBSCRIBE";
 export const UNSUBSCRIBE = "UNSUBSCRIBE";
@@ -11,6 +11,7 @@ export interface Message {
   // received?: boolean;
   client_generated_uuid?: string;
   message_kind: "gif" | "text";
+  created_at: string;
 }
 
 export interface MessageWithMetadata extends Message {

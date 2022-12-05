@@ -1,4 +1,5 @@
 import { useRecoilCallback } from "recoil";
+
 import * as atoms from "../../atoms";
 
 export const useUpdateEthereumBalances = () =>

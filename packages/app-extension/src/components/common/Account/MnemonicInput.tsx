@@ -1,26 +1,27 @@
-import { useState, useEffect } from "react";
-import {
-  Box,
-  Grid,
-  TextField,
-  Typography,
-  InputAdornment,
-  Link,
-} from "@mui/material";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import makeStyles from "@mui/styles/makeStyles";
+import { useEffect, useState } from "react";
 import {
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
   UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import {
+  Box,
+  Grid,
+  InputAdornment,
+  Link,
+  TextField,
+  Typography,
+} from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+
 import {
   CheckboxForm,
   Header,
-  SubtextParagraph,
   PrimaryButton,
   SecondaryButton,
+  SubtextParagraph,
 } from "../../common";
 import { WithCopyTooltip } from "../../common/WithCopyTooltip";
 

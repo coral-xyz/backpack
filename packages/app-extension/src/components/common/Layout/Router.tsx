@@ -1,40 +1,42 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  useLocation,
-  useSearchParams,
-  Routes,
-  Route,
   Navigate,
+  Route,
+  Routes,
+  useLocation,
   useNavigate,
+  useSearchParams,
 } from "react-router-dom";
-import { AnimatePresence } from "framer-motion";
-import { Typography } from "@mui/material";
+import type { SearchParamsFor } from "@coral-xyz/recoil";
 import {
+  PluginManager,
   useDecodedSearchParams,
+  useFreshPlugin,
   useNavigation,
   useRedirectUrl,
-  useFreshPlugin,
-  PluginManager,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import type { SearchParamsFor } from "@coral-xyz/recoil";
-import { Balances } from "../../Unlocked/Balances";
-import { Token } from "../../Unlocked/Balances/TokensWidget/Token";
+import { Typography } from "@mui/material";
+import { AnimatePresence } from "framer-motion";
+
+import { WithDrawer } from "../../common/Layout/Drawer";
 import { Apps } from "../../Unlocked/Apps";
 import { _PluginDisplay } from "../../Unlocked/Apps/Plugin";
-import { Nfts } from "../../Unlocked/Nfts";
-import { Swap } from "../../Unlocked/Swap";
-import { NftsDetail, NftOptionsButton } from "../../Unlocked/Nfts/Detail";
-import { NftsCollection } from "../../Unlocked/Nfts/Collection";
-import { SettingsButton } from "../../Unlocked/Settings";
-import { WithNav, NavBackButton } from "./Nav";
-import { WithMotion } from "./NavStack";
-import { WithDrawer } from "../../common/Layout/Drawer";
-import { NftChat, NftsExperience } from "../../Unlocked/Nfts/Experience";
-import { Inbox } from "../../Unlocked/Messages/Inbox";
+import { Balances } from "../../Unlocked/Balances";
+import { Token } from "../../Unlocked/Balances/TokensWidget/Token";
 import { ChatScreen } from "../../Unlocked/Messages/ChatScreen";
+import { Inbox } from "../../Unlocked/Messages/Inbox";
 import { ProfileScreen } from "../../Unlocked/Messages/ProfileScreen";
 import { RequestsScreen } from "../../Unlocked/Messages/RequestsScreen";
+import { Nfts } from "../../Unlocked/Nfts";
+import { NftsCollection } from "../../Unlocked/Nfts/Collection";
+import { NftOptionsButton, NftsDetail } from "../../Unlocked/Nfts/Detail";
+import { NftChat, NftsExperience } from "../../Unlocked/Nfts/Experience";
+import { SettingsButton } from "../../Unlocked/Settings";
+import { Swap } from "../../Unlocked/Swap";
+
+import { NavBackButton, WithNav } from "./Nav";
+import { WithMotion } from "./NavStack";
 
 export function Router() {
   const location = useLocation();

@@ -1,31 +1,31 @@
 import { useEffect, useState } from "react";
-import { Box, Grid, Typography } from "@mui/material";
-import { AddCircle, ArrowCircleDown } from "@mui/icons-material";
+import type { Blockchain } from "@coral-xyz/common";
 import {
-  Blockchain,
   openConnectHardware,
-  TAB_BALANCES,
   TAB_APPS,
-  UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
+  TAB_BALANCES,
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
+  UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
-  UI_RPC_METHOD_NAVIGATION_TO_ROOT,
 } from "@coral-xyz/common";
-import { useCustomTheme } from "@coral-xyz/themes";
 import {
+  useBackgroundClient,
   useKeyringType,
   useTab,
   useWalletName,
-  useBackgroundClient,
 } from "@coral-xyz/recoil";
-import { ActionCard } from "../../../common/Layout/ActionCard";
-import { HardwareWalletIcon, CheckIcon } from "../../../common/Icon";
+import { useCustomTheme } from "@coral-xyz/themes";
+import { AddCircle, ArrowCircleDown } from "@mui/icons-material";
+import { Box, Grid, Typography } from "@mui/material";
+
 import { Header, SubtextParagraph } from "../../../common";
-import { useNavStack } from "../../../common/Layout/NavStack";
+import { CheckIcon, HardwareWalletIcon } from "../../../common/Icon";
+import { ActionCard } from "../../../common/Layout/ActionCard";
 import {
   useDrawerContext,
   WithMiniDrawer,
 } from "../../../common/Layout/Drawer";
+import { useNavStack } from "../../../common/Layout/NavStack";
 import { WalletListItem } from "../YourAccount/EditWallets";
 
 export function AddConnectWalletMenu({

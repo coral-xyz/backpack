@@ -1,45 +1,46 @@
-import { ConfirmOptions, PublicKey, SendOptions } from "@solana/web3.js";
+import type { Event, XnftMetadata } from "@coral-xyz/common-public";
+import { getLogger } from "@coral-xyz/common-public";
+import type { ConfirmOptions, PublicKey, SendOptions } from "@solana/web3.js";
+
+import { openPopupWindow } from "./browser/extension";
+import type { BackgroundClient } from "./channel/app-ui";
+import { PluginServer } from "./channel/plugin";
 import {
+  CHANNEL_PLUGIN_NOTIFICATION,
   CHANNEL_PLUGIN_RPC_REQUEST,
   CHANNEL_PLUGIN_RPC_RESPONSE,
-  CHANNEL_PLUGIN_NOTIFICATION,
-  PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET,
-  PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT,
-  ETHEREUM_RPC_METHOD_SIGN_TX as PLUGIN_ETHEREUM_RPC_METHOD_SIGN_TX,
   ETHEREUM_RPC_METHOD_SIGN_AND_SEND_TX as PLUGIN_ETHEREUM_RPC_METHOD_SIGN_AND_SEND_TX,
   ETHEREUM_RPC_METHOD_SIGN_MESSAGE as PLUGIN_ETHEREUM_RPC_METHOD_SIGN_MESSAGE,
-  SOLANA_RPC_METHOD_SIGN_TX as PLUGIN_SOLANA_RPC_METHOD_SIGN_TX,
-  SOLANA_RPC_METHOD_SIGN_ALL_TXS as PLUGIN_SOLANA_RPC_METHOD_SIGN_ALL_TXS,
-  SOLANA_RPC_METHOD_SIGN_AND_SEND_TX as PLUGIN_SOLANA_RPC_METHOD_SIGN_AND_SEND_TX,
-  SOLANA_RPC_METHOD_SIMULATE as PLUGIN_SOLANA_RPC_METHOD_SIMULATE_TX,
-  SOLANA_RPC_METHOD_SIGN_MESSAGE as PLUGIN_SOLANA_RPC_METHOD_SIGN_MESSAGE,
-  PLUGIN_RPC_METHOD_WINDOW_OPEN,
+  ETHEREUM_RPC_METHOD_SIGN_TX as PLUGIN_ETHEREUM_RPC_METHOD_SIGN_TX,
   PLUGIN_NOTIFICATION_CONNECT,
-  PLUGIN_NOTIFICATION_MOUNT,
-  PLUGIN_NOTIFICATION_UNMOUNT,
-  PLUGIN_NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
-  PLUGIN_NOTIFICATION_SOLANA_PUBLIC_KEY_UPDATED,
   PLUGIN_NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
   PLUGIN_NOTIFICATION_ETHEREUM_PUBLIC_KEY_UPDATED,
-  PLUGIN_REQUEST_ETHEREUM_SIGN_TRANSACTION,
+  PLUGIN_NOTIFICATION_MOUNT,
+  PLUGIN_NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
+  PLUGIN_NOTIFICATION_SOLANA_PUBLIC_KEY_UPDATED,
+  PLUGIN_NOTIFICATION_UNMOUNT,
+  PLUGIN_NOTIFICATION_UPDATE_METADATA,
   PLUGIN_REQUEST_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
   PLUGIN_REQUEST_ETHEREUM_SIGN_MESSAGE,
-  PLUGIN_REQUEST_SOLANA_SIGN_TRANSACTION,
+  PLUGIN_REQUEST_ETHEREUM_SIGN_TRANSACTION,
   PLUGIN_REQUEST_SOLANA_SIGN_ALL_TRANSACTIONS,
   PLUGIN_REQUEST_SOLANA_SIGN_AND_SEND_TRANSACTION,
   PLUGIN_REQUEST_SOLANA_SIGN_MESSAGE,
+  PLUGIN_REQUEST_SOLANA_SIGN_TRANSACTION,
+  PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET,
+  PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT,
+  PLUGIN_RPC_METHOD_POP_OUT,
+  PLUGIN_RPC_METHOD_WINDOW_OPEN,
+  SOLANA_RPC_METHOD_SIGN_ALL_TXS as PLUGIN_SOLANA_RPC_METHOD_SIGN_ALL_TXS,
+  SOLANA_RPC_METHOD_SIGN_AND_SEND_TX as PLUGIN_SOLANA_RPC_METHOD_SIGN_AND_SEND_TX,
+  SOLANA_RPC_METHOD_SIGN_MESSAGE as PLUGIN_SOLANA_RPC_METHOD_SIGN_MESSAGE,
+  SOLANA_RPC_METHOD_SIGN_TX as PLUGIN_SOLANA_RPC_METHOD_SIGN_TX,
+  SOLANA_RPC_METHOD_SIMULATE as PLUGIN_SOLANA_RPC_METHOD_SIMULATE_TX,
   UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET,
   UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT,
-  PLUGIN_NOTIFICATION_UPDATE_METADATA,
-  PLUGIN_RPC_METHOD_POP_OUT,
 } from "./constants";
-
-import { getLogger, Event, XnftMetadata } from "@coral-xyz/common-public";
-import { BackgroundClient } from "./channel/app-ui";
-import { PluginServer } from "./channel/plugin";
-
-import { Blockchain, RpcResponse, XnftPreference } from "./types";
-import { openPopupWindow } from "./browser/extension";
+import type { RpcResponse, XnftPreference } from "./types";
+import { Blockchain } from "./types";
 
 const logger = getLogger("common/plugin");
 
@@ -128,7 +129,7 @@ export class Plugin {
   //
   // Loads the plugin javascript code inside the iframe.
   //
-  public createIframe(preference: XnftPreference) {
+  public createIframe(preference?: XnftPreference) {
     logger.debug("creating iframe element");
 
     this._nextRenderId = 0;
@@ -137,7 +138,7 @@ export class Plugin {
     this.iframeRoot.style.height = "100vh";
     this.iframeRoot.style.border = "none";
 
-    if (preference.mediaPermissions) {
+    if (preference?.mediaPermissions) {
       this.iframeRoot.setAttribute(
         "allow",
         "camera;microphone;display-capture"
@@ -222,7 +223,7 @@ export class Plugin {
   // Rendering.
   //////////////////////////////////////////////////////////////////////////////
 
-  public mount(preference: XnftPreference) {
+  public mount(preference?: XnftPreference) {
     this.createIframe(preference);
     this.didFinishSetup!.then(() => {
       this.pushMountNotification();

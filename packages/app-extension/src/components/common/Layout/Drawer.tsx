@@ -1,19 +1,20 @@
 import React, {
-  useContext,
-  useEffect,
   type CSSProperties,
   type Dispatch,
   type MutableRefObject,
   type PropsWithChildren,
   type SetStateAction,
+  useContext,
+  useEffect,
 } from "react";
-import { Drawer, Button, IconButton } from "@mui/material";
-import { Close } from "@mui/icons-material";
-import { styles } from "@coral-xyz/themes";
 import { EXTENSION_HEIGHT } from "@coral-xyz/common";
 import { useEphemeralNav } from "@coral-xyz/recoil";
-import { WithEphemeralNav } from "./NavEphemeral";
+import { styles } from "@coral-xyz/themes";
+import { Close } from "@mui/icons-material";
+import { Button, Drawer, IconButton } from "@mui/material";
+
 import { NAV_BAR_HEIGHT, NAV_BUTTON_WIDTH } from "./Nav";
+import { WithEphemeralNav } from "./NavEphemeral";
 
 const useStyles = styles((theme) => ({
   withDrawer: {
@@ -45,6 +46,10 @@ const useStyles = styles((theme) => ({
     background: "transparent",
     zIndex: "1301 !important" as any,
     flex: 1,
+    "& .MuiBackdrop-root": {
+      opacity: 0.8,
+      background: `${theme.custom.colors.miniDrawerBackdrop} !important`,
+    },
   },
   miniDrawerPaper: {
     backgroundColor: "transparent",

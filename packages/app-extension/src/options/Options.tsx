@@ -1,19 +1,22 @@
-import { RecoilRoot } from "recoil";
+import { MemoryRouter } from "react-router-dom";
 import {
   Blockchain,
+  QUERY_ADD_USER_ACCOUNT,
   QUERY_CONNECT_HARDWARE,
   QUERY_ONBOARDING,
 } from "@coral-xyz/common";
 import {
-  useBackgroundKeepAlive,
   NotificationsProvider,
+  useBackgroundKeepAlive,
 } from "@coral-xyz/recoil";
+import { RecoilRoot } from "recoil";
+
 import { WithSuspense } from "../app/Router";
-import { ConnectHardware } from "../components/Unlocked/Settings/AddConnectWallet/ConnectHardware";
-import { Onboarding } from "../components/Onboarding";
-import "../app/App.css";
 import { WithTheme } from "../components/common/WithTheme";
-import { MemoryRouter } from "react-router-dom";
+import { Onboarding } from "../components/Onboarding";
+import { ConnectHardware } from "../components/Unlocked/Settings/AddConnectWallet/ConnectHardware";
+
+import "../app/App.css";
 
 //
 // Options provides the "expanded" extension app flows. Namely,
@@ -67,6 +70,8 @@ function Router() {
       );
     case QUERY_ONBOARDING:
       return <Onboarding />;
+    case QUERY_ADD_USER_ACCOUNT:
+      return <Onboarding isAddingAccount={true} />;
     default:
       throw new Error("invalid query param");
   }

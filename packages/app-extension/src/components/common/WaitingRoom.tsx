@@ -1,8 +1,10 @@
-import { useDarkMode, useUsername } from "@coral-xyz/recoil";
 import { useEffect } from "react";
+import { useDarkMode, useUser } from "@coral-xyz/recoil";
+
+import { WithNav } from "../common/Layout/Nav";
+
 import { useNavStack } from "./Layout/NavStack";
 import SocialNavbarButtons from "./SocialNavbarButtons";
-import { WithNav } from "../common/Layout/Nav";
 
 const WAITLIST_RES_ID_KEY = "waitlist-form-res-id";
 
@@ -47,7 +49,7 @@ const WaitingRoom = ({ onboarded }: { onboarded?: boolean }) => {
       }}
       allow="clipboard-read; clipboard-write"
       src={`https://beta-waiting-room.vercel.app/?id=${
-        onboarded ? useUsername() : getWaitlistId()
+        onboarded ? useUser().username : getWaitlistId()
       }&onboarded=${onboarded ?? false}&theme=${
         isDarkMode ? "dark" : "light"
       }&v=2`}

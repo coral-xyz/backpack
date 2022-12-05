@@ -1,7 +1,8 @@
-import { useRecoilValue } from "recoil";
 import { Blockchain } from "@coral-xyz/common";
+import { useRecoilValue } from "recoil";
+
 import * as atoms from "../atoms";
-import { TokenData } from "../types";
+import type { TokenData } from "../types";
 
 export function useBlockchainKeyrings() {
   return useRecoilValue(atoms.blockchainKeyrings);

@@ -4,7 +4,6 @@ import { useRef } from "react";
 import { FullScreenChat } from "./FullScreenChat";
 import { ChatProvider } from "./ChatContext";
 import { SubscriptionType } from "@coral-xyz/common";
-import { useUsername } from "@coral-xyz/recoil";
 
 interface ChatRoomProps {
   roomId: string;
@@ -88,8 +87,9 @@ export const ChatRoom = ({
       areFriends={areFriends}
       requested={requested}
       remoteUserId={remoteUserId || ""}
+      type={type}
     >
-      <FullScreenChat chats={chats} messageContainerRef={messageContainerRef} />
+      <FullScreenChat />
     </ChatProvider>
   );
 };

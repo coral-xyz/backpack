@@ -1,7 +1,9 @@
-import React, { useState, useContext } from "react";
+import React, { useContext, useState } from "react";
 import { AnimatePresence } from "framer-motion";
+
 import { WithMotion } from "../../../plugin/Component";
-import { WithNav, NavBackButton } from "./Nav";
+
+import { NavBackButton, WithNav } from "./Nav";
 
 export { WithMotion } from "../../../plugin/Component";
 

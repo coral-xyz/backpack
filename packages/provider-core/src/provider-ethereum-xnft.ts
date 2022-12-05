@@ -1,21 +1,22 @@
-import { ethers } from "ethers";
 import type { Event } from "@coral-xyz/common";
-import { UnsignedTransaction } from "@ethersproject/transactions";
 import {
-  getLogger,
   BackgroundEthereumProvider,
   Blockchain,
   CHANNEL_ETHEREUM_CONNECTION_INJECTED_REQUEST,
   CHANNEL_ETHEREUM_CONNECTION_INJECTED_RESPONSE,
   CHANNEL_PLUGIN_NOTIFICATION,
+  getLogger,
   PLUGIN_NOTIFICATION_CONNECT,
   PLUGIN_NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
   PLUGIN_NOTIFICATION_ETHEREUM_PUBLIC_KEY_UPDATED,
 } from "@coral-xyz/common";
+import type { UnsignedTransaction } from "@ethersproject/transactions";
+import type { ethers } from "ethers";
+
 import * as cmn from "./common/ethereum";
-import { RequestManager } from "./request-manager";
 import { PrivateEventEmitter } from "./common/PrivateEventEmitter";
-import { ChainedRequestManager } from "./chained-request-manager";
+import type { ChainedRequestManager } from "./chained-request-manager";
+import { RequestManager } from "./request-manager";
 
 const logger = getLogger("provider-xnft-injection");
 

@@ -1,5 +1,6 @@
-import { atom, selector } from "recoil";
 import { UI_RPC_METHOD_NAVIGATION_READ } from "@coral-xyz/common";
+import { atom, selector } from "recoil";
+
 import { backgroundClient } from "./client";
 
 // Version of bootstrap for very fast data on load. This shouldn't block the load

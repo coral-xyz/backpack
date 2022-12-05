@@ -24,7 +24,7 @@ router.get("/", extractUserId, async (req, res) => {
   // @ts-ignore
   const usernamePrefix: string = req.query.usernamePrefix;
   // @ts-ignore
-  const uuid = req.id;
+  const uuid: string = req.id;
 
   await getUsersByPrefix({ usernamePrefix, uuid })
     .then((users) => {
@@ -80,7 +80,7 @@ router.post("/", async (req, res) => {
   );
 
   if (user) {
-    setCookie(req, res, user.id as string);
+    await setCookie(req, res, user.id as string);
   } else {
     throw new Error("Error creating user account");
   }
@@ -105,7 +105,7 @@ router.post("/", async (req, res) => {
     }
   }
 
-  return res.json({ msg: "ok" });
+  return res.json({ id: user.id, msg: "ok" });
 });
 
 /**

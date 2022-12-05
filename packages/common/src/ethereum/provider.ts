@@ -1,9 +1,11 @@
-import { ethers } from "ethers";
 import type { UnsignedTransaction } from "@ethersproject/transactions";
+import { ethers } from "ethers";
+
 import {
-  UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION,
   UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
+  UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION,
 } from "../constants";
+
 import type { EthereumContext } from ".";
 
 // Provider api used by the app UI. Spiritually the same as the injected

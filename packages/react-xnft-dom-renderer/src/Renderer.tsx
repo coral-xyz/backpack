@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { Element } from "react-xnft";
-import { ViewRenderer } from "./ViewRenderer";
-import { useDomContext } from "./Context";
+import type { Element } from "react-xnft";
 import { styles } from "@coral-xyz/themes";
+
+import { useDomContext } from "./Context";
+import { ViewRenderer } from "./ViewRenderer";
 const useStyles = styles((theme) => {
   return {
     appContainer: {

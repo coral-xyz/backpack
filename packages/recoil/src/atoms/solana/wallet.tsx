@@ -1,8 +1,10 @@
-import { selector } from "recoil";
+import { BackgroundSolanaConnection } from "@coral-xyz/common";
 import { AnchorProvider, Spl } from "@project-serum/anchor";
 import { Keypair } from "@solana/web3.js";
-import { BackgroundSolanaConnection } from "@coral-xyz/common";
+import { selector } from "recoil";
+
 import { connectionBackgroundClient } from "../client";
+
 import { solanaCommitment, solanaConnectionUrl } from "./preferences";
 
 export const anchorContext = selector({

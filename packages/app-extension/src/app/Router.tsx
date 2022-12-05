@@ -1,42 +1,43 @@
 import { Suspense, useEffect } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { Block as BlockIcon } from "@mui/icons-material";
-import { styles } from "@coral-xyz/themes";
+import type { Blockchain } from "@coral-xyz/common";
 import {
-  Blockchain,
+  EXTENSION_HEIGHT,
+  EXTENSION_WIDTH,
   getLogger,
   openOnboarding,
-  toTitleCase,
-  EXTENSION_WIDTH,
-  EXTENSION_HEIGHT,
-  QUERY_LOCKED,
   QUERY_APPROVAL,
-  QUERY_APPROVE_TRANSACTION,
   QUERY_APPROVE_ALL_TRANSACTIONS,
   QUERY_APPROVE_MESSAGE,
+  QUERY_APPROVE_TRANSACTION,
+  QUERY_LOCKED,
+  toTitleCase,
 } from "@coral-xyz/common";
 import {
   KeyringStoreStateEnum,
-  useKeyringStoreState,
   useApprovedOrigins,
-  useBootstrapFast,
-  useBackgroundResponder,
   useBackgroundClient,
+  useBackgroundResponder,
+  useBootstrapFast,
   useEnabledBlockchains,
-  useUsername,
+  useKeyringStoreState,
 } from "@coral-xyz/recoil";
+import { styles } from "@coral-xyz/themes";
+import { Block as BlockIcon } from "@mui/icons-material";
+import { AnimatePresence, motion } from "framer-motion";
+
+import { refreshXnftPreferences } from "../api/preferences";
+import { EmptyState } from "../components/common/EmptyState";
 import { Locked } from "../components/Locked";
 import { Unlocked } from "../components/Unlocked";
+import { ApproveMessage } from "../components/Unlocked/Approvals/ApproveMessage";
 import { ApproveOrigin } from "../components/Unlocked/Approvals/ApproveOrigin";
 import {
-  ApproveTransaction,
   ApproveAllTransactions,
+  ApproveTransaction,
 } from "../components/Unlocked/Approvals/ApproveTransaction";
-import { ApproveMessage } from "../components/Unlocked/Approvals/ApproveMessage";
-import "./App.css";
 import { refreshFeatureGates } from "../gates/FEATURES";
-import { EmptyState } from "../components/common/EmptyState";
-import { refreshXnftPreferences } from "../api/preferences";
+
+import "./App.css";
 
 const logger = getLogger("router");
 

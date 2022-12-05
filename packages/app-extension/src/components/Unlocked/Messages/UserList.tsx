@@ -1,12 +1,14 @@
-import { useCustomTheme } from "@coral-xyz/themes";
-import { List, ListItem } from "@mui/material";
-import { isFirstLastListItemStyle } from "../../common";
-import { ProxyImage } from "../../common/ProxyImage";
-import { useStyles } from "./styles";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { NAV_COMPONENT_MESSAGE_PROFILE } from "@coral-xyz/common";
-import { useNavStack } from "../../common/Layout/NavStack";
 import { useNavigation } from "@coral-xyz/recoil";
+import { useCustomTheme } from "@coral-xyz/themes";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { List, ListItem } from "@mui/material";
+
+import { isFirstLastListItemStyle } from "../../common";
+import { useNavStack } from "../../common/Layout/NavStack";
+import { ProxyImage } from "../../common/ProxyImage";
+
+import { useStyles } from "./styles";
 
 export const UserList = ({
   users,

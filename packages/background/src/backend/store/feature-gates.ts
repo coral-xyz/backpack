@@ -1,5 +1,6 @@
+import type { FEATURE_GATES_MAP } from "@coral-xyz/common";
+
 import { LocalStorageDb } from "./db";
-import { FEATURE_GATES_MAP } from "@coral-xyz/common";
 
 const KEY_FEATURE_GATES_STORE = "feature-gates-store";
 

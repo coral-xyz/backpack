@@ -1,5 +1,5 @@
+import { ETH_NATIVE_MINT, UniswapTokenList } from "@coral-xyz/common";
 import { atom } from "recoil";
-import { UniswapTokenList, ETH_NATIVE_MINT } from "@coral-xyz/common";
 
 // Ethereum token metadata
 export const ethereumTokenMetadata = atom({

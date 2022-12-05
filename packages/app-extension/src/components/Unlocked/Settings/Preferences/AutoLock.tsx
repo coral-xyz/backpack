@@ -1,11 +1,12 @@
-import { useState, useEffect } from "react";
-import { Typography } from "@mui/material";
-import { useCustomTheme } from "@coral-xyz/themes";
+import { useEffect, useState } from "react";
 import { UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE } from "@coral-xyz/common";
-import { TextField, PrimaryButton, SecondaryButton } from "../../../common";
-import { useNavStack } from "../../../common/Layout/NavStack";
 import { useAutolockSecs, useBackgroundClient } from "@coral-xyz/recoil";
+import { useCustomTheme } from "@coral-xyz/themes";
+import { Typography } from "@mui/material";
+
+import { PrimaryButton, SecondaryButton, TextField } from "../../../common";
 import { TextInput } from "../../../common/Inputs";
+import { useNavStack } from "../../../common/Layout/NavStack";
 
 export function PreferencesAutoLock() {
   const nav = useNavStack();

@@ -1,5 +1,6 @@
-import type { RpcResponse, Context } from "@coral-xyz/common";
+import type { Context, RpcResponse } from "@coral-xyz/common";
 import { getLogger } from "@coral-xyz/common";
+
 import type { Backend } from "../backend/core";
 import { SUCCESS_RESPONSE } from "../backend/core";
 import type { Config, Handle } from "../types";

@@ -1,6 +1,6 @@
+import createStyles from "@mui/styles/createStyles";
 import _makeStyles from "@mui/styles/makeStyles";
 import useTheme from "@mui/styles/useTheme";
-import createStyles from "@mui/styles/createStyles";
 
 export const HOVER_OPACITY = 0.8;
 
@@ -116,10 +116,12 @@ export const darkTheme: any = {
       backgroundBackdrop: BACKGROUND_BACKDROP_COLOR,
       bg2: BACKGROUND_COLOR_2,
       bg3: BACKGROUND_COLOR_0,
+      bg4: "rgba(255, 255, 255, 0.2)",
       nav: BACKGROUND_COLOR_1,
       fontColor: FONT_COLOR,
       fontColor2: FONT_COLOR_2,
       fontColor3: FONT_COLOR_3,
+      fontColor4: LIGHT_BACKGROUND_COLOR_1,
       subtext: FONT_COLOR_3,
       secondary: FONT_COLOR_1,
       primaryButton: BRAND_COLOR,
@@ -166,6 +168,7 @@ export const darkTheme: any = {
       tabBarBoxShadow: "0px -4px 4px rgba(3, 10, 25, 0.02)",
       coralGradient:
         "linear-gradient(113.94deg, #3EECB8 15.93%, #A372FE 58.23%, #FE7D4A 98.98%)",
+      miniDrawerBackdrop: "#000000",
     },
   },
 };
@@ -228,9 +231,11 @@ export const lightTheme: any = {
       nav: LIGHT_BACKGROUND_COLOR_1,
       bg2: LIGHT_BACKGROUND_COLOR_2,
       bg3: LIGHT_BACKGROUND_COLOR_1,
+      bg4: LIGHT_BACKGROUND_COLOR_0,
       fontColor: LIGHT_FONT_COLOR,
       fontColor2: LIGHT_FONT_COLOR_2,
       fontColor3: LIGHT_FONT_COLOR_3,
+      fontColor4: LIGHT_FONT_COLOR_2,
       subtext: LIGHT_FONT_COLOR_3,
       secondary: LIGHT_FONT_COLOR_1,
       primaryButton: LIGHT_BRAND_COLOR,
@@ -277,6 +282,7 @@ export const lightTheme: any = {
       tabBarBoxShadow: "0px -4px 4px rgba(3, 10, 25, 0.02)",
       coralGradient:
         "linear-gradient(113.94deg, #3EECB8 15.93%, #A372FE 58.23%, #FE7D4A 98.98%)",
+      miniDrawerBackdrop: "#18181b",
     },
   },
 };

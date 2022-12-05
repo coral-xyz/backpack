@@ -1,13 +1,11 @@
-import { atomFamily, selectorFamily } from "recoil";
+import type { RecentTransaction } from "@coral-xyz/common";
+import { Blockchain, ETH_NATIVE_MINT } from "@coral-xyz/common";
 import { PublicKey } from "@solana/web3.js";
-import {
-  Blockchain,
-  RecentTransaction,
-  ETH_NATIVE_MINT,
-} from "@coral-xyz/common";
-import { anchorContext } from "./solana/wallet";
+import { atomFamily, selectorFamily } from "recoil";
+
 import { ethersContext } from "./ethereum/provider";
 import { fetchRecentSolanaTransactions } from "./solana/recent-transactions";
+import { anchorContext } from "./solana/wallet";
 
 /**
  * Retrieve recent Ethereum transactions using alchemy_getAssetTransfers.

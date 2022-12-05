@@ -1,9 +1,9 @@
-import { ethers, BigNumber } from "ethers";
 import type {
-  ContractCallResults,
   ContractCallContext,
+  ContractCallResults,
 } from "ethereum-multicall";
 import { Multicall } from "ethereum-multicall";
+import { BigNumber, ethers } from "ethers";
 
 import { UniswapTokenList } from "./tokens-uniswap";
 

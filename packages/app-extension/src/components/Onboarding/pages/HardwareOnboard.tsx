@@ -1,21 +1,23 @@
 import { useState } from "react";
-import Transport from "@ledgerhq/hw-transport";
-import {
+import type {
   Blockchain,
   BlockchainKeyringInit,
   DerivationPath,
 } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { HardwareSign } from "./HardwareSign";
-import { HardwareDefaultAccount } from "./HardwareDefaultAccount";
-import { ConnectHardwareWelcome } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareWelcome";
+import type Transport from "@ledgerhq/hw-transport";
+
+import { useSteps } from "../../../hooks/useSteps";
+import type { SelectedAccount } from "../../common/Account/ImportAccounts";
+import { ImportAccounts } from "../../common/Account/ImportAccounts";
+import { CloseButton } from "../../common/Layout/Drawer";
+import { NavBackButton, WithNav } from "../../common/Layout/Nav";
 import { ConnectHardwareSearching } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareSearching";
 import { ConnectHardwareSuccess } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareSuccess";
-import { ImportAccounts } from "../../common/Account/ImportAccounts";
-import type { SelectedAccount } from "../../common/Account/ImportAccounts";
-import { WithNav, NavBackButton } from "../../common/Layout/Nav";
-import { CloseButton } from "../../common/Layout/Drawer";
-import { useSteps } from "../../../hooks/useSteps";
+import { ConnectHardwareWelcome } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareWelcome";
+
+import { HardwareDefaultAccount } from "./HardwareDefaultAccount";
+import { HardwareSign } from "./HardwareSign";
 
 export function HardwareOnboard({
   blockchain,

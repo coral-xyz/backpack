@@ -7,6 +7,7 @@
     "@bonfida/spl-name-service": "^0.1.51",
     "@cardinal/token-manager": "^1.7.9",
     "@coral-xyz/background": "*",
+    "@coral-xyz/chat-sdk": "*",
     "@coral-xyz/common": "*",
     "@coral-xyz/react-xnft-dom-renderer": "*",
     "@coral-xyz/recoil": "*",

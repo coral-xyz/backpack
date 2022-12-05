@@ -1,6 +1,7 @@
+import { useEffect, useState } from "react";
 import { SIMULATOR_URL } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { useState, useEffect } from "react";
+
 import { PluginDisplay } from "./Plugin";
 
 // The refresh code is a big hack. :)

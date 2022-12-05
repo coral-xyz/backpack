@@ -1,10 +1,10 @@
-import { Skeleton, Typography } from "@mui/material";
 import { formatUSD } from "@coral-xyz/common";
-import { styles, useCustomTheme, HOVER_OPACITY } from "@coral-xyz/themes";
 import {
   totalBalance as totalBalanceSelector,
   useLoader,
 } from "@coral-xyz/recoil";
+import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
+import { Skeleton, Typography } from "@mui/material";
 
 const useStyles = styles((theme) => ({
   button: {

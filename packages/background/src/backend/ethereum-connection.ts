@@ -1,22 +1,23 @@
-import type { BigNumber } from "ethers";
-import { ethers } from "ethers";
-import type { Notification, EventEmitter } from "@coral-xyz/common";
+import type { EventEmitter, Notification } from "@coral-xyz/common";
 import {
+  BACKEND_EVENT,
+  Blockchain,
   fetchEthereumBalances,
   getLogger,
-  Blockchain,
-  BACKEND_EVENT,
   NOTIFICATION_BLOCKCHAIN_DISABLED,
   NOTIFICATION_BLOCKCHAIN_ENABLED,
-  NOTIFICATION_KEYRING_STORE_CREATED,
-  NOTIFICATION_KEYRING_STORE_UNLOCKED,
-  NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
-  NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
-  NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
+  NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
   NOTIFICATION_ETHEREUM_FEE_DATA_DID_UPDATE,
+  NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
+  NOTIFICATION_KEYRING_STORE_CREATED,
+  NOTIFICATION_KEYRING_STORE_LOCKED,
+  NOTIFICATION_KEYRING_STORE_UNLOCKED,
 } from "@coral-xyz/common";
+import type { BigNumber } from "ethers";
+import { ethers } from "ethers";
+
 import type { CachedValue } from "../types";
 
 const logger = getLogger("ethereum-connection-backend");

@@ -1,4 +1,4 @@
-import { MessageLeft } from "./Message";
+import { ChatMessages } from "./Message";
 import { SendMessage } from "./SendMessage";
 import InfoIcon from "@mui/icons-material/Info";
 import { ScrollBarImpl } from "./ScrollbarImpl";
@@ -8,9 +8,11 @@ import { MessagesSkeleton } from "./MessagesSkeleton";
 import { EmptyChat } from "./EmptyChat";
 import { useStyles } from "./styles";
 import { useCustomTheme } from "@coral-xyz/themes";
-export const FullScreenChat = ({ messageContainerRef, chats }) => {
-  const { chatManager, loading, areFriends, requested } = useChatContext();
+export const FullScreenChat = () => {
+  const { chatManager, loading, areFriends, requested, chats } =
+    useChatContext();
   const [autoScroll, setAutoScroll] = useState(true);
+  const theme = useCustomTheme();
 
   const messageRef = useRef<any>();
 
@@ -43,6 +45,7 @@ export const FullScreenChat = ({ messageContainerRef, chats }) => {
         display: "flex",
         flexFlow: "column",
         height: "100%",
+        background: theme.custom.colors.bg3,
       }}
     >
       <ScrollBarImpl>
@@ -52,8 +55,8 @@ export const FullScreenChat = ({ messageContainerRef, chats }) => {
           ref={messageRef}
           style={{
             overflowY: "scroll",
-            height: "calc(100% - 47px)",
-            padding: 15,
+            height: "calc(100% - 67px)",
+            background: theme.custom.colors.bg3,
           }}
         >
           {!areFriends && !requested && (
@@ -63,22 +66,8 @@ export const FullScreenChat = ({ messageContainerRef, chats }) => {
             <Banner title={"Contact pending request"} />
           )}
           {loading && <MessagesSkeleton />}
-          {!loading && chats.length === 0 && <EmptyChat />}
-          {!loading &&
-            chats.length !== 0 &&
-            chats.map((chat) => {
-              return (
-                <MessageLeft
-                  timestamp={chat.created_at}
-                  key={chat.id}
-                  message={chat.message}
-                  received={chat.received}
-                  messageKind={chat.message_kind}
-                  image={chat.image}
-                  username={chat.username}
-                />
-              );
-            })}
+          {!loading && chats?.length === 0 && <EmptyChat />}
+          {!loading && chats?.length !== 0 && <ChatMessages />}
         </div>
       </ScrollBarImpl>
       <div style={{ position: "absolute", bottom: 0, width: "100%" }}>

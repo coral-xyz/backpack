@@ -3,9 +3,9 @@
 // the background script.
 //
 
-import type { RpcResponse } from "../types";
-import { BrowserRuntimeExtension, BrowserRuntimeCommon } from "../browser";
+import { BrowserRuntimeCommon, BrowserRuntimeExtension } from "../browser";
 import { POST_MESSAGE_ORIGIN } from "../constants";
+import type { RpcResponse } from "../types";
 
 // Channel is a class that establishes communication channel from a
 // content/injected script to a background script.
