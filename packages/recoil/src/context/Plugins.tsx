@@ -36,4 +36,3 @@ export function PluginManager(props: any) {
   return <>{props.children}</>;
 }
 
-// type PluginsContext = {};
