@@ -19,6 +19,7 @@ export function PluginRenderer({
 
   useEffect(() => {
     if (plugin && ref && ref.current) {
+      console.log("mounting");
       plugin.mount(xnftPreference);
       plugin.didFinishSetup!.then(() => {
         plugin.pushAppUiMetadata({ isDarkMode, username, avatarUrl });
@@ -42,8 +43,7 @@ export function PluginRenderer({
     <div ref={ref} style={{ height: "100vh", overflow: "hidden" }}>
       {!loaded && (
         <div style={{ height: "100vh" }}>
-          {" "}
-          <Loading />{" "}
+          <Loading />
         </div>
       )}
     </div>

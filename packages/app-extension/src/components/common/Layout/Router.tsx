@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import {
   Navigate,
   Route,
   Routes,
   useLocation,
-  useNavigate,
   useSearchParams,
 } from "react-router-dom";
 import {
@@ -15,10 +14,12 @@ import type { SearchParamsFor } from "@coral-xyz/recoil";
 import {
   PluginManager,
   useBackgroundClient,
+  useClosePlugin,
   useDecodedSearchParams,
   useFreshPlugin,
   useNavigation,
   useRedirectUrl,
+  useUpdateSearchParams,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
@@ -26,7 +27,7 @@ import { AnimatePresence } from "framer-motion";
 
 import { WithDrawer } from "../../common/Layout/Drawer";
 import { Apps } from "../../Unlocked/Apps";
-import { _PluginDisplay, PluginApp } from "../../Unlocked/Apps/Plugin";
+import { PluginApp } from "../../Unlocked/Apps/Plugin";
 import { Balances } from "../../Unlocked/Balances";
 import { Token } from "../../Unlocked/Balances/TokensWidget/Token";
 import { ChatScreen } from "../../Unlocked/Messages/ChatScreen";
@@ -39,6 +40,7 @@ import { NftOptionsButton, NftsDetail } from "../../Unlocked/Nfts/Detail";
 import { NftChat, NftsExperience } from "../../Unlocked/Nfts/Experience";
 import { SettingsButton } from "../../Unlocked/Settings";
 import { Swap } from "../../Unlocked/Swap";
+import { Loading } from "..";
 
 import { NavBackButton, WithNav } from "./Nav";
 import { WithMotion } from "./NavStack";
@@ -75,6 +77,7 @@ export function Redirect() {
     // TODO: probably want to use some API to append the search param instead.
     url = `${url}&pluginProps=${encodeURIComponent(pluginProps)}`;
   }
+  console.log(url);
   return <Navigate to={url} replace />;
 }
 
@@ -175,7 +178,8 @@ function NavScreen({ component }: { component: React.ReactNode }) {
         >
           <NavBootstrap>
             <PluginManager>
-              <NavScreenComponent component={component} />
+              {component}
+              <PluginDrawer />
             </PluginManager>
           </NavBootstrap>
         </WithNav>
@@ -184,29 +188,13 @@ function NavScreen({ component }: { component: React.ReactNode }) {
   );
 }
 
-function NavScreenComponent({ component }: { component: React.ReactNode }) {
-  const [searchParams] = useSearchParams();
-  const pluginProps = searchParams.get("pluginProps");
-
-  if (pluginProps) {
-    return (
-      <>
-        {component}
-        <PluginDrawer />
-      </>
-    );
-  }
-
-  return <>{component}</>;
-}
-
 function PluginDrawer() {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [searchParams] = useSearchParams();
-  const background = useBackgroundClient();
-  const location = useLocation();
+  const closePlugin = useClosePlugin();
+
   const pluginProps = searchParams.get("pluginProps");
-  const { xnftAddress } = JSON.parse(decodeURIComponent(pluginProps!));
+  const { xnftAddress } = JSON.parse(decodeURIComponent(pluginProps ?? "{}"));
 
   useEffect(() => {
     if (xnftAddress) {
@@ -216,29 +204,17 @@ function PluginDrawer() {
 
   return (
     <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-      {xnftAddress && (
-        <PluginApp
-          xnftAddress={xnftAddress}
-          closePlugin={() => {
-            setOpenDrawer(false);
-            setTimeout(() => {
-              const activeTab = TAB_SET.has(location.pathname)
-                ? location.pathname.slice(1)
-                : null;
-              searchParams.delete("pluginProps");
-              const newUrl = `${location.pathname}?${searchParams.toString()}`;
-              console.log("navigate", newUrl);
-              background
-                .request({
-                  method: UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
-                  params: [newUrl, activeTab],
-                })
-                .catch(console.error);
-              // navigate(newUrl);
-            }, 100);
-          }}
-        />
-      )}
+      <Suspense fallback={<Loading />}>
+        {xnftAddress && (
+          <PluginApp
+            xnftAddress={xnftAddress}
+            closePlugin={() => {
+              setOpenDrawer(false);
+              setTimeout(closePlugin, 100);
+            }}
+          />
+        )}
+      </Suspense>
     </WithDrawer>
   );
 }

@@ -21,7 +21,7 @@ export function PluginManager(props: any) {
   //
   useEffect(() => {
     plugins
-      .filter((p) => p.needsLoad)
+      ?.filter((p) => p.needsLoad)
       .forEach((plugin) => {
         plugin.setHostApi({
           push: segue.push,
@@ -33,12 +33,8 @@ export function PluginManager(props: any) {
       });
   }, [plugins]);
 
-  return (
-    <_PluginsContext.Provider value={{}}>
-      {props.children}
-    </_PluginsContext.Provider>
-  );
+  return <>{props.children}</>;
 }
 
-type PluginsContext = {};
-const _PluginsContext = React.createContext<PluginsContext | null>(null);
+// type PluginsContext = {};
+// const _PluginsContext = React.createContext<PluginsContext | null>(null);

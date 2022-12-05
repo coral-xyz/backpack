@@ -1,10 +1,13 @@
 import React, { useEffect } from "react";
-import type { Blockchain, Notification } from "@coral-xyz/common";
+import type {
+  Blockchain,
+  FEATURE_GATES_MAP,
+  Notification,
+} from "@coral-xyz/common";
 import {
   BackgroundSolanaConnection,
   CHANNEL_POPUP_NOTIFICATIONS,
   ChannelAppUi,
-  FEATURE_GATES_MAP,
   getLogger,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
@@ -40,6 +43,7 @@ import type { Commitment } from "@solana/web3.js";
 import { useSetRecoilState } from "recoil";
 
 import * as atoms from "../atoms";
+import { featureGates } from "../atoms";
 import { allPlugins } from "../hooks";
 import type { WalletPublicKeys } from "../types";
 import {
@@ -49,7 +53,6 @@ import {
 } from "../";
 
 import { useNavigate } from "./useNavigatePolyfill";
-import { featureGates } from "../atoms";
 
 const logger = getLogger("notifications-provider");
 

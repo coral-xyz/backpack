@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE } from "@coral-xyz/common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
+import {
+  useBackgroundClient,
+  useOpenPlugin,
+  useUpdateSearchParams,
+} from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 import { Skeleton } from "@mui/material";
 import Card from "@mui/material/Card";
@@ -64,8 +68,7 @@ export default function EntryONE() {
   const [imageLoaded, setImageLoaded] = useState(false);
   const isONELive = useIsONELive();
   const classes = useStyles();
-  const background = useBackgroundClient();
-  const location = useLocation();
+  const openPlugin = useOpenPlugin();
 
   useEffect(() => {
     const img = new Image();
@@ -73,31 +76,15 @@ export default function EntryONE() {
       setImageLoaded(true);
     };
     img.src = "https://xnft.wao.gg/one-entry-bg.png";
+    return () => {
+      img.onload = () => null;
+    };
   }, []);
 
   const isLoading = false || !imageLoaded || isONELive === "loading";
 
   const openXNFT = () => {
-    // Update the URL to use the plugin.
-    //
-    // This will do two things
-    //
-    // 1. Update and persist the new url. Important so that if the user
-    //    closes/re-opens the app, the plugin opens up immediately.
-    // 2. Cause a reload of this route with the plguin url in the search
-    //    params, which will trigger the drawer to activate.
-    //
-    const newUrl = `${location.pathname}${
-      location.search
-    }&plugin=${encodeURIComponent(
-      "4ekUZj2TKNoyCwnRDstvViCZYkhnhNoWNQpa5bBLwhq4"
-    )}`;
-    background
-      .request({
-        method: UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
-        params: [newUrl],
-      })
-      .catch(console.error);
+    openPlugin("4ekUZj2TKNoyCwnRDstvViCZYkhnhNoWNQpa5bBLwhq4");
   };
 
   return (
