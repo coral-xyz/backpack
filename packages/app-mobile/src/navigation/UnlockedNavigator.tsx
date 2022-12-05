@@ -8,7 +8,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import AppListScreen from "@screens/Unlocked/AppListScreen";
 import { BalancesNavigator } from "@screens/Unlocked/BalancesScreen";
 import DepositModal from "@screens/Unlocked/DepositScreen";
-import NftCollectiblesScreen from "@screens/Unlocked/NftCollectiblesScreen";
+import { NFTCollectiblesNavigator } from "@screens/Unlocked/NftCollectiblesScreen";
 import { RecentActivityScreen } from "@screens/Unlocked/RecentActivityScreen";
 import {
   SelectSendTokenModal,
@@ -45,13 +45,13 @@ export default function UnlockedNavigator() {
           component={SelectSendTokenModal}
         />
         <Stack.Screen
+          name="SendTokenModal"
+          component={SendTokenModal}
           options={({ route }) => {
             return {
               title: route.params.title,
             };
           }}
-          name="SendTokenModal"
-          component={SendTokenModal}
         />
         <Stack.Screen
           options={{ title: "Swap" }}
@@ -109,7 +109,7 @@ function UnlockedBottomTabNavigator() {
     >
       <Tab.Screen name="Balances" component={BalancesNavigator} />
       <Tab.Screen name="Applications" component={AppListScreen} />
-      <Tab.Screen name="Collectibles" component={NftCollectiblesScreen} />
+      <Tab.Screen name="Collectibles" component={NFTCollectiblesNavigator} />
     </Tab.Navigator>
   );
 }

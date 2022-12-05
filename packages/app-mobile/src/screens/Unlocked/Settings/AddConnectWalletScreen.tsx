@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Button, Pressable, Text, View } from "react-native";
 import {
   ActionCard,
   Header,
@@ -24,20 +24,23 @@ import {
   useWalletName,
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTheme } from "@hooks";
 import { useNavigation } from "@react-navigation/native";
 
-export function AddConnectWalletScreen({
-  blockchain,
-}: {
-  blockchain: Blockchain;
-}) {
+export function AddConnectWalletScreen({ route }) {
+  const { blockchain } = route.params;
   const navigation = useNavigation();
   const background = useBackgroundClient();
   const keyringType = useKeyringType();
   const theme = useTheme();
-  const [openDrawer, setOpenDrawer] = useState(false);
-  const [newPublicKey, setNewPublicKey] = useState("");
+  const [newPublicKey, setNewPublicKey] = useState(null);
+
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const snapPoints = useMemo(() => ["25%"], []);
+
+  const handleOpenModal = () => bottomSheetModalRef.current?.present();
+  const handleDismissModal = () => bottomSheetModalRef.current?.dismiss();
 
   return (
     <Screen>
@@ -75,7 +78,7 @@ export function AddConnectWalletScreen({
                 });
 
                 setNewPublicKey(newPubkey);
-                setOpenDrawer(true);
+                handleOpenModal();
               }}
             />
           </View>
@@ -90,12 +93,13 @@ export function AddConnectWalletScreen({
               />
             }
             text="Import a private key"
-            onPress={() => navigation.push("import-secret-key", { blockchain })}
+            onPress={() => navigation.push("ImportSecretKey", { blockchain })}
           />
         </View>
       </View>
       <View style={{ flex: 0.5, width: "48%", marginTop: 12 }}>
         <ActionCard
+          disabled={true}
           icon={
             <MaterialIcons
               size={24}
@@ -105,30 +109,36 @@ export function AddConnectWalletScreen({
           }
           text="Import from hardware wallet"
           onPress={() => {
-            openConnectHardware(blockchain);
-            window.close();
+            // openConnectHardware(blockchain);
           }}
         />
       </View>
+      <BottomSheetModal
+        index={0}
+        snapPoints={snapPoints}
+        ref={bottomSheetModalRef}
+      >
+        {newPublicKey ? (
+          <ConfirmCreateWallet
+            blockchain={blockchain}
+            publicKey={newPublicKey}
+            onDismiss={handleDismissModal}
+          />
+        ) : null}
+        {newPublicKey ? <Text>{JSON.stringify({ newPublicKey })}</Text> : null}
+      </BottomSheetModal>
     </Screen>
   );
 }
 
-// <ConfirmCreateWallet
-//   blockchain={blockchain}
-//   publicKey={newPublicKey}
-//   setOpenDrawer={setOpenDrawer}
-// />
-
 export const ConfirmCreateWallet: React.FC<{
   blockchain: Blockchain;
   publicKey: string;
-  setOpenDrawer: (b: boolean) => void;
-}> = ({ blockchain, publicKey, setOpenDrawer }) => {
+  onDismiss: () => void;
+}> = ({ blockchain, publicKey, onDismiss }) => {
   const theme = useTheme();
   const walletName = useWalletName(publicKey);
-  const background = useBackgroundClient();
-  // const tab = useTab();
+  // const background = useBackgroundClient();
 
   return (
     <View
@@ -156,23 +166,7 @@ export const ConfirmCreateWallet: React.FC<{
       <View>
         <Pressable
           onPress={() => {
-            if (tab === TAB_BALANCES) {
-              // Experience won't go back to TAB_BALANCES so we poke it
-              background.request({
-                method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
-                params: [TAB_APPS],
-              });
-            }
-
-            background.request({
-              method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
-              params: [TAB_BALANCES],
-            });
-
-            // Close mini drawer.
-            setOpenDrawer(false);
-            // Close main drawer.
-            close();
+            onDismiss();
           }}
         >
           <Text>
