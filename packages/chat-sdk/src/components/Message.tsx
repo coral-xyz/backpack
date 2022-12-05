@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme: any) =>
     messageLeft: {
       borderRadius: "16px 16px 16px 0px",
       maxWidth: 200,
-      background: theme.custom.colors.background,
+      background: theme.custom.colors.bg4,
       color: theme.custom.colors.fontColor2,
       padding: "12px 16px",
     },
