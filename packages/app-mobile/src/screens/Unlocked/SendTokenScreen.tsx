@@ -7,6 +7,7 @@ import {
   Screen,
   StyledTextInput,
   TokenInputField,
+  Debug,
 } from "@components";
 import {
   Blockchain,
@@ -130,22 +131,18 @@ export function SendTokenModal({ route }) {
           }}
         />
       </View>
-      <Text style={{ color: "#FFF" }}>
-        {JSON.stringify(
-          {
-            destinationAddress,
-            amountSubFee,
-            maxAmount,
-            exceedsBalance,
-            isSendDisabled,
-            isAmountError,
-            errorStateWhatever,
-            errors,
-          },
-          null,
-          2
-        )}
-      </Text>
+      <Debug
+        data={{
+          destinationAddress,
+          amountSubFee,
+          maxAmount,
+          exceedsBalance,
+          isSendDisabled,
+          isAmountError,
+          errorStateWhatever,
+          errors,
+        }}
+      />
       <PrimaryButton
         disabled={false}
         label="Send"

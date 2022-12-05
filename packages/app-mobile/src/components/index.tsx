@@ -359,7 +359,7 @@ export function EmptyState({
 }
 
 // React Native apps need to specifcy a width and height for remote images
-export function ProxyImage({ src, ...props }: any) {
+export function ProxyImage({ src, ...props }: any): JSX.Element {
   const uri = proxyImageUrl(props.src);
   return (
     <Image
@@ -389,7 +389,7 @@ export function Margin({
   horizontal?: number | string;
   vertical?: number | string;
   children: JSX.Element[] | JSX.Element;
-}) {
+}): JSX.Element {
   const style = {};
   if (bottom) {
     // @ts-ignore
@@ -434,7 +434,7 @@ export function WalletAddressLabel({
   name: string;
   style: StyleProp<ViewStyle>;
   nameStyle: StyleProp<TextStyle>;
-}) {
+}): JSX.Element {
   const theme = useTheme();
   return (
     <View style={[{ flexDirection: "row", alignItems: "center" }, style]}>
@@ -450,7 +450,7 @@ export function WalletAddressLabel({
   );
 }
 
-export function Avatar({ size = 64 }: { size?: number }) {
+export function Avatar({ size = 64 }: { size?: number }): JSX.Element {
   const avatarUrl = useAvatarUrl(size);
   const theme = useTheme();
 
@@ -474,6 +474,42 @@ export function Avatar({ size = 64 }: { size?: number }) {
           borderRadius: size / 2,
         }}
       />
+    </View>
+  );
+}
+
+export function Debug({ data }: any): JSX.Element {
+  const theme = useTheme();
+  return (
+    <View>
+      <Text
+        style={{
+          color: theme.custom.colors.fontColor,
+          fontFamily: "monospace",
+        }}
+      >
+        {JSON.stringify(data, null, 2)}
+      </Text>
+    </View>
+  );
+}
+
+function generateRandomHexColor() {
+  return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+}
+
+export function DummyScreen({ route }) {
+  return (
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: generateRandomHexColor(),
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <Text>Dummy Screen</Text>
+      <Debug data={{ route: route.params }} />
     </View>
   );
 }
