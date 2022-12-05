@@ -699,12 +699,7 @@ export class Backend {
     if (BACKPACK_FEATURE_USERNAMES && BACKPACK_FEATURE_JWT) {
       // ensure the user has a JSON Web Token stored in their cookies
       try {
-        const res = await fetch(`${BACKEND_API_URL}/users/${username}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+        const res = await fetch(`${BACKEND_API_URL}/users/${username}`);
         if (res.status !== 200)
           throw new Error(`failed to authenticate (${username})`);
         const { id, publickeys } = await res.json();
