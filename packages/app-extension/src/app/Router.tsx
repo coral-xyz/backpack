@@ -315,7 +315,6 @@ function WithEnabledBlockchain({
 
 function WithUnlock({ children }: { children: React.ReactNode }) {
   const keyringStoreState = useKeyringStoreState();
-  console.log(keyringStoreState);
   const needsOnboarding =
     keyringStoreState === KeyringStoreStateEnum.NeedsOnboarding;
   const isLocked =
