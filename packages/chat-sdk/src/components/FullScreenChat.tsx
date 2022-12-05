@@ -8,7 +8,6 @@ import { MessagesSkeleton } from "./MessagesSkeleton";
 import { EmptyChat } from "./EmptyChat";
 import { useStyles } from "./styles";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { Banner } from "./Banner";
 export const FullScreenChat = () => {
   const { chatManager, loading, areFriends, requested, chats } =
     useChatContext();
@@ -60,7 +59,12 @@ export const FullScreenChat = () => {
             background: theme.custom.colors.bg3,
           }}
         >
-          <Banner />
+          {!areFriends && !requested && (
+            <Banner title={"This account is not a friend."} />
+          )}
+          {!areFriends && requested && (
+            <Banner title={"Contact pending request"} />
+          )}
           {loading && <MessagesSkeleton />}
           {!loading && chats?.length === 0 && <EmptyChat />}
           {!loading && chats?.length !== 0 && <ChatMessages />}
@@ -72,3 +76,22 @@ export const FullScreenChat = () => {
     </div>
   );
 };
+
+function Banner({ title }: { title: String }) {
+  const theme = useCustomTheme();
+  const classes = useStyles();
+  return (
+    <div>
+      <div
+        className={`${classes.noContactBanner} ${classes.horizontalCenter} ${classes.text}`}
+      >
+        {" "}
+        <InfoIcon
+          style={{ color: theme.custom.colors.fontColor, marginRight: 5 }}
+        />{" "}
+        {title}
+      </div>
+      <br />
+    </div>
+  );
+}
