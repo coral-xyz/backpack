@@ -9,7 +9,7 @@ import {
   Text,
   View,
 } from "react-native";
-import { Margin, NFTCard, Screen } from "@components";
+import { EmptyState, Margin, NFTCard, Screen } from "@components";
 import type { NftCollection } from "@coral-xyz/common";
 import { Blockchain, toTitleCase } from "@coral-xyz/common";
 import {
@@ -20,6 +20,8 @@ import {
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
+import * as Linking from "expo-linking";
+
 import { NFTDetailScreen, NFTDetailSendScreen } from "./NFTDetailScreen";
 // import { useIsONELive, useTheme } from "@hooks";
 
@@ -256,14 +258,6 @@ function SectionHeader({ section: { title } }: any): JSX.Element {
 //   attributes?: NftAttribute[];
 // };
 
-function EmptyState() {
-  return (
-    <View style={{ backgroundColor: "blue" }}>
-      <Text>NO NFTS go buy some</Text>
-    </View>
-  );
-}
-
 function TableHeader({
   onPress,
   visible,
@@ -368,6 +362,25 @@ function NFTTable({
   );
 }
 
+function NoEmptyState() {
+  return (
+    <View
+      style={{
+        flex: 1,
+        justifyContent: "center",
+      }}
+    >
+      <EmptyState
+        icon={(props: any) => <MaterialIcons name="image" {...props} />}
+        title={"No NFTs"}
+        subtitle={"Get started with your first NFT"}
+        buttonText={"Browse Magic Eden"}
+        onPress={() => Linking.openURL("https://magiceden.io")}
+      />
+    </View>
+  );
+}
+
 export function NFTCollectionListScreen({ navigation }): JSX.Element {
   // const isONELive = useIsONELive();
   const activeWallets = useActiveWallets();
@@ -419,21 +432,22 @@ export function NFTCollectionListScreen({ navigation }): JSX.Element {
 
   // TODO(peter) FlatList inside of a ScrollView error. TBD
   return (
-    <ScrollView style={{ flex: 1 }}>
+    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flex: 1 }}>
       <View style={{ padding: 8, flex: 1 }}>
-        {!hasCollections ? <EmptyState /> : null}
-        {Object.entries(collections).map(([blockchain, collection]) => {
-          return (
-            <Margin key={blockchain} bottom={8}>
-              <NFTTable
-                blockchain={blockchain}
-                collection={collection}
-                initialState={true}
-                onSelectItem={onSelectItem}
-              />
-            </Margin>
-          );
-        })}
+        {!hasCollections ? <NoEmptyState /> : null}
+        {hasCollections &&
+          Object.entries(collections).map(([blockchain, collection]) => {
+            return (
+              <Margin key={blockchain} bottom={8}>
+                <NFTTable
+                  blockchain={blockchain}
+                  collection={collection}
+                  initialState={true}
+                  onSelectItem={onSelectItem}
+                />
+              </Margin>
+            );
+          })}
       </View>
     </ScrollView>
   );
