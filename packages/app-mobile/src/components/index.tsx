@@ -8,6 +8,7 @@ import { useTheme } from "@hooks";
 export { ActionCard } from "./ActionCard";
 export { MnemonicInputFields } from "./MnemonicInputFields";
 export { NavHeader } from "./NavHeader";
+export { NFTCard } from "./NFTCard";
 export { StyledTextInput } from "./StyledTextInput";
 export { TokenAmountHeader } from "./TokenAmountHeader";
 export { TokenInputField } from "./TokenInputField";
@@ -165,6 +166,34 @@ export function SecondaryButton({
       buttonStyle={{ backgroundColor: theme.custom.colors.secondaryButton }}
       labelStyle={{
         color: theme.custom.colors.secondaryButtonTextColor,
+      }}
+      {...props}
+    />
+  );
+}
+
+export function NegativeButton({
+  label,
+  onPress,
+  disabled,
+  loading,
+  ...props
+}: {
+  label: string;
+  onPress: () => void;
+  disabled: boolean;
+  loading?: boolean;
+}) {
+  const theme = useTheme();
+  return (
+    <BaseButton
+      label={label}
+      onPress={onPress}
+      disabled={disabled}
+      loading={loading}
+      buttonStyle={{ backgroundColor: theme.custom.colors.negative }}
+      labelStyle={{
+        color: theme.custom.colors.negativeButtonTextColor,
       }}
       {...props}
     />
@@ -331,7 +360,7 @@ export function EmptyState({
 
 // React Native apps need to specifcy a width and height for remote images
 export function ProxyImage({ src, ...props }: any) {
-  const url = proxyImageUrl(props.src);
+  const uri = proxyImageUrl(props.src);
   return (
     <Image
       {...props}
@@ -339,7 +368,7 @@ export function ProxyImage({ src, ...props }: any) {
       //   currentTarget.onerror = props.onError || null;
       //   currentTarget.src = props.src;
       // }}
-      source={url}
+      source={{ uri }}
     />
   );
 }

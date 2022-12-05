@@ -675,14 +675,6 @@ export function ImportSecretKeyScreen({
           onChangeText={(text) => {
             setSecretKey(text);
           }}
-          // onKeyDown={(e) => {
-          //   if (e.key === "Enter") {
-          //     save(e);
-          //   }
-          // }}
-          // rows={4}
-          // error={error ? true : false}
-          // errorMessage={error || ""}
         />
       </View>
       <PrimaryButton
