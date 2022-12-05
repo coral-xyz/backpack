@@ -21,12 +21,6 @@ import {
 } from "@coral-xyz/recoil";
 import { useTheme } from "@hooks";
 
-// import // ETH_NATIVE_MINT,
-// NAV_COMPONENT_TOKEN,
-// SOL_NATIVE_MINT,
-// toTitleCase,
-// walletAddressDisplay,
-// "@coral-xyz/common";
 import type { Token } from "./index";
 import { RowSeparator, TableHeader } from "./index";
 

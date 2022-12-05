@@ -45,13 +45,13 @@ export default function UnlockedNavigator() {
           component={SelectSendTokenModal}
         />
         <Stack.Screen
+          name="SendTokenModal"
+          component={SendTokenModal}
           options={({ route }) => {
             return {
               title: route.params.title,
             };
           }}
-          name="SendTokenModal"
-          component={SendTokenModal}
         />
         <Stack.Screen
           options={{ title: "Swap" }}
