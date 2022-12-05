@@ -87,8 +87,9 @@ export const ChatRoom = ({
       areFriends={areFriends}
       requested={requested}
       remoteUserId={remoteUserId || ""}
+      type={type}
     >
-      <FullScreenChat chats={chats} messageContainerRef={messageContainerRef} />
+      <FullScreenChat />
     </ChatProvider>
   );
 };

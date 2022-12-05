@@ -38,7 +38,9 @@ function MessageSkeleton() {
           alignItems: "center",
         }}
       >
-        <Skeleton variant="circular" width={40} height={40} />
+        <div style={{ width: 40 }}>
+          <Skeleton variant="circular" width={40} height={40} />
+        </div>
         <div style={{ marginLeft: "5px", width: "100%" }}>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <Skeleton width="40%" height={20} style={{ marginTop: "-6px" }} />
