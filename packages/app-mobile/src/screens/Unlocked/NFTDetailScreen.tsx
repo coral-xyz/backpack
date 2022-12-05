@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { TextInput, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 import {
   Margin,
   NegativeButton,
@@ -8,8 +8,8 @@ import {
   ProxyImage,
   Screen,
   SecondaryButton,
+  StyledTextInput,
 } from "@components";
-import type { NftCollection } from "@coral-xyz/common";
 import {
   Blockchain,
   confirmTransaction,
@@ -18,9 +18,6 @@ import {
   toTitleCase,
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
 } from "@coral-xyz/common";
-// import { Text, IconButton, Popover } from "@mui/material";
-// import { Whatshot, CallMade } from "@mui/icons-material";
-// import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import {
   nftMetadata,
   useAnchorContext,
@@ -34,13 +31,7 @@ import {
   useSolanaCtx,
   useSolanaExplorer,
 } from "@coral-xyz/recoil";
-import {
-  nftCollections,
-  nftMetadata,
-  useActiveWallets,
-  useEnabledBlockchains,
-  useLoader,
-} from "@coral-xyz/recoil";
+import { useActionSheet } from "@expo/react-native-action-sheet";
 import { useTheme } from "@hooks";
 import { PublicKey } from "@solana/web3.js";
 import { BigNumber } from "ethers";
@@ -130,7 +121,6 @@ function Description({ description }: { description: string }): JSX.Element {
 export function NFTDetailSendScreen({ navigation, route }): JSX.Element {
   const { nft } = route.params;
   const background = useBackgroundClient();
-  const { close } = useDrawerContext();
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
   const [destinationAddress, setDestinationAddress] = useState("");
@@ -172,21 +162,20 @@ export function NFTDetailSendScreen({ navigation, route }): JSX.Element {
       >
         <View
           style={{
-            flexDirection: "column",
             justifyContent: "space-between",
           }}
         >
           <View>
             <NFTImage imageUrl={nft.imageUrl} />
-            <TextInput
-              autoFocus
+            <StyledTextInput
+              autoFocus={true}
               placeholder={`Recipient's ${toTitleCase(nft.blockchain)} Address`}
               value={destinationAddress}
-              setValue={(e) => setDestinationAddress(e.target.value)}
-              error={isErrorAddress}
-              inputProps={{
-                name: "to",
-              }}
+              //   setValue={(e) => setDestinationAddress(e.target.value)}
+              //   error={isErrorAddress}
+              //   inputProps={{
+              //     name: "to",
+              //   }}
             />
           </View>
           <View
@@ -261,7 +250,7 @@ function Attributes({ attributes }: { attributes: any }): JSX.Element {
       >
         <View
           style={{
-            display: "flex",
+            flexDirection: "row",
             flexWrap: "wrap",
             marginTop: 4,
             marginLeft: -4,
@@ -313,11 +302,10 @@ function Attributes({ attributes }: { attributes: any }): JSX.Element {
 }
 
 export function NftOptionsButton(): JSX.Element {
-  const theme = useTheme();
   const background = useBackgroundClient();
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const { showActionSheetWithOptions } = useActionSheet();
+
   const [openDrawer, setOpenDrawer] = useState(false);
-  const searchParams = useDecodedSearchParams();
   const [nfts] = useLoader(nftMetadata, new Map());
   const [wasBurnt, setWasBurnt] = useState(false);
 
@@ -336,123 +324,65 @@ export function NftOptionsButton(): JSX.Element {
   }, [openDrawer, wasBurnt, background]);
 
   // @ts-ignore
-  const nft: any = nfts.get(searchParams.props.nftId);
+  //   const nft: any = nfts.get(searchParams.props.nftId);
 
-  const isEthereum = nft && nft.contractAddress;
+  //   const isEthereum = nft && nft.contractAddress;
 
-  const explorer = isEthereum ? useEthereumExplorer() : useSolanaExplorer();
+  //   const explorer = isEthereum ? useEthereumExplorer() : useSolanaExplorer();
 
-  const connectionUrl = isEthereum
-    ? useEthereumConnectionUrl()
-    : useSolanaConnectionUrl();
+  //   const connectionUrl = isEthereum
+  //     ? useEthereumConnectionUrl()
+  //     : useSolanaConnectionUrl();
 
-  const onPress = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
+  //   const onPress = (event: React.MouseEvent<HTMLButtonElement>) => {
+  //     setAnchorEl(event.currentTarget);
+  //   };
+
+  //   const onClose = () => {
+  //     setAnchorEl(null);
+  //   };
+
+  //   const onBurn = () => {
+  //     onClose();
+  //     setOpenDrawer(true);
+  //   };
+
+  const onPress = () => {
+    const options = ["Burn", "View On Explorer", "Cancel"];
+    const destructiveButtonIndex = 0;
+    const cancelButtonIndex = 2;
+
+    showActionSheetWithOptions(
+      {
+        options,
+        cancelButtonIndex,
+        destructiveButtonIndex,
+      },
+      (selectedIndex: number) => {
+        switch (selectedIndex) {
+          case 1:
+            // Save
+            break;
+
+          case destructiveButtonIndex:
+            // Delete
+            break;
+
+          case cancelButtonIndex:
+          // Canceled
+        }
+      }
+    );
   };
 
-  const onClose = () => {
-    setAnchorEl(null);
-  };
+  //   <ApproveTransactionDrawer
+  //     openDrawer={openDrawer}
+  //     setOpenDrawer={setOpenDrawer}
+  //   >
+  //     <BurnConfirmationCard nft={nft} onComplete={() => setWasBurnt(true)} />
+  //   </ApproveTransactionDrawer>
 
-  const onBurn = () => {
-    onClose();
-    setOpenDrawer(true);
-  };
-
-  return (
-    <>
-      <IconButton
-        disableRipple
-        style={{
-          padding: 0,
-        }}
-        onPress={(e) => onPress(e)}
-      >
-        <MoreHorizIcon
-          style={{
-            color: theme.custom.colors.secondary,
-          }}
-        />
-      </IconButton>
-      <Popover
-        open={Boolean(anchorEl)}
-        anchorEl={anchorEl}
-        onClose={onClose}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right",
-        }}
-        PaperProps={{
-          style: {
-            background: theme.custom.colors.nav,
-          },
-        }}
-      >
-        <View
-          style={{
-            padding: 4,
-          }}
-        >
-          <List
-            style={{
-              margin: 0,
-            }}
-          >
-            <ListItem
-              style={{
-                width: "100%",
-                height: 30,
-              }}
-              isFirst={true}
-              isLast={isEthereum}
-              onPress={() => {
-                const url = explorerNftUrl(explorer, nft, connectionUrl);
-                window.open(url, "_blank");
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 14,
-                }}
-              >
-                View on Explorer
-              </Text>
-              <CallMade
-                style={{
-                  color: theme.custom.colors.secondary,
-                }}
-              />
-            </ListItem>
-            {!isEthereum && (
-              <ListItem
-                style={{
-                  width: "100%",
-                  height: 30,
-                }}
-                isLast={true}
-                onPress={() => onBurn()}
-              >
-                <Text
-                  style={{
-                    fontSize: 14,
-                    color: theme.custom.colors.negative,
-                  }}
-                >
-                  Burn Token
-                </Text>
-              </ListItem>
-            )}
-          </List>
-        </View>
-      </Popover>
-      <ApproveTransactionDrawer
-        openDrawer={openDrawer}
-        setOpenDrawer={setOpenDrawer}
-      >
-        <BurnConfirmationCard nft={nft} onComplete={() => setWasBurnt(true)} />
-      </ApproveTransactionDrawer>
-    </>
-  );
+  return <PrimaryButton label="Options" onPress={onPress} />;
 }
 
 function BurnConfirmationCard({

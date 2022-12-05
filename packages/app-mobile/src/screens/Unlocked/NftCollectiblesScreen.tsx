@@ -11,12 +11,7 @@ import {
 } from "react-native";
 import { Margin, NFTCard, Screen } from "@components";
 import type { NftCollection } from "@coral-xyz/common";
-import {
-  Blockchain,
-  NAV_COMPONENT_NFT_COLLECTION,
-  NAV_COMPONENT_NFT_DETAIL,
-  toTitleCase,
-} from "@coral-xyz/common";
+import { Blockchain, toTitleCase } from "@coral-xyz/common";
 import {
   nftCollections,
   useActiveWallets,
@@ -25,6 +20,7 @@ import {
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
+import { NFTDetailScreen, NFTDetailSendScreen } from "./NFTDetailScreen";
 // import { useIsONELive, useTheme } from "@hooks";
 
 const Stack = createStackNavigator();
@@ -506,14 +502,6 @@ function NFTCollectionDetailScreen({ navigation, route }): JSX.Element {
   );
 }
 
-function NFTDetailScreen({ navigation, route }): JSX.Element {
-  return (
-    <View style={{ backgroundColor: "green", flex: 1 }}>
-      <Text>{JSON.stringify({ route: route.params })}</Text>
-    </View>
-  );
-}
-
 export function NFTCollectiblesNavigator(): JSX.Element {
   return (
     <Stack.Navigator
@@ -534,6 +522,7 @@ export function NFTCollectiblesNavigator(): JSX.Element {
         component={NFTDetailScreen}
         options={({ route }) => ({ title: route.params.title })}
       />
+      <Stack.Screen name="SendNFT" component={NFTDetailSendScreen} />
     </Stack.Navigator>
   );
 }

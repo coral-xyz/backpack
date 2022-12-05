@@ -3,6 +3,7 @@ import { useColorScheme } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
 import { NotificationsProvider, useBackgroundClient } from "@coral-xyz/recoil";
+import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 
 import "react-native-gesture-handler";
@@ -14,7 +15,9 @@ function Providers({ children }: { children: JSX.Element }) {
   return (
     <NotificationsProvider>
       <SafeAreaProvider>
-        <BottomSheetModalProvider>{children}</BottomSheetModalProvider>
+        <ActionSheetProvider>
+          <BottomSheetModalProvider>{children}</BottomSheetModalProvider>
+        </ActionSheetProvider>
       </SafeAreaProvider>
     </NotificationsProvider>
   );
