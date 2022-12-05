@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import type { Blockchain } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
   BACKPACK_FEATURE_JWT,
@@ -7,18 +8,47 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
 } from "@coral-xyz/common";
-import { useBackgroundClient, useUsername } from "@coral-xyz/recoil";
+import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(false);
+  // Public key/signature pairs that are required to sync the state of the
+  // server public key data with the client data. A signature that is `undefined`
+  // is one that has not been gathered yet, and a signature of `null` means the
+  // user has opted to remove that public key from the server
+  const [requiredSignatures, setRequiredSignatures] = useState<
+    Array<{
+      publicKey: string;
+      signature: string | undefined | null;
+      hardware: boolean;
+    }>
+  >([]);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const background = useBackgroundClient();
-  const username = useUsername();
+  const user = useUser();
+  const jwtEnabled = !!(
+    BACKPACK_FEATURE_USERNAMES &&
+    BACKPACK_FEATURE_JWT &&
+    user
+  );
 
   useEffect(() => {
     (async () => {
-      if (BACKPACK_FEATURE_USERNAMES && BACKPACK_FEATURE_JWT && username) {
-        const { id, publicKeys, isAuthenticated } = await checkAuthentication();
-        console.log(requiredSignatures(id, publicKeys, isAuthenticated));
+      if (jwtEnabled) {
+        const result = await checkAuthentication();
+        if (result) {
+          const { publicKeys, isAuthenticated } = await checkAuthentication();
+          const { publicKeysToAdd, hardwareSigners } =
+            await getRequiredSignatures(publicKeys);
+          setIsAuthenticated(isAuthenticated);
+          setRequiredSignatures(
+            publicKeysToAdd.map((publicKey) => ({
+              publicKey,
+              signature: undefined,
+              hardware: hardwareSigners.includes(publicKey),
+            }))
+          );
+        }
       } else {
         setLoading(false);
       }
@@ -26,9 +56,89 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   }, []);
 
   /**
+   * Iterate through the required signatures state and gather signatures either
+   * by signing transparently or by displaying a drawer to the user to guide
+   * them through the ledger flow.
+   **/
+  useEffect(() => {
+    (async () => {
+      // Get the next unresolves signature
+      const nextIndex = requiredSignatures.findIndex(
+        (s) => s.signature === undefined
+      );
+      // No more signatures needed
+      if (nextIndex === -1) {
+        // Job done
+        console.log("job done");
+        return;
+      }
+
+      const next = requiredSignatures[nextIndex];
+
+      let signature: string | null;
+      if (next.hardware) {
+        // Display drawer
+        signature = null;
+      } else {
+        signature = await background.request({
+          method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
+          params: ["solana", "onboard", next.publicKey],
+        });
+      }
+      if (signature && !isAuthenticated) {
+        console.log("authenticating");
+        authenticate();
+      }
+      // Add the signature to state
+      const nextRequiredSignatures = requiredSignatures.map((s, i) => {
+        if (i === nextIndex) {
+          return {
+            ...s,
+            signature,
+          };
+        } else {
+          return s;
+        }
+      });
+
+      setRequiredSignatures(nextRequiredSignatures);
+    })();
+  }, [requiredSignatures]);
+
+  /**
    * Query the server and see if the user has a valid JWT.
    */
   const checkAuthentication = async () => {
+    try {
+      const response = await fetch(
+        `${BACKEND_API_URL}/users/${user.username}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.status === 404) {
+        // User does not exist on server, how to handle?
+        throw new Error("user does not exist");
+      }
+      if (response.status !== 200) throw new Error(`could not fetch user`);
+      return await response.json();
+    } catch (err) {
+      console.error("error checking authentication", err);
+      // Relock if authentication failed
+      await background.request({
+        method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
+        params: [],
+      });
+    }
+  };
+
+  /**
+   * Login the user.
+   */
+  const authenticate = async () => {
     try {
       const response = await fetch(`${BACKEND_API_URL}/authenticate`, {
         method: "POST",
@@ -36,14 +146,10 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
           "Content-Type": "application/json",
         },
       });
-      console.log(response);
-
-      if (response.status !== 200)
-        throw new Error(`could not fetch authentication status`);
+      if (response.status !== 200) throw new Error(`could not authenticate`);
       return await response.json();
     } catch (err) {
       // Relock if authentication failed
-      console.error("error checking auth", err);
       await background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
         params: [],
@@ -55,84 +161,40 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
    * Determine the signatures that are required for authentication and for
    * ensuring all client side public keys are stored on the Backpack account.
    */
-  const requiredSignatures = async (
-    userId: string,
-    serverPublicKeys: Array<string>,
-    isAuthenticated: boolean
-  ) => {
-    const clientPublicKeys = await background.request({
+  const getRequiredSignatures = async (serverPublicKeys: Array<string>) => {
+    type NamedPublicKeys = Array<{ name: string; publicKey: string }>;
+    const clientPublicKeys = (await background.request({
       method: UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
       params: [],
-    });
-
-    console.log(clientPublicKeys);
-    console.log(Object.values(clientPublicKeys));
-    console.log(Object.values(clientPublicKeys).flat());
-
-    // Public keys that exist on the client that don't exist on the server
-    const publicKeysToAdd = Object.values(clientPublicKeys)
-      .flat()
-      .filter((k) => !serverPublicKeys.includes(k as string));
-
-    // JWT is set and there is no public keys to sync to the server
-    if (isAuthenticated && publicKeysToAdd.length === 0) return [];
+    })) as Record<
+      Blockchain,
+      {
+        hdPublicKeys: NamedPublicKeys;
+        importedPublicKeys: NamedPublicKeys;
+        ledgerPublicKeys: NamedPublicKeys;
+      }
+    >;
 
     // Transparent signers are those signers that Backpack can sign with on its
     // own, without needing to prompt the user (like for a Ledger signature)
-    const transparentSigners = [
-      ...clientPublicKeys.hdKeyring,
-      ...clientPublicKeys.importedKeyring,
-    ];
-
-    let jwtAuthSigner;
-    if (!isAuthenticated) {
-      // Not authenticated, attempt to auth using a public key that we can sign
-      // with transparently
-
-      // First, check if theres a transparent signer that we need a signature
-      // for anyway to potentially reduce the number of signing RPC requests
-      const signers = transparentSigners.filter((k) =>
-        publicKeysToAdd.includes(k)
+    let transparentSigners: Array<string> = [];
+    let hardwareSigners: Array<string> = [];
+    for (const data of Object.values(clientPublicKeys)) {
+      transparentSigners = transparentSigners.concat([
+        ...data.hdPublicKeys.map((n) => n.publicKey),
+        ...data.importedPublicKeys.map((n) => n.publicKey),
+      ]);
+      hardwareSigners = hardwareSigners.concat(
+        data.ledgerPublicKeys.map((n) => n.publicKey)
       );
-      if (signers) {
-        jwtAuthSigner = signers[0];
-      } else if (transparentSigners.length > 0) {
-        // Next best choice is any of the transparent signers
-        jwtAuthSigner = transparentSigners[0];
-      } else {
-        // Ledger is the only option, and the least preferred since it
-        // requires user intervention
-        jwtAuthSigner = clientPublicKeys.ledgerKeyring[0];
-      }
     }
 
-    // List of public keys that require signatures
-    const publicKeysForSigning = [new Set([...publicKeysToAdd, jwtAuthSigner])];
-    for (const publicKey in publicKeysForSigning) {
-      const signature = await background.request({
-        method: UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
-        params: [],
-      });
-    }
-  };
+    // Public keys that exist on the client that don't exist on the server
+    const publicKeysToAdd = [...transparentSigners, ...hardwareSigners].filter(
+      (k) => !serverPublicKeys.includes(k as string)
+    );
 
-  /**
-   * Login the user.
-   */
-  const login = async (id: string, serverPublicKeys: Array<string>) => {
-    const clientPublicKeys = await background.request({
-      method: UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
-      params: [],
-    });
-    console.log(clientPublicKeys);
-    /**
-    const response = await fetch(`http://localhost:8787/authenticate`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    **/
+    return { publicKeysToAdd, hardwareSigners };
   };
 
   return <>{loading ? "Authenticating" : children}</>;

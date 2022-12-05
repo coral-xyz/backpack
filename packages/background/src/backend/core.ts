@@ -474,8 +474,6 @@ export class Backend {
       mnemonic?: string;
     }
   ) {
-    const blockchainKeyring = keyringForBlockchain(blockchain);
-
     if (
       !keyringInit &&
       (await this.keyringStoreState()) !== KeyringStoreStateEnum.Unlocked
@@ -485,8 +483,12 @@ export class Backend {
       );
     }
 
+    let blockchainKeyring: BlockchainKeyring;
+
     // If keyring init parameters were provided then init the keyring
     if (keyringInit) {
+      // Create an empty keyring to init
+      blockchainKeyring = keyringForBlockchain(blockchain);
       if (keyringInit.mnemonic) {
         // Using a mnemonic
         blockchainKeyring.initFromMnemonic(
@@ -504,6 +506,11 @@ export class Backend {
           },
         ]);
       }
+    } else {
+      blockchainKeyring =
+        this.keyringStore.activeUsernameKeyring.keyringForBlockchain(
+          blockchain
+        );
     }
 
     // Check if the keyring was initialised properly or if the existing stored

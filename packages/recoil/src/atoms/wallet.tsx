@@ -1,6 +1,5 @@
 import {
   Blockchain,
-  UI_RPC_METHOD_KEYRING_ACTIVE_WALLETS,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEY_DATA,
 } from "@coral-xyz/common";
 import { atom, selector, selectorFamily } from "recoil";

@@ -5,6 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "@coral-xyz/zeus": "*",
+    "@coral-xyz/common": "*",
     "@solana/web3.js": "^1.67.2",
     "@types/express": "^4.17.14",
     "@types/request": "^2.48.8",

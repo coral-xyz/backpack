@@ -93,7 +93,6 @@ import {
   UI_RPC_METHOD_SOLANA_SIMULATE,
   UI_RPC_METHOD_USER_READ,
   UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
-  UI_RPC_METHOD_USERNAME_READ,
   withContextPort,
 } from "@coral-xyz/common";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
