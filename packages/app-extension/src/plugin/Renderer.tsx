@@ -19,7 +19,6 @@ export function PluginRenderer({
 
   useEffect(() => {
     if (plugin && ref && ref.current) {
-      console.log("mounting");
       plugin.mount(xnftPreference);
       plugin.didFinishSetup!.then(() => {
         plugin.pushAppUiMetadata({ isDarkMode, username, avatarUrl });
