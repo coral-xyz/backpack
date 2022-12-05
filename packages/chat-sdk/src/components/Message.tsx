@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { createStyles, makeStyles } from "@mui/styles";
 import { Gif as GifComponent } from "@giphy/react-components";
 import { GiphyFetch } from "@giphy/js-fetch-api";
+import { useChatContext } from "./ChatContext";
 
 // use @giphy/js-fetch-api to fetch gifs, instantiate with your api key
 const gf = new GiphyFetch("SjZwwCn1e394TKKjrMJWb2qQRNcqW8ro");
@@ -50,6 +51,32 @@ const useStyles = makeStyles((theme: any) =>
       fontSize: "12px",
       fontColor: "#4E5768",
     },
+    messageLeftContainer: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "flex-start",
+      padding: "12px 16px",
+    },
+    messageLeft: {
+      borderRadius: "16px 16px 16px 0px",
+      maxWidth: 200,
+      background: theme.custom.colors.background,
+      color: theme.custom.colors.fontColor2,
+      padding: "12px 16px",
+    },
+    messageRightContainer: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "flex-end",
+      padding: "12px 16px",
+    },
+    messageRight: {
+      borderRadius: "16px 16px 0px 16px",
+      maxWidth: 200,
+      color: theme.custom.colors.background,
+      background: theme.custom.colors.fontColor2,
+      padding: "12px 16px",
+    },
   })
 );
 
@@ -89,7 +116,7 @@ const GifDemo = ({
   ) : null;
 };
 
-export const MessageLeft = (props) => {
+export const MessageLine = (props) => {
   const message = props.message ? props.message : "";
   const timestamp = props.timestamp ? new Date(props.timestamp) : new Date();
   const photoURL =
@@ -137,3 +164,79 @@ export const MessageLeft = (props) => {
     </>
   );
 };
+
+export function ChatMessages() {
+  const { chats, type, userId } = useChatContext();
+  if (type !== "individual") {
+    return (
+      <div>
+        {chats.map((chat) => {
+          return (
+            <MessageLine
+              timestamp={chat.created_at}
+              key={chat.id}
+              message={chat.message}
+              received={chat.received}
+              messageKind={chat.message_kind}
+              image={chat.image}
+              username={chat.username}
+            />
+          );
+        })}
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      {chats.map((chat) => {
+        if (chat.uuid !== userId) {
+          return (
+            <>
+              <MessageLeft
+                timestamp={chat.created_at}
+                key={chat.id}
+                message={chat.message}
+                received={chat.received}
+                messageKind={chat.message_kind}
+                image={chat.image}
+                username={chat.username}
+              />
+            </>
+          );
+        }
+        return (
+          <MessageRight
+            timestamp={chat.created_at}
+            key={chat.id}
+            message={chat.message}
+            received={chat.received}
+            messageKind={chat.message_kind}
+            image={chat.image}
+            username={chat.username}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+function MessageLeft(props) {
+  const classes = useStyles();
+  const message = props.message ? props.message : "";
+  return (
+    <div className={classes.messageLeftContainer}>
+      <div className={classes.messageLeft}>{message}</div>
+    </div>
+  );
+}
+
+function MessageRight(props) {
+  const classes = useStyles();
+  const message = props.message ? props.message : "";
+  return (
+    <div className={classes.messageRightContainer}>
+      <div className={classes.messageRight}>{message}</div>
+    </div>
+  );
+}
