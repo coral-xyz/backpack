@@ -142,72 +142,6 @@ export const getFriendships = async ({
   return response.auth_friendships ?? [];
 };
 
-export async function setSpam({
-  from,
-  to,
-  spam,
-}: {
-  from: string;
-  to: string;
-  spam: boolean;
-}) {
-  const { user1, user2 } = getSortedUsers(from, to);
-  const updateLabel = getLabel("spam", from, to);
-
-  // @ts-ignore
-  await chain("mutation")({
-    insert_auth_friendships_one: [
-      {
-        object: {
-          user1,
-          user2,
-          [updateLabel]: spam,
-        },
-        on_conflict: {
-          //@ts-ignore
-          update_columns: [updateLabel],
-          //@ts-ignore
-          constraint: "friendships_pkey",
-        },
-      },
-      { id: true },
-    ],
-  });
-}
-
-export async function setBlocked({
-  from,
-  to,
-  spam,
-}: {
-  from: string;
-  to: string;
-  spam: boolean;
-}) {
-  const { user1, user2 } = getSortedUsers(from, to);
-  const updateLabel = getLabel("blocked", from, to);
-
-  // @ts-ignore
-  await chain("mutation")({
-    insert_auth_friendships_one: [
-      {
-        object: {
-          user1,
-          user2,
-          [updateLabel]: spam,
-        },
-        on_conflict: {
-          //@ts-ignore
-          update_columns: [updateLabel],
-          //@ts-ignore
-          constraint: "friendships_pkey",
-        },
-      },
-      { id: true },
-    ],
-  });
-}
-
 export async function setFriendship({
   from,
   to,
@@ -377,13 +311,8 @@ export const getFriendship = async ({
 }: {
   from: string;
   to: string;
-  blocked: boolean;
-  spam: boolean;
 }): Promise<{ are_friends: boolean; request_sent: boolean }> => {
   const { user1, user2 } = getSortedUsers(from, to);
-  const spamLabel = getLabel("spam", from, to);
-  const blockedLabel = getLabel("blocked", from, to);
-
   const existingFriendship = await chain("query")({
     auth_friendships: [
       {
@@ -392,8 +321,6 @@ export const getFriendship = async ({
       },
       {
         are_friends: true,
-        [spamLabel]: true,
-        [blockedLabel]: true,
       },
     ],
     auth_friend_requests: [
@@ -406,8 +333,6 @@ export const getFriendship = async ({
 
   return {
     are_friends: existingFriendship.auth_friendships[0]?.are_friends ?? false,
-    spam: existingFriendship.auth_friendships[0]?.[spamLabel] ?? false,
-    blocked: existingFriendship.auth_friendships[0]?.[blockedLabel] ?? false,
     request_sent: existingFriendship.auth_friend_requests[0] ? true : false,
   };
 };
@@ -441,8 +366,3 @@ export const validateRoom = async (uuid: string, roomId: number) => {
 
   return false;
 };
-
-function getLabel(type: "blocked" | "spam", from: string, to: string) {
-  const { user1, user2 } = getSortedUsers(from, to);
-  return user1 === from ? `user1_${type}_user2` : `user2_${type}_user1`;
-}
