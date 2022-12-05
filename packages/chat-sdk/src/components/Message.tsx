@@ -61,7 +61,7 @@ const useStyles = makeStyles((theme: any) =>
       borderRadius: "16px 16px 16px 0px",
       maxWidth: 200,
       background: theme.custom.colors.bg4,
-      color: theme.custom.colors.fontColor2,
+      color: theme.custom.colors.fontColor4,
       padding: "12px 16px",
     },
     messageRightContainer: {
