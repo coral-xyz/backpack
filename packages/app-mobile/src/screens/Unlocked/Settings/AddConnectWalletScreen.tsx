@@ -28,11 +28,8 @@ import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTheme } from "@hooks";
 import { useNavigation } from "@react-navigation/native";
 
-export function AddConnectWalletScreen({
-  blockchain,
-}: {
-  blockchain: Blockchain;
-}) {
+export function AddConnectWalletScreen({ route }) {
+  const { blockchain } = route.params;
   const navigation = useNavigation();
   const background = useBackgroundClient();
   const keyringType = useKeyringType();

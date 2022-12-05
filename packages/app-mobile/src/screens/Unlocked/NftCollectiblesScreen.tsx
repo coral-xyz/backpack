@@ -373,8 +373,8 @@ export function NFTCollectionListScreen({ navigation }): JSX.Element {
   const activeWallets = useActiveWallets();
   const enabledBlockchains = useEnabledBlockchains();
 
-  const collections = DEV_COLLECTIONS;
-  const [_collections, _, isLoading] = useLoader(
+  // const collections = DEV_COLLECTIONS;
+  const [collections, _, isLoading] = useLoader(
     nftCollections,
     Object.fromEntries(
       enabledBlockchains.map((b: Blockchain) => [b, new Array<NftCollection>()])

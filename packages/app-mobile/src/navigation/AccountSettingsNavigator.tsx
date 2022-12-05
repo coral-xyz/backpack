@@ -8,9 +8,8 @@ import {
   StyledTextInput,
   SubtextParagraph,
 } from "@components";
-import type { ChannelAppUiClient } from "@coral-xyz/common";
+import type { Blockchain, ChannelAppUiClient } from "@coral-xyz/common";
 import {
-  Blockchain,
   DerivationPath,
   EthereumConnectionUrl,
   SolanaCluster,
@@ -23,12 +22,10 @@ import {
   UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE,
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
-  UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
   UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
   UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE,
 } from "@coral-xyz/common";
-import type { WalletPublicKeys } from "@coral-xyz/recoil";
 import {
   useBackgroundClient,
   useEnabledBlockchains,
@@ -40,8 +37,6 @@ import {
   useWalletPublicKeys,
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useTheme } from "@hooks";
-import { useNavigation } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import AccountSettingsScreen from "@screens/Unlocked/Settings/AccountSettingsScreen";
 import { AddConnectWalletScreen } from "@screens/Unlocked/Settings/AddConnectWalletScreen";
@@ -54,8 +49,9 @@ import {
 import { PreferencesScreen } from "@screens/Unlocked/Settings/PreferencesScreen";
 import { PreferencesTrustedSitesScreen } from "@screens/Unlocked/Settings/PreferencesTrustedSitesScreen";
 import type { Commitment } from "@solana/web3.js";
-import { Keypair } from "@solana/web3.js";
 import { ethers } from "ethers";
+
+import { validateSecretKey } from "../lib/validateSecretKey";
 const { hexlify } = ethers.utils;
 
 const Stack = createStackNavigator();
@@ -602,19 +598,13 @@ function PreferencesBlockchain({ blockchain }: { blockchain: Blockchain }) {
   );
 }
 
-export function ImportSecretKeyScreen({
-  blockchain,
-}: {
-  blockchain: Blockchain;
-}) {
+export function ImportSecretKeyScreen({ route }) {
+  const { blockchain } = route.params;
   const background = useBackgroundClient();
   const existingPublicKeys = useWalletPublicKeys();
-  const navigation = useNavigation();
-  const theme = useTheme();
-  const [name, setName] = useState("");
+  const [name, setName] = useState("dev");
   const [secretKey, setSecretKey] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [openDrawer, setOpenDrawer] = useState(false);
   const [newPublicKey, setNewPublicKey] = useState("");
 
   useEffect(() => {
@@ -645,12 +635,22 @@ export function ImportSecretKeyScreen({
       params: [publicKey, blockchain],
     });
 
+    Alert.alert("success", publicKey);
+
     setNewPublicKey(publicKey);
-    setOpenDrawer(true);
   };
 
   return (
     <Screen style={{ justifyContent: "space-between" }}>
+      <Text>
+        {JSON.stringify({
+          name,
+          blockchain,
+          secretKey,
+          error,
+          newPublicKey,
+        })}
+      </Text>
       <View>
         <Header text="Import private key" />
         <Margin bottom={32}>
@@ -703,50 +703,3 @@ export function ImportSecretKeyScreen({
 //   }}
 // >
 // </WithMiniDrawer>
-
-// Validate a secret key and return a normalised hex representation
-function validateSecretKey(
-  blockchain: Blockchain,
-  secretKey: string,
-  keyring: WalletPublicKeys
-): string {
-  // Extract public keys from keychain object into array of strings
-  const existingPublicKeys = Object.values(keyring[blockchain])
-    .map((k) => k.map((i) => i.publicKey))
-    .flat();
-
-  if (blockchain === Blockchain.SOLANA) {
-    let keypair: Keypair | null = null;
-    try {
-      // Attempt to create a keypair from JSON secret key
-      keypair = Keypair.fromSecretKey(new Uint8Array(JSON.parse(secretKey)));
-    } catch (_) {
-      try {
-        // Attempt to create a keypair from bs58 decode of secret key
-        keypair = Keypair.fromSecretKey(new Uint8Array(bs58.decode(secretKey)));
-      } catch (_) {
-        // Failure
-        throw new Error("Invalid private key");
-      }
-    }
-
-    if (existingPublicKeys.includes(keypair.publicKey.toString())) {
-      throw new Error("Key already exists");
-    }
-
-    return Buffer.from(keypair.secretKey).toString("hex");
-  } else if (blockchain === Blockchain.ETHEREUM) {
-    try {
-      const wallet = new ethers.Wallet(secretKey);
-
-      if (existingPublicKeys.includes(wallet.publicKey)) {
-        throw new Error("Key already exists");
-      }
-
-      return wallet.privateKey;
-    } catch (_) {
-      throw new Error("Invalid private key");
-    }
-  }
-  throw new Error("secret key validation not implemented for blockchain");
-}
