@@ -12,9 +12,26 @@ import { enrichFriendships } from "./inbox";
 
 const router = express.Router();
 
+router.post("/spam", extractUserId, async (req, res) => {
+  //@ts-ignore
+  const uuid: string = req.id; // TODO from from
+  // @ts-ignore
+  const to: string = req.body.to;
+  // @ts-ignore
+
+  if (uuid === to) {
+    res.status(411).json({
+      msg: "To and from cant be the same",
+    });
+    return;
+  }
+  const spam: boolean = req.body.spam;
+  await setSpam({ from: uuid, to, sendRequest });
+});
+
 router.post("/request", extractUserId, async (req, res) => {
   //@ts-ignore
-  const uuid = req.id; // TODO from from
+  const uuid: string = req.id; // TODO from from
   // @ts-ignore
   const to: string = req.body.to;
   // @ts-ignore
@@ -49,7 +66,7 @@ router.get("/all", extractUserId, async (req, res) => {
 
 router.get("/", extractUserId, async (req, res) => {
   //@ts-ignore
-  const uuid = req.id; // TODO from from
+  const uuid: string = req.id; // TODO from from
   // @ts-ignore
   const userId: string = req.query.userId;
   // @ts-ignore
@@ -62,7 +79,7 @@ router.get("/", extractUserId, async (req, res) => {
   }
 
   try {
-    const { are_friends, request_sent } = await getFriendship({
+    const { are_friends, request_sent, blocked, spam } = await getFriendship({
       from: uuid,
       to: userId,
     });
@@ -71,6 +88,8 @@ router.get("/", extractUserId, async (req, res) => {
       user,
       are_friends,
       request_sent,
+      blocked,
+      spam,
     });
   } catch (e) {
     console.log(e);

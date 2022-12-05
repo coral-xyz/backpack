@@ -14,6 +14,11 @@ interface ChatRoomProps {
   areFriends?: boolean;
   requested?: boolean;
   remoteUserId?: string;
+  blocked?: boolean;
+  spam?: boolean;
+  setRequested?: any;
+  setSpam?: any;
+  setBlocked?: any;
 }
 
 export const ChatRoom = ({
@@ -25,6 +30,11 @@ export const ChatRoom = ({
   areFriends = true,
   requested = false,
   remoteUserId,
+  blocked,
+  spam,
+  setRequested,
+  setSpam,
+  setBlocked,
 }: ChatRoomProps) => {
   const [chatManager, setChatManager] = useState<ChatManager | null>(null);
   const messageContainerRef = useRef(null);
@@ -88,6 +98,11 @@ export const ChatRoom = ({
       requested={requested}
       remoteUserId={remoteUserId || ""}
       type={type}
+      spam={spam}
+      blocked={blocked}
+      setRequested={setRequested}
+      setSpam={setSpam}
+      setBlocked={setBlocked}
     >
       <FullScreenChat />
     </ChatProvider>
