@@ -1,9 +1,24 @@
 // https://github.com/feross/buffer#usage
 // note: the trailing slash is important!
 
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import type { StyleProp, ViewStyle } from "react-native";
 import {
+  Alert,
+  Button,
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import {
+  ActionCard,
   Box,
+  FullScreenLoading,
   Header,
+  Margin,
   MnemonicInputFields,
   PrimaryButton,
   Screen,
@@ -11,8 +26,8 @@ import {
   SubtextParagraph,
 } from "@components";
 import { CheckBox } from "@components/CheckBox";
-import { CustomButton } from "@components/CustomButton";
 import { ErrorMessage } from "@components/ErrorMessage";
+import { RedBackpack } from "@components/Icon";
 import { PasswordInput } from "@components/PasswordInput";
 import type {
   Blockchain,
@@ -21,31 +36,34 @@ import type {
 } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
+  BACKPACK_FEATURE_USERNAMES,
   DerivationPath,
+  DISCORD_INVITE_LINK,
   KeyringType,
   toTitleCase,
+  TWITTER_LINK,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
   UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET,
+  UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
+  XNFT_GG_LINK,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
+import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTheme } from "@hooks/useTheme";
 import type { StackScreenProps } from "@react-navigation/stack";
 import { createStackNavigator } from "@react-navigation/stack";
-import { encode } from "bs58";
-import { useCallback, useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import type { StyleProp, ViewStyle } from "react-native";
 import {
-  Button,
-  FlatList,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+  IconLaunchDetail,
+  RoundedContainer,
+  SettingsRow,
+} from "@screens/Unlocked/Settings/components/SettingsRow";
+import { encode } from "bs58";
+import * as Linking from "expo-linking";
+import { v4 as uuidv4 } from "uuid";
 
 import {
   OnboardingProvider,
@@ -60,6 +78,10 @@ function maybeRender(condition: boolean, fn: () => any) {
   if (condition) {
     return fn();
   }
+}
+
+function getWaitlistId() {
+  return undefined;
 }
 
 type OnboardingStackParamList = {
@@ -97,43 +119,161 @@ function OnboardingScreen({
 }
 
 // https://github.com/gorhom/react-native-bottom-sheet
-function CreateOrImportWalletScreen({
+function OnboardingCreateOrImportWalletScreen({
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "CreateOrImportWallet">) {
+  const theme = useTheme();
   const { setOnboardingData } = useOnboardingData();
-  return (
-    <Screen style={styles.container}>
-      <View style={{ alignItems: "center" }}>
-        <StyledText style={{ fontSize: 24, marginBottom: 12 }}>
-          Backpack
-        </StyledText>
-        <StyledText>A home for your !! xNFTs</StyledText>
-      </View>
-      <View
-        style={{
-          padding: 16,
-          alignItems: "center",
-        }}
-      >
-        <PrimaryButton
-          label="Create a new wallet"
-          onPress={() => {
-            setOnboardingData({ action: "create" });
-            navigation.push("MnemonicInput");
-          }}
+
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+
+  // variables
+  const snapPoints = useMemo(() => [200], []);
+
+  // callbacks
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
+
+  const menuOptions = [
+    {
+      icon: (
+        <MaterialIcons
+          color={theme.custom.colors.secondary}
+          size={24}
+          name="lock"
         />
-        <View style={{ paddingVertical: 8 }}>
-          <SubtextParagraph
-            onPress={() => {
-              setOnboardingData({ action: "import" });
-              navigation.push("MnemonicInput");
+      ),
+      label: "Backpack.app",
+      onPress: () => Linking.openURL(BACKPACK_LINK),
+      detailIcon: <IconLaunchDetail />,
+    },
+    {
+      icon: (
+        <MaterialCommunityIcons
+          color={theme.custom.colors.secondary}
+          size={24}
+          name="twitter"
+        />
+      ),
+      label: "Twitter",
+      onPress: () => Linking.openURL(TWITTER_LINK),
+      detailIcon: <IconLaunchDetail />,
+    },
+    {
+      icon: (
+        <MaterialCommunityIcons
+          color={theme.custom.colors.secondary}
+          size={24}
+          name="discord"
+        />
+      ),
+      label: "Need help? Hop into Discord",
+      onPress: () => Linking.openURL(DISCORD_INVITE_LINK),
+      detailIcon: <IconLaunchDetail />,
+    },
+  ];
+
+  return (
+    <>
+      <Screen style={styles.container}>
+        <Pressable
+          onPress={() => {
+            handlePresentModalPress();
+          }}
+          style={{
+            position: "absolute",
+            top: 20,
+            right: 20,
+            zIndex: 999,
+          }}
+        >
+          <MaterialIcons
+            name="menu"
+            size={32}
+            color={theme.custom.colors.fontColor}
+          />
+        </Pressable>
+
+        <View style={{ alignItems: "center" }}>
+          <Margin top={48} bottom={24}>
+            <RedBackpack />
+          </Margin>
+          <Text
+            style={{
+              fontWeight: "600",
+              fontSize: 42,
+              textAlign: "center",
+              color: theme.custom.colors.fontColor,
             }}
           >
-            I already have an account
-          </SubtextParagraph>
+            Backpack
+          </Text>
+          <Margin top={8}>
+            <Text
+              style={{
+                lineHeight: 24,
+                fontSize: 16,
+                fontWeight: "500",
+                color: theme.custom.colors.secondary,
+              }}
+            >
+              A home for your xNFTs
+            </Text>
+          </Margin>
         </View>
-      </View>
-    </Screen>
+        <View
+          style={{
+            padding: 16,
+            alignItems: "center",
+          }}
+        >
+          <PrimaryButton
+            label="Create a new wallet"
+            onPress={() => {
+              setOnboardingData({ action: "create" });
+              navigation.push("MnemonicInput");
+            }}
+          />
+          <View style={{ paddingVertical: 8 }}>
+            <SubtextParagraph
+              onPress={() => {
+                setOnboardingData({ action: "import" });
+                navigation.push("MnemonicInput");
+              }}
+            >
+              I already have an account
+            </SubtextParagraph>
+          </View>
+        </View>
+      </Screen>
+      <BottomSheetModal
+        ref={bottomSheetModalRef}
+        index={0}
+        snapPoints={snapPoints}
+        backgroundStyle={{
+          marginTop: 12,
+          backgroundColor: theme.custom.colors.background,
+        }}
+      >
+        <RoundedContainer>
+          <FlatList
+            data={menuOptions}
+            scrollEnabled={false}
+            renderItem={({ item }) => {
+              return (
+                <SettingsRow
+                  onPress={item.onPress}
+                  icon={item.icon}
+                  detailIcon={item.detailIcon}
+                  label={item.label}
+                />
+              );
+            }}
+          />
+        </RoundedContainer>
+      </BottomSheetModal>
+    </>
   );
 }
 
@@ -591,79 +731,117 @@ function OnboardingImportAccountsScreen({
 }
 
 function OnboardingFinishedScreen() {
+  const background = useBackgroundClient();
   const { onboardingData } = useOnboardingData();
-  const {
+  let {
     password,
     mnemonic,
     blockchainKeyrings,
     username,
     inviteCode,
     waitlistId,
+    isAddingAccount,
+    userId,
   } = onboardingData;
 
   const [isValid, setIsValid] = useState(false);
-  const background = useBackgroundClient();
 
   const keyringInit = {
     mnemonic,
     blockchainKeyrings,
   };
 
+  useEffect(() => {
+    (async () => {
+      const { id } = await createUser();
+      createStore(id);
+    })();
+  }, []);
+
   //
   // Create the user in the backend
   //
-  async function createUser() {
-    if (inviteCode) {
-      const body = JSON.stringify({
-        username,
-        inviteCode,
-        waitlistId, // TODO(peter) waitlistId: getWaitlistId?.(),
-        blockchainPublicKeys: keyringInit.blockchainKeyrings.map((b) => ({
-          blockchain: b.blockchain,
-          publicKey: b.publicKey,
-          signature: b.signature,
-        })),
+  async function createUser(): Promise<{ id: string }> {
+    // If userId is provided, then we are onboarding via the recover flow.
+    if (userId) {
+      return { id: userId };
+    }
+    // If userId is not provided and an invite code is not provided, then
+    // this is dev mode.
+    if (!inviteCode) {
+      return { id: uuidv4() };
+    }
+
+    //
+    // If we're down here, then we are creating a user for the first time.
+    //
+    const body = JSON.stringify({
+      username,
+      inviteCode,
+      waitlistId: getWaitlistId?.(),
+      blockchainPublicKeys: keyringInit.blockchainKeyrings.map((b) => ({
+        blockchain: b.blockchain,
+        publicKey: b.publicKey,
+        signature: b.signature,
+      })),
+    });
+
+    try {
+      const res = await fetch(`${BACKEND_API_URL}/users`, {
+        method: "POST",
+        body,
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
 
-      try {
-        const res = await fetch(`${BACKEND_API_URL}/users`, {
-          method: "POST",
-          body,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        if (!res.ok) {
-          throw new Error(await res.json());
-        }
-      } catch (err) {
-        throw new Error("error creating account");
+      if (!res.ok) {
+        throw new Error(await res.json());
       }
+      return await res.json();
+    } catch (err) {
+      throw new Error("error creating account");
     }
   }
 
   //
   // Create the local store for the wallets
   //
-  async function createStore() {
+  async function createStore(uuid: string) {
     try {
-      await background.request({
-        method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
-        params: [username, password, keyringInit],
-      });
+      //
+      // If usernames are disabled, use a default one for developing.
+      //
+      if (!BACKPACK_FEATURE_USERNAMES) {
+        username = uuidv4().split("-")[0];
+      }
+
+      if (isAddingAccount) {
+        await background.request({
+          method: UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
+          params: [username, keyringInit, uuid],
+        });
+      } else {
+        await background.request({
+          method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
+          params: [username, password, keyringInit, uuid],
+        });
+      }
+
       setIsValid(true);
     } catch (err) {
       console.log("account setup error", err);
-      // TODO(peter)
-      // if (
-      //   confirm("There was an issue setting up your account. Please try again.")
-      // ) {
-      //   window.location.reload();
-      // }
+      if (
+        confirm("There was an issue setting up your account. Please try again.")
+      ) {
+        // window.location.reload();
+      }
     }
   }
 
-  return (
+  return !isValid ? (
+    <FullScreenLoading />
+  ) : (
     <OnboardingScreen
       title="You've set up Backpack!"
       subtitle="Now get started exploring what your Backpack can do."
@@ -677,8 +855,8 @@ function OnboardingFinishedScreen() {
       <PrimaryButton
         label="Finish"
         onPress={async () => {
-          await createUser();
-          await createStore();
+          // await createUser();
+          // await createStore();
           // Navigation should happen automagically based on keyring state
         }}
       />
@@ -686,7 +864,6 @@ function OnboardingFinishedScreen() {
   );
 }
 
-// TODO(peter) hardware onboarding, but figure out how first
 export default function OnboardingNavigator() {
   const theme = useTheme();
   return (
@@ -694,7 +871,7 @@ export default function OnboardingNavigator() {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen
           name="CreateOrImportWallet"
-          component={CreateOrImportWalletScreen}
+          component={OnboardingCreateOrImportWalletScreen}
         />
         <Stack.Group
           screenOptions={{

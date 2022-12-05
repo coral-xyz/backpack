@@ -1,5 +1,5 @@
 import type { StyleProp, TextStyle, ViewStyle } from "react-native";
-import { Image, Pressable, Text, View } from "react-native";
+import { ActivityIndicator, Image, Pressable, Text, View } from "react-native";
 import { proxyImageUrl, walletAddressDisplay } from "@coral-xyz/common";
 import { useAvatarUrl } from "@coral-xyz/recoil";
 // probably should put all the components in here as an index
@@ -510,6 +510,22 @@ export function DummyScreen({ route }) {
     >
       <Text>Dummy Screen</Text>
       <Debug data={{ route: route.params }} />
+    </View>
+  );
+}
+
+export function FullScreenLoading() {
+  const theme = useTheme();
+  return (
+    <View
+      style={{
+        backgroundColor: theme.custom.colors.background,
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <ActivityIndicator size="large" color={theme.custom.colors.fontColor} />
     </View>
   );
 }
