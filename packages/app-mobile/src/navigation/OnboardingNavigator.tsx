@@ -27,7 +27,12 @@ import {
 } from "@components";
 import { CheckBox } from "@components/CheckBox";
 import { ErrorMessage } from "@components/ErrorMessage";
-import { RedBackpack } from "@components/Icon";
+import {
+  DiscordIcon,
+  RedBackpack,
+  TwitterIcon,
+  WidgetIcon,
+} from "@components/Icon";
 import { PasswordInput } from "@components/PasswordInput";
 import type {
   Blockchain,
@@ -37,6 +42,7 @@ import type {
 import {
   BACKEND_API_URL,
   BACKPACK_FEATURE_USERNAMES,
+  BACKPACK_FEATURE_XNFT,
   DerivationPath,
   DISCORD_INVITE_LINK,
   KeyringType,
@@ -348,7 +354,6 @@ function OnboardingMnemonicInputScreen({
   const { onboardingData, setOnboardingData } = useOnboardingData();
   const { action } = onboardingData;
   const readOnly = action === "create";
-  console.log({ action, readOnly });
 
   const background = useBackgroundClient();
   const [mnemonicWords, setMnemonicWords] = useState<string[]>([
@@ -839,6 +844,15 @@ function OnboardingFinishedScreen() {
     }
   }
 
+  function Cell({ children, style }: any): JSX.Element {
+    return (
+      <View style={[{ alignSelf: "flex-start", marginBottom: 12 }, style]}>
+        {" "}
+        {children}{" "}
+      </View>
+    );
+  }
+
   return !isValid ? (
     <FullScreenLoading />
   ) : (
@@ -846,11 +860,30 @@ function OnboardingFinishedScreen() {
       title="You've set up Backpack!"
       subtitle="Now get started exploring what your Backpack can do."
     >
-      <View>
-        <Button title="Browse the xNFT library" />
-        <Button title="Follow us on Twitter" />
-        <Button title="Join the Discord Community" />
-        <StyledText>Is Valid: {JSON.stringify(isValid, null, 2)}</StyledText>
+      <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+        {BACKPACK_FEATURE_XNFT && (
+          <Cell style={{ paddingRight: 6 }}>
+            <ActionCard
+              icon={<WidgetIcon />}
+              text="Browse the xNFT library"
+              onClick={() => Linking.openURL(XNFT_GG_LINK)}
+            />
+          </Cell>
+        )}
+        <Cell style={{ paddingLeft: 6 }}>
+          <ActionCard
+            icon={<TwitterIcon />}
+            text="Follow us on Twitter"
+            onClick={() => Linking.openURL(TWITTER_LINK)}
+          />
+        </Cell>
+        <Cell>
+          <ActionCard
+            icon={<DiscordIcon />}
+            text="Join the Discord community"
+            onClick={() => Linking.openURL(DISCORD_INVITE_LINK)}
+          />
+        </Cell>
       </View>
       <PrimaryButton
         label="Finish"
@@ -864,7 +897,7 @@ function OnboardingFinishedScreen() {
   );
 }
 
-export default function OnboardingNavigator() {
+export default function OnboardingNavigator(): JSX.Element {
   const theme = useTheme();
   return (
     <OnboardingProvider>

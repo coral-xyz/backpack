@@ -1,5 +1,7 @@
 import type { SvgProps } from "react-native-svg";
 import Svg, { Path } from "react-native-svg";
+import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import { useTheme } from "@hooks";
 
 export const RedBackpack = (props: SvgProps) => (
   <Svg width={55} height={80} fill="none" {...props}>
@@ -9,3 +11,36 @@ export const RedBackpack = (props: SvgProps) => (
     />
   </Svg>
 );
+
+type IconProps = {
+  color?: string;
+  size?: number;
+};
+
+export function TwitterIcon({
+  color = "#1D9BF0",
+  size = 24,
+}: IconProps): JSX.Element {
+  return <MaterialCommunityIcons name="twitter" color={color} size={size} />;
+}
+
+export function DiscordIcon({
+  color = "#5865F2",
+  size = 24,
+}: IconProps): JSX.Element {
+  return <MaterialCommunityIcons name="discord" color={color} size={size} />;
+}
+
+export function WidgetIcon({
+  color = "#E33E3F",
+  size = 24,
+}: IconProps): JSX.Element {
+  return <MaterialCommunityIcons name="widgets" color={color} size={size} />;
+}
+
+export function MenuIcon({
+  color = useTheme().custom.colors.fontColor,
+  size = 24,
+}: IconProps): JSX.Element {
+  return <MaterialIcons name="menu" color={color} size={size} />;
+}
