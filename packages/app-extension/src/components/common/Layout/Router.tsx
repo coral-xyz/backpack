@@ -77,7 +77,6 @@ export function Redirect() {
     // TODO: probably want to use some API to append the search param instead.
     url = `${url}&pluginProps=${encodeURIComponent(pluginProps)}`;
   }
-  console.log(url);
   return <Navigate to={url} replace />;
 }
 
