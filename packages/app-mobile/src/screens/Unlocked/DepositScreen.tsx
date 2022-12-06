@@ -13,6 +13,7 @@ import type { Blockchain } from "@coral-xyz/common";
 import { walletAddressDisplay } from "@coral-xyz/common";
 import { useActiveWallets } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
+import QRCode from "react-qr-code";
 import { useBlockchainLogo, useTheme } from "@hooks";
 
 export default function DepositModal({ navigation }) {
@@ -129,7 +130,7 @@ function QRCodeModal({
         </Text>
       </View>
       <Margin vertical={24}>
-        <View style={{ width: 200, height: 200, backgroundColor: "orange" }} />
+        <QRCode value={publicKey} size={200} />
       </Margin>
       <Text
         style={{

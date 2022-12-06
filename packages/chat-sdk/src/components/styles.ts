@@ -16,7 +16,8 @@ export const useStyles = styles((theme) => ({
     background: theme.custom.colors.textBorder,
   },
   noContactBanner: {
-    marginTop: 1,
+    marginTop: 0,
+    paddingTop: 5,
     background: theme.custom.colors.backgroundBackdrop,
     height: 36,
   },

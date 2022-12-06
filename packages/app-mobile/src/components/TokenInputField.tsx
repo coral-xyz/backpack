@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
-import { ethers, BigNumber } from "ethers";
-import { TextInput } from "react-native";
+import { useEffect, useState } from "react";
+import { StyledTextInput } from "@components";
+import type { BigNumber } from "ethers";
+import { ethers } from "ethers";
 
 export function TokenInputField({
   decimals,
@@ -55,9 +56,7 @@ export function TokenInputField({
   }
 
   return (
-    <TextInput
-      autoCorrect={false}
-      autoCapitalize="none"
+    <StyledTextInput
       {...props}
       value={value}
       // Override default TextField setValue with function to truncate decimal inputs

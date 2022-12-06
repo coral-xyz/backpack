@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
-import { Margin, WalletAddress } from "@components";
+import { Margin, WalletAddressLabel } from "@components";
 import type {
   // openPopupWindow,
   Blockchain,
@@ -117,7 +117,6 @@ export function WalletList({
           name={name}
           publicKey={publicKey}
           onPress={() => {
-            Alert.alert("pressed");
             setShowAll(!showAll);
           }}
         />
@@ -130,12 +129,11 @@ export function WalletList({
 
 function AllWallets({ keys }) {
   return (
-    <>
+    <Margin horizontal={16} vertical={16}>
       {keys.map(({ name, publicKey, type }) => {
         return (
           <View key={publicKey.toString()}>
-            <Text>{JSON.stringify({ name, publicKey, type }, null, 2)}</Text>
-            <WalletAddress
+            <WalletAddressLabel
               name={name}
               publicKey={publicKey}
               style={{
@@ -150,7 +148,7 @@ function AllWallets({ keys }) {
           </View>
         );
       })}
-    </>
+    </Margin>
   );
 }
 
