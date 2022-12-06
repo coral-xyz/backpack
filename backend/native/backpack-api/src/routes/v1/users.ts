@@ -24,7 +24,7 @@ router.get("/", extractUserId, async (req, res) => {
   // @ts-ignore
   const usernamePrefix: string = req.query.usernamePrefix;
   // @ts-ignore
-  const uuid: string = req.id;
+  const uuid = req.id;
 
   await getUsersByPrefix({ usernamePrefix, uuid })
     .then((users) => {

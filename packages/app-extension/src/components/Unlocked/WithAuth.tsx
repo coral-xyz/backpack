@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
+import { ethers } from "ethers";
 import type Transport from "@ledgerhq/hw-transport";
 import type { Blockchain, DerivationPath } from "@coral-xyz/common";
 import {
   BACKPACK_FEATURE_JWT,
   BACKPACK_FEATURE_USERNAMES,
+  UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
 } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
+import { Loading } from "../common";
 import { WithDrawer } from "../common/Layout/Drawer";
 import { NavBackButton, WithNav } from "../common/Layout/Nav";
 import { ConnectHardwareSearching } from "../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareSearching";
@@ -17,15 +20,21 @@ import { HardwareSign } from "../Onboarding/pages/HardwareSign";
 import { useSteps } from "../../hooks/useSteps";
 import { useAuthentication } from "../../hooks/useAuthentication";
 
-export function AuthGuard({ children }: { children: React.ReactNode }) {
-  const [loading, setLoading] = useState(false);
+const { base58 } = ethers.utils;
+
+export function WithAuth({ children }: { children: React.ReactElement }) {
+  const [loading, setLoading] = useState(true);
   const [authSigner, setAuthSigner] = useState<{
     publicKey: string;
     blockchain: Blockchain;
     hardware: boolean;
   } | null>(null);
-  const [authSignature, setAuthSignature] = useState<string | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authData, setAuthData] = useState<{
+    blockchain: Blockchain;
+    publicKey: string;
+    message: string;
+    signature: string;
+  } | null>(null);
   const [openDrawer, setOpenDrawer] = useState(false);
   const background = useBackgroundClient();
   const user = useUser();
@@ -36,19 +45,29 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     user
   );
 
+  const signMessage = authSigner
+    ? base58.encode(Buffer.from(`Backpack login ${user.uuid}`, "utf-8"))
+    : null;
+
   /**
    * Check authentication status and take required actions to authenticate if
    * not authenticated.
    */
   useEffect(() => {
     (async () => {
-      if (isAuthenticated || !jwtEnabled) {
+      if (!jwtEnabled) {
         // Already authenticated or not using JWTs
         setLoading(false);
       } else {
         const result = await checkAuthentication();
-        if (result && !result.isAuthenticated) {
-          setAuthSigner(await getAuthSigner(result.publicKeys));
+        if (result) {
+          if (result.isAuthenticated) {
+            setLoading(false);
+          } else {
+            setAuthSigner(
+              await getAuthSigner(result.publicKeys.map((p) => p.publicKey))
+            );
+          }
         }
       }
     })();
@@ -59,33 +78,40 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
    */
   useEffect(() => {
     (async () => {
-      if (authSigner && !authSigner.hardware) {
-        // Auth signer is not a hardware wallet, sign transparent
-        const signature = await background.request({
-          method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-          params: [authSigner.blockchain, "onboard", authSigner.publicKey],
-        });
-        setAuthSignature(signature);
-      } else if (authSigner) {
-        // Auth signer is a hardware wallet, pop up a drawer to guide through
-        // flow
-        setOpenDrawer(true);
+      if (authSigner && signMessage) {
+        if (!authSigner.hardware) {
+          // Auth signer is not a hardware wallet, sign transparent
+          const signature = await background.request({
+            method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
+            params: [authSigner.blockchain, signMessage, authSigner.publicKey],
+          });
+          setAuthData({
+            blockchain: authSigner.blockchain,
+            publicKey: authSigner.publicKey,
+            signature,
+            message: signMessage,
+          });
+        } else {
+          // Auth signer is a hardware wallet, pop up a drawer to guide through
+          // flow
+          setOpenDrawer(true);
+        }
       }
     })();
-  }, [authSigner]);
+  }, [authSigner, signMessage]);
 
   /**
    * When an auth signature is created, authenticate with it.
    */
   useEffect(() => {
     (async () => {
-      if (authSignature) {
-        await authenticate(authSignature);
-        setIsAuthenticated(true);
+      if (authData) {
+        const result = await authenticate(authData);
+        console.log(result);
         setLoading(false);
       }
     })();
-  }, [authSignature]);
+  }, [authData]);
 
   /**
    * Find the most suitable signer for signing an authentication message. The
@@ -98,9 +124,14 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     const signers = (await getSigners()).filter((k) =>
       serverPublicKeys.includes(k.publicKey)
     );
+
     if (signers.length === 0) {
       // This should never happen
-      throw new Error("no valid auth signers found");
+      console.error("no valid auth signers found");
+      await background.request({
+        method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
+        params: [],
+      });
     }
     // Try and find a transparent server (i.e. not hardware based) as the first
     // choice
@@ -113,21 +144,31 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <WithDrawer
-        openDrawer={openDrawer}
-        setOpenDrawer={setOpenDrawer}
-        paperStyles={{
-          height: "calc(100% - 56px)",
-          borderTopLeftRadius: "12px",
-          borderTopRightRadius: "12px",
-        }}
-      >
-        <HardwareAuthSigner
-          blockchain={authSigner!.blockchain}
-          publicKey={authSigner!.publicKey}
-          onSignature={setAuthSignature}
-        />
-      </WithDrawer>
+      <Loading />
+      {authSigner && (
+        <WithDrawer
+          openDrawer={openDrawer}
+          setOpenDrawer={setOpenDrawer}
+          paperStyles={{
+            height: "calc(100% - 56px)",
+            borderTopLeftRadius: "12px",
+            borderTopRightRadius: "12px",
+          }}
+        >
+          <HardwareAuthSigner
+            blockchain={authSigner!.blockchain}
+            publicKey={authSigner!.publicKey}
+            onSignature={(signature) => {
+              setAuthData({
+                blockchain: authSigner!.blockchain,
+                publicKey: authSigner!.publicKey,
+                message: signMessage!,
+                signature,
+              });
+            }}
+          />
+        </WithDrawer>
+      )}
     </>
   );
 }
@@ -172,9 +213,12 @@ export function HardwareAuthSigner({
     />,
     <HardwareSign
       blockchain={blockchain!}
+      // TODO
+      message="Login to Backpack"
       publicKey={publicKey!}
       derivationPath={signingAccount!.derivationPath}
       accountIndex={signingAccount!.accountIndex!}
+      text="Sign the message to authenticate with Backpack"
       onNext={onSignature}
     />,
   ];
