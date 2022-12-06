@@ -14,7 +14,13 @@ function Item({ item, index }) {
         },
       ]}
     >
-      <Text>{index + 1}</Text>
+      <Text
+        style={{
+          color: theme.custom.colors.secondary,
+        }}
+      >
+        {index + 1}
+      </Text>
       <TextInput
         value={item}
         style={[
