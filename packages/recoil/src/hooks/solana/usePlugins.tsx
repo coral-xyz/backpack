@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { fetchXnft } from "@coral-xyz/common";
 // XXX: this full path is currently necessary as it avoids loading the jsx in
 //      react-xnft-renderer/src/Component.tsx in the background service worker
@@ -18,6 +19,7 @@ import {
   useBackgroundClient,
   useConnectionBackgroundClient,
   useNavigationSegue,
+  useUpdateSearchParams,
 } from "../";
 
 import { useAnchorContext } from "./useSolanaConnection";
@@ -31,13 +33,33 @@ export function useAppIcons() {
   return xnftData;
 }
 
-export function usePlugins(): Array<Plugin> {
+export function usePlugins(): Array<Plugin> | null {
   const xnftLoadable = useRecoilValueLoadable(atoms.plugins);
-  const xnftData =
-    xnftLoadable.state === "hasValue"
-      ? (xnftLoadable.contents as Array<any>)
-      : [];
-  return xnftData.map((p) => getPlugin(p));
+
+  if (xnftLoadable.state === "hasValue") {
+    return xnftLoadable.contents.map((p) => getPlugin(p));
+  }
+  return null;
+}
+
+export function useClosePlugin(): () => void {
+  const [searchParams] = useSearchParams();
+  const updateSearchParams = useUpdateSearchParams();
+
+  return () => {
+    searchParams.delete("pluginProps");
+    updateSearchParams(searchParams);
+  };
+}
+
+export function useOpenPlugin(): (xnftAddress: string) => void {
+  const [searchParams] = useSearchParams();
+  const updateSearchParams = useUpdateSearchParams();
+
+  return (xnftAddress) => {
+    searchParams.set("pluginProps", JSON.stringify({ xnftAddress }));
+    updateSearchParams(searchParams);
+  };
 }
 
 export function usePluginUrl(address?: string) {

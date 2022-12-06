@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import type { Plugin } from "@coral-xyz/common";
 import { SIMULATOR_URL } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 
@@ -6,19 +7,18 @@ import { PluginDisplay } from "./Plugin";
 
 // The refresh code is a big hack. :)
 export function Simulator({
-  xnft,
+  plugin,
   closePlugin,
 }: {
-  xnft: string;
+  plugin: Plugin;
   closePlugin: () => void;
 }) {
   const theme = useCustomTheme();
-  const props = { xnft, closePlugin };
   const refresh = useJavaScriptRefresh(SIMULATOR_URL);
   return refresh % 2 === 1 ? (
     <div style={{ backgroundColor: theme.custom.colors.background }}></div>
   ) : (
-    <PluginDisplay {...props} />
+    <PluginDisplay plugin={plugin} closePlugin={closePlugin} />
   );
 }
 
