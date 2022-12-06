@@ -1,10 +1,10 @@
-import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import type { Blockchain } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
 } from "@coral-xyz/common";
+import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
 
 export const useAuthentication = () => {
   const background = useBackgroundClient();

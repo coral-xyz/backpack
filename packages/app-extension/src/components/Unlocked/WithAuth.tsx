@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import { ethers } from "ethers";
-import type Transport from "@ledgerhq/hw-transport";
 import type { Blockchain, DerivationPath } from "@coral-xyz/common";
 import {
   BACKPACK_FEATURE_JWT,
@@ -8,17 +6,20 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
 } from "@coral-xyz/common";
-import { useCustomTheme } from "@coral-xyz/themes";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
+import { useCustomTheme } from "@coral-xyz/themes";
+import type Transport from "@ledgerhq/hw-transport";
+import { ethers } from "ethers";
+
+import { useAuthentication } from "../../hooks/useAuthentication";
+import { useSteps } from "../../hooks/useSteps";
 import { Loading } from "../common";
 import { WithDrawer } from "../common/Layout/Drawer";
 import { NavBackButton, WithNav } from "../common/Layout/Nav";
-import { ConnectHardwareSearching } from "../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareSearching";
-import { ConnectHardwareWelcome } from "../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareWelcome";
 import { HardwareSearch } from "../Onboarding/pages/HardwareSearch";
 import { HardwareSign } from "../Onboarding/pages/HardwareSign";
-import { useSteps } from "../../hooks/useSteps";
-import { useAuthentication } from "../../hooks/useAuthentication";
+import { ConnectHardwareSearching } from "../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareSearching";
+import { ConnectHardwareWelcome } from "../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareWelcome";
 
 const { base58 } = ethers.utils;
 
