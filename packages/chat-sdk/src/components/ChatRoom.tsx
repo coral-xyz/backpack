@@ -37,7 +37,6 @@ export const ChatRoom = ({
   setBlocked,
 }: ChatRoomProps) => {
   const [chatManager, setChatManager] = useState<ChatManager | null>(null);
-  const messageContainerRef = useRef(null);
   // TODO: Make state propogte from outside the state since this'll be expensive
   const [chats, setChats] = useState<EnrichedMessage[]>([]);
   const [loading, setLoading] = useState(true);
