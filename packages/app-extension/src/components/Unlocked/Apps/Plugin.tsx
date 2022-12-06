@@ -1,6 +1,7 @@
+import { useEffect } from "react";
 import type { Plugin } from "@coral-xyz/common";
 import {
-  useDarkMode,
+  useFreshPlugin,
   usePlugins,
   xnftPreference as xnftPreferenceAtom,
 } from "@coral-xyz/recoil";
@@ -11,7 +12,6 @@ import { useRecoilValue } from "recoil";
 
 import { PluginRenderer } from "../../../plugin/Renderer";
 import { MoreIcon, PowerIcon } from "../../common/Icon";
-import { Redirect } from "../../common/Layout/Router";
 
 import { Simulator } from "./Simulator";
 
@@ -22,27 +22,38 @@ export function PluginApp({
   xnftAddress: string;
   closePlugin: () => void;
 }) {
-  return xnftAddress! === PublicKey.default.toString() ? (
-    <Simulator xnft={xnftAddress} closePlugin={closePlugin} />
-  ) : (
-    <PluginDisplay xnft={xnftAddress!} closePlugin={() => closePlugin()} />
-  );
+  const plugins = usePlugins();
+
+  if (!plugins) {
+    return null;
+  }
+  const plugin = plugins?.find((p) => p.xnftAddress.toString() === xnftAddress);
+  if (!plugin) {
+    return (
+      <DisplayFreshPlugin xnftAddress={xnftAddress} closePlugin={closePlugin} />
+    );
+  }
+  if (xnftAddress === PublicKey.default.toString()) {
+    return <Simulator plugin={plugin} closePlugin={closePlugin} />;
+  }
+  return <PluginDisplay plugin={plugin} closePlugin={closePlugin} />;
+}
+
+function DisplayFreshPlugin({
+  xnftAddress,
+  closePlugin,
+}: {
+  xnftAddress: string;
+  closePlugin: () => void;
+}) {
+  const p = useFreshPlugin(xnftAddress);
+  if (!p.result) {
+    return null;
+  }
+  return <PluginDisplay plugin={p.result} closePlugin={closePlugin} />;
 }
 
 export function PluginDisplay({
-  xnft,
-  closePlugin,
-}: {
-  xnft: string;
-  closePlugin: () => void;
-}) {
-  const plugins: Array<Plugin> = usePlugins();
-  const p = plugins.find((p) => p.xnftAddress.toString() === xnft);
-
-  return <_PluginDisplay plugin={p} closePlugin={closePlugin} />;
-}
-
-export function _PluginDisplay({
   plugin,
   closePlugin,
 }: {

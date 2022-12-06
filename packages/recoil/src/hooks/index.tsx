@@ -9,6 +9,7 @@ export * from "./solana";
 export * from "./transaction-request";
 export * from "./useBlockchain";
 export * from "./useFeatureGates";
+export * from "./useFriendship";
 export * from "./useLoader";
 export * from "./useNftMetadata";
 export * from "./usePriceData";

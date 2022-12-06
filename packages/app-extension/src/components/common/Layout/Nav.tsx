@@ -1,6 +1,7 @@
-import { Suspense } from "react";
+import React, { Suspense, useState } from "react";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ArrowBack } from "@mui/icons-material";
+import KeyboardArrowDownSharpIcon from "@mui/icons-material/KeyboardArrowDownSharp";
 import { IconButton, Typography } from "@mui/material";
 
 import { Loading } from "../";
@@ -47,6 +48,7 @@ export function WithNav({
   children,
   navbarStyle = {},
   navContentStyle = {},
+  notchViewComponent,
 }: {
   title?: string;
   navButtonLeft?: React.ReactNode;
@@ -54,10 +56,12 @@ export function WithNav({
   children?: React.ReactNode;
   navbarStyle?: React.CSSProperties;
   navContentStyle?: React.CSSProperties;
+  notchViewComponent?: React.ReactElement | null;
 }) {
   return (
     <>
       <NavBar
+        notchViewComponent={notchViewComponent}
         title={title || ""}
         navButtonLeft={navButtonLeft}
         navButtonRight={navButtonRight}
@@ -73,11 +77,13 @@ export function NavBar({
   navButtonLeft,
   navButtonRight,
   style = {},
+  notchViewComponent,
 }: {
   title: string;
   navButtonLeft: React.ReactNode;
   navButtonRight: React.ReactNode;
   style?: any;
+  notchViewComponent?: React.ReactElement | null;
 }) {
   return (
     <Suspense fallback={null}>
@@ -93,7 +99,10 @@ export function NavBar({
       >
         <div style={{ position: "relative", width: "100%", display: "flex" }}>
           <NavButton button={navButtonLeft} />
-          <CenterDisplay title={title} />
+          <CenterDisplay
+            title={title}
+            notchViewComponent={notchViewComponent}
+          />
           <NavButton button={navButtonRight} align="right" />
         </div>
       </div>
@@ -171,7 +180,19 @@ export function NavContent({
   );
 }
 
-function CenterDisplay({ title }: { title: string }) {
+function CenterDisplay({
+  title,
+  notchViewComponent,
+}: {
+  title: string;
+  notchViewComponent?: React.ReactElement | null;
+}) {
+  const [notchEnabled, setNotchEnabled] = useState(false);
+  const notchViewComponentWithProps = notchViewComponent
+    ? React.cloneElement(notchViewComponent, { setOpenDrawer: setNotchEnabled })
+    : null;
+  const theme = useCustomTheme();
+
   return (
     <Suspense fallback={<div></div>}>
       <div
@@ -185,6 +206,15 @@ function CenterDisplay({ title }: { title: string }) {
         }}
       >
         <NavTitleLabel title={title} />
+        {notchViewComponent && (
+          <KeyboardArrowDownSharpIcon
+            onClick={() => setNotchEnabled((x) => !x)}
+            style={{ cursor: "pointer", color: theme.custom.colors.fontColor }}
+          />
+        )}
+        {notchEnabled && notchViewComponentWithProps && (
+          <>{notchViewComponentWithProps}</>
+        )}
       </div>
     </Suspense>
   );

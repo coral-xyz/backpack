@@ -1,5 +1,4 @@
 import { ApproveTransactionRequest } from "../../Unlocked/ApproveTransactionRequest";
-import { DisplayPlugin } from "../../Unlocked/DisplayPlugin";
 
 import { Router } from "./Router";
 import { WithTabs } from "./Tab";
@@ -21,7 +20,6 @@ export function NavTabs() {
       >
         <Router />
         <ApproveTransactionRequest />
-        <DisplayPlugin />
       </div>
     </WithTabs>
   );

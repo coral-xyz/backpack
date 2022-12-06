@@ -1,13 +1,15 @@
-import { ChatMessages } from "./Message";
-import { SendMessage } from "./SendMessage";
-import InfoIcon from "@mui/icons-material/Info";
-import { ScrollBarImpl } from "./ScrollbarImpl";
 import { useEffect, useRef, useState } from "react";
-import { useChatContext } from "./ChatContext";
-import { MessagesSkeleton } from "./MessagesSkeleton";
-import { EmptyChat } from "./EmptyChat";
-import { useStyles } from "./styles";
 import { useCustomTheme } from "@coral-xyz/themes";
+import InfoIcon from "@mui/icons-material/Info";
+
+import { Banner } from "./Banner";
+import { useChatContext } from "./ChatContext";
+import { EmptyChat } from "./EmptyChat";
+import { ChatMessages } from "./Message";
+import { MessagesSkeleton } from "./MessagesSkeleton";
+import { ScrollBarImpl } from "./ScrollbarImpl";
+import { SendMessage } from "./SendMessage";
+import { useStyles } from "./styles";
 export const FullScreenChat = () => {
   const { chatManager, loading, areFriends, requested, chats } =
     useChatContext();
@@ -59,12 +61,7 @@ export const FullScreenChat = () => {
             background: theme.custom.colors.bg3,
           }}
         >
-          {!areFriends && !requested && (
-            <Banner title={"This account is not a friend."} />
-          )}
-          {!areFriends && requested && (
-            <Banner title={"Contact pending request"} />
-          )}
+          <Banner />
           {loading && <MessagesSkeleton />}
           {!loading && chats?.length === 0 && <EmptyChat />}
           {!loading && chats?.length !== 0 && <ChatMessages />}
@@ -76,22 +73,3 @@ export const FullScreenChat = () => {
     </div>
   );
 };
-
-function Banner({ title }: { title: String }) {
-  const theme = useCustomTheme();
-  const classes = useStyles();
-  return (
-    <div>
-      <div
-        className={`${classes.noContactBanner} ${classes.horizontalCenter} ${classes.text}`}
-      >
-        {" "}
-        <InfoIcon
-          style={{ color: theme.custom.colors.fontColor, marginRight: 5 }}
-        />{" "}
-        {title}
-      </div>
-      <br />
-    </div>
-  );
-}

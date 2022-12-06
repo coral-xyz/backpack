@@ -47,7 +47,7 @@ export async function setWalletDataForUser(uuid: string, data: WalletData) {
 }
 
 function key(uuid: string): string {
-  return `${STORE_KEY_WALLET_DATA}:${uuid}`;
+  return `${STORE_KEY_WALLET_DATA}_${uuid}`;
 }
 
 export const DEFAULT_LOCK_INTERVAL_SECS = 15 * 60;

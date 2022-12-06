@@ -1,7 +1,9 @@
+import { useCallback } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import type { Blockchain } from "@coral-xyz/common";
 import {
   TAB_SET,
+  UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
   UI_RPC_METHOD_NAVIGATION_POP,
   UI_RPC_METHOD_NAVIGATION_PUSH,
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
@@ -44,6 +46,27 @@ export function useTab(): string {
   const pathname = location.pathname;
   const tab = pathname.split("/")[1];
   return tab;
+}
+
+export function useUpdateSearchParams(): (params: URLSearchParams) => void {
+  const background = useRecoilValue(atoms.backgroundClient);
+  const location = useLocation();
+  const activeTab = TAB_SET.has(location.pathname)
+    ? location.pathname.slice(1)
+    : null;
+
+  return useCallback(
+    (params) => {
+      const url = `${location.pathname}?${params.toString()}`;
+      background
+        .request({
+          method: UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
+          params: [url, activeTab],
+        })
+        .catch(console.error);
+    },
+    [location.pathname, background]
+  );
 }
 
 export function useNavigationSegue() {
