@@ -4,6 +4,7 @@ import type {
   BlockchainKeyringInit,
   DerivationPath,
 } from "@coral-xyz/common";
+import { toTitleCase } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import type Transport from "@ledgerhq/hw-transport";
 
@@ -40,6 +41,10 @@ export function HardwareOnboard({
   const [transportError, setTransportError] = useState(false);
   const [accounts, setAccounts] = useState<Array<SelectedAccount>>();
   const [derivationPath, setDerivationPath] = useState<DerivationPath>();
+
+  // Component only allows onboarding of a singular selected account at this
+  // time
+  const account = accounts ? accounts[0] : undefined;
 
   //
   // Flow for onboarding a hardware wallet.
@@ -119,15 +124,19 @@ export function HardwareOnboard({
       ? [
           <HardwareSign
             blockchain={blockchain}
-            inviteCode={inviteCode ? inviteCode : ""}
-            accounts={accounts ? accounts : []}
+            message={inviteCode ? inviteCode : ""}
+            publicKey={account!.publicKey}
             derivationPath={derivationPath}
+            accountIndex={account!.index}
+            text={`Sign the message to enable ${toTitleCase(
+              blockchain
+            )} in Backpack.`}
             onNext={(signature: string) => {
               onComplete({
                 blockchain,
+                publicKey: account!.publicKey,
                 derivationPath: derivationPath!,
-                accountIndex: accounts![0].index,
-                publicKey: accounts![0].publicKey,
+                accountIndex: account!.index,
                 signature,
               });
             }}
