@@ -21,16 +21,13 @@ import {
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
 import { generateMnemonic } from "bip39";
-
-import type { User } from "../store";
+import type { User, KeyringStoreJson, UserKeyringJson } from "../store";
 import * as store from "../store";
 import {
   DEFAULT_DARK_MODE,
   DEFAULT_DEVELOPER_MODE,
   DefaultKeyname,
 } from "../store";
-
-import * as crypto from "./crypto";
 
 /**
  * KeyringStore API for managing all wallet keys .
@@ -129,7 +126,7 @@ export class KeyringStore {
     if (this.isUnlocked()) {
       return false;
     }
-    const ciphertext = await store.getEncryptedKeyring();
+    const ciphertext = await store.getKeyringCiphertext();
     return ciphertext !== undefined && ciphertext !== null;
   }
 
@@ -147,8 +144,8 @@ export class KeyringStore {
 
   public async tryUnlock(password: string) {
     return this.withLock(async () => {
-      const plaintext = await this.decryptKeyringFromStorage(password);
-      await this.fromJson(JSON.parse(plaintext));
+      const json = await store.getKeyringStore(password);
+      await this.fromJson(json);
       this.password = password;
       // Automatically lock the store when idle.
       this.autoLockStart();
@@ -160,20 +157,11 @@ export class KeyringStore {
    */
   public async checkPassword(password: string) {
     try {
-      await this.decryptKeyringFromStorage(password);
+      await store.getKeyringStore(password);
       return true;
     } catch (err) {
       return false;
     }
-  }
-
-  private async decryptKeyringFromStorage(password: string) {
-    const ciphertextPayload = await store.getEncryptedKeyring();
-    if (ciphertextPayload === undefined || ciphertextPayload === null) {
-      throw new Error("keyring store not found on disk");
-    }
-    const plaintext = await crypto.decrypt(ciphertextPayload, password);
-    return plaintext;
   }
 
   public lock() {
@@ -452,9 +440,7 @@ export class KeyringStore {
     if (!forceBecauseCalledFromInit && !this.isUnlocked()) {
       throw new Error("attempted persist of locked keyring");
     }
-    const plaintext = JSON.stringify(this.toJson());
-    const ciphertext = await crypto.encrypt(plaintext, this.password!);
-    await store.setEncryptedKeyring(ciphertext);
+    await store.setKeyringStore(this.toJson(), this.password!);
   }
 
   private updateLastUsed() {
@@ -465,20 +451,21 @@ export class KeyringStore {
   // Serialization.
   ///////////////////////////////////////////////////////////////////////////////
 
-  private toJson(): any {
+  private toJson(): KeyringStoreJson {
     // toJson on all the usernames
     const usernames = Object.fromEntries(
       [...this.usernames].map(([k, v]) => [k, v.toJson()])
     );
     return {
-      activeUserUuid: this.activeUserUuid,
+      activeUserUuid: this.activeUserUuid!,
       usernames,
       lastUsedTs: this.lastUsedTs,
     };
   }
 
-  private async fromJson(json: any) {
-    const { activeUserUuid, usernames } = (() => {
+  private async fromJson(json: KeyringStoreJson) {
+    // @ts-ignore
+    const { activeUserUuid, usernames }: KeyringStoreJson = (() => {
       if (json.usernames) {
         return json;
       }
@@ -729,12 +716,7 @@ class UsernameKeyring {
   // Serialization.
   ///////////////////////////////////////////////////////////////////////////////
 
-  public toJson(): {
-    uuid: string;
-    username: string;
-    mnemonic?: string;
-    blockchains: any;
-  } {
+  public toJson(): UserKeyringJson {
     // toJson on all the keyrings
     const blockchains = Object.fromEntries(
       [...this.blockchains].map(([k, v]) => [k, v.toJson()])
@@ -747,7 +729,7 @@ class UsernameKeyring {
     };
   }
 
-  public static fromJson(json: any): UsernameKeyring {
+  public static fromJson(json: UserKeyringJson): UsernameKeyring {
     const { uuid, username, mnemonic, blockchains } = json;
 
     const u = new UsernameKeyring();
