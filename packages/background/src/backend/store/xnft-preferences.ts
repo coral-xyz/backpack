@@ -18,5 +18,5 @@ export async function setXnftPreferencesForUser(
 }
 
 function key(uuid: string): string {
-  return `${KEY_XNFT_PREFERENCES_STORE}:${uuid}`;
+  return `${KEY_XNFT_PREFERENCES_STORE}_${uuid}`;
 }
