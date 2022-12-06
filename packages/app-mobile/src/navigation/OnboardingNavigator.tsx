@@ -28,8 +28,13 @@ import {
 import { CheckBox } from "@components/CheckBox";
 import { ErrorMessage } from "@components/ErrorMessage";
 import {
+  BscIcon,
+  CheckBadge,
   DiscordIcon,
+  EthereumIcon,
+  PolygonIcon,
   RedBackpack,
+  SolanaIcon,
   TwitterIcon,
   WidgetIcon,
 } from "@components/Icon";
@@ -155,25 +160,13 @@ function OnboardingCreateOrImportWalletScreen({
       detailIcon: <IconLaunchDetail />,
     },
     {
-      icon: (
-        <MaterialCommunityIcons
-          color={theme.custom.colors.secondary}
-          size={24}
-          name="twitter"
-        />
-      ),
+      icon: <TwitterIcon color={theme.custom.colors.secondary} />,
       label: "Twitter",
       onPress: () => Linking.openURL(TWITTER_LINK),
       detailIcon: <IconLaunchDetail />,
     },
     {
-      icon: (
-        <MaterialCommunityIcons
-          color={theme.custom.colors.secondary}
-          size={24}
-          name="discord"
-        />
-      ),
+      icon: <DiscordIcon color={theme.custom.colors.secondary} />,
       label: "Need help? Hop into Discord",
       onPress: () => Linking.openURL(DISCORD_INVITE_LINK),
       detailIcon: <IconLaunchDetail />,
@@ -569,29 +562,34 @@ function OnboardingBlockchainSelectScreen({
     selected: boolean;
     onSelect: (b: Blockchain) => void;
   }) {
+    function getIcon(id) {
+      switch (id) {
+        case "ethereum":
+          return <EthereumIcon />;
+        case "solana":
+          return <SolanaIcon />;
+        case "polygon":
+          return <PolygonIcon />;
+        case "binance":
+          return <BscIcon />;
+        default:
+          return null;
+      }
+    }
+
     return (
-      <View
-        style={{
-          padding: 8,
-          height: 80,
-          flex: 1,
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "#333",
-          margin: 4,
-        }}
-      >
-        <Pressable
+      <View style={{ flex: 1, margin: 6 }}>
+        <ActionCard
+          text={label}
+          disabled={!enabled}
+          icon={getIcon(id)}
+          textAdornment={selectedBlockchains.includes(id) ? <CheckBadge /> : ""}
           onPress={() => {
             if (enabled) {
               onSelect(id);
             }
           }}
-        >
-          <Text style={{ color: "#FFF" }}>
-            {label} {selected ? "(selected)" : ""}
-          </Text>
-        </Pressable>
+        />
       </View>
     );
   }

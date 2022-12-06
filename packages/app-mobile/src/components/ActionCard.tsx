@@ -30,10 +30,12 @@ export function ActionCard({
       ]}
     >
       <View style={styles.iconContainer}>{icon}</View>
-      <Text style={[styles.text, { color: theme.custom.colors.fontColor }]}>
-        {text}
+      <View style={{ flexDirection: "row" }}>
+        <Text style={[styles.text, { color: theme.custom.colors.fontColor }]}>
+          {text}
+        </Text>
         {textAdornment}
-      </Text>
+      </View>
     </Pressable>
   );
 }
@@ -52,5 +54,6 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     fontSize: 16,
     lineHeight: 24,
+    marginRight: 8,
   },
 });
