@@ -40,9 +40,10 @@
     "yarn-deduplicate": "^6.0.0"
   },
   "lint-staged": {
-    "*.{css,md,json}": "prettier --write --cache",
-    "*.{ts,tsx,js,jsx}": [
-      "prettier --write --cache"
+    "*.{js,jsx,css,md,json}": "prettier --write --cache",
+    "*.{ts,tsx}": [
+      "prettier --write --cache",
+      "eslint --fix"
     ]
   },
   "resolutions": {
