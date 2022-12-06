@@ -120,7 +120,7 @@ export function HardwareOnboard({
           />,
         ]),
     // Prompting for a signature is optional in the component
-    ...(requireSignature
+    ...(requireSignature && account && derivationPath
       ? [
           <HardwareSign
             blockchain={blockchain}
@@ -134,9 +134,9 @@ export function HardwareOnboard({
             onNext={(signature: string) => {
               onComplete({
                 blockchain,
-                publicKey: account!.publicKey,
+                publicKey: account.publicKey,
                 derivationPath: derivationPath!,
-                accountIndex: account!.index,
+                accountIndex: account.index,
                 signature,
               });
             }}

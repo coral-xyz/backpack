@@ -25,7 +25,7 @@ export function HardwareSign({
   blockchain: Blockchain;
   message: string;
   publicKey: string;
-  derivationPath: DerivationPath | undefined;
+  derivationPath: DerivationPath;
   accountIndex: number;
   text: string;
   onNext: (signature: string) => void;
@@ -35,21 +35,19 @@ export function HardwareSign({
 
   useEffect(() => {
     (async () => {
-      if (publicKey && derivationPath && accountIndex) {
-        const signature = await background.request({
-          method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET,
-          params: [
-            blockchain,
-            encode(Buffer.from(message, "utf-8")),
-            derivationPath,
-            accountIndex,
-            publicKey,
-          ],
-        });
-        setSignature(signature);
-      }
+      const signature = await background.request({
+        method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET,
+        params: [
+          blockchain,
+          encode(Buffer.from(message, "utf-8")),
+          derivationPath,
+          accountIndex,
+          publicKey,
+        ],
+      });
+      setSignature(signature);
     })();
-  }, [publicKey, derivationPath, accountIndex]);
+  }, []);
 
   return (
     <Box
