@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import type { Blockchain } from "@coral-xyz/common";
+import type Transport from "@ledgerhq/hw-transport";
+import type { Blockchain, DerivationPath } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
   BACKPACK_FEATURE_JWT,
@@ -8,7 +9,15 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
 } from "@coral-xyz/common";
+import { useCustomTheme } from "@coral-xyz/themes";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
+import { WithDrawer } from "../common/Layout/Drawer";
+import { NavBackButton, WithNav } from "../common/Layout/Nav";
+import { ConnectHardwareSearching } from "../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareSearching";
+import { ConnectHardwareWelcome } from "../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareWelcome";
+import { HardwareSearch } from "../Onboarding/pages/HardwareSearch";
+import { HardwareSign } from "../Onboarding/pages/HardwareSign";
+import { useSteps } from "../../hooks/useSteps";
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(false);
@@ -24,6 +33,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     }>
   >([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [openDrawer, setOpenDrawer] = useState(false);
   const background = useBackgroundClient();
   const user = useUser();
   const jwtEnabled = !!(
@@ -38,16 +48,26 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
         const result = await checkAuthentication();
         if (result) {
           const { publicKeys, isAuthenticated } = await checkAuthentication();
-          const { publicKeysToAdd, hardwareSigners } =
-            await getRequiredSignatures(publicKeys);
+          const publicKeysToAdd = await getRequiredSignatures(publicKeys);
           setIsAuthenticated(isAuthenticated);
-          setRequiredSignatures(
-            publicKeysToAdd.map((publicKey) => ({
-              publicKey,
-              signature: undefined,
-              hardware: hardwareSigners.includes(publicKey),
-            }))
-          );
+          // Gather required signatures
+          const signatures: typeof requiredSignatures = [];
+          for (const data of publicKeysToAdd) {
+            let signature: string | undefined;
+            // If it's not a hardware publuc key, sign transparently now
+            if (!data.hardware) {
+              signature = await background.request({
+                method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
+                params: [data.blockchain, "onboard", data.publicKey],
+              });
+            }
+            signatures.push({
+              publicKey: data.publicKey,
+              signature,
+              hardware: data.hardware,
+            });
+          }
+          setRequiredSignatures(signatures);
         }
       } else {
         setLoading(false);
@@ -60,6 +80,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
    * by signing transparently or by displaying a drawer to the user to guide
    * them through the ledger flow.
    **/
+
   useEffect(() => {
     (async () => {
       // Get the next unresolves signature
@@ -75,38 +96,27 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
       const next = requiredSignatures[nextIndex];
 
-      let signature: string | null;
-      if (next.hardware) {
-        // Display drawer
-        signature = null;
-      } else {
-        signature = await background.request({
-          method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-          params: ["solana", "onboard", next.publicKey],
-        });
-      }
-      if (signature && !isAuthenticated) {
-        console.log("authenticating");
-        authenticate();
-      }
-      // Add the signature to state
-      const nextRequiredSignatures = requiredSignatures.map((s, i) => {
-        if (i === nextIndex) {
-          return {
-            ...s,
-            signature,
-          };
-        } else {
-          return s;
-        }
-      });
-
-      setRequiredSignatures(nextRequiredSignatures);
+      setOpenDrawer(true);
     })();
   }, [requiredSignatures]);
 
   /**
-   * Query the server and see if the user has a valid JWT.
+   * As soon as a valid signature becomes available, use it to create a JWT
+   */
+  useEffect(() => {
+    (async () => {
+      if (!isAuthenticated) {
+        const firstSignature = requiredSignatures.find((s) => !!s.signature);
+        if (firstSignature) {
+          console.log("authenticating");
+          authenticate();
+        }
+      }
+    })();
+  }, [requiredSignatures]);
+
+  /**
+   * Query the server and see if the user has a valid JWT..
    */
   const checkAuthentication = async () => {
     try {
@@ -175,27 +185,125 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
       }
     >;
 
-    // Transparent signers are those signers that Backpack can sign with on its
-    // own, without needing to prompt the user (like for a Ledger signature)
-    let transparentSigners: Array<string> = [];
-    let hardwareSigners: Array<string> = [];
-    for (const data of Object.values(clientPublicKeys)) {
-      transparentSigners = transparentSigners.concat([
-        ...data.hdPublicKeys.map((n) => n.publicKey),
-        ...data.importedPublicKeys.map((n) => n.publicKey),
+    let publicKeysToAdd: Array<{
+      publicKey: string;
+      blockchain: Blockchain;
+      hardware: boolean;
+    }> = [];
+    for (const [blockchain, data] of Object.entries(clientPublicKeys)) {
+      publicKeysToAdd = publicKeysToAdd.concat([
+        ...data.hdPublicKeys.map((n) => ({
+          ...n,
+          blockchain: blockchain as Blockchain,
+          hardware: false,
+        })),
+        ...data.importedPublicKeys.map((n) => ({
+          ...n,
+          blockchain: blockchain as Blockchain,
+          hardware: false,
+        })),
+        ...data.ledgerPublicKeys.map((n) => ({
+          ...n,
+          blockchain: blockchain as Blockchain,
+          hardware: true,
+        })),
       ]);
-      hardwareSigners = hardwareSigners.concat(
-        data.ledgerPublicKeys.map((n) => n.publicKey)
-      );
     }
-
-    // Public keys that exist on the client that don't exist on the server
-    const publicKeysToAdd = [...transparentSigners, ...hardwareSigners].filter(
-      (k) => !serverPublicKeys.includes(k as string)
+    // Filter public keys that exist on the client but not on the server
+    publicKeysToAdd = publicKeysToAdd.filter((k) =>
+      serverPublicKeys.includes(k.publicKey)
     );
 
-    return { publicKeysToAdd, hardwareSigners };
+    return publicKeysToAdd;
   };
 
-  return <>{loading ? "Authenticating" : children}</>;
+  if (!loading) return children;
+
+  return (
+    <>
+      Authenticating
+      <WithDrawer
+        openDrawer={openDrawer}
+        setOpenDrawer={setOpenDrawer}
+        paperStyles={{
+          height: "calc(100% - 56px)",
+          borderTopLeftRadius: "12px",
+          borderTopRightRadius: "12px",
+        }}
+      ></WithDrawer>
+    </>
+  );
+}
+
+export function HardwareSigner({
+  blockchain,
+  publicKeys,
+}: {
+  blockchain: Blockchain;
+  publicKeys: Array<string>;
+}) {
+  const theme = useCustomTheme();
+  const { step, nextStep, prevStep, setStep } = useSteps();
+  const [transport, setTransport] = useState<Transport | null>(null);
+  const [transportError, setTransportError] = useState(false);
+  const [signingAccount, setSigningAccount] = useState<{
+    derivationPath: DerivationPath;
+    accountIndex: number;
+  } | null>();
+
+  const steps = [
+    <ConnectHardwareWelcome onNext={nextStep} />,
+    <ConnectHardwareSearching
+      blockchain={blockchain}
+      onNext={(transport) => {
+        setTransport(transport);
+        nextStep();
+      }}
+      isConnectFailure={!!transportError}
+    />,
+    // For each public key, add a step for searching for the public key on the
+    // ledger and signing
+    ...publicKeys.map((publicKey) => (
+      <>
+        <HardwareSearch
+          blockchain={blockchain!}
+          transport={transport!}
+          publicKey={publicKey!}
+          onNext={(derivationPath: DerivationPath, accountIndex: number) => {
+            setSigningAccount({ derivationPath, accountIndex });
+            nextStep();
+          }}
+          onRetry={() => setStep(1)}
+        />
+        <HardwareSign
+          blockchain={blockchain!}
+          publicKey={publicKey!}
+          derivationPath={signingAccount!.derivationPath}
+          accountIndex={signingAccount!.accountIndex!}
+          onNext={(signature: string) => {
+            nextStep();
+          }}
+        />
+      </>
+    )),
+  ];
+
+  return (
+    <WithNav
+      navButtonLeft={
+        step > 0 && step < steps.length - 1 ? (
+          <NavBackButton onClick={prevStep} />
+        ) : null
+      }
+      navbarStyle={{
+        backgroundColor: theme.custom.colors.nav,
+      }}
+      navContentStyle={{
+        backgroundColor: theme.custom.colors.nav,
+        height: "400px",
+      }}
+    >
+      {steps[step]}
+    </WithNav>
+  );
 }
