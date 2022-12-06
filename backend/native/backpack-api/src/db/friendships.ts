@@ -17,6 +17,8 @@ export const getOrCreateFriendship = async ({
   to: string;
 }) => {
   const { user1, user2 } = getSortedUsers(from, to);
+  const spamLabel = getLabel("spam", from, to);
+  const blockedLabel = getLabel("blocked", from, to);
 
   const existingFriendship = await chain("query")({
     auth_friendships: [
@@ -27,6 +29,8 @@ export const getOrCreateFriendship = async ({
       {
         id: true,
         are_friends: true,
+        [spamLabel]: true,
+        [blockedLabel]: true,
       },
     ],
     auth_friend_requests: [
@@ -43,6 +47,10 @@ export const getOrCreateFriendship = async ({
       id: existingFriendship.auth_friendships[0]?.id,
       are_friends: existingFriendship.auth_friendships[0]?.are_friends,
       requested: existingFriendship.auth_friend_requests[0] ? true : false,
+      spam: existingFriendship.auth_friendships[0]?.[spamLabel] ? true : false,
+      blocked: existingFriendship.auth_friendships[0]?.[blockedLabel]
+        ? true
+        : false,
     };
   } else {
     const response = await chain("mutation")({
@@ -63,7 +71,13 @@ export const getOrCreateFriendship = async ({
         { id: true },
       ],
     });
-    return { id: response.insert_auth_friendships_one?.id, are_friends: false };
+    return {
+      id: response.insert_auth_friendships_one?.id,
+      are_friends: false,
+      requested: false,
+      spam: false,
+      blocked: false,
+    };
   }
 };
 
@@ -142,6 +156,24 @@ export const getFriendships = async ({
   return response.auth_friendships ?? [];
 };
 
+export async function unfriend({ from, to }: { from: string; to: string }) {
+  const { user1, user2 } = getSortedUsers(from, to);
+  await chain("mutation")({
+    update_auth_friendships: [
+      {
+        where: {
+          user1: { _eq: user1 },
+          user2: { _eq: user2 },
+        },
+        _set: {
+          are_friends: false,
+        },
+      },
+      { affected_rows: true },
+    ],
+  });
+}
+
 export async function setSpam({
   from,
   to,
@@ -156,21 +188,18 @@ export async function setSpam({
 
   // @ts-ignore
   await chain("mutation")({
-    insert_auth_friendships_one: [
+    update_auth_friendships: [
       {
-        object: {
-          user1,
-          user2,
+        where: {
+          user1: { _eq: user1 },
+          user2: { _eq: user2 },
+        },
+        _set: {
+          are_friends: false,
           [updateLabel]: spam,
         },
-        on_conflict: {
-          //@ts-ignore
-          update_columns: [updateLabel],
-          //@ts-ignore
-          constraint: "friendships_pkey",
-        },
       },
-      { id: true },
+      { affected_rows: true },
     ],
   });
 }
@@ -178,32 +207,27 @@ export async function setSpam({
 export async function setBlocked({
   from,
   to,
-  spam,
+  block,
 }: {
   from: string;
   to: string;
-  spam: boolean;
+  block: boolean;
 }) {
   const { user1, user2 } = getSortedUsers(from, to);
   const updateLabel = getLabel("blocked", from, to);
-
-  // @ts-ignore
   await chain("mutation")({
-    insert_auth_friendships_one: [
+    update_auth_friendships: [
       {
-        object: {
-          user1,
-          user2,
-          [updateLabel]: spam,
+        where: {
+          user1: { _eq: user1 },
+          user2: { _eq: user2 },
         },
-        on_conflict: {
-          //@ts-ignore
-          update_columns: [updateLabel],
-          //@ts-ignore
-          constraint: "friendships_pkey",
+        _set: {
+          are_friends: false,
+          [updateLabel]: block,
         },
       },
-      { id: true },
+      { affected_rows: true },
     ],
   });
 }

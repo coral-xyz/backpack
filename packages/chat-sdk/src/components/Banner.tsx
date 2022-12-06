@@ -18,23 +18,41 @@ export const Banner = () => {
   const classes = useStyles();
 
   if (spam) {
-    return <TextBanner title={"You marked this account as spam"} />;
+    return (
+      <TextBanner
+        type={"danger"}
+        title={"You marked this account as spam"}
+        buttonText={"Undo"}
+        onClick={async () => {
+          await fetch(`${BACKEND_API_URL}/friends/spam`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ to: remoteUserId, spam: false }),
+          });
+          setSpam(false);
+        }}
+      />
+    );
   }
 
   if (blocked) {
-    return <TextBanner title={"You have blocked this account"} />;
+    return (
+      <TextBanner type={"normal"} title={"You have blocked this account"} />
+    );
   }
 
   return (
     <div>
       {!areFriends && (
         <div
-          style={{ justifyContent: "center", display: "flex", marginBottom: 5 }}
+          className={`${classes.noContactBanner} ${classes.horizontalCenter} ${classes.text}`}
         >
           {!requested && (
             <div
-              className={classes.text}
-              style={{ cursor: "pointer", marginRight: 15 }}
+              className={classes.strongText}
+              style={{ cursor: "pointer", marginRight: 25 }}
               onClick={async () => {
                 await fetch(`${BACKEND_API_URL}/friends/request`, {
                   method: "POST",
@@ -50,7 +68,7 @@ export const Banner = () => {
             </div>
           )}
           <div
-            className={classes.text}
+            className={classes.strongText}
             style={{ cursor: "pointer" }}
             onClick={async () => {
               await fetch(`${BACKEND_API_URL}/friends/spam`, {
@@ -72,9 +90,19 @@ export const Banner = () => {
   );
 };
 
-function TextBanner({ title }: { title: String }) {
+function TextBanner({
+  title,
+  buttonText,
+  onClick,
+  type,
+}: {
+  title: String;
+  buttonText?: string;
+  onClick?: () => void;
+  type: "danger" | "normal";
+}) {
   const theme = useCustomTheme();
-  const classes = useStyles();
+  const classes = useStyles({ type });
   return (
     <div>
       <div
@@ -82,9 +110,20 @@ function TextBanner({ title }: { title: String }) {
       >
         {" "}
         <InfoIcon
-          style={{ color: theme.custom.colors.fontColor, marginRight: 5 }}
+          style={{
+            color:
+              type === "danger"
+                ? theme.custom.colors.negative
+                : theme.custom.colors.fontColor,
+            marginRight: 5,
+          }}
         />{" "}
         {title}
+        {buttonText && (
+          <div style={{ marginLeft: 10, cursor: "pointer" }} onClick={onClick}>
+            {buttonText}
+          </div>
+        )}
       </div>
       <br />
     </div>

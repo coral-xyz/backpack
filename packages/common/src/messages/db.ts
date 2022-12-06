@@ -12,3 +12,12 @@ export interface EnrichedInboxDb extends InboxDb {
   remoteUserImage: string;
   remoteUserId: string;
 }
+
+export interface Friendship {
+  remoteUserId: string;
+  id: string;
+  areFriends: boolean;
+  blocked: boolean;
+  requested: boolean;
+  spam: boolean;
+}

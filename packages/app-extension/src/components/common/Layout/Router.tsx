@@ -37,6 +37,7 @@ import { Swap } from "../../Unlocked/Swap";
 
 import { NavBackButton, WithNav } from "./Nav";
 import { WithMotion } from "./NavStack";
+import { ChatDrawer } from "../../Unlocked/Messages/ChatDrawer";
 
 export function Router() {
   const location = useLocation();
@@ -141,7 +142,8 @@ function SwapPage() {
 
 function NavScreen({ component }: { component: React.ReactNode }) {
   const { title, isRoot, pop } = useNavigation();
-  const { style, navButtonLeft, navButtonRight } = useNavBar();
+  const { style, navButtonLeft, navButtonRight, notchViewComponent } =
+    useNavBar();
 
   const _navButtonLeft = navButtonLeft ? (
     navButtonLeft
@@ -164,6 +166,7 @@ function NavScreen({ component }: { component: React.ReactNode }) {
       >
         <WithNav
           title={title}
+          notchViewComponent={notchViewComponent}
           navButtonLeft={_navButtonLeft}
           navButtonRight={navButtonRight}
           navbarStyle={style}
@@ -251,6 +254,9 @@ function useNavBar() {
   let navStyle = {
     fontSize: "18px",
   } as React.CSSProperties;
+  if (pathname === "/messages/chat") {
+    navStyle.background = theme.custom.colors.bg3;
+  }
 
   if (isRoot) {
     const emoji = pathname.startsWith("/balances")
@@ -297,10 +303,16 @@ function useNavBar() {
     navButtonRight = <NftOptionsButton />;
   }
 
+  const notchViewComponent =
+    pathname === "/messages/chat" ? (
+      <ChatDrawer setOpenDrawer={() => {}} />
+    ) : null;
+
   return {
     navButtonRight,
     navButtonLeft,
     style: navStyle,
+    notchViewComponent,
   };
 }
 
