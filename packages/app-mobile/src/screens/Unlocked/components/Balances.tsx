@@ -313,8 +313,6 @@ export function BalanceRow({
     // pass
   }
 
-  console.log({ token, trim, subtitle });
-
   return (
     <Pressable
       onPress={() => onPressRow(blockchain, token)}

@@ -834,11 +834,11 @@ function OnboardingFinishedScreen() {
       setIsValid(true);
     } catch (err) {
       console.log("account setup error", err);
-      if (
-        confirm("There was an issue setting up your account. Please try again.")
-      ) {
-        // window.location.reload();
-      }
+      // if (
+      //   confirm("There was an issue setting up your account. Please try again.")
+      // ) {
+      //   // window.location.reload();
+      // }
     }
   }
 
