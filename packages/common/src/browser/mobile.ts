@@ -236,6 +236,13 @@ export function startMobileIfNeeded() {
   // so we must JSON.parse and JSON.stringify values when needed
   // https://docs.expo.dev/versions/latest/sdk/securestore
   const handleGetLocalStorage = async (key: string) => {
+    const newKey = key
+      .trim()
+      // @ts-expect-error
+      .replaceAll("-", "A")
+      .replaceAll(":", "B")
+      .toString();
+    console.log("LOCAL_STORAGE:GET", key, newKey);
     // const stores = [
     //   "keyring-store",
     //   "keyname-store",
@@ -250,11 +257,24 @@ export function startMobileIfNeeded() {
     //   }
     // }
 
-    return [JSON.parse(String(await getItemAsync(key))), undefined];
+    return [JSON.parse(String(await getItemAsync(newKey))), undefined];
   };
+
   const handleSetLocalStorage = async (key: string, value: any) => {
-    await setItemAsync(key, JSON.stringify(value));
-    return ["success", undefined];
+    const newKey = key
+      .trim()
+      // @ts-expect-error
+      .replaceAll("-", "A")
+      .replaceAll(":", "B")
+      .toString();
+    console.log("LOCAL_STORAGE:SET", key, newKey);
+    try {
+      await setItemAsync(newKey, JSON.stringify(value));
+      return ["success", undefined];
+    } catch (err) {
+      console.error("SETITEMASYNC:ERROR2", err);
+      throw err;
+    }
   };
 }
 

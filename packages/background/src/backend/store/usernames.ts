@@ -19,6 +19,8 @@ export async function getActiveUser(): Promise<User> {
 
 export async function setActiveUser(activeUser: User) {
   const data = await LocalStorageDb.get(STORE_KEY_USER_DATA);
+  console.log("LOCAL_STORAGE:data", data);
+  console.log("LOCAL_STORAGE:activeUser", activeUser);
   if (data === undefined) {
     await LocalStorageDb.set(STORE_KEY_USER_DATA, {
       activeUser,
@@ -36,6 +38,7 @@ export async function setActiveUser(activeUser: User) {
 
 export async function getUserData(): Promise<UserData> {
   const data = await LocalStorageDb.get(STORE_KEY_USER_DATA);
+  console.log("LOCAL_STORAGE:data", data);
   if (data === undefined) {
     throw new Error("user data not found");
   }
