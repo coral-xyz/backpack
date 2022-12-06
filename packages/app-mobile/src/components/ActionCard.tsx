@@ -30,7 +30,7 @@ export function ActionCard({
       ]}
     >
       <View style={styles.iconContainer}>{icon}</View>
-      <View style={{ flexDirection: "row" }}>
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
         <Text style={[styles.text, { color: theme.custom.colors.fontColor }]}>
           {text}
         </Text>
@@ -48,12 +48,12 @@ const styles = StyleSheet.create({
   iconContainer: {
     width: 24,
     height: 24,
-    marginBottom: 8,
+    marginBottom: 6,
   },
   text: {
     fontWeight: "500",
     fontSize: 16,
     lineHeight: 24,
-    marginRight: 8,
+    marginRight: 4,
   },
 });

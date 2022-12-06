@@ -13,12 +13,16 @@ import { useAvatarUrl } from "@coral-xyz/recoil";
 import { useTheme } from "@hooks";
 
 export { ActionCard } from "./ActionCard";
+export { BaseCheckBoxLabel, CheckBox } from "./CheckBox";
 export { MnemonicInputFields } from "./MnemonicInputFields";
 export { NavHeader } from "./NavHeader";
 export { NFTCard } from "./NFTCard";
+export { PasswordInput } from "./PasswordInput";
+export { default as ResetAppButton } from "./ResetAppButton";
 export { StyledTextInput } from "./StyledTextInput";
 export { TokenAmountHeader } from "./TokenAmountHeader";
 export { TokenInputField } from "./TokenInputField";
+import { RedBackpack } from "@components/Icon";
 //
 // function getRandomColor() { var letters = "0123456789ABCDEF";
 //   var color = "#";
@@ -533,6 +537,39 @@ export function FullScreenLoading() {
       }}
     >
       <ActivityIndicator size="large" color={theme.custom.colors.fontColor} />
+    </View>
+  );
+}
+
+export function WelcomeLogoHeader() {
+  const theme = useTheme();
+  return (
+    <View style={{ alignItems: "center" }}>
+      <Margin top={48} bottom={24}>
+        <RedBackpack />
+      </Margin>
+      <Text
+        style={{
+          fontWeight: "600",
+          fontSize: 42,
+          textAlign: "center",
+          color: theme.custom.colors.fontColor,
+        }}
+      >
+        Backpack
+      </Text>
+      <Margin top={8}>
+        <Text
+          style={{
+            lineHeight: 24,
+            fontSize: 16,
+            fontWeight: "500",
+            color: theme.custom.colors.secondary,
+          }}
+        >
+          A home for your xNFTs
+        </Text>
+      </Margin>
     </View>
   );
 }

@@ -2,7 +2,7 @@
 // note: the trailing slash is important!
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import type { StyleProp, ViewStyle } from "react-native";
 import {
   Alert,
@@ -11,34 +11,40 @@ import {
   Pressable,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from "react-native";
 import {
   ActionCard,
+  BaseCheckBoxLabel,
   Box,
+  CheckBox,
   FullScreenLoading,
   Header,
   Margin,
   MnemonicInputFields,
+  PasswordInput,
   PrimaryButton,
   Screen,
   StyledText,
+  StyledTextInput,
   SubtextParagraph,
+  WelcomeLogoHeader,
+  Debug,
 } from "@components";
-import { CheckBox } from "@components/CheckBox";
 import { ErrorMessage } from "@components/ErrorMessage";
 import {
+  AvalancheIcon,
   BscIcon,
   CheckBadge,
+  CosmosIcon,
   DiscordIcon,
   EthereumIcon,
   PolygonIcon,
-  RedBackpack,
   SolanaIcon,
   TwitterIcon,
   WidgetIcon,
 } from "@components/Icon";
-import { PasswordInput } from "@components/PasswordInput";
 import type {
   Blockchain,
   BlockchainKeyringInit,
@@ -118,12 +124,10 @@ function OnboardingScreen({
 }) {
   return (
     <Screen style={{ padding: 24, justifyContent: "space-between" }}>
-      <View style={{ marginBottom: 12 }}>
+      <Margin bottom={24}>
         <Header text={title} />
-        {maybeRender(Boolean(subtitle), () => {
-          <SubtextParagraph>{subtitle}</SubtextParagraph>;
-        })}
-      </View>
+        {subtitle ? <SubtextParagraph>{subtitle}</SubtextParagraph> : null}
+      </Margin>
       {children}
     </Screen>
   );
@@ -194,33 +198,9 @@ function OnboardingCreateOrImportWalletScreen({
           />
         </Pressable>
 
-        <View style={{ alignItems: "center" }}>
-          <Margin top={48} bottom={24}>
-            <RedBackpack />
-          </Margin>
-          <Text
-            style={{
-              fontWeight: "600",
-              fontSize: 42,
-              textAlign: "center",
-              color: theme.custom.colors.fontColor,
-            }}
-          >
-            Backpack
-          </Text>
-          <Margin top={8}>
-            <Text
-              style={{
-                lineHeight: 24,
-                fontSize: 16,
-                fontWeight: "500",
-                color: theme.custom.colors.secondary,
-              }}
-            >
-              A home for your xNFTs
-            </Text>
-          </Margin>
-        </View>
+        <Margin top={48} bottom={24}>
+          <WelcomeLogoHeader />
+        </Margin>
         <View
           style={{
             padding: 16,
@@ -440,12 +420,15 @@ function OnboardingMnemonicInputScreen({
         </StyledText>
       ))}
       {maybeRender(readOnly, () => (
-        <Button
-          title="I saved my secret recovery phrase"
-          onPress={() => {
-            setChecked(!checked);
-          }}
-        />
+        <Margin bottom={12}>
+          <BaseCheckBoxLabel
+            label="I saved my secret recovery phrase"
+            value={checked}
+            onPress={() => {
+              setChecked(!checked);
+            }}
+          />
+        </Margin>
       ))}
       {maybeRender(Boolean(error), () => (
         <ErrorMessage for={{ message: error }} />
@@ -565,13 +548,17 @@ function OnboardingBlockchainSelectScreen({
     function getIcon(id) {
       switch (id) {
         case "ethereum":
-          return <EthereumIcon />;
+          return <EthereumIcon width={24} height={24} />;
         case "solana":
-          return <SolanaIcon />;
+          return <SolanaIcon width={24} height={24} />;
         case "polygon":
-          return <PolygonIcon />;
-        case "binance":
-          return <BscIcon />;
+          return <PolygonIcon width={24} height={24} />;
+        case "bsc":
+          return <BscIcon width={24} height={24} />;
+        case "cosmos":
+          return <CosmosIcon width={24} height={24} />;
+        case "valanache":
+          return <AvalancheIcon width={24} height={24} />;
         default:
           return null;
       }
@@ -632,52 +619,54 @@ function OnboardingBlockchainSelectScreen({
   );
 }
 
+type CreatePasswordFormData = {
+  password: string;
+  passwordConfirmation: string;
+  agreedToTerms: boolean;
+};
+
 // TODO(peter) KeyboardAvoidingView
 function OnboardingCreatePasswordScreen({
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "CreatePassword">) {
   const { setOnboardingData } = useOnboardingData();
-  const isNextDisabled = false; // TODO(peter) disable upon invalid password
-  interface CreatePasswordFormData {
-    password: string;
-    passwordConfirmation: string;
-    agreedToTerms: boolean;
-  }
 
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-    watch,
-  } = useForm<CreatePasswordFormData>();
+  const { control, handleSubmit, formState, watch } =
+    useForm<CreatePasswordFormData>();
+  const { errors, isValid } = formState;
 
   const onSubmit = ({ password }: CreatePasswordFormData) => {
-    setOnboardingData({ password });
+    Alert.alert("password", JSON.stringify({ isValid, password }));
+    setOnboardingData({ password, complete: true });
     navigation.push("Finished");
   };
 
+  // TODO(peter) some fk'd up shit is happening here where the hook claims to be invalid when it's not
   return (
     <OnboardingScreen
       title="Create a password"
       subtitle="It should be at least 8 characters. You'll need this to unlock Backpack."
     >
       <View style={{ flex: 1, justifyContent: "flex-start" }}>
+        <Debug data={{ isValid, formState }} />
+        <Margin bottom={12}>
+          <PasswordInput
+            name="password"
+            placeholder="Password"
+            control={control}
+            rules={{
+              required: "You must specify a password",
+              minLength: {
+                value: 8,
+                message: "Password must be at least 8 characters",
+              },
+            }}
+          />
+          <ErrorMessage for={errors.password} />
+        </Margin>
         <PasswordInput
-          placeholder="Password"
-          name="password"
-          control={control}
-          rules={{
-            required: "You must specify a password",
-            minLength: {
-              value: 8,
-              message: "Password must be at least 8 characters",
-            },
-          }}
-        />
-        <ErrorMessage for={errors.password} />
-        <PasswordInput
-          placeholder="Confirm Password"
           name="passwordConfirmation"
+          placeholder="Confirm Password"
           control={control}
           rules={{
             validate: (val: string) => {
@@ -689,7 +678,7 @@ function OnboardingCreatePasswordScreen({
         />
         <ErrorMessage for={errors.passwordConfirmation} />
       </View>
-      <View style={{ marginBottom: 24, justifyContent: "center" }}>
+      <View style={{ marginBottom: 24 }}>
         <CheckBox
           name="agreedToTerms"
           control={control}
@@ -698,7 +687,7 @@ function OnboardingCreatePasswordScreen({
         <ErrorMessage for={errors.agreedToTerms} />
       </View>
       <PrimaryButton
-        disabled={isNextDisabled}
+        // disabled={!isValid}
         label="Next"
         onPress={handleSubmit(onSubmit)}
       />
@@ -908,6 +897,7 @@ export default function OnboardingNavigator(): JSX.Element {
           screenOptions={{
             headerStyle: {
               backgroundColor: theme.custom.colors.background,
+              shadowColor: "transparent",
             },
             headerTintColor: theme.custom.colors.fontColor,
             headerTitle: "",

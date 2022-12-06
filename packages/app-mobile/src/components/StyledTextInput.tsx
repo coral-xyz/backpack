@@ -8,7 +8,7 @@ export function StyledTextInput({
   onChangeText,
   onBlur,
   ...props
-}) {
+}: any) {
   const theme = useTheme();
 
   return (
@@ -29,6 +29,7 @@ export function StyledTextInput({
       placeholderTextColor={theme.custom.colors.textPlaceholder}
       onChangeText={onChangeText}
       onBlur={onBlur}
+      value={value}
       {...props}
     />
   );
