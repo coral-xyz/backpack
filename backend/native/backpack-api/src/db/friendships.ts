@@ -377,9 +377,12 @@ export const getFriendship = async ({
 }: {
   from: string;
   to: string;
+}): Promise<{
+  are_friends: boolean;
+  request_sent: boolean;
   blocked: boolean;
   spam: boolean;
-}): Promise<{ are_friends: boolean; request_sent: boolean }> => {
+}> => {
   const { user1, user2 } = getSortedUsers(from, to);
   const spamLabel = getLabel("spam", from, to);
   const blockedLabel = getLabel("blocked", from, to);

@@ -5,6 +5,7 @@ import {
   getAllFriends,
   getFriendship,
   setFriendship,
+  setSpam,
 } from "../../db/friendships";
 import { getUser } from "../../db/users";
 
@@ -26,7 +27,7 @@ router.post("/spam", extractUserId, async (req, res) => {
     return;
   }
   const spam: boolean = req.body.spam;
-  await setSpam({ from: uuid, to, sendRequest });
+  await setSpam({ from: uuid, to, spam });
 });
 
 router.post("/request", extractUserId, async (req, res) => {
@@ -50,7 +51,7 @@ router.post("/request", extractUserId, async (req, res) => {
 
 router.get("/all", extractUserId, async (req, res) => {
   //@ts-ignore
-  const uuid = req.id; // TODO from from
+  const uuid: string = req.id; // TODO from from
 
   try {
     const friends = await getAllFriends({
