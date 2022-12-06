@@ -236,7 +236,7 @@ export function startMobileIfNeeded() {
   // Keys may contain alphanumeric characters ., -, and _.
   // Read more here: https://docs.expo.dev/versions/latest/sdk/securestore/
   const parseKeyForMobile = (str: string): string =>
-    str.replace(/[^a-zA-Z0-9._-]/g, ".");
+    str.replace(/[^a-zA-Z0-9._-]/g, "_");
 
   // like localStorage, expo-secure-store can only save and return strings,
   // so we must JSON.parse and JSON.stringify values when needed
