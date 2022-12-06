@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
 import type { Blockchain, DerivationPath } from "@coral-xyz/common";
-import {
-  toTitleCase,
-  UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET,
-} from "@coral-xyz/common";
+import { UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { Box } from "@mui/material";
 import { encode } from "bs58";
@@ -14,46 +11,43 @@ import {
   PrimaryButton,
   SubtextParagraph,
 } from "../../common";
-import type { SelectedAccount } from "../../common/Account/ImportAccounts";
 import { HardwareWalletIcon } from "../../common/Icon";
 
 export function HardwareSign({
   blockchain,
-  inviteCode,
-  accounts,
+  message,
+  publicKey,
   derivationPath,
+  accountIndex,
+  text,
   onNext,
 }: {
   blockchain: Blockchain;
-  inviteCode: string | null;
-  accounts: Array<SelectedAccount>;
-  derivationPath: DerivationPath | undefined;
+  message: string;
+  publicKey: string;
+  derivationPath: DerivationPath;
+  accountIndex: number;
+  text: string;
   onNext: (signature: string) => void;
 }) {
   const background = useBackgroundClient();
   const [signature, setSignature] = useState<string | null>(null);
 
-  const account = accounts.length > 0 ? accounts[0] : null;
-
   useEffect(() => {
     (async () => {
-      if (account) {
-        const signature = await background.request({
-          method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET,
-          params: [
-            blockchain,
-            // Sign the invite code, or an empty string if no invite code
-            // TODO setup a nonce based system
-            encode(Buffer.from(inviteCode ? inviteCode : "", "utf-8")),
-            derivationPath,
-            account.index,
-            account.publicKey,
-          ],
-        });
-        setSignature(signature);
-      }
+      const signature = await background.request({
+        method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET,
+        params: [
+          blockchain,
+          encode(Buffer.from(message, "utf-8")),
+          derivationPath,
+          accountIndex,
+          publicKey,
+        ],
+      });
+      setSignature(signature);
     })();
-  }, [accounts, derivationPath]);
+  }, []);
 
   return (
     <Box
@@ -67,9 +61,7 @@ export function HardwareSign({
       <Box sx={{ margin: "0 24px" }}>
         <HeaderIcon icon={<HardwareWalletIcon />} />
         <Header text="Sign the message" />
-        <SubtextParagraph>
-          Sign the message to enable {toTitleCase(blockchain)} in Backpack.
-        </SubtextParagraph>
+        <SubtextParagraph>{text}</SubtextParagraph>
       </Box>
       <Box
         sx={{
@@ -80,7 +72,6 @@ export function HardwareSign({
           justifyContent: "space-between",
         }}
       >
-        {/* <PrimaryButton label="Retry" onClick={() => setRetry(retry + 1)} /> */}
         <PrimaryButton
           label="Next"
           onClick={() => {
