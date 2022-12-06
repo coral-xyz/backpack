@@ -1,0 +1,3 @@
+name = "swr-data-cache"
+main = "src/index.ts"
+compatibility_date = "2022-12-05"
