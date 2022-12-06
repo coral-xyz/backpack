@@ -583,7 +583,7 @@ function OnboardingBlockchainSelectScreen({
           text={label}
           disabled={!enabled}
           icon={getIcon(id)}
-          textAdornment={selectedBlockchains.includes(id) ? <CheckBadge /> : ""}
+          textAdornment={selected ? <CheckBadge /> : ""}
           onPress={() => {
             if (enabled) {
               onSelect(id);
