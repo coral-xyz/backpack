@@ -23,6 +23,9 @@ const SCROLLBAR_THUMB_COLOR = "rgb(153 164 180)";
 const LIGHT_TEXT_SMALL_COLOR = "#4E5768";
 const DARK_TEXT_SMALL_COLOR = "#8F929E";
 
+const NEGATIVE_LIGHT = "#FFF4F3";
+const NEGATIVE_DARK = "#FFF4F3";
+
 export const LIGHT_TEXT_COLOR = FONT_COLOR_1;
 const LIGHT_BACKGROUND_BACKDROP_COLOR =
   "linear-gradient(180deg, #F8F8F9 0%, #F0F0F2 100%), #FFFFFF";
@@ -43,6 +46,7 @@ const LIGHT_SCROLLBAR_THUMB_COLOR = SCROLLBAR_THUMB_COLOR;
 const LIGHT_ICON_HOVER_COLOR = "#787C89";
 
 const DANGER_COLOR = "#DC2626";
+const DANGER_DARK_COLOR = "#DC2626";
 
 const baseTheme = createStyles({
   typography: {
@@ -155,12 +159,13 @@ export const darkTheme: any = {
       hoverIconBackground: `rgb(39, 39, 42, ${HOVER_OPACITY})`,
       avatarIconBackground: "#DFE0E5",
       text: TEXT_COLOR,
-      dangerButton: DANGER_COLOR,
+      dangerButton: DANGER_DARK_COLOR,
       alpha: "#8F929E",
       scrollbarTrack: BACKGROUND_COLOR_0,
       scrollbarThumb: SCROLLBAR_THUMB_COLOR,
       positive: POSITIVE_COLOR,
       negative: NEGATIVE_COLOR,
+      negativeBackground: NEGATIVE_DARK,
       neutral: "rgb(78, 87, 104)",
       negativeButtonTextColor: "#fff",
       drawerGradient: `linear-gradient(180deg, ${BACKGROUND_COLOR_1} 0%, rgba(41, 44, 51, 0) 100%)`,
@@ -275,6 +280,7 @@ export const lightTheme: any = {
       scrollbarThumb: LIGHT_SCROLLBAR_THUMB_COLOR,
       positive: LIGHT_POSITIVE_COLOR,
       negative: LIGHT_NEGATIVE_COLOR,
+      negativeBackground: NEGATIVE_LIGHT,
       neutral: "rgb(78, 87, 104)",
       negativeButtonTextColor: "#fff",
       drawerGradient: `linear-gradient(180deg, ${LIGHT_BACKGROUND_COLOR_1} 0%, rgba(41, 44, 51, 0) 100%)`,

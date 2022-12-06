@@ -17,3 +17,4 @@ export * from "./useTotalBalance";
 export * from "./useTransactionData";
 export * from "./useXnftPreferences";
 export * from "./wallet";
+export * from "./useFriendship";
