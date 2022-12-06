@@ -25,7 +25,7 @@ export type UserKeyringJson = {
   activeBlockchain: Blockchain;
   mnemonic?: string;
   blockchains: {
-    [key: string]: BlockchainKeyringJson;
+    [blockchain: string]: BlockchainKeyringJson;
   };
 };
 
@@ -40,17 +40,6 @@ export async function getKeyringStore(
   const plaintext = await crypto.decrypt(ciphertextPayload, password);
   const json = JSON.parse(plaintext);
 
-  if (json.usernames) {
-    return json;
-  }
-
-  migrate_0_2_0_2408(json);
-
-  //
-  // Migrate user from single username -> multi username account management.
-  //
-  // TODO.
-
   return json;
 }
 
@@ -63,7 +52,8 @@ export async function setKeyringStore(
   await setKeyringCiphertext(ciphertext);
 }
 
-async function getKeyringCiphertext(): Promise<SecretPayload> {
+// Never call this externally. Only exported for migrations.
+export async function getKeyringCiphertext(): Promise<SecretPayload> {
   return await LocalStorageDb.get(KEY_KEYRING_STORE);
 }
 
