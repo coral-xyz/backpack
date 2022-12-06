@@ -88,3 +88,38 @@ export interface XnftPreference {
 }
 
 export type XnftPreferenceStore = { [key: string]: XnftPreference };
+
+/////////////////////////////////////////////////////////////////////////////////
+// TODO: The types here should be elsewhere (e.g. in
+//       packages/blockchains/keyring) or packages/backend/src/store
+//       but we need to refactor those packages a bit to avoid cyclic deps.
+/////////////////////////////////////////////////////////////////////////////////
+
+export type BlockchainKeyringJson = {
+  hdKeyring: HdKeyringJson;
+  importedKeyring: KeyringJson;
+  ledgerKeyring: LedgerKeyringJson;
+  activeWallet: string;
+  deletedWallets: Array<string>;
+};
+
+export type KeyringJson = {
+  secretKeys: Array<string>;
+};
+
+export type HdKeyringJson = {
+  mnemonic: string;
+  seed: string;
+  accountIndices: Array<number>;
+  derivationPath: DerivationPath;
+};
+
+export type LedgerKeyringJson = {
+  derivationPaths: Array<ImportedDerivationPath>;
+};
+
+export type ImportedDerivationPath = {
+  path: string;
+  account: number;
+  publicKey: string;
+};

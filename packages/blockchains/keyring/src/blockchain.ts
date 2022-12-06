@@ -1,9 +1,9 @@
 import * as store from "@coral-xyz/background/src/backend/store";
 import { DefaultKeyname } from "@coral-xyz/background/src/backend/store";
+import type { BlockchainKeyringJson } from "@coral-xyz/common";
 import type { DerivationPath } from "@coral-xyz/common";
 import { getLogger } from "@coral-xyz/common";
 import * as bs58 from "bs58";
-import type { KeyringJson, HdKeyringJson, LedgerKeyringJson } from ".";
 import type {
   HdKeyring,
   HdKeyringFactory,
@@ -240,11 +240,3 @@ export class BlockchainKeyring {
     }
   }
 }
-
-export type BlockchainKeyringJson = {
-  hdKeyring: HdKeyringJson;
-  importedKeyring: KeyringJson;
-  ledgerKeyring: LedgerKeyringJson;
-  activeWallet: string;
-  deletedWallets: Array<string>;
-};

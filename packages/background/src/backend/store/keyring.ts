@@ -1,4 +1,4 @@
-import type { BlockchainKeyringJson } from "@coral-xyz/blockchain-keyring";
+import type { BlockchainKeyringJson } from "@coral-xyz/common";
 import type { SecretPayload } from "../keyring/crypto";
 import { LocalStorageDb } from "./db";
 import * as crypto from "../keyring/crypto";
