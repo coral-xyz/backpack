@@ -16,9 +16,15 @@ export const useStyles = styles((theme) => ({
     background: theme.custom.colors.textBorder,
   },
   noContactBanner: {
-    marginTop: 0,
-    paddingTop: 5,
-    background: theme.custom.colors.backgroundBackdrop,
-    height: 36,
+    paddingTop: 12,
+    paddingBottom: 12,
+    background: (props: any) =>
+      props.type === "danger"
+        ? theme.custom.colors.negativeBackground
+        : theme.custom.colors.banner,
+  },
+  strongText: {
+    color: theme.custom.colors.fontColor2,
+    fontWeight: 700,
   },
 }));

@@ -14,3 +14,4 @@ export * from "./recent-transactions";
 export * from "./solana";
 export * from "./transaction-request";
 export * from "./wallet";
+export * from "./friendship";
