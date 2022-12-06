@@ -4,5 +4,5 @@ compatibility_date = "2022-12-05"
 node_compat = true
 
 services = [
-  { binding = "rpc", service = "rpc-proxy" }
+  { binding = "rpc", service = "swr-data-cache" }
 ]
