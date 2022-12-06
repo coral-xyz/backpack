@@ -83,6 +83,7 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
                   componentId: NAV_COMPONENT_MESSAGE_CHAT,
                   componentProps: {
                     userId: user.id,
+                    username: user.username,
                   },
                 });
               }}

@@ -22,6 +22,8 @@ router.post("/", extractUserId, async (req, res) => {
     friendshipId: friendship.id,
     areFriends: friendship.are_friends,
     requested: friendship.requested,
+    spam: friendship.spam,
+    blocked: friendship.blocked,
   });
 });
 

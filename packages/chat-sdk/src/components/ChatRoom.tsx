@@ -14,6 +14,11 @@ interface ChatRoomProps {
   areFriends?: boolean;
   requested?: boolean;
   remoteUserId?: string;
+  blocked?: boolean;
+  spam?: boolean;
+  setRequested?: any;
+  setSpam?: any;
+  setBlocked?: any;
 }
 
 export const ChatRoom = ({
@@ -25,9 +30,13 @@ export const ChatRoom = ({
   areFriends = true,
   requested = false,
   remoteUserId,
+  blocked,
+  spam,
+  setRequested,
+  setSpam,
+  setBlocked,
 }: ChatRoomProps) => {
   const [chatManager, setChatManager] = useState<ChatManager | null>(null);
-  const messageContainerRef = useRef(null);
   // TODO: Make state propogte from outside the state since this'll be expensive
   const [chats, setChats] = useState<EnrichedMessage[]>([]);
   const [loading, setLoading] = useState(true);
@@ -88,6 +97,11 @@ export const ChatRoom = ({
       requested={requested}
       remoteUserId={remoteUserId || ""}
       type={type}
+      spam={spam}
+      blocked={blocked}
+      setRequested={setRequested}
+      setSpam={setSpam}
+      setBlocked={setBlocked}
     >
       <FullScreenChat />
     </ChatProvider>

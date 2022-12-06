@@ -1,50 +1,48 @@
-import { useEffect, useState } from "react";
 import { ChatRoom } from "@coral-xyz/chat-sdk";
-import { BACKEND_API_URL } from "@coral-xyz/common";
-import { useUser } from "@coral-xyz/recoil";
+import { friendship, useUser } from "@coral-xyz/recoil";
+import { useRecoilState } from "recoil";
+import { Friendship } from "@coral-xyz/common";
 
 export const ChatScreen = ({ userId }: { userId: string }) => {
-  const [roomId, setRoomId] = useState("");
-  const [uuid, setUuid] = useState("");
-  const [fetchingRoom, setFetchingRoom] = useState(true);
-  const [areFriends, setAreFriends] = useState(false);
-  const [requested, setRequested] = useState(false);
-  const { username } = useUser();
+  const [friendshipValue, setFriendshipValue] =
+    useRecoilState<Friendship | null>(friendship({ userId }));
+  const { uuid, username } = useUser();
 
-  async function getChatRoom(userId?: string) {
-    if (!userId) {
-      return;
-    }
-    const res = await fetch(`${BACKEND_API_URL}/inbox`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ to: userId }),
-    });
-    const json = await res.json();
-    setRoomId(json.friendshipId);
-    setUuid(json.id);
-    setAreFriends(json.areFriends);
-    setRequested(json.requested);
-    setFetchingRoom(false);
+  if (!friendshipValue) {
+    console.error(`Friendship not found with user ${userId}`);
+    return <div></div>;
   }
-
-  useEffect(() => {
-    getChatRoom(userId);
-  }, [userId]);
-
   return (
     <div>
-      {!fetchingRoom && (
-        <ChatRoom
-          type={"individual"}
-          username={username || ""}
-          roomId={roomId}
-          userId={uuid}
-          areFriends={areFriends}
-          requested={requested}
-          remoteUserId={userId}
-        />
-      )}
+      <ChatRoom
+        type={"individual"}
+        username={username || ""}
+        roomId={friendshipValue.id}
+        userId={uuid}
+        areFriends={friendshipValue.areFriends}
+        requested={friendshipValue.requested}
+        remoteUserId={userId}
+        blocked={friendshipValue.blocked}
+        spam={friendshipValue.spam}
+        setRequested={(updatedValue: boolean) =>
+          setFriendshipValue((x: any) => ({
+            ...x,
+            requested: updatedValue,
+          }))
+        }
+        setSpam={(updatedValue: boolean) =>
+          setFriendshipValue((x: any) => ({
+            ...x,
+            spam: updatedValue,
+          }))
+        }
+        setBlocked={(updatedValue: boolean) =>
+          setFriendshipValue((x: any) => ({
+            ...x,
+            blocked: updatedValue,
+          }))
+        }
+      />
     </div>
   );
 };

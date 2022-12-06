@@ -34,7 +34,7 @@ export const SearchUsers = ({
     const json = await res.json();
     setContactsLoading(false);
     const chats: EnrichedInboxDb[] = json.chats;
-    setContacts(chats);
+    setContacts(chats || []);
   };
 
   useEffect(() => {
