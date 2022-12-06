@@ -1,4 +1,4 @@
-// https://gist.github.com/wilsonpage/a4568d776ee6de188999afe6e2d2ee69
+// Inspired by: https://gist.github.com/wilsonpage/a4568d776ee6de188999afe6e2d2ee69
 export const CACHE_STALE_AT_HEADER = "x-edge-cache-stale-at";
 export const CACHE_STATUS_HEADER = "x-edge-cache-status";
 export const CACHE_CONTROL_HEADER = "Cache-Control";
@@ -11,13 +11,25 @@ enum CacheStatus {
   REVALIDATING = "REVALIDATING",
 }
 
-const swr = async (request: Request, event: ExecutionContext) => {
-  const cache = caches.default;
-  const cacheKey = toCacheKey(request);
-  const cachedRes = await cache.match(cacheKey);
-  if (cachedRes) {
-    let cacheStatus = cachedRes.headers.get(CACHE_STATUS_HEADER);
+export type ShouldCache = (req: Request, res: Response) => Promise<boolean>;
+export type ToCacheKey = (req: Request) => Promise<Request>;
+export type ExecuteRequest = (req: Request) => Promise<Response>;
 
+const swr = async (
+  request: Request,
+  ctx: ExecutionContext,
+  executeRequest: ExecuteRequest = executeRequestDefault,
+  shouldCache: ShouldCache = shouldCacheDefault,
+  toCacheKey: ToCacheKey = toCacheKeyDefault
+) => {
+  const url = new URL(request.url);
+  const bustCache = url.searchParams.get("no-cache");
+  const cache = caches.default;
+  const cacheKey = await toCacheKey(request);
+  const cachedRes = await cache.match(cacheKey);
+
+  if (bustCache !== "true" && cachedRes) {
+    let cacheStatus = cachedRes.headers.get(CACHE_STATUS_HEADER);
     if (shouldRevalidate(cachedRes)) {
       cacheStatus = CacheStatus.REVALIDATING;
 
@@ -30,12 +42,14 @@ const swr = async (request: Request, event: ExecutionContext) => {
         })
       );
 
-      event.waitUntil(
+      ctx.waitUntil(
         (async () => {
           await fetchAndCache({
             cacheKey,
             request,
-            event,
+            ctx,
+            executeRequest,
+            shouldCache,
           });
         })()
       );
@@ -52,26 +66,39 @@ const swr = async (request: Request, event: ExecutionContext) => {
   return fetchAndCache({
     cacheKey,
     request,
-    event,
+    ctx,
+    executeRequest,
+    shouldCache,
   });
 };
+
+const executeRequestDefault: ExecuteRequest = (request) =>
+  fetch(addCacheBustParam(request));
 
 const fetchAndCache = async ({
   cacheKey,
   request,
-  event,
+  ctx,
+  executeRequest,
+  shouldCache,
 }: {
   request: Request;
-  event: ExecutionContext;
+  ctx: ExecutionContext;
   cacheKey: Request;
+  executeRequest: ExecuteRequest;
+  shouldCache: ShouldCache;
 }) => {
   const cache = caches.default;
 
   // we add a cache busting query param here to ensure that
   // we hit the origin and no other upstream cf caches
-  const originRes = await fetch(addCacheBustParam(request));
+  const originRes = await executeRequest(request);
 
-  const cacheControl = resolveCacheControlHeaders(request, originRes);
+  const cacheControl = await resolveCacheControlHeaders(
+    request,
+    originRes,
+    shouldCache
+  );
 
   const headers = {
     [ORIGIN_CACHE_CONTROL_HEADER]: originRes.headers.get("cache-control"),
@@ -81,10 +108,10 @@ const fetchAndCache = async ({
 
   if (cacheControl?.edge) {
     // store the cache response w/o blocking response
-    event.waitUntil(
+    ctx.waitUntil(
       cache.put(
         cacheKey,
-        addHeaders(originRes, {
+        await addHeaders(originRes, {
           ...headers,
 
           [CACHE_STATUS_HEADER]: CacheStatus.HIT,
@@ -114,17 +141,21 @@ const fetchAndCache = async ({
   });
 };
 
-const resolveCacheControlHeaders = (req: Request, res: Response) => {
-  // don't cache error or POST/PUT/DELETE
-  const shouldCache = res.ok && req.method === "GET";
+const shouldCacheDefault: ShouldCache = async (request, response) =>
+  response.ok && request.method === "GET";
 
-  if (!shouldCache) {
+const resolveCacheControlHeaders = async (
+  request: Request,
+  response: Response,
+  shouldCache: ShouldCache
+) => {
+  if (!(await shouldCache(request, response))) {
     return {
       client: "public, max-age=0, must-revalidate",
     };
   }
 
-  const cacheControl = res.headers.get(CACHE_CONTROL_HEADER);
+  const cacheControl = response.headers.get(CACHE_CONTROL_HEADER);
 
   // never cache anything that doesn't have a cache-control header
   if (!cacheControl) return;
@@ -197,9 +228,10 @@ const addHeaders = (
   response: Response,
   headers: { [key: string]: string | undefined | null }
 ) => {
-  const response2 = new Response(response.body, {
-    status: response.status,
-    headers: response.headers,
+  const responseToCache = response.clone();
+  const response2 = new Response(responseToCache.body, {
+    status: responseToCache.status,
+    headers: responseToCache.headers,
   });
 
   for (const key in headers) {
@@ -237,7 +269,7 @@ const toCamelCase = (string: string) =>
  * wanted to in the future the cache key could contain req.body,
  * but this is probably not ever a good idea.
  */
-const toCacheKey = (req: Request) =>
+const toCacheKeyDefault: ToCacheKey = async (req: Request) =>
   new Request(req.url, {
     method: req.method,
   });
