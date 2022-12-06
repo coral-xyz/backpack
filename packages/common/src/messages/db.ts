@@ -14,7 +14,6 @@ export interface EnrichedInboxDb extends InboxDb {
 }
 
 export interface Friendship {
-  remoteUserId: string;
   id: string;
   areFriends: boolean;
   blocked: boolean;
