@@ -82,7 +82,7 @@ export function SendSolanaConfirmationCard({
           destination: new PublicKey(destinationAddress),
           amount: amount.toNumber(),
         });
-      } else if (await isCreatorStandardToken(mintId, mintInfo)) {
+      } else if (isCreatorStandardToken(mintId, mintInfo)) {
         txSig = await Solana.transferCreatorStandardToken(solanaCtx, {
           destination: new PublicKey(destinationAddress),
           mint: new PublicKey(token.mint!),
@@ -319,7 +319,7 @@ export const isCardinalWrappedToken = async (
   return false;
 };
 
-export const isCreatorStandardToken = async (
+export const isCreatorStandardToken = (
   mintId: PublicKey,
   mintInfo: MintInfo
 ) => {
