@@ -1,9 +1,9 @@
 import * as store from "@coral-xyz/background/src/backend/store";
 import { DefaultKeyname } from "@coral-xyz/background/src/backend/store";
+import type { BlockchainKeyringJson } from "@coral-xyz/common";
 import type { DerivationPath } from "@coral-xyz/common";
 import { getLogger } from "@coral-xyz/common";
 import * as bs58 from "bs58";
-
 import type {
   HdKeyring,
   HdKeyringFactory,
@@ -165,7 +165,7 @@ export class BlockchainKeyring {
     keyring.deletePublicKey(publicKey);
   }
 
-  public toJson(): any {
+  public toJson(): BlockchainKeyringJson {
     if (!this.importedKeyring || !this.ledgerKeyring) {
       throw new Error("blockchain keyring is locked");
     }
@@ -173,13 +173,12 @@ export class BlockchainKeyring {
       hdKeyring: this.hdKeyring ? this.hdKeyring.toJson() : undefined,
       importedKeyring: this.importedKeyring.toJson(),
       ledgerKeyring: this.ledgerKeyring.toJson(),
-      activeWallet: this.activeWallet,
-      deletedWallets: this.deletedWallets,
+      activeWallet: this.activeWallet!,
+      deletedWallets: this.deletedWallets!,
     };
   }
 
-  // ts-ignore
-  public fromJson(json): any {
+  public fromJson(json: BlockchainKeyringJson): void {
     const {
       hdKeyring,
       importedKeyring,

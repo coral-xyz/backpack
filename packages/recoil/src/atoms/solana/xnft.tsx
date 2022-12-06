@@ -86,13 +86,14 @@ export const xnfts = atom({
 
 export const plugins = selector({
   key: "plugins",
-  get: ({ get }: any) => {
+  get: ({ get }) => {
     const developerMode = get(isDeveloperMode);
     const _xnfts = get(xnfts);
     const plugins = [..._xnfts];
     // Display the simulator if developer mode is enabled
     if (developerMode) {
-      plugins.push({
+      // @ts-ignore
+      const simulator = {
         url: SIMULATOR_URL,
         iconUrl: "assets/simulator.png",
         title: "Simulator",
@@ -104,7 +105,9 @@ export const plugins = selector({
             xnft: PublicKey.default.toString(),
           },
         },
-      });
+      } as typeof plugins[0];
+
+      plugins.push(simulator);
     }
     return plugins;
   },
