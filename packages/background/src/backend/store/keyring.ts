@@ -11,7 +11,7 @@ const KEY_KEYRING_STORE = "keyring-store";
  */
 export type KeyringStoreJson = {
   activeUserUuid: string;
-  usernames: {
+  users: {
     [uuid: string]: UserKeyringJson;
   };
   lastUsedTs: number;
@@ -26,6 +26,7 @@ export type UserKeyringJson = {
   };
 };
 
+// The keyring store should only ever be accessed through this method.
 export async function getKeyringStore(
   password: string
 ): Promise<KeyringStoreJson> {
@@ -34,7 +35,18 @@ export async function getKeyringStore(
     throw new Error("keyring store not found on disk");
   }
   const plaintext = await crypto.decrypt(ciphertextPayload, password);
-  return JSON.parse(plaintext);
+  const json = JSON.parse(plaintext);
+
+  if (json.usernames) {
+    return json;
+  }
+
+  //
+  // Migrate user from single username -> multi username account management.
+  //
+  // TODO.
+
+  return json;
 }
 
 export async function setKeyringStore(
@@ -46,10 +58,15 @@ export async function setKeyringStore(
   await setKeyringCiphertext(ciphertext);
 }
 
-export async function getKeyringCiphertext(): Promise<SecretPayload> {
+async function getKeyringCiphertext(): Promise<SecretPayload> {
   return await LocalStorageDb.get(KEY_KEYRING_STORE);
 }
 
 async function setKeyringCiphertext(ciphertext: SecretPayload) {
   await LocalStorageDb.set(KEY_KEYRING_STORE, ciphertext);
+}
+
+export async function doesCiphertextExist(): Promise<boolean> {
+  const ciphertext = await getKeyringCiphertext();
+  return ciphertext !== undefined && ciphertext !== null;
 }

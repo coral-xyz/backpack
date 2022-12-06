@@ -37,7 +37,7 @@ export class KeyringStore {
   private password?: string;
   private autoLockInterval?: ReturnType<typeof setInterval>;
   private events: EventEmitter;
-  private usernames: Map<string, UsernameKeyring>;
+  private users: Map<string, UserKeyring>;
   // Must be undefined when the keyring-store is locked or uninitialized.
   private activeUserUuid?: string;
 
@@ -45,13 +45,13 @@ export class KeyringStore {
   // Getters.
   ///////////////////////////////////////////////////////////////////////////////
 
-  public get activeUsernameKeyring(): UsernameKeyring {
+  public get activeUserKeyring(): UserKeyring {
     if (!this.activeUserUuid) {
       throw new Error("invariant violation: activeUserUuid is undefined");
     }
-    const kr = this.usernames.get(this.activeUserUuid)!;
+    const kr = this.users.get(this.activeUserUuid)!;
     if (!kr) {
-      throw new Error("invariant violation: activeUsernameKeyring not found");
+      throw new Error("invariant violation: activeUserKeyring not found");
     }
     return kr;
   }
@@ -61,7 +61,7 @@ export class KeyringStore {
   ///////////////////////////////////////////////////////////////////////////////
 
   constructor(events: EventEmitter) {
-    this.usernames = new Map();
+    this.users = new Map();
     this.lastUsedTs = 0;
     this.events = events;
   }
@@ -90,10 +90,7 @@ export class KeyringStore {
     keyringInit: KeyringInit,
     uuid: string
   ) {
-    this.usernames.set(
-      uuid,
-      await UsernameKeyring.init(username, keyringInit, uuid)
-    );
+    this.users.set(uuid, await UserKeyring.init(username, keyringInit, uuid));
     this.activeUserUuid = uuid;
 
     await store.setWalletDataForUser(
@@ -126,14 +123,13 @@ export class KeyringStore {
     if (this.isUnlocked()) {
       return false;
     }
-    const ciphertext = await store.getKeyringCiphertext();
-    return ciphertext !== undefined && ciphertext !== null;
+    return await store.doesCiphertextExist();
   }
 
   private isUnlocked(): boolean {
     return (
       this.activeUserUuid !== undefined &&
-      this.activeUsernameKeyring.blockchains.size > 0 &&
+      this.activeUserKeyring.blockchains.size > 0 &&
       this.lastUsedTs !== 0
     );
   }
@@ -166,7 +162,7 @@ export class KeyringStore {
 
   public lock() {
     this.activeUserUuid = undefined; // Must be set to undefined here.
-    this.usernames = new Map();
+    this.users = new Map();
     this.lastUsedTs = 0;
   }
 
@@ -275,7 +271,7 @@ export class KeyringStore {
     publicKey?: string,
     persist = true
   ): Promise<void> {
-    this.activeUsernameKeyring.blockchainKeyringAdd(
+    this.activeUserKeyring.blockchainKeyringAdd(
       blockchain,
       derivationPath,
       accountIndex,
@@ -295,7 +291,7 @@ export class KeyringStore {
     name: string
   ): Promise<[string, string]> {
     return this.withUnlockAndPersist(async () => {
-      return await this.activeUsernameKeyring.importSecretKey(
+      return await this.activeUserKeyring.importSecretKey(
         blockchain,
         secretKey,
         name
@@ -308,13 +304,13 @@ export class KeyringStore {
     blockchain: Blockchain
   ): Promise<[string, string]> {
     return this.withUnlockAndPersist(async () => {
-      return await this.activeUsernameKeyring.deriveNextKey(blockchain);
+      return await this.activeUserKeyring.deriveNextKey(blockchain);
     });
   }
 
   public async keyDelete(blockchain: Blockchain, pubkey: string) {
     return this.withUnlockAndPersist(async () => {
-      return await this.activeUsernameKeyring.keyDelete(blockchain, pubkey);
+      return await this.activeUserKeyring.keyDelete(blockchain, pubkey);
     });
   }
 
@@ -325,7 +321,7 @@ export class KeyringStore {
     pubkey: string
   ) {
     return this.withUnlockAndPersist(async () => {
-      return await this.activeUsernameKeyring.ledgerImport(
+      return await this.activeUserKeyring.ledgerImport(
         blockchain,
         dPath,
         account,
@@ -342,7 +338,7 @@ export class KeyringStore {
     blockchain: Blockchain
   ) {
     return this.withUnlockAndPersist(async () => {
-      return await this.activeUsernameKeyring.activeWalletUpdate(
+      return await this.activeUserKeyring.activeWalletUpdate(
         newActivePublicKey,
         blockchain
       );
@@ -360,7 +356,7 @@ export class KeyringStore {
     };
   }> {
     return await this.withUnlock(async () => {
-      return await this.activeUsernameKeyring.publicKeys();
+      return await this.activeUserKeyring.publicKeys();
     });
   }
 
@@ -369,19 +365,19 @@ export class KeyringStore {
    */
   public async activeWallets(): Promise<string[]> {
     return this.withUnlock(async () => {
-      return await this.activeUsernameKeyring.activeWallets();
+      return await this.activeUserKeyring.activeWallets();
     });
   }
 
   public exportSecretKey(password: string, publicKey: string): string {
     return this.withPassword(password, () => {
-      return this.activeUsernameKeyring.exportSecretKey(password, publicKey);
+      return this.activeUserKeyring.exportSecretKey(password, publicKey);
     });
   }
 
   public exportMnemonic(password: string): string {
     return this.withPassword(password, () => {
-      return this.activeUsernameKeyring.exportMnemonic(password);
+      return this.activeUserKeyring.exportMnemonic(password);
     });
   }
 
@@ -452,40 +448,30 @@ export class KeyringStore {
   ///////////////////////////////////////////////////////////////////////////////
 
   private toJson(): KeyringStoreJson {
-    // toJson on all the usernames
-    const usernames = Object.fromEntries(
-      [...this.usernames].map(([k, v]) => [k, v.toJson()])
+    // toJson on all the users
+    const users = Object.fromEntries(
+      [...this.users].map(([k, v]) => [k, v.toJson()])
     );
     return {
       activeUserUuid: this.activeUserUuid!,
-      usernames,
+      users,
       lastUsedTs: this.lastUsedTs,
     };
   }
 
   private async fromJson(json: KeyringStoreJson) {
-    // @ts-ignore
-    const { activeUserUuid, usernames }: KeyringStoreJson = (() => {
-      if (json.usernames) {
-        return json;
-      }
-
-      //
-      // Migrate user from single username -> multi username account management.
-      //
-      // TODO.
-    })();
+    const { activeUserUuid, users } = json;
     this.activeUserUuid = activeUserUuid;
-    this.usernames = new Map(
-      Object.entries(usernames).map(([username, obj]) => {
-        return [username, UsernameKeyring.fromJson(obj)];
+    this.users = new Map(
+      Object.entries(users).map(([username, obj]) => {
+        return [username, UserKeyring.fromJson(obj)];
       })
     );
   }
 }
 
 // Holds all keys for a given username.
-class UsernameKeyring {
+class UserKeyring {
   blockchains: Map<string, BlockchainKeyring>;
   username: string;
   uuid: string;
@@ -503,8 +489,8 @@ class UsernameKeyring {
     username: string,
     keyringInit: KeyringInit,
     uuid: string
-  ): Promise<UsernameKeyring> {
-    const kr = new UsernameKeyring();
+  ): Promise<UserKeyring> {
+    const kr = new UserKeyring();
     kr.uuid = uuid;
     kr.username = username;
     kr.mnemonic = keyringInit.mnemonic;
@@ -729,10 +715,10 @@ class UsernameKeyring {
     };
   }
 
-  public static fromJson(json: UserKeyringJson): UsernameKeyring {
+  public static fromJson(json: UserKeyringJson): UserKeyring {
     const { uuid, username, mnemonic, blockchains } = json;
 
-    const u = new UsernameKeyring();
+    const u = new UserKeyring();
     u.uuid = uuid;
     u.username = username;
     u.mnemonic = mnemonic;

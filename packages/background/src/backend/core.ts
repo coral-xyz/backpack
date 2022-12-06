@@ -116,7 +116,7 @@ export class Backend {
     tx.addSignature(pubkey, Buffer.from(bs58.decode(signature)));
 
     // Send it to the network.
-    const uuid = this.keyringStore.activeUsernameKeyring.uuid;
+    const uuid = this.keyringStore.activeUserKeyring.uuid;
     const commitment = await this.solanaCommitmentRead(uuid);
     return await this.solanaConnectionBackend.sendRawTransaction(
       tx.serialize(),
@@ -147,7 +147,7 @@ export class Backend {
     const message = tx.message.serialize();
     const txMessage = bs58.encode(message);
     const blockchainKeyring =
-      this.keyringStore.activeUsernameKeyring.keyringForBlockchain(
+      this.keyringStore.activeUserKeyring.keyringForBlockchain(
         Blockchain.SOLANA
       );
     return await blockchainKeyring.signTransaction(txMessage, walletAddress);
@@ -155,7 +155,7 @@ export class Backend {
 
   async solanaSignMessage(msg: string, walletAddress: string): Promise<string> {
     const blockchainKeyring =
-      this.keyringStore.activeUsernameKeyring.keyringForBlockchain(
+      this.keyringStore.activeUserKeyring.keyringForBlockchain(
         Blockchain.SOLANA
       );
     return await blockchainKeyring.signMessage(msg, walletAddress);
@@ -229,7 +229,7 @@ export class Backend {
 
   // Returns true if the url changed.
   async solanaConnectionUrlUpdate(cluster: string): Promise<boolean> {
-    const uuid = this.keyringStore.activeUsernameKeyring.uuid;
+    const uuid = this.keyringStore.activeUserKeyring.uuid;
     const data = await getWalletDataForUser(uuid);
 
     if (data.solana.cluster === cluster) {
@@ -238,7 +238,7 @@ export class Backend {
 
     let keyring: BlockchainKeyring | null;
     try {
-      keyring = this.keyringStore.activeUsernameKeyring.keyringForBlockchain(
+      keyring = this.keyringStore.activeUserKeyring.keyringForBlockchain(
         Blockchain.SOLANA
       );
     } catch {
@@ -274,7 +274,7 @@ export class Backend {
   }
 
   async solanaExplorerUpdate(explorer: string): Promise<string> {
-    const uuid = this.keyringStore.activeUsernameKeyring.uuid;
+    const uuid = this.keyringStore.activeUserKeyring.uuid;
     const data = await store.getWalletDataForUser(uuid);
     await store.setWalletDataForUser(uuid, {
       ...data,
@@ -300,7 +300,7 @@ export class Backend {
   }
 
   async solanaCommitmentUpdate(commitment: Commitment): Promise<string> {
-    const uuid = this.keyringStore.activeUsernameKeyring.uuid;
+    const uuid = this.keyringStore.activeUserKeyring.uuid;
     const data = await store.getWalletDataForUser(uuid);
     await store.setWalletDataForUser(uuid, {
       ...data,
@@ -327,7 +327,7 @@ export class Backend {
     walletAddress: string
   ): Promise<string> {
     const blockchainKeyring =
-      this.keyringStore.activeUsernameKeyring.keyringForBlockchain(
+      this.keyringStore.activeUserKeyring.keyringForBlockchain(
         Blockchain.ETHEREUM
       );
     return await blockchainKeyring.signTransaction(serializedTx, walletAddress);
@@ -347,7 +347,7 @@ export class Backend {
 
   async ethereumSignMessage(msg: string, walletAddress: string) {
     const blockchainKeyring =
-      this.keyringStore.activeUsernameKeyring.keyringForBlockchain(
+      this.keyringStore.activeUserKeyring.keyringForBlockchain(
         Blockchain.ETHEREUM
       );
     return await blockchainKeyring.signMessage(msg, walletAddress);
@@ -365,7 +365,7 @@ export class Backend {
   }
 
   async ethereumExplorerUpdate(explorer: string): Promise<string> {
-    const uuid = this.keyringStore.activeUsernameKeyring.uuid;
+    const uuid = this.keyringStore.activeUserKeyring.uuid;
     const data = await store.getWalletDataForUser(uuid);
     await store.setWalletDataForUser(uuid, {
       ...data,
@@ -391,7 +391,7 @@ export class Backend {
   }
 
   async ethereumConnectionUrlUpdate(connectionUrl: string): Promise<string> {
-    const uuid = this.keyringStore.activeUsernameKeyring.uuid;
+    const uuid = this.keyringStore.activeUserKeyring.uuid;
     const data = await store.getWalletDataForUser(uuid);
 
     await store.setWalletDataForUser(uuid, {
@@ -404,7 +404,7 @@ export class Backend {
 
     let keyring: BlockchainKeyring | null;
     try {
-      keyring = this.keyringStore.activeUsernameKeyring.keyringForBlockchain(
+      keyring = this.keyringStore.activeUserKeyring.keyringForBlockchain(
         Blockchain.ETHEREUM
       );
     } catch {
@@ -425,7 +425,7 @@ export class Backend {
 
   async ethereumChainIdRead(): Promise<string> {
     const data = await store.getWalletDataForUser(
-      this.keyringStore.activeUsernameKeyring.uuid
+      this.keyringStore.activeUserKeyring.uuid
     );
     return data.ethereum && data.ethereum.chainId
       ? data.ethereum.chainId
@@ -434,7 +434,7 @@ export class Backend {
   }
 
   async ethereumChainIdUpdate(chainId: string): Promise<string> {
-    const uuid = this.keyringStore.activeUsernameKeyring.uuid;
+    const uuid = this.keyringStore.activeUserKeyring.uuid;
     const data = await store.getWalletDataForUser(uuid);
     await store.setWalletDataForUser(uuid, {
       ...data,
@@ -512,7 +512,7 @@ export class Backend {
             tx.feePayer = new PublicKey(match.publickey);
             tx.recentBlockhash = tx.feePayer.toString();
             const blockchainKeyring =
-              this.keyringStore.activeUsernameKeyring.keyringForBlockchain(
+              this.keyringStore.activeUserKeyring.keyringForBlockchain(
                 Blockchain.SOLANA
               );
             signature = await blockchainKeyring.signTransaction(
@@ -816,7 +816,7 @@ export class Backend {
     blockchain: Blockchain
   ): Promise<string> {
     const keyring =
-      this.keyringStore.activeUsernameKeyring.keyringForBlockchain(blockchain);
+      this.keyringStore.activeUserKeyring.keyringForBlockchain(blockchain);
     const oldActivePublicKey = keyring.getActiveWallet();
     await this.keyringStore.activeWalletUpdate(newActivePublicKey, blockchain);
 
@@ -850,9 +850,7 @@ export class Backend {
     return Object.fromEntries(
       (await this.activeWallets()).map((publicKey) => {
         return [
-          this.keyringStore.activeUsernameKeyring.blockchainForPublicKey(
-            publicKey
-          ),
+          this.keyringStore.activeUserKeyring.blockchainForPublicKey(publicKey),
           publicKey,
         ];
       })
@@ -895,7 +893,7 @@ export class Backend {
     publicKey: string
   ): Promise<string> {
     const keyring =
-      this.keyringStore.activeUsernameKeyring.keyringForBlockchain(blockchain);
+      this.keyringStore.activeUserKeyring.keyringForBlockchain(blockchain);
 
     // If we're removing the currently active key then we need to update it
     // first.
@@ -1021,7 +1019,7 @@ export class Backend {
   }
 
   keyringTypeRead(): KeyringType {
-    return this.keyringStore.activeUsernameKeyring.hasMnemonic()
+    return this.keyringStore.activeUserKeyring.hasMnemonic()
       ? "mnemonic"
       : "ledger";
   }
@@ -1054,7 +1052,7 @@ export class Backend {
   }
 
   async darkModeUpdate(darkMode: boolean): Promise<string> {
-    const uuid = this.keyringStore.activeUsernameKeyring.uuid;
+    const uuid = this.keyringStore.activeUserKeyring.uuid;
     const data = await store.getWalletDataForUser(uuid);
     await store.setWalletDataForUser(uuid, {
       ...data,
@@ -1075,7 +1073,7 @@ export class Backend {
   }
 
   async developerModeUpdate(developerMode: boolean): Promise<string> {
-    const uuid = this.keyringStore.activeUsernameKeyring.uuid;
+    const uuid = this.keyringStore.activeUserKeyring.uuid;
     const data = await store.getWalletDataForUser(uuid);
     await store.setWalletDataForUser(uuid, {
       ...data,
@@ -1091,7 +1089,7 @@ export class Backend {
   }
 
   async isApprovedOrigin(origin: string): Promise<boolean> {
-    const uuid = this.keyringStore.activeUsernameKeyring.uuid;
+    const uuid = this.keyringStore.activeUserKeyring.uuid;
     const data = await store.getWalletDataForUser(uuid);
     if (!data.approvedOrigins) {
       return false;
@@ -1106,7 +1104,7 @@ export class Backend {
   }
 
   async approvedOriginsUpdate(approvedOrigins: Array<string>): Promise<string> {
-    const uuid = this.keyringStore.activeUsernameKeyring.uuid;
+    const uuid = this.keyringStore.activeUserKeyring.uuid;
     const data = await store.getWalletDataForUser(uuid);
     await store.setWalletDataForUser(uuid, {
       ...data,
@@ -1123,7 +1121,7 @@ export class Backend {
   }
 
   async approvedOriginsDelete(origin: string): Promise<string> {
-    const uuid = this.keyringStore.activeUsernameKeyring.uuid;
+    const uuid = this.keyringStore.activeUserKeyring.uuid;
     const data = await store.getWalletDataForUser(uuid);
     const approvedOrigins = data.approvedOrigins.filter((o) => o !== origin);
     await store.setWalletDataForUser(uuid, {
@@ -1167,14 +1165,14 @@ export class Backend {
    * enabled.
    */
   async blockchainKeyringsRead(): Promise<Array<Blockchain>> {
-    return this.keyringStore.activeUsernameKeyring.blockchainKeyrings();
+    return this.keyringStore.activeUserKeyring.blockchainKeyrings();
   }
 
   /**
    * Enable a blockchain. The blockchain keyring must be initialized prior to this.
    */
   async enabledBlockchainsAdd(blockchain: Blockchain) {
-    const uuid = this.keyringStore.activeUsernameKeyring.uuid;
+    const uuid = this.keyringStore.activeUserKeyring.uuid;
     const data = await store.getWalletDataForUser(uuid);
     if (data.enabledBlockchains.includes(blockchain)) {
       throw new Error("blockchain already enabled");
@@ -1186,9 +1184,7 @@ export class Backend {
     let keyring: BlockchainKeyring;
     try {
       keyring =
-        this.keyringStore.activeUsernameKeyring.keyringForBlockchain(
-          blockchain
-        );
+        this.keyringStore.activeUserKeyring.keyringForBlockchain(blockchain);
     } catch (error) {
       throw new Error(`${blockchain} keyring not initialised`);
     }
@@ -1214,7 +1210,7 @@ export class Backend {
   }
 
   async enabledBlockchainsRemove(blockchain: Blockchain) {
-    const uuid = this.keyringStore.activeUsernameKeyring.uuid;
+    const uuid = this.keyringStore.activeUserKeyring.uuid;
     const data = await store.getWalletDataForUser(uuid);
     if (!data.enabledBlockchains.includes(blockchain)) {
       throw new Error("blockchain not enabled");
@@ -1240,7 +1236,7 @@ export class Backend {
    * Return all the enabled blockchains.
    */
   async enabledBlockchainsRead(): Promise<Array<Blockchain>> {
-    const uuid = this.keyringStore.activeUsernameKeyring.uuid;
+    const uuid = this.keyringStore.activeUserKeyring.uuid;
     const data = await store.getWalletDataForUser(uuid);
     return data.enabledBlockchains;
   }
@@ -1260,7 +1256,7 @@ export class Backend {
   }
 
   async setXnftPreferences(xnftId: string, preference: XnftPreference) {
-    const uuid = this.keyringStore.activeUsernameKeyring.uuid;
+    const uuid = this.keyringStore.activeUserKeyring.uuid;
     const currentPreferences =
       (await store.getXnftPreferencesForUser(uuid)) || {};
     const updatedPreferences = {
@@ -1278,7 +1274,7 @@ export class Backend {
   }
 
   async getXnftPreferences() {
-    const uuid = this.keyringStore.activeUsernameKeyring.uuid;
+    const uuid = this.keyringStore.activeUserKeyring.uuid;
     return await store.getXnftPreferencesForUser(uuid);
   }
 
