@@ -25,16 +25,16 @@ app.get("/metaplex-nft/:mintAddress/image", async (c) => {
       new Request("https://solana-rpc.xnfts.dev/rpc-proxy", {
         method: "POST",
         body: `{
-				"jsonrpc": "2.0",
-				"id": 1,
-				"method": "getAccountInfo",
-				"params": [
-					"${metadataAccountAddress}",
-					{
-						"encoding": "base64"
-					}
-				]
-			}`,
+          "jsonrpc": "2.0",
+          "id": 1,
+          "method": "getAccountInfo",
+          "params": [
+            "${metadataAccountAddress}",
+            {
+              "encoding": "base64"
+            }
+          ]
+        }`,
       })
     );
     const metadataAccount = await metadataAccountResponse.json();
@@ -69,7 +69,7 @@ app.get("/metaplex-nft/:mintAddress/image", async (c) => {
     );
     return response;
   } catch (e) {
-    console.log("Error", e);
+    console.error(e);
     return c.status(500);
   }
 });

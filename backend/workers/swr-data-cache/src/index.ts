@@ -1,7 +1,6 @@
 import type { ExecuteRequest, ShouldCache, ToCacheKey } from "./swr";
 import swr from "./swr";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface Env {
   data: { fetch: (req: Request) => Promise<Response> };
   rpc: { fetch: (req: Request) => Promise<Response> };
@@ -48,7 +47,6 @@ const shouldCache: (
   // cache posts to specific rpc methods
   if (service === "rpc-proxy") {
     const method = (await body)?.method ?? "";
-
     if (
       method &&
       method.startsWith("get") &&
@@ -56,7 +54,6 @@ const shouldCache: (
     ) {
       return true;
     }
-    // return cacheRPCmethods.includes((await body)?.method);
   }
 
   return false;
