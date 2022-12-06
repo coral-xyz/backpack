@@ -9,3 +9,7 @@ export const xnftMiddleware = (req, res, next) => {
   req.xnftAddress = xnftAddress;
   next();
 };
+
+export const authMiddleware = (req, res, next) => {
+  next();
+};
