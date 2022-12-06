@@ -19,5 +19,5 @@
     "strictNullChecks": true,
     "target": "es2019"
   },
-  "exclude": ["**/dist/**/*"]
+  "exclude": ["**/*.js", "**/dist/**/*"]
 }
