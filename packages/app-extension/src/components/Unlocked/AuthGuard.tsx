@@ -2,11 +2,8 @@ import { useEffect, useState } from "react";
 import type Transport from "@ledgerhq/hw-transport";
 import type { Blockchain, DerivationPath } from "@coral-xyz/common";
 import {
-  BACKEND_API_URL,
   BACKPACK_FEATURE_JWT,
   BACKPACK_FEATURE_USERNAMES,
-  UI_RPC_METHOD_KEYRING_STORE_LOCK,
-  UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
 } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
@@ -18,210 +15,104 @@ import { ConnectHardwareWelcome } from "../Unlocked/Settings/AddConnectWallet/Co
 import { HardwareSearch } from "../Onboarding/pages/HardwareSearch";
 import { HardwareSign } from "../Onboarding/pages/HardwareSign";
 import { useSteps } from "../../hooks/useSteps";
+import { useAuthentication } from "../../hooks/useAuthentication";
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(false);
-  // Public key/signature pairs that are required to sync the state of the
-  // server public key data with the client data. A signature that is `undefined`
-  // is one that has not been gathered yet, and a signature of `null` means the
-  // user has opted to remove that public key from the server
-  const [requiredSignatures, setRequiredSignatures] = useState<
-    Array<{
-      publicKey: string;
-      signature: string | undefined | null;
-      hardware: boolean;
-    }>
-  >([]);
+  const [authSigner, setAuthSigner] = useState<{
+    publicKey: string;
+    blockchain: Blockchain;
+    hardware: boolean;
+  } | null>(null);
+  const [authSignature, setAuthSignature] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false);
   const background = useBackgroundClient();
   const user = useUser();
+  const { authenticate, checkAuthentication, getSigners } = useAuthentication();
   const jwtEnabled = !!(
     BACKPACK_FEATURE_USERNAMES &&
     BACKPACK_FEATURE_JWT &&
     user
   );
 
+  /**
+   * Check authentication status and take required actions to authenticate if
+   * not authenticated.
+   */
   useEffect(() => {
     (async () => {
-      if (jwtEnabled) {
-        const result = await checkAuthentication();
-        if (result) {
-          const { publicKeys, isAuthenticated } = await checkAuthentication();
-          const publicKeysToAdd = await getRequiredSignatures(publicKeys);
-          setIsAuthenticated(isAuthenticated);
-          // Gather required signatures
-          const signatures: typeof requiredSignatures = [];
-          for (const data of publicKeysToAdd) {
-            let signature: string | undefined;
-            // If it's not a hardware publuc key, sign transparently now
-            if (!data.hardware) {
-              signature = await background.request({
-                method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-                params: [data.blockchain, "onboard", data.publicKey],
-              });
-            }
-            signatures.push({
-              publicKey: data.publicKey,
-              signature,
-              hardware: data.hardware,
-            });
-          }
-          setRequiredSignatures(signatures);
-        }
-      } else {
+      if (isAuthenticated || !jwtEnabled) {
+        // Already authenticated or not using JWTs
         setLoading(false);
+      } else {
+        const result = await checkAuthentication();
+        if (result && !result.isAuthenticated) {
+          setAuthSigner(await getAuthSigner(result.publicKeys));
+        }
       }
     })();
   }, []);
 
   /**
-   * Iterate through the required signatures state and gather signatures either
-   * by signing transparently or by displaying a drawer to the user to guide
-   * them through the ledger flow.
-   **/
-
-  useEffect(() => {
-    (async () => {
-      // Get the next unresolves signature
-      const nextIndex = requiredSignatures.findIndex(
-        (s) => s.signature === undefined
-      );
-      // No more signatures needed
-      if (nextIndex === -1) {
-        // Job done
-        console.log("job done");
-        return;
-      }
-
-      const next = requiredSignatures[nextIndex];
-
-      setOpenDrawer(true);
-    })();
-  }, [requiredSignatures]);
-
-  /**
-   * As soon as a valid signature becomes available, use it to create a JWT
+   * When an auth signer is found, take the required action to get a signature.
    */
   useEffect(() => {
     (async () => {
-      if (!isAuthenticated) {
-        const firstSignature = requiredSignatures.find((s) => !!s.signature);
-        if (firstSignature) {
-          console.log("authenticating");
-          authenticate();
-        }
+      if (authSigner && !authSigner.hardware) {
+        // Auth signer is not a hardware wallet, sign transparent
+        const signature = await background.request({
+          method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
+          params: [authSigner.blockchain, "onboard", authSigner.publicKey],
+        });
+        setAuthSignature(signature);
+      } else if (authSigner) {
+        // Auth signer is a hardware wallet, pop up a drawer to guide through
+        // flow
+        setOpenDrawer(true);
       }
     })();
-  }, [requiredSignatures]);
+  }, [authSigner]);
 
   /**
-   * Query the server and see if the user has a valid JWT..
+   * When an auth signature is created, authenticate with it.
    */
-  const checkAuthentication = async () => {
-    try {
-      const response = await fetch(
-        `${BACKEND_API_URL}/users/${user.username}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.status === 404) {
-        // User does not exist on server, how to handle?
-        throw new Error("user does not exist");
+  useEffect(() => {
+    (async () => {
+      if (authSignature) {
+        await authenticate(authSignature);
+        setIsAuthenticated(true);
+        setLoading(false);
       }
-      if (response.status !== 200) throw new Error(`could not fetch user`);
-      return await response.json();
-    } catch (err) {
-      console.error("error checking authentication", err);
-      // Relock if authentication failed
-      await background.request({
-        method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
-        params: [],
-      });
-    }
-  };
+    })();
+  }, [authSignature]);
 
   /**
-   * Login the user.
+   * Find the most suitable signer for signing an authentication message. The
+   * most suitable signer is one that Backpack can sign with transparently
+   * that has a matching public key on the server, or fall back to hardware
+   * signers.
    */
-  const authenticate = async () => {
-    try {
-      const response = await fetch(`${BACKEND_API_URL}/authenticate`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (response.status !== 200) throw new Error(`could not authenticate`);
-      return await response.json();
-    } catch (err) {
-      // Relock if authentication failed
-      await background.request({
-        method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
-        params: [],
-      });
-    }
-  };
-
-  /**
-   * Determine the signatures that are required for authentication and for
-   * ensuring all client side public keys are stored on the Backpack account.
-   */
-  const getRequiredSignatures = async (serverPublicKeys: Array<string>) => {
-    type NamedPublicKeys = Array<{ name: string; publicKey: string }>;
-    const clientPublicKeys = (await background.request({
-      method: UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
-      params: [],
-    })) as Record<
-      Blockchain,
-      {
-        hdPublicKeys: NamedPublicKeys;
-        importedPublicKeys: NamedPublicKeys;
-        ledgerPublicKeys: NamedPublicKeys;
-      }
-    >;
-
-    let publicKeysToAdd: Array<{
-      publicKey: string;
-      blockchain: Blockchain;
-      hardware: boolean;
-    }> = [];
-    for (const [blockchain, data] of Object.entries(clientPublicKeys)) {
-      publicKeysToAdd = publicKeysToAdd.concat([
-        ...data.hdPublicKeys.map((n) => ({
-          ...n,
-          blockchain: blockchain as Blockchain,
-          hardware: false,
-        })),
-        ...data.importedPublicKeys.map((n) => ({
-          ...n,
-          blockchain: blockchain as Blockchain,
-          hardware: false,
-        })),
-        ...data.ledgerPublicKeys.map((n) => ({
-          ...n,
-          blockchain: blockchain as Blockchain,
-          hardware: true,
-        })),
-      ]);
-    }
-    // Filter public keys that exist on the client but not on the server
-    publicKeysToAdd = publicKeysToAdd.filter((k) =>
+  const getAuthSigner = async (serverPublicKeys: Array<String>) => {
+    // Intersection of local signers with public keys stored on the server
+    const signers = (await getSigners()).filter((k) =>
       serverPublicKeys.includes(k.publicKey)
     );
-
-    return publicKeysToAdd;
+    if (signers.length === 0) {
+      // This should never happen
+      throw new Error("no valid auth signers found");
+    }
+    // Try and find a transparent server (i.e. not hardware based) as the first
+    // choice
+    const transparentSigner = signers.find((s) => !s.hardware);
+    // If no transparent signer, just return the first (hardware) signer
+    return transparentSigner ? transparentSigner : signers[0];
   };
 
   if (!loading) return children;
 
   return (
     <>
-      Authenticating
       <WithDrawer
         openDrawer={openDrawer}
         setOpenDrawer={setOpenDrawer}
@@ -230,22 +121,30 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
           borderTopLeftRadius: "12px",
           borderTopRightRadius: "12px",
         }}
-      ></WithDrawer>
+      >
+        <HardwareAuthSigner
+          blockchain={authSigner!.blockchain}
+          publicKey={authSigner!.publicKey}
+          onSignature={setAuthSignature}
+        />
+      </WithDrawer>
     </>
   );
 }
 
-export function HardwareSigner({
+export function HardwareAuthSigner({
   blockchain,
-  publicKeys,
+  publicKey,
+  onSignature,
 }: {
   blockchain: Blockchain;
-  publicKeys: Array<string>;
+  publicKey: string;
+  onSignature: (signature: string) => void;
 }) {
   const theme = useCustomTheme();
   const { step, nextStep, prevStep, setStep } = useSteps();
   const [transport, setTransport] = useState<Transport | null>(null);
-  const [transportError, setTransportError] = useState(false);
+  const [transportError] = useState(false);
   const [signingAccount, setSigningAccount] = useState<{
     derivationPath: DerivationPath;
     accountIndex: number;
@@ -261,31 +160,23 @@ export function HardwareSigner({
       }}
       isConnectFailure={!!transportError}
     />,
-    // For each public key, add a step for searching for the public key on the
-    // ledger and signing
-    ...publicKeys.map((publicKey) => (
-      <>
-        <HardwareSearch
-          blockchain={blockchain!}
-          transport={transport!}
-          publicKey={publicKey!}
-          onNext={(derivationPath: DerivationPath, accountIndex: number) => {
-            setSigningAccount({ derivationPath, accountIndex });
-            nextStep();
-          }}
-          onRetry={() => setStep(1)}
-        />
-        <HardwareSign
-          blockchain={blockchain!}
-          publicKey={publicKey!}
-          derivationPath={signingAccount!.derivationPath}
-          accountIndex={signingAccount!.accountIndex!}
-          onNext={(signature: string) => {
-            nextStep();
-          }}
-        />
-      </>
-    )),
+    <HardwareSearch
+      blockchain={blockchain!}
+      transport={transport!}
+      publicKey={publicKey!}
+      onNext={(derivationPath: DerivationPath, accountIndex: number) => {
+        setSigningAccount({ derivationPath, accountIndex });
+        nextStep();
+      }}
+      onRetry={() => setStep(1)}
+    />,
+    <HardwareSign
+      blockchain={blockchain!}
+      publicKey={publicKey!}
+      derivationPath={signingAccount!.derivationPath}
+      accountIndex={signingAccount!.accountIndex!}
+      onNext={onSignature}
+    />,
   ];
 
   return (
