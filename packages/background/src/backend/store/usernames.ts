@@ -25,7 +25,7 @@ export async function setActiveUser(activeUser: User) {
       users: [activeUser],
     });
   } else {
-    let isNew = !data.users.some((u) => u.uuid === activeUser.uuid);
+    let isNew = !data.users.some((u: any) => u.uuid === activeUser.uuid);
     const users = isNew ? data.users.concat([activeUser]) : data.users;
     await LocalStorageDb.set(STORE_KEY_USER_DATA, {
       activeUser,
