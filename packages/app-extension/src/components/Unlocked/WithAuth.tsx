@@ -111,6 +111,7 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
       if (authData) {
         await authenticate(authData);
         setLoading(false);
+        setOpenDrawer(false);
       }
     })();
   }, [authData]);
