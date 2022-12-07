@@ -275,6 +275,7 @@ class CommonRequestManager {
       channel: _,
       data: { id, result, error },
     } = msg;
+    console.log("CommonRequestManager", CommonRequestManager._resolvers);
     const resolver = CommonRequestManager._resolvers[id];
     if (resolver === undefined) {
       logger.error("unable to find resolver for data", { id, result, error });

@@ -6,6 +6,7 @@ import {
 } from "@react-navigation/native";
 
 import { NotFoundScreen } from "../screens/NotFoundScreen";
+
 import LockedNavigator from "./LockedNavigator";
 import OnboardingNavigator from "./OnboardingNavigator";
 import UnlockedNavigator from "./UnlockedNavigator";
@@ -26,7 +27,6 @@ export default function Navigation({
 
 function RootNavigator() {
   const keyringStoreState = useKeyringStoreState();
-  console.log("keyringStoreState", keyringStoreState);
 
   switch (keyringStoreState) {
     case "needs-onboarding":
