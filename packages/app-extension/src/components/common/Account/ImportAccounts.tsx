@@ -31,7 +31,6 @@ import {
   Loading,
   PrimaryButton,
   SubtextParagraph,
-  TextField,
   walletAddressDisplay,
 } from "../../common";
 import { TextInput } from "../Inputs";

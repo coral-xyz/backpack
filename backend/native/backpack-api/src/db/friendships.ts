@@ -470,6 +470,6 @@ export const validateRoom = async (uuid: string, roomId: number) => {
 };
 
 function getLabel(type: "blocked" | "spam", from: string, to: string) {
-  const { user1, user2 } = getSortedUsers(from, to);
+  const { user1 } = getSortedUsers(from, to);
   return user1 === from ? `user1_${type}_user2` : `user2_${type}_user1`;
 }

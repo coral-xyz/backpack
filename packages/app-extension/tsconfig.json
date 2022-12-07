@@ -17,5 +17,5 @@
     "downlevelIteration": true,
     "jsx": "react-jsx"
   },
-  "include": ["src"]
+  "include": ["src", "webpack.config.js"]
 }

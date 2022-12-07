@@ -1,9 +1,10 @@
-import { BACKEND_API_URL } from "@coral-xyz/common";
-import { useStyles } from "./styles";
 import { useState } from "react";
-import { useChatContext } from "./ChatContext";
+import { BACKEND_API_URL } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import InfoIcon from "@mui/icons-material/Info";
+
+import { useChatContext } from "./ChatContext";
+import { useStyles } from "./styles";
 
 export const Banner = () => {
   const {

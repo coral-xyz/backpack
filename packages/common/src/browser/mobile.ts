@@ -318,6 +318,7 @@ class BackendRequestManager extends CommonRequestManager {
 }
 
 async function postMsgFromWorker(msg: any) {
+  // @ts-ignore
   const clients = await self.clients.matchAll({
     includeUncontrolled: true,
     type: "window",

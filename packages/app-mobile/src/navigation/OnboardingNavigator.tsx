@@ -62,8 +62,7 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
   UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
-  UI_RPC_METHOD_PREVIEW_PUBKEYS,
-  UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET,
+  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
   UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
   XNFT_GG_LINK,
 } from "@coral-xyz/common";
@@ -503,16 +502,18 @@ function OnboardingBlockchainSelectScreen({
     }
 
     const signature = await background.request({
-      method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET,
+      method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
       params: [
         blockchain,
         // Sign the invite code, or an empty string if no invite code
         // TODO setup a nonce based system
         encode(Buffer.from(inviteCode ? inviteCode : "", "utf-8")),
-        derivationPath,
-        accountIndex,
         publicKey!,
-        mnemonic,
+        {
+          derivationPath,
+          accountIndex,
+          mnemonic,
+        },
       ],
     });
 

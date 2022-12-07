@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import type { Blockchain, DerivationPath } from "@coral-xyz/common";
-import { UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET } from "@coral-xyz/common";
+import {
+  toTitleCase,
+  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
+} from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { Box } from "@mui/material";
 import { encode } from "bs58";
@@ -36,13 +39,15 @@ export function HardwareSign({
   useEffect(() => {
     (async () => {
       const signature = await background.request({
-        method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET,
+        method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
         params: [
           blockchain,
           encode(Buffer.from(message, "utf-8")),
-          derivationPath,
-          accountIndex,
           publicKey,
+          {
+            derivationPath,
+            accountIndex,
+          },
         ],
       });
       setSignature(signature);

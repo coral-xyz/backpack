@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { ChatManager, EnrichedMessage } from "../ChatManager";
-import { useRef } from "react";
-import { FullScreenChat } from "./FullScreenChat";
+import React, { useEffect, useRef,useState  } from "react";
+import type { SubscriptionType } from "@coral-xyz/common";
+
+import type { EnrichedMessage } from "../ChatManager";
+import { ChatManager } from "../ChatManager";
+
 import { ChatProvider } from "./ChatContext";
-import { SubscriptionType } from "@coral-xyz/common";
+import { FullScreenChat } from "./FullScreenChat";
 
 interface ChatRoomProps {
   roomId: string;

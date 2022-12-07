@@ -55,6 +55,7 @@ function _log(str: any, ...args: any) {
 async function _mobileLog(...args: any[]) {
   // We're in the serviceworker, try sending the message to the HTML page.
   try {
+    // @ts-ignore
     const clients = await self.clients.matchAll({
       includeUncontrolled: true,
       type: "window",

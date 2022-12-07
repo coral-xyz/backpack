@@ -1,5 +1,6 @@
+import type { Friendship } from "@coral-xyz/common";
+import { BACKEND_API_URL } from "@coral-xyz/common";
 import { atomFamily, selectorFamily } from "recoil";
-import { BACKEND_API_URL, Friendship } from "@coral-xyz/common";
 
 export const friendship = atomFamily<Friendship | null, { userId: string }>({
   key: "friendship",

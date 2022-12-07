@@ -1,17 +1,18 @@
 import type {
-  KeyringJson,
-  LedgerKeyringJson,
+  DerivationPath,
   HdKeyringJson,
   ImportedDerivationPath,
-  DerivationPath,
+  KeyringJson,
+  LedgerKeyringJson,
 } from "@coral-xyz/common";
+
 import type { LedgerKeyringBase } from "./ledger";
 
-export {
-  KeyringJson,
-  LedgerKeyringJson,
+export type {
   HdKeyringJson,
   ImportedDerivationPath,
+  KeyringJson,
+  LedgerKeyringJson,
 } from "@coral-xyz/common";
 
 export interface KeyringFactory {

@@ -1,4 +1,4 @@
-import type { NextFunction, Request, Response } from "express";
+import type { Request, Response } from "express";
 import express from "express";
 import { ZodError } from "zod";
 
@@ -32,7 +32,6 @@ app.use("/friends", friendsRouter);
 app.use("/users", usersRouter);
 
 app.use((err: any, _req: Request, res: Response) => {
-  console.error(err);
   if (err instanceof ZodError) {
     return res.status(400).json({
       message: zodErrorToString(err),

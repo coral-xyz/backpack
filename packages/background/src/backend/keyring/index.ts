@@ -21,7 +21,8 @@ import {
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
 import { generateMnemonic } from "bip39";
-import type { User, KeyringStoreJson, UserKeyringJson } from "../store";
+
+import type { KeyringStoreJson, User, UserKeyringJson } from "../store";
 import * as store from "../store";
 import {
   DEFAULT_DARK_MODE,
@@ -76,7 +77,7 @@ export class KeyringStore {
     this.password = password;
 
     // Setup the user.
-    await this.usernameKeyringCreate(username, keyringInit, uuid);
+    await this._usernameKeyringCreate(username, keyringInit, uuid);
 
     // Persist the encrypted data to then store.
     await this.persist(true);
@@ -86,6 +87,16 @@ export class KeyringStore {
   }
 
   public async usernameKeyringCreate(
+    username: string,
+    keyringInit: KeyringInit,
+    uuid: string
+  ) {
+    return await this.withUnlockAndPersist(async () => {
+      return await this._usernameKeyringCreate(username, keyringInit, uuid);
+    });
+  }
+
+  public async _usernameKeyringCreate(
     username: string,
     keyringInit: KeyringInit,
     uuid: string

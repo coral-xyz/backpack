@@ -1,15 +1,16 @@
-import { Drawer, ListItem, Typography } from "@mui/material";
-import { styles } from "@coral-xyz/themes";
-import BlockIcon from "@mui/icons-material/Block";
-import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import { useSearchParams } from "react-router-dom";
-import { useRecoilState } from "recoil";
-import { BACKEND_API_URL, Friendship } from "@coral-xyz/common";
+import type { Friendship } from "@coral-xyz/common";
+import { BACKEND_API_URL } from "@coral-xyz/common";
 import {
   friendship,
   SearchParamsFor,
   useDecodedSearchParams,
 } from "@coral-xyz/recoil";
+import { styles } from "@coral-xyz/themes";
+import BlockIcon from "@mui/icons-material/Block";
+import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
+import { Drawer, ListItem, Typography } from "@mui/material";
+import { useRecoilState } from "recoil";
 export const useStyles = styles((theme) => ({
   container: {
     padding: 16,

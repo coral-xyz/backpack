@@ -4,7 +4,7 @@ import type {
   BlockchainKeyringInit,
   DerivationPath,
 } from "@coral-xyz/common";
-import { toTitleCase } from "@coral-xyz/common";
+import { getCreateMessage, toTitleCase } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import type Transport from "@ledgerhq/hw-transport";
 
@@ -14,7 +14,6 @@ import { ImportAccounts } from "../../common/Account/ImportAccounts";
 import { CloseButton } from "../../common/Layout/Drawer";
 import { NavBackButton, WithNav } from "../../common/Layout/Nav";
 import { ConnectHardwareSearching } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareSearching";
-import { ConnectHardwareSuccess } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareSuccess";
 import { ConnectHardwareWelcome } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareWelcome";
 
 import { HardwareDefaultAccount } from "./HardwareDefaultAccount";
@@ -23,16 +22,12 @@ import { HardwareSign } from "./HardwareSign";
 export function HardwareOnboard({
   blockchain,
   action,
-  inviteCode,
   onComplete,
   onClose,
-  requireSignature = true,
 }: {
   blockchain: Blockchain;
   action: "create" | "import";
   onComplete: (keyringInit: BlockchainKeyringInit) => void;
-  inviteCode?: string;
-  requireSignature?: boolean;
   onClose?: () => void;
 }) {
   const theme = useCustomTheme();
@@ -69,19 +64,9 @@ export function HardwareOnboard({
               accounts: SelectedAccount[],
               derivationPath: DerivationPath
             ) => {
-              if (requireSignature) {
-                setAccounts(accounts);
-                setDerivationPath(derivationPath);
-                nextStep();
-              } else {
-                onComplete({
-                  blockchain,
-                  derivationPath: derivationPath!,
-                  accountIndex: accounts![0].index,
-                  publicKey: accounts![0].publicKey,
-                  signature: null,
-                });
-              }
+              setAccounts(accounts);
+              setDerivationPath(derivationPath);
+              nextStep();
             }}
             onError={() => {
               setTransportError(true);
@@ -99,19 +84,9 @@ export function HardwareOnboard({
               accounts: SelectedAccount[],
               derivationPath: DerivationPath
             ) => {
-              if (requireSignature) {
-                setAccounts(accounts);
-                setDerivationPath(derivationPath);
-                nextStep();
-              } else {
-                onComplete({
-                  blockchain,
-                  derivationPath: derivationPath!,
-                  accountIndex: accounts![0].index,
-                  publicKey: accounts![0].publicKey,
-                  signature: null,
-                });
-              }
+              setAccounts(accounts);
+              setDerivationPath(derivationPath);
+              nextStep();
             }}
             onError={() => {
               setTransportError(true);
@@ -119,12 +94,11 @@ export function HardwareOnboard({
             }}
           />,
         ]),
-    // Prompting for a signature is optional in the component
-    ...(requireSignature && account && derivationPath
+    ...(account && derivationPath
       ? [
           <HardwareSign
             blockchain={blockchain}
-            message={inviteCode ? inviteCode : ""}
+            message={getCreateMessage(account!.publicKey)}
             publicKey={account!.publicKey}
             derivationPath={derivationPath}
             accountIndex={account!.index}
@@ -135,7 +109,7 @@ export function HardwareOnboard({
               onComplete({
                 blockchain,
                 publicKey: account.publicKey,
-                derivationPath: derivationPath!,
+                derivationPath: derivationPath,
                 accountIndex: account.index,
                 signature,
               });

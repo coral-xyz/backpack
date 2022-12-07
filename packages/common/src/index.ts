@@ -48,3 +48,17 @@ export function walletAddressDisplay(publicKey: PublicKey | string) {
     typeof publicKey === "string" ? publicKey : publicKey.toString();
   return `${pubkeyStr.slice(0, 4)}...${pubkeyStr.slice(pubkeyStr.length - 4)}`;
 }
+
+/**
+ * Message to be signed for authenticating a user.
+ */
+export function getAuthMessage(uuid: string) {
+  return `Backpack login ${uuid}`;
+}
+
+/**
+ * Message to be signed for creating a Backpack account.
+ */
+export function getCreateMessage(publicKey: string) {
+  return `Backpack create ${publicKey}`;
+}

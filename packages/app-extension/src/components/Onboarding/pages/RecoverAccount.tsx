@@ -5,8 +5,15 @@ import type {
   DerivationPath,
   KeyringType,
 } from "@coral-xyz/common";
-import { BACKEND_API_URL } from "@coral-xyz/common";
+import {
+  BACKEND_API_URL,
+  getAuthMessage,
+  toTitleCase,
+  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
+} from "@coral-xyz/common";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 import type Transport from "@ledgerhq/hw-transport";
+import { encode } from "bs58";
 
 import { useSteps } from "../../../hooks/useSteps";
 import { CreatePassword } from "../../common/Account/CreatePassword";
@@ -18,6 +25,7 @@ import { ConnectHardwareWelcome } from "../../Unlocked/Settings/AddConnectWallet
 
 import { Finish } from "./Finish";
 import { HardwareSearch } from "./HardwareSearch";
+import { HardwareSign } from "./HardwareSign";
 import { KeyringTypeSelector } from "./KeyringTypeSelector";
 import { MnemonicSearch } from "./MnemonicSearch";
 import { RecoverAccountUsernameForm } from "./RecoverAccountUsernameForm";
@@ -32,19 +40,28 @@ export const RecoverAccount = ({
   isAddingAccount?: boolean;
 }) => {
   const { step, nextStep, prevStep } = useSteps();
+  const background = useBackgroundClient();
   const [username, setUsername] = useState<string | null>(null);
   const [password, setPassword] = useState<string | null>(null);
   const [publicKey, setPublicKey] = useState<string | null>(null);
+  const [derivationPath, setDerivationPath] = useState<DerivationPath | null>(
+    null
+  );
+  const [accountIndex, setAccountIndex] = useState<number | null>(null);
   const [keyringType, setKeyringType] = useState<KeyringType | null>(null);
   const [blockchain, setBlockchain] = useState<Blockchain | null>(null);
   const [mnemonic, setMnemonic] = useState<string | undefined>(undefined);
   const [transport, setTransport] = useState<Transport | null>(null);
   const [transportError] = useState(false);
   const [userId, setUserId] = useState<string | undefined>(undefined);
+  // TODO onboarded blockchains is currently unused but it will be used to recover
+  // multiple accounts on different blockchains
   const [, setOnboardedBlockchains] = useState<Array<Blockchain>>([]);
   const [blockchainKeyrings, setBlockchainKeyrings] = useState<
     Array<BlockchainKeyringInit>
   >([]);
+
+  const authMessage = userId ? getAuthMessage(userId) : "";
 
   useEffect(() => {
     (async () => {
@@ -70,6 +87,40 @@ export const RecoverAccount = ({
       }
     })();
   }, [username]);
+
+  const signForWallet = async (
+    blockchain: Blockchain,
+    derivationPath: DerivationPath,
+    accountIndex: number,
+    publicKey?: string
+  ) => {
+    const signature = await background.request({
+      method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
+      params: [
+        blockchain,
+        encode(Buffer.from(authMessage, "utf-8")),
+        publicKey!,
+        {
+          derivationPath,
+          accountIndex,
+          mnemonic,
+        },
+      ],
+    });
+
+    addBlockchainKeyring({
+      blockchain: blockchain!,
+      derivationPath,
+      accountIndex,
+      publicKey: publicKey!,
+      signature,
+    });
+  };
+
+  // Add the initialisation parameters for a blockchain keyring to state
+  const addBlockchainKeyring = (blockchainKeyring: BlockchainKeyringInit) => {
+    setBlockchainKeyrings([...blockchainKeyrings, blockchainKeyring]);
+  };
 
   const keyringInit = {
     mnemonic,
@@ -105,17 +156,12 @@ export const RecoverAccount = ({
             mnemonic={mnemonic!}
             publicKey={publicKey!}
             onNext={(derivationPath: DerivationPath, accountIndex: number) => {
-              setBlockchainKeyrings([
-                {
-                  blockchain: blockchain!,
-                  derivationPath,
-                  accountIndex,
-                  // No signature required because this isn't being used to setup
-                  // an account
-                  signature: null,
-                  publicKey: publicKey!,
-                },
-              ]);
+              signForWallet(
+                blockchain!,
+                derivationPath,
+                accountIndex,
+                publicKey!
+              );
               nextStep();
             }}
             onRetry={prevStep}
@@ -150,21 +196,36 @@ export const RecoverAccount = ({
             transport={transport!}
             publicKey={publicKey!}
             onNext={(derivationPath: DerivationPath, accountIndex: number) => {
-              setBlockchainKeyrings([
-                {
-                  blockchain: blockchain!,
-                  derivationPath,
-                  accountIndex,
-                  // No signature required because this isn't being used to setup
-                  // an account
-                  signature: null,
-                  publicKey: publicKey!,
-                },
-              ]);
+              setDerivationPath(derivationPath);
+              setAccountIndex(accountIndex);
               nextStep();
             }}
             onRetry={prevStep}
           />,
+          ...(accountIndex !== null && derivationPath // accountIndex can be 0
+            ? [
+                <HardwareSign
+                  blockchain={blockchain!}
+                  message={authMessage}
+                  publicKey={publicKey!}
+                  derivationPath={derivationPath}
+                  accountIndex={accountIndex}
+                  text={`Sign the message to enable ${toTitleCase(
+                    blockchain!
+                  )} in Backpack.`}
+                  onNext={(signature: string) => {
+                    addBlockchainKeyring({
+                      blockchain: blockchain!,
+                      derivationPath,
+                      accountIndex,
+                      publicKey: publicKey!,
+                      signature,
+                    });
+                    nextStep();
+                  }}
+                />,
+              ]
+            : []),
         ]),
     ...(!isAddingAccount
       ? [
