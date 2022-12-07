@@ -10,7 +10,7 @@ import {
   toTitleCase,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
 } from "@coral-xyz/common";
-import { useAuthMessage, useBackgroundClient } from "@coral-xyz/recoil";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 import type Transport from "@ledgerhq/hw-transport";
 import { encode } from "bs58";
 
@@ -39,7 +39,6 @@ export const RecoverAccount = ({
   isAddingAccount?: boolean;
 }) => {
   const { step, nextStep, prevStep } = useSteps();
-  const authMessage = useAuthMessage();
   const background = useBackgroundClient();
   const [username, setUsername] = useState<string | null>(null);
   const [password, setPassword] = useState<string | null>(null);
@@ -60,6 +59,9 @@ export const RecoverAccount = ({
   const [blockchainKeyrings, setBlockchainKeyrings] = useState<
     Array<BlockchainKeyringInit>
   >([]);
+
+  // Can't use the useAuthMessage hook here because the user is not set in recoil state
+  const authMessage = `Backpack login ${userId}`;
 
   useEffect(() => {
     (async () => {

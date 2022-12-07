@@ -8,7 +8,7 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
 } from "@coral-xyz/common";
-import { useAuthMessage, useBackgroundClient } from "@coral-xyz/recoil";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 import { v4 as uuidv4 } from "uuid";
 
 import { useAuthentication } from "../../../hooks/useAuthentication";
@@ -32,9 +32,11 @@ export const Finish = ({
   isAddingAccount?: boolean;
 }) => {
   const { authenticate } = useAuthentication();
-  const authMessage = useAuthMessage();
   const [isValid, setIsValid] = useState(false);
   const background = useBackgroundClient();
+
+  // Can't use the useAuthMessage hook here because the user is not set in recoil state
+  const authMessage = `Backpack login ${userId}`;
 
   useEffect(() => {
     (async () => {
