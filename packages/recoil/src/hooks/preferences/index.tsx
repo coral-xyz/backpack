@@ -46,3 +46,7 @@ export function useUser() {
 export function useAllUsers() {
   return useRecoilValue(atoms.allUsers);
 }
+
+export function useAuthMessage() {
+  return useRecoilValue(atoms.authMessage);
+}

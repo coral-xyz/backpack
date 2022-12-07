@@ -8,7 +8,7 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
 } from "@coral-xyz/common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
+import { useAuthMessage, useBackgroundClient } from "@coral-xyz/recoil";
 import { v4 as uuidv4 } from "uuid";
 
 import { useAuthentication } from "../../../hooks/useAuthentication";
@@ -32,6 +32,7 @@ export const Finish = ({
   isAddingAccount?: boolean;
 }) => {
   const { authenticate } = useAuthentication();
+  const authMessage = useAuthMessage();
   const [isValid, setIsValid] = useState(false);
   const background = useBackgroundClient();
 
@@ -54,9 +55,6 @@ export const Finish = ({
       }
       const { id } = await createUser();
       createStore(id);
-      // Authenticate the user that has been newly created so a JWT is stored
-      const authSignature = keyringInit.blockchainKeyrings[0].signature;
-      await authenticate(authSignature);
     })();
   }, []);
 
@@ -66,8 +64,21 @@ export const Finish = ({
   async function createUser(): Promise<{ id: string }> {
     // If userId is provided, then we are onboarding via the recover flow.
     if (userId) {
+      // Authenticate the user that the recovery has a JWT.
+      // Take the first keyring init to fetch the JWT, it doesn't matter which
+      // we use if there are multiple.
+      const { blockchain, publicKey, signature } =
+        keyringInit.blockchainKeyrings[0];
+      const authData = {
+        blockchain,
+        publicKey,
+        signature,
+        message: authMessage!,
+      };
+      await authenticate(authData!);
       return { id: userId };
     }
+
     // If userId is not provided and an invite code is not provided, then
     // this is dev mode.
     if (!inviteCode) {

@@ -10,7 +10,7 @@ import {
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
 } from "@coral-xyz/common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
+import { useAuthMessage,useBackgroundClient } from "@coral-xyz/recoil";
 import { encode } from "bs58";
 
 import { useSteps } from "../../../hooks/useSteps";
@@ -43,6 +43,7 @@ export const OnboardAccount = ({
   isAddingAccount?: boolean;
 }) => {
   const { step, nextStep, prevStep } = useSteps();
+  const authMessage = useAuthMessage();
   const background = useBackgroundClient();
   const [inviteCode, setInviteCode] = useState<string | undefined>(undefined);
   const [username, setUsername] = useState<string | null>(null);
@@ -107,9 +108,7 @@ export const OnboardAccount = ({
       method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
       params: [
         blockchain,
-        // Sign the invite code, or an empty string if no invite code
-        // TODO setup a nonce based system
-        encode(Buffer.from(inviteCode ? inviteCode : "", "utf-8")),
+        encode(Buffer.from(authMessage, "utf-8")),
         publicKey!,
         {
           derivationPath,
@@ -233,14 +232,12 @@ export const OnboardAccount = ({
         {keyringType === "ledger" ? (
           <HardwareOnboard
             blockchain={blockchain!}
-            inviteCode={inviteCode}
             action={action!}
             onComplete={(result: BlockchainKeyringInit) => {
               addBlockchainKeyring(result);
               setOpenDrawer(false);
             }}
             onClose={() => setOpenDrawer(false)}
-            requireSignature={!!BACKPACK_FEATURE_USERNAMES}
           />
         ) : (
           <ImportAccounts
