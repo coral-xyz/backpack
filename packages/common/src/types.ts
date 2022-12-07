@@ -78,7 +78,7 @@ export type BlockchainKeyringInit = {
   derivationPath: DerivationPath;
   accountIndex: number;
   publicKey: string;
-  signature: string | null;
+  signature: string;
 };
 
 export interface XnftPreference {

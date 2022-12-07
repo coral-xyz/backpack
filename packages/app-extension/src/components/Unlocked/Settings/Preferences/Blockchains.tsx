@@ -130,7 +130,6 @@ export function PreferencesBlockchains({
           action={"create"}
           onComplete={handleHardwareOnboardComplete}
           onClose={() => setOpenDrawer(false)}
-          requireSignature={false}
         />
       </WithDrawer>
     </>

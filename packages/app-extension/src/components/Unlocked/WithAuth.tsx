@@ -3,6 +3,7 @@ import type { Blockchain, DerivationPath } from "@coral-xyz/common";
 import {
   BACKPACK_FEATURE_JWT,
   BACKPACK_FEATURE_USERNAMES,
+  getAuthMessage,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
 } from "@coral-xyz/common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
@@ -23,6 +24,10 @@ import { ConnectHardwareWelcome } from "../Unlocked/Settings/AddConnectWallet/Co
 const { base58 } = ethers.utils;
 
 export function WithAuth({ children }: { children: React.ReactElement }) {
+  const { authenticate, checkAuthentication, getAuthSigner } =
+    useAuthentication();
+  const background = useBackgroundClient();
+  const user = useUser();
   const [loading, setLoading] = useState(true);
   const [authSigner, setAuthSigner] = useState<{
     publicKey: string;
@@ -36,16 +41,12 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
     signature: string;
   } | null>(null);
   const [openDrawer, setOpenDrawer] = useState(false);
-  const background = useBackgroundClient();
-  const user = useUser();
-  const { authenticate, checkAuthentication, getAuthSigner } =
-    useAuthentication();
+
   const jwtEnabled = !!(
     BACKPACK_FEATURE_USERNAMES &&
     BACKPACK_FEATURE_JWT &&
     user
   );
-  const signMessage = `Backpack login ${user.uuid}`;
 
   /**
    * Check authentication status and take required actions to authenticate if
@@ -78,13 +79,14 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
   useEffect(() => {
     (async () => {
       if (authSigner) {
+        const authMessage = getAuthMessage(user.uuid);
         if (!authSigner.hardware) {
           // Auth signer is not a hardware wallet, sign transparent
           const signature = await background.request({
             method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
             params: [
               authSigner.blockchain,
-              base58.encode(Buffer.from(signMessage, "utf-8")),
+              base58.encode(Buffer.from(authMessage, "utf-8")),
               authSigner.publicKey,
             ],
           });
@@ -92,7 +94,7 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
             blockchain: authSigner.blockchain,
             publicKey: authSigner.publicKey,
             signature,
-            message: signMessage,
+            message: authMessage,
           });
         } else {
           // Auth signer is a hardware wallet, pop up a drawer to guide through
@@ -101,7 +103,7 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
         }
       }
     })();
-  }, [authSigner]);
+  }, [authSigner, user]);
 
   /**
    * When an auth signature is created, authenticate with it.
@@ -115,6 +117,8 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
       }
     })();
   }, [authData]);
+
+  const authMessage = getAuthMessage(user.uuid);
 
   return (
     <>
@@ -132,12 +136,12 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
           <HardwareAuthSigner
             blockchain={authSigner!.blockchain}
             publicKey={authSigner!.publicKey}
-            signMessage={signMessage!}
+            authMessage={authMessage}
             onSignature={(signature) => {
               setAuthData({
                 blockchain: authSigner!.blockchain,
                 publicKey: authSigner!.publicKey,
-                message: signMessage!,
+                message: authMessage,
                 signature,
               });
             }}
@@ -151,12 +155,12 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
 export function HardwareAuthSigner({
   blockchain,
   publicKey,
-  signMessage,
+  authMessage,
   onSignature,
 }: {
   blockchain: Blockchain;
   publicKey: string;
-  signMessage: string;
+  authMessage: string;
   onSignature: (signature: string) => void;
 }) {
   const theme = useCustomTheme();
@@ -192,8 +196,7 @@ export function HardwareAuthSigner({
       ? [
           <HardwareSign
             blockchain={blockchain!}
-            // TODO
-            message={signMessage}
+            message={authMessage}
             publicKey={publicKey}
             derivationPath={signingAccount.derivationPath}
             accountIndex={signingAccount.accountIndex!}
