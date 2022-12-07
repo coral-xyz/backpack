@@ -57,3 +57,19 @@ export async function createXnftSecret(xnftId: string) {
 
   return secret;
 }
+
+export async function fetchXnftFromSecret(secret: string) {
+  const response = await chain("query")({
+    auth_xnft_secrets: [
+      {
+        where: {
+          secret: { _eq: secret },
+        },
+      },
+      {
+        xnft_id: true,
+      },
+    ],
+  });
+  return response.auth_xnft_secrets[0]?.xnft_id;
+}

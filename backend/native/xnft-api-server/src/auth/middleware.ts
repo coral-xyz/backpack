@@ -1,15 +1,22 @@
 import { Errors } from "../errors";
 import nacl from "tweetnacl";
 import bs58 from "bs58";
+import { fetchXnftFromSecret } from "../db/xnftSecrets";
 
-export const xnftMiddleware = (req, res, next) => {
+export const xnftMiddleware = async (req, res, next) => {
   const authorizationHeader = req.headers["authorization"];
-  const xnftAddress = authorizationHeader?.split(" ")?.[1];
-  if (!xnftAddress) {
+  const xnftSecret = authorizationHeader?.split(" ")?.[1];
+  if (!xnftSecret) {
     return res.status(403).json({ msg: Errors.AUTH_ERROR });
   }
-  req.xnftAddress = xnftAddress;
-  next();
+
+  const xnftAddress = await fetchXnftFromSecret(xnftSecret);
+  if (xnftAddress) {
+    req.xnftAddress = xnftAddress;
+    next();
+  } else {
+    return res.status(403).json({ msg: Errors.NO_XNFT_FOUND });
+  }
 };
 
 export const authMiddleware = (req, res, next) => {
