@@ -1,11 +1,12 @@
 import { xnftClient } from "../v1/xnft";
 import { Connection, Keypair } from "@solana/web3.js";
+import { AnchorProvider } from "@project-serum/anchor";
 
-async function isXnftOwner(publicKey: string, xnftId: string) {
+export async function isXnftOwner(publicKey: string, xnftId: string) {
   const provider = getProvider();
   const client = xnftClient(provider);
   const xnftAccount = await client.account.xnft.fetch(xnftId);
-  const owner = xnftAccount.account.authority.toString();
+  const owner = xnftAccount.publisher.toString();
 
   if (owner === publicKey) {
     return true;
