@@ -109,8 +109,7 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
   useEffect(() => {
     (async () => {
       if (authData) {
-        const result = await authenticate(authData);
-        console.log(result);
+        await authenticate(authData);
         setLoading(false);
       }
     })();
