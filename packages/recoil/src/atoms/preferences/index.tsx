@@ -1,5 +1,5 @@
+import type { Blockchain } from "@coral-xyz/common";
 import {
-  Blockchain,
   UI_RPC_METHOD_ALL_USERS_READ,
   UI_RPC_METHOD_PREFERENCES_READ,
   UI_RPC_METHOD_USER_READ,
@@ -82,7 +82,7 @@ export const allUsers = selector({
   key: "allUsernamesDefault",
   get: async ({ get }) => {
     const background = get(backgroundClient);
-    const _user = get(user); // Use this to retriger a fetch when the active username changes.
+    get(user); // Use this to retriger a fetch when the active username changes.
     return await background.request({
       method: UI_RPC_METHOD_ALL_USERS_READ,
       params: [],

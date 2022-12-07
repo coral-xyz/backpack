@@ -30,6 +30,7 @@ import { Apps } from "../../Unlocked/Apps";
 import { PluginApp } from "../../Unlocked/Apps/Plugin";
 import { Balances } from "../../Unlocked/Balances";
 import { Token } from "../../Unlocked/Balances/TokensWidget/Token";
+import { ChatDrawer } from "../../Unlocked/Messages/ChatDrawer";
 import { ChatScreen } from "../../Unlocked/Messages/ChatScreen";
 import { Inbox } from "../../Unlocked/Messages/Inbox";
 import { ProfileScreen } from "../../Unlocked/Messages/ProfileScreen";
@@ -44,7 +45,6 @@ import { Loading } from "..";
 
 import { NavBackButton, WithNav } from "./Nav";
 import { WithMotion } from "./NavStack";
-import { ChatDrawer } from "../../Unlocked/Messages/ChatDrawer";
 
 export function Router() {
   const location = useLocation();

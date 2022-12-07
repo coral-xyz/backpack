@@ -8,7 +8,7 @@ import {
   BACKPACK_FEATURE_USERNAMES,
   DerivationPath,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
-  UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET,
+  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { encode } from "bs58";
@@ -104,16 +104,18 @@ export const OnboardAccount = ({
       publicKey = publicKeys[accountIndex];
     }
     const signature = await background.request({
-      method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET,
+      method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
       params: [
         blockchain,
         // Sign the invite code, or an empty string if no invite code
         // TODO setup a nonce based system
         encode(Buffer.from(inviteCode ? inviteCode : "", "utf-8")),
-        derivationPath,
-        accountIndex,
         publicKey!,
-        mnemonic,
+        {
+          derivationPath,
+          accountIndex,
+          mnemonic,
+        },
       ],
     });
     addBlockchainKeyring({

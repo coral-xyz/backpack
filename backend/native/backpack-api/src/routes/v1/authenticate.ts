@@ -18,10 +18,15 @@ router.delete("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const { blockchain, signature, publicKey, encodedMessage, message } =
-    req.body;
-  const { id } = JSON.parse(message);
-  const decodedMessage = Buffer.from(base58.decode(encodedMessage));
+  const { blockchain, signature, publicKey, message } = req.body;
+  const decodedMessage = Buffer.from(base58.decode(message));
+
+  const messagePrefix = "Backpack login ";
+  if (!decodedMessage.toString().startsWith(messagePrefix)) {
+    return res.status(403).json({ msg: "invalid signed message" });
+  }
+
+  const uuid = decodedMessage.toString().replace(messagePrefix, "");
 
   let valid = false;
   if (blockchain === "solana") {
@@ -33,22 +38,27 @@ router.post("/", async (req, res) => {
   } else if (blockchain === "ethereum") {
     valid = validateEthereumSignature(decodedMessage, signature, publicKey);
   }
-  if (!valid) throw new Error("Invalid signature");
+  if (!valid) {
+    return res.status(403).json({ msg: "invalid signature" });
+  }
 
   let user;
   try {
-    user = await getUser(id);
+    user = await getUser(uuid);
     // Make sure the user has the signing public key
     const hasPublicKey = user.publicKeys.find(
       ({ blockchain: b, publicKey: p }) => b === blockchain && p === publicKey
     );
-    if (!hasPublicKey) throw new Error("Signing public key not found for user");
+    if (!hasPublicKey)
+      return res
+        .status(403)
+        .json({ msg: "invalid signing public key for user" });
   } catch {
     // User not found
-    return res.status(403);
+    return res.status(403).json({ msg: "invalid user id" });
   }
 
-  setCookie(req, res, user.id as string);
+  await setCookie(req, res, user.id as string);
 
   return res.json(user);
 });

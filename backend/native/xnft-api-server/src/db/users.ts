@@ -1,6 +1,6 @@
-import { HASURA_URL, JWT } from "../config";
-
 import { Chain } from "@coral-xyz/zeus";
+
+import { HASURA_URL, JWT } from "../config";
 
 const chain = Chain(HASURA_URL, {
   headers: {

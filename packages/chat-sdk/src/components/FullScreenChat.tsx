@@ -1,14 +1,15 @@
-import { ChatMessages } from "./Message";
-import { SendMessage } from "./SendMessage";
-import InfoIcon from "@mui/icons-material/Info";
-import { ScrollBarImpl } from "./ScrollbarImpl";
 import { useEffect, useRef, useState } from "react";
-import { useChatContext } from "./ChatContext";
-import { MessagesSkeleton } from "./MessagesSkeleton";
-import { EmptyChat } from "./EmptyChat";
-import { useStyles } from "./styles";
 import { useCustomTheme } from "@coral-xyz/themes";
+import InfoIcon from "@mui/icons-material/Info";
+
 import { Banner } from "./Banner";
+import { useChatContext } from "./ChatContext";
+import { EmptyChat } from "./EmptyChat";
+import { ChatMessages } from "./Message";
+import { MessagesSkeleton } from "./MessagesSkeleton";
+import { ScrollBarImpl } from "./ScrollbarImpl";
+import { SendMessage } from "./SendMessage";
+import { useStyles } from "./styles";
 export const FullScreenChat = () => {
   const { chatManager, loading, areFriends, requested, chats } =
     useChatContext();

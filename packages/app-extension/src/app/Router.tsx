@@ -35,6 +35,7 @@ import {
   ApproveAllTransactions,
   ApproveTransaction,
 } from "../components/Unlocked/Approvals/ApproveTransaction";
+import { WithAuth } from "../components/Unlocked/WithAuth";
 import { refreshFeatureGates } from "../gates/FEATURES";
 
 import "./App.css";
@@ -312,7 +313,7 @@ function WithEnabledBlockchain({
   );
 }
 
-function WithUnlock({ children }: { children: React.ReactNode }) {
+function WithUnlock({ children }: { children: React.ReactElement }) {
   const keyringStoreState = useKeyringStoreState();
   const needsOnboarding =
     keyringStoreState === KeyringStoreStateEnum.NeedsOnboarding;
@@ -323,7 +324,7 @@ function WithUnlock({ children }: { children: React.ReactNode }) {
     <AnimatePresence initial={false}>
       <WithLockMotion id={isLocked ? "locked" : "unlocked"}>
         <Suspense fallback={<div style={{ display: "none" }}></div>}>
-          {isLocked ? <Locked /> : children}
+          {isLocked ? <Locked /> : <WithAuth>{children}</WithAuth>}
         </Suspense>
       </WithLockMotion>
     </AnimatePresence>

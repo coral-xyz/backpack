@@ -14,7 +14,6 @@ import { ImportAccounts } from "../../common/Account/ImportAccounts";
 import { CloseButton } from "../../common/Layout/Drawer";
 import { NavBackButton, WithNav } from "../../common/Layout/Nav";
 import { ConnectHardwareSearching } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareSearching";
-import { ConnectHardwareSuccess } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareSuccess";
 import { ConnectHardwareWelcome } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareWelcome";
 
 import { HardwareDefaultAccount } from "./HardwareDefaultAccount";
@@ -135,7 +134,7 @@ export function HardwareOnboard({
               onComplete({
                 blockchain,
                 publicKey: account.publicKey,
-                derivationPath: derivationPath!,
+                derivationPath: derivationPath,
                 accountIndex: account.index,
                 signature,
               });

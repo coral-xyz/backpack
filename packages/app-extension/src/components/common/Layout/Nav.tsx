@@ -1,13 +1,12 @@
-import React from "react";
-import { Suspense, useState } from "react";
+import React, { Suspense, useState } from "react";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ArrowBack } from "@mui/icons-material";
+import KeyboardArrowDownSharpIcon from "@mui/icons-material/KeyboardArrowDownSharp";
 import { IconButton, Typography } from "@mui/material";
 
 import { Loading } from "../";
 
 import { Scrollbar } from "./Scrollbar";
-import KeyboardArrowDownSharpIcon from "@mui/icons-material/KeyboardArrowDownSharp";
 
 export const NAV_BAR_HEIGHT = 56;
 export const NAV_BUTTON_WIDTH = 38;

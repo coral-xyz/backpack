@@ -1,9 +1,9 @@
 import * as store from "@coral-xyz/background/src/backend/store";
 import { DefaultKeyname } from "@coral-xyz/background/src/backend/store";
-import type { BlockchainKeyringJson } from "@coral-xyz/common";
-import type { DerivationPath } from "@coral-xyz/common";
+import type { BlockchainKeyringJson , DerivationPath } from "@coral-xyz/common";
 import { getLogger } from "@coral-xyz/common";
 import * as bs58 from "bs58";
+
 import type {
   HdKeyring,
   HdKeyringFactory,

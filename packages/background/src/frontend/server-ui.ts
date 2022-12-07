@@ -79,7 +79,7 @@ import {
   UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
   UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_READ,
   UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_UPDATE,
-  UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET,
+  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
   UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
   UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
   UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ,
@@ -91,7 +91,6 @@ import {
   UI_RPC_METHOD_SOLANA_SIGN_MESSAGE,
   UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION,
   UI_RPC_METHOD_SOLANA_SIMULATE,
-  UI_RPC_METHOD_TRY_TO_SIGN_MESSAGE,
   UI_RPC_METHOD_USER_READ,
   UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
   withContextPort,
@@ -363,17 +362,13 @@ async function handle<T = any>(
       );
     case UI_RPC_METHOD_ETHEREUM_SIGN_MESSAGE:
       return await handleEthereumSignMessage(ctx, params[0], params[1]);
-    case UI_RPC_METHOD_TRY_TO_SIGN_MESSAGE:
-      return await tryToSignMessage(ctx, params[0], params[1]);
-    case UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET:
-      return await handleSignMessageForWallet(
+    case UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY:
+      return await handleSignMessageForPublicKey(
         ctx,
         params[0],
         params[1],
         params[2],
-        params[3],
-        params[4],
-        params[5]
+        params[3]
       );
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
@@ -872,30 +867,22 @@ async function handleEthereumSignMessage(
   return [resp];
 }
 
-async function tryToSignMessage(
-  ctx: Context<Backend>,
-  ...args: Parameters<Backend["tryToSignMessage"]>
-) {
-  const resp = await ctx.backend.tryToSignMessage(...args);
-  return [resp];
-}
-
-async function handleSignMessageForWallet(
+async function handleSignMessageForPublicKey(
   ctx: Context<Backend>,
   blockchain: Blockchain,
   msg: string,
-  derivationPath: DerivationPath,
-  accountIndex: number,
   publicKey: string,
-  mnemonic?: string
+  keyringInit?: {
+    derivationPath: DerivationPath;
+    accountIndex: number;
+    mnemonic?: string;
+  }
 ) {
-  const resp = await ctx.backend.signMessageForWallet(
+  const resp = await ctx.backend.signMessageForPublicKey(
     blockchain,
     msg,
-    derivationPath,
-    accountIndex,
     publicKey,
-    mnemonic
+    keyringInit
   );
   return [resp];
 }

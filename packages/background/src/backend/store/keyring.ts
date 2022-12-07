@@ -1,7 +1,9 @@
 import type { BlockchainKeyringJson } from "@coral-xyz/common";
+
 import type { SecretPayload } from "../keyring/crypto";
-import { LocalStorageDb } from "./db";
 import * as crypto from "../keyring/crypto";
+
+import { LocalStorageDb } from "./db";
 
 const KEY_KEYRING_STORE = "keyring-store";
 
