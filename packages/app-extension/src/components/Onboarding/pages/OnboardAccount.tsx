@@ -7,10 +7,11 @@ import type {
 import {
   BACKPACK_FEATURE_USERNAMES,
   DerivationPath,
+  getCreateMessage,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
 } from "@coral-xyz/common";
-import { useAuthMessage,useBackgroundClient } from "@coral-xyz/recoil";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 import { encode } from "bs58";
 
 import { useSteps } from "../../../hooks/useSteps";
@@ -43,7 +44,6 @@ export const OnboardAccount = ({
   isAddingAccount?: boolean;
 }) => {
   const { step, nextStep, prevStep } = useSteps();
-  const authMessage = useAuthMessage();
   const background = useBackgroundClient();
   const [inviteCode, setInviteCode] = useState<string | undefined>(undefined);
   const [username, setUsername] = useState<string | null>(null);
@@ -108,7 +108,7 @@ export const OnboardAccount = ({
       method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
       params: [
         blockchain,
-        encode(Buffer.from(authMessage, "utf-8")),
+        encode(Buffer.from(getCreateMessage(publicKey!), "utf-8")),
         publicKey!,
         {
           derivationPath,

@@ -3,13 +3,10 @@ import type { Blockchain, DerivationPath } from "@coral-xyz/common";
 import {
   BACKPACK_FEATURE_JWT,
   BACKPACK_FEATURE_USERNAMES,
+  getAuthMessage,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
 } from "@coral-xyz/common";
-import {
-  useAuthMessage,
-  useBackgroundClient,
-  useUser,
-} from "@coral-xyz/recoil";
+import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import type Transport from "@ledgerhq/hw-transport";
 import { ethers } from "ethers";
@@ -29,7 +26,6 @@ const { base58 } = ethers.utils;
 export function WithAuth({ children }: { children: React.ReactElement }) {
   const { authenticate, checkAuthentication, getAuthSigner } =
     useAuthentication();
-  const authMessage = useAuthMessage();
   const background = useBackgroundClient();
   const user = useUser();
   const [loading, setLoading] = useState(true);
@@ -83,6 +79,7 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
   useEffect(() => {
     (async () => {
       if (authSigner) {
+        const authMessage = getAuthMessage(user.uuid);
         if (!authSigner.hardware) {
           // Auth signer is not a hardware wallet, sign transparent
           const signature = await background.request({
@@ -106,7 +103,7 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
         }
       }
     })();
-  }, [authSigner]);
+  }, [authSigner, user]);
 
   /**
    * When an auth signature is created, authenticate with it.
@@ -120,6 +117,8 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
       }
     })();
   }, [authData]);
+
+  const authMessage = getAuthMessage(user.uuid);
 
   return (
     <>
@@ -137,12 +136,12 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
           <HardwareAuthSigner
             blockchain={authSigner!.blockchain}
             publicKey={authSigner!.publicKey}
-            authMessage={authMessage!}
+            authMessage={authMessage}
             onSignature={(signature) => {
               setAuthData({
                 blockchain: authSigner!.blockchain,
                 publicKey: authSigner!.publicKey,
-                message: authMessage!,
+                message: authMessage,
                 signature,
               });
             }}

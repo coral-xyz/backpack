@@ -4,6 +4,7 @@ import {
   BACKEND_API_URL,
   BACKPACK_FEATURE_USERNAMES,
   BrowserRuntimeExtension,
+  getAuthMessage,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
@@ -34,9 +35,6 @@ export const Finish = ({
   const { authenticate } = useAuthentication();
   const [isValid, setIsValid] = useState(false);
   const background = useBackgroundClient();
-
-  // Can't use the useAuthMessage hook here because the user is not set in recoil state
-  const authMessage = `Backpack login ${userId}`;
 
   useEffect(() => {
     (async () => {
@@ -75,7 +73,7 @@ export const Finish = ({
         blockchain,
         publicKey,
         signature,
-        message: authMessage!,
+        message: getAuthMessage(userId),
       };
       await authenticate(authData!);
       return { id: userId };

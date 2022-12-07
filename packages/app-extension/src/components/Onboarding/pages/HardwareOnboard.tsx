@@ -4,8 +4,7 @@ import type {
   BlockchainKeyringInit,
   DerivationPath,
 } from "@coral-xyz/common";
-import { toTitleCase } from "@coral-xyz/common";
-import { useAuthMessage } from "@coral-xyz/recoil";
+import { getCreateMessage, toTitleCase } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import type Transport from "@ledgerhq/hw-transport";
 
@@ -31,7 +30,6 @@ export function HardwareOnboard({
   onComplete: (keyringInit: BlockchainKeyringInit) => void;
   onClose?: () => void;
 }) {
-  const authMessage = useAuthMessage();
   const theme = useCustomTheme();
   const { step, nextStep, prevStep } = useSteps();
   const [transport, setTransport] = useState<Transport | null>(null);
@@ -100,7 +98,7 @@ export function HardwareOnboard({
       ? [
           <HardwareSign
             blockchain={blockchain}
-            message={authMessage}
+            message={getCreateMessage(account!.publicKey)}
             publicKey={account!.publicKey}
             derivationPath={derivationPath}
             accountIndex={account!.index}

@@ -90,12 +90,4 @@ export const allUsers = selector({
   },
 });
 
-export const authMessage = selector<string>({
-  key: "authMessage",
-  get: async ({ get }) => {
-    const _user = get(user);
-    return `Backpack login ${_user.uuid}`;
-  },
-});
-
 export * from "./xnft-preferences";

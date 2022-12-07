@@ -1,3 +1,4 @@
+import { getCreateMessage } from "@coral-xyz/common";
 import { ethers } from "ethers";
 import type { Request, Response } from "express";
 import express from "express";
@@ -49,10 +50,11 @@ router.post("/", async (req, res) => {
 
   // Validate all the signatures
   for (const blockchainPublicKey of blockchainPublicKeys) {
+    const signedMessage = getCreateMessage(blockchainPublicKey.publicKey);
     if (blockchainPublicKey.blockchain === "solana") {
       if (
         !validateSolanaSignature(
-          Buffer.from(inviteCode, "utf8"),
+          Buffer.from(signedMessage, "utf8"),
           base58.decode(blockchainPublicKey.signature),
           base58.decode(blockchainPublicKey.publicKey)
         )
@@ -62,7 +64,7 @@ router.post("/", async (req, res) => {
     } else {
       if (
         !validateEthereumSignature(
-          Buffer.from(inviteCode, "utf8"),
+          Buffer.from(signedMessage, "utf8"),
           blockchainPublicKey.signature,
           blockchainPublicKey.publicKey
         )
@@ -104,8 +106,6 @@ router.post("/", async (req, res) => {
       console.error({ slackWebhook: err });
     }
   }
-
-  setCookie(req, res, user.id as string);
 
   return res.json({ id: user.id, msg: "ok" });
 });

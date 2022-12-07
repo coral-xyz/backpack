@@ -7,6 +7,7 @@ import type {
 } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
+  getAuthMessage,
   toTitleCase,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
 } from "@coral-xyz/common";
@@ -60,8 +61,7 @@ export const RecoverAccount = ({
     Array<BlockchainKeyringInit>
   >([]);
 
-  // Can't use the useAuthMessage hook here because the user is not set in recoil state
-  const authMessage = `Backpack login ${userId}`;
+  const authMessage = userId ? getAuthMessage(userId) : "";
 
   useEffect(() => {
     (async () => {
