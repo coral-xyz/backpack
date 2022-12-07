@@ -5,6 +5,7 @@ import {
   BACKPACK_FEATURE_USERNAMES,
   BrowserRuntimeExtension,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
+  UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
@@ -34,6 +35,21 @@ export const Finish = ({
 
   useEffect(() => {
     (async () => {
+      // This is a mitigation to ensure the keyring store doesn't lock before
+      // creating the user on the server.
+      //
+      // Would be better (though probably not a priority atm) to ensure atomicity.
+      // E.g. we could generate the UUID here on the client, create the keyring store,
+      // and only then create the user on the server. If the server fails, then
+      // rollback on the client.
+      //
+      // An improvement for the future!
+      if (isAddingAccount) {
+        await background.request({
+          method: UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
+          params: [],
+        });
+      }
       const { id } = await createUser();
       createStore(id);
     })();
