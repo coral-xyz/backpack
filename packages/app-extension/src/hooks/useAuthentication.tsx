@@ -5,6 +5,9 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
 } from "@coral-xyz/common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
+import { ethers } from "ethers";
+
+const { base58 } = ethers.utils;
 
 export const useAuthentication = () => {
   const background = useBackgroundClient();
@@ -31,7 +34,7 @@ export const useAuthentication = () => {
           blockchain,
           signature,
           publicKey,
-          message,
+          message: base58.encode(Buffer.from(message, "utf-8")),
         }),
         headers: {
           "Content-Type": "application/json",

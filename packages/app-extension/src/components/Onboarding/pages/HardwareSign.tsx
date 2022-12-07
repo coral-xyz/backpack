@@ -43,9 +43,11 @@ export function HardwareSign({
         params: [
           blockchain,
           encode(Buffer.from(message, "utf-8")),
-          derivationPath,
-          accountIndex,
           publicKey,
+          {
+            derivationPath,
+            accountIndex,
+          },
         ],
       });
       setSignature(signature);

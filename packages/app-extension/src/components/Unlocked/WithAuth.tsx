@@ -9,7 +9,6 @@ import {
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import type Transport from "@ledgerhq/hw-transport";
-import { ethers } from "ethers";
 
 import { useAuthentication } from "../../hooks/useAuthentication";
 import { useSteps } from "../../hooks/useSteps";
@@ -20,8 +19,6 @@ import { HardwareSearch } from "../Onboarding/pages/HardwareSearch";
 import { HardwareSign } from "../Onboarding/pages/HardwareSign";
 import { ConnectHardwareSearching } from "../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareSearching";
 import { ConnectHardwareWelcome } from "../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareWelcome";
-
-const { base58 } = ethers.utils;
 
 export function WithAuth({ children }: { children: React.ReactElement }) {
   const [loading, setLoading] = useState(true);
@@ -46,9 +43,7 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
     user
   );
 
-  const signMessage = authSigner
-    ? base58.encode(Buffer.from(`Backpack login ${user.uuid}`, "utf-8"))
-    : null;
+  const signMessage = authSigner ? `Backpack login ${user.uuid}` : null;
 
   /**
    * Check authentication status and take required actions to authenticate if
@@ -159,6 +154,7 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
           <HardwareAuthSigner
             blockchain={authSigner!.blockchain}
             publicKey={authSigner!.publicKey}
+            signMessage={signMessage!}
             onSignature={(signature) => {
               setAuthData({
                 blockchain: authSigner!.blockchain,
@@ -177,10 +173,12 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
 export function HardwareAuthSigner({
   blockchain,
   publicKey,
+  signMessage,
   onSignature,
 }: {
   blockchain: Blockchain;
   publicKey: string;
+  signMessage: string;
   onSignature: (signature: string) => void;
 }) {
   const theme = useCustomTheme();
@@ -212,16 +210,20 @@ export function HardwareAuthSigner({
       }}
       onRetry={() => setStep(1)}
     />,
-    <HardwareSign
-      blockchain={blockchain!}
-      // TODO
-      message="Login to Backpack"
-      publicKey={publicKey!}
-      derivationPath={signingAccount!.derivationPath}
-      accountIndex={signingAccount!.accountIndex!}
-      text="Sign the message to authenticate with Backpack"
-      onNext={onSignature}
-    />,
+    ...(signingAccount
+      ? [
+          <HardwareSign
+            blockchain={blockchain!}
+            // TODO
+            message={signMessage}
+            publicKey={publicKey}
+            derivationPath={signingAccount.derivationPath}
+            accountIndex={signingAccount.accountIndex!}
+            text="Sign the message to authenticate with Backpack"
+            onNext={onSignature}
+          />,
+        ]
+      : []),
   ];
 
   return (
