@@ -60,7 +60,7 @@ export function startMobileIfNeeded() {
     });
   } else {
     WEB_VIEW_EVENTS.on("message", (event: { channel: string; data: any }) => {
-      // logger._log("web-view-event:", JSON.stringify(event));
+      logger._log("web-view-event:", JSON.stringify(event));
       EVENT_LISTENERS.forEach((handler: any) => handler(event));
     });
   }
@@ -275,7 +275,6 @@ class CommonRequestManager {
       channel: _,
       data: { id, result, error },
     } = msg;
-    console.log("CommonRequestManager", CommonRequestManager._resolvers);
     const resolver = CommonRequestManager._resolvers[id];
     if (resolver === undefined) {
       logger.error("unable to find resolver for data", { id, result, error });
