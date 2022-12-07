@@ -39,7 +39,7 @@
     "web-push": "^3.5.0"
   },
   "scripts": {
-    "start": "cross-env NODE_ENV=development webpack serve",
+    "start": "cross-env NODE_ENV=development webpack serve --config webpack.dev.config.js",
     "build": "cross-env NODE_ENV=production webpack",
     "build:release": "cross-env NODE_ENV=production webpack",
     "e2e": "jest --maxWorkers 1 --detectOpenHandles --forceExit --verbose",
