@@ -9,6 +9,7 @@ import {
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import type Transport from "@ledgerhq/hw-transport";
+import { ethers } from "ethers";
 
 import { useAuthentication } from "../../hooks/useAuthentication";
 import { useSteps } from "../../hooks/useSteps";
@@ -19,6 +20,8 @@ import { HardwareSearch } from "../Onboarding/pages/HardwareSearch";
 import { HardwareSign } from "../Onboarding/pages/HardwareSign";
 import { ConnectHardwareSearching } from "../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareSearching";
 import { ConnectHardwareWelcome } from "../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareWelcome";
+
+const { base58 } = ethers.utils;
 
 export function WithAuth({ children }: { children: React.ReactElement }) {
   const [loading, setLoading] = useState(true);
@@ -79,7 +82,11 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
           // Auth signer is not a hardware wallet, sign transparent
           const signature = await background.request({
             method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-            params: [authSigner.blockchain, signMessage, authSigner.publicKey],
+            params: [
+              authSigner.blockchain,
+              base58.encode(Buffer.from(signMessage, "utf-8")),
+              authSigner.publicKey,
+            ],
           });
           setAuthData({
             blockchain: authSigner.blockchain,

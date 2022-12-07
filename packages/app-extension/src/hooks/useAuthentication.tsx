@@ -57,6 +57,7 @@ export const useAuthentication = () => {
    */
   const checkAuthentication = async (): Promise<
     | {
+        id: string;
         publicKeys: Array<{ blockchain: Blockchain; publicKey: string }>;
         isAuthenticated: Boolean;
       }
