@@ -19,7 +19,7 @@ export async function getActiveUser(): Promise<User> {
 
 export async function setActiveUser(activeUser: User) {
   const data = await LocalStorageDb.get(STORE_KEY_USER_DATA);
-  if (data === undefined) {
+  if (data == undefined || data == null) {
     await LocalStorageDb.set(STORE_KEY_USER_DATA, {
       activeUser,
       users: [activeUser],
