@@ -107,7 +107,7 @@ function LockedHelpMenuModal({ navigation }) {
 const LockedScreen = ({ navigation }) => {
   const background = useBackgroundClient();
   const user = useUser();
-  console.log(JSON.stringify({ user }));
+  console.log(user);
   const { control, handleSubmit, formState, setError } = useForm<FormData>();
 
   const { errors, isValid } = formState;
