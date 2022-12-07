@@ -29,16 +29,16 @@ export default function App() {
   const colorScheme = useColorScheme();
 
   // uncomment this later for proper loading
-  useEffect(() => {
-    async function unlock() {
-      await background.request({
-        method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-        params: ["backpack"],
-      });
-    }
-
-    unlock();
-  }, []);
+  // useEffect(() => {
+  //   async function unlock() {
+  //     await background.request({
+  //       method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
+  //       params: ["backpack"],
+  //     });
+  //   }
+  //
+  //   unlock();
+  // }, []);
 
   if (!isLoadingComplete) {
     return null;

@@ -60,7 +60,7 @@ export function startMobileIfNeeded() {
     });
   } else {
     WEB_VIEW_EVENTS.on("message", (event: { channel: string; data: any }) => {
-      logger._log("web-view-event:", JSON.stringify(event));
+      // logger._log("web-view-event:", JSON.stringify(event));
       EVENT_LISTENERS.forEach((handler: any) => handler(event));
     });
   }
