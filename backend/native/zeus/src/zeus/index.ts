@@ -2753,6 +2753,134 @@ export type ValueTypes = {
       | Variable<any, string>;
     where: ValueTypes["auth_xnft_preferences_bool_exp"] | Variable<any, string>;
   };
+  /** columns and relationships of "auth.xnft_secrets" */
+  ["auth_xnft_secrets"]: AliasType<{
+    id?: boolean | `@${string}`;
+    secret?: boolean | `@${string}`;
+    xnft_id?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Boolean expression to filter rows from the table "auth.xnft_secrets". All fields are combined with a logical 'AND'. */
+  ["auth_xnft_secrets_bool_exp"]: {
+    _and?:
+      | Array<ValueTypes["auth_xnft_secrets_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    _not?:
+      | ValueTypes["auth_xnft_secrets_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    _or?:
+      | Array<ValueTypes["auth_xnft_secrets_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?:
+      | ValueTypes["Int_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    secret?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    xnft_id?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** unique or primary key constraints on table "auth.xnft_secrets" */
+  ["auth_xnft_secrets_constraint"]: auth_xnft_secrets_constraint;
+  /** input type for incrementing numeric columns in table "auth.xnft_secrets" */
+  ["auth_xnft_secrets_inc_input"]: {
+    id?: number | undefined | null | Variable<any, string>;
+  };
+  /** input type for inserting data into table "auth.xnft_secrets" */
+  ["auth_xnft_secrets_insert_input"]: {
+    id?: number | undefined | null | Variable<any, string>;
+    secret?: string | undefined | null | Variable<any, string>;
+    xnft_id?: string | undefined | null | Variable<any, string>;
+  };
+  /** response of any mutation on the table "auth.xnft_secrets" */
+  ["auth_xnft_secrets_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ValueTypes["auth_xnft_secrets"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "auth.xnft_secrets" */
+  ["auth_xnft_secrets_on_conflict"]: {
+    constraint:
+      | ValueTypes["auth_xnft_secrets_constraint"]
+      | Variable<any, string>;
+    update_columns:
+      | Array<ValueTypes["auth_xnft_secrets_update_column"]>
+      | Variable<any, string>;
+    where?:
+      | ValueTypes["auth_xnft_secrets_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Ordering options when selecting data from "auth.xnft_secrets". */
+  ["auth_xnft_secrets_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    secret?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    xnft_id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** primary key columns input for table: auth_xnft_secrets */
+  ["auth_xnft_secrets_pk_columns_input"]: {
+    id: number | Variable<any, string>;
+  };
+  /** select columns of table "auth.xnft_secrets" */
+  ["auth_xnft_secrets_select_column"]: auth_xnft_secrets_select_column;
+  /** input type for updating data in table "auth.xnft_secrets" */
+  ["auth_xnft_secrets_set_input"]: {
+    id?: number | undefined | null | Variable<any, string>;
+    secret?: string | undefined | null | Variable<any, string>;
+    xnft_id?: string | undefined | null | Variable<any, string>;
+  };
+  /** Streaming cursor of the table "auth_xnft_secrets" */
+  ["auth_xnft_secrets_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value:
+      | ValueTypes["auth_xnft_secrets_stream_cursor_value_input"]
+      | Variable<any, string>;
+    /** cursor ordering */
+    ordering?:
+      | ValueTypes["cursor_ordering"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_xnft_secrets_stream_cursor_value_input"]: {
+    id?: number | undefined | null | Variable<any, string>;
+    secret?: string | undefined | null | Variable<any, string>;
+    xnft_id?: string | undefined | null | Variable<any, string>;
+  };
+  /** update columns of table "auth.xnft_secrets" */
+  ["auth_xnft_secrets_update_column"]: auth_xnft_secrets_update_column;
+  ["auth_xnft_secrets_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?:
+      | ValueTypes["auth_xnft_secrets_inc_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    /** sets the columns of the filtered rows to the given values */
+    _set?:
+      | ValueTypes["auth_xnft_secrets_set_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    where: ValueTypes["auth_xnft_secrets_bool_exp"] | Variable<any, string>;
+  };
   ["citext"]: unknown;
   /** Boolean expression to compare columns of type "citext". All fields are combined with logical 'AND'. */
   ["citext_comparison_exp"]: {
@@ -3191,6 +3319,34 @@ export type ValueTypes = {
       },
       ValueTypes["auth_xnft_preferences"]
     ];
+    insert_auth_xnft_secrets?: [
+      {
+        /** the rows to be inserted */
+        objects:
+          | Array<ValueTypes["auth_xnft_secrets_insert_input"]>
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["auth_xnft_secrets_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_xnft_secrets_mutation_response"]
+    ];
+    insert_auth_xnft_secrets_one?: [
+      {
+        /** the row to be inserted */
+        object:
+          | ValueTypes["auth_xnft_secrets_insert_input"]
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["auth_xnft_secrets_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_xnft_secrets"]
+    ];
     update_auth_friendships?: [
       {
         /** increments the numeric columns with given value of the filtered values */
@@ -3506,6 +3662,60 @@ export type ValueTypes = {
           | Variable<any, string>;
       },
       ValueTypes["auth_xnft_preferences_mutation_response"]
+    ];
+    update_auth_xnft_secrets?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ValueTypes["auth_xnft_secrets_inc_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ValueTypes["auth_xnft_secrets_set_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** filter the rows which have to be updated */;
+        where: ValueTypes["auth_xnft_secrets_bool_exp"] | Variable<any, string>;
+      },
+      ValueTypes["auth_xnft_secrets_mutation_response"]
+    ];
+    update_auth_xnft_secrets_by_pk?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ValueTypes["auth_xnft_secrets_inc_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ValueTypes["auth_xnft_secrets_set_input"]
+          | undefined
+          | null
+          | Variable<any, string>;
+        pk_columns:
+          | ValueTypes["auth_xnft_secrets_pk_columns_input"]
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_xnft_secrets"]
+    ];
+    update_auth_xnft_secrets_many?: [
+      {
+        /** updates to execute, in order */
+        updates:
+          | Array<ValueTypes["auth_xnft_secrets_updates"]>
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_xnft_secrets_mutation_response"]
     ];
     __typename?: boolean | `@${string}`;
   }>;
@@ -3889,6 +4099,44 @@ export type ValueTypes = {
     auth_xnft_preferences_by_pk?: [
       { id: number | Variable<any, string> },
       ValueTypes["auth_xnft_preferences"]
+    ];
+    auth_xnft_secrets?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_xnft_secrets_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_xnft_secrets_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_xnft_secrets_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_xnft_secrets"]
+    ];
+    auth_xnft_secrets_by_pk?: [
+      { id: number | Variable<any, string> },
+      ValueTypes["auth_xnft_secrets"]
     ];
     invitations?: [
       {
@@ -4528,6 +4776,68 @@ export type ValueTypes = {
           | Variable<any, string>;
       },
       ValueTypes["auth_xnft_preferences"]
+    ];
+    auth_xnft_secrets?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_xnft_secrets_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_xnft_secrets_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_xnft_secrets_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_xnft_secrets"]
+    ];
+    auth_xnft_secrets_by_pk?: [
+      { id: number | Variable<any, string> },
+      ValueTypes["auth_xnft_secrets"]
+    ];
+    auth_xnft_secrets_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size:
+          | number
+          | Variable<
+              any,
+              string
+            > /** cursor to stream the results returned by the query */;
+        cursor:
+          | Array<
+              | ValueTypes["auth_xnft_secrets_stream_cursor_input"]
+              | undefined
+              | null
+            >
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_xnft_secrets_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_xnft_secrets"]
     ];
     invitations?: [
       {
@@ -5922,6 +6232,96 @@ export type ResolverInputTypes = {
       | null;
     where: ResolverInputTypes["auth_xnft_preferences_bool_exp"];
   };
+  /** columns and relationships of "auth.xnft_secrets" */
+  ["auth_xnft_secrets"]: AliasType<{
+    id?: boolean | `@${string}`;
+    secret?: boolean | `@${string}`;
+    xnft_id?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Boolean expression to filter rows from the table "auth.xnft_secrets". All fields are combined with a logical 'AND'. */
+  ["auth_xnft_secrets_bool_exp"]: {
+    _and?:
+      | Array<ResolverInputTypes["auth_xnft_secrets_bool_exp"]>
+      | undefined
+      | null;
+    _not?: ResolverInputTypes["auth_xnft_secrets_bool_exp"] | undefined | null;
+    _or?:
+      | Array<ResolverInputTypes["auth_xnft_secrets_bool_exp"]>
+      | undefined
+      | null;
+    id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
+    secret?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    xnft_id?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+  };
+  /** unique or primary key constraints on table "auth.xnft_secrets" */
+  ["auth_xnft_secrets_constraint"]: auth_xnft_secrets_constraint;
+  /** input type for incrementing numeric columns in table "auth.xnft_secrets" */
+  ["auth_xnft_secrets_inc_input"]: {
+    id?: number | undefined | null;
+  };
+  /** input type for inserting data into table "auth.xnft_secrets" */
+  ["auth_xnft_secrets_insert_input"]: {
+    id?: number | undefined | null;
+    secret?: string | undefined | null;
+    xnft_id?: string | undefined | null;
+  };
+  /** response of any mutation on the table "auth.xnft_secrets" */
+  ["auth_xnft_secrets_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ResolverInputTypes["auth_xnft_secrets"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "auth.xnft_secrets" */
+  ["auth_xnft_secrets_on_conflict"]: {
+    constraint: ResolverInputTypes["auth_xnft_secrets_constraint"];
+    update_columns: Array<
+      ResolverInputTypes["auth_xnft_secrets_update_column"]
+    >;
+    where?: ResolverInputTypes["auth_xnft_secrets_bool_exp"] | undefined | null;
+  };
+  /** Ordering options when selecting data from "auth.xnft_secrets". */
+  ["auth_xnft_secrets_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    secret?: ResolverInputTypes["order_by"] | undefined | null;
+    xnft_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** primary key columns input for table: auth_xnft_secrets */
+  ["auth_xnft_secrets_pk_columns_input"]: {
+    id: number;
+  };
+  /** select columns of table "auth.xnft_secrets" */
+  ["auth_xnft_secrets_select_column"]: auth_xnft_secrets_select_column;
+  /** input type for updating data in table "auth.xnft_secrets" */
+  ["auth_xnft_secrets_set_input"]: {
+    id?: number | undefined | null;
+    secret?: string | undefined | null;
+    xnft_id?: string | undefined | null;
+  };
+  /** Streaming cursor of the table "auth_xnft_secrets" */
+  ["auth_xnft_secrets_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ResolverInputTypes["auth_xnft_secrets_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ResolverInputTypes["cursor_ordering"] | undefined | null;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_xnft_secrets_stream_cursor_value_input"]: {
+    id?: number | undefined | null;
+    secret?: string | undefined | null;
+    xnft_id?: string | undefined | null;
+  };
+  /** update columns of table "auth.xnft_secrets" */
+  ["auth_xnft_secrets_update_column"]: auth_xnft_secrets_update_column;
+  ["auth_xnft_secrets_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: ResolverInputTypes["auth_xnft_secrets_inc_input"] | undefined | null;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: ResolverInputTypes["auth_xnft_secrets_set_input"] | undefined | null;
+    where: ResolverInputTypes["auth_xnft_secrets_bool_exp"];
+  };
   ["citext"]: unknown;
   /** Boolean expression to compare columns of type "citext". All fields are combined with logical 'AND'. */
   ["citext_comparison_exp"]: {
@@ -6276,6 +6676,30 @@ export type ResolverInputTypes = {
       },
       ResolverInputTypes["auth_xnft_preferences"]
     ];
+    insert_auth_xnft_secrets?: [
+      {
+        /** the rows to be inserted */
+        objects: Array<
+          ResolverInputTypes["auth_xnft_secrets_insert_input"]
+        > /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["auth_xnft_secrets_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_xnft_secrets_mutation_response"]
+    ];
+    insert_auth_xnft_secrets_one?: [
+      {
+        /** the row to be inserted */
+        object: ResolverInputTypes["auth_xnft_secrets_insert_input"] /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["auth_xnft_secrets_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_xnft_secrets"]
+    ];
     update_auth_friendships?: [
       {
         /** increments the numeric columns with given value of the filtered values */
@@ -6488,6 +6912,43 @@ export type ResolverInputTypes = {
         updates: Array<ResolverInputTypes["auth_xnft_preferences_updates"]>;
       },
       ResolverInputTypes["auth_xnft_preferences_mutation_response"]
+    ];
+    update_auth_xnft_secrets?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ResolverInputTypes["auth_xnft_secrets_inc_input"]
+          | undefined
+          | null /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ResolverInputTypes["auth_xnft_secrets_set_input"]
+          | undefined
+          | null /** filter the rows which have to be updated */;
+        where: ResolverInputTypes["auth_xnft_secrets_bool_exp"];
+      },
+      ResolverInputTypes["auth_xnft_secrets_mutation_response"]
+    ];
+    update_auth_xnft_secrets_by_pk?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ResolverInputTypes["auth_xnft_secrets_inc_input"]
+          | undefined
+          | null /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ResolverInputTypes["auth_xnft_secrets_set_input"]
+          | undefined
+          | null;
+        pk_columns: ResolverInputTypes["auth_xnft_secrets_pk_columns_input"];
+      },
+      ResolverInputTypes["auth_xnft_secrets"]
+    ];
+    update_auth_xnft_secrets_many?: [
+      {
+        /** updates to execute, in order */
+        updates: Array<ResolverInputTypes["auth_xnft_secrets_updates"]>;
+      },
+      ResolverInputTypes["auth_xnft_secrets_mutation_response"]
     ];
     __typename?: boolean | `@${string}`;
   }>;
@@ -6783,6 +7244,36 @@ export type ResolverInputTypes = {
     auth_xnft_preferences_by_pk?: [
       { id: number },
       ResolverInputTypes["auth_xnft_preferences"]
+    ];
+    auth_xnft_secrets?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_xnft_secrets_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_xnft_secrets_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_xnft_secrets_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_xnft_secrets"]
+    ];
+    auth_xnft_secrets_by_pk?: [
+      { id: number },
+      ResolverInputTypes["auth_xnft_secrets"]
     ];
     invitations?: [
       {
@@ -7247,6 +7738,52 @@ export type ResolverInputTypes = {
           | null;
       },
       ResolverInputTypes["auth_xnft_preferences"]
+    ];
+    auth_xnft_secrets?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_xnft_secrets_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_xnft_secrets_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_xnft_secrets_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_xnft_secrets"]
+    ];
+    auth_xnft_secrets_by_pk?: [
+      { id: number },
+      ResolverInputTypes["auth_xnft_secrets"]
+    ];
+    auth_xnft_secrets_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size: number /** cursor to stream the results returned by the query */;
+        cursor: Array<
+          | ResolverInputTypes["auth_xnft_secrets_stream_cursor_input"]
+          | undefined
+          | null
+        > /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_xnft_secrets_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_xnft_secrets"]
     ];
     invitations?: [
       {
@@ -8295,6 +8832,83 @@ export type ModelTypes = {
     _set?: ModelTypes["auth_xnft_preferences_set_input"] | undefined;
     where: ModelTypes["auth_xnft_preferences_bool_exp"];
   };
+  /** columns and relationships of "auth.xnft_secrets" */
+  ["auth_xnft_secrets"]: {
+    id: number;
+    secret: string;
+    xnft_id: string;
+  };
+  /** Boolean expression to filter rows from the table "auth.xnft_secrets". All fields are combined with a logical 'AND'. */
+  ["auth_xnft_secrets_bool_exp"]: {
+    _and?: Array<ModelTypes["auth_xnft_secrets_bool_exp"]> | undefined;
+    _not?: ModelTypes["auth_xnft_secrets_bool_exp"] | undefined;
+    _or?: Array<ModelTypes["auth_xnft_secrets_bool_exp"]> | undefined;
+    id?: ModelTypes["Int_comparison_exp"] | undefined;
+    secret?: ModelTypes["String_comparison_exp"] | undefined;
+    xnft_id?: ModelTypes["String_comparison_exp"] | undefined;
+  };
+  ["auth_xnft_secrets_constraint"]: auth_xnft_secrets_constraint;
+  /** input type for incrementing numeric columns in table "auth.xnft_secrets" */
+  ["auth_xnft_secrets_inc_input"]: {
+    id?: number | undefined;
+  };
+  /** input type for inserting data into table "auth.xnft_secrets" */
+  ["auth_xnft_secrets_insert_input"]: {
+    id?: number | undefined;
+    secret?: string | undefined;
+    xnft_id?: string | undefined;
+  };
+  /** response of any mutation on the table "auth.xnft_secrets" */
+  ["auth_xnft_secrets_mutation_response"]: {
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<ModelTypes["auth_xnft_secrets"]>;
+  };
+  /** on_conflict condition type for table "auth.xnft_secrets" */
+  ["auth_xnft_secrets_on_conflict"]: {
+    constraint: ModelTypes["auth_xnft_secrets_constraint"];
+    update_columns: Array<ModelTypes["auth_xnft_secrets_update_column"]>;
+    where?: ModelTypes["auth_xnft_secrets_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "auth.xnft_secrets". */
+  ["auth_xnft_secrets_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+    secret?: ModelTypes["order_by"] | undefined;
+    xnft_id?: ModelTypes["order_by"] | undefined;
+  };
+  /** primary key columns input for table: auth_xnft_secrets */
+  ["auth_xnft_secrets_pk_columns_input"]: {
+    id: number;
+  };
+  ["auth_xnft_secrets_select_column"]: auth_xnft_secrets_select_column;
+  /** input type for updating data in table "auth.xnft_secrets" */
+  ["auth_xnft_secrets_set_input"]: {
+    id?: number | undefined;
+    secret?: string | undefined;
+    xnft_id?: string | undefined;
+  };
+  /** Streaming cursor of the table "auth_xnft_secrets" */
+  ["auth_xnft_secrets_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ModelTypes["auth_xnft_secrets_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ModelTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_xnft_secrets_stream_cursor_value_input"]: {
+    id?: number | undefined;
+    secret?: string | undefined;
+    xnft_id?: string | undefined;
+  };
+  ["auth_xnft_secrets_update_column"]: auth_xnft_secrets_update_column;
+  ["auth_xnft_secrets_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: ModelTypes["auth_xnft_secrets_inc_input"] | undefined;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: ModelTypes["auth_xnft_secrets_set_input"] | undefined;
+    where: ModelTypes["auth_xnft_secrets_bool_exp"];
+  };
   ["citext"]: any;
   /** Boolean expression to compare columns of type "citext". All fields are combined with logical 'AND'. */
   ["citext_comparison_exp"]: {
@@ -8475,6 +9089,12 @@ export type ModelTypes = {
     insert_auth_xnft_preferences_one?:
       | ModelTypes["auth_xnft_preferences"]
       | undefined;
+    /** insert data into the table: "auth.xnft_secrets" */
+    insert_auth_xnft_secrets?:
+      | ModelTypes["auth_xnft_secrets_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "auth.xnft_secrets" */
+    insert_auth_xnft_secrets_one?: ModelTypes["auth_xnft_secrets"] | undefined;
     /** update data of the table: "auth.friendships" */
     update_auth_friendships?:
       | ModelTypes["auth_friendships_mutation_response"]
@@ -8544,6 +9164,18 @@ export type ModelTypes = {
     update_auth_xnft_preferences_many?:
       | Array<ModelTypes["auth_xnft_preferences_mutation_response"] | undefined>
       | undefined;
+    /** update data of the table: "auth.xnft_secrets" */
+    update_auth_xnft_secrets?:
+      | ModelTypes["auth_xnft_secrets_mutation_response"]
+      | undefined;
+    /** update single row of the table: "auth.xnft_secrets" */
+    update_auth_xnft_secrets_by_pk?:
+      | ModelTypes["auth_xnft_secrets"]
+      | undefined;
+    /** update multiples rows of table: "auth.xnft_secrets" */
+    update_auth_xnft_secrets_many?:
+      | Array<ModelTypes["auth_xnft_secrets_mutation_response"] | undefined>
+      | undefined;
   };
   ["order_by"]: order_by;
   ["query_root"]: {
@@ -8589,6 +9221,10 @@ export type ModelTypes = {
     auth_xnft_preferences_by_pk?:
       | ModelTypes["auth_xnft_preferences"]
       | undefined;
+    /** fetch data from the table: "auth.xnft_secrets" */
+    auth_xnft_secrets: Array<ModelTypes["auth_xnft_secrets"]>;
+    /** fetch data from the table: "auth.xnft_secrets" using primary key columns */
+    auth_xnft_secrets_by_pk?: ModelTypes["auth_xnft_secrets"] | undefined;
     /** fetch data from the table: "invitations" */
     invitations: Array<ModelTypes["invitations"]>;
     /** fetch aggregated fields from the table: "invitations" */
@@ -8655,6 +9291,12 @@ export type ModelTypes = {
       | undefined;
     /** fetch data from the table in a streaming manner : "auth.xnft_preferences" */
     auth_xnft_preferences_stream: Array<ModelTypes["auth_xnft_preferences"]>;
+    /** fetch data from the table: "auth.xnft_secrets" */
+    auth_xnft_secrets: Array<ModelTypes["auth_xnft_secrets"]>;
+    /** fetch data from the table: "auth.xnft_secrets" using primary key columns */
+    auth_xnft_secrets_by_pk?: ModelTypes["auth_xnft_secrets"] | undefined;
+    /** fetch data from the table in a streaming manner : "auth.xnft_secrets" */
+    auth_xnft_secrets_stream: Array<ModelTypes["auth_xnft_secrets"]>;
     /** fetch data from the table: "invitations" */
     invitations: Array<ModelTypes["invitations"]>;
     /** fetch aggregated fields from the table: "invitations" */
@@ -9714,6 +10356,88 @@ export type GraphQLTypes = {
     _set?: GraphQLTypes["auth_xnft_preferences_set_input"] | undefined;
     where: GraphQLTypes["auth_xnft_preferences_bool_exp"];
   };
+  /** columns and relationships of "auth.xnft_secrets" */
+  ["auth_xnft_secrets"]: {
+    __typename: "auth_xnft_secrets";
+    id: number;
+    secret: string;
+    xnft_id: string;
+  };
+  /** Boolean expression to filter rows from the table "auth.xnft_secrets". All fields are combined with a logical 'AND'. */
+  ["auth_xnft_secrets_bool_exp"]: {
+    _and?: Array<GraphQLTypes["auth_xnft_secrets_bool_exp"]> | undefined;
+    _not?: GraphQLTypes["auth_xnft_secrets_bool_exp"] | undefined;
+    _or?: Array<GraphQLTypes["auth_xnft_secrets_bool_exp"]> | undefined;
+    id?: GraphQLTypes["Int_comparison_exp"] | undefined;
+    secret?: GraphQLTypes["String_comparison_exp"] | undefined;
+    xnft_id?: GraphQLTypes["String_comparison_exp"] | undefined;
+  };
+  /** unique or primary key constraints on table "auth.xnft_secrets" */
+  ["auth_xnft_secrets_constraint"]: auth_xnft_secrets_constraint;
+  /** input type for incrementing numeric columns in table "auth.xnft_secrets" */
+  ["auth_xnft_secrets_inc_input"]: {
+    id?: number | undefined;
+  };
+  /** input type for inserting data into table "auth.xnft_secrets" */
+  ["auth_xnft_secrets_insert_input"]: {
+    id?: number | undefined;
+    secret?: string | undefined;
+    xnft_id?: string | undefined;
+  };
+  /** response of any mutation on the table "auth.xnft_secrets" */
+  ["auth_xnft_secrets_mutation_response"]: {
+    __typename: "auth_xnft_secrets_mutation_response";
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<GraphQLTypes["auth_xnft_secrets"]>;
+  };
+  /** on_conflict condition type for table "auth.xnft_secrets" */
+  ["auth_xnft_secrets_on_conflict"]: {
+    constraint: GraphQLTypes["auth_xnft_secrets_constraint"];
+    update_columns: Array<GraphQLTypes["auth_xnft_secrets_update_column"]>;
+    where?: GraphQLTypes["auth_xnft_secrets_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "auth.xnft_secrets". */
+  ["auth_xnft_secrets_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+    secret?: GraphQLTypes["order_by"] | undefined;
+    xnft_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** primary key columns input for table: auth_xnft_secrets */
+  ["auth_xnft_secrets_pk_columns_input"]: {
+    id: number;
+  };
+  /** select columns of table "auth.xnft_secrets" */
+  ["auth_xnft_secrets_select_column"]: auth_xnft_secrets_select_column;
+  /** input type for updating data in table "auth.xnft_secrets" */
+  ["auth_xnft_secrets_set_input"]: {
+    id?: number | undefined;
+    secret?: string | undefined;
+    xnft_id?: string | undefined;
+  };
+  /** Streaming cursor of the table "auth_xnft_secrets" */
+  ["auth_xnft_secrets_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: GraphQLTypes["auth_xnft_secrets_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: GraphQLTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_xnft_secrets_stream_cursor_value_input"]: {
+    id?: number | undefined;
+    secret?: string | undefined;
+    xnft_id?: string | undefined;
+  };
+  /** update columns of table "auth.xnft_secrets" */
+  ["auth_xnft_secrets_update_column"]: auth_xnft_secrets_update_column;
+  ["auth_xnft_secrets_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: GraphQLTypes["auth_xnft_secrets_inc_input"] | undefined;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: GraphQLTypes["auth_xnft_secrets_set_input"] | undefined;
+    where: GraphQLTypes["auth_xnft_secrets_bool_exp"];
+  };
   ["citext"]: "scalar" & { name: "citext" };
   /** Boolean expression to compare columns of type "citext". All fields are combined with logical 'AND'. */
   ["citext_comparison_exp"]: {
@@ -9908,6 +10632,14 @@ export type GraphQLTypes = {
     insert_auth_xnft_preferences_one?:
       | GraphQLTypes["auth_xnft_preferences"]
       | undefined;
+    /** insert data into the table: "auth.xnft_secrets" */
+    insert_auth_xnft_secrets?:
+      | GraphQLTypes["auth_xnft_secrets_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "auth.xnft_secrets" */
+    insert_auth_xnft_secrets_one?:
+      | GraphQLTypes["auth_xnft_secrets"]
+      | undefined;
     /** update data of the table: "auth.friendships" */
     update_auth_friendships?:
       | GraphQLTypes["auth_friendships_mutation_response"]
@@ -9983,6 +10715,18 @@ export type GraphQLTypes = {
           GraphQLTypes["auth_xnft_preferences_mutation_response"] | undefined
         >
       | undefined;
+    /** update data of the table: "auth.xnft_secrets" */
+    update_auth_xnft_secrets?:
+      | GraphQLTypes["auth_xnft_secrets_mutation_response"]
+      | undefined;
+    /** update single row of the table: "auth.xnft_secrets" */
+    update_auth_xnft_secrets_by_pk?:
+      | GraphQLTypes["auth_xnft_secrets"]
+      | undefined;
+    /** update multiples rows of table: "auth.xnft_secrets" */
+    update_auth_xnft_secrets_many?:
+      | Array<GraphQLTypes["auth_xnft_secrets_mutation_response"] | undefined>
+      | undefined;
   };
   /** column ordering options */
   ["order_by"]: order_by;
@@ -10032,6 +10776,10 @@ export type GraphQLTypes = {
     auth_xnft_preferences_by_pk?:
       | GraphQLTypes["auth_xnft_preferences"]
       | undefined;
+    /** fetch data from the table: "auth.xnft_secrets" */
+    auth_xnft_secrets: Array<GraphQLTypes["auth_xnft_secrets"]>;
+    /** fetch data from the table: "auth.xnft_secrets" using primary key columns */
+    auth_xnft_secrets_by_pk?: GraphQLTypes["auth_xnft_secrets"] | undefined;
     /** fetch data from the table: "invitations" */
     invitations: Array<GraphQLTypes["invitations"]>;
     /** fetch aggregated fields from the table: "invitations" */
@@ -10101,6 +10849,12 @@ export type GraphQLTypes = {
       | undefined;
     /** fetch data from the table in a streaming manner : "auth.xnft_preferences" */
     auth_xnft_preferences_stream: Array<GraphQLTypes["auth_xnft_preferences"]>;
+    /** fetch data from the table: "auth.xnft_secrets" */
+    auth_xnft_secrets: Array<GraphQLTypes["auth_xnft_secrets"]>;
+    /** fetch data from the table: "auth.xnft_secrets" using primary key columns */
+    auth_xnft_secrets_by_pk?: GraphQLTypes["auth_xnft_secrets"] | undefined;
+    /** fetch data from the table in a streaming manner : "auth.xnft_secrets" */
+    auth_xnft_secrets_stream: Array<GraphQLTypes["auth_xnft_secrets"]>;
     /** fetch data from the table: "invitations" */
     invitations: Array<GraphQLTypes["invitations"]>;
     /** fetch aggregated fields from the table: "invitations" */
@@ -10306,6 +11060,22 @@ export const enum auth_xnft_preferences_update_column {
   uuid = "uuid",
   xnft_id = "xnft_id",
 }
+/** unique or primary key constraints on table "auth.xnft_secrets" */
+export const enum auth_xnft_secrets_constraint {
+  xnft_secrets_pkey = "xnft_secrets_pkey",
+}
+/** select columns of table "auth.xnft_secrets" */
+export const enum auth_xnft_secrets_select_column {
+  id = "id",
+  secret = "secret",
+  xnft_id = "xnft_id",
+}
+/** update columns of table "auth.xnft_secrets" */
+export const enum auth_xnft_secrets_update_column {
+  id = "id",
+  secret = "secret",
+  xnft_id = "xnft_id",
+}
 /** ordering argument of a cursor */
 export const enum cursor_ordering {
   ASC = "ASC",
@@ -10438,6 +11208,19 @@ type ZEUS_VARIABLES = {
   ["auth_xnft_preferences_stream_cursor_value_input"]: ValueTypes["auth_xnft_preferences_stream_cursor_value_input"];
   ["auth_xnft_preferences_update_column"]: ValueTypes["auth_xnft_preferences_update_column"];
   ["auth_xnft_preferences_updates"]: ValueTypes["auth_xnft_preferences_updates"];
+  ["auth_xnft_secrets_bool_exp"]: ValueTypes["auth_xnft_secrets_bool_exp"];
+  ["auth_xnft_secrets_constraint"]: ValueTypes["auth_xnft_secrets_constraint"];
+  ["auth_xnft_secrets_inc_input"]: ValueTypes["auth_xnft_secrets_inc_input"];
+  ["auth_xnft_secrets_insert_input"]: ValueTypes["auth_xnft_secrets_insert_input"];
+  ["auth_xnft_secrets_on_conflict"]: ValueTypes["auth_xnft_secrets_on_conflict"];
+  ["auth_xnft_secrets_order_by"]: ValueTypes["auth_xnft_secrets_order_by"];
+  ["auth_xnft_secrets_pk_columns_input"]: ValueTypes["auth_xnft_secrets_pk_columns_input"];
+  ["auth_xnft_secrets_select_column"]: ValueTypes["auth_xnft_secrets_select_column"];
+  ["auth_xnft_secrets_set_input"]: ValueTypes["auth_xnft_secrets_set_input"];
+  ["auth_xnft_secrets_stream_cursor_input"]: ValueTypes["auth_xnft_secrets_stream_cursor_input"];
+  ["auth_xnft_secrets_stream_cursor_value_input"]: ValueTypes["auth_xnft_secrets_stream_cursor_value_input"];
+  ["auth_xnft_secrets_update_column"]: ValueTypes["auth_xnft_secrets_update_column"];
+  ["auth_xnft_secrets_updates"]: ValueTypes["auth_xnft_secrets_updates"];
   ["citext"]: ValueTypes["citext"];
   ["citext_comparison_exp"]: ValueTypes["citext_comparison_exp"];
   ["cursor_ordering"]: ValueTypes["cursor_ordering"];

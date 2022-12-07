@@ -428,6 +428,41 @@ export const AllTypesProps: Record<string, any> = {
     _set: "auth_xnft_preferences_set_input",
     where: "auth_xnft_preferences_bool_exp",
   },
+  auth_xnft_secrets_bool_exp: {
+    _and: "auth_xnft_secrets_bool_exp",
+    _not: "auth_xnft_secrets_bool_exp",
+    _or: "auth_xnft_secrets_bool_exp",
+    id: "Int_comparison_exp",
+    secret: "String_comparison_exp",
+    xnft_id: "String_comparison_exp",
+  },
+  auth_xnft_secrets_constraint: "enum" as const,
+  auth_xnft_secrets_inc_input: {},
+  auth_xnft_secrets_insert_input: {},
+  auth_xnft_secrets_on_conflict: {
+    constraint: "auth_xnft_secrets_constraint",
+    update_columns: "auth_xnft_secrets_update_column",
+    where: "auth_xnft_secrets_bool_exp",
+  },
+  auth_xnft_secrets_order_by: {
+    id: "order_by",
+    secret: "order_by",
+    xnft_id: "order_by",
+  },
+  auth_xnft_secrets_pk_columns_input: {},
+  auth_xnft_secrets_select_column: "enum" as const,
+  auth_xnft_secrets_set_input: {},
+  auth_xnft_secrets_stream_cursor_input: {
+    initial_value: "auth_xnft_secrets_stream_cursor_value_input",
+    ordering: "cursor_ordering",
+  },
+  auth_xnft_secrets_stream_cursor_value_input: {},
+  auth_xnft_secrets_update_column: "enum" as const,
+  auth_xnft_secrets_updates: {
+    _inc: "auth_xnft_secrets_inc_input",
+    _set: "auth_xnft_secrets_set_input",
+    where: "auth_xnft_secrets_bool_exp",
+  },
   citext: `scalar.citext` as const,
   citext_comparison_exp: {
     _eq: "citext",
@@ -560,6 +595,14 @@ export const AllTypesProps: Record<string, any> = {
       object: "auth_xnft_preferences_insert_input",
       on_conflict: "auth_xnft_preferences_on_conflict",
     },
+    insert_auth_xnft_secrets: {
+      objects: "auth_xnft_secrets_insert_input",
+      on_conflict: "auth_xnft_secrets_on_conflict",
+    },
+    insert_auth_xnft_secrets_one: {
+      object: "auth_xnft_secrets_insert_input",
+      on_conflict: "auth_xnft_secrets_on_conflict",
+    },
     update_auth_friendships: {
       _inc: "auth_friendships_inc_input",
       _set: "auth_friendships_set_input",
@@ -636,6 +679,19 @@ export const AllTypesProps: Record<string, any> = {
     update_auth_xnft_preferences_many: {
       updates: "auth_xnft_preferences_updates",
     },
+    update_auth_xnft_secrets: {
+      _inc: "auth_xnft_secrets_inc_input",
+      _set: "auth_xnft_secrets_set_input",
+      where: "auth_xnft_secrets_bool_exp",
+    },
+    update_auth_xnft_secrets_by_pk: {
+      _inc: "auth_xnft_secrets_inc_input",
+      _set: "auth_xnft_secrets_set_input",
+      pk_columns: "auth_xnft_secrets_pk_columns_input",
+    },
+    update_auth_xnft_secrets_many: {
+      updates: "auth_xnft_secrets_updates",
+    },
   },
   order_by: "enum" as const,
   query_root: {
@@ -699,6 +755,12 @@ export const AllTypesProps: Record<string, any> = {
       where: "auth_xnft_preferences_bool_exp",
     },
     auth_xnft_preferences_by_pk: {},
+    auth_xnft_secrets: {
+      distinct_on: "auth_xnft_secrets_select_column",
+      order_by: "auth_xnft_secrets_order_by",
+      where: "auth_xnft_secrets_bool_exp",
+    },
+    auth_xnft_secrets_by_pk: {},
     invitations: {
       distinct_on: "invitations_select_column",
       order_by: "invitations_order_by",
@@ -802,6 +864,16 @@ export const AllTypesProps: Record<string, any> = {
     auth_xnft_preferences_stream: {
       cursor: "auth_xnft_preferences_stream_cursor_input",
       where: "auth_xnft_preferences_bool_exp",
+    },
+    auth_xnft_secrets: {
+      distinct_on: "auth_xnft_secrets_select_column",
+      order_by: "auth_xnft_secrets_order_by",
+      where: "auth_xnft_secrets_bool_exp",
+    },
+    auth_xnft_secrets_by_pk: {},
+    auth_xnft_secrets_stream: {
+      cursor: "auth_xnft_secrets_stream_cursor_input",
+      where: "auth_xnft_secrets_bool_exp",
     },
     invitations: {
       distinct_on: "invitations_select_column",
@@ -1019,6 +1091,15 @@ export const ReturnTypes: Record<string, any> = {
     affected_rows: "Int",
     returning: "auth_xnft_preferences",
   },
+  auth_xnft_secrets: {
+    id: "Int",
+    secret: "String",
+    xnft_id: "String",
+  },
+  auth_xnft_secrets_mutation_response: {
+    affected_rows: "Int",
+    returning: "auth_xnft_secrets",
+  },
   citext: `scalar.citext` as const,
   invitations: {
     claimed_at: "timestamptz",
@@ -1072,6 +1153,8 @@ export const ReturnTypes: Record<string, any> = {
     insert_auth_users_one: "auth_users",
     insert_auth_xnft_preferences: "auth_xnft_preferences_mutation_response",
     insert_auth_xnft_preferences_one: "auth_xnft_preferences",
+    insert_auth_xnft_secrets: "auth_xnft_secrets_mutation_response",
+    insert_auth_xnft_secrets_one: "auth_xnft_secrets",
     update_auth_friendships: "auth_friendships_mutation_response",
     update_auth_friendships_by_pk: "auth_friendships",
     update_auth_friendships_many: "auth_friendships_mutation_response",
@@ -1094,6 +1177,9 @@ export const ReturnTypes: Record<string, any> = {
     update_auth_xnft_preferences_by_pk: "auth_xnft_preferences",
     update_auth_xnft_preferences_many:
       "auth_xnft_preferences_mutation_response",
+    update_auth_xnft_secrets: "auth_xnft_secrets_mutation_response",
+    update_auth_xnft_secrets_by_pk: "auth_xnft_secrets",
+    update_auth_xnft_secrets_many: "auth_xnft_secrets_mutation_response",
   },
   query_root: {
     auth_friend_requests: "auth_friend_requests",
@@ -1114,6 +1200,8 @@ export const ReturnTypes: Record<string, any> = {
     auth_users_by_pk: "auth_users",
     auth_xnft_preferences: "auth_xnft_preferences",
     auth_xnft_preferences_by_pk: "auth_xnft_preferences",
+    auth_xnft_secrets: "auth_xnft_secrets",
+    auth_xnft_secrets_by_pk: "auth_xnft_secrets",
     invitations: "invitations",
     invitations_aggregate: "invitations_aggregate",
   },
@@ -1144,6 +1232,9 @@ export const ReturnTypes: Record<string, any> = {
     auth_xnft_preferences: "auth_xnft_preferences",
     auth_xnft_preferences_by_pk: "auth_xnft_preferences",
     auth_xnft_preferences_stream: "auth_xnft_preferences",
+    auth_xnft_secrets: "auth_xnft_secrets",
+    auth_xnft_secrets_by_pk: "auth_xnft_secrets",
+    auth_xnft_secrets_stream: "auth_xnft_secrets",
     invitations: "invitations",
     invitations_aggregate: "invitations_aggregate",
     invitations_stream: "invitations",
