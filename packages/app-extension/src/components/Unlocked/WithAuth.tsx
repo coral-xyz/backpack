@@ -3,7 +3,6 @@ import type { Blockchain, DerivationPath } from "@coral-xyz/common";
 import {
   BACKPACK_FEATURE_JWT,
   BACKPACK_FEATURE_USERNAMES,
-  UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
 } from "@coral-xyz/common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
@@ -39,7 +38,8 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
   const [openDrawer, setOpenDrawer] = useState(false);
   const background = useBackgroundClient();
   const user = useUser();
-  const { authenticate, checkAuthentication, getSigners } = useAuthentication();
+  const { authenticate, checkAuthentication, getAuthSigner } =
+    useAuthentication();
   const jwtEnabled = !!(
     BACKPACK_FEATURE_USERNAMES &&
     BACKPACK_FEATURE_JWT &&
@@ -115,38 +115,9 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
     })();
   }, [authData]);
 
-  /**
-   * Find the most suitable signer for signing an authentication message. The
-   * most suitable signer is one that Backpack can sign with transparently
-   * that has a matching public key on the server, or fall back to hardware
-   * signers.
-   */
-  const getAuthSigner = async (serverPublicKeys: Array<String>) => {
-    // Intersection of local signers with public keys stored on the server
-    const signers = (await getSigners()).filter((k) =>
-      serverPublicKeys.includes(k.publicKey)
-    );
-
-    if (signers.length === 0) {
-      // This should never happen
-      console.error("no valid auth signers found");
-      await background.request({
-        method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
-        params: [],
-      });
-    }
-    // Try and find a transparent server (i.e. not hardware based) as the first
-    // choice
-    const transparentSigner = signers.find((s) => !s.hardware);
-    // If no transparent signer, just return the first (hardware) signer
-    return transparentSigner ? transparentSigner : signers[0];
-  };
-
-  if (!loading) return children;
-
   return (
     <>
-      <Loading />
+      {loading ? <Loading /> : children}
       {authSigner && (
         <WithDrawer
           openDrawer={openDrawer}

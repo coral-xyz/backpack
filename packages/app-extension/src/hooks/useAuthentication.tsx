@@ -137,5 +137,32 @@ export const useAuthentication = () => {
     return signers;
   };
 
-  return { authenticate, checkAuthentication, getSigners };
+  /**
+   * Find the most suitable signer for signing an authentication message. The
+   * most suitable signer is one that Backpack can sign with transparently
+   * that has a matching public key on the server, or fall back to hardware
+   * signers.
+   */
+  const getAuthSigner = async (serverPublicKeys: Array<String>) => {
+    // Intersection of local signers with public keys stored on the server
+    const signers = (await getSigners()).filter((k) =>
+      serverPublicKeys.includes(k.publicKey)
+    );
+
+    if (signers.length === 0) {
+      // This should never happen
+      console.error("no valid auth signers found");
+      await background.request({
+        method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
+        params: [],
+      });
+    }
+    // Try and find a transparent server (i.e. not hardware based) as the first
+    // choice
+    const transparentSigner = signers.find((s) => !s.hardware);
+    // If no transparent signer, just return the first (hardware) signer
+    return transparentSigner ? transparentSigner : signers[0];
+  };
+
+  return { authenticate, checkAuthentication, getSigners, getAuthSigner };
 };
