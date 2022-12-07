@@ -219,6 +219,7 @@ export const RecoverAccount = ({
                       publicKey: publicKey!,
                       signature,
                     });
+                    nextStep();
                   }}
                 />,
               ]
