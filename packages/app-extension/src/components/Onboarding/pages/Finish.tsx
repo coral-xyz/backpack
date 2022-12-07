@@ -11,6 +11,7 @@ import {
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { v4 as uuidv4 } from "uuid";
 
+import { useAuthentication } from "../../../hooks/useAuthentication";
 import { Loading } from "../../common";
 import { SetupComplete } from "../../common/Account/SetupComplete";
 import { getWaitlistId } from "../../common/WaitingRoom";
@@ -30,6 +31,7 @@ export const Finish = ({
   userId?: string;
   isAddingAccount?: boolean;
 }) => {
+  const { authenticate } = useAuthentication();
   const [isValid, setIsValid] = useState(false);
   const background = useBackgroundClient();
 
@@ -52,6 +54,9 @@ export const Finish = ({
       }
       const { id } = await createUser();
       createStore(id);
+      // Authenticate the user that has been newly created so a JWT is stored
+      const authSignature = keyringInit.blockchainKeyrings[0].signature;
+      await authenticate(authSignature);
     })();
   }, []);
 

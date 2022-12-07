@@ -24,7 +24,7 @@ router.get("/", extractUserId, async (req, res) => {
   // @ts-ignore
   const usernamePrefix: string = req.query.usernamePrefix;
   // @ts-ignore
-  const uuid = req.id;
+  const uuid = req.id as string;
 
   await getUsersByPrefix({ usernamePrefix, uuid })
     .then((users) => {
@@ -104,6 +104,8 @@ router.post("/", async (req, res) => {
       console.error({ slackWebhook: err });
     }
   }
+
+  setCookie(req, res, user.id as string);
 
   return res.json({ id: user.id, msg: "ok" });
 });
