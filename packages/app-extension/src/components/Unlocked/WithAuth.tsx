@@ -45,8 +45,7 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
     BACKPACK_FEATURE_JWT &&
     user
   );
-
-  const signMessage = authSigner ? `Backpack login ${user.uuid}` : null;
+  const signMessage = `Backpack login ${user.uuid}`;
 
   /**
    * Check authentication status and take required actions to authenticate if
@@ -70,14 +69,15 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
         }
       }
     })();
-  }, []);
+    // Rerun authentication on user changes
+  }, [user]);
 
   /**
    * When an auth signer is found, take the required action to get a signature.
    */
   useEffect(() => {
     (async () => {
-      if (authSigner && signMessage) {
+      if (authSigner) {
         if (!authSigner.hardware) {
           // Auth signer is not a hardware wallet, sign transparent
           const signature = await background.request({
@@ -101,7 +101,7 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
         }
       }
     })();
-  }, [authSigner, signMessage]);
+  }, [authSigner]);
 
   /**
    * When an auth signature is created, authenticate with it.
