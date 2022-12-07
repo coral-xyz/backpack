@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "dist/rn/",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "types": ["chrome", "firefox-webext-browser"]
   }
 }
