@@ -196,7 +196,7 @@ export function xnftClient(provider: Provider): Program<Xnft> {
   return new Program<Xnft>(IDL, XNFT_PROGRAM_ID, provider);
 }
 
-type Xnft = {
+export type Xnft = {
   version: "0.1.0";
   name: "xnft";
   constants: [
@@ -1126,7 +1126,7 @@ type Xnft = {
   ];
 };
 
-const IDL: Xnft = {
+export const IDL: Xnft = {
   version: "0.1.0",
   name: "xnft",
   constants: [
