@@ -27,22 +27,31 @@ export function TableHeader({
   onPress,
   visible,
   blockchain,
+  disableToggle = false,
+  subtitle,
 }: {
   blockchain: Blockchain;
   visible: boolean;
   onPress: () => void;
+  disableToggle?: boolean;
+  subtitle?: JSX.Element;
 }) {
   const theme = useTheme();
   const title = toTitleCase(blockchain);
   const logo = useBlockchainLogo(blockchain);
 
   return (
-    <Pressable onPress={onPress} style={styles.tableHeader}>
+    <Pressable
+      disabled={disableToggle}
+      onPress={onPress}
+      style={styles.tableHeader}
+    >
       <LeftSide>
         <Image style={styles.logoContainer} source={logo} />
         <Text style={[styles.title, { color: theme.custom.colors.fontColor }]}>
           {title}
         </Text>
+        {subtitle ? subtitle : null}
       </LeftSide>
       <MaterialIcons
         name={visible ? "keyboard-arrow-up" : "keyboard-arrow-down"}

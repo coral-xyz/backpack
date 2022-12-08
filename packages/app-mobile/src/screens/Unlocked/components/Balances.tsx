@@ -7,9 +7,9 @@ import {
   Text,
   View,
 } from "react-native";
-import { Margin } from "@components";
+import { Margin, ProxyImage } from "@components";
 import type { Blockchain } from "@coral-xyz/common";
-import { formatUSD } from "@coral-xyz/common";
+import { formatUSD, walletAddressDisplay } from "@coral-xyz/common";
 import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
 import {
   blockchainBalancesSorted,
@@ -20,10 +20,12 @@ import {
   useLoader,
 } from "@coral-xyz/recoil";
 import { useTheme } from "@hooks";
+import * as Clipboard from "expo-clipboard";
 
 import type { Token } from "./index";
 import { RowSeparator, TableHeader } from "./index";
 
+// Renders each blockchain section
 export function TokenTables({
   blockchains,
   onPressRow,
@@ -45,7 +47,7 @@ export function TokenTables({
       {filteredBlockchains.map((blockchain: Blockchain) => {
         return (
           <Margin key={blockchain} bottom={8}>
-            <BalanceTable
+            <TokenTable
               blockchain={blockchain}
               onPressRow={onPressRow}
               searchFilter={searchFilter}
@@ -58,21 +60,23 @@ export function TokenTables({
   );
 }
 
-function BalanceTable({
+// Renders the header (expand/collapse) as well as the list of tokens
+function TokenTable({
   blockchain,
   onPressRow,
   tokenAccounts,
   searchFilter = "",
   customFilter = () => true,
-}: // displayWalletHeader,
-{
+  displayWalletHeader = true,
+}: {
   blockchain: Blockchain;
   onPressRow: (blockchain: Blockchain, token: Token) => void;
   tokenAccounts?: ReturnType<typeof useBlockchainTokensSorted>;
   searchFilter?: string;
   customFilter?: (token: Token) => boolean;
-  // displayWalletHeader?: boolean;
-}) {
+  displayWalletHeader?: boolean;
+}): JSX.Element {
+  const [search, setSearch] = useState(searchFilter);
   const [expanded, setExpanded] = React.useState(true);
   const onPressExpand = () => {
     setExpanded(!expanded);
@@ -82,7 +86,7 @@ function BalanceTable({
   const activeWallets = useActiveWallets();
   const wallet = activeWallets.filter((w) => w.blockchain === blockchain)[0];
 
-  const [_tokenAccounts, _, isLoading] = tokenAccounts
+  const [rawTokenAccounts, _, isLoading] = tokenAccounts
     ? [tokenAccounts, "hasValue"]
     : useLoader(
         blockchainBalancesSorted(blockchain),
@@ -90,10 +94,8 @@ function BalanceTable({
         [wallet.publicKey, connectionUrl]
       );
 
-  const [search, setSearch] = useState(searchFilter);
-
   const searchLower = search.toLowerCase();
-  const tokenAccountsFiltered = _tokenAccounts
+  const tokenAccountsFiltered = rawTokenAccounts
     .filter(
       (t: any) =>
         t.name &&
@@ -101,6 +103,9 @@ function BalanceTable({
           t.ticker.toLowerCase().startsWith(searchLower))
     )
     .filter(customFilter);
+
+  // LOG  {"connectionUrl": "https://eth-mainnet.g.alchemy.com/v2/DlJr6QuBC2EaE-L60-iqQQGq9hi9-XSZ", "wallet": {"blockchain": "ethereum", "name": "Wallet 1", "publicKey": "0x3b75C921A06C18b9B75dD1916F1fb97f41796CeB"}}
+  console.log({ connectionUrl, wallet });
 
   useEffect(() => {
     setSearch(searchFilter);
@@ -112,18 +117,25 @@ function BalanceTable({
         blockchain={blockchain}
         onPress={onPressExpand}
         visible={expanded}
+        subtitle={
+          displayWalletHeader ? (
+            <Margin left={6}>
+              <CopyWalletAddressSubtitle publicKey={wallet.publicKey} />
+            </Margin>
+          ) : undefined
+        }
       />
 
       {expanded ? (
         <FlatList
-          style={{ padding: 8 }}
-          initialNumToRender={2}
+          initialNumToRender={4}
           scrollEnabled={false}
           data={tokenAccountsFiltered}
+          keyExtractor={(item) => item.address}
           ItemSeparatorComponent={RowSeparator}
           renderItem={({ item: token }) => {
             return (
-              <BalanceRow
+              <TokenRow
                 onPressRow={onPressRow}
                 blockchain={blockchain}
                 token={token}
@@ -133,6 +145,25 @@ function BalanceTable({
         />
       ) : null}
     </View>
+  );
+}
+
+function CopyWalletAddressSubtitle({
+  publicKey,
+}: {
+  publicKey: string;
+}): JSX.Element {
+  const theme = useTheme();
+  return (
+    <Pressable
+      onPress={async () => {
+        await Clipboard.setStringAsync(publicKey);
+      }}
+    >
+      <Text style={{ color: theme.custom.colors.secondary }}>
+        {walletAddressDisplay(publicKey)}
+      </Text>
+    </Pressable>
   );
 }
 
@@ -178,7 +209,8 @@ function TextPercentChanged({ percentChange }: { percentChange: number }) {
   );
 }
 
-export function BalanceRow({
+// Renders the individual token row
+export function TokenRow({
   onPressRow,
   token,
   blockchain,
@@ -186,7 +218,7 @@ export function BalanceRow({
   onPressRow: (blockchain: Blockchain, token: Token) => void;
   token: Token;
   blockchain: Blockchain;
-}) {
+}): JSX.Element {
   const theme = useTheme();
   const { name, recentUsdBalanceChange, logo: iconUrl } = token;
 
@@ -208,9 +240,11 @@ export function BalanceRow({
       style={styles.rowContainer}
     >
       <View style={{ flexDirection: "row" }}>
-        <Margin right={12}>
-          <Image style={styles.rowLogo} source={{ uri: iconUrl }} />
-        </Margin>
+        {iconUrl ? (
+          <Margin right={12}>
+            <ProxyImage style={styles.rowLogo} src={iconUrl} />
+          </Margin>
+        ) : null}
         <View>
           <Text
             style={[styles.tokenName, { color: theme.custom.colors.fontColor }]}
