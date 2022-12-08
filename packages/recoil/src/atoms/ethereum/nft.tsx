@@ -46,7 +46,7 @@ export const ethereumNftCollections = selector<NftCollection[]>({
           externalResourceUri(nft.metadata.image) ||
           externalResourceUri(nft.metadata.image_url),
         attributes:
-          nft.metadata.attributes &&
+          Array.isArray(nft.metadata.attributes) &&
           nft.metadata.attributes.map(
             (a: { trait_type: string; value: string }) => ({
               traitType: a.trait_type,

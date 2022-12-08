@@ -27,6 +27,7 @@ import {
 } from "../common";
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
 import { CheckIcon, CrossIcon } from "../common/Icon";
+import { BottomCard } from "../common/Layout/BottomCard";
 import { useDrawerContext } from "../common/Layout/Drawer";
 import { useNavStack } from "../common/Layout/NavStack";
 import { MaxSwapLabel } from "../common/MaxSwapLabel";
@@ -34,8 +35,6 @@ import { TokenAmountHeader } from "../common/TokenAmountHeader";
 import { TokenInputField } from "../common/TokenInput";
 import type { Token } from "../common/TokenTable";
 import { SearchableTokenTable } from "../common/TokenTable";
-
-import { BottomCard } from "./Balances/TokensWidget/Send";
 
 const { Zero } = ethers.constants;
 
