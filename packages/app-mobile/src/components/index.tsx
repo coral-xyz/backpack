@@ -573,3 +573,13 @@ export function WelcomeLogoHeader() {
     </View>
   );
 }
+
+export function ListRowSeparator() {
+  return <View style={listRowStyles.container} />;
+}
+
+const listRowStyles = StyleSheet.create({
+  container: {
+    height: 12,
+  },
+});

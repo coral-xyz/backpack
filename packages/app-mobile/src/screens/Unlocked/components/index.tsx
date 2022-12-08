@@ -14,10 +14,6 @@ import { useBlockchainLogo, useTheme } from "@hooks";
 // TODO move this
 export type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
 
-export function RowSeparator() {
-  return <View style={styles.rowSeparator} />;
-}
-
 // TODO(peter) children: any
 function LeftSide({ children }: any) {
   return <View style={styles.leftSide}>{children}</View>;
@@ -87,8 +83,5 @@ const styles = StyleSheet.create({
     width: 12,
     height: 12,
     marginRight: 8,
-  },
-  rowSeparator: {
-    height: 12,
   },
 });

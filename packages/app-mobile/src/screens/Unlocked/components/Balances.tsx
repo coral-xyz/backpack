@@ -7,7 +7,7 @@ import {
   Text,
   View,
 } from "react-native";
-import { Margin, ProxyImage } from "@components";
+import { ListRowSeparator,Margin, ProxyImage } from "@components";
 import type { Blockchain } from "@coral-xyz/common";
 import { formatUSD, walletAddressDisplay } from "@coral-xyz/common";
 import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
@@ -23,7 +23,7 @@ import { useTheme } from "@hooks";
 import * as Clipboard from "expo-clipboard";
 
 import type { Token } from "./index";
-import { RowSeparator, TableHeader } from "./index";
+import { TableHeader } from "./index";
 
 // Renders each blockchain section
 export function TokenTables({
@@ -139,7 +139,7 @@ function TokenTable({
           scrollEnabled={false}
           data={tokenAccountsFiltered}
           keyExtractor={(item) => item.address}
-          ItemSeparatorComponent={RowSeparator}
+          ItemSeparatorComponent={ListRowSeparator}
           renderItem={({ item: token }) => {
             return (
               <TokenRow
