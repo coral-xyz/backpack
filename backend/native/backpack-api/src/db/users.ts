@@ -1,3 +1,4 @@
+import type { Blockchain } from "@coral-xyz/common";
 import { Chain } from "@coral-xyz/zeus";
 
 import { HASURA_URL, JWT } from "../config";
@@ -82,7 +83,7 @@ const transformUser = (user: {
     username: user.username,
     // Camelcase public keys for response
     publicKeys: user.public_keys.map((k) => ({
-      blockchain: k.blockchain,
+      blockchain: k.blockchain as Blockchain,
       publicKey: k.public_key,
     })),
     image: `https://avatars.xnfts.dev/v1/${user.username}`,
@@ -94,7 +95,7 @@ const transformUser = (user: {
  */
 export const createUser = async (
   username: string,
-  blockchainPublicKeys: Array<{ blockchain: string; publicKey: string }>,
+  blockchainPublicKeys: Array<{ blockchain: Blockchain; publicKey: string }>,
   inviteCode?: string,
   waitlistId?: string | null
 ) => {
@@ -149,4 +150,65 @@ export async function getUsersByPrefix({
   });
 
   return response.auth_users || [];
+}
+
+/**
+ * Delete a public key/blockchain from a user.
+ */
+
+export async function deleteUserPublicKey({
+  userId,
+  blockchain,
+  publicKey,
+}: {
+  userId: string;
+  blockchain: Blockchain;
+  publicKey: string;
+}) {
+  const response = await chain("mutation")({
+    delete_auth_public_keys: [
+      {
+        where: {
+          user_id: { _eq: userId },
+          blockchain: { _eq: blockchain },
+          public_key: { _eq: publicKey },
+        },
+      },
+      {
+        affected_rows: true,
+      },
+    ],
+  });
+
+  return response.delete_auth_public_keys;
+}
+
+/**
+ * Add a public key/blockchain to a user.
+ */
+export async function createUserPublicKey({
+  userId,
+  blockchain,
+  publicKey,
+}: {
+  userId: string;
+  blockchain: Blockchain;
+  publicKey: string;
+}) {
+  const response = await chain("mutation")({
+    insert_auth_public_keys_one: [
+      {
+        object: {
+          user_id: userId,
+          blockchain: blockchain as string,
+          public_key: publicKey,
+        },
+      },
+      {
+        id: true,
+      },
+    ],
+  });
+
+  return response.insert_auth_public_keys_one;
 }

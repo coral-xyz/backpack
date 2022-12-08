@@ -7,11 +7,14 @@ import { extractUserId, optionallyExtractUserId } from "../../auth/middleware";
 import { setCookie } from "../../auth/util";
 import {
   createUser,
+  createUserPublicKey,
+  deleteUserPublicKey,
   getUser,
   getUserByUsername,
   getUsersByPrefix,
 } from "../../db/users";
 import {
+  BlockchainPublicKey,
   CreateUserWithKeyrings,
   validateEthereumSignature,
   validateSolanaSignature,
@@ -167,5 +170,23 @@ router.get(
     return res.status(404).json({ msg: "user not found" });
   }
 );
+
+/**
+ * Delete a public key/blockchain from the currently authenticated user.
+ */
+router.delete("/publicKeys", extractUserId, async (req, res) => {
+  const { blockchain, publicKey } = BlockchainPublicKey.parse(req.body);
+  await deleteUserPublicKey(req.id, blockchain, publicKey);
+  return res.status(201);
+});
+
+/**
+ * Add a public key/blockchain to the currently authenticated user.
+ */
+router.post("/publicKeys", extractUserId, async (req, res) => {
+  const { blockchain, publicKey } = BlockchainPublicKey.parse(req.body);
+  await createUserPublicKey(req.id, blockchain, publicKey);
+  return res.status(201);
+});
 
 export default router;
