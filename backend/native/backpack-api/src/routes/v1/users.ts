@@ -78,17 +78,28 @@ router.post("/", async (req, res) => {
     }
   }
 
-  const user = await createUser(
-    username,
-    blockchainPublicKeys,
-    inviteCode,
-    waitlistId
-  );
+  let user;
+  try {
+    user = await createUser(
+      username,
+      blockchainPublicKeys,
+      inviteCode,
+      waitlistId
+    );
+  } catch (error) {
+    for (const _error of error.response.errors) {
+      if (_error.extensions.code === "constraint-violation") {
+        return res
+          .status(409)
+          .json({ msg: "Public key is in use on another account" });
+      }
+    }
+  }
 
   if (user) {
     await setCookie(req, res, user.id as string);
   } else {
-    return res.status(500).json({ msg: "Error creating user account " });
+    return res.status(500).json({ msg: "Error creating user account" });
   }
 
   if (process.env.SLACK_WEBHOOK_URL) {
