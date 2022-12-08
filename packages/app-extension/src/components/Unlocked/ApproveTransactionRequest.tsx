@@ -365,6 +365,7 @@ function SendTransactionRequest({
             options?.commitment
           );
           if (resp?.value.err) {
+            onReject();
             setTxState("failed");
           } else {
             onResolve(signature);
