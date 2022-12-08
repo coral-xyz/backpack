@@ -59,7 +59,7 @@ router.post("/", async (req, res) => {
           base58.decode(blockchainPublicKey.publicKey)
         )
       ) {
-        throw new Error("Invalid Solana signature");
+        return res.status(500).json({ msg: "Invalid Solana signature" });
       }
     } else {
       if (
@@ -69,7 +69,7 @@ router.post("/", async (req, res) => {
           blockchainPublicKey.publicKey
         )
       ) {
-        throw new Error("Invalid Ethereum signature");
+        return res.status(500).json({ msg: "Invalid Ethereum signature" });
       }
     }
   }
@@ -84,7 +84,7 @@ router.post("/", async (req, res) => {
   if (user) {
     await setCookie(req, res, user.id as string);
   } else {
-    throw new Error("Error creating user account");
+    return res.status(500).json({ msg: "Error creating user account " });
   }
 
   if (process.env.SLACK_WEBHOOK_URL) {
@@ -137,16 +137,20 @@ router.get(
     // Valid JWT, user is authenticated
     const isAuthenticated = !!user;
 
+    // If no user id was found in the JWT, we are not authenticated but still
+    // try and get the user details by username
     if (!user) {
-      user = await getUserByUsername(username);
+      try {
+        user = await getUserByUsername(username);
+      } catch {
+        return res.status(404).json({ msg: "User not found " });
+      }
     }
 
-    return user
-      ? res.json({
-          ...user,
-          isAuthenticated,
-        })
-      : res.status(404).json({ msg: "User not found" });
+    return res.json({
+      ...user,
+      isAuthenticated,
+    });
   }
 );
 
@@ -164,7 +168,7 @@ router.get(
         // User not found
       }
     }
-    return res.status(404).json({ msg: "user not found" });
+    return res.status(404).json({ msg: "User not found" });
   }
 );
 
