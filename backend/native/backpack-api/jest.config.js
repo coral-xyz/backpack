@@ -2,5 +2,7 @@
 module.exports = {
   preset: "ts-jest",
   testEnvironment: "node",
-  moduleDirectories: ["node_modules"],
+  moduleNameMapper: {
+    "@coral-xyz/zeus(.*)$": "<rootDir>/../zeus/src/$1",
+  },
 };
