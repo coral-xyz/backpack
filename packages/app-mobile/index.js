@@ -59,6 +59,24 @@ function WrappedApp() {
   );
 }
 
+function maybeParseLog({ channel, data }) {
+  try {
+    console.group(channel);
+
+    if (channel === "mobile-logs") {
+      const [name, value] = data;
+      console.log(name);
+      console.log(value);
+    } else if (channel === "mobile-fe-response") {
+      console.log(data.wrappedEvent.channel);
+      console.log(data.wrappedEvent.data);
+    }
+    console.groupEnd();
+  } catch (error) {
+    console.error(channel, error);
+  }
+}
+
 function Background() {
   const setInjectJavaScript = useStore((state) => state.setInjectJavaScript);
   const ref = useRef(null);
@@ -78,6 +96,7 @@ function Background() {
         }}
         onMessage={(event) => {
           const msg = JSON.parse(event.nativeEvent.data);
+          maybeParseLog(msg);
           if (msg.type === BACKGROUND_SERVICE_WORKER_READY) {
             setInjectJavaScript(ref.current.injectJavaScript);
           } else {

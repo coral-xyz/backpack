@@ -14,12 +14,10 @@ import {
   TWITTER_LINK,
   UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
 } from "@coral-xyz/common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
+import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { createStackNavigator } from "@react-navigation/stack";
 import { Linking } from "expo-linking";
-import tw from "twrnc";
 
-import { CustomButton } from "../components/CustomButton";
 import { ErrorMessage } from "../components/ErrorMessage";
 import { PasswordInput } from "../components/PasswordInput";
 
@@ -43,10 +41,6 @@ export default function LockedNavigator() {
       <Stack.Screen name="HelpMenuModal" component={LockedHelpMenuModal} />
     </Stack.Navigator>
   );
-}
-
-function ResetWelcomeScreen({ navigation }) {
-  return <View style={{ flex: 1, backgroundColor: "orange" }} />;
 }
 
 function LockedHelpMenuModal({ navigation }) {
@@ -112,12 +106,14 @@ function LockedHelpMenuModal({ navigation }) {
 
 const LockedScreen = ({ navigation }) => {
   const background = useBackgroundClient();
+  const user = useUser();
+  console.log(user);
   const { control, handleSubmit, formState, setError } = useForm<FormData>();
 
   const { errors, isValid } = formState;
 
   const onSubmit = async ({ password }: FormData) => {
-    Alert.alert("password", password, formState);
+    Alert.alert("password", JSON.stringify({ password, formState }));
     // TODO: fix issue with uncaught error with incorrect password
     try {
       await background.request({

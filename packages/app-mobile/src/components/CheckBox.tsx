@@ -3,8 +3,6 @@ import { StyleSheet, Text, View } from "react-native";
 import { useTheme } from "@hooks";
 import ExpoCheckBox from "expo-checkbox";
 
-import { addTestIdentifier } from "../lib/addTestIdentifier";
-
 export const BaseCheckBoxLabel: React.FC<{
   label: string;
   value: any;
@@ -17,7 +15,6 @@ export const BaseCheckBoxLabel: React.FC<{
         value={value}
         onValueChange={onPress}
         color={theme.custom.colors.fontColor}
-        {...addTestIdentifier(label)}
       />
       {label ? (
         <Text
