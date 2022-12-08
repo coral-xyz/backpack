@@ -47,3 +47,5 @@ process.on("uncaughtException", function (err) {
   console.error(err);
   console.log("Caught exception: " + err);
 });
+
+export default app;
