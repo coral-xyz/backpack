@@ -398,7 +398,7 @@ export class KeyringStore {
 
   private async withUnlockAndPersist<T>(fn: () => Promise<T>) {
     return await this.withUnlock(async () => {
-      const resp = fn();
+      const resp = await fn();
       await this.persist();
       return resp;
     });
