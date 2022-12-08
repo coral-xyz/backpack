@@ -107,7 +107,7 @@ function LockedHelpMenuModal({ navigation }) {
 const LockedScreen = ({ navigation }) => {
   const background = useBackgroundClient();
   const user = useUser();
-  console.log(user);
+
   const { control, handleSubmit, formState, setError } = useForm<FormData>();
 
   const { errors, isValid } = formState;
@@ -118,7 +118,7 @@ const LockedScreen = ({ navigation }) => {
     try {
       await background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-        params: [password],
+        params: [password, user.uuid, user.username],
       });
     } catch (err) {
       console.error(err);
