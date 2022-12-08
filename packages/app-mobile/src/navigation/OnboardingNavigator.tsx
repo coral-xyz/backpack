@@ -19,6 +19,7 @@ import {
   BaseCheckBoxLabel,
   Box,
   CheckBox,
+  Debug,
   FullScreenLoading,
   Header,
   Margin,
@@ -30,7 +31,6 @@ import {
   StyledTextInput,
   SubtextParagraph,
   WelcomeLogoHeader,
-  Debug,
 } from "@components";
 import { ErrorMessage } from "@components/ErrorMessage";
 import {
@@ -62,6 +62,7 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
   UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
+  UI_RPC_METHOD_PREVIEW_PUBKEYS,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
   UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
   XNFT_GG_LINK,
