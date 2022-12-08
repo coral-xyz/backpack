@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { proxyImageUrl } from "@coral-xyz/common";
 import { Skeleton } from "@mui/material";
 
@@ -26,18 +26,32 @@ export function ProxyImage(
   if (!props.src || hasError) {
     return null;
   }
+  const visuallyHidden: React.CSSProperties = {
+    visibility: "hidden",
+    position: "absolute",
+    top: "0px",
+  };
 
   return (
-    <>
-      {loading && !imageCache.includes(props.src) ? (
+    <div
+      style={{
+        position: "relative",
+      }}
+    >
+      {loading && (
         <Skeleton
           height={props.height}
           width={props.width}
           style={{ transform: "none", ...(props.style ?? {}) }}
         />
-      ) : (
-        <img {...props} src={proxyImageUrl(props.src)} />
       )}
-    </>
+      <img
+        {...props}
+        style={{ ...(props.style ?? {}), ...(loading ? visuallyHidden : {}) }}
+        onLoad={() => setLoading(false)}
+        onError={() => setError(true)}
+        src={proxyImageUrl(props.src)}
+      />
+    </div>
   );
 }
