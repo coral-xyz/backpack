@@ -49,7 +49,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
     >
       <Box
         sx={{
-          backgroundColor: theme.custom.colors.backdropColor,
+          backgroundColor: theme.custom.colors.backgroundBackdrop,
           textAlign: "center",
           display: "flex",
           flexDirection: "column",

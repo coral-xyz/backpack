@@ -31,7 +31,7 @@ const useStyles = styles((theme: CustomTheme) => ({
     fontWeight: 500,
     fontSize: "12px",
     lineHeight: "16px",
-    color: theme.custom.colors.interactiveIconsActive,
+    color: theme.custom.colors.fontColor,
   },
   loadingContainer: {
     display: "flex",

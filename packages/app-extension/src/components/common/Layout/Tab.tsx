@@ -37,7 +37,7 @@ const useStyles = styles((theme) => ({
     bottom: 0,
   },
   tab: {
-    color: theme.custom.colors.tabIconBackground,
+    // color: theme.custom.colors.tabIconBackground,
     height: `${TAB_HEIGHT}px`,
     "&:hover": {
       "& svg": {
