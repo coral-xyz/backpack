@@ -7,7 +7,7 @@ import {
   Text,
   View,
 } from "react-native";
-import { Margin, ProxyImage } from "@components";
+import { ListRowSeparator,Margin, ProxyImage } from "@components";
 import type { Blockchain } from "@coral-xyz/common";
 import { formatUSD, walletAddressDisplay } from "@coral-xyz/common";
 import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
@@ -23,7 +23,7 @@ import { useTheme } from "@hooks";
 import * as Clipboard from "expo-clipboard";
 
 import type { Token } from "./index";
-import { RowSeparator, TableHeader } from "./index";
+import { TableHeader } from "./index";
 
 // Renders each blockchain section
 export function TokenTables({
@@ -46,7 +46,7 @@ export function TokenTables({
     <View style={{ padding: 8, flex: 1 }}>
       {filteredBlockchains.map((blockchain: Blockchain) => {
         return (
-          <Margin key={blockchain} bottom={8}>
+          <Margin key={blockchain} bottom={12}>
             <TokenTable
               blockchain={blockchain}
               onPressRow={onPressRow}
@@ -76,6 +76,7 @@ function TokenTable({
   customFilter?: (token: Token) => boolean;
   displayWalletHeader?: boolean;
 }): JSX.Element {
+  const theme = useTheme();
   const [search, setSearch] = useState(searchFilter);
   const [expanded, setExpanded] = React.useState(true);
   const onPressExpand = () => {
@@ -112,7 +113,13 @@ function TokenTable({
   }, [searchFilter]);
 
   return (
-    <View style={{ backgroundColor: "transparent", borderRadius: 8 }}>
+    <View
+      style={{
+        borderColor: theme.custom.colors.borderFull,
+        backgroundColor: theme.custom.colors.nav,
+        borderRadius: 12,
+      }}
+    >
       <TableHeader
         blockchain={blockchain}
         onPress={onPressExpand}
@@ -132,7 +139,7 @@ function TokenTable({
           scrollEnabled={false}
           data={tokenAccountsFiltered}
           keyExtractor={(item) => item.address}
-          ItemSeparatorComponent={RowSeparator}
+          ItemSeparatorComponent={ListRowSeparator}
           renderItem={({ item: token }) => {
             return (
               <TokenRow
