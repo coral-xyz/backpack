@@ -3,6 +3,7 @@ import { getCreateMessage } from "@coral-xyz/common";
 import { ethers } from "ethers";
 import type { Request, Response } from "express";
 import express from "express";
+import jwt from "jsonwebtoken";
 
 import { extractUserId, optionallyExtractUserId } from "../../auth/middleware";
 import { setCookie } from "../../auth/util";
@@ -14,6 +15,7 @@ import {
   getUserByUsername,
   getUsersByPrefix,
 } from "../../db/users";
+import { getOrcreateXnftSecret } from "../../db/xnftSecrets";
 import {
   BlockchainPublicKey,
   CreateUserWithKeyrings,
@@ -43,6 +45,16 @@ router.get("/", extractUserId, async (req, res) => {
     .catch(() => {
       res.status(511).json({ msg: "Error while fetching users" });
     });
+});
+
+router.get("/jwt/xnft", extractUserId, async (req, res) => {
+  // @ts-ignore
+  const uuid = req.id as string;
+  // @ts-ignore
+  const xnftAddress: string = req.query.xnftAddress;
+  const secret = await getOrcreateXnftSecret(xnftAddress);
+  const signedJwt = await jwt.sign({ uuid: uuid }, secret);
+  return res.json({ jwt: signedJwt });
 });
 
 /**
