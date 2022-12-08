@@ -29,12 +29,13 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
   const background = useBackgroundClient();
   const user = useUser();
   const [loading, setLoading] = useState(true);
-  const [authSigner, setAuthSigner] = useState<{
+  const [authData, setAuthData] = useState<{
     publicKey: string;
     blockchain: Blockchain;
     hardware: boolean;
+    message: string;
   } | null>(null);
-  const [authData, setAuthData] = useState<{
+  const [signedAuthData, setSignedAuthData] = useState<{
     blockchain: Blockchain;
     publicKey: string;
     message: string;
@@ -58,14 +59,21 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
         // Already authenticated or not using JWTs
         setLoading(false);
       } else {
+        setLoading(true);
         const result = await checkAuthentication();
         if (result) {
           if (result.isAuthenticated) {
             setLoading(false);
           } else {
-            setAuthSigner(
-              await getAuthSigner(result.publicKeys.map((p) => p.publicKey))
+            const authData = await getAuthSigner(
+              result.publicKeys.map((p) => p.publicKey)
             );
+            if (authData) {
+              setAuthData({
+                ...authData,
+                message: getAuthMessage(user.uuid),
+              });
+            }
           }
         }
       }
@@ -78,23 +86,22 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
    */
   useEffect(() => {
     (async () => {
-      if (authSigner) {
-        const authMessage = getAuthMessage(user.uuid);
-        if (!authSigner.hardware) {
+      if (authData) {
+        if (!authData.hardware) {
           // Auth signer is not a hardware wallet, sign transparent
           const signature = await background.request({
             method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
             params: [
-              authSigner.blockchain,
-              base58.encode(Buffer.from(authMessage, "utf-8")),
-              authSigner.publicKey,
+              authData.blockchain,
+              base58.encode(Buffer.from(authData.message, "utf-8")),
+              authData.publicKey,
             ],
           });
-          setAuthData({
-            blockchain: authSigner.blockchain,
-            publicKey: authSigner.publicKey,
+          setSignedAuthData({
+            blockchain: authData.blockchain,
+            publicKey: authData.publicKey,
+            message: authData.message,
             signature,
-            message: authMessage,
           });
         } else {
           // Auth signer is a hardware wallet, pop up a drawer to guide through
@@ -103,27 +110,27 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
         }
       }
     })();
-  }, [authSigner, user]);
+  }, [authData]);
 
   /**
    * When an auth signature is created, authenticate with it.
    */
   useEffect(() => {
     (async () => {
-      if (authData) {
-        await authenticate(authData);
+      if (signedAuthData) {
+        await authenticate(signedAuthData);
         setLoading(false);
         setOpenDrawer(false);
       }
     })();
-  }, [authData]);
+  }, [signedAuthData]);
 
   const authMessage = getAuthMessage(user.uuid);
 
   return (
     <>
       {loading ? <Loading /> : children}
-      {authSigner && (
+      {authData && (
         <WithDrawer
           openDrawer={openDrawer}
           setOpenDrawer={setOpenDrawer}
@@ -134,13 +141,13 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
           }}
         >
           <HardwareAuthSigner
-            blockchain={authSigner!.blockchain}
-            publicKey={authSigner!.publicKey}
+            blockchain={authData!.blockchain}
+            publicKey={authData!.publicKey}
             authMessage={authMessage}
             onSignature={(signature) => {
-              setAuthData({
-                blockchain: authSigner!.blockchain,
-                publicKey: authSigner!.publicKey,
+              setSignedAuthData({
+                blockchain: authData!.blockchain,
+                publicKey: authData!.publicKey,
                 message: authMessage,
                 signature,
               });
