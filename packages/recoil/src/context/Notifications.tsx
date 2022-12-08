@@ -43,7 +43,6 @@ import type { Commitment } from "@solana/web3.js";
 import { useSetRecoilState } from "recoil";
 
 import * as atoms from "../atoms";
-import { featureGates } from "../atoms";
 import { allPlugins } from "../hooks";
 import type { WalletPublicKeys } from "../types";
 import {
@@ -320,7 +319,8 @@ export function NotificationsProvider(props: any) {
       const { blockchain, deletedPublicKey } = notif.data;
       // Remove the deleted key from the key list.
       setWalletData((current) => {
-        const publicKeys = current.publicKeys;
+        const publicKeys = { ...current.publicKeys };
+
         publicKeys[blockchain] = {
           hdPublicKeys: [
             ...publicKeys[blockchain].hdPublicKeys.filter(
@@ -338,9 +338,11 @@ export function NotificationsProvider(props: any) {
             ),
           ],
         };
-        const activePublicKeys = current.activePublicKeys.filter(
+
+        const activePublicKeys = [...current.activePublicKeys].filter(
           (key) => key !== deletedPublicKey
         );
+
         return {
           activePublicKeys,
           publicKeys,
@@ -368,7 +370,7 @@ export function NotificationsProvider(props: any) {
     const handleKeyringDerivedWallet = (notif: Notification) => {
       const { blockchain, publicKey, name } = notif.data;
       setWalletData((current: any) => {
-        const publicKeys = current.publicKeys;
+        const publicKeys = { ...current.publicKeys };
 
         // Deriving a new wallet can result in the initialisation of this
         // keyring so no guarantee the keyrings exist
@@ -394,7 +396,9 @@ export function NotificationsProvider(props: any) {
               : []),
           ],
         };
-        const activePublicKeys = current.activePublicKeys.concat([publicKey]);
+
+        const activePublicKeys = [...current.activePublicKeys, publicKey];
+
         return {
           activePublicKeys,
           publicKeys,
@@ -405,7 +409,7 @@ export function NotificationsProvider(props: any) {
     const handleKeyringImportedSecretKey = (notif: Notification) => {
       const { blockchain, publicKey, name } = notif.data;
       setWalletData((current: any) => {
-        const publicKeys = current.publicKeys;
+        const publicKeys = { ...current.publicKeys };
 
         // Although not possible to initialise a new keyring by importing
         // a secret key, it may be possible in the future so this is handled
@@ -432,7 +436,9 @@ export function NotificationsProvider(props: any) {
               : []),
           ],
         };
-        const activePublicKeys = current.activePublicKeys.concat([publicKey]);
+
+        const activePublicKeys = [...current.activePublicKeys, publicKey];
+
         return {
           activePublicKeys,
           publicKeys,
