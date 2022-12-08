@@ -24,111 +24,6 @@ import { useTheme } from "@hooks";
 import type { Token } from "./index";
 import { RowSeparator, TableHeader } from "./index";
 
-export const balances = {
-  enabledBlockchains: ["ethereum", "solana"],
-  filteredBlockchains: ["ethereum", "solana"],
-  "solana.tokenAccountsFiltered": [
-    {
-      name: "Solana",
-      decimals: 9,
-      nativeBalance: {
-        type: "BigNumber",
-        hex: "0x076e32b5f7",
-      },
-      displayBalance: "31.913588215",
-      ticker: "SOL",
-      logo: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png",
-      address: "GqRzxLfxUmuQPh48K3cq7M6uy8bScJV9qVmXcfbmT5jD",
-      mint: "11111111111111111111111111111111",
-      priceMint: "11111111111111111111111111111111",
-      usdBalance: 406.89824974125,
-      recentPercentChange: -0.57,
-      recentUsdBalanceChange: -2.317763597333453,
-      priceData: {
-        usd: 12.75,
-        usd_market_cap: 4624757141.387485,
-        usd_24h_vol: 450952009.3447383,
-        usd_24h_change: -0.5696174900745707,
-        last_updated_at: 1668978758,
-      },
-    },
-    {
-      name: "USD Coin",
-      decimals: 6,
-      nativeBalance: {
-        type: "BigNumber",
-        hex: "0xb0990f",
-      },
-      displayBalance: "11.573519",
-      ticker: "USDC",
-      logo: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png",
-      address: "Eu6DQKRJoQJKBixj72oaxbnEN5YnRS5ab82uYAU9YeLk",
-      mint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-      priceMint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-      usdBalance: 11.596666037999999,
-      recentPercentChange: -0.03,
-      recentUsdBalanceChange: -0.0035714359978840093,
-      priceData: {
-        usd: 1.002,
-        usd_market_cap: 44534865080.03753,
-        usd_24h_vol: 1846118975.5030138,
-        usd_24h_change: -0.030797092769430382,
-        last_updated_at: 1668978755,
-      },
-    },
-  ],
-  "ethereum.tokenAccountsFiltered": [
-    {
-      name: "Ethereum",
-      decimals: 9,
-      nativeBalance: {
-        type: "BigNumber",
-        hex: "0x076e32b5f7",
-      },
-      displayBalance: "31.913588215",
-      ticker: "ETH",
-      logo: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png",
-      address: "GqRzxLfxUmuQPh48K3cq7M6uy8bScJV9qVmXcfbmT5jD",
-      mint: "11111111111111111111111111111111",
-      priceMint: "11111111111111111111111111111111",
-      usdBalance: 1200.89824974125,
-      recentPercentChange: -0.57,
-      recentUsdBalanceChange: -2.317763597333453,
-      priceData: {
-        usd: 12.75,
-        usd_market_cap: 4624757141.387485,
-        usd_24h_vol: 450952009.3447383,
-        usd_24h_change: -0.5696174900745707,
-        last_updated_at: 1668978758,
-      },
-    },
-    {
-      name: "USD Coin",
-      decimals: 6,
-      nativeBalance: {
-        type: "BigNumber",
-        hex: "0xb0990f",
-      },
-      displayBalance: "11.573519",
-      ticker: "USDC",
-      logo: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png",
-      address: "Eu6DQKRJoQJKBixj72oaxbnEN5YnRS5ab82uYAU9YeLk",
-      mint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-      priceMint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-      usdBalance: 11.596666037999999,
-      recentPercentChange: -0.03,
-      recentUsdBalanceChange: -0.0035714359978840093,
-      priceData: {
-        usd: 1.002,
-        usd_market_cap: 44534865080.03753,
-        usd_24h_vol: 1846118975.5030138,
-        usd_24h_change: -0.030797092769430382,
-        last_updated_at: 1668978755,
-      },
-    },
-  ],
-};
-
 export function TokenTables({
   blockchains,
   onPressRow,
@@ -183,10 +78,6 @@ function BalanceTable({
     setExpanded(!expanded);
   };
 
-  // LOG  {"blockchain": "ethereum", "blockchainLogo": 6, "title": "Ethereum"}
-  // LOG  {"blockchain": "solana", "blockchainLogo": 5, "title": "Solana"}
-  // const title = toTitleCase(blockchain);
-  // const blockchainLogo = useBlockchainLogo(blockchain);
   const connectionUrl = useBlockchainConnectionUrl(blockchain);
   const activeWallets = useActiveWallets();
   const wallet = activeWallets.filter((w) => w.blockchain === blockchain)[0];
@@ -202,7 +93,7 @@ function BalanceTable({
   const [search, setSearch] = useState(searchFilter);
 
   const searchLower = search.toLowerCase();
-  const tokenAccountsFiltered2 = _tokenAccounts
+  const tokenAccountsFiltered = _tokenAccounts
     .filter(
       (t: any) =>
         t.name &&
@@ -210,8 +101,6 @@ function BalanceTable({
           t.ticker.toLowerCase().startsWith(searchLower))
     )
     .filter(customFilter);
-
-  const tokenAccountsFiltered = balances["solana.tokenAccountsFiltered"];
 
   useEffect(() => {
     setSearch(searchFilter);
