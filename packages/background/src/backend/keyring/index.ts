@@ -109,15 +109,19 @@ export class KeyringStore {
     uuid: string,
     jwt: string
   ) {
+    // Store unlocked keyring in memory.
     this.users.set(uuid, await UserKeyring.init(username, keyringInit, uuid));
     this.activeUserUuid = uuid;
 
+    // Per user preferences.
     await store.setWalletDataForUser(
       uuid,
       defaultPreferences(
         keyringInit.blockchainKeyrings.map((k) => k.blockchain)
       )
     );
+
+    // Persist active user to disk.
     await store.setActiveUser({
       username,
       uuid,
@@ -157,6 +161,30 @@ export class KeyringStore {
   ///////////////////////////////////////////////////////////////////////////////
   // Actions.
   ///////////////////////////////////////////////////////////////////////////////
+
+  public async removeUser(uuid: string) {
+    return this.withUnlockAndPersist(async () => {
+      const user = this.users.get(uuid);
+      if (!user) {
+        throw new Error(`User not found: ${uuid}`);
+      }
+      this.users.delete(uuid);
+      await store.setWalletDataForUser(uuid, undefined);
+
+      //
+      // If the active user is being removed, then auto switch it.
+      //
+      if (this.activeUserUuid === uuid) {
+        const userData = await store.getUserData();
+        const users = userData.users.filter((user) => user.uuid !== uuid);
+        await store.setUserData({
+          activeUser: users[0],
+          users,
+        });
+        this.activeUserUuid = users[0].uuid;
+      }
+    });
+  }
 
   public async tryUnlock(password: string, uuid: string) {
     return this.withLock(async () => {

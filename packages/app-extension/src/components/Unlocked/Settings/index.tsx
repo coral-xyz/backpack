@@ -58,8 +58,7 @@ import {
   NavStackScreen,
   useNavStack,
 } from "../../common/Layout/NavStack";
-import { Reset } from "../../Locked/Reset";
-import { ResetWarning } from "../../Locked/Reset/ResetWarning";
+import { Logout, ResetWarning } from "../../Locked/Reset/ResetWarning";
 import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
 import { NotificationButton } from "../Balances/Notifications";
 import { Contacts } from "../Messages/Contacts";
@@ -300,8 +299,8 @@ function AvatarButton() {
               component={(props: any) => <ResetWarning {...props} />}
             />
             <NavStackScreen
-              name={"reset"}
-              component={(props: any) => <Reset {...props} />}
+              name={"logout"}
+              component={(props: any) => <Logout {...props} />}
             />
             <NavStackScreen
               name={"xnfts"}

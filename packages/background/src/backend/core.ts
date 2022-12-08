@@ -32,6 +32,7 @@ import {
   NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED,
   NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
+  NOTIFICATION_KEYRING_STORE_REMOVED_USER,
   NOTIFICATION_KEYRING_STORE_RESET,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_KEYRING_STORE_USERNAME_ACCOUNT_CREATED,
@@ -630,6 +631,38 @@ export class Backend {
     });
 
     // Done.
+    return SUCCESS_RESPONSE;
+  }
+
+  async userLogout(uuid: string): Promise<string> {
+    //
+    // If we're logging out the last user, reset the entire app.
+    //
+    const data = await store.getUserData();
+    if (data.users.length === 1) {
+      this.keyringReset();
+      return SUCCESS_RESPONSE;
+    }
+
+    //
+    // If we have more users available, just remove the user.
+    //
+    const newActiveUser = await this.keyringStore.removeUser(uuid);
+
+    //
+    // Push out the event for the UI to update.
+    //
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_KEYRING_STORE_REMOVED_USER,
+      data: {
+        removedUserUuid: uuid,
+        newActiveUser,
+      },
+    });
+
+    //
+    // Done.
+    //
     return SUCCESS_RESPONSE;
   }
 
