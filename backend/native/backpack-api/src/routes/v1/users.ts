@@ -1,3 +1,4 @@
+import type { Blockchain } from "@coral-xyz/common";
 import { getCreateMessage } from "@coral-xyz/common";
 import { ethers } from "ethers";
 import type { Request, Response } from "express";
@@ -7,11 +8,14 @@ import { extractUserId, optionallyExtractUserId } from "../../auth/middleware";
 import { setCookie } from "../../auth/util";
 import {
   createUser,
+  createUserPublicKey,
+  deleteUserPublicKey,
   getUser,
   getUserByUsername,
   getUsersByPrefix,
 } from "../../db/users";
 import {
+  BlockchainPublicKey,
   CreateUserWithKeyrings,
   validateEthereumSignature,
   validateSolanaSignature,
@@ -169,6 +173,40 @@ router.get(
       }
     }
     return res.status(404).json({ msg: "User not found" });
+  }
+);
+
+/**
+ * Delete a public key/blockchain from the currently authenticated user.
+ */
+router.delete(
+  "/publicKeys",
+  extractUserId,
+  async (req: Request, res: Response) => {
+    const { blockchain, publicKey } = BlockchainPublicKey.parse(req.body);
+    await deleteUserPublicKey({
+      userId: req.id!,
+      blockchain: blockchain as Blockchain,
+      publicKey,
+    });
+    return res.status(204).end();
+  }
+);
+
+/**
+ * Add a public key/blockchain to the currently authenticated user.
+ */
+router.post(
+  "/publicKeys",
+  extractUserId,
+  async (req: Request, res: Response) => {
+    const { blockchain, publicKey } = BlockchainPublicKey.parse(req.body);
+    await createUserPublicKey({
+      userId: req.id!,
+      blockchain: blockchain as Blockchain,
+      publicKey,
+    });
+    return res.status(201).end();
   }
 );
 

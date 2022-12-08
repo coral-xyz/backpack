@@ -24,24 +24,10 @@ export const BaseCreateUser = z.object({
 });
 
 //
-// User creation, with multiple blockchains and public keys
+// Public key / blockchain
 //
 
-export const CreateEthereumKeyring = z.object({
-  publicKey: z.string().refine((str) => {
-    try {
-      ethers.utils.getAddress(str);
-      return true;
-    } catch {
-      // Pass
-    }
-    return false;
-  }, "must be a valid Ethereum public key"),
-  blockchain: z.literal("ethereum"),
-  signature: z.string(),
-});
-
-export const CreateSolanaKeyring = z.object({
+export const SolanaPublicKey = z.object({
   publicKey: z.string().refine((str) => {
     try {
       new PublicKey(str);
@@ -52,6 +38,35 @@ export const CreateSolanaKeyring = z.object({
     return false;
   }, "must be a valid Solana public key"),
   blockchain: z.literal("solana"),
+});
+
+export const EthereumPublicKey = z.object({
+  publicKey: z.string().refine((str) => {
+    try {
+      ethers.utils.getAddress(str);
+      return true;
+    } catch {
+      // Pass
+    }
+    return false;
+  }, "must be a valid Ethereum public key"),
+  blockchain: z.literal("ethereum"),
+});
+
+export const BlockchainPublicKey = z.discriminatedUnion("blockchain", [
+  SolanaPublicKey,
+  EthereumPublicKey,
+]);
+
+//
+// User creation
+//
+
+export const CreateEthereumKeyring = EthereumPublicKey.extend({
+  signature: z.string(),
+});
+
+export const CreateSolanaKeyring = SolanaPublicKey.extend({
   signature: z.string(),
 });
 
@@ -66,7 +81,6 @@ export const CreateUserWithKeyrings = BaseCreateUser.extend({
 
 //
 // Signature validation for blockchains
-//
 //
 
 /**
