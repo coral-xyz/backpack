@@ -101,10 +101,10 @@ function TransferButton({
           style={{
             width: 50,
             height: 50,
-            borderRadius: 100,
-            backgroundColor: theme.custom.colors.backgroundColor,
-            borderColor: theme.custom.colors.borderColor,
-            borderWidth: 1,
+            borderRadius: 25,
+            borderColor: theme.custom.colors.borderFull,
+            backgroundColor: theme.custom.colors.nav,
+            borderWidth: 2,
             alignItems: "center",
             justifyContent: "center",
           }}

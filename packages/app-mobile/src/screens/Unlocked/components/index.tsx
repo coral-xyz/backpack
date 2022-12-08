@@ -55,7 +55,7 @@ export function TableHeader({
       </LeftSide>
       <MaterialIcons
         name={visible ? "keyboard-arrow-up" : "keyboard-arrow-down"}
-        size={24}
+        size={18}
         color={theme.custom.colors.fontColor}
       />
     </Pressable>
@@ -80,7 +80,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
   },
   logoContainer: {
     width: 12,
