@@ -51,22 +51,19 @@ export function Router() {
 }
 
 function _Router() {
-  const classes = useStyles();
-
-  //
-  // Expanded view: first time onboarding flow.
-  //
   const needsOnboarding =
     useKeyringStoreState() === KeyringStoreStateEnum.NeedsOnboarding;
 
-  if (needsOnboarding) {
-    openOnboarding();
-    return <></>;
-  }
+  useEffect(() => {
+    // if the user needs onboarding then open the expanded view
+    if (needsOnboarding) openOnboarding();
+  }, [needsOnboarding]);
 
-  //
-  // Popup view: main application.
-  //
+  return needsOnboarding ? null : <PopupView />;
+}
+
+function PopupView() {
+  const classes = useStyles();
   return (
     <div className={classes.appContainer}>
       <PopupRouter />
