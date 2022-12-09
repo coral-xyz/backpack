@@ -27,6 +27,7 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { IconButton, Popover, Typography } from "@mui/material";
 import { PublicKey } from "@solana/web3.js";
 import { BigNumber } from "ethers";
+import { relative } from "path";
 
 import { NegativeButton, PrimaryButton, SecondaryButton } from "../../common";
 import { ApproveTransactionDrawer } from "../../common/ApproveTransactionDrawer";
@@ -92,6 +93,7 @@ function Image({ nft }: { nft: any }) {
         width: "100%",
         minHeight: "343px",
         display: "flex",
+        position: "relative",
         alignItems: "center",
       }}
     >
@@ -100,8 +102,11 @@ function Image({ nft }: { nft: any }) {
           width: "100%",
           borderRadius: "8px",
         }}
+        loadingStyles={{
+          minHeight: "343px",
+        }}
         src={nft.imageUrl}
-        onError={(event: any) => (event.currentTarget.style.display = "none")}
+        removeOnError={true}
       />
     </div>
   );

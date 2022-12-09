@@ -10,25 +10,18 @@ import {
   useWalletPublicKeys,
 } from "@coral-xyz/recoil";
 import { styled, useCustomTheme } from "@coral-xyz/themes";
-import { ExpandLess, ExpandMore, Image } from "@mui/icons-material";
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  CardHeader,
-  Grid,
-  Skeleton,
-} from "@mui/material";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
+import { CardHeader, Grid } from "@mui/material";
 import Collapse from "@mui/material/Collapse";
 import Typography from "@mui/material/Typography";
 import { useRecoilValueLoadable } from "recoil";
 
+import { PrimaryButton, SecondaryButton } from "../../../common";
 import { Scrollbar } from "../../../common/Layout/Scrollbar";
 import { ProxyImage } from "../../../common/ProxyImage";
-import { BalancesTable, BalancesTableHead } from "../../Balances";
-import { NftTable } from "../../Nfts";
 
 export function UpdateProfilePicture() {
+  const [newAvatarUrl, setNewAvatarUrl] = useState<string | null>(null);
   const avatarUrl = useAvatarUrl(64);
   const { username } = useUser();
   // const wallets = useActiveWallets();
@@ -37,29 +30,62 @@ export function UpdateProfilePicture() {
   console.log("wallets", wallets, collections);
   return (
     <Container>
-      <div style={{ marginTop: "16px", marginBottom: "16px" }}>
-        <AvatarWrapper>
-          <Avatar src={avatarUrl} />
-        </AvatarWrapper>
-        <Typography style={{ textAlign: "center" }}>
-          {`@${username}`}
-        </Typography>
-      </div>
+      <AvatarWrapper>
+        <Avatar src={newAvatarUrl || avatarUrl} />
+      </AvatarWrapper>
+      <Typography style={{ textAlign: "center" }}>{`@${username}`}</Typography>
       <FakeDrawer>
-        <Scrollbar style={{ height: "100%" }}>
-          {collections.state === "hasValue" &&
-            Object.entries(collections.contents).map(
-              ([blockchain, collection]) => (
-                <BlockchainNFTs
-                  key={blockchain}
-                  blockchain={blockchain as Blockchain}
-                  collections={collection as NftCollection[]}
-                  isLoading={collections.state !== "hasValue"}
-                />
-              )
-            )}
+        <Scrollbar
+          style={{
+            height: "100%",
+          }}
+        >
+          <div
+            style={{
+              paddingBottom: "80px",
+            }}
+          >
+            {collections.state === "hasValue" &&
+              Object.entries(collections.contents).map(
+                ([blockchain, collection]) => (
+                  <BlockchainNFTs
+                    key={blockchain}
+                    blockchain={blockchain as Blockchain}
+                    collections={collection as NftCollection[]}
+                    isLoading={collections.state !== "hasValue"}
+                    newAvatarUrl={newAvatarUrl}
+                    setNewAvatarUrl={setNewAvatarUrl}
+                  />
+                )
+              )}
+          </div>
         </Scrollbar>
       </FakeDrawer>
+      <ButtonsOverlay
+        style={{
+          maxHeight: newAvatarUrl ? "100px" : "0px",
+        }}
+      >
+        <SecondaryButton
+          label={"Cancel"}
+          onClick={() => {
+            setNewAvatarUrl(null);
+          }}
+          style={{
+            margin: "16px",
+          }}
+        />
+        <PrimaryButton
+          label={"Update"}
+          onClick={() => {
+            setNewAvatarUrl(null);
+          }}
+          style={{
+            margin: "16px",
+            marginLeft: "0px",
+          }}
+        />
+      </ButtonsOverlay>
     </Container>
   );
 }
@@ -68,10 +94,14 @@ function BlockchainNFTs({
   blockchain,
   collections,
   isLoading,
+  newAvatarUrl,
+  setNewAvatarUrl,
 }: {
   blockchain: Blockchain;
   collections: NftCollection[];
   isLoading: boolean;
+  newAvatarUrl: string | null;
+  setNewAvatarUrl: (newAvatarUrl: string) => void;
 }) {
   const [showContent, setShowContent] = useState(true);
 
@@ -100,16 +130,22 @@ function BlockchainNFTs({
         >
           {nfts.map((nft, index) => {
             return (
-              <Grid item xs={3} sm={3} md={3} lg={3} key={index}>
-                <ProxyImage
-                  style={{
-                    width: "72px",
-                    height: "72px",
-                    borderRadius: "40px",
-                  }}
-                  src={nft.imageUrl}
-                />
-              </Grid>
+              <StyledProxyImage
+                key={index}
+                onClick={() => {
+                  setNewAvatarUrl(nft.imageUrl);
+                }}
+                style={{
+                  width: "72px",
+                  height: "72px",
+                  borderRadius: "40px",
+                  margin: "16px 0px 0px 16px",
+                  border:
+                    newAvatarUrl === nft.imageUrl ? "3px solid black" : "",
+                }}
+                src={nft.imageUrl}
+                removeOnError={true}
+              />
             );
           })}
         </Grid>
@@ -209,6 +245,12 @@ const Container = styled("div")(({ theme }) => ({
   flexDirection: "column",
   height: "100%",
 }));
+const StyledProxyImage = styled(ProxyImage)(({ theme }) => ({
+  "&:hover": {
+    border: `3px solid ${theme.custom.colors.avatarIconBackground}`,
+    cursor: "pointer",
+  },
+}));
 
 const FakeDrawer = styled("div")(({ theme }) => ({
   position: "relative",
@@ -222,9 +264,20 @@ const FakeDrawer = styled("div")(({ theme }) => ({
   paddingTop: "0px",
   borderTopLeftRadius: "12px",
   borderTopRightRadius: "12px",
+  marginTop: "16px",
+  zIndex: "0",
+}));
+const ButtonsOverlay = styled("div")(({ theme }) => ({
+  position: "absolute",
+  bottom: "0px",
+  display: "flex",
+  zIndex: "1",
+  background: "rgba(255,255,255, 0.8)",
+  alignItems: "stretch",
+  width: "100%",
 }));
 
-const Avatar = styled("img")(({ theme }) => ({
+const Avatar = styled(ProxyImage)(({ theme }) => ({
   borderRadius: "40px",
   width: "64px",
   height: "64px",
@@ -238,10 +291,10 @@ const AvatarWrapper = styled("div")(({ theme }) => ({
   boxSizing: "border-box",
   position: "relative",
   borderRadius: "40px",
-  border: `2px dashed ${theme.custom.colors.avatarIconBackground}`,
+  border: `3px dashed ${theme.custom.colors.avatarIconBackground}`,
   padding: "6px",
-  width: "80px",
-  height: "80px",
+  width: "82px",
+  height: "82px",
   marginLeft: "auto",
   marginRight: "auto",
   overflow: "hidden",

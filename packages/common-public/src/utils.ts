@@ -58,6 +58,9 @@ export function externalResourceUri(uri: string): string {
   if (uri && uri.startsWith("ipfs://")) {
     return uri.replace("ipfs://", "https://ipfs.io/ipfs/");
   }
+  if (uri && uri.startsWith("ar://")) {
+    return uri.replace("ar://", "https://arweave.net/");
+  }
   return uri;
 }
 
