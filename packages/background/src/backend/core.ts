@@ -71,6 +71,7 @@ import * as store from "./store";
 import {
   DEFAULT_DARK_MODE,
   getWalletDataForUser,
+  setUser,
   setWalletDataForUser,
 } from "./store";
 
@@ -549,9 +550,10 @@ export class Backend {
     username: string,
     password: string,
     keyringInit: KeyringInit,
-    uuid: string
+    uuid: string,
+    jwt: string
   ): Promise<string> {
-    await this.keyringStore.init(username, password, keyringInit, uuid);
+    await this.keyringStore.init(username, password, keyringInit, uuid, jwt);
 
     // Notify all listeners.
     this.events.emit(BACKEND_EVENT, {
@@ -571,9 +573,15 @@ export class Backend {
   async usernameAccountCreate(
     username: string,
     keyringInit: KeyringInit,
-    uuid: string
+    uuid: string,
+    jwt: string
   ): Promise<string> {
-    await this.keyringStore.usernameKeyringCreate(username, keyringInit, uuid);
+    await this.keyringStore.usernameKeyringCreate(
+      username,
+      keyringInit,
+      uuid,
+      jwt
+    );
     const walletData = await this.keyringStoreReadAllPubkeyData();
     const preferences = await this.preferencesRead(uuid);
     const xnftPreferences = await this.getXnftPreferences();
@@ -584,6 +592,7 @@ export class Backend {
         user: {
           username,
           uuid,
+          jwt,
         },
         walletData,
         preferences,
@@ -841,8 +850,13 @@ export class Backend {
       const user = await store.getActiveUser();
       return user;
     } catch (err) {
-      return { username: "", uuid: "" };
+      return { username: "", uuid: "", jwt: "" };
     }
+  }
+
+  async userJwtUpdate(uuid: string, jwt: string) {
+    await setUser(uuid, { jwt });
+    return SUCCESS_RESPONSE;
   }
 
   async allUsersRead(): Promise<Array<User>> {

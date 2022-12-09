@@ -80,10 +80,9 @@ export const optionallyExtractUserId = (allowQueryString: boolean) => {
       } catch {
         // Pass
       }
-    }
-
-    // Couldn't get JWT from cookie, try query string
-    if (!jwt && req.query.jwt && allowQueryString) {
+    } else if (req.headers["Backpack-JWT"]) {
+      jwt = req.headers["Backpack-JWT"] as string;
+    } else if (req.query.jwt && allowQueryString) {
       jwt = req.query.jwt as string;
     }
 
@@ -91,7 +90,7 @@ export const optionallyExtractUserId = (allowQueryString: boolean) => {
       try {
         const payloadRes = await validateJwt(jwt);
         if (payloadRes.payload.sub) {
-          // Extend cookie
+          // Extend cookie or set it if not set
           setCookie(req, res, payloadRes.payload.sub);
           // Set id on request
           req.id = payloadRes.payload.sub;

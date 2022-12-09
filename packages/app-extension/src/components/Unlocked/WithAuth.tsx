@@ -5,6 +5,7 @@ import {
   BACKPACK_FEATURE_USERNAMES,
   getAuthMessage,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
+  UI_RPC_METHOD_USER_JWT_UPDATE,
 } from "@coral-xyz/common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
@@ -34,13 +35,9 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
     blockchain: Blockchain;
     hardware: boolean;
     message: string;
+    userId: string;
   } | null>(null);
-  const [signedAuthData, setSignedAuthData] = useState<{
-    blockchain: Blockchain;
-    publicKey: string;
-    message: string;
-    signature: string;
-  } | null>(null);
+  const [authSignature, setAuthSignature] = useState<string | null>(null);
   const [openDrawer, setOpenDrawer] = useState(false);
 
   const jwtEnabled = !!(
@@ -59,8 +56,9 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
         // Already authenticated or not using JWTs
         setLoading(false);
       } else {
+        setAuthSignature(null);
         setLoading(true);
-        const result = await checkAuthentication();
+        const result = await checkAuthentication(user.username, user.jwt);
         if (result) {
           if (result.isAuthenticated) {
             setLoading(false);
@@ -72,6 +70,7 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
               setAuthData({
                 ...authData,
                 message: getAuthMessage(user.uuid),
+                userId: user.uuid,
               });
             }
           }
@@ -97,12 +96,7 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
               authData.publicKey,
             ],
           });
-          setSignedAuthData({
-            blockchain: authData.blockchain,
-            publicKey: authData.publicKey,
-            message: authData.message,
-            signature,
-          });
+          setAuthSignature(signature);
         } else {
           // Auth signer is a hardware wallet, pop up a drawer to guide through
           // flow
@@ -117,15 +111,20 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
    */
   useEffect(() => {
     (async () => {
-      if (signedAuthData) {
-        await authenticate(signedAuthData);
+      if (authData && authSignature) {
+        const { id, jwt } = await authenticate({
+          ...authData,
+          signature: authSignature,
+        });
+        await background.request({
+          method: UI_RPC_METHOD_USER_JWT_UPDATE,
+          params: [id, jwt],
+        });
         setLoading(false);
         setOpenDrawer(false);
       }
     })();
-  }, [signedAuthData]);
-
-  const authMessage = getAuthMessage(user.uuid);
+  }, [authData, authSignature]);
 
   return (
     <>
@@ -143,15 +142,8 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
           <HardwareAuthSigner
             blockchain={authData!.blockchain}
             publicKey={authData!.publicKey}
-            authMessage={authMessage}
-            onSignature={(signature) => {
-              setSignedAuthData({
-                blockchain: authData!.blockchain,
-                publicKey: authData!.publicKey,
-                message: authMessage,
-                signature,
-              });
-            }}
+            authMessage={authData!.message}
+            onSignature={setAuthSignature}
           />
         </WithDrawer>
       )}

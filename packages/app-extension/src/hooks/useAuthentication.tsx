@@ -3,6 +3,7 @@ import {
   BACKEND_API_URL,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
+  UI_RPC_METHOD_USER_JWT_UPDATE,
 } from "@coral-xyz/common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { ethers } from "ethers";
@@ -11,7 +12,6 @@ const { base58 } = ethers.utils;
 
 export const useAuthentication = () => {
   const background = useBackgroundClient();
-  const user = useUser();
 
   /**
    * Login the user.
@@ -55,7 +55,10 @@ export const useAuthentication = () => {
   /**
    * Query the server and see if the user has a valid JWT..
    */
-  const checkAuthentication = async (): Promise<
+  const checkAuthentication = async (
+    username: string,
+    jwt: string
+  ): Promise<
     | {
         id: string;
         publicKeys: Array<{ blockchain: Blockchain; publicKey: string }>;
@@ -64,15 +67,13 @@ export const useAuthentication = () => {
     | undefined
   > => {
     try {
-      const response = await fetch(
-        `${BACKEND_API_URL}/users/${user.username}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(`${BACKEND_API_URL}/users/${username}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          ...(jwt ? { "Backpack-JWT": jwt } : {}),
+        },
+      });
       if (response.status === 404) {
         // User does not exist on server, how to handle?
         throw new Error("user does not exist");

@@ -193,6 +193,7 @@ export const UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE =
   "ui-rpc-method-username-account-create";
 export const UI_RPC_METHOD_ACTIVE_USER_UPDATE =
   "ui-rpc-method-active-user-update";
+export const UI_RPC_METHOD_USER_JWT_UPDATE = "ui-rpc-method-user-jwt-update";
 export const UI_RPC_METHOD_PREFERENCES_READ = "ui-rpc-method-references-read";
 // Solana
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_READ =

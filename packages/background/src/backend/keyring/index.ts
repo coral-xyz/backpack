@@ -72,12 +72,13 @@ export class KeyringStore {
     username: string,
     password: string,
     keyringInit: KeyringInit,
-    uuid: string
+    uuid: string,
+    jwt: string
   ) {
     this.password = password;
 
     // Setup the user.
-    await this._usernameKeyringCreate(username, keyringInit, uuid);
+    await this._usernameKeyringCreate(username, keyringInit, uuid, jwt);
 
     // Persist the encrypted data to then store.
     await this.persist(true);
@@ -89,17 +90,24 @@ export class KeyringStore {
   public async usernameKeyringCreate(
     username: string,
     keyringInit: KeyringInit,
-    uuid: string
+    uuid: string,
+    jwt: string
   ) {
     return await this.withUnlockAndPersist(async () => {
-      return await this._usernameKeyringCreate(username, keyringInit, uuid);
+      return await this._usernameKeyringCreate(
+        username,
+        keyringInit,
+        uuid,
+        jwt
+      );
     });
   }
 
   public async _usernameKeyringCreate(
     username: string,
     keyringInit: KeyringInit,
-    uuid: string
+    uuid: string,
+    jwt: string
   ) {
     this.users.set(uuid, await UserKeyring.init(username, keyringInit, uuid));
     this.activeUserUuid = uuid;
@@ -113,6 +121,7 @@ export class KeyringStore {
     await store.setActiveUser({
       username,
       uuid,
+      jwt,
     });
   }
 
@@ -239,10 +248,7 @@ export class KeyringStore {
     const userData = await store.getUserData();
     const user = userData.users.filter((u) => u.uuid === uuid)[0];
     this.activeUserUuid = uuid;
-    await store.setActiveUser({
-      username: user.username,
-      uuid,
-    });
+    await store.setActiveUser(user);
     return user;
   }
 
