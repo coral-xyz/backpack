@@ -55,7 +55,9 @@ export function AvatarHeader() {
             <NavStackScreen
               key={"update"}
               name={"UpdateProfilePicture"}
-              component={UpdateProfilePicture}
+              component={() => (
+                <UpdateProfilePicture setOpenDrawer={setOpenDrawer} />
+              )}
             />
           </NavStackEphemeral>
         </div>

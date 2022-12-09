@@ -193,6 +193,8 @@ export const UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE =
   "ui-rpc-method-username-account-create";
 export const UI_RPC_METHOD_ACTIVE_USER_UPDATE =
   "ui-rpc-method-active-user-update";
+export const UI_RPC_METHOD_USER_AVATAR_UPDATE =
+  "ui-rpc-method-user-avatar-update";
 export const UI_RPC_METHOD_PREFERENCES_READ = "ui-rpc-method-references-read";
 // Solana
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_READ =
@@ -279,6 +281,8 @@ export const NOTIFICATION_NAVIGATION_URL_DID_CHANGE =
   "notification-navigation-url-did-change";
 export const NOTIFICATION_KEYRING_STORE_USERNAME_ACCOUNT_CREATED =
   "notification-username-account-created";
+export const NOTIFICATION_KEYRING_STORE_USER_AVATAR_UPDATED =
+  "notification-user-avatar-updated";
 export const NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED =
   "notification-active-user-updated";
 // Ethereum specific notifications

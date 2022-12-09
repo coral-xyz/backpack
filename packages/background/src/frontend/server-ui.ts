@@ -91,6 +91,7 @@ import {
   UI_RPC_METHOD_SOLANA_SIGN_MESSAGE,
   UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION,
   UI_RPC_METHOD_SOLANA_SIMULATE,
+  UI_RPC_METHOD_USER_AVATAR_UPDATE,
   UI_RPC_METHOD_USER_READ,
   UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
   withContextPort,
@@ -289,6 +290,9 @@ async function handle<T = any>(
     case UI_RPC_METHOD_ACTIVE_USER_UPDATE:
       // @ts-ignore
       return await handleActiveUserUpdate(ctx, ...params);
+    case UI_RPC_METHOD_USER_AVATAR_UPDATE:
+      // @ts-ignore
+      return await handleUserAvatarUpdate(ctx, ...params);
     //
     // Password.
     //
@@ -515,6 +519,14 @@ async function handleActiveUserUpdate(
   ...args: Parameters<Backend["activeUserUpdate"]>
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.activeUserUpdate(...args);
+  return [resp];
+}
+
+async function handleUserAvatarUpdate(
+  ctx: Context<Backend>,
+  ...args: Parameters<Backend["userAvatarUpdate"]>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.userAvatarUpdate(...args);
   return [resp];
 }
 

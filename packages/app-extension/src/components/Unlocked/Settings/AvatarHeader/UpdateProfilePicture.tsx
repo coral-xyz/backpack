@@ -1,10 +1,15 @@
 import { useState } from "react";
 import type { Blockchain, Nft, NftCollection } from "@coral-xyz/common";
-import { toTitleCase, walletAddressDisplay } from "@coral-xyz/common";
+import {
+  toTitleCase,
+  UI_RPC_METHOD_USER_AVATAR_UPDATE,
+  walletAddressDisplay,
+} from "@coral-xyz/common";
 import {
   nftCollections,
   useActiveWallets,
   useAvatarUrl,
+  useBackgroundClient,
   useBlockchainLogo,
   useUser,
   useWalletPublicKeys,
@@ -20,14 +25,19 @@ import { PrimaryButton, SecondaryButton } from "../../../common";
 import { Scrollbar } from "../../../common/Layout/Scrollbar";
 import { ProxyImage } from "../../../common/ProxyImage";
 
-export function UpdateProfilePicture() {
+export function UpdateProfilePicture({
+  setOpenDrawer,
+}: {
+  setOpenDrawer: (open: boolean) => void;
+}) {
+  const background = useBackgroundClient();
   const [newAvatarUrl, setNewAvatarUrl] = useState<string | null>(null);
   const avatarUrl = useAvatarUrl(64);
   const { username } = useUser();
   // const wallets = useActiveWallets();
   const wallets = useWalletPublicKeys();
   const collections = useRecoilValueLoadable(nftCollections);
-  console.log("wallets", wallets, collections);
+  console.log("wallets", wallets, collections, newAvatarUrl);
   return (
     <Container>
       <AvatarWrapper>
@@ -42,7 +52,8 @@ export function UpdateProfilePicture() {
         >
           <div
             style={{
-              paddingBottom: "80px",
+              paddingBottom: newAvatarUrl ? "80px" : "0px",
+              transition: "padding ease-out 200ms",
             }}
           >
             {collections.state === "hasValue" &&
@@ -70,6 +81,7 @@ export function UpdateProfilePicture() {
           label={"Cancel"}
           onClick={() => {
             setNewAvatarUrl(null);
+            setOpenDrawer(false);
           }}
           style={{
             margin: "16px",
@@ -77,8 +89,12 @@ export function UpdateProfilePicture() {
         />
         <PrimaryButton
           label={"Update"}
-          onClick={() => {
+          onClick={async () => {
             setNewAvatarUrl(null);
+            await background.request({
+              method: UI_RPC_METHOD_USER_AVATAR_UPDATE,
+              params: [],
+            });
           }}
           style={{
             margin: "16px",
@@ -244,7 +260,9 @@ const Container = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   height: "100%",
+  overflow: "hidden",
 }));
+
 const StyledProxyImage = styled(ProxyImage)(({ theme }) => ({
   "&:hover": {
     border: `3px solid ${theme.custom.colors.avatarIconBackground}`,
@@ -275,6 +293,7 @@ const ButtonsOverlay = styled("div")(({ theme }) => ({
   background: "rgba(255,255,255, 0.8)",
   alignItems: "stretch",
   width: "100%",
+  transition: "max-height ease-out 200ms",
 }));
 
 const Avatar = styled(ProxyImage)(({ theme }) => ({
