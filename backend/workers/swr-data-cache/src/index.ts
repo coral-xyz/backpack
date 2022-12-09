@@ -56,6 +56,18 @@ const shouldCache: (
     }
   }
 
+  // cache posts to specific rpc methods
+  if (service === "ethereum-rpc-proxy") {
+    const method = (await body)?.method ?? "";
+    if (
+      method &&
+      method.startsWith("eth_get") &&
+      !excludeFromCache.includes(method)
+    ) {
+      return true;
+    }
+  }
+
   return false;
 };
 
@@ -63,11 +75,24 @@ const executeRequest: (c: ExecutionContext, env: Env) => ExecuteRequest =
   (_c, env) => async (req) => {
     const [service, url] = extractService(new URL(req.url));
 
+    // calling data worker internally... works without and might not be necessary.
     if (service === "data") {
       return env.data.fetch(new Request(url, req));
     }
 
     if (service === "rpc-proxy") {
+      const fetched = await env.rpc.fetch(new Request(url, req));
+      return new Response(fetched.body, {
+        headers: new Headers([
+          [
+            "Cache-Control",
+            `max-age=${1}, s-maxage=${1}, stale-while-revalidate=${5}`,
+          ],
+        ]),
+      });
+    }
+
+    if (service === "ethereum-rpc-proxy") {
       const fetched = await env.rpc.fetch(new Request(url, req));
       return new Response(fetched.body, {
         headers: new Headers([
