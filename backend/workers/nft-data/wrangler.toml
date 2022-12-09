@@ -1,8 +1,8 @@
-name = "data"
+name = "nft-data"
 main = "src/index.ts"
 compatibility_date = "2022-12-05"
 node_compat = true
 
 services = [
-  { binding = "rpc", service = "swr-data-cache" }
+  { binding = "swr", service = "swr-data-cache" }
 ]

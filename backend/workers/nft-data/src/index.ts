@@ -21,7 +21,7 @@ app.get("/metaplex-nft/:mintAddress/image", async (c) => {
       TOKEN_METADATA_PROGRAM_ID
     )[0];
 
-    const metadataAccountResponse = await c.env.rpc.fetch(
+    const metadataAccountResponse = await c.env.swr.fetch(
       new Request("https://solana-rpc.xnfts.dev/rpc-proxy", {
         method: "POST",
         body: `{
@@ -61,6 +61,38 @@ app.get("/metaplex-nft/:mintAddress/image", async (c) => {
       return c.status(404);
     }
 
+    const imageResponse = await fetch(externalResourceUri(imageUrl));
+    const response = new Response(imageResponse.body);
+    response.headers.set(
+      "Cache-Control",
+      `max-age=${60 * 5}, s-maxage=${60 * 5}, stale-while-revalidate=${60 * 5}`
+    );
+    return response;
+  } catch (e) {
+    console.error(e);
+    return c.status(500);
+  }
+});
+
+app.get("/ethereum-nft/:contractAddress/:tokenId/image", async (c) => {
+  try {
+    const { contractAddress, tokenId } = c.req.param();
+
+    const metadataResponse = await c.env.swr.fetch(
+      new Request(
+        `https://swr-data.xnfts.dev/ethereum-rpc-proxy/nft/getNFTMetadata?contractAddress=${contractAddress}&tokenId=${tokenId}`
+      )
+    );
+
+    const metadata = await metadataResponse.json();
+    // @ts-ignore
+    const imageUrl = metadata?.metadata?.image;
+
+    if (!metadata || !imageUrl) {
+      return c.status(404);
+    }
+
+    // console.log(JSON.stringify(metadata))
     const imageResponse = await fetch(externalResourceUri(imageUrl));
     const response = new Response(imageResponse.body);
     response.headers.set(

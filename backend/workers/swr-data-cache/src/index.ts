@@ -2,8 +2,9 @@ import type { ExecuteRequest, ShouldCache, ToCacheKey } from "./swr";
 import swr from "./swr";
 
 interface Env {
-  data: { fetch: (req: Request) => Promise<Response> };
-  rpc: { fetch: (req: Request) => Promise<Response> };
+  nftData: { fetch: (req: Request) => Promise<Response> };
+  ethereumRpc: { fetch: (req: Request) => Promise<Response> };
+  solanaRpc: { fetch: (req: Request) => Promise<Response> };
 }
 
 const toCacheKey: (
@@ -76,12 +77,12 @@ const executeRequest: (c: ExecutionContext, env: Env) => ExecuteRequest =
     const [service, url] = extractService(new URL(req.url));
 
     // calling data worker internally... works without and might not be necessary.
-    if (service === "data") {
-      return env.data.fetch(new Request(url, req));
+    if (service === "nft-data") {
+      return env.nftData.fetch(new Request(url, req));
     }
 
-    if (service === "rpc-proxy") {
-      const fetched = await env.rpc.fetch(new Request(url, req));
+    if (service === "solana-rpc-proxy") {
+      const fetched = await env.solanaRpc.fetch(new Request(url, req));
       return new Response(fetched.body, {
         headers: new Headers([
           [
@@ -93,7 +94,7 @@ const executeRequest: (c: ExecutionContext, env: Env) => ExecuteRequest =
     }
 
     if (service === "ethereum-rpc-proxy") {
-      const fetched = await env.rpc.fetch(new Request(url, req));
+      const fetched = await env.ethereumRpc.fetch(new Request(url, req));
       return new Response(fetched.body, {
         headers: new Headers([
           [
