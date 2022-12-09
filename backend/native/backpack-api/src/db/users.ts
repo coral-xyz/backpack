@@ -77,6 +77,7 @@ const transformUser = (user: {
   id: unknown;
   username: unknown;
   public_keys: Array<{ blockchain: string; public_key: string }>;
+  avatar_nft: string | null;
 }) => {
   return {
     id: user.id,
@@ -86,8 +87,16 @@ const transformUser = (user: {
       blockchain: k.blockchain as Blockchain,
       publicKey: k.public_key,
     })),
-    image: `https://avatars.xnfts.dev/v1/${user.username}`,
+    image:
+      getAvatar(user.avatar_nft) ??
+      `https://avatars.xnfts.dev/v1/${user.username}`,
   };
+};
+const defaultAvatar = `https://avatars.xnfts.dev/v1/${user.username}`;
+const getAvatar = (avatar_nft: string | null): string => {
+  if (!avatar_nft) {
+    return defaultImage;
+  }
 };
 
 /**
@@ -211,4 +220,35 @@ export async function createUserPublicKey({
   });
 
   return response.insert_auth_public_keys_one;
+}
+
+/**
+ * Update avatar_nft of a user.
+ */
+
+// update_auth_users(where: {id: {_eq: ":id"}}, _set: {avatar_nft: null})
+export async function updateUserAvatar({
+  userId,
+  avatar,
+}: {
+  userId: string;
+  avatar: string;
+}) {
+  const response = await chain("mutation")({
+    update_auth_users: [
+      {
+        where: {
+          id: { _eq: userId },
+        },
+        _set: {
+          avatar_nft: avatar === "null" ? null : avatar,
+        },
+      },
+      {
+        affected_rows: true,
+      },
+    ],
+  });
+
+  return response.update_auth_users;
 }
