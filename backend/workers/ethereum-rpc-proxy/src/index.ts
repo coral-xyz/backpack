@@ -1,6 +1,7 @@
 export interface Env {
   // in secrets, see `npx wrangler secret --help`
   RPC_URL: string;
+  NFT_RPC_URL: string;
 }
 
 export default {
@@ -15,6 +16,7 @@ export default {
         headers: corsHeaders,
       });
     }
+
     if (request.method === "POST") {
       return await fetch(
         env.RPC_URL ||
@@ -22,9 +24,26 @@ export default {
         request
       );
     } else {
-      return new Response("Only POST requests are allowed", {
+      const [service, url] = extractService(new URL(request.url));
+      if (request.method === "GET" && service === "nft") {
+        const newUrl =
+          env.NFT_RPC_URL ||
+          "https://eth-mainnet.g.alchemy.com/nft/v2/DlJr6QuBC2EaE-L60-iqQQGq9hi9-XSZ";
+        return await fetch(
+          newUrl + url.pathname + url.search + url.hash,
+          request
+        );
+      }
+      return new Response("Invalid Request", {
         status: 405,
       });
     }
   },
+};
+
+const extractService = (url: URL): [string | undefined, URL] => {
+  const path = url.pathname.slice(1).split("/");
+  const service = path.shift();
+  url.pathname = `/${path.join("/")}`;
+  return [service, url];
 };
