@@ -57,6 +57,12 @@ select_permissions:
         - id
         - username
       filter: {}
+  - role: public_avatar
+    permission:
+      columns:
+        - avatar_nft
+        - username
+      filter: {}
 update_permissions:
   - role: auth_worker
     permission:
