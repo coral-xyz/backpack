@@ -1,4 +1,8 @@
-import { ETH_NATIVE_MINT, fetchEthereumTokenBalances } from "@coral-xyz/common";
+import {
+  ETH_NATIVE_MINT,
+  fetchEthereumTokenBalances,
+  getLogger,
+} from "@coral-xyz/common";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { BigNumber, ethers } from "ethers";
 import { atom, atomFamily, selector, selectorFamily } from "recoil";
@@ -10,6 +14,8 @@ import { ethereumPublicKey } from "../wallet";
 import { ethereumConnectionUrl } from "./preferences";
 import { ethersContext } from "./provider";
 import { ethereumTokenMetadata } from "./token-metadata";
+
+const logger = getLogger("BB");
 
 // Map of ETH native balance and all ERC20 balances
 // We use a dummy address for the ETH balance (zero address) so it can be
@@ -61,7 +67,10 @@ export const erc20Balances = selector({
       return new Map();
     }
     const provider = get(ethersContext).provider;
-    return await fetchEthereumTokenBalances(provider, publicKey);
+    logger.debug("recoil provider");
+    const results = await fetchEthereumTokenBalances(provider, publicKey);
+    logger.debug("recoil results");
+    return results;
   },
 });
 

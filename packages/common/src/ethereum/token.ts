@@ -1,3 +1,4 @@
+import { getLogger } from "@coral-xyz/common-public";
 import type {
   ContractCallContext,
   ContractCallResults,
@@ -9,6 +10,8 @@ import { UniswapTokenList } from "./tokens-uniswap";
 
 // Dummy representation of native ETH.
 export const ETH_NATIVE_MINT = ethers.constants.AddressZero;
+
+const logger = getLogger("BB");
 
 export async function fetchEthereumBalances(
   provider: ethers.providers.Provider,
@@ -22,6 +25,31 @@ export async function fetchEthereumBalances(
   const balanceMap = tokenBalances;
   balanceMap.set(ETH_NATIVE_MINT, ethBalance);
   return balanceMap;
+}
+
+function parseContractCallResults(contractCall: ContractCallResults): any[] {
+  logger.debug(
+    "parseContractCallResults",
+    Object.keys(contractCall.results).length
+  );
+  const filtered = Object.entries(contractCall.results).filter(
+    ([_, { callsReturnContext }]) => {
+      const returnValue = callsReturnContext[0].returnValues[0];
+
+      if (returnValue) {
+        return !BigNumber.from(returnValue).isZero();
+      }
+      return false;
+    }
+  );
+
+  logger.debug("filtered");
+  const results = filtered.map(([contractAddress, { callsReturnContext }]) => {
+    return [contractAddress, callsReturnContext[0].returnValues[0]];
+  });
+
+  logger.debug("results");
+  return results;
 }
 
 export async function fetchEthereumTokenBalances(
@@ -90,18 +118,10 @@ export async function fetchEthereumTokenBalances(
     contractCallContext
   );
 
-  return new Map(
-    Object.entries(contractCall.results)
-      .filter(([_, { callsReturnContext }]) => {
-        return (
-          callsReturnContext[0].returnValues[0] &&
-          !BigNumber.from(callsReturnContext[0].returnValues[0]).isZero()
-        );
-      })
-      .map(([contractAddress, { callsReturnContext }]) => {
-        return [contractAddress, callsReturnContext[0].returnValues[0]];
-      })
-  );
+  const parsedResults = parseContractCallResults(contractCall);
+  logger.debug("parsedResults", parsedResults.length);
+
+  return new Map(parsedResults);
 }
 
 export function ethereumTokenData() {
