@@ -12,14 +12,17 @@ const toCacheKey: (
   env: Env,
   body: Promise<any>
 ) => ToCacheKey = (c, env, body) => async (req) => {
+  const url = new URL(req.url);
+  url.searchParams.delete("bust_cache");
+
   if (req.method === "GET" || req.method === "HEAD") {
-    return new Request(req.url, {
+    return new Request(url, {
       method: req.method,
     });
   }
   // Can't cache POST requests, so we're creating a GET cache key.
   return new Request(
-    req.url + "?" + encodeURIComponent(JSON.stringify(await body)),
+    url + "?" + encodeURIComponent(JSON.stringify(await body)),
     {
       method: "GET",
     }
