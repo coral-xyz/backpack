@@ -1,5 +1,8 @@
 import { useEffect } from "react";
-import { UI_RPC_METHOD_KEYRING_RESET } from "@coral-xyz/common";
+import {
+  UI_RPC_METHOD_KEYRING_RESET,
+  UI_RPC_METHOD_USER_LOGOUT,
+} from "@coral-xyz/common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Box } from "@mui/material";
@@ -31,8 +34,11 @@ export function Logout() {
       subtext={
         "This will remove all the wallets you have created or imported. Make sure you have your existing secret recovery phrase and private keys saved."
       }
-      onNext={() => {
-        // todo
+      onNext={async () => {
+        await background.request({
+          method: UI_RPC_METHOD_USER_LOGOUT,
+          params: [],
+        });
       }}
     />
   );
