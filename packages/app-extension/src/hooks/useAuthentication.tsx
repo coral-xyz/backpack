@@ -69,7 +69,7 @@ export const useAuthentication = () => {
     try {
       const headers = {
         "Content-Type": "application/json",
-        ...(jwt ? { "Backpack-JWT": jwt } : {}),
+        ...(jwt ? { Authorization: `Bearer ${jwt}` } : {}),
       };
       const response = await fetch(`${BACKEND_API_URL}/users/${username}`, {
         method: "GET",
