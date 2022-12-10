@@ -66,3 +66,7 @@ export async function setUser(
   });
   return updatedUser;
 }
+
+export async function setUserData(data: UserData) {
+  await LocalStorageDb.set(STORE_KEY_USER_DATA, data);
+}

@@ -32,6 +32,7 @@ import {
   NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED,
   NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
+  NOTIFICATION_KEYRING_STORE_REMOVED_USER,
   NOTIFICATION_KEYRING_STORE_RESET,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_KEYRING_STORE_USERNAME_ACCOUNT_CREATED,
@@ -630,6 +631,54 @@ export class Backend {
     });
 
     // Done.
+    return SUCCESS_RESPONSE;
+  }
+
+  async userLogout(uuid: string): Promise<string> {
+    //
+    // If we're logging out the last user, reset the entire app.
+    //
+    const data = await store.getUserData();
+    if (data.users.length === 1) {
+      this.keyringReset();
+      return SUCCESS_RESPONSE;
+    }
+
+    //
+    // If we have more users available, just remove the user.
+    //
+    const isNewActiveUser = await this.keyringStore.removeUser(uuid);
+
+    //
+    // If the user changed, notify the UI.
+    //
+    if (isNewActiveUser) {
+      const user = await this.userRead();
+      const walletData = await this.keyringStoreReadAllPubkeyData();
+      const preferences = await this.preferencesRead(uuid);
+      const xnftPreferences = await this.getXnftPreferences();
+
+      this.events.emit(BACKEND_EVENT, {
+        name: NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED,
+        data: {
+          user,
+          walletData,
+          preferences,
+          xnftPreferences,
+        },
+      });
+    }
+
+    //
+    // Notify the UI about the removal.
+    //
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_KEYRING_STORE_REMOVED_USER,
+    });
+
+    //
+    // Done.
+    //
     return SUCCESS_RESPONSE;
   }
 
