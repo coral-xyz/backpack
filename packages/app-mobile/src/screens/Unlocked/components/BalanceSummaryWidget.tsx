@@ -60,13 +60,6 @@ export function BalanceSummaryWidget() {
       percentChange: 0,
     });
 
-  // const isLoading = false;
-  // const { totalBalance, totalChange, percentChange } = {
-  //   totalBalance: 386.23,
-  //   totalChange: -32.33,
-  //   percentChange: -7.72,
-  // };
-
   return (
     <View style={styles.container}>
       <Text

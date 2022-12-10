@@ -133,10 +133,12 @@ function BalanceListScreen({ navigation }) {
 
   return (
     <Screen>
-      <Margin vertical={12}>
+      <Margin bottom={18}>
         <BalanceSummaryWidget />
       </Margin>
-      <TransferWidget rampEnabled={false} onNavigate={onNavigate} />
+      <Margin bottom={18}>
+        <TransferWidget rampEnabled={false} onNavigate={onNavigate} />
+      </Margin>
       <TokenTables
         onPressRow={onPressTokenRow}
         customFilter={(token: Token) => {

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  Alert,
   FlatList,
   Image,
   Modal,
@@ -8,19 +9,18 @@ import {
   Text,
   View,
 } from "react-native";
-import { Margin, Screen } from "@components";
+import QRCode from "react-qr-code";
+import { ListRowSeparator,Margin, Screen } from "@components";
 import type { Blockchain } from "@coral-xyz/common";
 import { walletAddressDisplay } from "@coral-xyz/common";
 import { useActiveWallets } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
-import QRCode from "react-qr-code";
 import { useBlockchainLogo, useTheme } from "@hooks";
+import * as Clipboard from "expo-clipboard";
 
 export default function DepositModal({ navigation }) {
   const activeWallets = useActiveWallets();
   const onClose = () => navigation.goBack();
-
-  console.log({ activeWallets });
 
   return (
     <Screen>
@@ -28,7 +28,7 @@ export default function DepositModal({ navigation }) {
         style={{ flex: 1 }}
         data={activeWallets}
         keyExtractor={(item) => item.publicKey}
-        ItemSeparatorComponent={<View style={{ height: 12 }} />}
+        ItemSeparatorComponent={ListRowSeparator}
         renderItem={({ item }) => {
           return (
             <BlockchainDepositCard
@@ -176,8 +176,9 @@ function BlockchainDepositCard({
     setShowQrCode(true);
   };
 
-  const onPressCopy = () => {
-    console.log("copy");
+  const onPressCopy = async () => {
+    await Clipboard.setStringAsync(publicKey);
+    Alert.alert("Copied to clipboard");
   };
 
   return (

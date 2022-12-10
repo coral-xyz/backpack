@@ -2,6 +2,7 @@ import { UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE } from "@coral-xyz/common";
 import { useRecoilValue } from "recoil";
 
 import * as atoms from "../../atoms";
+import { xnftJwt } from "../../atoms";
 import { useBackgroundClient } from "../client";
 
 export function useApprovedOrigins(): Array<string> {
@@ -41,6 +42,10 @@ export function useConnectionUrls() {
 
 export function useUser() {
   return useRecoilValue(atoms.user);
+}
+
+export function useXnftJwt(xnftAddress: string) {
+  return useRecoilValue(xnftJwt({ xnftAddress }));
 }
 
 export function useAllUsers() {

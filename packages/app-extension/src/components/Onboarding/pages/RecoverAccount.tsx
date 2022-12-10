@@ -237,14 +237,18 @@ export const RecoverAccount = ({
           />,
         ]
       : []),
-    <Finish
-      inviteCode={undefined}
-      userId={userId}
-      username={username}
-      password={password!}
-      keyringInit={keyringInit!}
-      isAddingAccount={isAddingAccount}
-    />,
+    ...(blockchainKeyrings.length > 0
+      ? [
+          <Finish
+            inviteCode={undefined}
+            userId={userId}
+            username={username}
+            password={password!}
+            keyringInit={keyringInit!}
+            isAddingAccount={isAddingAccount}
+          />,
+        ]
+      : []),
   ];
 
   return (

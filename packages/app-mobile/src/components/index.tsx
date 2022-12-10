@@ -7,6 +7,7 @@ import {
   Text,
   View,
 } from "react-native";
+import { SvgUri } from "react-native-svg";
 import { proxyImageUrl, walletAddressDisplay } from "@coral-xyz/common";
 import { useAvatarUrl } from "@coral-xyz/recoil";
 // probably should put all the components in here as an index
@@ -63,7 +64,7 @@ export function Screen({
         {
           flex: 1,
           backgroundColor: theme.custom.colors.background,
-          padding: 16,
+          padding: 12,
         },
         style,
       ]}
@@ -477,14 +478,7 @@ export function Avatar({ size = 64 }: { size?: number }): JSX.Element {
         height: outerSize,
       }}
     >
-      <Image
-        source={{ uri: avatarUrl }}
-        style={{
-          width: size,
-          height: size,
-          borderRadius: size / 2,
-        }}
-      />
+      <SvgUri width={size} height={size} uri={avatarUrl} />
     </View>
   );
 }
@@ -573,3 +567,13 @@ export function WelcomeLogoHeader() {
     </View>
   );
 }
+
+export function ListRowSeparator() {
+  return <View style={listRowStyles.container} />;
+}
+
+const listRowStyles = StyleSheet.create({
+  container: {
+    height: 12,
+  },
+});

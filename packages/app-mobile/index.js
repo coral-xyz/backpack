@@ -65,7 +65,8 @@ function maybeParseLog({ channel, data }) {
 
     if (channel === "mobile-logs") {
       const [name, value] = data;
-      console.log(name);
+      const color = name.includes("ERROR") ? "red" : "yellow";
+      console.log("%c" + name, `color: ${color}`);
       console.log(value);
     } else if (channel === "mobile-fe-response") {
       console.log(data.wrappedEvent.channel);

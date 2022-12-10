@@ -301,7 +301,7 @@ export class KeyringStore {
     secretKey: string,
     name: string
   ): Promise<[string, string]> {
-    return this.withUnlockAndPersist(async () => {
+    return await this.withUnlockAndPersist(async () => {
       return await this.activeUserKeyring.importSecretKey(
         blockchain,
         secretKey,
@@ -314,13 +314,13 @@ export class KeyringStore {
   public async deriveNextKey(
     blockchain: Blockchain
   ): Promise<[string, string]> {
-    return this.withUnlockAndPersist(async () => {
+    return await this.withUnlockAndPersist(async () => {
       return await this.activeUserKeyring.deriveNextKey(blockchain);
     });
   }
 
   public async keyDelete(blockchain: Blockchain, pubkey: string) {
-    return this.withUnlockAndPersist(async () => {
+    return await this.withUnlockAndPersist(async () => {
       return await this.activeUserKeyring.keyDelete(blockchain, pubkey);
     });
   }
@@ -331,7 +331,7 @@ export class KeyringStore {
     account: number,
     pubkey: string
   ) {
-    return this.withUnlockAndPersist(async () => {
+    return await this.withUnlockAndPersist(async () => {
       return await this.activeUserKeyring.ledgerImport(
         blockchain,
         dPath,
@@ -348,7 +348,7 @@ export class KeyringStore {
     newActivePublicKey: string,
     blockchain: Blockchain
   ) {
-    return this.withUnlockAndPersist(async () => {
+    return await this.withUnlockAndPersist(async () => {
       return await this.activeUserKeyring.activeWalletUpdate(
         newActivePublicKey,
         blockchain
@@ -396,10 +396,10 @@ export class KeyringStore {
   // Utilities.
   ///////////////////////////////////////////////////////////////////////////////
 
-  private withUnlockAndPersist<T>(fn: () => T) {
-    return this.withUnlock(() => {
-      const resp = fn();
-      this.persist();
+  private async withUnlockAndPersist<T>(fn: () => Promise<T>) {
+    return await this.withUnlock(async () => {
+      const resp = await fn();
+      await this.persist();
       return resp;
     });
   }
