@@ -68,8 +68,12 @@ export const optionallyExtractUserId = (allowQueryString: boolean) => {
 
     let jwt = "";
 
+    // Header takes precedence
+    if (req.headers["backpack-jwt"]) {
+      jwt = req.headers["backpack-jwt"] as string;
+    }
     // Extract JWT from cookie
-    if (cookie) {
+    else if (cookie) {
       try {
         cookie.split(";").forEach((item) => {
           const cookie = item.trim().split("=");
@@ -80,8 +84,6 @@ export const optionallyExtractUserId = (allowQueryString: boolean) => {
       } catch {
         // Pass
       }
-    } else if (req.headers["Backpack-JWT"]) {
-      jwt = req.headers["Backpack-JWT"] as string;
     } else if (req.query.jwt && allowQueryString) {
       jwt = req.query.jwt as string;
     }

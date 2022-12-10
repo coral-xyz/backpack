@@ -605,7 +605,7 @@ export class Backend {
 
   async activeUserUpdate(uuid: string): Promise<string> {
     // Change active user account.
-    const { username } = await this.keyringStore.activeUserUpdate(uuid);
+    const { username, jwt } = await this.keyringStore.activeUserUpdate(uuid);
 
     // Get data to push back to the UI.
     const walletData = await this.keyringStoreReadAllPubkeyData();
@@ -621,6 +621,7 @@ export class Backend {
         user: {
           uuid,
           username,
+          jwt,
         },
         walletData,
         preferences,

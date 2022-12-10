@@ -67,12 +67,13 @@ export const useAuthentication = () => {
     | undefined
   > => {
     try {
+      const headers = {
+        "Content-Type": "application/json",
+        ...(jwt ? { "Backpack-JWT": jwt } : {}),
+      };
       const response = await fetch(`${BACKEND_API_URL}/users/${username}`, {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          ...(jwt ? { "Backpack-JWT": jwt } : {}),
-        },
+        headers,
       });
       if (response.status === 404) {
         // User does not exist on server, how to handle?
