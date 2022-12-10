@@ -14,7 +14,6 @@ import {
   getUser,
   getUserByUsername,
   getUsersByPrefix,
-  updateUserAvatar,
 } from "../../db/users";
 import { getOrcreateXnftSecret } from "../../db/xnftSecrets";
 import {
@@ -233,16 +232,5 @@ router.post(
     return res.status(201).end();
   }
 );
-
-/**
- * Add a public key/blockchain to the currently authenticated user.
- */
-router.post("/avatar", extractUserId, async (req: Request, res: Response) => {
-  await updateUserAvatar({
-    userId: req.id!,
-    avatar: req.body,
-  });
-  return res.status(201).end();
-});
 
 export default router;
