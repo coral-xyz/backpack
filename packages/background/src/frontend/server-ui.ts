@@ -91,6 +91,7 @@ import {
   UI_RPC_METHOD_SOLANA_SIGN_MESSAGE,
   UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION,
   UI_RPC_METHOD_SOLANA_SIMULATE,
+  UI_RPC_METHOD_USER_JWT_UPDATE,
   UI_RPC_METHOD_USER_READ,
   UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
   withContextPort,
@@ -281,6 +282,9 @@ async function handle<T = any>(
     //
     case UI_RPC_METHOD_USER_READ:
       return await handleUserRead(ctx);
+    case UI_RPC_METHOD_USER_JWT_UPDATE:
+      // @ts-ignore
+      return await handleUserJwtUpdate(ctx, ...params);
     case UI_RPC_METHOD_ALL_USERS_READ:
       return await handleAllUsersRead(ctx);
     case UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE:
@@ -492,6 +496,14 @@ async function handleUserRead(
   ctx: Context<Backend>
 ): Promise<RpcResponse<number>> {
   const resp = await ctx.backend.userRead();
+  return [resp];
+}
+
+async function handleUserJwtUpdate(
+  ctx: Context<Backend>,
+  ...args: Parameters<Backend["userJwtUpdate"]>
+): Promise<RpcResponse<string>> {
+  const resp = ctx.backend.userJwtUpdate(...args);
   return [resp];
 }
 

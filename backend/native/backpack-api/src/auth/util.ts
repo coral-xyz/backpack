@@ -43,4 +43,6 @@ export const setCookie = async (
     path: "/",
     maxAge: 60 * 60 * 24 * 365, // approx 1 year
   });
+
+  return jwt;
 };

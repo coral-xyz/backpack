@@ -58,9 +58,9 @@ router.post("/", async (req, res) => {
     return res.status(403).json({ msg: "invalid user id" });
   }
 
-  await setCookie(req, res, user.id as string);
+  const jwt = await setCookie(req, res, user.id as string);
 
-  return res.json(user);
+  return res.json({ ...user, jwt });
 });
 
 export default router;
