@@ -22,6 +22,7 @@ export function Logout() {
   const background = useBackgroundClient();
   const nav = useNavStack();
   const user = useUser();
+  const { close } = useDrawerContext();
 
   useEffect(() => {
     nav.setTitle(`Logout ${user.username}`);
@@ -37,8 +38,9 @@ export function Logout() {
       onNext={async () => {
         await background.request({
           method: UI_RPC_METHOD_USER_LOGOUT,
-          params: [],
+          params: [user.uuid],
         });
+        close();
       }}
     />
   );

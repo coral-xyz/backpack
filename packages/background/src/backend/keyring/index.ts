@@ -162,7 +162,10 @@ export class KeyringStore {
   // Actions.
   ///////////////////////////////////////////////////////////////////////////////
 
-  public async removeUser(uuid: string) {
+  /**
+   * Returns true if the active user was removed (and thus chanaged).
+   */
+  public async removeUser(uuid: string): Promise<boolean> {
     return this.withUnlockAndPersist(async () => {
       const user = this.users.get(uuid);
       if (!user) {
@@ -182,6 +185,9 @@ export class KeyringStore {
           users,
         });
         this.activeUserUuid = users[0].uuid;
+        return true;
+      } else {
+        return false;
       }
     });
   }
