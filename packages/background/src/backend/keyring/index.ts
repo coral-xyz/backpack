@@ -166,7 +166,12 @@ export class KeyringStore {
    * Returns true if the active user was removed (and thus chanaged).
    */
   public async removeUser(uuid: string): Promise<boolean> {
-    return this.withUnlockAndPersist(async () => {
+    if (this.users.size <= 1) {
+      throw new Error(
+        "invariant violation: users map size must be greater than 1"
+      );
+    }
+    return await this.withUnlockAndPersist(async () => {
       const user = this.users.get(uuid);
       if (!user) {
         throw new Error(`User not found: ${uuid}`);
