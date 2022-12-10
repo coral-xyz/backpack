@@ -41,7 +41,7 @@ import {
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
 } from "@coral-xyz/common";
 import type { Commitment } from "@solana/web3.js";
-import { useResetRecoilState,useSetRecoilState } from "recoil";
+import { useResetRecoilState, useSetRecoilState } from "recoil";
 
 import * as atoms from "../atoms";
 import { allPlugins } from "../hooks";
@@ -81,7 +81,7 @@ export function NotificationsProvider(props: any) {
   };
   const setKeyringStoreState = useSetRecoilState(atoms.keyringStoreState);
   const setActiveUser = useSetRecoilState(atoms.user);
-  const resetAllUsers = useResetRecoilState(atoms.allUsersTrigger);
+  const resetAllUsers = useResetRecoilState(atoms.allUsers);
   // Preferences.
   const setPreferences = useSetRecoilState(atoms.preferences);
   const setFeatureGates = useSetRecoilState(atoms.featureGates);
