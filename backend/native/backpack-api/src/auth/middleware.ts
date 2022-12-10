@@ -69,11 +69,11 @@ export const optionallyExtractUserId = (allowQueryString: boolean) => {
     let jwt = "";
 
     // Header takes precedence
-    if (req.headers["backpack-jwt"]) {
-      jwt = req.headers["backpack-jwt"] as string;
-    }
-    // Extract JWT from cookie
-    else if (cookie) {
+    const authHeader = req.headers["authorization"];
+    if (authHeader && authHeader.split(" ")[0] === "Bearer") {
+      jwt = authHeader.split(" ")[1];
+    } else if (cookie) {
+      // Extract JWT from cookie
       try {
         cookie.split(";").forEach((item) => {
           const cookie = item.trim().split("=");
