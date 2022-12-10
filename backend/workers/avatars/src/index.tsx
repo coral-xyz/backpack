@@ -1,19 +1,91 @@
-import Avatar from "boring-avatars";
-import { Hono } from "hono";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import Avatar from "boring-avatars";
+import { Hono } from "hono";
 
-const app = new Hono();
+interface Env {
+  PUBLIC_AVATAR_JWT: string; // set in secret
+  HASURA_URL: string; // set in secret
+}
+
+const app = new Hono<{ Bindings: Env }>();
 
 app.get("/", (c) => c.json({ hello: "world" }));
 
-app.get("/v1/:username", (c) => {
+app.get("/v1/:username_", (c) => {
   const size = c.req.query("size") || 200;
   return c.body(
     renderToStaticMarkup(
       <Avatar
         size={size}
-        name={c.req.param("username").toLowerCase().trim()}
+        name={c.req.param("username_").toLowerCase().trim()}
+        variant="pixel"
+        colors={["#FEED5B", "#6260FF", "#29DBD1", "#C061F7", "#FF6F5B"]}
+      />
+    ),
+    200,
+    {
+      "Content-Type": "image/svg+xml",
+    }
+  );
+});
+
+const avatarQuery = (username: string) => `query Avatar {
+  auth_users(where: {username: {_eq: "${username}"}}) {
+    avatar_nft
+  }
+}`;
+
+app.get("/:username", async (c) => {
+  const username = c.req.param("username");
+  const jwt = c.env.PUBLIC_AVATAR_JWT;
+  const hasuraUrl = c.env.HASURA_URL;
+
+  const avatarResponse = await fetch(hasuraUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-hasura-role": "public_avatar",
+      Authorization: `Bearer ${jwt}`,
+    },
+    body: JSON.stringify({
+      query: avatarQuery(username),
+      variables: {},
+    }),
+  });
+
+  const avatar = await avatarResponse.json();
+
+  // @ts-ignore
+  const avatar_nft = avatar?.data?.auth_users?.[0]?.avatar_nft ?? "";
+
+  const [chain, address, id] = (avatar_nft ?? "").split("/");
+
+  c.header(
+    "Cache-Control",
+    `max-age=${60}, s-maxage=${60}, stale-while-revalidate=${60}`
+  );
+
+  if (chain === "ethereum") {
+    const url = `https://swr-data.xnfts.dev/nft-data/ethereum-nft/${address}/${id}/image`;
+    console.log(url);
+    const response = await fetch(new Request(url));
+    return c.body(response.body);
+  }
+
+  if (chain === "solana") {
+    const url = `https://swr-data.xnfts.dev/nft-data/metaplex-nft/${address}/image`;
+    console.log(url);
+    const response = await fetch(new Request(url));
+    return c.body(response.body);
+  }
+
+  // else generate default Avatar from username:
+  return c.body(
+    renderToStaticMarkup(
+      <Avatar
+        size={500}
+        name={username.toLowerCase().trim()}
         variant="pixel"
         colors={["#FEED5B", "#6260FF", "#29DBD1", "#C061F7", "#FF6F5B"]}
       />
