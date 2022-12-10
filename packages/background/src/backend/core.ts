@@ -857,6 +857,25 @@ export class Backend {
 
   async userJwtUpdate(uuid: string, jwt: string) {
     await setUser(uuid, { jwt });
+
+    const walletData = await this.keyringStoreReadAllPubkeyData();
+    const preferences = await this.preferencesRead(uuid);
+    const xnftPreferences = await this.getXnftPreferences();
+
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED,
+      data: {
+        user: {
+          uuid,
+          username: this.keyringStore.activeUserKeyring.username,
+          jwt,
+        },
+        walletData,
+        preferences,
+        xnftPreferences,
+      },
+    });
+
     return SUCCESS_RESPONSE;
   }
 
