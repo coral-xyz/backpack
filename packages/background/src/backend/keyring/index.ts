@@ -83,7 +83,7 @@ export class KeyringStore {
     await this.persist(true);
 
     // Automatically lock the store when idle.
-    await this.tryUnlock(password);
+    await this.tryUnlock(password, uuid);
   }
 
   public async usernameKeyringCreate(
@@ -149,10 +149,11 @@ export class KeyringStore {
   // Actions.
   ///////////////////////////////////////////////////////////////////////////////
 
-  public async tryUnlock(password: string) {
+  public async tryUnlock(password: string, uuid: string) {
     return this.withLock(async () => {
       const json = await store.getKeyringStore(password);
       await this.fromJson(json);
+      this.activeUserUuid = uuid;
       this.password = password;
       // Automatically lock the store when idle.
       this.autoLockStart();
@@ -464,15 +465,13 @@ export class KeyringStore {
       [...this.users].map(([k, v]) => [k, v.toJson()])
     );
     return {
-      activeUserUuid: this.activeUserUuid!,
       users,
       lastUsedTs: this.lastUsedTs,
     };
   }
 
   private async fromJson(json: KeyringStoreJson) {
-    const { activeUserUuid, users } = json;
-    this.activeUserUuid = activeUserUuid;
+    const { users } = json;
     this.users = new Map(
       Object.entries(users).map(([username, obj]) => {
         return [username, UserKeyring.fromJson(obj)];

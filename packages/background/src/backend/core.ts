@@ -636,7 +636,7 @@ export class Backend {
       throw new Error("invariant violation: username not found");
     }
 
-    await this.keyringStore.tryUnlock(password);
+    await this.keyringStore.tryUnlock(password, uuid);
 
     const blockchainActiveWallets = await this.blockchainActiveWallets();
 
