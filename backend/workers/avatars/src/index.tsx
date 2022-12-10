@@ -67,14 +67,14 @@ app.get("/:username", async (c) => {
   );
 
   if (chain === "ethereum") {
-    const url = `https://swr-data.xnfts.dev/nft-data/ethereum-nft/${address}/${id}/image`;
+    const url = `https://swr.xnfts.dev/nft-data/ethereum-nft/${address}/${id}/image`;
     console.log(url);
     const response = await fetch(new Request(url));
     return c.body(response.body);
   }
 
   if (chain === "solana") {
-    const url = `https://swr-data.xnfts.dev/nft-data/metaplex-nft/${address}/image`;
+    const url = `https://swr.xnfts.dev/nft-data/metaplex-nft/${address}/image`;
     console.log(url);
     const response = await fetch(new Request(url));
     return c.body(response.body);

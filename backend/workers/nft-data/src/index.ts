@@ -80,7 +80,7 @@ app.get("/ethereum-nft/:contractAddress/:tokenId/image", async (c) => {
 
     const metadataResponse = await c.env.swr.fetch(
       new Request(
-        `https://swr-data.xnfts.dev/ethereum-rpc-proxy/nft/getNFTMetadata?contractAddress=${contractAddress}&tokenId=${tokenId}`
+        `https://swr.xnfts.dev/ethereum-rpc-proxy/nft/getNFTMetadata?contractAddress=${contractAddress}&tokenId=${tokenId}`
       )
     );
 

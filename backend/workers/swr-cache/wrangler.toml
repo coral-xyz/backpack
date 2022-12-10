@@ -1,4 +1,4 @@
-name = "swr-data-cache"
+name = "swr-cache"
 main = "src/index.ts"
 compatibility_date = "2022-12-05"
 

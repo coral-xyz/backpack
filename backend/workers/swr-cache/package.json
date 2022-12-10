@@ -1,5 +1,5 @@
 {
-  "name": "swr-data-cache",
+  "name": "swr-cache",
   "version": "0.0.0",
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20221111.1",
