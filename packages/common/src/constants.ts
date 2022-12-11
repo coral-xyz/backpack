@@ -193,6 +193,8 @@ export const UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE =
   "ui-rpc-method-username-account-create";
 export const UI_RPC_METHOD_ACTIVE_USER_UPDATE =
   "ui-rpc-method-active-user-update";
+export const UI_RPC_METHOD_USER_JWT_UPDATE = "ui-rpc-method-user-jwt-update";
+export const UI_RPC_METHOD_USER_LOGOUT = "ui-rpc-method-user-logout";
 export const UI_RPC_METHOD_PREFERENCES_READ = "ui-rpc-method-references-read";
 // Solana
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_READ =
@@ -281,6 +283,8 @@ export const NOTIFICATION_KEYRING_STORE_USERNAME_ACCOUNT_CREATED =
   "notification-username-account-created";
 export const NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED =
   "notification-active-user-updated";
+export const NOTIFICATION_KEYRING_STORE_REMOVED_USER =
+  "notification-keyring-store-removed-user";
 // Ethereum specific notifications
 export const NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED =
   "notification-keyring-ethereum-active-wallet-updated";
@@ -312,6 +316,7 @@ export const NOTIFICATION_SOLANA_EXPLORER_UPDATED =
   "notification-solana-explorer-updated";
 export const NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE =
   "notification-solana-spl-tokens-did-update";
+
 //
 // Ethereum web injected provider API.
 //

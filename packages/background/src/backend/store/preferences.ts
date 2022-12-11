@@ -42,7 +42,7 @@ export async function getWalletDataForUser(uuid: string): Promise<WalletData> {
   return data;
 }
 
-export async function setWalletDataForUser(uuid: string, data: WalletData) {
+export async function setWalletDataForUser(uuid: string, data?: WalletData) {
   await LocalStorageDb.set(key(uuid), data);
 }
 

@@ -53,15 +53,15 @@ export const Finish = ({
           params: [],
         });
       }
-      const { id } = await createUser();
-      createStore(id);
+      const { id, jwt } = await createUser();
+      createStore(id, jwt);
     })();
   }, []);
 
   //
   // Create the user in the backend
   //
-  async function createUser(): Promise<{ id: string }> {
+  async function createUser(): Promise<{ id: string; jwt: string }> {
     // If userId is provided, then we are onboarding via the recover flow.
     if (userId) {
       // Authenticate the user that the recovery has a JWT.
@@ -75,14 +75,14 @@ export const Finish = ({
         signature,
         message: getAuthMessage(userId),
       };
-      await authenticate(authData!);
-      return { id: userId };
+      const { jwt } = await authenticate(authData!);
+      return { id: userId, jwt };
     }
 
     // If userId is not provided and an invite code is not provided, then
     // this is dev mode.
     if (!inviteCode) {
-      return { id: uuidv4() };
+      return { id: uuidv4(), jwt: "" };
     }
 
     //
@@ -120,7 +120,7 @@ export const Finish = ({
   //
   // Create the local store for the wallets
   //
-  async function createStore(uuid: string) {
+  async function createStore(uuid: string, jwt: string) {
     try {
       //
       // If usernames are disabled, use a default one for developing.
@@ -131,12 +131,12 @@ export const Finish = ({
       if (isAddingAccount) {
         await background.request({
           method: UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
-          params: [username, keyringInit, uuid],
+          params: [username, keyringInit, uuid, jwt],
         });
       } else {
         await background.request({
           method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
-          params: [username, password, keyringInit, uuid],
+          params: [username, password, keyringInit, uuid, jwt],
         });
       }
       setIsValid(true);

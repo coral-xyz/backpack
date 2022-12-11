@@ -9,7 +9,13 @@ import {
   UI_RPC_METHOD_USER_READ,
 } from "@coral-xyz/common";
 import { PublicKey } from "@solana/web3.js";
-import { atom, atomFamily, selector, selectorFamily } from "recoil";
+import {
+  atom,
+  atomFamily,
+  DefaultValue,
+  selector,
+  selectorFamily,
+} from "recoil";
 
 import { backgroundClient } from "../client";
 import { anchorContext } from "../solana";
@@ -70,7 +76,7 @@ export const approvedOrigins = selector<Array<string>>({
 });
 
 // This is the *active* username.
-export const user = atom<{ username: string; uuid: string }>({
+export const user = atom<{ username: string; uuid: string; jwt: string }>({
   key: "user",
   default: selector({
     key: "userDefault",
@@ -107,12 +113,23 @@ export const allUsers = selector({
   key: "allUsernamesDefault",
   get: async ({ get }) => {
     const background = get(backgroundClient);
-    get(user); // Use this to retriger a fetch when the active username changes.
+    get(allUsersTrigger); // Use this to retriger a fetch when the active username changes.
     return await background.request({
       method: UI_RPC_METHOD_ALL_USERS_READ,
       params: [],
     });
   },
+  set: ({ set }, value) => {
+    if (value instanceof DefaultValue) {
+      set(allUsersTrigger, (v) => v + 1);
+    }
+  },
+});
+
+// This atom is used for nothing other than re-triggering the allUsers fetch.
+export const allUsersTrigger = atom<number>({
+  key: "allUsersTrigger",
+  default: 0,
 });
 
 export * from "./xnft-preferences";

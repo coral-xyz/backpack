@@ -28,6 +28,7 @@ import {
   NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED,
   NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
+  NOTIFICATION_KEYRING_STORE_REMOVED_USER,
   NOTIFICATION_KEYRING_STORE_RESET,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_KEYRING_STORE_USERNAME_ACCOUNT_CREATED,
@@ -40,7 +41,7 @@ import {
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
 } from "@coral-xyz/common";
 import type { Commitment } from "@solana/web3.js";
-import { useSetRecoilState } from "recoil";
+import { useResetRecoilState, useSetRecoilState } from "recoil";
 
 import * as atoms from "../atoms";
 import { allPlugins } from "../hooks";
@@ -80,6 +81,7 @@ export function NotificationsProvider(props: any) {
   };
   const setKeyringStoreState = useSetRecoilState(atoms.keyringStoreState);
   const setActiveUser = useSetRecoilState(atoms.user);
+  const resetAllUsers = useResetRecoilState(atoms.allUsers);
   // Preferences.
   const setPreferences = useSetRecoilState(atoms.preferences);
   const setFeatureGates = useSetRecoilState(atoms.featureGates);
@@ -293,6 +295,9 @@ export function NotificationsProvider(props: any) {
           break;
         case NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED:
           handleActiveUserUpdated(notif);
+          break;
+        case NOTIFICATION_KEYRING_STORE_REMOVED_USER:
+          handleRemovedUser(notif);
           break;
         default:
           break;
@@ -562,6 +567,7 @@ export function NotificationsProvider(props: any) {
       setXnftPreferences(notif.data.xnftPreferences);
       setWalletData(notif.data.walletData);
       setActiveUser(notif.data.user);
+      resetAllUsers();
     };
 
     const handleActiveUserUpdated = (notif: Notification) => {
@@ -570,6 +576,11 @@ export function NotificationsProvider(props: any) {
       setXnftPreferences(notif.data.xnftPreferences);
       setWalletData(notif.data.walletData);
       setActiveUser(notif.data.user);
+      resetAllUsers();
+    };
+
+    const handleRemovedUser = (notif: Notification) => {
+      resetAllUsers();
     };
 
     //
