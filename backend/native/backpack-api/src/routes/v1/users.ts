@@ -171,7 +171,7 @@ router.get(
       try {
         user = await getUserByUsername(username);
       } catch {
-        return res.status(404).json({ msg: "User not found " });
+        return res.status(404).json({ msg: "User not found" });
       }
     }
 
