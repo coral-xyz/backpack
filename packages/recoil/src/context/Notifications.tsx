@@ -565,6 +565,7 @@ export function NotificationsProvider(props: any) {
       // Order of each setter matters here.
       setPreferences(notif.data.preferences);
       setXnftPreferences(notif.data.xnftPreferences);
+      setEnabledBlockchains(notif.data.enabledBlockchains);
       setWalletData(notif.data.walletData);
       setActiveUser(notif.data.user);
       resetAllUsers();
@@ -574,6 +575,7 @@ export function NotificationsProvider(props: any) {
       // Order of each setter matters here.
       setPreferences(notif.data.preferences);
       setXnftPreferences(notif.data.xnftPreferences);
+      setEnabledBlockchains(notif.data.enabledBlockchains);
       setWalletData(notif.data.walletData);
       setActiveUser(notif.data.user);
       resetAllUsers();
