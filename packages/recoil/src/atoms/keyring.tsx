@@ -5,6 +5,8 @@ import {
 } from "@coral-xyz/common";
 import { atom, selector } from "recoil";
 
+import { user } from "../atoms/preferences";
+
 import { backgroundClient } from "./client";
 
 export type KeyringStoreState = "locked" | "unlocked" | "needs-onboarding";
@@ -40,6 +42,8 @@ export const keyringType = atom<KeyringType | null>({
   default: selector({
     key: "keyringTypeDefault",
     get: ({ get }) => {
+      // Dependent on changes to the user
+      get(user);
       const background = get(backgroundClient);
       return background.request({
         method: UI_RPC_METHOD_KEYRING_TYPE_READ,
