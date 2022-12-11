@@ -9,6 +9,7 @@ import type {
   XnftPreference,
 } from "@coral-xyz/common";
 import {
+  BACKEND_API_URL,
   BACKEND_EVENT,
   Blockchain,
   deserializeTransaction,
@@ -635,6 +636,11 @@ export class Backend {
   }
 
   async userLogout(uuid: string): Promise<string> {
+    // Clear the jwt cookie if it exists. Don't block.
+    fetch(`${BACKEND_API_URL}/authenticate`, {
+      method: "DELETE",
+    });
+
     //
     // If we're logging out the last user, reset the entire app.
     //
