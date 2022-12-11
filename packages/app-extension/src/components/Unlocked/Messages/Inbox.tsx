@@ -18,6 +18,7 @@ export function Inbox() {
   const [searchFilter, setSearchFilter] = useState("");
   const [messagesLoading, setMessagesLoading] = useState(true);
   const [activeChats, setActiveChats] = useState<EnrichedInboxDb[]>([]);
+  const [requestCount, setRequestCount] = useState(0);
   const { push } = useNavigation();
   const [searchResults, setSearchResults] = useState<
     { image: string; id: string; username: string }[]
@@ -28,11 +29,17 @@ export function Inbox() {
     const json = await res.json();
     setMessagesLoading(false);
     setActiveChats(json.chats || []);
+    setRequestCount(json.requestCount || 0);
   };
 
   useEffect(() => {
     init();
   }, []);
+
+  const searchedUsersDistinct = searchResults.filter(
+    (result) =>
+      !activeChats.map((x) => x.remoteUsername).includes(result.username)
+  );
 
   return (
     <div className={classes.container}>
@@ -60,39 +67,21 @@ export function Inbox() {
           },
         }}
       />
-      <div
-        style={{
-          display: "flex",
-          marginBottom: 10,
-          justifyContent: "space-between",
-        }}
-      >
-        <div>
-          <div
-            className={classes.text}
-            style={{ cursor: "pointer" }}
-            onClick={() => {
-              push({
-                title: `Requests`,
-                componentId: NAV_COMPONENT_MESSAGE_REQUESTS,
-                componentProps: {},
-              });
-            }}
-          >
-            View Requests
-          </div>
-        </div>
-      </div>
       {messagesLoading && <MessagesSkeleton />}
-      {!messagesLoading && (
-        <MessageList
-          activeChats={activeChats.filter((x) =>
-            x.remoteUsername.includes(searchFilter)
-          )}
-        />
-      )}
-      {searchFilter.length >= 3 && searchResults.length !== 0 && (
-        <UserList users={searchResults} />
+      {!messagesLoading &&
+        activeChats.filter((x) => x.remoteUsername.includes(searchFilter))
+          .length > 0 && (
+          <MessageList
+            requestCount={searchFilter.length < 3 ? requestCount : 0}
+            activeChats={activeChats.filter((x) =>
+              x.remoteUsername.includes(searchFilter)
+            )}
+          />
+        )}
+      {searchFilter.length >= 3 && searchedUsersDistinct.length !== 0 && (
+        <div style={{ marginTop: 10 }}>
+          <UserList users={searchedUsersDistinct} />
+        </div>
       )}
     </div>
   );
