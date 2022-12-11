@@ -1,7 +1,7 @@
 // TODO(peter) move all the RPC/onboarding function shit here & out of every individual screen (eventually)
+import { createContext, useContext, useState } from "react";
 import type { BlockchainKeyringInit, KeyringType } from "@coral-xyz/common";
 import { Blockchain } from "@coral-xyz/common";
-import { createContext, useContext, useState } from "react";
 
 type BlockchainSelectOption = {
   id: string;
@@ -44,6 +44,7 @@ const BLOCKCHAIN_OPTIONS: BlockchainSelectOption[] = [
 
 export type OnboardingAction = "import" | "create" | "recover"; // TODO(peter) move to OnboardingProvider
 export type OnboardingData = {
+  complete: boolean;
   inviteCode: string | undefined;
   username: string | null;
   action: string | null; // TODO consider this default of 'welcome' maybe
@@ -57,6 +58,7 @@ export type OnboardingData = {
 };
 
 const defaults = {
+  complete: false,
   inviteCode: undefined,
   username: null,
   action: null,

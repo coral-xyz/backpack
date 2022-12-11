@@ -1,10 +1,10 @@
+import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { CallMade, ChevronRight } from "@mui/icons-material";
 import {
   Divider,
   List as MuiList,
   ListItem as MuiListItem,
 } from "@mui/material";
-import { ChevronRight, CallMade } from "@mui/icons-material";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
 
 const useStyles = styles((theme) => ({
   settingsContentListItem: {

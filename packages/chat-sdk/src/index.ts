@@ -1,1 +1,1 @@
-export * from "./ChatManager";
+export * from "./components/ChatRoom";

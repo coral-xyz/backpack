@@ -1,13 +1,14 @@
 import { EventEmitter } from "eventemitter3";
-import * as serverUi from "./frontend/server-ui";
-import * as serverInjected from "./frontend/server-injected";
-import * as solanaConnection from "./frontend/solana-connection";
-import * as ethereumConnection from "./frontend/ethereum-connection";
+
 import * as coreBackend from "./backend/core";
-import * as solanaConnectionBackend from "./backend/solana-connection";
 import * as ethereumConnectionBackend from "./backend/ethereum-connection";
-import type { Background, Config } from "./types";
 import { initPushNotificationHandlers } from "./backend/push-notifications";
+import * as solanaConnectionBackend from "./backend/solana-connection";
+import * as ethereumConnection from "./frontend/ethereum-connection";
+import * as serverInjected from "./frontend/server-injected";
+import * as serverUi from "./frontend/server-ui";
+import * as solanaConnection from "./frontend/solana-connection";
+import type { Background, Config } from "./types";
 
 export * from "./backend/keyring";
 

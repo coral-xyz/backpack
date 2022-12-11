@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { TextField, Typography } from "@mui/material";
+import { UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE } from "@coral-xyz/common";
+import { TextField, Typography } from "@mui/material";
+
 import { List, ListItem, PrimaryButton } from "../../../../common";
+import { InputListItem, Inputs } from "../../../../common/Inputs";
 import { useDrawerContext } from "../../../../common/Layout/Drawer";
 import { useNavStack } from "../../../../common/Layout/NavStack";
-import { Inputs, InputListItem } from "../../../../common/Inputs";
 
 const useStyles = styles((theme) => ({
   textFieldRoot: {

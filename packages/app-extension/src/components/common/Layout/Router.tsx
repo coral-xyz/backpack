@@ -1,35 +1,50 @@
-import React, { useState, useEffect } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import {
+  Navigate,
+  Route,
+  Routes,
   useLocation,
   useSearchParams,
-  Routes,
-  Route,
-  Navigate,
-  useNavigate,
 } from "react-router-dom";
-import { AnimatePresence } from "framer-motion";
-import { Typography } from "@mui/material";
 import {
+  TAB_SET,
+  UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
+} from "@coral-xyz/common/src/constants";
+import type { SearchParamsFor } from "@coral-xyz/recoil";
+import {
+  PluginManager,
+  useBackgroundClient,
+  useClosePlugin,
   useDecodedSearchParams,
+  useFreshPlugin,
   useNavigation,
   useRedirectUrl,
-  useFreshPlugin,
-  PluginManager,
+  useUpdateSearchParams,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import type { SearchParamsFor } from "@coral-xyz/recoil";
+import { Typography } from "@mui/material";
+import { AnimatePresence } from "framer-motion";
+
+import { WithDrawer } from "../../common/Layout/Drawer";
+import { Apps } from "../../Unlocked/Apps";
+import { PluginApp } from "../../Unlocked/Apps/Plugin";
 import { Balances } from "../../Unlocked/Balances";
 import { Token } from "../../Unlocked/Balances/TokensWidget/Token";
-import { Apps } from "../../Unlocked/Apps";
-import { _PluginDisplay } from "../../Unlocked/Apps/Plugin";
+import { ChatDrawer } from "../../Unlocked/Messages/ChatDrawer";
+import { ChatScreen } from "../../Unlocked/Messages/ChatScreen";
+import { Inbox } from "../../Unlocked/Messages/Inbox";
+import { ProfileScreen } from "../../Unlocked/Messages/ProfileScreen";
+import { RequestsScreen } from "../../Unlocked/Messages/RequestsScreen";
 import { Nfts } from "../../Unlocked/Nfts";
-import { Swap } from "../../Unlocked/Swap";
-import { NftsDetail, NftOptionsButton } from "../../Unlocked/Nfts/Detail";
 import { NftsCollection } from "../../Unlocked/Nfts/Collection";
+import { NftOptionsButton, NftsDetail } from "../../Unlocked/Nfts/Detail";
+import { NftChat, NftsExperience } from "../../Unlocked/Nfts/Experience";
 import { SettingsButton } from "../../Unlocked/Settings";
-import { WithNav, NavBackButton } from "./Nav";
+import { Swap } from "../../Unlocked/Swap";
+import { Loading } from "..";
+
+import { NavBackButton, WithNav } from "./Nav";
 import { WithMotion } from "./NavStack";
-import { WithDrawer } from "../../common/Layout/Drawer";
 
 export function Router() {
   const location = useLocation();
@@ -38,10 +53,16 @@ export function Router() {
       <Routes location={location} key={location.pathname}>
         <Route path="/balances" element={<BalancesPage />} />
         <Route path="/balances/token" element={<TokenPage />} />
+        <Route path="/messages" element={<MessagesPage />} />
+        <Route path="/messages/chat" element={<ChatPage />} />
+        <Route path="/messages/profile" element={<ProfilePage />} />
+        <Route path="/messages/requests" element={<RequestsPage />} />
         <Route path="/apps" element={<AppsPage />} />
         <Route path="/nfts" element={<NftsPage />} />
         {/*<Route path="/swap" element={<SwapPage />} />*/}
         <Route path="/nfts/collection" element={<NftsCollectionPage />} />
+        <Route path="/nfts/experience" element={<NftsExperiencePage />} />
+        <Route path="/nfts/chat" element={<NftsChatPage />} />
         <Route path="/nfts/detail" element={<NftsDetailPage />} />
         <Route path="*" element={<Redirect />} />
       </Routes>
@@ -68,14 +89,47 @@ function NftsPage() {
   return <NavScreen component={<Nfts />} />;
 }
 
+function NftsChatPage() {
+  const { props } = useDecodedSearchParams();
+  return <NavScreen component={<NftChat {...props} />} />;
+}
+
+function NftsExperiencePage() {
+  const { props } = useDecodedSearchParams();
+  return <NavScreen component={<NftsExperience {...props} />} />;
+}
+
 function NftsCollectionPage() {
   const { props } = useDecodedSearchParams();
+  // @ts-expect-error TS2322: Property 'id' is missing in type '{}' but required in type '{ id: string; }'
   return <NavScreen component={<NftsCollection {...props} />} />;
 }
 
 function NftsDetailPage() {
   const { props } = useDecodedSearchParams();
+  // @ts-expect-error TS2322: Property 'nftId' is missing in type '{}' but required in type '{ nftId: string; }'.
   return <NavScreen component={<NftsDetail {...props} />} />;
+}
+
+function MessagesPage() {
+  return <NavScreen component={<Inbox />} />;
+}
+
+function ChatPage() {
+  const { props } = useDecodedSearchParams();
+  // @ts-ignore
+  return <NavScreen component={<ChatScreen userId={props.userId} />} />;
+}
+
+function RequestsPage() {
+  // @ts-ignore
+  return <NavScreen component={<RequestsScreen />} />;
+}
+
+function ProfilePage() {
+  const { props } = useDecodedSearchParams();
+  // @ts-ignore
+  return <NavScreen component={<ProfileScreen userId={props.userId} />} />;
 }
 
 function AppsPage() {
@@ -95,7 +149,8 @@ function SwapPage() {
 
 function NavScreen({ component }: { component: React.ReactNode }) {
   const { title, isRoot, pop } = useNavigation();
-  const { style, navButtonLeft, navButtonRight } = useNavBar();
+  const { style, navButtonLeft, navButtonRight, notchViewComponent } =
+    useNavBar();
 
   const _navButtonLeft = navButtonLeft ? (
     navButtonLeft
@@ -118,13 +173,15 @@ function NavScreen({ component }: { component: React.ReactNode }) {
       >
         <WithNav
           title={title}
+          notchViewComponent={notchViewComponent}
           navButtonLeft={_navButtonLeft}
           navButtonRight={navButtonRight}
           navbarStyle={style}
         >
           <NavBootstrap>
             <PluginManager>
-              <NavScreenComponent component={component} />
+              {component}
+              <PluginDrawer />
             </PluginManager>
           </NavBootstrap>
         </WithNav>
@@ -133,51 +190,33 @@ function NavScreen({ component }: { component: React.ReactNode }) {
   );
 }
 
-function NavScreenComponent({ component }: { component: React.ReactNode }) {
-  const [searchParams] = useSearchParams();
-  const pluginProps = searchParams.get("pluginProps");
-
-  if (pluginProps) {
-    return (
-      <>
-        {component}
-        <PluginDrawer />
-      </>
-    );
-  }
-
-  return <>{component}</>;
-}
-
 function PluginDrawer() {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [searchParams] = useSearchParams();
+  const closePlugin = useClosePlugin();
+
   const pluginProps = searchParams.get("pluginProps");
-  const { xnftAddress } = JSON.parse(decodeURIComponent(pluginProps!));
-  const xnftPlugin = useFreshPlugin(xnftAddress);
-  const navigate = useNavigate();
+  const { xnftAddress } = JSON.parse(decodeURIComponent(pluginProps ?? "{}"));
 
   useEffect(() => {
-    if (!openDrawer && xnftPlugin.state) {
+    if (xnftAddress) {
       setOpenDrawer(true);
     }
-  }, [xnftPlugin.state]);
+  }, [xnftAddress]);
 
   return (
     <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-      {xnftPlugin.result && (
-        <_PluginDisplay
-          plugin={xnftPlugin.result!}
-          closePlugin={() => {
-            setOpenDrawer(false);
-            setTimeout(() => {
-              searchParams.delete("pluginProps");
-              const newUrl = `${location.pathname}?${searchParams.toString()}`;
-              navigate(newUrl);
-            }, 100);
-          }}
-        />
-      )}
+      <Suspense fallback={<Loading />}>
+        {xnftAddress && (
+          <PluginApp
+            xnftAddress={xnftAddress}
+            closePlugin={() => {
+              setOpenDrawer(false);
+              setTimeout(closePlugin, 100);
+            }}
+          />
+        )}
+      </Suspense>
     </WithDrawer>
   );
 }
@@ -205,12 +244,17 @@ function useNavBar() {
   let navStyle = {
     fontSize: "18px",
   } as React.CSSProperties;
+  if (pathname === "/messages/chat") {
+    navStyle.background = theme.custom.colors.bg3;
+  }
 
   if (isRoot) {
     const emoji = pathname.startsWith("/balances")
       ? "💰"
       : pathname.startsWith("/apps")
       ? "👾"
+      : pathname.startsWith("/messages")
+      ? "💬"
       : "🎨";
     navButtonRight = <SettingsButton />;
     navButtonLeft = (
@@ -237,6 +281,8 @@ function useNavBar() {
             ? "Balances"
             : pathname.startsWith("/apps")
             ? "Applications"
+            : pathname.startsWith("/messages")
+            ? "Messages"
             : "Collectibles"}
         </Typography>
       </div>
@@ -247,10 +293,16 @@ function useNavBar() {
     navButtonRight = <NftOptionsButton />;
   }
 
+  const notchViewComponent =
+    pathname === "/messages/chat" ? (
+      <ChatDrawer setOpenDrawer={() => {}} />
+    ) : null;
+
   return {
     navButtonRight,
     navButtonLeft,
     style: navStyle,
+    notchViewComponent,
   };
 }
 

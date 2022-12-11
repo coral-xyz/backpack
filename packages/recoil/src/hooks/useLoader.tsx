@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { RecoilValue, useRecoilValueLoadable } from "recoil";
+import type { RecoilValue } from "recoil";
+import { useRecoilValueLoadable } from "recoil";
 
 /**
  * This is a hook to maintain state while recoil is updating.

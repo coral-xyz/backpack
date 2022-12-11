@@ -1,94 +1,98 @@
-import { useEffect, useState, Suspense } from "react";
-import * as bs58 from "bs58";
-import { ethers } from "ethers";
-import { Box, Typography, IconButton } from "@mui/material";
+import { Suspense, useEffect, useState } from "react";
 import {
-  ExpandMore,
-  ExpandLess,
-  Add,
-  Lock,
-  AccountCircleOutlined,
-  Tab as WindowIcon,
-  Settings,
-  People,
-} from "@mui/icons-material";
-import { Keypair } from "@solana/web3.js";
-import { styles, useCustomTheme, HOVER_OPACITY } from "@coral-xyz/themes";
-import {
-  useBackgroundClient,
-  useWalletPublicKeys,
-  useActiveWallets,
-  useBlockchainLogo,
-  useUsername,
-  useAvatarUrl,
-  WalletPublicKeys,
-} from "@coral-xyz/recoil";
-import {
-  openPopupWindow,
-  Blockchain,
   BACKPACK_FEATURE_POP_MODE,
   BACKPACK_FEATURE_XNFT,
+  Blockchain,
+  DISCORD_INVITE_LINK,
+  MESSAGES_ENABLED,
+  NOTIFICATIONS_ENABLED,
+  openPopupWindow,
+  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
-  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-  DISCORD_INVITE_LINK,
 } from "@coral-xyz/common";
+import type { WalletPublicKeys } from "@coral-xyz/recoil";
+import {
+  useActiveWallets,
+  useAvatarUrl,
+  useBackgroundClient,
+  useBlockchainLogo,
+  useFeatureGates,
+  useWalletPublicKeys,
+} from "@coral-xyz/recoil";
+import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
+import {
+  AccountCircleOutlined,
+  Add,
+  ExpandLess,
+  ExpandMore,
+  Lock,
+  Settings,
+  Tab as WindowIcon,
+} from "@mui/icons-material";
+import { Box, IconButton, Typography } from "@mui/material";
+import { Keypair } from "@solana/web3.js";
+import * as bs58 from "bs58";
+import { ethers } from "ethers";
+
 import {
   Header,
+  LaunchDetail,
   List,
   ListItem,
-  PushDetail,
-  LaunchDetail,
   PrimaryButton,
+  PushDetail,
   SubtextParagraph,
   WalletAddress,
 } from "../../../components/common";
+import { ContactsIcon, DiscordIcon, GridIcon } from "../../common/Icon";
+import { TextInput } from "../../common/Inputs";
 import {
-  WithDrawer,
   CloseButton,
   useDrawerContext,
+  WithDrawer,
   WithMiniDrawer,
 } from "../../common/Layout/Drawer";
 import {
-  useNavStack,
   NavStackEphemeral,
   NavStackScreen,
+  useNavStack,
 } from "../../common/Layout/NavStack";
-import {
-  ShowPrivateKeyWarning,
-  ShowPrivateKey,
-} from "./YourAccount/ShowPrivateKey";
-import {
-  ShowRecoveryPhraseWarning,
-  ShowRecoveryPhrase,
-} from "./YourAccount/ShowRecoveryPhrase";
-import { Preferences } from "./Preferences";
-import { PreferencesSolana } from "./Preferences/Solana";
-import { PreferencesEthereum } from "./Preferences/Ethereum";
-import { PreferencesAutoLock } from "./Preferences/AutoLock";
-import { PreferencesTrustedSites } from "./Preferences/TrustedSites";
-import { PreferencesSolanaConnection } from "./Preferences/Solana/ConnectionSwitch";
-import { PreferencesSolanaCommitment } from "./Preferences/Solana/Commitment";
-import { PreferencesSolanaExplorer } from "./Preferences/Solana/Explorer";
-import { PreferencesEthereumConnection } from "./Preferences/Ethereum/Connection";
-import { ChangePassword } from "./YourAccount/ChangePassword";
-import { ResetWarning } from "../../Locked/Reset/ResetWarning";
 import { Reset } from "../../Locked/Reset";
-import { AddConnectWalletMenu, ConfirmCreateWallet } from "./AddConnectWallet";
-import { YourAccount } from "./YourAccount";
+import { ResetWarning } from "../../Locked/Reset/ResetWarning";
+import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
+import { NotificationButton } from "../Balances/Notifications";
+import { Contacts } from "../Messages/Contacts";
+
+import { PreferencesAutoLock } from "./Preferences/AutoLock";
+import { PreferencesEthereum } from "./Preferences/Ethereum";
+import { PreferencesEthereumConnection } from "./Preferences/Ethereum/Connection";
+import { PreferenceEthereumCustomRpcUrl } from "./Preferences/Ethereum/CustomRpcUrl";
+import { PreferencesSolana } from "./Preferences/Solana";
+import { PreferencesSolanaCommitment } from "./Preferences/Solana/Commitment";
+import { PreferencesSolanaConnection } from "./Preferences/Solana/ConnectionSwitch";
+import { PreferenceSolanaCustomRpcUrl } from "./Preferences/Solana/CustomRpcUrl";
+import { PreferencesSolanaExplorer } from "./Preferences/Solana/Explorer";
+import { PreferencesTrustedSites } from "./Preferences/TrustedSites";
+import { XnftDetail } from "./Xnfts/Detail";
+import { ChangePassword } from "./YourAccount/ChangePassword";
 import { EditWallets } from "./YourAccount/EditWallets";
 import { RemoveWallet } from "./YourAccount/EditWallets/RemoveWallet";
 import { RenameWallet } from "./YourAccount/EditWallets/RenameWallet";
 import { WalletDetail } from "./YourAccount/EditWallets/WalletDetail";
-import { DiscordIcon, GridIcon } from "../../common/Icon";
+import {
+  ShowPrivateKey,
+  ShowPrivateKeyWarning,
+} from "./YourAccount/ShowPrivateKey";
+import {
+  ShowRecoveryPhrase,
+  ShowRecoveryPhraseWarning,
+} from "./YourAccount/ShowRecoveryPhrase";
+import { AddConnectWalletMenu, ConfirmCreateWallet } from "./AddConnectWallet";
+import { Preferences } from "./Preferences";
+import { UserAccountsMenuButton } from "./UsernamesMenu";
 import { XnftSettings } from "./Xnfts";
-import { XnftDetail } from "./Xnfts/Detail";
-import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
-import { PreferenceSolanaCustomRpcUrl } from "./Preferences/Solana/CustomRpcUrl";
-import { PreferenceEthereumCustomRpcUrl } from "./Preferences/Ethereum/CustomRpcUrl";
-import WaitingRoom from "../../common/WaitingRoom";
-import { TextInput } from "../../common/Inputs";
-import { NotificationButton } from "../Balances/Notifications";
+import { YourAccount } from "./YourAccount";
 
 const useStyles = styles((theme) => ({
   addConnectWalletLabel: {
@@ -134,11 +138,11 @@ const useStyles = styles((theme) => ({
 }));
 
 export function SettingsButton() {
+  const featureGates = useFeatureGates();
   return (
     <div style={{ display: "flex" }}>
       <RecentActivityButton />
-      {/* Enable post designs */}
-      {/*<NotificationButton />*/}
+      {featureGates[NOTIFICATIONS_ENABLED] && <NotificationButton />}
       <div style={{ width: "16px" }} />
       <AvatarButton />
     </div>
@@ -194,8 +198,8 @@ function AvatarButton() {
               component={(props: any) => <YourAccount {...props} />}
             />
             <NavStackScreen
-              name={"waiting-room"}
-              component={(props: any) => <WaitingRoom onboarded {...props} />}
+              name={"contacts-list"}
+              component={(props: any) => <Contacts {...props} />}
             />
             <NavStackScreen
               name={"preferences"}
@@ -318,7 +322,7 @@ function SettingsMenu() {
   const { setTitle } = useNavStack();
 
   useEffect(() => {
-    setTitle("Profile");
+    setTitle(<UserAccountsMenuButton />);
   }, [setTitle]);
 
   return (
@@ -340,11 +344,10 @@ function _SettingsContent() {
 }
 
 function AvatarHeader() {
-  const username = useUsername();
   const theme = useCustomTheme();
   const avatarUrl = useAvatarUrl(64);
   return (
-    <div style={{ marginBottom: "40px" }}>
+    <div style={{ marginTop: "16px", marginBottom: "36px" }}>
       <div
         style={{
           background: theme.custom.colors.avatarIconBackground,
@@ -369,21 +372,6 @@ function AvatarHeader() {
           }}
         />
       </div>
-      {username && (
-        <Typography
-          style={{
-            textAlign: "center",
-            color: theme.custom.colors.fontColor,
-            fontWeight: 500,
-            fontSize: "18px",
-            lineHeight: "28px",
-            marginTop: "8px",
-            marginBottom: "12px",
-          }}
-        >
-          @{username}
-        </Typography>
-      )}
     </div>
   );
 }
@@ -771,6 +759,7 @@ function SettingsList() {
   const theme = useCustomTheme();
   const nav = useNavStack();
   const background = useBackgroundClient();
+  const featureGates = useFeatureGates();
 
   const lockWallet = () => {
     background
@@ -836,16 +825,19 @@ function SettingsList() {
 
   const discordList = [
     {
-      label: "Waiting Room",
-      onClick: () => nav.push("waiting-room"),
-      icon: (props: any) => <People {...props} />,
-      detailIcon: <PushDetail />,
-    },
-    {
       label: "Need help? Hop into Discord",
       onClick: () => window.open(DISCORD_INVITE_LINK, "_blank"),
       icon: (props: any) => <DiscordIcon {...props} />,
       detailIcon: <LaunchDetail />,
+    },
+  ];
+
+  const contactList = [
+    {
+      label: "Contacts",
+      onClick: () => nav.push("contacts-list"),
+      icon: (props: any) => <ContactsIcon {...props} />,
+      detailIcon: <PushDetail />,
     },
   ];
 
@@ -902,6 +894,61 @@ function SettingsList() {
           );
         })}
       </List>
+
+      {featureGates[MESSAGES_ENABLED] && (
+        <List
+          style={{
+            marginTop: "24px",
+            marginBottom: "16px",
+            border: `${theme.custom.colors.borderFull}`,
+            borderRadius: "10px",
+          }}
+        >
+          {contactList.map((s, idx) => {
+            return (
+              <ListItem
+                key={s.label}
+                isFirst={idx === 0}
+                isLast={idx === discordList.length - 1}
+                onClick={s.onClick}
+                id={s.label}
+                style={{
+                  height: "44px",
+                  padding: "12px",
+                }}
+                detail={s.detailIcon}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    flex: 1,
+                  }}
+                >
+                  {s.icon({
+                    style: {
+                      color: theme.custom.colors.icon,
+                      height: "24px",
+                      width: "24px",
+                    },
+                    fill: theme.custom.colors.icon,
+                  })}
+                  <Typography
+                    style={{
+                      marginLeft: "8px",
+                      fontWeight: 500,
+                      fontSize: "16px",
+                      lineHeight: "24px",
+                    }}
+                  >
+                    {s.label}
+                  </Typography>
+                </div>
+              </ListItem>
+            );
+          })}
+        </List>
+      )}
+
       <List
         style={{
           marginTop: "24px",
@@ -1071,16 +1118,7 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
           />
         </Box>
       </form>
-      <WithMiniDrawer
-        openDrawer={openDrawer}
-        setOpenDrawer={setOpenDrawer}
-        backdropProps={{
-          style: {
-            opacity: 0.8,
-            background: "#18181b",
-          },
-        }}
-      >
+      <WithMiniDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
         <ConfirmCreateWallet
           blockchain={blockchain}
           publicKey={newPublicKey}

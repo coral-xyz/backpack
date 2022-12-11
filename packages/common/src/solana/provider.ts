@@ -1,10 +1,12 @@
-import * as bs58 from "bs58";
 import type { Transaction, TransactionSignature } from "@solana/web3.js";
+import * as bs58 from "bs58";
+
 import {
-  UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION,
   UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS,
   UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
+  UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION,
 } from "../constants";
+
 import type { SolanaContext } from ".";
 
 // Provider api used by the app UI. Spiritually the same as the injected

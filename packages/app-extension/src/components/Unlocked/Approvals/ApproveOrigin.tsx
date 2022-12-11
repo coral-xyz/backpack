@@ -1,9 +1,11 @@
-import { List, ListItem, ListItemIcon, Typography } from "@mui/material";
-import _CheckIcon from "@mui/icons-material/Check";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { useApproveOrigin, useBlockchainActiveWallet } from "@coral-xyz/recoil";
-import { WithApproval, displayOriginTitle } from ".";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
+import _CheckIcon from "@mui/icons-material/Check";
+import { List, ListItem, ListItemIcon, Typography } from "@mui/material";
+
 import { walletAddressDisplay } from "../../../components/common";
+
+import { displayOriginTitle, WithApproval } from ".";
 
 const useStyles = styles((theme) => ({
   title: {

@@ -3,10 +3,11 @@
 // the background script.
 //
 
-import { generateUniqueId } from "@coral-xyz/common-public";
 import type { RpcRequest } from "@coral-xyz/common-public";
+import { generateUniqueId } from "@coral-xyz/common-public";
+
 import { BrowserRuntimeCommon } from "../browser";
-import type { RpcResponse, Notification } from "../types";
+import type { Notification, RpcResponse } from "../types";
 
 export interface BackgroundClient {
   request<T = any>({ method, params }: RpcRequest): Promise<RpcResponse<T>>;
@@ -30,15 +31,33 @@ export class ChannelAppUi {
   }
 }
 
+// This check is necessary otherwise chrome.runtime.id will explode in React Native
+function isReactNative() {
+  if (typeof window !== "undefined" && typeof window.document !== "undefined") {
+    return false;
+  }
+
+  return true;
+}
+
 export class ChannelAppUiServer {
   constructor(private name: string) {}
 
   public handler(handlerFn: (req: RpcRequest) => Promise<RpcResponse>) {
     BrowserRuntimeCommon.addEventListenerFromBackground(
-      (msg: any, _sender: any, sendResponse: any) => {
+      (msg: any, sender: any, sendResponse: any) => {
         if (msg.channel !== this.name) {
           return;
         }
+
+        if (!isReactNative()) {
+          if (chrome && chrome?.runtime?.id) {
+            if (sender.id !== chrome.runtime.id) {
+              return;
+            }
+          }
+        }
+
         const id = msg.data.id;
         handlerFn(msg.data)
           .then((resp) => {
@@ -59,10 +78,19 @@ export class ChannelAppUiNotifications {
 
   public onNotification(handlerFn: (notif: Notification) => void) {
     BrowserRuntimeCommon.addEventListenerFromAppUi(
-      (msg: any, _sender: any, sendResponse: any) => {
+      (msg: any, sender: any, sendResponse: any) => {
         if (msg.channel !== this.name) {
           return;
         }
+
+        if (!isReactNative()) {
+          if (chrome && chrome?.runtime?.id) {
+            if (sender.id !== chrome.runtime.id) {
+              return;
+            }
+          }
+        }
+
         handlerFn(msg.data);
         sendResponse({ result: "success" });
       }

@@ -1,9 +1,9 @@
-import { PublicKey } from "@solana/web3.js";
+import { externalResourceUri } from "@coral-xyz/common-public";
+import type { Provider } from "@project-serum/anchor";
 import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
-import type { Provider } from "@project-serum/anchor";
 import { metadata } from "@project-serum/token";
-import { externalResourceUri } from "@coral-xyz/common-public";
+import { PublicKey } from "@solana/web3.js";
 
 export const XNFT_PROGRAM_ID = new PublicKey(
   "BaHSGaf883GA3u8qSC5wNigcXyaScJLSBJZbALWvPcjs"
@@ -14,7 +14,6 @@ export async function fetchXnfts(
   wallet: PublicKey
 ): Promise<Array<{ publicKey: PublicKey; medtadata: any; metadataBlob: any }>> {
   const client = xnftClient(provider);
-
   //
   // Fetch all xnfts installed by this user.
   //
@@ -104,6 +103,63 @@ export async function fetchXnfts(
   return xnfts;
 }
 
+export async function fetchXnftsFromPubkey(
+  provider: Provider,
+  xnfts: string[]
+): Promise<{ xnftId: string; image?: string; title?: string }[]> {
+  const client = xnftClient(provider);
+  const accounts = await Promise.all(
+    xnfts.map(async (xnft) => ({
+      xnftId: xnft,
+      account: await client.account.xnft.fetch(xnft),
+    }))
+  );
+
+  const metadataAccounts = (
+    await anchor.utils.rpc.getMultipleAccounts(
+      provider.connection,
+      accounts.map((x) => x.account.masterMetadata)
+    )
+  ).map((t, index) => {
+    if (!t) {
+      return null;
+    }
+
+    return {
+      xnftMetadata: metadata.decodeMetadata(t.account.data),
+      xnftId: accounts[index].xnftId,
+    };
+  });
+
+  const xnftMetadataBlobs = await Promise.all(
+    metadataAccounts.map(async (blob) => {
+      if (blob?.xnftMetadata) {
+        return {
+          externalMetadata: await fetch(
+            externalResourceUri(blob.xnftMetadata.data.uri)
+          ).then((r) => r.json()),
+          xnftId: blob.xnftId,
+        };
+      }
+      return {
+        xnftId: blob?.xnftId,
+        externalMetadata: {}, // TODO: Add default image here?
+      };
+    })
+  );
+
+  return xnfts.map((xnftId) => {
+    const metadataBlob = xnftMetadataBlobs.find(
+      (blob) => blob.xnftId === xnftId
+    )?.externalMetadata;
+    return {
+      xnftId,
+      image: externalResourceUri(metadataBlob.image),
+      title: metadataBlob.name,
+    };
+  });
+}
+
 export async function fetchXnft(
   provider: Provider,
   xnft: PublicKey
@@ -140,7 +196,7 @@ export function xnftClient(provider: Provider): Program<Xnft> {
   return new Program<Xnft>(IDL, XNFT_PROGRAM_ID, provider);
 }
 
-type Xnft = {
+export type Xnft = {
   version: "0.1.0";
   name: "xnft";
   constants: [
@@ -1070,7 +1126,7 @@ type Xnft = {
   ];
 };
 
-const IDL: Xnft = {
+export const IDL: Xnft = {
   version: "0.1.0",
   name: "xnft",
   constants: [

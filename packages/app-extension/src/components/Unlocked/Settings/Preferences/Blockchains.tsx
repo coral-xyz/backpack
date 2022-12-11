@@ -1,7 +1,6 @@
 import { useState } from "react";
+import type { Blockchain, BlockchainKeyringInit } from "@coral-xyz/common";
 import {
-  Blockchain,
-  BlockchainKeyringInit,
   DerivationPath,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
@@ -13,11 +12,13 @@ import {
   useEnabledBlockchains,
   useKeyringType,
 } from "@coral-xyz/recoil";
-import { WithCopyTooltip } from "../../../common/WithCopyTooltip";
-import { SwitchToggle } from ".";
-import { SettingsList } from "../../../common/Settings/List";
-import { HardwareOnboard } from "../../../Onboarding/pages/HardwareOnboard";
+
 import { WithDrawer } from "../../../common/Layout/Drawer";
+import { SettingsList } from "../../../common/Settings/List";
+import { WithCopyTooltip } from "../../../common/WithCopyTooltip";
+import { HardwareOnboard } from "../../../Onboarding/pages/HardwareOnboard";
+
+import { SwitchToggle } from ".";
 
 export function PreferencesBlockchains({
   blockchain,
@@ -129,7 +130,6 @@ export function PreferencesBlockchains({
           action={"create"}
           onComplete={handleHardwareOnboardComplete}
           onClose={() => setOpenDrawer(false)}
-          requireSignature={false}
         />
       </WithDrawer>
     </>

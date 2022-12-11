@@ -1,5 +1,19 @@
 import { useEffect, useState } from "react";
-import { ethers, BigNumber } from "ethers";
+import {
+  accountDerivationPath,
+  Blockchain,
+  DEFAULT_SOLANA_CLUSTER,
+  DerivationPath,
+  derivationPathPrefix,
+  EthereumConnectionUrl,
+  UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
+  UI_RPC_METHOD_PREVIEW_PUBKEYS,
+} from "@coral-xyz/common";
+import { useBackgroundClient } from "@coral-xyz/recoil";
+import { useCustomTheme } from "@coral-xyz/themes";
+import Ethereum from "@ledgerhq/hw-app-eth";
+import Solana from "@ledgerhq/hw-app-solana";
+import type Transport from "@ledgerhq/hw-transport";
 import {
   Box,
   List,
@@ -7,30 +21,16 @@ import {
   ListItemText,
   MenuItem,
 } from "@mui/material";
-import Ethereum from "@ledgerhq/hw-app-eth";
-import Solana from "@ledgerhq/hw-app-solana";
-import Transport from "@ledgerhq/hw-transport";
-import { Connection as SolanaConnection, PublicKey } from "@solana/web3.js";
 import * as anchor from "@project-serum/anchor";
-import { useBackgroundClient } from "@coral-xyz/recoil";
-import {
-  accountDerivationPath,
-  derivationPathPrefix,
-  Blockchain,
-  DerivationPath,
-  EthereumConnectionUrl,
-  DEFAULT_SOLANA_CLUSTER,
-  UI_RPC_METHOD_PREVIEW_PUBKEYS,
-  UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
-} from "@coral-xyz/common";
-import { useCustomTheme } from "@coral-xyz/themes";
+import { Connection as SolanaConnection, PublicKey } from "@solana/web3.js";
+import { BigNumber, ethers } from "ethers";
+
 import {
   Checkbox,
   Header,
   Loading,
   PrimaryButton,
   SubtextParagraph,
-  TextField,
   walletAddressDisplay,
 } from "../../common";
 import { TextInput } from "../Inputs";

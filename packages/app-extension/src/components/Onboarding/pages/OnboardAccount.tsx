@@ -1,42 +1,47 @@
 import { useEffect, useState } from "react";
-import {
+import type {
   Blockchain,
   BlockchainKeyringInit,
-  DerivationPath,
   KeyringType,
+} from "@coral-xyz/common";
+import {
   BACKPACK_FEATURE_USERNAMES,
+  DerivationPath,
+  getCreateMessage,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
-  UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET,
+  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { encode } from "bs58";
-import { KeyringTypeSelector } from "./KeyringTypeSelector";
-import { BlockchainSelector } from "./BlockchainSelector";
-import { HardwareOnboard } from "./HardwareOnboard";
-import { CreateOrImportWallet } from "./CreateOrImportWallet";
-import { Finish } from "./Finish";
-import { InviteCodeForm } from "./InviteCodeForm";
-import { UsernameForm } from "./UsernameForm";
-import { MnemonicInput } from "../../common/Account/MnemonicInput";
+
+import { useSteps } from "../../../hooks/useSteps";
 import { CreatePassword } from "../../common/Account/CreatePassword";
-import {
-  ImportAccounts,
-  SelectedAccount,
-} from "../../common/Account/ImportAccounts";
+import type { SelectedAccount } from "../../common/Account/ImportAccounts";
+import { ImportAccounts } from "../../common/Account/ImportAccounts";
+import { MnemonicInput } from "../../common/Account/MnemonicInput";
 import { WithContaineredDrawer } from "../../common/Layout/Drawer";
 import { NavBackButton, WithNav } from "../../common/Layout/Nav";
-import { useSteps } from "../../../hooks/useSteps";
+
+import { BlockchainSelector } from "./BlockchainSelector";
+import { CreateOrImportWallet } from "./CreateOrImportWallet";
+import { Finish } from "./Finish";
+import { HardwareOnboard } from "./HardwareOnboard";
+import { InviteCodeForm } from "./InviteCodeForm";
+import { KeyringTypeSelector } from "./KeyringTypeSelector";
+import { UsernameForm } from "./UsernameForm";
 
 export const OnboardAccount = ({
   onWaiting,
   onRecover,
   containerRef,
   navProps,
+  isAddingAccount,
 }: {
   onWaiting: () => void;
   onRecover: () => void;
   containerRef: any;
   navProps: any;
+  isAddingAccount?: boolean;
 }) => {
   const { step, nextStep, prevStep } = useSteps();
   const background = useBackgroundClient();
@@ -100,16 +105,16 @@ export const OnboardAccount = ({
       publicKey = publicKeys[accountIndex];
     }
     const signature = await background.request({
-      method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET,
+      method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
       params: [
         blockchain,
-        // Sign the invite code, or an empty string if no invite code
-        // TODO setup a nonce based system
-        encode(Buffer.from(inviteCode ? inviteCode : "", "utf-8")),
-        derivationPath,
-        accountIndex,
+        encode(Buffer.from(getCreateMessage(publicKey!), "utf-8")),
         publicKey!,
-        mnemonic,
+        {
+          derivationPath,
+          accountIndex,
+          mnemonic,
+        },
       ],
     });
     addBlockchainKeyring({
@@ -182,17 +187,22 @@ export const OnboardAccount = ({
       onClick={handleBlockchainClick}
       onNext={nextStep}
     />,
-    <CreatePassword
-      onNext={(password) => {
-        setPassword(password);
-        nextStep();
-      }}
-    />,
+    ...(!isAddingAccount
+      ? [
+          <CreatePassword
+            onNext={(password) => {
+              setPassword(password);
+              nextStep();
+            }}
+          />,
+        ]
+      : []),
     <Finish
       inviteCode={inviteCode}
       username={username}
       password={password!}
       keyringInit={keyringInit!}
+      isAddingAccount={isAddingAccount}
     />,
   ];
 
@@ -222,14 +232,12 @@ export const OnboardAccount = ({
         {keyringType === "ledger" ? (
           <HardwareOnboard
             blockchain={blockchain!}
-            inviteCode={inviteCode}
             action={action!}
             onComplete={(result: BlockchainKeyringInit) => {
               addBlockchainKeyring(result);
               setOpenDrawer(false);
             }}
             onClose={() => setOpenDrawer(false)}
-            requireSignature={!!BACKPACK_FEATURE_USERNAMES}
           />
         ) : (
           <ImportAccounts

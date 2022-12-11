@@ -1,35 +1,33 @@
 import { useState } from "react";
-import Transport from "@ledgerhq/hw-transport";
-import {
+import type {
   Blockchain,
   BlockchainKeyringInit,
   DerivationPath,
 } from "@coral-xyz/common";
+import { getCreateMessage, toTitleCase } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { HardwareSign } from "./HardwareSign";
-import { HardwareDefaultAccount } from "./HardwareDefaultAccount";
-import { ConnectHardwareWelcome } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareWelcome";
-import { ConnectHardwareSearching } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareSearching";
-import { ConnectHardwareSuccess } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareSuccess";
-import { ImportAccounts } from "../../common/Account/ImportAccounts";
-import type { SelectedAccount } from "../../common/Account/ImportAccounts";
-import { WithNav, NavBackButton } from "../../common/Layout/Nav";
-import { CloseButton } from "../../common/Layout/Drawer";
+import type Transport from "@ledgerhq/hw-transport";
+
 import { useSteps } from "../../../hooks/useSteps";
+import type { SelectedAccount } from "../../common/Account/ImportAccounts";
+import { ImportAccounts } from "../../common/Account/ImportAccounts";
+import { CloseButton } from "../../common/Layout/Drawer";
+import { NavBackButton, WithNav } from "../../common/Layout/Nav";
+import { ConnectHardwareSearching } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareSearching";
+import { ConnectHardwareWelcome } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareWelcome";
+
+import { HardwareDefaultAccount } from "./HardwareDefaultAccount";
+import { HardwareSign } from "./HardwareSign";
 
 export function HardwareOnboard({
   blockchain,
   action,
-  inviteCode,
   onComplete,
   onClose,
-  requireSignature = true,
 }: {
   blockchain: Blockchain;
   action: "create" | "import";
   onComplete: (keyringInit: BlockchainKeyringInit) => void;
-  inviteCode?: string;
-  requireSignature?: boolean;
   onClose?: () => void;
 }) {
   const theme = useCustomTheme();
@@ -38,6 +36,10 @@ export function HardwareOnboard({
   const [transportError, setTransportError] = useState(false);
   const [accounts, setAccounts] = useState<Array<SelectedAccount>>();
   const [derivationPath, setDerivationPath] = useState<DerivationPath>();
+
+  // Component only allows onboarding of a singular selected account at this
+  // time
+  const account = accounts ? accounts[0] : undefined;
 
   //
   // Flow for onboarding a hardware wallet.
@@ -62,19 +64,9 @@ export function HardwareOnboard({
               accounts: SelectedAccount[],
               derivationPath: DerivationPath
             ) => {
-              if (requireSignature) {
-                setAccounts(accounts);
-                setDerivationPath(derivationPath);
-                nextStep();
-              } else {
-                onComplete({
-                  blockchain,
-                  derivationPath: derivationPath!,
-                  accountIndex: accounts![0].index,
-                  publicKey: accounts![0].publicKey,
-                  signature: null,
-                });
-              }
+              setAccounts(accounts);
+              setDerivationPath(derivationPath);
+              nextStep();
             }}
             onError={() => {
               setTransportError(true);
@@ -92,19 +84,9 @@ export function HardwareOnboard({
               accounts: SelectedAccount[],
               derivationPath: DerivationPath
             ) => {
-              if (requireSignature) {
-                setAccounts(accounts);
-                setDerivationPath(derivationPath);
-                nextStep();
-              } else {
-                onComplete({
-                  blockchain,
-                  derivationPath: derivationPath!,
-                  accountIndex: accounts![0].index,
-                  publicKey: accounts![0].publicKey,
-                  signature: null,
-                });
-              }
+              setAccounts(accounts);
+              setDerivationPath(derivationPath);
+              nextStep();
             }}
             onError={() => {
               setTransportError(true);
@@ -112,20 +94,23 @@ export function HardwareOnboard({
             }}
           />,
         ]),
-    // Prompting for a signature is optional in the component
-    ...(requireSignature
+    ...(account && derivationPath
       ? [
           <HardwareSign
             blockchain={blockchain}
-            inviteCode={inviteCode ? inviteCode : ""}
-            accounts={accounts ? accounts : []}
+            message={getCreateMessage(account!.publicKey)}
+            publicKey={account!.publicKey}
             derivationPath={derivationPath}
+            accountIndex={account!.index}
+            text={`Sign the message to enable ${toTitleCase(
+              blockchain
+            )} in Backpack.`}
             onNext={(signature: string) => {
               onComplete({
                 blockchain,
-                derivationPath: derivationPath!,
-                accountIndex: accounts![0].index,
-                publicKey: accounts![0].publicKey,
+                publicKey: account.publicKey,
+                derivationPath: derivationPath,
+                accountIndex: account.index,
                 signature,
               });
             }}

@@ -2,98 +2,104 @@
 // extension UI to the background script.
 
 import type {
+  Blockchain,
+  Context,
+  DerivationPath,
+  EventEmitter,
+  FEATURE_GATES_MAP,
   RpcRequest,
   RpcResponse,
-  DerivationPath,
-  Context,
-  EventEmitter,
-  Blockchain,
   XnftPreference,
 } from "@coral-xyz/common";
-import type { Commitment } from "@solana/web3.js";
 import {
-  getLogger,
-  withContextPort,
+  BACKEND_EVENT,
+  CHANNEL_POPUP_NOTIFICATIONS,
+  CHANNEL_POPUP_RPC,
   ChannelAppUi,
+  getLogger,
+  UI_RPC_METHOD_ACTIVE_USER_UPDATE,
+  UI_RPC_METHOD_ALL_USERS_READ,
+  UI_RPC_METHOD_APPROVED_ORIGINS_DELETE,
+  UI_RPC_METHOD_APPROVED_ORIGINS_READ,
+  UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE,
+  UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
+  UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
   UI_RPC_METHOD_BLOCKCHAINS_ENABLED_ADD,
   UI_RPC_METHOD_BLOCKCHAINS_ENABLED_DELETE,
   UI_RPC_METHOD_BLOCKCHAINS_ENABLED_READ,
-  UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
-  UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
+  UI_RPC_METHOD_ETHEREUM_CHAIN_ID_READ,
+  UI_RPC_METHOD_ETHEREUM_CHAIN_ID_UPDATE,
+  UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_READ,
+  UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE,
+  UI_RPC_METHOD_ETHEREUM_EXPLORER_READ,
+  UI_RPC_METHOD_ETHEREUM_EXPLORER_UPDATE,
+  UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
+  UI_RPC_METHOD_ETHEREUM_SIGN_MESSAGE,
+  UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION,
+  UI_RPC_METHOD_GET_FEATURE_GATES,
+  UI_RPC_METHOD_GET_XNFT_PREFERENCES,
+  UI_RPC_METHOD_KEYNAME_READ,
+  UI_RPC_METHOD_KEYNAME_UPDATE,
+  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
+  UI_RPC_METHOD_KEYRING_AUTOLOCK_READ,
+  UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE,
+  UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
+  UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC,
+  UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY,
+  UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
+  UI_RPC_METHOD_KEYRING_KEY_DELETE,
+  UI_RPC_METHOD_KEYRING_RESET,
   UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
-  UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
-  UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
-  UI_RPC_METHOD_KEYRING_KEY_DELETE,
-  UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
-  UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY,
-  UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
-  UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC,
+  UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
+  UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEY_DATA,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
   UI_RPC_METHOD_KEYRING_STORE_STATE,
-  UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
+  UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
   UI_RPC_METHOD_KEYRING_TYPE_READ,
-  UI_RPC_METHOD_KEYRING_RESET,
-  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-  UI_RPC_METHOD_KEYRING_ACTIVE_WALLETS,
-  UI_RPC_METHOD_KEYNAME_READ,
-  UI_RPC_METHOD_KEYNAME_UPDATE,
-  UI_RPC_METHOD_PASSWORD_UPDATE,
-  UI_RPC_METHOD_KEYRING_AUTOLOCK_READ,
-  UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE,
-  UI_RPC_METHOD_NAVIGATION_PUSH,
-  UI_RPC_METHOD_NAVIGATION_POP,
-  UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
-  UI_RPC_METHOD_NAVIGATION_READ,
+  UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
+  UI_RPC_METHOD_LEDGER_IMPORT,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+  UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
+  UI_RPC_METHOD_NAVIGATION_POP,
+  UI_RPC_METHOD_NAVIGATION_PUSH,
+  UI_RPC_METHOD_NAVIGATION_READ,
+  UI_RPC_METHOD_NAVIGATION_TO_DEFAULT,
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
+  UI_RPC_METHOD_PASSWORD_UPDATE,
+  UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET,
+  UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT,
+  UI_RPC_METHOD_PREFERENCES_READ,
+  UI_RPC_METHOD_PREVIEW_PUBKEYS,
+  UI_RPC_METHOD_SET_FEATURE_GATES,
+  UI_RPC_METHOD_SET_XNFT_PREFERENCES,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_READ,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
   UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_READ,
   UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_UPDATE,
-  UI_RPC_METHOD_APPROVED_ORIGINS_READ,
-  UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE,
-  UI_RPC_METHOD_APPROVED_ORIGINS_DELETE,
-  UI_RPC_METHOD_LEDGER_IMPORT,
-  UI_RPC_METHOD_PREVIEW_PUBKEYS,
-  UI_RPC_METHOD_SOLANA_EXPLORER_READ,
-  UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE,
-  UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET,
-  UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT,
-  UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ,
-  UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
+  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
   UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
   UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
-  UI_RPC_METHOD_SOLANA_SIMULATE,
-  UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION,
+  UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ,
+  UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
+  UI_RPC_METHOD_SOLANA_EXPLORER_READ,
+  UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE,
   UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS,
   UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
   UI_RPC_METHOD_SOLANA_SIGN_MESSAGE,
-  UI_RPC_METHOD_ETHEREUM_EXPLORER_READ,
-  UI_RPC_METHOD_ETHEREUM_EXPLORER_UPDATE,
-  UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_READ,
-  UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE,
-  UI_RPC_METHOD_ETHEREUM_CHAIN_ID_READ,
-  UI_RPC_METHOD_ETHEREUM_CHAIN_ID_UPDATE,
-  UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION,
-  UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
-  UI_RPC_METHOD_ETHEREUM_SIGN_MESSAGE,
-  UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET,
-  UI_RPC_METHOD_USERNAME_READ,
-  BACKEND_EVENT,
-  CHANNEL_POPUP_RPC,
-  CHANNEL_POPUP_NOTIFICATIONS,
-  UI_RPC_METHOD_SET_FEATURE_GATES,
-  FEATURE_GATES_MAP,
-  UI_RPC_METHOD_GET_FEATURE_GATES,
-  UI_RPC_METHOD_GET_XNFT_PREFERENCES,
-  UI_RPC_METHOD_SET_XNFT_PREFERENCES,
-  UI_RPC_METHOD_NAVIGATION_TO_DEFAULT,
+  UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION,
+  UI_RPC_METHOD_SOLANA_SIMULATE,
+  UI_RPC_METHOD_USER_READ,
+  UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
+  withContextPort,
 } from "@coral-xyz/common";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
+import type { Commitment } from "@solana/web3.js";
+
 import type { Backend } from "../backend/core";
+import type { User } from "../backend/store";
 import type { Config, Handle } from "../types";
 
 const logger = getLogger("background-server-ui");
@@ -138,11 +144,18 @@ async function handle<T = any>(
         ...params
       );
     case UI_RPC_METHOD_KEYRING_STORE_UNLOCK:
-      return await handleKeyringStoreUnlock(ctx, params[0]);
+      return await handleKeyringStoreUnlock(
+        ctx,
+        params[0],
+        params[1],
+        params[2]
+      );
     case UI_RPC_METHOD_KEYRING_STORE_LOCK:
       return await handleKeyringStoreLock(ctx);
     case UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS:
       return await handleKeyringStoreReadAllPubkeys(ctx);
+    case UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEY_DATA:
+      return await handleKeyringStoreReadAllPubkeyData(ctx);
     case UI_RPC_METHOD_KEYRING_KEY_DELETE:
       return await handleKeyringKeyDelete(ctx, params[0], params[1]);
     case UI_RPC_METHOD_KEYRING_STORE_STATE:
@@ -165,7 +178,7 @@ async function handle<T = any>(
     case UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC:
       return handleKeyringExportMnemonic(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_AUTOLOCK_READ:
-      return await handleKeyringAutolockRead(ctx);
+      return await handleKeyringAutolockRead(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE:
       return await handleKeyringAutolockUpdate(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE:
@@ -213,20 +226,20 @@ async function handle<T = any>(
     //
     // Wallet app settings.
     //
+    case UI_RPC_METHOD_PREFERENCES_READ:
+      return await handlePreferencesRead(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE:
       return await handleKeyringActiveWalletUpdate(ctx, params[0], params[1]);
-    case UI_RPC_METHOD_KEYRING_ACTIVE_WALLETS:
-      return await handleKeyringActiveWallets(ctx);
     case UI_RPC_METHOD_SETTINGS_DARK_MODE_READ:
-      return await handleDarkModeRead(ctx);
+      return await handleDarkModeRead(ctx, params[0]);
     case UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE:
       return await handleDarkModeUpdate(ctx, params[0]);
     case UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_READ:
-      return await handleDeveloperModeRead(ctx);
+      return await handleDeveloperModeRead(ctx, params[0]);
     case UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_UPDATE:
       return await handleDeveloperModeUpdate(ctx, params[0]);
     case UI_RPC_METHOD_APPROVED_ORIGINS_READ:
-      return await handleApprovedOriginsRead(ctx);
+      return await handleApprovedOriginsRead(ctx, params[0]);
     case UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE:
       return await handleApprovedOriginsUpdate(ctx, params[0]);
     case UI_RPC_METHOD_APPROVED_ORIGINS_DELETE:
@@ -266,8 +279,16 @@ async function handle<T = any>(
     //
     // Username.
     //
-    case UI_RPC_METHOD_USERNAME_READ:
-      return await handleUsernameRead(ctx);
+    case UI_RPC_METHOD_USER_READ:
+      return await handleUserRead(ctx);
+    case UI_RPC_METHOD_ALL_USERS_READ:
+      return await handleAllUsersRead(ctx);
+    case UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE:
+      // @ts-ignore
+      return await handleUsernameAccountCreate(ctx, ...params);
+    case UI_RPC_METHOD_ACTIVE_USER_UPDATE:
+      // @ts-ignore
+      return await handleActiveUserUpdate(ctx, ...params);
     //
     // Password.
     //
@@ -305,26 +326,26 @@ async function handle<T = any>(
     case UI_RPC_METHOD_SOLANA_SIGN_MESSAGE:
       return await handleSolanaSignMessage(ctx, params[0], params[1]);
     case UI_RPC_METHOD_SOLANA_COMMITMENT_READ:
-      return await handleSolanaCommitmentRead(ctx);
+      return await handleSolanaCommitmentRead(ctx, params[0]);
     case UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE:
       return await handleSolanaCommitmentUpdate(ctx, params[0]);
     case UI_RPC_METHOD_SOLANA_EXPLORER_READ:
-      return await handleSolanaExplorerRead(ctx);
+      return await handleSolanaExplorerRead(ctx, params[0]);
     case UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE:
       return await handleSolanaExplorerUpdate(ctx, params[0]);
     case UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ:
-      return await handleSolanaConnectionUrlRead(ctx);
+      return await handleSolanaConnectionUrlRead(ctx, params[0]);
     case UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE:
       return await handleSolanaConnectionUrlUpdate(ctx, params[0]);
     //
     // Ethereum
     //
     case UI_RPC_METHOD_ETHEREUM_EXPLORER_READ:
-      return await handleEthereumExplorerRead(ctx);
+      return await handleEthereumExplorerRead(ctx, params[0]);
     case UI_RPC_METHOD_ETHEREUM_EXPLORER_UPDATE:
       return await handleEthereumExplorerUpdate(ctx, params[0]);
     case UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_READ:
-      return await handleEthereumConnectionUrlRead(ctx);
+      return await handleEthereumConnectionUrlRead(ctx, params[0]);
     case UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE:
       return await handleEthereumConnectionUrlUpdate(ctx, params[0]);
     case UI_RPC_METHOD_ETHEREUM_CHAIN_ID_READ:
@@ -341,15 +362,13 @@ async function handle<T = any>(
       );
     case UI_RPC_METHOD_ETHEREUM_SIGN_MESSAGE:
       return await handleEthereumSignMessage(ctx, params[0], params[1]);
-    case UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET:
-      return await handleSignMessageForWallet(
+    case UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY:
+      return await handleSignMessageForPublicKey(
         ctx,
         params[0],
         params[1],
         params[2],
-        params[3],
-        params[4],
-        params[5]
+        params[3]
       );
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
@@ -378,10 +397,10 @@ async function handleKeyringStoreCheckPassword(
 
 async function handleKeyringStoreUnlock(
   ctx: Context<Backend>,
-  password: string
+  ...args: Parameters<Backend["keyringStoreUnlock"]>
 ) {
   try {
-    const resp = await ctx.backend.keyringStoreUnlock(password);
+    const resp = await ctx.backend.keyringStoreUnlock(...args);
     return [resp];
   } catch (err) {
     return [undefined, String(err)];
@@ -407,6 +426,11 @@ function handleKeyringStoreKeepAlive(
   return [resp];
 }
 
+async function handlePreferencesRead(ctx: Context<Backend>, uuid: string) {
+  const resp = await ctx.backend.preferencesRead(uuid);
+  return [resp];
+}
+
 async function handleKeyringActiveWalletUpdate(
   ctx: Context<Backend>,
   newWallet: string,
@@ -416,10 +440,10 @@ async function handleKeyringActiveWalletUpdate(
   return [resp];
 }
 
-async function handleKeyringActiveWallets(
+async function handleKeyringStoreReadAllPubkeyData(
   ctx: Context<Backend>
-): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.activeWallets();
+): Promise<RpcResponse<Array<string>>> {
+  const resp = await ctx.backend.keyringStoreReadAllPubkeyData();
   return [resp];
 }
 
@@ -464,10 +488,33 @@ async function handleKeyringKeyDelete(
   return [resp];
 }
 
-async function handleUsernameRead(
+async function handleUserRead(
   ctx: Context<Backend>
 ): Promise<RpcResponse<number>> {
-  const resp = await ctx.backend.usernameRead();
+  const resp = await ctx.backend.userRead();
+  return [resp];
+}
+
+async function handleAllUsersRead(
+  ctx: Context<Backend>
+): Promise<RpcResponse<Array<User>>> {
+  const resp = await ctx.backend.allUsersRead();
+  return [resp];
+}
+
+async function handleUsernameAccountCreate(
+  ctx: Context<Backend>,
+  ...args: Parameters<Backend["usernameAccountCreate"]>
+): Promise<RpcResponse<number>> {
+  const resp = await ctx.backend.usernameAccountCreate(...args);
+  return [resp];
+}
+
+async function handleActiveUserUpdate(
+  ctx: Context<Backend>,
+  ...args: Parameters<Backend["activeUserUpdate"]>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.activeUserUpdate(...args);
   return [resp];
 }
 
@@ -520,9 +567,10 @@ function handleKeyringExportMnemonic(
 }
 
 async function handleKeyringAutolockRead(
-  ctx: Context<Backend>
+  ctx: Context<Backend>,
+  uuid: string
 ): Promise<RpcResponse<number>> {
-  const resp = await ctx.backend.keyringAutolockRead();
+  const resp = await ctx.backend.keyringAutolockRead(uuid);
   return [resp];
 }
 
@@ -608,9 +656,10 @@ async function handleNavigationToDefault(
 }
 
 async function handleDarkModeRead(
-  ctx: Context<Backend>
+  ctx: Context<Backend>,
+  uuid: string
 ): Promise<RpcResponse<boolean>> {
-  const resp = await ctx.backend.darkModeRead();
+  const resp = await ctx.backend.darkModeRead(uuid);
   return [resp];
 }
 
@@ -623,9 +672,10 @@ async function handleDarkModeUpdate(
 }
 
 async function handleDeveloperModeRead(
-  ctx: Context<Backend>
+  ctx: Context<Backend>,
+  uuid: string
 ): Promise<RpcResponse<boolean>> {
-  const resp = await ctx.backend.developerModeRead();
+  const resp = await ctx.backend.developerModeRead(uuid);
   return [resp];
 }
 
@@ -638,9 +688,10 @@ async function handleDeveloperModeUpdate(
 }
 
 async function handleSolanaConnectionUrlRead(
-  ctx: Context<Backend>
+  ctx: Context<Backend>,
+  uuid: string
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.solanaConnectionUrlRead();
+  const resp = await ctx.backend.solanaConnectionUrlRead(uuid);
   return [resp];
 }
 
@@ -653,9 +704,10 @@ async function handleSolanaConnectionUrlUpdate(
 }
 
 async function handleSolanaCommitmentRead(
-  ctx: Context<Backend>
+  ctx: Context<Backend>,
+  uuid: string
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.solanaCommitmentRead();
+  const resp = await ctx.backend.solanaCommitmentRead(uuid);
   return [resp];
 }
 
@@ -670,9 +722,10 @@ async function handleSolanaCommitmentUpdate(
 }
 
 async function handleSolanaExplorerRead(
-  ctx: Context<Backend>
+  ctx: Context<Backend>,
+  uuid: string
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.solanaExplorerRead();
+  const resp = await ctx.backend.solanaExplorerRead(uuid);
   return [resp];
 }
 
@@ -735,9 +788,10 @@ async function handleSolanaSignAndSendTransaction(
 }
 
 async function handleEthereumExplorerRead(
-  ctx: Context<Backend>
+  ctx: Context<Backend>,
+  uuid: string
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.ethereumExplorerRead();
+  const resp = await ctx.backend.ethereumExplorerRead(uuid);
   return [resp];
 }
 
@@ -750,9 +804,10 @@ async function handleEthereumExplorerUpdate(
 }
 
 async function handleEthereumConnectionUrlRead(
-  ctx: Context<Backend>
+  ctx: Context<Backend>,
+  uuid: string
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.ethereumConnectionUrlRead();
+  const resp = await ctx.backend.ethereumConnectionUrlRead(uuid);
   return [resp];
 }
 
@@ -812,30 +867,31 @@ async function handleEthereumSignMessage(
   return [resp];
 }
 
-async function handleSignMessageForWallet(
+async function handleSignMessageForPublicKey(
   ctx: Context<Backend>,
   blockchain: Blockchain,
   msg: string,
-  derivationPath: DerivationPath,
-  accountIndex: number,
   publicKey: string,
-  mnemonic?: string
+  keyringInit?: {
+    derivationPath: DerivationPath;
+    accountIndex: number;
+    mnemonic?: string;
+  }
 ) {
-  const resp = await ctx.backend.signMessageForWallet(
+  const resp = await ctx.backend.signMessageForPublicKey(
     blockchain,
     msg,
-    derivationPath,
-    accountIndex,
     publicKey,
-    mnemonic
+    keyringInit
   );
   return [resp];
 }
 
 async function handleApprovedOriginsRead(
-  ctx: Context<Backend>
+  ctx: Context<Backend>,
+  uuid: string
 ): Promise<RpcResponse<Array<string>>> {
-  const resp = await ctx.backend.approvedOriginsRead();
+  const resp = await ctx.backend.approvedOriginsRead(uuid);
   return [resp];
 }
 

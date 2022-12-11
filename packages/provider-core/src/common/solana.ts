@@ -1,17 +1,3 @@
-import { decode, encode } from "bs58";
-import type {
-  Connection,
-  PublicKey,
-  Transaction,
-  Signer,
-  Commitment,
-  SendOptions,
-  ConfirmOptions,
-  TransactionSignature,
-  SimulatedTransactionResponse,
-  Version,
-} from "@solana/web3.js";
-import type { RequestManager } from "../request-manager";
 import {
   isVersionedTransaction,
   SOLANA_RPC_METHOD_SIGN_ALL_TXS,
@@ -20,8 +6,23 @@ import {
   SOLANA_RPC_METHOD_SIGN_TX,
   SOLANA_RPC_METHOD_SIMULATE,
 } from "@coral-xyz/common";
-import { VersionedTransaction } from "@solana/web3.js";
-import { ChainedRequestManager } from "../chained-request-manager";
+import type {
+  Commitment,
+  ConfirmOptions,
+  Connection,
+  PublicKey,
+  SendOptions,
+  Signer,
+  SimulatedTransactionResponse,
+  Transaction,
+  TransactionSignature,
+  Version,
+  VersionedTransaction,
+} from "@solana/web3.js";
+import { decode, encode } from "bs58";
+
+import type { ChainedRequestManager } from "../chained-request-manager";
+import type { RequestManager } from "../request-manager";
 
 export async function sendAndConfirm<
   T extends Transaction | VersionedTransaction
@@ -33,24 +34,15 @@ export async function sendAndConfirm<
   signers?: Signer[],
   options?: ConfirmOptions
 ): Promise<TransactionSignature> {
-  const [signature, { blockhash, lastValidBlockHeight }] = await Promise.all([
-    send(publicKey, requestManager, connection, tx, signers, options, true),
-    connection.getLatestBlockhash(options?.preflightCommitment),
-  ]);
-
-  const resp = await connection.confirmTransaction(
-    {
-      signature,
-      blockhash,
-      lastValidBlockHeight,
-    },
-    options?.commitment
+  const signature = await send(
+    publicKey,
+    requestManager,
+    connection,
+    tx,
+    signers,
+    options,
+    true
   );
-  if (resp?.value.err) {
-    throw new Error(
-      `error confirming transaction: ${resp.value.err.toString()}`
-    );
-  }
   return signature;
 }
 

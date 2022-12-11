@@ -1,0 +1,40 @@
+table:
+  name: public_keys
+  schema: auth
+object_relationships:
+  - name: user
+    using:
+      foreign_key_constraint_on: user_id
+insert_permissions:
+  - role: auth_worker
+    permission:
+      check: {}
+      columns:
+        - blockchain
+        - public_key
+        - user_id
+select_permissions:
+  - role: appstore
+    permission:
+      columns:
+        - blockchain
+        - id
+        - public_key
+        - user_id
+      filter: {}
+      allow_aggregations: true
+  - role: auth_worker
+    permission:
+      columns:
+        - id
+        - blockchain
+        - public_key
+        - created_at
+        - user_id
+      filter: {}
+      allow_aggregations: true
+delete_permissions:
+  - role: auth_worker
+    permission:
+      backend_only: false
+      filter: {}

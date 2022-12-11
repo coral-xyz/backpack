@@ -1,7 +1,7 @@
-import { vanillaStore } from "./zustand-store";
-import { isServiceWorker, IS_MOBILE } from "./utils";
 import { MOBILE_CHANNEL_LOGS } from "./constants";
 import * as cfg from "./generated-config";
+import { IS_MOBILE, isServiceWorker } from "./utils";
+import { vanillaStore } from "./zustand-store";
 
 export function getLogger(mod: string) {
   if (_LOG_LEVEL === undefined) {
@@ -55,6 +55,7 @@ function _log(str: any, ...args: any) {
 async function _mobileLog(...args: any[]) {
   // We're in the serviceworker, try sending the message to the HTML page.
   try {
+    // @ts-ignore
     const clients = await self.clients.matchAll({
       includeUncontrolled: true,
       type: "window",

@@ -1,7 +1,7 @@
+import type { ChannelAppUiClient } from "@coral-xyz/common";
 import {
-  ChannelAppUiClient,
-  UI_RPC_METHOD_SET_FEATURE_GATES,
   buildFullFeatureGatesMap,
+  UI_RPC_METHOD_SET_FEATURE_GATES,
 } from "@coral-xyz/common";
 
 const FEATURE_GATE_URL = "https://feature-gates.backpack.workers.dev";

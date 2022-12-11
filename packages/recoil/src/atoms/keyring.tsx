@@ -1,9 +1,10 @@
-import { atom, selector } from "recoil";
+import type { KeyringType } from "@coral-xyz/common";
 import {
-  KeyringType,
   UI_RPC_METHOD_KEYRING_STORE_STATE,
   UI_RPC_METHOD_KEYRING_TYPE_READ,
 } from "@coral-xyz/common";
+import { atom, selector } from "recoil";
+
 import { backgroundClient } from "./client";
 
 export type KeyringStoreState = "locked" | "unlocked" | "needs-onboarding";

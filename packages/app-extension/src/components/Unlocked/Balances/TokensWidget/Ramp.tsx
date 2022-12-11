@@ -1,23 +1,24 @@
 import { useState } from "react";
-import { Button as MuiButton, ListItemIcon, Typography } from "@mui/material";
-import { styles } from "@coral-xyz/themes";
+import { Blockchain, toTitleCase } from "@coral-xyz/common";
 import {
   SOL_LOGO_URI,
   useActiveWallets,
   useBlockchainLogo,
 } from "@coral-xyz/recoil";
-import { Blockchain, toTitleCase } from "@coral-xyz/common";
+import { styles } from "@coral-xyz/themes";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import { Button as MuiButton, ListItemIcon, Typography } from "@mui/material";
+
 import { TextField, walletAddressDisplay } from "../../../common";
+import { useNavStack } from "../../../common/Layout/NavStack";
+import { ProxyImage } from "../../../common/ProxyImage";
+import { WithCopyTooltip } from "../../../common/WithCopyTooltip";
 import {
   BalancesTable,
   BalancesTableContent,
   BalancesTableHead,
   BalancesTableRow,
 } from "../Balances";
-import { WithCopyTooltip } from "../../../common/WithCopyTooltip";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import { ProxyImage } from "../../../common/ProxyImage";
-import { useNavStack } from "../../../common/Layout/NavStack";
 
 const useStyles = styles((theme) => ({
   searchField: {

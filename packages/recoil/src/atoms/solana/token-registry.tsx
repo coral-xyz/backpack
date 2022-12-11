@@ -1,6 +1,7 @@
+import { SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
+import type { TokenInfo } from "@solana/spl-token-registry";
+import { TokenListProvider } from "@solana/spl-token-registry";
 import { atom, selector } from "recoil";
-import { TokenListProvider, TokenInfo } from "@solana/spl-token-registry";
-import { WSOL_MINT, SOL_NATIVE_MINT } from "@coral-xyz/common";
 
 export const SOL_LOGO_URI =
   "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png";

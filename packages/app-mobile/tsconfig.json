@@ -1,16 +1,26 @@
 {
-  "extends": "../../node_modules/expo/tsconfig.base",
-  "baseUrl": "",
-  "paths": {
-    "@components/*": ["src/components/*"],
-    "@hooks/*": ["src/hooks/*"],
-    "@lib/*": ["src/lib/*"],
-    "@screens/*": ["src/screens/*"],
-    "@coral-xyz/recoil": ["../packages/recoil/*"],
-    "@coral-xyz/common": ["../packages/common/*"],
-    "@coral-xyz/background": ["../packages/background/*"]
-  },
+  "extends": "expo/tsconfig.base",
+  "baseUrl": "./",
+  "include": ["src"],
+  "exclude": ["**/node_modules", "**/.*/"],
   "compilerOptions": {
-    "strict": true
-  }
+    "strict": true,
+    "paths": {
+      "@navigation/*": ["src/navigation/*"],
+      "@components/*": ["src/components/*"],
+      "@hooks/*": ["src/hooks/*"],
+      "@lib/*": ["src/lib/*"],
+      "@screens/*": ["src/screens/*"],
+      "@coral-xyz/recoil": ["../packages/recoil"],
+      "@coral-xyz/common": ["../packages/common"],
+      "@coral-xyz/background": ["../packages/background"],
+      "@coral-xyz/themes": ["../packages/themes"]
+    }
+  },
+  "references": [
+    { "path": "../packages/recoil" },
+    { "path": "../packages/common" },
+    { "path": "../packages/background" },
+    { "path": "../packages/themes" }
+  ]
 }

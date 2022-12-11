@@ -1,20 +1,21 @@
 import { useEffect, useState } from "react";
-import { Button, TextField, Typography } from "@mui/material";
-import { useBackgroundClient } from "@coral-xyz/recoil";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
 import {
   UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
   UI_RPC_METHOD_PASSWORD_UPDATE,
 } from "@coral-xyz/common";
+import { useBackgroundClient } from "@coral-xyz/recoil";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { Button, TextField, Typography } from "@mui/material";
+
 import {
   List,
   ListItem,
   PrimaryButton,
   SubtextParagraph,
 } from "../../../common";
+import { InputListItem, Inputs } from "../../../common/Inputs";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { useNavStack } from "../../../common/Layout/NavStack";
-import { InputListItem, Inputs } from "../../../common/Inputs";
 
 const useStyles = styles((theme) => ({
   textFieldRoot: {

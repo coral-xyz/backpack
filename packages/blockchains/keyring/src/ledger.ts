@@ -1,8 +1,9 @@
 import {
   generateUniqueId,
-  LEDGER_INJECTED_CHANNEL_RESPONSE,
   LEDGER_INJECTED_CHANNEL_REQUEST,
+  LEDGER_INJECTED_CHANNEL_RESPONSE,
 } from "@coral-xyz/common";
+
 import type { ImportedDerivationPath, LedgerKeyringJson } from "./types";
 
 export class LedgerKeyringBase {
@@ -16,12 +17,10 @@ export class LedgerKeyringBase {
     return this.derivationPaths.length;
   }
 
-  public deleteKeyIfNeeded(pubkey: string): number {
-    const idx = this.derivationPaths.findIndex((dp) => dp.publicKey === pubkey);
+  public deletePublicKey(publicKey: string) {
     this.derivationPaths = this.derivationPaths.filter(
-      (dp) => dp.publicKey !== pubkey
+      (dp) => dp.publicKey !== publicKey
     );
-    return idx;
   }
 
   public async ledgerImport(path: string, account: number, publicKey: string) {
@@ -38,11 +37,11 @@ export class LedgerKeyringBase {
     return this.derivationPaths.map((dp) => dp.publicKey);
   }
 
-  exportSecretKey(_address: string): string | null {
+  exportSecretKey(): string | null {
     throw new Error("ledger keyring cannot export secret keys");
   }
 
-  importSecretKey(_secretKey: string): string {
+  importSecretKey(): string {
     throw new Error("ledger keyring cannot import secret keys");
   }
 

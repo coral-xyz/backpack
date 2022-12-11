@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { BACKEND_API_URL } from "@coral-xyz/common";
-import { useUsername } from "@coral-xyz/recoil";
-import { PermissionsContent } from "./PermissionsContent";
+import { useUser } from "@coral-xyz/recoil";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import NotificationsOffIcon from "@mui/icons-material/NotificationsOff";
+
+import { PermissionsContent } from "./PermissionsContent";
 
 const BACKPACK_NOTIFICATION_PUBKEY =
   "BJ6je9D4-ZJUH1yxTCRT01ILw07-YZcpAEk5hxpnPnEXJJ8WjE9BYf_fTPXNGRM1yw5C1CZQaCFmUX0gujpf67E";
@@ -11,7 +12,7 @@ const BACKPACK_NOTIFICATION_PUBKEY =
 export const NotificationPermissions = () => {
   const [permissionGranted, setPermissionGranted] = useState(false);
   const [inProgress, setInProgress] = useState(true);
-  const username = useUsername();
+  const { username } = useUser();
 
   const requestNotificationPermission = async () => {
     const permission = await window.Notification.requestPermission();
@@ -25,7 +26,7 @@ export const NotificationPermissions = () => {
   const urlB64ToUint8Array = (base64String: any) => {
     const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
     const base64 = (base64String + padding)
-      .replace(/\-/g, "+")
+      .replace(/-/g, "+")
       .replace(/_/g, "/");
     const rawData = atob(base64);
     const outputArray = new Uint8Array(rawData.length);
@@ -83,7 +84,7 @@ export const NotificationPermissions = () => {
   if (inProgress) {
     return (
       <PermissionsContent
-        title={"Allow Camera"}
+        title={"Allow Notifications"}
         subtitle1={"Please allow Backpack access to notifications."}
         icon={
           <NotificationsIcon

@@ -1,31 +1,33 @@
 import React from "react";
-import {
-  ImageProps,
-  ViewProps,
-  TextProps,
-  TextFieldProps,
-  BalancesTableHeadProps,
-  TableProps,
-  TableRowProps,
+
+import type {
+  BalancesTableCellProps,
+  BalancesTableContentProps,
   BalancesTableFooterProps,
+  BalancesTableHeadProps,
+  BalancesTableProps,
+  BalancesTableRowProps,
   ButtonProps,
+  CircleProps,
+  CustomProps,
+  IframeProps,
+  ImageProps,
   LoadingProps,
+  NavAnimationProps,
+  PathProps,
   ScrollBarProps,
   SvgProps,
-  PathProps,
-  CircleProps,
-  NavAnimationProps,
-  IframeProps,
-  BalancesTableProps,
-  BalancesTableCellProps,
-  BalancesTableRowProps,
-  BalancesTableContentProps,
-  CustomProps,
+  TableProps,
+  TableRowProps,
+  TextFieldProps,
+  TextProps,
+  ViewProps,
 } from "./reconciler";
 
 const c =
   <T,>(name: string) =>
   (props: T) =>
+    // @ts-expect-error Argument of type 'T' is not assignable to parameter of type 'Attributes | null | undefined'.
     React.createElement(name, props);
 
 export const Text = c<TextProps>("Text");

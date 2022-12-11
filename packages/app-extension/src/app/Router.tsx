@@ -1,43 +1,44 @@
 import { Suspense, useEffect } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { Block as BlockIcon } from "@mui/icons-material";
-import { styles } from "@coral-xyz/themes";
+import type { Blockchain } from "@coral-xyz/common";
 import {
-  Blockchain,
+  EXTENSION_HEIGHT,
+  EXTENSION_WIDTH,
   getLogger,
   openOnboarding,
-  toTitleCase,
-  EXTENSION_WIDTH,
-  EXTENSION_HEIGHT,
-  QUERY_LOCKED,
   QUERY_APPROVAL,
-  QUERY_APPROVE_TRANSACTION,
   QUERY_APPROVE_ALL_TRANSACTIONS,
   QUERY_APPROVE_MESSAGE,
+  QUERY_APPROVE_TRANSACTION,
+  QUERY_LOCKED,
+  toTitleCase,
 } from "@coral-xyz/common";
 import {
   KeyringStoreStateEnum,
-  useKeyringStoreState,
   useApprovedOrigins,
-  useBootstrapFast,
-  useBackgroundResponder,
   useBackgroundClient,
+  useBackgroundResponder,
+  useBootstrapFast,
   useEnabledBlockchains,
-  useWalletBlockchain,
-  useUsername,
+  useKeyringStoreState,
 } from "@coral-xyz/recoil";
+import { styles } from "@coral-xyz/themes";
+import { Block as BlockIcon } from "@mui/icons-material";
+import { AnimatePresence, motion } from "framer-motion";
+
+import { refreshXnftPreferences } from "../api/preferences";
+import { EmptyState } from "../components/common/EmptyState";
 import { Locked } from "../components/Locked";
 import { Unlocked } from "../components/Unlocked";
+import { ApproveMessage } from "../components/Unlocked/Approvals/ApproveMessage";
 import { ApproveOrigin } from "../components/Unlocked/Approvals/ApproveOrigin";
 import {
-  ApproveTransaction,
   ApproveAllTransactions,
+  ApproveTransaction,
 } from "../components/Unlocked/Approvals/ApproveTransaction";
-import { ApproveMessage } from "../components/Unlocked/Approvals/ApproveMessage";
-import "./App.css";
+import { WithAuth } from "../components/Unlocked/WithAuth";
 import { refreshFeatureGates } from "../gates/FEATURES";
-import { EmptyState } from "../components/common/EmptyState";
-import { refreshXnftPreferences } from "../api/preferences";
+
+import "./App.css";
 
 const logger = getLogger("router");
 
@@ -50,22 +51,19 @@ export function Router() {
 }
 
 function _Router() {
-  const classes = useStyles();
-
-  //
-  // Expanded view: first time onboarding flow.
-  //
   const needsOnboarding =
     useKeyringStoreState() === KeyringStoreStateEnum.NeedsOnboarding;
 
-  if (needsOnboarding) {
-    openOnboarding();
-    return <></>;
-  }
+  useEffect(() => {
+    // if the user needs onboarding then open the expanded view
+    if (needsOnboarding) openOnboarding();
+  }, [needsOnboarding]);
 
-  //
-  // Popup view: main application.
-  //
+  return needsOnboarding ? null : <PopupView />;
+}
+
+function PopupView() {
+  const classes = useStyles();
   return (
     <div className={classes.appContainer}>
       <PopupRouter />
@@ -275,11 +273,10 @@ function QueryApproveMessage() {
 function FullApp() {
   logger.debug("full app");
   const background = useBackgroundClient();
-  const username = useUsername();
 
   useEffect(() => {
     refreshFeatureGates(background);
-    refreshXnftPreferences(background, username || "");
+    refreshXnftPreferences(background);
   }, [background]);
 
   return (
@@ -313,17 +310,18 @@ function WithEnabledBlockchain({
   );
 }
 
-function WithUnlock({ children }: { children: React.ReactNode }) {
+function WithUnlock({ children }: { children: React.ReactElement }) {
   const keyringStoreState = useKeyringStoreState();
   const needsOnboarding =
     keyringStoreState === KeyringStoreStateEnum.NeedsOnboarding;
   const isLocked =
     !needsOnboarding && keyringStoreState === KeyringStoreStateEnum.Locked;
+
   return (
     <AnimatePresence initial={false}>
       <WithLockMotion id={isLocked ? "locked" : "unlocked"}>
         <Suspense fallback={<div style={{ display: "none" }}></div>}>
-          {isLocked ? <Locked /> : children}
+          {isLocked ? <Locked /> : <WithAuth>{children}</WithAuth>}
         </Suspense>
       </WithLockMotion>
     </AnimatePresence>

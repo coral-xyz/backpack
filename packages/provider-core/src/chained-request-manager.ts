@@ -1,13 +1,13 @@
 // A request manager that is used for chaining requests form
 // child IFRAMES to parent IFRAMES.
 
-import { getLogger, PluginServer } from "@coral-xyz/common";
 import type {
-  RpcRequest,
-  RpcResponse,
   Event,
   ResponseHandler,
+  RpcRequest,
+  RpcResponse,
 } from "@coral-xyz/common";
+import { getLogger, PluginServer } from "@coral-xyz/common";
 
 const logger = getLogger("common/request-manager");
 

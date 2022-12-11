@@ -1,27 +1,29 @@
-import { Box, ListItemText, Toolbar, IconButton } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import AccountCircleIcon from "@mui/icons-material/AccountCircleOutlined";
-import LockIcon from "@mui/icons-material/Lock";
-import TwitterIcon from "@mui/icons-material/Twitter";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import CallMadeIcon from "@mui/icons-material/CallMade";
-import { useCustomTheme, styles } from "@coral-xyz/themes";
 import {
+  BACKPACK_LINK,
   DISCORD_INVITE_LINK,
   TWITTER_LINK,
-  BACKPACK_LINK,
 } from "@coral-xyz/common";
-import { List, ListItem } from "../common/List";
-import { WithDrawer, CloseButton } from "../common/Layout/Drawer";
-import { Reset } from "./Reset";
-import { ResetWarning } from "./Reset/ResetWarning";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
+import AccountCircleIcon from "@mui/icons-material/AccountCircleOutlined";
+import CallMadeIcon from "@mui/icons-material/CallMade";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import LockIcon from "@mui/icons-material/Lock";
+import MenuIcon from "@mui/icons-material/Menu";
+import TwitterIcon from "@mui/icons-material/Twitter";
+import { Box, IconButton, ListItemText, Toolbar } from "@mui/material";
+
+import { DiscordIcon } from "../common/Icon";
+import { CloseButton, WithDrawer } from "../common/Layout/Drawer";
 import { NAV_BAR_HEIGHT } from "../common/Layout/Nav";
 import {
-  useNavStack,
   NavStackEphemeral,
   NavStackScreen,
+  useNavStack,
 } from "../common/Layout/NavStack";
-import { DiscordIcon } from "../common/Icon";
+import { List, ListItem } from "../common/List";
+
+import { ResetWarning } from "./Reset/ResetWarning";
+import { Reset } from "./Reset";
 
 const useStyles = styles((theme) => ({
   listItemRoot: {

@@ -1,20 +1,22 @@
 import { useState } from "react";
-import { Box, Typography, InputAdornment, IconButton } from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
-import { useBackgroundClient, useUsername } from "@coral-xyz/recoil";
-import { TextField, PrimaryButton } from "../common";
-import { RedBackpack, Backpack } from "../common/Icon";
-import { LockedMenu } from "./LockedMenu";
+import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
+import { useCustomTheme } from "@coral-xyz/themes";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
+
+import { PrimaryButton } from "../common";
+import { Backpack, RedBackpack } from "../common/Icon";
 import { TextInput } from "../common/Inputs";
+
+import { LockedMenu } from "./LockedMenu";
 
 export const NAV_BAR_HEIGHT = 56;
 
 export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
   const theme = useCustomTheme();
   const background = useBackgroundClient();
-  const username = useUsername();
+  const user = useUser();
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [password, setPassword] = useState("");
@@ -26,7 +28,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
     try {
       await background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-        params: [password],
+        params: [password, user.uuid, user.username],
       });
 
       if (onUnlock) {
@@ -63,7 +65,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
         </Box>
 
         <Box style={{ marginBottom: 84 }}>
-          {username && (
+          {user.username && (
             <Box
               style={{
                 flex: 1,
@@ -73,7 +75,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
               }}
             >
               <Typography style={{ color: theme.custom.colors.fontColor }}>
-                gm @{username}
+                gm @{user.username}
               </Typography>
             </Box>
           )}

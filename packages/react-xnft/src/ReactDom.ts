@@ -1,12 +1,12 @@
-import {
-  NodeKind,
-  UpdateDiff,
-  Element,
-  TextSerialized,
-  NodeSerialized,
-} from "./index";
-
 import { getLogger } from "@coral-xyz/common-public";
+
+import type {
+  Element,
+  NodeSerialized,
+  TextSerialized,
+  UpdateDiff,
+} from "./index";
+import { NodeKind } from "./index";
 const logger = getLogger("react-xnft/reconciler");
 
 class PendingUpdates {

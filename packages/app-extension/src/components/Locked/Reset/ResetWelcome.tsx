@@ -1,12 +1,13 @@
-import { Box } from "@mui/material";
-import { useCustomTheme } from "@coral-xyz/themes";
 import { KeyringStoreStateEnum, useKeyringStoreState } from "@coral-xyz/recoil";
+import { useCustomTheme } from "@coral-xyz/themes";
+import { Box } from "@mui/material";
+
 import {
+  DangerButton,
   Header,
   HeaderIcon,
-  SubtextParagraph,
   SecondaryButton,
-  DangerButton,
+  SubtextParagraph,
 } from "../../common";
 import { QuestionIcon } from "../../common/Icon";
 import { useNavStack } from "../../common/Layout/NavStack";

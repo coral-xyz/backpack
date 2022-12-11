@@ -1,18 +1,21 @@
-import type { PublicKey } from "@solana/web3.js";
 import type { RpcRequest } from "@coral-xyz/common-public";
-import type { Context, RpcResponse, EventEmitter } from "./types";
+import type { PublicKey } from "@solana/web3.js";
 
-export * from "@coral-xyz/common-public";
+import type { Context, EventEmitter, RpcResponse } from "./types";
+
+export * from "./browser";
+export * from "./channel";
 export * from "./constants";
 export * from "./crypto";
-export * from "./channel";
-export * from "./browser";
-export * from "./types";
-export * from "./solana";
 export * from "./ethereum";
 export * from "./explorer";
-export * from "./plugin";
 export * from "./feature-gates";
+export * from "./messages";
+export * from "./notifications";
+export * from "./plugin";
+export * from "./solana";
+export * from "./types";
+export * from "@coral-xyz/common-public";
 
 // Generated pre-build step.
 export * from "./generated-config";
@@ -44,4 +47,18 @@ export function walletAddressDisplay(publicKey: PublicKey | string) {
   const pubkeyStr: string =
     typeof publicKey === "string" ? publicKey : publicKey.toString();
   return `${pubkeyStr.slice(0, 4)}...${pubkeyStr.slice(pubkeyStr.length - 4)}`;
+}
+
+/**
+ * Message to be signed for authenticating a user.
+ */
+export function getAuthMessage(uuid: string) {
+  return `Backpack login ${uuid}`;
+}
+
+/**
+ * Message to be signed for creating a Backpack account.
+ */
+export function getCreateMessage(publicKey: string) {
+  return `Backpack create ${publicKey}`;
 }

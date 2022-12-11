@@ -1,6 +1,14 @@
 table:
   name: invitations
   schema: auth
+object_relationships:
+  - name: user
+    using:
+      foreign_key_constraint_on:
+        column: invitation_id
+        table:
+          name: users
+          schema: auth
 insert_permissions:
   - role: mod
     permission:

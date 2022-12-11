@@ -1,8 +1,10 @@
-import { WithTheme } from "../components/common/WithTheme";
+import { Routes, useLocation } from "react-router-dom";
 import { RecoilRoot } from "recoil";
-import { useLocation, Routes } from "react-router-dom";
-import { NotificationPermissions } from "./NotificationPermissions";
+
+import { WithTheme } from "../components/common/WithTheme";
+
 import { CameraPermissions } from "./CameraPermissions";
+import { NotificationPermissions } from "./NotificationPermissions";
 
 const Permissions = () => {
   const params = new URLSearchParams(window.location.search);

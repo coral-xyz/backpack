@@ -1,11 +1,29 @@
 import type { StyleProp, TextStyle, ViewStyle } from "react-native";
-import { Image, Pressable, Text, View } from "react-native";
-import { proxyImageUrl } from "@coral-xyz/common";
+import {
+  ActivityIndicator,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { SvgUri } from "react-native-svg";
+import { proxyImageUrl, walletAddressDisplay } from "@coral-xyz/common";
+import { useAvatarUrl } from "@coral-xyz/recoil";
 // probably should put all the components in here as an index
 import { useTheme } from "@hooks";
 
-export { TokenInputField } from "./TokenInputField";
+export { ActionCard } from "./ActionCard";
+export { BaseCheckBoxLabel, CheckBox } from "./CheckBox";
 export { MnemonicInputFields } from "./MnemonicInputFields";
+export { NavHeader } from "./NavHeader";
+export { NFTCard } from "./NFTCard";
+export { PasswordInput } from "./PasswordInput";
+export { default as ResetAppButton } from "./ResetAppButton";
+export { StyledTextInput } from "./StyledTextInput";
+export { TokenAmountHeader } from "./TokenAmountHeader";
+export { TokenInputField } from "./TokenInputField";
+import { RedBackpack } from "@components/Icon";
 //
 // function getRandomColor() { var letters = "0123456789ABCDEF";
 //   var color = "#";
@@ -43,7 +61,11 @@ export function Screen({
   return (
     <View
       style={[
-        { flex: 1, backgroundColor: theme.custom.colors.background },
+        {
+          flex: 1,
+          backgroundColor: theme.custom.colors.background,
+          padding: 12,
+        },
         style,
       ]}
     >
@@ -75,11 +97,12 @@ export function BaseButton({
         {
           backgroundColor: theme.custom.colors.primaryButton,
           height: 48,
+          paddingHorizontal: 12,
           borderRadius: 12,
           justifyContent: "center",
           alignItems: "center",
           width: "100%",
-          opacity: disabled ? 80 : 100, // TODO(peter)
+          opacity: disabled ? 50 : 100, // TODO(peter)
         },
         buttonStyle,
       ]}
@@ -94,11 +117,12 @@ export function BaseButton({
             fontSize: 16,
             lineHeight: 24,
             color: theme.custom.colors.primaryButtonTextColor,
+            opacity: disabled ? 50 : 100, // TODO(peter)
           },
           labelStyle,
         ]}
       >
-        {loading ? "loading.." : label} {disabled ? "(disabled)" : ""}
+        {loading ? "loading..." : label} {disabled ? "(disabled)" : ""}
       </Text>
     </Pressable>
   );
@@ -154,6 +178,34 @@ export function SecondaryButton({
       buttonStyle={{ backgroundColor: theme.custom.colors.secondaryButton }}
       labelStyle={{
         color: theme.custom.colors.secondaryButtonTextColor,
+      }}
+      {...props}
+    />
+  );
+}
+
+export function NegativeButton({
+  label,
+  onPress,
+  disabled,
+  loading,
+  ...props
+}: {
+  label: string;
+  onPress: () => void;
+  disabled: boolean;
+  loading?: boolean;
+}) {
+  const theme = useTheme();
+  return (
+    <BaseButton
+      label={label}
+      onPress={onPress}
+      disabled={disabled}
+      loading={loading}
+      buttonStyle={{ backgroundColor: theme.custom.colors.negative }}
+      labelStyle={{
+        color: theme.custom.colors.negativeButtonTextColor,
       }}
       {...props}
     />
@@ -276,7 +328,14 @@ export function EmptyState({
 }) {
   const theme = useTheme();
   return (
-    <View>
+    <View style={{ alignItems: "center" }}>
+      {icon({
+        size: 56,
+        style: {
+          color: theme.custom.colors.secondary,
+          marginBottom: 16,
+        },
+      })}
       <Typography
         style={{
           fontSize: 24,
@@ -302,14 +361,18 @@ export function EmptyState({
           {subtitle}
         </Typography>
       )}
-      <PrimaryButton label={buttonText} onPress={onPress} />
+      {minimize !== true && buttonText && (
+        <Margin top={12}>
+          <PrimaryButton label={buttonText} onPress={() => onPress()} />
+        </Margin>
+      )}
     </View>
   );
 }
 
 // React Native apps need to specifcy a width and height for remote images
-export function ProxyImage({ src, ...props }: any) {
-  const url = proxyImageUrl(props.src);
+export function ProxyImage({ src, ...props }: any): JSX.Element {
+  const uri = proxyImageUrl(props.src);
   return (
     <Image
       {...props}
@@ -317,7 +380,7 @@ export function ProxyImage({ src, ...props }: any) {
       //   currentTarget.onerror = props.onError || null;
       //   currentTarget.src = props.src;
       // }}
-      source={url}
+      source={{ uri }}
     />
   );
 }
@@ -338,7 +401,7 @@ export function Margin({
   horizontal?: number | string;
   vertical?: number | string;
   children: JSX.Element[] | JSX.Element;
-}) {
+}): JSX.Element {
   const style = {};
   if (bottom) {
     // @ts-ignore
@@ -372,3 +435,145 @@ export function Margin({
 
   return <View style={style}>{children}</View>;
 }
+
+export function WalletAddressLabel({
+  publicKey,
+  name,
+  style,
+  nameStyle,
+}: {
+  publicKey: string;
+  name: string;
+  style: StyleProp<ViewStyle>;
+  nameStyle: StyleProp<TextStyle>;
+}): JSX.Element {
+  const theme = useTheme();
+  return (
+    <View style={[{ flexDirection: "row", alignItems: "center" }, style]}>
+      <Margin right={8}>
+        <Text style={[{ color: theme.custom.colors.fontColor }, nameStyle]}>
+          {name}
+        </Text>
+      </Margin>
+      <Text style={{ color: theme.custom.colors.secondary }}>
+        ({walletAddressDisplay(publicKey)})
+      </Text>
+    </View>
+  );
+}
+
+export function Avatar({ size = 64 }: { size?: number }): JSX.Element {
+  const avatarUrl = useAvatarUrl(size);
+  const theme = useTheme();
+
+  const outerSize = size + 6;
+
+  return (
+    <View
+      style={{
+        backgroundColor: theme.custom.colors.avatarIconBackground,
+        borderRadius: outerSize / 2,
+        padding: 3,
+        width: outerSize,
+        height: outerSize,
+      }}
+    >
+      <SvgUri width={size} height={size} uri={avatarUrl} />
+    </View>
+  );
+}
+
+export function Debug({ data }: any): JSX.Element {
+  const theme = useTheme();
+  return (
+    <View>
+      <Text
+        style={{
+          color: theme.custom.colors.fontColor,
+          fontFamily: "monospace",
+        }}
+      >
+        {JSON.stringify(data, null, 2)}
+      </Text>
+    </View>
+  );
+}
+
+function generateRandomHexColor() {
+  return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+}
+
+export function DummyScreen({ route }) {
+  return (
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: generateRandomHexColor(),
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <Text>Dummy Screen</Text>
+      <Debug data={{ route: route.params }} />
+    </View>
+  );
+}
+
+export function FullScreenLoading() {
+  const theme = useTheme();
+  return (
+    <View
+      style={{
+        backgroundColor: theme.custom.colors.background,
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <ActivityIndicator size="large" color={theme.custom.colors.fontColor} />
+    </View>
+  );
+}
+
+export function WelcomeLogoHeader() {
+  const theme = useTheme();
+  return (
+    <View style={{ alignItems: "center" }}>
+      <Margin top={48} bottom={24}>
+        <RedBackpack />
+      </Margin>
+      <Text
+        style={{
+          fontWeight: "600",
+          fontSize: 42,
+          textAlign: "center",
+          color: theme.custom.colors.fontColor,
+        }}
+      >
+        Backpack
+      </Text>
+      <Margin top={8}>
+        <Text
+          style={{
+            lineHeight: 24,
+            fontSize: 16,
+            fontWeight: "500",
+            color: theme.custom.colors.secondary,
+          }}
+        >
+          A home for your xNFTs
+        </Text>
+      </Margin>
+    </View>
+  );
+}
+
+export function ListRowSeparator() {
+  return <View style={listRowStyles.container} />;
+}
+
+const listRowStyles = StyleSheet.create({
+  container: {
+    height: 12,
+  },
+});

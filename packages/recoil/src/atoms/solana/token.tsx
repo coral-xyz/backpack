@@ -1,19 +1,21 @@
-import { atomFamily, selector, selectorFamily } from "recoil";
-import { ethers, BigNumber } from "ethers";
-import { TokenInfo } from "@solana/spl-token-registry";
-import { priceData } from "../prices";
-import { splTokenRegistry } from "./token-registry";
-import { TokenData, TokenNativeData } from "../../types";
-import { anchorContext } from "./wallet";
-import { solanaPublicKey } from "../wallet";
-import { solanaConnectionUrl } from "./preferences";
-import { PublicKey } from "@solana/web3.js";
-import { SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
 import type {
   SolanaTokenAccountWithKeyString,
   SplNftMetadataString,
   TokenMetadataString,
 } from "@coral-xyz/common";
+import { SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
+import type { TokenInfo } from "@solana/spl-token-registry";
+import { PublicKey } from "@solana/web3.js";
+import { BigNumber, ethers } from "ethers";
+import { atomFamily, selector, selectorFamily } from "recoil";
+
+import type { TokenData, TokenNativeData } from "../../types";
+import { priceData } from "../prices";
+import { solanaPublicKey } from "../wallet";
+
+import { solanaConnectionUrl } from "./preferences";
+import { splTokenRegistry } from "./token-registry";
+import { anchorContext } from "./wallet";
 
 export const customSplTokenAccounts = atomFamily({
   key: "customSplTokenAccounts",

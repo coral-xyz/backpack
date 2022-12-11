@@ -18,6 +18,23 @@ import { RecoilRoot } from "recoil";
 
 import App from "./src/App";
 
+Promise.allSettled =
+  Promise.allSettled ||
+  ((promises) =>
+    Promise.all(
+      promises.map((p) =>
+        p
+          .then((value) => ({
+            status: "fulfilled",
+            value,
+          }))
+          .catch((reason) => ({
+            status: "rejected",
+            reason,
+          }))
+      )
+    ));
+
 const LOCALHOST_WEBVIEW_URI = "http://localhost:9333";
 
 const WEBVIEW_URI = (() => {
@@ -42,6 +59,25 @@ function WrappedApp() {
   );
 }
 
+function maybeParseLog({ channel, data }) {
+  try {
+    console.group(channel);
+
+    if (channel === "mobile-logs") {
+      const [name, value] = data;
+      const color = name.includes("ERROR") ? "red" : "yellow";
+      console.log("%c" + name, `color: ${color}`);
+      console.log(value);
+    } else if (channel === "mobile-fe-response") {
+      console.log(data.wrappedEvent.channel);
+      console.log(data.wrappedEvent.data);
+    }
+    console.groupEnd();
+  } catch (error) {
+    console.error(channel, error);
+  }
+}
+
 function Background() {
   const setInjectJavaScript = useStore((state) => state.setInjectJavaScript);
   const ref = useRef(null);
@@ -61,6 +97,7 @@ function Background() {
         }}
         onMessage={(event) => {
           const msg = JSON.parse(event.nativeEvent.data);
+          maybeParseLog(msg);
           if (msg.type === BACKGROUND_SERVICE_WORKER_READY) {
             setInjectJavaScript(ref.current.injectJavaScript);
           } else {

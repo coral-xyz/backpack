@@ -1,13 +1,15 @@
-import { Button, FlatList, Text, View } from "react-native";
-import { Screen } from "@components";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { Text, View } from "react-native";
+import { NavHeader } from "@components";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import AccountSettingsNavigator from "@navigation/AccountSettingsNavigator";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { getHeaderTitle } from "@react-navigation/elements";
 import { createStackNavigator } from "@react-navigation/stack";
 import AppListScreen from "@screens/Unlocked/AppListScreen";
-import BalancesScreen from "@screens/Unlocked/BalancesScreen";
+import { BalancesNavigator } from "@screens/Unlocked/BalancesScreen";
 import DepositModal from "@screens/Unlocked/DepositScreen";
-import NftCollectiblesScreen from "@screens/Unlocked/NftCollectiblesScreen";
+import { NFTCollectiblesNavigator } from "@screens/Unlocked/NftCollectiblesScreen";
+import { RecentActivityScreen } from "@screens/Unlocked/RecentActivityScreen";
 import {
   SelectSendTokenModal,
   SendTokenModal,
@@ -25,11 +27,12 @@ export default function UnlockedNavigator() {
       <Stack.Group screenOptions={{ presentation: "modal", headerShown: true }}>
         <Stack.Screen
           name="AccountSettingsModal"
-          component={AccountSettingsModal}
+          component={AccountSettingsNavigator}
         />
         <Stack.Screen
           name="RecentActivityModal"
-          component={RecentActivityModal}
+          options={{ title: "Recent Activity" }}
+          component={RecentActivityScreen}
         />
         <Stack.Screen
           options={{ title: "Deposit" }}
@@ -42,13 +45,13 @@ export default function UnlockedNavigator() {
           component={SelectSendTokenModal}
         />
         <Stack.Screen
+          name="SendTokenModal"
+          component={SendTokenModal}
           options={({ route }) => {
             return {
               title: route.params.title,
             };
           }}
-          name="SendTokenModal"
-          component={SendTokenModal}
         />
         <Stack.Screen
           options={{ title: "Swap" }}
@@ -57,14 +60,6 @@ export default function UnlockedNavigator() {
         />
       </Stack.Group>
     </Stack.Navigator>
-  );
-}
-
-function AccountSettingsModal() {
-  return (
-    <View style={{ flex: 1, backgroundColor: "green", alignItems: "center" }}>
-      <Text>Account Settings</Text>
-    </View>
   );
 }
 
@@ -79,34 +74,6 @@ function RecentActivityModal() {
 function TabBarIcon(props) {
   return (
     <MaterialCommunityIcons size={30} style={{ marginBottom: -3 }} {...props} />
-  );
-}
-
-function Header({ title, navigation }: { title: string; navigation: any }) {
-  // TODO fix any
-  return (
-    <View
-      style={{
-        padding: 8,
-        height: 54,
-        backgroundColor: "white",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-      }}
-    >
-      <Text>{title}</Text>
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <Button
-          onPress={() => navigation.navigate("RecentActivityModal")}
-          title="Activity"
-        />
-        <Button
-          onPress={() => navigation.navigate("AccountSettingsModal")}
-          title="Account"
-        />
-      </View>
-    </View>
   );
 }
 
@@ -130,7 +97,7 @@ function UnlockedBottomTabNavigator() {
         tabBarShowLabel: false,
         header: ({ navigation, route, options }) => {
           const title = getHeaderTitle(options, route.name);
-          return <Header title={title} navigation={navigation} />;
+          return <NavHeader title={title} navigation={navigation} />;
         },
         tabBarIcon: ({ focused, color, size }) => {
           const name = getIcon(focused, route.name);
@@ -140,9 +107,9 @@ function UnlockedBottomTabNavigator() {
         tabBarInactiveTintColor: "gray",
       })}
     >
-      <Tab.Screen name="Balances" component={BalancesScreen} />
+      <Tab.Screen name="Balances" component={BalancesNavigator} />
       <Tab.Screen name="Applications" component={AppListScreen} />
-      <Tab.Screen name="Collectibles" component={NftCollectiblesScreen} />
+      <Tab.Screen name="Collectibles" component={NFTCollectiblesNavigator} />
     </Tab.Navigator>
   );
 }

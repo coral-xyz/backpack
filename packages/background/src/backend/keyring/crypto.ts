@@ -1,6 +1,6 @@
+import * as bs58 from "bs58";
 import { pbkdf2 } from "crypto";
 import { randomBytes, secretbox } from "tweetnacl";
-import * as bs58 from "bs58";
 
 // An encrypted secret with associated metadata required for decryption.
 export type SecretPayload = {

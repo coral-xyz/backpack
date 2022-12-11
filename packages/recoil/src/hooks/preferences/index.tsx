@@ -1,14 +1,16 @@
-import { useRecoilValue, useRecoilState } from "recoil";
 import { UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE } from "@coral-xyz/common";
-import { useBackgroundClient } from "../client";
+import { useRecoilValue } from "recoil";
+
 import * as atoms from "../../atoms";
+import { xnftJwt } from "../../atoms";
+import { useBackgroundClient } from "../client";
 
 export function useApprovedOrigins(): Array<string> {
   return useRecoilValue(atoms.approvedOrigins)!;
 }
 
 export function useApproveOrigin(): (origin: string) => Promise<void> {
-  const [approvedOrigins] = useRecoilState(atoms.approvedOrigins);
+  const approvedOrigins = useRecoilValue(atoms.approvedOrigins);
   const background = useBackgroundClient();
   return async (origin: string) => {
     const o = approvedOrigins!.find((o) => o === origin);
@@ -38,6 +40,14 @@ export function useConnectionUrls() {
   return useRecoilValue(atoms.connectionUrls);
 }
 
-export function useUsername() {
-  return useRecoilValue(atoms.username);
+export function useUser() {
+  return useRecoilValue(atoms.user);
+}
+
+export function useXnftJwt(xnftAddress: string) {
+  return useRecoilValue(xnftJwt({ xnftAddress }));
+}
+
+export function useAllUsers() {
+  return useRecoilValue(atoms.allUsers);
 }

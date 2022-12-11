@@ -1,5 +1,6 @@
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { ethers, BigNumber } from "ethers";
+import type { BigNumber } from "ethers";
+import { ethers } from "ethers";
 
 const useStyles = styles((theme) => ({
   wrapper: {

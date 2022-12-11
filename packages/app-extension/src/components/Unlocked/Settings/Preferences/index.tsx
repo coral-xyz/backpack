@@ -1,19 +1,20 @@
 import { useEffect } from "react";
-import { Typography, Switch } from "@mui/material";
 import {
-  Blockchain,
-  BACKPACK_FEATURE_LIGHT_MODE,
   BACKPACK_CONFIG_VERSION,
+  BACKPACK_FEATURE_LIGHT_MODE,
+  Blockchain,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
   UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_UPDATE,
 } from "@coral-xyz/common";
-import { useCustomTheme, styles } from "@coral-xyz/themes";
 import {
   useBackgroundClient,
   useBlockchainLogo,
   useDarkMode,
   useDeveloperMode,
 } from "@coral-xyz/recoil";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { Switch, Typography } from "@mui/material";
+
 import { useNavStack } from "../../../common/Layout/NavStack";
 import { SettingsList } from "../../../common/Settings/List";
 

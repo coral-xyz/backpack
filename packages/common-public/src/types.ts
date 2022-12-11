@@ -10,4 +10,5 @@ export interface XnftMetadata {
   isDarkMode: boolean;
   username?: string;
   avatarUrl: string;
+  jwt?: string;
 }

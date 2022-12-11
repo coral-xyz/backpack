@@ -1,13 +1,15 @@
-import { atom, selector } from "recoil";
-import {
-  ChannelAppUi,
+import type {
   ChannelAppUiClient,
   ChannelAppUiResponder,
-  CHANNEL_POPUP_RPC,
-  CHANNEL_POPUP_RESPONSE,
-  CHANNEL_SOLANA_CONNECTION_RPC_UI,
-  CHANNEL_ETHEREUM_CONNECTION_RPC_UI,
 } from "@coral-xyz/common";
+import {
+  CHANNEL_ETHEREUM_CONNECTION_RPC_UI,
+  CHANNEL_POPUP_RESPONSE,
+  CHANNEL_POPUP_RPC,
+  CHANNEL_SOLANA_CONNECTION_RPC_UI,
+  ChannelAppUi,
+} from "@coral-xyz/common";
+import { atom, selector } from "recoil";
 
 /**
  * Allows the app ui to send requests to the background script.

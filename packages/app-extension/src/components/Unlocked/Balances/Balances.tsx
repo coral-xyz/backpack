@@ -1,3 +1,7 @@
+import React, { useState } from "react";
+import { formatUSD, proxyImageUrl } from "@coral-xyz/common";
+import { styles } from "@coral-xyz/themes";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import {
   Card,
   CardContent,
@@ -7,11 +11,8 @@ import {
   ListItemIcon,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
-import { ExpandLess, ExpandMore } from "@mui/icons-material";
-import { formatUSD, proxyImageUrl } from "@coral-xyz/common";
+
 import { Button } from "../../../plugin";
-import { styles } from "@coral-xyz/themes";
 
 const useStyles = styles((theme) => ({
   blockchainLogo: {

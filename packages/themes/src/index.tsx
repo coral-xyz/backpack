@@ -1,6 +1,6 @@
+import createStyles from "@mui/styles/createStyles";
 import _makeStyles from "@mui/styles/makeStyles";
 import useTheme from "@mui/styles/useTheme";
-import createStyles from "@mui/styles/createStyles";
 
 export const HOVER_OPACITY = 0.8;
 
@@ -20,6 +20,11 @@ const BORDER_COLOR_1 = "#52525B";
 const POSITIVE_COLOR = "#35A63A";
 const NEGATIVE_COLOR = "#E95050";
 const SCROLLBAR_THUMB_COLOR = "rgb(153 164 180)";
+const LIGHT_TEXT_SMALL_COLOR = "#4E5768";
+const DARK_TEXT_SMALL_COLOR = "#8F929E";
+
+const NEGATIVE_LIGHT = "#FFF4F3";
+const NEGATIVE_DARK = "#FFF4F3";
 
 export const LIGHT_TEXT_COLOR = FONT_COLOR_1;
 const LIGHT_BACKGROUND_BACKDROP_COLOR =
@@ -41,6 +46,7 @@ const LIGHT_SCROLLBAR_THUMB_COLOR = SCROLLBAR_THUMB_COLOR;
 const LIGHT_ICON_HOVER_COLOR = "#787C89";
 
 const DANGER_COLOR = "#DC2626";
+const DANGER_DARK_COLOR = "#DC2626";
 
 const baseTheme = createStyles({
   typography: {
@@ -108,15 +114,18 @@ export const darkTheme: any = {
   components: darkComponentOverrides,
   custom: {
     colors: {
+      smallTextColor: DARK_TEXT_SMALL_COLOR,
       brandColor: BRAND_COLOR,
       background: BACKGROUND_COLOR_0,
       backgroundBackdrop: BACKGROUND_BACKDROP_COLOR,
       bg2: BACKGROUND_COLOR_2,
       bg3: BACKGROUND_COLOR_0,
+      bg4: "rgba(255, 255, 255, 0.2)",
       nav: BACKGROUND_COLOR_1,
       fontColor: FONT_COLOR,
       fontColor2: FONT_COLOR_2,
       fontColor3: FONT_COLOR_3,
+      fontColor4: LIGHT_BACKGROUND_COLOR_1,
       subtext: FONT_COLOR_3,
       secondary: FONT_COLOR_1,
       primaryButton: BRAND_COLOR,
@@ -150,12 +159,13 @@ export const darkTheme: any = {
       hoverIconBackground: `rgb(39, 39, 42, ${HOVER_OPACITY})`,
       avatarIconBackground: "#DFE0E5",
       text: TEXT_COLOR,
-      dangerButton: DANGER_COLOR,
+      dangerButton: DANGER_DARK_COLOR,
       alpha: "#8F929E",
       scrollbarTrack: BACKGROUND_COLOR_0,
       scrollbarThumb: SCROLLBAR_THUMB_COLOR,
       positive: POSITIVE_COLOR,
       negative: NEGATIVE_COLOR,
+      negativeBackground: NEGATIVE_DARK,
       neutral: "rgb(78, 87, 104)",
       negativeButtonTextColor: "#fff",
       drawerGradient: `linear-gradient(180deg, ${BACKGROUND_COLOR_1} 0%, rgba(41, 44, 51, 0) 100%)`,
@@ -163,6 +173,7 @@ export const darkTheme: any = {
       tabBarBoxShadow: "0px -4px 4px rgba(3, 10, 25, 0.02)",
       coralGradient:
         "linear-gradient(113.94deg, #3EECB8 15.93%, #A372FE 58.23%, #FE7D4A 98.98%)",
+      miniDrawerBackdrop: "#000000",
     },
   },
 };
@@ -218,15 +229,18 @@ export const lightTheme: any = {
   components: lightComponentOverrides,
   custom: {
     colors: {
+      smallTextColor: LIGHT_TEXT_SMALL_COLOR,
       brandColor: LIGHT_BRAND_COLOR,
       backgroundBackdrop: LIGHT_BACKGROUND_BACKDROP_COLOR,
       background: LIGHT_BACKGROUND_COLOR_0,
       nav: LIGHT_BACKGROUND_COLOR_1,
       bg2: LIGHT_BACKGROUND_COLOR_2,
       bg3: LIGHT_BACKGROUND_COLOR_1,
+      bg4: LIGHT_BACKGROUND_COLOR_0,
       fontColor: LIGHT_FONT_COLOR,
       fontColor2: LIGHT_FONT_COLOR_2,
       fontColor3: LIGHT_FONT_COLOR_3,
+      fontColor4: LIGHT_FONT_COLOR_2,
       subtext: LIGHT_FONT_COLOR_3,
       secondary: LIGHT_FONT_COLOR_1,
       primaryButton: LIGHT_BRAND_COLOR,
@@ -266,6 +280,7 @@ export const lightTheme: any = {
       scrollbarThumb: LIGHT_SCROLLBAR_THUMB_COLOR,
       positive: LIGHT_POSITIVE_COLOR,
       negative: LIGHT_NEGATIVE_COLOR,
+      negativeBackground: NEGATIVE_LIGHT,
       neutral: "rgb(78, 87, 104)",
       negativeButtonTextColor: "#fff",
       drawerGradient: `linear-gradient(180deg, ${LIGHT_BACKGROUND_COLOR_1} 0%, rgba(41, 44, 51, 0) 100%)`,
@@ -273,6 +288,7 @@ export const lightTheme: any = {
       tabBarBoxShadow: "0px -4px 4px rgba(3, 10, 25, 0.02)",
       coralGradient:
         "linear-gradient(113.94deg, #3EECB8 15.93%, #A372FE 58.23%, #FE7D4A 98.98%)",
+      miniDrawerBackdrop: "#18181b",
     },
   },
 };

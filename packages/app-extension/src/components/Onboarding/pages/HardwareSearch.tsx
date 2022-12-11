@@ -1,17 +1,17 @@
-// This component searches a hardware wallet for a publickey and displays
+// This component searches a hardware wallet for a public key and displays
 // a loading indicator until it is found (or an error if it not found).
 
 import { useEffect, useState } from "react";
-import { Box } from "@mui/material";
+import type { DerivationPath } from "@coral-xyz/common";
+import { accountDerivationPath, Blockchain } from "@coral-xyz/common";
 import Ethereum from "@ledgerhq/hw-app-eth";
 import Solana from "@ledgerhq/hw-app-solana";
-import Transport from "@ledgerhq/hw-transport";
-import {
-  accountDerivationPath,
-  Blockchain,
-  DerivationPath,
-} from "@coral-xyz/common";
+import type Transport from "@ledgerhq/hw-transport";
+import { Box } from "@mui/material";
+import * as anchor from "@project-serum/anchor";
+
 import { Header, Loading, PrimaryButton, SubtextParagraph } from "../../common";
+
 import { DERIVATION_PATHS, LOAD_PUBKEY_AMOUNT } from "./MnemonicSearch";
 
 export const HardwareSearch = ({
@@ -46,8 +46,11 @@ export const HardwareSearch = ({
             derivationPath,
             accountIndex
           );
-          const ledgerAddress = (await ledger.getAddress(path)).address;
-          if (ledgerAddress === publicKey) {
+          const ledgerAddress = (await ledger.getAddress(path))
+            .address as Buffer;
+          const ledgerAddressStr =
+            anchor.utils.bytes.bs58.encode(ledgerAddress);
+          if (ledgerAddressStr === publicKey) {
             onNext(derivationPath, accountIndex);
             return;
           }
