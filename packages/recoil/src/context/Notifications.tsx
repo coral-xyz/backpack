@@ -85,6 +85,7 @@ export function NotificationsProvider(props: any) {
   // Preferences.
   const setPreferences = useSetRecoilState(atoms.preferences);
   const setFeatureGates = useSetRecoilState(atoms.featureGates);
+  const setKeyringType = useSetRecoilState(atoms.keyringType);
 
   const setAutoLockSecs = (autoLockSecs: number) => {
     setPreferences((current) => {
@@ -576,6 +577,7 @@ export function NotificationsProvider(props: any) {
       setXnftPreferences(notif.data.xnftPreferences);
       setWalletData(notif.data.walletData);
       setActiveUser(notif.data.user);
+      setKeyringType(notif.data.keyringType);
       resetAllUsers();
     };
 
