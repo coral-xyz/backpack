@@ -37,6 +37,15 @@ import type { Config, Handle } from "../types";
 
 const logger = getLogger("ethereum-connection");
 
+// NOTE(peter): defaultProvider is a function that fails to serialize in the mobile app.
+// By setting it to undefined, we can avoid the serialization error.
+function handleResponse(response) {
+  return {
+    ...response,
+    _defaultProvider: undefined,
+  };
+}
+
 export function start(
   cfg: Config,
   events: EventEmitter,
@@ -200,7 +209,7 @@ async function handleResolveName(
 
 async function handleGetNetwork(ctx: Context<EthereumConnectionBackend>) {
   const resp = await ctx.backend.getNetwork();
-  return [resp];
+  return [handleResponse(resp)];
 }
 
 async function handleGetBlockNumber(ctx: Context<EthereumConnectionBackend>) {

@@ -25,14 +25,6 @@ const logger = getLogger("ethereum-connection-backend");
 export const ETHEREUM_TOKENS_REFRESH_INTERVAL = 10 * 1000;
 export const ETHEREUM_FEE_DATA_REFRESH_INTERVAL = 20 * 1000;
 
-// defaultProvider breaks mobile
-function handleResponse(response) {
-  return {
-    ...response,
-    _defaultProvider: undefined,
-  };
-}
-
 export function start(events: EventEmitter): EthereumConnectionBackend {
   const b = new EthereumConnectionBackend(events);
   b.start();
@@ -226,76 +218,70 @@ export class EthereumConnectionBackend {
   // Ethereum Connection API.
   //
   async getBalance(address: string, blockTag?: string) {
-    return handleResponse(await this.provider!.getBalance(address, blockTag));
+    return await this.provider!.getBalance(address, blockTag);
   }
 
   async getCode(address: string, blockTag?: string) {
-    return handleResponse(await this.provider!.getCode(address, blockTag));
+    return await this.provider!.getCode(address, blockTag);
   }
 
   async getStorageAt(address: string, position: BigNumber, blockTag?: string) {
-    return handleResponse(
-      await this.provider!.getStorageAt(address, position, blockTag)
-    );
+    return await this.provider!.getStorageAt(address, position, blockTag);
   }
 
   async getTransactionCount(address: string, blockTag?: string) {
-    return handleResponse(
-      await this.provider!.getTransactionCount(address, blockTag)
-    );
+    return await this.provider!.getTransactionCount(address, blockTag);
   }
 
   async getBlock(block: number) {
-    return handleResponse(await this.provider!.getBlock(block));
+    return await this.provider!.getBlock(block);
   }
 
   async getBlockWithTransactions(block: number) {
-    return handleResponse(await this.provider!.getBlockWithTransactions(block));
+    return await this.provider!.getBlockWithTransactions(block);
   }
 
   async lookupAddress(name: string) {
-    return handleResponse(await this.provider!.lookupAddress(name));
+    return await this.provider!.lookupAddress(name);
   }
 
   async resolveName(name: string) {
-    return handleResponse(await this.provider!.resolveName(name));
+    return await this.provider!.resolveName(name);
   }
 
   async getNetwork() {
-    return handleResponse(await this.provider!.getNetwork());
+    return await this.provider!.getNetwork();
   }
 
   async getBlockNumber() {
-    return handleResponse(await this.provider!.getBlockNumber());
+    return await this.provider!.getBlockNumber();
   }
 
   async getGasPrice() {
-    return handleResponse(await this.provider!.getGasPrice());
+    return await this.provider!.getGasPrice();
   }
 
   async getFeeData() {
-    return handleResponse(await this.provider!.getFeeData());
+    return await this.provider!.getFeeData();
   }
 
   async call(tx: any, blockTag?: string) {
-    return handleResponse(await this.provider!.call(tx, blockTag));
+    return await this.provider!.call(tx, blockTag);
   }
 
   async estimateGas(tx: any) {
-    return handleResponse(await this.provider!.estimateGas(tx));
+    return await this.provider!.estimateGas(tx);
   }
 
   async getTransaction(hash: any) {
-    return handleResponse(await this.provider!.getTransaction(hash));
+    return await this.provider!.getTransaction(hash);
   }
 
   async getTransactionReceipt(hash: string) {
-    return handleResponse(await this.provider!.getTransactionReceipt(hash));
+    return await this.provider!.getTransactionReceipt(hash);
   }
 
   async waitForTransaction(hash: string, confirms?: number, timeout?: number) {
-    return handleResponse(
-      await this.provider!.waitForTransaction(hash, confirms, timeout)
-    );
+    return await this.provider!.waitForTransaction(hash, confirms, timeout);
   }
 }
