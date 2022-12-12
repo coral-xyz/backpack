@@ -212,3 +212,32 @@ export async function createUserPublicKey({
 
   return response.insert_auth_public_keys_one;
 }
+
+/**
+ * Update avatar_nft of a user.
+ */
+export async function updateUserAvatar({
+  userId,
+  avatar,
+}: {
+  userId: string;
+  avatar: string;
+}) {
+  const response = await chain("mutation")({
+    update_auth_users: [
+      {
+        where: {
+          id: { _eq: userId },
+        },
+        _set: {
+          avatar_nft: avatar === "null" ? null : avatar,
+        },
+      },
+      {
+        affected_rows: true,
+      },
+    ],
+  });
+
+  return response.update_auth_users;
+}
