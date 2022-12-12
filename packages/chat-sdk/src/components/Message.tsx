@@ -63,10 +63,7 @@ const useStyles = makeStyles((theme: any) =>
     },
     messageLeft: {
       borderRadius: "16px 16px 16px 0px",
-      maxWidth: 200,
-      background: theme.custom.colors.bg4,
       color: theme.custom.colors.fontColor4,
-      padding: "12px 16px",
     },
     messageRightContainer: {
       display: "flex",
@@ -76,10 +73,7 @@ const useStyles = makeStyles((theme: any) =>
     },
     messageRight: {
       borderRadius: "16px 16px 0px 16px",
-      maxWidth: 200,
       color: theme.custom.colors.background,
-      background: theme.custom.colors.fontColor2,
-      padding: "12px 16px",
     },
     hoverParent: {
       "&:hover $hoverChild, & .Mui-focused $hoverChild": {
@@ -262,20 +256,38 @@ function MessageLeft(props) {
         </div>
       )}
       <div className={`${classes.messageLeftContainer} ${classes.hoverParent}`}>
-        <div className={classes.messageLeft}>{message}</div>
         <div
-          style={{ marginLeft: 10, marginTop: 10, cursor: "pointer" }}
-          className={classes.hoverChild}
-          onClick={() => {
-            setActiveReply({
-              parent_client_generated_uuid: props.client_generated_uuid,
-              text: message,
-              parent_username: `@${props.username}`,
-            });
+          className={classes.messageLeft}
+          style={{
+            maxWidth: props.messageKind === "gif" ? 250 : 200,
+            background:
+              props.messageKind === "gif"
+                ? "transparent"
+                : theme.custom.colors.bg4,
+            padding: props.messageKind === "gif" ? "0px 0px" : "12px 16px",
           }}
         >
-          <ReplyIcon fill={theme.custom.colors.icon} />
+          {props.messageKind === "gif" ? (
+            <GifDemo id={message} width={250} />
+          ) : (
+            message
+          )}
         </div>
+        {props.messageKind !== "gif" && (
+          <div
+            style={{ marginLeft: 10, marginTop: 10, cursor: "pointer" }}
+            className={classes.hoverChild}
+            onClick={() => {
+              setActiveReply({
+                parent_client_generated_uuid: props.client_generated_uuid,
+                text: message,
+                parent_username: `@${props.username}`,
+              });
+            }}
+          >
+            <ReplyIcon fill={theme.custom.colors.icon} />
+          </div>
+        )}
       </div>
     </>
   );
@@ -309,20 +321,38 @@ function MessageRight(props) {
             alignItems: "flex-start",
           }}
         >
+          {props.messageKind !== "gif" && (
+            <div
+              style={{ marginRight: 10, marginTop: 10, cursor: "pointer" }}
+              className={classes.hoverChild}
+              onClick={() => {
+                setActiveReply({
+                  parent_client_generated_uuid: props.client_generated_uuid,
+                  text: message,
+                  parent_username: "Yourself",
+                });
+              }}
+            >
+              <ReplyIcon fill={theme.custom.colors.icon} />
+            </div>
+          )}
           <div
-            style={{ marginRight: 10, marginTop: 10, cursor: "pointer" }}
-            className={classes.hoverChild}
-            onClick={() => {
-              setActiveReply({
-                parent_client_generated_uuid: props.client_generated_uuid,
-                text: message,
-                parent_username: "Yourself",
-              });
+            className={classes.messageRight}
+            style={{
+              maxWidth: props.messageKind === "gif" ? 250 : 200,
+              background:
+                props.messageKind === "gif"
+                  ? "transparent"
+                  : theme.custom.colors.fontColor2,
+              padding: props.messageKind === "gif" ? "0px 0px" : "12px 16px",
             }}
           >
-            <ReplyIcon fill={theme.custom.colors.icon} />
+            {props.messageKind === "gif" ? (
+              <GifDemo id={message} width={250} />
+            ) : (
+              message
+            )}
           </div>
-          <div className={classes.messageRight}>{message}</div>
         </div>
       </div>
     </>

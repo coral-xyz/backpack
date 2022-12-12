@@ -40,6 +40,7 @@ export const getChats = async ({
         client_generated_uuid: true,
         message_kind: true,
         created_at: true,
+        parent_client_generated_uuid: true,
       },
     ],
   });
@@ -47,4 +48,33 @@ export const getChats = async ({
   return (
     response.chats.sort((a, b) => (a.created_at < b.created_at ? -1 : 1)) || []
   );
+};
+
+export const getChatsFromParentGuids = async (
+  roomId: string,
+  type: SubscriptionType,
+  parentClientGeneratedGuids: string[]
+) => {
+  const response = await chain("query")({
+    chats: [
+      {
+        where: {
+          room: { _eq: roomId },
+          //@ts-ignore
+          type: { _eq: type },
+          client_generated_uuid: { _in: parentClientGeneratedGuids },
+        },
+      },
+      {
+        id: true,
+        uuid: true,
+        message: true,
+        client_generated_uuid: true,
+        created_at: true,
+        message_kind: true,
+        parent_client_generated_uuid: true,
+      },
+    ],
+  });
+  return response.chats || [];
 };
