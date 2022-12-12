@@ -18,6 +18,7 @@ import {
 import { getOrcreateXnftSecret } from "../../db/xnftSecrets";
 import {
   BlockchainPublicKey,
+  CreatePublicKeys,
   CreateUserWithPublicKeys,
   validateEthereumSignature,
   validateSolanaSignature,
