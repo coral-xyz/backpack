@@ -207,6 +207,7 @@ export function ChatMessages() {
                 messageKind={chat.message_kind}
                 image={chat.image}
                 username={chat.username}
+                userId={chat.uuid}
                 client_generated_uuid={chat.client_generated_uuid}
                 parent_message_text={chat.parent_message_text}
                 parent_message_author_username={
@@ -223,6 +224,7 @@ export function ChatMessages() {
             key={chat.id}
             message={chat.message}
             received={chat.received}
+            userId={chat.uuid}
             messageKind={chat.message_kind}
             image={chat.image}
             username={chat.username}
@@ -282,6 +284,7 @@ function MessageLeft(props) {
                 parent_client_generated_uuid: props.client_generated_uuid,
                 text: message,
                 parent_username: `@${props.username}`,
+                parent_message_author_uuid: props.userId,
               });
             }}
           >
@@ -329,6 +332,7 @@ function MessageRight(props) {
                 setActiveReply({
                   parent_client_generated_uuid: props.client_generated_uuid,
                   text: message,
+                  parent_message_author_uuid: props.userId,
                   parent_username: "Yourself",
                 });
               }}
