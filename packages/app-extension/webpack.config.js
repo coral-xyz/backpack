@@ -73,6 +73,7 @@ const options = {
   },
   output: {
     filename: "[name].js",
+    chunkFilename: "[name].js",
     path: path.resolve(__dirname, dir),
     clean: true,
     publicPath: "",
