@@ -47,16 +47,18 @@ export function PreferencesBlockchains({
 
   const onToggle = async (isDisabled: boolean) => {
     if (isDisabled) {
+      // Disable the blockchain
       await background.request({
         method: UI_RPC_METHOD_BLOCKCHAINS_ENABLED_DELETE,
         params: [blockchain],
       });
     } else {
+      // Get all the keyrings for the blockchain and see if we already have one
+      // for the blockchain being enabled
       const blockchainKeyrings = await background.request({
         method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
         params: [],
       });
-
       if (!blockchainKeyrings.includes(blockchain)) {
         // Blockchain has no keyring initialised, initialise it
         if (keyringType === "ledger") {
