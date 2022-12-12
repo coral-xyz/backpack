@@ -36,4 +36,5 @@ select_permissions:
 delete_permissions:
   - role: auth_worker
     permission:
+      backend_only: false
       filter: {}
