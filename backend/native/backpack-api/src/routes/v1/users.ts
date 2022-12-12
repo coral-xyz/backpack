@@ -236,7 +236,7 @@ router.post(
 );
 
 /**
- * Add a public key/blockchain to the currently authenticated user.
+ * Update avatar of the currently authenticated user.
  */
 router.post("/avatar", extractUserId, async (req: Request, res: Response) => {
   await updateUserAvatar({
