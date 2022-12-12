@@ -19,7 +19,8 @@ import {
 import { getOrcreateXnftSecret } from "../../db/xnftSecrets";
 import {
   BlockchainPublicKey,
-  CreateUserWithKeyrings,
+  CreatePublicKeys,
+  CreateUserWithPublicKeys,
   validateEthereumSignature,
   validateSolanaSignature,
 } from "../../validation/user";
@@ -63,7 +64,7 @@ router.get("/jwt/xnft", extractUserId, async (req, res) => {
  */
 router.post("/", async (req, res) => {
   const { username, inviteCode, waitlistId, blockchainPublicKeys } =
-    CreateUserWithKeyrings.parse(req.body);
+    CreateUserWithPublicKeys.parse(req.body);
 
   // Validate all the signatures
   for (const blockchainPublicKey of blockchainPublicKeys) {
@@ -225,7 +226,9 @@ router.post(
   "/publicKeys",
   extractUserId,
   async (req: Request, res: Response) => {
-    const { blockchain, publicKey } = BlockchainPublicKey.parse(req.body);
+    const { blockchain, publicKey, signature } = CreatePublicKeys.parse(
+      req.body
+    );
     await createUserPublicKey({
       userId: req.id!,
       blockchain: blockchain as Blockchain,

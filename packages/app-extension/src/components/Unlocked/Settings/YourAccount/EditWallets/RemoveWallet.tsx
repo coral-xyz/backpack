@@ -1,14 +1,7 @@
 import React, { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
-import {
-  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-  UI_RPC_METHOD_KEYRING_KEY_DELETE,
-} from "@coral-xyz/common";
-import {
-  useActiveWallets,
-  useBackgroundClient,
-  useWalletPublicKeys,
-} from "@coral-xyz/recoil";
+import { UI_RPC_METHOD_KEYRING_KEY_DELETE } from "@coral-xyz/common";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
 
@@ -26,15 +19,6 @@ export const RemoveWallet: React.FC<{
   const nav = useNavStack();
   const background = useBackgroundClient();
   const [showSuccess, setShowSuccess] = useState(false);
-  const activeWallets = useActiveWallets();
-  const wallet = activeWallets.find((w) => w.blockchain === blockchain);
-  const blockchainKeyrings = useWalletPublicKeys();
-  const keyring = blockchainKeyrings[blockchain];
-  const flattenedWallets = [
-    ...keyring.hdPublicKeys,
-    ...keyring.importedPublicKeys,
-    ...keyring.ledgerPublicKeys,
-  ];
 
   useEffect(() => {
     nav.setTitle("Remove Wallet");
@@ -122,18 +106,6 @@ export const RemoveWallet: React.FC<{
             style={{ backgroundColor: theme.custom.colors.negative }}
             onClick={() => {
               (async () => {
-                if (wallet?.publicKey.toString() === publicKey.toString()) {
-                  const newActiveWalletPubkey = flattenedWallets.find(
-                    (wallet) =>
-                      wallet.publicKey.toString() !== publicKey.toString()
-                  )?.publicKey;
-                  if (newActiveWalletPubkey) {
-                    await background.request({
-                      method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-                      params: [newActiveWalletPubkey, blockchain],
-                    });
-                  }
-                }
                 await background.request({
                   method: UI_RPC_METHOD_KEYRING_KEY_DELETE,
                   params: [blockchain, publicKey],

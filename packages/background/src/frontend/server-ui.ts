@@ -206,7 +206,8 @@ async function handle<T = any>(
         params[0],
         params[1],
         params[2],
-        params[3]
+        params[3],
+        params[4]
       );
     //
     // Navigation.
@@ -1011,15 +1012,17 @@ async function handleBlockchainKeyringsRead(
 async function handleKeyringLedgerImport(
   ctx: Context<Backend>,
   blockchain: Blockchain,
-  dPath: string,
+  derivationPath: string,
   account: number,
-  pubkey: string
+  publicKey: string,
+  signature?: string
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.ledgerImport(
     blockchain,
-    dPath,
+    derivationPath,
     account,
-    pubkey
+    publicKey,
+    signature
   );
   return [resp];
 }

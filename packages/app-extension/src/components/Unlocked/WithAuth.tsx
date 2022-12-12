@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Blockchain, DerivationPath } from "@coral-xyz/common";
+import type { Blockchain, BlockchainKeyringInit } from "@coral-xyz/common";
 import {
   BACKPACK_FEATURE_JWT,
   BACKPACK_FEATURE_USERNAMES,
@@ -8,19 +8,12 @@ import {
   UI_RPC_METHOD_USER_JWT_UPDATE,
 } from "@coral-xyz/common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
-import { useCustomTheme } from "@coral-xyz/themes";
-import type Transport from "@ledgerhq/hw-transport";
 import { ethers } from "ethers";
 
 import { useAuthentication } from "../../hooks/useAuthentication";
-import { useSteps } from "../../hooks/useSteps";
 import { Loading } from "../common";
 import { WithDrawer } from "../common/Layout/Drawer";
-import { NavBackButton, WithNav } from "../common/Layout/Nav";
-import { HardwareSearch } from "../Onboarding/pages/HardwareSearch";
-import { HardwareSign } from "../Onboarding/pages/HardwareSign";
-import { ConnectHardwareSearching } from "../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareSearching";
-import { ConnectHardwareWelcome } from "../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareWelcome";
+import { HardwareOnboard } from "../Onboarding/pages/HardwareOnboard";
 
 const { base58 } = ethers.utils;
 
@@ -40,11 +33,7 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
   const [authSignature, setAuthSignature] = useState<string | null>(null);
   const [openDrawer, setOpenDrawer] = useState(false);
 
-  const jwtEnabled = !!(
-    BACKPACK_FEATURE_USERNAMES &&
-    BACKPACK_FEATURE_JWT &&
-    user
-  );
+  const jwtEnabled = !!(BACKPACK_FEATURE_USERNAMES && BACKPACK_FEATURE_JWT);
 
   /**
    * Check authentication status and take required actions to authenticate if
@@ -139,89 +128,18 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
             borderTopRightRadius: "12px",
           }}
         >
-          <HardwareAuthSigner
+          <HardwareOnboard
             blockchain={authData!.blockchain}
-            publicKey={authData!.publicKey}
-            authMessage={authData!.message}
-            onSignature={setAuthSignature}
+            action="search"
+            searchPublicKey={authData!.publicKey}
+            signMessage={authData!.message}
+            signText="Sign the message to authenticate with Backpack."
+            onComplete={(keyringInit: BlockchainKeyringInit) => {
+              setAuthSignature(keyringInit.signature);
+            }}
           />
         </WithDrawer>
       )}
     </>
-  );
-}
-
-export function HardwareAuthSigner({
-  blockchain,
-  publicKey,
-  authMessage,
-  onSignature,
-}: {
-  blockchain: Blockchain;
-  publicKey: string;
-  authMessage: string;
-  onSignature: (signature: string) => void;
-}) {
-  const theme = useCustomTheme();
-  const { step, nextStep, prevStep, setStep } = useSteps();
-  const [transport, setTransport] = useState<Transport | null>(null);
-  const [transportError] = useState(false);
-  const [signingAccount, setSigningAccount] = useState<{
-    derivationPath: DerivationPath;
-    accountIndex: number;
-  } | null>();
-
-  const steps = [
-    <ConnectHardwareWelcome onNext={nextStep} />,
-    <ConnectHardwareSearching
-      blockchain={blockchain}
-      onNext={(transport) => {
-        setTransport(transport);
-        nextStep();
-      }}
-      isConnectFailure={!!transportError}
-    />,
-    <HardwareSearch
-      blockchain={blockchain!}
-      transport={transport!}
-      publicKey={publicKey!}
-      onNext={(derivationPath: DerivationPath, accountIndex: number) => {
-        setSigningAccount({ derivationPath, accountIndex });
-        nextStep();
-      }}
-      onRetry={() => setStep(1)}
-    />,
-    ...(signingAccount
-      ? [
-          <HardwareSign
-            blockchain={blockchain!}
-            message={authMessage}
-            publicKey={publicKey}
-            derivationPath={signingAccount.derivationPath}
-            accountIndex={signingAccount.accountIndex!}
-            text="Sign the message to authenticate with Backpack"
-            onNext={onSignature}
-          />,
-        ]
-      : []),
-  ];
-
-  return (
-    <WithNav
-      navButtonLeft={
-        step > 0 && step < steps.length - 1 ? (
-          <NavBackButton onClick={prevStep} />
-        ) : null
-      }
-      navbarStyle={{
-        backgroundColor: theme.custom.colors.nav,
-      }}
-      navContentStyle={{
-        backgroundColor: theme.custom.colors.nav,
-        height: "400px",
-      }}
-    >
-      {steps[step]}
-    </WithNav>
   );
 }
