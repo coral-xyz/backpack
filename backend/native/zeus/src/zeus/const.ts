@@ -31,6 +31,11 @@ export const AllTypesProps: Record<string, any> = {
   },
   auth_friend_requests_stream_cursor_value_input: {},
   auth_friend_requests_update_column: "enum" as const,
+  auth_friendships_aggregate_fields: {
+    count: {
+      columns: "auth_friendships_select_column",
+    },
+  },
   auth_friendships_bool_exp: {
     _and: "auth_friendships_bool_exp",
     _not: "auth_friendships_bool_exp",
@@ -43,9 +48,11 @@ export const AllTypesProps: Record<string, any> = {
     user1: "String_comparison_exp",
     user1_blocked_user2: "Boolean_comparison_exp",
     user1_interacted: "Boolean_comparison_exp",
+    user1_spam_user2: "Boolean_comparison_exp",
     user2: "String_comparison_exp",
     user2_blocked_user1: "Boolean_comparison_exp",
     user2_interacted: "Boolean_comparison_exp",
+    user2_spam_user1: "Boolean_comparison_exp",
   },
   auth_friendships_constraint: "enum" as const,
   auth_friendships_inc_input: {},
@@ -66,9 +73,11 @@ export const AllTypesProps: Record<string, any> = {
     user1: "order_by",
     user1_blocked_user2: "order_by",
     user1_interacted: "order_by",
+    user1_spam_user2: "order_by",
     user2: "order_by",
     user2_blocked_user1: "order_by",
     user2_interacted: "order_by",
+    user2_spam_user1: "order_by",
   },
   auth_friendships_pk_columns_input: {},
   auth_friendships_select_column: "enum" as const,
@@ -181,6 +190,14 @@ export const AllTypesProps: Record<string, any> = {
     _inc: "auth_notifications_inc_input",
     _set: "auth_notifications_set_input",
     where: "auth_notifications_bool_exp",
+  },
+  auth_public_keys_aggregate_bool_exp: {
+    count: "auth_public_keys_aggregate_bool_exp_count",
+  },
+  auth_public_keys_aggregate_bool_exp_count: {
+    arguments: "auth_public_keys_select_column",
+    filter: "auth_public_keys_bool_exp",
+    predicate: "Int_comparison_exp",
   },
   auth_public_keys_aggregate_fields: {
     count: {
@@ -343,6 +360,7 @@ export const AllTypesProps: Record<string, any> = {
     _or: "auth_users_bool_exp",
     id: "uuid_comparison_exp",
     public_keys: "auth_public_keys_bool_exp",
+    public_keys_aggregate: "auth_public_keys_aggregate_bool_exp",
     username: "citext_comparison_exp",
   },
   auth_users_constraint: "enum" as const,
@@ -706,6 +724,11 @@ export const AllTypesProps: Record<string, any> = {
       order_by: "auth_friendships_order_by",
       where: "auth_friendships_bool_exp",
     },
+    auth_friendships_aggregate: {
+      distinct_on: "auth_friendships_select_column",
+      order_by: "auth_friendships_order_by",
+      where: "auth_friendships_bool_exp",
+    },
     auth_friendships_by_pk: {},
     auth_notification_subscriptions: {
       distinct_on: "auth_notification_subscriptions_select_column",
@@ -784,6 +807,11 @@ export const AllTypesProps: Record<string, any> = {
       where: "auth_friend_requests_bool_exp",
     },
     auth_friendships: {
+      distinct_on: "auth_friendships_select_column",
+      order_by: "auth_friendships_order_by",
+      where: "auth_friendships_bool_exp",
+    },
+    auth_friendships_aggregate: {
       distinct_on: "auth_friendships_select_column",
       order_by: "auth_friendships_order_by",
       where: "auth_friendships_bool_exp",
@@ -937,13 +965,72 @@ export const ReturnTypes: Record<string, any> = {
     user1: "String",
     user1_blocked_user2: "Boolean",
     user1_interacted: "Boolean",
+    user1_spam_user2: "Boolean",
     user2: "String",
     user2_blocked_user1: "Boolean",
     user2_interacted: "Boolean",
+    user2_spam_user1: "Boolean",
+  },
+  auth_friendships_aggregate: {
+    aggregate: "auth_friendships_aggregate_fields",
+    nodes: "auth_friendships",
+  },
+  auth_friendships_aggregate_fields: {
+    avg: "auth_friendships_avg_fields",
+    count: "Int",
+    max: "auth_friendships_max_fields",
+    min: "auth_friendships_min_fields",
+    stddev: "auth_friendships_stddev_fields",
+    stddev_pop: "auth_friendships_stddev_pop_fields",
+    stddev_samp: "auth_friendships_stddev_samp_fields",
+    sum: "auth_friendships_sum_fields",
+    var_pop: "auth_friendships_var_pop_fields",
+    var_samp: "auth_friendships_var_samp_fields",
+    variance: "auth_friendships_variance_fields",
+  },
+  auth_friendships_avg_fields: {
+    id: "Float",
+  },
+  auth_friendships_max_fields: {
+    id: "Int",
+    last_message: "String",
+    last_message_sender: "String",
+    last_message_timestamp: "timestamptz",
+    user1: "String",
+    user2: "String",
+  },
+  auth_friendships_min_fields: {
+    id: "Int",
+    last_message: "String",
+    last_message_sender: "String",
+    last_message_timestamp: "timestamptz",
+    user1: "String",
+    user2: "String",
   },
   auth_friendships_mutation_response: {
     affected_rows: "Int",
     returning: "auth_friendships",
+  },
+  auth_friendships_stddev_fields: {
+    id: "Float",
+  },
+  auth_friendships_stddev_pop_fields: {
+    id: "Float",
+  },
+  auth_friendships_stddev_samp_fields: {
+    id: "Float",
+  },
+  auth_friendships_sum_fields: {
+    id: "Int",
+  },
+  auth_friendships_var_pop_fields: {
+    id: "Float",
+  },
+  auth_friendships_var_samp_fields: {
+    id: "Float",
+  },
+  auth_friendships_variance_fields: {
+    id: "Float",
   },
   auth_notification_subscriptions: {
     auth: "String",
@@ -1185,6 +1272,7 @@ export const ReturnTypes: Record<string, any> = {
     auth_friend_requests: "auth_friend_requests",
     auth_friend_requests_by_pk: "auth_friend_requests",
     auth_friendships: "auth_friendships",
+    auth_friendships_aggregate: "auth_friendships_aggregate",
     auth_friendships_by_pk: "auth_friendships",
     auth_notification_subscriptions: "auth_notification_subscriptions",
     auth_notification_subscriptions_by_pk: "auth_notification_subscriptions",
@@ -1210,6 +1298,7 @@ export const ReturnTypes: Record<string, any> = {
     auth_friend_requests_by_pk: "auth_friend_requests",
     auth_friend_requests_stream: "auth_friend_requests",
     auth_friendships: "auth_friendships",
+    auth_friendships_aggregate: "auth_friendships_aggregate",
     auth_friendships_by_pk: "auth_friendships",
     auth_friendships_stream: "auth_friendships",
     auth_notification_subscriptions: "auth_notification_subscriptions",

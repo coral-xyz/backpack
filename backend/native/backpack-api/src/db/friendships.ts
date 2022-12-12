@@ -151,9 +151,39 @@ export const getFriendships = async ({
         last_message_sender: true,
       },
     ],
+    auth_friendships_aggregate: [
+      {
+        where: {
+          _or: [
+            {
+              user1: { _eq: uuid },
+              are_friends: { _eq: false },
+              user1_interacted: { _eq: false },
+              user1_blocked_user2: { _eq: false },
+              user2_interacted: { _eq: true },
+            },
+            {
+              user2: { _eq: uuid },
+              are_friends: { _eq: false },
+              user2_interacted: { _eq: false },
+              user2_blocked_user1: { _eq: false },
+              user1_interacted: { _eq: true },
+            },
+          ],
+        },
+      },
+      {
+        aggregate: {
+          count: true,
+        },
+      },
+    ],
   });
 
-  return response.auth_friendships ?? [];
+  return {
+    friendships: response.auth_friendships ?? [],
+    requestCount: response.auth_friendships_aggregate.aggregate?.count || 0,
+  };
 };
 
 export async function unfriend({ from, to }: { from: string; to: string }) {

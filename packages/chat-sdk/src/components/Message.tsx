@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { createStyles, makeStyles } from "@mui/styles";
-import { Gif as GifComponent } from "@giphy/react-components";
 import { GiphyFetch } from "@giphy/js-fetch-api";
+import { Gif as GifComponent } from "@giphy/react-components";
+import { createStyles, makeStyles } from "@mui/styles";
+
 import { useChatContext } from "./ChatContext";
 
 // use @giphy/js-fetch-api to fetch gifs, instantiate with your api key
@@ -55,7 +56,7 @@ const useStyles = makeStyles((theme: any) =>
       display: "flex",
       flexDirection: "column",
       alignItems: "flex-start",
-      padding: "12px 16px",
+      padding: "12px 19px",
     },
     messageLeft: {
       borderRadius: "16px 16px 16px 0px",
