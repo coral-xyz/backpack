@@ -619,6 +619,7 @@ export class Backend {
     // Get preferences to push back to the UI.
     const preferences = await this.preferencesRead(uuid);
     const xnftPreferences = await this.getXnftPreferences();
+    const enabledBlockchains = await this.enabledBlockchainsRead();
 
     // Push it.
     this.events.emit(BACKEND_EVENT, {
@@ -632,6 +633,7 @@ export class Backend {
         walletData,
         preferences,
         xnftPreferences,
+        enabledBlockchains,
       },
     });
 
@@ -667,6 +669,7 @@ export class Backend {
       const walletData = await this.keyringStoreReadAllPubkeyData();
       const preferences = await this.preferencesRead(uuid);
       const xnftPreferences = await this.getXnftPreferences();
+      const enabledBlockchains = await this.enabledBlockchainsRead();
 
       this.events.emit(BACKEND_EVENT, {
         name: NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED,
@@ -675,6 +678,7 @@ export class Backend {
           walletData,
           preferences,
           xnftPreferences,
+          enabledBlockchains,
         },
       });
     }
@@ -956,6 +960,7 @@ export class Backend {
     const walletData = await this.keyringStoreReadAllPubkeyData();
     const preferences = await this.preferencesRead(uuid);
     const xnftPreferences = await this.getXnftPreferences();
+    const enabledBlockchains = await this.enabledBlockchainsRead();
 
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED,
@@ -968,6 +973,7 @@ export class Backend {
         walletData,
         preferences,
         xnftPreferences,
+        enabledBlockchains,
       },
     });
 
