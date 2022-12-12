@@ -1,4 +1,4 @@
-import type { ImageStyle,StyleProp, TextStyle, ViewStyle } from "react-native";
+import type { ImageStyle, StyleProp, TextStyle, ViewStyle } from "react-native";
 import {
   ActivityIndicator,
   Image,

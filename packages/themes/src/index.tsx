@@ -44,6 +44,8 @@ const LIGHT_POSITIVE_COLOR = POSITIVE_COLOR;
 const LIGHT_NEGATIVE_COLOR = NEGATIVE_COLOR;
 const LIGHT_SCROLLBAR_THUMB_COLOR = SCROLLBAR_THUMB_COLOR;
 const LIGHT_ICON_HOVER_COLOR = "#787C89";
+const LIGHT_UNREAD_BACKGROUND = "rgba(99, 96, 255, 0.1)";
+const DARK_UNREAD_BACKGROUND = "rgba(99, 96, 255, 0.1)";
 
 const DANGER_COLOR = "#DC2626";
 const DANGER_DARK_COLOR = "#DC2626";
@@ -175,6 +177,7 @@ export const darkTheme: any = {
       coralGradient:
         "linear-gradient(113.94deg, #3EECB8 15.93%, #A372FE 58.23%, #FE7D4A 98.98%)",
       miniDrawerBackdrop: "#000000",
+      unreadBackground: LIGHT_UNREAD_BACKGROUND,
     },
   },
 };
@@ -291,6 +294,7 @@ export const lightTheme: any = {
       coralGradient:
         "linear-gradient(113.94deg, #3EECB8 15.93%, #A372FE 58.23%, #FE7D4A 98.98%)",
       miniDrawerBackdrop: "#18181b",
+      unreadBackground: DARK_UNREAD_BACKGROUND,
     },
   },
 };

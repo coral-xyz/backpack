@@ -9,15 +9,18 @@ insert_permissions:
         - are_friends
         - id
         - last_message
+        - last_message_client_uuid
         - last_message_sender
         - last_message_timestamp
         - user1
         - user1_blocked_user2
         - user1_interacted
+        - user1_last_read_message_id
         - user1_spam_user2
         - user2
         - user2_blocked_user1
         - user2_interacted
+        - user2_last_read_message_id
         - user2_spam_user1
 select_permissions:
   - role: auth_worker
@@ -26,15 +29,18 @@ select_permissions:
         - are_friends
         - id
         - last_message
+        - last_message_client_uuid
         - last_message_sender
         - last_message_timestamp
         - user1
         - user1_blocked_user2
         - user1_interacted
+        - user1_last_read_message_id
         - user1_spam_user2
         - user2
         - user2_blocked_user1
         - user2_interacted
+        - user2_last_read_message_id
         - user2_spam_user1
       filter: {}
       allow_aggregations: true
@@ -45,15 +51,18 @@ update_permissions:
         - are_friends
         - id
         - last_message
+        - last_message_client_uuid
         - last_message_sender
         - last_message_timestamp
         - user1
         - user1_blocked_user2
         - user1_interacted
+        - user1_last_read_message_id
         - user1_spam_user2
         - user2
         - user2_blocked_user1
         - user2_interacted
+        - user2_last_read_message_id
         - user2_spam_user1
       filter: {}
       check: {}
