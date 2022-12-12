@@ -11,6 +11,7 @@ import { Box } from "@mui/material";
 import * as anchor from "@project-serum/anchor";
 
 import { Header, Loading, PrimaryButton, SubtextParagraph } from "../../common";
+import type { SelectedAccount } from "../../common/Account/ImportAccounts";
 
 import { DERIVATION_PATHS, LOAD_PUBKEY_AMOUNT } from "./MnemonicSearch";
 
@@ -24,7 +25,8 @@ export const HardwareSearch = ({
   blockchain: Blockchain;
   transport: Transport;
   publicKey: string;
-  onNext: (derivationPath: DerivationPath, accountIndex: number) => void;
+  onNext: (accounts: SelectedAccount[], derivationPath: DerivationPath) => void;
+  onError?: (error: Error) => void;
   onRetry: () => void;
 }) => {
   const [error, setError] = useState(false);
@@ -51,7 +53,7 @@ export const HardwareSearch = ({
           const ledgerAddressStr =
             anchor.utils.bytes.bs58.encode(ledgerAddress);
           if (ledgerAddressStr === publicKey) {
-            onNext(derivationPath, accountIndex);
+            onNext([{ index: accountIndex, publicKey }], derivationPath);
             return;
           }
         }

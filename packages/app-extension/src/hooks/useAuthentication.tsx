@@ -3,9 +3,8 @@ import {
   BACKEND_API_URL,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
-  UI_RPC_METHOD_USER_JWT_UPDATE,
 } from "@coral-xyz/common";
-import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 import { ethers } from "ethers";
 
 const { base58 } = ethers.utils;

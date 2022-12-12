@@ -12,7 +12,6 @@ import {
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
-import type Transport from "@ledgerhq/hw-transport";
 import { encode } from "bs58";
 
 import { useSteps } from "../../../hooks/useSteps";
@@ -20,12 +19,9 @@ import { CreatePassword } from "../../common/Account/CreatePassword";
 // import { BlockchainSelector } from "./BlockchainSelector";
 import { MnemonicInput } from "../../common/Account/MnemonicInput";
 import { NavBackButton, WithNav } from "../../common/Layout/Nav";
-import { ConnectHardwareSearching } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareSearching";
-import { ConnectHardwareWelcome } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareWelcome";
+import { HardwareOnboard } from "../../Onboarding/pages/HardwareOnboard";
 
 import { Finish } from "./Finish";
-import { HardwareSearch } from "./HardwareSearch";
-import { HardwareSign } from "./HardwareSign";
 import { KeyringTypeSelector } from "./KeyringTypeSelector";
 import { MnemonicSearch } from "./MnemonicSearch";
 import { RecoverAccountUsernameForm } from "./RecoverAccountUsernameForm";
@@ -44,15 +40,9 @@ export const RecoverAccount = ({
   const [username, setUsername] = useState<string | null>(null);
   const [password, setPassword] = useState<string | null>(null);
   const [publicKey, setPublicKey] = useState<string | null>(null);
-  const [derivationPath, setDerivationPath] = useState<DerivationPath | null>(
-    null
-  );
-  const [accountIndex, setAccountIndex] = useState<number | null>(null);
   const [keyringType, setKeyringType] = useState<KeyringType | null>(null);
   const [blockchain, setBlockchain] = useState<Blockchain | null>(null);
   const [mnemonic, setMnemonic] = useState<string | undefined>(undefined);
-  const [transport, setTransport] = useState<Transport | null>(null);
-  const [transportError] = useState(false);
   const [userId, setUserId] = useState<string | undefined>(undefined);
   // TODO onboarded blockchains is currently unused but it will be used to recover
   // multiple accounts on different blockchains
@@ -144,6 +134,7 @@ export const RecoverAccount = ({
     />,
     ...(keyringType === "mnemonic"
       ? [
+          // Using a mnemonic
           <MnemonicInput
             buttonLabel={"Next"}
             onNext={(mnemonic: string) => {
@@ -168,64 +159,18 @@ export const RecoverAccount = ({
           />,
         ]
       : [
-          /**
-          ...(onboardedBlockchains.length > 1
-            ? [
-                // If multiple blockchains have been onboarded, then display the selector
-                // because the user will need to open the correct app on their Ledger.
-                <BlockchainSelector
-                  selectedBlockchains={[]}
-                  onClick={handleBlockchainClick}
-                  onNext={nextStep}
-                  isRecovery={true}
-                />,
-              ]
-            : []),
-        **/
-          <ConnectHardwareWelcome onNext={nextStep} />,
-          <ConnectHardwareSearching
+          // Using a ledger
+          <HardwareOnboard
             blockchain={blockchain!}
-            onNext={(transport) => {
-              setTransport(transport);
+            action={"search"}
+            searchPublicKey={publicKey!}
+            signMessage={getAuthMessage}
+            signText={`Sign the message to authenticate with Backpack`}
+            onComplete={(keyringInit: BlockchainKeyringInit) => {
+              addBlockchainKeyring(keyringInit);
               nextStep();
             }}
-            isConnectFailure={!!transportError}
           />,
-          <HardwareSearch
-            blockchain={blockchain!}
-            transport={transport!}
-            publicKey={publicKey!}
-            onNext={(derivationPath: DerivationPath, accountIndex: number) => {
-              setDerivationPath(derivationPath);
-              setAccountIndex(accountIndex);
-              nextStep();
-            }}
-            onRetry={prevStep}
-          />,
-          ...(accountIndex !== null && derivationPath // accountIndex can be 0
-            ? [
-                <HardwareSign
-                  blockchain={blockchain!}
-                  message={authMessage}
-                  publicKey={publicKey!}
-                  derivationPath={derivationPath}
-                  accountIndex={accountIndex}
-                  text={`Sign the message to enable ${toTitleCase(
-                    blockchain!
-                  )} in Backpack.`}
-                  onNext={(signature: string) => {
-                    addBlockchainKeyring({
-                      blockchain: blockchain!,
-                      derivationPath,
-                      accountIndex,
-                      publicKey: publicKey!,
-                      signature,
-                    });
-                    nextStep();
-                  }}
-                />,
-              ]
-            : []),
         ]),
     ...(!isAddingAccount
       ? [

@@ -11,6 +11,8 @@ import type {
 import {
   BACKEND_API_URL,
   BACKEND_EVENT,
+  BACKPACK_FEATURE_JWT,
+  BACKPACK_FEATURE_USERNAMES,
   Blockchain,
   deserializeTransaction,
   EthereumConnectionUrl,
@@ -78,6 +80,8 @@ import {
 } from "./store";
 
 const { base58: bs58 } = ethers.utils;
+
+const jwtEnabled = !!(BACKPACK_FEATURE_USERNAMES && BACKPACK_FEATURE_JWT);
 
 export function start(
   events: EventEmitter,
@@ -833,25 +837,46 @@ export class Backend {
     );
   }
 
+  /**
+   * Add a new wallet to the keyring using the next derived wallet for the mnemonic.
+   * @param blockchain - Blockchain to add the wallet for
+   */
   async keyringDeriveWallet(blockchain: Blockchain): Promise<string> {
-    const [pubkey, name] = await this.keyringStore.deriveNextKey(blockchain);
+    const [publicKey, name] = await this.keyringStore.deriveNextKey(blockchain);
+
+    if (jwtEnabled) {
+      this._addPublicKeyToAccount(blockchain, publicKey);
+    }
+
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_DERIVED_WALLET,
       data: {
         blockchain,
-        publicKey: pubkey.toString(),
+        publicKey: publicKey.toString(),
         name,
       },
     });
-    // Return the newly created key.
-    return pubkey.toString();
+
+    // Set the active wallet to the newly added public key
+    this.activeWalletUpdate(publicKey, blockchain);
+
+    // Return the newly added public key
+    return publicKey.toString();
   }
 
+  /**
+   * Read the name associated with a public key in the local store.
+   * @param publicKey - public key to read the name for
+   */
   async keynameRead(publicKey: string): Promise<string> {
-    const keyname = await store.getKeyname(publicKey);
-    return keyname;
+    return await store.getKeyname(publicKey);
   }
 
+  /**
+   * Update the name associated with a public key in the local store.
+   * @param publicKey - public key to update the name for
+   * @param newName - new name to associate with the public key
+   */
   async keynameUpdate(publicKey: string, newName: string): Promise<string> {
     await store.setKeyname(publicKey, newName);
     this.events.emit(BACKEND_EVENT, {
@@ -864,6 +889,11 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
+  /**
+   * Remove a wallet from the keyring and delete the public key record on the server.
+   * @param blockchain - Blockchain for the public key
+   * @param publickey
+   */
   async keyringKeyDelete(
     blockchain: Blockchain,
     publicKey: string
@@ -873,16 +903,26 @@ export class Backend {
 
     // If we're removing the currently active key then we need to update it
     // first.
+    let nextActivePublicKey: string | undefined;
     if (keyring.getActiveWallet() === publicKey) {
       // Find remaining public keys
-      const nextPublicKey = Object.values(keyring.publicKeys())
+      nextActivePublicKey = Object.values(keyring.publicKeys())
         .flat()
         .find((k) => k !== keyring.getActiveWallet());
-      if (!nextPublicKey) {
+      if (!nextActivePublicKey) {
         throw new Error("cannot delete last public key");
       }
-      // Set the first to be it to be the new active wallet
-      keyring.activeWalletUpdate(nextPublicKey);
+    }
+
+    if (jwtEnabled) {
+      this._removePublicKeyFromAccount(blockchain, publicKey);
+    }
+
+    // Set the next active public key if we deleted the active one. Note this
+    // is a local state change so it needs to come after the API request to
+    // remove the public key
+    if (nextActivePublicKey) {
+      keyring.activeWalletUpdate(nextActivePublicKey);
     }
 
     await this.keyringStore.keyDelete(blockchain, publicKey);
@@ -957,6 +997,11 @@ export class Backend {
       secretKey,
       name
     );
+
+    if (jwtEnabled) {
+      this._addPublicKeyToAccount(blockchain, publicKey);
+    }
+
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
       data: {
@@ -965,6 +1010,10 @@ export class Backend {
         name: _name,
       },
     });
+
+    // Set the active wallet to the newly added public key
+    this.activeWalletUpdate(publicKey, blockchain);
+
     return publicKey;
   }
 
@@ -1002,11 +1051,24 @@ export class Backend {
 
   async ledgerImport(
     blockchain: Blockchain,
-    dPath: string,
+    derivationPath: string,
     account: number,
-    pubkey: string
+    publicKey: string,
+    signature?: string
   ) {
-    await this.keyringStore.ledgerImport(blockchain, dPath, account, pubkey);
+    await this.keyringStore.ledgerImport(
+      blockchain,
+      derivationPath,
+      account,
+      publicKey
+    );
+    if (jwtEnabled) {
+      this._addPublicKeyToAccount(blockchain, publicKey, signature);
+    }
+    // Set the active wallet to the newly added public key
+    this.activeWalletUpdate(publicKey, blockchain);
+    // Set the active wallet to the newly added public key
+    this.activeWalletUpdate(publicKey, blockchain);
     return SUCCESS_RESPONSE;
   }
 
@@ -1036,6 +1098,58 @@ export class Backend {
       derivationPath,
       numberOfAccounts
     );
+  }
+
+  /**
+   * Helper method to add a public key to a Backpack account via the Backpack API.
+   */
+  async _addPublicKeyToAccount(
+    blockchain: Blockchain,
+    publicKey: string,
+    signature?: string
+  ) {
+    // Persist the newly added public key to the Backpack API
+    if (!signature) {
+      signature = await this.signMessageForPublicKey(blockchain, "", publicKey);
+    }
+    const response = await fetch(`${BACKEND_API_URL}/users/publicKeys`, {
+      method: "POST",
+      body: JSON.stringify({
+        blockchain,
+        signature,
+        publicKey,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      // Something went wrong persisting to server, roll back changes to the keyring
+      this.keyringKeyDelete(blockchain, publicKey);
+      throw new Error((await response.json()).msg);
+    }
+  }
+
+  /**
+   * Helper method to add remove a public key from a Backpack account via the Backpack API.
+   */
+  async _removePublicKeyFromAccount(blockchain: Blockchain, publicKey: string) {
+    // Remove the key from the server
+    const response = await fetch(`${BACKEND_API_URL}/users/publicKeys`, {
+      method: "DELETE",
+      body: JSON.stringify({
+        blockchain,
+        publicKey,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.ok) {
+      throw new Error("could not remove public key");
+    }
   }
 
   ///////////////////////////////////////////////////////////////////////////////

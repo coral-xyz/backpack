@@ -1,14 +1,10 @@
 import type { Blockchain } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
-  SolanaTokenAccountWithKeyString,
-  SplNftMetadataString,
-  TokenMetadataString,
   UI_RPC_METHOD_ALL_USERS_READ,
   UI_RPC_METHOD_PREFERENCES_READ,
   UI_RPC_METHOD_USER_READ,
 } from "@coral-xyz/common";
-import { PublicKey } from "@solana/web3.js";
 import {
   atom,
   atomFamily,
@@ -18,7 +14,6 @@ import {
 } from "recoil";
 
 import { backgroundClient } from "../client";
-import { anchorContext } from "../solana";
 
 export const preferences = atom<any>({
   key: "preferences",
@@ -26,6 +21,7 @@ export const preferences = atom<any>({
     key: "preferencesDefault",
     get: async ({ get }) => {
       const background = get(backgroundClient);
+      // Preferences are dependent on the current active user
       const _user = get(user);
       return await background.request({
         method: UI_RPC_METHOD_PREFERENCES_READ,
@@ -96,7 +92,7 @@ export const xnftJwt = atomFamily({
     key: "xnftJwtDefault",
     get:
       ({ xnftAddress }: { xnftAddress: string }) =>
-      async ({ get }): Promise<string> => {
+      async (): Promise<string> => {
         try {
           const response = await fetch(
             `${BACKEND_API_URL}/users/jwt/xnft?xnftAddress=${xnftAddress}`

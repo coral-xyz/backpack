@@ -62,21 +62,21 @@ export const BlockchainPublicKey = z.discriminatedUnion("blockchain", [
 // User creation
 //
 
-export const CreateEthereumKeyring = EthereumPublicKey.extend({
+export const CreateEthereumPublicKey = EthereumPublicKey.extend({
   signature: z.string(),
 });
 
-export const CreateSolanaKeyring = SolanaPublicKey.extend({
+export const CreateSolanaPublicKey = SolanaPublicKey.extend({
   signature: z.string(),
 });
 
-export const CreateKeyrings = z.discriminatedUnion("blockchain", [
-  CreateEthereumKeyring,
-  CreateSolanaKeyring,
+export const CreatePublicKeys = z.discriminatedUnion("blockchain", [
+  CreateEthereumPublicKey,
+  CreateSolanaPublicKey,
 ]);
 
-export const CreateUserWithKeyrings = BaseCreateUser.extend({
-  blockchainPublicKeys: CreateKeyrings.array(),
+export const CreateUserWithPublicKeys = BaseCreateUser.extend({
+  blockchainPublicKeys: CreatePublicKeys.array(),
 });
 
 //

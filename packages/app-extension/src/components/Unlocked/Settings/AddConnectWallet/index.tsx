@@ -75,17 +75,11 @@ export function AddConnectWalletMenu({
                   }
                   text="Create a new wallet"
                   onClick={async () => {
-                    const newPubkey = await background.request({
+                    const publicKey = await background.request({
                       method: UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
                       params: [blockchain],
                     });
-
-                    await background.request({
-                      method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-                      params: [newPubkey, blockchain],
-                    });
-
-                    setNewPublicKey(newPubkey);
+                    setNewPublicKey(publicKey);
                     setOpenDrawer(true);
                   }}
                 />

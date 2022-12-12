@@ -1,5 +1,5 @@
-// This component searches a hardware wallet for a public key and displays
-// a loading indicator until it is found (or an error if it not found).
+// This component gets the first wallet from a hardware wallet using the
+// default derivation path.
 
 import { useEffect } from "react";
 import {

@@ -62,3 +62,10 @@ export function getAuthMessage(uuid: string) {
 export function getCreateMessage(publicKey: string) {
   return `Backpack create ${publicKey}`;
 }
+
+/**
+ * Message to be signed when adding public keys to an existing Backpack account.
+ */
+export function getAddMessage(publicKey: string) {
+  return `Backpack add ${publicKey}`;
+}
