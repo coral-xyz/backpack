@@ -849,7 +849,7 @@ export class Backend {
     const [publicKey, name] = await this.keyringStore.deriveNextKey(blockchain);
 
     if (jwtEnabled) {
-      this._addPublicKeyToAccount(blockchain, publicKey);
+      await this._addPublicKeyToAccount(blockchain, publicKey);
     }
 
     this.events.emit(BACKEND_EVENT, {
@@ -862,7 +862,7 @@ export class Backend {
     });
 
     // Set the active wallet to the newly added public key
-    this.activeWalletUpdate(publicKey, blockchain);
+    await this.activeWalletUpdate(publicKey, blockchain);
 
     // Return the newly added public key
     return publicKey.toString();
@@ -919,14 +919,14 @@ export class Backend {
     }
 
     if (jwtEnabled) {
-      this._removePublicKeyFromAccount(blockchain, publicKey);
+      await this._removePublicKeyFromAccount(blockchain, publicKey);
     }
 
     // Set the next active public key if we deleted the active one. Note this
     // is a local state change so it needs to come after the API request to
     // remove the public key
     if (nextActivePublicKey) {
-      keyring.activeWalletUpdate(nextActivePublicKey);
+      await this.activeWalletUpdate(nextActivePublicKey, blockchain);
     }
 
     await this.keyringStore.keyDelete(blockchain, publicKey);
@@ -1005,7 +1005,7 @@ export class Backend {
     );
 
     if (jwtEnabled) {
-      this._addPublicKeyToAccount(blockchain, publicKey);
+      await this._addPublicKeyToAccount(blockchain, publicKey);
     }
 
     this.events.emit(BACKEND_EVENT, {
@@ -1018,7 +1018,7 @@ export class Backend {
     });
 
     // Set the active wallet to the newly added public key
-    this.activeWalletUpdate(publicKey, blockchain);
+    await this.activeWalletUpdate(publicKey, blockchain);
 
     return publicKey;
   }
@@ -1069,10 +1069,10 @@ export class Backend {
       publicKey
     );
     if (jwtEnabled) {
-      this._addPublicKeyToAccount(blockchain, publicKey, signature);
+      await this._addPublicKeyToAccount(blockchain, publicKey, signature);
     }
     // Set the active wallet to the newly added public key
-    this.activeWalletUpdate(publicKey, blockchain);
+    await this.activeWalletUpdate(publicKey, blockchain);
     return SUCCESS_RESPONSE;
   }
 
@@ -1135,6 +1135,7 @@ export class Backend {
       // This is the correct behaviour because it should allow for sensible
       // retries on conflicts.
       this.keyringKeyDelete(blockchain, publicKey);
+
       throw new Error((await response.json()).msg);
     }
   }
@@ -1155,7 +1156,7 @@ export class Backend {
       },
     });
 
-    if (response.ok) {
+    if (!response.ok) {
       throw new Error("could not remove public key");
     }
   }
