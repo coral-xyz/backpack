@@ -19,7 +19,10 @@ import { HardwareDefaultAccount } from "./HardwareDefaultAccount";
 import { HardwareSearch } from "./HardwareSearch";
 import { HardwareSign } from "./HardwareSign";
 
-export function HardwareOnboard({
+// We are using a hook here to generate the steps for the hardware onboard
+// component to allow these steps to be used in the middle of the RecoverAccount
+// component steps
+export function useHardwareOnboardSteps({
   blockchain,
   action,
   searchPublicKey,
@@ -27,7 +30,8 @@ export function HardwareOnboard({
   signText,
   successComponent,
   onComplete,
-  onClose,
+  nextStep,
+  prevStep,
 }: {
   blockchain: Blockchain;
   action: "create" | "search" | "import";
@@ -36,11 +40,9 @@ export function HardwareOnboard({
   signText: string;
   successComponent?: React.ReactElement;
   onComplete: (keyringInit: BlockchainKeyringInit) => void;
-  onClose?: () => void;
+  nextStep: () => void;
+  prevStep: () => void;
 }) {
-  const theme = useCustomTheme();
-  const { step, nextStep, prevStep } = useSteps();
-
   const [transport, setTransport] = useState<Transport | null>(null);
   const [transportError, setTransportError] = useState(false);
   const [accounts, setAccounts] = useState<Array<SelectedAccount>>();
@@ -167,6 +169,41 @@ export function HardwareOnboard({
     steps.push(successComponent);
   }
 
+  return steps;
+}
+
+export function HardwareOnboard({
+  blockchain,
+  action,
+  searchPublicKey,
+  signMessage,
+  signText,
+  successComponent,
+  onComplete,
+  onClose,
+}: {
+  blockchain: Blockchain;
+  action: "create" | "search" | "import";
+  searchPublicKey?: string;
+  signMessage: string | ((publicKey: string) => string);
+  signText: string;
+  successComponent?: React.ReactElement;
+  onComplete: (keyringInit: BlockchainKeyringInit) => void;
+  onClose?: () => void;
+}) {
+  const theme = useCustomTheme();
+  const { step, nextStep, prevStep } = useSteps();
+  const steps = useHardwareOnboardSteps({
+    blockchain,
+    action,
+    searchPublicKey,
+    signMessage,
+    signText,
+    successComponent,
+    onComplete,
+    nextStep,
+    prevStep,
+  });
   return (
     <WithNav
       navButtonLeft={

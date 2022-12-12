@@ -8,7 +8,6 @@ import type {
 import {
   BACKEND_API_URL,
   getAuthMessage,
-  toTitleCase,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
@@ -19,7 +18,7 @@ import { CreatePassword } from "../../common/Account/CreatePassword";
 // import { BlockchainSelector } from "./BlockchainSelector";
 import { MnemonicInput } from "../../common/Account/MnemonicInput";
 import { NavBackButton, WithNav } from "../../common/Layout/Nav";
-import { HardwareOnboard } from "../../Onboarding/pages/HardwareOnboard";
+import { useHardwareOnboardSteps } from "../../Onboarding/pages/HardwareOnboard";
 
 import { Finish } from "./Finish";
 import { KeyringTypeSelector } from "./KeyringTypeSelector";
@@ -37,6 +36,7 @@ export const RecoverAccount = ({
 }) => {
   const { step, nextStep, prevStep } = useSteps();
   const background = useBackgroundClient();
+
   const [username, setUsername] = useState<string | null>(null);
   const [password, setPassword] = useState<string | null>(null);
   const [publicKey, setPublicKey] = useState<string | null>(null);
@@ -52,6 +52,20 @@ export const RecoverAccount = ({
   >([]);
 
   const authMessage = userId ? getAuthMessage(userId) : "";
+
+  const hardwareOnboardSteps = useHardwareOnboardSteps({
+    blockchain: blockchain!,
+    action: "search",
+    searchPublicKey: publicKey!,
+    signMessage: getAuthMessage,
+    signText: "Sign the message to authenticate with Backapck",
+    onComplete: (keyringInit: BlockchainKeyringInit) => {
+      addBlockchainKeyring(keyringInit);
+      nextStep();
+    },
+    nextStep,
+    prevStep,
+  });
 
   useEffect(() => {
     (async () => {
@@ -158,20 +172,7 @@ export const RecoverAccount = ({
             onRetry={prevStep}
           />,
         ]
-      : [
-          // Using a ledger
-          <HardwareOnboard
-            blockchain={blockchain!}
-            action={"search"}
-            searchPublicKey={publicKey!}
-            signMessage={getAuthMessage}
-            signText={`Sign the message to authenticate with Backpack`}
-            onComplete={(keyringInit: BlockchainKeyringInit) => {
-              addBlockchainKeyring(keyringInit);
-              nextStep();
-            }}
-          />,
-        ]),
+      : hardwareOnboardSteps),
     ...(!isAddingAccount
       ? [
           <CreatePassword
