@@ -32,7 +32,11 @@ export const _ChatContext = React.createContext<ChatContext | null>(null);
 
 export function ChatProvider(props: {
   setActiveReply: any;
-  activeReply: { parent_client_generated_uuid: string | null; text: string };
+  activeReply: {
+    parent_client_generated_uuid: string | null;
+    text: string;
+    parent_username: string;
+  };
   chatManager: ChatManager | null;
   roomId: string;
   chats: EnrichedMessage[];
