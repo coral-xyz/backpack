@@ -1073,8 +1073,6 @@ export class Backend {
     }
     // Set the active wallet to the newly added public key
     this.activeWalletUpdate(publicKey, blockchain);
-    // Set the active wallet to the newly added public key
-    this.activeWalletUpdate(publicKey, blockchain);
     return SUCCESS_RESPONSE;
   }
 
@@ -1131,7 +1129,11 @@ export class Backend {
     });
 
     if (!response.ok) {
-      // Something went wrong persisting to server, roll back changes to the keyring
+      // Something went wrong persisting to server, roll back changes to the
+      // keyring. Note that for HD keyrings this is not a complete rollback
+      // of state changes, because the next account index gets incremented.
+      // This is the correct behaviour because it should allow for sensible
+      // retries on conflicts.
       this.keyringKeyDelete(blockchain, publicKey);
       throw new Error((await response.json()).msg);
     }
