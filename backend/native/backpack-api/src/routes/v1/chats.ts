@@ -30,6 +30,7 @@ router.post(
       client_generated_uuid,
       user1 === uuid ? "1" : "2"
     );
+    res.json({});
   }
 );
 
