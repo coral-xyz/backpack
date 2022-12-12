@@ -25,6 +25,7 @@ export function HardwareOnboard({
   searchPublicKey,
   signMessage,
   signText,
+  successComponent,
   onComplete,
   onClose,
 }: {
@@ -33,6 +34,7 @@ export function HardwareOnboard({
   searchPublicKey?: string;
   signMessage: string | ((publicKey: string) => string);
   signText: string;
+  successComponent?: React.ReactElement;
   onComplete: (keyringInit: BlockchainKeyringInit) => void;
   onClose?: () => void;
 }) {
@@ -152,11 +154,18 @@ export function HardwareOnboard({
                 accountIndex: account.index,
                 signature,
               });
+              if (successComponent) {
+                nextStep();
+              }
             }}
           />,
         ]
       : []),
   ];
+
+  if (successComponent) {
+    steps.push(successComponent);
+  }
 
   return (
     <WithNav
