@@ -42,7 +42,10 @@ app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-app.listen(process.env.PORT || 8080);
+const port = process.env.PORT || 8080;
+app.listen(port);
+
+console.log("Listening on port: ", port);
 
 process.on("uncaughtException", function (err) {
   console.error(err);
