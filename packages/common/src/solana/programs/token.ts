@@ -1,8 +1,8 @@
 import { externalResourceUri, getLogger } from "@coral-xyz/common-public";
+import { Metadata } from "@metaplex-foundation/mpl-token-metadata";
 import type { Program, Provider, SplToken } from "@project-serum/anchor";
 import * as anchor from "@project-serum/anchor";
 import { AnchorProvider, BN, Spl } from "@project-serum/anchor";
-import { metadata } from "@project-serum/token";
 import type { Connection } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
 
@@ -139,7 +139,7 @@ export async function fetchSplMetadata(
     t
       ? {
           publicKey: t.publicKey,
-          account: metadata.decodeMetadata(t.account.data),
+          account: Metadata.deserialize(t.account.data)[0],
         }
       : null
   );

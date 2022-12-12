@@ -3,7 +3,12 @@ import type {
   SplNftMetadataString,
   TokenMetadataString,
 } from "@coral-xyz/common";
-import { SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
+import {
+  SOL_NATIVE_MINT,
+  TOKEN_METADATA_PROGRAM_ID,
+  TokenMetadata,
+  WSOL_MINT,
+} from "@coral-xyz/common";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { PublicKey } from "@solana/web3.js";
 import { BigNumber, ethers } from "ethers";
@@ -111,10 +116,16 @@ export const solanaTokenNativeBalance = selectorFamily<
       if (!tokenAccount) {
         return null;
       }
+
+      const tokenMetadata = get(solanaTokenMetadata({ tokenAddress }));
+
       const tokenRegistry = get(splTokenRegistry)!;
-      const tokenMetadata =
-        tokenRegistry.get(tokenAccount.mint.toString()) ?? ({} as TokenInfo);
-      const { symbol: ticker, logoURI: logo, name, decimals } = tokenMetadata;
+      const {
+        symbol: ticker,
+        logoURI: logo,
+        name,
+        decimals,
+      } = tokenRegistry.get(tokenAccount.mint.toString()) ?? ({} as TokenInfo);
       const nativeBalance = BigNumber.from(tokenAccount.amount.toString());
       const displayBalance = ethers.utils.formatUnits(nativeBalance, decimals);
       const priceMint =
@@ -133,6 +144,40 @@ export const solanaTokenNativeBalance = selectorFamily<
         mint: tokenAccount.mint.toString(),
         priceMint,
       };
+    },
+});
+
+// The token metadata for a given token adddress.
+const solanaTokenMetadata = selectorFamily<
+  TokenMetadataString | null,
+  { tokenAddress: string }
+>({
+  key: "solanaTokenMetadata",
+  get:
+    ({ tokenAddress }) =>
+    ({ get }) => {
+      const tokenAccount = get(solanaTokenAccountsMap({ tokenAddress }));
+      if (!tokenAccount) {
+        return null;
+      }
+
+      const connectionUrl = get(solanaConnectionUrl)!;
+      const publicKey = get(solanaPublicKey)!;
+      const { splTokenMetadata } = get(
+        customSplTokenAccounts({ connectionUrl, publicKey })
+      );
+      const metadataAddress = PublicKey.findProgramAddressSync(
+        [
+          Buffer.from("metadata"),
+          TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+          new PublicKey(tokenAccount.mint).toBuffer(),
+        ],
+        TOKEN_METADATA_PROGRAM_ID
+      )[0];
+      const tokenMetadata = splTokenMetadata.find((m: TokenMetadataString) =>
+        metadataAddress.equals(new PublicKey(m.publicKey))
+      );
+      return tokenMetadata ?? null;
     },
 });
 
