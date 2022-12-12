@@ -13,7 +13,7 @@ import { RecoilRoot } from "recoil";
 
 import { WithSuspense } from "../app/Router";
 import { WithTheme } from "../components/common/WithTheme";
-import { Onboarding } from "../components/Onboarding";
+import { Onboarding, OptionsContainer } from "../components/Onboarding";
 import { ConnectHardware } from "../components/Unlocked/Settings/AddConnectWallet/ConnectHardware";
 
 import "../app/App.css";
@@ -63,10 +63,12 @@ function Router() {
   switch (query) {
     case QUERY_CONNECT_HARDWARE:
       return (
-        <ConnectHardware
-          blockchain={blockchain as Blockchain}
-          onComplete={window.close}
-        />
+        <OptionsContainer>
+          <ConnectHardware
+            blockchain={blockchain as Blockchain}
+            onComplete={window.close}
+          />
+        </OptionsContainer>
       );
     case QUERY_ONBOARDING:
       return <Onboarding />;
