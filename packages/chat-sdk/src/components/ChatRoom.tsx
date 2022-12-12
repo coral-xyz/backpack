@@ -45,6 +45,7 @@ export const ChatRoom = ({
   const [activeReply, setActiveReply] = useState({
     parent_username: "",
     parent_client_generated_uuid: null,
+    parent_message_author_uuid: "",
     text: "",
   });
 

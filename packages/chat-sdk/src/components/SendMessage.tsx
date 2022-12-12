@@ -124,6 +124,11 @@ export const SendMessage = ({ messageRef }: any) => {
           message_kind: messageKind,
           username,
           image: `https://avatars.xnfts.dev/v1/${username}`,
+          parent_client_generated_uuid:
+            activeReply.parent_client_generated_uuid,
+          parent_message_author_uuid: activeReply.parent_message_author_uuid,
+          parent_message_text: activeReply.text,
+          parent_message_author_username: activeReply.parent_username,
         },
       ]);
       setMessageContent("");
