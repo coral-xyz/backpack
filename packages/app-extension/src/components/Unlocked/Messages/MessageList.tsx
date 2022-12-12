@@ -53,8 +53,8 @@ export const MessageList = ({
               activeChat.last_message_sender === activeChat.remoteUserId &&
               activeChat.last_message_client_uuid !==
                 (activeChat.user1 === activeChat.remoteUserId
-                  ? activeChat.user1_last_read_message_id
-                  : activeChat.user2_last_read_message_id)
+                  ? activeChat.user2_last_read_message_id
+                  : activeChat.user1_last_read_message_id)
             }
           />
         ))}
@@ -107,7 +107,9 @@ export function ChatListItem({
         paddingRight: "16px",
         display: "flex",
         height: "80px",
-        backgroundColor: theme.custom.colors.nav,
+        backgroundColor: isUnread
+          ? theme.custom.colors.unreadBackground
+          : theme.custom.colors.nav,
         borderBottom: isLast
           ? undefined
           : `solid 1pt ${theme.custom.colors.border}`,
@@ -146,15 +148,38 @@ export function ChatListItem({
               />
             </div>
             <div>
-              <div className={classes.userTextSmall}>@{username}</div>
-              <div className={classes.userTextSmall}>
+              <div
+                className={classes.userTextSmall}
+                style={{
+                  fontWeight: isUnread ? 700 : 600,
+                  color: isUnread
+                    ? theme.custom.colors.fontColor
+                    : theme.custom.colors.smallTextColor,
+                }}
+              >
+                @{username}
+              </div>
+              <div
+                className={classes.userTextSmall}
+                style={{
+                  fontWeight: 500,
+                  color: isUnread
+                    ? theme.custom.colors.fontColor
+                    : theme.custom.colors.smallTextColor,
+                }}
+              >
                 {message?.substr(0, 50) || ""}
               </div>
             </div>
           </div>
           <div
             className={classes.timestamp}
-            style={{ fontWeight: isUnread ? 400 : 600 }}
+            style={{
+              fontWeight: isUnread ? 700 : 500,
+              color: isUnread
+                ? theme.custom.colors.fontColor
+                : theme.custom.colors.smallTextColor,
+            }}
           >
             {formatAMPM(new Date(timestamp))}
           </div>
