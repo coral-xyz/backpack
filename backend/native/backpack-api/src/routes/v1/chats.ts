@@ -7,9 +7,32 @@ import express from "express";
 
 import { ensureHasRoomAccess, extractUserId } from "../../auth/middleware";
 import { getChats, getChatsFromParentGuids } from "../../db/chats";
+import { updateLastReadIndividual } from "../../db/friendships";
 import { getUsers } from "../../db/users";
 
 const router = express.Router();
+
+router.post(
+  "/lastRead",
+  extractUserId,
+  ensureHasRoomAccess,
+  async (req, res) => {
+    // @ts-ignore
+    const client_generated_uuid: string = req.body.client_generated_uuid;
+    // @ts-ignore
+    const { user1, user2 } = req.roomMetadata;
+    //@ts-ignore
+    const uuid: string = req.id;
+
+    await updateLastReadIndividual(
+      user1,
+      user2,
+      client_generated_uuid,
+      user1 === uuid ? "1" : "2"
+    );
+    res.json({});
+  }
+);
 
 router.get("/", extractUserId, ensureHasRoomAccess, async (req, res) => {
   const room = req.query.room;

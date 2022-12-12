@@ -1,10 +1,7 @@
-import { useState } from "react";
-import { BACKEND_API_URL } from "@coral-xyz/common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import TextsmsIcon from "@mui/icons-material/Textsms";
 import { IconButton } from "@mui/material";
 
-import { useChatContext } from "./ChatContext";
 import { useStyles } from "./styles";
 
 export const EmptyChat = () => {

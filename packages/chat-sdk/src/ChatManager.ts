@@ -1,12 +1,9 @@
 import type {
   Message,
   MessageWithMetadata,
-  SubscriptionType} from "@coral-xyz/common";
-import {
-  BACKEND_API_URL,
-  CHAT_MESSAGES,
-  SUBSCRIBE
+  SubscriptionType,
 } from "@coral-xyz/common";
+import { BACKEND_API_URL, CHAT_MESSAGES, SUBSCRIBE } from "@coral-xyz/common";
 
 import { Signaling, SIGNALING_CONNECTED } from "./Signaling";
 
@@ -14,6 +11,8 @@ export interface EnrichedMessage extends MessageWithMetadata {
   direction: "send" | "recv";
   received?: boolean;
 }
+
+const DEBOUNCE_INTERVAL_MS = 500;
 
 export class ChatManager {
   private roomId: string;
@@ -27,6 +26,7 @@ export class ChatManager {
   private signaling: Signaling;
   private type: SubscriptionType;
   private initCallbackCalled = false;
+  private updateLastReadTimeout = 0;
 
   constructor(
     userId: string,
@@ -127,6 +127,7 @@ export class ChatManager {
         if (filteredChats.length || !this.initCallbackCalled) {
           this.initCallbackCalled = true;
           this.onMessages(filteredChats);
+          this.debouncedUpdateLastRead(filteredChats);
         }
         if (filteredReceived.length) {
           this.onLocalMessageReceived(filteredReceived);
@@ -160,8 +161,36 @@ export class ChatManager {
     });
   }
 
-  destroy() {
+  debouncedUpdateLastRead(chats: EnrichedMessage[]) {
+    const latestMessage = chats.pop();
+    if (this.updateLastReadTimeout) {
+      window.clearTimeout(this.updateLastReadTimeout);
+    }
+    this.updateLastReadTimeout = window.setTimeout(() => {
+      this.updateLastRead(latestMessage?.client_generated_uuid || "");
+    }, DEBOUNCE_INTERVAL_MS);
+  }
+
+  updateLastRead(client_generated_uuid: string) {
+    fetch(
+      `${BACKEND_API_URL}/chat/lastRead?room=${this.roomId}&type=${this.type}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ client_generated_uuid }),
+      }
+    );
+  }
+
+  async destroy() {
     try {
+      if (this.updateLastReadTimeout) {
+        await new Promise((resolve) =>
+          setTimeout(resolve, DEBOUNCE_INTERVAL_MS)
+        ); // TODO: make this cleaner
+      }
       this.signaling.destroy();
     } catch (e) {
       console.log(`Error while updating subscription`);

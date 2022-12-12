@@ -3,10 +3,9 @@ import type {
   FromServer,
   Message,
   MessageWithMetadata,
-  SubscriptionType} from "@coral-xyz/common";
-import {
-  CHAT_MESSAGES
+  SubscriptionType,
 } from "@coral-xyz/common";
+import { CHAT_MESSAGES } from "@coral-xyz/common";
 
 import { CHAT_HASURA_URL, CHAT_JWT } from "../config";
 import { getChats, getChatsFromParentGuids } from "../db/chats";
@@ -119,7 +118,8 @@ export class Room {
         parseInt(this.room),
         msg.message_kind === "gif" ? "GIF" : msg.message,
         userId,
-        this.roomValidation
+        this.roomValidation,
+        msg.client_generated_uuid
       );
     }
 
