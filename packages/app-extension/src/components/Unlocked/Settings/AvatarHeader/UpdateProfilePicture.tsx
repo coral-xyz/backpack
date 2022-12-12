@@ -98,16 +98,14 @@ export function UpdateProfilePicture({
           onClick={async () => {
             if (newAvatar) {
               await fetch(BACKEND_API_URL + "/users/avatar", {
+                headers: {
+                  "Content-Type": "application/json",
+                },
                 method: "POST",
-                body: newAvatar.id,
+                body: JSON.stringify({ avatar: newAvatar.id }),
               });
               setNewAvatar(null);
             }
-
-            // await background.request({
-            //   method: UI_RPC_METHOD_USER_AVATAR_UPDATE,
-            //   params: [],
-            // });
           }}
           style={{
             margin: "16px",
