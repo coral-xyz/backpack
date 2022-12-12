@@ -7,6 +7,7 @@ import {
 import { useNavigation } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import MarkChatUnreadIcon from "@mui/icons-material/MarkChatUnread";
+import MarkUnreadChatAltIcon from "@mui/icons-material/MarkUnreadChatAlt";
 import { List, ListItem } from "@mui/material";
 
 import { isFirstLastListItemStyle } from "../../common";
