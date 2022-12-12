@@ -1,4 +1,4 @@
-import React, { useEffect, useRef,useState  } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import type { SubscriptionType } from "@coral-xyz/common";
 
 import type { EnrichedMessage } from "../ChatManager";
@@ -42,6 +42,12 @@ export const ChatRoom = ({
   // TODO: Make state propogte from outside the state since this'll be expensive
   const [chats, setChats] = useState<EnrichedMessage[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeReply, setActiveReply] = useState({
+    parent_username: "",
+    parent_client_generated_uuid: null,
+    parent_message_author_uuid: "",
+    text: "",
+  });
 
   useEffect(() => {
     if (roomId) {
@@ -88,6 +94,8 @@ export const ChatRoom = ({
 
   return (
     <ChatProvider
+      activeReply={activeReply}
+      setActiveReply={setActiveReply}
       loading={loading}
       chatManager={chatManager}
       roomId={roomId}

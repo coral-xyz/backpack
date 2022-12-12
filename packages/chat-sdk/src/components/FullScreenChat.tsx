@@ -62,6 +62,7 @@ export const FullScreenChat = () => {
           }}
         >
           <Banner />
+          <br />
           {loading && <MessagesSkeleton />}
           {!loading && chats?.length === 0 && <EmptyChat />}
           {!loading && chats?.length !== 0 && <ChatMessages />}

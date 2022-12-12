@@ -20,8 +20,8 @@ function MessageSkeleton() {
     <div
       onClick={() => {}}
       style={{
-        paddingLeft: "12px",
-        paddingRight: "12px",
+        paddingLeft: "19px",
+        paddingRight: "19px",
         paddingTop: "10px",
         paddingBottom: "10px",
         display: "flex",

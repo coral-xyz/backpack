@@ -2,38 +2,44 @@ import { useEffect, useState } from "react";
 import type { EnrichedInboxDb } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
-  NAV_COMPONENT_MESSAGE_PROFILE,
   NAV_COMPONENT_MESSAGE_REQUESTS,
 } from "@coral-xyz/common";
 import { useNavigation } from "@coral-xyz/recoil";
-import { styles } from "@coral-xyz/themes";
-import AddIcon from "@mui/icons-material/Add";
 
 import { TextInput } from "../../common/Inputs";
 
 import { MessageList } from "./MessageList";
 import { MessagesSkeleton } from "./MessagesSkeleton";
-import { NewMessageModal } from "./NewMessageModal";
 import { useStyles } from "./styles";
+import { UserList } from "./UserList";
 
 export function Inbox() {
   const classes = useStyles();
   const [searchFilter, setSearchFilter] = useState("");
   const [messagesLoading, setMessagesLoading] = useState(true);
   const [activeChats, setActiveChats] = useState<EnrichedInboxDb[]>([]);
-  const [newSettingsModal, setNewSettingsModal] = useState(false);
+  const [requestCount, setRequestCount] = useState(0);
   const { push } = useNavigation();
+  const [searchResults, setSearchResults] = useState<
+    { image: string; id: string; username: string }[]
+  >([]);
 
   const init = async () => {
     const res = await fetch(`${BACKEND_API_URL}/inbox?areConnected=true`);
     const json = await res.json();
     setMessagesLoading(false);
     setActiveChats(json.chats || []);
+    setRequestCount(json.requestCount || 0);
   };
 
   useEffect(() => {
     init();
   }, []);
+
+  const searchedUsersDistinct = searchResults.filter(
+    (result) =>
+      !activeChats.map((x) => x.remoteUsername).includes(result.username)
+  );
 
   return (
     <div className={classes.container}>
@@ -44,6 +50,16 @@ export function Inbox() {
         setValue={async (e) => {
           const prefix = e.target.value;
           setSearchFilter(prefix);
+          if (prefix.length >= 3) {
+            //TODO debounce
+            const res = await fetch(
+              `${BACKEND_API_URL}/users?usernamePrefix=${prefix}`
+            );
+            const json = await res.json();
+            setSearchResults(json.users || []);
+          } else {
+            setSearchResults([]);
+          }
         }}
         inputProps={{
           style: {
@@ -51,51 +67,22 @@ export function Inbox() {
           },
         }}
       />
-      <div
-        style={{
-          display: "flex",
-          marginBottom: 10,
-          justifyContent: "space-between",
-        }}
-      >
-        <div style={{ display: "flex" }}>
-          <div className={classes.text}>New Message</div>{" "}
-          <div
-            className={classes.roundBtn}
-            onClick={() => setNewSettingsModal(true)}
-          >
-            {" "}
-            <AddIcon className={classes.add} />{" "}
-          </div>
-        </div>
-        <div>
-          <div
-            className={classes.text}
-            style={{ cursor: "pointer" }}
-            onClick={() => {
-              push({
-                title: `Requests`,
-                componentId: NAV_COMPONENT_MESSAGE_REQUESTS,
-                componentProps: {},
-              });
-            }}
-          >
-            View Requests
-          </div>
-        </div>
-      </div>
       {messagesLoading && <MessagesSkeleton />}
-      {!messagesLoading && (
-        <MessageList
-          activeChats={activeChats.filter((x) =>
-            x.remoteUsername.includes(searchFilter)
-          )}
-        />
+      {!messagesLoading &&
+        activeChats.filter((x) => x.remoteUsername.includes(searchFilter))
+          .length > 0 && (
+          <MessageList
+            requestCount={searchFilter.length < 3 ? requestCount : 0}
+            activeChats={activeChats.filter((x) =>
+              x.remoteUsername.includes(searchFilter)
+            )}
+          />
+        )}
+      {searchFilter.length >= 3 && searchedUsersDistinct.length !== 0 && (
+        <div style={{ marginTop: 10 }}>
+          <UserList users={searchedUsersDistinct} />
+        </div>
       )}
-      <NewMessageModal
-        newSettingsModal={newSettingsModal}
-        setNewSettingsModal={setNewSettingsModal}
-      />
     </div>
   );
 }
