@@ -2767,6 +2767,11 @@ export type ValueTypes = {
   ["auth_users_select_column"]: auth_users_select_column;
   /** input type for updating data in table "auth.users" */
   ["auth_users_set_input"]: {
+    avatar_nft?:
+      | ValueTypes["citext"]
+      | undefined
+      | null
+      | Variable<any, string>;
     updated_at?:
       | ValueTypes["timestamptz"]
       | undefined
@@ -6548,6 +6553,7 @@ export type ResolverInputTypes = {
   ["auth_users_select_column"]: auth_users_select_column;
   /** input type for updating data in table "auth.users" */
   ["auth_users_set_input"]: {
+    avatar_nft?: ResolverInputTypes["citext"] | undefined | null;
     updated_at?: ResolverInputTypes["timestamptz"] | undefined | null;
   };
   /** Streaming cursor of the table "auth_users" */
@@ -9350,6 +9356,7 @@ export type ModelTypes = {
   ["auth_users_select_column"]: auth_users_select_column;
   /** input type for updating data in table "auth.users" */
   ["auth_users_set_input"]: {
+    avatar_nft?: ModelTypes["citext"] | undefined;
     updated_at?: ModelTypes["timestamptz"] | undefined;
   };
   /** Streaming cursor of the table "auth_users" */
@@ -11013,6 +11020,7 @@ export type GraphQLTypes = {
   ["auth_users_select_column"]: auth_users_select_column;
   /** input type for updating data in table "auth.users" */
   ["auth_users_set_input"]: {
+    avatar_nft?: GraphQLTypes["citext"] | undefined;
     updated_at?: GraphQLTypes["timestamptz"] | undefined;
   };
   /** Streaming cursor of the table "auth_users" */
@@ -11832,6 +11840,7 @@ export const enum auth_users_select_column {
 }
 /** update columns of table "auth.users" */
 export const enum auth_users_update_column {
+  avatar_nft = "avatar_nft",
   updated_at = "updated_at",
 }
 /** unique or primary key constraints on table "auth.xnft_preferences" */
