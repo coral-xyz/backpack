@@ -1,8 +1,9 @@
 import { useState } from "react";
 import type { Blockchain, Nft, NftCollection } from "@coral-xyz/common";
 import {
+  BACKEND_API_URL,
   toTitleCase,
-  UI_RPC_METHOD_USER_AVATAR_UPDATE,
+  // UI_RPC_METHOD_USER_AVATAR_UPDATE,
   walletAddressDisplay,
 } from "@coral-xyz/common";
 import {
@@ -25,23 +26,27 @@ import { PrimaryButton, SecondaryButton } from "../../../common";
 import { Scrollbar } from "../../../common/Layout/Scrollbar";
 import { ProxyImage } from "../../../common/ProxyImage";
 
+type NewAvatar = {
+  url: string;
+  id: string;
+};
 export function UpdateProfilePicture({
   setOpenDrawer,
 }: {
   setOpenDrawer: (open: boolean) => void;
 }) {
   const background = useBackgroundClient();
-  const [newAvatarUrl, setNewAvatarUrl] = useState<string | null>(null);
+  const [newAvatar, setNewAvatar] = useState<NewAvatar | null>(null);
   const avatarUrl = useAvatarUrl(64);
   const { username } = useUser();
   // const wallets = useActiveWallets();
   const wallets = useWalletPublicKeys();
   const collections = useRecoilValueLoadable(nftCollections);
-  console.log("wallets", wallets, collections, newAvatarUrl);
+  console.log("wallets", wallets, collections, newAvatar);
   return (
     <Container>
       <AvatarWrapper>
-        <Avatar src={newAvatarUrl || avatarUrl} />
+        <Avatar src={newAvatar?.url || avatarUrl} />
       </AvatarWrapper>
       <Typography style={{ textAlign: "center" }}>{`@${username}`}</Typography>
       <FakeDrawer>
@@ -52,7 +57,7 @@ export function UpdateProfilePicture({
         >
           <div
             style={{
-              paddingBottom: newAvatarUrl ? "80px" : "0px",
+              paddingBottom: newAvatar ? "80px" : "0px",
               transition: "padding ease-out 200ms",
             }}
           >
@@ -64,8 +69,8 @@ export function UpdateProfilePicture({
                     blockchain={blockchain as Blockchain}
                     collections={collection as NftCollection[]}
                     isLoading={collections.state !== "hasValue"}
-                    newAvatarUrl={newAvatarUrl}
-                    setNewAvatarUrl={setNewAvatarUrl}
+                    newAvatar={newAvatar}
+                    setNewAvatar={setNewAvatar}
                   />
                 )
               )}
@@ -74,13 +79,14 @@ export function UpdateProfilePicture({
       </FakeDrawer>
       <ButtonsOverlay
         style={{
-          maxHeight: newAvatarUrl ? "100px" : "0px",
+          maxHeight: newAvatar ? "100px" : "0px",
         }}
       >
         <SecondaryButton
           label={"Cancel"}
           onClick={() => {
-            setNewAvatarUrl(null);
+            console.log(newAvatar);
+            setNewAvatar(null);
             setOpenDrawer(false);
           }}
           style={{
@@ -90,11 +96,18 @@ export function UpdateProfilePicture({
         <PrimaryButton
           label={"Update"}
           onClick={async () => {
-            setNewAvatarUrl(null);
-            await background.request({
-              method: UI_RPC_METHOD_USER_AVATAR_UPDATE,
-              params: [],
-            });
+            if (newAvatar) {
+              await fetch(BACKEND_API_URL + "/users/avatar", {
+                method: "POST",
+                body: newAvatar.id,
+              });
+              setNewAvatar(null);
+            }
+
+            // await background.request({
+            //   method: UI_RPC_METHOD_USER_AVATAR_UPDATE,
+            //   params: [],
+            // });
           }}
           style={{
             margin: "16px",
@@ -110,14 +123,14 @@ function BlockchainNFTs({
   blockchain,
   collections,
   isLoading,
-  newAvatarUrl,
-  setNewAvatarUrl,
+  newAvatar,
+  setNewAvatar,
 }: {
   blockchain: Blockchain;
   collections: NftCollection[];
   isLoading: boolean;
-  newAvatarUrl: string | null;
-  setNewAvatarUrl: (newAvatarUrl: string) => void;
+  newAvatar: NewAvatar | null;
+  setNewAvatar: (newAvatar: NewAvatar) => void;
 }) {
   const [showContent, setShowContent] = useState(true);
 
@@ -130,7 +143,6 @@ function BlockchainNFTs({
     return null;
   }
 
-  console.log(blockchain, nfts);
   return (
     <>
       <BlockchainHeader
@@ -149,7 +161,11 @@ function BlockchainNFTs({
               <StyledProxyImage
                 key={index}
                 onClick={() => {
-                  setNewAvatarUrl(nft.imageUrl);
+                  console.log(nft);
+                  setNewAvatar({
+                    url: nft.imageUrl,
+                    id: `${nft.blockchain}/${nft.id}`,
+                  });
                 }}
                 style={{
                   width: "72px",
@@ -157,7 +173,7 @@ function BlockchainNFTs({
                   borderRadius: "40px",
                   margin: "16px 0px 0px 16px",
                   border:
-                    newAvatarUrl === nft.imageUrl ? "3px solid black" : "",
+                    newAvatar?.url === nft.imageUrl ? "3px solid black" : "",
                 }}
                 src={nft.imageUrl}
                 removeOnError={true}
