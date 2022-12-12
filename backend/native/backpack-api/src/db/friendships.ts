@@ -1,4 +1,5 @@
 import type { InboxDb } from "@coral-xyz/common";
+import { SubscriptionType } from "@coral-xyz/common";
 import { Chain } from "@coral-xyz/zeus";
 
 import { HASURA_URL, JWT } from "../config";
@@ -91,7 +92,7 @@ export const getFriendships = async ({
   limit: number;
   offset: number;
   areConnected: boolean;
-}): Promise<InboxDb[]> => {
+}): Promise<{ requestCount: number; friendships: InboxDb[] }> => {
   let where = {};
   if (areConnected) {
     where = {
@@ -149,6 +150,9 @@ export const getFriendships = async ({
         last_message_timestamp: true,
         last_message: true,
         last_message_sender: true,
+        last_message_client_uuid: true,
+        user1_last_read_message_id: true,
+        user2_last_read_message_id: true,
       },
     ],
     auth_friendships_aggregate: [
@@ -488,15 +492,41 @@ export const validateRoom = async (uuid: string, roomId: number) => {
       },
       {
         id: true,
+        user1: true,
+        user2: true,
       },
     ],
   });
 
-  if (response.auth_friendships) {
-    return true;
+  const friendship = response.auth_friendships[0];
+
+  if (friendship) {
+    return { user1: friendship.user1, user2: friendship.user2 };
   }
 
-  return false;
+  return null;
+};
+
+export const updateLastReadIndividual = async (
+  user1: string,
+  user2: string,
+  client_generated_uuid: string,
+  userIndex: "1" | "2"
+) => {
+  await chain("mutation")({
+    update_auth_friendships: [
+      {
+        where: {
+          user1: { _eq: user1 },
+          user2: { _eq: user2 },
+        },
+        _set: {
+          [`user${userIndex}_last_read_message_id`]: client_generated_uuid,
+        },
+      },
+      { affected_rows: true },
+    ],
+  });
 };
 
 function getLabel(type: "blocked" | "spam", from: string, to: string) {

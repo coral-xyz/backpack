@@ -29,7 +29,7 @@ router.post("/", extractUserId, async (req, res) => {
 
 router.get("/", extractUserId, async (req, res) => {
   //@ts-ignore
-  const uuid = req.id;
+  const uuid: string = req.id;
   //@ts-ignore
   const limit: number = req.query.limit || 50;
   //@ts-ignore

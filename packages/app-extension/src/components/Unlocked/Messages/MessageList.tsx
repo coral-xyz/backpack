@@ -49,6 +49,13 @@ export const MessageList = ({
             timestamp={activeChat.last_message_timestamp}
             isFirst={requestCount === 0 && index === 0}
             isLast={index === activeChats.length - 1}
+            isUnread={
+              activeChat.last_message_sender === activeChat.remoteUserId &&
+              activeChat.last_message_client_uuid !==
+                (activeChat.user1 === activeChat.remoteUserId
+                  ? activeChat.user1_last_read_message_id
+                  : activeChat.user2_last_read_message_id)
+            }
           />
         ))}
       </List>
@@ -64,6 +71,7 @@ export function ChatListItem({
   isFirst,
   isLast,
   userId,
+  isUnread,
 }: any) {
   const classes = useStyles();
   const theme = useCustomTheme();
@@ -144,7 +152,10 @@ export function ChatListItem({
               </div>
             </div>
           </div>
-          <div className={classes.timestamp}>
+          <div
+            className={classes.timestamp}
+            style={{ fontWeight: isUnread ? 400 : 600 }}
+          >
             {formatAMPM(new Date(timestamp))}
           </div>
         </div>

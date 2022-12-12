@@ -1,12 +1,9 @@
 import type {
   Message,
   MessageWithMetadata,
-  SubscriptionType} from "@coral-xyz/common";
-import {
-  BACKEND_API_URL,
-  CHAT_MESSAGES,
-  SUBSCRIBE
+  SubscriptionType,
 } from "@coral-xyz/common";
+import { BACKEND_API_URL, CHAT_MESSAGES, SUBSCRIBE } from "@coral-xyz/common";
 
 import { Signaling, SIGNALING_CONNECTED } from "./Signaling";
 
@@ -27,6 +24,7 @@ export class ChatManager {
   private signaling: Signaling;
   private type: SubscriptionType;
   private initCallbackCalled = false;
+  private updateLastReadTimeout = 0;
 
   constructor(
     userId: string,
@@ -127,6 +125,7 @@ export class ChatManager {
         if (filteredChats.length || !this.initCallbackCalled) {
           this.initCallbackCalled = true;
           this.onMessages(filteredChats);
+          this.debouncedUpdateLastRead(filteredChats);
         }
         if (filteredReceived.length) {
           this.onLocalMessageReceived(filteredReceived);
@@ -158,6 +157,26 @@ export class ChatManager {
         room: this.roomId,
       },
     });
+  }
+
+  debouncedUpdateLastRead(chats: EnrichedMessage[]) {
+    const latestMessage = chats.pop();
+    if (this.updateLastReadTimeout) {
+      window.clearTimeout(this.updateLastReadTimeout);
+      this.updateLastReadTimeout = window.setTimeout(() => {
+        this.updateLastRead(latestMessage?.client_generated_uuid || "");
+      }, 500);
+    }
+  }
+
+  updateLastRead(client_generated_uuid: string) {
+    fetch(
+      `${BACKEND_API_URL}/chat/lastRead?room=${this.roomId}&type=${this.type}`,
+      {
+        method: "POST",
+        body: JSON.stringify({ client_generated_uuid }),
+      }
+    );
   }
 
   destroy() {

@@ -19,7 +19,6 @@ export function Inbox() {
   const [messagesLoading, setMessagesLoading] = useState(true);
   const [activeChats, setActiveChats] = useState<EnrichedInboxDb[]>([]);
   const [requestCount, setRequestCount] = useState(0);
-  const { push } = useNavigation();
   const [searchResults, setSearchResults] = useState<
     { image: string; id: string; username: string }[]
   >([]);
