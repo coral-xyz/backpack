@@ -5,7 +5,7 @@ services:
     image: postgres:14-alpine
     restart: unless-stopped
     ports:
-      - 4446:5432
+      - 4447:5432
     volumes:
       - data:/var/lib/postgresql/data
     command: "postgres -c listen_addresses='*'"
