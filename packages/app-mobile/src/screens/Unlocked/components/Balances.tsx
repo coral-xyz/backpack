@@ -7,7 +7,7 @@ import {
   Text,
   View,
 } from "react-native";
-import { ListRowSeparator,Margin, ProxyImage } from "@components";
+import { ListRowSeparator, Margin, ProxyImage } from "@components";
 import type { Blockchain } from "@coral-xyz/common";
 import { formatUSD, walletAddressDisplay } from "@coral-xyz/common";
 import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
@@ -104,9 +104,6 @@ function TokenTable({
           t.ticker.toLowerCase().startsWith(searchLower))
     )
     .filter(customFilter);
-
-  // LOG  {"connectionUrl": "https://eth-mainnet.g.alchemy.com/v2/DlJr6QuBC2EaE-L60-iqQQGq9hi9-XSZ", "wallet": {"blockchain": "ethereum", "name": "Wallet 1", "publicKey": "0x3b75C921A06C18b9B75dD1916F1fb97f41796CeB"}}
-  console.log({ connectionUrl, wallet });
 
   useEffect(() => {
     setSearch(searchFilter);
@@ -288,12 +285,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    padding: 12,
+    overflow: "hidden",
   },
   rowLogo: {
     width: 50,
     height: 50,
     aspectRatio: 1,
-    borderRadius: 100,
+    borderRadius: 25,
   },
   tokenName: {
     height: 24,
@@ -301,39 +300,30 @@ const styles = StyleSheet.create({
     fontSize: 16,
     // maxWidth: "200px",
     // overflow: "hidden",
-    // color: theme.custom.colors.fontColor,
     lineHeight: 24,
   },
   tokenAmount: {
     fontWeight: "500",
     fontSize: 14,
-    // color: theme.custom.colors.secondary,
     lineHeight: 20,
   },
   tokenBalance: {
     fontWeight: "500",
     fontSize: 16,
-    // color: theme.custom.colors.fontColor,
     lineHeight: 24,
   },
   tokenBalanceChangeNeutral: {
     fontWeight: "500",
     fontSize: 14,
-    // color: theme.custom.colors.secondary,
-    // float: "right",
     lineHeight: 20,
   },
   tokenBalanceChangePositive: {
     fontWeight: "500",
     fontSize: 14,
-    // color: theme.custom.colors.positive,
-    // float: "right",
     lineHeight: 20,
   },
   tokenBalanceChangeNegative: {
     fontWeight: "500",
     fontSize: 12,
-    // color: theme.custom.colors.negative,
-    // float: "right",
   },
 });

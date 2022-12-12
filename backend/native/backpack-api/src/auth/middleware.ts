@@ -68,8 +68,12 @@ export const optionallyExtractUserId = (allowQueryString: boolean) => {
 
     let jwt = "";
 
-    // Extract JWT from cookie
-    if (cookie) {
+    // Header takes precedence
+    const authHeader = req.headers["authorization"];
+    if (authHeader && authHeader.split(" ")[0] === "Bearer") {
+      jwt = authHeader.split(" ")[1];
+    } else if (cookie) {
+      // Extract JWT from cookie
       try {
         cookie.split(";").forEach((item) => {
           const cookie = item.trim().split("=");
@@ -80,10 +84,7 @@ export const optionallyExtractUserId = (allowQueryString: boolean) => {
       } catch {
         // Pass
       }
-    }
-
-    // Couldn't get JWT from cookie, try query string
-    if (!jwt && req.query.jwt && allowQueryString) {
+    } else if (req.query.jwt && allowQueryString) {
       jwt = req.query.jwt as string;
     }
 
@@ -91,7 +92,7 @@ export const optionallyExtractUserId = (allowQueryString: boolean) => {
       try {
         const payloadRes = await validateJwt(jwt);
         if (payloadRes.payload.sub) {
-          // Extend cookie
+          // Extend cookie or set it if not set
           setCookie(req, res, payloadRes.payload.sub);
           // Set id on request
           req.id = payloadRes.payload.sub;

@@ -11,6 +11,7 @@ insert_permissions:
         - id
         - message
         - message_kind
+        - parent_client_generated_uuid
         - room
         - type
         - username
@@ -24,6 +25,7 @@ select_permissions:
         - id
         - message
         - message_kind
+        - parent_client_generated_uuid
         - room
         - type
         - username

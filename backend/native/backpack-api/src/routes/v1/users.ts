@@ -109,8 +109,9 @@ router.post("/", async (req, res) => {
     }
   }
 
+  let jwt: string;
   if (user) {
-    await setCookie(req, res, user.id as string);
+    jwt = await setCookie(req, res, user.id as string);
   } else {
     return res.status(500).json({ msg: "Error creating user account" });
   }
@@ -135,7 +136,7 @@ router.post("/", async (req, res) => {
     }
   }
 
-  return res.json({ id: user.id, msg: "ok" });
+  return res.json({ id: user.id, msg: "ok", jwt });
 });
 
 /**
@@ -171,7 +172,7 @@ router.get(
       try {
         user = await getUserByUsername(username);
       } catch {
-        return res.status(404).json({ msg: "User not found " });
+        return res.status(404).json({ msg: "User not found" });
       }
     }
 

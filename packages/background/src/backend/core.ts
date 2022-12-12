@@ -9,6 +9,7 @@ import type {
   XnftPreference,
 } from "@coral-xyz/common";
 import {
+  BACKEND_API_URL,
   BACKEND_EVENT,
   Blockchain,
   deserializeTransaction,
@@ -32,6 +33,7 @@ import {
   NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED,
   NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
+  NOTIFICATION_KEYRING_STORE_REMOVED_USER,
   NOTIFICATION_KEYRING_STORE_RESET,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
   NOTIFICATION_KEYRING_STORE_USERNAME_ACCOUNT_CREATED,
@@ -71,6 +73,7 @@ import * as store from "./store";
 import {
   DEFAULT_DARK_MODE,
   getWalletDataForUser,
+  setUser,
   setWalletDataForUser,
 } from "./store";
 
@@ -549,9 +552,10 @@ export class Backend {
     username: string,
     password: string,
     keyringInit: KeyringInit,
-    uuid: string
+    uuid: string,
+    jwt: string
   ): Promise<string> {
-    await this.keyringStore.init(username, password, keyringInit, uuid);
+    await this.keyringStore.init(username, password, keyringInit, uuid, jwt);
 
     // Notify all listeners.
     this.events.emit(BACKEND_EVENT, {
@@ -571,9 +575,15 @@ export class Backend {
   async usernameAccountCreate(
     username: string,
     keyringInit: KeyringInit,
-    uuid: string
+    uuid: string,
+    jwt: string
   ): Promise<string> {
-    await this.keyringStore.usernameKeyringCreate(username, keyringInit, uuid);
+    await this.keyringStore.usernameKeyringCreate(
+      username,
+      keyringInit,
+      uuid,
+      jwt
+    );
     const walletData = await this.keyringStoreReadAllPubkeyData();
     const preferences = await this.preferencesRead(uuid);
     const xnftPreferences = await this.getXnftPreferences();
@@ -584,6 +594,7 @@ export class Backend {
         user: {
           username,
           uuid,
+          jwt,
         },
         walletData,
         preferences,
@@ -625,7 +636,7 @@ export class Backend {
 
   async activeUserUpdate(uuid: string): Promise<string> {
     // Change active user account.
-    const { username } = await this.keyringStore.activeUserUpdate(uuid);
+    const { username, jwt } = await this.keyringStore.activeUserUpdate(uuid);
 
     // Get data to push back to the UI.
     const walletData = await this.keyringStoreReadAllPubkeyData();
@@ -633,6 +644,7 @@ export class Backend {
     // Get preferences to push back to the UI.
     const preferences = await this.preferencesRead(uuid);
     const xnftPreferences = await this.getXnftPreferences();
+    const enabledBlockchains = await this.enabledBlockchainsRead();
 
     // Push it.
     this.events.emit(BACKEND_EVENT, {
@@ -641,14 +653,71 @@ export class Backend {
         user: {
           uuid,
           username,
+          jwt,
         },
         walletData,
         preferences,
         xnftPreferences,
+        enabledBlockchains,
       },
     });
 
     // Done.
+    return SUCCESS_RESPONSE;
+  }
+
+  async userLogout(uuid: string): Promise<string> {
+    // Clear the jwt cookie if it exists. Don't block.
+    fetch(`${BACKEND_API_URL}/authenticate`, {
+      method: "DELETE",
+    });
+
+    //
+    // If we're logging out the last user, reset the entire app.
+    //
+    const data = await store.getUserData();
+    if (data.users.length === 1) {
+      this.keyringReset();
+      return SUCCESS_RESPONSE;
+    }
+
+    //
+    // If we have more users available, just remove the user.
+    //
+    const isNewActiveUser = await this.keyringStore.removeUser(uuid);
+
+    //
+    // If the user changed, notify the UI.
+    //
+    if (isNewActiveUser) {
+      const user = await this.userRead();
+      const walletData = await this.keyringStoreReadAllPubkeyData();
+      const preferences = await this.preferencesRead(uuid);
+      const xnftPreferences = await this.getXnftPreferences();
+      const enabledBlockchains = await this.enabledBlockchainsRead();
+
+      this.events.emit(BACKEND_EVENT, {
+        name: NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED,
+        data: {
+          user,
+          walletData,
+          preferences,
+          xnftPreferences,
+          enabledBlockchains,
+        },
+      });
+    }
+
+    //
+    // Notify the UI about the removal.
+    //
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_KEYRING_STORE_REMOVED_USER,
+    });
+
+    //
+    // Done.
+    //
     return SUCCESS_RESPONSE;
   }
 
@@ -665,7 +734,7 @@ export class Backend {
       throw new Error("invariant violation: username not found");
     }
 
-    await this.keyringStore.tryUnlock(password);
+    await this.keyringStore.tryUnlock(password, uuid);
 
     const blockchainActiveWallets = await this.blockchainActiveWallets();
 
@@ -870,8 +939,34 @@ export class Backend {
       const user = await store.getActiveUser();
       return user;
     } catch (err) {
-      return { username: "", uuid: "" };
+      return { username: "", uuid: "", jwt: "" };
     }
+  }
+
+  async userJwtUpdate(uuid: string, jwt: string) {
+    await setUser(uuid, { jwt });
+
+    const walletData = await this.keyringStoreReadAllPubkeyData();
+    const preferences = await this.preferencesRead(uuid);
+    const xnftPreferences = await this.getXnftPreferences();
+    const enabledBlockchains = await this.enabledBlockchainsRead();
+
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED,
+      data: {
+        user: {
+          uuid,
+          username: this.keyringStore.activeUserKeyring.username,
+          jwt,
+        },
+        walletData,
+        preferences,
+        xnftPreferences,
+        enabledBlockchains,
+      },
+    });
+
+    return SUCCESS_RESPONSE;
   }
 
   async allUsersRead(): Promise<Array<User>> {

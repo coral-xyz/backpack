@@ -7,18 +7,9 @@ import { TextInput } from "../../common/Inputs";
 import { useStyles } from "./styles";
 import { UserList } from "./UserList";
 
-export const SearchUsers = ({
-  title,
-  onlyContacts,
-}: {
-  title: string;
-  onlyContacts: boolean;
-}) => {
+export const SearchUsers = () => {
   const classes = useStyles();
   const [searchFilter, setSearchFilter] = useState("");
-  const [searchResults, setSearchResults] = useState<
-    { image: string; id: string; username: string }[]
-  >([]);
   const [contactsLoading, setContactsLoading] = useState(true);
   const [contacts, setContacts] = useState<EnrichedInboxDb[]>([]);
   const filteredContacts = contacts
@@ -43,7 +34,6 @@ export const SearchUsers = ({
 
   return (
     <div className={classes.container}>
-      {title && <div className={classes.text}>{title}</div>}
       <TextInput
         className={classes.searchField}
         placeholder={"Search"}
@@ -51,19 +41,6 @@ export const SearchUsers = ({
         setValue={async (e) => {
           const prefix = e.target.value;
           setSearchFilter(prefix);
-          if (onlyContacts) {
-            return;
-          }
-          if (prefix.length >= 3) {
-            //TODO debounce
-            const res = await fetch(
-              `${BACKEND_API_URL}/users?usernamePrefix=${prefix}`
-            );
-            const json = await res.json();
-            setSearchResults(json.users || []);
-          } else {
-            setSearchResults([]);
-          }
         }}
         inputProps={{
           style: {
@@ -72,8 +49,6 @@ export const SearchUsers = ({
         }}
       />
       {filteredContacts.length !== 0 && <UserList users={filteredContacts} />}
-      <br />
-      {searchResults.length !== 0 && <UserList users={searchResults} />}
     </div>
   );
 };

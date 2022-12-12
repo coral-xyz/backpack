@@ -12,7 +12,6 @@ const KEY_KEYRING_STORE = "keyring-store";
  * before reading to/from local storage.
  */
 export type KeyringStoreJson = {
-  activeUserUuid: string;
   users: {
     [uuid: string]: UserKeyringJson;
   };

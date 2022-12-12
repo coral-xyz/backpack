@@ -67,6 +67,7 @@ update_permissions:
   - role: auth_worker
     permission:
       columns:
+        - avatar_nft
         - updated_at
       filter: {}
       check: null

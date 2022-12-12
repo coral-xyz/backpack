@@ -6,7 +6,6 @@ import { useNavStack } from "../../../common/Layout/NavStack";
 import { SettingsList } from "../../../common/Settings/List";
 
 export function YourAccount() {
-  const { close } = useDrawerContext();
   const nav = useNavStack();
   const keyringType = useKeyringType();
 
@@ -24,8 +23,8 @@ export function YourAccount() {
           },
         }
       : {}),
-    "Reset Wallet": {
-      onClick: () => nav.push("reset-warning", { onClose: () => close() }),
+    Logout: {
+      onClick: () => nav.push("logout"),
     },
   };
 

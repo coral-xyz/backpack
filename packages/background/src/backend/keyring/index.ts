@@ -72,47 +72,60 @@ export class KeyringStore {
     username: string,
     password: string,
     keyringInit: KeyringInit,
-    uuid: string
+    uuid: string,
+    jwt: string
   ) {
     this.password = password;
 
     // Setup the user.
-    await this._usernameKeyringCreate(username, keyringInit, uuid);
+    await this._usernameKeyringCreate(username, keyringInit, uuid, jwt);
 
     // Persist the encrypted data to then store.
     await this.persist(true);
 
     // Automatically lock the store when idle.
-    await this.tryUnlock(password);
+    await this.tryUnlock(password, uuid);
   }
 
   public async usernameKeyringCreate(
     username: string,
     keyringInit: KeyringInit,
-    uuid: string
+    uuid: string,
+    jwt: string
   ) {
     return await this.withUnlockAndPersist(async () => {
-      return await this._usernameKeyringCreate(username, keyringInit, uuid);
+      return await this._usernameKeyringCreate(
+        username,
+        keyringInit,
+        uuid,
+        jwt
+      );
     });
   }
 
   public async _usernameKeyringCreate(
     username: string,
     keyringInit: KeyringInit,
-    uuid: string
+    uuid: string,
+    jwt: string
   ) {
+    // Store unlocked keyring in memory.
     this.users.set(uuid, await UserKeyring.init(username, keyringInit, uuid));
     this.activeUserUuid = uuid;
 
+    // Per user preferences.
     await store.setWalletDataForUser(
       uuid,
       defaultPreferences(
         keyringInit.blockchainKeyrings.map((k) => k.blockchain)
       )
     );
+
+    // Persist active user to disk.
     await store.setActiveUser({
       username,
       uuid,
+      jwt,
     });
   }
 
@@ -149,10 +162,46 @@ export class KeyringStore {
   // Actions.
   ///////////////////////////////////////////////////////////////////////////////
 
-  public async tryUnlock(password: string) {
+  /**
+   * Returns true if the active user was removed (and thus chanaged).
+   */
+  public async removeUser(uuid: string): Promise<boolean> {
+    if (this.users.size <= 1) {
+      throw new Error(
+        "invariant violation: users map size must be greater than 1"
+      );
+    }
+    return await this.withUnlockAndPersist(async () => {
+      const user = this.users.get(uuid);
+      if (!user) {
+        throw new Error(`User not found: ${uuid}`);
+      }
+      this.users.delete(uuid);
+      await store.setWalletDataForUser(uuid, undefined);
+
+      //
+      // If the active user is being removed, then auto switch it.
+      //
+      if (this.activeUserUuid === uuid) {
+        const userData = await store.getUserData();
+        const users = userData.users.filter((user) => user.uuid !== uuid);
+        await store.setUserData({
+          activeUser: users[0],
+          users,
+        });
+        this.activeUserUuid = users[0].uuid;
+        return true;
+      } else {
+        return false;
+      }
+    });
+  }
+
+  public async tryUnlock(password: string, uuid: string) {
     return this.withLock(async () => {
       const json = await store.getKeyringStore(password);
       await this.fromJson(json);
+      this.activeUserUuid = uuid;
       this.password = password;
       // Automatically lock the store when idle.
       this.autoLockStart();
@@ -239,10 +288,7 @@ export class KeyringStore {
     const userData = await store.getUserData();
     const user = userData.users.filter((u) => u.uuid === uuid)[0];
     this.activeUserUuid = uuid;
-    await store.setActiveUser({
-      username: user.username,
-      uuid,
-    });
+    await store.setActiveUser(user);
     return user;
   }
 
@@ -464,15 +510,13 @@ export class KeyringStore {
       [...this.users].map(([k, v]) => [k, v.toJson()])
     );
     return {
-      activeUserUuid: this.activeUserUuid!,
       users,
       lastUsedTs: this.lastUsedTs,
     };
   }
 
   private async fromJson(json: KeyringStoreJson) {
-    const { activeUserUuid, users } = json;
-    this.activeUserUuid = activeUserUuid;
+    const { users } = json;
     this.users = new Map(
       Object.entries(users).map(([username, obj]) => {
         return [username, UserKeyring.fromJson(obj)];

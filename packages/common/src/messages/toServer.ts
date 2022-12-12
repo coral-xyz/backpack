@@ -15,6 +15,7 @@ export type ToServer =
           client_generated_uuid: string;
           message: string;
           message_kind: string;
+          parent_client_generated_uuid?: string;
         }[];
         type: SubscriptionType;
         room: string;

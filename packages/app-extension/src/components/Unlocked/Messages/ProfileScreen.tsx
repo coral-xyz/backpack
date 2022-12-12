@@ -7,7 +7,7 @@ import LockIcon from "@mui/icons-material/Lock";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import { IconButton } from "@mui/material";
 
-import { PrimaryButton, SecondaryButton } from "../../common";
+import { Loading, PrimaryButton, SecondaryButton } from "../../common";
 import { MessageIcon } from "../../common/Icon";
 import { useNavStack } from "../../common/Layout/NavStack";
 import { ProxyImage } from "../../common/ProxyImage";
@@ -54,7 +54,11 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div style={{ height: "100vh" }}>
+        <Loading />
+      </div>
+    );
   }
 
   return (

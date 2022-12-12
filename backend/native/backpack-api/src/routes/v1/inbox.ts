@@ -35,17 +35,15 @@ router.get("/", extractUserId, async (req, res) => {
   //@ts-ignore
   const offset: number = req.query.limit || 0;
   const areConnected: boolean =
-    req.query.areConnected === "true" || req.query.areConnected === "true"
-      ? true
-      : false;
-  const friendships = await getFriendships({
+    req.query.areConnected === "true" ? true : false;
+  const { friendships, requestCount } = await getFriendships({
     uuid,
     limit,
     offset,
     areConnected,
   });
   const enrichedFriendships = await enrichFriendships(friendships, uuid);
-  res.json({ chats: enrichedFriendships });
+  res.json({ chats: enrichedFriendships, requestCount });
 });
 
 export async function enrichFriendships(
