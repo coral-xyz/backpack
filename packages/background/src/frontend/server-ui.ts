@@ -92,6 +92,7 @@ import {
   UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION,
   UI_RPC_METHOD_SOLANA_SIMULATE,
   UI_RPC_METHOD_USER_JWT_UPDATE,
+  UI_RPC_METHOD_USER_LOGOUT,
   UI_RPC_METHOD_USER_READ,
   UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
   withContextPort,
@@ -278,7 +279,7 @@ async function handle<T = any>(
     case UI_RPC_METHOD_KEYNAME_UPDATE:
       return await handleKeynameUpdate(ctx, params[0], params[1]);
     //
-    // Username.
+    // User.
     //
     case UI_RPC_METHOD_USER_READ:
       return await handleUserRead(ctx);
@@ -293,6 +294,9 @@ async function handle<T = any>(
     case UI_RPC_METHOD_ACTIVE_USER_UPDATE:
       // @ts-ignore
       return await handleActiveUserUpdate(ctx, ...params);
+    case UI_RPC_METHOD_USER_LOGOUT:
+      // @ts-ignore
+      return await handleUserLogout(ctx, ...params);
     //
     // Password.
     //
@@ -527,6 +531,14 @@ async function handleActiveUserUpdate(
   ...args: Parameters<Backend["activeUserUpdate"]>
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.activeUserUpdate(...args);
+  return [resp];
+}
+
+async function handleUserLogout(
+  ctx: Context<Backend>,
+  ...args: Parameters<Backend["userLogout"]>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.userLogout(...args);
   return [resp];
 }
 

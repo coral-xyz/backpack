@@ -12,7 +12,7 @@ export const Contacts = () => {
 
   return (
     <div>
-      <SearchUsers title={""} onlyContacts={true} />
+      <SearchUsers />
     </div>
   );
 };

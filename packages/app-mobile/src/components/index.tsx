@@ -1,4 +1,4 @@
-import type { StyleProp, TextStyle, ViewStyle } from "react-native";
+import type { ImageStyle,StyleProp, TextStyle, ViewStyle } from "react-native";
 import {
   ActivityIndicator,
   Image,
@@ -371,16 +371,24 @@ export function EmptyState({
 }
 
 // React Native apps need to specifcy a width and height for remote images
-export function ProxyImage({ src, ...props }: any): JSX.Element {
-  const uri = proxyImageUrl(props.src);
+export function ProxyImage({
+  src,
+  style,
+  ...props
+}: {
+  src: string;
+  style: StyleProp<ImageStyle>;
+}): JSX.Element {
+  const uri = proxyImageUrl(src);
   return (
     <Image
-      {...props}
+      style={style}
+      source={{ uri }}
       // onError={({ currentTarget }) => {
       //   currentTarget.onerror = props.onError || null;
       //   currentTarget.src = props.src;
       // }}
-      source={{ uri }}
+      {...props}
     />
   );
 }
