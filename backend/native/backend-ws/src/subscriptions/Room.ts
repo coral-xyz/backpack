@@ -1,16 +1,18 @@
-import { User } from "../users/User";
-import { CHAT_HASURA_URL, CHAT_JWT } from "../config";
 import { Chain } from "@coral-xyz/chat-zeus";
-
-import {
-  CHAT_MESSAGES,
+import type {
   FromServer,
   Message,
   MessageWithMetadata,
-  SubscriptionType,
+  SubscriptionType} from "@coral-xyz/common";
+import {
+  CHAT_MESSAGES
 } from "@coral-xyz/common";
-import { getUsers } from "../db/users";
+
+import { CHAT_HASURA_URL, CHAT_JWT } from "../config";
+import { getChats, getChatsFromParentGuids } from "../db/chats";
 import { updateLatestMessage } from "../db/friendships";
+import { getUsers } from "../db/users";
+import type { User } from "../users/User";
 
 const chain = Chain(CHAT_HASURA_URL, {
   headers: {
@@ -26,6 +28,21 @@ export class Room {
   private userIdMappings: Map<string, { username: string }> = new Map<
     string,
     { username: string }
+  >();
+  private replyToMessageMappings: Map<
+    string,
+    {
+      parent_message_text: string;
+      parent_message_author_username: string;
+      parent_message_author_uuid: string;
+    }
+  > = new Map<
+    string,
+    {
+      parent_message_text: string;
+      parent_message_author_username: string;
+      parent_message_author_uuid: string;
+    }
   >();
   public roomCreationPromise: any;
   // Only applicable for `individual` rooms. User for storing
@@ -47,33 +64,9 @@ export class Room {
   }
 
   async init() {
-    const response = await chain("query")({
-      chats: [
-        {
-          limit: 50,
-          offset: 0,
-          //@ts-ignore
-          order_by: [{ created_at: "desc" }],
-          where: {
-            room: { _eq: this.room.toString() },
-            //@ts-ignore
-            type: { _eq: this.type },
-          },
-        },
-        {
-          id: true,
-          uuid: true,
-          message: true,
-          client_generated_uuid: true,
-          created_at: true,
-          message_kind: true,
-        },
-      ],
-    });
-
+    const chats = await getChats(this.room.toString(), this.type);
     this.messageHistory = await this.enrichMessages(
-      response.chats?.sort((a, b) => (a.created_at < b.created_at ? -1 : 1)) ||
-        []
+      chats?.sort((a, b) => (a.created_at < b.created_at ? -1 : 1)) || []
     );
   }
 
@@ -96,6 +89,7 @@ export class Room {
       client_generated_uuid: string;
       message: string;
       message_kind: string;
+      parent_client_generated_uuid?: string;
     }
   ) {
     //TODO: bulkify this
@@ -109,6 +103,7 @@ export class Room {
             uuid: userId,
             message_kind: msg.message_kind,
             client_generated_uuid: msg.client_generated_uuid,
+            parent_client_generated_uuid: msg.parent_client_generated_uuid,
             type: this.type,
             created_at: new Date(),
           },
@@ -136,6 +131,7 @@ export class Room {
           message: msg.message,
           client_generated_uuid: msg.client_generated_uuid,
           message_kind: msg.message_kind,
+          parent_client_generated_uuid: msg.parent_client_generated_uuid,
         },
       ])
     )[0];
@@ -161,6 +157,69 @@ export class Room {
   }
 
   async enrichMessages(messages: Message[]): Promise<MessageWithMetadata[]> {
+    const replyIds: string[] = messages.map(
+      (m) => m.parent_client_generated_uuid || ""
+    );
+
+    const uniqueReplyIds = replyIds
+      .filter((x, index) => replyIds.indexOf(x) === index)
+      .filter((x) => x)
+      .filter((x) => !this.replyToMessageMappings.get(x || ""));
+
+    if (uniqueReplyIds.length) {
+      const parentReplies = await getChatsFromParentGuids(
+        this.room.toString(),
+        this.type,
+        uniqueReplyIds
+      );
+      await this.enrichUsernames([...messages, ...parentReplies]);
+      uniqueReplyIds.forEach((replyId) => {
+        const reply = parentReplies.find(
+          (x) => x.client_generated_uuid === replyId
+        );
+        if (reply) {
+          this.replyToMessageMappings.set(replyId, {
+            parent_message_text: reply.message,
+            parent_message_author_uuid: reply.uuid || "",
+            parent_message_author_username:
+              this.userIdMappings.get(reply.uuid || "")?.username || "",
+          });
+        } else {
+          console.log(`reply with id ${replyId} not found`);
+        }
+      });
+    } else {
+      await this.enrichUsernames(messages);
+    }
+
+    return messages.map((message) => {
+      const username =
+        this.userIdMappings.get(message.uuid || "")?.username || "";
+      const image = `https://avatars.xnfts.dev/v1/${username}`;
+      return {
+        ...message,
+        username,
+        image,
+        parent_message_text: message.parent_client_generated_uuid
+          ? this.replyToMessageMappings.get(
+              message.parent_client_generated_uuid || ""
+            )?.parent_message_text
+          : undefined,
+        parent_message_author_username: message.parent_client_generated_uuid
+          ? this.replyToMessageMappings.get(
+              message.parent_client_generated_uuid || ""
+            )?.parent_message_author_username
+          : undefined,
+        parent_message_author_uuid: message.parent_client_generated_uuid
+          ? this.replyToMessageMappings.get(
+              message.parent_client_generated_uuid || ""
+            )?.parent_message_author_uuid
+          : undefined,
+      };
+    });
+  }
+
+  async enrichUsernames(messages: Message[]) {
     const userIds: string[] = messages.map((m) => m.uuid || "");
     const uniqueUserIds = userIds
       .filter((x, index) => userIds.indexOf(x) === index)
@@ -172,17 +231,6 @@ export class Room {
         this.userIdMappings.set(id, { username })
       );
     }
-
-    return messages.map((message) => {
-      const username =
-        this.userIdMappings.get(message.uuid || "")?.username || "";
-      const image = `https://avatars.xnfts.dev/v1/${username}`;
-      return {
-        ...message,
-        username,
-        image,
-      };
-    });
   }
 
   removeUser(user: User) {

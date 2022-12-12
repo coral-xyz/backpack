@@ -12,11 +12,15 @@ export interface Message {
   client_generated_uuid?: string;
   message_kind: "gif" | "text";
   created_at: string;
+  parent_client_generated_uuid?: string;
 }
 
 export interface MessageWithMetadata extends Message {
   username: string;
   image: string;
+  parent_message_text?: string;
+  parent_message_author_username?: string;
+  parent_message_author_uuid?: string;
 }
 
 export type ReceiveChat = {
