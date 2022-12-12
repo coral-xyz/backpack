@@ -599,7 +599,6 @@ export const ResolveFromPath = (
   returns: ReturnTypesType,
   ops: Operations
 ) => {
-  // @ts-ignore
   const ResolvePropsType = (mappedParts: Part[]) => {
     const oKey = ops[mappedParts[0].v];
     const propsP1 = oKey ? props[oKey] : props[mappedParts[0].v];
@@ -642,7 +641,6 @@ export const ResolveFromPath = (
       }
     }
   };
-  // @ts-ignore
   const ResolveReturnType = (mappedParts: Part[]) => {
     if (mappedParts.length === 0) {
       return "not";
@@ -1047,6 +1045,7 @@ export type ValueTypes = {
     id?: boolean | `@${string}`;
     message?: boolean | `@${string}`;
     message_kind?: boolean | `@${string}`;
+    parent_client_generated_uuid?: boolean | `@${string}`;
     room?: boolean | `@${string}`;
     type?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
@@ -1095,6 +1094,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    parent_client_generated_uuid?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     room?:
       | ValueTypes["String_comparison_exp"]
       | undefined
@@ -1129,6 +1133,11 @@ export type ValueTypes = {
     id?: number | undefined | null | Variable<any, string>;
     message?: string | undefined | null | Variable<any, string>;
     message_kind?: string | undefined | null | Variable<any, string>;
+    parent_client_generated_uuid?:
+      | string
+      | undefined
+      | null
+      | Variable<any, string>;
     room?: string | undefined | null | Variable<any, string>;
     type?: string | undefined | null | Variable<any, string>;
     username?: string | undefined | null | Variable<any, string>;
@@ -1173,6 +1182,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    parent_client_generated_uuid?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     room?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     type?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     username?:
@@ -1208,6 +1222,11 @@ export type ValueTypes = {
     id?: number | undefined | null | Variable<any, string>;
     message?: string | undefined | null | Variable<any, string>;
     message_kind?: string | undefined | null | Variable<any, string>;
+    parent_client_generated_uuid?:
+      | string
+      | undefined
+      | null
+      | Variable<any, string>;
     room?: string | undefined | null | Variable<any, string>;
     type?: string | undefined | null | Variable<any, string>;
     username?: string | undefined | null | Variable<any, string>;
@@ -1422,6 +1441,7 @@ export type ResolverInputTypes = {
     id?: boolean | `@${string}`;
     message?: boolean | `@${string}`;
     message_kind?: boolean | `@${string}`;
+    parent_client_generated_uuid?: boolean | `@${string}`;
     room?: boolean | `@${string}`;
     type?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
@@ -1447,6 +1467,10 @@ export type ResolverInputTypes = {
       | ResolverInputTypes["String_comparison_exp"]
       | undefined
       | null;
+    parent_client_generated_uuid?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
     room?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     type?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     username?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
@@ -1461,6 +1485,7 @@ export type ResolverInputTypes = {
     id?: number | undefined | null;
     message?: string | undefined | null;
     message_kind?: string | undefined | null;
+    parent_client_generated_uuid?: string | undefined | null;
     room?: string | undefined | null;
     type?: string | undefined | null;
     username?: string | undefined | null;
@@ -1487,6 +1512,10 @@ export type ResolverInputTypes = {
     id?: ResolverInputTypes["order_by"] | undefined | null;
     message?: ResolverInputTypes["order_by"] | undefined | null;
     message_kind?: ResolverInputTypes["order_by"] | undefined | null;
+    parent_client_generated_uuid?:
+      | ResolverInputTypes["order_by"]
+      | undefined
+      | null;
     room?: ResolverInputTypes["order_by"] | undefined | null;
     type?: ResolverInputTypes["order_by"] | undefined | null;
     username?: ResolverInputTypes["order_by"] | undefined | null;
@@ -1508,6 +1537,7 @@ export type ResolverInputTypes = {
     id?: number | undefined | null;
     message?: string | undefined | null;
     message_kind?: string | undefined | null;
+    parent_client_generated_uuid?: string | undefined | null;
     room?: string | undefined | null;
     type?: string | undefined | null;
     username?: string | undefined | null;
@@ -1679,6 +1709,7 @@ export type ModelTypes = {
     id: number;
     message: string;
     message_kind?: string | undefined;
+    parent_client_generated_uuid?: string | undefined;
     room?: string | undefined;
     type: string;
     username?: string | undefined;
@@ -1694,6 +1725,9 @@ export type ModelTypes = {
     id?: ModelTypes["Int_comparison_exp"] | undefined;
     message?: ModelTypes["String_comparison_exp"] | undefined;
     message_kind?: ModelTypes["String_comparison_exp"] | undefined;
+    parent_client_generated_uuid?:
+      | ModelTypes["String_comparison_exp"]
+      | undefined;
     room?: ModelTypes["String_comparison_exp"] | undefined;
     type?: ModelTypes["String_comparison_exp"] | undefined;
     username?: ModelTypes["String_comparison_exp"] | undefined;
@@ -1707,6 +1741,7 @@ export type ModelTypes = {
     id?: number | undefined;
     message?: string | undefined;
     message_kind?: string | undefined;
+    parent_client_generated_uuid?: string | undefined;
     room?: string | undefined;
     type?: string | undefined;
     username?: string | undefined;
@@ -1732,6 +1767,7 @@ export type ModelTypes = {
     id?: ModelTypes["order_by"] | undefined;
     message?: ModelTypes["order_by"] | undefined;
     message_kind?: ModelTypes["order_by"] | undefined;
+    parent_client_generated_uuid?: ModelTypes["order_by"] | undefined;
     room?: ModelTypes["order_by"] | undefined;
     type?: ModelTypes["order_by"] | undefined;
     username?: ModelTypes["order_by"] | undefined;
@@ -1752,6 +1788,7 @@ export type ModelTypes = {
     id?: number | undefined;
     message?: string | undefined;
     message_kind?: string | undefined;
+    parent_client_generated_uuid?: string | undefined;
     room?: string | undefined;
     type?: string | undefined;
     username?: string | undefined;
@@ -1778,7 +1815,7 @@ export type ModelTypes = {
     chats: Array<ModelTypes["chats"]>;
     /** fetch data from the table: "chats" using primary key columns */
     chats_by_pk?: ModelTypes["chats"] | undefined;
-    /** fetch data from the table in a streaming manner : "chats" */
+    /** fetch data from the table in a streaming manner: "chats" */
     chats_stream: Array<ModelTypes["chats"]>;
   };
   ["timestamptz"]: any;
@@ -1849,6 +1886,7 @@ export type GraphQLTypes = {
     id: number;
     message: string;
     message_kind?: string | undefined;
+    parent_client_generated_uuid?: string | undefined;
     room?: string | undefined;
     type: string;
     username?: string | undefined;
@@ -1864,6 +1902,9 @@ export type GraphQLTypes = {
     id?: GraphQLTypes["Int_comparison_exp"] | undefined;
     message?: GraphQLTypes["String_comparison_exp"] | undefined;
     message_kind?: GraphQLTypes["String_comparison_exp"] | undefined;
+    parent_client_generated_uuid?:
+      | GraphQLTypes["String_comparison_exp"]
+      | undefined;
     room?: GraphQLTypes["String_comparison_exp"] | undefined;
     type?: GraphQLTypes["String_comparison_exp"] | undefined;
     username?: GraphQLTypes["String_comparison_exp"] | undefined;
@@ -1878,6 +1919,7 @@ export type GraphQLTypes = {
     id?: number | undefined;
     message?: string | undefined;
     message_kind?: string | undefined;
+    parent_client_generated_uuid?: string | undefined;
     room?: string | undefined;
     type?: string | undefined;
     username?: string | undefined;
@@ -1904,6 +1946,7 @@ export type GraphQLTypes = {
     id?: GraphQLTypes["order_by"] | undefined;
     message?: GraphQLTypes["order_by"] | undefined;
     message_kind?: GraphQLTypes["order_by"] | undefined;
+    parent_client_generated_uuid?: GraphQLTypes["order_by"] | undefined;
     room?: GraphQLTypes["order_by"] | undefined;
     type?: GraphQLTypes["order_by"] | undefined;
     username?: GraphQLTypes["order_by"] | undefined;
@@ -1925,6 +1968,7 @@ export type GraphQLTypes = {
     id?: number | undefined;
     message?: string | undefined;
     message_kind?: string | undefined;
+    parent_client_generated_uuid?: string | undefined;
     room?: string | undefined;
     type?: string | undefined;
     username?: string | undefined;
@@ -1957,7 +2001,7 @@ export type GraphQLTypes = {
     chats: Array<GraphQLTypes["chats"]>;
     /** fetch data from the table: "chats" using primary key columns */
     chats_by_pk?: GraphQLTypes["chats"] | undefined;
-    /** fetch data from the table in a streaming manner : "chats" */
+    /** fetch data from the table in a streaming manner: "chats" */
     chats_stream: Array<GraphQLTypes["chats"]>;
   };
   ["timestamptz"]: "scalar" & { name: "timestamptz" };
@@ -1985,6 +2029,7 @@ export const enum chats_select_column {
   id = "id",
   message = "message",
   message_kind = "message_kind",
+  parent_client_generated_uuid = "parent_client_generated_uuid",
   room = "room",
   type = "type",
   username = "username",
