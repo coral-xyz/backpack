@@ -241,8 +241,9 @@ router.post(
 router.post("/avatar", extractUserId, async (req: Request, res: Response) => {
   await updateUserAvatar({
     userId: req.id!,
-    avatar: req.body,
+    avatar: req.body.avatar,
   });
+
   return res.status(201).end();
 });
 

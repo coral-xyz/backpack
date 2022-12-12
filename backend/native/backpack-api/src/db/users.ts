@@ -230,7 +230,7 @@ export async function updateUserAvatar({
           id: { _eq: userId },
         },
         _set: {
-          avatar_nft: avatar === "null" ? null : avatar,
+          avatar_nft: avatar,
         },
       },
       {
