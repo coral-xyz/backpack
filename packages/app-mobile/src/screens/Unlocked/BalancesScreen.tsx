@@ -15,15 +15,15 @@ import {
   useActiveEthereumWallet,
   useLoader,
 } from "@coral-xyz/recoil";
+import { useTheme } from "@hooks";
 import { createStackNavigator } from "@react-navigation/stack";
 import { RecentActivityList } from "@screens/Unlocked/RecentActivityScreen";
 
-import { TokenTables } from "./components/Balances";
+import { TokenTables, UsdBalanceAndPercentChange } from "./components/Balances";
 import { BalanceSummaryWidget } from "./components/BalanceSummaryWidget";
 import type { Token } from "./components/index";
 
 const Stack = createStackNavigator();
-
 export function BalancesNavigator() {
   return (
     <Stack.Navigator
@@ -55,9 +55,8 @@ function BalanceDetailScreen({ route, navigation }) {
 
   // We only use ethereumWallet here, even though its shared on the Solana side too.
   const ethereumWallet = useActiveEthereumWallet();
-  // Hack: This is hit for some reason due to the framer-motion animation.
   if (!blockchain || !address) {
-    return <></>;
+    return null;
   }
 
   const activityAddress =
@@ -79,18 +78,11 @@ function BalanceDetailScreen({ route, navigation }) {
   );
 }
 
-// TODO(peter) figure out if token == null
 function TokenHeader({ blockchain, address }: SearchParamsFor.Token["props"]) {
+  const theme = useTheme();
   const [token] = useLoader(blockchainTokenData({ blockchain, address }), null);
 
-  if (!token) return <></>;
-
-  const percentClass =
-    token.recentPercentChange === undefined
-      ? ""
-      : token.recentPercentChange > 0
-      ? styles.positivePercent
-      : styles.negativePercent;
+  if (!token) return null;
 
   return (
     <View
@@ -105,10 +97,10 @@ function TokenHeader({ blockchain, address }: SearchParamsFor.Token["props"]) {
           amount={token.nativeBalance}
           displayLogo={false}
         />
-        <Text style={styles.usdBalanceLabel}>
-          ${parseFloat(token.usdBalance.toFixed(2)).toLocaleString()}{" "}
-          <span style={percentClass}>{token.recentPercentChange}%</span>
-        </Text>
+        <UsdBalanceAndPercentChange
+          usdBalance={token.usdBalance}
+          recentPercentChange={token.recentPercentChange}
+        />
       </View>
       <View style={styles.tokenHeaderButtonContainer}>
         <TransferWidget
@@ -160,14 +152,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginTop: 24,
   },
-  positivePercent: {
-    // color: theme.custom.colors.positive,
-  },
-  negativePercent: {
-    // color: theme.custom.colors.negative,
-  },
   usdBalanceLabel: {
-    // color: theme.custom.colors.secondary,
     fontWeight: "500",
     fontSize: 14,
     textAlign: "center",

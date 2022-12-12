@@ -171,6 +171,7 @@ function CopyWalletAddressSubtitle({
   );
 }
 
+// Used for each individual row  of Balances
 function TextPercentChanged({ percentChange }: { percentChange: number }) {
   const theme = useTheme();
   const positive = percentChange && percentChange > 0 ? true : false;
@@ -210,6 +211,47 @@ function TextPercentChanged({ percentChange }: { percentChange: number }) {
         </Text>
       )}
     </>
+  );
+}
+
+// Used in BalanceDetail TokenHeader, slightly diff than the other one
+function RecentPercentChange({
+  recentPercentChange,
+}: {
+  recentPercentChange: number | undefined;
+}): JSX.Element {
+  const theme = useTheme();
+  const color =
+    recentPercentChange === undefined
+      ? ""
+      : recentPercentChange > 0
+      ? theme.custom.colors.positive
+      : theme.custom.colors.negative;
+
+  return <Text style={{ color }}>{recentPercentChange}%</Text>;
+}
+
+// Used in BalanceDetail TokenHeader, slightly diff than other recent percent changes
+export function UsdBalanceAndPercentChange({
+  usdBalance,
+  recentPercentChange,
+}: {
+  usdBalance: number;
+  recentPercentChange: number;
+}): JSX.Element {
+  const theme = useTheme();
+  return (
+    <View style={usdBalanceAndPercentChangeStyles.container}>
+      <Text
+        style={[
+          usdBalanceAndPercentChangeStyles.usdBalanceLabel,
+          { color: theme.custom.colors.secondary },
+        ]}
+      >
+        ${parseFloat(usdBalance.toFixed(2)).toLocaleString()}{" "}
+        <RecentPercentChange recentPercentChange={recentPercentChange} />
+      </Text>
+    </View>
   );
 }
 
@@ -325,5 +367,20 @@ const styles = StyleSheet.create({
   tokenBalanceChangeNegative: {
     fontWeight: "500",
     fontSize: 12,
+  },
+});
+
+const usdBalanceAndPercentChangeStyles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    alignSelf: "center",
+  },
+  usdBalanceLabel: {
+    fontWeight: "500",
+    fontSize: 14,
+    textAlign: "center",
+    marginTop: 4,
+    lineHeight: 24,
   },
 });
