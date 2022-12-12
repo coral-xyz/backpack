@@ -10,18 +10,86 @@ import {
   View,
 } from "react-native";
 import QRCode from "react-qr-code";
-import { ListRowSeparator,Margin, Screen } from "@components";
-import type { Blockchain } from "@coral-xyz/common";
-import { walletAddressDisplay } from "@coral-xyz/common";
+import {
+  CopyWalletFieldInput,
+  ListRowSeparator,
+  Margin,
+  Screen,
+} from "@components";
+import { Blockchain , walletAddressDisplay } from "@coral-xyz/common";
 import { useActiveWallets } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useBlockchainLogo, useTheme } from "@hooks";
 import * as Clipboard from "expo-clipboard";
 
-export default function DepositModal({ navigation }) {
-  const activeWallets = useActiveWallets();
-  const onClose = () => navigation.goBack();
+function BlockchainDisclaimerText({
+  blockchain,
+}: {
+  blockchain: Blockchain;
+}): JSX.Element {
+  const theme = useTheme();
+  return (
+    <Text
+      style={[
+        blockchainDisclaimerTextStyles.text,
+        { color: theme.custom.colors.secondary },
+      ]}
+    >
+      {blockchain === Blockchain.SOLANA && (
+        <>This address can only receive SOL and SPL tokens on Solana.</>
+      )}
+      {blockchain === Blockchain.ETHEREUM && (
+        <>This address can only receive ETH and ERC20 tokens on Ethereum.</>
+      )}
+    </Text>
+  );
+}
 
+const blockchainDisclaimerTextStyles = StyleSheet.create({
+  text: {
+    textAlign: "center",
+    fontSize: 14,
+    fontWeight: "500",
+    lineHeight: 20,
+  },
+});
+
+export function DepositSingleScreen({ route, navigation }): JSX.Element | null {
+  const theme = useTheme();
+  const { blockchain } = route.params;
+
+  const activeWallets = useActiveWallets();
+  const activeWallet = activeWallets.find((w) => w.blockchain === blockchain);
+
+  if (!activeWallet) {
+    return null;
+  }
+
+  return (
+    <Screen style={{ alignItems: "center", justifyContent: "space-around" }}>
+      <QRCode value={activeWallet.publicKey} size={200} />
+      <View style={{ alignItems: "center" }}>
+        <Text
+          style={{
+            fontSize: 16,
+            textAlign: "center",
+            marginBottom: 8,
+            color: theme.custom.colors.fontColor,
+          }}
+        >
+          {activeWallet.name}
+        </Text>
+        <Margin top={8} bottom={16}>
+          <CopyWalletFieldInput publicKey={activeWallet.publicKey} />
+        </Margin>
+        <BlockchainDisclaimerText blockchain={blockchain} />
+      </View>
+    </Screen>
+  );
+}
+
+export function DepositListScreen({ navigation, route }): JSX.Element {
+  const activeWallets = useActiveWallets();
   return (
     <Screen>
       <FlatList
@@ -49,7 +117,7 @@ function CircleButton({
 }: {
   icon: string;
   onPress: () => void;
-}) {
+}): JSX.Element {
   const theme = useTheme();
   return (
     <Pressable
@@ -163,9 +231,6 @@ function BlockchainDepositCard({
   publicKey: string;
 }) {
   const theme = useTheme();
-
-  // const [tooltipOpen, setTooltipOpen] = useState(false);
-  // const [tooltipOpenModal, setTooltipOpenModal] = useState(false);
   const [showQrCode, setShowQrCode] = useState(false);
 
   const blockchainLogo = useBlockchainLogo(blockchain);

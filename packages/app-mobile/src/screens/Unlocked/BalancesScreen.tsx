@@ -49,48 +49,16 @@ export function BalancesNavigator() {
   );
 }
 
-function BalanceDetailScreen({ route, navigation }) {
-  const { blockchain, token } = route.params;
-  const { address } = token;
-
-  // We only use ethereumWallet here, even though its shared on the Solana side too.
-  const ethereumWallet = useActiveEthereumWallet();
-  if (!blockchain || !address) {
-    return null;
-  }
-
-  const activityAddress =
-    blockchain === Blockchain.ETHEREUM ? ethereumWallet.publicKey : address;
-  const contractAddresses =
-    blockchain === Blockchain.ETHEREUM ? [address] : undefined;
-
-  return (
-    <Screen>
-      <TokenHeader blockchain={blockchain} address={address} />
-      <RecentActivityList
-        blockchain={blockchain}
-        address={activityAddress}
-        contractAddresses={contractAddresses}
-        minimize={true}
-        style={{ marginTop: 0 }}
-      />
-    </Screen>
-  );
-}
-
-function TokenHeader({ blockchain, address }: SearchParamsFor.Token["props"]) {
-  const theme = useTheme();
+function TokenHeader({
+  blockchain,
+  address,
+  onPressOption,
+}: SearchParamsFor.Token["props"]) {
   const [token] = useLoader(blockchainTokenData({ blockchain, address }), null);
-
   if (!token) return null;
 
   return (
-    <View
-      style={{
-        paddingTop: 38,
-        marginBottom: 24,
-      }}
-    >
+    <View>
       <View>
         <TokenAmountHeader
           token={token}
@@ -110,9 +78,48 @@ function TokenHeader({ blockchain, address }: SearchParamsFor.Token["props"]) {
             (blockchain === Blockchain.SOLANA && token.ticker === "SOL") ||
             (blockchain === Blockchain.ETHEREUM && token.ticker === "ETH")
           }
+          onPressOption={onPressOption}
         />
       </View>
     </View>
+  );
+}
+
+function BalanceDetailScreen({ route, navigation }) {
+  const { blockchain, token } = route.params;
+  const { address } = token;
+
+  // We only use ethereumWallet here, even though its shared on the Solana side too.
+  const ethereumWallet = useActiveEthereumWallet();
+  if (!blockchain || !address) {
+    return null;
+  }
+
+  const activityAddress =
+    blockchain === Blockchain.ETHEREUM ? ethereumWallet.publicKey : address;
+  const contractAddresses =
+    blockchain === Blockchain.ETHEREUM ? [address] : undefined;
+
+  const handlePressOption = (route, options) => {
+    console.log("onPress:Detail", route, options);
+    navigation.push("DepositSingle", { blockchain, token });
+  };
+
+  return (
+    <Screen>
+      <TokenHeader
+        blockchain={blockchain}
+        address={address}
+        onPressOption={handlePressOption}
+      />
+      <RecentActivityList
+        blockchain={blockchain}
+        address={activityAddress}
+        contractAddresses={contractAddresses}
+        minimize={true}
+        style={{ marginTop: 0 }}
+      />
+    </Screen>
   );
 }
 
@@ -121,7 +128,9 @@ function BalanceListScreen({ navigation }) {
     navigation.push("BalanceDetail", { token, blockchain });
   };
 
-  const onNavigate = (route) => navigation.navigate(route);
+  const handlePressOption = (route, options) => {
+    navigation.push("DepositList");
+  };
 
   return (
     <Screen>
@@ -129,7 +138,7 @@ function BalanceListScreen({ navigation }) {
         <BalanceSummaryWidget />
       </Margin>
       <Margin bottom={18}>
-        <TransferWidget rampEnabled={false} onNavigate={onNavigate} />
+        <TransferWidget rampEnabled={false} onPressOption={handlePressOption} />
       </Margin>
       <TokenTables
         onPressRow={onPressTokenRow}

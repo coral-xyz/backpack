@@ -220,3 +220,10 @@ export function MenuIcon({
 }: IconProps): JSX.Element {
   return <MaterialIcons name="menu" color={color} size={size} />;
 }
+
+export function ContentCopyIcon({
+  color = useTheme().custom.colors.fontColor,
+  size = 24,
+}: IconProps): JSX.Element {
+  return <MaterialIcons name="content-copy" color={color} size={size} />;
+}

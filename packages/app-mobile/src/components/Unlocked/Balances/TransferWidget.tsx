@@ -13,29 +13,19 @@ import {
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@hooks";
-import { useNavigation } from "@react-navigation/native";
 
-// import { WithHeaderButton } from "./TokensWidget/Token";
-// import { Deposit } from "./TokensWidget/Deposit";
-// import { SendLoader, Send } from "./TokensWidget/Send";
-import type { Token } from "../../common/TokenTable";
-// import { SearchableTokenTables } from "../../common/TokenTable";
-// import { Swap, SelectToken } from "../../Unlocked/Swap";
-// import { Ramp } from "./TokensWidget/Ramp";
-// import { StripeRamp } from "./StripeRamp";
-
-type ModalRoutes = "Send" | "Receive" | "Swap";
+const HorizontalSpacer = () => <View style={{ width: 16 }} />;
 
 export function TransferWidget({
   blockchain,
   address,
   rampEnabled,
-  onNavigate,
+  onPressOption,
 }: {
   blockchain?: Blockchain;
   address?: string;
   rampEnabled: boolean;
-  onNavigate: (route: string) => void;
+  onPressOption: (option: string, options: any) => void;
 }) {
   const enabledBlockchains = useEnabledBlockchains();
   const featureGates = useFeatureGates();
@@ -45,9 +35,10 @@ export function TransferWidget({
     blockchain !== Blockchain.ETHEREUM &&
     enabledBlockchains.includes(Blockchain.SOLANA);
 
-  const Spacer = () => <View style={{ width: 16 }} />;
+  const onPress = (route: string, options: any) =>
+    onPressOption(route, options);
 
-  const onPress = (route: string) => onNavigate(route);
+  console.log("transferwidget", blockchain);
 
   return (
     <View
@@ -57,22 +48,22 @@ export function TransferWidget({
         alignItems: "center",
       }}
     >
-      {enableOnramp && (
+      {enableOnramp ? (
         <>
           <RampButton
             onPress={onPress}
             blockchain={blockchain}
             address={address}
           />
-          <Spacer />
+          <HorizontalSpacer />
         </>
-      )}
+      ) : null}
       <ReceiveButton onPress={onPress} blockchain={blockchain} />
-      <Spacer />
+      <HorizontalSpacer />
       <SendButton onPress={onPress} blockchain={blockchain} address={address} />
       {renderSwap && (
         <>
-          <Spacer />
+          <HorizontalSpacer />
           <SwapButton
             onPress={onPress}
             blockchain={blockchain}
@@ -174,11 +165,12 @@ function ReceiveButton({
   blockchain?: Blockchain;
   onPress: (route: string) => void;
 }) {
+  console.log("receive blockchain", blockchain);
   return (
     <TransferButton
       label="Receive"
       icon="arrow-downward"
-      onPress={() => onPress("ReceiveModal")}
+      onPress={() => onPress("ReceiveModal", { blockchain })}
     />
   );
 }

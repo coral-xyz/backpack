@@ -1,4 +1,4 @@
-import type { ImageStyle,StyleProp, TextStyle, ViewStyle } from "react-native";
+import type { ImageStyle, StyleProp, TextStyle, ViewStyle } from "react-native";
 import {
   ActivityIndicator,
   Image,
@@ -12,6 +12,7 @@ import { proxyImageUrl, walletAddressDisplay } from "@coral-xyz/common";
 import { useAvatarUrl } from "@coral-xyz/recoil";
 // probably should put all the components in here as an index
 import { useTheme } from "@hooks";
+import * as Clipboard from "expo-clipboard";
 
 export { ActionCard } from "./ActionCard";
 export { BaseCheckBoxLabel, CheckBox } from "./CheckBox";
@@ -23,7 +24,7 @@ export { default as ResetAppButton } from "./ResetAppButton";
 export { StyledTextInput } from "./StyledTextInput";
 export { TokenAmountHeader } from "./TokenAmountHeader";
 export { TokenInputField } from "./TokenInputField";
-import { RedBackpack } from "@components/Icon";
+import { ContentCopyIcon,RedBackpack } from "@components/Icon";
 //
 // function getRandomColor() { var letters = "0123456789ABCDEF";
 //   var color = "#";
@@ -585,3 +586,48 @@ const listRowStyles = StyleSheet.create({
     height: 12,
   },
 });
+
+export function CopyWalletFieldInput({
+  publicKey,
+}: {
+  publicKey: string;
+}): JSX.Element {
+  const theme = useTheme();
+
+  // We use a different publicKey layout here than walletAddressDisplay
+  const walletDisplay =
+    publicKey.toString().slice(0, 12) +
+    "..." +
+    publicKey.toString().slice(publicKey.toString().length - 12);
+
+  return (
+    <View
+      style={[
+        { flexDirection: "row", alignItems: "center" },
+        {
+          width: "100%",
+          borderColor: theme.custom.colors.textBackground,
+          backgroundColor: theme.custom.colors.textBackground,
+          borderRadius: 12,
+          padding: 8,
+          borderWidth: 2,
+        },
+      ]}
+    >
+      <Margin right={12}>
+        <Text
+          style={{ fontWeight: "500", color: theme.custom.colors.fontColor }}
+        >
+          {walletDisplay}
+        </Text>
+      </Margin>
+      <Pressable
+        onPress={async () => {
+          await Clipboard.setStringAsync(publicKey);
+        }}
+      >
+        <ContentCopyIcon />
+      </Pressable>
+    </View>
+  );
+}

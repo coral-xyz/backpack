@@ -237,7 +237,7 @@ export function UsdBalanceAndPercentChange({
   recentPercentChange,
 }: {
   usdBalance: number;
-  recentPercentChange: number;
+  recentPercentChange: number | undefined;
 }): JSX.Element {
   const theme = useTheme();
   return (
