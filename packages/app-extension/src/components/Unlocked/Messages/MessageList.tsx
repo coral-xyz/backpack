@@ -1,4 +1,3 @@
-import { useState } from "react";
 import type { EnrichedInboxDb } from "@coral-xyz/common";
 import {
   NAV_COMPONENT_MESSAGE_CHAT,

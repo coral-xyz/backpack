@@ -1,12 +1,14 @@
-import { Signaling, SIGNALING_CONNECTED } from "./Signaling";
+import type {
+  Message,
+  MessageWithMetadata,
+  SubscriptionType} from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
   CHAT_MESSAGES,
-  Message,
-  MessageWithMetadata,
-  SUBSCRIBE,
-  SubscriptionType,
+  SUBSCRIBE
 } from "@coral-xyz/common";
+
+import { Signaling, SIGNALING_CONNECTED } from "./Signaling";
 
 export interface EnrichedMessage extends MessageWithMetadata {
   direction: "send" | "recv";
@@ -136,7 +138,8 @@ export class ChatManager {
   async send(
     message: string,
     client_generated_uuid: string,
-    messageKind: "text" | "gif"
+    messageKind: "text" | "gif",
+    parent_client_generated_uuid?: string
   ) {
     this.sendQueue[client_generated_uuid] = true;
 
@@ -148,6 +151,7 @@ export class ChatManager {
             message,
             client_generated_uuid,
             message_kind: messageKind,
+            parent_client_generated_uuid,
           },
         ],
         type: this.type,

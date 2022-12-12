@@ -1,9 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { useCustomTheme } from "@coral-xyz/themes";
 import { GiphyFetch } from "@giphy/js-fetch-api";
 import { Gif as GifComponent } from "@giphy/react-components";
 import { createStyles, makeStyles } from "@mui/styles";
 
 import { useChatContext } from "./ChatContext";
+import { ReplyIcon } from "./Icons";
+import { ReplyContainer } from "./ReplyContainer";
 
 // use @giphy/js-fetch-api to fetch gifs, instantiate with your api key
 const gf = new GiphyFetch("SjZwwCn1e394TKKjrMJWb2qQRNcqW8ro");
@@ -54,16 +57,13 @@ const useStyles = makeStyles((theme: any) =>
     },
     messageLeftContainer: {
       display: "flex",
-      flexDirection: "column",
+      flexDirection: "row",
       alignItems: "flex-start",
       padding: "12px 19px",
     },
     messageLeft: {
       borderRadius: "16px 16px 16px 0px",
-      maxWidth: 200,
-      background: theme.custom.colors.bg4,
       color: theme.custom.colors.fontColor4,
-      padding: "12px 16px",
     },
     messageRightContainer: {
       display: "flex",
@@ -73,10 +73,15 @@ const useStyles = makeStyles((theme: any) =>
     },
     messageRight: {
       borderRadius: "16px 16px 0px 16px",
-      maxWidth: 200,
       color: theme.custom.colors.background,
-      background: theme.custom.colors.fontColor2,
-      padding: "12px 16px",
+    },
+    hoverParent: {
+      "&:hover $hoverChild, & .Mui-focused $hoverChild": {
+        visibility: "visible",
+      },
+    },
+    hoverChild: {
+      visibility: "hidden",
     },
   })
 );
@@ -202,6 +207,12 @@ export function ChatMessages() {
                 messageKind={chat.message_kind}
                 image={chat.image}
                 username={chat.username}
+                client_generated_uuid={chat.client_generated_uuid}
+                parent_message_text={chat.parent_message_text}
+                parent_message_author_username={
+                  chat.parent_message_author_username
+                }
+                parent_message_author_uuid={chat.parent_message_author_uuid}
               />
             </>
           );
@@ -215,6 +226,10 @@ export function ChatMessages() {
             messageKind={chat.message_kind}
             image={chat.image}
             username={chat.username}
+            client_generated_uuid={chat.client_generated_uuid}
+            parent_message_text={chat.parent_message_text}
+            parent_message_author_username={chat.parent_message_author_username}
+            parent_message_author_uuid={chat.parent_message_author_uuid}
           />
         );
       })}
@@ -225,19 +240,121 @@ export function ChatMessages() {
 function MessageLeft(props) {
   const classes = useStyles();
   const message = props.message ? props.message : "";
+  const theme = useCustomTheme();
+  const { setActiveReply } = useChatContext();
+
   return (
-    <div className={classes.messageLeftContainer}>
-      <div className={classes.messageLeft}>{message}</div>
-    </div>
+    <>
+      {props.parent_message_author_uuid && (
+        <div style={{ paddingLeft: 19, marginBottom: -10 }}>
+          <ReplyContainer
+            marginBottom={0}
+            parent_username={props.parent_message_author_username || ""}
+            showCloseBtn={false}
+            text={props.parent_message_text}
+          />
+        </div>
+      )}
+      <div className={`${classes.messageLeftContainer} ${classes.hoverParent}`}>
+        <div
+          className={classes.messageLeft}
+          style={{
+            maxWidth: props.messageKind === "gif" ? 250 : 200,
+            background:
+              props.messageKind === "gif"
+                ? "transparent"
+                : theme.custom.colors.bg4,
+            padding: props.messageKind === "gif" ? "0px 0px" : "12px 16px",
+          }}
+        >
+          {props.messageKind === "gif" ? (
+            <GifDemo id={message} width={250} />
+          ) : (
+            message
+          )}
+        </div>
+        {props.messageKind !== "gif" && (
+          <div
+            style={{ marginLeft: 10, marginTop: 10, cursor: "pointer" }}
+            className={classes.hoverChild}
+            onClick={() => {
+              setActiveReply({
+                parent_client_generated_uuid: props.client_generated_uuid,
+                text: message,
+                parent_username: `@${props.username}`,
+              });
+            }}
+          >
+            <ReplyIcon fill={theme.custom.colors.icon} />
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 
 function MessageRight(props) {
   const classes = useStyles();
+  const theme = useCustomTheme();
+  const { setActiveReply } = useChatContext();
   const message = props.message ? props.message : "";
+
   return (
-    <div className={classes.messageRightContainer}>
-      <div className={classes.messageRight}>{message}</div>
-    </div>
+    <>
+      {props.parent_message_author_uuid && (
+        <div style={{ paddingLeft: 19, marginBottom: -10 }}>
+          <ReplyContainer
+            align={"right"}
+            marginBottom={0}
+            parent_username={props.parent_message_author_username || ""}
+            showCloseBtn={false}
+            text={props.parent_message_text}
+          />
+        </div>
+      )}
+      <div className={`${classes.messageRightContainer}`}>
+        <div
+          className={`${classes.hoverParent}`}
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "flex-start",
+          }}
+        >
+          {props.messageKind !== "gif" && (
+            <div
+              style={{ marginRight: 10, marginTop: 10, cursor: "pointer" }}
+              className={classes.hoverChild}
+              onClick={() => {
+                setActiveReply({
+                  parent_client_generated_uuid: props.client_generated_uuid,
+                  text: message,
+                  parent_username: "Yourself",
+                });
+              }}
+            >
+              <ReplyIcon fill={theme.custom.colors.icon} />
+            </div>
+          )}
+          <div
+            className={classes.messageRight}
+            style={{
+              maxWidth: props.messageKind === "gif" ? 250 : 200,
+              background:
+                props.messageKind === "gif"
+                  ? "transparent"
+                  : theme.custom.colors.fontColor2,
+              padding: props.messageKind === "gif" ? "0px 0px" : "12px 16px",
+            }}
+          >
+            {props.messageKind === "gif" ? (
+              <GifDemo id={message} width={250} />
+            ) : (
+              message
+            )}
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
