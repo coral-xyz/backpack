@@ -388,6 +388,7 @@ export const AllTypesProps: Record<string, any> = {
   },
   auth_users_select_column: "enum" as const,
   auth_users_set_input: {
+    avatar_nft: "citext",
     updated_at: "timestamptz",
   },
   auth_users_stream_cursor_input: {
