@@ -170,7 +170,7 @@ export const solanaTokenNativeBalance = selectorFamily<
           ? SOL_NATIVE_MINT
           : tokenAccount.mint.toString();
 
-      const resp = {
+      return {
         name,
         decimals,
         nativeBalance,
@@ -181,8 +181,6 @@ export const solanaTokenNativeBalance = selectorFamily<
         mint: tokenAccount.mint.toString(),
         priceMint,
       };
-
-      return resp;
     },
 });
 

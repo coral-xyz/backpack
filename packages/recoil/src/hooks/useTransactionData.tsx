@@ -294,7 +294,6 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
                   //
                   // Calculate the native balance change
                   const nativeChange = BigNumber.from(
-                    // TODO: check this.
                     account.amount.toString()
                   ).sub(existingNativeBalance);
 
