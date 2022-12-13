@@ -1,11 +1,11 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import ReactDOM from "react-dom";
 import { BACKPACK_FEATURE_POP_MODE, openPopupWindow } from "@coral-xyz/common";
 
-import App from "./app/App";
-import LedgerIframe from "./components/LedgerIframe";
-
 import "./index.css";
+
+const App = lazy(() => import("./app/App"));
+const LedgerIframe = lazy(() => import("./components/LedgerIframe"));
 
 //
 // Configure event listeners.
@@ -27,8 +27,12 @@ document.addEventListener("keypress", function onPress(event) {
 //
 ReactDOM.render(
   <React.StrictMode>
-    <App />
-    <LedgerIframe />
+    <Suspense fallback={null}>
+      <App />
+    </Suspense>
+    <Suspense fallback={null}>
+      <LedgerIframe />
+    </Suspense>
   </React.StrictMode>,
   document.getElementById("root")
 );

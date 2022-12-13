@@ -73,6 +73,7 @@ const options = {
   },
   output: {
     filename: "[name].js",
+    chunkFilename: "[name].js",
     path: path.resolve(__dirname, dir),
     clean: true,
     publicPath: "",
@@ -117,9 +118,12 @@ const options = {
         use: {
           loader: require.resolve("swc-loader"),
           options: {
+            env: {
+              targets: require("./package.json").browserslist,
+            },
             sourceMap: process.env.NODE_ENV === "development",
             jsc: {
-              target: "es2021",
+              target: "es2022",
               parser: {
                 syntax: "typescript",
                 tsx: true,
