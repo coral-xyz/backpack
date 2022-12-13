@@ -337,6 +337,17 @@ async function handleCustomSplTokenAccounts(
         },
       ];
     }),
+    mintsMap: _resp.mintsMap.map((m: any) => {
+      return [
+        m[0],
+        {
+          ...m[1],
+          freezeAuthority: m[1].freezeAuthority.toString(),
+          mintAuthority: m[1].mintAuthority.toString(),
+          supply: m[1].supply.toString(),
+        },
+      ];
+    }),
   };
   return [resp];
 }

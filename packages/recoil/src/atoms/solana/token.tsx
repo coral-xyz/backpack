@@ -3,7 +3,13 @@ import type {
   SplNftMetadataString,
   TokenMetadataString,
 } from "@coral-xyz/common";
-import { SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
+import {
+  SOL_NATIVE_MINT,
+  TOKEN_METADATA_PROGRAM_ID,
+  TokenMetadata,
+  WSOL_MINT,
+} from "@coral-xyz/common";
+import type { RawMint } from "@solana/spl-token";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { PublicKey } from "@solana/web3.js";
 import { BigNumber, ethers } from "ethers";
@@ -17,6 +23,10 @@ import { solanaConnectionUrl } from "./preferences";
 import { splTokenRegistry } from "./token-registry";
 import { anchorContext } from "./wallet";
 
+/**
+ * Batches requests to fetch all the Solana tokens and associated metadata.
+ * All other solana token selectors derive from this.
+ */
 export const customSplTokenAccounts = atomFamily({
   key: "customSplTokenAccounts",
   default: selectorFamily({
@@ -32,22 +42,24 @@ export const customSplTokenAccounts = atomFamily({
       async ({
         get,
       }): Promise<{
-        splTokenAccounts: Map<String, SolanaTokenAccountWithKeyString>;
-        splTokenMetadata: (TokenMetadataString | null)[];
+        splTokenAccounts: Map<string, SolanaTokenAccountWithKeyString>;
+        splTokenMetadata: Array<TokenMetadataString | null>;
         splNftMetadata: Map<string, SplNftMetadataString>;
+        splTokenMints: Map<string, RawMint>;
       }> => {
         const { connection } = get(anchorContext);
         //
         // Fetch token data.
         //
         try {
-          const { tokenAccountsMap, tokenMetadata, nftMetadata } =
+          const { tokenAccountsMap, tokenMetadata, nftMetadata, mintsMap } =
             await connection.customSplTokenAccounts(new PublicKey(publicKey));
           const splTokenAccounts = new Map(tokenAccountsMap);
           return {
             splTokenAccounts,
             splTokenMetadata: tokenMetadata,
             splNftMetadata: new Map(nftMetadata),
+            splTokenMints: new Map(mintsMap),
           };
         } catch (error) {
           console.error("could not fetch solana token data", error);
@@ -55,6 +67,7 @@ export const customSplTokenAccounts = atomFamily({
             splTokenAccounts: new Map(),
             splTokenMetadata: [],
             splNftMetadata: new Map(),
+            splTokenMints: new Map(),
           };
         }
       },
@@ -111,10 +124,45 @@ export const solanaTokenNativeBalance = selectorFamily<
       if (!tokenAccount) {
         return null;
       }
+      const tokenMint = get(solanaTokenMint({ tokenAddress }));
+      const tokenMetadata = get(solanaTokenMetadata({ tokenAddress }));
       const tokenRegistry = get(splTokenRegistry)!;
-      const tokenMetadata =
-        tokenRegistry.get(tokenAccount.mint.toString()) ?? ({} as TokenInfo);
-      const { symbol: ticker, logoURI: logo, name, decimals } = tokenMetadata;
+      const tokenRegistryItem = tokenRegistry.get(tokenAccount.mint.toString());
+
+      //
+      // Extract token metadata and fall back to the registry list if needed.
+      //
+      let {
+        symbol: ticker,
+        logoURI: logo,
+        name,
+        decimals,
+      } = tokenMint &&
+      tokenMetadata &&
+      tokenMetadata.account &&
+      tokenMetadata.account.data
+        ? {
+            symbol: tokenMetadata.account.data.symbol.replace(/\0/g, ""),
+            logoURI: tokenMetadata.account.data.uri.replace(/\0/g, ""),
+            name: tokenMetadata.account.data.name.replace(/\0/g, ""),
+            decimals: tokenMint.decimals,
+          }
+        : tokenRegistryItem ?? ({} as TokenInfo);
+      if (tokenRegistryItem) {
+        if (ticker === "") {
+          ticker = tokenRegistryItem.symbol;
+        }
+        if (logo === "") {
+          logo = tokenRegistryItem.logoURI;
+        }
+        if (name === "") {
+          name = tokenRegistryItem.name;
+        }
+      }
+
+      //
+      // Calculate balances.
+      //
       const nativeBalance = BigNumber.from(tokenAccount.amount.toString());
       const displayBalance = ethers.utils.formatUnits(nativeBalance, decimals);
       const priceMint =
@@ -133,6 +181,61 @@ export const solanaTokenNativeBalance = selectorFamily<
         mint: tokenAccount.mint.toString(),
         priceMint,
       };
+    },
+});
+
+const solanaTokenMint = selectorFamily<
+  RawMint | null,
+  { tokenAddress: string }
+>({
+  key: "solanaTokenMint",
+  get:
+    ({ tokenAddress }) =>
+    ({ get }) => {
+      const tokenAccount = get(solanaTokenAccountsMap({ tokenAddress }));
+      if (!tokenAccount) {
+        return null;
+      }
+      const connectionUrl = get(solanaConnectionUrl)!;
+      const publicKey = get(solanaPublicKey)!;
+      const { splTokenMints } = get(
+        customSplTokenAccounts({ connectionUrl, publicKey })
+      );
+      return splTokenMints.get(tokenAccount.mint.toString()) ?? null;
+    },
+});
+
+const solanaTokenMetadata = selectorFamily<
+  TokenMetadataString | null,
+  { tokenAddress: string }
+>({
+  key: "solanaTokenMetadata",
+  get:
+    ({ tokenAddress }) =>
+    ({ get }) => {
+      const tokenAccount = get(solanaTokenAccountsMap({ tokenAddress }));
+      if (!tokenAccount) {
+        return null;
+      }
+      const connectionUrl = get(solanaConnectionUrl)!;
+      const publicKey = get(solanaPublicKey)!;
+      const { splTokenMetadata } = get(
+        customSplTokenAccounts({ connectionUrl, publicKey })
+      );
+      const metadataAddress = PublicKey.findProgramAddressSync(
+        [
+          Buffer.from("metadata"),
+          TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+          new PublicKey(tokenAccount.mint).toBuffer(),
+        ],
+        TOKEN_METADATA_PROGRAM_ID
+      )[0];
+      const tokenMetadata = splTokenMetadata
+        .filter((m) => m !== null)
+        .find((m: TokenMetadataString) =>
+          metadataAddress.equals(new PublicKey(m.publicKey))
+        );
+      return tokenMetadata ?? null;
     },
 });
 
