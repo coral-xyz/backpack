@@ -9,6 +9,7 @@ import {
   TokenMetadata,
   WSOL_MINT,
 } from "@coral-xyz/common";
+import type { RawMint } from "@solana/spl-token";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { PublicKey } from "@solana/web3.js";
 import { BigNumber, ethers } from "ethers";
@@ -38,21 +39,23 @@ export const customSplTokenAccounts = atomFamily({
         get,
       }): Promise<{
         splTokenAccounts: Map<String, SolanaTokenAccountWithKeyString>;
-        splTokenMetadata: (TokenMetadataString | null)[];
+        splTokenMetadata: Array<TokenMetadataString | null>;
         splNftMetadata: Map<string, SplNftMetadataString>;
+        splTokenMints: Map<string, RawMint>;
       }> => {
         const { connection } = get(anchorContext);
         //
         // Fetch token data.
         //
         try {
-          const { tokenAccountsMap, tokenMetadata, nftMetadata } =
+          const { tokenAccountsMap, tokenMetadata, nftMetadata, mintsMap } =
             await connection.customSplTokenAccounts(new PublicKey(publicKey));
           const splTokenAccounts = new Map(tokenAccountsMap);
           return {
             splTokenAccounts,
             splTokenMetadata: tokenMetadata,
             splNftMetadata: new Map(nftMetadata),
+            splTokenMints: new Map(mintsMap),
           };
         } catch (error) {
           console.error("could not fetch solana token data", error);
@@ -60,6 +63,7 @@ export const customSplTokenAccounts = atomFamily({
             splTokenAccounts: new Map(),
             splTokenMetadata: [],
             splNftMetadata: new Map(),
+            splTokenMints: new Map(),
           };
         }
       },
@@ -117,6 +121,7 @@ export const solanaTokenNativeBalance = selectorFamily<
         return null;
       }
 
+      const tokenMint = get(solanaTokenMint({ tokenAddress }));
       const tokenMetadata = get(solanaTokenMetadata({ tokenAddress }));
 
       const tokenRegistry = get(splTokenRegistry)!;
@@ -147,7 +152,27 @@ export const solanaTokenNativeBalance = selectorFamily<
     },
 });
 
-// The token metadata for a given token adddress.
+const solanaTokenMint = selectorFamily<
+  RawMint | null,
+  { tokenAddress: string }
+>({
+  key: "solanaTokenMint",
+  get:
+    ({ tokenAddress }) =>
+    ({ get }) => {
+      const tokenAccount = get(solanaTokenAccountsMap({ tokenAddress }));
+      if (!tokenAccount) {
+        return null;
+      }
+      const connectionUrl = get(solanaConnectionUrl)!;
+      const publicKey = get(solanaPublicKey)!;
+      const { splTokenMints } = get(
+        customSplTokenAccounts({ connectionUrl, publicKey })
+      );
+      return splTokenMints.get(tokenAccount.mint.toString()) ?? null;
+    },
+});
+
 const solanaTokenMetadata = selectorFamily<
   TokenMetadataString | null,
   { tokenAddress: string }
@@ -160,7 +185,6 @@ const solanaTokenMetadata = selectorFamily<
       if (!tokenAccount) {
         return null;
       }
-
       const connectionUrl = get(solanaConnectionUrl)!;
       const publicKey = get(solanaPublicKey)!;
       const { splTokenMetadata } = get(
@@ -174,9 +198,11 @@ const solanaTokenMetadata = selectorFamily<
         ],
         TOKEN_METADATA_PROGRAM_ID
       )[0];
-      const tokenMetadata = splTokenMetadata.find((m: TokenMetadataString) =>
-        metadataAddress.equals(new PublicKey(m.publicKey))
-      );
+      const tokenMetadata = splTokenMetadata
+        .filter((m) => m !== null)
+        .find((m: TokenMetadataString) =>
+          metadataAddress.equals(new PublicKey(m.publicKey))
+        );
       return tokenMetadata ?? null;
     },
 });

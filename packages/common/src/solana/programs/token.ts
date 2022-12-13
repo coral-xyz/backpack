@@ -3,6 +3,8 @@ import { Metadata } from "@metaplex-foundation/mpl-token-metadata";
 import type { Program, Provider, SplToken } from "@project-serum/anchor";
 import * as anchor from "@project-serum/anchor";
 import { AnchorProvider, BN, Spl } from "@project-serum/anchor";
+import type { RawMint } from "@solana/spl-token";
+import { MintLayout } from "@solana/spl-token";
 import type { Connection } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
 
@@ -51,6 +53,7 @@ export async function customSplTokenAccounts(
   tokenAccountsMap: [string, SolanaTokenAccountWithKeySerializable][];
   tokenMetadata: (TokenMetadata | null)[];
   nftMetadata: [string, SplNftMetadata][];
+  mintsMap: [string, RawMint][];
 }> {
   // @ts-ignore
   const provider = new AnchorProvider(connection, { publicKey });
@@ -79,21 +82,30 @@ export async function customSplTokenAccounts(
   };
   const tokenAccountsArray = Array.from(tokenAccounts.values());
 
-  //
-  // Fetch metadata.
-  //
-  const tokenMetadata = await fetchSplMetadata(
-    tokenClient.provider,
-    tokenAccountsArray
-  );
+  const [mintsMap, [tokenMetadata, nftMetadata]] = await Promise.all([
+    fetchMints(provider, tokenAccountsArray).then((mint) =>
+      mint.filter((m) => m[1] !== null)
+    ),
+    (async () => {
+      //
+      // Fetch metadata.
+      //
+      const tokenMetadata = await fetchSplMetadata(
+        tokenClient.provider,
+        tokenAccountsArray
+      );
 
-  //
-  // Fetch the metadata uri and interpert as NFTs.
-  //
-  const nftMetadata = await fetchSplMetadataUri(
-    tokenAccountsArray,
-    tokenMetadata
-  );
+      //
+      // Fetch the metadata uri and interpert as NFTs.
+      //
+      const nftMetadata = await fetchSplMetadataUri(
+        tokenAccountsArray,
+        tokenMetadata
+      );
+
+      return [tokenMetadata, nftMetadata];
+    })(),
+  ]);
 
   const tokenAccountsMap = (
     Array.from(removeNfts(tokenAccounts, nftMetadata)).map(
@@ -110,8 +122,28 @@ export async function customSplTokenAccounts(
   return {
     tokenAccountsMap,
     tokenMetadata,
+    // @ts-ignore
+    mintsMap,
     nftMetadata: Array.from(nftMetadata),
   };
+}
+
+export async function fetchMints(
+  provider: Provider,
+  tokenAccounts: SolanaTokenAccountWithKey[]
+): Promise<Array<[string, RawMint | null]>> {
+  const mints: [string, RawMint | null][] = (
+    await anchor.utils.rpc.getMultipleAccounts(
+      provider.connection,
+      tokenAccounts.map((t) => t.mint)
+    )
+  ).map((m, idx) => {
+    return [
+      tokenAccounts[idx].mint.toString(),
+      m ? MintLayout.decode(m.account.data) : null,
+    ];
+  });
+  return mints;
 }
 
 export async function fetchSplMetadata(

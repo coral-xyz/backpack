@@ -6,7 +6,7 @@ import {
 } from "@coral-xyz/common";
 import type { TransactionRequest } from "@ethersproject/abstract-provider";
 import type { UnsignedTransaction } from "@ethersproject/transactions";
-import { AccountLayout, TOKEN_PROGRAM_ID, u64 } from "@solana/spl-token";
+import { AccountLayout, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import type { Message } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
 import { BigNumber, ethers } from "ethers";
@@ -294,7 +294,8 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
                   //
                   // Calculate the native balance change
                   const nativeChange = BigNumber.from(
-                    u64.fromBuffer(account.amount).toString()
+                    // TODO: check this.
+                    account.amount.toString()
                   ).sub(existingNativeBalance);
 
                   result[token.symbol] = {
