@@ -1,5 +1,8 @@
 import { externalResourceUri, getLogger } from "@coral-xyz/common-public";
-import { Metadata } from "@metaplex-foundation/mpl-token-metadata";
+import {
+  Metadata,
+  TokenStandard,
+} from "@metaplex-foundation/mpl-token-metadata";
 import type { Program, Provider, SplToken } from "@project-serum/anchor";
 import * as anchor from "@project-serum/anchor";
 import { AnchorProvider, BN, Spl } from "@project-serum/anchor";
@@ -82,30 +85,21 @@ export async function customSplTokenAccounts(
   };
   const tokenAccountsArray = Array.from(tokenAccounts.values());
 
-  const [mintsMap, [tokenMetadata, nftMetadata]] = await Promise.all([
+  const [mintsMap, tokenMetadata] = await Promise.all([
     fetchMints(provider, tokenAccountsArray).then((mint) =>
       mint.filter((m) => m[1] !== null)
     ),
-    (async () => {
-      //
-      // Fetch metadata.
-      //
-      const tokenMetadata = await fetchSplMetadata(
-        tokenClient.provider,
-        tokenAccountsArray
-      );
-
-      //
-      // Fetch the metadata uri and interpert as NFTs.
-      //
-      const nftMetadata = await fetchSplMetadataUri(
-        tokenAccountsArray,
-        tokenMetadata
-      );
-
-      return [tokenMetadata, nftMetadata];
-    })(),
+    fetchSplMetadata(tokenClient.provider, tokenAccountsArray),
   ]);
+
+  //
+  // Fetch the metadata uri and interpert as NFTs.
+  //
+  const nftMetadata = await fetchSplMetadataUri(
+    tokenAccountsArray,
+    tokenMetadata,
+    new Map(mintsMap) as Map<string, RawMint>
+  );
 
   const tokenAccountsMap = (
     Array.from(removeNfts(tokenAccounts, nftMetadata)).map(
@@ -181,13 +175,54 @@ export async function fetchSplMetadata(
 
 export async function fetchSplMetadataUri(
   tokens: SolanaTokenAccountWithKey[],
-  splTokenMetadata: (TokenMetadata | null)[]
+  splTokenMetadata: Array<TokenMetadata | null>,
+  mintsMap: Map<string, RawMint>
 ): Promise<Map<string, SplNftMetadata>> {
   //
-  // Fetch the URI for each metadata.
+  // Filter for NFTs only.
   //
-  const tokenMetaUriData = await Promise.all(
-    splTokenMetadata.map(async (t) => {
+  let nftTokens: Array<SolanaTokenAccountWithKey> = [];
+  let nftTokenMetadata: Array<TokenMetadata | null> = [];
+  tokens.forEach((token, idx) => {
+    const tokenMetadata = splTokenMetadata[idx];
+
+    //
+    // If token standard is available use it.
+    //
+    if (
+      tokenMetadata &&
+      tokenMetadata!.account &&
+      tokenMetadata!.account.tokenStandard
+    ) {
+      if (
+        // Why do I need to ts-ignore this?
+        // @ts-ignore
+        tokenMetadata!.account.tokenStandard === TokenStandard.NonFungible ||
+        tokenMetadata!.account.tokenStandard ===
+          TokenStandard.NonFungibleEdition ||
+        tokenMetadata!.account.tokenStandard === TokenStandard.FungibleAsset
+      ) {
+        nftTokens.push(token);
+        nftTokenMetadata.push(tokenMetadata);
+      }
+    }
+    //
+    // Token standard not available so use decimals.
+    //
+    else {
+      const mint = mintsMap.get(token.mint.toString());
+      if (mint && mint.decimals === 0) {
+        nftTokens.push(token);
+        nftTokenMetadata.push(tokenMetadata);
+      }
+    }
+  });
+
+  //
+  // Fetch the URI for each NFT.
+  //
+  const nftMetaUriData = await Promise.all(
+    nftTokenMetadata.map(async (t) => {
       if (t === null || !t.account.data.uri) {
         return null;
       }
@@ -226,19 +261,19 @@ export async function fetchSplMetadataUri(
   //
   // Zip it all together.
   //
-  const splNftMetadata = tokens.reduce((acc, m, idx) => {
-    const tokenMetadata = splTokenMetadata[idx];
+  const splNftMetadata = nftTokens.reduce((acc, m, idx) => {
+    const tokenMetadata = nftTokenMetadata[idx];
     if (!tokenMetadata) {
       return acc;
     }
-    if (!tokenMetaUriData[idx]) {
+    if (!nftMetaUriData[idx]) {
       return acc;
     }
     acc.set(m.key.toString(), {
       publicKey: m.key,
       metadataAddress: tokenMetadata.publicKey,
       metadata: tokenMetadata.account,
-      tokenMetaUriData: tokenMetaUriData[idx],
+      tokenMetaUriData: nftMetaUriData[idx],
     });
     return acc;
   }, new Map<string, SplNftMetadata>());
