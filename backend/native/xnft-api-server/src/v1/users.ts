@@ -20,7 +20,7 @@ router.get("/fromPubkey", authMiddleware, async (req, res) => {
       }
     })
     .catch((e) => {
-      res.status(411).json({ msg: "Failed to fetch user details" });
+      res.status(500).json({ msg: "Failed to fetch user details" });
     });
 });
 
@@ -37,7 +37,7 @@ router.get("/fromUsername", authMiddleware, async (req, res) => {
       }
     })
     .catch((e) => {
-      res.status(411).json({ msg: "Failed to fetch user details" });
+      res.status(500).json({ msg: "Failed to fetch user details" });
     });
 });
 
@@ -54,7 +54,7 @@ router.get("/", authMiddleware, async (req, res) => {
       }
     })
     .catch((e) => {
-      res.status(411).json({ msg: "Failed to fetch user details" });
+      res.status(500).json({ msg: "Failed to fetch user details" });
     });
 });
 
