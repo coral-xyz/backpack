@@ -9,6 +9,7 @@ import inboxRouter from "./routes/v1/inbox";
 import notificationRoutes from "./routes/v1/notifications";
 import preferenceRoutes from "./routes/v1/preferences";
 import proxyRouter from "./routes/v1/proxy";
+import publicKeysRouter from "./routes/v1/public-keys";
 import usersRouter from "./routes/v1/users";
 import { zodErrorToString } from "./util";
 
@@ -23,12 +24,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.json({ type: "application/json" }));
 app.use("/authenticate", authenticateRouter);
 app.use("/chat", chatRouter);
+app.use("/friends", friendsRouter);
+app.use("/inbox", inboxRouter);
 app.use("/notifications/", notificationRoutes);
 app.use("/preferences", preferenceRoutes);
 app.use("/proxy", proxyRouter);
-app.use("/chat", chatRouter);
-app.use("/inbox", inboxRouter);
-app.use("/friends", friendsRouter);
+app.use("/publicKeys", publicKeysRouter);
 app.use("/users", usersRouter);
 
 // @ts-ignore
