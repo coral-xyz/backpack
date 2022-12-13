@@ -27,6 +27,59 @@ export const getUsers = async (
 };
 
 /**
+ * Look up user IDs for multiple blockchain/public key pairs.
+ */
+export const getUsersByPublicKeys = async (
+  blockchainPublicKeys: Array<{ blockchain: Blockchain; publicKey: string }>
+): Promise<Array<{ id: unknown }>> => {
+  const response = await chain("query")({
+    auth_users: [
+      {
+        where: {
+          public_keys: {
+            // Only matching public keys here, but it should be checking
+            // blockchain AND public key as the same public key will be used
+            // for different blockchains (particularly EVM)
+            public_key: { _in: blockchainPublicKeys.map((b) => b.publicKey) },
+          },
+        },
+      },
+      {
+        id: true,
+        public_keys: [
+          {
+            where: {
+              public_key: {
+                _in: blockchainPublicKeys.map((b) => b.publicKey),
+              },
+            },
+          },
+          {
+            public_key: true,
+            blockchain: true,
+          },
+        ],
+      },
+    ],
+  });
+
+  // Filter again to make sure the blockchain/public key pair match. It might
+  // be possible to do this in graphql query?
+  return response.auth_users
+    .filter((user) => {
+      return user.public_keys
+        .map((p) => ({
+          blockchain: p.blockchain as Blockchain,
+          publicKey: p.public_key,
+        }))
+        .some((x) => blockchainPublicKeys.includes(x));
+    })
+    .map((r) => ({
+      id: r.id,
+    }));
+};
+
+/**
  * Get a user by their username.
  */
 export const getUserByUsername = async (username: string) => {
