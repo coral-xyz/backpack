@@ -130,7 +130,14 @@ export const solanaTokenNativeBalance = selectorFamily<
         logoURI: logo,
         name,
         decimals,
-      } = tokenRegistry.get(tokenAccount.mint.toString()) ?? ({} as TokenInfo);
+      } = tokenMint && tokenMetadata
+        ? {
+            symbol: tokenMetadata.account.data.symbol,
+            logoURI: tokenMetadata.account.data.uri,
+            name: tokenMetadata.account.data.name,
+            decimals: tokenMint.decimals,
+          }
+        : tokenRegistry.get(tokenAccount.mint.toString()) ?? ({} as TokenInfo);
       const nativeBalance = BigNumber.from(tokenAccount.amount.toString());
       const displayBalance = ethers.utils.formatUnits(nativeBalance, decimals);
       const priceMint =
