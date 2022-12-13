@@ -1047,11 +1047,6 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
       params: [blockchain, secretKeyHex, name],
     });
 
-    await background.request({
-      method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-      params: [publicKey, blockchain],
-    });
-
     setNewPublicKey(publicKey);
     setOpenDrawer(true);
   };
@@ -1059,6 +1054,7 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
   return (
     <>
       <form
+        noValidate
         onSubmit={save}
         style={{
           display: "flex",
