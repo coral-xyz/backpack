@@ -281,6 +281,8 @@ export const NOTIFICATION_NAVIGATION_URL_DID_CHANGE =
   "notification-navigation-url-did-change";
 export const NOTIFICATION_KEYRING_STORE_USERNAME_ACCOUNT_CREATED =
   "notification-username-account-created";
+export const NOTIFICATION_KEYRING_STORE_USER_AVATAR_UPDATED =
+  "notification-user-avatar-updated";
 export const NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED =
   "notification-active-user-updated";
 export const NOTIFICATION_KEYRING_STORE_REMOVED_USER =

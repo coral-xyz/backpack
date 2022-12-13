@@ -58,11 +58,13 @@ import {
   NavStackScreen,
   useNavStack,
 } from "../../common/Layout/NavStack";
+import { ProxyImage } from "../../common/ProxyImage";
 import { Logout, ResetWarning } from "../../Locked/Reset/ResetWarning";
 import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
 import { NotificationButton } from "../Balances/Notifications";
 import { Contacts } from "../Messages/Contacts";
 
+import { AvatarHeader } from "./AvatarHeader/AvatarHeader";
 import { PreferencesAutoLock } from "./Preferences/AutoLock";
 import { PreferencesEthereum } from "./Preferences/Ethereum";
 import { PreferencesEthereumConnection } from "./Preferences/Ethereum/Connection";
@@ -152,7 +154,7 @@ function AvatarButton() {
   const classes = useStyles();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const avatarUrl = useAvatarUrl(32);
-
+  // PCA test ProxyImage
   return (
     <div className={classes.menuButtonContainer}>
       <IconButton
@@ -162,7 +164,7 @@ function AvatarButton() {
         size="large"
         id="menu-button"
       >
-        <img
+        <ProxyImage
           src={avatarUrl}
           style={{
             width: "32px",
@@ -338,39 +340,6 @@ function _SettingsContent() {
       <AvatarHeader />
       <WalletLists close={close} />
       <SettingsList />
-    </div>
-  );
-}
-
-function AvatarHeader() {
-  const theme = useCustomTheme();
-  const avatarUrl = useAvatarUrl(64);
-  return (
-    <div style={{ marginTop: "16px", marginBottom: "36px" }}>
-      <div
-        style={{
-          background: theme.custom.colors.avatarIconBackground,
-          borderRadius: "40px",
-          padding: "3px",
-          width: "70px",
-          height: "70px",
-          marginLeft: "auto",
-          marginRight: "auto",
-          display: "block",
-        }}
-      >
-        <img
-          src={avatarUrl}
-          style={{
-            width: "64px",
-            height: "64px",
-            borderRadius: "32px",
-            marginLeft: "auto",
-            marginRight: "auto",
-            display: "block",
-          }}
-        />
-      </div>
     </div>
   );
 }

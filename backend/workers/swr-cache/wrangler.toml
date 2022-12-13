@@ -1,0 +1,10 @@
+name = "swr-cache"
+main = "src/index.ts"
+compatibility_date = "2022-12-05"
+
+
+services = [
+  { binding = "solanaRpc", service = "rpc-proxy" },
+  { binding = "ethereumRpc", service = "ethereum-rpc-proxy" },
+  { binding = "nftData", service = "nft-data" }
+]

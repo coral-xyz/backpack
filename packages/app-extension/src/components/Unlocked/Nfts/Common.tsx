@@ -34,8 +34,11 @@ export function GridCard({ onClick, nft, subtitle }: any) {
         style={{
           width: "100%",
         }}
+        loadingStyles={{
+          height: "100%",
+        }}
+        removeOnError={true}
         src={nft.imageUrl}
-        onError={(event: any) => (event.currentTarget.style.display = "none")}
       />
       {subtitle && (
         <div

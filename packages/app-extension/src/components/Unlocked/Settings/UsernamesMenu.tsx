@@ -18,6 +18,7 @@ import {
   useDrawerContext,
   WithMiniDrawer,
 } from "../../../components/common/Layout/Drawer";
+import { ProxyImage } from "../../common/ProxyImage";
 
 const useStyles = styles((theme) => ({
   addAccountButton: {
@@ -206,6 +207,7 @@ function UserAccountListItem({
 
 function MiniAvatarIcon({ avatarUrl }: { avatarUrl: string }) {
   const theme = useCustomTheme();
+  // PCA test ProxyImage
   return (
     <div
       style={{
@@ -218,7 +220,7 @@ function MiniAvatarIcon({ avatarUrl }: { avatarUrl: string }) {
         flexDirection: "column",
       }}
     >
-      <img
+      <ProxyImage
         src={avatarUrl}
         style={{
           width: "24px",

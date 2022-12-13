@@ -31,7 +31,7 @@ const useStyles = styles((theme: CustomTheme) => ({
     fontWeight: 500,
     fontSize: "12px",
     lineHeight: "16px",
-    color: theme.custom.colors.interactiveIconsActive,
+    color: theme.custom.colors.fontColor,
   },
   loadingContainer: {
     display: "flex",
@@ -205,7 +205,7 @@ export function TokenInputField({
 export function Loading(props: any) {
   const classes = useStyles();
   return (
-    <div className={classes.loadingContainer}>
+    <div style={props.style} className={classes.loadingContainer}>
       <>
         <svg style={{ position: "fixed" }}>
           <linearGradient id="linearColors" x1="0" y1="0" x2="1" y2="1">

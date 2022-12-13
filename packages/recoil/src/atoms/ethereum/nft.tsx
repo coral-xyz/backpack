@@ -2,6 +2,7 @@ import type { EthereumNft, NftCollection } from "@coral-xyz/common";
 import {
   ALCHEMY_ETHEREUM_MAINNET_API_KEY,
   Blockchain,
+  EthereumConnectionUrl,
   externalResourceUri,
 } from "@coral-xyz/common";
 import { selector } from "recoil";
@@ -14,7 +15,7 @@ export const ethereumNftCollections = selector<NftCollection[]>({
     const wallet = get(activeEthereumWallet);
     if (!wallet) return [];
 
-    const url = `https://eth-mainnet.g.alchemy.com/nft/v2/${ALCHEMY_ETHEREUM_MAINNET_API_KEY}/getNFTs?owner=${wallet.publicKey}`;
+    const url = `${EthereumConnectionUrl.MAINNET}/nft/getNFTs?owner=${wallet.publicKey}`;
     const response = await fetch(url);
     const data = await response.json();
 
@@ -46,7 +47,7 @@ export const ethereumNftCollections = selector<NftCollection[]>({
           externalResourceUri(nft.metadata.image) ||
           externalResourceUri(nft.metadata.image_url),
         attributes:
-          nft.metadata.attributes &&
+          Array.isArray(nft.metadata.attributes) &&
           nft.metadata.attributes.map(
             (a: { trait_type: string; value: string }) => ({
               traitType: a.trait_type,

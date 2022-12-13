@@ -1,6 +1,6 @@
-import { View, Pressable, Text, StyleSheet } from "react-native";
-import { useTheme } from "@hooks";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { ProxyImage } from "@components";
+import { useTheme } from "@hooks";
 
 export function GridCard({ onPress, nft, subtitle }: any) {
   const theme = useTheme();

@@ -23,12 +23,12 @@ const swr = async (
   toCacheKey: ToCacheKey = toCacheKeyDefault
 ) => {
   const url = new URL(request.url);
-  const bustCache = url.searchParams.get("no-cache");
+  const bustCache = url.searchParams.get("bust_cache");
   const cache = caches.default;
   const cacheKey = await toCacheKey(request);
   const cachedRes = await cache.match(cacheKey);
 
-  if (bustCache !== "true" && cachedRes) {
+  if (!bustCache && cachedRes) {
     let cacheStatus = cachedRes.headers.get(CACHE_STATUS_HEADER);
     if (shouldRevalidate(cachedRes)) {
       cacheStatus = CacheStatus.REVALIDATING;
