@@ -27,7 +27,6 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { IconButton, Popover, Typography } from "@mui/material";
 import { PublicKey } from "@solana/web3.js";
 import { BigNumber } from "ethers";
-import { relative } from "path";
 
 import { NegativeButton, PrimaryButton, SecondaryButton } from "../../common";
 import { ApproveTransactionDrawer } from "../../common/ApproveTransactionDrawer";

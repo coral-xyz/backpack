@@ -256,8 +256,6 @@ function RampTokenCell({ token }: any) {
           classes={{ root: classes.tokenListItemIconRoot }}
         >
           <ProxyImage
-            maxImageHeight={88}
-            maxImageWidth={88}
             src={icon}
             className={classes.logoIcon}
             onError={(event: any) =>

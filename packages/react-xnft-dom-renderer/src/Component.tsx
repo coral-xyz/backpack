@@ -474,12 +474,7 @@ export function BalancesTableHead({ props, style }: any) {
         onClick={() => !disableToggle && setShowContent(!showContent)}
         avatar={
           iconUrl ? (
-            <ProxyImage
-              maxImageHeight={24}
-              maxImageWidth={24}
-              className={classes.blockchainLogo}
-              src={iconUrl}
-            />
+            <ProxyImage className={classes.blockchainLogo} src={iconUrl} />
           ) : undefined
         }
         title={
@@ -637,8 +632,6 @@ export function BalancesTableCell({ props, style }: any) {
           classes={{ root: classes.tokenListItemIconRoot }}
         >
           <ProxyImage
-            maxImageHeight={88}
-            maxImageWidth={88}
             src={icon}
             className={classes.logoIcon}
             onError={(event) => (event.currentTarget.style.display = "none")}

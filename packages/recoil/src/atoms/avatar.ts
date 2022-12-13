@@ -6,7 +6,7 @@ type NewAvatar = {
 };
 
 /**
- * All NFT collections keyed by Blockchain.
+ * Store updated Avatar data
  */
 export const newAvatarAtom = atom<NewAvatar | null>({
   key: "newAvatarAtom",

@@ -48,11 +48,7 @@ export function UpdateProfilePicture({
   return (
     <Container>
       <AvatarWrapper>
-        <Avatar
-          src={tempAvatar?.url || avatarUrl}
-          maxImageHeight={128}
-          maxImageWidth={128}
-        />
+        <Avatar src={tempAvatar?.url || avatarUrl} />
       </AvatarWrapper>
       <Typography style={{ textAlign: "center" }}>{`@${username}`}</Typography>
       <FakeDrawer>
@@ -122,9 +118,7 @@ export function UpdateProfilePicture({
                 body: JSON.stringify({ avatar: tempAvatar.id }),
               });
               await fetch(
-                "https://swr-data.xnfts.dev/avatars/" +
-                  username +
-                  "?bust_cache=1"
+                "https://swr.xnfts.dev/avatars/" + username + "?bust_cache=1"
               ); // bust edge cache
               setNewAvatar(tempAvatar);
               setTempAvatar(null);
@@ -243,8 +237,6 @@ function BlockchainHeader({
       avatar={
         blockchainLogo && (
           <ProxyImage
-            maxImageHeight={24}
-            maxImageWidth={24}
             src={blockchainLogo}
             style={{
               width: "12px",

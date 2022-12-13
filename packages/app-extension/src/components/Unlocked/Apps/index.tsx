@@ -197,8 +197,6 @@ function AppIcon({
         }}
       >
         <ProxyImage
-          maxImageHeight={ICON_WIDTH * 2}
-          maxImageWidth={ICON_WIDTH * 2}
           src={iconUrl}
           style={{
             width: ICON_WIDTH,

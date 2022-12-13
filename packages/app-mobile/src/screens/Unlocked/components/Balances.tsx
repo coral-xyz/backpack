@@ -246,12 +246,7 @@ export function TokenRow({
       <View style={{ flexDirection: "row" }}>
         {iconUrl ? (
           <Margin right={12}>
-            <ProxyImage
-              maxImageHeight={100}
-              maxImageWidth={100}
-              style={styles.rowLogo}
-              src={iconUrl}
-            />
+            <ProxyImage style={styles.rowLogo} src={iconUrl} />
           </Margin>
         ) : null}
         <View>

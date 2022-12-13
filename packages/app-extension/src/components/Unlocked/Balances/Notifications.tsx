@@ -365,12 +365,7 @@ function NotificationListItem({
 function NotificationListItemIcon({ image }: any) {
   const classes = useStyles();
   return (
-    <ProxyImage
-      maxImageHeight={88}
-      maxImageWidth={88}
-      src={image}
-      className={classes.recentActivityListItemIcon}
-    />
+    <ProxyImage src={image} className={classes.recentActivityListItemIcon} />
   );
 }
 

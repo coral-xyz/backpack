@@ -7,14 +7,10 @@ type ImgProps = React.DetailedHTMLProps<
   HTMLImageElement
 >;
 export function ProxyImage({
-  maxImageWidth = 400,
-  maxImageHeight = 400,
   removeOnError,
   loadingStyles,
   ...imgProps
 }: {
-  maxImageWidth?: number;
-  maxImageHeight?: number;
   removeOnError?: boolean;
   loadingStyles?: React.CSSProperties;
 } & ImgProps) {
@@ -60,7 +56,7 @@ export function ProxyImage({
           setError(true);
           imgProps.onError && imgProps.onError(...e);
         }}
-        src={proxyImageUrl(imgProps.src ?? "", maxImageWidth, maxImageHeight)}
+        src={proxyImageUrl(imgProps.src ?? "")}
       />
     </>
   );

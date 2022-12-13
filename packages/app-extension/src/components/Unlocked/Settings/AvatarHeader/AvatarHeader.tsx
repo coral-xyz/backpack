@@ -27,8 +27,6 @@ export function AvatarHeader() {
       <AvatarWrapper onClick={onClick}>
         <ProxyImage
           key={avatarUrl}
-          maxImageHeight={128}
-          maxImageWidth={128}
           src={avatarUrl}
           style={{
             width: "64px",

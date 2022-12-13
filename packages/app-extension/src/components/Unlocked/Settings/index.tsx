@@ -58,6 +58,7 @@ import {
   NavStackScreen,
   useNavStack,
 } from "../../common/Layout/NavStack";
+import { ProxyImage } from "../../common/ProxyImage";
 import { Logout, ResetWarning } from "../../Locked/Reset/ResetWarning";
 import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
 import { NotificationButton } from "../Balances/Notifications";
@@ -153,7 +154,7 @@ function AvatarButton() {
   const classes = useStyles();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const avatarUrl = useAvatarUrl(32);
-
+  // PCA test ProxyImage
   return (
     <div className={classes.menuButtonContainer}>
       <IconButton
@@ -163,7 +164,7 @@ function AvatarButton() {
         size="large"
         id="menu-button"
       >
-        <img
+        <ProxyImage
           src={avatarUrl}
           style={{
             width: "32px",
