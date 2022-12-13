@@ -118,7 +118,8 @@ export class Room {
         parseInt(this.room),
         msg.message_kind === "gif" ? "GIF" : msg.message,
         userId,
-        this.roomValidation
+        this.roomValidation,
+        msg.client_generated_uuid
       );
     }
 

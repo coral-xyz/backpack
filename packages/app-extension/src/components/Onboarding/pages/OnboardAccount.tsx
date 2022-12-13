@@ -233,6 +233,8 @@ export const OnboardAccount = ({
           <HardwareOnboard
             blockchain={blockchain!}
             action={action!}
+            signMessage={(publicKey: string) => getCreateMessage(publicKey)}
+            signText={`Sign the message to authenticate with Backpack.`}
             onComplete={(result: BlockchainKeyringInit) => {
               addBlockchainKeyring(result);
               setOpenDrawer(false);

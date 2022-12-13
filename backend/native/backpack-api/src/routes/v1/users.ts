@@ -1,6 +1,5 @@
 import type { Blockchain } from "@coral-xyz/common";
-import { getCreateMessage } from "@coral-xyz/common";
-import { ethers } from "ethers";
+import { getAddMessage, getCreateMessage } from "@coral-xyz/common";
 import type { Request, Response } from "express";
 import express from "express";
 import jwt from "jsonwebtoken";
@@ -17,14 +16,12 @@ import {
   updateUserAvatar,
 } from "../../db/users";
 import { getOrcreateXnftSecret } from "../../db/xnftSecrets";
+import { validateSignature } from "../../validation/signature";
 import {
   BlockchainPublicKey,
-  CreateUserWithKeyrings,
-  validateEthereumSignature,
-  validateSolanaSignature,
+  CreatePublicKeys,
+  CreateUserWithPublicKeys,
 } from "../../validation/user";
-
-const { base58 } = ethers.utils;
 
 const router = express.Router();
 
@@ -63,31 +60,22 @@ router.get("/jwt/xnft", extractUserId, async (req, res) => {
  */
 router.post("/", async (req, res) => {
   const { username, inviteCode, waitlistId, blockchainPublicKeys } =
-    CreateUserWithKeyrings.parse(req.body);
+    CreateUserWithPublicKeys.parse(req.body);
 
   // Validate all the signatures
   for (const blockchainPublicKey of blockchainPublicKeys) {
     const signedMessage = getCreateMessage(blockchainPublicKey.publicKey);
-    if (blockchainPublicKey.blockchain === "solana") {
-      if (
-        !validateSolanaSignature(
-          Buffer.from(signedMessage, "utf8"),
-          base58.decode(blockchainPublicKey.signature),
-          base58.decode(blockchainPublicKey.publicKey)
-        )
-      ) {
-        return res.status(500).json({ msg: "Invalid Solana signature" });
-      }
-    } else {
-      if (
-        !validateEthereumSignature(
-          Buffer.from(signedMessage, "utf8"),
-          blockchainPublicKey.signature,
-          blockchainPublicKey.publicKey
-        )
-      ) {
-        return res.status(500).json({ msg: "Invalid Ethereum signature" });
-      }
+    if (
+      !validateSignature(
+        Buffer.from(signedMessage, "utf-8"),
+        blockchainPublicKey.blockchain as Blockchain,
+        blockchainPublicKey.signature,
+        blockchainPublicKey.publicKey
+      )
+    ) {
+      return res
+        .status(400)
+        .json({ msg: `Invalid ${blockchainPublicKey.blockchain} signature` });
     }
   }
 
@@ -95,7 +83,11 @@ router.post("/", async (req, res) => {
   try {
     user = await createUser(
       username,
-      blockchainPublicKeys,
+      blockchainPublicKeys.map((b) => ({
+        ...b,
+        // Cast blockchain to correct type
+        blockchain: b.blockchain as Blockchain,
+      })),
       inviteCode,
       waitlistId
     );
@@ -104,7 +96,7 @@ router.post("/", async (req, res) => {
       if (_error.extensions.code === "constraint-violation") {
         return res
           .status(409)
-          .json({ msg: "Public key is in use on another account" });
+          .json({ msg: "Wallet address is used by another Backpack account" });
       }
     }
   }
@@ -225,24 +217,52 @@ router.post(
   "/publicKeys",
   extractUserId,
   async (req: Request, res: Response) => {
-    const { blockchain, publicKey } = BlockchainPublicKey.parse(req.body);
-    await createUserPublicKey({
-      userId: req.id!,
-      blockchain: blockchain as Blockchain,
-      publicKey,
-    });
+    const { blockchain, publicKey, signature } = CreatePublicKeys.parse(
+      req.body
+    );
+
+    const signedMessage = getAddMessage(publicKey);
+
+    if (
+      !validateSignature(
+        Buffer.from(signedMessage, "utf-8"),
+        blockchain as Blockchain,
+        signature,
+        publicKey
+      )
+    ) {
+      return res.status(400).json({ msg: `Invalid signature` });
+    }
+
+    try {
+      await createUserPublicKey({
+        userId: req.id!,
+        blockchain: blockchain as Blockchain,
+        publicKey,
+      });
+    } catch (error) {
+      for (const _error of error.response.errors) {
+        if (_error.extensions.code === "constraint-violation") {
+          return res.status(409).json({
+            msg: "Wallet address is used by another Backpack account",
+          });
+        }
+      }
+    }
+
     return res.status(201).end();
   }
 );
 
 /**
- * Add a public key/blockchain to the currently authenticated user.
+ * Update avatar of the currently authenticated user.
  */
 router.post("/avatar", extractUserId, async (req: Request, res: Response) => {
   await updateUserAvatar({
     userId: req.id!,
-    avatar: req.body,
+    avatar: req.body.avatar,
   });
+
   return res.status(201).end();
 });
 

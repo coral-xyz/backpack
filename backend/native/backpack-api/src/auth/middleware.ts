@@ -12,8 +12,10 @@ export const ensureHasRoomAccess = async (
   const room = req.query.room;
   const type = req.query.type;
   if (type === "individual") {
-    const hasAccess = await validateRoom(req.id!, room);
-    if (hasAccess) {
+    const roomMetadata = await validateRoom(req.id!, room);
+    if (roomMetadata) {
+      // @ts-ignore
+      req.roomMetadata = roomMetadata;
       next();
     } else {
       return res.status(403).json({ msg: "you dont have access" });

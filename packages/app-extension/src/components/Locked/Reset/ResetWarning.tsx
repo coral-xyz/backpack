@@ -66,6 +66,7 @@ export function ResetWarning() {
           method: UI_RPC_METHOD_KEYRING_RESET,
           params: [],
         });
+        window.close();
       }}
     />
   );

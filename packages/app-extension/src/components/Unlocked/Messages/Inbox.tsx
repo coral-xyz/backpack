@@ -19,7 +19,6 @@ export function Inbox() {
   const [messagesLoading, setMessagesLoading] = useState(true);
   const [activeChats, setActiveChats] = useState<EnrichedInboxDb[]>([]);
   const [requestCount, setRequestCount] = useState(0);
-  const { push } = useNavigation();
   const [searchResults, setSearchResults] = useState<
     { image: string; id: string; username: string }[]
   >([]);
@@ -69,8 +68,9 @@ export function Inbox() {
       />
       {messagesLoading && <MessagesSkeleton />}
       {!messagesLoading &&
-        activeChats.filter((x) => x.remoteUsername.includes(searchFilter))
-          .length > 0 && (
+        (activeChats.filter((x) => x.remoteUsername.includes(searchFilter))
+          .length > 0 ||
+          requestCount > 0) && (
           <MessageList
             requestCount={searchFilter.length < 3 ? requestCount : 0}
             activeChats={activeChats.filter((x) =>

@@ -711,7 +711,9 @@ class UserKeyring {
     await keyring.activeWalletUpdate(newActivePublicKey);
   }
 
-  // Derive the next key for the given blockchain.
+  /**
+   * Get the next derived key for the mnemonic.
+   */
   public async deriveNextKey(
     blockchain: Blockchain
   ): Promise<[string, string]> {
@@ -720,8 +722,8 @@ class UserKeyring {
       throw new Error("blockchain keyring not initialised");
     } else {
       // Derive the next key.
-      const [pubkey, name] = blockchainKeyring.deriveNextKey();
-      return [pubkey, name];
+      const [publicKey, name] = blockchainKeyring.deriveNextKey();
+      return [publicKey, name];
     }
   }
 

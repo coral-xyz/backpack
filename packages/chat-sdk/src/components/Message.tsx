@@ -64,6 +64,7 @@ const useStyles = makeStyles((theme: any) =>
     messageLeft: {
       borderRadius: "16px 16px 16px 0px",
       color: theme.custom.colors.fontColor4,
+      overflowWrap: "break-word",
     },
     messageRightContainer: {
       display: "flex",
@@ -74,6 +75,7 @@ const useStyles = makeStyles((theme: any) =>
     messageRight: {
       borderRadius: "16px 16px 0px 16px",
       color: theme.custom.colors.background,
+      overflowWrap: "break-word",
     },
     hoverParent: {
       "&:hover $hoverChild, & .Mui-focused $hoverChild": {

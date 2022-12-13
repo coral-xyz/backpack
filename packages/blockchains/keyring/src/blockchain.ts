@@ -1,6 +1,6 @@
 import * as store from "@coral-xyz/background/src/backend/store";
 import { DefaultKeyname } from "@coral-xyz/background/src/backend/store";
-import type { BlockchainKeyringJson , DerivationPath } from "@coral-xyz/common";
+import type { BlockchainKeyringJson, DerivationPath } from "@coral-xyz/common";
 import { getLogger } from "@coral-xyz/common";
 import * as bs58 from "bs58";
 
@@ -122,13 +122,13 @@ export class BlockchainKeyring {
   }
 
   public deriveNextKey(): [string, string, number] {
-    const [pubkey, accountIndex] = this.hdKeyring!.deriveNext();
+    const [publicKey, accountIndex] = this.hdKeyring!.deriveNext();
 
     // Save a default name.
     const name = DefaultKeyname.defaultDerived(accountIndex);
-    store.setKeyname(pubkey, name);
+    store.setKeyname(publicKey, name);
 
-    return [pubkey, name, accountIndex];
+    return [publicKey, name, accountIndex];
   }
 
   public async importSecretKey(

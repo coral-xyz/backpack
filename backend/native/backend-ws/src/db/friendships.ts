@@ -1,4 +1,5 @@
 import { Chain } from "@coral-xyz/zeus";
+
 import { AUTH_HASURA_URL, AUTH_JWT } from "../config";
 
 const chain = Chain(AUTH_HASURA_URL, {
@@ -46,7 +47,8 @@ export const updateLatestMessage = async (
   roomId: number,
   message: string,
   sender: string,
-  roomValidation: { user1: string; user2: string } | null
+  roomValidation: { user1: string; user2: string } | null,
+  client_generated_uuid: string
 ) => {
   const interactedProps = getInteractedProps(sender, roomValidation);
   await chain("mutation")({
@@ -56,6 +58,7 @@ export const updateLatestMessage = async (
           last_message_timestamp: new Date(),
           last_message: message,
           last_message_sender: sender,
+          last_message_client_uuid: client_generated_uuid,
           ...interactedProps,
         },
         where: { id: { _eq: roomId } },

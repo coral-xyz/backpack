@@ -1156,15 +1156,18 @@ export type ValueTypes = {
     are_friends?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
     last_message?: boolean | `@${string}`;
+    last_message_client_uuid?: boolean | `@${string}`;
     last_message_sender?: boolean | `@${string}`;
     last_message_timestamp?: boolean | `@${string}`;
     user1?: boolean | `@${string}`;
     user1_blocked_user2?: boolean | `@${string}`;
     user1_interacted?: boolean | `@${string}`;
+    user1_last_read_message_id?: boolean | `@${string}`;
     user1_spam_user2?: boolean | `@${string}`;
     user2?: boolean | `@${string}`;
     user2_blocked_user1?: boolean | `@${string}`;
     user2_interacted?: boolean | `@${string}`;
+    user2_last_read_message_id?: boolean | `@${string}`;
     user2_spam_user1?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
@@ -1236,6 +1239,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    last_message_client_uuid?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     last_message_sender?:
       | ValueTypes["String_comparison_exp"]
       | undefined
@@ -1261,6 +1269,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    user1_last_read_message_id?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     user1_spam_user2?:
       | ValueTypes["Boolean_comparison_exp"]
       | undefined
@@ -1281,6 +1294,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    user2_last_read_message_id?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     user2_spam_user1?:
       | ValueTypes["Boolean_comparison_exp"]
       | undefined
@@ -1298,6 +1316,11 @@ export type ValueTypes = {
     are_friends?: boolean | undefined | null | Variable<any, string>;
     id?: number | undefined | null | Variable<any, string>;
     last_message?: string | undefined | null | Variable<any, string>;
+    last_message_client_uuid?:
+      | string
+      | undefined
+      | null
+      | Variable<any, string>;
     last_message_sender?: string | undefined | null | Variable<any, string>;
     last_message_timestamp?:
       | ValueTypes["timestamptz"]
@@ -1307,30 +1330,46 @@ export type ValueTypes = {
     user1?: string | undefined | null | Variable<any, string>;
     user1_blocked_user2?: boolean | undefined | null | Variable<any, string>;
     user1_interacted?: boolean | undefined | null | Variable<any, string>;
+    user1_last_read_message_id?:
+      | string
+      | undefined
+      | null
+      | Variable<any, string>;
     user1_spam_user2?: boolean | undefined | null | Variable<any, string>;
     user2?: string | undefined | null | Variable<any, string>;
     user2_blocked_user1?: boolean | undefined | null | Variable<any, string>;
     user2_interacted?: boolean | undefined | null | Variable<any, string>;
+    user2_last_read_message_id?:
+      | string
+      | undefined
+      | null
+      | Variable<any, string>;
     user2_spam_user1?: boolean | undefined | null | Variable<any, string>;
   };
   /** aggregate max on columns */
   ["auth_friendships_max_fields"]: AliasType<{
     id?: boolean | `@${string}`;
     last_message?: boolean | `@${string}`;
+    last_message_client_uuid?: boolean | `@${string}`;
     last_message_sender?: boolean | `@${string}`;
     last_message_timestamp?: boolean | `@${string}`;
     user1?: boolean | `@${string}`;
+    user1_last_read_message_id?: boolean | `@${string}`;
     user2?: boolean | `@${string}`;
+    user2_last_read_message_id?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
   /** aggregate min on columns */
   ["auth_friendships_min_fields"]: AliasType<{
     id?: boolean | `@${string}`;
     last_message?: boolean | `@${string}`;
+    last_message_client_uuid?: boolean | `@${string}`;
     last_message_sender?: boolean | `@${string}`;
     last_message_timestamp?: boolean | `@${string}`;
     user1?: boolean | `@${string}`;
+    user1_last_read_message_id?: boolean | `@${string}`;
     user2?: boolean | `@${string}`;
+    user2_last_read_message_id?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
   /** response of any mutation on the table "auth.friendships" */
@@ -1368,6 +1407,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    last_message_client_uuid?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     last_message_sender?:
       | ValueTypes["order_by"]
       | undefined
@@ -1389,6 +1433,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    user1_last_read_message_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     user1_spam_user2?:
       | ValueTypes["order_by"]
       | undefined
@@ -1401,6 +1450,11 @@ export type ValueTypes = {
       | null
       | Variable<any, string>;
     user2_interacted?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    user2_last_read_message_id?:
       | ValueTypes["order_by"]
       | undefined
       | null
@@ -1423,6 +1477,11 @@ export type ValueTypes = {
     are_friends?: boolean | undefined | null | Variable<any, string>;
     id?: number | undefined | null | Variable<any, string>;
     last_message?: string | undefined | null | Variable<any, string>;
+    last_message_client_uuid?:
+      | string
+      | undefined
+      | null
+      | Variable<any, string>;
     last_message_sender?: string | undefined | null | Variable<any, string>;
     last_message_timestamp?:
       | ValueTypes["timestamptz"]
@@ -1432,10 +1491,20 @@ export type ValueTypes = {
     user1?: string | undefined | null | Variable<any, string>;
     user1_blocked_user2?: boolean | undefined | null | Variable<any, string>;
     user1_interacted?: boolean | undefined | null | Variable<any, string>;
+    user1_last_read_message_id?:
+      | string
+      | undefined
+      | null
+      | Variable<any, string>;
     user1_spam_user2?: boolean | undefined | null | Variable<any, string>;
     user2?: string | undefined | null | Variable<any, string>;
     user2_blocked_user1?: boolean | undefined | null | Variable<any, string>;
     user2_interacted?: boolean | undefined | null | Variable<any, string>;
+    user2_last_read_message_id?:
+      | string
+      | undefined
+      | null
+      | Variable<any, string>;
     user2_spam_user1?: boolean | undefined | null | Variable<any, string>;
   };
   /** aggregate stddev on columns */
@@ -1471,6 +1540,11 @@ export type ValueTypes = {
     are_friends?: boolean | undefined | null | Variable<any, string>;
     id?: number | undefined | null | Variable<any, string>;
     last_message?: string | undefined | null | Variable<any, string>;
+    last_message_client_uuid?:
+      | string
+      | undefined
+      | null
+      | Variable<any, string>;
     last_message_sender?: string | undefined | null | Variable<any, string>;
     last_message_timestamp?:
       | ValueTypes["timestamptz"]
@@ -1480,10 +1554,20 @@ export type ValueTypes = {
     user1?: string | undefined | null | Variable<any, string>;
     user1_blocked_user2?: boolean | undefined | null | Variable<any, string>;
     user1_interacted?: boolean | undefined | null | Variable<any, string>;
+    user1_last_read_message_id?:
+      | string
+      | undefined
+      | null
+      | Variable<any, string>;
     user1_spam_user2?: boolean | undefined | null | Variable<any, string>;
     user2?: string | undefined | null | Variable<any, string>;
     user2_blocked_user1?: boolean | undefined | null | Variable<any, string>;
     user2_interacted?: boolean | undefined | null | Variable<any, string>;
+    user2_last_read_message_id?:
+      | string
+      | undefined
+      | null
+      | Variable<any, string>;
     user2_spam_user1?: boolean | undefined | null | Variable<any, string>;
   };
   /** aggregate sum on columns */
@@ -2683,6 +2767,11 @@ export type ValueTypes = {
   ["auth_users_select_column"]: auth_users_select_column;
   /** input type for updating data in table "auth.users" */
   ["auth_users_set_input"]: {
+    avatar_nft?:
+      | ValueTypes["citext"]
+      | undefined
+      | null
+      | Variable<any, string>;
     updated_at?:
       | ValueTypes["timestamptz"]
       | undefined
@@ -5317,15 +5406,18 @@ export type ResolverInputTypes = {
     are_friends?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
     last_message?: boolean | `@${string}`;
+    last_message_client_uuid?: boolean | `@${string}`;
     last_message_sender?: boolean | `@${string}`;
     last_message_timestamp?: boolean | `@${string}`;
     user1?: boolean | `@${string}`;
     user1_blocked_user2?: boolean | `@${string}`;
     user1_interacted?: boolean | `@${string}`;
+    user1_last_read_message_id?: boolean | `@${string}`;
     user1_spam_user2?: boolean | `@${string}`;
     user2?: boolean | `@${string}`;
     user2_blocked_user1?: boolean | `@${string}`;
     user2_interacted?: boolean | `@${string}`;
+    user2_last_read_message_id?: boolean | `@${string}`;
     user2_spam_user1?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
@@ -5384,6 +5476,10 @@ export type ResolverInputTypes = {
       | ResolverInputTypes["String_comparison_exp"]
       | undefined
       | null;
+    last_message_client_uuid?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
     last_message_sender?:
       | ResolverInputTypes["String_comparison_exp"]
       | undefined
@@ -5401,6 +5497,10 @@ export type ResolverInputTypes = {
       | ResolverInputTypes["Boolean_comparison_exp"]
       | undefined
       | null;
+    user1_last_read_message_id?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
     user1_spam_user2?:
       | ResolverInputTypes["Boolean_comparison_exp"]
       | undefined
@@ -5412,6 +5512,10 @@ export type ResolverInputTypes = {
       | null;
     user2_interacted?:
       | ResolverInputTypes["Boolean_comparison_exp"]
+      | undefined
+      | null;
+    user2_last_read_message_id?:
+      | ResolverInputTypes["String_comparison_exp"]
       | undefined
       | null;
     user2_spam_user1?:
@@ -5430,6 +5534,7 @@ export type ResolverInputTypes = {
     are_friends?: boolean | undefined | null;
     id?: number | undefined | null;
     last_message?: string | undefined | null;
+    last_message_client_uuid?: string | undefined | null;
     last_message_sender?: string | undefined | null;
     last_message_timestamp?:
       | ResolverInputTypes["timestamptz"]
@@ -5438,30 +5543,38 @@ export type ResolverInputTypes = {
     user1?: string | undefined | null;
     user1_blocked_user2?: boolean | undefined | null;
     user1_interacted?: boolean | undefined | null;
+    user1_last_read_message_id?: string | undefined | null;
     user1_spam_user2?: boolean | undefined | null;
     user2?: string | undefined | null;
     user2_blocked_user1?: boolean | undefined | null;
     user2_interacted?: boolean | undefined | null;
+    user2_last_read_message_id?: string | undefined | null;
     user2_spam_user1?: boolean | undefined | null;
   };
   /** aggregate max on columns */
   ["auth_friendships_max_fields"]: AliasType<{
     id?: boolean | `@${string}`;
     last_message?: boolean | `@${string}`;
+    last_message_client_uuid?: boolean | `@${string}`;
     last_message_sender?: boolean | `@${string}`;
     last_message_timestamp?: boolean | `@${string}`;
     user1?: boolean | `@${string}`;
+    user1_last_read_message_id?: boolean | `@${string}`;
     user2?: boolean | `@${string}`;
+    user2_last_read_message_id?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
   /** aggregate min on columns */
   ["auth_friendships_min_fields"]: AliasType<{
     id?: boolean | `@${string}`;
     last_message?: boolean | `@${string}`;
+    last_message_client_uuid?: boolean | `@${string}`;
     last_message_sender?: boolean | `@${string}`;
     last_message_timestamp?: boolean | `@${string}`;
     user1?: boolean | `@${string}`;
+    user1_last_read_message_id?: boolean | `@${string}`;
     user2?: boolean | `@${string}`;
+    user2_last_read_message_id?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
   /** response of any mutation on the table "auth.friendships" */
@@ -5483,15 +5596,27 @@ export type ResolverInputTypes = {
     are_friends?: ResolverInputTypes["order_by"] | undefined | null;
     id?: ResolverInputTypes["order_by"] | undefined | null;
     last_message?: ResolverInputTypes["order_by"] | undefined | null;
+    last_message_client_uuid?:
+      | ResolverInputTypes["order_by"]
+      | undefined
+      | null;
     last_message_sender?: ResolverInputTypes["order_by"] | undefined | null;
     last_message_timestamp?: ResolverInputTypes["order_by"] | undefined | null;
     user1?: ResolverInputTypes["order_by"] | undefined | null;
     user1_blocked_user2?: ResolverInputTypes["order_by"] | undefined | null;
     user1_interacted?: ResolverInputTypes["order_by"] | undefined | null;
+    user1_last_read_message_id?:
+      | ResolverInputTypes["order_by"]
+      | undefined
+      | null;
     user1_spam_user2?: ResolverInputTypes["order_by"] | undefined | null;
     user2?: ResolverInputTypes["order_by"] | undefined | null;
     user2_blocked_user1?: ResolverInputTypes["order_by"] | undefined | null;
     user2_interacted?: ResolverInputTypes["order_by"] | undefined | null;
+    user2_last_read_message_id?:
+      | ResolverInputTypes["order_by"]
+      | undefined
+      | null;
     user2_spam_user1?: ResolverInputTypes["order_by"] | undefined | null;
   };
   /** primary key columns input for table: auth.friendships */
@@ -5506,6 +5631,7 @@ export type ResolverInputTypes = {
     are_friends?: boolean | undefined | null;
     id?: number | undefined | null;
     last_message?: string | undefined | null;
+    last_message_client_uuid?: string | undefined | null;
     last_message_sender?: string | undefined | null;
     last_message_timestamp?:
       | ResolverInputTypes["timestamptz"]
@@ -5514,10 +5640,12 @@ export type ResolverInputTypes = {
     user1?: string | undefined | null;
     user1_blocked_user2?: boolean | undefined | null;
     user1_interacted?: boolean | undefined | null;
+    user1_last_read_message_id?: string | undefined | null;
     user1_spam_user2?: boolean | undefined | null;
     user2?: string | undefined | null;
     user2_blocked_user1?: boolean | undefined | null;
     user2_interacted?: boolean | undefined | null;
+    user2_last_read_message_id?: string | undefined | null;
     user2_spam_user1?: boolean | undefined | null;
   };
   /** aggregate stddev on columns */
@@ -5547,6 +5675,7 @@ export type ResolverInputTypes = {
     are_friends?: boolean | undefined | null;
     id?: number | undefined | null;
     last_message?: string | undefined | null;
+    last_message_client_uuid?: string | undefined | null;
     last_message_sender?: string | undefined | null;
     last_message_timestamp?:
       | ResolverInputTypes["timestamptz"]
@@ -5555,10 +5684,12 @@ export type ResolverInputTypes = {
     user1?: string | undefined | null;
     user1_blocked_user2?: boolean | undefined | null;
     user1_interacted?: boolean | undefined | null;
+    user1_last_read_message_id?: string | undefined | null;
     user1_spam_user2?: boolean | undefined | null;
     user2?: string | undefined | null;
     user2_blocked_user1?: boolean | undefined | null;
     user2_interacted?: boolean | undefined | null;
+    user2_last_read_message_id?: string | undefined | null;
     user2_spam_user1?: boolean | undefined | null;
   };
   /** aggregate sum on columns */
@@ -6422,6 +6553,7 @@ export type ResolverInputTypes = {
   ["auth_users_select_column"]: auth_users_select_column;
   /** input type for updating data in table "auth.users" */
   ["auth_users_set_input"]: {
+    avatar_nft?: ResolverInputTypes["citext"] | undefined | null;
     updated_at?: ResolverInputTypes["timestamptz"] | undefined | null;
   };
   /** Streaming cursor of the table "auth_users" */
@@ -8384,15 +8516,18 @@ export type ModelTypes = {
     are_friends: boolean;
     id: number;
     last_message?: string | undefined;
+    last_message_client_uuid?: string | undefined;
     last_message_sender?: string | undefined;
     last_message_timestamp?: ModelTypes["timestamptz"] | undefined;
     user1: string;
     user1_blocked_user2: boolean;
     user1_interacted: boolean;
+    user1_last_read_message_id?: string | undefined;
     user1_spam_user2: boolean;
     user2: string;
     user2_blocked_user1: boolean;
     user2_interacted: boolean;
+    user2_last_read_message_id?: string | undefined;
     user2_spam_user1: boolean;
   };
   /** aggregated selection of "auth.friendships" */
@@ -8426,6 +8561,7 @@ export type ModelTypes = {
     are_friends?: ModelTypes["Boolean_comparison_exp"] | undefined;
     id?: ModelTypes["Int_comparison_exp"] | undefined;
     last_message?: ModelTypes["String_comparison_exp"] | undefined;
+    last_message_client_uuid?: ModelTypes["String_comparison_exp"] | undefined;
     last_message_sender?: ModelTypes["String_comparison_exp"] | undefined;
     last_message_timestamp?:
       | ModelTypes["timestamptz_comparison_exp"]
@@ -8433,10 +8569,16 @@ export type ModelTypes = {
     user1?: ModelTypes["String_comparison_exp"] | undefined;
     user1_blocked_user2?: ModelTypes["Boolean_comparison_exp"] | undefined;
     user1_interacted?: ModelTypes["Boolean_comparison_exp"] | undefined;
+    user1_last_read_message_id?:
+      | ModelTypes["String_comparison_exp"]
+      | undefined;
     user1_spam_user2?: ModelTypes["Boolean_comparison_exp"] | undefined;
     user2?: ModelTypes["String_comparison_exp"] | undefined;
     user2_blocked_user1?: ModelTypes["Boolean_comparison_exp"] | undefined;
     user2_interacted?: ModelTypes["Boolean_comparison_exp"] | undefined;
+    user2_last_read_message_id?:
+      | ModelTypes["String_comparison_exp"]
+      | undefined;
     user2_spam_user1?: ModelTypes["Boolean_comparison_exp"] | undefined;
   };
   ["auth_friendships_constraint"]: auth_friendships_constraint;
@@ -8449,34 +8591,43 @@ export type ModelTypes = {
     are_friends?: boolean | undefined;
     id?: number | undefined;
     last_message?: string | undefined;
+    last_message_client_uuid?: string | undefined;
     last_message_sender?: string | undefined;
     last_message_timestamp?: ModelTypes["timestamptz"] | undefined;
     user1?: string | undefined;
     user1_blocked_user2?: boolean | undefined;
     user1_interacted?: boolean | undefined;
+    user1_last_read_message_id?: string | undefined;
     user1_spam_user2?: boolean | undefined;
     user2?: string | undefined;
     user2_blocked_user1?: boolean | undefined;
     user2_interacted?: boolean | undefined;
+    user2_last_read_message_id?: string | undefined;
     user2_spam_user1?: boolean | undefined;
   };
   /** aggregate max on columns */
   ["auth_friendships_max_fields"]: {
     id?: number | undefined;
     last_message?: string | undefined;
+    last_message_client_uuid?: string | undefined;
     last_message_sender?: string | undefined;
     last_message_timestamp?: ModelTypes["timestamptz"] | undefined;
     user1?: string | undefined;
+    user1_last_read_message_id?: string | undefined;
     user2?: string | undefined;
+    user2_last_read_message_id?: string | undefined;
   };
   /** aggregate min on columns */
   ["auth_friendships_min_fields"]: {
     id?: number | undefined;
     last_message?: string | undefined;
+    last_message_client_uuid?: string | undefined;
     last_message_sender?: string | undefined;
     last_message_timestamp?: ModelTypes["timestamptz"] | undefined;
     user1?: string | undefined;
+    user1_last_read_message_id?: string | undefined;
     user2?: string | undefined;
+    user2_last_read_message_id?: string | undefined;
   };
   /** response of any mutation on the table "auth.friendships" */
   ["auth_friendships_mutation_response"]: {
@@ -8496,15 +8647,18 @@ export type ModelTypes = {
     are_friends?: ModelTypes["order_by"] | undefined;
     id?: ModelTypes["order_by"] | undefined;
     last_message?: ModelTypes["order_by"] | undefined;
+    last_message_client_uuid?: ModelTypes["order_by"] | undefined;
     last_message_sender?: ModelTypes["order_by"] | undefined;
     last_message_timestamp?: ModelTypes["order_by"] | undefined;
     user1?: ModelTypes["order_by"] | undefined;
     user1_blocked_user2?: ModelTypes["order_by"] | undefined;
     user1_interacted?: ModelTypes["order_by"] | undefined;
+    user1_last_read_message_id?: ModelTypes["order_by"] | undefined;
     user1_spam_user2?: ModelTypes["order_by"] | undefined;
     user2?: ModelTypes["order_by"] | undefined;
     user2_blocked_user1?: ModelTypes["order_by"] | undefined;
     user2_interacted?: ModelTypes["order_by"] | undefined;
+    user2_last_read_message_id?: ModelTypes["order_by"] | undefined;
     user2_spam_user1?: ModelTypes["order_by"] | undefined;
   };
   /** primary key columns input for table: auth.friendships */
@@ -8518,15 +8672,18 @@ export type ModelTypes = {
     are_friends?: boolean | undefined;
     id?: number | undefined;
     last_message?: string | undefined;
+    last_message_client_uuid?: string | undefined;
     last_message_sender?: string | undefined;
     last_message_timestamp?: ModelTypes["timestamptz"] | undefined;
     user1?: string | undefined;
     user1_blocked_user2?: boolean | undefined;
     user1_interacted?: boolean | undefined;
+    user1_last_read_message_id?: string | undefined;
     user1_spam_user2?: boolean | undefined;
     user2?: string | undefined;
     user2_blocked_user1?: boolean | undefined;
     user2_interacted?: boolean | undefined;
+    user2_last_read_message_id?: string | undefined;
     user2_spam_user1?: boolean | undefined;
   };
   /** aggregate stddev on columns */
@@ -8553,15 +8710,18 @@ export type ModelTypes = {
     are_friends?: boolean | undefined;
     id?: number | undefined;
     last_message?: string | undefined;
+    last_message_client_uuid?: string | undefined;
     last_message_sender?: string | undefined;
     last_message_timestamp?: ModelTypes["timestamptz"] | undefined;
     user1?: string | undefined;
     user1_blocked_user2?: boolean | undefined;
     user1_interacted?: boolean | undefined;
+    user1_last_read_message_id?: string | undefined;
     user1_spam_user2?: boolean | undefined;
     user2?: string | undefined;
     user2_blocked_user1?: boolean | undefined;
     user2_interacted?: boolean | undefined;
+    user2_last_read_message_id?: string | undefined;
     user2_spam_user1?: boolean | undefined;
   };
   /** aggregate sum on columns */
@@ -9196,6 +9356,7 @@ export type ModelTypes = {
   ["auth_users_select_column"]: auth_users_select_column;
   /** input type for updating data in table "auth.users" */
   ["auth_users_set_input"]: {
+    avatar_nft?: ModelTypes["citext"] | undefined;
     updated_at?: ModelTypes["timestamptz"] | undefined;
   };
   /** Streaming cursor of the table "auth_users" */
@@ -9945,15 +10106,18 @@ export type GraphQLTypes = {
     are_friends: boolean;
     id: number;
     last_message?: string | undefined;
+    last_message_client_uuid?: string | undefined;
     last_message_sender?: string | undefined;
     last_message_timestamp?: GraphQLTypes["timestamptz"] | undefined;
     user1: string;
     user1_blocked_user2: boolean;
     user1_interacted: boolean;
+    user1_last_read_message_id?: string | undefined;
     user1_spam_user2: boolean;
     user2: string;
     user2_blocked_user1: boolean;
     user2_interacted: boolean;
+    user2_last_read_message_id?: string | undefined;
     user2_spam_user1: boolean;
   };
   /** aggregated selection of "auth.friendships" */
@@ -9992,6 +10156,9 @@ export type GraphQLTypes = {
     are_friends?: GraphQLTypes["Boolean_comparison_exp"] | undefined;
     id?: GraphQLTypes["Int_comparison_exp"] | undefined;
     last_message?: GraphQLTypes["String_comparison_exp"] | undefined;
+    last_message_client_uuid?:
+      | GraphQLTypes["String_comparison_exp"]
+      | undefined;
     last_message_sender?: GraphQLTypes["String_comparison_exp"] | undefined;
     last_message_timestamp?:
       | GraphQLTypes["timestamptz_comparison_exp"]
@@ -9999,10 +10166,16 @@ export type GraphQLTypes = {
     user1?: GraphQLTypes["String_comparison_exp"] | undefined;
     user1_blocked_user2?: GraphQLTypes["Boolean_comparison_exp"] | undefined;
     user1_interacted?: GraphQLTypes["Boolean_comparison_exp"] | undefined;
+    user1_last_read_message_id?:
+      | GraphQLTypes["String_comparison_exp"]
+      | undefined;
     user1_spam_user2?: GraphQLTypes["Boolean_comparison_exp"] | undefined;
     user2?: GraphQLTypes["String_comparison_exp"] | undefined;
     user2_blocked_user1?: GraphQLTypes["Boolean_comparison_exp"] | undefined;
     user2_interacted?: GraphQLTypes["Boolean_comparison_exp"] | undefined;
+    user2_last_read_message_id?:
+      | GraphQLTypes["String_comparison_exp"]
+      | undefined;
     user2_spam_user1?: GraphQLTypes["Boolean_comparison_exp"] | undefined;
   };
   /** unique or primary key constraints on table "auth.friendships" */
@@ -10016,15 +10189,18 @@ export type GraphQLTypes = {
     are_friends?: boolean | undefined;
     id?: number | undefined;
     last_message?: string | undefined;
+    last_message_client_uuid?: string | undefined;
     last_message_sender?: string | undefined;
     last_message_timestamp?: GraphQLTypes["timestamptz"] | undefined;
     user1?: string | undefined;
     user1_blocked_user2?: boolean | undefined;
     user1_interacted?: boolean | undefined;
+    user1_last_read_message_id?: string | undefined;
     user1_spam_user2?: boolean | undefined;
     user2?: string | undefined;
     user2_blocked_user1?: boolean | undefined;
     user2_interacted?: boolean | undefined;
+    user2_last_read_message_id?: string | undefined;
     user2_spam_user1?: boolean | undefined;
   };
   /** aggregate max on columns */
@@ -10032,20 +10208,26 @@ export type GraphQLTypes = {
     __typename: "auth_friendships_max_fields";
     id?: number | undefined;
     last_message?: string | undefined;
+    last_message_client_uuid?: string | undefined;
     last_message_sender?: string | undefined;
     last_message_timestamp?: GraphQLTypes["timestamptz"] | undefined;
     user1?: string | undefined;
+    user1_last_read_message_id?: string | undefined;
     user2?: string | undefined;
+    user2_last_read_message_id?: string | undefined;
   };
   /** aggregate min on columns */
   ["auth_friendships_min_fields"]: {
     __typename: "auth_friendships_min_fields";
     id?: number | undefined;
     last_message?: string | undefined;
+    last_message_client_uuid?: string | undefined;
     last_message_sender?: string | undefined;
     last_message_timestamp?: GraphQLTypes["timestamptz"] | undefined;
     user1?: string | undefined;
+    user1_last_read_message_id?: string | undefined;
     user2?: string | undefined;
+    user2_last_read_message_id?: string | undefined;
   };
   /** response of any mutation on the table "auth.friendships" */
   ["auth_friendships_mutation_response"]: {
@@ -10066,15 +10248,18 @@ export type GraphQLTypes = {
     are_friends?: GraphQLTypes["order_by"] | undefined;
     id?: GraphQLTypes["order_by"] | undefined;
     last_message?: GraphQLTypes["order_by"] | undefined;
+    last_message_client_uuid?: GraphQLTypes["order_by"] | undefined;
     last_message_sender?: GraphQLTypes["order_by"] | undefined;
     last_message_timestamp?: GraphQLTypes["order_by"] | undefined;
     user1?: GraphQLTypes["order_by"] | undefined;
     user1_blocked_user2?: GraphQLTypes["order_by"] | undefined;
     user1_interacted?: GraphQLTypes["order_by"] | undefined;
+    user1_last_read_message_id?: GraphQLTypes["order_by"] | undefined;
     user1_spam_user2?: GraphQLTypes["order_by"] | undefined;
     user2?: GraphQLTypes["order_by"] | undefined;
     user2_blocked_user1?: GraphQLTypes["order_by"] | undefined;
     user2_interacted?: GraphQLTypes["order_by"] | undefined;
+    user2_last_read_message_id?: GraphQLTypes["order_by"] | undefined;
     user2_spam_user1?: GraphQLTypes["order_by"] | undefined;
   };
   /** primary key columns input for table: auth.friendships */
@@ -10089,15 +10274,18 @@ export type GraphQLTypes = {
     are_friends?: boolean | undefined;
     id?: number | undefined;
     last_message?: string | undefined;
+    last_message_client_uuid?: string | undefined;
     last_message_sender?: string | undefined;
     last_message_timestamp?: GraphQLTypes["timestamptz"] | undefined;
     user1?: string | undefined;
     user1_blocked_user2?: boolean | undefined;
     user1_interacted?: boolean | undefined;
+    user1_last_read_message_id?: string | undefined;
     user1_spam_user2?: boolean | undefined;
     user2?: string | undefined;
     user2_blocked_user1?: boolean | undefined;
     user2_interacted?: boolean | undefined;
+    user2_last_read_message_id?: string | undefined;
     user2_spam_user1?: boolean | undefined;
   };
   /** aggregate stddev on columns */
@@ -10127,15 +10315,18 @@ export type GraphQLTypes = {
     are_friends?: boolean | undefined;
     id?: number | undefined;
     last_message?: string | undefined;
+    last_message_client_uuid?: string | undefined;
     last_message_sender?: string | undefined;
     last_message_timestamp?: GraphQLTypes["timestamptz"] | undefined;
     user1?: string | undefined;
     user1_blocked_user2?: boolean | undefined;
     user1_interacted?: boolean | undefined;
+    user1_last_read_message_id?: string | undefined;
     user1_spam_user2?: boolean | undefined;
     user2?: string | undefined;
     user2_blocked_user1?: boolean | undefined;
     user2_interacted?: boolean | undefined;
+    user2_last_read_message_id?: string | undefined;
     user2_spam_user1?: boolean | undefined;
   };
   /** aggregate sum on columns */
@@ -10829,6 +11020,7 @@ export type GraphQLTypes = {
   ["auth_users_select_column"]: auth_users_select_column;
   /** input type for updating data in table "auth.users" */
   ["auth_users_set_input"]: {
+    avatar_nft?: GraphQLTypes["citext"] | undefined;
     updated_at?: GraphQLTypes["timestamptz"] | undefined;
   };
   /** Streaming cursor of the table "auth_users" */
@@ -11516,15 +11708,18 @@ export const enum auth_friendships_select_column {
   are_friends = "are_friends",
   id = "id",
   last_message = "last_message",
+  last_message_client_uuid = "last_message_client_uuid",
   last_message_sender = "last_message_sender",
   last_message_timestamp = "last_message_timestamp",
   user1 = "user1",
   user1_blocked_user2 = "user1_blocked_user2",
   user1_interacted = "user1_interacted",
+  user1_last_read_message_id = "user1_last_read_message_id",
   user1_spam_user2 = "user1_spam_user2",
   user2 = "user2",
   user2_blocked_user1 = "user2_blocked_user1",
   user2_interacted = "user2_interacted",
+  user2_last_read_message_id = "user2_last_read_message_id",
   user2_spam_user1 = "user2_spam_user1",
 }
 /** update columns of table "auth.friendships" */
@@ -11532,15 +11727,18 @@ export const enum auth_friendships_update_column {
   are_friends = "are_friends",
   id = "id",
   last_message = "last_message",
+  last_message_client_uuid = "last_message_client_uuid",
   last_message_sender = "last_message_sender",
   last_message_timestamp = "last_message_timestamp",
   user1 = "user1",
   user1_blocked_user2 = "user1_blocked_user2",
   user1_interacted = "user1_interacted",
+  user1_last_read_message_id = "user1_last_read_message_id",
   user1_spam_user2 = "user1_spam_user2",
   user2 = "user2",
   user2_blocked_user1 = "user2_blocked_user1",
   user2_interacted = "user2_interacted",
+  user2_last_read_message_id = "user2_last_read_message_id",
   user2_spam_user1 = "user2_spam_user1",
 }
 /** unique or primary key constraints on table "auth.notification_subscriptions" */
@@ -11642,6 +11840,7 @@ export const enum auth_users_select_column {
 }
 /** update columns of table "auth.users" */
 export const enum auth_users_update_column {
+  avatar_nft = "avatar_nft",
   updated_at = "updated_at",
 }
 /** unique or primary key constraints on table "auth.xnft_preferences" */
