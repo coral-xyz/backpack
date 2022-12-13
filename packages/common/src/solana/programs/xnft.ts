@@ -1,8 +1,8 @@
 import { externalResourceUri } from "@coral-xyz/common-public";
+import { Metadata } from "@metaplex-foundation/mpl-token-metadata";
 import type { Provider } from "@project-serum/anchor";
 import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
-import { metadata } from "@project-serum/token";
 import { PublicKey } from "@solana/web3.js";
 
 export const XNFT_PROGRAM_ID = new PublicKey(
@@ -72,7 +72,7 @@ export async function fetchXnfts(
     if (!t) {
       return null;
     }
-    return metadata.decodeMetadata(t.account.data);
+    return Metadata.deserialize(t.account.data)[0];
   });
 
   //
@@ -126,7 +126,7 @@ export async function fetchXnftsFromPubkey(
     }
 
     return {
-      xnftMetadata: metadata.decodeMetadata(t.account.data),
+      xnftMetadata: Metadata.deserialize(t.account.data)[0],
       xnftId: accounts[index].xnftId,
     };
   });
@@ -178,7 +178,7 @@ export async function fetchXnft(
     if (!info) {
       throw new Error("account info not found");
     }
-    return metadata.decodeMetadata(info.data);
+    return Metadata.deserialize(info.data)[0];
   })();
 
   const xnftMetadataBlob = await fetch(

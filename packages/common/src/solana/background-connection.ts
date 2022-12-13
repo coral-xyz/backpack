@@ -1,3 +1,4 @@
+import type { RawMint } from "@solana/spl-token";
 import type {
   AccountBalancePair,
   AccountChangeCallback,
@@ -129,6 +130,7 @@ export class BackgroundSolanaConnection extends Connection {
     tokenAccountsMap: [string, SolanaTokenAccountWithKeyString][];
     tokenMetadata: (TokenMetadataString | null)[];
     nftMetadata: [string, SplNftMetadataString][];
+    mintsMap: [string, RawMint][];
   }> {
     const resp = await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
@@ -148,6 +150,17 @@ export class BackgroundSolanaConnection extends Connection {
           {
             ...t[1],
             amount: new BN(t[1].amount),
+          },
+        ];
+      }),
+      mintsMap: json.mintsMap.map((m: any) => {
+        return [
+          m[0],
+          {
+            ...m[1],
+            freezeAuthority: new PublicKey(m[1].freezeAuthority),
+            mintAuthority: new PublicKey(m[1].mintAuthority),
+            // todo: should transform the supply here
           },
         ];
       }),
