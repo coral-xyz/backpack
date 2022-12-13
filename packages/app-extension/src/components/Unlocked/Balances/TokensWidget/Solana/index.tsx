@@ -297,6 +297,7 @@ export const isCardinalWrappedToken = async (
     return false;
   }
 
+  // only need network calls to double confirm but the above check is likely sufficient if we assume it was created correctly
   const [tokenManagerId] =
     await programs.tokenManager.pda.findTokenManagerAddress(
       new PublicKey(tokenAddress)
@@ -324,6 +325,7 @@ export const isCreatorStandardToken = (
   mintInfo: MintInfo
 ) => {
   const mintManagerId = findMintManagerId(mintId);
+  // not network calls involved we can assume this token was created properly if the mint and freeze authority match
   return (
     mintInfo.freezeAuthority?.equals(mintManagerId) &&
     mintInfo.mintAuthority?.equals(mintManagerId)

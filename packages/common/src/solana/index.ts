@@ -4,7 +4,7 @@ import {
   findMintMetadataId,
   MintManager,
 } from "@cardinal/creator-standard";
-import { withSend } from "@cardinal/token-manager";
+import { emptyWallet, withSend } from "@cardinal/token-manager";
 import type { Program, SplToken } from "@project-serum/anchor";
 import * as anchor from "@project-serum/anchor";
 import {
@@ -280,53 +280,12 @@ export class Solana {
     const { walletPublicKey, tokenClient, commitment } = ctx;
     const { mint, destination } = req;
 
-    const destinationAta = associatedTokenAddress(mint, destination);
     const sourceAta = associatedTokenAddress(mint, walletPublicKey);
 
-    const [destinationAccount, destinationAtaAccount] =
-      await anchor.utils.rpc.getMultipleAccounts(
-        tokenClient.provider.connection,
-        [destination, destinationAta],
-        commitment
-      );
-
-    //
-    // Require the account to either be a system program account or a brand new
-    // account.
-    //
-    if (
-      destinationAccount &&
-      !destinationAccount.account.owner.equals(SystemProgram.programId)
-    ) {
-      throw new Error("invalid account");
-    }
-
-    // Instructions to execute prior to the transfer.
-    const transaction: Transaction = new Transaction();
-    if (!destinationAtaAccount) {
-      transaction.add(
-        assertOwner.assertOwnerInstruction({
-          account: destination,
-          owner: SystemProgram.programId,
-        })
-      );
-      transaction.add(
-        createAssociatedTokenAccountInstruction(
-          walletPublicKey,
-          destinationAta,
-          destination,
-          mint
-        )
-      );
-    }
-
     const tx = await withSend(
-      transaction,
+      new Transaction(),
       tokenClient.provider.connection,
-      // @ts-ignore
-      {
-        publicKey: walletPublicKey,
-      },
+      emptyWallet(walletPublicKey),
       mint,
       sourceAta,
       destination
