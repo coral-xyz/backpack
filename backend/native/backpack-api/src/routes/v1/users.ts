@@ -1,5 +1,5 @@
 import type { Blockchain } from "@coral-xyz/common";
-import { getAddMessage,getCreateMessage } from "@coral-xyz/common";
+import { getAddMessage, getCreateMessage } from "@coral-xyz/common";
 import type { Request, Response } from "express";
 import express from "express";
 import jwt from "jsonwebtoken";
@@ -96,7 +96,7 @@ router.post("/", async (req, res) => {
       if (_error.extensions.code === "constraint-violation") {
         return res
           .status(409)
-          .json({ msg: "Public key is in use on another account" });
+          .json({ msg: "Wallet address is used by another Backpack account" });
       }
     }
   }
@@ -234,11 +234,22 @@ router.post(
       return res.status(400).json({ msg: `Invalid signature` });
     }
 
-    await createUserPublicKey({
-      userId: req.id!,
-      blockchain: blockchain as Blockchain,
-      publicKey,
-    });
+    try {
+      await createUserPublicKey({
+        userId: req.id!,
+        blockchain: blockchain as Blockchain,
+        publicKey,
+      });
+    } catch (error) {
+      for (const _error of error.response.errors) {
+        if (_error.extensions.code === "constraint-violation") {
+          return res.status(409).json({
+            msg: "Wallet address is used by another Backpack account",
+          });
+        }
+      }
+    }
+
     return res.status(201).end();
   }
 );
