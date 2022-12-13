@@ -42,9 +42,9 @@ export function UpdateProfilePicture({
   const avatarUrl = useAvatarUrl();
   const { username } = useUser();
   // const wallets = useActiveWallets();
-  const wallets = useWalletPublicKeys();
+  // const wallets = useWalletPublicKeys();
   const collections = useRecoilValueLoadable(nftCollections);
-  console.log("wallets", wallets, collections, avatarUrl, tempAvatar);
+
   return (
     <Container>
       <AvatarWrapper>

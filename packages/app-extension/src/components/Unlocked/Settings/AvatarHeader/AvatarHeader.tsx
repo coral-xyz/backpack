@@ -17,7 +17,7 @@ const title = "Change Profile Picture";
 export function AvatarHeader() {
   const [openDrawer, setOpenDrawer] = useState(false);
   const avatarUrl = useAvatarUrl(64);
-  console.log("test", avatarUrl);
+
   const onClick = () => {
     setOpenDrawer(true);
   };

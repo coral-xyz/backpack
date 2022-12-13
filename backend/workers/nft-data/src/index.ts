@@ -37,10 +37,6 @@ app.get("/metaplex-nft/:mintAddress/image", async (c) => {
       })
     );
 
-    console.log(
-      metadataAccountResponse.status,
-      metadataAccountResponse.statusText
-    );
     const metadataAccount = await metadataAccountResponse.json();
 
     const data = metadataAccount?.result?.value?.data?.[0];
@@ -63,6 +59,10 @@ app.get("/metaplex-nft/:mintAddress/image", async (c) => {
 
     if (!jsonMetadata || !imageUrl) {
       return c.status(404);
+    }
+
+    if (imageUrl.startsWith("data:")) {
+      return c.text(imageUrl);
     }
 
     const imageResponse = await fetch(externalResourceUri(imageUrl));
@@ -94,6 +94,10 @@ app.get("/ethereum-nft/:contractAddress/:tokenId/image", async (c) => {
 
     if (!metadata || !imageUrl) {
       return c.status(404);
+    }
+
+    if (imageUrl.startsWith("data:")) {
+      return c.text(imageUrl);
     }
 
     // console.log(JSON.stringify(metadata))
