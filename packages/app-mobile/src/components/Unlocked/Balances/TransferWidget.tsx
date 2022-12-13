@@ -1,11 +1,6 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { Margin } from "@components";
-import {
-  Blockchain,
-  ETH_NATIVE_MINT,
-  SOL_NATIVE_MINT,
-  STRIPE_ENABLED,
-} from "@coral-xyz/common";
+import { Blockchain, STRIPE_ENABLED, toTitleCase } from "@coral-xyz/common";
 import {
   SwapProvider,
   useEnabledBlockchains,
@@ -13,6 +8,8 @@ import {
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@hooks";
+
+import type { Token } from "./components/index";
 
 const HorizontalSpacer = () => <View style={{ width: 16 }} />;
 
@@ -23,11 +20,13 @@ export function TransferWidget({
   address,
   rampEnabled,
   onPressOption,
+  token,
 }: {
   blockchain?: Blockchain;
   address?: string;
   rampEnabled: boolean;
   onPressOption: (option: string, options: any) => void;
+  token?: Token;
 }) {
   const enabledBlockchains = useEnabledBlockchains();
   const featureGates = useFeatureGates();
@@ -49,17 +48,13 @@ export function TransferWidget({
     >
       {enableOnramp ? (
         <>
-          <RampButton
-            onPress={onPress}
-            blockchain={blockchain}
-            address={address}
-          />
+          <RampButton blockchain={blockchain} address={address} />
           <HorizontalSpacer />
         </>
       ) : null}
       <ReceiveButton onPress={onPress} blockchain={blockchain} />
       <HorizontalSpacer />
-      <SendButton onPress={onPress} blockchain={blockchain} address={address} />
+      <SendButton onPress={onPress} blockchain={blockchain} token={token} />
       {renderSwap && (
         <>
           <HorizontalSpacer />
@@ -144,15 +139,17 @@ function SwapButton({
 function SendButton({
   blockchain,
   onPress,
+  token,
 }: {
   blockchain?: Blockchain;
   onPress: (route: Route, options: any) => void;
+  token?: Token;
 }) {
   return (
     <TransferButton
       label="Send"
       icon="arrow-upward"
-      onPress={() => onPress("Send", { blockchain })}
+      onPress={() => onPress("Send", { blockchain, token, title: "TODO" })}
     />
   );
 }

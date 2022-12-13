@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  FlatList,
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { ListRowSeparator, Margin, ProxyImage } from "@components";
 import type { Blockchain } from "@coral-xyz/common";
 import { formatUSD, walletAddressDisplay } from "@coral-xyz/common";
@@ -15,7 +8,6 @@ import {
   blockchainBalancesSorted,
   useActiveWallets,
   useBlockchainConnectionUrl,
-  // useBlockchainLogo,
   useEnabledBlockchains,
   useLoader,
 } from "@coral-xyz/recoil";
@@ -340,8 +332,6 @@ const styles = StyleSheet.create({
     height: 24,
     fontWeight: "500",
     fontSize: 16,
-    // maxWidth: "200px",
-    // overflow: "hidden",
     lineHeight: 24,
   },
   tokenAmount: {

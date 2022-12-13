@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Margin, Screen, TokenAmountHeader } from "@components";
 import { TransferWidget } from "@components/Unlocked/Balances/TransferWidget";
 import {
@@ -15,7 +15,6 @@ import {
   useActiveEthereumWallet,
   useLoader,
 } from "@coral-xyz/recoil";
-import { useTheme } from "@hooks";
 import { createStackNavigator } from "@react-navigation/stack";
 import { RecentActivityList } from "@screens/Unlocked/RecentActivityScreen";
 
@@ -72,6 +71,7 @@ function TokenHeader({
       </View>
       <View style={styles.tokenHeaderButtonContainer}>
         <TransferWidget
+          token={token}
           blockchain={blockchain}
           address={address}
           rampEnabled={

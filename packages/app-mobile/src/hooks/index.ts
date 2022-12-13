@@ -1,6 +1,7 @@
 import { Blockchain } from "@coral-xyz/common";
 
 export { useIsONELive } from "./useIsONELive";
+export { useIsValidAddress } from "./useIsValidAddress";
 export { useTheme } from "./useTheme";
 import Images from "../Images";
 
