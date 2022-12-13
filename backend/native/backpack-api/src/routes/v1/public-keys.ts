@@ -1,5 +1,5 @@
 import type { Blockchain } from "@coral-xyz/common";
-import type { Request, Response } from "express";
+import type { NextFunction,Request, Response } from "express";
 import express from "express";
 
 import { getUsersByPublicKeys } from "../../db/users";
@@ -10,11 +10,17 @@ const router = express.Router();
 /**
  * Get usernames for an array of public keys.
  */
-router.post("/publicKeys", async (req: Request, res: Response) => {
-  const blockchainPublicKeys = BlockchainPublicKey.array().parse(req.body);
+router.post("/", async (req: Request, res: Response, next: NextFunction) => {
+  let blockchainPublicKeys: any;
+  try {
+    blockchainPublicKeys = BlockchainPublicKey.array().parse(req.body);
+  } catch (error) {
+    next(error);
+    return;
+  }
 
-  const users = getUsersByPublicKeys(
-    blockchainPublicKeys.map((b) => ({
+  const users = await getUsersByPublicKeys(
+    blockchainPublicKeys!.map((b: any) => ({
       blockchain: b.blockchain as Blockchain,
       publicKey: b.publicKey,
     }))

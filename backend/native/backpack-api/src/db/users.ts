@@ -31,52 +31,38 @@ export const getUsers = async (
  */
 export const getUsersByPublicKeys = async (
   blockchainPublicKeys: Array<{ blockchain: Blockchain; publicKey: string }>
-): Promise<Array<{ id: unknown }>> => {
+): Promise<
+  Array<{ user_id?: unknown; blockchain: string; public_key: unknown }>
+> => {
   const response = await chain("query")({
-    auth_users: [
+    auth_public_keys: [
       {
         where: {
-          public_keys: {
-            // Only matching public keys here, but it should be checking
-            // blockchain AND public key as the same public key will be used
-            // for different blockchains (particularly EVM)
-            public_key: { _in: blockchainPublicKeys.map((b) => b.publicKey) },
-          },
+          // Only matching public keys here, but it should be checking
+          // blockchain AND public key as the same public key will be used
+          // for different blockchains (particularly EVM)
+          public_key: { _in: blockchainPublicKeys.map((b) => b.publicKey) },
         },
       },
       {
-        id: true,
-        public_keys: [
-          {
-            where: {
-              public_key: {
-                _in: blockchainPublicKeys.map((b) => b.publicKey),
-              },
-            },
-          },
-          {
-            public_key: true,
-            blockchain: true,
-          },
-        ],
+        user_id: true,
+        public_key: true,
+        blockchain: true,
       },
     ],
   });
 
   // Filter again to make sure the blockchain/public key pair match. It might
   // be possible to do this in graphql query?
-  return response.auth_users
-    .filter((user) => {
-      return user.public_keys
-        .map((p) => ({
-          blockchain: p.blockchain as Blockchain,
-          publicKey: p.public_key,
-        }))
-        .some((x) => blockchainPublicKeys.includes(x));
-    })
-    .map((r) => ({
-      id: r.id,
-    }));
+  const result = response.auth_public_keys.filter((r) => {
+    return blockchainPublicKeys.some(
+      (b) =>
+        b.publicKey === r.public_key &&
+        (b.blockchain as Blockchain) === r.blockchain
+    );
+  });
+
+  return result;
 };
 
 /**
