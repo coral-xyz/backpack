@@ -1042,13 +1042,17 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
       return;
     }
 
-    const publicKey = await background.request({
-      method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
-      params: [blockchain, secretKeyHex, name],
-    });
-
-    setNewPublicKey(publicKey);
-    setOpenDrawer(true);
+    try {
+      setNewPublicKey(
+        await background.request({
+          method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
+          params: [blockchain, secretKeyHex, name],
+        })
+      );
+      setOpenDrawer(true);
+    } catch (error) {
+      setError("Wallet address is used by another Backpack account.");
+    }
   };
 
   return (
