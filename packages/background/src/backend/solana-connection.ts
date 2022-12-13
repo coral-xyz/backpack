@@ -609,48 +609,49 @@ export class SolanaConnectionBackend {
     return await this.connection!.getAddressLookupTable(programId, config);
   }
 
+  ///////////////////////////////////////////////////////////////////////////////
+  // Methods below not used currently.
+  ///////////////////////////////////////////////////////////////////////////////
+
   async getBalanceAndContext(
     publicKey: PublicKey,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<number>> {
-    return await this.connection!.getBalanceAndContext(publicKey, commitment);
+    throw new Error("not implemented");
   }
 
   async getMinimumLedgerSlot(): Promise<number> {
-    return await this.connection!.getMinimumLedgerSlot();
+    throw new Error("not implemented");
   }
 
   async getFirstAvailableBlock(): Promise<number> {
-    return await this.connection!.getFirstAvailableBlock();
+    throw new Error("not implemented");
   }
 
   async getSupply(
     config?: GetSupplyConfig | Commitment
   ): Promise<RpcResponseAndContext<Supply>> {
-    return await this.connection!.getSupply(config);
+    throw new Error("not implemented");
   }
 
   async getTokenSupply(
     tokenMintAddress: PublicKey,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<TokenAmount>> {
-    return await this.connection!.getTokenSupply(tokenMintAddress, commitment);
+    throw new Error("not implemented");
   }
 
   async getLargestAccounts(
     config?: GetLargestAccountsConfig
   ): Promise<RpcResponseAndContext<Array<AccountBalancePair>>> {
-    return await this.connection!.getLargestAccounts(config);
+    throw new Error("not implemented");
   }
 
   async getMultipleAccountsInfoAndContext(
     publicKeys: PublicKey[],
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<(AccountInfo<Buffer> | null)[]>> {
-    return await this.connection!.getMultipleAccountsInfoAndContext(
-      publicKeys,
-      commitment
-    );
+    throw new Error("not implemented");
   }
 
   async getStakeActivation(
@@ -658,276 +659,231 @@ export class SolanaConnectionBackend {
     commitment?: Commitment,
     epoch?: number
   ): Promise<StakeActivationData> {
-    return await this.connection!.getStakeActivation(
-      publicKey,
-      commitment,
-      epoch
-    );
+    throw new Error("not implemented");
   }
 
-  async getClusterNodes(): Promise<Array<ContactInfo>> {
-    return await this.connection!.getClusterNodes();
+  getClusterNodes(): Promise<Array<ContactInfo>> {
+    throw new Error("not implemented");
   }
 
-  async getVoteAccounts(commitment?: Commitment): Promise<VoteAccountStatus> {
-    return await this.connection!.getVoteAccounts(commitment);
+  getVoteAccounts(commitment?: Commitment): Promise<VoteAccountStatus> {
+    throw new Error("not implemented");
   }
 
-  async getSlotLeader(commitment?: Commitment): Promise<string> {
-    return await this.connection!.getSlotLeader(commitment);
+  getSlotLeader(commitment?: Commitment): Promise<string> {
+    throw new Error("not implemented");
   }
 
-  async getSlotLeaders(
-    startSlot: number,
-    limit: number
-  ): Promise<Array<PublicKey>> {
-    return await this.connection!.getSlotLeaders(startSlot, limit);
+  getSlotLeaders(startSlot: number, limit: number): Promise<Array<PublicKey>> {
+    throw new Error("not implemented");
   }
 
-  async getSignatureStatus(
+  getSignatureStatus(
     signature: TransactionSignature,
     config?: SignatureStatusConfig
   ): Promise<RpcResponseAndContext<SignatureStatus | null>> {
-    return await this.connection!.getSignatureStatus(signature, config);
+    throw new Error("not implemented");
   }
 
-  async getSignatureStatuses(
+  getSignatureStatuses(
     signatures: Array<TransactionSignature>,
     config?: SignatureStatusConfig
   ): Promise<RpcResponseAndContext<Array<SignatureStatus | null>>> {
-    return await this.connection!.getSignatureStatuses(signatures, config);
+    throw new Error("not implemented");
   }
 
-  async getTransactionCount(commitment?: Commitment): Promise<number> {
-    return await this.connection!.getTransactionCount(commitment);
+  getTransactionCount(commitment?: Commitment): Promise<number> {
+    throw new Error("not implemented");
   }
 
-  async getTotalSupply(commitment?: Commitment): Promise<number> {
-    return await this.connection!.getTotalSupply(commitment);
+  getTotalSupply(commitment?: Commitment): Promise<number> {
+    throw new Error("not implemented");
   }
 
-  async getInflationGovernor(
-    commitment?: Commitment
-  ): Promise<InflationGovernor> {
-    return await this.connection!.getInflationGovernor(commitment);
+  getInflationGovernor(commitment?: Commitment): Promise<InflationGovernor> {
+    throw new Error("not implemented");
   }
 
-  async getInflationReward(
+  getInflationReward(
     addresses: PublicKey[],
     epoch?: number,
     commitment?: Commitment
   ): Promise<(InflationReward | null)[]> {
-    return await this.connection!.getInflationReward(
-      addresses,
-      epoch,
-      commitment
-    );
+    throw new Error("not implemented");
   }
 
-  async getEpochInfo(commitment?: Commitment): Promise<EpochInfo> {
-    return await this.connection!.getEpochInfo(commitment);
+  getEpochInfo(commitment?: Commitment): Promise<EpochInfo> {
+    throw new Error("not implemented");
   }
 
-  async getEpochSchedule(): Promise<EpochSchedule> {
-    return await this.connection!.getEpochSchedule();
+  getEpochSchedule(): Promise<EpochSchedule> {
+    throw new Error("not implemented");
   }
 
-  async getLeaderSchedule(): Promise<LeaderSchedule> {
-    return await this.connection!.getLeaderSchedule();
+  getLeaderSchedule(): Promise<LeaderSchedule> {
+    throw new Error("not implemented");
   }
 
-  async getRecentBlockhashAndContext(commitment?: Commitment): Promise<
+  getRecentBlockhashAndContext(commitment?: Commitment): Promise<
     RpcResponseAndContext<{
       blockhash: Blockhash;
       feeCalculator: FeeCalculator;
     }>
   > {
-    return await this.connection!.getRecentBlockhashAndContext(commitment);
+    throw new Error("not implemented");
   }
 
-  async getRecentPerformanceSamples(
-    limit?: number
-  ): Promise<Array<PerfSample>> {
-    return await this.connection!.getRecentPerformanceSamples(limit);
+  getRecentPerformanceSamples(limit?: number): Promise<Array<PerfSample>> {
+    throw new Error("not implemented");
   }
 
-  async getFeeCalculatorForBlockhash(
+  getFeeCalculatorForBlockhash(
     blockhash: Blockhash,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<FeeCalculator | null>> {
-    return await this.connection!.getFeeCalculatorForBlockhash(
-      blockhash,
-      commitment
-    );
+    throw new Error("not implemented");
   }
 
-  async getRecentBlockhash(commitment?: Commitment): Promise<{
+  getRecentBlockhash(commitment?: Commitment): Promise<{
     blockhash: Blockhash;
     feeCalculator: FeeCalculator;
   }> {
-    return await this.connection!.getRecentBlockhash(commitment);
+    throw new Error("not implemented");
   }
 
-  async getVersion(): Promise<Version> {
-    return await this.connection!.getVersion();
+  getVersion(): Promise<Version> {
+    throw new Error("not implemented");
   }
 
-  async getGenesisHash(): Promise<string> {
-    return await this.connection!.getGenesisHash();
+  getGenesisHash(): Promise<string> {
+    throw new Error("not implemented");
   }
-
-  async getBlock(
+  getBlock(
     slot: number,
     opts?: {
       commitment?: Finality;
     }
   ): Promise<BlockResponse | null> {
-    return await this.connection!.getBlock(slot, opts);
+    throw new Error("not implemented");
   }
-
-  async getBlockHeight(commitment?: Commitment): Promise<number> {
-    return await this.connection!.getBlockHeight(commitment);
+  getBlockHeight(commitment?: Commitment): Promise<number> {
+    throw new Error("not implemented");
   }
-
-  async getBlockProduction(
+  getBlockProduction(
     configOrCommitment?: GetBlockProductionConfig | Commitment
   ): Promise<RpcResponseAndContext<BlockProduction>> {
-    return await this.connection!.getBlockProduction(configOrCommitment);
+    throw new Error("not implemented");
   }
 
-  async getTransaction(
+  getTransaction(
     signature: string,
     opts?: {
       commitment?: Finality;
     }
   ): Promise<TransactionResponse | null> {
-    return await this.connection!.getTransaction(signature, opts);
+    throw new Error("not implemented");
   }
 
-  async getConfirmedBlock(
+  getConfirmedBlock(
     slot: number,
     commitment?: Finality
   ): Promise<ConfirmedBlock> {
-    return await this.connection!.getConfirmedBlock(slot, commitment);
+    throw new Error("not implemented");
   }
 
-  async getBlocks(
+  getBlocks(
     startSlot: number,
     endSlot?: number,
     commitment?: Finality
   ): Promise<Array<number>> {
-    return await this.connection!.getBlocks(startSlot, endSlot, commitment);
+    throw new Error("not implemented");
   }
 
-  async getBlockSignatures(
+  getBlockSignatures(
     slot: number,
     commitment?: Finality
   ): Promise<BlockSignatures> {
-    return await this.connection!.getBlockSignatures(slot, commitment);
+    throw new Error("not implemented");
   }
 
-  async getConfirmedBlockSignatures(
+  getConfirmedBlockSignatures(
     slot: number,
     commitment?: Finality
   ): Promise<BlockSignatures> {
-    return await this.connection!.getConfirmedBlockSignatures(slot, commitment);
+    throw new Error("not implemented");
   }
 
-  async getConfirmedTransaction(
+  getConfirmedTransaction(
     signature: TransactionSignature,
     commitment?: Finality
   ): Promise<ConfirmedTransaction | null> {
-    return await this.connection!.getConfirmedTransaction(
-      signature,
-      commitment
-    );
+    throw new Error("not implemented");
   }
 
-  async getParsedConfirmedTransaction(
+  getParsedConfirmedTransaction(
     signature: TransactionSignature,
     commitment?: Finality
   ): Promise<ParsedConfirmedTransaction | null> {
-    return await this.connection!.getParsedConfirmedTransaction(
-      signature,
-      commitment
-    );
+    throw new Error("not implemented");
   }
 
-  async getParsedConfirmedTransactions(
+  getParsedConfirmedTransactions(
     signatures: TransactionSignature[],
     commitment?: Finality
   ): Promise<(ParsedConfirmedTransaction | null)[]> {
-    return await this.connection!.getParsedConfirmedTransactions(
-      signatures,
-      commitment
-    );
+    throw new Error("not implemented");
   }
 
-  async getConfirmedSignaturesForAddress(
+  getConfirmedSignaturesForAddress(
     address: PublicKey,
     startSlot: number,
     endSlot: number
   ): Promise<Array<TransactionSignature>> {
-    return await this.connection!.getConfirmedSignaturesForAddress(
-      address,
-      startSlot,
-      endSlot
-    );
+    throw new Error("not implemented");
   }
 
-  async getSignaturesForAddress(
+  getSignaturesForAddress(
     address: PublicKey,
     options?: SignaturesForAddressOptions,
     commitment?: Finality
   ): Promise<Array<ConfirmedSignatureInfo>> {
-    return await this.connection!.getSignaturesForAddress(
-      address,
-      options,
-      commitment
-    );
+    throw new Error("not implemented");
   }
 
-  async getNonceAndContext(
+  getNonceAndContext(
     nonceAccount: PublicKey,
     commitment?: Commitment
   ): Promise<RpcResponseAndContext<NonceAccount | null>> {
-    return await this.connection!.getNonceAndContext(nonceAccount, commitment);
+    throw new Error("not implemented");
   }
 
-  async getNonce(
+  getNonce(
     nonceAccount: PublicKey,
     commitment?: Commitment
   ): Promise<NonceAccount | null> {
-    return await this.connection!.getNonce(nonceAccount, commitment);
+    throw new Error("not implemented");
   }
 
-  async requestAirdrop(
+  requestAirdrop(
     to: PublicKey,
     lamports: number
   ): Promise<TransactionSignature> {
-    return await this.connection!.requestAirdrop(to, lamports);
+    throw new Error("not implemented");
   }
 
-  async sendTransaction(
+  sendTransaction(
     transaction: Transaction,
     signers: Array<Signer>,
     options?: SendOptions
   ): Promise<TransactionSignature> {
-    return await this.connection!.sendTransaction(
-      transaction,
-      signers,
-      options
-    );
+    throw new Error("not implemented");
   }
 
-  async sendEncodedTransaction(
+  sendEncodedTransaction(
     encodedTransaction: string,
     options?: SendOptions
   ): Promise<TransactionSignature> {
-    return await this.connection!.sendEncodedTransaction(
-      encodedTransaction,
-      options
-    );
+    throw new Error("not implemented");
   }
 
   onAccountChange(
@@ -935,11 +891,11 @@ export class SolanaConnectionBackend {
     callback: AccountChangeCallback,
     commitment?: Commitment
   ): number {
-    return this.connection!.onAccountChange(publicKey, callback, commitment);
+    throw new Error("not implemented");
   }
 
-  async removeAccountChangeListener(id: number): Promise<void> {
-    return await this.connection!.removeAccountChangeListener(id);
+  removeAccountChangeListener(id: number): Promise<void> {
+    throw new Error("not implemented");
   }
 
   onProgramAccountChange(
@@ -948,16 +904,11 @@ export class SolanaConnectionBackend {
     commitment?: Commitment,
     filters?: GetProgramAccountsFilter[]
   ): number {
-    return this.connection!.onProgramAccountChange(
-      programId,
-      callback,
-      commitment,
-      filters
-    );
+    throw new Error("not implemented");
   }
 
-  async removeProgramAccountChangeListener(id: number): Promise<void> {
-    return await this.connection!.removeProgramAccountChangeListener(id);
+  removeProgramAccountChangeListener(id: number): Promise<void> {
+    throw new Error("not implemented");
   }
 
   onLogs(
@@ -965,36 +916,35 @@ export class SolanaConnectionBackend {
     callback: LogsCallback,
     commitment?: Commitment
   ): number {
-    return this.connection!.onLogs(filter, callback, commitment);
+    throw new Error("not implemented");
   }
 
-  async removeOnLogsListener(id: number): Promise<void> {
-    return await this.connection!.removeOnLogsListener(id);
+  removeOnLogsListener(id: number): Promise<void> {
+    throw new Error("not implemented");
   }
 
   onSlotChange(callback: SlotChangeCallback): number {
-    return this.connection!.onSlotChange(callback);
+    throw new Error("not implemented");
   }
 
-  async removeSlotChangeListener(id: number): Promise<void> {
-    return await this.connection!.removeSlotChangeListener(id);
+  removeSlotChangeListener(id: number): Promise<void> {
+    throw new Error("not implemented");
   }
 
   onSlotUpdate(callback: SlotUpdateCallback): number {
-    return this.connection!.onSlotUpdate(callback);
+    throw new Error("not implemented");
   }
 
-  async removeSlotUpdateListener(id: number): Promise<void> {
-    return await this.connection!.removeSlotUpdateListener(id);
+  removeSlotUpdateListener(id: number): Promise<void> {
+    throw new Error("not implemented");
   }
-
   _buildArgs(
     args: Array<any>,
     override?: Commitment,
     encoding?: "jsonParsed" | "base64",
     extra?: any
   ): Array<any> {
-    return this.connection!._buildArgs(args, override, encoding, extra);
+    throw new Error("not implemented");
   }
 
   onSignature(
@@ -1002,7 +952,7 @@ export class SolanaConnectionBackend {
     callback: SignatureResultCallback,
     commitment?: Commitment
   ): number {
-    return this.connection!.onSignature(signature, callback, commitment);
+    throw new Error("not implemented");
   }
 
   onSignatureWithOptions(
@@ -1010,22 +960,18 @@ export class SolanaConnectionBackend {
     callback: SignatureSubscriptionCallback,
     options?: SignatureSubscriptionOptions
   ): number {
-    return this.connection!.onSignatureWithOptions(
-      signature,
-      callback,
-      options
-    );
+    throw new Error("not implemented");
   }
 
-  async removeSignatureListener(id: number): Promise<void> {
-    return await this.connection!.removeSignatureListener(id);
+  removeSignatureListener(id: number): Promise<void> {
+    throw new Error("not implemented");
   }
 
   onRootChange(callback: RootChangeCallback): number {
-    return this.connection!.onRootChange(callback);
+    throw new Error("not implemented");
   }
 
-  async removeRootChangeListener(id: number): Promise<void> {
-    return await this.connection!.removeRootChangeListener(id);
+  removeRootChangeListener(id: number): Promise<void> {
+    throw new Error("not implemented");
   }
 }
