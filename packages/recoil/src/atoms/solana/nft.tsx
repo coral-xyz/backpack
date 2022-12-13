@@ -5,7 +5,7 @@ import { selector } from "recoil";
 import { solanaPublicKey } from "../wallet";
 
 import { solanaConnectionUrl } from "./preferences";
-import { customSplTokenAccounts } from "./token";
+import { splNftMetadata } from "./token";
 
 interface SolanaCollection extends NftCollection {
   items: (Nft & { publicKey: string; mint: string })[];
@@ -19,9 +19,7 @@ export const solanaNftCollections = selector<NftCollection[]>({
     //
     const connectionUrl = get(solanaConnectionUrl)!;
     const publicKey = get(solanaPublicKey)!;
-    const { splNftMetadata: metadata } = get(
-      customSplTokenAccounts({ connectionUrl, publicKey })
-    );
+    const metadata = get(splNftMetadata({ connectionUrl, publicKey }));
 
     //
     // Bucket all the nfts by collection name.
@@ -53,10 +51,10 @@ export const solanaNftCollections = selector<NftCollection[]>({
         });
       }
       collections.get(collectionId)!.items.push({
-        id: value.publicKey,
+        id: value.publicKey.toString(),
         blockchain: Blockchain.SOLANA,
-        publicKey: value.publicKey,
-        mint: value.metadata.mint,
+        publicKey: value.publicKey.toString(),
+        mint: value.metadata.mint.toString(), // todo: check type here on the pubkey
         name: value.tokenMetaUriData.name,
         description: value.tokenMetaUriData.description,
         externalUrl: externalResourceUri(value.tokenMetaUriData.external_url),

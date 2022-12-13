@@ -1,8 +1,7 @@
 import type {
   SolanaTokenAccountWithKeyString,
-  SplNftMetadataString,
-  TokenMetadataString,
-} from "@coral-xyz/common";
+  SplNftMetadata,  SplNftMetadataString,
+  TokenMetadataString} from "@coral-xyz/common";
 import {
   SOL_NATIVE_MINT,
   TOKEN_METADATA_PROGRAM_ID,
@@ -44,7 +43,6 @@ export const customSplTokenAccounts = atomFamily({
       }): Promise<{
         splTokenAccounts: Map<string, SolanaTokenAccountWithKeyString>;
         splTokenMetadata: Array<TokenMetadataString | null>;
-        splNftMetadata: Map<string, SplNftMetadataString>;
         splTokenMints: Map<string, RawMint>;
       }> => {
         const { connection } = get(anchorContext);
@@ -52,13 +50,13 @@ export const customSplTokenAccounts = atomFamily({
         // Fetch token data.
         //
         try {
-          const { tokenAccountsMap, tokenMetadata, nftMetadata, mintsMap } =
+          const { tokenAccountsMap, tokenMetadata, mintsMap, fts, nfts } =
             await connection.customSplTokenAccounts(new PublicKey(publicKey));
+          console.log("ARMANI", fts, nfts);
           const splTokenAccounts = new Map(tokenAccountsMap);
           return {
             splTokenAccounts,
             splTokenMetadata: tokenMetadata,
-            splNftMetadata: new Map(nftMetadata),
             splTokenMints: new Map(mintsMap),
           };
         } catch (error) {
@@ -66,12 +64,32 @@ export const customSplTokenAccounts = atomFamily({
           return {
             splTokenAccounts: new Map(),
             splTokenMetadata: [],
-            splNftMetadata: new Map(),
             splTokenMints: new Map(),
           };
         }
       },
   }),
+});
+
+export const splNftMetadata = selectorFamily<
+  Map<string, SplNftMetadata>,
+  {
+    connectionUrl: string;
+    publicKey: string;
+  }
+>({
+  key: "splNftMetadata",
+  get:
+    ({
+      connectionUrl,
+      publicKey,
+    }: {
+      connectionUrl: string;
+      publicKey: string;
+    }) =>
+    ({ get }) => {
+      return new Map(); // todo
+    },
 });
 
 /**

@@ -20,7 +20,7 @@ export const useUpdateAllSplTokenAccounts = () =>
         customSplTokenAccounts: {
           tokenAccounts: SolanaTokenAccountWithKey[];
           tokenMetadata: (TokenMetadata | null)[];
-          nftMetadata: [string, SplNftMetadata][];
+          //          nftMetadata: [string, SplNftMetadata][];
         };
       }) => {
         // TODO: Do we want to check if the atoms have changed before setting
@@ -29,7 +29,7 @@ export const useUpdateAllSplTokenAccounts = () =>
         set(atoms.customSplTokenAccounts({ connectionUrl, publicKey }), {
           splTokenAccounts: customSplTokenAccounts.tokenAccounts,
           splTokenMetadata: customSplTokenAccounts.tokenMetadata,
-          splNftMetadata: new Map(customSplTokenAccounts.nftMetadata),
+          //          splNftMetadata: new Map(customSplTokenAccounts.nftMetadata),
         });
       }
   );

@@ -348,6 +348,26 @@ async function handleCustomSplTokenAccounts(
         },
       ];
     }),
+    fts: {
+      fungibleTokens: _resp.fts.fungibleTokens.map((t: any) => {
+        return {
+          ...t,
+          mint: t.mint.toString(),
+          amount: t.amount.toString(),
+        };
+      }),
+      fungibleTokenMetadata: _resp.fts.fungibleTokenMetadata,
+    },
+    nfts: {
+      nftTokens: _resp.fts.fungibleTokens.map((t: any) => {
+        return {
+          ...t,
+          mint: t.mint.toString(),
+          amount: t.amount.toString(),
+        };
+      }),
+      nftTokenMetadata: _resp.nfts.nftTokenMetadata,
+    },
   };
   return [resp];
 }

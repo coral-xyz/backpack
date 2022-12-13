@@ -129,8 +129,15 @@ export class BackgroundSolanaConnection extends Connection {
   async customSplTokenAccounts(publicKey: PublicKey): Promise<{
     tokenAccountsMap: [string, SolanaTokenAccountWithKeyString][];
     tokenMetadata: (TokenMetadataString | null)[];
-    nftMetadata: [string, SplNftMetadataString][];
     mintsMap: [string, RawMint][];
+    nfts: {
+      nftTokens: Array<SolanaTokenAccountWithKeyString>;
+      nftTokenMetadata: Array<TokenMetadataString | null>;
+    };
+    fts: {
+      fungibleTokens: Array<SolanaTokenAccountWithKeyString>;
+      fungibleTokenMetadata: Array<TokenMetadataString | null>;
+    };
   }> {
     const resp = await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
@@ -164,6 +171,24 @@ export class BackgroundSolanaConnection extends Connection {
           },
         ];
       }),
+      fts: {
+        ...json.fts,
+        fungibleTokens: json.fts.fungibleTokens.map((t: any) => {
+          return {
+            ...t,
+            mint: new PublicKey(t.mint),
+          };
+        }),
+      },
+      nfts: {
+        ...json.nfts,
+        nftTokens: json.nfts.nftTokens.map((t: any) => {
+          return {
+            ...t,
+            mint: new PublicKey(t.mint),
+          };
+        }),
+      },
     };
   }
 

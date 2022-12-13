@@ -55,8 +55,11 @@ export async function customSplTokenAccounts(
 ): Promise<{
   tokenAccountsMap: [string, SolanaTokenAccountWithKeySerializable][];
   tokenMetadata: (TokenMetadata | null)[];
-  nftMetadata: [string, SplNftMetadata][];
   mintsMap: [string, RawMint][];
+  nfts: {
+    nftTokens: Array<SolanaTokenAccountWithKey>;
+    nftTokenMetadata: Array<TokenMetadata | null>;
+  };
 }> {
   // @ts-ignore
   const provider = new AnchorProvider(connection, { publicKey });
@@ -72,11 +75,11 @@ export async function customSplTokenAccounts(
     //
     fetchTokens(publicKey, tokenClient),
   ]);
-  const nativeSol: SolanaTokenAccountWithKeySerializable = {
+  const nativeSol: SolanaTokenAccountWithKey = {
     key: publicKey,
     mint: PublicKey.default,
     authority: publicKey,
-    amount: accountInfo ? accountInfo.lamports.toString() : "0",
+    amount: accountInfo ? new BN(accountInfo.lamports) : new BN(0),
     delegate: null,
     state: 1,
     isNative: null,
@@ -95,15 +98,16 @@ export async function customSplTokenAccounts(
   //
   // Fetch the metadata uri and interpert as NFTs.
   //
-  const { nftTokens, nftTokenMetadata, fungibleTokens } = splitOutNfts(
-    tokenAccountsArray,
-    tokenMetadata,
-    new Map(mintsMap) as Map<string, RawMint>
-  );
+  const { fungibleTokens, fungibleTokenMetadata, nftTokens, nftTokenMetadata } =
+    splitOutNfts(
+      tokenAccountsArray,
+      tokenMetadata,
+      new Map(mintsMap) as Map<string, RawMint>
+    );
 
-  const nftMetadata = await fetchSplMetadataUri(nftTokens, nftTokenMetadata);
+  //  const nftMetadata = await fetchSplMetadataUri(nftTokens, nftTokenMetadata);
 
-  const tokenAccountsMap = (
+  const fungibleTokenAccountsMap = (
     fungibleTokens.map((t: SolanaTokenAccountWithKey) => [
       t.key.toString(),
       {
@@ -114,11 +118,18 @@ export async function customSplTokenAccounts(
   ).concat([[nativeSol.key.toString(), nativeSol]]);
 
   return {
-    tokenAccountsMap,
-    tokenMetadata,
     // @ts-ignore
-    mintsMap,
-    nftMetadata: Array.from(nftMetadata),
+    mintsMap, // All mints (fungible and non-fungible).
+    tokenAccountsMap: fungibleTokenAccountsMap, // Fungible tokens.
+    tokenMetadata, // All token metadata (fungible and non-fungible).
+    nfts: {
+      nftTokens, // Non-fungible tokens.
+      nftTokenMetadata, // Non-fungible token metaata.
+    },
+    fts: {
+      fungibleTokens: fungibleTokens.concat([nativeSol]),
+      fungibleTokenMetadata,
+    },
   };
 }
 
