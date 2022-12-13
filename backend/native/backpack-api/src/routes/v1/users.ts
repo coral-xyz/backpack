@@ -1,6 +1,5 @@
 import type { Blockchain } from "@coral-xyz/common";
-import { getCreateMessage } from "@coral-xyz/common";
-import { ethers } from "ethers";
+import { getAddMessage,getCreateMessage } from "@coral-xyz/common";
 import type { Request, Response } from "express";
 import express from "express";
 import jwt from "jsonwebtoken";
@@ -17,15 +16,12 @@ import {
   updateUserAvatar,
 } from "../../db/users";
 import { getOrcreateXnftSecret } from "../../db/xnftSecrets";
+import { validateSignature } from "../../validation/signature";
 import {
   BlockchainPublicKey,
   CreatePublicKeys,
   CreateUserWithPublicKeys,
-  validateEthereumSignature,
-  validateSolanaSignature,
 } from "../../validation/user";
-
-const { base58 } = ethers.utils;
 
 const router = express.Router();
 
@@ -69,26 +65,17 @@ router.post("/", async (req, res) => {
   // Validate all the signatures
   for (const blockchainPublicKey of blockchainPublicKeys) {
     const signedMessage = getCreateMessage(blockchainPublicKey.publicKey);
-    if (blockchainPublicKey.blockchain === "solana") {
-      if (
-        !validateSolanaSignature(
-          Buffer.from(signedMessage, "utf8"),
-          base58.decode(blockchainPublicKey.signature),
-          base58.decode(blockchainPublicKey.publicKey)
-        )
-      ) {
-        return res.status(500).json({ msg: "Invalid Solana signature" });
-      }
-    } else {
-      if (
-        !validateEthereumSignature(
-          Buffer.from(signedMessage, "utf8"),
-          blockchainPublicKey.signature,
-          blockchainPublicKey.publicKey
-        )
-      ) {
-        return res.status(500).json({ msg: "Invalid Ethereum signature" });
-      }
+    if (
+      !validateSignature(
+        Buffer.from(signedMessage, "utf-8"),
+        blockchainPublicKey.blockchain as Blockchain,
+        blockchainPublicKey.signature,
+        blockchainPublicKey.publicKey
+      )
+    ) {
+      return res
+        .status(400)
+        .json({ msg: `Invalid ${blockchainPublicKey.blockchain} signature` });
     }
   }
 
@@ -96,7 +83,11 @@ router.post("/", async (req, res) => {
   try {
     user = await createUser(
       username,
-      blockchainPublicKeys,
+      blockchainPublicKeys.map((b) => ({
+        ...b,
+        // Cast blockchain to correct type
+        blockchain: b.blockchain as Blockchain,
+      })),
       inviteCode,
       waitlistId
     );
@@ -229,6 +220,20 @@ router.post(
     const { blockchain, publicKey, signature } = CreatePublicKeys.parse(
       req.body
     );
+
+    const signedMessage = getAddMessage(publicKey);
+
+    if (
+      !validateSignature(
+        Buffer.from(signedMessage, "utf-8"),
+        blockchain as Blockchain,
+        signature,
+        publicKey
+      )
+    ) {
+      return res.status(400).json({ msg: `Invalid signature` });
+    }
+
     await createUserPublicKey({
       userId: req.id!,
       blockchain: blockchain as Blockchain,
