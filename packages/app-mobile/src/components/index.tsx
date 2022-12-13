@@ -1,6 +1,7 @@
 import type { ImageStyle, StyleProp, TextStyle, ViewStyle } from "react-native";
 import {
   ActivityIndicator,
+  Alert,
   Image,
   Pressable,
   StyleSheet,
@@ -24,7 +25,7 @@ export { default as ResetAppButton } from "./ResetAppButton";
 export { StyledTextInput } from "./StyledTextInput";
 export { TokenAmountHeader } from "./TokenAmountHeader";
 export { TokenInputField } from "./TokenInputField";
-import { ContentCopyIcon,RedBackpack } from "@components/Icon";
+import { ContentCopyIcon, RedBackpack } from "@components/Icon";
 //
 // function getRandomColor() { var letters = "0123456789ABCDEF";
 //   var color = "#";
@@ -624,6 +625,7 @@ export function CopyWalletFieldInput({
       <Pressable
         onPress={async () => {
           await Clipboard.setStringAsync(publicKey);
+          Alert.alert("Copied to clipboard", publicKey);
         }}
       >
         <ContentCopyIcon />

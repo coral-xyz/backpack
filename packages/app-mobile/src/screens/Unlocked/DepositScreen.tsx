@@ -16,7 +16,7 @@ import {
   Margin,
   Screen,
 } from "@components";
-import { Blockchain , walletAddressDisplay } from "@coral-xyz/common";
+import { Blockchain, walletAddressDisplay } from "@coral-xyz/common";
 import { useActiveWallets } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useBlockchainLogo, useTheme } from "@hooks";
@@ -243,7 +243,7 @@ function BlockchainDepositCard({
 
   const onPressCopy = async () => {
     await Clipboard.setStringAsync(publicKey);
-    Alert.alert("Copied to clipboard");
+    Alert.alert("Copied to clipboard", publicKey);
   };
 
   return (
