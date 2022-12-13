@@ -300,7 +300,7 @@ export const isCardinalWrappedToken = async (
   // only need network calls to double confirm but the above check is likely sufficient if we assume it was created correctly
   const [tokenManagerId] =
     await programs.tokenManager.pda.findTokenManagerAddress(
-      new PublicKey(tokenAddress)
+      new PublicKey(mintId)
     );
   const tokenManagerData = await tryGetAccount(() =>
     programs.tokenManager.accounts.getTokenManager(connection, tokenManagerId)
