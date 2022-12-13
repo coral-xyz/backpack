@@ -205,7 +205,7 @@ export function TokenInputField({
 export function Loading(props: any) {
   const classes = useStyles();
   return (
-    <div className={classes.loadingContainer}>
+    <div style={props.style} className={classes.loadingContainer}>
       <>
         <svg style={{ position: "fixed" }}>
           <linearGradient id="linearColors" x1="0" y1="0" x2="1" y2="1">

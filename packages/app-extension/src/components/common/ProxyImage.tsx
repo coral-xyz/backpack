@@ -2,17 +2,19 @@ import React, { useEffect, useState } from "react";
 import { proxyImageUrl } from "@coral-xyz/common";
 import { Skeleton } from "@mui/material";
 
-const imageCache: string[] = [];
-
 type ImgProps = React.DetailedHTMLProps<
   React.ImgHTMLAttributes<HTMLImageElement>,
   HTMLImageElement
 >;
 export function ProxyImage({
+  maxImageWidth = 400,
+  maxImageHeight = 400,
   removeOnError,
   loadingStyles,
   ...imgProps
 }: {
+  maxImageWidth?: number;
+  maxImageHeight?: number;
   removeOnError?: boolean;
   loadingStyles?: React.CSSProperties;
 } & ImgProps) {
@@ -58,7 +60,7 @@ export function ProxyImage({
           setError(true);
           imgProps.onError && imgProps.onError(...e);
         }}
-        src={proxyImageUrl(imgProps.src ?? "")}
+        src={proxyImageUrl(imgProps.src ?? "", maxImageWidth, maxImageHeight)}
       />
     </>
   );

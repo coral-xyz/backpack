@@ -47,6 +47,8 @@ export const TokenAmountHeader: React.FC<{
           }}
         >
           <ProxyImage
+            maxImageHeight={64}
+            maxImageWidth={64}
             src={token.logo}
             style={{
               width: "32px",

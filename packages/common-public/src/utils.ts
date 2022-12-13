@@ -64,9 +64,13 @@ export function externalResourceUri(uri: string): string {
   return uri;
 }
 
-export function proxyImageUrl(url: string): string {
+export function proxyImageUrl(
+  url: string,
+  maxWidth = 400,
+  maxHeight = 400
+): string {
   if (url && (url.startsWith("http://") || url.startsWith("https://"))) {
-    return `${IMAGE_PROXY_URL}/insecure/rs:fit:400:400:0:0/plain/${url}`;
+    return `${IMAGE_PROXY_URL}/cdn-cgi/image/fit=contain,width=${maxWidth},height=${maxHeight},quality=85/${url}`;
   }
   return url;
 }

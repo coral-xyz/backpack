@@ -17,12 +17,13 @@ import {
 } from "@coral-xyz/recoil";
 import { styled, useCustomTheme } from "@coral-xyz/themes";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
-import { CardHeader, Grid } from "@mui/material";
+import { CardHeader, CircularProgress, Grid } from "@mui/material";
 import Collapse from "@mui/material/Collapse";
 import Typography from "@mui/material/Typography";
-import { useRecoilValueLoadable, useSetRecoilState } from "recoil";
+import { resolve } from "dns";
+import { useRecoilValueLoadable, useSetRecoilState, waitForAll } from "recoil";
 
-import { PrimaryButton, SecondaryButton } from "../../../common";
+import { Loading, PrimaryButton, SecondaryButton } from "../../../common";
 import { Scrollbar } from "../../../common/Layout/Scrollbar";
 import { ProxyImage } from "../../../common/ProxyImage";
 
@@ -36,8 +37,9 @@ export function UpdateProfilePicture({
   setOpenDrawer: (open: boolean) => void;
 }) {
   const [tempAvatar, setTempAvatar] = useState<tempAvatar | null>(null);
+  const [loading, setLoading] = useState(false);
   const setNewAvatar = useSetRecoilState(newAvatarAtom);
-  const avatarUrl = useAvatarUrl(64);
+  const avatarUrl = useAvatarUrl();
   const { username } = useUser();
   // const wallets = useActiveWallets();
   const wallets = useWalletPublicKeys();
@@ -46,7 +48,11 @@ export function UpdateProfilePicture({
   return (
     <Container>
       <AvatarWrapper>
-        <Avatar src={tempAvatar?.url || avatarUrl} />
+        <Avatar
+          src={tempAvatar?.url || avatarUrl}
+          maxImageHeight={128}
+          maxImageWidth={128}
+        />
       </AvatarWrapper>
       <Typography style={{ textAlign: "center" }}>{`@${username}`}</Typography>
       <FakeDrawer>
@@ -61,7 +67,7 @@ export function UpdateProfilePicture({
               transition: "padding ease-out 200ms",
             }}
           >
-            {collections.state === "hasValue" &&
+            {collections.state === "hasValue" ? (
               Object.entries(collections.contents).map(
                 ([blockchain, collection]) => (
                   <BlockchainNFTs
@@ -73,7 +79,10 @@ export function UpdateProfilePicture({
                     setTempAvatar={setTempAvatar}
                   />
                 )
-              )}
+              )
+            ) : (
+              <Loading style={{ marginTop: "50px" }}></Loading>
+            )}
           </div>
         </Scrollbar>
       </FakeDrawer>
@@ -92,9 +101,19 @@ export function UpdateProfilePicture({
           }}
         />
         <PrimaryButton
-          label={"Update"}
+          label={
+            loading ? (
+              <CircularProgress
+                size={24}
+                sx={{ color: "white", display: "flex", alignSelf: "center" }}
+              />
+            ) : (
+              "Update"
+            )
+          }
           onClick={async () => {
             if (tempAvatar) {
+              setLoading(true);
               await fetch(BACKEND_API_URL + "/users/avatar", {
                 headers: {
                   "Content-Type": "application/json",
@@ -106,12 +125,16 @@ export function UpdateProfilePicture({
                 "https://swr-data.xnfts.dev/avatars/" +
                   username +
                   "?bust_cache=1"
-              );
+              ); // bust edge cache
               setNewAvatar(tempAvatar);
+              setTempAvatar(null);
               setOpenDrawer(false);
             }
           }}
           style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
             margin: "16px",
             marginLeft: "0px",
           }}
@@ -165,9 +188,11 @@ function BlockchainNFTs({
                 onClick={() => {
                   console.log(nft);
 
-                  // @ts-ignore
                   const avatarId =
-                    nft.blockchain === "solana" ? nft.mint : nft.id;
+                    nft.blockchain === "solana"
+                      ? // @ts-ignore
+                        nft.mint
+                      : nft.id;
 
                   setTempAvatar({
                     url: nft.imageUrl,
@@ -218,6 +243,8 @@ function BlockchainHeader({
       avatar={
         blockchainLogo && (
           <ProxyImage
+            maxImageHeight={24}
+            maxImageWidth={24}
             src={blockchainLogo}
             style={{
               width: "12px",
@@ -332,7 +359,7 @@ const Avatar = styled(ProxyImage)(({ theme }) => ({
 const AvatarWrapper = styled("div")(({ theme }) => ({
   boxSizing: "border-box",
   position: "relative",
-  borderRadius: "40px",
+  borderRadius: "50px",
   border: `3px dashed ${theme.custom.colors.avatarIconBackground}`,
   padding: "6px",
   width: "82px",
@@ -340,7 +367,9 @@ const AvatarWrapper = styled("div")(({ theme }) => ({
   marginLeft: "auto",
   marginRight: "auto",
   overflow: "hidden",
-  display: "block",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
   "&:hover .editOverlay": {
     visibility: "visible",
   },

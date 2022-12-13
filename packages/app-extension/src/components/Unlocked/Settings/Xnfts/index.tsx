@@ -23,6 +23,8 @@ export function XnftSettings() {
       onClick: () => nav.push("xnfts-detail", { xnft }),
       icon: (props: any) => (
         <ProxyImage
+          maxImageHeight={88}
+          maxImageWidth={88}
           style={{
             marginRight: "12px",
             borderRadius: "8px",

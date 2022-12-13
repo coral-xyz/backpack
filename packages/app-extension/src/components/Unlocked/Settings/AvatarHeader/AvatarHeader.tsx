@@ -8,6 +8,7 @@ import {
   NavStackEphemeral,
   NavStackScreen,
 } from "../../../common/Layout/NavStack";
+import { ProxyImage } from "../../../common/ProxyImage";
 
 import { UpdateProfilePicture } from "./UpdateProfilePicture";
 
@@ -16,7 +17,7 @@ const title = "Change Profile Picture";
 export function AvatarHeader() {
   const [openDrawer, setOpenDrawer] = useState(false);
   const avatarUrl = useAvatarUrl(64);
-  console.log(avatarUrl);
+  console.log("test", avatarUrl);
   const onClick = () => {
     setOpenDrawer(true);
   };
@@ -24,7 +25,10 @@ export function AvatarHeader() {
   return (
     <div style={{ marginTop: "16px", marginBottom: "36px" }}>
       <AvatarWrapper onClick={onClick}>
-        <img
+        <ProxyImage
+          key={avatarUrl}
+          maxImageHeight={128}
+          maxImageWidth={128}
           src={avatarUrl}
           style={{
             width: "64px",
@@ -33,6 +37,7 @@ export function AvatarHeader() {
             marginRight: "auto",
             display: "block",
             zIndex: 0,
+            borderRadius: 32,
           }}
         />
         <EditOverlay className={"editOverlay"}>

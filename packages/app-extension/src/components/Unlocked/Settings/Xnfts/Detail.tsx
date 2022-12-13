@@ -164,6 +164,8 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
     >
       <div>
         <ProxyImage
+          maxImageHeight={240}
+          maxImageWidth={240}
           src={xnft.iconUrl}
           style={{
             width: "120px",
