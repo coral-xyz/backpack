@@ -104,11 +104,11 @@ export async function customSplTokenAccounts(
   const nftMetadata = await fetchSplMetadataUri(nftTokens, nftTokenMetadata);
 
   const tokenAccountsMap = (
-    fungibleTokens.map((SolanaTokenAccountWithKey) => [
-      SolanaTokenAccountWithKey.key.toString(),
+    fungibleTokens.map((t: SolanaTokenAccountWithKey) => [
+      t.key.toString(),
       {
-        ...SolanaTokenAccountWithKey,
-        amount: SolanaTokenAccountWithKey.amount.toString(),
+        ...t,
+        amount: t.amount.toString(),
       },
     ]) as [string, SolanaTokenAccountWithKeySerializable][]
   ).concat([[nativeSol.key.toString(), nativeSol]]);
@@ -173,6 +173,9 @@ export async function fetchSplMetadata(
   return tokenMetaAccounts;
 }
 
+/**
+ * Splits out all the tokens into fungible and non fungible tokens.
+ */
 function splitOutNfts(
   tokens: Array<SolanaTokenAccountWithKey>,
   tokensMetadata: Array<TokenMetadata | null>,
@@ -183,9 +186,6 @@ function splitOutNfts(
   fungibleTokens: Array<SolanaTokenAccountWithKey>;
   fungibleTokenMetadata: Array<TokenMetadata | null>;
 } {
-  //
-  // Filter for NFTs only.
-  //
   let nftTokens: Array<SolanaTokenAccountWithKey> = [];
   let nftTokenMetadata: Array<TokenMetadata | null> = [];
 
@@ -199,12 +199,12 @@ function splitOutNfts(
     // If token standard is available use it.
     //
     if (tokenMetadata && tokenMetadata.account) {
-      if (tokenMetadata.account.tokenStandard !== TokenStandard.Fungible) {
-        nftTokens.push(token);
-        nftTokenMetadata.push(tokenMetadata);
-      } else {
+      if (tokenMetadata.account.tokenStandard === TokenStandard.Fungible) {
         fungibleTokens.push(token);
         fungibleTokenMetadata.push(tokenMetadata);
+      } else {
+        nftTokens.push(token);
+        nftTokenMetadata.push(tokenMetadata);
       }
     }
     //
