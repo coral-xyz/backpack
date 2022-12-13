@@ -36,10 +36,11 @@ import {
 export class KeyringStore {
   private lastUsedTs: number;
   private password?: string;
-  private autoLockInterval?: ReturnType<typeof setInterval>;
   private events: EventEmitter;
   private users: Map<string, UserKeyring>;
-  // Must be undefined when the keyring-store is locked or uninitialized.
+  /** A countdown that locks the extension after a user-specified interval */
+  private autoLockCountdown: { start: () => void; restart: () => void };
+  /** Must be undefined when the keyring-store is locked or uninitialized. */
   private activeUserUuid?: string;
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -65,6 +66,38 @@ export class KeyringStore {
     this.users = new Map();
     this.lastUsedTs = 0;
     this.events = events;
+    this.autoLockCountdown = (() => {
+      let countdown: ReturnType<typeof setTimeout>;
+      let seconds: number;
+
+      const countdownFactory = () =>
+        setTimeout(() => {
+          // If the countdown ends, lock the extension and emit an event.
+          this.lock();
+          this.events.emit(BACKEND_EVENT, {
+            name: NOTIFICATION_KEYRING_STORE_LOCKED,
+          });
+        }, seconds * 1000);
+
+      return {
+        start: () => {
+          // Get the auto-lock interval from the
+          // user's preferences and start the countdown timer.
+          store
+            .getWalletDataForUser(this.activeUserUuid!)
+            .then(({ autoLockSecs }) => {
+              seconds = autoLockSecs || store.DEFAULT_LOCK_INTERVAL_SECS;
+              if (countdown) clearTimeout(countdown);
+              countdown = countdownFactory();
+            });
+        },
+        restart: () => {
+          // Reset the countdown timer and start it again.
+          if (countdown) clearTimeout(countdown);
+          countdown = countdownFactory();
+        },
+      };
+    })();
   }
 
   // Initializes the keystore for the first time.
@@ -204,7 +237,7 @@ export class KeyringStore {
       this.activeUserUuid = uuid;
       this.password = password;
       // Automatically lock the store when idle.
-      this.autoLockStart();
+      this.autoLockCountdown.start();
     });
   }
 
@@ -268,11 +301,12 @@ export class KeyringStore {
         autoLockSecs,
       });
 
-      if (this.autoLockInterval) {
-        clearInterval(this.autoLockInterval);
-      }
-      this.autoLockStart();
+      this.autoLockCountdown.start();
     });
+  }
+
+  public autoLockCountdownRestart() {
+    this.autoLockCountdown.restart();
   }
 
   public keepAlive() {
@@ -290,28 +324,6 @@ export class KeyringStore {
     this.activeUserUuid = uuid;
     await store.setActiveUser(user);
     return user;
-  }
-
-  private autoLockStart() {
-    // Check the last time the keystore was used at a regular interval.
-    // If it hasn't been used recently, lock the keystore.
-    store
-      .getWalletDataForUser(this.activeUserUuid!)
-      .then(({ autoLockSecs }) => {
-        const _autoLockSecs = autoLockSecs ?? store.DEFAULT_LOCK_INTERVAL_SECS;
-        this.autoLockInterval = setInterval(() => {
-          const currentTs = Date.now() / 1000;
-          if (currentTs - this.lastUsedTs >= _autoLockSecs) {
-            this.lock();
-            this.events.emit(BACKEND_EVENT, {
-              name: NOTIFICATION_KEYRING_STORE_LOCKED,
-            });
-            if (this.autoLockInterval) {
-              clearInterval(this.autoLockInterval);
-            }
-          }
-        }, _autoLockSecs * 1000);
-      });
   }
 
   ///////////////////////////////////////////////////////////////////////////////

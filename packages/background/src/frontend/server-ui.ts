@@ -134,6 +134,9 @@ async function handle<T = any>(
 ): Promise<RpcResponse<T>> {
   logger.debug(`handle rpc ${msg.method}`, msg);
 
+  // The user did something so keep the keyring store unlocked
+  ctx.backend.keyringStoreAutoLockCountdownRestart();
+
   const { method, params } = msg;
   switch (method) {
     //
