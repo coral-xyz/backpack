@@ -1051,7 +1051,6 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
       );
       setOpenDrawer(true);
     } catch (error) {
-      console.log(error);
       setError("Wallet address is used by another Backpack account.");
     }
   };
