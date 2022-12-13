@@ -17,6 +17,7 @@ import {
   deserializeTransaction,
   EthereumConnectionUrl,
   EthereumExplorer,
+  getAddMessage,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
   NOTIFICATION_BLOCKCHAIN_DISABLED,
@@ -1114,7 +1115,11 @@ export class Backend {
   ) {
     // Persist the newly added public key to the Backpack API
     if (!signature) {
-      signature = await this.signMessageForPublicKey(blockchain, "", publicKey);
+      signature = await this.signMessageForPublicKey(
+        blockchain,
+        bs58.encode(Buffer.from(getAddMessage(publicKey), "utf-8")),
+        publicKey
+      );
     }
     const response = await fetch(`${BACKEND_API_URL}/users/publicKeys`, {
       method: "POST",
