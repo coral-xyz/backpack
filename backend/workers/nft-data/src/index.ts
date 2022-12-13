@@ -11,7 +11,6 @@ const TOKEN_METADATA_PROGRAM_ID = new PublicKey(
 app.get("/metaplex-nft/:mintAddress/image", async (c) => {
   try {
     const { mintAddress } = c.req.param();
-
     const metadataAccountAddress = PublicKey.findProgramAddressSync(
       [
         Buffer.from("metadata"),
@@ -21,8 +20,8 @@ app.get("/metaplex-nft/:mintAddress/image", async (c) => {
       TOKEN_METADATA_PROGRAM_ID
     )[0];
 
-    const metadataAccountResponse = await c.env.swr.fetch(
-      new Request("https://solana-rpc.xnfts.dev/rpc-proxy", {
+    const metadataAccountResponse = await c.env.solanaRpc.fetch(
+      new Request("https://rpc-proxy.backpack.workers.dev/", {
         method: "POST",
         body: `{
           "jsonrpc": "2.0",
@@ -36,6 +35,11 @@ app.get("/metaplex-nft/:mintAddress/image", async (c) => {
           ]
         }`,
       })
+    );
+
+    console.log(
+      metadataAccountResponse.status,
+      metadataAccountResponse.statusText
     );
     const metadataAccount = await metadataAccountResponse.json();
 
@@ -78,9 +82,9 @@ app.get("/ethereum-nft/:contractAddress/:tokenId/image", async (c) => {
   try {
     const { contractAddress, tokenId } = c.req.param();
 
-    const metadataResponse = await c.env.swr.fetch(
+    const metadataResponse = await c.env.ethereumRpc.fetch(
       new Request(
-        `https://swr.xnfts.dev/ethereum-rpc-proxy/nft/getNFTMetadata?contractAddress=${contractAddress}&tokenId=${tokenId}`
+        `https://ethereum-rpc-proxy.backpack.workers.dev/nft/getNFTMetadata?contractAddress=${contractAddress}&tokenId=${tokenId}`
       )
     );
 

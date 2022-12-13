@@ -4,5 +4,6 @@ compatibility_date = "2022-12-05"
 node_compat = true
 
 services = [
-  { binding = "swr", service = "swr-cache" }
+  { binding = "solanaRpc", service = "rpc-proxy" },
+  { binding = "ethereumRpc", service = "ethereum-rpc-proxy" }
 ]

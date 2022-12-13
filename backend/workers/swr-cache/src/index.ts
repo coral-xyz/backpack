@@ -20,13 +20,16 @@ const toCacheKey: (
       method: req.method,
     });
   }
+
   // Can't cache POST requests, so we're creating a GET cache key.
-  return new Request(
-    url + "?" + encodeURIComponent(JSON.stringify(await body)),
-    {
-      method: "GET",
-    }
+  url.searchParams.set(
+    "postBody",
+    encodeURIComponent(JSON.stringify(await body))
   );
+
+  return new Request(url, {
+    method: "GET",
+  });
 };
 
 const excludeFromCache: string[] = [
@@ -122,6 +125,7 @@ export default {
       request.method === "POST"
         ? request.clone().json()
         : Promise.resolve(null);
+
     return swr(
       request,
       ctx,
