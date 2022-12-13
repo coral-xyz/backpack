@@ -3428,6 +3428,19 @@
     bn.js "^5.2.0"
     debug "^4.3.3"
 
+"@metaplex-foundation/mpl-token-metadata@^2.5.2":
+  version "2.5.2"
+  resolved "https://registry.yarnpkg.com/@metaplex-foundation/mpl-token-metadata/-/mpl-token-metadata-2.5.2.tgz#ec84464e2bf65bf491abdc71c3882e5973dd9978"
+  integrity sha512-lAjQjj2gGtyLq8MOkp4tWZSC5DK9NWgPd3EoH0KQ9gMs3sKIJRik0CBaZg+JA0uLwzkiErY2Izus4vbWtRADJQ==
+  dependencies:
+    "@metaplex-foundation/beet" "^0.7.1"
+    "@metaplex-foundation/beet-solana" "^0.4.0"
+    "@metaplex-foundation/cusper" "^0.0.2"
+    "@solana/spl-token" "^0.3.6"
+    "@solana/web3.js" "^1.66.2"
+    bn.js "^5.2.0"
+    debug "^4.3.4"
+
 "@miniflare/cache@2.9.0":
   version "2.9.0"
   resolved "https://registry.yarnpkg.com/@miniflare/cache/-/cache-2.9.0.tgz#1a7735eea505d77eaa21561cb18f578e1e8be110"
