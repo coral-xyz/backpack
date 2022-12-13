@@ -100,9 +100,12 @@ function BalanceDetailScreen({ route, navigation }) {
   const contractAddresses =
     blockchain === Blockchain.ETHEREUM ? [address] : undefined;
 
-  const handlePressOption = (route, options) => {
-    console.log("onPress:Detail", route, options);
-    navigation.push("DepositSingle", { blockchain, token });
+  const handlePressOption = (
+    route: "Receive" | "Send" | "Swap",
+    options: any
+  ) => {
+    const name = route === "Receive" ? "DepositSingle" : "SendTokenModal";
+    navigation.push(name, options);
   };
 
   return (
@@ -128,8 +131,12 @@ function BalanceListScreen({ navigation }) {
     navigation.push("BalanceDetail", { token, blockchain });
   };
 
-  const handlePressOption = (route, options) => {
-    navigation.push("DepositList");
+  const handlePressOption = (
+    route: "Receive" | "Send" | "Swap",
+    options: any
+  ) => {
+    const name = route === "Receive" ? "DepositList" : "SendSelectTokenModal";
+    navigation.push(name, options);
   };
 
   return (

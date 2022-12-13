@@ -16,6 +16,8 @@ import { useTheme } from "@hooks";
 
 const HorizontalSpacer = () => <View style={{ width: 16 }} />;
 
+type Route = "Receive" | "Send" | "Swap";
+
 export function TransferWidget({
   blockchain,
   address,
@@ -35,10 +37,7 @@ export function TransferWidget({
     blockchain !== Blockchain.ETHEREUM &&
     enabledBlockchains.includes(Blockchain.SOLANA);
 
-  const onPress = (route: string, options: any) =>
-    onPressOption(route, options);
-
-  console.log("transferwidget", blockchain);
+  const onPress = (route: Route, options: any) => onPressOption(route, options);
 
   return (
     <View
@@ -129,14 +128,14 @@ function SwapButton({
 }: {
   blockchain?: Blockchain;
   address?: string;
-  onPress: (route: string) => void;
+  onPress: (route: Route, options: any) => void;
 }) {
   return (
     <SwapProvider blockchain={Blockchain.SOLANA} tokenAddress={address}>
       <TransferButton
         label="Swap"
         icon="compare-arrows"
-        onPress={() => onPress("SwapModal")}
+        onPress={() => onPress("Swap", { blockchain })}
       />
     </SwapProvider>
   );
@@ -147,13 +146,13 @@ function SendButton({
   onPress,
 }: {
   blockchain?: Blockchain;
-  onPress: (route: string) => void;
+  onPress: (route: Route, options: any) => void;
 }) {
   return (
     <TransferButton
       label="Send"
       icon="arrow-upward"
-      onPress={() => onPress("SendSelectTokenModal")}
+      onPress={() => onPress("Send", { blockchain })}
     />
   );
 }
@@ -163,14 +162,13 @@ function ReceiveButton({
   onPress,
 }: {
   blockchain?: Blockchain;
-  onPress: (route: string) => void;
+  onPress: (route: Route, options: any) => void;
 }) {
-  console.log("receive blockchain", blockchain);
   return (
     <TransferButton
       label="Receive"
       icon="arrow-downward"
-      onPress={() => onPress("ReceiveModal", { blockchain })}
+      onPress={() => onPress("Receive", { blockchain })}
     />
   );
 }
