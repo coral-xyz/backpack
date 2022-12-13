@@ -62,16 +62,30 @@ app.get("/metaplex-nft/:mintAddress/image", async (c) => {
     }
 
     if (imageUrl.startsWith("data:")) {
-      return c.text(imageUrl);
+      const [header, data] = imageUrl.split(",");
+      const [_protocol, contentTypeEncoding] = header.split(":");
+      const [contentType, _encoding] = contentTypeEncoding.split(";");
+      const image = Buffer.from(data, "base64");
+      const response = new Response(image);
+      response.headers.set("Content-Type", contentType);
+      response.headers.set(
+        "Cache-Control",
+        `max-age=${60 * 5}, s-maxage=${60 * 5}, stale-while-revalidate=${
+          60 * 5
+        }`
+      );
+      return response;
+    } else {
+      const imageResponse = await fetch(externalResourceUri(imageUrl));
+      const response = new Response(imageResponse.body);
+      response.headers.set(
+        "Cache-Control",
+        `max-age=${60 * 5}, s-maxage=${60 * 5}, stale-while-revalidate=${
+          60 * 5
+        }`
+      );
+      return response;
     }
-
-    const imageResponse = await fetch(externalResourceUri(imageUrl));
-    const response = new Response(imageResponse.body);
-    response.headers.set(
-      "Cache-Control",
-      `max-age=${60 * 5}, s-maxage=${60 * 5}, stale-while-revalidate=${60 * 5}`
-    );
-    return response;
   } catch (e) {
     console.error(e);
     return c.status(500);
@@ -97,17 +111,32 @@ app.get("/ethereum-nft/:contractAddress/:tokenId/image", async (c) => {
     }
 
     if (imageUrl.startsWith("data:")) {
-      return c.text(imageUrl);
-    }
+      const [header, data] = imageUrl.split(",");
+      const [_protocol, contentTypeEncoding] = header.split(":");
+      const [contentType, _encoding] = contentTypeEncoding.split(";");
+      const image = Buffer.from(data, "base64");
 
-    // console.log(JSON.stringify(metadata))
-    const imageResponse = await fetch(externalResourceUri(imageUrl));
-    const response = new Response(imageResponse.body);
-    response.headers.set(
-      "Cache-Control",
-      `max-age=${60 * 5}, s-maxage=${60 * 5}, stale-while-revalidate=${60 * 5}`
-    );
-    return response;
+      const response = new Response(image);
+      response.headers.set("Content-Type", contentType);
+      response.headers.set(
+        "Cache-Control",
+        `max-age=${60 * 5}, s-maxage=${60 * 5}, stale-while-revalidate=${
+          60 * 5
+        }`
+      );
+      return response;
+    } else {
+      // console.log(JSON.stringify(metadata))
+      const imageResponse = await fetch(externalResourceUri(imageUrl));
+      const response = new Response(imageResponse.body);
+      response.headers.set(
+        "Cache-Control",
+        `max-age=${60 * 5}, s-maxage=${60 * 5}, stale-while-revalidate=${
+          60 * 5
+        }`
+      );
+      return response;
+    }
   } catch (e) {
     console.error(e);
     return c.status(500);

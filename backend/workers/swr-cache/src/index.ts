@@ -46,13 +46,15 @@ const shouldCache: (
   if (!res.ok) {
     return false;
   }
-  // cache all get requests
+  // cache all get requests ////////////////
   if (req.method === "GET") {
     return true;
   }
+
   const [service] = extractService(new URL(req.url));
-  // cache posts to specific rpc methods
-  if (service === "rpc-proxy") {
+
+  // cache posts to specific rpc methods ///////////////
+  if (service === "rpc-proxy" || service === "solana-rpc-proxy") {
     const method = (await body)?.method ?? "";
     if (
       method &&
@@ -63,7 +65,7 @@ const shouldCache: (
     }
   }
 
-  // cache posts to specific rpc methods
+  // cache posts to specific rpc methods ///////////////
   if (service === "ethereum-rpc-proxy") {
     const method = (await body)?.method ?? "";
     if (
@@ -87,31 +89,47 @@ const executeRequest: (c: ExecutionContext, env: Env) => ExecuteRequest =
       return env.nftData.fetch(new Request(url, req));
     }
 
-    if (service === "solana-rpc-proxy") {
+    if (service === "images") {
+      url.host = `images.xnfts.dev`;
+      // return new Response("hello");
+      console.log("images", url.toString());
+      const fetched = await fetch(url);
+      const response = new Response(fetched.body, fetched);
+      response.headers.set(
+        "Cache-Control",
+        `max-age=${60 * 60 * 24 * 30}, s-maxage=${
+          60 * 60 * 24 * 30
+        }, stale-while-revalidate=${60 * 60 * 24 * 30}`
+      );
+      return response;
+    }
+
+    if (service === "rpc-proxy" || service === "solana-rpc-proxy") {
+      url.host = `rpc-proxy.backpack.workers.dev`;
+      console.log("solana-rpc-proxy", url.toString());
       const fetched = await env.solanaRpc.fetch(new Request(url, req));
-      return new Response(fetched.body, {
-        headers: new Headers([
-          [
-            "Cache-Control",
-            `max-age=${1}, s-maxage=${1}, stale-while-revalidate=${5}`,
-          ],
-        ]),
-      });
+      const response = new Response(fetched.body, fetched);
+      response.headers.set(
+        "Cache-Control",
+        `max-age=${1}, s-maxage=${1}, stale-while-revalidate=${5}`
+      );
+      return response;
     }
 
     if (service === "ethereum-rpc-proxy") {
+      url.host = `ethereum-rpc-proxy.backpack.workers.dev`;
+      console.log("ethereum-rpc-proxy", url.toString());
       const fetched = await env.ethereumRpc.fetch(new Request(url, req));
-      return new Response(fetched.body, {
-        headers: new Headers([
-          [
-            "Cache-Control",
-            `max-age=${1}, s-maxage=${1}, stale-while-revalidate=${5}`,
-          ],
-        ]),
-      });
+      const response = new Response(fetched.body, fetched);
+      response.headers.set(
+        "Cache-Control",
+        `max-age=${1}, s-maxage=${1}, stale-while-revalidate=${5}`
+      );
+      return response;
     }
 
     url.host = `${service}.backpack.workers.dev`;
+    console.log(service, url.toString());
     return fetch(new Request(url, req));
   };
 

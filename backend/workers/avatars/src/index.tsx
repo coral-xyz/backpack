@@ -6,6 +6,7 @@ import { Hono } from "hono";
 interface Env {
   PUBLIC_AVATAR_JWT: string; // set in secret
   HASURA_URL: string; // set in secret
+  nftData: { fetch: (req: Request) => Promise<Response> };
 }
 
 const app = new Hono<{ Bindings: Env }>();
@@ -67,17 +68,27 @@ app.get("/:username", async (c) => {
   );
 
   if (chain === "ethereum") {
-    const url = `https://swr.xnfts.dev/nft-data/ethereum-nft/${address}/${id}/image`;
+    const url = `https://nft-data.backpack.workers.dev/ethereum-nft/${address}/${id}/image`;
     console.log(url);
-    const response = await c.env.swr.fetch(new Request(url));
-    return c.body(response.body);
+    const fetched = await c.env.nftData.fetch(new Request(url));
+    const response = new Response(fetched.body, fetched);
+    response.headers.set(
+      "Cache-Control",
+      `max-age=${60}, s-maxage=${60}, stale-while-revalidate=${60}`
+    );
+    return fetched;
   }
 
   if (chain === "solana") {
-    const url = `https://swr.xnfts.dev/nft-data/metaplex-nft/${address}/image`;
+    const url = `https://nft-data.backpack.workers.dev/metaplex-nft/${address}/image`;
     console.log(url);
-    const response = await c.env.swr.fetch(new Request(url));
-    return c.body(response.body);
+    const fetched = await c.env.nftData.fetch(new Request(url));
+    const response = new Response(fetched.body, fetched);
+    response.headers.set(
+      "Cache-Control",
+      `max-age=${60}, s-maxage=${60}, stale-while-revalidate=${60}`
+    );
+    return fetched;
   }
 
   // else generate default Avatar from username:

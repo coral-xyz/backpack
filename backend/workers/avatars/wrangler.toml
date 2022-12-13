@@ -3,5 +3,5 @@ main = "src/index.tsx"
 compatibility_date = "2022-10-02"
 
 services = [
-  { binding = "swr", service = "swr-cache" }
+  { binding = "nftData", service = "nft-data" }
 ]
