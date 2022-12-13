@@ -95,22 +95,22 @@ export async function customSplTokenAccounts(
   //
   // Fetch the metadata uri and interpert as NFTs.
   //
-  const nftMetadata = await fetchSplMetadataUri(
+  const { nftTokens, nftTokenMetadata, fungibleTokens } = splitOutNfts(
     tokenAccountsArray,
     tokenMetadata,
     new Map(mintsMap) as Map<string, RawMint>
   );
 
+  const nftMetadata = await fetchSplMetadataUri(nftTokens, nftTokenMetadata);
+
   const tokenAccountsMap = (
-    Array.from(removeNfts(tokenAccounts, nftMetadata)).map(
-      ([key, SolanaTokenAccountWithKey]) => [
-        key,
-        {
-          ...SolanaTokenAccountWithKey,
-          amount: SolanaTokenAccountWithKey.amount.toString(),
-        },
-      ]
-    ) as [string, SolanaTokenAccountWithKeySerializable][]
+    fungibleTokens.map((SolanaTokenAccountWithKey) => [
+      SolanaTokenAccountWithKey.key.toString(),
+      {
+        ...SolanaTokenAccountWithKey,
+        amount: SolanaTokenAccountWithKey.amount.toString(),
+      },
+    ]) as [string, SolanaTokenAccountWithKeySerializable][]
   ).concat([[nativeSol.key.toString(), nativeSol]]);
 
   return {
@@ -173,37 +173,38 @@ export async function fetchSplMetadata(
   return tokenMetaAccounts;
 }
 
-export async function fetchSplMetadataUri(
-  tokens: SolanaTokenAccountWithKey[],
-  splTokenMetadata: Array<TokenMetadata | null>,
+function splitOutNfts(
+  tokens: Array<SolanaTokenAccountWithKey>,
+  tokensMetadata: Array<TokenMetadata | null>,
   mintsMap: Map<string, RawMint>
-): Promise<Map<string, SplNftMetadata>> {
+): {
+  nftTokens: Array<SolanaTokenAccountWithKey>;
+  nftTokenMetadata: Array<TokenMetadata | null>;
+  fungibleTokens: Array<SolanaTokenAccountWithKey>;
+  fungibleTokenMetadata: Array<TokenMetadata | null>;
+} {
   //
   // Filter for NFTs only.
   //
   let nftTokens: Array<SolanaTokenAccountWithKey> = [];
   let nftTokenMetadata: Array<TokenMetadata | null> = [];
+
+  let fungibleTokens: Array<SolanaTokenAccountWithKey> = [];
+  let fungibleTokenMetadata: Array<TokenMetadata | null> = [];
+
   tokens.forEach((token, idx) => {
-    const tokenMetadata = splTokenMetadata[idx];
+    const tokenMetadata = tokensMetadata[idx];
 
     //
     // If token standard is available use it.
     //
-    if (
-      tokenMetadata &&
-      tokenMetadata!.account &&
-      tokenMetadata!.account.tokenStandard
-    ) {
-      if (
-        // Why do I need to ts-ignore this?
-        // @ts-ignore
-        tokenMetadata!.account.tokenStandard === TokenStandard.NonFungible ||
-        tokenMetadata!.account.tokenStandard ===
-          TokenStandard.NonFungibleEdition ||
-        tokenMetadata!.account.tokenStandard === TokenStandard.FungibleAsset
-      ) {
+    if (tokenMetadata && tokenMetadata.account) {
+      if (tokenMetadata.account.tokenStandard !== TokenStandard.Fungible) {
         nftTokens.push(token);
         nftTokenMetadata.push(tokenMetadata);
+      } else {
+        fungibleTokens.push(token);
+        fungibleTokenMetadata.push(tokenMetadata);
       }
     }
     //
@@ -214,10 +215,25 @@ export async function fetchSplMetadataUri(
       if (mint && mint.decimals === 0) {
         nftTokens.push(token);
         nftTokenMetadata.push(tokenMetadata);
+      } else {
+        fungibleTokens.push(token);
+        fungibleTokenMetadata.push(tokenMetadata);
       }
     }
   });
 
+  return {
+    nftTokens,
+    nftTokenMetadata,
+    fungibleTokens,
+    fungibleTokenMetadata,
+  };
+}
+
+async function fetchSplMetadataUri(
+  nftTokens: Array<SolanaTokenAccountWithKey>,
+  nftTokenMetadata: Array<TokenMetadata | null>
+): Promise<Map<string, SplNftMetadata>> {
   //
   // Fetch the URI for each NFT.
   //
