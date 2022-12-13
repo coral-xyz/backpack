@@ -610,35 +610,6 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  async userAvatarUpdate(uuid: string): Promise<string> {
-    // // Change active user account.
-    // const { username } = await this.keyringStore.activeUserUpdate(uuid);
-
-    // // Get data to push back to the UI.
-    // const walletData = await this.keyringStoreReadAllPubkeyData();
-
-    // // Get preferences to push back to the UI.
-    // const preferences = await this.preferencesRead(uuid);
-    // const xnftPreferences = await this.getXnftPreferences();
-    console.log("userAvatarUpdate backend core");
-    // Push it.
-    // this.events.emit(BACKEND_EVENT, {
-    //   name: NOTIFICATION_KEYRING_STORE_USER_AVATAR_UPDATED,
-    //   data: {
-    //     user: {
-    //       uuid,
-    //       username,
-    //     },
-    //     walletData,
-    //     preferences,
-    //     xnftPreferences,
-    //   },
-    // });
-
-    // Done.
-    return SUCCESS_RESPONSE;
-  }
-
   async activeUserUpdate(uuid: string): Promise<string> {
     // Change active user account.
     const { username, jwt } = await this.keyringStore.activeUserUpdate(uuid);
