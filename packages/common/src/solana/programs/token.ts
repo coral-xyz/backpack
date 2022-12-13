@@ -207,7 +207,7 @@ export async function fetchSplMetadataUri(
       }
     }
     //
-    // Token standard not available so use decimals.
+    // Token standard not available so use decimals to determin if it's an NFT.
     //
     else {
       const mint = mintsMap.get(token.mint.toString());

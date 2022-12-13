@@ -23,6 +23,10 @@ import { solanaConnectionUrl } from "./preferences";
 import { splTokenRegistry } from "./token-registry";
 import { anchorContext } from "./wallet";
 
+/**
+ * Batches requests to fetch all the Solana tokens and associated metadata.
+ * All other solana token selectors derive from this.
+ */
 export const customSplTokenAccounts = atomFamily({
   key: "customSplTokenAccounts",
   default: selectorFamily({
@@ -38,7 +42,7 @@ export const customSplTokenAccounts = atomFamily({
       async ({
         get,
       }): Promise<{
-        splTokenAccounts: Map<String, SolanaTokenAccountWithKeyString>;
+        splTokenAccounts: Map<string, SolanaTokenAccountWithKeyString>;
         splTokenMetadata: Array<TokenMetadataString | null>;
         splNftMetadata: Map<string, SplNftMetadataString>;
         splTokenMints: Map<string, RawMint>;
@@ -120,24 +124,45 @@ export const solanaTokenNativeBalance = selectorFamily<
       if (!tokenAccount) {
         return null;
       }
-
       const tokenMint = get(solanaTokenMint({ tokenAddress }));
       const tokenMetadata = get(solanaTokenMetadata({ tokenAddress }));
-
       const tokenRegistry = get(splTokenRegistry)!;
-      const {
+      const tokenRegistryItem = tokenRegistry.get(tokenAccount.mint.toString());
+
+      //
+      // Extract token metadata and fall back to the registry list if needed.
+      //
+      let {
         symbol: ticker,
         logoURI: logo,
         name,
         decimals,
-      } = tokenMint && tokenMetadata
+      } = tokenMint &&
+      tokenMetadata &&
+      tokenMetadata.account &&
+      tokenMetadata.account.data
         ? {
-            symbol: tokenMetadata.account.data.symbol,
-            logoURI: tokenMetadata.account.data.uri,
-            name: tokenMetadata.account.data.name,
+            symbol: tokenMetadata.account.data.symbol.replace(/\0/g, ""),
+            logoURI: tokenMetadata.account.data.uri.replace(/\0/g, ""),
+            name: tokenMetadata.account.data.name.replace(/\0/g, ""),
             decimals: tokenMint.decimals,
           }
-        : tokenRegistry.get(tokenAccount.mint.toString()) ?? ({} as TokenInfo);
+        : tokenRegistryItem ?? ({} as TokenInfo);
+      if (tokenRegistryItem) {
+        if (ticker === "") {
+          ticker = tokenRegistryItem.symbol;
+        }
+        if (logo === "") {
+          logo = tokenRegistryItem.logoURI;
+        }
+        if (name === "") {
+          name = tokenRegistryItem.name;
+        }
+      }
+
+      //
+      // Calculate balances.
+      //
       const nativeBalance = BigNumber.from(tokenAccount.amount.toString());
       const displayBalance = ethers.utils.formatUnits(nativeBalance, decimals);
       const priceMint =
@@ -145,7 +170,7 @@ export const solanaTokenNativeBalance = selectorFamily<
           ? SOL_NATIVE_MINT
           : tokenAccount.mint.toString();
 
-      return {
+      const resp = {
         name,
         decimals,
         nativeBalance,
@@ -156,6 +181,8 @@ export const solanaTokenNativeBalance = selectorFamily<
         mint: tokenAccount.mint.toString(),
         priceMint,
       };
+
+      return resp;
     },
 });
 
