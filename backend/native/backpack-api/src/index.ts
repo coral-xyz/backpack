@@ -6,6 +6,7 @@ import chatRouter from "./routes/v1/chats";
 import inboxRouter from "./routes/v1/inbox";
 import friendsRouter from "./routes/v1/friends";
 import usersRouter from "./routes/v1/users";
+import avatarRouter from "./routes/v1/avatars";
 
 const app = express();
 const bodyParser = require("body-parser");
@@ -21,6 +22,7 @@ app.use("/chat", chatRouter);
 app.use("/inbox", inboxRouter);
 app.use("/friends", friendsRouter);
 app.use("/users", usersRouter);
+app.use("/avatars",avatarRouter);
 
 // TODO: Add validation using zod
 

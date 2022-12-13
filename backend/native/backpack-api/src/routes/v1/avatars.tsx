@@ -7,7 +7,7 @@ const app = new Hono();
 
 app.get("/", (c) => c.json({ hello: "world" }));
 
-app.get("/v1/:username", (c) => {
+app.get("/:username", (c) => {
   const size = c.req.query("size") || 200;
   return c.body(
     renderToStaticMarkup(
