@@ -198,7 +198,11 @@ function splitOutNfts(
     //
     // If token standard is available use it.
     //
-    if (tokenMetadata && tokenMetadata.account) {
+    if (
+      tokenMetadata &&
+      tokenMetadata.account &&
+      !!tokenMetadata.account.tokenStandard
+    ) {
       if (tokenMetadata.account.tokenStandard === TokenStandard.Fungible) {
         fungibleTokens.push(token);
         fungibleTokenMetadata.push(tokenMetadata);
