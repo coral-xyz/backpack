@@ -1,0 +1,22 @@
+{
+  "name": "notifications-worker",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@coral-xyz/common": "*",
+    "@coral-xyz/zeus": "*",
+    "@project-serum/anchor": "^0.25.0",
+    "@solana/wallet-adapter-react": "^0.15.25",
+    "@types/redis": "^4.0.11",
+    "@types/web-push": "^3.3.2",
+    "esbuild": "^0.15.13",
+    "redis": "^4.5.1",
+    "uuid": "^9.0.0",
+    "web-push": "^3.5.0"
+  },
+  "scripts": {
+    "build": "esbuild ./src/index.js --bundle --platform=node --outfile=dist/index.js",
+    "start": "npm run build && node dist/index.js"
+  }
+}
