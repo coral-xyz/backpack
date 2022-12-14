@@ -21,6 +21,7 @@ export class Redis {
     return this.instance;
   }
 
+  // TODO: debounce here
   async send(message: string) {
     await this.client.rPush(NOTIFICATIONS_QUEUE, message);
   }

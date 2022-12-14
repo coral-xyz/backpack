@@ -7,13 +7,14 @@ export const processQueue = async () => {
   return processQueue();
 };
 
-const processResponse = (response: string) => {
+const processResponse = async (response: string) => {
   try {
     const parsedResponse = JSON.parse(response);
     const { type, payload } = parsedResponse;
     switch (type) {
       case "message":
-        processMessage(payload);
+        await processMessage(payload);
+        break;
     }
   } catch (e) {
     console.log(`ERROR: while processing queue`);

@@ -29,11 +29,13 @@ export const processMessage = async ({
       user2_last_read_message_id: user2_last_read_message_id,
     });
     const messageSender = messages[client_generated_uuid].uuid;
+
     if (messageSender === friendship.user1) {
       if (
         friendship.last_message_sender !== friendship.user2 &&
-        messages[user2_last_read_message_id].created_at <
-          messages[client_generated_uuid].created_at
+        (!messages[user2_last_read_message_id]?.created_at ||
+          new Date(messages[user2_last_read_message_id]?.created_at) <
+            new Date(messages[client_generated_uuid].created_at))
       ) {
         await notify(
           friendship.user2,
@@ -44,8 +46,9 @@ export const processMessage = async ({
     } else {
       if (
         friendship.last_message_sender !== friendship.user1 &&
-        messages[user1_last_read_message_id].created_at <
-          messages[client_generated_uuid].created_at
+        (!messages[user1_last_read_message_id]?.created_at ||
+          new Date(messages[user1_last_read_message_id]?.created_at) <
+            new Date(messages[client_generated_uuid].created_at))
       ) {
         await notify(
           friendship.user1,
