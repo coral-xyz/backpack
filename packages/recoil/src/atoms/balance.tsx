@@ -9,9 +9,9 @@ import {
 } from "./ethereum/token";
 import { ethereumTokenMetadata } from "./ethereum/token-metadata";
 import {
-  solanaTokenAccountKeys,
-  solanaTokenBalance,
-  solanaTokenNativeBalance,
+  solanaFungibleTokenAccountKeys,
+  solanaFungibleTokenBalance,
+  solanaFungibleTokenNativeBalance,
 } from "./solana/token";
 import { enabledBlockchains } from "./preferences";
 
@@ -81,7 +81,7 @@ export const blockchainTokenNativeData = selectorFamily<
     ({ get }) => {
       switch (blockchain) {
         case Blockchain.SOLANA:
-          return get(solanaTokenNativeBalance(address));
+          return get(solanaFungibleTokenNativeBalance(address));
         case Blockchain.ETHEREUM:
           return get(ethereumTokenNativeBalance(address));
         default:
@@ -103,7 +103,7 @@ export const blockchainTokenData = selectorFamily<
     ({ get }) => {
       switch (blockchain) {
         case Blockchain.SOLANA:
-          return get(solanaTokenBalance(address));
+          return get(solanaFungibleTokenBalance(address));
         case Blockchain.ETHEREUM:
           return get(ethereumTokenBalance(address));
         default:
@@ -122,7 +122,7 @@ export const blockchainTokenAddresses = selectorFamily({
     ({ get }) => {
       switch (blockchain) {
         case Blockchain.SOLANA:
-          return get(solanaTokenAccountKeys);
+          return get(solanaFungibleTokenAccountKeys);
         case Blockchain.ETHEREUM:
           const ethTokenMetadata = get(ethereumTokenMetadata)();
           return ethTokenMetadata

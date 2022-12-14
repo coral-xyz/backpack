@@ -408,6 +408,8 @@ export const SOLANA_CONNECTION_RPC_GET_CONFIRMED_SIGNATURES_FOR_ADDRESS_2 =
   "solana-get-confirmed-signatures-for-address-2";
 export const SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS =
   "solana-custom-spl-token-accounts";
+export const SOLANA_CONNECTION_RPC_CUSTOM_SPL_METADATA_URI =
+  "solana-custom-spl-metadata-uri";
 export const SOLANA_CONNECTION_RPC_GET_PROGRAM_ACCOUNTS =
   "solana-get-program-accounts";
 export const SOLANA_CONNECTION_RPC_GET_FEE_FOR_MESSAGE =
