@@ -1,4 +1,5 @@
 import type {
+  RawMintString,
   SolanaTokenAccountWithKey,
   SolanaTokenAccountWithKeyString,
   SplNftMetadata,
@@ -45,7 +46,7 @@ export const customSplTokenAccounts = atomFamily({
       async ({
         get,
       }): Promise<{
-        splTokenMints: Map<string, RawMint>;
+        splTokenMints: Map<string, RawMintString | null>;
         nfts: {
           nftTokens: Array<SolanaTokenAccountWithKeyString>;
           nftTokenMetadata: Array<TokenMetadataString | null>;
@@ -62,10 +63,9 @@ export const customSplTokenAccounts = atomFamily({
         try {
           const { mintsMap, fts, nfts } =
             await connection.customSplTokenAccounts(new PublicKey(publicKey));
-          const splTokenMints = new Map(mintsMap);
 
           return {
-            splTokenMints,
+            splTokenMints: new Map(mintsMap),
             nfts,
             fts,
           };
@@ -270,7 +270,7 @@ export const solanaTokenNativeBalance = selectorFamily<
 });
 
 const solanaTokenMint = selectorFamily<
-  RawMint | null,
+  RawMintString | null,
   { tokenAddress: string }
 >({
   key: "solanaTokenMint",

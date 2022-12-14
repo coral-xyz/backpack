@@ -99,6 +99,7 @@ import {
   SOLANA_CONNECTION_RPC_SEND_RAW_TRANSACTION,
 } from "../constants";
 
+import type { CustomSplTokenAccountsResponseString } from "./programs/token";
 import { addressLookupTableAccountParser } from "./rpc-helpers";
 import type {
   SolanaTokenAccountWithKey,
@@ -126,36 +127,26 @@ export class BackgroundSolanaConnection extends Connection {
     this._backgroundClient = backgroundClient;
   }
 
-  async customSplTokenAccounts(publicKey: PublicKey): Promise<{
-    mintsMap: Array<[string, RawMint]>;
-    nfts: {
-      nftTokens: Array<SolanaTokenAccountWithKeyString>;
-      nftTokenMetadata: Array<TokenMetadataString | null>;
-    };
-    fts: {
-      fungibleTokens: Array<SolanaTokenAccountWithKeyString>;
-      fungibleTokenMetadata: Array<TokenMetadataString | null>;
-    };
-  }> {
+  async customSplTokenAccounts(
+    publicKey: PublicKey
+  ): Promise<CustomSplTokenAccountsResponseString> {
     const resp = await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
       params: [publicKey.toString()],
     });
-
     return BackgroundSolanaConnection.customSplTokenAccountsFromJson(resp);
   }
 
-  static customSplTokenAccountsFromJson(json: any) {
+  static customSplTokenAccountsFromJson(
+    json: any
+  ): CustomSplTokenAccountsResponseString {
     return {
-      ...json,
       mintsMap: json.mintsMap.map((m: any) => {
         return [
           m[0],
           {
             ...m[1],
-            freezeAuthority: new PublicKey(m[1].freezeAuthority),
-            mintAuthority: new PublicKey(m[1].mintAuthority),
-            // todo: should transform the supply here
+            supply: BigInt(m[1].supply),
           },
         ];
       }),

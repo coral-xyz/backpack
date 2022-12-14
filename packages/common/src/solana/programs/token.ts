@@ -13,6 +13,7 @@ import { PublicKey } from "@solana/web3.js";
 
 import { BACKEND_API_URL } from "../../constants";
 import type {
+  ReplaceTypes,
   SolanaTokenAccount,
   SolanaTokenAccountWithKey,
   SolanaTokenAccountWithKeyString,
@@ -63,6 +64,12 @@ export type CustomSplTokenAccountsResponse = {
   };
 };
 
+export type CustomSplTokenAccountsResponseString = ReplaceTypes<
+  CustomSplTokenAccountsResponse,
+  PublicKey,
+  string
+>;
+
 export async function customSplTokenAccounts(
   connection: Connection,
   publicKey: PublicKey
@@ -71,6 +78,9 @@ export async function customSplTokenAccounts(
   const provider = new AnchorProvider(connection, { publicKey });
   const tokenClient = Spl.token(provider);
 
+  //
+  // Fetch all tokenAccounts.
+  //
   const [accountInfo, tokenAccounts] = await Promise.all([
     //
     // Fetch native sol data.
@@ -81,9 +91,11 @@ export async function customSplTokenAccounts(
     //
     fetchTokens(publicKey, tokenClient),
   ]);
-
   const tokenAccountsArray = Array.from(tokenAccounts.values());
 
+  //
+  // Fetch all mints.
+  //
   const [mintsMap, tokenMetadata] = await Promise.all([
     fetchMints(provider, tokenAccountsArray).then((mint) =>
       mint.filter((m) => m[1] !== null)
@@ -92,7 +104,7 @@ export async function customSplTokenAccounts(
   ]);
 
   //
-  // Fetch the metadata uri and interpert as NFTs.
+  // Separate out fungible and non-fungible tokens.
   //
   const { fungibleTokens, fungibleTokenMetadata, nftTokens, nftTokenMetadata } =
     splitOutNfts(
@@ -361,14 +373,4 @@ export async function fetchTokens(
   // Done.
   //
   return new Map(validTokens);
-}
-
-function removeNfts(
-  splTokenAccounts: Map<string, SolanaTokenAccountWithKey>,
-  splNftMetadata: Map<string, SplNftMetadata>
-): Map<string, SolanaTokenAccountWithKey> {
-  for (let key of splNftMetadata.keys()) {
-    splTokenAccounts.delete(key);
-  }
-  return splTokenAccounts;
 }

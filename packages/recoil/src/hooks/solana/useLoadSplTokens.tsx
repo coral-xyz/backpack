@@ -1,9 +1,5 @@
-import type {
-  SolanaTokenAccountWithKey,
-  SplNftMetadata,
-  TokenMetadata,
-} from "@coral-xyz/common";
-import { useRecoilCallback, useRecoilValue } from "recoil";
+import type { CustomSplTokenAccountsResponseString } from "@coral-xyz/common";
+import { useRecoilCallback } from "recoil";
 
 import * as atoms from "../../atoms";
 
@@ -17,19 +13,14 @@ export const useUpdateAllSplTokenAccounts = () =>
       }: {
         connectionUrl: string;
         publicKey: string;
-        customSplTokenAccounts: {
-          tokenAccounts: SolanaTokenAccountWithKey[];
-          tokenMetadata: (TokenMetadata | null)[];
-          //          nftMetadata: [string, SplNftMetadata][];
-        };
+        customSplTokenAccounts: CustomSplTokenAccountsResponseString;
       }) => {
         // TODO: Do we want to check if the atoms have changed before setting
         //       them? Probably since we don't have a recoil transaction and
         //       so this hook may cause unnecessary rerenders.
         set(atoms.customSplTokenAccounts({ connectionUrl, publicKey }), {
-          splTokenAccounts: customSplTokenAccounts.tokenAccounts,
-          splTokenMetadata: customSplTokenAccounts.tokenMetadata,
-          //          splNftMetadata: new Map(customSplTokenAccounts.nftMetadata),
+          ...customSplTokenAccounts,
+          splTokenMints: new Map(customSplTokenAccounts.mintsMap),
         });
       }
   );

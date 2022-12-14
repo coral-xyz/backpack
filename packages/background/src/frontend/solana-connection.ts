@@ -327,33 +327,30 @@ async function handleCustomSplTokenAccounts(
 ) {
   const _resp = await ctx.backend.customSplTokenAccounts(new PublicKey(pubkey));
   const resp = {
-    ..._resp,
-    mintsMap: _resp.mintsMap.map((m: any) => {
+    mintsMap: _resp.mintsMap.map((m) => {
       return [
         m[0],
-        {
-          ...m[1],
-          freezeAuthority: m[1].freezeAuthority.toString(),
-          mintAuthority: m[1].mintAuthority.toString(),
-          supply: m[1].supply.toString(),
-        },
+        m[1] === null
+          ? null
+          : {
+              ...m[1],
+              supply: m[1].supply.toString(),
+            },
       ];
     }),
     fts: {
-      fungibleTokens: _resp.fts.fungibleTokens.map((t: any) => {
+      fungibleTokens: _resp.fts.fungibleTokens.map((t) => {
         return {
           ...t,
-          mint: t.mint.toString(),
           amount: t.amount.toString(),
         };
       }),
       fungibleTokenMetadata: _resp.fts.fungibleTokenMetadata,
     },
     nfts: {
-      nftTokens: _resp.nfts.nftTokens.map((t: any) => {
+      nftTokens: _resp.nfts.nftTokens.map((t) => {
         return {
           ...t,
-          mint: t.mint.toString(),
           amount: t.amount.toString(),
         };
       }),

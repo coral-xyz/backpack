@@ -504,15 +504,10 @@ export function NotificationsProvider(props: any) {
     const handleSolanaSplTokensDidUpdate = (notif: Notification) => {
       const publicKey = notif.data.publicKey;
       const connectionUrl = notif.data.connectionUrl;
-      const result = BackgroundSolanaConnection.customSplTokenAccountsFromJson(
-        notif.data.customSplTokenAccounts
-      );
-      const customSplTokenAccounts = {
-        ...result,
-        tokenAccounts: new Map(
-          result.tokenAccountsMap.map((t: any) => [t[0], t[1]])
-        ),
-      };
+      const customSplTokenAccounts =
+        BackgroundSolanaConnection.customSplTokenAccountsFromJson(
+          notif.data.customSplTokenAccounts
+        );
       updateAllSplTokenAccounts({
         publicKey,
         connectionUrl,
