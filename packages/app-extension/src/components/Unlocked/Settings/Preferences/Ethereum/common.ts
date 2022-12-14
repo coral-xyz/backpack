@@ -1,5 +1,5 @@
+import type { ChannelAppUiClient } from "@coral-xyz/common";
 import {
-  ChannelAppUiClient,
   UI_RPC_METHOD_ETHEREUM_CHAIN_ID_UPDATE,
   UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE,
 } from "@coral-xyz/common";

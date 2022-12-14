@@ -1,12 +1,14 @@
-import { ethers, BigNumber } from "ethers";
-import type { UnsignedTransaction } from "@ethersproject/transactions";
 import type { FeeData } from "@ethersproject/abstract-provider";
+import type { UnsignedTransaction } from "@ethersproject/transactions";
+import { BigNumber, ethers } from "ethers";
+
 import type { BackgroundClient } from "../";
+
 import { EthereumProvider } from "./provider";
 
 export * from "./background-provider";
-export * from "./explorer";
 export * from "./connection-url";
+export * from "./explorer";
 export * from "./token";
 export * from "./tokens-uniswap";
 

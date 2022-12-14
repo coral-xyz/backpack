@@ -1,16 +1,17 @@
-import { ChatRoom } from "@coral-xyz/chat-sdk";
 import { useState } from "react";
+import { ChatRoom } from "@coral-xyz/chat-sdk";
+import { NAV_COMPONENT_NFT_CHAT } from "@coral-xyz/common";
+import { useNavigation, useUser } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
-import { NAV_BUTTON_WIDTH } from "../../common/Layout/Nav";
-import { PrimaryButton } from "../../common";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
+
+import { PrimaryButton } from "../../common";
+import { CloseButton } from "../../common/Layout/Drawer";
+import { NAV_BUTTON_WIDTH } from "../../common/Layout/Nav";
 import {
   NavStackEphemeral,
   NavStackScreen,
 } from "../../common/Layout/NavStack";
-import { useNavigation } from "@coral-xyz/recoil";
-import { CloseButton } from "../../common/Layout/Drawer";
-import { NAV_COMPONENT_NFT_CHAT } from "@coral-xyz/common";
 
 const useStyles = styles((theme) => ({
   container: {
@@ -43,7 +44,15 @@ export const NftsExperience = ({ id }: any) => {
 };
 
 export function NftChat({ id }: any) {
-  return <ChatRoom roomId={id} userId={"asdadsas"} />;
+  const { username } = useUser();
+  return (
+    <ChatRoom
+      username={username || ""}
+      type={"collection"}
+      roomId={id}
+      userId={"asdadsas"}
+    />
+  );
 }
 
 function MainScreen({ id }: { id: string }) {

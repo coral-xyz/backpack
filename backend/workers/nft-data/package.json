@@ -1,0 +1,19 @@
+{
+  "name": "nft-data",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "wrangler dev",
+    "deploy": "wrangler publish"
+  },
+  "dependencies": {
+    "@project-serum/token": "^0.1.0",
+    "@solana/web3.js": "^1.69.0",
+    "hono": "^2.5.8"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20221111.1",
+    "typescript": "^4.9.3",
+    "wrangler": "2.1.9"
+  }
+}

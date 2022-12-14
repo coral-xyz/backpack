@@ -1,10 +1,11 @@
-import { useRecoilValue } from "recoil";
-import { ethers, BigNumber } from "ethers";
-import type { FeeData } from "@ethersproject/abstract-provider";
 import type { EthereumContext } from "@coral-xyz/common";
+import type { FeeData } from "@ethersproject/abstract-provider";
+import { BigNumber, ethers } from "ethers";
+import { useRecoilValue } from "recoil";
+
 import * as atoms from "../../atoms";
-import { useActiveEthereumWallet } from "../wallet";
 import { useBackgroundClient } from "../client";
+import { useActiveEthereumWallet } from "../wallet";
 
 const { AddressZero } = ethers.constants;
 

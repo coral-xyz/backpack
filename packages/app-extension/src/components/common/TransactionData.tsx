@@ -1,11 +1,12 @@
-import { useState, useEffect, useRef } from "react";
-import { ethers } from "ethers";
-import { Button, Skeleton, TextField, Typography } from "@mui/material";
-import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
+import { useEffect, useRef, useState } from "react";
 import { useEthereumFeeData } from "@coral-xyz/recoil";
-import { useCustomTheme, styles, HOVER_OPACITY } from "@coral-xyz/themes";
-import { SettingsList } from "./Settings/List";
+import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
+import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
+import { Button, Skeleton, TextField, Typography } from "@mui/material";
+import { ethers } from "ethers";
+
 import { WithMiniDrawer } from "./Layout/Drawer";
+import { SettingsList } from "./Settings/List";
 import { CloseButton } from "./ApproveTransactionDrawer";
 import { PrimaryButton, SecondaryButton } from "./";
 

@@ -1,16 +1,28 @@
-import { Tabs, Tab } from "@mui/material";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { useTab, useBackgroundClient } from "@coral-xyz/recoil";
+import { useLocation } from "react-router-dom";
 import {
   BACKPACK_FEATURE_XNFT,
-  TAB_NFTS,
+  MESSAGES_ENABLED,
   TAB_APPS,
   TAB_BALANCES,
+  TAB_MESSAGES,
+  TAB_NFTS,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
 } from "@coral-xyz/common";
-import { BalancesIcon, GridIcon, ImageIcon } from "../../common/Icon";
-import { useLocation } from "react-router-dom";
+import {
+  useBackgroundClient,
+  useFeatureGates,
+  useTab,
+} from "@coral-xyz/recoil";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { Tab, Tabs } from "@mui/material";
+
+import {
+  BalancesIcon,
+  GridIcon,
+  ImageIcon,
+  MessageIcon,
+} from "../../common/Icon";
 
 const TAB_HEIGHT = 64;
 
@@ -25,7 +37,7 @@ const useStyles = styles((theme) => ({
     bottom: 0,
   },
   tab: {
-    color: theme.custom.colors.tabIconBackground,
+    // color: theme.custom.colors.tabIconBackground,
     height: `${TAB_HEIGHT}px`,
     "&:hover": {
       "& svg": {
@@ -65,7 +77,9 @@ export function WithTabs(props: any) {
         {props.children}
       </div>
       {location.pathname !== "/nfts/experience" &&
-        location.pathname !== "/nfts/chat" && <TabBar />}
+        location.pathname !== "/nfts/chat" &&
+        location.pathname !== "/messages/chat" &&
+        location.pathname !== "/messages/profile" && <TabBar />}
     </div>
   );
 }
@@ -75,6 +89,7 @@ function TabBar() {
   const theme = useCustomTheme();
   const tab = useTab();
   const background = useBackgroundClient();
+  const featureGates = useFeatureGates();
 
   const onTabClick = (tabValue: string) => {
     if (tabValue === tab) {
@@ -167,6 +182,29 @@ function TabBar() {
           />
         }
       />
+      {featureGates[MESSAGES_ENABLED] && (
+        <Tab
+          onClick={() => onTabClick(TAB_MESSAGES)}
+          value={TAB_MESSAGES}
+          disableRipple
+          className={`${classes.tab} ${
+            tab === TAB_MESSAGES ? classes.activeTab : ""
+          }`}
+          icon={
+            <MessageIcon
+              fill={
+                tab === TAB_MESSAGES
+                  ? theme.custom.colors.brandColor
+                  : theme.custom.colors.icon
+              }
+              style={{
+                width: "20px",
+                height: "20px",
+              }}
+            />
+          }
+        />
+      )}
     </Tabs>
   );
 }

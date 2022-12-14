@@ -1,31 +1,33 @@
 import { useEffect, useRef, useState } from "react";
-import { Loading } from "../components/common";
+import type { XnftPreference } from "@coral-xyz/common";
 import {
   useAvatarUrl,
   useDarkMode,
-  useUsername,
-  useXnftPreference,
+  useUser,
+  useXnftJwt,
 } from "@coral-xyz/recoil";
-import { XnftPreference } from "@coral-xyz/common";
+
+import { Loading } from "../components/common";
 
 export function PluginRenderer({
   plugin,
   xnftPreference,
 }: {
   plugin: any;
-  xnftPreference: XnftPreference;
+  xnftPreference: XnftPreference | null;
 }) {
   const ref = useRef<any>();
   const [loaded, setLoaded] = useState(false);
-  const username = useUsername();
+  const { username } = useUser();
   const isDarkMode = useDarkMode();
   const avatarUrl = useAvatarUrl(100);
+  const jwt = useXnftJwt(plugin.xnftAddress);
 
   useEffect(() => {
     if (plugin && ref && ref.current) {
       plugin.mount(xnftPreference);
       plugin.didFinishSetup!.then(() => {
-        plugin.pushAppUiMetadata({ isDarkMode, username, avatarUrl });
+        plugin.pushAppUiMetadata({ isDarkMode, username, avatarUrl, jwt });
         plugin.iframeRoot.style.display = "";
         setLoaded(true);
       });
@@ -46,8 +48,7 @@ export function PluginRenderer({
     <div ref={ref} style={{ height: "100vh", overflow: "hidden" }}>
       {!loaded && (
         <div style={{ height: "100vh" }}>
-          {" "}
-          <Loading />{" "}
+          <Loading />
         </div>
       )}
     </div>

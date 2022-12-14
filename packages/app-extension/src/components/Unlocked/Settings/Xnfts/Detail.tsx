@@ -1,54 +1,57 @@
-import { useState, useEffect } from "react";
-import { CircularProgress, Typography, Button, Link } from "@mui/material";
-import { PublicKey } from "@solana/web3.js";
-import { updateRemotePreference } from "../../../../api/preferences";
+import { useEffect, useState } from "react";
 import {
-  getLogger,
+  BACKEND_API_URL,
+  Blockchain,
   confirmTransaction,
   explorerUrl,
-  Blockchain,
+  getLogger,
   Solana,
-  UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
   UI_RPC_METHOD_GET_XNFT_PREFERENCES,
+  UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
   UI_RPC_METHOD_SET_XNFT_PREFERENCES,
-  BACKEND_API_URL,
 } from "@coral-xyz/common";
-import { useCustomTheme } from "@coral-xyz/themes";
 import {
+  useBackgroundClient,
+  useNavigation,
+  useSolanaConnectionUrl,
   useSolanaCtx,
   useSolanaExplorer,
-  useSolanaConnectionUrl,
-  useNavigation,
-  useXnftPreference,
-  useBackgroundClient,
+  useUser,
+  xnftPreference as xnftPreferenceAtom,
 } from "@coral-xyz/recoil";
-import { SwitchToggle } from "../Preferences";
-import { SettingsList } from "../../../common/Settings/List";
-import { useNavStack } from "../../../common/Layout/NavStack";
+import { useCustomTheme } from "@coral-xyz/themes";
+import { Button, CircularProgress, Link, Typography } from "@mui/material";
+import { PublicKey } from "@solana/web3.js";
+import { useRecoilValue } from "recoil";
+
+import { updateRemotePreference } from "../../../../api/preferences";
 import {
-  PrimaryButton,
-  SecondaryButton,
-  NegativeButton,
   LaunchDetail,
   Loading,
+  NegativeButton,
+  PrimaryButton,
+  SecondaryButton,
 } from "../../../common";
 import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
 import { CheckIcon } from "../../../common/Icon";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
-import { Error } from "../../Balances/TokensWidget/Send";
+import { useNavStack } from "../../../common/Layout/NavStack";
 import { ProxyImage } from "../../../common/ProxyImage";
-import { useUsername } from "@coral-xyz/recoil";
+import { SettingsList } from "../../../common/Settings/List";
+import { Error } from "../../Balances/TokensWidget/Send";
+import { SwitchToggle } from "../Preferences";
 const logger = getLogger("xnft-detail");
 
 export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
   const theme = useCustomTheme();
   const [openConfirm, setOpenConfirm] = useState(false);
-  const xnftPreference = useXnftPreference({
-    xnftId: xnft.install.account.xnft.toString(),
-  });
+  const xnftPreference = useRecoilValue(
+    xnftPreferenceAtom(xnft.install.account.xnft.toString())
+  );
+
   const nav = useNavStack();
   const background = useBackgroundClient();
-  const username = useUsername();
+  const { username } = useUser();
 
   const isDisabled = xnft.install.publicKey === PublicKey.default.toString();
 
@@ -59,7 +62,7 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
   const menuItems = {
     Display: {
       detail: (
-        <SwitchToggle enabled={!xnftPreference.disabled} onChange={() => {}} />
+        <SwitchToggle enabled={!xnftPreference?.disabled} onChange={() => {}} />
       ),
       onClick: () => {},
       style: {
@@ -70,9 +73,9 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
       label: "Cam/Mic/Display access",
       detail: (
         <SwitchToggle
-          enabled={xnftPreference.mediaPermissions}
+          enabled={!!xnftPreference?.mediaPermissions}
           onChange={async () => {
-            const updatedMediaPermissions = !xnftPreference.mediaPermissions;
+            const updatedMediaPermissions = !xnftPreference?.mediaPermissions;
             await background.request({
               method: UI_RPC_METHOD_SET_XNFT_PREFERENCES,
               params: [
@@ -104,9 +107,9 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
       label: "Push notifications",
       detail: (
         <SwitchToggle
-          enabled={xnftPreference.pushNotifications}
+          enabled={!!xnftPreference?.pushNotifications}
           onChange={async () => {
-            const updatedPushNotifications = !xnftPreference.pushNotifications;
+            const updatedPushNotifications = !xnftPreference?.pushNotifications;
             await background.request({
               method: UI_RPC_METHOD_SET_XNFT_PREFERENCES,
               params: [

@@ -1,50 +1,86 @@
 // https://github.com/feross/buffer#usage
 // note: the trailing slash is important!
 
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import type { StyleProp, ViewStyle } from "react-native";
 import {
+  Alert,
+  Button,
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+import {
+  ActionCard,
+  BaseCheckBoxLabel,
   Box,
+  CheckBox,
+  Debug,
+  FullScreenLoading,
   Header,
+  Margin,
   MnemonicInputFields,
+  PasswordInput,
   PrimaryButton,
   Screen,
   StyledText,
+  StyledTextInput,
   SubtextParagraph,
+  WelcomeLogoHeader,
 } from "@components";
-import { CheckBox } from "@components/CheckBox";
-import { CustomButton } from "@components/CustomButton";
 import { ErrorMessage } from "@components/ErrorMessage";
-import { PasswordInput } from "@components/PasswordInput";
+import {
+  AvalancheIcon,
+  BscIcon,
+  CheckBadge,
+  CosmosIcon,
+  DiscordIcon,
+  EthereumIcon,
+  PolygonIcon,
+  SolanaIcon,
+  TwitterIcon,
+  WidgetIcon,
+} from "@components/Icon";
 import type {
   Blockchain,
   BlockchainKeyringInit,
   KeyringInit,
 } from "@coral-xyz/common";
 import {
+  BACKEND_API_URL,
+  BACKPACK_FEATURE_USERNAMES,
+  BACKPACK_FEATURE_XNFT,
   DerivationPath,
+  DISCORD_INVITE_LINK,
   KeyringType,
   toTitleCase,
+  TWITTER_LINK,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
   UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
-  UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET,
+  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
+  UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
+  XNFT_GG_LINK,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
+import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTheme } from "@hooks/useTheme";
 import type { StackScreenProps } from "@react-navigation/stack";
 import { createStackNavigator } from "@react-navigation/stack";
-import { encode } from "bs58";
-import { useCallback, useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import type { StyleProp, ViewStyle } from "react-native";
 import {
-  Button,
-  FlatList,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+  IconLaunchDetail,
+  RoundedContainer,
+  SettingsRow,
+} from "@screens/Unlocked/Settings/components/SettingsRow";
+import { encode } from "bs58";
+import * as Linking from "expo-linking";
+import { v4 as uuidv4 } from "uuid";
 
 import {
   OnboardingProvider,
@@ -59,6 +95,10 @@ function maybeRender(condition: boolean, fn: () => any) {
   if (condition) {
     return fn();
   }
+}
+
+function getWaitlistId() {
+  return undefined;
 }
 
 type OnboardingStackParamList = {
@@ -84,55 +124,135 @@ function OnboardingScreen({
 }) {
   return (
     <Screen style={{ padding: 24, justifyContent: "space-between" }}>
-      <View style={{ marginBottom: 12 }}>
+      <Margin bottom={24}>
         <Header text={title} />
-        {maybeRender(Boolean(subtitle), () => {
-          <SubtextParagraph>{subtitle}</SubtextParagraph>;
-        })}
-      </View>
+        {subtitle ? <SubtextParagraph>{subtitle}</SubtextParagraph> : null}
+      </Margin>
       {children}
     </Screen>
   );
 }
 
 // https://github.com/gorhom/react-native-bottom-sheet
-function CreateOrImportWalletScreen({
+function OnboardingCreateOrImportWalletScreen({
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "CreateOrImportWallet">) {
+  const theme = useTheme();
   const { setOnboardingData } = useOnboardingData();
-  return (
-    <Screen style={styles.container}>
-      <View style={{ alignItems: "center" }}>
-        <StyledText style={{ fontSize: 24, marginBottom: 12 }}>
-          Backpack
-        </StyledText>
-        <StyledText>A home for your !! xNFTs</StyledText>
-      </View>
-      <View
-        style={{
-          padding: 16,
-          alignItems: "center",
-        }}
-      >
-        <PrimaryButton
-          label="Create a new wallet"
-          onPress={() => {
-            setOnboardingData({ action: "create" });
-            navigation.push("MnemonicInput");
-          }}
+
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+
+  // variables
+  const snapPoints = useMemo(() => [200], []);
+
+  // callbacks
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
+
+  const menuOptions = [
+    {
+      icon: (
+        <MaterialIcons
+          color={theme.custom.colors.secondary}
+          size={24}
+          name="lock"
         />
-        <View style={{ paddingVertical: 8 }}>
-          <SubtextParagraph
+      ),
+      label: "Backpack.app",
+      onPress: () => Linking.openURL(BACKPACK_LINK),
+      detailIcon: <IconLaunchDetail />,
+    },
+    {
+      icon: <TwitterIcon color={theme.custom.colors.secondary} />,
+      label: "Twitter",
+      onPress: () => Linking.openURL(TWITTER_LINK),
+      detailIcon: <IconLaunchDetail />,
+    },
+    {
+      icon: <DiscordIcon color={theme.custom.colors.secondary} />,
+      label: "Need help? Hop into Discord",
+      onPress: () => Linking.openURL(DISCORD_INVITE_LINK),
+      detailIcon: <IconLaunchDetail />,
+    },
+  ];
+
+  return (
+    <>
+      <Screen style={styles.container}>
+        <Pressable
+          onPress={() => {
+            handlePresentModalPress();
+          }}
+          style={{
+            position: "absolute",
+            top: 20,
+            right: 20,
+            zIndex: 999,
+          }}
+        >
+          <MaterialIcons
+            name="menu"
+            size={32}
+            color={theme.custom.colors.fontColor}
+          />
+        </Pressable>
+
+        <Margin top={48} bottom={24}>
+          <WelcomeLogoHeader />
+        </Margin>
+        <View
+          style={{
+            padding: 16,
+            alignItems: "center",
+          }}
+        >
+          <PrimaryButton
+            label="Create a new wallet"
             onPress={() => {
-              setOnboardingData({ action: "import" });
+              setOnboardingData({ action: "create" });
               navigation.push("MnemonicInput");
             }}
-          >
-            I already have an account
-          </SubtextParagraph>
+          />
+          <View style={{ paddingVertical: 8 }}>
+            <SubtextParagraph
+              onPress={() => {
+                setOnboardingData({ action: "import" });
+                navigation.push("MnemonicInput");
+              }}
+            >
+              I already have an account
+            </SubtextParagraph>
+          </View>
         </View>
-      </View>
-    </Screen>
+      </Screen>
+      <BottomSheetModal
+        ref={bottomSheetModalRef}
+        index={0}
+        snapPoints={snapPoints}
+        backgroundStyle={{
+          marginTop: 12,
+          backgroundColor: theme.custom.colors.background,
+        }}
+      >
+        <RoundedContainer>
+          <FlatList
+            data={menuOptions}
+            scrollEnabled={false}
+            renderItem={({ item }) => {
+              return (
+                <SettingsRow
+                  onPress={item.onPress}
+                  icon={item.icon}
+                  detailIcon={item.detailIcon}
+                  label={item.label}
+                />
+              );
+            }}
+          />
+        </RoundedContainer>
+      </BottomSheetModal>
+    </>
   );
 }
 
@@ -207,7 +327,6 @@ function OnboardingMnemonicInputScreen({
   const { onboardingData, setOnboardingData } = useOnboardingData();
   const { action } = onboardingData;
   const readOnly = action === "create";
-  console.log({ action, readOnly });
 
   const background = useBackgroundClient();
   const [mnemonicWords, setMnemonicWords] = useState<string[]>([
@@ -301,12 +420,15 @@ function OnboardingMnemonicInputScreen({
         </StyledText>
       ))}
       {maybeRender(readOnly, () => (
-        <Button
-          title="I saved my secret recovery phrase"
-          onPress={() => {
-            setChecked(!checked);
-          }}
-        />
+        <Margin bottom={12}>
+          <BaseCheckBoxLabel
+            label="I saved my secret recovery phrase"
+            value={checked}
+            onPress={() => {
+              setChecked(!checked);
+            }}
+          />
+        </Margin>
       ))}
       {maybeRender(Boolean(error), () => (
         <ErrorMessage for={{ message: error }} />
@@ -381,16 +503,18 @@ function OnboardingBlockchainSelectScreen({
     }
 
     const signature = await background.request({
-      method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET,
+      method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
       params: [
         blockchain,
         // Sign the invite code, or an empty string if no invite code
         // TODO setup a nonce based system
         encode(Buffer.from(inviteCode ? inviteCode : "", "utf-8")),
-        derivationPath,
-        accountIndex,
         publicKey!,
-        mnemonic,
+        {
+          derivationPath,
+          accountIndex,
+          mnemonic,
+        },
       ],
     });
 
@@ -423,29 +547,38 @@ function OnboardingBlockchainSelectScreen({
     selected: boolean;
     onSelect: (b: Blockchain) => void;
   }) {
+    function getIcon(id) {
+      switch (id) {
+        case "ethereum":
+          return <EthereumIcon width={24} height={24} />;
+        case "solana":
+          return <SolanaIcon width={24} height={24} />;
+        case "polygon":
+          return <PolygonIcon width={24} height={24} />;
+        case "bsc":
+          return <BscIcon width={24} height={24} />;
+        case "cosmos":
+          return <CosmosIcon width={24} height={24} />;
+        case "valanache":
+          return <AvalancheIcon width={24} height={24} />;
+        default:
+          return null;
+      }
+    }
+
     return (
-      <View
-        style={{
-          padding: 8,
-          height: 80,
-          flex: 1,
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "#333",
-          margin: 4,
-        }}
-      >
-        <Pressable
+      <View style={{ flex: 1, margin: 6 }}>
+        <ActionCard
+          text={label}
+          disabled={!enabled}
+          icon={getIcon(id)}
+          textAdornment={selected ? <CheckBadge /> : ""}
           onPress={() => {
             if (enabled) {
               onSelect(id);
             }
           }}
-        >
-          <Text style={{ color: "#FFF" }}>
-            {label} {selected ? "(selected)" : ""}
-          </Text>
-        </Pressable>
+        />
       </View>
     );
   }
@@ -488,52 +621,54 @@ function OnboardingBlockchainSelectScreen({
   );
 }
 
+type CreatePasswordFormData = {
+  password: string;
+  passwordConfirmation: string;
+  agreedToTerms: boolean;
+};
+
 // TODO(peter) KeyboardAvoidingView
 function OnboardingCreatePasswordScreen({
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "CreatePassword">) {
   const { setOnboardingData } = useOnboardingData();
-  const isNextDisabled = false; // TODO(peter) disable upon invalid password
-  interface CreatePasswordFormData {
-    password: string;
-    passwordConfirmation: string;
-    agreedToTerms: boolean;
-  }
 
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-    watch,
-  } = useForm<CreatePasswordFormData>();
+  const { control, handleSubmit, formState, watch } =
+    useForm<CreatePasswordFormData>();
+  const { errors, isValid } = formState;
 
   const onSubmit = ({ password }: CreatePasswordFormData) => {
-    setOnboardingData({ password });
+    Alert.alert("password", JSON.stringify({ isValid, password }));
+    setOnboardingData({ password, complete: true });
     navigation.push("Finished");
   };
 
+  // TODO(peter) some fk'd up shit is happening here where the hook claims to be invalid when it's not
   return (
     <OnboardingScreen
       title="Create a password"
       subtitle="It should be at least 8 characters. You'll need this to unlock Backpack."
     >
       <View style={{ flex: 1, justifyContent: "flex-start" }}>
+        <Debug data={{ isValid, formState }} />
+        <Margin bottom={12}>
+          <PasswordInput
+            name="password"
+            placeholder="Password"
+            control={control}
+            rules={{
+              required: "You must specify a password",
+              minLength: {
+                value: 8,
+                message: "Password must be at least 8 characters",
+              },
+            }}
+          />
+          <ErrorMessage for={errors.password} />
+        </Margin>
         <PasswordInput
-          placeholder="Password"
-          name="password"
-          control={control}
-          rules={{
-            required: "You must specify a password",
-            minLength: {
-              value: 8,
-              message: "Password must be at least 8 characters",
-            },
-          }}
-        />
-        <ErrorMessage for={errors.password} />
-        <PasswordInput
-          placeholder="Confirm Password"
           name="passwordConfirmation"
+          placeholder="Confirm Password"
           control={control}
           rules={{
             validate: (val: string) => {
@@ -545,7 +680,7 @@ function OnboardingCreatePasswordScreen({
         />
         <ErrorMessage for={errors.passwordConfirmation} />
       </View>
-      <View style={{ marginBottom: 24, justifyContent: "center" }}>
+      <View style={{ marginBottom: 24 }}>
         <CheckBox
           name="agreedToTerms"
           control={control}
@@ -554,7 +689,7 @@ function OnboardingCreatePasswordScreen({
         <ErrorMessage for={errors.agreedToTerms} />
       </View>
       <PrimaryButton
-        disabled={isNextDisabled}
+        // disabled={!isValid}
         label="Next"
         onPress={handleSubmit(onSubmit)}
       />
@@ -590,94 +725,160 @@ function OnboardingImportAccountsScreen({
 }
 
 function OnboardingFinishedScreen() {
+  const background = useBackgroundClient();
   const { onboardingData } = useOnboardingData();
-  const {
+  let {
     password,
     mnemonic,
     blockchainKeyrings,
     username,
     inviteCode,
     waitlistId,
+    isAddingAccount,
+    userId,
   } = onboardingData;
 
   const [isValid, setIsValid] = useState(false);
-  const background = useBackgroundClient();
 
   const keyringInit = {
     mnemonic,
     blockchainKeyrings,
   };
 
+  useEffect(() => {
+    (async () => {
+      const { id } = await createUser();
+      createStore(id);
+    })();
+  }, []);
+
   //
   // Create the user in the backend
   //
-  async function createUser() {
-    if (inviteCode) {
-      const body = JSON.stringify({
-        username,
-        inviteCode,
-        waitlistId, // TODO(peter) waitlistId: getWaitlistId?.(),
-        blockchainPublicKeys: keyringInit.blockchainKeyrings.map((b) => ({
-          blockchain: b.blockchain,
-          publicKey: b.publicKey,
-          signature: b.signature,
-        })),
+  async function createUser(): Promise<{ id: string }> {
+    // If userId is provided, then we are onboarding via the recover flow.
+    if (userId) {
+      return { id: userId };
+    }
+    // If userId is not provided and an invite code is not provided, then
+    // this is dev mode.
+    if (!inviteCode) {
+      return { id: uuidv4() };
+    }
+
+    //
+    // If we're down here, then we are creating a user for the first time.
+    //
+    const body = JSON.stringify({
+      username,
+      inviteCode,
+      waitlistId: getWaitlistId?.(),
+      blockchainPublicKeys: keyringInit.blockchainKeyrings.map((b) => ({
+        blockchain: b.blockchain,
+        publicKey: b.publicKey,
+        signature: b.signature,
+      })),
+    });
+
+    try {
+      const res = await fetch(`${BACKEND_API_URL}/users`, {
+        method: "POST",
+        body,
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
 
-      try {
-        const res = await fetch("https://auth.xnfts.dev/users", {
-          method: "POST",
-          body,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        if (!res.ok) {
-          throw new Error(await res.json());
-        }
-      } catch (err) {
-        throw new Error("error creating account");
+      if (!res.ok) {
+        throw new Error(await res.json());
       }
+      return await res.json();
+    } catch (err) {
+      throw new Error("error creating account");
     }
   }
 
   //
   // Create the local store for the wallets
   //
-  async function createStore() {
+  async function createStore(uuid: string) {
     try {
-      await background.request({
-        method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
-        params: [username, password, keyringInit],
-      });
+      //
+      // If usernames are disabled, use a default one for developing.
+      //
+      if (!BACKPACK_FEATURE_USERNAMES) {
+        username = uuidv4().split("-")[0];
+      }
+
+      if (isAddingAccount) {
+        await background.request({
+          method: UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
+          params: [username, keyringInit, uuid],
+        });
+      } else {
+        await background.request({
+          method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
+          params: [username, password, keyringInit, uuid],
+        });
+      }
+
       setIsValid(true);
     } catch (err) {
       console.log("account setup error", err);
-      // TODO(peter)
       // if (
       //   confirm("There was an issue setting up your account. Please try again.")
       // ) {
-      //   window.location.reload();
+      //   // window.location.reload();
       // }
     }
   }
 
-  return (
+  function Cell({ children, style }: any): JSX.Element {
+    return (
+      <View style={[{ alignSelf: "flex-start", marginBottom: 12 }, style]}>
+        {" "}
+        {children}{" "}
+      </View>
+    );
+  }
+
+  return !isValid ? (
+    <FullScreenLoading />
+  ) : (
     <OnboardingScreen
       title="You've set up Backpack!"
       subtitle="Now get started exploring what your Backpack can do."
     >
-      <View>
-        <Button title="Browse the xNFT library" />
-        <Button title="Follow us on Twitter" />
-        <Button title="Join the Discord Community" />
-        <StyledText>Is Valid: {JSON.stringify(isValid, null, 2)}</StyledText>
+      <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+        {BACKPACK_FEATURE_XNFT && (
+          <Cell style={{ paddingRight: 6 }}>
+            <ActionCard
+              icon={<WidgetIcon />}
+              text="Browse the xNFT library"
+              onClick={() => Linking.openURL(XNFT_GG_LINK)}
+            />
+          </Cell>
+        )}
+        <Cell style={{ paddingLeft: 6 }}>
+          <ActionCard
+            icon={<TwitterIcon />}
+            text="Follow us on Twitter"
+            onClick={() => Linking.openURL(TWITTER_LINK)}
+          />
+        </Cell>
+        <Cell>
+          <ActionCard
+            icon={<DiscordIcon />}
+            text="Join the Discord community"
+            onClick={() => Linking.openURL(DISCORD_INVITE_LINK)}
+          />
+        </Cell>
       </View>
       <PrimaryButton
         label="Finish"
         onPress={async () => {
-          await createUser();
-          await createStore();
+          // await createUser();
+          // await createStore();
           // Navigation should happen automagically based on keyring state
         }}
       />
@@ -685,20 +886,20 @@ function OnboardingFinishedScreen() {
   );
 }
 
-// TODO(peter) hardware onboarding, but figure out how first
-export default function OnboardingNavigator() {
+export default function OnboardingNavigator(): JSX.Element {
   const theme = useTheme();
   return (
     <OnboardingProvider>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen
           name="CreateOrImportWallet"
-          component={CreateOrImportWalletScreen}
+          component={OnboardingCreateOrImportWalletScreen}
         />
         <Stack.Group
           screenOptions={{
             headerStyle: {
               backgroundColor: theme.custom.colors.background,
+              shadowColor: "transparent",
             },
             headerTintColor: theme.custom.colors.fontColor,
             headerTitle: "",

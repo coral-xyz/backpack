@@ -1,23 +1,25 @@
-import EventEmitter from "eventemitter3";
 import {
-  getLogger,
-  vanillaStore,
   generateUniqueId,
-  isServiceWorker,
+  getLogger,
   IS_MOBILE,
+  isServiceWorker,
+  vanillaStore,
 } from "@coral-xyz/common-public";
-import { BrowserRuntimeCommon } from "./common";
+import EventEmitter from "eventemitter3";
+// use expo-secure-store if in react-native, otherwise fake-expo-secure-store.ts
+import { deleteItemAsync, getItemAsync, setItemAsync } from "expo-secure-store";
+
 import {
-  MOBILE_CHANNEL_HOST_RPC_REQUEST,
   MOBILE_CHANNEL_BG_REQUEST,
   MOBILE_CHANNEL_BG_RESPONSE,
   MOBILE_CHANNEL_BG_RESPONSE_INNER,
   MOBILE_CHANNEL_FE_REQUEST,
   MOBILE_CHANNEL_FE_RESPONSE,
   MOBILE_CHANNEL_FE_RESPONSE_INNER,
+  MOBILE_CHANNEL_HOST_RPC_REQUEST,
 } from "../constants";
-// use expo-secure-store if in react-native, otherwise fake-expo-secure-store.ts
-import { deleteItemAsync, getItemAsync, setItemAsync } from "expo-secure-store";
+
+import { BrowserRuntimeCommon } from "./common";
 
 const logger = getLogger("common/mobile");
 
@@ -230,6 +232,12 @@ export function startMobileIfNeeded() {
     }
   };
 
+  // Expo's mobile SecureStore has specific requirements for the way the key is stored:
+  // Keys may contain alphanumeric characters ., -, and _.
+  // Read more here: https://docs.expo.dev/versions/latest/sdk/securestore/
+  // const parseKeyForMobile = (str: string): string =>
+  //   str.replace(/[^a-zA-Z0-9._-]/g, "_").toString();
+
   // like localStorage, expo-secure-store can only save and return strings,
   // so we must JSON.parse and JSON.stringify values when needed
   // https://docs.expo.dev/versions/latest/sdk/securestore
@@ -309,6 +317,7 @@ class BackendRequestManager extends CommonRequestManager {
 }
 
 async function postMsgFromWorker(msg: any) {
+  // @ts-ignore
   const clients = await self.clients.matchAll({
     includeUncontrolled: true,
     type: "window",

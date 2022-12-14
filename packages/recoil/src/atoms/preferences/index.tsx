@@ -1,97 +1,131 @@
-import { atom, selector } from "recoil";
+import type { Blockchain } from "@coral-xyz/common";
 import {
-  Blockchain,
-  UI_RPC_METHOD_KEYRING_AUTOLOCK_READ,
-  UI_RPC_METHOD_APPROVED_ORIGINS_READ,
-  UI_RPC_METHOD_SETTINGS_DARK_MODE_READ,
-  UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_READ,
-  UI_RPC_METHOD_USERNAME_READ,
+  BACKEND_API_URL,
+  UI_RPC_METHOD_ALL_USERS_READ,
+  UI_RPC_METHOD_PREFERENCES_READ,
+  UI_RPC_METHOD_USER_READ,
 } from "@coral-xyz/common";
-import { solanaConnectionUrl } from "../solana";
-import { ethereumConnectionUrl } from "../ethereum";
+import {
+  atom,
+  atomFamily,
+  DefaultValue,
+  selector,
+  selectorFamily,
+} from "recoil";
+
 import { backgroundClient } from "../client";
 
-export const isDarkMode = atom<boolean | null>({
+export const preferences = atom<any>({
+  key: "preferences",
+  default: selector({
+    key: "preferencesDefault",
+    get: async ({ get }) => {
+      const background = get(backgroundClient);
+      // Preferences are dependent on the current active user
+      const _user = get(user);
+      return await background.request({
+        method: UI_RPC_METHOD_PREFERENCES_READ,
+        params: [_user.uuid],
+      });
+    },
+  }),
+});
+
+export const enabledBlockchains = selector<Array<Blockchain>>({
+  key: "enabledBlockchains",
+  get: async ({ get }) => {
+    const p = get(preferences);
+    return p.enabledBlockchains;
+  },
+});
+
+export const isDarkMode = selector<boolean>({
   key: "isDarkMode",
-  default: selector({
-    key: "isDarkModeDefault",
-    get: async ({ get }) => {
-      const background = get(backgroundClient);
-      return await background.request({
-        method: UI_RPC_METHOD_SETTINGS_DARK_MODE_READ,
-        params: [],
-      });
-    },
-  }),
+  get: async ({ get }) => {
+    const p = get(preferences);
+    return p.darkMode;
+  },
 });
 
-export const isDeveloperMode = atom<boolean | null>({
+export const isDeveloperMode = selector<boolean>({
   key: "isDeveloperMode",
-  default: selector({
-    key: "isDeveloperModeDefault",
-    get: async ({ get }) => {
-      const background = get(backgroundClient);
-      return await background.request({
-        method: UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_READ,
-        params: [],
-      });
-    },
-  }),
+  get: async ({ get }) => {
+    const p = get(preferences);
+    return p.developerMode;
+  },
 });
 
-export const autoLockSecs = atom<number | null>({
+export const autoLockSecs = selector<number>({
   key: "autoLockSecs",
-  default: selector({
-    key: "autoLockSecsDefault",
-    get: async ({ get }) => {
-      const background = get(backgroundClient);
-      return await background.request({
-        method: UI_RPC_METHOD_KEYRING_AUTOLOCK_READ,
-        params: [],
-      });
-    },
-  }),
+  get: async ({ get }) => {
+    const p = get(preferences);
+    return p.autoLockSecs;
+  },
 });
 
-export const approvedOrigins = atom<Array<string> | null>({
+export const approvedOrigins = selector<Array<string>>({
   key: "approvedOrigins",
+  get: async ({ get }) => {
+    const p = get(preferences);
+    return p.approvedOrigins;
+  },
+});
+
+// This is the *active* username.
+export const user = atom<{ username: string; uuid: string; jwt: string }>({
+  key: "user",
   default: selector({
-    key: "approvedOriginsDefault",
+    key: "userDefault",
     get: async ({ get }) => {
       const background = get(backgroundClient);
       return await background.request({
-        method: UI_RPC_METHOD_APPROVED_ORIGINS_READ,
+        method: UI_RPC_METHOD_USER_READ,
         params: [],
       });
     },
   }),
 });
 
-export const connectionUrls = atom<{ [key: string]: string | null }>({
-  key: "connectionUrls",
-  default: selector({
-    key: "connectionUrlsDefault",
-    get: async ({ get }) => {
-      return {
-        [Blockchain.SOLANA as string]: get(solanaConnectionUrl),
-        [Blockchain.ETHEREUM as string]: get(ethereumConnectionUrl),
-      };
-    },
+export const xnftJwt = atomFamily({
+  key: "xnftJwt",
+  default: selectorFamily({
+    key: "xnftJwtDefault",
+    get:
+      ({ xnftAddress }: { xnftAddress: string }) =>
+      async (): Promise<string> => {
+        try {
+          const response = await fetch(
+            `${BACKEND_API_URL}/users/jwt/xnft?xnftAddress=${xnftAddress}`
+          );
+          return (await response.json())?.jwt || "";
+        } catch (e) {
+          return "";
+        }
+      },
   }),
 });
 
-export const username = atom<string | null>({
-  key: "username",
-  default: selector({
-    key: "usernameDefault",
-    get: async ({ get }) => {
-      const background = get(backgroundClient);
-      return await background.request({
-        method: UI_RPC_METHOD_USERNAME_READ,
-        params: [],
-      });
-    },
-  }),
+export const allUsers = selector({
+  key: "allUsernamesDefault",
+  get: async ({ get }) => {
+    const background = get(backgroundClient);
+    get(allUsersTrigger); // Use this to retriger a fetch when the active username changes.
+    return await background.request({
+      method: UI_RPC_METHOD_ALL_USERS_READ,
+      params: [],
+    });
+  },
+  set: ({ set }, value) => {
+    if (value instanceof DefaultValue) {
+      set(allUsersTrigger, (v) => v + 1);
+    }
+  },
+});
+
+// This atom is used for nothing other than re-triggering the allUsers fetch.
+export const allUsersTrigger = atom<number>({
+  key: "allUsersTrigger",
+  default: 0,
 });
 
 export * from "./xnft-preferences";

@@ -1,5 +1,7 @@
-import { KeyringType, toTitleCase } from "@coral-xyz/common";
+import type { KeyringType } from "@coral-xyz/common";
+import { toTitleCase } from "@coral-xyz/common";
 import { Box } from "@mui/material";
+
 import {
   Header,
   HeaderIcon,

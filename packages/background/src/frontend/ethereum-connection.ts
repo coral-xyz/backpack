@@ -1,36 +1,37 @@
-import type { BigNumber } from "ethers";
 import type {
-  RpcRequest,
-  RpcResponse,
   Context,
   EventEmitter,
+  RpcRequest,
+  RpcResponse,
 } from "@coral-xyz/common";
 import {
+  CHANNEL_ETHEREUM_CONNECTION_INJECTED_REQUEST,
+  CHANNEL_ETHEREUM_CONNECTION_RPC_UI,
+  ChannelAppUi,
+  ChannelContentScript,
+  ETHEREUM_PROVIDER_RPC_CALL,
+  ETHEREUM_PROVIDER_RPC_ESTIMATE_GAS,
+  ETHEREUM_PROVIDER_RPC_GET_BALANCE,
+  ETHEREUM_PROVIDER_RPC_GET_BLOCK,
+  ETHEREUM_PROVIDER_RPC_GET_BLOCK_NUMBER,
+  ETHEREUM_PROVIDER_RPC_GET_BLOCK_WITH_TRANSACTIONS,
+  ETHEREUM_PROVIDER_RPC_GET_CODE,
+  ETHEREUM_PROVIDER_RPC_GET_FEE_DATA,
+  ETHEREUM_PROVIDER_RPC_GET_GAS_PRICE,
+  ETHEREUM_PROVIDER_RPC_GET_NETWORK,
+  ETHEREUM_PROVIDER_RPC_GET_STORAGE_AT,
+  ETHEREUM_PROVIDER_RPC_GET_TRANSACTION,
+  ETHEREUM_PROVIDER_RPC_GET_TRANSACTION_COUNT,
+  ETHEREUM_PROVIDER_RPC_GET_TRANSACTION_RECEIPT,
+  ETHEREUM_PROVIDER_RPC_LOOKUP_ADDRESS,
+  ETHEREUM_PROVIDER_RPC_RESOLVE_NAME,
+  ETHEREUM_PROVIDER_RPC_WAIT_FOR_TRANSACTION,
   getLogger,
   withContext,
   withContextPort,
-  ChannelAppUi,
-  ChannelContentScript,
-  CHANNEL_ETHEREUM_CONNECTION_INJECTED_REQUEST,
-  CHANNEL_ETHEREUM_CONNECTION_RPC_UI,
-  ETHEREUM_PROVIDER_RPC_GET_BALANCE,
-  ETHEREUM_PROVIDER_RPC_GET_CODE,
-  ETHEREUM_PROVIDER_RPC_GET_STORAGE_AT,
-  ETHEREUM_PROVIDER_RPC_GET_TRANSACTION_COUNT,
-  ETHEREUM_PROVIDER_RPC_GET_BLOCK,
-  ETHEREUM_PROVIDER_RPC_GET_BLOCK_WITH_TRANSACTIONS,
-  ETHEREUM_PROVIDER_RPC_LOOKUP_ADDRESS,
-  ETHEREUM_PROVIDER_RPC_RESOLVE_NAME,
-  ETHEREUM_PROVIDER_RPC_GET_NETWORK,
-  ETHEREUM_PROVIDER_RPC_GET_BLOCK_NUMBER,
-  ETHEREUM_PROVIDER_RPC_GET_GAS_PRICE,
-  ETHEREUM_PROVIDER_RPC_GET_FEE_DATA,
-  ETHEREUM_PROVIDER_RPC_CALL,
-  ETHEREUM_PROVIDER_RPC_ESTIMATE_GAS,
-  ETHEREUM_PROVIDER_RPC_GET_TRANSACTION,
-  ETHEREUM_PROVIDER_RPC_GET_TRANSACTION_RECEIPT,
-  ETHEREUM_PROVIDER_RPC_WAIT_FOR_TRANSACTION,
 } from "@coral-xyz/common";
+import type { BigNumber } from "ethers";
+
 import type { EthereumConnectionBackend } from "../backend/ethereum-connection";
 import type { Config, Handle } from "../types";
 
@@ -199,7 +200,15 @@ async function handleResolveName(
 
 async function handleGetNetwork(ctx: Context<EthereumConnectionBackend>) {
   const resp = await ctx.backend.getNetwork();
-  return [resp];
+
+  // NOTE(peter): defaultProvider is a function that fails to serialize in the mobile app.
+  // By setting it to undefined, we can avoid the serialization error.
+  return [
+    {
+      ...resp,
+      _defaultProvider: undefined,
+    },
+  ];
 }
 
 async function handleGetBlockNumber(ctx: Context<EthereumConnectionBackend>) {

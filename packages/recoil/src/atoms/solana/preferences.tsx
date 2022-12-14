@@ -1,54 +1,31 @@
-import { atom, selector } from "recoil";
+import type { Commitment } from "@solana/web3.js";
+import { selector } from "recoil";
 
-import { Commitment } from "@solana/web3.js";
-import {
-  UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ,
-  UI_RPC_METHOD_SOLANA_EXPLORER_READ,
-  UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
-} from "@coral-xyz/common";
-import { backgroundClient } from "../client";
+import { preferences } from "../preferences";
 
-export const solanaExplorer = atom<string | null>({
+export const solanaExplorer = selector<string>({
   key: "solanaExplorer",
-  default: selector({
-    key: "solanaExplorerDefault",
-    get: async ({ get }) => {
-      const background = get(backgroundClient);
-      return await background.request({
-        method: UI_RPC_METHOD_SOLANA_EXPLORER_READ,
-        params: [],
-      });
-    },
-  }),
+  get: async ({ get }) => {
+    const p = get(preferences);
+    return p.solana.explorer;
+  },
 });
 
-export const solanaCommitment = atom<Commitment | null>({
+export const solanaCommitment = selector<Commitment>({
   key: "solanaCommitment",
-  default: selector({
-    key: "solanaCommitmentDefault",
-    get: async ({ get }) => {
-      const background = get(backgroundClient);
-      return await background.request({
-        method: UI_RPC_METHOD_SOLANA_COMMITMENT_READ,
-        params: [],
-      });
-    },
-  }),
+  get: async ({ get }) => {
+    const p = get(preferences);
+    return p.solana.commitment;
+  },
 });
 
 /**
  * URL to the cluster to communicate with.
  */
-export const solanaConnectionUrl = atom<string | null>({
+export const solanaConnectionUrl = selector<string>({
   key: "solanaConnectionUrl",
-  default: selector({
-    key: "solanaConnectionUrlDefault",
-    get: ({ get }) => {
-      const background = get(backgroundClient);
-      return background.request({
-        method: UI_RPC_METHOD_SOLANA_CONNECTION_URL_READ,
-        params: [],
-      });
-    },
-  }),
+  get: ({ get }) => {
+    const p = get(preferences);
+    return p.solana.cluster;
+  },
 });

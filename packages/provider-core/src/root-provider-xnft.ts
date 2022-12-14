@@ -1,26 +1,23 @@
 import type { Event } from "@coral-xyz/common";
-import type { XnftMetadata } from "@coral-xyz/common-public";
 import {
-  getLogger,
+  Blockchain,
+  CHANNEL_PLUGIN_NOTIFICATION,
   CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
   CHANNEL_SOLANA_CONNECTION_INJECTED_RESPONSE,
-  CHANNEL_PLUGIN_NOTIFICATION,
+  getLogger,
   PLUGIN_NOTIFICATION_CONNECT,
+  PLUGIN_NOTIFICATION_ETHEREUM_PUBLIC_KEY_UPDATED,
   PLUGIN_NOTIFICATION_MOUNT,
+  PLUGIN_NOTIFICATION_SOLANA_PUBLIC_KEY_UPDATED,
   PLUGIN_NOTIFICATION_UNMOUNT,
+  PLUGIN_NOTIFICATION_UPDATE_METADATA,
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET,
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT,
-  PLUGIN_RPC_METHOD_WINDOW_OPEN,
-  PLUGIN_NOTIFICATION_UPDATE_METADATA,
-  Blockchain,
-  PLUGIN_NOTIFICATION_SOLANA_PUBLIC_KEY_UPDATED,
-  PLUGIN_NOTIFICATION_ETHEREUM_PUBLIC_KEY_UPDATED,
   PLUGIN_RPC_METHOD_POP_OUT,
+  PLUGIN_RPC_METHOD_WINDOW_OPEN,
 } from "@coral-xyz/common";
-import { RequestManager } from "./request-manager";
-import { PrivateEventEmitter } from "./common/PrivateEventEmitter";
-import { ChainedRequestManager } from "./chained-request-manager";
-import {
+import type { XnftMetadata } from "@coral-xyz/common-public";
+import type {
   Commitment,
   SendOptions,
   Signer,
@@ -29,6 +26,10 @@ import {
   TransactionSignature,
   VersionedTransaction,
 } from "@solana/web3.js";
+
+import { PrivateEventEmitter } from "./common/PrivateEventEmitter";
+import type { ChainedRequestManager } from "./chained-request-manager";
+import { RequestManager } from "./request-manager";
 
 const logger = getLogger("provider-xnft-injection");
 

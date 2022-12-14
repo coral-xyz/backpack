@@ -1,20 +1,17 @@
+import { type FormEvent, useCallback, useEffect, useState } from "react";
+import { BACKEND_API_URL } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { AlternateEmail } from "@mui/icons-material";
-import { Box, InputAdornment, Typography } from "@mui/material";
-import { useCallback, useEffect, useState, type FormEvent } from "react";
-import {
-  Header,
-  PrimaryButton,
-  SubtextParagraph,
-  TextField,
-} from "../../common";
-import { getWaitlistId } from "../../common/WaitingRoom";
+import { Box, InputAdornment } from "@mui/material";
+
+import { Header, PrimaryButton, SubtextParagraph } from "../../common";
 import { TextInput } from "../../common/Inputs";
+import { getWaitlistId } from "../../common/WaitingRoom";
 
 export const RecoverAccountUsernameForm = ({
   onNext,
 }: {
-  onNext: (username: string, publickey: string) => void;
+  onNext: (username: string, publicKey: string) => void;
 }) => {
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
@@ -27,19 +24,12 @@ export const RecoverAccountUsernameForm = ({
   const handleSubmit = useCallback(
     async (e: FormEvent) => {
       e.preventDefault();
-
       try {
-        const res = await fetch(
-          `https://auth.xnfts.dev/users/${username}/info`,
-          {
-            headers: {
-              "x-backpack-waitlist-id": getWaitlistId() || "",
-            },
-          }
-        );
-        const json = await res.json();
-        if (!res.ok) throw new Error(json.message);
-        onNext(username, json.pubkey);
+        const response = await fetch(`${BACKEND_API_URL}/users/${username}`);
+        const json = await response.json();
+        if (!response.ok) throw new Error(json.msg);
+        // Use the first found public key
+        onNext(username, json.publicKeys[0].publicKey);
       } catch (err: any) {
         setError(err.message || "Something went wrong");
       }
@@ -52,13 +42,13 @@ export const RecoverAccountUsernameForm = ({
       noValidate
       onSubmit={handleSubmit}
       style={{
-        flex: 1,
         display: "flex",
         flexDirection: "column",
-        padding: "0 16px 16px",
+        height: "100%",
+        justifyContent: "space-between",
       }}
     >
-      <Box style={{ padding: 8, flex: 1 }}>
+      <Box style={{ margin: "24px" }}>
         <Header text="Username recovery" />
         <SubtextParagraph style={{ margin: "16px 0" }}>
           Enter your username below, you will then be asked for your secret
@@ -66,7 +56,13 @@ export const RecoverAccountUsernameForm = ({
           initially associated with it.
         </SubtextParagraph>
       </Box>
-      <Box style={{ flex: 1 }}>
+      <Box
+        style={{
+          marginLeft: "16px",
+          marginRight: "16px",
+          marginBottom: "16px",
+        }}
+      >
         <TextInput
           inputProps={{
             name: "username",
@@ -97,8 +93,6 @@ export const RecoverAccountUsernameForm = ({
             </InputAdornment>
           }
         />
-      </Box>
-      <Box>
         <PrimaryButton
           label="Continue"
           type="submit"

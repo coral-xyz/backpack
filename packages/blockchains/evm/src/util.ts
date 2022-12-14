@@ -1,6 +1,6 @@
-import { ethers } from "ethers";
-import type { Wallet } from "ethers";
 import { DerivationPath } from "@coral-xyz/common";
+import type { Wallet } from "ethers";
+import { ethers } from "ethers";
 
 export function deriveEthereumWallets(
   seed: Buffer,

@@ -1,17 +1,21 @@
 import React from "react";
-import { RecoilRoot } from "recoil";
 import { HashRouter } from "react-router-dom";
 import {
-  useBackgroundKeepAlive,
   NotificationsProvider,
+  useBackgroundKeepAlive,
 } from "@coral-xyz/recoil";
-import { Router } from "./Router";
-import { WithTheme } from "../components/common/WithTheme";
-import "./App.css";
+import { RecoilRoot } from "recoil";
+
 import "@fontsource/inter";
+
+import { WithTheme } from "../components/common/WithTheme";
+
+import { ErrorBoundary } from "./ErrorBoundary";
+import { Router } from "./Router";
+
+import "./App.css";
 import "@fontsource/inter/500.css";
 import "@fontsource/inter/600.css";
-import { ErrorBoundary } from "./ErrorBoundary";
 
 export default function App() {
   return (

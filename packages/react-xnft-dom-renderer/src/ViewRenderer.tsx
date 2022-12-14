@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Element } from "react-xnft";
+import type { Element } from "react-xnft";
+
 import { Component } from "./Component";
 import { useDomContext } from "./Context";
 

@@ -1,5 +1,5 @@
-import { View } from "../elements";
 import { useTheme } from "../Context";
+import { View } from "../elements";
 
 // Note: this component currently explects `<ListItem>` children.
 export const List: React.FC<{

@@ -1,5 +1,5 @@
-import { PublicKey, TransactionInstruction } from "@solana/web3.js";
 import { Blob, struct } from "@solana/buffer-layout";
+import { PublicKey, TransactionInstruction } from "@solana/web3.js";
 
 export function assertOwnerInstruction({ account, owner }: any) {
   const keys = [{ pubkey: account, isSigner: false, isWritable: false }];

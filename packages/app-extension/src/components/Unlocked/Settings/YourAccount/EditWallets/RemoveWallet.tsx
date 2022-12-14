@@ -1,20 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { Typography } from "@mui/material";
-import {
-  Blockchain,
-  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-  UI_RPC_METHOD_KEYRING_KEY_DELETE,
-} from "@coral-xyz/common";
+import React, { useEffect, useState } from "react";
+import type { Blockchain } from "@coral-xyz/common";
+import { UI_RPC_METHOD_KEYRING_KEY_DELETE } from "@coral-xyz/common";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import {
-  useActiveWallets,
-  useBackgroundClient,
-  useWalletPublicKeys,
-} from "@coral-xyz/recoil";
-import { useNavStack } from "../../../../common/Layout/NavStack";
-import { WithMiniDrawer } from "../../../../common/Layout/Drawer";
+import { Typography } from "@mui/material";
+
+import { PrimaryButton, SecondaryButton } from "../../../../common";
 import { CheckIcon, WarningIcon } from "../../../../common/Icon";
-import { SecondaryButton, PrimaryButton } from "../../../../common";
+import { WithMiniDrawer } from "../../../../common/Layout/Drawer";
+import { useNavStack } from "../../../../common/Layout/NavStack";
 
 export const RemoveWallet: React.FC<{
   blockchain: Blockchain;
@@ -25,15 +19,6 @@ export const RemoveWallet: React.FC<{
   const nav = useNavStack();
   const background = useBackgroundClient();
   const [showSuccess, setShowSuccess] = useState(false);
-  const activeWallets = useActiveWallets();
-  const wallet = activeWallets.find((w) => w.blockchain === blockchain);
-  const blockchainKeyrings = useWalletPublicKeys();
-  const keyring = blockchainKeyrings[blockchain];
-  const flattenedWallets = [
-    ...keyring.hdPublicKeys,
-    ...keyring.importedPublicKeys,
-    ...keyring.ledgerPublicKeys,
-  ];
 
   useEffect(() => {
     nav.setTitle("Remove Wallet");
@@ -121,18 +106,6 @@ export const RemoveWallet: React.FC<{
             style={{ backgroundColor: theme.custom.colors.negative }}
             onClick={() => {
               (async () => {
-                if (wallet?.publicKey.toString() === publicKey.toString()) {
-                  const newActiveWalletPubkey = flattenedWallets.find(
-                    (wallet) =>
-                      wallet.publicKey.toString() !== publicKey.toString()
-                  )?.publicKey;
-                  if (newActiveWalletPubkey) {
-                    await background.request({
-                      method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-                      params: [newActiveWalletPubkey, blockchain],
-                    });
-                  }
-                }
                 await background.request({
                   method: UI_RPC_METHOD_KEYRING_KEY_DELETE,
                   params: [blockchain, publicKey],

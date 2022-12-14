@@ -1,15 +1,15 @@
-import { Blockchain, DerivationPath } from "@coral-xyz/common";
 import {
   EthereumHdKeyringFactory,
   EthereumKeyringFactory,
   EthereumLedgerKeyringFactory,
 } from "@coral-xyz/blockchain-evm";
+import { BlockchainKeyring } from "@coral-xyz/blockchain-keyring";
 import {
   SolanaHdKeyringFactory,
   SolanaKeyringFactory,
   SolanaLedgerKeyringFactory,
 } from "@coral-xyz/blockchain-solana";
-import { BlockchainKeyring } from "@coral-xyz/blockchain-keyring";
+import { Blockchain, DerivationPath } from "@coral-xyz/common";
 
 export function hdFactoryForBlockchain(blockchain: Blockchain) {
   return {

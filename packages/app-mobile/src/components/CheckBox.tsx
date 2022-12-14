@@ -1,30 +1,62 @@
-import ExpoCheckBox from "expo-checkbox";
 import { Controller } from "react-hook-form";
-import { Text, View } from "react-native";
-import tw from "twrnc";
+import { StyleSheet, Text, View } from "react-native";
+import { useTheme } from "@hooks";
+import ExpoCheckBox from "expo-checkbox";
 
-import { addTestIdentifier } from "../lib/addTestIdentifier";
+export const BaseCheckBoxLabel: React.FC<{
+  label: string;
+  value: any;
+  onPress: (value: boolean) => void;
+}> = ({ label, value, onPress }) => {
+  const theme = useTheme();
+  return (
+    <View style={styles.row}>
+      <ExpoCheckBox
+        value={value}
+        onValueChange={onPress}
+        color={theme.custom.colors.fontColor}
+      />
+      {label ? (
+        <Text
+          style={[
+            styles.label,
+            {
+              color: theme.custom.colors.fontColor,
+            },
+          ]}
+        >
+          {label}
+        </Text>
+      ) : null}
+    </View>
+  );
+};
 
 export const CheckBox: React.FC<{
   name: string;
   control: any;
   label: string;
-}> = ({ name, control, label }) => (
-  <Controller
-    control={control}
-    name={name}
-    render={({ field: { value, onChange } }) => (
-      <View style={tw`flex flex-row mt-4`}>
-        <ExpoCheckBox
-          value={value}
-          onValueChange={onChange}
-          {...addTestIdentifier(label)}
-        />
-        {label && <Text style={tw`text-white flex-1 pl-2`}>{label}</Text>}
-      </View>
-    )}
-    rules={{
-      required: "You must agree to the Terms of Service",
-    }}
-  />
-);
+}> = ({ name, control, label }) => {
+  return (
+    <Controller
+      control={control}
+      name={name}
+      render={({ field: { value, onChange } }) => (
+        <BaseCheckBoxLabel label={label} value={value} onPress={onChange} />
+      )}
+      rules={{
+        required: "You must agree to the Terms of Service",
+      }}
+    />
+  );
+};
+
+const styles = StyleSheet.create({
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  label: {
+    marginLeft: 8,
+  },
+});

@@ -1,0 +1,12 @@
+{
+  "name": "ethereum-rpc-proxy",
+  "version": "0.0.0",
+  "devDependencies": {
+    "wrangler": "^2.1.9"
+  },
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler publish"
+  }
+}

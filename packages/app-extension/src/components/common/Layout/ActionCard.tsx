@@ -1,5 +1,5 @@
-import { Button, Typography, Box, Card, CardContent } from "@mui/material";
 import { useCustomTheme } from "@coral-xyz/themes";
+import { Box, Button, Card, CardContent, Typography } from "@mui/material";
 
 export function ActionCard({
   icon,

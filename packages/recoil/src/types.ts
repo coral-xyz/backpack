@@ -1,5 +1,12 @@
-import { BigNumber } from "ethers";
-import { TAB_BALANCES, TAB_SWAP, TAB_NFTS, TAB_APPS } from "@coral-xyz/common";
+import {
+  TAB_APPS,
+  TAB_BALANCES,
+  TAB_MESSAGES,
+  TAB_NFTS,
+  TAB_SWAP,
+} from "@coral-xyz/common";
+import type { BigNumber } from "ethers";
+
 import { makeUrl } from "./hooks";
 
 export type NamedPublicKey = {
@@ -49,6 +56,7 @@ export const TABS = [
   [TAB_NFTS, "Nfts"],
   [TAB_SWAP, "Swap"],
   [TAB_APPS, "Apps"],
+  [TAB_MESSAGES, "Messages"],
 ];
 
 export function makeDefaultNav() {

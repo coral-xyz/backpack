@@ -1,0 +1,16 @@
+name: Deploy notifications-worker
+on:
+  push:
+    branches: ["master"]
+    paths: ["backend/native/notifications-worker/**"]
+
+env:
+  FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: "mv docker/notifications-worker/fly.toml . && flyctl deploy --remote-only"

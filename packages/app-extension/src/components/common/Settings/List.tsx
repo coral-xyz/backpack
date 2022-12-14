@@ -1,5 +1,6 @@
-import { Typography } from "@mui/material";
 import { useCustomTheme } from "@coral-xyz/themes";
+import { Typography } from "@mui/material";
+
 import { List, ListItem, PushDetail } from "../../common";
 
 export function SettingsList({

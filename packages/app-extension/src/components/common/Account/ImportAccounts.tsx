@@ -1,5 +1,19 @@
 import { useEffect, useState } from "react";
-import { ethers, BigNumber } from "ethers";
+import {
+  accountDerivationPath,
+  Blockchain,
+  DEFAULT_SOLANA_CLUSTER,
+  DerivationPath,
+  derivationPathPrefix,
+  EthereumConnectionUrl,
+  UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
+  UI_RPC_METHOD_PREVIEW_PUBKEYS,
+} from "@coral-xyz/common";
+import { useBackgroundClient } from "@coral-xyz/recoil";
+import { useCustomTheme } from "@coral-xyz/themes";
+import Ethereum from "@ledgerhq/hw-app-eth";
+import Solana from "@ledgerhq/hw-app-solana";
+import type Transport from "@ledgerhq/hw-transport";
 import {
   Box,
   List,
@@ -7,30 +21,17 @@ import {
   ListItemText,
   MenuItem,
 } from "@mui/material";
-import Ethereum from "@ledgerhq/hw-app-eth";
-import Solana from "@ledgerhq/hw-app-solana";
-import Transport from "@ledgerhq/hw-transport";
-import { Connection as SolanaConnection, PublicKey } from "@solana/web3.js";
 import * as anchor from "@project-serum/anchor";
-import { useBackgroundClient } from "@coral-xyz/recoil";
-import {
-  accountDerivationPath,
-  derivationPathPrefix,
-  Blockchain,
-  DerivationPath,
-  EthereumConnectionUrl,
-  DEFAULT_SOLANA_CLUSTER,
-  UI_RPC_METHOD_PREVIEW_PUBKEYS,
-  UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
-} from "@coral-xyz/common";
-import { useCustomTheme } from "@coral-xyz/themes";
+import { Connection as SolanaConnection, PublicKey } from "@solana/web3.js";
+import { BigNumber, ethers } from "ethers";
+
+import { useConflictQuery } from "../../../hooks/useConflictQuery";
 import {
   Checkbox,
   Header,
   Loading,
   PrimaryButton,
   SubtextParagraph,
-  TextField,
   walletAddressDisplay,
 } from "../../common";
 import { TextInput } from "../Inputs";
@@ -72,16 +73,22 @@ export function ImportAccounts({
   allowMultiple?: boolean;
 }) {
   const background = useBackgroundClient();
+  const checkPublicKeyConflicts = useConflictQuery();
   const theme = useCustomTheme();
   const [accounts, setAccounts] = useState<Array<Account>>([]);
   const [selectedAccounts, setSelectedAccounts] = useState<SelectedAccount[]>(
     []
   );
   const [ledgerLocked, setLedgerLocked] = useState(false);
+  // Public keys that have already been imported on this account
   const [importedPubkeys, setImportedPubkeys] = useState<string[]>([]);
+  // Public keys that are in use on other Backpack accounts
+  const [conflictingPubkeys, setConflictingPubkeys] = useState<string[]>([]);
   const [derivationPath, setDerivationPath] = useState<DerivationPath>(
     DerivationPath.Default
   );
+
+  const disabledPubkeys = [...importedPubkeys, ...conflictingPubkeys];
 
   useEffect(() => {
     (async () => {
@@ -101,6 +108,26 @@ export function ImportAccounts({
       }
     })();
   }, [background, blockchain]);
+
+  //
+  // Query the server for a list of public keys that are already in use
+  //
+  useEffect(() => {
+    (async () => {
+      if (accounts.length === 0) return;
+      try {
+        const response = await checkPublicKeyConflicts(
+          accounts.map((a) => ({
+            blockchain,
+            publicKey: a.publicKey,
+          }))
+        );
+        setConflictingPubkeys(response.map((r: any) => r.public_key));
+      } catch {
+        // If the query failed assume all are valid
+      }
+    })();
+  }, [accounts, blockchain]);
 
   //
   // Load a list of accounts and their associated balances
@@ -382,7 +409,7 @@ export function ImportAccounts({
                       paddingBottom: "5px",
                     }}
                     disableRipple
-                    disabled={importedPubkeys.includes(publicKey.toString())}
+                    disabled={disabledPubkeys.includes(publicKey.toString())}
                   >
                     <Box style={{ display: "flex", width: "100%" }}>
                       <div
@@ -399,7 +426,7 @@ export function ImportAccounts({
                             importedPubkeys.includes(publicKey.toString())
                           }
                           tabIndex={-1}
-                          disabled={importedPubkeys.includes(
+                          disabled={disabledPubkeys.includes(
                             publicKey.toString()
                           )}
                           disableRipple

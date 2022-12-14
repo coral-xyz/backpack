@@ -1,10 +1,10 @@
-import { SERVER_URL } from "./config";
+import { SERVER_HTTP_URL, SERVER_URL } from "./config";
 import EventEmitter from "eventemitter3";
 import {
   CHAT_MESSAGES,
   FromServer,
-  SUBSCRIBE,
   ToServer,
+  WS_READY,
 } from "@coral-xyz/common";
 
 export const SIGNALING_CONNECTED = "SIGNALING_CONNECTED";
@@ -12,15 +12,16 @@ export const SIGNALING_CONNECTED = "SIGNALING_CONNECTED";
 export class Signaling extends EventEmitter {
   ws: WebSocket;
 
-  constructor(serverUrl = SERVER_URL) {
+  constructor() {
     super();
-    this.initWs(`${serverUrl}?userId=123`);
   }
 
-  initWs(serverUrl: string) {
-    const ws = new WebSocket(serverUrl);
+  async initWs() {
+    const res = await fetch(`${SERVER_HTTP_URL}/cookie`);
+    const jwt = (await res.json()).jwt;
+    const ws = new WebSocket(`${SERVER_URL}?jwt=${jwt}`);
     ws.addEventListener("open", () => {
-      this.emit(SIGNALING_CONNECTED);
+      // this.emit(SIGNALING_CONNECTED);
     });
 
     ws.addEventListener("message", (event) => {
@@ -38,6 +39,9 @@ export class Signaling extends EventEmitter {
       switch (message.type) {
         case CHAT_MESSAGES:
           this.emit(CHAT_MESSAGES, message.payload);
+          break;
+        case WS_READY:
+          this.emit(SIGNALING_CONNECTED);
           break;
         default:
           console.error(`Invalid type of message found ${data}`);

@@ -1,7 +1,6 @@
-import { deleteItemAsync } from "expo-secure-store";
 import { Alert, DevSettings } from "react-native";
-
-import { CustomButton } from "./CustomButton";
+import { DangerButton } from "@components";
+import { deleteItemAsync } from "expo-secure-store";
 
 const maybeResetApp = () => {
   Alert.alert(
@@ -46,8 +45,8 @@ const doReset = async (shouldReset: boolean) => {
 
 export default function ResetAppButton() {
   return (
-    <CustomButton
-      text="Reset App"
+    <DangerButton
+      label="Reset App"
       onPress={() => {
         maybeResetApp();
       }}

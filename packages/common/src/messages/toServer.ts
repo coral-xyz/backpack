@@ -1,4 +1,5 @@
-import { CHAT_MESSAGES, Message, SUBSCRIBE, UNSUBSCRIBE } from "./fromServer";
+import type { CHAT_MESSAGES, SUBSCRIBE, UNSUBSCRIBE } from "./fromServer";
+import { Message } from "./fromServer";
 
 export type SubscriptionType = "collection" | "individual";
 export type SubscriptionMessage = {
@@ -14,6 +15,7 @@ export type ToServer =
           client_generated_uuid: string;
           message: string;
           message_kind: string;
+          parent_client_generated_uuid?: string;
         }[];
         type: SubscriptionType;
         room: string;

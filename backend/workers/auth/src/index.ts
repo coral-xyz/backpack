@@ -8,10 +8,9 @@ import { decode } from "bs58";
 import { ethers } from "ethers";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { importSPKI, jwtVerify } from "jose";
 import { z, ZodError } from "zod";
 
-import { alg, clearCookie, jwt } from "./jwt";
+import { jwt } from "./jwt";
 import { registerOnRampHandlers } from "./onramp";
 import { zodErrorToString } from "./util";
 import {
@@ -118,22 +117,30 @@ app.get("/users/:username/info", async (c) => {
         limit: 1,
       },
       {
-        publickeys: [{}, { blockchain: true, publickey: true }],
+        public_keys: [{}, { blockchain: true, public_key: true }],
       },
     ],
   });
 
-  if (res.auth_users[0]?.publickeys) {
-    return c.json({
-      ...res.auth_users[0],
-      // TODO remove
-      // This is to not break legacy recovery flows
-      pubkey: res.auth_users[0].publickeys[0].publickey,
-      blockchain: res.auth_users[0].publickeys[0].blockchain,
-    });
-  } else {
+  if (!res.auth_users[0]?.public_keys) {
     return c.json({ message: "user not found" }, 404);
   }
+
+  // Camelcase the response
+  const response = {
+    publicKeys: res.auth_users[0].public_keys.map((k) => ({
+      ...k,
+      publicKey: k.public_key,
+    })),
+  };
+
+  // TODO remove the below after 0.4.0 is superceded in store
+  // Add compatibility for 0.4.0 in response
+  response["pubkey"] = res.auth_users[0].public_keys[0].public_key;
+  response["blockchain"] = res.auth_users[0].public_keys[0].blockchain;
+  response["publickeys"] = response.publicKeys;
+
+  return c.json(response);
 });
 
 app.get("/users/:username", async (c) => {
@@ -203,17 +210,15 @@ app.get("/users/:username", async (c) => {
 app.post("/users", async (c) => {
   const body = await c.req.json();
 
-  let username: string,
-    inviteCode: string,
-    waitlistId: string | null | undefined,
-    publicKeys: Array<{ blockchain: "ethereum" | "solana"; publickey: string }>;
+  const { username, inviteCode, waitlistId, blockchainPublicKeys } =
+    CreateUserWithKeyrings.parse(body);
 
-  const data = CreateUserWithKeyrings.parse(body);
-  for (const blockchainPublicKey of data.blockchainPublicKeys) {
+  // Validate all the signatures
+  for (const blockchainPublicKey of blockchainPublicKeys) {
     if (blockchainPublicKey.blockchain === "solana") {
       if (
         !validateSolanaSignature(
-          Buffer.from(data.inviteCode, "utf8"),
+          Buffer.from(inviteCode, "utf8"),
           decode(blockchainPublicKey.signature),
           decode(blockchainPublicKey.publicKey)
         )
@@ -223,7 +228,7 @@ app.post("/users", async (c) => {
     } else {
       if (
         !validateEthereumSignature(
-          Buffer.from(data.inviteCode, "utf8"),
+          Buffer.from(inviteCode, "utf8"),
           blockchainPublicKey.signature,
           blockchainPublicKey.publicKey
         )
@@ -232,12 +237,6 @@ app.post("/users", async (c) => {
       }
     }
   }
-
-  ({ username, inviteCode, waitlistId } = data);
-  publicKeys = data.blockchainPublicKeys.map((b) => ({
-    blockchain: b.blockchain,
-    publickey: b.publicKey,
-  }));
 
   const chain = Chain(c.env.HASURA_URL, {
     headers: {
@@ -252,8 +251,11 @@ app.post("/users", async (c) => {
           username: username,
           invitation_id: inviteCode,
           waitlist_id: waitlistId,
-          publickeys: {
-            data: publicKeys!,
+          public_keys: {
+            data: blockchainPublicKeys.map((b) => ({
+              blockchain: b.blockchain,
+              public_key: b.publicKey,
+            })),
           },
         },
       },
@@ -269,8 +271,8 @@ app.post("/users", async (c) => {
 
   if (c.env.SLACK_WEBHOOK_URL) {
     try {
-      const publicKeyStr = publicKeys!
-        .map((b) => `${b.blockchain.substring(0, 3)}: ${b.publickey}`)
+      const publicKeyStr = blockchainPublicKeys
+        .map((b) => `${b.blockchain.substring(0, 3)}: ${b.publicKey}`)
         .join(", ");
       await fetch(c.env.SLACK_WEBHOOK_URL, {
         method: "POST",
@@ -288,142 +290,6 @@ app.post("/users", async (c) => {
   }
 
   return jwt(c, res.insert_auth_users_one);
-});
-
-app.delete("/authenticate", (c) => {
-  clearCookie(c, "jwt");
-  return c.json({ msg: "ok" });
-});
-
-app.post("/authenticate", async (c) => {
-  const body = await c.req.json();
-  const sig = body.signature;
-  const pk = body.publickey;
-  const message = Buffer.from(decode(body.encodedMessage));
-  const { id, username } = JSON.parse(body.message);
-
-  let valid = false;
-  if (body.blockchain === "solana") {
-    valid = validateSolanaSignature(message, decode(sig), decode(pk));
-  } else if (body.blockchain === "ethereum") {
-    valid = validateEthereumSignature(message, sig, pk);
-  }
-  if (!valid) throw new Error("Invalid signature");
-
-  const chain = Chain(c.env.HASURA_URL, {
-    headers: {
-      Authorization: `Bearer ${c.env.JWT}`,
-    },
-  });
-
-  const res = await chain("query")({
-    auth_users: [
-      {
-        where: {
-          id: { _eq: id },
-          username: { _eq: username },
-          publickeys: {
-            publickey: { _eq: body.publickey },
-            blockchain: { _eq: body.blockchain },
-          },
-        },
-        limit: 1,
-      },
-      {
-        id: true,
-        username: true,
-      },
-    ],
-  });
-  const [user] = res.auth_users;
-  if (!user) throw new Error("user not found");
-
-  return jwt(c, user);
-});
-
-app.post("/authenticate/:username", async (c) => {
-  const username = c.req.param("username");
-  const _jwt = c.req.cookie("jwt");
-
-  if (_jwt) {
-    try {
-      const publicKey = await importSPKI(c.env.AUTH_JWT_PUBLIC_KEY, alg);
-      const res = await jwtVerify(_jwt, publicKey, {
-        issuer: "auth.xnfts.dev",
-        audience: "backpack",
-      });
-      if (res.payload.username === username) {
-        // update jwt cookie to push expiration date further into the future
-        return jwt(c, { id: res.payload.sub, username });
-      } else {
-        throw new Error(`invalid username (${username})`);
-      }
-    } catch (err) {
-      console.error(err);
-      clearCookie(c, "jwt");
-      return c.json({ msg: "invalid jwt cookie" }, 401);
-    }
-  } else {
-    const chain = Chain(c.env.HASURA_URL, {
-      headers: {
-        Authorization: `Bearer ${c.env.JWT}`,
-      },
-    });
-    const res = await chain("query")({
-      auth_users: [
-        {
-          where: { username: { _eq: username } },
-          limit: 1,
-        },
-        {
-          id: true,
-          publickeys: [{}, { blockchain: true, publickey: true }],
-        },
-      ],
-    });
-    const user = res.auth_users?.[0];
-    return user
-      ? c.json(user)
-      : c.json({ message: `username (${username}) not found` }, 404);
-  }
-});
-
-/**
- * returns information about the user associated with the jwt that's
- * provided either by a ?jwt= querystring parameter or 'jwt' cookie
- */
-app.get("/me", async (c) => {
-  const jwt = c.req.query("jwt") || c.req.cookie("jwt");
-  try {
-    const publicKey = await importSPKI(c.env.AUTH_JWT_PUBLIC_KEY, alg);
-    const { payload } = await jwtVerify(jwt, publicKey, {
-      issuer: "auth.xnfts.dev",
-      audience: "backpack",
-    });
-    const chain = Chain(c.env.HASURA_URL, {
-      headers: {
-        Authorization: `Bearer ${c.env.JWT}`,
-      },
-    });
-    const res = await chain("query")({
-      auth_users_by_pk: [
-        {
-          id: payload.sub,
-        },
-        {
-          id: true,
-          username: true,
-          publickeys: [{}, { blockchain: true, publickey: true }],
-        },
-      ],
-    });
-    const user = res.auth_users_by_pk;
-    if (!user) return c.json({ msg: `user not found (${payload.sub})` }, 404);
-    return c.json(user);
-  } catch (err) {
-    console.error(err);
-    return c.json({ msg: "invalid or missing jwt" }, 401);
-  }
 });
 
 registerOnRampHandlers(app);

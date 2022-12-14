@@ -1,9 +1,12 @@
-import { Suspense } from "react";
-import { Typography, IconButton } from "@mui/material";
+import React, { Suspense, useState } from "react";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ArrowBack } from "@mui/icons-material";
-import { Scrollbar } from "./Scrollbar";
+import KeyboardArrowDownSharpIcon from "@mui/icons-material/KeyboardArrowDownSharp";
+import { IconButton, Typography } from "@mui/material";
+
 import { Loading } from "../";
+
+import { Scrollbar } from "./Scrollbar";
 
 export const NAV_BAR_HEIGHT = 56;
 export const NAV_BUTTON_WIDTH = 38;
@@ -45,6 +48,7 @@ export function WithNav({
   children,
   navbarStyle = {},
   navContentStyle = {},
+  notchViewComponent,
 }: {
   title?: string;
   navButtonLeft?: React.ReactNode;
@@ -52,10 +56,12 @@ export function WithNav({
   children?: React.ReactNode;
   navbarStyle?: React.CSSProperties;
   navContentStyle?: React.CSSProperties;
+  notchViewComponent?: React.ReactElement | null;
 }) {
   return (
     <>
       <NavBar
+        notchViewComponent={notchViewComponent}
         title={title || ""}
         navButtonLeft={navButtonLeft}
         navButtonRight={navButtonRight}
@@ -71,11 +77,13 @@ export function NavBar({
   navButtonLeft,
   navButtonRight,
   style = {},
+  notchViewComponent,
 }: {
   title: string;
   navButtonLeft: React.ReactNode;
   navButtonRight: React.ReactNode;
   style?: any;
+  notchViewComponent?: React.ReactElement | null;
 }) {
   return (
     <Suspense fallback={null}>
@@ -91,7 +99,10 @@ export function NavBar({
       >
         <div style={{ position: "relative", width: "100%", display: "flex" }}>
           <NavButton button={navButtonLeft} />
-          <CenterDisplay title={title} />
+          <CenterDisplay
+            title={title}
+            notchViewComponent={notchViewComponent}
+          />
           <NavButton button={navButtonRight} align="right" />
         </div>
       </div>
@@ -169,7 +180,19 @@ export function NavContent({
   );
 }
 
-function CenterDisplay({ title }: { title: string }) {
+function CenterDisplay({
+  title,
+  notchViewComponent,
+}: {
+  title: string;
+  notchViewComponent?: React.ReactElement | null;
+}) {
+  const [notchEnabled, setNotchEnabled] = useState(false);
+  const notchViewComponentWithProps = notchViewComponent
+    ? React.cloneElement(notchViewComponent, { setOpenDrawer: setNotchEnabled })
+    : null;
+  const theme = useCustomTheme();
+
   return (
     <Suspense fallback={<div></div>}>
       <div
@@ -183,6 +206,15 @@ function CenterDisplay({ title }: { title: string }) {
         }}
       >
         <NavTitleLabel title={title} />
+        {notchViewComponent && (
+          <KeyboardArrowDownSharpIcon
+            onClick={() => setNotchEnabled((x) => !x)}
+            style={{ cursor: "pointer", color: theme.custom.colors.fontColor }}
+          />
+        )}
+        {notchEnabled && notchViewComponentWithProps && (
+          <>{notchViewComponentWithProps}</>
+        )}
       </div>
     </Suspense>
   );
@@ -190,6 +222,9 @@ function CenterDisplay({ title }: { title: string }) {
 
 export function NavTitleLabel({ title }: any) {
   const classes = useStyles();
+  if (typeof title !== "string") {
+    return title;
+  }
   const slashTitleComponents = title.split("/");
   const parenComponents = title.split("(");
   return slashTitleComponents.length === 2 ? (

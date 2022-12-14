@@ -1,12 +1,13 @@
-import { ethers, BigNumber } from "ethers";
-import { Typography } from "@mui/material";
-import _CheckIcon from "@mui/icons-material/Check";
+import type { Blockchain } from "@coral-xyz/common";
 import { useTransactionData, useWalletBlockchain } from "@coral-xyz/recoil";
-import { Blockchain } from "@coral-xyz/common";
 import { styles } from "@coral-xyz/themes";
+import _CheckIcon from "@mui/icons-material/Check";
+import { Typography } from "@mui/material";
+import { BigNumber, ethers } from "ethers";
+
 import { Loading } from "../../common";
-import { WithApproval } from "../../Unlocked/Approvals";
 import { TransactionData } from "../../common/TransactionData";
+import { WithApproval } from "../../Unlocked/Approvals";
 
 const { Zero } = ethers.constants;
 

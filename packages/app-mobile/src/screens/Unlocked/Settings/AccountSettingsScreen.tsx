@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import { Avatar, Margin, Screen } from "@components";
-import { useUsername } from "@coral-xyz/recoil";
+import { useUser } from "@coral-xyz/recoil";
 import { useTheme } from "@hooks";
 
 import { SettingsList } from "./components/SettingsList";
@@ -21,7 +21,7 @@ export default function AccountSettingsModal() {
 }
 
 function AvatarHeader() {
-  const username = useUsername();
+  const { username } = useUser();
   const theme = useTheme();
   return (
     <View style={{ alignItems: "center" }}>

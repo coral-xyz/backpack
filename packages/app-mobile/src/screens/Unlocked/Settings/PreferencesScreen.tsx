@@ -1,4 +1,4 @@
-import { Screen, Margin } from "@components";
+import { Margin, Screen } from "@components";
 import {
   BACKPACK_CONFIG_VERSION,
   BACKPACK_FEATURE_LIGHT_MODE,
@@ -74,14 +74,16 @@ export function PreferencesScreen({ navigation }) {
             label={Blockchain.SOLANA}
             detailIcon={<IconPushDetail />}
             onPress={() =>
-              navigation.push("Preferences", { blockchain: Blockchain.SOLANA })
+              navigation.push("PreferencesSolana", {
+                blockchain: Blockchain.SOLANA,
+              })
             }
           />
           <SettingsRow
             label={Blockchain.ETHEREUM}
             detailIcon={<IconPushDetail />}
             onPress={() =>
-              navigation.push("Preferences", {
+              navigation.push("PreferencesEthereum", {
                 blockchain: Blockchain.ETHEREUM,
               })
             }

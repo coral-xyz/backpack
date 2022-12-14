@@ -1,8 +1,9 @@
 import { useState } from "react";
+import type { Blockchain, BlockchainKeyringInit } from "@coral-xyz/common";
 import {
-  Blockchain,
-  BlockchainKeyringInit,
   DerivationPath,
+  getAddMessage,
+  toTitleCase,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
   UI_RPC_METHOD_BLOCKCHAINS_ENABLED_ADD,
@@ -13,11 +14,13 @@ import {
   useEnabledBlockchains,
   useKeyringType,
 } from "@coral-xyz/recoil";
-import { WithCopyTooltip } from "../../../common/WithCopyTooltip";
-import { SwitchToggle } from ".";
-import { SettingsList } from "../../../common/Settings/List";
-import { HardwareOnboard } from "../../../Onboarding/pages/HardwareOnboard";
+
 import { WithDrawer } from "../../../common/Layout/Drawer";
+import { SettingsList } from "../../../common/Settings/List";
+import { WithCopyTooltip } from "../../../common/WithCopyTooltip";
+import { HardwareOnboard } from "../../../Onboarding/pages/HardwareOnboard";
+
+import { SwitchToggle } from ".";
 
 export function PreferencesBlockchains({
   blockchain,
@@ -44,16 +47,18 @@ export function PreferencesBlockchains({
 
   const onToggle = async (isDisabled: boolean) => {
     if (isDisabled) {
+      // Disable the blockchain
       await background.request({
         method: UI_RPC_METHOD_BLOCKCHAINS_ENABLED_DELETE,
         params: [blockchain],
       });
     } else {
+      // Get all the keyrings for the blockchain and see if we already have one
+      // for the blockchain being enabled
       const blockchainKeyrings = await background.request({
         method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
         params: [],
       });
-
       if (!blockchainKeyrings.includes(blockchain)) {
         // Blockchain has no keyring initialised, initialise it
         if (keyringType === "ledger") {
@@ -127,9 +132,12 @@ export function PreferencesBlockchains({
         <HardwareOnboard
           blockchain={blockchain!}
           action={"create"}
+          signMessage={getAddMessage}
+          signText={`Sign the message to enable the ${toTitleCase(
+            blockchain!
+          )} in Backpack.`}
           onComplete={handleHardwareOnboardComplete}
           onClose={() => setOpenDrawer(false)}
-          requireSignature={false}
         />
       </WithDrawer>
     </>

@@ -1,21 +1,25 @@
+import { useForm } from "react-hook-form";
+import { Alert, Button, Text, View } from "react-native";
+import {
+  Margin,
+  PrimaryButton,
+  ResetAppButton,
+  Screen,
+  SecondaryButton,
+  WelcomeLogoHeader,
+} from "@components";
 import {
   BACKPACK_LINK,
   DISCORD_INVITE_LINK,
   TWITTER_LINK,
   UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
 } from "@coral-xyz/common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
+import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { createStackNavigator } from "@react-navigation/stack";
 import { Linking } from "expo-linking";
-import { useForm } from "react-hook-form";
-import { Text, View, Button } from "react-native";
-import tw from "twrnc";
 
-import { CustomButton } from "../components/CustomButton";
 import { ErrorMessage } from "../components/ErrorMessage";
 import { PasswordInput } from "../components/PasswordInput";
-import ResetAppButton from "../components/ResetAppButton";
-import { ButtonFooter, MainContent } from "../components/Templates";
 
 const Stack = createStackNavigator();
 
@@ -27,20 +31,16 @@ export default function LockedNavigator() {
   return (
     <Stack.Navigator
       initialRouteName="Locked"
-      screenOptions={{ headerTitle: "", presentation: "modal" }}
+      screenOptions={{
+        headerShown: false,
+        headerTitle: "",
+        presentation: "modal",
+      }}
     >
       <Stack.Screen name="Locked" component={LockedScreen} />
       <Stack.Screen name="HelpMenuModal" component={LockedHelpMenuModal} />
-      <Stack.Group>
-        <Stack.Screen name="ResetWelcome" component={ResetWelcomeScreen} />
-        <Stack.Screen name="ResetWarning" component={LockedScreen} />
-      </Stack.Group>
     </Stack.Navigator>
   );
-}
-
-function ResetWelcomeScreen({ navigation }) {
-  return <View style={{ flex: 1, backgroundColor: "orange" }} />;
 }
 
 function LockedHelpMenuModal({ navigation }) {
@@ -106,19 +106,19 @@ function LockedHelpMenuModal({ navigation }) {
 
 const LockedScreen = ({ navigation }) => {
   const background = useBackgroundClient();
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-    setError,
-  } = useForm<FormData>();
+  const user = useUser();
+
+  const { control, handleSubmit, formState, setError } = useForm<FormData>();
+
+  const { errors, isValid } = formState;
 
   const onSubmit = async ({ password }: FormData) => {
+    Alert.alert("password", JSON.stringify({ password, formState }));
     // TODO: fix issue with uncaught error with incorrect password
     try {
       await background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-        params: [password],
+        params: [password, user.uuid, user.username],
       });
     } catch (err) {
       console.error(err);
@@ -127,29 +127,31 @@ const LockedScreen = ({ navigation }) => {
   };
 
   return (
-    <>
-      <MainContent>
-        <Text style={tw`text-white`}>Locked</Text>
-        <PasswordInput
-          placeholder="Password"
-          name="password"
-          control={control}
-          rules={{
-            required: "You must enter a password",
-          }}
-        />
-        <ErrorMessage for={errors.password} />
-      </MainContent>
-      <ButtonFooter>
+    <Screen style={{ justifyContent: "space-between" }}>
+      <WelcomeLogoHeader />
+      <View>
+        <Margin bottom={8}>
+          <PasswordInput
+            placeholder="Password"
+            name="password"
+            control={control}
+            rules={{
+              required: "You must enter a password",
+            }}
+          />
+          {errors.password ? <ErrorMessage for={errors.password} /> : null}
+        </Margin>
+        <PrimaryButton label="Unlock" onPress={handleSubmit(onSubmit)} />
+        <Margin top={24} bottom={8}>
+          <SecondaryButton
+            label="Open Help"
+            onPress={() => {
+              navigation.push("HelpMenuModal");
+            }}
+          />
+        </Margin>
         <ResetAppButton />
-        <CustomButton text="Unlock" onPress={handleSubmit(onSubmit)} />
-        <CustomButton
-          text="Open Help"
-          onPress={() => {
-            navigation.push("HelpMenuModal");
-          }}
-        />
-      </ButtonFooter>
-    </>
+      </View>
+    </Screen>
   );
 };

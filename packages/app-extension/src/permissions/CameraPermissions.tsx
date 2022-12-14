@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { styles } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
-import PermissionWithContext from "./Permissions";
-import { PermissionsContent } from "./PermissionsContent";
+
 import { CameraOff } from "./icons/CameraOff";
 import { CameraOn } from "./icons/CameraOn";
+import PermissionWithContext from "./Permissions";
+import { PermissionsContent } from "./PermissionsContent";
 
 const useStyles = styles((theme) => ({
   containerDiv: {

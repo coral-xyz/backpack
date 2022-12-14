@@ -1,20 +1,22 @@
-import { useLocation } from "react-router-dom";
-import { getSvgPath } from "figma-squircle";
-import { Skeleton, Grid, Button, Typography } from "@mui/material";
-import { styles, useCustomTheme, HOVER_OPACITY } from "@coral-xyz/themes";
-import { Block as BlockIcon } from "@mui/icons-material";
-import {
-  filteredPlugins,
-  useLoader,
-  useActiveWallets,
-  useBackgroundClient,
-  useEnabledBlockchains,
-} from "@coral-xyz/recoil";
+import { useSearchParams } from "react-router-dom";
 import {
   Blockchain,
-  UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
   TAB_APPS,
+  UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
 } from "@coral-xyz/common";
+import {
+  filteredPlugins,
+  useActiveWallets,
+  useEnabledBlockchains,
+  useLoader,
+  useOpenPlugin,
+  useUpdateSearchParams,
+} from "@coral-xyz/recoil";
+import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
+import { Block as BlockIcon } from "@mui/icons-material";
+import { Button, Grid, Skeleton, Typography } from "@mui/material";
+import { getSvgPath } from "figma-squircle";
+
 import { EmptyState } from "../../common/EmptyState";
 import { ProxyImage } from "../../common/ProxyImage";
 
@@ -73,10 +75,9 @@ export function Apps() {
 }
 
 function PluginGrid() {
-  const location = useLocation();
-  const background = useBackgroundClient();
   const theme = useCustomTheme();
   const activeWallets = useActiveWallets();
+  const openPlugin = useOpenPlugin();
 
   const [plugins, _, isLoading] = useLoader(
     filteredPlugins,
@@ -88,24 +89,7 @@ function PluginGrid() {
   );
 
   const onClickPlugin = (p: any) => {
-    // Update the URL to use the plugin.
-    //
-    // This will do two things
-    //
-    // 1. Update and persist the new url. Important so that if the user
-    //    closes/re-opens the app, the plugin opens up immediately.
-    // 2. Cause a reload of this route with the plguin url in the search
-    //    params, which will trigger the drawer to activate.
-    //
-    const newUrl = `${location.pathname}${
-      location.search
-    }&plugin=${encodeURIComponent(p.install.account.xnft.toString())}`;
-    background
-      .request({
-        method: UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
-        params: [newUrl, TAB_APPS],
-      })
-      .catch(console.error);
+    openPlugin(p.install.account.xnft.toString());
   };
 
   if (!isLoading && plugins.length === 0) {

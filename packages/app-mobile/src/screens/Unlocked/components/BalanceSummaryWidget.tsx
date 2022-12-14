@@ -1,12 +1,12 @@
-import { View, Text, StyleSheet } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import { Margin } from "@components";
 import { formatUSD } from "@coral-xyz/common";
-import { HOVER_OPACITY } from "@coral-xyz/themes";
 import {
   totalBalance as totalBalanceSelector,
   useLoader,
 } from "@coral-xyz/recoil";
+import { HOVER_OPACITY } from "@coral-xyz/themes";
 import { useTheme } from "@hooks";
-import { Margin } from "@components";
 
 function TextTotalChange({ totalChange }) {
   const theme = useTheme();
@@ -41,8 +41,6 @@ function TextPercentChange({ isLoading, totalChange, percentChange }) {
     ? theme.custom.colors.balanceChangeNegative
     : theme.custom.colors.balanceChangePositive;
 
-  console.log("backgroundColor", backgroundColor);
-
   return (
     <Text style={[styles.percentChangeText, { backgroundColor, color }]}>
       {totalChange > 0 ? "+" : ""}
@@ -55,19 +53,12 @@ function TextPercentChange({ isLoading, totalChange, percentChange }) {
 
 export function BalanceSummaryWidget() {
   const theme = useTheme();
-  // const [{ totalBalance, totalChange, percentChange }, _, isLoading] =
-  //   useLoader(totalBalanceSelector, {
-  //     totalBalance: 0,
-  //     totalChange: 0,
-  //     percentChange: 0,
-  //   });
-
-  const isLoading = false;
-  const { totalBalance, totalChange, percentChange } = {
-    totalBalance: 386.23,
-    totalChange: -32.33,
-    percentChange: -7.72,
-  };
+  const [{ totalBalance, totalChange, percentChange }, _, isLoading] =
+    useLoader(totalBalanceSelector, {
+      totalBalance: 0,
+      totalChange: 0,
+      percentChange: 0,
+    });
 
   return (
     <View style={styles.container}>
@@ -101,8 +92,6 @@ const styles = StyleSheet.create({
   totalBalanceText: {
     fontWeight: "600",
     fontSize: 40,
-    // lineHeight: 36,
-    // color: "inherit",
   },
   totalChangeText: {
     fontSize: 12,
@@ -117,12 +106,10 @@ const styles = StyleSheet.create({
     paddingVeritcal: 2,
   },
   positive: {
-    // color: `${theme.custom.colors.positive} !important`,
     fontSize: 12,
     lineHeight: 24,
   },
   negative: {
-    // color: theme.custom.colors.negative,
     fontSize: 12,
     lineHeight: 24,
   },

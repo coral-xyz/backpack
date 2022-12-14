@@ -1,14 +1,20 @@
-import React from "react";
+import { Controller } from "react-hook-form";
 
-import { TextInput } from "./TextInput";
+import { StyledTextInput } from "./StyledTextInput";
 
-export const PasswordInput = (
-  props: React.ComponentProps<typeof TextInput>
-) => (
-  <TextInput
-    secureTextEntry
-    textContentType="password"
-    keyboardType="ascii-capable"
-    {...props}
+export const PasswordInput = ({ control, rules, name, placeholder }: any) => (
+  <Controller
+    name={name}
+    control={control}
+    rules={rules}
+    render={({ field: { onChange, onBlur, value } }) => (
+      <StyledTextInput
+        secureTextEntry={true}
+        onBlur={onBlur}
+        onChangeText={onChange}
+        value={value}
+        placeholder={placeholder}
+      />
+    )}
   />
 );

@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
-import { TextField, Typography } from "@mui/material";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { TextField, Typography } from "@mui/material";
+
 import { List, ListItem, PrimaryButton } from "../../../../common";
+import { InputListItem, Inputs } from "../../../../common/Inputs";
 import { useDrawerContext } from "../../../../common/Layout/Drawer";
 import { useNavStack } from "../../../../common/Layout/NavStack";
+
 import { changeNetwork } from "./common";
-import { Inputs, InputListItem } from "../../../../common/Inputs";
 
 const useStyles = styles((theme) => ({
   textFieldRoot: {

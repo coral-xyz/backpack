@@ -108,8 +108,6 @@ export const UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ =
   "ui-rpc-method-blockchain-keyrings-read";
 export const UI_RPC_METHOD_KEYNAME_READ = "ui-rpc-method-keyname-read";
 export const UI_RPC_METHOD_KEYNAME_UPDATE = "ui-rpc-method-keyname-update";
-export const UI_RPC_METHOD_KEYRING_ACTIVE_WALLETS =
-  "ui-rpc-method-keyring-active-wallets";
 export const UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE =
   "ui-rpc-method-keyring-active-wallet-update";
 export const UI_RPC_METHOD_KEYRING_AUTOLOCK_READ =
@@ -138,6 +136,8 @@ export const UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE =
   "ui-rpc-method-keyring-mnemonic-create";
 export const UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS =
   "ui-rpc-method-keyring-read-all-pubkeys";
+export const UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEY_DATA =
+  "ui-rpc-method-keyring-read-all-pubkey-data";
 export const UI_RPC_METHOD_KEYRING_STORE_STATE =
   "ui-rpc-method-keyring-store-state";
 export const UI_RPC_METHOD_KEYRING_STORE_UNLOCK =
@@ -183,11 +183,19 @@ export const UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_READ =
   "ui-rpc-method-settings-developer-mode-read";
 export const UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_UPDATE =
   "ui-rpc-method-settings-developer-mode-update";
-export const UI_RPC_METHOD_SIGN_MESSAGE_FOR_WALLET =
-  "ui-rpc-method-sign-message-for-wallet";
+export const UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY =
+  "ui-rpc-method-sign-message-for-public-key";
 export const UI_RPC_METHOD_TRY_TO_SIGN_MESSAGE =
   "ui-rpc-method-try-to-sign-message";
-export const UI_RPC_METHOD_USERNAME_READ = "ui-rpc-method-username-read";
+export const UI_RPC_METHOD_USER_READ = "ui-rpc-method-user-read";
+export const UI_RPC_METHOD_ALL_USERS_READ = "ui-rpc-method-all-users-read";
+export const UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE =
+  "ui-rpc-method-username-account-create";
+export const UI_RPC_METHOD_ACTIVE_USER_UPDATE =
+  "ui-rpc-method-active-user-update";
+export const UI_RPC_METHOD_USER_JWT_UPDATE = "ui-rpc-method-user-jwt-update";
+export const UI_RPC_METHOD_USER_LOGOUT = "ui-rpc-method-user-logout";
+export const UI_RPC_METHOD_PREFERENCES_READ = "ui-rpc-method-references-read";
 // Solana
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_READ =
   "ui-rpc-method-solana-commitment-read";
@@ -244,6 +252,8 @@ export const NOTIFICATION_XNFT_PREFERENCE_UPDATED =
   "notification-xnft-preference-updated";
 export const NOTIFICATION_BLOCKCHAIN_ENABLED =
   "notification-blockchain-enabled";
+export const NOTIFICATION_FEATURE_GATES_UPDATED =
+  "notification-feature-gates-updated";
 export const NOTIFICATION_DARK_MODE_UPDATED = "notification-dark-mode-updated";
 export const NOTIFICATION_DEVELOPER_MODE_UPDATED =
   "notification-developer-mode-updated";
@@ -269,6 +279,14 @@ export const NOTIFICATION_KEYRING_STORE_UNLOCKED =
   "notification-keyring-store-unlocked";
 export const NOTIFICATION_NAVIGATION_URL_DID_CHANGE =
   "notification-navigation-url-did-change";
+export const NOTIFICATION_KEYRING_STORE_USERNAME_ACCOUNT_CREATED =
+  "notification-username-account-created";
+export const NOTIFICATION_KEYRING_STORE_USER_AVATAR_UPDATED =
+  "notification-user-avatar-updated";
+export const NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED =
+  "notification-active-user-updated";
+export const NOTIFICATION_KEYRING_STORE_REMOVED_USER =
+  "notification-keyring-store-removed-user";
 // Ethereum specific notifications
 export const NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED =
   "notification-keyring-ethereum-active-wallet-updated";
@@ -300,6 +318,7 @@ export const NOTIFICATION_SOLANA_EXPLORER_UPDATED =
   "notification-solana-explorer-updated";
 export const NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE =
   "notification-solana-spl-tokens-did-update";
+
 //
 // Ethereum web injected provider API.
 //
@@ -452,14 +471,24 @@ export const EXTENSION_HEIGHT = 600;
 export const TAB_BALANCES = "balances";
 export const TAB_SWAP = "swap";
 export const TAB_NFTS = "nfts";
+export const TAB_MESSAGES = "messages";
 export const TAB_APPS = "apps";
-export const TAB_SET = new Set([TAB_BALANCES, TAB_SWAP, TAB_NFTS, TAB_APPS]);
+export const TAB_SET = new Set([
+  TAB_BALANCES,
+  TAB_SWAP,
+  TAB_NFTS,
+  TAB_APPS,
+  TAB_MESSAGES,
+]);
 
 export const NAV_COMPONENT_TOKEN = "balances/token";
 export const NAV_COMPONENT_NFT_DETAIL = "nfts/detail";
 export const NAV_COMPONENT_NFT_COLLECTION = "nfts/collection";
 export const NAV_COMPONENT_NFT_EXPERIENCE = "nfts/experience";
 export const NAV_COMPONENT_NFT_CHAT = "nfts/chat";
+export const NAV_COMPONENT_MESSAGE_CHAT = "messages/chat";
+export const NAV_COMPONENT_MESSAGE_PROFILE = "messages/profile";
+export const NAV_COMPONENT_MESSAGE_REQUESTS = "messages/requests";
 
 export const BACKEND_EVENT = "backend-event";
 
@@ -473,6 +502,7 @@ export const QUERY_APPROVE_ALL_TRANSACTIONS = "approve-all-txs=true";
 export const QUERY_APPROVE_MESSAGE = "approve-message=true";
 export const QUERY_CONNECT_HARDWARE = "connect-hardware=true";
 export const QUERY_ONBOARDING = "onboarding=true";
+export const QUERY_ADD_USER_ACCOUNT = "add-user-account=true";
 
 export const SIMULATOR_PORT = 9933;
 

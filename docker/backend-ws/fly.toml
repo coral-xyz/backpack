@@ -7,13 +7,16 @@ processes = []
 
 [env]
 
+[build]
+  dockerfile = "./docker/backend-ws/Dockerfile"
+
 [experimental]
   allowed_public_ports = []
   auto_rollback = true
 
 [[services]]
   http_checks = []
-  internal_port = 8080
+  internal_port = 8082
   processes = ["app"]
   protocol = "tcp"
   script_checks = []

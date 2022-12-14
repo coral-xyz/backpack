@@ -1,7 +1,9 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import ReactDOM from "react-dom";
+
 import Options from "./Options";
-import LedgerIframe from "../components/LedgerIframe";
+
+const LedgerIframe = lazy(() => import("../components/LedgerIframe"));
 
 //
 // Render the UI.
@@ -9,7 +11,9 @@ import LedgerIframe from "../components/LedgerIframe";
 ReactDOM.render(
   <React.StrictMode>
     <Options />
-    <LedgerIframe />
+    <Suspense fallback={null}>
+      <LedgerIframe />
+    </Suspense>
   </React.StrictMode>,
   document.getElementById("options")
 );

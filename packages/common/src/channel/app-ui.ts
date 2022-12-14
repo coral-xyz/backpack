@@ -3,10 +3,11 @@
 // the background script.
 //
 
-import { generateUniqueId } from "@coral-xyz/common-public";
 import type { RpcRequest } from "@coral-xyz/common-public";
+import { generateUniqueId } from "@coral-xyz/common-public";
+
 import { BrowserRuntimeCommon } from "../browser";
-import type { RpcResponse, Notification } from "../types";
+import type { Notification, RpcResponse } from "../types";
 
 export interface BackgroundClient {
   request<T = any>({ method, params }: RpcRequest): Promise<RpcResponse<T>>;
@@ -30,6 +31,15 @@ export class ChannelAppUi {
   }
 }
 
+// This check is necessary otherwise chrome.runtime.id will explode in React Native
+function isReactNative() {
+  if (typeof window !== "undefined" && typeof window.document !== "undefined") {
+    return false;
+  }
+
+  return true;
+}
+
 export class ChannelAppUiServer {
   constructor(private name: string) {}
 
@@ -40,12 +50,13 @@ export class ChannelAppUiServer {
           return;
         }
 
-        // TODO(peter/armani): chrome.runtime.id doesn't work in react-native since it uses Hermes/JavascriptCore under the hood. We'll need to figure out the equivalent (eventually?)
-        // if (chrome && chrome?.runtime?.id) {
-        //   if (sender.id !== chrome.runtime.id) {
-        //     return;
-        //   }
-        // }
+        if (!isReactNative()) {
+          if (chrome && chrome?.runtime?.id) {
+            if (sender.id !== chrome.runtime.id) {
+              return;
+            }
+          }
+        }
 
         const id = msg.data.id;
         handlerFn(msg.data)
@@ -72,12 +83,13 @@ export class ChannelAppUiNotifications {
           return;
         }
 
-        // TODO(peter/armani): chrome.runtime.id doesn't work in react-native since it uses Hermes/JavascriptCore under the hood. We'll need to figure out the equivalent (eventually?)
-        // if (chrome && chrome?.runtime?.id) {
-        //   if (sender.id !== chrome.runtime.id) {
-        //     return;
-        //   }
-        // }
+        if (!isReactNative()) {
+          if (chrome && chrome?.runtime?.id) {
+            if (sender.id !== chrome.runtime.id) {
+              return;
+            }
+          }
+        }
 
         handlerFn(msg.data);
         sendResponse({ result: "success" });

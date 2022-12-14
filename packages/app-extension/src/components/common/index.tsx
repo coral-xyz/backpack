@@ -1,19 +1,17 @@
-import { ethers, BigNumber } from "ethers";
+import { walletAddressDisplay } from "@coral-xyz/common";
+import type { CustomTheme } from "@coral-xyz/themes";
+import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import {
   Box,
-  Typography,
   Button,
-  CircularProgress,
   Checkbox as _Checkbox,
+  CircularProgress,
+  Typography,
 } from "@mui/material";
-import {
-  styles,
-  useCustomTheme,
-  CustomTheme,
-  HOVER_OPACITY,
-} from "@coral-xyz/themes";
+import type { BigNumber } from "ethers";
+import { ethers } from "ethers";
+
 import { TextField } from "../../plugin/Component";
-import { walletAddressDisplay } from "@coral-xyz/common";
 
 export * from "./List";
 export { TextField };
@@ -33,7 +31,7 @@ const useStyles = styles((theme: CustomTheme) => ({
     fontWeight: 500,
     fontSize: "12px",
     lineHeight: "16px",
-    color: theme.custom.colors.interactiveIconsActive,
+    color: theme.custom.colors.fontColor,
   },
   loadingContainer: {
     display: "flex",
@@ -207,7 +205,7 @@ export function TokenInputField({
 export function Loading(props: any) {
   const classes = useStyles();
   return (
-    <div className={classes.loadingContainer}>
+    <div style={props.style} className={classes.loadingContainer}>
       <>
         <svg style={{ position: "fixed" }}>
           <linearGradient id="linearColors" x1="0" y1="0" x2="1" y2="1">

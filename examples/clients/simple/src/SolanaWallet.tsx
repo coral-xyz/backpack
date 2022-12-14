@@ -1,14 +1,15 @@
-import { FC, useMemo } from "react";
+import type { FC } from "react";
+import { useMemo } from "react";
+import { BackpackWalletAdapter } from "@solana/wallet-adapter-backpack";
+import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
+import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import {
   ConnectionProvider,
   WalletProvider,
 } from "@solana/wallet-adapter-react";
-import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
-import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
-import { BackpackWalletAdapter } from "@solana/wallet-adapter-backpack";
 import {
-  WalletModalProvider,
   WalletDisconnectButton,
+  WalletModalProvider,
   WalletMultiButton,
 } from "@solana/wallet-adapter-react-ui";
 import { clusterApiUrl } from "@solana/web3.js";
@@ -23,7 +24,7 @@ export const SolanaWallet: FC = (props) => {
   // You can also provide a custom RPC endpoint.
   const endpoint = useMemo(() => {
     if (network === "mainnet-beta") {
-      return "https://solana-rpc.xnfts.dev/";
+      return "https://swr.xnfts.dev/rpc-proxy/";
     } else {
       return clusterApiUrl(network);
     }

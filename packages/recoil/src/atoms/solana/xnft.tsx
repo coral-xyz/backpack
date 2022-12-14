@@ -1,15 +1,18 @@
-import { atom, selector } from "recoil";
-import { PublicKey } from "@solana/web3.js";
 import {
-  fetchXnfts,
-  Blockchain,
   BACKPACK_CONFIG_XNFT_PROXY,
+  Blockchain,
+  fetchXnfts,
   SIMULATOR_PORT,
 } from "@coral-xyz/common";
 import { externalResourceUri } from "@coral-xyz/common-public";
+import { PublicKey } from "@solana/web3.js";
+import { atom, selector } from "recoil";
+
+import { isDeveloperMode } from "../preferences";
+import { connectionUrls } from "../preferences/connection-urls";
+import { activePublicKeys, solanaPublicKey } from "../wallet";
+
 import { anchorContext } from "./wallet";
-import { solanaPublicKey, activePublicKeys } from "../wallet";
-import { connectionUrls, isDeveloperMode } from "../preferences";
 
 //
 // Private dev plugins.
@@ -83,13 +86,14 @@ export const xnfts = atom({
 
 export const plugins = selector({
   key: "plugins",
-  get: ({ get }: any) => {
+  get: ({ get }) => {
     const developerMode = get(isDeveloperMode);
     const _xnfts = get(xnfts);
     const plugins = [..._xnfts];
     // Display the simulator if developer mode is enabled
     if (developerMode) {
-      plugins.push({
+      // @ts-ignore
+      const simulator = {
         url: SIMULATOR_URL,
         iconUrl: "assets/simulator.png",
         title: "Simulator",
@@ -101,7 +105,9 @@ export const plugins = selector({
             xnft: PublicKey.default.toString(),
           },
         },
-      });
+      } as typeof plugins[0];
+
+      plugins.push(simulator);
     }
     return plugins;
   },
