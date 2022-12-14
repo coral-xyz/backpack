@@ -8,6 +8,11 @@ import {
   View,
 } from "react-native";
 import { Margin, PrimaryButton, Screen, SubtextParagraph } from "@components";
+import {
+  UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
+  UI_RPC_METHOD_PASSWORD_UPDATE,
+} from "@coral-xyz/common";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useTheme } from "@hooks";
 import { RoundedContainer } from "@screens/Unlocked/Settings/components/SettingsRow";
 
@@ -59,7 +64,9 @@ function InputListItem({
   const theme = useTheme();
   return (
     <View style={[styles.container]}>
-      <Text style={styles.label}>{title}</Text>
+      <Text style={[styles.label, { color: theme.custom.colors.fontColor }]}>
+        {title}
+      </Text>
       <Controller
         name={name}
         control={control}
@@ -125,7 +132,14 @@ function InstructionText() {
   );
 }
 
+type PasswordInput = {
+  currentPassword: string;
+  newPassword: string;
+  verifyPassword: string;
+};
+
 export function ChangePasswordScreen({ navigation }) {
+  const background = useBackgroundClient();
   const { control, handleSubmit, formState, watch } = useForm({
     defaultValues: {
       currentPassword: "",
@@ -137,26 +151,32 @@ export function ChangePasswordScreen({ navigation }) {
   const hasError = (name: string) => !!formState.errors[name];
   const isValid = Object.keys(formState.errors).length === 0;
 
-  const onSubmit = async (data) => {
-    Alert.alert("success", JSON.stringify(data));
+  const onSubmit = async ({
+    currentPassword,
+    newPassword,
+    verifyPassword,
+  }: PasswordInput) => {
+    Alert.alert(
+      "success",
+      JSON.stringify({ currentPassword, newPassword, verifyPassword })
+    );
 
-    // const isCurrentCorrect = await background.request({
-    //   method: UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
-    //   params: [currentPassword],
-    // });
-    // const mismatchError = newPw1.trim() === "" || newPw1 !== newPw2;
-    //
-    // setCurrentPasswordError(!isCurrentCorrect);
-    // setPasswordMismatchError(mismatchError);
-    //
-    // if (!isCurrentCorrect || mismatchError) {
-    //   return;
-    // }
-    //
-    // await background.request({
-    //   method: UI_RPC_METHOD_PASSWORD_UPDATE,
-    //   params: [currentPassword, newPw1],
-    // });
+    const isCurrentCorrect = await background.request({
+      method: UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
+      params: [currentPassword],
+    });
+
+    const mismatchError =
+      newPassword.trim() === "" || newPassword !== verifyPassword;
+
+    if (!isCurrentCorrect || mismatchError) {
+      return;
+    }
+
+    await background.request({
+      method: UI_RPC_METHOD_PASSWORD_UPDATE,
+      params: [currentPassword, newPassword],
+    });
   };
 
   const handlePressForgotPassword = () => {
