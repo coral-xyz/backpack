@@ -1,4 +1,4 @@
-import { Controller,useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import {
   Alert,
   Pressable,
@@ -160,7 +160,7 @@ export function ChangePasswordScreen({ navigation }) {
   };
 
   const handlePressForgotPassword = () => {
-    console.log("move to forgot password screen");
+    navigation.navigate("forgot-password");
   };
 
   return (
