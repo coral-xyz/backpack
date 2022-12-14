@@ -99,6 +99,24 @@ export const solanaFungibleTokenAccounts = selectorFamily<
     },
 });
 
+export const solanaNftTokenAccounts = selectorFamily<
+  Map<string, SolanaTokenAccountWithKeyString>,
+  {
+    connectionUrl: string;
+    publicKey: string;
+  }
+>({
+  key: "solanaNftTokenAccounts",
+  get:
+    ({ connectionUrl, publicKey }) =>
+    ({ get }) => {
+      const { nfts } = get(
+        customSplTokenAccounts({ connectionUrl, publicKey })
+      );
+      return new Map(nfts.nftTokens.map((t) => [t.key, t]));
+    },
+});
+
 export const solanaNftUriData = selectorFamily<
   Map<string, SplNftMetadataString>,
   {
@@ -146,7 +164,14 @@ export const solanaTokenAccountsMap = atomFamily<
         const _fungibleTokenAccounts = get(
           solanaFungibleTokenAccounts({ connectionUrl, publicKey })
         );
-        return _fungibleTokenAccounts.get(tokenAddress);
+        const _nftTokenAccounts = get(
+          solanaNftTokenAccounts({ connectionUrl, publicKey })
+        );
+        const resp = _fungibleTokenAccounts.get(tokenAddress);
+        if (resp) {
+          return resp;
+        }
+        return _nftTokenAccounts.get(tokenAddress);
       },
   }),
 });
@@ -154,15 +179,13 @@ export const solanaTokenAccountsMap = atomFamily<
 /**
  * List of all stored token accounts within tokenAccountsMap.
  */
-export const solanaFungibleTokenAccountKeys = selector({
+export const solanaFungibleTokenAccountKeys = selector<Array<string>>({
   key: "solanaFungibleTokenAccountKeys",
   get: ({ get }) => {
     const connectionUrl = get(solanaConnectionUrl)!;
     const publicKey = get(solanaPublicKey)!;
-    const _fungibleTokenAccounts = get(
-      solanaFungibleTokenAccounts({ connectionUrl, publicKey })
-    );
-    return Array.from(_fungibleTokenAccounts.keys()) as string[];
+    const { fts } = get(customSplTokenAccounts({ connectionUrl, publicKey }));
+    return fts.fungibleTokens.map((f) => f.key);
   },
 });
 
@@ -179,7 +202,7 @@ export const solanaFungibleTokenNativeBalance = selectorFamily<
         return null;
       }
       const tokenMint = get(solanaTokenMint({ tokenAddress }));
-      const tokenMetadata = get(solanaTokenMetadata({ tokenAddress }));
+      const tokenMetadata = get(solanaFungibleTokenMetadata({ tokenAddress }));
       const tokenRegistry = get(splTokenRegistry)!;
       const tokenRegistryItem = tokenRegistry.get(tokenAccount.mint.toString());
 
@@ -238,6 +261,9 @@ export const solanaFungibleTokenNativeBalance = selectorFamily<
     },
 });
 
+/**
+ * Returns all mints--fungible and non-fungible.
+ */
 const solanaTokenMint = selectorFamily<
   RawMintString | null,
   { tokenAddress: string }
@@ -259,11 +285,11 @@ const solanaTokenMint = selectorFamily<
     },
 });
 
-const solanaTokenMetadata = selectorFamily<
+const solanaFungibleTokenMetadata = selectorFamily<
   TokenMetadataString | null,
   { tokenAddress: string }
 >({
-  key: "solanaTokenMetadata",
+  key: "solanaFungibleTokenMetadata",
   get:
     ({ tokenAddress }) =>
     ({ get }) => {
@@ -273,26 +299,15 @@ const solanaTokenMetadata = selectorFamily<
       }
       const connectionUrl = get(solanaConnectionUrl)!;
       const publicKey = get(solanaPublicKey)!;
-      const { nfts, fts } = get(
-        customSplTokenAccounts({ connectionUrl, publicKey })
+      const { fts } = get(customSplTokenAccounts({ connectionUrl, publicKey }));
+      return (
+        fts.fungibleTokenMetadata
+          .filter((m) => m !== null)
+          .find(
+            (m: TokenMetadataString) =>
+              m.account.mint === tokenAccount.mint.toString()
+          ) ?? null
       );
-      const _splTokenMetadata = fts.fungibleTokenMetadata.concat(
-        nfts.nftTokenMetadata
-      );
-      const metadataAddress = PublicKey.findProgramAddressSync(
-        [
-          Buffer.from("metadata"),
-          TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-          new PublicKey(tokenAccount.mint).toBuffer(),
-        ],
-        TOKEN_METADATA_PROGRAM_ID
-      )[0];
-      const tokenMetadata = _splTokenMetadata
-        .filter((m) => m !== null)
-        .find((m: TokenMetadataString) =>
-          metadataAddress.equals(new PublicKey(m.publicKey))
-        );
-      return tokenMetadata ?? null;
     },
 });
 
