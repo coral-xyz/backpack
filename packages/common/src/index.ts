@@ -43,10 +43,15 @@ export function withContextPort<Backend>(
   };
 }
 
-export function walletAddressDisplay(publicKey: PublicKey | string) {
+export function walletAddressDisplay(
+  publicKey: PublicKey | string,
+  numDigits = 4
+): string {
   const pubkeyStr: string =
     typeof publicKey === "string" ? publicKey : publicKey.toString();
-  return `${pubkeyStr.slice(0, 4)}...${pubkeyStr.slice(pubkeyStr.length - 4)}`;
+  return `${pubkeyStr.slice(0, numDigits)}...${pubkeyStr.slice(
+    pubkeyStr.length - numDigits
+  )}`;
 }
 
 /**

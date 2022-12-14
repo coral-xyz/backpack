@@ -53,6 +53,17 @@ export function IconLeft({ name }) {
   );
 }
 
+export function IconCopyContent() {
+  const theme = useTheme();
+  return (
+    <MaterialIcons
+      name="content-copy"
+      color={theme.custom.colors.icon}
+      size={24}
+    />
+  );
+}
+
 function RowContainer({ children }) {
   const theme = useTheme();
   return (
