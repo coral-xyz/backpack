@@ -58,7 +58,7 @@ export const RecoverAccount = ({
     action: "search",
     searchPublicKey: publicKey!,
     signMessage: authMessage,
-    signText: "Sign the message to authenticate with Backapck",
+    signText: "Sign the message to authenticate with Backpack.",
     onComplete: (keyringInit: BlockchainKeyringInit) => {
       addBlockchainKeyring(keyringInit);
       nextStep();
