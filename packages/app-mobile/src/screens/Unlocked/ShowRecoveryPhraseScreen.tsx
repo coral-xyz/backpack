@@ -11,7 +11,7 @@ import {
   StyledTextInput,
   SubtextParagraph,
 } from "@components";
-import { ContentCopyIcon,EyeIcon, WarningIcon } from "@components/Icon";
+import { EyeIcon, WarningIcon } from "@components/Icon";
 import { UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -23,7 +23,7 @@ export function ShowRecoveryPhraseWarningScreen({ navigation }): JSX.Element {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
 
-  const handlePressShowPhrase = async () => {
+  const handlePressConfirm = async () => {
     let mnemonic;
     try {
       mnemonic = await background.request({
@@ -102,9 +102,9 @@ export function ShowRecoveryPhraseWarningScreen({ navigation }): JSX.Element {
           />
         </Margin>
         <DangerButton
-          label="Show phrase"
+          label="Show secret phrase"
           disabled={password.length < 8}
-          onPress={handlePressShowPhrase}
+          onPress={handlePressConfirm}
         />
       </View>
     </Screen>

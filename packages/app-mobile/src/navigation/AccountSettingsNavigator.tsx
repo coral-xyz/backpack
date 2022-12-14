@@ -55,6 +55,10 @@ import {
 import { PreferencesScreen } from "@screens/Unlocked/Settings/PreferencesScreen";
 import { PreferencesTrustedSitesScreen } from "@screens/Unlocked/Settings/PreferencesTrustedSitesScreen";
 import {
+  ShowPrivateKeyScreen,
+  ShowPrivateKeyWarningScreen,
+} from "@screens/Unlocked/ShowPrivateKeyScreen";
+import {
   ShowRecoveryPhraseScreen,
   ShowRecoveryPhraseWarningScreen,
 } from "@screens/Unlocked/ShowRecoveryPhraseScreen";
@@ -173,6 +177,11 @@ export default function AccountSettingsNavigator() {
         name="show-secret-phrase"
         component={ShowRecoveryPhraseScreen}
       />
+      <Stack.Screen
+        name="show-private-key-warning"
+        component={ShowPrivateKeyWarningScreen}
+      />
+      <Stack.Screen name="show-private-key" component={ShowPrivateKeyScreen} />
       <Stack.Group
         screenOptions={{ presentation: "modal", headerShown: false }}
       >
