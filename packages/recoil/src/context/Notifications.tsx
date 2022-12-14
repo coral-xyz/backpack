@@ -502,16 +502,12 @@ export function NotificationsProvider(props: any) {
     };
 
     const handleSolanaSplTokensDidUpdate = (notif: Notification) => {
-      const publicKey = notif.data.publicKey;
-      const connectionUrl = notif.data.connectionUrl;
-      const customSplTokenAccounts =
-        BackgroundSolanaConnection.customSplTokenAccountsFromJson(
-          notif.data.customSplTokenAccounts
-        );
       updateAllSplTokenAccounts({
-        publicKey,
-        connectionUrl,
-        customSplTokenAccounts,
+        ...notif.data,
+        customSplTokenAccounts:
+          BackgroundSolanaConnection.customSplTokenAccountsFromJson(
+            notif.data.customSplTokenAccounts
+          ),
       });
     };
 

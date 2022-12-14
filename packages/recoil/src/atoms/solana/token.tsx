@@ -4,12 +4,7 @@ import type {
   SplNftMetadataString,
   TokenMetadataString,
 } from "@coral-xyz/common";
-import {
-  fetchSplMetadataUri,
-  SOL_NATIVE_MINT,
-  TOKEN_METADATA_PROGRAM_ID,
-  WSOL_MINT,
-} from "@coral-xyz/common";
+import { SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { PublicKey } from "@solana/web3.js";
 import { BigNumber, ethers } from "ethers";
@@ -150,31 +145,28 @@ export const solanaNftUriData = selectorFamily<
 /**
  * Store the info from the SPL Token Account owned by the connected wallet.
  */
-export const solanaTokenAccountsMap = atomFamily<
+export const solanaTokenAccountsMap = selectorFamily<
   SolanaTokenAccountWithKeyString | undefined,
   { tokenAddress: string }
 >({
   key: "solanaTokenAccountsMap",
-  default: selectorFamily({
-    key: "solanaTokenAccountsMapDefault",
-    get:
-      ({ tokenAddress }: { tokenAddress: string }) =>
-      ({ get }) => {
-        const connectionUrl = get(solanaConnectionUrl)!;
-        const publicKey = get(solanaPublicKey)!;
-        const _fungibleTokenAccounts = get(
-          solanaFungibleTokenAccounts({ connectionUrl, publicKey })
-        );
-        const _nftTokenAccounts = get(
-          solanaNftTokenAccounts({ connectionUrl, publicKey })
-        );
-        const resp = _fungibleTokenAccounts.get(tokenAddress);
-        if (resp) {
-          return resp;
-        }
-        return _nftTokenAccounts.get(tokenAddress);
-      },
-  }),
+  get:
+    ({ tokenAddress }: { tokenAddress: string }) =>
+    ({ get }) => {
+      const connectionUrl = get(solanaConnectionUrl)!;
+      const publicKey = get(solanaPublicKey)!;
+      const _fungibleTokenAccounts = get(
+        solanaFungibleTokenAccounts({ connectionUrl, publicKey })
+      );
+      const _nftTokenAccounts = get(
+        solanaNftTokenAccounts({ connectionUrl, publicKey })
+      );
+      const resp = _fungibleTokenAccounts.get(tokenAddress);
+      if (resp) {
+        return resp;
+      }
+      return _nftTokenAccounts.get(tokenAddress);
+    },
 });
 
 /**
