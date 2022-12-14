@@ -224,12 +224,10 @@ export class SolanaConnectionBackend {
   // the data is still fresh.
   //
   private async startPolling(activeWallet: PublicKey) {
+    const connection = new Connection(this.url!); // Unhooked connection.
     this.pollIntervals.push(
       setInterval(async () => {
-        const data = await customSplTokenAccounts(
-          this.connection!,
-          activeWallet
-        );
+        const data = await customSplTokenAccounts(connection, activeWallet);
         const key = JSON.stringify({
           url: this.url,
           method: "customSplTokenAccounts",
