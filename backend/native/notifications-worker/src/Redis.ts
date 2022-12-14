@@ -1,7 +1,7 @@
 import type { RedisClientType } from "redis";
 import { createClient } from "redis";
 
-import { NOTIFICATIONS_QUEUE, REDIS_URL } from "../config";
+import { NOTIFICATIONS_QUEUE, REDIS_URL } from "./config";
 
 export class Redis {
   private client: RedisClientType;
@@ -21,7 +21,8 @@ export class Redis {
     return this.instance;
   }
 
-  async send(message: string) {
-    await this.client.rPush(NOTIFICATIONS_QUEUE, message);
+  async fetch(): string {
+    const response = await this.client.blPop(NOTIFICATIONS_QUEUE, 0);
+    return response?.element || "";
   }
 }
