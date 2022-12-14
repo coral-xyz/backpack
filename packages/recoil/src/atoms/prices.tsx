@@ -7,7 +7,7 @@ import type { TokenDisplay } from "../types";
 
 import { erc20Balances } from "./ethereum/token";
 import { solanaConnectionUrl } from "./solana/preferences";
-import { fungibleTokenAccounts } from "./solana/token";
+import { solanaFungibleTokenAccounts } from "./solana/token";
 import { splTokenRegistry } from "./solana/token-registry";
 import { solanaPublicKey } from "./wallet";
 
@@ -48,7 +48,7 @@ export const splMintsToCoingeckoId = equalSelector({
     const connectionUrl = get(solanaConnectionUrl);
     const publicKey = get(solanaPublicKey);
     const _fungibleTokenAccounts = get(
-      fungibleTokenAccounts({ connectionUrl, publicKey })
+      solanaFungibleTokenAccounts({ connectionUrl, publicKey })
     );
     const tokenRegistry = get(splTokenRegistry);
     return [..._fungibleTokenAccounts.values()].reduce(
