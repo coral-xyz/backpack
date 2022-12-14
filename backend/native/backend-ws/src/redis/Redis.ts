@@ -1,4 +1,5 @@
-import redis, { RedisClient } from "redis";
+import type { RedisClientType } from "redis";
+import { createClient } from "redis";
 
 import {
   NOTIFICATIONS_QUEUE,
@@ -8,14 +9,18 @@ import {
 } from "../config";
 
 export class Redis {
-  private client: redis.RedisClientType;
+  private client: RedisClientType;
   private static instance: Redis;
 
   constructor() {
-    this.client = redis.createClient({
-      url: `${REDIS_HOST}:${REDIS_PORT}`,
-      password: REDIS_PASS,
+    this.client = createClient({
+      socket: {
+        host: REDIS_HOST,
+        port: parseInt(REDIS_PORT),
+      },
+      // password: REDIS_PASS,
     });
+    this.client.connect();
   }
 
   public static getInstance(): Redis {
