@@ -604,12 +604,7 @@ export function CopyWalletFieldInput({
   publicKey: string;
 }): JSX.Element {
   const theme = useTheme();
-
-  // We use a different publicKey layout here than walletAddressDisplay
-  const walletDisplay =
-    publicKey.toString().slice(0, 12) +
-    "..." +
-    publicKey.toString().slice(publicKey.toString().length - 12);
+  const walletDisplay = walletAddressDisplay(publicKey, 12);
 
   return (
     <View

@@ -25,6 +25,7 @@ import {
   UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
   UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
   UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE,
+  walletAddressDisplay,
 } from "@coral-xyz/common";
 import {
   useBackgroundClient,
@@ -42,6 +43,7 @@ import {
   LogoutWarningScreen,
   ResetWarningScreen,
 } from "@screens/ResetWarningScreen";
+import { EditWalletDetailScreen } from "@screens/Unlocked/EditWalletDetailScreen";
 import { EditWalletsScreen } from "@screens/Unlocked/EditWalletsScreen";
 import { ForgotPasswordScreen } from "@screens/Unlocked/ForgotPasswordScreen";
 import AccountSettingsScreen from "@screens/Unlocked/Settings/AccountSettingsScreen";
@@ -184,6 +186,16 @@ export default function AccountSettingsNavigator() {
       />
       <Stack.Screen name="show-private-key" component={ShowPrivateKeyScreen} />
       <Stack.Screen name="edit-wallets" component={EditWalletsScreen} />
+      <Stack.Screen
+        name="edit-wallets-wallet-detail"
+        component={EditWalletDetailScreen}
+        options={({ route }) => {
+          const { name, publicKey } = route.params;
+          return {
+            title: `${name} (${walletAddressDisplay(publicKey)})`,
+          };
+        }}
+      />
       <Stack.Group
         screenOptions={{ presentation: "modal", headerShown: false }}
       >

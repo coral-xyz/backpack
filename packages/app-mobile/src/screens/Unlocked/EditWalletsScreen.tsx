@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Pressable, SectionList, StyleSheet,Text, View } from "react-native";
+import { Pressable, SectionList, StyleSheet, Text, View } from "react-native";
 import {
   AddConnectWalletButton,
   ImportTypeBadge,
@@ -19,6 +19,7 @@ import {
 
 function buildSectionList(blockchainKeyrings: any) {
   return Object.entries(blockchainKeyrings).map(([blockchain, keyring]) => ({
+    blockchain,
     title: toTitleCase(blockchain),
     data: [
       ...keyring.hdPublicKeys.map((k: any) => ({ ...k, type: "derived" })),
@@ -50,23 +51,34 @@ function SectionHeader({ title }: { title: string }): JSX.Element {
   );
 }
 
-function WalletListItem({ wallet, onPress }): JSX.Element {
+type Wallet = {
+  name: string;
+  publicKey: string;
+  type: string;
+};
+
+function WalletListItem({
+  blockchain,
+  name,
+  publicKey,
+  type,
+  onPress,
+}: {
+  blockchain: Blockchain;
+  name: string;
+  publicKey: string;
+  type: string;
+  onPress: (blockchain: Blockchain, wallet: Wallet) => void;
+}): JSX.Element {
   const theme = useTheme();
-  // return (
-  //   <SettingsWalletRow
-  //     name={wallet.name}
-  //     publicKey={wallet.publicKey}
-  //     icon={wallet.icon}
-  //     onPress={onPress}
-  //   />
-  // );
   return (
     <Pressable
+      onPress={() => onPress(blockchain, { name, publicKey, type })}
       style={[styles.listItem, { backgroundColor: theme.custom.colors.nav }]}
     >
       <View style={styles.listItemLeft}>
-        <WalletAddressLabel name={wallet.name} publicKey={wallet.publicKey} />
-        {wallet.type ? <ImportTypeBadge type={wallet.type} /> : null}
+        <WalletAddressLabel name={name} publicKey={publicKey} />
+        {type ? <ImportTypeBadge type={type} /> : null}
       </View>
       <IconPushDetail />
     </Pressable>
@@ -77,8 +89,16 @@ export function EditWalletsScreen({ navigation }): JSX.Element {
   const blockchainKeyrings = useWalletPublicKeys();
   const sections = buildSectionList(blockchainKeyrings);
 
-  const onPressItem = (blockchain: Blockchain, wallet: any) => {
-    navigation.navigate("edit-wallets-wallet-detail", { blockchain, wallet });
+  const onPressItem = (
+    blockchain: Blockchain,
+    { name, publicKey, type }: Wallet
+  ) => {
+    navigation.navigate("edit-wallets-wallet-detail", {
+      blockchain,
+      publicKey,
+      name,
+      type,
+    });
   };
 
   const handlePressAddWallet = (blockchain: Blockchain) => {
@@ -90,15 +110,27 @@ export function EditWalletsScreen({ navigation }): JSX.Element {
       <SectionList
         sections={sections}
         keyExtractor={(item, index) => item + index}
-        renderItem={({ item }) => (
-          <WalletListItem wallet={item} onPress={onPressItem} />
-        )}
+        renderItem={({ section, item: wallet }) => {
+          const blockchain = section.blockchain as Blockchain;
+          return (
+            <WalletListItem
+              name={wallet.name}
+              publicKey={wallet.publicKey}
+              type={wallet.type}
+              blockchain={blockchain}
+              onPress={onPressItem}
+            />
+          );
+        }}
         renderSectionHeader={({ section: { title } }) => (
           <SectionHeader title={title} />
         )}
-        renderSectionFooter={() => (
+        renderSectionFooter={({ section }) => (
           <Margin bottom={24} top={8}>
-            <AddConnectWalletButton onPress={handlePressAddWallet} />
+            <AddConnectWalletButton
+              blockchain={section.blockchain}
+              onPress={handlePressAddWallet}
+            />
           </Margin>
         )}
       />
