@@ -45,12 +45,14 @@ export const customSplTokenAccounts = atomFamily({
       async ({
         get,
       }): Promise<{
-        splTokenAccounts: Map<string, SolanaTokenAccountWithKeyString>;
-        splTokenMetadata: Array<TokenMetadataString | null>;
         splTokenMints: Map<string, RawMint>;
         nfts: {
           nftTokens: Array<SolanaTokenAccountWithKeyString>;
           nftTokenMetadata: Array<TokenMetadataString | null>;
+        };
+        fts: {
+          fungibleTokens: Array<SolanaTokenAccountWithKeyString>;
+          fungibleTokenMetadata: Array<TokenMetadataString | null>;
         };
       }> => {
         const { connection } = get(anchorContext);
@@ -60,35 +62,71 @@ export const customSplTokenAccounts = atomFamily({
         try {
           const { mintsMap, fts, nfts } =
             await connection.customSplTokenAccounts(new PublicKey(publicKey));
-
-          const splTokenAccounts = new Map(
-            fts.fungibleTokens.concat(nfts.nftTokens).map((t) => [t.key, t])
-          );
-          const splTokenMetadata = fts.fungibleTokenMetadata.concat(
-            nfts.nftTokenMetadata
-          );
           const splTokenMints = new Map(mintsMap);
 
           return {
-            splTokenAccounts,
-            splTokenMetadata,
             splTokenMints,
             nfts,
+            fts,
           };
         } catch (error) {
           console.error("could not fetch solana token data", error);
           return {
-            splTokenAccounts: new Map(),
-            splTokenMetadata: [],
             splTokenMints: new Map(),
             nfts: {
               nftTokens: [],
               nftTokenMetadata: [],
             },
+            fts: {
+              fungibleTokens: [],
+              fungibleTokenMetadata: [],
+            },
           };
         }
       },
   }),
+});
+
+export const splTokenAccounts = selectorFamily<
+  Map<string, SolanaTokenAccountWithKeyString>,
+  {
+    connectionUrl: string;
+    publicKey: string;
+  }
+>({
+  key: "splTokenAccounts",
+  get:
+    ({ connectionUrl, publicKey }) =>
+    ({ get }) => {
+      const { nfts, fts } = get(
+        customSplTokenAccounts({ connectionUrl, publicKey })
+      );
+      const splTokenAccounts = new Map(
+        fts.fungibleTokens.concat(nfts.nftTokens).map((t) => [t.key, t])
+      );
+      return splTokenAccounts;
+    },
+});
+
+export const splTokenMetadata = selectorFamily<
+  Array<any /*TokenMetadataString*/ | null>,
+  {
+    connectionUrl: string;
+    publicKey: string;
+  }
+>({
+  key: "splTokenMetadata",
+  get:
+    ({ connectionUrl, publicKey }) =>
+    ({ get }) => {
+      const { nfts, fts } = get(
+        customSplTokenAccounts({ connectionUrl, publicKey })
+      );
+      const splTokenMetadata = fts.fungibleTokenMetadata.concat(
+        nfts.nftTokenMetadata
+      );
+      return splTokenMetadata;
+    },
 });
 
 export const splNftMetadata = selectorFamily<
@@ -112,7 +150,6 @@ export const splNftMetadata = selectorFamily<
         customSplTokenAccounts({ connectionUrl, publicKey })
       );
       const { nftTokens, nftTokenMetadata } = nfts;
-      // @ts-ignore
       const nftMetadata = await fetchSplMetadataUri(
         nftTokens,
         nftTokenMetadata
@@ -136,10 +173,10 @@ export const solanaTokenAccountsMap = atomFamily<
       ({ get }) => {
         const connectionUrl = get(solanaConnectionUrl)!;
         const publicKey = get(solanaPublicKey)!;
-        const { splTokenAccounts } = get(
-          customSplTokenAccounts({ connectionUrl, publicKey })
+        const _splTokenAccounts = get(
+          splTokenAccounts({ connectionUrl, publicKey })
         );
-        return splTokenAccounts.get(tokenAddress);
+        return _splTokenAccounts.get(tokenAddress);
       },
   }),
 });
@@ -152,10 +189,10 @@ export const solanaTokenAccountKeys = selector({
   get: ({ get }) => {
     const connectionUrl = get(solanaConnectionUrl)!;
     const publicKey = get(solanaPublicKey)!;
-    const { splTokenAccounts } = get(
-      customSplTokenAccounts({ connectionUrl, publicKey })
+    const _splTokenAccounts = get(
+      splTokenAccounts({ connectionUrl, publicKey })
     );
-    return Array.from(splTokenAccounts.keys()) as string[];
+    return Array.from(_splTokenAccounts.keys()) as string[];
   },
 });
 
@@ -266,8 +303,8 @@ const solanaTokenMetadata = selectorFamily<
       }
       const connectionUrl = get(solanaConnectionUrl)!;
       const publicKey = get(solanaPublicKey)!;
-      const { splTokenMetadata } = get(
-        customSplTokenAccounts({ connectionUrl, publicKey })
+      const _splTokenMetadata = get(
+        splTokenMetadata({ connectionUrl, publicKey })
       );
       const metadataAddress = PublicKey.findProgramAddressSync(
         [
@@ -277,7 +314,7 @@ const solanaTokenMetadata = selectorFamily<
         ],
         TOKEN_METADATA_PROGRAM_ID
       )[0];
-      const tokenMetadata = splTokenMetadata
+      const tokenMetadata = _splTokenMetadata
         .filter((m) => m !== null)
         .find((m: TokenMetadataString) =>
           metadataAddress.equals(new PublicKey(m.publicKey))

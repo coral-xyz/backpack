@@ -124,20 +124,6 @@ export async function customSplTokenAccounts(
   };
 }
 
-//  const nftMetadata = await fetchSplMetadataUri(nftTokens, nftTokenMetadata);
-
-/*
-  const fungibleTokenAccountsMap = (
-    fungibleTokens.map((t: SolanaTokenAccountWithKey) => [
-      t.key.toString(),
-      {
-        ...t,
-        amount: t.amount.toString(),
-      },
-    ]) as [string, SolanaTokenAccountWithKeySerializable][]
-  ).concat([[nativeSol.key.toString(), nativeSol]]);
-*/
-
 export async function fetchMints(
   provider: Provider,
   tokenAccounts: SolanaTokenAccountWithKey[]
@@ -251,8 +237,8 @@ function splitOutNfts(
 }
 
 export async function fetchSplMetadataUri(
-  nftTokens: Array<SolanaTokenAccountWithKey>,
-  nftTokenMetadata: Array<TokenMetadata | null>
+  nftTokens: Array<SolanaTokenAccountWithKeyString>,
+  nftTokenMetadata: Array<TokenMetadataString | null>
 ): Promise<Map<string, SplNftMetadata>> {
   //
   // Fetch the URI for each NFT.
@@ -306,8 +292,9 @@ export async function fetchSplMetadataUri(
       return acc;
     }
     acc.set(m.key.toString(), {
-      publicKey: m.key,
-      metadataAddress: tokenMetadata.publicKey,
+      publicKey: new PublicKey(m.key),
+      metadataAddress: new PublicKey(tokenMetadata.publicKey),
+      // @ts-ignore todo
       metadata: tokenMetadata.account,
       tokenMetaUriData: nftMetaUriData[idx],
     });
