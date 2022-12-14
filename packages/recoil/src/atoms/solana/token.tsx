@@ -301,12 +301,10 @@ const solanaFungibleTokenMetadata = selectorFamily<
       const publicKey = get(solanaPublicKey)!;
       const { fts } = get(customSplTokenAccounts({ connectionUrl, publicKey }));
       return (
-        fts.fungibleTokenMetadata
-          .filter((m) => m !== null)
-          .find(
-            (m: TokenMetadataString) =>
-              m.account.mint === tokenAccount.mint.toString()
-          ) ?? null
+        fts.fungibleTokenMetadata.find(
+          (m: TokenMetadataString) =>
+            m !== null && m.account.mint === tokenAccount.mint.toString()
+        ) ?? null
       );
     },
 });
