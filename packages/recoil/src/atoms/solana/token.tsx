@@ -1,8 +1,12 @@
 import type {
+  SolanaTokenAccountWithKey,
   SolanaTokenAccountWithKeyString,
-  SplNftMetadata,  SplNftMetadataString,
-  TokenMetadataString} from "@coral-xyz/common";
+  SplNftMetadata,
+  SplNftMetadataString,
+  TokenMetadataString,
+} from "@coral-xyz/common";
 import {
+  fetchSplMetadataUri,
   SOL_NATIVE_MINT,
   TOKEN_METADATA_PROGRAM_ID,
   TokenMetadata,
@@ -44,20 +48,32 @@ export const customSplTokenAccounts = atomFamily({
         splTokenAccounts: Map<string, SolanaTokenAccountWithKeyString>;
         splTokenMetadata: Array<TokenMetadataString | null>;
         splTokenMints: Map<string, RawMint>;
+        nfts: {
+          nftTokens: Array<SolanaTokenAccountWithKeyString>;
+          nftTokenMetadata: Array<TokenMetadataString | null>;
+        };
       }> => {
         const { connection } = get(anchorContext);
         //
         // Fetch token data.
         //
         try {
-          const { tokenAccountsMap, tokenMetadata, mintsMap, fts, nfts } =
+          const { mintsMap, fts, nfts } =
             await connection.customSplTokenAccounts(new PublicKey(publicKey));
-          console.log("ARMANI", fts, nfts);
-          const splTokenAccounts = new Map(tokenAccountsMap);
+
+          const splTokenAccounts = new Map(
+            fts.fungibleTokens.concat(nfts.nftTokens).map((t) => [t.key, t])
+          );
+          const splTokenMetadata = fts.fungibleTokenMetadata.concat(
+            nfts.nftTokenMetadata
+          );
+          const splTokenMints = new Map(mintsMap);
+
           return {
             splTokenAccounts,
-            splTokenMetadata: tokenMetadata,
-            splTokenMints: new Map(mintsMap),
+            splTokenMetadata,
+            splTokenMints,
+            nfts,
           };
         } catch (error) {
           console.error("could not fetch solana token data", error);
@@ -65,6 +81,10 @@ export const customSplTokenAccounts = atomFamily({
             splTokenAccounts: new Map(),
             splTokenMetadata: [],
             splTokenMints: new Map(),
+            nfts: {
+              nftTokens: [],
+              nftTokenMetadata: [],
+            },
           };
         }
       },
@@ -87,8 +107,17 @@ export const splNftMetadata = selectorFamily<
       connectionUrl: string;
       publicKey: string;
     }) =>
-    ({ get }) => {
-      return new Map(); // todo
+    async ({ get }) => {
+      const { nfts } = get(
+        customSplTokenAccounts({ connectionUrl, publicKey })
+      );
+      const { nftTokens, nftTokenMetadata } = nfts;
+      // @ts-ignore
+      const nftMetadata = await fetchSplMetadataUri(
+        nftTokens,
+        nftTokenMetadata
+      );
+      return nftMetadata;
     },
 });
 

@@ -1,4 +1,4 @@
-import type { EventEmitter, Notification } from "@coral-xyz/common";
+import type {   CustomSplTokenAccountsResponse,EventEmitter, Notification } from "@coral-xyz/common";
 import {
   BACKEND_EVENT,
   Blockchain,
@@ -217,22 +217,10 @@ export class SolanaConnectionBackend {
   private async startPolling(activeWallet: PublicKey) {
     this.pollIntervals.push(
       setInterval(async () => {
-        const _data = await customSplTokenAccounts(
+        const data = await customSplTokenAccounts(
           this.connection!,
           activeWallet
         );
-        const data = {
-          ..._data,
-          tokenAccountsMap: _data.tokenAccountsMap.map((t: any) => {
-            return [
-              t[0],
-              {
-                ...t[1],
-                mint: t[1].mint.toString(),
-              },
-            ];
-          }),
-        };
         const key = JSON.stringify({
           url: this.url,
           method: "customSplTokenAccounts",
@@ -307,7 +295,9 @@ export class SolanaConnectionBackend {
   // Custom endpoints.
   //////////////////////////////////////////////////////////////////////////////
 
-  async customSplTokenAccounts(publicKey: PublicKey): Promise<any> {
+  async customSplTokenAccounts(
+    publicKey: PublicKey
+  ): Promise<CustomSplTokenAccountsResponse> {
     const key = JSON.stringify({
       url: this.url,
       method: "customSplTokenAccounts",

@@ -328,15 +328,6 @@ async function handleCustomSplTokenAccounts(
   const _resp = await ctx.backend.customSplTokenAccounts(new PublicKey(pubkey));
   const resp = {
     ..._resp,
-    tokenAccountsMap: _resp.tokenAccountsMap.map((t: any) => {
-      return [
-        t[0],
-        {
-          ...t[1],
-          mint: t[1].mint.toString(),
-        },
-      ];
-    }),
     mintsMap: _resp.mintsMap.map((m: any) => {
       return [
         m[0],
