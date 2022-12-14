@@ -134,15 +134,16 @@ export const solanaNftUriData = selectorFamily<
       publicKey: string;
     }) =>
     async ({ get }) => {
+      const { connection } = get(anchorContext);
       const { nfts } = get(
         customSplTokenAccounts({ connectionUrl, publicKey })
       );
       const { nftTokens, nftTokenMetadata } = nfts;
-      const nftMetadata = await fetchSplMetadataUri(
+      const nftMetadata = await connection.customSplMetadataUri(
         nftTokens,
         nftTokenMetadata
       );
-      return nftMetadata;
+      return new Map(nftMetadata);
     },
 });
 

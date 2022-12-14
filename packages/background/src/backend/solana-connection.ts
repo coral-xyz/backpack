@@ -2,6 +2,9 @@ import type {
   CustomSplTokenAccountsResponse,
   EventEmitter,
   Notification,
+  SolanaTokenAccountWithKeyString,
+  SplNftMetadataString,
+  TokenMetadataString,
 } from "@coral-xyz/common";
 import {
   BACKEND_EVENT,
@@ -9,6 +12,7 @@ import {
   Blockchain,
   confirmTransaction,
   customSplTokenAccounts,
+  fetchSplMetadataUri,
   getLogger,
   NOTIFICATION_BLOCKCHAIN_DISABLED,
   NOTIFICATION_BLOCKCHAIN_ENABLED,
@@ -312,6 +316,27 @@ export class SolanaConnectionBackend {
       return value.value;
     }
     const resp = await customSplTokenAccounts(this.connection!, publicKey);
+    this.cache.set(key, {
+      ts: Date.now(),
+      value: resp,
+    });
+    return resp;
+  }
+
+  async customSplMetadataUri(
+    nftTokens: Array<SolanaTokenAccountWithKeyString>,
+    nftTokenMetadata: Array<TokenMetadataString | null>
+  ): Promise<Array<[string, SplNftMetadataString]>> {
+    const key = JSON.stringify({
+      url: this.url,
+      method: "customSplMetadataUri",
+      args: [nftTokens, nftTokenMetadata],
+    });
+    const value = this.cache.get(key);
+    if (value && value.ts + CACHE_EXPIRY > Date.now()) {
+      return value.value;
+    }
+    const resp = await fetchSplMetadataUri(nftTokens, nftTokenMetadata);
     this.cache.set(key, {
       ts: Date.now(),
       value: resp,

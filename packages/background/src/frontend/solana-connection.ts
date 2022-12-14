@@ -5,6 +5,8 @@ import type {
   RpcRequest,
   RpcResponse,
   SerializedTokenAccountsFilter,
+  SolanaTokenAccountWithKeyString,
+  TokenMetadataString,
 } from "@coral-xyz/common";
 import {
   addressLookupTableAccountParser,
@@ -18,6 +20,7 @@ import {
   getLogger,
   SOLANA_CONNECTION_GET_MULTIPLE_ACCOUNTS_INFO,
   SOLANA_CONNECTION_RPC_CONFIRM_TRANSACTION,
+  SOLANA_CONNECTION_RPC_CUSTOM_SPL_METADATA_URI,
   SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
   SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO,
   SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO_AND_CONTEXT,
@@ -146,6 +149,8 @@ async function handleImpl<T = any>(
       return await handleGetParsedTransactions(ctx, params[0], params[1]);
     case SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS:
       return await handleCustomSplTokenAccounts(ctx, params[0]);
+    case SOLANA_CONNECTION_RPC_CUSTOM_SPL_METADATA_URI:
+      return await handleCustomSplMetadataUri(ctx, params[0], params[1]);
     case SOLANA_CONNECTION_RPC_GET_PROGRAM_ACCOUNTS:
       return await handleGetProgramAccounts(ctx, params[0], params[1]);
     case SOLANA_CONNECTION_RPC_GET_FEE_FOR_MESSAGE:
@@ -329,6 +334,18 @@ async function handleCustomSplTokenAccounts(
 ) {
   const resp = await ctx.backend.customSplTokenAccounts(new PublicKey(pubkey));
   return [BackgroundSolanaConnection.customSplTokenAccountsToJson(resp)];
+}
+
+async function handleCustomSplMetadataUri(
+  ctx: Context<SolanaConnectionBackend>,
+  nftTokens: Array<SolanaTokenAccountWithKeyString>,
+  nftTokenMetadata: Array<TokenMetadataString | null>
+) {
+  const resp = await ctx.backend.customSplMetadataUri(
+    nftTokens,
+    nftTokenMetadata
+  );
+  return [resp];
 }
 
 async function handleGetProgramAccounts(

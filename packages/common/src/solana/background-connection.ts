@@ -75,6 +75,7 @@ import type { BackgroundClient } from "../channel";
 import {
   SOLANA_CONNECTION_GET_MULTIPLE_ACCOUNTS_INFO,
   SOLANA_CONNECTION_RPC_CONFIRM_TRANSACTION,
+  SOLANA_CONNECTION_RPC_CUSTOM_SPL_METADATA_URI,
   SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
   SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO,
   SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO_AND_CONTEXT,
@@ -128,6 +129,16 @@ export class BackgroundSolanaConnection extends Connection {
   ) {
     super(endpoint, commitmentOrConfig);
     this._backgroundClient = backgroundClient;
+  }
+
+  async customSplMetadataUri(
+    nftTokens: Array<SolanaTokenAccountWithKeyString>,
+    nftTokenMetadata: Array<TokenMetadataString | null>
+  ): Promise<Array<[string, SplNftMetadataString]>> {
+    return await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_CUSTOM_SPL_METADATA_URI,
+      params: [nftTokens, nftTokenMetadata],
+    });
   }
 
   async customSplTokenAccounts(

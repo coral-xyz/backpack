@@ -256,7 +256,7 @@ function splitOutNfts(
 export async function fetchSplMetadataUri(
   nftTokens: Array<SolanaTokenAccountWithKeyString>,
   nftTokenMetadata: Array<TokenMetadataString | null>
-): Promise<Map<string, SplNftMetadataString>> {
+): Promise<Array<[string, SplNftMetadataString]>> {
   //
   // Fetch the URI for each NFT.
   //
@@ -307,14 +307,17 @@ export async function fetchSplMetadataUri(
     if (!nftMetaUriData[idx]) {
       return acc;
     }
-    acc.set(m.key.toString(), {
-      publicKey: m.key,
-      metadataAddress: tokenMetadata.publicKey,
-      metadata: tokenMetadata.account,
-      tokenMetaUriData: nftMetaUriData[idx],
-    });
+    acc.push([
+      m.key.toString(),
+      {
+        publicKey: m.key,
+        metadataAddress: tokenMetadata.publicKey,
+        metadata: tokenMetadata.account,
+        tokenMetaUriData: nftMetaUriData[idx],
+      },
+    ]);
     return acc;
-  }, new Map<string, SplNftMetadataString>());
+  }, [] as Array<[string, SplNftMetadataString]>);
 
   //
   // Done.
