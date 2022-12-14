@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Alert } from "react-native";
-import { Margin,Screen } from "@components";
-import type { Blockchain } from "@coral-xyz/common";
+import { Margin, Screen } from "@components";
 import { UI_RPC_METHOD_KEYNAME_READ } from "@coral-xyz/common";
 import { useBackgroundClient, useWalletPublicKeys } from "@coral-xyz/recoil";
-import { useTheme } from "@hooks";
 import { SettingsList } from "@screens/Unlocked/Settings/components/SettingsMenuList";
 import { IconCopyContent } from "@screens/Unlocked/Settings/components/SettingsRow";
 import * as Clipboard from "expo-clipboard";
@@ -27,9 +25,6 @@ export function EditWalletDetailScreen({ navigation, route }): JSX.Element {
       });
 
       setWalletName(keyname);
-
-      const addr =
-        publicKey.slice(0, 4) + "..." + publicKey.slice(publicKey.length - 4);
     })();
   }, []);
 

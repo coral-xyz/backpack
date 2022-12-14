@@ -767,7 +767,11 @@ export function CopyButton({ text }: { text: string }): JSX.Element {
   );
 }
 
-export function ImportTypeBadge({ type }: { type: string }) {
+export function ImportTypeBadge({
+  type,
+}: {
+  type: string;
+}): JSX.Element | null {
   const theme = useTheme();
   if (type === "derived") {
     return null;
@@ -803,7 +807,7 @@ export function AddConnectWalletButton({
 }: {
   blockchain: Blockchain;
   onPress: (blockchain: Blockchain) => void;
-}) {
+}): JSX.Element {
   const theme = useTheme();
 
   return (
@@ -833,3 +837,25 @@ export function AddConnectWalletButton({
     </Pressable>
   );
 }
+
+export function TwoButtonFooter({
+  leftButton,
+  rightButton,
+}: {
+  leftButton: JSX.Element;
+  rightButton: JSX.Element;
+}): JSX.Element {
+  return (
+    <View style={twoButtonFooterStyles.container}>
+      <View style={{ flex: 1, marginRight: 8 }}>{leftButton}</View>
+      <View style={{ flex: 1, marginLeft: 8 }}>{rightButton}</View>
+    </View>
+  );
+}
+
+const twoButtonFooterStyles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+});

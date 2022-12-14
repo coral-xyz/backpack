@@ -6,6 +6,7 @@ import {
   Screen,
   SecondaryButton,
   SubtextParagraph,
+  TwoButtonFooter,
 } from "@components";
 import { WarningIcon } from "@components/Icon";
 import {
@@ -15,7 +16,7 @@ import {
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { useNavigation } from "@react-navigation/native";
 
-export function LogoutWarningScreen({ navigation }) {
+export function LogoutWarningScreen({ navigation }): JSX.Element {
   const background = useBackgroundClient();
   const user = useUser();
 
@@ -36,7 +37,7 @@ export function LogoutWarningScreen({ navigation }) {
   );
 }
 
-export function ResetWarningScreen({ navigation }) {
+export function ResetWarningScreen({ navigation }): JSX.Element {
   const background = useBackgroundClient();
 
   return (
@@ -66,7 +67,7 @@ function Warning({
   buttonTitle: string;
   subtext: string;
   onNext: () => void;
-}) {
+}): JSX.Element {
   const navigation = useNavigation();
   const onPressCancel = () => {
     navigation.goBack();
@@ -87,19 +88,10 @@ function Warning({
         <Header text={title} />
         <SubtextParagraph>{subtext}</SubtextParagraph>
       </View>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-        }}
-      >
-        <View style={{ flex: 1, marginRight: 8 }}>
-          <SecondaryButton label="Cancel" onPress={onPressCancel} />
-        </View>
-        <View style={{ flex: 1, marginLeft: 8 }}>
-          <DangerButton label={buttonTitle} onPress={onNext} />
-        </View>
-      </View>
+      <TwoButtonFooter
+        leftButton={<SecondaryButton label="Cancel" onPress={onPressCancel} />}
+        rightButton={<DangerButton label={buttonTitle} onPress={onNext} />}
+      />
     </Screen>
   );
 }

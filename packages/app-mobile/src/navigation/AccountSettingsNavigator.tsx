@@ -46,6 +46,7 @@ import {
 import { EditWalletDetailScreen } from "@screens/Unlocked/EditWalletDetailScreen";
 import { EditWalletsScreen } from "@screens/Unlocked/EditWalletsScreen";
 import { ForgotPasswordScreen } from "@screens/Unlocked/ForgotPasswordScreen";
+import { RenameWalletScreen } from "@screens/Unlocked/RenameWalletScreen";
 import AccountSettingsScreen from "@screens/Unlocked/Settings/AccountSettingsScreen";
 import { AddConnectWalletScreen } from "@screens/Unlocked/Settings/AddConnectWalletScreen";
 import { ChangePasswordScreen } from "@screens/Unlocked/Settings/ChangePasswordScreen";
@@ -186,6 +187,7 @@ export default function AccountSettingsNavigator() {
       />
       <Stack.Screen name="show-private-key" component={ShowPrivateKeyScreen} />
       <Stack.Screen name="edit-wallets" component={EditWalletsScreen} />
+      <Stack.Screen name="edit-wallets-rename" component={RenameWalletScreen} />
       <Stack.Screen
         name="edit-wallets-wallet-detail"
         component={EditWalletDetailScreen}
