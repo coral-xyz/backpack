@@ -40,6 +40,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import AccountSettingsScreen from "@screens/Unlocked/Settings/AccountSettingsScreen";
 import { AddConnectWalletScreen } from "@screens/Unlocked/Settings/AddConnectWalletScreen";
+import { ChangePasswordScreen } from "@screens/Unlocked/Settings/ChangePasswordScreen";
 import { SettingsList } from "@screens/Unlocked/Settings/components/SettingsMenuList";
 import {
   IconPushDetail,
@@ -48,6 +49,7 @@ import {
 } from "@screens/Unlocked/Settings/components/SettingsRow";
 import { PreferencesScreen } from "@screens/Unlocked/Settings/PreferencesScreen";
 import { PreferencesTrustedSitesScreen } from "@screens/Unlocked/Settings/PreferencesTrustedSitesScreen";
+import { YourAccountScreen } from "@screens/Unlocked/YourAccountScreen";
 import type { Commitment } from "@solana/web3.js";
 import { ethers } from "ethers";
 
@@ -75,7 +77,12 @@ export default function AccountSettingsNavigator() {
       <Stack.Screen
         options={{ title: "Your Account" }}
         name="YourAccount"
-        component={DummyScreen}
+        component={YourAccountScreen}
+      />
+      <Stack.Screen
+        options={{ title: "Change password" }}
+        name="change-password"
+        component={ChangePasswordScreen}
       />
       <Stack.Screen
         options={{ title: "Preferences" }}

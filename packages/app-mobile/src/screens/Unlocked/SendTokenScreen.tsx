@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import {
+  DangerButton,
   Debug,
+  InputFieldLabel,
+  InputFieldMaxLabel,
   Margin,
   PrimaryButton,
   Screen,
@@ -79,22 +82,42 @@ export function SendTokenModal({ route }) {
   const isSendDisabled = !isValidAddress || amount === null || !!exceedsBalance;
   const isAmountError = amount && exceedsBalance;
 
-  let errorStateWhatever;
+  let sendButton;
   if (isErrorAddress) {
-    errorStateWhatever = "Invalid address";
+    sendButton = <DangerButton disabled={true} label="Invalid Address" />;
   } else if (isAmountError) {
-    errorStateWhatever = "Insufficient Balance";
+    sendButton = <DangerButton disabled={true} label="Insufficient Balance" />;
+  } else {
+    sendButton = (
+      <PrimaryButton
+        disabled={isSendDisabled}
+        label="Send"
+        onPress={() => onSubmit()}
+      />
+    );
   }
 
   return (
     <Screen style={styles.container}>
       <View>
-        <Margin bottom={12}>
+        <Margin bottom={42}>
+          <InputFieldLabel leftLabel="Send to" />
           <StyledTextInput
-            placeholder="Wallet address"
-            onChangeText={(address: string) => setAddress(address)}
+            value={address}
+            placeholder={`${toTitleCase(blockchain)} address`}
+            onChangeText={(address: string) => setAddress(address.trim())}
           />
         </Margin>
+        <InputFieldLabel
+          leftLabel="Amount"
+          rightLabelComponent={
+            <InputFieldMaxLabel
+              amount={maxAmount}
+              onSetAmount={setAmount}
+              decimals={token.decimals}
+            />
+          }
+        />
         <TokenInputField
           decimals={token.decimals}
           placeholder="Amount"
@@ -108,7 +131,7 @@ export function SendTokenModal({ route }) {
           }}
         />
       </View>
-      <PrimaryButton disabled={false} label="Send" onPress={() => onSubmit()} />
+      {sendButton}
     </Screen>
   );
 }
