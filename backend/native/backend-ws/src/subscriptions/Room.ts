@@ -146,16 +146,18 @@ export class Room {
         room: this.room,
       },
     });
-    await Redis.getInstance().send(
-      JSON.stringify({
-        type: "message",
-        payload: {
-          type: this.type,
-          room: this.room,
-          client_generated_uuid: msg.client_generated_uuid,
-        },
-      })
-    );
+    setTimeout(async () => {
+      await Redis.getInstance().send(
+        JSON.stringify({
+          type: "message",
+          payload: {
+            type: this.type,
+            room: this.room,
+            client_generated_uuid: msg.client_generated_uuid,
+          },
+        })
+      );
+    }, 1000);
   }
 
   broadcast(userToSkip: string | null, msg: FromServer) {
