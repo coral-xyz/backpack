@@ -11,6 +11,7 @@ import { CHAT_HASURA_URL, CHAT_JWT } from "../config";
 import { getChats, getChatsFromParentGuids } from "../db/chats";
 import { updateLatestMessage } from "../db/friendships";
 import { getUsers } from "../db/users";
+import { Redis } from "../redis/Redis";
 import type { User } from "../users/User";
 
 const chain = Chain(CHAT_HASURA_URL, {
@@ -145,6 +146,16 @@ export class Room {
         room: this.room,
       },
     });
+    await Redis.getInstance().send(
+      JSON.stringify({
+        type: "message",
+        payload: {
+          type: this.type,
+          room: this.room,
+          client_generated_uuid: msg.client_generated_uuid,
+        },
+      })
+    );
   }
 
   broadcast(userToSkip: string | null, msg: FromServer) {
