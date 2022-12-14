@@ -1,5 +1,6 @@
 import type {
   Context,
+  CustomSplTokenAccountsResponse,
   EventEmitter,
   RpcRequest,
   RpcResponse,
@@ -7,6 +8,7 @@ import type {
 } from "@coral-xyz/common";
 import {
   addressLookupTableAccountParser,
+  BackgroundSolanaConnection,
   CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
   CHANNEL_SOLANA_CONNECTION_RPC_UI,
   ChannelAppUi,
@@ -325,39 +327,8 @@ async function handleCustomSplTokenAccounts(
   ctx: Context<SolanaConnectionBackend>,
   pubkey: string
 ) {
-  const _resp = await ctx.backend.customSplTokenAccounts(new PublicKey(pubkey));
-  const resp = {
-    mintsMap: _resp.mintsMap.map((m) => {
-      return [
-        m[0],
-        m[1] === null
-          ? null
-          : {
-              ...m[1],
-              supply: m[1].supply.toString(),
-            },
-      ];
-    }),
-    fts: {
-      fungibleTokens: _resp.fts.fungibleTokens.map((t) => {
-        return {
-          ...t,
-          amount: t.amount.toString(),
-        };
-      }),
-      fungibleTokenMetadata: _resp.fts.fungibleTokenMetadata,
-    },
-    nfts: {
-      nftTokens: _resp.nfts.nftTokens.map((t) => {
-        return {
-          ...t,
-          amount: t.amount.toString(),
-        };
-      }),
-      nftTokenMetadata: _resp.nfts.nftTokenMetadata,
-    },
-  };
-  return [resp];
+  const resp = await ctx.backend.customSplTokenAccounts(new PublicKey(pubkey));
+  return [BackgroundSolanaConnection.customSplTokenAccountsToJson(resp)];
 }
 
 async function handleGetProgramAccounts(

@@ -17,7 +17,6 @@ import type {
   SolanaTokenAccount,
   SolanaTokenAccountWithKey,
   SolanaTokenAccountWithKeyString,
-  SplNftMetadata,
   SplNftMetadataString,
   TokenMetadata,
   TokenMetadataString,
@@ -51,24 +50,6 @@ export function associatedTokenAddress(
     ASSOCIATED_TOKEN_PROGRAM_ID
   )[0];
 }
-
-export type CustomSplTokenAccountsResponse = {
-  mintsMap: Array<[string, RawMint | null]>;
-  nfts: {
-    nftTokens: Array<SolanaTokenAccountWithKey>;
-    nftTokenMetadata: Array<TokenMetadata | null>;
-  };
-  fts: {
-    fungibleTokens: Array<SolanaTokenAccountWithKey>;
-    fungibleTokenMetadata: Array<TokenMetadata | null>;
-  };
-};
-
-export type CustomSplTokenAccountsResponseString = ReplaceTypes<
-  CustomSplTokenAccountsResponse,
-  PublicKey,
-  string
->;
 
 export async function customSplTokenAccounts(
   connection: Connection,
@@ -141,6 +122,24 @@ export async function customSplTokenAccounts(
     },
   };
 }
+
+export type CustomSplTokenAccountsResponse = {
+  mintsMap: Array<[string, RawMint | null]>;
+  nfts: {
+    nftTokens: Array<SolanaTokenAccountWithKey>;
+    nftTokenMetadata: Array<TokenMetadata | null>;
+  };
+  fts: {
+    fungibleTokens: Array<SolanaTokenAccountWithKey>;
+    fungibleTokenMetadata: Array<TokenMetadata | null>;
+  };
+};
+
+export type CustomSplTokenAccountsResponseString = ReplaceTypes<
+  CustomSplTokenAccountsResponse,
+  PublicKey,
+  string
+>;
 
 export async function fetchMints(
   provider: Provider,

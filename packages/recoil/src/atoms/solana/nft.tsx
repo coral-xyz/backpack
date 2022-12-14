@@ -51,10 +51,10 @@ export const solanaNftCollections = selector<NftCollection[]>({
         });
       }
       collections.get(collectionId)!.items.push({
-        id: value.publicKey.toString(),
+        id: value.publicKey,
         blockchain: Blockchain.SOLANA,
-        publicKey: value.publicKey.toString(),
-        mint: value.metadata.mint.toString(), // todo: check type here on the pubkey
+        publicKey: value.publicKey,
+        mint: value.metadata.mint,
         name: value.tokenMetaUriData.name,
         description: value.tokenMetaUriData.description,
         externalUrl: externalResourceUri(value.tokenMetaUriData.external_url),

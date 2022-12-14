@@ -99,7 +99,10 @@ import {
   SOLANA_CONNECTION_RPC_SEND_RAW_TRANSACTION,
 } from "../constants";
 
-import type { CustomSplTokenAccountsResponseString } from "./programs/token";
+import type {
+  CustomSplTokenAccountsResponse,
+  CustomSplTokenAccountsResponseString,
+} from "./programs/token";
 import { addressLookupTableAccountParser } from "./rpc-helpers";
 import type {
   SolanaTokenAccountWithKey,
@@ -167,6 +170,40 @@ export class BackgroundSolanaConnection extends Connection {
             amount: new BN(t.amount),
           };
         }),
+      },
+    };
+  }
+
+  static customSplTokenAccountsToJson(_resp: CustomSplTokenAccountsResponse) {
+    return {
+      mintsMap: _resp.mintsMap.map((m) => {
+        return [
+          m[0],
+          m[1] === null
+            ? null
+            : {
+                ...m[1],
+                supply: m[1].supply.toString(),
+              },
+        ];
+      }),
+      fts: {
+        fungibleTokens: _resp.fts.fungibleTokens.map((t) => {
+          return {
+            ...t,
+            amount: t.amount.toString(),
+          };
+        }),
+        fungibleTokenMetadata: _resp.fts.fungibleTokenMetadata,
+      },
+      nfts: {
+        nftTokens: _resp.nfts.nftTokens.map((t) => {
+          return {
+            ...t,
+            amount: t.amount.toString(),
+          };
+        }),
+        nftTokenMetadata: _resp.nfts.nftTokenMetadata,
       },
     };
   }

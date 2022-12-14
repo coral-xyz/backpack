@@ -1,6 +1,11 @@
-import type {   CustomSplTokenAccountsResponse,EventEmitter, Notification } from "@coral-xyz/common";
+import type {
+  CustomSplTokenAccountsResponse,
+  EventEmitter,
+  Notification,
+} from "@coral-xyz/common";
 import {
   BACKEND_EVENT,
+  BackgroundSolanaConnection,
   Blockchain,
   confirmTransaction,
   customSplTokenAccounts,
@@ -235,9 +240,8 @@ export class SolanaConnectionBackend {
           data: {
             connectionUrl: this.url,
             publicKey: activeWallet.toString(),
-            customSplTokenAccounts: {
-              ...data,
-            },
+            customSplTokenAccounts:
+              BackgroundSolanaConnection.customSplTokenAccountsToJson(data),
           },
         });
       }, LOAD_SPL_TOKENS_REFRESH_INTERVAL)
