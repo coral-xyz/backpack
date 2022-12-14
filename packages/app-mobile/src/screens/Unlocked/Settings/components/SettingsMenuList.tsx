@@ -4,6 +4,7 @@ import { useTheme } from "@hooks";
 
 import { IconPushDetail, RoundedContainer, SettingsRow } from "./SettingsRow";
 
+// TODO(peter) fix for next PR
 export function SettingsList({
   style,
   menuItems,

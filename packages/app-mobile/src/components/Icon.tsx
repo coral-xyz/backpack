@@ -1,5 +1,5 @@
 import type { SvgProps } from "react-native-svg";
-import Svg, { Defs, LinearGradient, Path, Stop } from "react-native-svg";
+import Svg, { Defs, LinearGradient, Path, Rect,Stop } from "react-native-svg";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@hooks";
 
@@ -219,4 +219,40 @@ export function MenuIcon({
   size = 24,
 }: IconProps): JSX.Element {
   return <MaterialIcons name="menu" color={color} size={size} />;
+}
+
+export function ContentCopyIcon({
+  color = useTheme().custom.colors.fontColor,
+  size = 24,
+}: IconProps): JSX.Element {
+  return <MaterialIcons name="content-copy" color={color} size={size} />;
+}
+
+export const CrossIcon = (props: SvgProps) => (
+  <Svg
+    width={48}
+    height={48}
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 48 48"
+    {...props}
+  >
+    <Rect width={48} height={48} rx={24} fill="#E95050" />
+    <Path
+      d="m33.333 16.547-1.88-1.88L24 22.12l-7.453-7.453-1.88 1.88L22.12 24l-7.453 7.454 1.88 1.88L24 25.88l7.453 7.454 1.88-1.88L25.88 24l7.453-7.453Z"
+      fill="#fff"
+    />
+  </Svg>
+);
+
+export function CheckIcon({ fill = "#35A63A" }: { fill?: string }) {
+  return (
+    <Svg width={48} height={48} fill="none" viewBox="0 0 48 48 ">
+      <Rect width={48} height={48} rx={24} fill={fill} />
+      <Path
+        d="M20 29.56 14.44 24l-1.893 1.88L20 33.333l16-16-1.88-1.88L20 29.56Z"
+        fill="#fff"
+      />
+    </Svg>
+  );
 }

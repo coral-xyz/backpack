@@ -7,7 +7,10 @@ import { getHeaderTitle } from "@react-navigation/elements";
 import { createStackNavigator } from "@react-navigation/stack";
 import AppListScreen from "@screens/Unlocked/AppListScreen";
 import { BalancesNavigator } from "@screens/Unlocked/BalancesScreen";
-import DepositModal from "@screens/Unlocked/DepositScreen";
+import {
+  DepositListScreen,
+  DepositSingleScreen,
+} from "@screens/Unlocked/DepositScreen";
 import { NFTCollectiblesNavigator } from "@screens/Unlocked/NftCollectiblesScreen";
 import { RecentActivityScreen } from "@screens/Unlocked/RecentActivityScreen";
 import {
@@ -36,8 +39,13 @@ export default function UnlockedNavigator() {
         />
         <Stack.Screen
           options={{ title: "Deposit" }}
-          name="ReceiveModal" // TODO(peter) DepositModal to be consistent
-          component={DepositModal}
+          name="DepositList"
+          component={DepositListScreen}
+        />
+        <Stack.Screen
+          options={{ title: "Deposit" }}
+          name="DepositSingle"
+          component={DepositSingleScreen}
         />
         <Stack.Screen
           options={{ title: "Select Token" }}

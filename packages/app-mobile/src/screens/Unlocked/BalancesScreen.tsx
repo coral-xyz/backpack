@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Margin, Screen, TokenAmountHeader } from "@components";
 import { TransferWidget } from "@components/Unlocked/Balances/TransferWidget";
 import {
@@ -18,12 +18,11 @@ import {
 import { createStackNavigator } from "@react-navigation/stack";
 import { RecentActivityList } from "@screens/Unlocked/RecentActivityScreen";
 
-import { TokenTables } from "./components/Balances";
+import { TokenTables, UsdBalanceAndPercentChange } from "./components/Balances";
 import { BalanceSummaryWidget } from "./components/BalanceSummaryWidget";
 import type { Token } from "./components/index";
 
 const Stack = createStackNavigator();
-
 export function BalancesNavigator() {
   return (
     <Stack.Navigator
@@ -49,15 +48,51 @@ export function BalancesNavigator() {
   );
 }
 
+function TokenHeader({
+  blockchain,
+  address,
+  onPressOption,
+}: SearchParamsFor.Token["props"]) {
+  const [token] = useLoader(blockchainTokenData({ blockchain, address }), null);
+  if (!token) return null;
+
+  return (
+    <View>
+      <View>
+        <TokenAmountHeader
+          token={token}
+          amount={token.nativeBalance}
+          displayLogo={false}
+        />
+        <UsdBalanceAndPercentChange
+          usdBalance={token.usdBalance}
+          recentPercentChange={token.recentPercentChange}
+        />
+      </View>
+      <View style={styles.tokenHeaderButtonContainer}>
+        <TransferWidget
+          token={token}
+          blockchain={blockchain}
+          address={address}
+          rampEnabled={
+            (blockchain === Blockchain.SOLANA && token.ticker === "SOL") ||
+            (blockchain === Blockchain.ETHEREUM && token.ticker === "ETH")
+          }
+          onPressOption={onPressOption}
+        />
+      </View>
+    </View>
+  );
+}
+
 function BalanceDetailScreen({ route, navigation }) {
   const { blockchain, token } = route.params;
   const { address } = token;
 
   // We only use ethereumWallet here, even though its shared on the Solana side too.
   const ethereumWallet = useActiveEthereumWallet();
-  // Hack: This is hit for some reason due to the framer-motion animation.
   if (!blockchain || !address) {
-    return <></>;
+    return null;
   }
 
   const activityAddress =
@@ -65,9 +100,21 @@ function BalanceDetailScreen({ route, navigation }) {
   const contractAddresses =
     blockchain === Blockchain.ETHEREUM ? [address] : undefined;
 
+  const handlePressOption = (
+    route: "Receive" | "Send" | "Swap",
+    options: any
+  ) => {
+    const name = route === "Receive" ? "DepositSingle" : "SendTokenModal";
+    navigation.push(name, options);
+  };
+
   return (
     <Screen>
-      <TokenHeader blockchain={blockchain} address={address} />
+      <TokenHeader
+        blockchain={blockchain}
+        address={address}
+        onPressOption={handlePressOption}
+      />
       <RecentActivityList
         blockchain={blockchain}
         address={activityAddress}
@@ -79,57 +126,18 @@ function BalanceDetailScreen({ route, navigation }) {
   );
 }
 
-// TODO(peter) figure out if token == null
-function TokenHeader({ blockchain, address }: SearchParamsFor.Token["props"]) {
-  const [token] = useLoader(blockchainTokenData({ blockchain, address }), null);
-
-  if (!token) return <></>;
-
-  const percentClass =
-    token.recentPercentChange === undefined
-      ? ""
-      : token.recentPercentChange > 0
-      ? styles.positivePercent
-      : styles.negativePercent;
-
-  return (
-    <View
-      style={{
-        paddingTop: 38,
-        marginBottom: 24,
-      }}
-    >
-      <View>
-        <TokenAmountHeader
-          token={token}
-          amount={token.nativeBalance}
-          displayLogo={false}
-        />
-        <Text style={styles.usdBalanceLabel}>
-          ${parseFloat(token.usdBalance.toFixed(2)).toLocaleString()}{" "}
-          <span style={percentClass}>{token.recentPercentChange}%</span>
-        </Text>
-      </View>
-      <View style={styles.tokenHeaderButtonContainer}>
-        <TransferWidget
-          blockchain={blockchain}
-          address={address}
-          rampEnabled={
-            (blockchain === Blockchain.SOLANA && token.ticker === "SOL") ||
-            (blockchain === Blockchain.ETHEREUM && token.ticker === "ETH")
-          }
-        />
-      </View>
-    </View>
-  );
-}
-
 function BalanceListScreen({ navigation }) {
   const onPressTokenRow = (blockchain: Blockchain, token: Token) => {
     navigation.push("BalanceDetail", { token, blockchain });
   };
 
-  const onNavigate = (route) => navigation.navigate(route);
+  const handlePressOption = (
+    route: "Receive" | "Send" | "Swap",
+    options: any
+  ) => {
+    const name = route === "Receive" ? "DepositList" : "SendSelectTokenModal";
+    navigation.push(name, options);
+  };
 
   return (
     <Screen>
@@ -137,7 +145,7 @@ function BalanceListScreen({ navigation }) {
         <BalanceSummaryWidget />
       </Margin>
       <Margin bottom={18}>
-        <TransferWidget rampEnabled={false} onNavigate={onNavigate} />
+        <TransferWidget rampEnabled={false} onPressOption={handlePressOption} />
       </Margin>
       <TokenTables
         onPressRow={onPressTokenRow}
@@ -160,14 +168,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginTop: 24,
   },
-  positivePercent: {
-    // color: theme.custom.colors.positive,
-  },
-  negativePercent: {
-    // color: theme.custom.colors.negative,
-  },
   usdBalanceLabel: {
-    // color: theme.custom.colors.secondary,
     fontWeight: "500",
     fontSize: 14,
     textAlign: "center",

@@ -1,37 +1,26 @@
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { Alert, StyleSheet, Text, TextInput, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import {
+  DangerButton,
+  Debug,
+  InputFieldLabel,
+  InputFieldMaxLabel,
   Margin,
   PrimaryButton,
   Screen,
   StyledTextInput,
   TokenInputField,
-  Debug,
 } from "@components";
+import type { Blockchain } from "@coral-xyz/common";
 import {
-  Blockchain,
   ETH_NATIVE_MINT,
-  explorerUrl,
   NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
   SOL_NATIVE_MINT,
   toTitleCase,
 } from "@coral-xyz/common";
-import {
-  blockchainTokenData,
-  TokenData,
-  useAnchorContext,
-  useBlockchainConnectionUrl,
-  useBlockchainExplorer,
-  useBlockchainTokenAccount,
-  useEthereumCtx,
-  useLoader,
-  useNavigation,
-} from "@coral-xyz/recoil";
-import type { Connection } from "@solana/web3.js";
-import { PublicKey, SystemProgram } from "@solana/web3.js";
-// import { TextInput } from "@components/TextInput";
-import { BigNumber, ethers } from "ethers";
+import { useAnchorContext, useEthereumCtx } from "@coral-xyz/recoil";
+import { useIsValidAddress } from "@hooks";
+import { BigNumber } from "ethers";
 
 import { TokenTables } from "./components/Balances";
 import type { Token } from "./components/index";
@@ -45,15 +34,6 @@ export function SendTokenModal({ route }) {
   const [address, setAddress] = useState("");
   const [amount, setAmount] = useState<BigNumber | undefined>(undefined);
   const [feeOffset, setFeeOffset] = useState(BigNumber.from(0));
-
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-    // watch, used for watching inputs as you type
-  } = useForm();
-
-  console.log({ errors });
 
   const onSubmit = () => {
     console.log("onSubmit", { amount, address });
@@ -102,22 +82,42 @@ export function SendTokenModal({ route }) {
   const isSendDisabled = !isValidAddress || amount === null || !!exceedsBalance;
   const isAmountError = amount && exceedsBalance;
 
-  let errorStateWhatever;
+  let sendButton;
   if (isErrorAddress) {
-    errorStateWhatever = "Invalid address";
+    sendButton = <DangerButton disabled={true} label="Invalid Address" />;
   } else if (isAmountError) {
-    errorStateWhatever = "Insufficient Balance";
+    sendButton = <DangerButton disabled={true} label="Insufficient Balance" />;
+  } else {
+    sendButton = (
+      <PrimaryButton
+        disabled={isSendDisabled}
+        label="Send"
+        onPress={() => onSubmit()}
+      />
+    );
   }
 
   return (
     <Screen style={styles.container}>
       <View>
-        <Margin bottom={12}>
+        <Margin bottom={42}>
+          <InputFieldLabel leftLabel="Send to" />
           <StyledTextInput
-            placeholder="Wallet address"
-            onChangeText={(address) => setAddress(address)}
+            value={address}
+            placeholder={`${toTitleCase(blockchain)} address`}
+            onChangeText={(address: string) => setAddress(address.trim())}
           />
         </Margin>
+        <InputFieldLabel
+          leftLabel="Amount"
+          rightLabelComponent={
+            <InputFieldMaxLabel
+              amount={maxAmount}
+              onSetAmount={setAmount}
+              decimals={token.decimals}
+            />
+          }
+        />
         <TokenInputField
           decimals={token.decimals}
           placeholder="Amount"
@@ -131,23 +131,7 @@ export function SendTokenModal({ route }) {
           }}
         />
       </View>
-      <Debug
-        data={{
-          destinationAddress,
-          amountSubFee,
-          maxAmount,
-          exceedsBalance,
-          isSendDisabled,
-          isAmountError,
-          errorStateWhatever,
-          errors,
-        }}
-      />
-      <PrimaryButton
-        disabled={false}
-        label="Send"
-        onPress={() => handleSubmit()}
-      />
+      {sendButton}
     </Screen>
   );
 }
@@ -184,127 +168,3 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
 });
-
-// TODO(peter) share between extension/mobile
-export function useIsValidAddress(
-  blockchain: Blockchain,
-  address: string,
-  solanaConnection?: Connection,
-  ethereumProvider?: ethers.providers.Provider
-) {
-  const [addressError, setAddressError] = useState<boolean>(false);
-  const [isFreshAccount, setIsFreshAccount] = useState<boolean>(false); // Not used for now.
-  const [accountValidated, setAccountValidated] = useState<boolean>(false);
-  const [normalizedAddress, setNormalizedAddress] = useState<string>(address);
-
-  // This effect validates the account address given.
-  useEffect(() => {
-    if (accountValidated) {
-      setAccountValidated(false);
-    }
-    if (address === "") {
-      setAccountValidated(false);
-      setAddressError(false);
-      return;
-    }
-    (async () => {
-      if (blockchain === Blockchain.SOLANA) {
-        let pubkey;
-
-        if (!solanaConnection) {
-          return;
-        }
-
-        // SNS Domain
-        if (address.includes(".sol")) {
-          try {
-            const hashedName = await getHashedName(address.replace(".sol", ""));
-            const nameAccountKey = await getNameAccountKey(
-              hashedName,
-              undefined,
-              new PublicKey("58PwtjSDuFHuUkYjH9BYnnQKHfwo9reZhC2zMJv9JPkx") // SOL TLD Authority
-            );
-
-            const owner = await NameRegistryState.retrieve(
-              solanaConnection,
-              nameAccountKey
-            );
-
-            pubkey = owner.registry.owner;
-          } catch (e) {
-            setAddressError(true);
-            return;
-          }
-        }
-
-        if (!pubkey) {
-          // Solana address validation
-          try {
-            pubkey = new PublicKey(address);
-          } catch (err) {
-            setAddressError(true);
-            // Not valid address so don't bother validating it.
-            return;
-          }
-        }
-
-        const account = await solanaConnection?.getAccountInfo(pubkey);
-
-        // Null data means the account has no lamports. This is valid.
-        if (!account) {
-          setIsFreshAccount(true);
-          setAccountValidated(true);
-          setNormalizedAddress(pubkey.toString());
-          return;
-        }
-
-        // Only allow system program accounts to be given. ATAs only!
-        if (!account.owner.equals(SystemProgram.programId)) {
-          setAddressError(true);
-          return;
-        }
-
-        // The account data has been successfully validated.
-        setAddressError(false);
-        setAccountValidated(true);
-        setNormalizedAddress(pubkey.toString());
-      } else if (blockchain === Blockchain.ETHEREUM) {
-        // Ethereum address validation
-        let checksumAddress;
-
-        if (!ethereumProvider) {
-          return;
-        }
-
-        if (address.includes(".eth")) {
-          try {
-            checksumAddress = await ethereumProvider?.resolveName(address);
-          } catch (e) {
-            setAddressError(true);
-            return;
-          }
-        }
-
-        if (!checksumAddress) {
-          try {
-            checksumAddress = ethers.utils.getAddress(address);
-          } catch (e) {
-            setAddressError(true);
-            return;
-          }
-        }
-
-        setAddressError(false);
-        setAccountValidated(true);
-        setNormalizedAddress(checksumAddress);
-      }
-    })();
-  }, [address]);
-
-  return {
-    isValidAddress: accountValidated,
-    isFreshAddress: isFreshAccount,
-    isErrorAddress: addressError,
-    normalizedAddress: normalizedAddress,
-  };
-}

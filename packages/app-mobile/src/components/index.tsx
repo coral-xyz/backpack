@@ -1,6 +1,7 @@
 import type { ImageStyle, StyleProp, TextStyle, ViewStyle } from "react-native";
 import {
   ActivityIndicator,
+  Alert,
   Image,
   Pressable,
   StyleSheet,
@@ -10,8 +11,10 @@ import {
 import { SvgUri } from "react-native-svg";
 import { proxyImageUrl, walletAddressDisplay } from "@coral-xyz/common";
 import { useAvatarUrl } from "@coral-xyz/recoil";
-// probably should put all the components in here as an index
 import { useTheme } from "@hooks";
+import type { BigNumber } from "ethers";
+import { ethers } from "ethers";
+import * as Clipboard from "expo-clipboard";
 
 export { ActionCard } from "./ActionCard";
 export { BaseCheckBoxLabel, CheckBox } from "./CheckBox";
@@ -23,7 +26,7 @@ export { default as ResetAppButton } from "./ResetAppButton";
 export { StyledTextInput } from "./StyledTextInput";
 export { TokenAmountHeader } from "./TokenAmountHeader";
 export { TokenInputField } from "./TokenInputField";
-import { RedBackpack } from "@components/Icon";
+import { ContentCopyIcon, RedBackpack } from "@components/Icon";
 //
 // function getRandomColor() { var letters = "0123456789ABCDEF";
 //   var color = "#";
@@ -585,3 +588,164 @@ const listRowStyles = StyleSheet.create({
     height: 12,
   },
 });
+
+export function CopyWalletFieldInput({
+  publicKey,
+}: {
+  publicKey: string;
+}): JSX.Element {
+  const theme = useTheme();
+
+  // We use a different publicKey layout here than walletAddressDisplay
+  const walletDisplay =
+    publicKey.toString().slice(0, 12) +
+    "..." +
+    publicKey.toString().slice(publicKey.toString().length - 12);
+
+  return (
+    <View
+      style={[
+        { flexDirection: "row", alignItems: "center" },
+        {
+          width: "100%",
+          borderColor: theme.custom.colors.textBackground,
+          backgroundColor: theme.custom.colors.textBackground,
+          borderRadius: 12,
+          padding: 8,
+          borderWidth: 2,
+        },
+      ]}
+    >
+      <Margin right={12}>
+        <Text
+          style={{ fontWeight: "500", color: theme.custom.colors.fontColor }}
+        >
+          {walletDisplay}
+        </Text>
+      </Margin>
+      <Pressable
+        onPress={async () => {
+          await Clipboard.setStringAsync(publicKey);
+          Alert.alert("Copied to clipboard", publicKey);
+        }}
+      >
+        <ContentCopyIcon />
+      </Pressable>
+    </View>
+  );
+}
+
+export function InputFieldLabel({
+  leftLabel,
+  rightLabel,
+  rightLabelComponent,
+  style,
+}: {
+  leftLabel: string;
+  rightLabel?: string;
+  rightLabelComponent?: JSX.Element;
+  style?: StyleProp<ViewStyle>;
+}): JSX.Element {
+  const theme = useTheme();
+  return (
+    <View style={[inputFieldLabelStyles.container, style]}>
+      <Text
+        style={[
+          inputFieldLabelStyles.leftLabel,
+          {
+            color: theme.custom.colors.fontColor,
+          },
+        ]}
+      >
+        {leftLabel}
+      </Text>
+      {rightLabelComponent ? (
+        rightLabelComponent
+      ) : (
+        <Text
+          style={[
+            inputFieldLabelStyles.rightLabel,
+            {
+              color: theme.custom.colors.interactiveIconsActive,
+            },
+          ]}
+        >
+          {rightLabel}
+        </Text>
+      )}
+    </View>
+  );
+}
+
+const inputFieldLabelStyles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
+  leftLabel: {
+    fontSize: 16,
+    lineHeight: 16,
+    fontWeight: "500",
+  },
+  rightLabel: {
+    fontWeight: "500",
+    fontSize: 12,
+    lineHeight: 16,
+  },
+});
+
+export const InputFieldMaxLabel = ({
+  amount,
+  onSetAmount,
+  decimals,
+}: {
+  amount: BigNumber | null;
+  onSetAmount: (amount: BigNumber) => void;
+  decimals: number;
+}) => {
+  const theme = useTheme();
+  return (
+    <Pressable
+      style={inputFieldMaxLabelStyles.container}
+      onPress={() => amount && onSetAmount(amount)}
+    >
+      <Text
+        style={[
+          inputFieldMaxLabelStyles.label,
+          { color: theme.custom.colors.secondary },
+        ]}
+      >
+        Max:{" "}
+      </Text>
+      <Text
+        style={[
+          inputFieldMaxLabelStyles.label,
+          {
+            color: theme.custom.colors.fontColor,
+          },
+        ]}
+      >
+        {amount !== null ? ethers.utils.formatUnits(amount, decimals) : "-"}
+      </Text>
+    </Pressable>
+  );
+};
+
+const inputFieldMaxLabelStyles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+  },
+  label: {
+    fontWeight: "500",
+    fontSize: 12,
+    lineHeight: 16,
+  },
+});
+
+export function Loading(props: any): JSX.Element {
+  return <ActivityIndicator {...props} />;
+}

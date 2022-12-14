@@ -1,11 +1,6 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { Margin } from "@components";
-import {
-  Blockchain,
-  ETH_NATIVE_MINT,
-  SOL_NATIVE_MINT,
-  STRIPE_ENABLED,
-} from "@coral-xyz/common";
+import { Blockchain, STRIPE_ENABLED, toTitleCase } from "@coral-xyz/common";
 import {
   SwapProvider,
   useEnabledBlockchains,
@@ -13,29 +8,25 @@ import {
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@hooks";
-import { useNavigation } from "@react-navigation/native";
 
-// import { WithHeaderButton } from "./TokensWidget/Token";
-// import { Deposit } from "./TokensWidget/Deposit";
-// import { SendLoader, Send } from "./TokensWidget/Send";
-import type { Token } from "../../common/TokenTable";
-// import { SearchableTokenTables } from "../../common/TokenTable";
-// import { Swap, SelectToken } from "../../Unlocked/Swap";
-// import { Ramp } from "./TokensWidget/Ramp";
-// import { StripeRamp } from "./StripeRamp";
+import type { Token } from "./components/index";
 
-type ModalRoutes = "Send" | "Receive" | "Swap";
+const HorizontalSpacer = () => <View style={{ width: 16 }} />;
+
+type Route = "Receive" | "Send" | "Swap";
 
 export function TransferWidget({
   blockchain,
   address,
   rampEnabled,
-  onNavigate,
+  onPressOption,
+  token,
 }: {
   blockchain?: Blockchain;
   address?: string;
   rampEnabled: boolean;
-  onNavigate: (route: string) => void;
+  onPressOption: (option: string, options: any) => void;
+  token?: Token;
 }) {
   const enabledBlockchains = useEnabledBlockchains();
   const featureGates = useFeatureGates();
@@ -45,9 +36,7 @@ export function TransferWidget({
     blockchain !== Blockchain.ETHEREUM &&
     enabledBlockchains.includes(Blockchain.SOLANA);
 
-  const Spacer = () => <View style={{ width: 16 }} />;
-
-  const onPress = (route: string) => onNavigate(route);
+  const onPress = (route: Route, options: any) => onPressOption(route, options);
 
   return (
     <View
@@ -57,22 +46,18 @@ export function TransferWidget({
         alignItems: "center",
       }}
     >
-      {enableOnramp && (
+      {enableOnramp ? (
         <>
-          <RampButton
-            onPress={onPress}
-            blockchain={blockchain}
-            address={address}
-          />
-          <Spacer />
+          <RampButton blockchain={blockchain} address={address} />
+          <HorizontalSpacer />
         </>
-      )}
+      ) : null}
       <ReceiveButton onPress={onPress} blockchain={blockchain} />
-      <Spacer />
-      <SendButton onPress={onPress} blockchain={blockchain} address={address} />
+      <HorizontalSpacer />
+      <SendButton onPress={onPress} blockchain={blockchain} token={token} />
       {renderSwap && (
         <>
-          <Spacer />
+          <HorizontalSpacer />
           <SwapButton
             onPress={onPress}
             blockchain={blockchain}
@@ -138,14 +123,14 @@ function SwapButton({
 }: {
   blockchain?: Blockchain;
   address?: string;
-  onPress: (route: string) => void;
+  onPress: (route: Route, options: any) => void;
 }) {
   return (
     <SwapProvider blockchain={Blockchain.SOLANA} tokenAddress={address}>
       <TransferButton
         label="Swap"
         icon="compare-arrows"
-        onPress={() => onPress("SwapModal")}
+        onPress={() => onPress("Swap", { blockchain })}
       />
     </SwapProvider>
   );
@@ -154,15 +139,17 @@ function SwapButton({
 function SendButton({
   blockchain,
   onPress,
+  token,
 }: {
   blockchain?: Blockchain;
-  onPress: (route: string) => void;
+  onPress: (route: Route, options: any) => void;
+  token?: Token;
 }) {
   return (
     <TransferButton
       label="Send"
       icon="arrow-upward"
-      onPress={() => onPress("SendSelectTokenModal")}
+      onPress={() => onPress("Send", { blockchain, token, title: "TODO" })}
     />
   );
 }
@@ -172,13 +159,13 @@ function ReceiveButton({
   onPress,
 }: {
   blockchain?: Blockchain;
-  onPress: (route: string) => void;
+  onPress: (route: Route, options: any) => void;
 }) {
   return (
     <TransferButton
       label="Receive"
       icon="arrow-downward"
-      onPress={() => onPress("ReceiveModal")}
+      onPress={() => onPress("Receive", { blockchain })}
     />
   );
 }
