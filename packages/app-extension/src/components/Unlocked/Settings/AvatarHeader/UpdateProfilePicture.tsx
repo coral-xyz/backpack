@@ -38,6 +38,7 @@ export function UpdateProfilePicture({
   const setNewAvatar = useSetRecoilState(newAvatarAtom);
   const avatarUrl = useAvatarUrl();
   const { username } = useUser();
+  const theme = useCustomTheme();
   // const wallets = useActiveWallets();
   // const wallets = useWalletPublicKeys();
   const collections = useRecoilValueLoadable(nftCollections);
@@ -47,7 +48,12 @@ export function UpdateProfilePicture({
       <AvatarWrapper>
         <Avatar src={tempAvatar?.url || avatarUrl} />
       </AvatarWrapper>
-      <Typography style={{ textAlign: "center" }}>{`@${username}`}</Typography>
+      <Typography
+        style={{
+          textAlign: "center",
+          color: theme.custom.colors.fontColor,
+        }}
+      >{`@${username}`}</Typography>
       <FakeDrawer>
         <Scrollbar
           style={{
@@ -263,6 +269,7 @@ function BlockchainHeader({
                 display: "flex",
                 justifyContent: "center",
                 flexDirection: "column",
+                color: theme.custom.colors.fontColor,
               }}
             >
               {title}
@@ -277,6 +284,7 @@ function BlockchainHeader({
                   justifyContent: "center",
                   flexDirection: "column",
                   marginLeft: "8px",
+                  color: theme.custom.colors.secondary,
                 }}
               >
                 {walletAddressDisplay(wallet.publicKey)}
