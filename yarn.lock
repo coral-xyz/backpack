@@ -1196,6 +1196,17 @@
     polished "^4.2.2"
     tslib "^2.4.0"
 
+"@cardinal/creator-standard@^2.1.10":
+  version "2.1.10"
+  resolved "https://registry.yarnpkg.com/@cardinal/creator-standard/-/creator-standard-2.1.10.tgz#d945a5c47e67d125868a596502d55f77d5cceabf"
+  integrity sha512-BQrB73r+SBKlIhgy/jPeSnd4Tq3FD4siEAIWL/sHKDU2BV9idcbdyeaGaSriyy2jxtmQD2A5GyaR0DwplfhGsg==
+  dependencies:
+    "@metaplex-foundation/rustbin" "^0.3.1"
+    "@metaplex-foundation/solita" "^0.12.2"
+    "@project-serum/anchor" "^0.25.0"
+    "@solana/spl-token" "^0.3.5"
+    "@solana/web3.js" "^1.66.2"
+
 "@cardinal/payment-manager@^1.7.9":
   version "1.7.9"
   resolved "https://registry.yarnpkg.com/@cardinal/payment-manager/-/payment-manager-1.7.9.tgz#47d894ccfbce5a40d90006e243d7b31e33524a89"
@@ -3448,6 +3459,32 @@
     "@solana/web3.js" "^1.66.2"
     bn.js "^5.2.0"
     debug "^4.3.4"
+
+"@metaplex-foundation/rustbin@^0.3.0", "@metaplex-foundation/rustbin@^0.3.1":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@metaplex-foundation/rustbin/-/rustbin-0.3.1.tgz#bbcd61e8699b73c0b062728c6f5e8d52e8145042"
+  integrity sha512-hWd2JPrnt2/nJzkBpZD3Y6ZfCUlJujv2K7qUfsxdS0jSwLrSrOvYwmNWFw6mc3lbULj6VP4WDyuy9W5/CHU/lQ==
+  dependencies:
+    debug "^4.3.3"
+    semver "^7.3.7"
+    text-table "^0.2.0"
+    toml "^3.0.0"
+
+"@metaplex-foundation/solita@^0.12.2":
+  version "0.12.2"
+  resolved "https://registry.yarnpkg.com/@metaplex-foundation/solita/-/solita-0.12.2.tgz#13ef213ac183c986f6d01c5d981c44e59a900834"
+  integrity sha512-oczMfE43NNHWweSqhXPTkQBUbap/aAiwjDQw8zLKNnd/J8sXr/0+rKcN5yJIEgcHeKRkp90eTqkmt2WepQc8yw==
+  dependencies:
+    "@metaplex-foundation/beet" "^0.4.0"
+    "@metaplex-foundation/beet-solana" "^0.3.0"
+    "@metaplex-foundation/rustbin" "^0.3.0"
+    "@solana/web3.js" "^1.36.0"
+    camelcase "^6.2.1"
+    debug "^4.3.3"
+    js-sha256 "^0.9.0"
+    prettier "^2.5.1"
+    snake-case "^3.0.4"
+    spok "^1.4.3"
 
 "@miniflare/cache@2.9.0":
   version "2.9.0"
@@ -7355,7 +7392,7 @@ ansi-styles@^6.0.0:
   resolved "https://registry.yarnpkg.com/ansi-styles/-/ansi-styles-6.1.0.tgz#87313c102b8118abd57371afab34618bf7350ed3"
   integrity sha512-VbqNsoz55SYGczauuup0MFUyXNQviSpFTj1RQtFzmQLk18qbVSpTFFGMT293rmDaQuKCT6InmbuEyUne4mTuxQ==
 
-ansicolors@^0.3.2:
+ansicolors@^0.3.2, ansicolors@~0.3.2:
   version "0.3.2"
   resolved "https://registry.yarnpkg.com/ansicolors/-/ansicolors-0.3.2.tgz#665597de86a9ffe3aa9bfbe6cae5c6ea426b4979"
   integrity sha512-QXu7BPrP29VllRxH8GwB7x5iX5qWKAAMLqKQGWTeLWVlNHNOpVMJ91dsxQAIWXpjuW5wqvxu3Jd/nRjrJ+0pqg==
@@ -8843,7 +8880,7 @@ camelcase@^5.0.0, camelcase@^5.3.1:
   resolved "https://registry.yarnpkg.com/camelcase/-/camelcase-5.3.1.tgz#e3c9b31569e106811df242f715725a1f4c494320"
   integrity sha512-L28STB170nwWS63UjtlEOE3dldQApaJXZkOI1uMFfzf3rRuPegHaHesyee+YxQ+W6SvRDQV6UrdOdRiR153wJg==
 
-camelcase@^6.0.0, camelcase@^6.2.0:
+camelcase@^6.0.0, camelcase@^6.2.0, camelcase@^6.2.1:
   version "6.3.0"
   resolved "https://registry.yarnpkg.com/camelcase/-/camelcase-6.3.0.tgz#5685b95eb209ac9c0c177467778c9c84df58ba9a"
   integrity sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==
@@ -19663,7 +19700,7 @@ prettier-plugin-tailwindcss@^0.1.11:
   resolved "https://registry.yarnpkg.com/prettier-plugin-tailwindcss/-/prettier-plugin-tailwindcss-0.1.12.tgz#d002a0e25d76a06fdccb6f3c6c52dd9f85e3ccd8"
   integrity sha512-pEZ6tppwknCeq3ObR9g8t61AhWtVRRR3I0EQNeiRrrJ3D42FJGeUDxiFc/LJRYEeAx5JOxagsF0MICwuWOJa+w==
 
-prettier@2.7.1, prettier@^2.7.1:
+prettier@2.7.1, prettier@^2.5.1, prettier@^2.7.1:
   version "2.7.1"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.7.1.tgz#e235806850d057f97bb08368a4f7d899f7760c64"
   integrity sha512-ujppO+MkdPqoVINuDFDRLClm7D78qbDt0/NR+wp5FqEZOoTNAjPHWj17QRhu7geIHJfcNhRk1XVQmF8Bp3ye+g==
@@ -21783,6 +21820,13 @@ split@^1.0.1:
   integrity sha512-mTyOoPbrivtXnwnIxZRFYRrPNtEFKlpB2fvjSnCQUiAA6qAZzqwna5envK4uk6OIeP17CsdF3rSBGYVBsU0Tkg==
   dependencies:
     through "2"
+
+spok@^1.4.3:
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/spok/-/spok-1.4.3.tgz#8516234e6bd8caf0e10567bd675e15fd03b5ceb8"
+  integrity sha512-5wFGctwrk638aDs+44u99kohxFNByUq2wo0uShQ9yqxSmsxqx7zKbMo1Busy4s7stZQXU+PhJ/BlVf2XWFEGIw==
+  dependencies:
+    ansicolors "~0.3.2"
 
 sprintf-js@~1.0.2:
   version "1.0.3"
