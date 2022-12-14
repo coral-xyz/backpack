@@ -266,7 +266,6 @@ export async function fetchSplMetadataUri(
         return null;
       }
       try {
-        // @ts-ignore
         const resp = await new Promise<any>(async (resolve, reject) => {
           setTimeout(() => {
             reject(new Error("timeout"));
