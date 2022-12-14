@@ -21,8 +21,8 @@ export class Redis {
     return this.instance;
   }
 
-  async fetch(): string {
-    const response = await this.client.blPop(NOTIFICATIONS_QUEUE, 0);
-    return response?.element || "";
+  async fetch(): Promise<string> {
+    const response = await this.client.lPop(NOTIFICATIONS_QUEUE);
+    return response || "";
   }
 }

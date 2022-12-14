@@ -21,7 +21,13 @@ if (cluster.isMaster) {
     spawn();
   });
 } else {
-  (async () => await processQueue())();
+  (async () => {
+    const x = 0;
+    while (x < 1) {
+      // Run always
+      await processQueue();
+    }
+  })();
 }
 
 process.on("uncaughtException", function (err) {
