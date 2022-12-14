@@ -52,7 +52,7 @@ export function associatedTokenAddress(
 }
 
 export type CustomSplTokenAccountsResponse = {
-  mintsMap: Array<[string, RawMint]>;
+  mintsMap: Array<[string, RawMint | null]>;
   nfts: {
     nftTokens: Array<SolanaTokenAccountWithKey>;
     nftTokenMetadata: Array<TokenMetadata | null>;
@@ -81,17 +81,7 @@ export async function customSplTokenAccounts(
     //
     fetchTokens(publicKey, tokenClient),
   ]);
-  const nativeSol: SolanaTokenAccountWithKey = {
-    key: publicKey,
-    mint: PublicKey.default,
-    authority: publicKey,
-    amount: accountInfo ? new BN(accountInfo.lamports) : new BN(0),
-    delegate: null,
-    state: 1,
-    isNative: null,
-    delegatedAmount: new BN(0),
-    closeAuthority: null,
-  };
+
   const tokenAccountsArray = Array.from(tokenAccounts.values());
 
   const [mintsMap, tokenMetadata] = await Promise.all([
@@ -111,16 +101,31 @@ export async function customSplTokenAccounts(
       new Map(mintsMap) as Map<string, RawMint>
     );
 
+  //
+  // Add native SOL to the token and metadata list.
+  //
+  const nativeSol: SolanaTokenAccountWithKey = {
+    key: publicKey,
+    mint: PublicKey.default,
+    authority: publicKey,
+    amount: accountInfo ? new BN(accountInfo.lamports) : new BN(0),
+    delegate: null,
+    state: 1,
+    isNative: null,
+    delegatedAmount: new BN(0),
+    closeAuthority: null,
+  };
+  const nativeSolMetadata = null;
+
   return {
-    // @ts-ignore
-    mintsMap, // All mints (fungible and non-fungible).
+    mintsMap,
     nfts: {
-      nftTokens, // Non-fungible tokens.
-      nftTokenMetadata, // Non-fungible token metaata.
+      nftTokens,
+      nftTokenMetadata,
     },
     fts: {
       fungibleTokens: fungibleTokens.concat([nativeSol]),
-      fungibleTokenMetadata,
+      fungibleTokenMetadata: fungibleTokenMetadata.concat([nativeSolMetadata]),
     },
   };
 }
