@@ -1,119 +1,13 @@
-import { Controller, useForm } from "react-hook-form";
-import {
-  Alert,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { useForm } from "react-hook-form";
+import { Alert, Text, View } from "react-native";
 import { Margin, PrimaryButton, Screen, SubtextParagraph } from "@components";
+import { InputGroup, InputListItem } from "@components/Form";
 import {
   UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
   UI_RPC_METHOD_PASSWORD_UPDATE,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useTheme } from "@hooks";
-import { RoundedContainer } from "@screens/Unlocked/Settings/components/SettingsRow";
-
-function InputGroup({
-  hasError,
-  children,
-}: {
-  hasError?: boolean;
-  children: JSX.Element | JSX.Element[];
-}): JSX.Element {
-  const theme = useTheme();
-  const borderColor = hasError
-    ? theme.custom.colors.negative
-    : theme.custom.colors.textInputBorderFull;
-  return (
-    <View
-      style={[
-        {
-          overflow: "hidden",
-          borderRadius: 12,
-          borderColor,
-          backgroundColor: theme.custom.colors.textBackground,
-          borderWidth: 2,
-        },
-      ]}
-    >
-      {children}
-    </View>
-  );
-}
-
-function InputListItem({
-  autoFocus,
-  title,
-  placeholder,
-  control,
-  rules,
-  secureTextEntry,
-  name,
-}: {
-  autoFocus?: boolean;
-  title: string;
-  placeholder?: string;
-  control: any;
-  rules: any;
-  secureTextEntry?: boolean;
-  name: string;
-}): JSX.Element {
-  const theme = useTheme();
-  return (
-    <View style={[styles.container]}>
-      <Text style={[styles.label, { color: theme.custom.colors.fontColor }]}>
-        {title}
-      </Text>
-      <Controller
-        name={name}
-        control={control}
-        rules={rules}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            autoFocus={autoFocus}
-            style={[
-              styles.input,
-              {
-                color: theme.custom.colors.fontColor2,
-              },
-            ]}
-            value={value}
-            onChangeText={onChange}
-            onBlur={onBlur}
-            placeholder={placeholder}
-            placeholderTextColor={theme.custom.colors.textPlaceholder}
-            secureTextEntry={secureTextEntry}
-          />
-        )}
-      />
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  label: {
-    paddingLeft: 12,
-    width: 80,
-    overflow: "hidden",
-    ellipsizeMode: "tail",
-    fontWeight: "500",
-    fontSize: 16,
-  },
-  input: {
-    flex: 1,
-    padding: 12,
-    fontWeight: "500",
-    fontSize: 16,
-  },
-});
 
 function InstructionText() {
   const theme = useTheme();

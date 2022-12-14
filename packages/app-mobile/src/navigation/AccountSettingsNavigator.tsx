@@ -42,6 +42,7 @@ import {
   LogoutWarningScreen,
   ResetWarningScreen,
 } from "@screens/ResetWarningScreen";
+import { EditWalletsScreen } from "@screens/Unlocked/EditWalletsScreen";
 import { ForgotPasswordScreen } from "@screens/Unlocked/ForgotPasswordScreen";
 import AccountSettingsScreen from "@screens/Unlocked/Settings/AccountSettingsScreen";
 import { AddConnectWalletScreen } from "@screens/Unlocked/Settings/AddConnectWalletScreen";
@@ -182,6 +183,7 @@ export default function AccountSettingsNavigator() {
         component={ShowPrivateKeyWarningScreen}
       />
       <Stack.Screen name="show-private-key" component={ShowPrivateKeyScreen} />
+      <Stack.Screen name="edit-wallets" component={EditWalletsScreen} />
       <Stack.Group
         screenOptions={{ presentation: "modal", headerShown: false }}
       >

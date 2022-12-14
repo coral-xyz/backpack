@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
-import { Margin, WalletAddressLabel } from "@components";
+import {
+  AddConnectWalletButton,
+  Margin,
+  WalletAddressLabel,
+} from "@components";
 import type {
   // openPopupWindow,
   Blockchain,
@@ -65,6 +69,7 @@ export function WalletList({
   keyring: any;
   close: () => void;
 }) {
+  const navigation = useNavigation();
   const background = useBackgroundClient();
   const activeWallets = useActiveWallets();
   const theme = useTheme();
@@ -122,7 +127,14 @@ export function WalletList({
         />
       </RoundedContainer>
       {showAll ? <AllWallets keys={keys} /> : null}
-      {showAll ? <AddConnectWalletButton blockchain={blockchain} /> : null}
+      {showAll ? (
+        <AddConnectWalletButton
+          blockchain={blockchain}
+          onPress={(blockchain: Blockchain) => {
+            navigation.navigate("AddConnectWallet", { blockchain });
+          }}
+        />
+      ) : null}
     </Margin>
   );
 }
@@ -151,44 +163,3 @@ function AllWallets({ keys }) {
     </Margin>
   );
 }
-
-export const AddConnectWalletButton = ({
-  blockchain,
-}: {
-  blockchain: Blockchain;
-}) => {
-  const navigation = useNavigation();
-  const theme = useTheme();
-  const onPress = (blockchain: Blockchain) => {
-    navigation.navigate("AddConnectWallet", { blockchain });
-  };
-
-  return (
-    <Pressable
-      onPress={() => {
-        onPress(blockchain);
-      }}
-      style={{
-        padding: 12,
-        flexDirection: "row",
-        alignItems: "center",
-      }}
-    >
-      <Margin right={12}>
-        <MaterialIcons
-          name="add"
-          size={24}
-          color={theme.custom.colors.secondary}
-        />
-      </Margin>
-      <Text
-        style={{
-          fontSize: 16,
-          color: theme.custom.colors.secondary,
-        }}
-      >
-        Add / Connect Wallet
-      </Text>
-    </Pressable>
-  );
-};

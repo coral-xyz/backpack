@@ -9,8 +9,10 @@ import {
   View,
 } from "react-native";
 import { SvgUri } from "react-native-svg";
+import type { Blockchain } from "@coral-xyz/common";
 import { proxyImageUrl, walletAddressDisplay } from "@coral-xyz/common";
 import { useAvatarUrl } from "@coral-xyz/recoil";
+import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@hooks";
 import type { BigNumber } from "ethers";
 import { ethers } from "ethers";
@@ -767,5 +769,72 @@ export function CopyButton({ text }: { text: string }): JSX.Element {
       }}
       icon={<ContentCopyIcon size={18} />}
     />
+  );
+}
+
+export function ImportTypeBadge({ type }: { type: string }) {
+  const theme = useTheme();
+  if (type === "derived") {
+    return null;
+  }
+
+  return (
+    <View
+      style={[
+        {
+          backgroundColor: theme.custom.colors.bg2,
+          borderRadius: 10,
+          paddingHorizontal: 12,
+          paddingVertical: 2,
+        },
+      ]}
+    >
+      <Text
+        style={{
+          color: theme.custom.colors.fontColor,
+          fontSize: 12,
+          fontWeight: "600",
+        }}
+      >
+        {type === "imported" ? "IMPORTED" : "HARDWARE"}
+      </Text>
+    </View>
+  );
+}
+
+export function AddConnectWalletButton({
+  blockchain,
+  onPress,
+}: {
+  blockchain: Blockchain;
+  onPress: (blockchain: Blockchain) => void;
+}) {
+  const theme = useTheme();
+
+  return (
+    <Pressable
+      onPress={() => {
+        onPress(blockchain);
+      }}
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+      }}
+    >
+      <Margin right={8}>
+        <MaterialIcons
+          name="add-circle"
+          size={24}
+          color={theme.custom.colors.secondary}
+        />
+      </Margin>
+      <Text
+        style={{
+          color: theme.custom.colors.secondary,
+        }}
+      >
+        Add / Connect Wallet
+      </Text>
+    </Pressable>
   );
 }
