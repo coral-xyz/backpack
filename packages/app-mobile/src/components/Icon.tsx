@@ -1,5 +1,5 @@
 import type { SvgProps } from "react-native-svg";
-import Svg, { Defs, LinearGradient, Path, Rect,Stop } from "react-native-svg";
+import Svg, { Defs, LinearGradient, Path, Rect, Stop } from "react-native-svg";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@hooks";
 
@@ -252,6 +252,80 @@ export function CheckIcon({ fill = "#35A63A" }: { fill?: string }) {
       <Path
         d="M20 29.56 14.44 24l-1.893 1.88L20 33.333l16-16-1.88-1.88L20 29.56Z"
         fill="#fff"
+      />
+    </Svg>
+  );
+}
+
+export function QuestionIcon({
+  fill = "#A1A1AA",
+  ...props
+}: {
+  fill?: string;
+  props?: SvgProps;
+}) {
+  return (
+    <Svg
+      width={56}
+      height={56}
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 56 56"
+      {...props}
+    >
+      <Path
+        d="M28.335 5C15.468 5 5 15.468 5 28.335S15.468 51.67 28.335 51.67 51.67 41.202 51.67 28.335 41.202 5 28.335 5Zm-.972 36.947a2.918 2.918 0 0 1 0-5.834 2.918 2.918 0 0 1 0 5.834Zm8.383-17.254c-.601.962-1.742 2.044-3.427 3.245-2.724 2.015-2.65 2.462-2.65 4.286h-4.778c0-1.425-.031-2.52.74-3.852.491-.854 1.393-1.762 2.704-2.723 1.573-1.123 3.102-2.207 3.102-4.093 0-1.767-1.513-2.398-3.28-2.398-1.803 0-3.859.59-6.167 1.768l-1.966-3.947c4.194-2.351 10.814-3.415 14.432-.469 2.657 2.164 2.672 5.97 1.29 8.183Z"
+        fill={fill}
+      />
+    </Svg>
+  );
+}
+
+export function WarningIcon({
+  fill = "#A1A1AA",
+  ...props
+}: {
+  fill?: string;
+  props?: SvgProps;
+}) {
+  return (
+    <Svg
+      width={56}
+      height={56}
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 56 56"
+      style={{ alignSelf: "center" }}
+      {...props}
+    >
+      <Path
+        d="M10.43 47.842h35.14c3.593 0 5.833-3.897 4.037-7l-17.57-30.357c-1.797-3.103-6.277-3.103-8.074 0L6.393 40.842c-1.796 3.103.444 7 4.037 7ZM28 31.51a2.34 2.34 0 0 1-2.333-2.334V24.51A2.34 2.34 0 0 1 28 22.175a2.34 2.34 0 0 1 2.333 2.334v4.666A2.34 2.34 0 0 1 28 31.51Zm2.333 9.333h-4.666v-4.667h4.666v4.667Z"
+        fill={fill}
+      />
+    </Svg>
+  );
+}
+
+export function EyeIcon({
+  fill = "#A1A1AA",
+  ...props
+}: {
+  fill?: string;
+  props?: SvgProps;
+}) {
+  return (
+    <Svg
+      width={40}
+      height={40}
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 40 40"
+      style={{ alignSelf: "center" }}
+      {...props}
+    >
+      <Path
+        d="M20 10.783c4.6 0 8.334 3.734 8.334 8.334 0 .85-.167 1.666-.4 2.433l5.1 5.1a19.67 19.67 0 0 0 5.3-7.55C35.45 11.8 28.334 6.617 20 6.617c-2.116 0-4.15.333-6.066.95l3.616 3.616c.784-.233 1.6-.4 2.45-.4ZM4.517 5.217c-.65.65-.65 1.7 0 2.35L7.8 10.85C5.1 13 2.95 15.833 1.667 19.117c2.883 7.316 10 12.5 18.333 12.5 2.534 0 4.95-.5 7.184-1.367l4.533 4.533c.65.65 1.7.65 2.35 0 .65-.65.65-1.7 0-2.35L6.884 5.217a1.68 1.68 0 0 0-2.367 0ZM20 27.45a8.336 8.336 0 0 1-8.333-8.333c0-1.284.3-2.5.817-3.567l2.616 2.617c-.05.3-.1.616-.1.95 0 2.766 2.234 5 5 5 .334 0 .634-.05.95-.117l2.617 2.617A8.02 8.02 0 0 1 20 27.45Zm4.95-8.883a4.948 4.948 0 0 0-4.4-4.4l4.4 4.4Z"
+        fill={fill}
       />
     </Svg>
   );

@@ -33,3 +33,7 @@ const processResponse = async (response: string) => {
     console.log(e);
   }
 };
+
+process.on("uncaughtException", function (err) {
+  console.log("Caught exception: " + err);
+});
