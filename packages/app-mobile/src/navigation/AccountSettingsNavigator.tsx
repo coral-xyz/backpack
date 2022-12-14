@@ -54,6 +54,10 @@ import {
 } from "@screens/Unlocked/Settings/components/SettingsRow";
 import { PreferencesScreen } from "@screens/Unlocked/Settings/PreferencesScreen";
 import { PreferencesTrustedSitesScreen } from "@screens/Unlocked/Settings/PreferencesTrustedSitesScreen";
+import {
+  ShowRecoveryPhraseScreen,
+  ShowRecoveryPhraseWarningScreen,
+} from "@screens/Unlocked/ShowRecoveryPhraseScreen";
 import { YourAccountScreen } from "@screens/Unlocked/YourAccountScreen";
 import type { Commitment } from "@solana/web3.js";
 import { ethers } from "ethers";
@@ -160,6 +164,15 @@ export default function AccountSettingsNavigator() {
         component={ImportSecretKeyScreen}
       />
       <Stack.Screen name="reset-warning" component={ResetWarningScreen} />
+      <Stack.Screen
+        name="show-secret-phrase-warning"
+        component={ShowRecoveryPhraseWarningScreen}
+        options={{ title: "Secret Recovery Phrase" }}
+      />
+      <Stack.Screen
+        name="show-secret-phrase"
+        component={ShowRecoveryPhraseScreen}
+      />
       <Stack.Group
         screenOptions={{ presentation: "modal", headerShown: false }}
       >

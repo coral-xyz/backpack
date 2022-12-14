@@ -84,14 +84,16 @@ export function BaseButton({
   onPress,
   disabled,
   loading,
+  icon,
   ...props
 }: {
   label: string;
   buttonStyle?: StyleProp<ViewStyle>;
   labelStyle?: StyleProp<TextStyle>;
   onPress: () => void;
-  disabled: boolean;
+  disabled?: boolean;
   loading?: boolean;
+  icon?: JSX.Element;
 }) {
   const theme = useTheme();
   return (
@@ -104,6 +106,7 @@ export function BaseButton({
           borderRadius: 12,
           justifyContent: "center",
           alignItems: "center",
+          flexDirection: "row",
           width: "100%",
           opacity: disabled ? 50 : 100, // TODO(peter)
         },
@@ -127,6 +130,7 @@ export function BaseButton({
       >
         {loading ? "loading..." : label} {disabled ? "(disabled)" : ""}
       </Text>
+      {icon}
     </Pressable>
   );
 }
@@ -164,12 +168,14 @@ export function SecondaryButton({
   onPress,
   disabled,
   loading,
+  icon,
   ...props
 }: {
   label: string;
   onPress: () => void;
-  disabled: boolean;
+  disabled?: boolean;
   loading?: boolean;
+  icon?: JSX.Element;
 }) {
   const theme = useTheme();
   return (
@@ -182,6 +188,7 @@ export function SecondaryButton({
       labelStyle={{
         color: theme.custom.colors.secondaryButtonTextColor,
       }}
+      icon={icon}
       {...props}
     />
   );
@@ -748,4 +755,17 @@ const inputFieldMaxLabelStyles = StyleSheet.create({
 
 export function Loading(props: any): JSX.Element {
   return <ActivityIndicator {...props} />;
+}
+
+export function CopyButton({ text }: { text: string }): JSX.Element {
+  return (
+    <SecondaryButton
+      label="Copy"
+      onPress={async () => {
+        await Clipboard.setStringAsync(text);
+        Alert.alert("Copied to clipboard");
+      }}
+      icon={<ContentCopyIcon size={18} />}
+    />
+  );
 }
