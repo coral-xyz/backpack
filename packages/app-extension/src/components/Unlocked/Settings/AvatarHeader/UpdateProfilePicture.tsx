@@ -3,7 +3,6 @@ import type { Blockchain, Nft, NftCollection } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
   toTitleCase,
-  // UI_RPC_METHOD_USER_AVATAR_UPDATE,
   walletAddressDisplay,
 } from "@coral-xyz/common";
 import {
@@ -13,15 +12,13 @@ import {
   useAvatarUrl,
   useBlockchainLogo,
   useUser,
-  useWalletPublicKeys,
 } from "@coral-xyz/recoil";
 import { styled, useCustomTheme } from "@coral-xyz/themes";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { CardHeader, CircularProgress, Grid } from "@mui/material";
 import Collapse from "@mui/material/Collapse";
 import Typography from "@mui/material/Typography";
-import { resolve } from "dns";
-import { useRecoilValueLoadable, useSetRecoilState, waitForAll } from "recoil";
+import { useRecoilValueLoadable, useSetRecoilState } from "recoil";
 
 import { Loading, PrimaryButton, SecondaryButton } from "../../../common";
 import { Scrollbar } from "../../../common/Layout/Scrollbar";

@@ -289,7 +289,7 @@ export class SolanaConnectionBackend {
       // This should never expire, but some projects use mutable urls rather
       // than IPFS or Arweave :(.
       //
-      if (value && value.ts + NFT_CACHE_EXPIRY > Date.now()) {
+      if (value && value.ts + CACHE_EXPIRY > Date.now()) {
         return value.value;
       }
       const resp = await _rpcRequest(method, args);
@@ -332,10 +332,10 @@ export class SolanaConnectionBackend {
     const key = JSON.stringify({
       url: this.url,
       method: "customSplMetadataUri",
-      args: [nftTokens, nftTokenMetadata],
+      args: [nftTokens.map((t) => t.key).sort()],
     });
     const value = this.cache.get(key);
-    if (value && value.ts + CACHE_EXPIRY > Date.now()) {
+    if (value && value.ts + NFT_CACHE_EXPIRY > Date.now()) {
       return value.value;
     }
     const resp = await fetchSplMetadataUri(nftTokens, nftTokenMetadata);
