@@ -14,6 +14,7 @@ export const processQueue = async () => {
       console.log(`Processing ${response}`);
       await processResponse(response);
       clearTimeout(timeout);
+      resolve();
     }
   });
 };
