@@ -350,7 +350,7 @@ async function handleCustomSplTokenAccounts(
       fungibleTokenMetadata: _resp.fts.fungibleTokenMetadata,
     },
     nfts: {
-      nftTokens: _resp.fts.fungibleTokens.map((t: any) => {
+      nftTokens: _resp.nfts.nftTokens.map((t: any) => {
         return {
           ...t,
           mint: t.mint.toString(),

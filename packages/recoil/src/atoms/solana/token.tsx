@@ -130,7 +130,7 @@ export const splTokenMetadata = selectorFamily<
 });
 
 export const splNftMetadata = selectorFamily<
-  Map<string, SplNftMetadata>,
+  Map<string, any /*SplNftMetadataString*/>,
   {
     connectionUrl: string;
     publicKey: string;
@@ -154,6 +154,7 @@ export const splNftMetadata = selectorFamily<
         nftTokens,
         nftTokenMetadata
       );
+      console.log("ARMANI NFTS", nfts, nftMetadata);
       return nftMetadata;
     },
 });
