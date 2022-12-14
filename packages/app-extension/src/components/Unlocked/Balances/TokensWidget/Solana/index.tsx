@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { findMintManagerId } from "@cardinal/creator-standard";
 import { programs, tryGetAccount } from "@cardinal/token-manager";
+import type {
+  RawMintString} from "@coral-xyz/common";
 import {
   Blockchain,
   confirmTransaction,
@@ -8,14 +10,11 @@ import {
   SOL_NATIVE_MINT,
   Solana,
 } from "@coral-xyz/common";
-import { useSolanaCtx } from "@coral-xyz/recoil";
+import { useSolanaCtx, useSolanaTokenMint } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
-import { TOKEN_PROGRAM_ID } from "@project-serum/anchor/dist/cjs/utils/token";
-import type { MintInfo } from "@solana/spl-token";
-import { Token } from "@solana/spl-token";
 import type { Connection } from "@solana/web3.js";
-import { Keypair, PublicKey } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 import type { BigNumber } from "ethers";
 
 import { PrimaryButton, walletAddressDisplay } from "../../../../common";
@@ -59,6 +58,7 @@ export function SendSolanaConfirmationCard({
   const [cardType, setCardType] = useState<
     "confirm" | "sending" | "complete" | "error"
   >("confirm");
+  const mintInfo = useSolanaTokenMint(token.address);
 
   const onConfirm = async () => {
     setCardType("sending");
@@ -69,13 +69,6 @@ export function SendSolanaConfirmationCard({
 
     try {
       const mintId = new PublicKey(token.mint?.toString() as string);
-      const mintToken = new Token(
-        solanaCtx.connection,
-        mintId,
-        TOKEN_PROGRAM_ID,
-        Keypair.generate()
-      );
-      const mintInfo = await mintToken.getMintInfo();
       if (token.mint === SOL_NATIVE_MINT.toString()) {
         txSig = await Solana.transferSol(solanaCtx, {
           source: solanaCtx.walletPublicKey,
@@ -288,12 +281,15 @@ const ConfirmSendSolanaTable: React.FC<{
 export const isCardinalWrappedToken = async (
   connection: Connection,
   mintId: PublicKey,
-  mintInfo: MintInfo
+  mintInfo: RawMintString
 ) => {
   const mintManagerId = (
     await programs.tokenManager.pda.findMintManagerId(mintId)
   )[0];
-  if (!mintInfo.freezeAuthority?.equals(mintManagerId)) {
+  if (
+    !mintInfo.freezeAuthority ||
+    mintInfo.freezeAuthority !== mintManagerId.toString()
+  ) {
     return false;
   }
 
@@ -322,12 +318,14 @@ export const isCardinalWrappedToken = async (
 
 export const isCreatorStandardToken = (
   mintId: PublicKey,
-  mintInfo: MintInfo
+  mintInfo: RawMintString
 ) => {
   const mintManagerId = findMintManagerId(mintId);
   // not network calls involved we can assume this token was created properly if the mint and freeze authority match
   return (
-    mintInfo.freezeAuthority?.equals(mintManagerId) &&
-    mintInfo.mintAuthority?.equals(mintManagerId)
+    mintInfo.freezeAuthority &&
+    mintInfo.mintAuthority &&
+    mintInfo.freezeAuthority === mintManagerId.toString() &&
+    mintInfo.mintAuthority === mintManagerId.toString()
   );
 };

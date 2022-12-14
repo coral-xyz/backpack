@@ -257,8 +257,8 @@ export const solanaFungibleTokenNativeBalance = selectorFamily<
 /**
  * Returns all mints--fungible and non-fungible.
  */
-const solanaTokenMint = selectorFamily<
-  RawMintString | null,
+export const solanaTokenMint = selectorFamily<
+  /*RawMintString | null*/ any,
   { tokenAddress: string }
 >({
   key: "solanaTokenMint",
