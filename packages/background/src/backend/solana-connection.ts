@@ -91,7 +91,6 @@ import type {
   VoteAccountStatus,
 } from "@solana/web3.js";
 import { Connection, PublicKey } from "@solana/web3.js";
-import { encode } from "bs58";
 
 import type { CachedValue } from "../types";
 
@@ -101,6 +100,7 @@ export const LOAD_SPL_TOKENS_REFRESH_INTERVAL = 10 * 1000;
 export const RECENT_BLOCKHASH_REFRESH_INTERVAL = 10 * 1000;
 // Time until cached values expire. This is arbitrary.
 const CACHE_EXPIRY = 15000;
+const NFT_CACHE_EXPIRY = 15 * 60000;
 
 export function start(events: EventEmitter): SolanaConnectionBackend {
   const b = new SolanaConnectionBackend(events);
@@ -287,7 +287,11 @@ export class SolanaConnectionBackend {
 
       // Only use cached values at most 15 seconds old.
       const value = this.cache.get(key);
-      if (value && value.ts + CACHE_EXPIRY > Date.now()) {
+      //
+      // This should never expire, but some projects use mutable urls rather
+      // than IPFS or Arweave :(.
+      //
+      if (value && value.ts + NFT_CACHE_EXPIRY > Date.now()) {
         return value.value;
       }
       const resp = await _rpcRequest(method, args);
