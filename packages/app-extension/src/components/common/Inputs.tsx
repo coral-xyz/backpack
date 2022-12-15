@@ -75,7 +75,7 @@ const useStyles = styles((theme) => ({
       "& fieldset": {
         border: (props) =>
           overrideErrBorder(
-            theme.custom.colors.textInputBorderFull,
+            theme.custom.colors.borderFull,
             //@ts-ignore
             props.error,
             theme
