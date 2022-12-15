@@ -173,9 +173,7 @@ export function NavContent({
   };
   return (
     <div className="nav-content-style" style={_style}>
-      <Scrollbar>
-        <Suspense fallback={<Loading />}>{renderComponent}</Suspense>
-      </Scrollbar>
+      <Suspense fallback={<Loading />}>{renderComponent}</Suspense>
     </div>
   );
 }

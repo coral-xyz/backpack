@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE } from "@coral-xyz/common";
 import {
@@ -64,7 +64,7 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-export default function EntryONE() {
+export default React.memo(function EntryONE() {
   const [imageLoaded, setImageLoaded] = useState(false);
   const isONELive = useIsONELive();
   const classes = useStyles();
@@ -101,4 +101,4 @@ export default function EntryONE() {
       ></div>
     </Card>
   );
-}
+});

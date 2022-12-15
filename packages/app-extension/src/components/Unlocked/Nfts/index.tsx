@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import type { Blockchain, NftCollection } from "@coral-xyz/common";
 import {
   NAV_COMPONENT_NFT_COLLECTION,
@@ -8,31 +9,20 @@ import {
 import {
   nftCollections,
   useActiveWallets,
-  useBlockchainLogo,
   useEnabledBlockchains,
   useLoader,
-  useNavigation,
 } from "@coral-xyz/recoil";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { Block, Image as ImageIcon } from "@mui/icons-material";
-import { Grid, Skeleton } from "@mui/material";
+import { styles } from "@coral-xyz/themes";
+import { Image as ImageIcon } from "@mui/icons-material";
 
 import { useIsONELive } from "../../../hooks/useIsONELive";
+import { Loading } from "../../common";
 import { EmptyState } from "../../common/EmptyState";
-import {
-  BalancesTable,
-  BalancesTableContent,
-  BalancesTableHead,
-} from "../Balances";
+import {} from "../Balances";
 
 import { GridCard } from "./Common";
 import EntryONE from "./EntryONE";
-
-const useStyles = styles(() => ({
-  cardContentContainer: {
-    //    marginTop: "36px",
-  },
-}));
+import { NftTable } from "./NftTable";
 
 export function Nfts() {
   const isONELive = useIsONELive();
@@ -49,10 +39,30 @@ export function Nfts() {
     [activeWallets]
   );
 
+  const NFTList = useMemo(() => {
+    return (
+      <NftTable
+        prependItems={
+          isONELive
+            ? [{ height: 129, key: "oneEntry", component: <EntryONE /> }]
+            : []
+        }
+        blockchainCollections={Object.entries(collections)}
+      />
+    );
+  }, [isONELive, JSON.stringify(collections)]);
+
   return (
-    <>
-      {isONELive && <EntryONE />}
-      {Object.values(collections).flat().length === 0 && !isLoading ? (
+    <div
+      style={{
+        position: "relative",
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+      }}
+    >
+      {false ||
+      (Object.values(collections).flat().length === 0 && !isLoading) ? (
         <EmptyState
           icon={(props: any) => <ImageIcon {...props} />}
           title={"No NFTs"}
@@ -61,118 +71,13 @@ export function Nfts() {
           onClick={() => window.open("https://magiceden.io")}
           verticallyCentered={!isONELive}
         />
+      ) : isLoading ? (
+        <Loading />
       ) : (
-        <>
-          {Object.entries(collections).map(([blockchain, collections]) => (
-            <NftTable
-              key={blockchain}
-              blockchain={blockchain as Blockchain}
-              collections={collections as NftCollection[]}
-              isLoading={isLoading}
-            />
-          ))}
-        </>
-      )}
-    </>
-  );
-}
-
-export function NftTable({
-  blockchain,
-  collections,
-  isLoading,
-}: {
-  blockchain: Blockchain;
-  collections: NftCollection[];
-  isLoading: boolean;
-}) {
-  const classes = useStyles();
-  const theme = useCustomTheme();
-  const blockchainLogo = useBlockchainLogo(blockchain);
-  const title = toTitleCase(blockchain);
-  if (!isLoading && collections.length === 0) return <></>;
-  // Note: the absolute positioning below is a total hack due to weird
-  //       padding + overlap issues on the table head and its content.
-  return (
-    <BalancesTable style={{ position: "relative" }}>
-      <BalancesTableHead props={{ title, iconUrl: blockchainLogo }} />
-      {/* <div className={classes.cardContentContainer}> */}
-      <BalancesTableContent>
-        <div>
-          <div
-            style={{
-              backgroundColor: theme.custom.colors.nav,
-              overflow: "hidden",
-              paddingLeft: "12px",
-              paddingRight: "12px",
-              paddingBottom: "12px",
-              flexWrap: "wrap",
-            }}
-          >
-            <Grid container spacing={{ xs: 2, ms: 2, md: 2, lg: 2 }}>
-              {isLoading
-                ? [...Array(2)].map((_, i) => (
-                    <Grid item xs={6} sm={4} md={3} lg={2} key={i}>
-                      <Skeleton
-                        height={200}
-                        style={{
-                          borderRadius: "10px",
-                          margin: "-20% 0",
-                        }}
-                      />
-                    </Grid>
-                  ))
-                : collections.map(
-                    (collection: NftCollection, index: number) => (
-                      <Grid item xs={6} sm={4} md={3} lg={2} key={index}>
-                        <NftCollectionCard collection={collection} />
-                      </Grid>
-                    )
-                  )}
-            </Grid>
-          </div>
+        <div style={{ display: "flex", flex: 1, position: "relative" }}>
+          {NFTList}
         </div>
-      </BalancesTableContent>
-      {/* </div> */}
-    </BalancesTable>
-  );
-}
-
-function NftCollectionCard({ collection }: { collection: NftCollection }) {
-  const { push } = useNavigation();
-  // Display the first NFT in the collection as the thumbnail in the grid
-  const collectionDisplayNft = collection.items[0];
-
-  const onClick = () => {
-    if (collection.items.length === 1) {
-      if (!collectionDisplayNft.name || !collectionDisplayNft.id) {
-        throw new Error("invalid NFT data");
-      }
-      // If there is only one item in the collection, link straight to its detail page
-      push({
-        title: collectionDisplayNft.name || "",
-        componentId: NAV_COMPONENT_NFT_DETAIL,
-        componentProps: {
-          nftId: collectionDisplayNft.id,
-        },
-      });
-    } else {
-      // Multiple items in connection, display a grid
-      push({
-        title: collection.name,
-        componentId: NAV_COMPONENT_NFT_COLLECTION,
-        componentProps: {
-          id: collection.id,
-        },
-      });
-    }
-  };
-
-  return (
-    <GridCard
-      onClick={onClick}
-      nft={collectionDisplayNft}
-      subtitle={{ name: collection.name, length: collection.items.length }}
-    />
+      )}
+    </div>
   );
 }

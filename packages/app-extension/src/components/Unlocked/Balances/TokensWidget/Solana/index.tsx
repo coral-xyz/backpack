@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { findMintManagerId } from "@cardinal/creator-standard";
 import { programs, tryGetAccount } from "@cardinal/token-manager";
-import type {
-  RawMintString} from "@coral-xyz/common";
+import type { RawMintString } from "@coral-xyz/common";
 import {
   Blockchain,
   confirmTransaction,
