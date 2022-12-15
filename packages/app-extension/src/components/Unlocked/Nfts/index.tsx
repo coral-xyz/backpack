@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import type { Blockchain, NftCollection } from "@coral-xyz/common";
 import {
   NAV_COMPONENT_NFT_COLLECTION,
@@ -37,9 +38,9 @@ export function Nfts() {
     // TODO Make this reload for only the relevant blockchain
     [activeWallets]
   );
-  const prependItems = isONELive
-    ? [{ height: 129, component: <EntryONE /> }]
-    : [];
+  const prependItems = useMemo(() => {
+    return isONELive ? [{ height: 129, component: <EntryONE /> }] : [];
+  }, [isONELive]);
 
   return (
     <div

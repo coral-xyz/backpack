@@ -1,4 +1,4 @@
-import React, { AllHTMLAttributes, useRef, useState } from "react";
+import React, { AllHTMLAttributes, useCallback, useRef, useState } from "react";
 import Autosizer from "react-virtualized-auto-sizer";
 import type { ListChildComponentProps } from "react-window";
 import { VariableSizeList } from "react-window";
@@ -35,6 +35,7 @@ export function NftTable({
     useState<CollapsedCollections>(
       new Array(blockchainCollections.length).fill(false)
     );
+
   const nftWidth = 174;
 
   return (
@@ -100,26 +101,29 @@ export function NftTable({
 const HeaderRow = React.memo(function ({
   blockchainIndex,
   blockchainCollections,
-  collapsedCollections,
+  isCollapsed,
   setCollapsedCollections,
 }: {
   blockchainIndex: number;
   blockchainCollections: BlockchainCollections;
-  collapsedCollections: CollapsedCollections;
-  setCollapsedCollections: (c: CollapsedCollections) => void;
+  isCollapsed: boolean;
+  setCollapsedCollections: React.Dispatch<
+    React.SetStateAction<CollapsedCollections>
+  >;
 }) {
   const [blockchain] = blockchainCollections[blockchainIndex];
-  const isCollapsed = collapsedCollections[blockchainIndex];
   return (
     <>
       <Card top={true} bottom={isCollapsed}>
         <BlockchainHeader
           setShowContent={(isCollapsed) => {
-            const collapsed = [...collapsedCollections];
-            collapsed[blockchainIndex] = !isCollapsed;
-            setCollapsedCollections(collapsed);
+            setCollapsedCollections((oldValue) => {
+              const collapsed = [...oldValue];
+              collapsed[blockchainIndex] = !isCollapsed;
+              return collapsed;
+            });
           }}
-          showContent={!collapsedCollections[blockchainIndex]}
+          showContent={!isCollapsed}
           blockchain={blockchain as Blockchain}
         />
       </Card>
@@ -130,12 +134,26 @@ const FooterRow = React.memo(function () {
   return <Card top={false} bottom={true} />;
 });
 const ItemRow = React.memo(function ({
-  items,
-  numberOfItemsPerRow,
+  blockchainIndex,
+  itemStartIndex,
+  itemsPerRow,
+  blockchainCollections,
 }: {
-  items: NftCollection[];
-  numberOfItemsPerRow: number;
+  blockchainIndex: number;
+  itemStartIndex: number;
+  itemsPerRow: number;
+  blockchainCollections: BlockchainCollections;
 }) {
+  const collectionItems = blockchainCollections[blockchainIndex][1];
+  const numberOfItems =
+    itemStartIndex + itemsPerRow <= collectionItems.length
+      ? itemsPerRow
+      : collectionItems.length % itemsPerRow;
+
+  const items: NftCollection[] = new Array(itemsPerRow).fill(null);
+  for (let i = itemStartIndex; i < itemStartIndex + numberOfItems; i++) {
+    items[i - itemStartIndex] = collectionItems[i];
+  }
   return (
     <Card top={false} bottom={false}>
       <div
@@ -236,7 +254,9 @@ const getItemForIndex = (
   index: number,
   blockchainCollections: BlockchainCollections,
   collapsedCollections: CollapsedCollections,
-  setCollapsedCollections: (updated: CollapsedCollections) => void,
+  setCollapsedCollections: React.Dispatch<
+    React.SetStateAction<CollapsedCollections>
+  >,
   itemsPerRow: number,
   prependItems: Row[]
 ): Row | null => {
@@ -281,7 +301,7 @@ const getItemForIndex = (
         <HeaderRow
           blockchainIndex={blockchainIndex}
           blockchainCollections={blockchainCollections}
-          collapsedCollections={collapsedCollections}
+          isCollapsed={collapsedCollections[blockchainIndex]}
           setCollapsedCollections={setCollapsedCollections}
         />
       ),
@@ -294,19 +314,16 @@ const getItemForIndex = (
     };
   }
   const startIndex = collectionGroupIndex * itemsPerRow;
-  const numberOfItems =
-    startIndex + itemsPerRow <= collectionItems.length
-      ? itemsPerRow
-      : collectionItems.length % itemsPerRow;
 
-  const items: NftCollection[] = new Array(itemsPerRow).fill(null);
-  for (let i = startIndex; i < startIndex + numberOfItems; i++) {
-    items[i - startIndex] = collectionItems[i];
-  }
   return {
     height: 174,
     component: (
-      <ItemRow items={items} numberOfItemsPerRow={numberOfRowsInCollection} />
+      <ItemRow
+        itemStartIndex={startIndex}
+        blockchainIndex={blockchainIndex}
+        blockchainCollections={blockchainCollections}
+        itemsPerRow={itemsPerRow}
+      />
     ),
   };
 };

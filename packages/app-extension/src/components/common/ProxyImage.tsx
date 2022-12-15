@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useRef } from "react";
 import { proxyImageUrl } from "@coral-xyz/common";
 import { Skeleton } from "@mui/material";
 
@@ -6,7 +6,7 @@ type ImgProps = React.DetailedHTMLProps<
   React.ImgHTMLAttributes<HTMLImageElement>,
   HTMLImageElement
 >;
-export function ProxyImage({
+export const ProxyImage = React.memo(function ProxyImage({
   removeOnError,
   loadingStyles,
   ...imgProps
@@ -14,12 +14,7 @@ export function ProxyImage({
   removeOnError?: boolean;
   loadingStyles?: React.CSSProperties;
 } & ImgProps) {
-  const [loading, setLoading] = useState(true);
-  const [hasError, setError] = useState(false);
-
-  if (hasError && removeOnError) {
-    return null;
-  }
+  const ref = useRef(null);
 
   const visuallyHidden: React.CSSProperties = {
     visibility: "hidden",
@@ -29,35 +24,48 @@ export function ProxyImage({
 
   return (
     <>
-      {loading && (
-        <Skeleton
-          style={{
-            height: "100%",
-            width: "100%",
-            transform: "none",
-            transformOrigin: "none",
-            ...(imgProps.style ?? {}),
-            ...(loadingStyles ?? {}),
-          }}
-          className={imgProps.className}
-        />
-      )}
+      <Skeleton
+        style={{
+          height: "100%",
+          width: "100%",
+          transform: "none",
+          transformOrigin: "none",
+          ...(imgProps.style ?? {}),
+          ...(loadingStyles ?? {}),
+        }}
+        ref={ref}
+        className={imgProps.className}
+      />
       <img
         {...imgProps}
         style={{
           ...(imgProps.style ?? {}),
-          ...(loading ? visuallyHidden : {}),
+          ...visuallyHidden,
         }}
         onLoad={(...e) => {
-          setLoading(false);
-          imgProps.onLoad && imgProps.onLoad(...e);
+          // setLoading(false);
+          const image = e[0].target as HTMLImageElement;
+          if (ref.current) {
+            console.log(ref.current);
+            // @ts-ignore
+            ref.current.style.display = "none";
+          }
+          image.parentElement;
+          image.style.position = "inherit";
+          image.style.top = "inherit";
+          image.style.visibility = "visible";
         }}
         onError={(...e) => {
-          setError(true);
-          imgProps.onError && imgProps.onError(...e);
+          if (removeOnError) {
+            if (ref.current) {
+              console.log(ref.current);
+              // @ts-ignore
+              ref.current.style.display = "none";
+            }
+          }
         }}
         src={proxyImageUrl(imgProps.src ?? "")}
       />
     </>
   );
-}
+});
