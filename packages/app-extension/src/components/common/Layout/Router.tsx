@@ -126,11 +126,11 @@ function NftsExperiencePage() {
 
 function NftsCollectionPage() {
   const { props } = useDecodedSearchParams();
-  // @ts-expect-error TS2322: Property 'id' is missing in type '{}' but required in type '{ id: string; }'
   return (
     <NavScreen
       component={
         <Scrollbar>
+          {/* @ts-expect-error TS2322: Property 'id' is missing in type '{}' but required in type '{ id: string; }' */}
           <NftsCollection {...props} />
         </Scrollbar>
       }
@@ -140,11 +140,11 @@ function NftsCollectionPage() {
 
 function NftsDetailPage() {
   const { props } = useDecodedSearchParams();
-  // @ts-expect-error TS2322: Property 'nftId' is missing in type '{}' but required in type '{ nftId: string; }'.
   return (
     <NavScreen
       component={
         <Scrollbar>
+          {/* @ts-expect-error TS2322: Property 'nftId' is missing in type '{}' but required in type '{ nftId: string; }'. */}
           <NftsDetail {...props} />
         </Scrollbar>
       }
@@ -166,11 +166,11 @@ function MessagesPage() {
 
 function ChatPage() {
   const { props } = useDecodedSearchParams();
-  // @ts-ignore
   return (
     <NavScreen
       component={
         <Scrollbar>
+          {/* @ts-ignore */}
           <ChatScreen userId={props.userId} />
         </Scrollbar>
       }
@@ -179,7 +179,6 @@ function ChatPage() {
 }
 
 function RequestsPage() {
-  // @ts-ignore
   return (
     <NavScreen
       component={
@@ -193,11 +192,11 @@ function RequestsPage() {
 
 function ProfilePage() {
   const { props } = useDecodedSearchParams();
-  // @ts-ignore
   return (
     <NavScreen
       component={
         <Scrollbar>
+          {/* @ts-ignore */}
           <ProfileScreen userId={props.userId} />
         </Scrollbar>
       }
