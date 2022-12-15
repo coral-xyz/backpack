@@ -261,14 +261,6 @@ function useNavBar() {
       <div style={{ display: "flex" }}>
         <Typography
           style={{
-            fontSize: "24px",
-            marginRight: "8px",
-          }}
-        >
-          {emoji}
-        </Typography>
-        <Typography
-          style={{
             fontSize: "18px",
             color: theme.custom.colors.fontColor,
             fontWeight: 600,
