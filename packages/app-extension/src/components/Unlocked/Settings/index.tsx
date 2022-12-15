@@ -60,6 +60,7 @@ import {
 } from "../../common/Layout/NavStack";
 import { ProxyImage } from "../../common/ProxyImage";
 import { Logout, ResetWarning } from "../../Locked/Reset/ResetWarning";
+import { ResetWelcome } from "../../Locked/Reset/ResetWelcome";
 import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
 import { NotificationButton } from "../Balances/Notifications";
 import { Contacts } from "../Messages/Contacts";
@@ -261,6 +262,10 @@ function AvatarButton() {
             <NavStackScreen
               name={"change-password"}
               component={(props: any) => <ChangePassword {...props} />}
+            />
+            <NavStackScreen
+              name={"reset"}
+              component={(props: any) => <ResetWelcome {...props} />}
             />
             <NavStackScreen
               name={"edit-wallets"}

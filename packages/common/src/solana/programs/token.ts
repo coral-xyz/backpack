@@ -13,11 +13,13 @@ import { PublicKey } from "@solana/web3.js";
 
 import { BACKEND_API_URL } from "../../constants";
 import type {
+  ReplaceTypes,
   SolanaTokenAccount,
   SolanaTokenAccountWithKey,
-  SolanaTokenAccountWithKeySerializable,
-  SplNftMetadata,
+  SolanaTokenAccountWithKeyString,
+  SplNftMetadataString,
   TokenMetadata,
+  TokenMetadataString,
 } from "../types";
 
 export const TOKEN_PROGRAM_ID = new PublicKey(
@@ -52,16 +54,14 @@ export function associatedTokenAddress(
 export async function customSplTokenAccounts(
   connection: Connection,
   publicKey: PublicKey
-): Promise<{
-  tokenAccountsMap: [string, SolanaTokenAccountWithKeySerializable][];
-  tokenMetadata: (TokenMetadata | null)[];
-  nftMetadata: [string, SplNftMetadata][];
-  mintsMap: [string, RawMint][];
-}> {
+): Promise<CustomSplTokenAccountsResponse> {
   // @ts-ignore
   const provider = new AnchorProvider(connection, { publicKey });
   const tokenClient = Spl.token(provider);
 
+  //
+  // Fetch all tokenAccounts.
+  //
   const [accountInfo, tokenAccounts] = await Promise.all([
     //
     // Fetch native sol data.
@@ -72,19 +72,11 @@ export async function customSplTokenAccounts(
     //
     fetchTokens(publicKey, tokenClient),
   ]);
-  const nativeSol: SolanaTokenAccountWithKeySerializable = {
-    key: publicKey,
-    mint: PublicKey.default,
-    authority: publicKey,
-    amount: accountInfo ? accountInfo.lamports.toString() : "0",
-    delegate: null,
-    state: 1,
-    isNative: null,
-    delegatedAmount: new BN(0),
-    closeAuthority: null,
-  };
   const tokenAccountsArray = Array.from(tokenAccounts.values());
 
+  //
+  // Fetch all mints.
+  //
   const [mintsMap, tokenMetadata] = await Promise.all([
     fetchMints(provider, tokenAccountsArray).then((mint) =>
       mint.filter((m) => m[1] !== null)
@@ -93,34 +85,61 @@ export async function customSplTokenAccounts(
   ]);
 
   //
-  // Fetch the metadata uri and interpert as NFTs.
+  // Separate out fungible and non-fungible tokens.
   //
-  const { nftTokens, nftTokenMetadata, fungibleTokens } = splitOutNfts(
-    tokenAccountsArray,
-    tokenMetadata,
-    new Map(mintsMap) as Map<string, RawMint>
-  );
+  const { fungibleTokens, fungibleTokenMetadata, nftTokens, nftTokenMetadata } =
+    splitOutNfts(
+      tokenAccountsArray,
+      tokenMetadata,
+      new Map(mintsMap) as Map<string, RawMint>
+    );
 
-  const nftMetadata = await fetchSplMetadataUri(nftTokens, nftTokenMetadata);
-
-  const tokenAccountsMap = (
-    fungibleTokens.map((t: SolanaTokenAccountWithKey) => [
-      t.key.toString(),
-      {
-        ...t,
-        amount: t.amount.toString(),
-      },
-    ]) as [string, SolanaTokenAccountWithKeySerializable][]
-  ).concat([[nativeSol.key.toString(), nativeSol]]);
+  //
+  // Add native SOL to the token and metadata list.
+  //
+  const nativeSol: SolanaTokenAccountWithKey = {
+    key: publicKey,
+    mint: PublicKey.default,
+    authority: publicKey,
+    amount: accountInfo ? new BN(accountInfo.lamports) : new BN(0),
+    delegate: null,
+    state: 1,
+    isNative: null,
+    delegatedAmount: new BN(0),
+    closeAuthority: null,
+  };
+  const nativeSolMetadata = null;
 
   return {
-    tokenAccountsMap,
-    tokenMetadata,
-    // @ts-ignore
     mintsMap,
-    nftMetadata: Array.from(nftMetadata),
+    nfts: {
+      nftTokens,
+      nftTokenMetadata,
+    },
+    fts: {
+      fungibleTokens: fungibleTokens.concat([nativeSol]),
+      fungibleTokenMetadata: fungibleTokenMetadata.concat([nativeSolMetadata]),
+    },
   };
 }
+
+export type CustomSplTokenAccountsResponse = {
+  mintsMap: Array<[string, RawMint | null]>;
+  nfts: {
+    nftTokens: Array<SolanaTokenAccountWithKey>;
+    nftTokenMetadata: Array<TokenMetadata | null>;
+  };
+  fts: {
+    fungibleTokens: Array<SolanaTokenAccountWithKey>;
+    fungibleTokenMetadata: Array<TokenMetadata | null>;
+  };
+};
+
+export type CustomSplTokenAccountsResponseString = ReplaceTypes<
+  CustomSplTokenAccountsResponse,
+  PublicKey,
+  string
+>;
 
 export async function fetchMints(
   provider: Provider,
@@ -234,10 +253,10 @@ function splitOutNfts(
   };
 }
 
-async function fetchSplMetadataUri(
-  nftTokens: Array<SolanaTokenAccountWithKey>,
-  nftTokenMetadata: Array<TokenMetadata | null>
-): Promise<Map<string, SplNftMetadata>> {
+export async function fetchSplMetadataUri(
+  nftTokens: Array<SolanaTokenAccountWithKeyString>,
+  nftTokenMetadata: Array<TokenMetadataString | null>
+): Promise<Array<[string, SplNftMetadataString]>> {
   //
   // Fetch the URI for each NFT.
   //
@@ -247,7 +266,6 @@ async function fetchSplMetadataUri(
         return null;
       }
       try {
-        // @ts-ignore
         const resp = await new Promise<any>(async (resolve, reject) => {
           setTimeout(() => {
             reject(new Error("timeout"));
@@ -289,14 +307,17 @@ async function fetchSplMetadataUri(
     if (!nftMetaUriData[idx]) {
       return acc;
     }
-    acc.set(m.key.toString(), {
-      publicKey: m.key,
-      metadataAddress: tokenMetadata.publicKey,
-      metadata: tokenMetadata.account,
-      tokenMetaUriData: nftMetaUriData[idx],
-    });
+    acc.push([
+      m.key.toString(),
+      {
+        publicKey: m.key,
+        metadataAddress: tokenMetadata.publicKey,
+        metadata: tokenMetadata.account,
+        tokenMetaUriData: nftMetaUriData[idx],
+      },
+    ]);
     return acc;
-  }, new Map<string, SplNftMetadata>());
+  }, [] as Array<[string, SplNftMetadataString]>);
 
   //
   // Done.
@@ -353,14 +374,4 @@ export async function fetchTokens(
   // Done.
   //
   return new Map(validTokens);
-}
-
-function removeNfts(
-  splTokenAccounts: Map<string, SolanaTokenAccountWithKey>,
-  splNftMetadata: Map<string, SplNftMetadata>
-): Map<string, SolanaTokenAccountWithKey> {
-  for (let key of splNftMetadata.keys()) {
-    splTokenAccounts.delete(key);
-  }
-  return splTokenAccounts;
 }

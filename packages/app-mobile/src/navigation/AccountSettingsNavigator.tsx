@@ -25,6 +25,7 @@ import {
   UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
   UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
   UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE,
+  walletAddressDisplay,
 } from "@coral-xyz/common";
 import {
   useBackgroundClient,
@@ -38,6 +39,14 @@ import {
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
+import {
+  LogoutWarningScreen,
+  ResetWarningScreen,
+} from "@screens/ResetWarningScreen";
+import { EditWalletDetailScreen } from "@screens/Unlocked/EditWalletDetailScreen";
+import { EditWalletsScreen } from "@screens/Unlocked/EditWalletsScreen";
+import { ForgotPasswordScreen } from "@screens/Unlocked/ForgotPasswordScreen";
+import { RenameWalletScreen } from "@screens/Unlocked/RenameWalletScreen";
 import AccountSettingsScreen from "@screens/Unlocked/Settings/AccountSettingsScreen";
 import { AddConnectWalletScreen } from "@screens/Unlocked/Settings/AddConnectWalletScreen";
 import { ChangePasswordScreen } from "@screens/Unlocked/Settings/ChangePasswordScreen";
@@ -49,6 +58,14 @@ import {
 } from "@screens/Unlocked/Settings/components/SettingsRow";
 import { PreferencesScreen } from "@screens/Unlocked/Settings/PreferencesScreen";
 import { PreferencesTrustedSitesScreen } from "@screens/Unlocked/Settings/PreferencesTrustedSitesScreen";
+import {
+  ShowPrivateKeyScreen,
+  ShowPrivateKeyWarningScreen,
+} from "@screens/Unlocked/ShowPrivateKeyScreen";
+import {
+  ShowRecoveryPhraseScreen,
+  ShowRecoveryPhraseWarningScreen,
+} from "@screens/Unlocked/ShowRecoveryPhraseScreen";
 import { YourAccountScreen } from "@screens/Unlocked/YourAccountScreen";
 import type { Commitment } from "@solana/web3.js";
 import { ethers } from "ethers";
@@ -154,6 +171,39 @@ export default function AccountSettingsNavigator() {
         name="ImportSecretKey"
         component={ImportSecretKeyScreen}
       />
+      <Stack.Screen name="reset-warning" component={ResetWarningScreen} />
+      <Stack.Screen
+        name="show-secret-phrase-warning"
+        component={ShowRecoveryPhraseWarningScreen}
+        options={{ title: "Secret Recovery Phrase" }}
+      />
+      <Stack.Screen
+        name="show-secret-phrase"
+        component={ShowRecoveryPhraseScreen}
+      />
+      <Stack.Screen
+        name="show-private-key-warning"
+        component={ShowPrivateKeyWarningScreen}
+      />
+      <Stack.Screen name="show-private-key" component={ShowPrivateKeyScreen} />
+      <Stack.Screen name="edit-wallets" component={EditWalletsScreen} />
+      <Stack.Screen name="edit-wallets-rename" component={RenameWalletScreen} />
+      <Stack.Screen
+        name="edit-wallets-wallet-detail"
+        component={EditWalletDetailScreen}
+        options={({ route }) => {
+          const { name, publicKey } = route.params;
+          return {
+            title: `${name} (${walletAddressDisplay(publicKey)})`,
+          };
+        }}
+      />
+      <Stack.Group
+        screenOptions={{ presentation: "modal", headerShown: false }}
+      >
+        <Stack.Screen name="forgot-password" component={ForgotPasswordScreen} />
+        <Stack.Screen name="logout-warning" component={LogoutWarningScreen} />
+      </Stack.Group>
     </Stack.Navigator>
   );
 }

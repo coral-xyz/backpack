@@ -1,112 +1,13 @@
-import { Controller,useForm } from "react-hook-form";
-import {
-  Alert,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { useForm } from "react-hook-form";
+import { Alert, Text, View } from "react-native";
 import { Margin, PrimaryButton, Screen, SubtextParagraph } from "@components";
+import { InputGroup, InputListItem } from "@components/Form";
+import {
+  UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
+  UI_RPC_METHOD_PASSWORD_UPDATE,
+} from "@coral-xyz/common";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useTheme } from "@hooks";
-import { RoundedContainer } from "@screens/Unlocked/Settings/components/SettingsRow";
-
-function InputGroup({
-  hasError,
-  children,
-}: {
-  hasError?: boolean;
-  children: JSX.Element | JSX.Element[];
-}): JSX.Element {
-  const theme = useTheme();
-  const borderColor = hasError
-    ? theme.custom.colors.negative
-    : theme.custom.colors.textInputBorderFull;
-  return (
-    <View
-      style={[
-        {
-          overflow: "hidden",
-          borderRadius: 12,
-          borderColor,
-          backgroundColor: theme.custom.colors.textBackground,
-          borderWidth: 2,
-        },
-      ]}
-    >
-      {children}
-    </View>
-  );
-}
-
-function InputListItem({
-  autoFocus,
-  title,
-  placeholder,
-  control,
-  rules,
-  secureTextEntry,
-  name,
-}: {
-  autoFocus?: boolean;
-  title: string;
-  placeholder?: string;
-  control: any;
-  rules: any;
-  secureTextEntry?: boolean;
-  name: string;
-}): JSX.Element {
-  const theme = useTheme();
-  return (
-    <View style={[styles.container]}>
-      <Text style={styles.label}>{title}</Text>
-      <Controller
-        name={name}
-        control={control}
-        rules={rules}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            autoFocus={autoFocus}
-            style={[
-              styles.input,
-              {
-                color: theme.custom.colors.fontColor2,
-              },
-            ]}
-            value={value}
-            onChangeText={onChange}
-            onBlur={onBlur}
-            placeholder={placeholder}
-            placeholderTextColor={theme.custom.colors.textPlaceholder}
-            secureTextEntry={secureTextEntry}
-          />
-        )}
-      />
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  label: {
-    paddingLeft: 12,
-    width: 80,
-    overflow: "hidden",
-    ellipsizeMode: "tail",
-    fontWeight: "500",
-    fontSize: 16,
-  },
-  input: {
-    flex: 1,
-    padding: 12,
-    fontWeight: "500",
-    fontSize: 16,
-  },
-});
 
 function InstructionText() {
   const theme = useTheme();
@@ -125,7 +26,14 @@ function InstructionText() {
   );
 }
 
+type PasswordInput = {
+  currentPassword: string;
+  newPassword: string;
+  verifyPassword: string;
+};
+
 export function ChangePasswordScreen({ navigation }) {
+  const background = useBackgroundClient();
   const { control, handleSubmit, formState, watch } = useForm({
     defaultValues: {
       currentPassword: "",
@@ -137,30 +45,36 @@ export function ChangePasswordScreen({ navigation }) {
   const hasError = (name: string) => !!formState.errors[name];
   const isValid = Object.keys(formState.errors).length === 0;
 
-  const onSubmit = async (data) => {
-    Alert.alert("success", JSON.stringify(data));
+  const onSubmit = async ({
+    currentPassword,
+    newPassword,
+    verifyPassword,
+  }: PasswordInput) => {
+    Alert.alert(
+      "success",
+      JSON.stringify({ currentPassword, newPassword, verifyPassword })
+    );
 
-    // const isCurrentCorrect = await background.request({
-    //   method: UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
-    //   params: [currentPassword],
-    // });
-    // const mismatchError = newPw1.trim() === "" || newPw1 !== newPw2;
-    //
-    // setCurrentPasswordError(!isCurrentCorrect);
-    // setPasswordMismatchError(mismatchError);
-    //
-    // if (!isCurrentCorrect || mismatchError) {
-    //   return;
-    // }
-    //
-    // await background.request({
-    //   method: UI_RPC_METHOD_PASSWORD_UPDATE,
-    //   params: [currentPassword, newPw1],
-    // });
+    const isCurrentCorrect = await background.request({
+      method: UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
+      params: [currentPassword],
+    });
+
+    const mismatchError =
+      newPassword.trim() === "" || newPassword !== verifyPassword;
+
+    if (!isCurrentCorrect || mismatchError) {
+      return;
+    }
+
+    await background.request({
+      method: UI_RPC_METHOD_PASSWORD_UPDATE,
+      params: [currentPassword, newPassword],
+    });
   };
 
   const handlePressForgotPassword = () => {
-    console.log("move to forgot password screen");
+    navigation.navigate("forgot-password");
   };
 
   return (

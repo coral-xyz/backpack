@@ -1217,7 +1217,7 @@ export class Backend {
   }
 
   async isApprovedOrigin(origin: string): Promise<boolean> {
-    const uuid = this.keyringStore.activeUserKeyring.uuid;
+    const { uuid } = await this.userRead();
     const data = await store.getWalletDataForUser(uuid);
     if (!data.approvedOrigins) {
       return false;
