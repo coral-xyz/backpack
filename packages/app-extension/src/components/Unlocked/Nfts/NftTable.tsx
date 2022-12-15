@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { AllHTMLAttributes, useRef, useState } from "react";
 import Autosizer from "react-virtualized-auto-sizer";
 import type { ListChildComponentProps } from "react-window";
 import { VariableSizeList } from "react-window";
@@ -6,18 +6,12 @@ import type { Blockchain, NftCollection } from "@coral-xyz/common";
 import {
   NAV_COMPONENT_NFT_COLLECTION,
   NAV_COMPONENT_NFT_DETAIL,
-  toTitleCase,
 } from "@coral-xyz/common";
-import { useBlockchainLogo, useNavigation } from "@coral-xyz/recoil";
-import { styled, useCustomTheme } from "@coral-xyz/themes";
-import { Grid, Skeleton, Typography } from "@mui/material";
+import { useNavigation } from "@coral-xyz/recoil";
+import { styled } from "@coral-xyz/themes";
+import { Typography } from "@mui/material";
 
-import {
-  BalancesTable,
-  BalancesTableContent,
-  BalancesTableHead,
-} from "../Balances";
-import { useStyles } from "../Messages/ChatDrawer";
+import { Scrollbar } from "../../common/Layout/Scrollbar";
 import { BlockchainHeader } from "../Settings/AvatarHeader/BlockchainHeader";
 
 import { GridCard } from "./Common";
@@ -78,14 +72,14 @@ const getItemForIndex = (
     return {
       type: "header",
       blockchainIndex,
-      height: 52,
+      height: isCollapsed ? 52 : 40,
     };
   }
   if (collectionGroupIndex >= numberOfRowsInCollection) {
     return {
       type: "footer",
       blockchainIndex,
-      height: 12,
+      height: 24,
     };
   }
   const startIndex = collectionGroupIndex * itemsPerRow;
@@ -125,19 +119,14 @@ const getNumberOfItems = (
 
 export function NftTable({
   blockchainCollections,
-  isLoading,
 }: {
   blockchainCollections: BlockchainCollections;
-  isLoading: boolean;
 }) {
   const [collapsedCollections, setCollapsedCollections] =
     useState<CollapsedCollections>(
       new Array(blockchainCollections.length).fill(false)
     );
   const nftWidth = 174;
-  if (isLoading) {
-    return <Typography>Loading</Typography>;
-  }
 
   const renderRow = ({
     index,
@@ -187,30 +176,44 @@ export function NftTable({
     <Autosizer>
       {({ width, height }) => {
         const numberOfItemsPerRow = Math.floor((width - 24) / nftWidth);
-        console.log(width, height, numberOfItemsPerRow);
         return (
-          <VariableSizeList
-            key={JSON.stringify({ collapsedCollections, numberOfItemsPerRow })}
-            height={height}
-            itemCount={getNumberOfItems(
-              blockchainCollections,
-              collapsedCollections,
-              numberOfItemsPerRow
-            )}
-            itemSize={(i) =>
-              getItemForIndex(
-                i,
+          <div
+            style={{
+              position: "relative",
+              height: `${height}px`,
+              width: `${width}px`,
+              pointerEvents: "all",
+            }}
+          >
+            <VariableSizeList
+              key={JSON.stringify({
+                height,
+                numberOfItemsPerRow,
+                collapsedCollections,
+              })}
+              outerElementType={Scrollbar}
+              height={height}
+              width={width}
+              itemCount={getNumberOfItems(
                 blockchainCollections,
                 collapsedCollections,
                 numberOfItemsPerRow
-              )?.height ?? 0
-            }
-            width={width}
-          >
-            {({ index, style, ...rest }) =>
-              renderRow({ index, style, numberOfItemsPerRow, ...rest })
-            }
-          </VariableSizeList>
+              )}
+              itemSize={(i) =>
+                getItemForIndex(
+                  i,
+                  blockchainCollections,
+                  collapsedCollections,
+                  numberOfItemsPerRow
+                )?.height ?? 0
+              }
+              style={{ overflow: "hidden" }}
+            >
+              {({ index, style, ...rest }) =>
+                renderRow({ index, style, numberOfItemsPerRow, ...rest })
+              }
+            </VariableSizeList>
+          </div>
         );
       }}
     </Autosizer>
@@ -269,8 +272,7 @@ function ItemRow({
         {Object.assign(
           new Array(numberOfItemsPerRow).fill(null),
           row.items
-        ).map((collection, index, array) => {
-          console.log(array);
+        ).map((collection) => {
           return (
             <div
               style={{
@@ -300,7 +302,6 @@ const Card = styled("div")(
       background: theme.custom.colors.nav,
       ...(top
         ? {
-            marginTop: "12px",
             borderTopLeftRadius: "12px",
             borderTopRightRadius: "12px",
             borderTop: theme.custom.colors.borderFull,

@@ -15,6 +15,7 @@ import { styles } from "@coral-xyz/themes";
 import { Image as ImageIcon } from "@mui/icons-material";
 
 import { useIsONELive } from "../../../hooks/useIsONELive";
+import { Loading } from "../../common";
 import { EmptyState } from "../../common/EmptyState";
 import {} from "../Balances";
 
@@ -57,12 +58,11 @@ export function Nfts() {
           onClick={() => window.open("https://magiceden.io")}
           verticallyCentered={!isONELive}
         />
+      ) : isLoading ? (
+        <Loading />
       ) : (
         <div style={{ display: "flex", flex: 1, position: "relative" }}>
-          <NftTable
-            blockchainCollections={Object.entries(collections)}
-            isLoading={isLoading}
-          />
+          <NftTable blockchainCollections={Object.entries(collections)} />
         </div>
       )}
     </div>
