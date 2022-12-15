@@ -511,7 +511,7 @@ export const SIMULATOR_PORT = 9933;
 export const NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS = 890880;
 export const TOKEN_ACCOUNT_RENT_EXEMPTION_LAMPORTS = 2039280;
 
-export const DISCORD_INVITE_LINK = "https://discord.gg/RfwUqWrn7T";
+export const DISCORD_INVITE_LINK = "https://discord.gg/RhKxgS8SaD";
 export const TWITTER_LINK = "https://twitter.com/xNFT_Backpack";
 export const XNFT_GG_LINK = "https://xnft.gg";
 export const BACKPACK_LINK = "https://backpack.app";
