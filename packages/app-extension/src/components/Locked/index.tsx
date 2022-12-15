@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
-import { useCustomTheme } from "@coral-xyz/themes";
+import { styles,useCustomTheme } from "@coral-xyz/themes";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
 
@@ -11,9 +11,21 @@ import { TextInput } from "../common/Inputs";
 
 import { LockedMenu } from "./LockedMenu";
 
+const useStyles = styles((theme) => ({
+  passwordInput: {
+    display: "flex",
+    "& .MuiOutlinedInput-root": {
+      "& fieldset": {
+        border: `${theme.custom.colors.borderFull} !important`,
+      },
+    },
+  },
+}));
+
 export const NAV_BAR_HEIGHT = 56;
 
 export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
+  const classes = useStyles();
   const theme = useCustomTheme();
   const background = useBackgroundClient();
   const user = useUser();
@@ -83,6 +95,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
           <form onSubmit={_onUnlock} noValidate>
             <Box sx={{ margin: "0 12px 12px 12px" }}>
               <TextInput
+                className={classes.passwordInput}
                 autoFocus={true}
                 error={error}
                 placeholder={"Password"}

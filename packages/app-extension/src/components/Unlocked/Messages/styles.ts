@@ -11,6 +11,9 @@ export const useStyles = styles((theme) => ({
         paddingTop: 0,
         paddingBottom: 0,
       },
+      "& fieldset": {
+        border: `${theme.custom.colors.borderFull} !important`,
+      },
     },
   },
   icon: {
