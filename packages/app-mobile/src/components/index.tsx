@@ -859,3 +859,28 @@ const twoButtonFooterStyles = StyleSheet.create({
     alignItems: "center",
   },
 });
+
+export function HeaderIconSubtitle({
+  icon,
+  title,
+  subtitle,
+}: {
+  icon: JSX.Element;
+  title: string;
+  subtitle?: string;
+}): JSX.Element {
+  return (
+    <View style={headerIconSubtitleStyles.container}>
+      <Margin bottom={16}>{icon}</Margin>
+      <Header text={title} />
+      {subtitle ? <SubtextParagraph>{subtitle}</SubtextParagraph> : null}
+    </View>
+  );
+}
+
+const headerIconSubtitleStyles = StyleSheet.create({
+  container: {
+    alignItems: "center",
+    marginBottom: 24,
+  },
+});
