@@ -37,6 +37,9 @@ export function Nfts() {
     // TODO Make this reload for only the relevant blockchain
     [activeWallets]
   );
+  const prependItems = isONELive
+    ? [{ height: 129, component: <EntryONE /> }]
+    : [];
 
   return (
     <div
@@ -47,7 +50,6 @@ export function Nfts() {
         height: "100%",
       }}
     >
-      {isONELive && <EntryONE />}
       {false ||
       (Object.values(collections).flat().length === 0 && !isLoading) ? (
         <EmptyState
@@ -62,7 +64,10 @@ export function Nfts() {
         <Loading />
       ) : (
         <div style={{ display: "flex", flex: 1, position: "relative" }}>
-          <NftTable blockchainCollections={Object.entries(collections)} />
+          <NftTable
+            prependItems={prependItems}
+            blockchainCollections={Object.entries(collections)}
+          />
         </div>
       )}
     </div>
