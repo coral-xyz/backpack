@@ -22,7 +22,7 @@ const useStyles = styles((theme) => ({
     marginLeft: "12px",
     marginRight: "12px",
     borderRadius: "12px",
-    border: theme.custom.colors.borderFull,
+    border: theme.custom.colors.border,
     backgroundColor: "#000",
     height: "117px",
     cursor: "pinter",
