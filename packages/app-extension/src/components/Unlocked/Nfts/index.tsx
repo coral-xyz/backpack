@@ -38,9 +38,19 @@ export function Nfts() {
     // TODO Make this reload for only the relevant blockchain
     [activeWallets]
   );
-  const prependItems = useMemo(() => {
-    return isONELive ? [{ height: 129, component: <EntryONE /> }] : [];
-  }, [isONELive]);
+
+  const NFTList = useMemo(() => {
+    return (
+      <NftTable
+        prependItems={
+          isONELive
+            ? [{ height: 129, key: "oneEntry", component: <EntryONE /> }]
+            : []
+        }
+        blockchainCollections={Object.entries(collections)}
+      />
+    );
+  }, [isONELive, JSON.stringify(collections)]);
 
   return (
     <div
@@ -65,10 +75,7 @@ export function Nfts() {
         <Loading />
       ) : (
         <div style={{ display: "flex", flex: 1, position: "relative" }}>
-          <NftTable
-            prependItems={prependItems}
-            blockchainCollections={Object.entries(collections)}
-          />
+          {NFTList}
         </div>
       )}
     </div>
