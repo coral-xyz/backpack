@@ -272,7 +272,7 @@ export async function fetchSplMetadataUri(
           }, 6000);
           try {
             const resp = await fetch(
-              `${BACKEND_API_URL}/proxy/${externalResourceUri(
+              `https://swr.xnfts.dev/web/${externalResourceUri(
                 t.account.data.uri
               )}`
             );
