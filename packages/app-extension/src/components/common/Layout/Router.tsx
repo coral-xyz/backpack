@@ -37,16 +37,11 @@ import { PluginApp } from "../../Unlocked/Apps/Plugin";
 import { Balances } from "../../Unlocked/Balances";
 import { Token } from "../../Unlocked/Balances/TokensWidget/Token";
 import { ChatDrawer } from "../../Unlocked/Messages/ChatDrawer";
-import { ChatScreen } from "../../Unlocked/Messages/ChatScreen";
-import { Inbox } from "../../Unlocked/Messages/Inbox";
-import { ProfileScreen } from "../../Unlocked/Messages/ProfileScreen";
-import { RequestsScreen } from "../../Unlocked/Messages/RequestsScreen";
 import { Nfts } from "../../Unlocked/Nfts";
 import { NftsCollection } from "../../Unlocked/Nfts/Collection";
 import { NftOptionsButton, NftsDetail } from "../../Unlocked/Nfts/Detail";
 import { NftChat, NftsExperience } from "../../Unlocked/Nfts/Experience";
 import { SettingsButton } from "../../Unlocked/Settings";
-import { Swap } from "../../Unlocked/Swap";
 
 import { NavBackButton, WithNav } from "./Nav";
 import { WithMotion } from "./NavStack";
