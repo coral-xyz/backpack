@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { SectionList, StyleSheet, Text, View } from "react-native";
+import { Alert, SectionList, StyleSheet, Text, View } from "react-native";
 import {
   AddConnectWalletButton,
   Avatar,
@@ -9,9 +9,13 @@ import {
 } from "@components";
 import { ExpandCollapseIcon } from "@components/Icon";
 import type { Blockchain } from "@coral-xyz/common";
-import { toTitleCase } from "@coral-xyz/common";
+import {
+  toTitleCase,
+  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
+} from "@coral-xyz/common";
 import {
   useActiveWallets,
+  useBackgroundClient,
   useUser,
   useWalletPublicKeys,
 } from "@coral-xyz/recoil";
@@ -19,17 +23,28 @@ import { useTheme } from "@hooks";
 import { WalletListItem } from "@screens/Unlocked/EditWalletsScreen";
 import { SettingsList } from "@screens/Unlocked/Settings/components/SettingsList";
 
-export function ProfileScreen({ navigation }) {
-  const handlePressItem = (
-    blockchain: Blockchain,
-    { name, publicKey, type }: Wallet
-  ) => {
-    navigation.navigate("edit-wallets-wallet-detail", {
-      blockchain,
-      publicKey,
-      name,
-      type,
-    });
+type Wallet = {
+  name: string;
+  publicKey: string;
+  type: string;
+};
+
+export function ProfileScreen({ navigation }): JSX.Element {
+  const background = useBackgroundClient();
+
+  const handlePressItem = async (blockchain: Blockchain, wallet: Wallet) => {
+    try {
+      await background.request({
+        method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
+        params: [wallet.publicKey, blockchain],
+      });
+
+      Alert.alert("Active wallet updated");
+
+      navigation.goBack();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handlePressAddWallet = (blockchain: Blockchain) => {
@@ -106,12 +121,6 @@ function buildSectionList(blockchainKeyrings: any, activeWallets: any[]) {
     };
   });
 }
-
-type Wallet = {
-  name: string;
-  publicKey: string;
-  type: string;
-};
 
 function WalletLists({
   onPressItem,
