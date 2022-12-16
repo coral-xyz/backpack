@@ -12,8 +12,7 @@ import {
   SOL_NATIVE_MINT,
   toTitleCase,
 } from "@coral-xyz/common";
-import type {
-  TokenData} from "@coral-xyz/recoil";
+import type { TokenData } from "@coral-xyz/recoil";
 import {
   blockchainTokenData,
   useAnchorContext,
@@ -115,11 +114,11 @@ export function SendButton({
   address: string;
 }) {
   const wallet = useBlockchainActiveWallet(blockchain);
-  const token = useBlockchainTokenAccount(
-    wallet.publicKey.toString(),
+  const token = useBlockchainTokenAccount({
+    publicKey: wallet.publicKey.toString(),
     blockchain,
-    address
-  );
+    tokenAddress: address,
+  });
   return (
     <WithHeaderButton
       label={"Send"}
