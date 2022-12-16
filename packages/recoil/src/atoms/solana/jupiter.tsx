@@ -50,7 +50,7 @@ export const jupiterInputMints = selector({
   key: "jupiterInputMints",
   get: async ({ get }) => {
     const inputMints = get(allJupiterInputMints);
-    const publicKey = get(solanaPublicKey)!; // todo
+    const publicKey = get(solanaPublicKey)!;
     const walletTokens = get(
       blockchainBalancesSorted({
         publicKey,
