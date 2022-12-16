@@ -4,15 +4,14 @@ import { TransferWidget } from "@components/Unlocked/Balances/TransferWidget";
 import {
   Blockchain,
   ETH_NATIVE_MINT,
-  // NAV_COMPONENT_TOKEN,
   SOL_NATIVE_MINT,
   toTitleCase,
-  // walletAddressDisplay,
 } from "@coral-xyz/common";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import {
   blockchainTokenData,
   useActiveEthereumWallet,
+  useBlockchainActiveWallet,
   useLoader,
 } from "@coral-xyz/recoil";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -53,7 +52,16 @@ function TokenHeader({
   address,
   onPressOption,
 }: SearchParamsFor.Token["props"]) {
-  const [token] = useLoader(blockchainTokenData({ blockchain, address }), null);
+  const wallet = useBlockchainActiveWallet(blockchain);
+  const [token] = useLoader(
+    blockchainTokenData({
+      publicKey: wallet.publicKey.toString(),
+      blockchain,
+      tokenAddress: address,
+    }),
+    null
+  );
+
   if (!token) return null;
 
   return (

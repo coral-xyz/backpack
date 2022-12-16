@@ -16,8 +16,8 @@ import {
 import { NFTCollectiblesNavigator } from "@screens/Unlocked/NftCollectiblesScreen";
 import { RecentActivityScreen } from "@screens/Unlocked/RecentActivityScreen";
 import {
-  SelectSendTokenModal,
-  SendTokenModal,
+  SelectSendTokenScreen,
+  SendTokenScreen,
 } from "@screens/Unlocked/SendTokenScreen";
 
 const Tab = createBottomTabNavigator();
@@ -62,11 +62,11 @@ export default function UnlockedNavigator(): JSX.Element {
         <Stack.Screen
           options={{ title: "Select Token" }}
           name="SendSelectTokenModal"
-          component={SelectSendTokenModal}
+          component={SelectSendTokenScreen}
         />
         <Stack.Screen
           name="SendTokenModal"
-          component={SendTokenModal}
+          component={SendTokenScreen}
           options={({ route }) => {
             return {
               title: route.params.title,

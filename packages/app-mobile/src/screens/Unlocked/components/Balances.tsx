@@ -82,7 +82,10 @@ function TokenTable({
   const [rawTokenAccounts, _, isLoading] = tokenAccounts
     ? [tokenAccounts, "hasValue"]
     : useLoader(
-        blockchainBalancesSorted(blockchain),
+        blockchainBalancesSorted({
+          publicKey: wallet.publicKey.toString(),
+          blockchain,
+        }),
         [],
         [wallet.publicKey, connectionUrl]
       );
