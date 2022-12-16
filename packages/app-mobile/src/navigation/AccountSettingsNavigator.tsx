@@ -47,7 +47,6 @@ import { EditWalletDetailScreen } from "@screens/Unlocked/EditWalletDetailScreen
 import { EditWalletsScreen } from "@screens/Unlocked/EditWalletsScreen";
 import { ForgotPasswordScreen } from "@screens/Unlocked/ForgotPasswordScreen";
 import { RenameWalletScreen } from "@screens/Unlocked/RenameWalletScreen";
-import AccountSettingsScreen from "@screens/Unlocked/Settings/AccountSettingsScreen";
 import { AddConnectWalletScreen } from "@screens/Unlocked/Settings/AddConnectWalletScreen";
 import { ChangePasswordScreen } from "@screens/Unlocked/Settings/ChangePasswordScreen";
 import { SettingsList } from "@screens/Unlocked/Settings/components/SettingsMenuList";
@@ -58,6 +57,7 @@ import {
 } from "@screens/Unlocked/Settings/components/SettingsRow";
 import { PreferencesScreen } from "@screens/Unlocked/Settings/PreferencesScreen";
 import { PreferencesTrustedSitesScreen } from "@screens/Unlocked/Settings/PreferencesTrustedSitesScreen";
+import { ProfileScreen } from "@screens/Unlocked/Settings/ProfileScreen";
 import {
   ShowPrivateKeyScreen,
   ShowPrivateKeyWarningScreen,
@@ -72,6 +72,7 @@ import { ethers } from "ethers";
 
 import { validateSecretKey } from "../lib/validateSecretKey";
 const { hexlify } = ethers.utils;
+import { useTheme } from "@hooks";
 
 const Stack = createStackNavigator();
 
@@ -84,17 +85,32 @@ function DummyScreen() {
 }
 
 export default function AccountSettingsNavigator() {
+  const theme = useTheme();
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: true,
+        headerTintColor: theme.custom.colors.fontColor,
+      }}
+    >
       <Stack.Screen
-        options={{ title: "Profile" }}
-        name="AccountSettingsHome"
-        component={AccountSettingsScreen}
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          headerShown: true,
+          headerTitle: "",
+          headerTransparent: true,
+          headerTintColor: theme.custom.colors.fontColor,
+          headerBackTitle: "Back",
+        }}
       />
       <Stack.Screen
-        options={{ title: "Your Account" }}
         name="YourAccount"
         component={YourAccountScreen}
+        options={{
+          title: "Your Account",
+          headerBackTitle: "Profile",
+        }}
       />
       <Stack.Screen
         options={{ title: "Change password" }}
@@ -157,11 +173,6 @@ export default function AccountSettingsNavigator() {
         component={DummyScreen}
       />
       <Stack.Screen
-        options={{ title: "Add / Connect Wallet" }}
-        name="AddConnectWallet"
-        component={AddConnectWalletScreen}
-      />
-      <Stack.Screen
         options={{ title: "Waiting Room" }}
         name="WaitingRoom"
         component={DummyScreen}
@@ -184,10 +195,23 @@ export default function AccountSettingsNavigator() {
       <Stack.Screen
         name="show-private-key-warning"
         component={ShowPrivateKeyWarningScreen}
+        options={{ title: "Warning" }}
       />
-      <Stack.Screen name="show-private-key" component={ShowPrivateKeyScreen} />
-      <Stack.Screen name="edit-wallets" component={EditWalletsScreen} />
-      <Stack.Screen name="edit-wallets-rename" component={RenameWalletScreen} />
+      <Stack.Screen
+        name="show-private-key"
+        component={ShowPrivateKeyScreen}
+        options={{ title: "Show Private Key" }}
+      />
+      <Stack.Screen
+        name="edit-wallets"
+        component={EditWalletsScreen}
+        options={{ title: "Edit Wallets" }}
+      />
+      <Stack.Screen
+        name="edit-wallets-rename"
+        component={RenameWalletScreen}
+        options={{ title: "Rename Wallet" }}
+      />
       <Stack.Screen
         name="edit-wallets-wallet-detail"
         component={EditWalletDetailScreen}
@@ -203,6 +227,13 @@ export default function AccountSettingsNavigator() {
       >
         <Stack.Screen name="forgot-password" component={ForgotPasswordScreen} />
         <Stack.Screen name="logout-warning" component={LogoutWarningScreen} />
+      </Stack.Group>
+      <Stack.Group screenOptions={{ presentation: "modal" }}>
+        <Stack.Screen
+          options={{ title: "Add / Connect Wallet" }}
+          name="add-wallet"
+          component={AddConnectWalletScreen}
+        />
       </Stack.Group>
     </Stack.Navigator>
   );

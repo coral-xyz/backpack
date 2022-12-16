@@ -1,4 +1,4 @@
-import { Margin, Screen } from "@components";
+import { Margin, RoundedContainerGroup,Screen } from "@components";
 import {
   BACKPACK_CONFIG_VERSION,
   BACKPACK_FEATURE_LIGHT_MODE,
@@ -16,7 +16,6 @@ import {
 import {
   IconLeft,
   IconPushDetail,
-  RoundedContainer,
   SettingsRow,
   SettingsRowSwitch,
   SettingsRowText,
@@ -45,7 +44,7 @@ export function PreferencesScreen({ navigation }) {
   return (
     <Screen>
       <Margin vertical={12}>
-        <RoundedContainer>
+        <RoundedContainerGroup>
           <SettingsRow
             label="Auto-lock Timer"
             onPress={() => navigation.push("Preferences")}
@@ -66,10 +65,10 @@ export function PreferencesScreen({ navigation }) {
             label="Developer Mode"
             onPress={(value) => onDeveloperModeSwitch(value)}
           />
-        </RoundedContainer>
+        </RoundedContainerGroup>
       </Margin>
       <Margin bottom={12}>
-        <RoundedContainer>
+        <RoundedContainerGroup>
           <SettingsRow
             label={Blockchain.SOLANA}
             detailIcon={<IconPushDetail />}
@@ -88,15 +87,15 @@ export function PreferencesScreen({ navigation }) {
               })
             }
           />
-        </RoundedContainer>
+        </RoundedContainerGroup>
       </Margin>
       <Margin bottom={12}>
-        <RoundedContainer>
+        <RoundedContainerGroup>
           <SettingsRowText
             label="Version"
             detailText={BACKPACK_CONFIG_VERSION}
           />
-        </RoundedContainer>
+        </RoundedContainerGroup>
       </Margin>
     </Screen>
   );

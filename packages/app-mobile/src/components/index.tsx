@@ -884,3 +884,47 @@ const headerIconSubtitleStyles = StyleSheet.create({
     marginBottom: 24,
   },
 });
+
+export function RoundedContainerGroup({
+  children,
+  style,
+  disableTopRadius = false,
+  disableBottomRadius = false,
+}: {
+  children: JSX.Element;
+  style: StyleProp<ViewStyle>;
+  disableTopRadius?: boolean;
+  disableBottomRadius?: boolean;
+}): JSX.Element {
+  const theme = useTheme();
+  return (
+    <View
+      style={[
+        roundedContainerStyles.container,
+        {
+          borderColor: theme.custom.colors.borderFull,
+        },
+        disableTopRadius ? roundedContainerStyles.disableTopRadius : null,
+        disableBottomRadius ? roundedContainerStyles.disableBottomRadius : null,
+        style,
+      ]}
+    >
+      {children}
+    </View>
+  );
+}
+
+const roundedContainerStyles = StyleSheet.create({
+  container: {
+    overflow: "hidden",
+    borderRadius: 12,
+  },
+  disableTopRadius: {
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+  },
+  disableBottomRadius: {
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+  },
+});
