@@ -1,13 +1,16 @@
+// import { friendship, useUser } from "@coral-xyz/recoil";
+import { useState } from "react";
 import { ChatRoom } from "@coral-xyz/chat-sdk";
 import type { Friendship } from "@coral-xyz/common";
-import { friendship, useUser } from "@coral-xyz/recoil";
-import { useRecoilState } from "recoil";
 
 export const ChatScreen = ({ userId }: { userId: string }) => {
-  const [friendshipValue, setFriendshipValue] =
-    useRecoilState<Friendship | null>(friendship({ userId }));
-  const { uuid, username } = useUser();
+  // const [friendshipValue, setFriendshipValue] =
+  //   useRecoilState<Friendship | null>(friendship({ userId }));
+  // const { uuid, username } = useUser();
 
+  const [friendshipValue, setFriendshipValue]: any = useState();
+  const username = "kira",
+    uuid = "asd";
   if (!friendshipValue) {
     console.error(`Friendship not found with user ${userId}`);
     return <div></div>;

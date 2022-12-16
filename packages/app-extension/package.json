@@ -10,6 +10,7 @@
     "@coral-xyz/chat-sdk": "*",
     "@coral-xyz/common": "*",
     "@coral-xyz/react-xnft-dom-renderer": "*",
+    "@coral-xyz/react-common": "*",
     "@coral-xyz/recoil": "*",
     "@coral-xyz/themes": "*",
     "@emotion/react": "^11.9.0",

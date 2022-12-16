@@ -7,7 +7,7 @@ import {
   ProxyImage,
   SecondaryButton,
 } from "@coral-xyz/react-common";
-import { useNavigation } from "@coral-xyz/recoil";
+// import { useNavigation } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import LockIcon from "@mui/icons-material/Lock";
@@ -27,8 +27,8 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
   const [loading, setLoading] = useState(true);
   const classes = useStyles();
   const theme = useCustomTheme();
-  const { push } = useNavigation();
-
+  // const { push } = useNavigation();
+  const push: any = () => {};
   async function getChatRoom() {
     const res = await fetch(`${BACKEND_API_URL}/friends?userId=${userId}`);
     const json = await res.json();

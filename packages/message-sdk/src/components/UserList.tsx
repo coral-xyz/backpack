@@ -1,6 +1,6 @@
 import { NAV_COMPONENT_MESSAGE_PROFILE } from "@coral-xyz/common";
-import { isFirstLastListItemStyle , ProxyImage } from "@coral-xyz/react-common";
-import { useNavigation } from "@coral-xyz/recoil";
+import { isFirstLastListItemStyle, ProxyImage } from "@coral-xyz/react-common";
+// import { useNavigation } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { List, ListItem } from "@mui/material";
@@ -44,7 +44,8 @@ function UserListItem({
   isLast: boolean;
 }) {
   const theme = useCustomTheme();
-  const { push } = useNavigation();
+  // const { push } = useNavigation();
+  const push: any = () => {};
   const classes = useStyles();
   return (
     <ListItem

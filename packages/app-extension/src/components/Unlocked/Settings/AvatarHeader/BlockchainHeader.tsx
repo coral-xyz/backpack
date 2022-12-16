@@ -1,12 +1,12 @@
 import type { Blockchain } from "@coral-xyz/common";
 import { toTitleCase, walletAddressDisplay } from "@coral-xyz/common";
+import { ProxyImage } from "@coral-xyz/react-common";
 import { useActiveWallets, useBlockchainLogo } from "@coral-xyz/recoil";
 import { styled, useCustomTheme } from "@coral-xyz/themes";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { CardHeader, Typography } from "@mui/material";
 
 import { Button } from "../../../../plugin";
-import { ProxyImage } from "../../../common/ProxyImage";
 
 export function BlockchainHeader({
   setShowContent,

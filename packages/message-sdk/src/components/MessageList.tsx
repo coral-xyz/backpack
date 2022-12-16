@@ -4,8 +4,8 @@ import {
   NAV_COMPONENT_MESSAGE_PROFILE,
   NAV_COMPONENT_MESSAGE_REQUESTS,
 } from "@coral-xyz/common";
-import { isFirstLastListItemStyle , ProxyImage } from "@coral-xyz/react-common";
-import { useNavigation } from "@coral-xyz/recoil";
+import { isFirstLastListItemStyle, ProxyImage } from "@coral-xyz/react-common";
+// import { useNavigation } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import MarkChatUnreadIcon from "@mui/icons-material/MarkChatUnread";
 import { List, ListItem } from "@mui/material";
@@ -72,7 +72,8 @@ export function ChatListItem({
 }: any) {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const { push } = useNavigation();
+  // const { push } = useNavigation();
+  const push: any = () => {};
 
   function formatAMPM(date: Date) {
     let hours = date.getHours();
@@ -197,7 +198,8 @@ export function RequestsChatItem({
 }) {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const { push } = useNavigation();
+  // const { push } = useNavigation();
+  const push: any = () => {};
 
   return (
     <ListItem

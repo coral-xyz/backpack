@@ -3,10 +3,10 @@ import type { EnrichedInboxDb } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import { TextInput } from "@coral-xyz/react-common";
 
-import { MessageList } from "./MessageList";
-import { MessagesSkeleton } from "./MessagesSkeleton";
+// import { MessageList } from "./MessageList";
+// import { MessagesSkeleton } from "./MessagesSkeleton";
 import { useStyles } from "./styles";
-import { UserList } from "./UserList";
+// import { UserList } from "./UserList";
 
 export function Inbox() {
   const classes = useStyles();
@@ -61,23 +61,23 @@ export function Inbox() {
           },
         }}
       />
-      {messagesLoading && <MessagesSkeleton />}
-      {!messagesLoading &&
-        (activeChats.filter((x) => x.remoteUsername.includes(searchFilter))
-          .length > 0 ||
-          requestCount > 0) && (
-          <MessageList
-            requestCount={searchFilter.length < 3 ? requestCount : 0}
-            activeChats={activeChats.filter((x) =>
-              x.remoteUsername.includes(searchFilter)
-            )}
-          />
-        )}
-      {searchFilter.length >= 3 && searchedUsersDistinct.length !== 0 && (
-        <div style={{ marginTop: 10 }}>
-          <UserList users={searchedUsersDistinct} />
-        </div>
-      )}
+      {/*{messagesLoading && <MessagesSkeleton />}*/}
+      {/*{!messagesLoading &&*/}
+      {/*  (activeChats.filter((x) => x.remoteUsername.includes(searchFilter))*/}
+      {/*    .length > 0 ||*/}
+      {/*    requestCount > 0) && (*/}
+      {/*    <MessageList*/}
+      {/*      requestCount={searchFilter.length < 3 ? requestCount : 0}*/}
+      {/*      activeChats={activeChats.filter((x) =>*/}
+      {/*        x.remoteUsername.includes(searchFilter)*/}
+      {/*      )}*/}
+      {/*    />*/}
+      {/*  )}*/}
+      {/*{searchFilter.length >= 3 && searchedUsersDistinct.length !== 0 && (*/}
+      {/*  <div style={{ marginTop: 10 }}>*/}
+      {/*    <UserList users={searchedUsersDistinct} />*/}
+      {/*  </div>*/}
+      {/*)}*/}
     </div>
   );
 }

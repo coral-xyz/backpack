@@ -5,7 +5,6 @@ import {
   QUERY_CONNECT_HARDWARE,
   QUERY_ONBOARDING,
 } from "@coral-xyz/common";
-import { WithTheme } from "@coral-xyz/react-common";
 import {
   NotificationsProvider,
   useBackgroundKeepAlive,
@@ -13,6 +12,7 @@ import {
 import { RecoilRoot } from "recoil";
 
 import { WithSuspense } from "../app/Router";
+import { WithTheme } from "../components/common/WithTheme";
 import { Onboarding, OptionsContainer } from "../components/Onboarding";
 import { ConnectHardware } from "../components/Unlocked/Settings/AddConnectWallet/ConnectHardware";
 

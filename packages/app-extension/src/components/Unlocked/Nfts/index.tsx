@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import type { Blockchain, NftCollection } from "@coral-xyz/common";
+import { Loading } from "@coral-xyz/react-common";
 import {
   nftCollections,
   useActiveWallets,
@@ -9,7 +10,6 @@ import {
 import { Image as ImageIcon } from "@mui/icons-material";
 
 import { useIsONELive } from "../../../hooks/useIsONELive";
-import { Loading } from "../../common";
 import { EmptyState } from "../../common/EmptyState";
 import {} from "../Balances";
 
