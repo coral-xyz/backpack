@@ -7,6 +7,8 @@ import {
   useLoader,
 } from "@coral-xyz/recoil";
 import { Image as ImageIcon } from "@mui/icons-material";
+import type { UnwrapRecoilValue } from "recoil";
+import { RecoilValue, selectorFamily, useRecoilValue } from "recoil";
 
 import { useIsONELive } from "../../../hooks/useIsONELive";
 import { Loading } from "../../common";
@@ -20,11 +22,11 @@ export function Nfts() {
   const isONELive = useIsONELive();
   const activeWallets = useActiveWallets();
   const enabledBlockchains = useEnabledBlockchains();
-  const [collections, _, isLoading] = useLoader(
+  const [collections, _, isLoading] = useLoader<
+    UnwrapRecoilValue<typeof nftCollections> | { [k: string]: null }
+  >(
     nftCollections,
-    Object.fromEntries(
-      enabledBlockchains.map((b: Blockchain) => [b, new Array<NftCollection>()])
-    ),
+    Object.fromEntries(enabledBlockchains.map((b: Blockchain) => [b, null])),
     // Note this reloads on any change to the active wallets, which reloads
     // NFTs for both blockchains.
     // TODO Make this reload for only the relevant blockchain
@@ -32,7 +34,9 @@ export function Nfts() {
   );
 
   // const collections = {..._collections, ethereum: []};
-
+  // const collections = Object.fromEntries(
+  //   enabledBlockchains.map((b: Blockchain) => [b, null])
+  // );
   const NFTList = useMemo(() => {
     return (
       <NftTable
@@ -69,8 +73,6 @@ export function Nfts() {
             verticallyCentered={!isONELive}
           />
         </>
-      ) : isLoading ? (
-        <Loading />
       ) : (
         <div style={{ display: "flex", flex: 1, position: "relative" }}>
           {NFTList}
