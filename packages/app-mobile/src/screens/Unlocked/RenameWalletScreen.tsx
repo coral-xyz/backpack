@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text,View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import {
   PrimaryButton,
   Screen,
@@ -7,7 +7,10 @@ import {
   StyledTextInput,
   TwoButtonFooter,
 } from "@components";
-import { UI_RPC_METHOD_KEYNAME_UPDATE , walletAddressDisplay } from "@coral-xyz/common";
+import {
+  UI_RPC_METHOD_KEYNAME_UPDATE,
+  walletAddressDisplay,
+} from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useTheme } from "@hooks";
 

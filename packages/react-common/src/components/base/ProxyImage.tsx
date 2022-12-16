@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useLayoutEffect, useRef } from "react";
 import { proxyImageUrl } from "@coral-xyz/common";
 import { Skeleton } from "@mui/material";
 
@@ -6,7 +6,7 @@ type ImgProps = React.DetailedHTMLProps<
   React.ImgHTMLAttributes<HTMLImageElement>,
   HTMLImageElement
 >;
-export function ProxyImage({
+export const ProxyImage = React.memo(function ProxyImage({
   removeOnError,
   loadingStyles,
   ...imgProps
@@ -14,12 +14,19 @@ export function ProxyImage({
   removeOnError?: boolean;
   loadingStyles?: React.CSSProperties;
 } & ImgProps) {
-  const [loading, setLoading] = useState(true);
-  const [hasError, setError] = useState(false);
+  const placeholderRef = useRef<HTMLSpanElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
 
-  if (hasError && removeOnError) {
-    return null;
-  }
+  useLayoutEffect(() => {
+    if (imageRef.current?.complete) {
+      imageRef.current.style.position = "inherit";
+      imageRef.current.style.top = "inherit";
+      imageRef.current.style.visibility = "visible";
+      if (placeholderRef.current) {
+        placeholderRef.current.style.display = "none";
+      }
+    }
+  }, []);
 
   const visuallyHidden: React.CSSProperties = {
     visibility: "hidden",
@@ -29,35 +36,41 @@ export function ProxyImage({
 
   return (
     <>
-      {loading && (
-        <Skeleton
-          style={{
-            height: "100%",
-            width: "100%",
-            transform: "none",
-            transformOrigin: "none",
-            ...(imgProps.style ?? {}),
-            ...(loadingStyles ?? {}),
-          }}
-          className={imgProps.className}
-        />
-      )}
+      <Skeleton
+        style={{
+          height: "100%",
+          width: "100%",
+          transform: "none",
+          transformOrigin: "none",
+          ...(imgProps.style ?? {}),
+          ...(loadingStyles ?? {}),
+        }}
+        ref={placeholderRef}
+        className={imgProps.className}
+      />
       <img
+        ref={imageRef}
         {...imgProps}
         style={{
           ...(imgProps.style ?? {}),
-          ...(loading ? visuallyHidden : {}),
+          ...visuallyHidden,
         }}
         onLoad={(...e) => {
-          setLoading(false);
-          imgProps.onLoad && imgProps.onLoad(...e);
+          const image = e[0].target as HTMLImageElement;
+          if (placeholderRef.current) {
+            placeholderRef.current.style.display = "none";
+          }
+          image.style.position = "inherit";
+          image.style.top = "inherit";
+          image.style.visibility = "visible";
         }}
         onError={(...e) => {
-          setError(true);
-          imgProps.onError && imgProps.onError(...e);
+          if (removeOnError && placeholderRef.current) {
+            placeholderRef.current.style.display = "none";
+          }
         }}
         src={proxyImageUrl(imgProps.src ?? "")}
       />
     </>
   );
-}
+});

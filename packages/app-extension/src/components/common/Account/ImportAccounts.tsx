@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import {
   accountDerivationPath,
+  BACKPACK_FEATURE_JWT,
+  BACKPACK_FEATURE_USERNAMES,
   Blockchain,
   DEFAULT_SOLANA_CLUSTER,
   DerivationPath,
@@ -9,7 +11,7 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
 } from "@coral-xyz/common";
-import { Loading, PrimaryButton,TextInput } from "@coral-xyz/react-common";
+import { Loading, PrimaryButton, TextInput } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import Ethereum from "@ledgerhq/hw-app-eth";
@@ -50,6 +52,7 @@ export type SelectedAccount = {
 
 const LOAD_PUBKEY_AMOUNT = 20;
 const DISPLAY_PUBKEY_AMOUNT = 5;
+const jwtEnabled = !!(BACKPACK_FEATURE_USERNAMES && BACKPACK_FEATURE_JWT);
 
 export function ImportAccounts({
   blockchain,
@@ -112,7 +115,7 @@ export function ImportAccounts({
   //
   useEffect(() => {
     (async () => {
-      if (accounts.length === 0) return;
+      if (accounts.length === 0 || !jwtEnabled) return;
       try {
         const response = await checkPublicKeyConflicts(
           accounts.map((a) => ({

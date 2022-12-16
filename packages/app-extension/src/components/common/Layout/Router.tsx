@@ -87,7 +87,7 @@ function BalancesPage() {
 }
 
 function NftsPage() {
-  return <NavScreen component={<Nfts />} />;
+  return <NavScreen noScrollbars={true} component={<Nfts />} />;
 }
 
 function NftsChatPage() {
@@ -102,14 +102,22 @@ function NftsExperiencePage() {
 
 function NftsCollectionPage() {
   const { props } = useDecodedSearchParams();
-  // @ts-expect-error TS2322: Property 'id' is missing in type '{}' but required in type '{ id: string; }'
-  return <NavScreen component={<NftsCollection {...props} />} />;
+  return (
+    <NavScreen
+      /* @ts-expect-error TS2322: Property 'id' is missing in type '{}' but required in type '{ id: string; }' */
+      component={<NftsCollection {...props} />}
+    />
+  );
 }
 
 function NftsDetailPage() {
   const { props } = useDecodedSearchParams();
-  // @ts-expect-error TS2322: Property 'nftId' is missing in type '{}' but required in type '{ nftId: string; }'.
-  return <NavScreen component={<NftsDetail {...props} />} />;
+  return (
+    <NavScreen
+      /* @ts-expect-error TS2322: Property 'nftId' is missing in type '{}' but required in type '{ nftId: string; }'. */
+      component={<NftsDetail {...props} />}
+    />
+  );
 }
 
 function MessagesIframe() {
@@ -133,19 +141,26 @@ function MessagesPage() {
 
 function ChatPage() {
   const { props } = useDecodedSearchParams();
-  // @ts-ignore
-  return <NavScreen component={<ChatScreen userId={props.userId} />} />;
+  return (
+    <NavScreen
+      /* @ts-ignore */
+      component={<ChatScreen userId={props.userId} />}
+    />
+  );
 }
 
 function RequestsPage() {
-  // @ts-ignore
   return <NavScreen component={<RequestsScreen />} />;
 }
 
 function ProfilePage() {
   const { props } = useDecodedSearchParams();
-  // @ts-ignore
-  return <NavScreen component={<ProfileScreen userId={props.userId} />} />;
+  return (
+    <NavScreen
+      /* @ts-ignore */
+      component={<ProfileScreen userId={props.userId} />}
+    />
+  );
 }
 
 function AppsPage() {
@@ -163,7 +178,13 @@ function SwapPage() {
 }
 */
 
-function NavScreen({ component }: { component: React.ReactNode }) {
+function NavScreen({
+  component,
+  noScrollbars,
+}: {
+  noScrollbars?: boolean;
+  component: React.ReactNode;
+}) {
   const { title, isRoot, pop } = useNavigation();
   const { style, navButtonLeft, navButtonRight, notchViewComponent } =
     useNavBar();
@@ -193,6 +214,7 @@ function NavScreen({ component }: { component: React.ReactNode }) {
           navButtonLeft={_navButtonLeft}
           navButtonRight={navButtonRight}
           navbarStyle={style}
+          noScrollbars={noScrollbars}
         >
           <NavBootstrap>
             <PluginManager>

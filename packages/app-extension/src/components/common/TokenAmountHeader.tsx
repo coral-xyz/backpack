@@ -52,9 +52,7 @@ export const TokenAmountHeader: React.FC<{
               height: "32px",
               borderRadius: "16px",
             }}
-            onError={(event: any) =>
-              (event.currentTarget.style.display = "none")
-            }
+            removeOnError={true}
           />
         </div>
       )}

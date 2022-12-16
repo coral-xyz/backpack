@@ -238,9 +238,8 @@ export function ScrollBarImpl(props: any) {
         renderView={(props: any) => <div {...props} className="view" />}
         autoHide
         thumbMinSize={30}
-      >
-        {props.children}
-      </Scrollbars>
+        {...props}
+      />
       <style>
         {`
           .track-vertical {
