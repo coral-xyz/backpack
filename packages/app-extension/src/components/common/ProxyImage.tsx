@@ -42,7 +42,6 @@ export const ProxyImage = React.memo(function ProxyImage({
           width: "100%",
           transform: "none",
           transformOrigin: "none",
-          ...(imageRef.current?.complete ? { display: "none" } : {}),
           ...(imgProps.style ?? {}),
           ...(loadingStyles ?? {}),
         }}
@@ -61,7 +60,6 @@ export const ProxyImage = React.memo(function ProxyImage({
           if (placeholderRef.current) {
             placeholderRef.current.style.display = "none";
           }
-          image.parentElement;
           image.style.position = "inherit";
           image.style.top = "inherit";
           image.style.visibility = "visible";

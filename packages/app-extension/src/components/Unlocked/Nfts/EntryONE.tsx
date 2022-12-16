@@ -79,12 +79,6 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-const visuallyHidden: React.CSSProperties = {
-  visibility: "hidden",
-  position: "absolute",
-  top: "0px",
-};
-
 export default function EntryONE() {
   const [imageLoaded, setImageLoaded] = useState(false);
   const ref = useRef<HTMLImageElement>(null);
