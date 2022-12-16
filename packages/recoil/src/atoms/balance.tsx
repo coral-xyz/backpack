@@ -14,20 +14,22 @@ import {
   solanaFungibleTokenNativeBalance,
 } from "./solana/token";
 import { enabledBlockchains } from "./preferences";
-import { solanaPublicKey } from "./wallet";
+import { ethereumPublicKey, solanaPublicKey } from "./wallet";
 
 /**
  * Return token balances sorted by usd notional balances.
  */
 export const blockchainBalancesSorted = selectorFamily<
   Array<TokenData>,
-  Blockchain
+  { publicKey: string; blockchain: Blockchain }
 >({
   key: "blockchainBalancesSorted",
   get:
-    (blockchain: Blockchain) =>
+    ({ publicKey, blockchain }) =>
     ({ get }) => {
-      const tokenAddresses = get(blockchainTokenAddresses(blockchain));
+      const tokenAddresses = get(
+        blockchainTokenAddresses({ publicKey, blockchain })
+      );
       const tokenData = tokenAddresses
         .map(
           (tokenAddress) =>
@@ -54,7 +56,9 @@ export const blockchainNativeBalances = selectorFamily<
   get:
     ({ blockchain, publicKey }) =>
     ({ get }) => {
-      const tokenAddresses = get(blockchainTokenAddresses(blockchain));
+      const tokenAddresses = get(
+        blockchainTokenAddresses({ publicKey, blockchain })
+      );
       return tokenAddresses
         .map(
           (tokenAddress) =>
@@ -120,16 +124,19 @@ export const blockchainTokenData = selectorFamily<
 /**
  * Selects a blockchain token list based on a network string.
  */
-export const blockchainTokenAddresses = selectorFamily({
+export const blockchainTokenAddresses = selectorFamily<
+  any,
+  { publicKey: string; blockchain: Blockchain }
+>({
   key: "blockchainTokenAddresses",
   get:
-    (blockchain: Blockchain) =>
+    ({ publicKey, blockchain }) =>
     ({ get }) => {
       switch (blockchain) {
         case Blockchain.SOLANA:
-          return get(solanaFungibleTokenAccountKeys);
+          return get(solanaFungibleTokenAccountKeys(publicKey));
         case Blockchain.ETHEREUM:
-          const ethTokenMetadata = get(ethereumTokenMetadata)();
+          const ethTokenMetadata = get(ethereumTokenMetadata)(); // todo
           return ethTokenMetadata
             ? [...ethTokenMetadata.values()].map((t) => t.address)
             : [];
@@ -142,14 +149,17 @@ export const blockchainTokenAddresses = selectorFamily({
 /**
  * Total asset balance in USD, change in USD, and percent change for a given blockchain.
  */
-export const blockchainTotalBalance = selectorFamily({
+export const blockchainTotalBalance = selectorFamily<
+  { totalBalance: number; totalChange: number; percentChange: number },
+  { publicKey: string; blockchain: Blockchain }
+>({
   key: "blockchainTotalBalance",
   get:
-    (blockchain: Blockchain) =>
+    ({ publicKey, blockchain }) =>
     ({ get }) => {
-      const tokens = get(blockchainBalancesSorted(blockchain)).filter(
-        (t) => t.usdBalance && t.recentUsdBalanceChange
-      );
+      const tokens = get(
+        blockchainBalancesSorted({ publicKey, blockchain })
+      ).filter((t) => t.usdBalance && t.recentUsdBalanceChange);
       const totalBalance = tokens
         .map((t) => t.usdBalance)
         .reduce((a, b) => a + b, 0);
@@ -177,7 +187,13 @@ export const totalBalance = selector({
         acc: { totalBalance: number; totalChange: number },
         blockchain: Blockchain
       ) => {
-        const total = get(blockchainTotalBalance(blockchain));
+        let publicKey: string;
+        if (blockchain === Blockchain.SOLANA) {
+          publicKey = get(solanaPublicKey)!;
+        } else {
+          publicKey = get(ethereumPublicKey)!;
+        }
+        const total = get(blockchainTotalBalance({ publicKey, blockchain }));
         return {
           totalBalance: acc.totalBalance + total.totalBalance,
           totalChange: acc.totalChange + total.totalChange,

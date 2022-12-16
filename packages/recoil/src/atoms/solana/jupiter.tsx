@@ -3,6 +3,7 @@ import type { TokenInfo } from "@solana/spl-token-registry";
 import { selector, selectorFamily } from "recoil";
 
 import { blockchainBalancesSorted } from "../balance";
+import { solanaPublicKey } from "../wallet";
 
 import { SOL_LOGO_URI, splTokenRegistry } from "./token-registry";
 
@@ -49,7 +50,13 @@ export const jupiterInputMints = selector({
   key: "jupiterInputMints",
   get: async ({ get }) => {
     const inputMints = get(allJupiterInputMints);
-    const walletTokens = get(blockchainBalancesSorted(Blockchain.SOLANA));
+    const publicKey = get(solanaPublicKey)!; // todo
+    const walletTokens = get(
+      blockchainBalancesSorted({
+        publicKey,
+        blockchain: Blockchain.SOLANA,
+      })
+    );
     // Only allow tokens that Jupiter allows as well as native SOL.
     return walletTokens.filter(
       (t: any) => inputMints.includes(t.mint) || t.mint === SOL_NATIVE_MINT

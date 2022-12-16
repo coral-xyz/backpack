@@ -180,14 +180,18 @@ export const solanaTokenAccountsMap = selectorFamily<
 /**
  * List of all stored token accounts within tokenAccountsMap.
  */
-export const solanaFungibleTokenAccountKeys = selector<Array<string>>({
+export const solanaFungibleTokenAccountKeys = selectorFamily<
+  Array<string>,
+  string // SOL publicKey.
+>({
   key: "solanaFungibleTokenAccountKeys",
-  get: ({ get }) => {
-    const connectionUrl = get(solanaConnectionUrl)!;
-    const publicKey = get(solanaPublicKey)!;
-    const { fts } = get(customSplTokenAccounts({ connectionUrl, publicKey }));
-    return fts.fungibleTokens.map((f) => f.key);
-  },
+  get:
+    (publicKey: string) =>
+    ({ get }) => {
+      const connectionUrl = get(solanaConnectionUrl)!;
+      const { fts } = get(customSplTokenAccounts({ connectionUrl, publicKey }));
+      return fts.fungibleTokens.map((f) => f.key);
+    },
 });
 
 export const solanaFungibleTokenNativeBalance = selectorFamily<

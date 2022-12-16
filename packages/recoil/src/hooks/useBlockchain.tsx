@@ -51,12 +51,34 @@ export function useBlockchainLogo(blockchain: Blockchain): string {
   }
 }
 
-export function useBlockchainTokens(blockchain: Blockchain) {
-  return useRecoilValue(atoms.blockchainTokenAddresses(blockchain));
+export function useBlockchainTokens({
+  publicKey,
+  blockchain,
+}: {
+  publicKey: string;
+  blockchain: Blockchain;
+}) {
+  return useRecoilValue(
+    atoms.blockchainTokenAddresses({
+      publicKey,
+      blockchain,
+    })
+  );
 }
 
-export function useBlockchainTokensSorted(blockchain: Blockchain) {
-  return useRecoilValue(atoms.blockchainBalancesSorted(blockchain));
+export function useBlockchainTokensSorted({
+  publicKey,
+  blockchain,
+}: {
+  publicKey: string;
+  blockchain: Blockchain;
+}) {
+  return useRecoilValue(
+    atoms.blockchainBalancesSorted({
+      publicKey,
+      blockchain,
+    })
+  );
 }
 
 export function useBlockchainNativeTokens({
