@@ -25,7 +25,7 @@ import { BigNumber } from "ethers";
 import { TokenTables } from "./components/Balances";
 import type { Token } from "./components/index";
 
-export function SendTokenModal({ route }) {
+export function SendTokenScreen({ route }) {
   const { blockchain, token } = route.params;
 
   const { provider: solanaProvider } = useAnchorContext();
@@ -136,7 +136,7 @@ export function SendTokenModal({ route }) {
   );
 }
 
-export function SelectSendTokenModal({ navigation }) {
+export function SelectSendTokenScreen({ navigation }) {
   const onPressTokenRow = (blockchain: Blockchain, token: Token) => {
     navigation.push("SendTokenModal", {
       title: `Send ${toTitleCase(blockchain)} / ${token.ticker}`,
