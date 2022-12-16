@@ -12,16 +12,19 @@ import {
   SOL_NATIVE_MINT,
   toTitleCase,
 } from "@coral-xyz/common";
-import type { TokenData } from "@coral-xyz/recoil";
+import type {
+  TokenData} from "@coral-xyz/recoil";
 import {
   blockchainTokenData,
   useAnchorContext,
+  useBlockchainActiveWallet,
   useBlockchainConnectionUrl,
   useBlockchainExplorer,
   useBlockchainTokenAccount,
   useEthereumCtx,
   useLoader,
   useNavigation,
+  useSolanaCtx,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
@@ -111,7 +114,12 @@ export function SendButton({
   blockchain: Blockchain;
   address: string;
 }) {
-  const token = useBlockchainTokenAccount(blockchain, address);
+  const wallet = useBlockchainActiveWallet(blockchain);
+  const token = useBlockchainTokenAccount(
+    wallet.publicKey.toString(),
+    blockchain,
+    address
+  );
   return (
     <WithHeaderButton
       label={"Send"}
@@ -137,8 +145,13 @@ export function SendLoader({
   blockchain: Blockchain;
   address: string;
 }) {
+  const wallet = useBlockchainActiveWallet(blockchain);
   const [token] = useLoader(
-    blockchainTokenData({ blockchain, tokenAddress: address }),
+    blockchainTokenData({
+      publicKey: wallet.publicKey.toString(),
+      blockchain,
+      tokenAddress: address,
+    }),
     null
   );
   if (!token) return <></>;

@@ -93,6 +93,7 @@ export function SwapProvider({
   const [token] = tokenAddress
     ? useLoader(
         blockchainTokenData({
+          publicKey: solanaCtx.walletPublicKey.toString(),
           blockchain,
           tokenAddress,
         }),

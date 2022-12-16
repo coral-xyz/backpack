@@ -94,11 +94,12 @@ export function useBlockchainNativeTokens({
 }
 
 export function useBlockchainTokenAccount(
+  publicKey: string,
   blockchain: Blockchain,
   tokenAddress: string
 ): TokenData | null {
   return useRecoilValue(
-    atoms.blockchainTokenData({ blockchain, tokenAddress })
+    atoms.blockchainTokenData({ publicKey, blockchain, tokenAddress })
   );
 }
 

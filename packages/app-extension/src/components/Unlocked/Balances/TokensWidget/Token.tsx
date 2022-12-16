@@ -4,6 +4,7 @@ import type { SearchParamsFor } from "@coral-xyz/recoil";
 import {
   blockchainTokenData,
   useActiveEthereumWallet,
+  useBlockchainActiveWallet,
   useLoader,
 } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
@@ -83,9 +84,13 @@ export function Token({ blockchain, address }: SearchParamsFor.Token["props"]) {
 
 function TokenHeader({ blockchain, address }: SearchParamsFor.Token["props"]) {
   const classes = useStyles();
-
+  const wallet = useBlockchainActiveWallet(blockchain);
   const [token] = useLoader(
-    blockchainTokenData({ blockchain, tokenAddress: address }),
+    blockchainTokenData({
+      publicKey: wallet.publicKey.toString(),
+      blockchain,
+      tokenAddress: address,
+    }),
     null
   );
 

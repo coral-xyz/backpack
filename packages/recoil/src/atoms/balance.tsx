@@ -35,6 +35,7 @@ export const blockchainBalancesSorted = selectorFamily<
           (tokenAddress) =>
             get(
               blockchainTokenData({
+                publicKey,
                 tokenAddress,
                 blockchain,
               })
@@ -103,15 +104,14 @@ export const blockchainTokenNativeData = selectorFamily<
  */
 export const blockchainTokenData = selectorFamily<
   TokenData | null,
-  { tokenAddress: string; blockchain: Blockchain }
+  { publicKey: string; tokenAddress: string; blockchain: Blockchain }
 >({
   key: "blockchainTokenData",
   get:
-    ({ tokenAddress, blockchain }) =>
+    ({ publicKey, tokenAddress, blockchain }) =>
     ({ get }) => {
       switch (blockchain) {
         case Blockchain.SOLANA:
-          const publicKey = get(solanaPublicKey)!; // todo: param
           return get(solanaFungibleTokenBalance({ publicKey, tokenAddress }));
         case Blockchain.ETHEREUM:
           return get(ethereumTokenBalance(tokenAddress));
