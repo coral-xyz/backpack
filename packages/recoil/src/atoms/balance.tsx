@@ -136,7 +136,7 @@ export const blockchainTokenAddresses = selectorFamily<
         case Blockchain.SOLANA:
           return get(solanaFungibleTokenAccountKeys(publicKey));
         case Blockchain.ETHEREUM:
-          const ethTokenMetadata = get(ethereumTokenMetadata)(); // todo
+          const ethTokenMetadata = get(ethereumTokenMetadata)();
           return ethTokenMetadata
             ? [...ethTokenMetadata.values()].map((t) => t.address)
             : [];

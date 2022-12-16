@@ -108,7 +108,7 @@ export const activeEthereumWallet = selector({
   },
 });
 
-export const ethereumPublicKey = selector({
+export const ethereumPublicKey = selector<string | null>({
   key: "ethereumPublicKey",
   get: ({ get }) => {
     return get(activeEthereumWallet)?.publicKey ?? null;
@@ -123,7 +123,7 @@ export const activeSolanaWallet = selector({
   },
 });
 
-export const solanaPublicKey = selector({
+export const solanaPublicKey = selector<string | null>({
   key: "solanaPublicKey",
   get: ({ get }) => {
     return get(activeSolanaWallet)?.publicKey ?? null;
