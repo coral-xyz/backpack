@@ -48,14 +48,6 @@ const useStyles = styles((theme) => ({
       backgroundPosition: "0px -117px",
     },
   },
-  // skeletonCard: {
-  //   marginBottom: "12px",
-  //   marginLeft: "12px",
-  //   marginRight: "12px",
-  //   borderRadius: "12px",
-  //   height: "117px",
-  //   padding: "0px",
-  // },
   skeleton: {
     position: "absolute",
     zIndex: "0",
@@ -112,7 +104,9 @@ export default function EntryONE() {
 
   return (
     <Card onClick={openXNFT} className={classes.blockchainCard} elevation={0}>
-      <Skeleton className={`${classes.skeleton} `}></Skeleton>
+      <Skeleton
+        className={`${classes.skeleton}  ${!isLoading ? classes.none : ""}`}
+      ></Skeleton>
       <div
         className={`${classes.imageBackground} ${
           isLoading ? classes.hidden : ""

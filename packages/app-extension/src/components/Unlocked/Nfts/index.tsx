@@ -31,6 +31,8 @@ export function Nfts() {
     [activeWallets]
   );
 
+  // const collections = {..._collections, ethereum: []};
+
   const NFTList = useMemo(() => {
     return (
       <NftTable

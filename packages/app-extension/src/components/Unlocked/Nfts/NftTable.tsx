@@ -222,6 +222,7 @@ const Card = styled("div")(
       backgroundColor: "inherit",
       marginLeft: "12px",
       marginRight: "12px",
+      overflow: "hidden",
       borderLeft: theme.custom.colors.borderFull,
       borderRight: theme.custom.colors.borderFull,
       background: theme.custom.colors.nav,
@@ -304,6 +305,10 @@ const getItemForIndex = (
       ? -1
       : Math.ceil(items.length / itemsPerRow);
 
+    if (numberOfRowsInCollection === 0) {
+      return false;
+    }
+
     if (result + numberOfRowsInCollection + 2 <= index) {
       result += numberOfRowsInCollection + 2; // rows + header & footer
       return false;
@@ -327,7 +332,7 @@ const getItemForIndex = (
 
   if (wrappedCollectionGroupIndex === 0) {
     return {
-      height: isCollapsed ? 52 : 40,
+      height: isCollapsed ? 48 : 36,
       key: `header${blockchainIndex}`,
       component: (
         <HeaderRow
@@ -373,11 +378,13 @@ const getNumberOfItems = (
   return collections.reduce((count, collection, i) => {
     const items = collection[1];
     const numberOfRowsInCollection = Math.ceil(items.length / itemsPerRow);
-    if (collapsedCollections[i]) {
-      count += 1; // 1 element to render collapsed collection
-    } else {
-      count += numberOfRowsInCollection + 2;
+
+    if (numberOfRowsInCollection == 0) {
+      return count;
     }
-    return count;
+    if (collapsedCollections[i]) {
+      return count + 1; // 1 element to render collapsed collection
+    }
+    return count + numberOfRowsInCollection + 2;
   }, count);
 };
