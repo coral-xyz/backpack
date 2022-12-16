@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Button, Pressable, Text, View } from "react-native";
+import { useMemo, useRef, useState } from "react";
+import { Pressable, Text, View } from "react-native";
 import {
   ActionCard,
   Header,
@@ -9,18 +9,12 @@ import {
 } from "@components";
 import type { Blockchain } from "@coral-xyz/common";
 import {
-  openConnectHardware,
-  TAB_APPS,
-  TAB_BALANCES,
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
-  UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
-  UI_RPC_METHOD_NAVIGATION_TO_ROOT,
 } from "@coral-xyz/common";
 import {
   useBackgroundClient,
   useKeyringType,
-  useTab,
   useWalletName,
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -28,7 +22,7 @@ import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTheme } from "@hooks";
 import { useNavigation } from "@react-navigation/native";
 
-export function AddConnectWalletScreen({ route }) {
+export function AddConnectWalletScreen({ route }): JSX.Element {
   const { blockchain } = route.params;
   const navigation = useNavigation();
   const background = useBackgroundClient();
