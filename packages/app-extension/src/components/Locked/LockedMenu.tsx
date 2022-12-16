@@ -3,6 +3,7 @@ import {
   DISCORD_INVITE_LINK,
   TWITTER_LINK,
 } from "@coral-xyz/common";
+import { DiscordIcon , List, ListItem } from "@coral-xyz/react-common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import AccountCircleIcon from "@mui/icons-material/AccountCircleOutlined";
 import CallMadeIcon from "@mui/icons-material/CallMade";
@@ -12,7 +13,6 @@ import MenuIcon from "@mui/icons-material/Menu";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import { Box, IconButton, ListItemText, Toolbar } from "@mui/material";
 
-import { DiscordIcon } from "../common/Icon";
 import { CloseButton, WithDrawer } from "../common/Layout/Drawer";
 import { NAV_BAR_HEIGHT } from "../common/Layout/Nav";
 import {
@@ -20,7 +20,6 @@ import {
   NavStackScreen,
   useNavStack,
 } from "../common/Layout/NavStack";
-import { List, ListItem } from "../common/List";
 
 import { ResetWarning } from "./Reset/ResetWarning";
 import { Reset } from "./Reset";

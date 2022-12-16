@@ -3,18 +3,16 @@ import {
   UI_RPC_METHOD_KEYRING_RESET,
   UI_RPC_METHOD_USER_LOGOUT,
 } from "@coral-xyz/common";
+import {
+  DangerButton,
+  SecondaryButton,
+  WarningIcon,
+} from "@coral-xyz/react-common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Box } from "@mui/material";
 
-import {
-  DangerButton,
-  Header,
-  HeaderIcon,
-  SecondaryButton,
-  SubtextParagraph,
-} from "../../common";
-import { WarningIcon } from "../../common/Icon";
+import { Header, HeaderIcon, SubtextParagraph } from "../../common";
 import { useDrawerContext } from "../../common/Layout/Drawer";
 import { useNavStack } from "../../common/Layout/NavStack";
 

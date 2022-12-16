@@ -1,7 +1,6 @@
+import { ProxyImage } from "@coral-xyz/react-common";
 import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import { Button, Typography } from "@mui/material";
-
-import { ProxyImage } from "../../common/ProxyImage";
 
 const useStyles = styles((theme) => ({
   button: {

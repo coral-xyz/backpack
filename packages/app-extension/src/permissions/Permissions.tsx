@@ -1,7 +1,6 @@
 import { Routes, useLocation } from "react-router-dom";
+import { WithTheme } from "@coral-xyz/react-common";
 import { RecoilRoot } from "recoil";
-
-import { WithTheme } from "../components/common/WithTheme";
 
 import { CameraPermissions } from "./CameraPermissions";
 import { NotificationPermissions } from "./NotificationPermissions";

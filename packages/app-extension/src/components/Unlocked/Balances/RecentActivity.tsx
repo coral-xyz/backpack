@@ -1,6 +1,7 @@
 import { Suspense, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import { explorerUrl } from "@coral-xyz/common";
+import { isFirstLastListItemStyle, Loading } from "@coral-xyz/react-common";
 import {
   useActiveEthereumWallet,
   useActiveSolanaWallet,
@@ -16,14 +17,12 @@ import { Bolt, CallMade, Check, Clear } from "@mui/icons-material";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import { IconButton, List, ListItem, Typography } from "@mui/material";
 
-import { Loading } from "../../common";
 import { EmptyState } from "../../common/EmptyState";
 import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
 import {
   NavStackEphemeral,
   NavStackScreen,
 } from "../../common/Layout/NavStack";
-import { isFirstLastListItemStyle } from "../../common/List";
 
 const useStyles = styles((theme) => ({
   recentActivityLabel: {

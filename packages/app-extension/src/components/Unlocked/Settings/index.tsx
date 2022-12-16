@@ -11,6 +11,16 @@ import {
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
 } from "@coral-xyz/common";
+import {
+  ContactsIcon,
+  DiscordIcon,
+  GridIcon,
+  LaunchDetail,
+  List,
+  ListItem,
+  PrimaryButton,
+ProxyImage,  PushDetail,
+ TextInput  } from "@coral-xyz/react-common";
 import type { WalletPublicKeys } from "@coral-xyz/recoil";
 import {
   useActiveWallets,
@@ -37,16 +47,9 @@ import { ethers } from "ethers";
 
 import {
   Header,
-  LaunchDetail,
-  List,
-  ListItem,
-  PrimaryButton,
-  PushDetail,
   SubtextParagraph,
   WalletAddress,
 } from "../../../components/common";
-import { ContactsIcon, DiscordIcon, GridIcon } from "../../common/Icon";
-import { TextInput } from "../../common/Inputs";
 import {
   CloseButton,
   useDrawerContext,
@@ -58,7 +61,6 @@ import {
   NavStackScreen,
   useNavStack,
 } from "../../common/Layout/NavStack";
-import { ProxyImage } from "../../common/ProxyImage";
 import { Logout, ResetWarning } from "../../Locked/Reset/ResetWarning";
 import { ResetWelcome } from "../../Locked/Reset/ResetWelcome";
 import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";

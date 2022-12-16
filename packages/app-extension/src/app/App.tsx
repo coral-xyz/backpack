@@ -1,5 +1,6 @@
 import React from "react";
 import { HashRouter } from "react-router-dom";
+import { WithTheme } from "@coral-xyz/react-common";
 import {
   NotificationsProvider,
   useBackgroundKeepAlive,
@@ -7,8 +8,6 @@ import {
 import { RecoilRoot } from "recoil";
 
 import "@fontsource/inter";
-
-import { WithTheme } from "../components/common/WithTheme";
 
 import { ErrorBoundary } from "./ErrorBoundary";
 import { Router } from "./Router";

@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import type { Plugin } from "@coral-xyz/common";
+import { MoreIcon, PowerIcon } from "@coral-xyz/react-common";
 import {
   useFreshPlugin,
   usePlugins,
@@ -11,7 +12,6 @@ import { PublicKey } from "@solana/web3.js";
 import { useRecoilValue } from "recoil";
 
 import { PluginRenderer } from "../../../plugin/Renderer";
-import { MoreIcon, PowerIcon } from "../../common/Icon";
 
 import { Simulator } from "./Simulator";
 

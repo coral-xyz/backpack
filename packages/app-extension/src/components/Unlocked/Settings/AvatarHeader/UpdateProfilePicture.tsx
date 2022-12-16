@@ -6,6 +6,12 @@ import {
   walletAddressDisplay,
 } from "@coral-xyz/common";
 import {
+  Loading,
+  PrimaryButton,
+  ProxyImage,
+  SecondaryButton,
+} from "@coral-xyz/react-common";
+import {
   newAvatarAtom,
   nftCollections,
   useActiveWallets,
@@ -20,9 +26,7 @@ import Collapse from "@mui/material/Collapse";
 import Typography from "@mui/material/Typography";
 import { useRecoilValueLoadable, useSetRecoilState } from "recoil";
 
-import { Loading, PrimaryButton, SecondaryButton } from "../../../common";
 import { Scrollbar } from "../../../common/Layout/Scrollbar";
-import { ProxyImage } from "../../../common/ProxyImage";
 
 type tempAvatar = {
   url: string;

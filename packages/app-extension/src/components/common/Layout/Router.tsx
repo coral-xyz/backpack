@@ -10,6 +10,7 @@ import {
   TAB_SET,
   UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
 } from "@coral-xyz/common/src/constants";
+import { Loading } from "@coral-xyz/react-common";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import {
   PluginManager,
@@ -41,7 +42,6 @@ import { NftOptionsButton, NftsDetail } from "../../Unlocked/Nfts/Detail";
 import { NftChat, NftsExperience } from "../../Unlocked/Nfts/Experience";
 import { SettingsButton } from "../../Unlocked/Settings";
 import { Swap } from "../../Unlocked/Swap";
-import { Loading } from "..";
 
 import { NavBackButton, WithNav } from "./Nav";
 import { WithMotion } from "./NavStack";
@@ -53,6 +53,7 @@ export function Router() {
       <Routes location={location} key={location.pathname}>
         <Route path="/balances" element={<BalancesPage />} />
         <Route path="/balances/token" element={<TokenPage />} />
+        <Route path={"/messages"} element={<MessagesIframe />} />
         <Route path="/messages" element={<MessagesPage />} />
         <Route path="/messages/chat" element={<ChatPage />} />
         <Route path="/messages/profile" element={<ProfilePage />} />
@@ -109,6 +110,21 @@ function NftsDetailPage() {
   const { props } = useDecodedSearchParams();
   // @ts-expect-error TS2322: Property 'nftId' is missing in type '{}' but required in type '{ nftId: string; }'.
   return <NavScreen component={<NftsDetail {...props} />} />;
+}
+
+function MessagesIframe() {
+  return (
+    <NavScreen
+      component={
+        <iframe
+          frameBorder="0"
+          src={`http://localhost:3000`}
+          width={"100%"}
+          height={"100%"}
+        />
+      }
+    />
+  );
 }
 
 function MessagesPage() {

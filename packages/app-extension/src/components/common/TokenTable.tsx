@@ -3,6 +3,7 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList as WindowedList } from "react-window";
 import type { Blockchain } from "@coral-xyz/common";
 import { toTitleCase, walletAddressDisplay } from "@coral-xyz/common";
+import { TextInput } from "@coral-xyz/react-common";
 import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
 import {
   blockchainBalancesSorted,
@@ -25,7 +26,6 @@ import {
   BalancesTableRow,
 } from "../Unlocked/Balances";
 
-import { TextInput } from "./Inputs";
 import { WithCopyTooltip } from "./WithCopyTooltip";
 
 export type Token = ReturnType<typeof useBlockchainTokensSorted>[number];

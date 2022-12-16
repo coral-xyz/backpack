@@ -1,14 +1,14 @@
+import {
+  PrimaryButton,
+  ProxyImage,
+  SecondaryButton,
+} from "@coral-xyz/react-common";
 import { useAvatarUrl, useWalletName } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 import _CheckIcon from "@mui/icons-material/Check";
 import _CloseIcon from "@mui/icons-material/Close";
 
-import {
-  PrimaryButton,
-  SecondaryButton,
-  walletAddressDisplay,
-} from "../../../components/common";
-import { ProxyImage } from "../../common/ProxyImage";
+import { walletAddressDisplay } from "../../../components/common";
 
 const useStyles = styles((theme) => ({
   contentContainer: {

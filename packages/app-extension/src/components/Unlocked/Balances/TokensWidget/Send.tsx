@@ -12,6 +12,14 @@ import {
   SOL_NATIVE_MINT,
   toTitleCase,
 } from "@coral-xyz/common";
+import {
+  CheckIcon,
+  CrossIcon,
+  DangerButton,
+  Loading,
+  PrimaryButton,
+  SecondaryButton,
+ TextInput } from "@coral-xyz/react-common";
 import type { TokenData } from "@coral-xyz/recoil";
 import {
   blockchainTokenData,
@@ -29,16 +37,8 @@ import type { Connection } from "@solana/web3.js";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { BigNumber, ethers } from "ethers";
 
-import {
-  DangerButton,
-  Loading,
-  PrimaryButton,
-  SecondaryButton,
-  TextFieldLabel,
-} from "../../../common";
+import { TextFieldLabel } from "../../../common";
 import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
-import { CheckIcon, CrossIcon } from "../../../common/Icon";
-import { TextInput } from "../../../common/Inputs";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { useNavStack } from "../../../common/Layout/NavStack";
 import { MaxLabel } from "../../../common/MaxLabel";

@@ -4,6 +4,7 @@ import {
   SOL_NATIVE_MINT,
   STRIPE_ENABLED,
 } from "@coral-xyz/common";
+import { Dollar } from "@coral-xyz/react-common";
 import {
   SwapProvider,
   useEnabledBlockchains,
@@ -13,7 +14,6 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import { ArrowDownward, ArrowUpward, SwapHoriz } from "@mui/icons-material";
 import { Typography } from "@mui/material";
 
-import { Dollar } from "../../common/Icon";
 import { useNavStack } from "../../common/Layout/NavStack";
 import type { Token } from "../../common/TokenTable";
 import { SearchableTokenTables } from "../../common/TokenTable";

@@ -1,10 +1,9 @@
 import React, { Suspense, useState } from "react";
+import { Loading } from "@coral-xyz/react-common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ArrowBack } from "@mui/icons-material";
 import KeyboardArrowDownSharpIcon from "@mui/icons-material/KeyboardArrowDownSharp";
 import { IconButton, Typography } from "@mui/material";
-
-import { Loading } from "../";
 
 import { Scrollbar } from "./Scrollbar";
 

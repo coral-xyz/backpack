@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
 import { BACKEND_API_URL, NAV_COMPONENT_MESSAGE_CHAT } from "@coral-xyz/common";
+import {
+  Loading,
+  MessageIcon,
+  PrimaryButton,
+ ProxyImage,  SecondaryButton } from "@coral-xyz/react-common";
 import { useNavigation } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
@@ -7,10 +12,7 @@ import LockIcon from "@mui/icons-material/Lock";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import { IconButton } from "@mui/material";
 
-import { Loading, PrimaryButton, SecondaryButton } from "../../common";
-import { MessageIcon } from "../../common/Icon";
 import { useNavStack } from "../../common/Layout/NavStack";
-import { ProxyImage } from "../../common/ProxyImage";
 
 import { useStyles } from "./styles";
 

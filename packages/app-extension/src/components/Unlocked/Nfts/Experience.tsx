@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { ChatRoom } from "@coral-xyz/chat-sdk";
 import { NAV_COMPONENT_NFT_CHAT } from "@coral-xyz/common";
+import { PrimaryButton } from "@coral-xyz/react-common";
 import { useNavigation, useUser } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 
-import { PrimaryButton } from "../../common";
 import { CloseButton } from "../../common/Layout/Drawer";
 import { NAV_BUTTON_WIDTH } from "../../common/Layout/Nav";
 import {

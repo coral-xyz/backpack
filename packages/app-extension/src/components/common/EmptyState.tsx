@@ -1,7 +1,6 @@
+import { PrimaryButton } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
-
-import { PrimaryButton } from ".";
 
 export const EmptyState: React.FC<{
   icon: (props: any) => React.ReactNode;

@@ -10,19 +10,18 @@ import {
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
 } from "@coral-xyz/common";
 import {
+  BalancesIcon,
+  GridIcon,
+  ImageIcon,
+  MessageIcon,
+} from "@coral-xyz/react-common";
+import {
   useBackgroundClient,
   useFeatureGates,
   useTab,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Tab, Tabs } from "@mui/material";
-
-import {
-  BalancesIcon,
-  GridIcon,
-  ImageIcon,
-  MessageIcon,
-} from "../../common/Icon";
 
 const TAB_HEIGHT = 64;
 

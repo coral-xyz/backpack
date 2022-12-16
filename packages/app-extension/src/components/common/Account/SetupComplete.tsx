@@ -4,17 +4,17 @@ import {
   TWITTER_LINK,
   XNFT_GG_LINK,
 } from "@coral-xyz/common";
+import {   DiscordIcon,
+  ExtensionIcon,
+  PinIcon,
+PrimaryButton ,
+  TwitterIcon,
+  WidgetIcon,
+} from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Box, Grid, Typography } from "@mui/material";
 
-import { Header, PrimaryButton, SubtextParagraph } from "../../common";
-import {
-  DiscordIcon,
-  ExtensionIcon,
-  PinIcon,
-  TwitterIcon,
-  WidgetIcon,
-} from "../../common/Icon";
+import { Header, SubtextParagraph } from "../../common";
 import { ActionCard } from "../../common/Layout/ActionCard";
 
 export function SetupComplete({ onClose }: { onClose: () => void }) {

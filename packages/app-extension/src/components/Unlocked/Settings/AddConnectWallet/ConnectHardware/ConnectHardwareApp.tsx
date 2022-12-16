@@ -1,13 +1,12 @@
 import { Blockchain } from "@coral-xyz/common";
+import {
+  EthereumIcon,
+  PrimaryButton,
+  SolanaIcon,
+} from "@coral-xyz/react-common";
 import { Box } from "@mui/material";
 
-import {
-  Header,
-  HeaderIcon,
-  PrimaryButton,
-  SubtextParagraph,
-} from "../../../../common";
-import { EthereumIcon, SolanaIcon } from "../../../../common/Icon";
+import { Header, HeaderIcon, SubtextParagraph } from "../../../../common";
 
 export function ConnectHardwareApp({
   blockchain,

@@ -1,3 +1,4 @@
+import type { ReactNode} from "react";
 import { Suspense, useMemo } from "react";
 import { EXTENSION_HEIGHT, EXTENSION_WIDTH } from "@coral-xyz/common";
 import { useDarkMode } from "@coral-xyz/recoil";
@@ -6,15 +7,17 @@ import { CssBaseline, StyledEngineProvider } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { ThemeProvider as OldThemeProvider } from "@mui/styles";
 
-export const WithTheme: React.FC = ({ children }) => {
+export const WithTheme: React.FC = ({ children }: { children: ReactNode }) => {
   return (
     <Suspense fallback={<BlankNoTheme />}>
+      {/*
+             //@ts-ignore */}
       <WithThemeInner>{children}</WithThemeInner>
     </Suspense>
   );
 };
 
-const WithThemeInner: React.FC = ({ children }) => {
+const WithThemeInner: React.FC = ({ children }: { children: ReactNode }) => {
   const isDarkMode = useDarkMode();
   const [theme, rawTheme] = useMemo(() => {
     const rawTheme = isDarkMode ? darkTheme : lightTheme;

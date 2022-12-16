@@ -1,15 +1,13 @@
+import {
+  DangerButton,
+  QuestionIcon,
+  SecondaryButton,
+} from "@coral-xyz/react-common";
 import { KeyringStoreStateEnum, useKeyringStoreState } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Box } from "@mui/material";
 
-import {
-  DangerButton,
-  Header,
-  HeaderIcon,
-  SecondaryButton,
-  SubtextParagraph,
-} from "../../common";
-import { QuestionIcon } from "../../common/Icon";
+import { Header, HeaderIcon, SubtextParagraph } from "../../common";
 import { useNavStack } from "../../common/Layout/NavStack";
 
 export function ResetWelcome({ onClose }: { onClose: () => void }) {

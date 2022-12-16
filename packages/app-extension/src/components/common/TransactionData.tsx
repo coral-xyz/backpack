@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { PrimaryButton, SecondaryButton } from "@coral-xyz/react-common";
 import { useEthereumFeeData } from "@coral-xyz/recoil";
 import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
@@ -8,7 +9,6 @@ import { ethers } from "ethers";
 import { WithMiniDrawer } from "./Layout/Drawer";
 import { SettingsList } from "./Settings/List";
 import { CloseButton } from "./ApproveTransactionDrawer";
-import { PrimaryButton, SecondaryButton } from "./";
 
 const useStyles = styles((theme: any) => ({
   chip: {

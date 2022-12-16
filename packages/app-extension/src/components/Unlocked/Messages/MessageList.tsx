@@ -4,14 +4,12 @@ import {
   NAV_COMPONENT_MESSAGE_PROFILE,
   NAV_COMPONENT_MESSAGE_REQUESTS,
 } from "@coral-xyz/common";
+import { isFirstLastListItemStyle,ProxyImage } from "@coral-xyz/react-common";
 import { useNavigation } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import MarkChatUnreadIcon from "@mui/icons-material/MarkChatUnread";
 import MarkUnreadChatAltIcon from "@mui/icons-material/MarkUnreadChatAlt";
 import { List, ListItem } from "@mui/material";
-
-import { isFirstLastListItemStyle } from "../../common";
-import { ProxyImage } from "../../common/ProxyImage";
 
 import { useStyles } from "./styles";
 export const MessageList = ({

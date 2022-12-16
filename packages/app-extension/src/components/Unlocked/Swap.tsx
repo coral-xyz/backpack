@@ -6,6 +6,14 @@ import {
   WSOL_MINT,
 } from "@coral-xyz/common";
 import {
+  CheckIcon,
+  CrossIcon,
+  DangerButton,
+  Loading,
+  PrimaryButton,
+  SecondaryButton,
+} from "@coral-xyz/react-common";
+import {
   useJupiterOutputMints,
   useSplTokenRegistry,
   useSwapContext,
@@ -17,16 +25,8 @@ import { IconButton, InputAdornment, Typography } from "@mui/material";
 import { ethers, FixedNumber } from "ethers";
 
 import { Button as XnftButton } from "../../plugin/Component";
-import {
-  DangerButton,
-  Loading,
-  PrimaryButton,
-  SecondaryButton,
-  TextField,
-  TextFieldLabel,
-} from "../common";
+import { TextField, TextFieldLabel } from "../common";
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
-import { CheckIcon, CrossIcon } from "../common/Icon";
 import { BottomCard } from "../common/Layout/BottomCard";
 import { useDrawerContext } from "../common/Layout/Drawer";
 import { useNavStack } from "../common/Layout/NavStack";

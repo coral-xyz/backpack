@@ -4,9 +4,8 @@ import {
   BACKEND_API_URL,
   NAV_COMPONENT_MESSAGE_REQUESTS,
 } from "@coral-xyz/common";
+import { TextInput } from "@coral-xyz/react-common";
 import { useNavigation } from "@coral-xyz/recoil";
-
-import { TextInput } from "../../common/Inputs";
 
 import { MessageList } from "./MessageList";
 import { MessagesSkeleton } from "./MessagesSkeleton";

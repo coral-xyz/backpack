@@ -1,6 +1,7 @@
+import { PrimaryButton } from "@coral-xyz/react-common";
 import { Box } from "@mui/material";
 
-import { PrimaryButton, SubtextParagraph } from "../../common";
+import { SubtextParagraph } from "../../common";
 import { BackpackHeader } from "../../Locked";
 
 export const CreateOrImportWallet = ({

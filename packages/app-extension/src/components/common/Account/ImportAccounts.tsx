@@ -9,6 +9,7 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
 } from "@coral-xyz/common";
+import { Loading, PrimaryButton,TextInput } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import Ethereum from "@ledgerhq/hw-app-eth";
@@ -29,12 +30,9 @@ import { useConflictQuery } from "../../../hooks/useConflictQuery";
 import {
   Checkbox,
   Header,
-  Loading,
-  PrimaryButton,
   SubtextParagraph,
   walletAddressDisplay,
 } from "../../common";
-import { TextInput } from "../Inputs";
 
 const { base58: bs58 } = ethers.utils;
 
