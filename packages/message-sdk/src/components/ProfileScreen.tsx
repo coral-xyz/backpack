@@ -14,6 +14,8 @@ import LockIcon from "@mui/icons-material/Lock";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import { IconButton } from "@mui/material";
 
+import { ParentCommunicationManager } from "../ParentCommunicationManager";
+
 import { useStyles } from "./styles";
 
 export const ProfileScreen = ({ userId }: { userId: string }) => {
@@ -27,10 +29,10 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
   const [loading, setLoading] = useState(true);
   const classes = useStyles();
   const theme = useCustomTheme();
-  // const { push } = useNavigation();
-  const push: any = () => {};
   async function getChatRoom() {
-    const res = await fetch(`${BACKEND_API_URL}/friends?userId=${userId}`);
+    const res = await ParentCommunicationManager.getInstance().fetch(
+      `${BACKEND_API_URL}/friends?userId=${userId}`
+    );
     const json = await res.json();
     if (json.user) {
       setFriendship(json.are_friends);
@@ -41,13 +43,16 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
   }
 
   const sendFriendRequest = async (sendRequest: boolean) => {
-    await fetch(`${BACKEND_API_URL}/friends/request`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ to: userId, sendRequest }),
-    });
+    await ParentCommunicationManager.getInstance().fetch(
+      `${BACKEND_API_URL}/friends/request`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ to: userId, sendRequest }),
+      }
+    );
     setRequestSent(sendRequest);
   };
 
@@ -84,7 +89,7 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
               size={"large"}
               className={classes.icon}
               onClick={() => {
-                push({
+                ParentCommunicationManager.getInstance().push({
                   title: `@${user.username}`,
                   componentId: NAV_COMPONENT_MESSAGE_CHAT,
                   componentProps: {

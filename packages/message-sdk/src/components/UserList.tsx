@@ -5,6 +5,8 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { List, ListItem } from "@mui/material";
 
+import { ParentCommunicationManager } from "../ParentCommunicationManager";
+
 import { useStyles } from "./styles";
 
 export const UserList = ({
@@ -44,15 +46,13 @@ function UserListItem({
   isLast: boolean;
 }) {
   const theme = useCustomTheme();
-  // const { push } = useNavigation();
-  const push: any = () => {};
   const classes = useStyles();
   return (
     <ListItem
       button
       disableRipple
       onClick={() => {
-        push({
+        ParentCommunicationManager.getInstance().push({
           title: `@${user.username}`,
           componentId: NAV_COMPONENT_MESSAGE_PROFILE,
           componentProps: {

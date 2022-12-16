@@ -2,7 +2,7 @@ import { styles } from "@coral-xyz/themes";
 
 export const useStyles = styles((theme) => ({
   searchField: {
-    marginTop: "16px",
+    marginTop: "0px",
     marginBottom: "16px",
     width: "inherit",
     display: "flex",

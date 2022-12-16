@@ -1,24 +1,64 @@
-// import { friendship, useUser } from "@coral-xyz/recoil";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChatRoom } from "@coral-xyz/chat-sdk";
-import type { Friendship } from "@coral-xyz/common";
+import { BACKEND_API_URL, REALTIME_API_URL } from "@coral-xyz/common";
 
-export const ChatScreen = ({ userId }: { userId: string }) => {
-  // const [friendshipValue, setFriendshipValue] =
-  //   useRecoilState<Friendship | null>(friendship({ userId }));
-  // const { uuid, username } = useUser();
+import { ParentCommunicationManager } from "../ParentCommunicationManager";
 
-  const [friendshipValue, setFriendshipValue]: any = useState();
-  const username = "kira",
-    uuid = "asd";
-  if (!friendshipValue) {
-    console.error(`Friendship not found with user ${userId}`);
+export const ChatScreen = ({
+  userId,
+  uuid,
+  username,
+  isDarkMode,
+}: {
+  isDarkMode: boolean;
+  userId: string;
+  uuid: string;
+  username: string;
+}) => {
+  const [friendshipValue, setFriendshipValue] = useState<any>();
+  const [jwt, setJwt] = useState("");
+
+  const fetchFriendship = async () => {
+    const res = await ParentCommunicationManager.getInstance().fetch(
+      `${BACKEND_API_URL}/inbox`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ to: userId }),
+      }
+    );
+    const json = await res.json();
+    setFriendshipValue({
+      id: json.friendshipId,
+      areFriends: json.areFriends,
+      blocked: json.blocked,
+      requested: json.requested,
+      spam: json.spam,
+    });
+  };
+
+  const fetchJwt = async () => {
+    const res = await ParentCommunicationManager.getInstance().fetch(
+      `${REALTIME_API_URL}/cookie`
+    );
+    const jwt = (await res.json()).jwt;
+    setJwt(jwt);
+  };
+
+  useEffect(() => {
+    fetchFriendship();
+    fetchJwt();
+  }, []);
+
+  if (!friendshipValue || !jwt) {
+    console.error(`Friendship not found with user ${userId} or jwt not found`);
     return <div></div>;
   }
 
   return (
     <div>
       <ChatRoom
+        jwt={jwt}
         type={"individual"}
         username={username || ""}
         roomId={friendshipValue.id}
@@ -46,6 +86,7 @@ export const ChatScreen = ({ userId }: { userId: string }) => {
             blocked: updatedValue,
           }))
         }
+        isDarkMode={isDarkMode}
       />
     </div>
   );

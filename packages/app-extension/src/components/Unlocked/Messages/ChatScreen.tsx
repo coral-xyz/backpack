@@ -42,6 +42,8 @@ export const ChatScreen = ({ userId }: { userId: string }) => {
             blocked: updatedValue,
           }))
         }
+        isDarkMode={false}
+        jwt={""}
       />
     </div>
   );

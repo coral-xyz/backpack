@@ -5,10 +5,11 @@ import {
   NAV_COMPONENT_MESSAGE_REQUESTS,
 } from "@coral-xyz/common";
 import { isFirstLastListItemStyle, ProxyImage } from "@coral-xyz/react-common";
-// import { useNavigation } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import MarkChatUnreadIcon from "@mui/icons-material/MarkChatUnread";
 import { List, ListItem } from "@mui/material";
+
+import { ParentCommunicationManager } from "../ParentCommunicationManager";
 
 import { useStyles } from "./styles";
 export const MessageList = ({
@@ -72,8 +73,6 @@ export function ChatListItem({
 }: any) {
   const classes = useStyles();
   const theme = useCustomTheme();
-  // const { push } = useNavigation();
-  const push: any = () => {};
 
   function formatAMPM(date: Date) {
     let hours = date.getHours();
@@ -90,7 +89,7 @@ export function ChatListItem({
       button
       disableRipple
       onClick={() => {
-        push({
+        ParentCommunicationManager.getInstance().push({
           title: `@${username}`,
           componentId: NAV_COMPONENT_MESSAGE_CHAT,
           componentProps: {
@@ -134,7 +133,7 @@ export function ChatListItem({
             >
               <UserIcon
                 onClick={() => {
-                  push({
+                  ParentCommunicationManager.getInstance().push({
                     title: `@${username}`,
                     componentId: NAV_COMPONENT_MESSAGE_PROFILE,
                     componentProps: {
@@ -198,15 +197,13 @@ export function RequestsChatItem({
 }) {
   const classes = useStyles();
   const theme = useCustomTheme();
-  // const { push } = useNavigation();
-  const push: any = () => {};
 
   return (
     <ListItem
       button
       disableRipple
       onClick={() => {
-        push({
+        ParentCommunicationManager.getInstance().push({
           title: `Requests`,
           componentId: NAV_COMPONENT_MESSAGE_REQUESTS,
           componentProps: {},

@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
-import { useDarkMode } from "@coral-xyz/recoil";
 import { GiphyFetch } from "@giphy/js-fetch-api";
 import { Carousel } from "@giphy/react-components";
 import GifIcon from "@mui/icons-material/Gif";
-import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import SendIcon from "@mui/icons-material/Send";
 import SentimentVerySatisfiedIcon from "@mui/icons-material/SentimentVerySatisfied";
 import { IconButton, TextField } from "@mui/material";
@@ -95,8 +93,8 @@ export const SendMessage = ({ messageRef }: any) => {
     username,
     activeReply,
     setActiveReply,
+    isDarkMode,
   } = useChatContext();
-  const isDarkMode = useDarkMode();
 
   const sendMessage = (messageTxt, messageKind: "text" | "gif" = "text") => {
     if (chatManager && messageTxt) {
