@@ -84,7 +84,10 @@ export function Token({ blockchain, address }: SearchParamsFor.Token["props"]) {
 function TokenHeader({ blockchain, address }: SearchParamsFor.Token["props"]) {
   const classes = useStyles();
 
-  const [token] = useLoader(blockchainTokenData({ blockchain, address }), null);
+  const [token] = useLoader(
+    blockchainTokenData({ blockchain, tokenAddress: address }),
+    null
+  );
 
   if (!token) return <></>;
 

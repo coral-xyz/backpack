@@ -226,8 +226,11 @@ export function useEthereumTxData(serializedTx: any): TransactionData {
 export function useSolanaTxData(serializedTx: any): TransactionData {
   const background = useBackgroundClient();
   const tokenRegistry = useSplTokenRegistry();
-  const tokenAccountsSorted = useBlockchainNativeTokens(Blockchain.SOLANA);
   const { connection, walletPublicKey } = useSolanaCtx();
+  const tokenAccountsSorted = useBlockchainNativeTokens({
+    publicKey: walletPublicKey.toString(),
+    blockchain: Blockchain.SOLANA,
+  });
 
   const [loading, setLoading] = useState(true);
   const [simulationError, setSimulationError] = useState(false);

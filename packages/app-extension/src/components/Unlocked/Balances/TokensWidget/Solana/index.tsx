@@ -57,7 +57,10 @@ export function SendSolanaConfirmationCard({
   const [cardType, setCardType] = useState<
     "confirm" | "sending" | "complete" | "error"
   >("confirm");
-  const mintInfo = useSolanaTokenMint(token.address);
+  const mintInfo = useSolanaTokenMint({
+    publicKey: solanaCtx.walletPublicKey.toString(),
+    tokenAddress: token.address,
+  });
 
   const onConfirm = async () => {
     setCardType("sending");

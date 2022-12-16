@@ -94,7 +94,7 @@ export function SwapProvider({
     ? useLoader(
         blockchainTokenData({
           blockchain,
-          address: tokenAddress,
+          tokenAddress,
         }),
         undefined
       )

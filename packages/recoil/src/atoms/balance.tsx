@@ -14,6 +14,7 @@ import {
   solanaFungibleTokenNativeBalance,
 } from "./solana/token";
 import { enabledBlockchains } from "./preferences";
+import { solanaPublicKey } from "./wallet";
 
 /**
  * Return token balances sorted by usd notional balances.
@@ -29,10 +30,10 @@ export const blockchainBalancesSorted = selectorFamily<
       const tokenAddresses = get(blockchainTokenAddresses(blockchain));
       const tokenData = tokenAddresses
         .map(
-          (address) =>
+          (tokenAddress) =>
             get(
               blockchainTokenData({
-                address,
+                tokenAddress,
                 blockchain,
               })
             )!
@@ -47,19 +48,20 @@ export const blockchainBalancesSorted = selectorFamily<
  */
 export const blockchainNativeBalances = selectorFamily<
   Array<TokenNativeData>,
-  Blockchain
+  { blockchain: Blockchain; publicKey: string }
 >({
   key: "blockchainNativeBalances",
   get:
-    (blockchain: Blockchain) =>
+    ({ blockchain, publicKey }) =>
     ({ get }) => {
       const tokenAddresses = get(blockchainTokenAddresses(blockchain));
       return tokenAddresses
         .map(
-          (address) =>
+          (tokenAddress) =>
             get(
               blockchainTokenNativeData({
-                address,
+                publicKey,
+                tokenAddress,
                 blockchain,
               })
             )!
@@ -73,17 +75,19 @@ export const blockchainNativeBalances = selectorFamily<
  */
 export const blockchainTokenNativeData = selectorFamily<
   TokenNativeData | null,
-  { address: string; blockchain: Blockchain }
+  { publicKey: string; tokenAddress: string; blockchain: Blockchain }
 >({
   key: "blockchainTokenNativeData",
   get:
-    ({ address, blockchain }: { address: string; blockchain: Blockchain }) =>
+    ({ publicKey, tokenAddress, blockchain }) =>
     ({ get }) => {
       switch (blockchain) {
         case Blockchain.SOLANA:
-          return get(solanaFungibleTokenNativeBalance(address));
+          return get(
+            solanaFungibleTokenNativeBalance({ tokenAddress, publicKey })
+          );
         case Blockchain.ETHEREUM:
-          return get(ethereumTokenNativeBalance(address));
+          return get(ethereumTokenNativeBalance(tokenAddress));
         default:
           throw new Error(`unsupported blockchain: ${blockchain}`);
       }
@@ -95,17 +99,18 @@ export const blockchainTokenNativeData = selectorFamily<
  */
 export const blockchainTokenData = selectorFamily<
   TokenData | null,
-  { address: string; blockchain: Blockchain }
+  { tokenAddress: string; blockchain: Blockchain }
 >({
   key: "blockchainTokenData",
   get:
-    ({ address, blockchain }: { address: string; blockchain: Blockchain }) =>
+    ({ tokenAddress, blockchain }) =>
     ({ get }) => {
       switch (blockchain) {
         case Blockchain.SOLANA:
-          return get(solanaFungibleTokenBalance(address));
+          const publicKey = get(solanaPublicKey)!; // todo: param
+          return get(solanaFungibleTokenBalance({ publicKey, tokenAddress }));
         case Blockchain.ETHEREUM:
-          return get(ethereumTokenBalance(address));
+          return get(ethereumTokenBalance(tokenAddress));
         default:
           throw new Error(`unsupported blockchain: ${blockchain}`);
       }

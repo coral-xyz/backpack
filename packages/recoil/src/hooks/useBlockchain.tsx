@@ -2,6 +2,7 @@ import { Blockchain } from "@coral-xyz/common";
 import { useRecoilValue } from "recoil";
 
 import * as atoms from "../atoms";
+import { ethereumPublicKey, solanaPublicKey } from "../atoms";
 import type { TokenData } from "../types";
 
 export function useBlockchainKeyrings() {
@@ -58,15 +59,25 @@ export function useBlockchainTokensSorted(blockchain: Blockchain) {
   return useRecoilValue(atoms.blockchainBalancesSorted(blockchain));
 }
 
-export function useBlockchainNativeTokens(blockchain: Blockchain) {
-  return useRecoilValue(atoms.blockchainNativeBalances(blockchain));
+export function useBlockchainNativeTokens({
+  publicKey,
+  blockchain,
+}: {
+  publicKey: string;
+  blockchain: Blockchain;
+}) {
+  return useRecoilValue(
+    atoms.blockchainNativeBalances({ publicKey, blockchain })
+  );
 }
 
 export function useBlockchainTokenAccount(
   blockchain: Blockchain,
-  address: string
+  tokenAddress: string
 ): TokenData | null {
-  return useRecoilValue(atoms.blockchainTokenData({ blockchain, address }));
+  return useRecoilValue(
+    atoms.blockchainTokenData({ blockchain, tokenAddress })
+  );
 }
 
 export function useBlockchainActiveWallet(blockchain: Blockchain) {

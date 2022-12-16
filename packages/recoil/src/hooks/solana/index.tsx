@@ -14,6 +14,12 @@ export * from "./useSolanaExplorer";
 export * from "./useSplTokenRegistry";
 export * from "./useXnfts";
 
-export function useSolanaTokenMint(tokenAddress: string): RawMintString {
-  return useRecoilValue(atoms.solanaTokenMint({ tokenAddress }));
+export function useSolanaTokenMint({
+  publicKey,
+  tokenAddress,
+}: {
+  publicKey: string;
+  tokenAddress: string;
+}): RawMintString {
+  return useRecoilValue(atoms.solanaTokenMint({ tokenAddress, publicKey }));
 }

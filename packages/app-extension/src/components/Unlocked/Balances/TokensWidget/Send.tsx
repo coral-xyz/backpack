@@ -137,7 +137,10 @@ export function SendLoader({
   blockchain: Blockchain;
   address: string;
 }) {
-  const [token] = useLoader(blockchainTokenData({ blockchain, address }), null);
+  const [token] = useLoader(
+    blockchainTokenData({ blockchain, tokenAddress: address }),
+    null
+  );
   if (!token) return <></>;
   return <Send blockchain={blockchain} token={token} />;
 }
