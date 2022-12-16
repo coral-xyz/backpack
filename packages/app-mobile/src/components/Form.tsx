@@ -29,6 +29,7 @@ export function InputGroup({
   );
 }
 
+// Wraps a single input component with a label and error message
 export function InputListItem({
   autoFocus,
   title,
@@ -104,3 +105,29 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+
+// Simple label with a text input
+export function Field({
+  label,
+  children,
+  hasError,
+}: {
+  label: string;
+  children: JSX.Element;
+  hasError?: boolean;
+}): JSX.Element {
+  const theme = useTheme();
+  return (
+    <View style={{ marginBottom: 24 }}>
+      <Text
+        style={[
+          { fontSize: 16, fontWeight: "500", marginBottom: 8 },
+          { color: theme.custom.colors.fontColor },
+        ]}
+      >
+        {label}
+      </Text>
+      <View>{children}</View>
+    </View>
+  );
+}

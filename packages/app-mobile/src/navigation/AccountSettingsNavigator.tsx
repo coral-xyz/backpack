@@ -1,13 +1,6 @@
 import { useEffect, useState } from "react";
 import { Alert, Text, View } from "react-native";
-import {
-  Header,
-  Margin,
-  PrimaryButton,
-  Screen,
-  StyledTextInput,
-  SubtextParagraph,
-} from "@components";
+import { Screen } from "@components";
 import type { Blockchain, ChannelAppUiClient } from "@coral-xyz/common";
 import {
   DerivationPath,
@@ -20,8 +13,6 @@ import {
   UI_RPC_METHOD_BLOCKCHAINS_ENABLED_DELETE,
   UI_RPC_METHOD_ETHEREUM_CHAIN_ID_UPDATE,
   UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE,
-  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-  UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
   UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
   UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE,
@@ -35,10 +26,10 @@ import {
   useSolanaCommitment,
   useSolanaConnectionUrl,
   useSolanaExplorer,
-  useWalletPublicKeys,
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
+import { ImportPrivateKeyScreen } from "@screens/ImportPrivateKeyScreen";
 import {
   LogoutWarningScreen,
   ResetWarningScreen,
@@ -69,8 +60,6 @@ import {
 import { YourAccountScreen } from "@screens/Unlocked/YourAccountScreen";
 import type { Commitment } from "@solana/web3.js";
 import { ethers } from "ethers";
-
-import { validateSecretKey } from "../lib/validateSecretKey";
 const { hexlify } = ethers.utils;
 import { useTheme } from "@hooks";
 
@@ -138,27 +127,27 @@ export default function AccountSettingsNavigator() {
         component={PreferencesEthereumCustomRpcUrl}
       />
       <Stack.Screen
-        options={{ title: "Preferences" }}
+        options={{ title: "Solana Preferences" }}
         name="PreferencesSolana"
         component={PreferencesSolana}
       />
       <Stack.Screen
-        options={{ title: "Preferences" }}
+        // options={{ title: "Preferences" }}
         name="PreferencesSolanaConnection"
         component={PreferencesSolanaConnection}
       />
       <Stack.Screen
-        options={{ title: "Preferences" }}
+        // options={{ title: "Preferences" }}
         name="PreferencesSolanaCommitment"
         component={PreferencesSolanaCommitment}
       />
       <Stack.Screen
-        options={{ title: "Preferences" }}
+        // options={{ title: "Preferences" }}
         name="PreferencesSolanaExplorer"
         component={PreferencesSolanaExplorer}
       />
       <Stack.Screen
-        options={{ title: "Preferences" }}
+        // options={{ title: "Preferences" }}
         name="PreferencesSolanaCustomRpcUrl"
         component={PreferencesSolanaCustomRpcUrl}
       />
@@ -178,9 +167,9 @@ export default function AccountSettingsNavigator() {
         component={DummyScreen}
       />
       <Stack.Screen
-        options={{ title: "Import private key" }}
-        name="ImportSecretKey"
-        component={ImportSecretKeyScreen}
+        options={{ title: "Import Private Key" }}
+        name="import-private-key"
+        component={ImportPrivateKeyScreen}
       />
       <Stack.Screen name="reset-warning" component={ResetWarningScreen} />
       <Stack.Screen
@@ -222,18 +211,16 @@ export default function AccountSettingsNavigator() {
           };
         }}
       />
+      <Stack.Screen
+        options={{ title: "Add / Connect Wallet" }}
+        name="add-wallet"
+        component={AddConnectWalletScreen}
+      />
       <Stack.Group
         screenOptions={{ presentation: "modal", headerShown: false }}
       >
         <Stack.Screen name="forgot-password" component={ForgotPasswordScreen} />
         <Stack.Screen name="logout-warning" component={LogoutWarningScreen} />
-      </Stack.Group>
-      <Stack.Group screenOptions={{ presentation: "modal" }}>
-        <Stack.Screen
-          options={{ title: "Add / Connect Wallet" }}
-          name="add-wallet"
-          component={AddConnectWalletScreen}
-        />
       </Stack.Group>
     </Stack.Navigator>
   );
@@ -685,109 +672,3 @@ function PreferencesBlockchain({ blockchain }: { blockchain: Blockchain }) {
     />
   );
 }
-
-export function ImportSecretKeyScreen({ route }) {
-  const { blockchain } = route.params;
-  const background = useBackgroundClient();
-  const existingPublicKeys = useWalletPublicKeys();
-  const [name, setName] = useState("dev");
-  const [secretKey, setSecretKey] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [newPublicKey, setNewPublicKey] = useState("");
-
-  useEffect(() => {
-    // Clear error on form input changes
-    setError(null);
-  }, [name, secretKey]);
-
-  const save = async () => {
-    let secretKeyHex;
-    try {
-      secretKeyHex = validateSecretKey(
-        blockchain,
-        secretKey,
-        existingPublicKeys
-      );
-    } catch (e) {
-      setError((e as Error).message);
-      return;
-    }
-
-    const publicKey = await background.request({
-      method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
-      params: [blockchain, secretKeyHex, name],
-    });
-
-    await background.request({
-      method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-      params: [publicKey, blockchain],
-    });
-
-    Alert.alert("success", publicKey);
-
-    setNewPublicKey(publicKey);
-  };
-
-  return (
-    <Screen style={{ justifyContent: "space-between" }}>
-      <Text>
-        {JSON.stringify({
-          name,
-          blockchain,
-          secretKey,
-          error,
-          newPublicKey,
-        })}
-      </Text>
-      <View>
-        <Header text="Import private key" />
-        <Margin bottom={32}>
-          <SubtextParagraph>
-            Enter your private key. It will be encrypted and stored on your
-            device.
-          </SubtextParagraph>
-        </Margin>
-        <Margin bottom={16}>
-          <StyledTextInput
-            autoFocus={true}
-            placeholder="Name"
-            value={name}
-            onChangeText={(text) => setName(text)}
-          />
-        </Margin>
-        <StyledTextInput
-          height={140}
-          multiline={true}
-          placeholder="Enter private key"
-          value={secretKey}
-          onChangeText={(text) => {
-            setSecretKey(text);
-          }}
-        />
-      </View>
-      <PrimaryButton
-        onPress={() => save()}
-        label="Import"
-        disabled={secretKey.length === 0}
-      />
-    </Screen>
-  );
-}
-
-// <ConfirmCreateWallet
-//   blockchain={blockchain}
-//   publicKey={newPublicKey}
-//   setOpenDrawer={setOpenDrawer}
-// />
-
-// <WithMiniDrawer
-//   openDrawer={openDrawer}
-//   setOpenDrawer={setOpenDrawer}
-//   backdropProps={{
-//     style: {
-//       opacity: 0.8,
-//       background: "#18181b",
-//     },
-//   }}
-// >
-// </WithMiniDrawer>

@@ -44,7 +44,7 @@ export function AddConnectWalletScreen({ route }) {
 
   return (
     <Screen>
-      <Margin vertical={24}>
+      <Margin bottom={24}>
         <Header text="Add or connect a wallet" />
         <SubtextParagraph>Add new wallets to Backpack</SubtextParagraph>
       </Margin>
@@ -93,7 +93,9 @@ export function AddConnectWalletScreen({ route }) {
               />
             }
             text="Import a private key"
-            onPress={() => navigation.push("ImportSecretKey", { blockchain })}
+            onPress={() =>
+              navigation.push("import-private-key", { blockchain })
+            }
           />
         </View>
       </View>
