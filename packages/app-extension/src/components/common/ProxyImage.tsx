@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useLayoutEffect, useRef } from "react";
 import { proxyImageUrl } from "@coral-xyz/common";
 import { Skeleton } from "@mui/material";
 
@@ -14,7 +14,19 @@ export const ProxyImage = React.memo(function ProxyImage({
   removeOnError?: boolean;
   loadingStyles?: React.CSSProperties;
 } & ImgProps) {
-  const ref = useRef(null);
+  const placeholderRef = useRef<HTMLSpanElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
+
+  useLayoutEffect(() => {
+    if (imageRef.current?.complete) {
+      imageRef.current.style.position = "inherit";
+      imageRef.current.style.top = "inherit";
+      imageRef.current.style.visibility = "visible";
+      if (placeholderRef.current) {
+        placeholderRef.current.style.display = "none";
+      }
+    }
+  }, []);
 
   const visuallyHidden: React.CSSProperties = {
     visibility: "hidden",
@@ -30,25 +42,24 @@ export const ProxyImage = React.memo(function ProxyImage({
           width: "100%",
           transform: "none",
           transformOrigin: "none",
+          ...(imageRef.current?.complete ? { display: "none" } : {}),
           ...(imgProps.style ?? {}),
           ...(loadingStyles ?? {}),
         }}
-        ref={ref}
+        ref={placeholderRef}
         className={imgProps.className}
       />
       <img
+        ref={imageRef}
         {...imgProps}
         style={{
           ...(imgProps.style ?? {}),
           ...visuallyHidden,
         }}
         onLoad={(...e) => {
-          // setLoading(false);
           const image = e[0].target as HTMLImageElement;
-          if (ref.current) {
-            console.log(ref.current);
-            // @ts-ignore
-            ref.current.style.display = "none";
+          if (placeholderRef.current) {
+            placeholderRef.current.style.display = "none";
           }
           image.parentElement;
           image.style.position = "inherit";
@@ -56,12 +67,8 @@ export const ProxyImage = React.memo(function ProxyImage({
           image.style.visibility = "visible";
         }}
         onError={(...e) => {
-          if (removeOnError) {
-            if (ref.current) {
-              console.log(ref.current);
-              // @ts-ignore
-              ref.current.style.display = "none";
-            }
+          if (removeOnError && placeholderRef.current) {
+            placeholderRef.current.style.display = "none";
           }
         }}
         src={proxyImageUrl(imgProps.src ?? "")}

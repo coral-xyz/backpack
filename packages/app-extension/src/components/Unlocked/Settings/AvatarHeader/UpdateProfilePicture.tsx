@@ -1,21 +1,14 @@
 import { useState } from "react";
 import type { Blockchain, Nft, NftCollection } from "@coral-xyz/common";
-import {
-  BACKEND_API_URL,
-  toTitleCase,
-  walletAddressDisplay,
-} from "@coral-xyz/common";
+import { BACKEND_API_URL } from "@coral-xyz/common";
 import {
   newAvatarAtom,
   nftCollections,
-  useActiveWallets,
   useAvatarUrl,
-  useBlockchainLogo,
   useUser,
 } from "@coral-xyz/recoil";
 import { styled, useCustomTheme } from "@coral-xyz/themes";
-import { ExpandLess, ExpandMore } from "@mui/icons-material";
-import { CardHeader, CircularProgress, Grid } from "@mui/material";
+import { CircularProgress, Grid } from "@mui/material";
 import Collapse from "@mui/material/Collapse";
 import Typography from "@mui/material/Typography";
 import { useRecoilValueLoadable, useSetRecoilState } from "recoil";
@@ -30,6 +23,7 @@ type tempAvatar = {
   url: string;
   id: string;
 };
+
 export function UpdateProfilePicture({
   setOpenDrawer,
 }: {
