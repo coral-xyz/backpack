@@ -14,25 +14,29 @@ import {
   solanaFungibleTokenNativeBalance,
 } from "./solana/token";
 import { enabledBlockchains } from "./preferences";
+import { ethereumPublicKey, solanaPublicKey } from "./wallet";
 
 /**
  * Return token balances sorted by usd notional balances.
  */
 export const blockchainBalancesSorted = selectorFamily<
   Array<TokenData>,
-  Blockchain
+  { publicKey: string; blockchain: Blockchain }
 >({
   key: "blockchainBalancesSorted",
   get:
-    (blockchain: Blockchain) =>
+    ({ publicKey, blockchain }) =>
     ({ get }) => {
-      const tokenAddresses = get(blockchainTokenAddresses(blockchain));
+      const tokenAddresses = get(
+        blockchainTokenAddresses({ publicKey, blockchain })
+      );
       const tokenData = tokenAddresses
         .map(
-          (address) =>
+          (tokenAddress) =>
             get(
               blockchainTokenData({
-                address,
+                publicKey,
+                tokenAddress,
                 blockchain,
               })
             )!
@@ -47,19 +51,22 @@ export const blockchainBalancesSorted = selectorFamily<
  */
 export const blockchainNativeBalances = selectorFamily<
   Array<TokenNativeData>,
-  Blockchain
+  { blockchain: Blockchain; publicKey: string }
 >({
   key: "blockchainNativeBalances",
   get:
-    (blockchain: Blockchain) =>
+    ({ blockchain, publicKey }) =>
     ({ get }) => {
-      const tokenAddresses = get(blockchainTokenAddresses(blockchain));
+      const tokenAddresses = get(
+        blockchainTokenAddresses({ publicKey, blockchain })
+      );
       return tokenAddresses
         .map(
-          (address) =>
+          (tokenAddress) =>
             get(
               blockchainTokenNativeData({
-                address,
+                publicKey,
+                tokenAddress,
                 blockchain,
               })
             )!
@@ -73,17 +80,19 @@ export const blockchainNativeBalances = selectorFamily<
  */
 export const blockchainTokenNativeData = selectorFamily<
   TokenNativeData | null,
-  { address: string; blockchain: Blockchain }
+  { publicKey: string; tokenAddress: string; blockchain: Blockchain }
 >({
   key: "blockchainTokenNativeData",
   get:
-    ({ address, blockchain }: { address: string; blockchain: Blockchain }) =>
+    ({ publicKey, tokenAddress, blockchain }) =>
     ({ get }) => {
       switch (blockchain) {
         case Blockchain.SOLANA:
-          return get(solanaFungibleTokenNativeBalance(address));
+          return get(
+            solanaFungibleTokenNativeBalance({ tokenAddress, publicKey })
+          );
         case Blockchain.ETHEREUM:
-          return get(ethereumTokenNativeBalance(address));
+          return get(ethereumTokenNativeBalance(tokenAddress));
         default:
           throw new Error(`unsupported blockchain: ${blockchain}`);
       }
@@ -95,17 +104,17 @@ export const blockchainTokenNativeData = selectorFamily<
  */
 export const blockchainTokenData = selectorFamily<
   TokenData | null,
-  { address: string; blockchain: Blockchain }
+  { publicKey: string; tokenAddress: string; blockchain: Blockchain }
 >({
   key: "blockchainTokenData",
   get:
-    ({ address, blockchain }: { address: string; blockchain: Blockchain }) =>
+    ({ publicKey, tokenAddress, blockchain }) =>
     ({ get }) => {
       switch (blockchain) {
         case Blockchain.SOLANA:
-          return get(solanaFungibleTokenBalance(address));
+          return get(solanaFungibleTokenBalance({ publicKey, tokenAddress }));
         case Blockchain.ETHEREUM:
-          return get(ethereumTokenBalance(address));
+          return get(ethereumTokenBalance(tokenAddress));
         default:
           throw new Error(`unsupported blockchain: ${blockchain}`);
       }
@@ -115,14 +124,17 @@ export const blockchainTokenData = selectorFamily<
 /**
  * Selects a blockchain token list based on a network string.
  */
-export const blockchainTokenAddresses = selectorFamily({
+export const blockchainTokenAddresses = selectorFamily<
+  any,
+  { publicKey: string; blockchain: Blockchain }
+>({
   key: "blockchainTokenAddresses",
   get:
-    (blockchain: Blockchain) =>
+    ({ publicKey, blockchain }) =>
     ({ get }) => {
       switch (blockchain) {
         case Blockchain.SOLANA:
-          return get(solanaFungibleTokenAccountKeys);
+          return get(solanaFungibleTokenAccountKeys(publicKey));
         case Blockchain.ETHEREUM:
           const ethTokenMetadata = get(ethereumTokenMetadata)();
           return ethTokenMetadata
@@ -137,14 +149,17 @@ export const blockchainTokenAddresses = selectorFamily({
 /**
  * Total asset balance in USD, change in USD, and percent change for a given blockchain.
  */
-export const blockchainTotalBalance = selectorFamily({
+export const blockchainTotalBalance = selectorFamily<
+  { totalBalance: number; totalChange: number; percentChange: number },
+  { publicKey: string; blockchain: Blockchain }
+>({
   key: "blockchainTotalBalance",
   get:
-    (blockchain: Blockchain) =>
+    ({ publicKey, blockchain }) =>
     ({ get }) => {
-      const tokens = get(blockchainBalancesSorted(blockchain)).filter(
-        (t) => t.usdBalance && t.recentUsdBalanceChange
-      );
+      const tokens = get(
+        blockchainBalancesSorted({ publicKey, blockchain })
+      ).filter((t) => t.usdBalance && t.recentUsdBalanceChange);
       const totalBalance = tokens
         .map((t) => t.usdBalance)
         .reduce((a, b) => a + b, 0);
@@ -172,7 +187,13 @@ export const totalBalance = selector({
         acc: { totalBalance: number; totalChange: number },
         blockchain: Blockchain
       ) => {
-        const total = get(blockchainTotalBalance(blockchain));
+        let publicKey: string;
+        if (blockchain === Blockchain.SOLANA) {
+          publicKey = get(solanaPublicKey)!;
+        } else {
+          publicKey = get(ethereumPublicKey)!;
+        }
+        const total = get(blockchainTotalBalance({ publicKey, blockchain }));
         return {
           totalBalance: acc.totalBalance + total.totalBalance,
           totalChange: acc.totalChange + total.totalChange,
