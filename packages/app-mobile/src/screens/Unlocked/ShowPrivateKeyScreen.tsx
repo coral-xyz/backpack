@@ -4,12 +4,11 @@ import {
   CopyButton,
   DangerButton,
   Header,
+  HeaderIconSubtitle,
   Margin,
-  MnemonicInputFields,
   Screen,
   SecondaryButton,
   StyledTextInput,
-  SubtextParagraph,
 } from "@components";
 import { EyeIcon, WarningIcon } from "@components/Icon";
 import { UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY } from "@coral-xyz/common";
@@ -129,15 +128,21 @@ export function ShowPrivateKeyScreen({ route, navigation }): JSX.Element {
       }}
     >
       <View>
-        <View style={styles.header}>
-          <Margin bottom={16}>
-            <EyeIcon />
-          </Margin>
-          <Header text="Private key" style={{ textAlign: "center" }} />
-          <SubtextParagraph>Never give out your private key</SubtextParagraph>
-        </View>
+        <HeaderIconSubtitle
+          icon={<EyeIcon />}
+          title="Private key"
+          subtitle="Never give out your private key"
+        />
         <Margin top={16}>
-          <StyledTextInput value={privateKey} editable={false} />
+          <Margin bottom={12}>
+            <StyledTextInput
+              style={{ height: 100 }}
+              multiline={true}
+              value={privateKey}
+              editable={false}
+            />
+          </Margin>
+          <CopyButton text={privateKey} />
         </Margin>
       </View>
       <SecondaryButton label="Close" onPress={handlePressClose} />
@@ -147,7 +152,7 @@ export function ShowPrivateKeyScreen({ route, navigation }): JSX.Element {
 
 const styles = StyleSheet.create({
   header: {
-    alignSelf: "center",
+    // alignSelf: "center",
     marginBottom: 24,
   },
   listContainer: {

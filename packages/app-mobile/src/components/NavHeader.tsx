@@ -32,7 +32,7 @@ export function NavHeader({
       </View>
       <View style={styles.centeredRow}>
         <Margin right={12}>
-          <Pressable onPress={() => navigation.navigate("RecentActivityModal")}>
+          <Pressable onPress={() => navigation.navigate("RecentActivity")}>
             <MaterialIcons
               name="list"
               size={28}
@@ -40,7 +40,7 @@ export function NavHeader({
             />
           </Pressable>
         </Margin>
-        <Pressable onPress={() => navigation.navigate("AccountSettingsModal")}>
+        <Pressable onPress={() => navigation.navigate("AccountSettings")}>
           <Avatar size={28} />
         </Pressable>
       </View>

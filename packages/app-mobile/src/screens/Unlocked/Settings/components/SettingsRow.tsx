@@ -1,23 +1,8 @@
+import type { StyleProp, ViewStyle } from "react-native";
 import { Image, Pressable, StyleSheet, Switch, Text, View } from "react-native";
 import { Margin, WalletAddressLabel } from "@components";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@hooks";
-
-export function RoundedContainer({ children }) {
-  const theme = useTheme();
-  return (
-    <View
-      style={[
-        styles.roundedContainer,
-        {
-          borderColor: theme.custom.colors.borderFull,
-        },
-      ]}
-    >
-      {children}
-    </View>
-  );
-}
 
 export function IconPushDetail() {
   const theme = useTheme();
@@ -165,40 +150,7 @@ export function SettingsRow({
   );
 }
 
-export function SettingsWalletRow({
-  icon,
-  name,
-  publicKey,
-  onPress,
-}: {
-  icon: any; // TODO(any)
-  name: string;
-  publicKey: string;
-  onPress: () => void;
-}) {
-  return (
-    <Pressable onPress={() => onPress()}>
-      <RowContainer>
-        <View style={styles.leftSide}>
-          <Margin right={12}>
-            <Image
-              source={icon}
-              style={{ width: 24, height: 24, borderRadius: 48 }}
-            />
-          </Margin>
-          <WalletAddressLabel name={name} publicKey={publicKey} />
-        </View>
-        <IconExpand collapsed={true} />
-      </RowContainer>
-    </Pressable>
-  );
-}
-
 const styles = StyleSheet.create({
-  roundedContainer: {
-    overflow: "hidden",
-    borderRadius: 12,
-  },
   container: {
     paddingHorizontal: 12,
     height: 48,

@@ -4,6 +4,7 @@ import {
   CopyButton,
   DangerButton,
   Header,
+  HeaderIconSubtitle,
   Margin,
   MnemonicInputFields,
   Screen,
@@ -57,12 +58,10 @@ export function ShowRecoveryPhraseWarningScreen({ navigation }): JSX.Element {
   return (
     <Screen style={{ justifyContent: "space-between" }}>
       <View>
-        <View style={styles.header}>
-          <Margin bottom={16}>
-            <WarningIcon fill="#E95050" />
-          </Margin>
-          <Header text="Warning" />
-        </View>
+        <HeaderIconSubtitle
+          icon={<WarningIcon fill="#E95050" />}
+          title="Warning"
+        />
         {warnings.map(({ icon, text }) => (
           <View
             key={text}
@@ -126,15 +125,11 @@ export function ShowRecoveryPhraseScreen({ route, navigation }): JSX.Element {
       }}
     >
       <View>
-        <View style={styles.header}>
-          <Margin bottom={16}>
-            <EyeIcon />
-          </Margin>
-          <Header text="Recovery phrase" style={{ textAlign: "center" }} />
-          <SubtextParagraph>
-            Use these {mnemonicWords.length} words to recover your wallet
-          </SubtextParagraph>
-        </View>
+        <HeaderIconSubtitle
+          icon={<EyeIcon />}
+          text="Recovery phrase"
+          subtitle={`Use these ${mnemonicWords.length} words to recover your wallet`}
+        />
         <MnemonicInputFields mnemonicWords={mnemonicWords} />
         <Margin top={16}>
           <CopyButton text={mnemonic} />
@@ -146,10 +141,6 @@ export function ShowRecoveryPhraseScreen({ route, navigation }): JSX.Element {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    alignSelf: "center",
-    marginBottom: 24,
-  },
   listContainer: {
     borderRadius: 12,
     padding: 12,

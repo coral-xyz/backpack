@@ -859,3 +859,72 @@ const twoButtonFooterStyles = StyleSheet.create({
     alignItems: "center",
   },
 });
+
+export function HeaderIconSubtitle({
+  icon,
+  title,
+  subtitle,
+}: {
+  icon: JSX.Element;
+  title: string;
+  subtitle?: string;
+}): JSX.Element {
+  return (
+    <View style={headerIconSubtitleStyles.container}>
+      <Margin bottom={16}>{icon}</Margin>
+      <Header text={title} />
+      {subtitle ? <SubtextParagraph>{subtitle}</SubtextParagraph> : null}
+    </View>
+  );
+}
+
+const headerIconSubtitleStyles = StyleSheet.create({
+  container: {
+    alignItems: "center",
+    marginBottom: 24,
+  },
+});
+
+export function RoundedContainerGroup({
+  children,
+  style,
+  disableTopRadius = false,
+  disableBottomRadius = false,
+}: {
+  children: JSX.Element;
+  style: StyleProp<ViewStyle>;
+  disableTopRadius?: boolean;
+  disableBottomRadius?: boolean;
+}): JSX.Element {
+  const theme = useTheme();
+  return (
+    <View
+      style={[
+        roundedContainerStyles.container,
+        {
+          borderColor: theme.custom.colors.borderFull,
+        },
+        disableTopRadius ? roundedContainerStyles.disableTopRadius : null,
+        disableBottomRadius ? roundedContainerStyles.disableBottomRadius : null,
+        style,
+      ]}
+    >
+      {children}
+    </View>
+  );
+}
+
+const roundedContainerStyles = StyleSheet.create({
+  container: {
+    overflow: "hidden",
+    borderRadius: 12,
+  },
+  disableTopRadius: {
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+  },
+  disableBottomRadius: {
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+  },
+});

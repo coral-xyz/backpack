@@ -330,3 +330,35 @@ export function EyeIcon({
     </Svg>
   );
 }
+
+export function ExpandCollapseIcon({
+  isExpanded,
+  size = 24,
+}: {
+  isExpanded: boolean;
+  size?: number;
+}): JSX.Element {
+  const theme = useTheme();
+  return (
+    <MaterialIcons
+      name={isExpanded ? "keyboard-arrow-up" : "keyboard-arrow-down"}
+      size={size}
+      color={theme.custom.colors.fontColor}
+    />
+  );
+}
+
+export function IconCloseModal({
+  tintColor,
+}: {
+  tintColor: string;
+}): JSX.Element {
+  return (
+    <MaterialIcons
+      name="close"
+      size={28}
+      color={tintColor}
+      style={{ padding: 8 }}
+    />
+  );
+}
