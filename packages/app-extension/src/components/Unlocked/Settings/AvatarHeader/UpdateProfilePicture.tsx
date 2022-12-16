@@ -1,21 +1,14 @@
 import { useState } from "react";
 import type { Blockchain, Nft, NftCollection } from "@coral-xyz/common";
-import {
-  BACKEND_API_URL,
-  toTitleCase,
-  walletAddressDisplay,
-} from "@coral-xyz/common";
+import { BACKEND_API_URL } from "@coral-xyz/common";
 import {
   newAvatarAtom,
   nftCollections,
-  useActiveWallets,
   useAvatarUrl,
-  useBlockchainLogo,
   useUser,
 } from "@coral-xyz/recoil";
 import { styled, useCustomTheme } from "@coral-xyz/themes";
-import { ExpandLess, ExpandMore } from "@mui/icons-material";
-import { CardHeader, CircularProgress, Grid } from "@mui/material";
+import { CircularProgress, Grid } from "@mui/material";
 import Collapse from "@mui/material/Collapse";
 import Typography from "@mui/material/Typography";
 import { useRecoilValueLoadable, useSetRecoilState } from "recoil";
@@ -30,6 +23,7 @@ type tempAvatar = {
   url: string;
   id: string;
 };
+
 export function UpdateProfilePicture({
   setOpenDrawer,
 }: {
@@ -177,7 +171,7 @@ function BlockchainNFTs({
       <Collapse in={showContent}>
         <Grid
           container
-          style={{ padding: "0px 16px 16px 16px" }}
+          style={{ padding: "12px 16px 16px 16px" }}
           spacing={{ xs: 2, ms: 2, md: 2, lg: 2 }}
         >
           {nfts.map((nft, index) => {
@@ -246,6 +240,7 @@ const FakeDrawer = styled("div")(({ theme }) => ({
   borderTopRightRadius: "12px",
   marginTop: "16px",
   zIndex: "0",
+  overflow: "hidden",
 }));
 const ButtonsOverlay = styled("div")(({ theme }) => ({
   position: "absolute",

@@ -1,18 +1,11 @@
 import { useMemo } from "react";
 import type { Blockchain, NftCollection } from "@coral-xyz/common";
 import {
-  NAV_COMPONENT_NFT_COLLECTION,
-  NAV_COMPONENT_NFT_DETAIL,
-  NAV_COMPONENT_NFT_EXPERIENCE,
-  toTitleCase,
-} from "@coral-xyz/common";
-import {
   nftCollections,
   useActiveWallets,
   useEnabledBlockchains,
   useLoader,
 } from "@coral-xyz/recoil";
-import { styles } from "@coral-xyz/themes";
 import { Image as ImageIcon } from "@mui/icons-material";
 
 import { useIsONELive } from "../../../hooks/useIsONELive";
@@ -20,7 +13,6 @@ import { Loading } from "../../common";
 import { EmptyState } from "../../common/EmptyState";
 import {} from "../Balances";
 
-import { GridCard } from "./Common";
 import EntryONE from "./EntryONE";
 import { NftTable } from "./NftTable";
 
@@ -39,6 +31,8 @@ export function Nfts() {
     [activeWallets]
   );
 
+  // const collections = {..._collections, ethereum: []};
+
   const NFTList = useMemo(() => {
     return (
       <NftTable
@@ -52,6 +46,8 @@ export function Nfts() {
     );
   }, [isONELive, JSON.stringify(collections)]);
 
+  const isEmpty =
+    false || (Object.values(collections).flat().length === 0 && !isLoading);
   return (
     <div
       style={{
@@ -61,16 +57,18 @@ export function Nfts() {
         height: "100%",
       }}
     >
-      {false ||
-      (Object.values(collections).flat().length === 0 && !isLoading) ? (
-        <EmptyState
-          icon={(props: any) => <ImageIcon {...props} />}
-          title={"No NFTs"}
-          subtitle={"Get started with your first NFT"}
-          buttonText={"Browse Magic Eden"}
-          onClick={() => window.open("https://magiceden.io")}
-          verticallyCentered={!isONELive}
-        />
+      {isEmpty ? (
+        <>
+          {isONELive && <EntryONE />}
+          <EmptyState
+            icon={(props: any) => <ImageIcon {...props} />}
+            title={"No NFTs"}
+            subtitle={"Get started with your first NFT"}
+            buttonText={"Browse Magic Eden"}
+            onClick={() => window.open("https://magiceden.io")}
+            verticallyCentered={!isONELive}
+          />
+        </>
       ) : isLoading ? (
         <Loading />
       ) : (
