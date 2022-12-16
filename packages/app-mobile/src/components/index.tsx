@@ -69,7 +69,8 @@ export function Screen({
         {
           flex: 1,
           backgroundColor: theme.custom.colors.background,
-          padding: 12,
+          paddingHorizontal: 16,
+          paddingVertical: 16,
         },
         style,
       ]}

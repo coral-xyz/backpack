@@ -1,10 +1,10 @@
 {
   "extends": "expo/tsconfig.base",
-  "baseUrl": "./",
   "include": ["src"],
   "exclude": ["**/node_modules", "**/.*/"],
   "compilerOptions": {
     "strict": true,
+    "baseUrl": ".",
     "paths": {
       "@navigation/*": ["src/navigation/*"],
       "@components/*": ["src/components/*"],
