@@ -117,7 +117,7 @@ export function SendTokenDetailScreen({ route }) {
             value={amount}
             decimals={token.decimals}
             placeholder="Amount"
-            onChangeValue={setAmount}
+            onChangeText={setAmount}
           />
         </InputField>
       </View>
