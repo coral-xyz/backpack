@@ -47,7 +47,7 @@ export const EmptyState: React.FC<{
       >
         {icon({
           style: {
-            color: theme.custom.colors.secondary,
+            color: theme.custom.colors.icon,
             width: "56px",
             height: "56px",
             display: "block",
