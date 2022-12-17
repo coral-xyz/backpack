@@ -852,12 +852,13 @@ export class Backend {
     if (jwtEnabled) {
       try {
         await this._addPublicKeyToAccount(blockchain, publicKey);
-      } catch {
+      } catch (error) {
         // Something went wrong persisting to server, roll back changes to the
         // keyring. This is not a complete rollback of state changes, because
         // the next account index gets incremented. This is the correct behaviour
         // because it should allow for sensible retries on conflicts.
         this.keyringKeyDelete(blockchain, publicKey);
+        throw error;
       }
     }
 
@@ -1016,10 +1017,11 @@ export class Backend {
     if (jwtEnabled) {
       try {
         await this._addPublicKeyToAccount(blockchain, publicKey);
-      } catch {
+      } catch (error) {
         // Something went wrong persisting to server, roll back changes to the
         // keyring.
         this.keyringKeyDelete(blockchain, publicKey);
+        throw error;
       }
     }
 
@@ -1086,10 +1088,11 @@ export class Backend {
     if (jwtEnabled) {
       try {
         await this._addPublicKeyToAccount(blockchain, publicKey, signature);
-      } catch {
+      } catch (error) {
         // Something went wrong persisting to server, roll back changes to the
         // keyring.
         this.keyringKeyDelete(blockchain, publicKey);
+        throw error;
       }
     }
     // Set the active wallet to the newly added public key
@@ -1301,9 +1304,10 @@ export class Backend {
     if (jwtEnabled) {
       try {
         await this._addPublicKeyToAccount(blockchain, newPublicKey, signature);
-      } catch {
+      } catch (error) {
         // Roll back the added blockchain keyring
         await this.keyringStore.blockchainKeyringRemove(blockchain);
+        throw error;
       }
     }
     // Automatically enable the newly added blockchain

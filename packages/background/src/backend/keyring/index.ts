@@ -574,9 +574,7 @@ class UserKeyring {
         blockchainKeyring.blockchain,
         blockchainKeyring.derivationPath,
         blockchainKeyring.accountIndex,
-        blockchainKeyring.publicKey,
-        // Don't persist, as we persist manually later
-        false
+        blockchainKeyring.publicKey
       );
     }
     return kr;
