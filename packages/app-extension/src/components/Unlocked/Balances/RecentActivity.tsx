@@ -364,10 +364,11 @@ function NoRecentActivityLabel({ minimize }: { minimize: boolean }) {
       }}
     >
       <EmptyState
-        icon={(props: any) => <Bolt {...props} />}
+        icon={(props: any) => <FormatListBulletedIcon {...props} />}
         title={"No Recent Activity"}
-        subtitle={"Get started by adding your first xNFT"}
-        buttonText={"Browse the xNFT Library"}
+        subtitle={
+          "Your transactions and app activity will show up here when you start using Backpack!"
+        }
         onClick={() => window.open("https://xnft.gg")}
         contentStyle={{
           marginBottom: minimize !== true ? "64px" : 0, // Tab height offset.
