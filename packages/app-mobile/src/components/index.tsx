@@ -14,8 +14,6 @@ import { proxyImageUrl, walletAddressDisplay } from "@coral-xyz/common";
 import { useAvatarUrl } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@hooks";
-import type { BigNumber } from "ethers";
-import { ethers } from "ethers";
 import * as Clipboard from "expo-clipboard";
 
 export { ActionCard } from "./ActionCard";
@@ -27,7 +25,7 @@ export { PasswordInput } from "./PasswordInput";
 export { default as ResetAppButton } from "./ResetAppButton";
 export { StyledTextInput } from "./StyledTextInput";
 export { TokenAmountHeader } from "./TokenAmountHeader";
-export { TokenInputField } from "./TokenInputField";
+export { StyledTokenTextInput } from "./TokenInputField";
 import { ContentCopyIcon, RedBackpack } from "@components/Icon";
 //
 // function getRandomColor() { var letters = "0123456789ABCDEF";
@@ -639,117 +637,6 @@ export function CopyWalletFieldInput({
     </View>
   );
 }
-
-export function InputFieldLabel({
-  leftLabel,
-  rightLabel,
-  rightLabelComponent,
-  style,
-}: {
-  leftLabel: string;
-  rightLabel?: string;
-  rightLabelComponent?: JSX.Element;
-  style?: StyleProp<ViewStyle>;
-}): JSX.Element {
-  const theme = useTheme();
-  return (
-    <View style={[inputFieldLabelStyles.container, style]}>
-      <Text
-        style={[
-          inputFieldLabelStyles.leftLabel,
-          {
-            color: theme.custom.colors.fontColor,
-          },
-        ]}
-      >
-        {leftLabel}
-      </Text>
-      {rightLabelComponent ? (
-        rightLabelComponent
-      ) : (
-        <Text
-          style={[
-            inputFieldLabelStyles.rightLabel,
-            {
-              color: theme.custom.colors.interactiveIconsActive,
-            },
-          ]}
-        >
-          {rightLabel}
-        </Text>
-      )}
-    </View>
-  );
-}
-
-const inputFieldLabelStyles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 8,
-  },
-  leftLabel: {
-    fontSize: 16,
-    lineHeight: 16,
-    fontWeight: "500",
-  },
-  rightLabel: {
-    fontWeight: "500",
-    fontSize: 12,
-    lineHeight: 16,
-  },
-});
-
-export const InputFieldMaxLabel = ({
-  amount,
-  onSetAmount,
-  decimals,
-}: {
-  amount: BigNumber | null;
-  onSetAmount: (amount: BigNumber) => void;
-  decimals: number;
-}) => {
-  const theme = useTheme();
-  return (
-    <Pressable
-      style={inputFieldMaxLabelStyles.container}
-      onPress={() => amount && onSetAmount(amount)}
-    >
-      <Text
-        style={[
-          inputFieldMaxLabelStyles.label,
-          { color: theme.custom.colors.secondary },
-        ]}
-      >
-        Max:{" "}
-      </Text>
-      <Text
-        style={[
-          inputFieldMaxLabelStyles.label,
-          {
-            color: theme.custom.colors.fontColor,
-          },
-        ]}
-      >
-        {amount !== null ? ethers.utils.formatUnits(amount, decimals) : "-"}
-      </Text>
-    </Pressable>
-  );
-};
-
-const inputFieldMaxLabelStyles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-end",
-  },
-  label: {
-    fontWeight: "500",
-    fontSize: 12,
-    lineHeight: 16,
-  },
-});
 
 export function Loading(props: any): JSX.Element {
   return <ActivityIndicator {...props} />;
