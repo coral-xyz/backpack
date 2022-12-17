@@ -244,7 +244,7 @@ async function handleConnect(
         blockchain
       );
     });
-    didApprove = !resp.windowClosed && resp.result;
+    didApprove = !resp.windowClosed && resp.result.didApprove;
   } else {
     if (await ctx.backend.isApprovedOrigin(origin)) {
       logger.debug("origin approved so automatically connecting");
@@ -260,7 +260,7 @@ async function handleConnect(
           blockchain
         );
       });
-      didApprove = !resp.windowClosed && resp.result;
+      didApprove = !resp.windowClosed && resp.result.didApprove;
     }
   }
 
@@ -272,16 +272,17 @@ async function handleConnect(
 
   // If the user approved and unlocked, then we're connected.
   if (didApprove) {
-    const activeWallet = (await ctx.backend.blockchainActiveWallets())[
-      blockchain
-    ];
     const user = await ctx.backend.userRead();
     if (blockchain === Blockchain.ETHEREUM) {
       const connectionUrl = await ctx.backend.ethereumConnectionUrlRead(
         user.uuid
       );
       const chainId = await ctx.backend.ethereumChainIdRead();
-      const data = { publicKey: activeWallet, connectionUrl, chainId };
+      const data = {
+        publicKey: resp.result.walletPublicKey,
+        connectionUrl,
+        chainId,
+      };
       ctx.events.emit(BACKEND_EVENT, {
         name: NOTIFICATION_ETHEREUM_CONNECTED,
         data,
@@ -291,7 +292,7 @@ async function handleConnect(
       const connectionUrl = await ctx.backend.solanaConnectionUrlRead(
         user.uuid
       );
-      const data = { publicKey: activeWallet, connectionUrl };
+      const data = { publicKey: resp.result.walletPublicKey, connectionUrl };
       ctx.events.emit(BACKEND_EVENT, {
         name: NOTIFICATION_SOLANA_CONNECTED,
         data,

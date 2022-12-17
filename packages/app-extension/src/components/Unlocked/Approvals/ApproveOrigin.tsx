@@ -62,15 +62,23 @@ export function ApproveOrigin({
 }: any) {
   const classes = useStyles();
   const approveOrigin = useApproveOrigin();
+
+  // TODO: add a wallet selector.
   const activeWallet = useBlockchainActiveWallet(blockchain);
 
   const onConfirm = async () => {
     await approveOrigin(origin);
-    await onCompletion(true);
+    await onCompletion({
+      didApprove: true,
+      walletPublicKey: activeWallet.publicKey,
+    });
   };
 
   const onDeny = async () => {
-    await onCompletion(false);
+    await onCompletion({
+      didApprove: false,
+      walletPublicKey: activeWallet.publicKey,
+    });
   };
 
   const walletTitle = activeWallet.name
