@@ -229,6 +229,7 @@ function BlockchainWalletList({
       }}
     >
       <WalletList
+        disableIconPadding={true}
         wallets={wallets}
         clickWallet={(v: any) => {
           onChange(v);
@@ -240,6 +241,7 @@ function BlockchainWalletList({
           marginLeft: 0,
           marginRight: 0,
         }}
+        selectedWalletPublicKey={value.publicKey}
       />
     </div>
   );

@@ -1,5 +1,6 @@
 import { List, ListItem } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
+import CheckIcon from "@mui/icons-material/Check";
 import { Typography } from "@mui/material";
 
 import { WalletAddress } from "./";
@@ -8,10 +9,14 @@ export function WalletList({
   wallets,
   clickWallet,
   style,
+  selectedWalletPublicKey,
+  disableIconPadding,
 }: {
   wallets: any;
   clickWallet: (w: any) => void;
   style: React.CSSProperties;
+  selectedWalletPublicKey?: string;
+  disableIconPadding?: boolean;
 }) {
   return (
     <List style={style}>
@@ -40,7 +45,7 @@ export function WalletList({
                   display: "flex",
                   justifyContent: "space-between",
                   width: "100%",
-                  marginLeft: "20px",
+                  marginLeft: disableIconPadding ? undefined : "20px",
                 }}
               >
                 <div
@@ -82,6 +87,10 @@ export function WalletList({
                     <ImportTypeBadge type={type} />
                   </div>
                 </div>
+                {selectedWalletPublicKey &&
+                  selectedWalletPublicKey === publicKey.toString() && (
+                    <CheckIcon />
+                  )}
               </div>
             </ListItem>
           );
