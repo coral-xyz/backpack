@@ -75,7 +75,7 @@ export const getOrCreateFriendship = async ({
     return {
       id: response.insert_auth_friendships_one?.id,
       are_friends: false,
-      requested: false,
+      requested: existingFriendship.auth_friend_requests[0] ? true : false,
       spam: false,
       blocked: false,
     };

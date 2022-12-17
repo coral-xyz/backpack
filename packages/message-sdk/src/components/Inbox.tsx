@@ -55,7 +55,11 @@ export function Inbox() {
               `${BACKEND_API_URL}/users?usernamePrefix=${prefix}`
             );
             const json = await res.json();
-            setSearchResults(json.users || []);
+            setSearchResults(
+              json.users.sort((a, b) =>
+                a.username.length < b.username.length ? -1 : 1
+              ) || []
+            );
           } else {
             setSearchResults([]);
           }
