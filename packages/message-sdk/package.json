@@ -25,11 +25,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "GENERATE_SOURCEMAP=false craco start",
-    "build": "tsc && tsc-alias",
-    "build-web": "craco build",
-    "test": "craco test",
-    "eject": "craco eject"
+    "build": "tsc && tsc-alias"
   },
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.10",
