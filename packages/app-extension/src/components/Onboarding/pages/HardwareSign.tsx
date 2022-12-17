@@ -4,17 +4,12 @@ import {
   toTitleCase,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
 } from "@coral-xyz/common";
+import { HardwareWalletIcon,PrimaryButton } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { Box } from "@mui/material";
 import { encode } from "bs58";
 
-import {
-  Header,
-  HeaderIcon,
-  PrimaryButton,
-  SubtextParagraph,
-} from "../../common";
-import { HardwareWalletIcon } from "../../common/Icon";
+import { Header, HeaderIcon, SubtextParagraph } from "../../common";
 
 export function HardwareSign({
   blockchain,

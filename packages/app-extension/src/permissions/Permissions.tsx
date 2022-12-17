@@ -1,4 +1,3 @@
-import { Routes, useLocation } from "react-router-dom";
 import { RecoilRoot } from "recoil";
 
 import { WithTheme } from "../components/common/WithTheme";

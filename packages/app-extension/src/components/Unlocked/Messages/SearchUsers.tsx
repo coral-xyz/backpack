@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import type { EnrichedInboxDb } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
-
-import { TextInput } from "../../common/Inputs";
+import { TextInput } from "@coral-xyz/react-common";
 
 import { useStyles } from "./styles";
 import { UserList } from "./UserList";

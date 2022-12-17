@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
+import { TextInput } from "@coral-xyz/react-common";
 import type { BigNumber } from "ethers";
 import { ethers } from "ethers";
 
 import type { TextField } from "./";
-import { TextInput } from "./Inputs";
 
 export function TokenInputField({
   decimals,

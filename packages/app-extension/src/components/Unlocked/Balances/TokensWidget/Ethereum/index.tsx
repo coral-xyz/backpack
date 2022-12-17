@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Blockchain, Ethereum, getLogger } from "@coral-xyz/common";
+import { PrimaryButton } from "@coral-xyz/react-common";
 import { useEthereumCtx, useTransactionData } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import type { UnsignedTransaction } from "@ethersproject/transactions";
@@ -7,7 +8,7 @@ import { Typography } from "@mui/material";
 import type { BigNumber } from "ethers";
 import { ethers } from "ethers";
 
-import { PrimaryButton, walletAddressDisplay } from "../../../../common";
+import { walletAddressDisplay } from "../../../../common";
 import { TokenAmountHeader } from "../../../../common/TokenAmountHeader";
 import { TransactionData } from "../../../../common/TransactionData";
 import { Error, Sending } from "../Send";

@@ -7,10 +7,11 @@ import {
   DerivationPath,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
 } from "@coral-xyz/common";
+import { Loading, PrimaryButton } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { Box } from "@mui/material";
 
-import { Header, Loading, PrimaryButton, SubtextParagraph } from "../../common";
+import { Header, SubtextParagraph } from "../../common";
 
 export const DERIVATION_PATHS = [
   DerivationPath.Bip44,

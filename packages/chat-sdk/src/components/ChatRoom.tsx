@@ -21,6 +21,8 @@ interface ChatRoomProps {
   setRequested?: any;
   setSpam?: any;
   setBlocked?: any;
+  isDarkMode: boolean;
+  jwt: string;
 }
 
 export const ChatRoom = ({
@@ -37,6 +39,8 @@ export const ChatRoom = ({
   setRequested,
   setSpam,
   setBlocked,
+  isDarkMode,
+  jwt,
 }: ChatRoomProps) => {
   const [chatManager, setChatManager] = useState<ChatManager | null>(null);
   // TODO: Make state propogte from outside the state since this'll be expensive
@@ -55,6 +59,7 @@ export const ChatRoom = ({
         userId,
         roomId,
         type,
+        jwt,
         (messages) => {
           setLoading(false);
           setChats((m) => [...m, ...messages]);
@@ -112,6 +117,7 @@ export const ChatRoom = ({
       setRequested={setRequested}
       setSpam={setSpam}
       setBlocked={setBlocked}
+      isDarkMode={isDarkMode}
     >
       <FullScreenChat />
     </ChatProvider>

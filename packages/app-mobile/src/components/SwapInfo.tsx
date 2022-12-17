@@ -6,6 +6,7 @@ import {
   SOL_NATIVE_MINT,
   WSOL_MINT,
 } from "@coral-xyz/common";
+import { CheckIcon, CrossIcon } from "@coral-xyz/react-common";
 import {
   useJupiterOutputMints,
   useSplTokenRegistry,
@@ -28,7 +29,6 @@ import {
   TextFieldLabel,
 } from "../common";
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
-import { CheckIcon, CrossIcon } from "../common/Icon";
 import { useDrawerContext } from "../common/Layout/Drawer";
 import { useNavStack } from "../common/Layout/NavStack";
 import { MaxSwapLabel } from "../common/MaxSwapLabel";

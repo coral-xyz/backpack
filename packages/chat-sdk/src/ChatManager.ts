@@ -32,6 +32,7 @@ export class ChatManager {
     userId: string,
     roomId: string,
     type: SubscriptionType,
+    jwt: string,
     onMessages: (messages: EnrichedMessage[]) => void,
     onMessagesPrepend: (messages: EnrichedMessage[]) => void,
     onLocalMessageReceived: (messages: EnrichedMessage[]) => void
@@ -42,7 +43,7 @@ export class ChatManager {
     this.onMessagesPrepend = onMessagesPrepend;
     this.onLocalMessageReceived = onLocalMessageReceived;
     this.signaling = new Signaling();
-    this.init();
+    this.init(jwt);
     this.type = type;
   }
 
@@ -82,8 +83,8 @@ export class ChatManager {
       });
   }
 
-  async init() {
-    await this.signaling.initWs();
+  async init(jwt: string) {
+    await this.signaling.initWs(jwt);
     this.signaling.addListener(SIGNALING_CONNECTED, () => {
       this.signaling.send({
         type: SUBSCRIBE,

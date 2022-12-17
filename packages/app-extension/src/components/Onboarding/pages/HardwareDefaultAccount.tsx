@@ -7,12 +7,12 @@ import {
   Blockchain,
   DerivationPath,
 } from "@coral-xyz/common";
+import { Loading } from "@coral-xyz/react-common";
 import Ethereum from "@ledgerhq/hw-app-eth";
 import Solana from "@ledgerhq/hw-app-solana";
 import type Transport from "@ledgerhq/hw-transport";
 import { encode } from "bs58";
 
-import { Loading } from "../../common";
 import type { SelectedAccount } from "../../common/Account/ImportAccounts";
 
 export const HardwareDefaultAccount = ({

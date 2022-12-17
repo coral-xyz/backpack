@@ -4,11 +4,11 @@ import {
   SolanaCluster,
   UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
 } from "@coral-xyz/common";
+import { PushDetail } from "@coral-xyz/react-common";
 import { useBackgroundClient, useSolanaConnectionUrl } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Check } from "@mui/icons-material";
 
-import { PushDetail } from "../../../../common";
 import { useDrawerContext } from "../../../../common/Layout/Drawer";
 import { useNavStack } from "../../../../common/Layout/NavStack";
 import { SettingsList } from "../../../../common/Settings/List";

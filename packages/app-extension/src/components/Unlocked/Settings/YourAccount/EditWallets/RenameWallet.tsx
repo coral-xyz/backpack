@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { UI_RPC_METHOD_KEYNAME_UPDATE } from "@coral-xyz/common";
+import {
+  PrimaryButton,
+  SecondaryButton,
+  TextInput,
+} from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
 
-import { PrimaryButton, SecondaryButton } from "../../../../common";
-import { TextInput } from "../../../../common/Inputs";
 import { useNavStack } from "../../../../common/Layout/NavStack";
 
 export const RenameWallet: React.FC<{ publicKey: string; name: string }> = ({

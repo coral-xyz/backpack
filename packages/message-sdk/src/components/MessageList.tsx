@@ -4,14 +4,12 @@ import {
   NAV_COMPONENT_MESSAGE_PROFILE,
   NAV_COMPONENT_MESSAGE_REQUESTS,
 } from "@coral-xyz/common";
-import { useNavigation } from "@coral-xyz/recoil";
+import { isFirstLastListItemStyle, ProxyImage } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import MarkChatUnreadIcon from "@mui/icons-material/MarkChatUnread";
-import MarkUnreadChatAltIcon from "@mui/icons-material/MarkUnreadChatAlt";
 import { List, ListItem } from "@mui/material";
 
-import { isFirstLastListItemStyle } from "../../common";
-import { ProxyImage } from "../../common/ProxyImage";
+import { ParentCommunicationManager } from "../ParentCommunicationManager";
 
 import { useStyles } from "./styles";
 export const MessageList = ({
@@ -75,7 +73,6 @@ export function ChatListItem({
 }: any) {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const { push } = useNavigation();
 
   function formatAMPM(date: Date) {
     let hours = date.getHours();
@@ -92,7 +89,7 @@ export function ChatListItem({
       button
       disableRipple
       onClick={() => {
-        push({
+        ParentCommunicationManager.getInstance().push({
           title: `@${username}`,
           componentId: NAV_COMPONENT_MESSAGE_CHAT,
           componentProps: {
@@ -136,7 +133,7 @@ export function ChatListItem({
             >
               <UserIcon
                 onClick={() => {
-                  push({
+                  ParentCommunicationManager.getInstance().push({
                     title: `@${username}`,
                     componentId: NAV_COMPONENT_MESSAGE_PROFILE,
                     componentProps: {
@@ -200,14 +197,13 @@ export function RequestsChatItem({
 }) {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const { push } = useNavigation();
 
   return (
     <ListItem
       button
       disableRipple
       onClick={() => {
-        push({
+        ParentCommunicationManager.getInstance().push({
           title: `Requests`,
           componentId: NAV_COMPONENT_MESSAGE_REQUESTS,
           componentProps: {},

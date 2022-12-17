@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import type { Blockchain, NftCollection } from "@coral-xyz/common";
+import { Loading } from "@coral-xyz/react-common";
 import {
   nftCollections,
   useActiveWallets,
@@ -11,7 +12,6 @@ import type { UnwrapRecoilValue } from "recoil";
 import { RecoilValue, selectorFamily, useRecoilValue } from "recoil";
 
 import { useIsONELive } from "../../../hooks/useIsONELive";
-import { Loading } from "../../common";
 import { EmptyState } from "../../common/EmptyState";
 import {} from "../Balances";
 

@@ -1,16 +1,13 @@
 import { useEffect, useState } from "react";
 import { Blockchain } from "@coral-xyz/common";
+import { SecondaryButton } from "@coral-xyz/react-common";
 import { useActiveWallets, useBlockchainLogo } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import QrCodeIcon from "@mui/icons-material/QrCode";
 import { IconButton, Modal, Typography } from "@mui/material";
 
-import {
-  SecondaryButton,
-  TextField,
-  walletAddressDisplay,
-} from "../../../common";
+import { TextField, walletAddressDisplay } from "../../../common";
 import { CloseButton, useDrawerContext } from "../../../common/Layout/Drawer";
 import { useNavStack } from "../../../common/Layout/NavStack";
 import { WithCopyTooltip } from "../../../common/WithCopyTooltip";

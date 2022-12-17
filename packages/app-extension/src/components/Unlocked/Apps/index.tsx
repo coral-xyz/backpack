@@ -4,6 +4,7 @@ import {
   TAB_APPS,
   UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
 } from "@coral-xyz/common";
+import { ProxyImage } from "@coral-xyz/react-common";
 import {
   filteredPlugins,
   useActiveWallets,
@@ -18,7 +19,6 @@ import { Button, Grid, Skeleton, Typography } from "@mui/material";
 import { getSvgPath } from "figma-squircle";
 
 import { EmptyState } from "../../common/EmptyState";
-import { ProxyImage } from "../../common/ProxyImage";
 
 const ICON_WIDTH = 64;
 

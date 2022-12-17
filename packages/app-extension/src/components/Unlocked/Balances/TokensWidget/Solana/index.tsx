@@ -9,6 +9,7 @@ import {
   SOL_NATIVE_MINT,
   Solana,
 } from "@coral-xyz/common";
+import { PrimaryButton } from "@coral-xyz/react-common";
 import { useSolanaCtx, useSolanaTokenMint } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
@@ -16,7 +17,7 @@ import type { Connection } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
 import type { BigNumber } from "ethers";
 
-import { PrimaryButton, walletAddressDisplay } from "../../../../common";
+import { walletAddressDisplay } from "../../../../common";
 import { SettingsList } from "../../../../common/Settings/List";
 import { TokenAmountHeader } from "../../../../common/TokenAmountHeader";
 import { Error, Sending } from "../Send";

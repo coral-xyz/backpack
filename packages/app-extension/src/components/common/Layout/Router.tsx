@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useEffect, useRef, useState } from "react";
 import {
   Navigate,
   Route,
@@ -7,19 +7,36 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import {
+  MESSAGE_IFRAME_ENABLED,
+  MESSAGING_COMMUNICATION_FETCH_RESPONSE,
+} from "@coral-xyz/common";
+import {
+  MESSAGING_COMMUNICATION_FETCH,
+  MESSAGING_COMMUNICATION_PUSH,
   TAB_SET,
   UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
 } from "@coral-xyz/common/src/constants";
+import {
+  ChatScreen,
+  Inbox,
+  ParentCommunicationManager,
+  ProfileScreen,
+  RequestsScreen,
+} from "@coral-xyz/message-sdk";
+import { Loading } from "@coral-xyz/react-common";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import {
   PluginManager,
   useBackgroundClient,
   useClosePlugin,
+  useDarkMode,
   useDecodedSearchParams,
+  useFeatureGates,
   useFreshPlugin,
   useNavigation,
   useRedirectUrl,
   useUpdateSearchParams,
+  useUser,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
@@ -31,17 +48,11 @@ import { PluginApp } from "../../Unlocked/Apps/Plugin";
 import { Balances } from "../../Unlocked/Balances";
 import { Token } from "../../Unlocked/Balances/TokensWidget/Token";
 import { ChatDrawer } from "../../Unlocked/Messages/ChatDrawer";
-import { ChatScreen } from "../../Unlocked/Messages/ChatScreen";
-import { Inbox } from "../../Unlocked/Messages/Inbox";
-import { ProfileScreen } from "../../Unlocked/Messages/ProfileScreen";
-import { RequestsScreen } from "../../Unlocked/Messages/RequestsScreen";
 import { Nfts } from "../../Unlocked/Nfts";
 import { NftsCollection } from "../../Unlocked/Nfts/Collection";
 import { NftOptionsButton, NftsDetail } from "../../Unlocked/Nfts/Detail";
 import { NftChat, NftsExperience } from "../../Unlocked/Nfts/Experience";
 import { SettingsButton } from "../../Unlocked/Settings";
-import { Swap } from "../../Unlocked/Swap";
-import { Loading } from "..";
 
 import { NavBackButton, WithNav } from "./Nav";
 import { WithMotion } from "./NavStack";
@@ -53,10 +64,7 @@ export function Router() {
       <Routes location={location} key={location.pathname}>
         <Route path="/balances" element={<BalancesPage />} />
         <Route path="/balances/token" element={<TokenPage />} />
-        <Route path="/messages" element={<MessagesPage />} />
-        <Route path="/messages/chat" element={<ChatPage />} />
-        <Route path="/messages/profile" element={<ProfilePage />} />
-        <Route path="/messages/requests" element={<RequestsPage />} />
+        <Route path={"/messages/*"} element={<Messages />} />
         <Route path="/apps" element={<AppsPage />} />
         <Route path="/nfts" element={<NftsPage />} />
         {/*<Route path="/swap" element={<SwapPage />} />*/}
@@ -119,30 +127,133 @@ function NftsDetailPage() {
   );
 }
 
-function MessagesPage() {
+function Messages() {
+  const featureGates = useFeatureGates();
+
+  if (featureGates[MESSAGE_IFRAME_ENABLED]) {
+    return <MessagesIframe />;
+  }
+
+  return <MessagesNative />;
+}
+
+function MessagesNative() {
+  const hash = location.hash.slice(1);
+  const isDarkMode = useDarkMode();
+  const { uuid, username } = useUser();
+  const { props } = useDecodedSearchParams<any>();
+  const { push } = useNavigation();
+
+  useEffect(() => {
+    ParentCommunicationManager.getInstance().setNativePush(push);
+  }, []);
+
+  if (hash.startsWith("/messages/chat")) {
+    return (
+      <NavScreen
+        component={
+          <ChatScreen
+            isDarkMode={isDarkMode}
+            userId={props.userId}
+            uuid={uuid}
+            username={username}
+          />
+        }
+      />
+    );
+  }
+
+  if (hash.startsWith("/messages/profile")) {
+    return <NavScreen component={<ProfileScreen userId={props.userId} />} />;
+  }
+
+  if (hash.startsWith("/messages/requests")) {
+    return <NavScreen component={<RequestsScreen />} />;
+  }
+
   return <NavScreen component={<Inbox />} />;
 }
 
-function ChatPage() {
-  const { props } = useDecodedSearchParams();
+function MessagesIframe() {
+  const MESSAGING_URL = "http://localhost:3000";
+  const iframeRef = useRef<any>();
+  const { push } = useNavigation();
+  const location = useLocation();
+  const { props }: any = useDecodedSearchParams();
+  const { uuid, username } = useUser();
+  const isDarkMode = useDarkMode();
+
+  useEffect(() => {
+    if (iframeRef && iframeRef.current) {
+      window.addEventListener(
+        "message",
+        async (event) => {
+          if (event.origin !== MESSAGING_URL) return;
+
+          if (event.data.type === MESSAGING_COMMUNICATION_FETCH) {
+            try {
+              const response = await fetch(
+                event.data.payload.url,
+                event.data.payload.args
+              );
+              iframeRef.current?.contentWindow?.postMessage(
+                {
+                  type: MESSAGING_COMMUNICATION_FETCH_RESPONSE,
+                  payload: {
+                    counter: event.data.payload.counter,
+                    data: await response.json(),
+                    success: true,
+                  },
+                },
+                "*"
+              );
+            } catch (e) {
+              iframeRef.current?.contentWindow?.postMessage(
+                {
+                  type: MESSAGING_COMMUNICATION_FETCH_RESPONSE,
+                  payload: {
+                    counter: event.data.payload.counter,
+                    success: false,
+                  },
+                },
+                "*"
+              );
+            }
+          }
+          if (event.data.type === MESSAGING_COMMUNICATION_PUSH) {
+            push(event.data.payload);
+          }
+        },
+        false
+      );
+    }
+  }, [iframeRef]);
+
+  const route = location.pathname;
+
   return (
     <NavScreen
-      /* @ts-ignore */
-      component={<ChatScreen userId={props.userId} />}
-    />
-  );
-}
-
-function RequestsPage() {
-  return <NavScreen component={<RequestsScreen />} />;
-}
-
-function ProfilePage() {
-  const { props } = useDecodedSearchParams();
-  return (
-    <NavScreen
-      /* @ts-ignore */
-      component={<ProfileScreen userId={props.userId} />}
+      component={
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+          }}
+        >
+          <iframe
+            ref={iframeRef}
+            frameBorder="0"
+            src={`${MESSAGING_URL}/#${route}?parentUrl=${
+              window.location.origin
+            }&userId=${
+              props.userId || ""
+            }&uuid=${uuid}&username=${username}&isDarkMode=${isDarkMode}`}
+            width={"100%"}
+            height={"100%"}
+          />
+        </div>
+      }
     />
   );
 }

@@ -11,6 +11,11 @@ import {
   UI_RPC_METHOD_SET_XNFT_PREFERENCES,
 } from "@coral-xyz/common";
 import {
+ CheckIcon ,   LaunchDetail,
+  Loading,
+  NegativeButton,
+ProxyImage,  SecondaryButton } from "@coral-xyz/react-common";
+import {
   useBackgroundClient,
   useNavigation,
   useSolanaConnectionUrl,
@@ -25,18 +30,9 @@ import { PublicKey } from "@solana/web3.js";
 import { useRecoilValue } from "recoil";
 
 import { updateRemotePreference } from "../../../../api/preferences";
-import {
-  LaunchDetail,
-  Loading,
-  NegativeButton,
-  PrimaryButton,
-  SecondaryButton,
-} from "../../../common";
 import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
-import { CheckIcon } from "../../../common/Icon";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { useNavStack } from "../../../common/Layout/NavStack";
-import { ProxyImage } from "../../../common/ProxyImage";
 import { SettingsList } from "../../../common/Settings/List";
 import { Error } from "../../Balances/TokensWidget/Send";
 import { SwitchToggle } from "../Preferences";

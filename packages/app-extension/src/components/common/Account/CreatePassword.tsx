@@ -1,15 +1,10 @@
 import { type FormEvent, useCallback, useEffect, useState } from "react";
+import { PrimaryButton,TextInput } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
 
-import {
-  CheckboxForm,
-  Header,
-  PrimaryButton,
-  SubtextParagraph,
-} from "../../common";
-import { TextInput } from "../Inputs";
+import { CheckboxForm, Header, SubtextParagraph } from "../../common";
 
 enum PasswordError {
   TOO_SHORT,

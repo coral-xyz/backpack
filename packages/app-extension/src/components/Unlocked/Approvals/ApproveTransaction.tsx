@@ -1,11 +1,11 @@
 import type { Blockchain } from "@coral-xyz/common";
+import { Loading } from "@coral-xyz/react-common";
 import { useTransactionData, useWalletBlockchain } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 import _CheckIcon from "@mui/icons-material/Check";
 import { Typography } from "@mui/material";
 import { BigNumber, ethers } from "ethers";
 
-import { Loading } from "../../common";
 import { TransactionData } from "../../common/TransactionData";
 import { WithApproval } from "../../Unlocked/Approvals";
 

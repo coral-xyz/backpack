@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { EthereumConnectionUrl } from "@coral-xyz/common";
+import { PushDetail } from "@coral-xyz/react-common";
 import {
   useBackgroundClient,
   useEthereumConnectionUrl,
@@ -7,7 +8,6 @@ import {
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Check } from "@mui/icons-material";
 
-import { PushDetail } from "../../../../common";
 import { useDrawerContext } from "../../../../common/Layout/Drawer";
 import { useNavStack } from "../../../../common/Layout/NavStack";
 import { SettingsList } from "../../../../common/Settings/List";
