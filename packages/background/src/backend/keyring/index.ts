@@ -18,7 +18,7 @@ import {
   SolanaCluster,
   SolanaExplorer,
 } from "@coral-xyz/common";
-import type { KeyringStoreState } from "@coral-xyz/recoil";
+import type { ExtractRecoilType, KeyringStoreState } from "@coral-xyz/recoil";
 import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
 import { generateMnemonic } from "bip39";
 
@@ -36,7 +36,13 @@ import {
 export class KeyringStore {
   private lastUsedTs: number;
   private password?: string;
-  private autoLockInterval?: ReturnType<typeof setInterval>;
+
+  private autoLockCountdown: {
+    start: () => void;
+    restart: () => void;
+    toggle: (enabled: boolean) => void;
+  };
+
   private events: EventEmitter;
   private users: Map<string, UserKeyring>;
   // Must be undefined when the keyring-store is locked or uninitialized.
@@ -65,6 +71,93 @@ export class KeyringStore {
     this.users = new Map();
     this.lastUsedTs = 0;
     this.events = events;
+
+    this.autoLockCountdown = (() => {
+      let autoLockCountdownTimer: ReturnType<typeof setTimeout>;
+
+      let secondsUntilAutoLock: number | undefined;
+      let autoLockIsEnabled = true;
+
+      let shouldLockImmediatelyWhenClosed = false;
+      let lockImmediatelyWhenClosedCountdown: ReturnType<typeof setTimeout>;
+      const SECONDS_UNTIL_LOCK_WHEN_CLOSED = 0.5;
+
+      const lock = () => {
+        if (!autoLockIsEnabled) return;
+        this.lock();
+        this.events.emit(BACKEND_EVENT, {
+          name: NOTIFICATION_KEYRING_STORE_LOCKED,
+        });
+      };
+
+      const startAutoLockCountdownTimer = () => {
+        stopAutoLockCountdownTimer();
+        stopLockWhenClosedCountdownTimer();
+        if (!secondsUntilAutoLock || !autoLockIsEnabled) return;
+        autoLockCountdownTimer = setTimeout(lock, secondsUntilAutoLock * 1000);
+      };
+
+      const stopAutoLockCountdownTimer = () => {
+        if (autoLockCountdownTimer) clearTimeout(autoLockCountdownTimer);
+      };
+
+      const stopLockWhenClosedCountdownTimer = () => {
+        if (lockImmediatelyWhenClosedCountdown)
+          clearTimeout(lockImmediatelyWhenClosedCountdown);
+      };
+
+      chrome.runtime.onConnect.addListener((port) => {
+        port.onDisconnect.addListener(() => {
+          // Force-enable the auto-lock countdown if the popup is closed
+          autoLockIsEnabled = true;
+          if (shouldLockImmediatelyWhenClosed) {
+            lockImmediatelyWhenClosedCountdown = setTimeout(() => {
+              stopAutoLockCountdownTimer();
+              lock();
+            }, SECONDS_UNTIL_LOCK_WHEN_CLOSED * 1000);
+          }
+        });
+      });
+
+      return {
+        start: () => {
+          // Get the auto-lock interval from the
+          // user's preferences and start the countdown timer.
+          store
+            .getWalletDataForUser(this.activeUserUuid!)
+            .then(({ autoLockSecs, autoLockOption }) => {
+              switch (autoLockOption) {
+                case "never":
+                  shouldLockImmediatelyWhenClosed = false;
+                  secondsUntilAutoLock = undefined;
+                  break;
+                case "onClose":
+                  shouldLockImmediatelyWhenClosed = true;
+                  secondsUntilAutoLock = undefined;
+                  break;
+                default:
+                  shouldLockImmediatelyWhenClosed = false;
+                  secondsUntilAutoLock =
+                    autoLockSecs || store.DEFAULT_LOCK_INTERVAL_SECS;
+              }
+              console.log({
+                autoLockSecs,
+                autoLockOption,
+                secondsUntilAutoLock,
+              });
+              startAutoLockCountdownTimer();
+            });
+        },
+        restart: () => {
+          // Reset the countdown timer and start it again.
+          startAutoLockCountdownTimer();
+        },
+        toggle: (enabled: boolean) => {
+          autoLockIsEnabled = enabled;
+          startAutoLockCountdownTimer();
+        },
+      };
+    })();
   }
 
   // Initializes the keystore for the first time.
@@ -204,7 +297,8 @@ export class KeyringStore {
       this.activeUserUuid = uuid;
       this.password = password;
       // Automatically lock the store when idle.
-      this.autoLockStart();
+      // this.autoLockStart();
+      this.autoLockCountdown.start();
     });
   }
 
@@ -260,18 +354,16 @@ export class KeyringStore {
     });
   }
 
-  public async autoLockUpdate(autoLockSecs: number) {
+  public async autoLockUpdate(autoLockSecs: number, autoLockOption?) {
     return await this.withUnlock(async () => {
       const data = await store.getWalletDataForUser(this.activeUserUuid!);
       await store.setWalletDataForUser(this.activeUserUuid!, {
         ...data,
         autoLockSecs,
+        autoLockOption,
       });
 
-      if (this.autoLockInterval) {
-        clearInterval(this.autoLockInterval);
-      }
-      this.autoLockStart();
+      this.autoLockCountdown.start();
     });
   }
 
@@ -292,26 +384,12 @@ export class KeyringStore {
     return user;
   }
 
-  private autoLockStart() {
-    // Check the last time the keystore was used at a regular interval.
-    // If it hasn't been used recently, lock the keystore.
-    store
-      .getWalletDataForUser(this.activeUserUuid!)
-      .then(({ autoLockSecs }) => {
-        const _autoLockSecs = autoLockSecs ?? store.DEFAULT_LOCK_INTERVAL_SECS;
-        this.autoLockInterval = setInterval(() => {
-          const currentTs = Date.now() / 1000;
-          if (currentTs - this.lastUsedTs >= _autoLockSecs) {
-            this.lock();
-            this.events.emit(BACKEND_EVENT, {
-              name: NOTIFICATION_KEYRING_STORE_LOCKED,
-            });
-            if (this.autoLockInterval) {
-              clearInterval(this.autoLockInterval);
-            }
-          }
-        }, _autoLockSecs * 1000);
-      });
+  public autoLockCountdownToggle(enable: boolean) {
+    this.autoLockCountdown.toggle(enable);
+  }
+
+  public autoLockCountdownRestart() {
+    this.autoLockCountdown.restart();
   }
 
   ///////////////////////////////////////////////////////////////////////////////

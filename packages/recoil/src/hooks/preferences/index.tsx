@@ -24,7 +24,11 @@ export function useApproveOrigin(): (origin: string) => Promise<void> {
   };
 }
 
-export function useAutolockSecs(): number {
+export function useAutoLockOption() {
+  return useRecoilValue(atoms.autoLockOption);
+}
+
+export function useAutoLockSecs(): number {
   return useRecoilValue(atoms.autoLockSecs)!;
 }
 

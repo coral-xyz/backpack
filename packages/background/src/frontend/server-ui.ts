@@ -135,6 +135,17 @@ async function handle<T = any>(
 ): Promise<RpcResponse<T>> {
   logger.debug(`handle rpc ${msg.method}`, msg);
 
+  // User did something so restart the auto-lock countdown
+  ctx.backend.keyringStoreAutoLockCountdownRestart();
+
+  // TODO: make more robust
+  // toggles whether the auto-lock is enabled or not, this
+  // is to ensure it's disabled when an xnft is open
+  const toggleAutoLockEnabled = (str: string) =>
+    ctx.backend.keyringStoreAutoLockCountdownToggle(
+      !str.includes("xnftAddress")
+    );
+
   const { method, params } = msg;
   switch (method) {
     //
@@ -183,7 +194,7 @@ async function handle<T = any>(
     case UI_RPC_METHOD_KEYRING_AUTOLOCK_READ:
       return await handleKeyringAutolockRead(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE:
-      return await handleKeyringAutolockUpdate(ctx, params[0]);
+      return await handleKeyringAutolockUpdate(ctx, params[0], params[1]);
     case UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE:
       return await handleMnemonicCreate(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_TYPE_READ:
@@ -218,9 +229,13 @@ async function handle<T = any>(
     case UI_RPC_METHOD_NAVIGATION_POP:
       return await handleNavigationPop(ctx);
     case UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE:
+      if (params[0]) toggleAutoLockEnabled(params[0]);
       return await handleNavigationCurrentUrlUpdate(ctx, params[0], params[1]);
     case UI_RPC_METHOD_NAVIGATION_READ:
-      return await handleNavRead(ctx);
+      const navigationData = await handleNavRead(ctx);
+      // TODO: make more robust
+      if (navigationData) toggleAutoLockEnabled(JSON.stringify(navigationData));
+      return navigationData;
     case UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE:
       return await handleNavigationActiveTabUpdate(ctx, params[0]);
     case UI_RPC_METHOD_NAVIGATION_TO_ROOT:
@@ -596,16 +611,20 @@ function handleKeyringExportMnemonic(
 async function handleKeyringAutolockRead(
   ctx: Context<Backend>,
   uuid: string
-): Promise<RpcResponse<number>> {
+): Promise<RpcResponse<number | undefined>> {
   const resp = await ctx.backend.keyringAutolockRead(uuid);
   return [resp];
 }
 
 async function handleKeyringAutolockUpdate(
   ctx: Context<Backend>,
-  autolockSecs: number
+  autolockSecs: number,
+  autoLockOption?: string
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.keyringAutolockUpdate(autolockSecs);
+  const resp = await ctx.backend.keyringAutolockUpdate(
+    autolockSecs,
+    autoLockOption
+  );
   return [resp];
 }
 

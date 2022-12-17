@@ -21,6 +21,7 @@ import {
   EthereumExplorer,
   getAddMessage,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
+  NOTIFICATION_AUTO_LOCK_OPTION_UPDATED,
   NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
   NOTIFICATION_BLOCKCHAIN_DISABLED,
   NOTIFICATION_BLOCKCHAIN_ENABLED,
@@ -740,6 +741,14 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
+  keyringStoreAutoLockCountdownToggle(enable: boolean) {
+    this.keyringStore.autoLockCountdownToggle(enable);
+  }
+
+  keyringStoreAutoLockCountdownRestart() {
+    this.keyringStore.autoLockCountdownRestart();
+  }
+
   keyringStoreLock() {
     this.keyringStore.lock();
     this.events.emit(BACKEND_EVENT, {
@@ -1061,17 +1070,26 @@ export class Backend {
     return this.keyringStore.exportMnemonic(password);
   }
 
-  async keyringAutolockRead(uuid: string): Promise<number> {
+  async keyringAutolockRead(uuid: string): Promise<number | undefined> {
     const data = await store.getWalletDataForUser(uuid);
     return data.autoLockSecs;
   }
 
-  async keyringAutolockUpdate(autoLockSecs: number): Promise<string> {
-    await this.keyringStore.autoLockUpdate(autoLockSecs);
+  async keyringAutolockUpdate(
+    autoLockSecs: number,
+    autoLockOption?: string
+  ): Promise<string> {
+    await this.keyringStore.autoLockUpdate(autoLockSecs, autoLockOption);
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
       data: {
         autoLockSecs,
+      },
+    });
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_AUTO_LOCK_OPTION_UPDATED,
+      data: {
+        autoLockOption,
       },
     });
     return SUCCESS_RESPONSE;

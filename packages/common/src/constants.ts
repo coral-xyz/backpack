@@ -244,6 +244,8 @@ export const UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION =
 
 export const NOTIFICATION_APPROVED_ORIGINS_UPDATE =
   "notification-approved-origins-update";
+export const NOTIFICATION_AUTO_LOCK_OPTION_UPDATED =
+  "notification-auto-lock-option-updated";
 export const NOTIFICATION_AUTO_LOCK_SECS_UPDATED =
   "notification-auto-lock-secs-updated";
 export const NOTIFICATION_BLOCKCHAIN_DISABLED =

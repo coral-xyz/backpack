@@ -7,6 +7,9 @@ import "./index.css";
 const App = lazy(() => import("./app/App"));
 const LedgerIframe = lazy(() => import("./components/LedgerIframe"));
 
+// Connect to the background script so it can detect if the popup is closed
+chrome.runtime.connect();
+
 //
 // Configure event listeners.
 //

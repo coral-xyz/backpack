@@ -55,6 +55,14 @@ export const isDeveloperMode = selector<boolean>({
   },
 });
 
+export const autoLockOption = selector<"never" | "onClose" | undefined>({
+  key: "autoLockOption",
+  get: async ({ get }) => {
+    const p = get(preferences);
+    return p.autoLockOption;
+  },
+});
+
 export const autoLockSecs = selector<number>({
   key: "autoLockSecs",
   get: async ({ get }) => {

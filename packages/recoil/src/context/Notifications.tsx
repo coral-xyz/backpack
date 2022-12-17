@@ -10,6 +10,7 @@ import {
   ChannelAppUi,
   getLogger,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
+  NOTIFICATION_AUTO_LOCK_OPTION_UPDATED,
   NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
   NOTIFICATION_BLOCKCHAIN_DISABLED,
   NOTIFICATION_BLOCKCHAIN_ENABLED,
@@ -86,6 +87,14 @@ export function NotificationsProvider(props: any) {
   const setPreferences = useSetRecoilState(atoms.preferences);
   const setFeatureGates = useSetRecoilState(atoms.featureGates);
 
+  const setAutoLockOption = (autoLockOption) => {
+    setPreferences((current) => {
+      return {
+        ...current,
+        autoLockOption,
+      };
+    });
+  };
   const setAutoLockSecs = (autoLockSecs: number) => {
     setPreferences((current) => {
       return {
@@ -238,6 +247,9 @@ export function NotificationsProvider(props: any) {
           break;
         case NOTIFICATION_NAVIGATION_URL_DID_CHANGE:
           handleNavigationUrlDidChange(notif);
+          break;
+        case NOTIFICATION_AUTO_LOCK_OPTION_UPDATED:
+          handleAutoLockOptionUpdated(notif);
           break;
         case NOTIFICATION_AUTO_LOCK_SECS_UPDATED:
           handleAutoLockSecsUpdated(notif);
@@ -468,6 +480,10 @@ export function NotificationsProvider(props: any) {
 
     const handleNavigationUrlDidChange = (notif: Notification) => {
       navigate(notif.data.url);
+    };
+
+    const handleAutoLockOptionUpdated = (notif: Notification) => {
+      setAutoLockOption(notif.data.autoLockOption);
     };
 
     const handleAutoLockSecsUpdated = (notif: Notification) => {
