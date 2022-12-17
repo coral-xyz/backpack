@@ -1,9 +1,26 @@
-import { useApproveOrigin, useBlockchainActiveWallet } from "@coral-xyz/recoil";
+import { useState } from "react";
+import type { Blockchain } from "@coral-xyz/common";
+import {
+  useAllWalletsPerBlockchain,
+  useApproveOrigin,
+  useBlockchainActiveWallet,
+} from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { ExpandMore } from "@mui/icons-material";
 import _CheckIcon from "@mui/icons-material/Check";
-import { List, ListItem, ListItemIcon, Typography } from "@mui/material";
+import {
+  Button,
+  List,
+  ListItem,
+  ListItemIcon,
+  Typography,
+} from "@mui/material";
 
-import { walletAddressDisplay } from "../../../components/common";
+import {
+  WalletAddress,
+  walletAddressDisplay,
+} from "../../../components/common";
+import { WithMiniDrawer } from "../../../components/common/Layout/Drawer";
 
 import { displayOriginTitle, WithApproval } from ".";
 
@@ -14,7 +31,7 @@ const useStyles = styles((theme) => ({
     lineHeight: "32px",
     color: theme.custom.colors.fontColor,
     marginBottom: "24px",
-    marginTop: "32px",
+    marginTop: "14px",
     textAlign: "center",
   },
   listDescription: {
@@ -62,9 +79,13 @@ export function ApproveOrigin({
 }: any) {
   const classes = useStyles();
   const approveOrigin = useApproveOrigin();
-
   // TODO: add a wallet selector.
   const activeWallet = useBlockchainActiveWallet(blockchain);
+  const [wallet, setWallet] = useState<{
+    publicKey: string;
+    name: string;
+    blockchain: string;
+  }>(activeWallet);
 
   const onConfirm = async () => {
     await approveOrigin(origin);
@@ -90,8 +111,14 @@ export function ApproveOrigin({
       origin={origin}
       originTitle={title}
       title={
-        <div className={classes.title}>
-          {displayOriginTitle(title)} would like to connect to {walletTitle}
+        <div>
+          <WalletSelector
+            value={wallet}
+            onChange={(wallet) => setWallet(wallet)}
+          />
+          <div className={classes.title}>
+            {displayOriginTitle(title)} would like to connect to {walletTitle}
+          </div>
         </div>
       }
       wallet={activeWallet.publicKey.toString()}
@@ -121,6 +148,64 @@ export function ApproveOrigin({
         </Typography>
       </>
     </WithApproval>
+  );
+}
+
+function WalletSelector({
+  value,
+  onChange,
+}: {
+  value: { blockchain: string; publicKey: string; name: string };
+  onChange: (v: {
+    blockchain: string;
+    publicKey: string;
+    name: string;
+  }) => void;
+}) {
+  const theme = useCustomTheme();
+  const [openDrawer, setOpenDrawer] = useState(false);
+  const wallets = useAllWalletsPerBlockchain(value.blockchain as Blockchain);
+  return (
+    <>
+      <div
+        style={{
+          paddingTop: "10px",
+          paddingBottom: "10px",
+          display: "flex",
+        }}
+      >
+        <div style={{ flex: 1 }} />
+        <Button
+          disableRipple
+          style={{
+            padding: 0,
+            textTransform: "none",
+            color: theme.custom.colors.fontColor,
+            fontSize: "18px",
+          }}
+          onClick={() => setOpenDrawer(!openDrawer)}
+        >
+          <WalletAddress
+            publicKey={value.publicKey}
+            name={value.name}
+            nameStyle={{
+              color: theme.custom.colors.fontColor,
+            }}
+          />
+          <ExpandMore
+            style={{
+              color: theme.custom.colors.icon,
+            }}
+          />
+        </Button>
+        <div style={{ flex: 1 }} />
+      </div>
+      <WithMiniDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
+        {wallets.map((wallet: any) => (
+          <div>{wallet.publicKey}</div>
+        ))}
+      </WithMiniDrawer>
+    </>
   );
 }
 

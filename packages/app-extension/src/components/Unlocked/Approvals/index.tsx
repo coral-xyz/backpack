@@ -9,6 +9,7 @@ import _CheckIcon from "@mui/icons-material/Check";
 import _CloseIcon from "@mui/icons-material/Close";
 
 import { walletAddressDisplay } from "../../../components/common";
+import { UNKNOWN_ICON_SRC } from "../../common/Icon";
 
 const useStyles = styles((theme) => ({
   contentContainer: {
@@ -120,7 +121,9 @@ export function OriginWalletConnectIcons({
       <Connectable
         title={displayOriginTitle(originTitle)}
         description={new URL(origin).host}
-        icon={siteIcon}
+        icon={
+          origin.startsWith("http://localhost") ? UNKNOWN_ICON_SRC : siteIcon
+        }
       />
       <Connectable
         title={walletName}
@@ -138,15 +141,24 @@ function Connectable({
 }: {
   title: string;
   description: string;
-  icon?: string;
+  icon: string;
 }) {
   const classes = useStyles();
   return (
     <div className={classes.connectable}>
       <div className={classes.connectableIcon}>
         <ProxyImage
-          style={{ maxWidth: "100%", maxHeight: "100%" }}
+          style={{
+            width: "56px",
+            height: "56px",
+            borderRadius: "28px",
+            maxWidth: "100%",
+            maxHeight: "100%",
+          }}
           src={icon}
+          onError={(event: any) => {
+            event.current.target.src = UNKNOWN_ICON_SRC;
+          }}
         />
       </div>
       <div className={classes.connectableTitle}>{title}</div>
