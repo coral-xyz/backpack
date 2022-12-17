@@ -2,15 +2,12 @@ import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import {
   DangerButton,
-  Debug,
-  InputFieldLabel,
-  InputFieldMaxLabel,
-  Margin,
   PrimaryButton,
   Screen,
   StyledTextInput,
-  TokenInputField,
+  StyledTokenTextInput,
 } from "@components";
+import { InputField, InputFieldMaxLabel } from "@components/Form";
 import type { Blockchain } from "@coral-xyz/common";
 import {
   ETH_NATIVE_MINT,
@@ -22,12 +19,11 @@ import { useAnchorContext, useEthereumCtx } from "@coral-xyz/recoil";
 import { useIsValidAddress } from "@hooks";
 import { BigNumber } from "ethers";
 
-import { TokenTables } from "./components/Balances";
+import { SearchableTokenTables } from "./components/Balances";
 import type { Token } from "./components/index";
 
-export function SendTokenScreen({ route }) {
+export function SendTokenDetailScreen({ route }) {
   const { blockchain, token } = route.params;
-
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
 
@@ -100,15 +96,14 @@ export function SendTokenScreen({ route }) {
   return (
     <Screen style={styles.container}>
       <View>
-        <Margin bottom={42}>
-          <InputFieldLabel leftLabel="Send to" />
+        <InputField leftLabel="Send to">
           <StyledTextInput
             value={address}
             placeholder={`${toTitleCase(blockchain)} address`}
             onChangeText={(address: string) => setAddress(address.trim())}
           />
-        </Margin>
-        <InputFieldLabel
+        </InputField>
+        <InputField
           leftLabel="Amount"
           rightLabelComponent={
             <InputFieldMaxLabel
@@ -117,29 +112,23 @@ export function SendTokenScreen({ route }) {
               decimals={token.decimals}
             />
           }
-        />
-        <TokenInputField
-          decimals={token.decimals}
-          placeholder="Amount"
-          // onChangeText={(amount) => setAmount(amount)}
-          setValue={setAmount}
-          style={{
-            borderRadius: 8,
-            padding: 8,
-            borderWidth: 1,
-            borderColor: "#333",
-          }}
-        />
+        >
+          <StyledTokenTextInput
+            value={amount}
+            decimals={token.decimals}
+            placeholder="Amount"
+            onChangeText={setAmount}
+          />
+        </InputField>
       </View>
       {sendButton}
     </Screen>
   );
 }
 
-export function SelectSendTokenScreen({ navigation }) {
+export function SendTokenListScreen({ navigation }) {
   const onPressTokenRow = (blockchain: Blockchain, token: Token) => {
     navigation.push("SendTokenModal", {
-      title: `Send ${toTitleCase(blockchain)} / ${token.ticker}`,
       blockchain,
       token,
     });
@@ -147,7 +136,7 @@ export function SelectSendTokenScreen({ navigation }) {
 
   return (
     <Screen>
-      <TokenTables
+      <SearchableTokenTables
         onPressRow={onPressTokenRow}
         customFilter={(token: Token) => {
           if (token.mint && token.mint === SOL_NATIVE_MINT) {
