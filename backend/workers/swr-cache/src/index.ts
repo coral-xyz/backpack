@@ -89,6 +89,18 @@ const executeRequest: (c: ExecutionContext, env: Env) => ExecuteRequest =
       return env.nftData.fetch(new Request(url, req));
     }
 
+    if (service === "web") {
+      const proxiedUrl = url.pathname.slice(1);
+      console.log("web", proxiedUrl);
+      const fetched = await fetch(proxiedUrl);
+      const response = new Response(fetched.body, fetched);
+      response.headers.set(
+        "Cache-Control",
+        `max-age=${1}, s-maxage=${1}, stale-while-revalidate=${5}`
+      );
+      return response;
+    }
+
     if (service === "images") {
       url.host = `images.xnfts.dev`;
       // return new Response("hello");
