@@ -8,6 +8,7 @@
     "@cardinal/token-manager": "^1.7.9",
     "@coral-xyz/background": "*",
     "@coral-xyz/chat-sdk": "*",
+    "@coral-xyz/message-sdk": "*",
     "@coral-xyz/common": "*",
     "@coral-xyz/react-xnft-dom-renderer": "*",
     "@coral-xyz/react-common": "*",

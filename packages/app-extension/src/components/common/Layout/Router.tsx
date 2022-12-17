@@ -6,13 +6,23 @@ import {
   useLocation,
   useSearchParams,
 } from "react-router-dom";
-import { MESSAGING_COMMUNICATION_FETCH_RESPONSE } from "@coral-xyz/common";
+import {
+  MESSAGE_IFRAME_ENABLED,
+  MESSAGING_COMMUNICATION_FETCH_RESPONSE,
+} from "@coral-xyz/common";
 import {
   MESSAGING_COMMUNICATION_FETCH,
   MESSAGING_COMMUNICATION_PUSH,
   TAB_SET,
   UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
 } from "@coral-xyz/common/src/constants";
+import {
+  ChatScreen,
+  Inbox,
+  ParentCommunicationManager,
+  ProfileScreen,
+  RequestsScreen,
+} from "@coral-xyz/message-sdk";
 import { Loading } from "@coral-xyz/react-common";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import {
@@ -21,6 +31,7 @@ import {
   useClosePlugin,
   useDarkMode,
   useDecodedSearchParams,
+  useFeatureGates,
   useFreshPlugin,
   useNavigation,
   useRedirectUrl,
@@ -53,7 +64,7 @@ export function Router() {
       <Routes location={location} key={location.pathname}>
         <Route path="/balances" element={<BalancesPage />} />
         <Route path="/balances/token" element={<TokenPage />} />
-        <Route path={"/messages/*"} element={<MessagesIframe />} />
+        <Route path={"/messages/*"} element={<Messages />} />
         <Route path="/apps" element={<AppsPage />} />
         <Route path="/nfts" element={<NftsPage />} />
         {/*<Route path="/swap" element={<SwapPage />} />*/}
@@ -116,6 +127,53 @@ function NftsDetailPage() {
   );
 }
 
+function Messages() {
+  const featureGates = useFeatureGates();
+
+  if (featureGates[MESSAGE_IFRAME_ENABLED]) {
+    return <MessagesIframe />;
+  }
+
+  return <MessagesNative />;
+}
+
+function MessagesNative() {
+  const route = location.pathname;
+  const isDarkMode = useDarkMode();
+  const { uuid, username } = useUser();
+  const { props } = useDecodedSearchParams<any>();
+  const { push } = useNavigation();
+
+  useEffect(() => {
+    ParentCommunicationManager.getInstance().setNativePush(push);
+  }, []);
+
+  if (route === "/messages/chat") {
+    return (
+      <NavScreen
+        component={
+          <ChatScreen
+            isDarkMode={isDarkMode}
+            userId={props.userId}
+            uuid={uuid}
+            username={username}
+          />
+        }
+      />
+    );
+  }
+
+  if (route === "/messages/profile") {
+    return <NavScreen component={<ProfileScreen userId={props.userId} />} />;
+  }
+
+  if (route === "/messages/requests") {
+    return <NavScreen component={<RequestsScreen />} />;
+  }
+
+  return <NavScreen component={<Inbox />} />;
+}
+
 function MessagesIframe() {
   const MESSAGING_URL = "http://localhost:3000";
   const iframeRef = useRef<any>();
@@ -168,12 +226,6 @@ function MessagesIframe() {
         },
         false
       );
-      window.setInterval(() => {
-        iframeRef.current?.contentWindow?.postMessage(
-          { type: "event type" },
-          "*"
-        );
-      }, 4000);
     }
   }, [iframeRef]);
 

@@ -1,7 +1,9 @@
 {
-  "name": "message-sdk",
+  "name": "@coral-xyz/message-sdk",
   "version": "0.1.0",
-  "private": true,
+  "module": "dist/esm/index.js",
+  "source": "src/index.ts ",
+  "types": "dist/esm/index.d.ts",
   "dependencies": {
     "@coral-xyz/chat-sdk": "*",
     "@coral-xyz/common": "*",
@@ -24,7 +26,8 @@
   },
   "scripts": {
     "start": "GENERATE_SOURCEMAP=false craco start",
-    "build": "craco build",
+    "build": "tsc && tsc-alias",
+    "build-web": "craco build",
     "test": "craco test",
     "eject": "craco eject"
   },
