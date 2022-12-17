@@ -4,6 +4,7 @@ import {
   useAllWalletsPerBlockchain,
   useApproveOrigin,
   useBlockchainActiveWallet,
+  useBlockchainLogo,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ExpandMore } from "@mui/icons-material";
@@ -220,14 +221,42 @@ function BlockchainWalletList({
   const theme = useCustomTheme();
   const { close } = useDrawerContext();
   const wallets = useAllWalletsPerBlockchain(value.blockchain as Blockchain);
+  const networkIcon = useBlockchainLogo(value.blockchain as Blockchain);
   return (
     <div
       style={{
         padding: "16px",
-        overflow: "hidden",
         background: theme.custom.colors.backgroundBackdrop,
       }}
     >
+      <div
+        style={{
+          display: "flex",
+          background: theme.custom.colors.backgroundBackdrop,
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+          }}
+        >
+          <img
+            src={networkIcon}
+            style={{
+              width: "16px",
+              height: "16px",
+              marginLeft: "8px",
+              marginRight: "8px",
+            }}
+          />
+        </div>
+        <Typography>
+          {value.blockchain.slice(0, 1).toUpperCase() +
+            value.blockchain.slice(1).toLowerCase()}
+        </Typography>
+      </div>
       <WalletList
         disableIconPadding={true}
         wallets={wallets}
