@@ -991,13 +991,15 @@ async function handleBlockchainKeyringsAdd(
   blockchain: Blockchain,
   derivationPath: DerivationPath,
   accountIndex: number,
-  publicKey: string | undefined
+  publicKey?: string,
+  signature?: string
 ): Promise<RpcResponse<Array<string>>> {
   const resp = await ctx.backend.blockchainKeyringsAdd(
     blockchain,
     derivationPath,
     accountIndex,
-    publicKey
+    publicKey,
+    signature
   );
   return [resp];
 }
