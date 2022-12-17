@@ -116,9 +116,7 @@ export function ApproveOrigin({
             value={wallet}
             onChange={(wallet) => setWallet(wallet)}
           />
-          <div className={classes.title}>
-            {displayOriginTitle(title)} would like to connect to {walletTitle}
-          </div>
+          <div className={classes.title}>Do you want to connect?</div>
         </div>
       }
       wallet={activeWallet.publicKey.toString()}
@@ -143,9 +141,6 @@ export function ApproveOrigin({
             Request approval for transactions
           </ListItem>
         </List>
-        <Typography className={classes.warning}>
-          Only connect to apps you trust.
-        </Typography>
       </>
     </WithApproval>
   );
@@ -164,7 +159,6 @@ function WalletSelector({
 }) {
   const theme = useCustomTheme();
   const [openDrawer, setOpenDrawer] = useState(false);
-  const wallets = useAllWalletsPerBlockchain(value.blockchain as Blockchain);
   return (
     <>
       <div
@@ -201,11 +195,30 @@ function WalletSelector({
         <div style={{ flex: 1 }} />
       </div>
       <WithMiniDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-        {wallets.map((wallet: any) => (
-          <div>{wallet.publicKey}</div>
-        ))}
+        <BlockchainWalletList value={value} onChange={onChange} />
       </WithMiniDrawer>
     </>
+  );
+}
+
+function BlockchainWalletList({
+  value,
+  onChange,
+}: {
+  value: { blockchain: string; publicKey: string; name: string };
+  onChange: (wallet: {
+    blockchain: string;
+    publicKey: string;
+    name: string;
+  }) => void;
+}) {
+  const wallets = useAllWalletsPerBlockchain(value.blockchain as Blockchain);
+  return (
+    <div>
+      {wallets.map((wallet: any) => (
+        <div>{wallet.publicKey}</div>
+      ))}
+    </div>
   );
 }
 

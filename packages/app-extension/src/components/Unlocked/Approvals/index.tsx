@@ -3,7 +3,7 @@ import {
   ProxyImage,
   SecondaryButton,
 } from "@coral-xyz/react-common";
-import { useAvatarUrl, useWalletName } from "@coral-xyz/recoil";
+import { useAvatarUrl, useUser,useWalletName } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 import _CheckIcon from "@mui/icons-material/Check";
 import _CloseIcon from "@mui/icons-material/Close";
@@ -112,6 +112,7 @@ export function OriginWalletConnectIcons({
   const classes = useStyles();
   const walletName = useWalletName(wallet);
   const avatarUrl = useAvatarUrl(56);
+  const { username } = useUser();
 
   // This uses a Google API for favicon retrieval, do we want to parse the page ourselves?
   const siteIcon = `https://www.google.com/s2/favicons?domain=${origin}&sz=180`;
@@ -126,8 +127,8 @@ export function OriginWalletConnectIcons({
         }
       />
       <Connectable
-        title={walletName}
-        description={walletAddressDisplay(wallet)}
+        title={username}
+        description={`${walletName} (${walletAddressDisplay(wallet)})`}
         icon={avatarUrl}
       />
     </div>
