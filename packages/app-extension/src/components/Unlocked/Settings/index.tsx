@@ -386,7 +386,7 @@ function WalletList({
         method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
         params: [publicKey, blockchain],
       })
-      .then((_resp) => close())
+      .then(() => close())
       .catch(console.error);
   };
 
