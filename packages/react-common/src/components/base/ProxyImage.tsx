@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import { proxyImageUrl } from "@coral-xyz/common";
 import { Skeleton } from "@mui/material";
 
@@ -16,6 +16,7 @@ export const ProxyImage = React.memo(function ProxyImage({
 } & ImgProps) {
   const placeholderRef = useRef<HTMLSpanElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
+  const [errCount, setErrCount] = useState(0);
 
   useLayoutEffect(() => {
     if (imageRef.current?.complete) {
@@ -65,9 +66,16 @@ export const ProxyImage = React.memo(function ProxyImage({
           image.style.visibility = "visible";
         }}
         onError={(...e) => {
-          if (removeOnError && placeholderRef.current) {
-            placeholderRef.current.style.display = "none";
-          }
+          setErrCount((count) => {
+            if (count >= 1) {
+              if (removeOnError && placeholderRef.current) {
+                placeholderRef.current.style.display = "none";
+              }
+            } else {
+              if (imageRef.current) imageRef.current.src = imgProps.src ?? "";
+            }
+            return count + 1;
+          });
         }}
         src={proxyImageUrl(imgProps.src ?? "")}
       />
