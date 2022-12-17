@@ -138,7 +138,7 @@ function Messages() {
 }
 
 function MessagesNative() {
-  const route = location.pathname;
+  const hash = location.hash.slice(1);
   const isDarkMode = useDarkMode();
   const { uuid, username } = useUser();
   const { props } = useDecodedSearchParams<any>();
@@ -148,7 +148,7 @@ function MessagesNative() {
     ParentCommunicationManager.getInstance().setNativePush(push);
   }, []);
 
-  if (route === "/messages/chat") {
+  if (hash.startsWith("/messages/chat")) {
     return (
       <NavScreen
         component={
@@ -163,11 +163,11 @@ function MessagesNative() {
     );
   }
 
-  if (route === "/messages/profile") {
+  if (hash.startsWith("/messages/profile")) {
     return <NavScreen component={<ProfileScreen userId={props.userId} />} />;
   }
 
-  if (route === "/messages/requests") {
+  if (hash.startsWith("/messages/requests")) {
     return <NavScreen component={<RequestsScreen />} />;
   }
 
