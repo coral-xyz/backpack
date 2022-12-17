@@ -16,13 +16,14 @@ import {
   Typography,
 } from "@mui/material";
 
+import { WalletAddress } from "../../../components/common";
 import {
-  WalletAddress,
-  walletAddressDisplay,
-} from "../../../components/common";
-import { WithMiniDrawer } from "../../../components/common/Layout/Drawer";
+  useDrawerContext,
+  WithMiniDrawer,
+} from "../../../components/common/Layout/Drawer";
+import { WalletList } from "../../common/WalletList";
 
-import { displayOriginTitle, WithApproval } from ".";
+import { WithApproval } from ".";
 
 const useStyles = styles((theme) => ({
   title: {
@@ -79,7 +80,6 @@ export function ApproveOrigin({
 }: any) {
   const classes = useStyles();
   const approveOrigin = useApproveOrigin();
-  // TODO: add a wallet selector.
   const activeWallet = useBlockchainActiveWallet(blockchain);
   const [wallet, setWallet] = useState<{
     publicKey: string;
@@ -91,20 +91,16 @@ export function ApproveOrigin({
     await approveOrigin(origin);
     await onCompletion({
       didApprove: true,
-      walletPublicKey: activeWallet.publicKey,
+      walletPublicKey: wallet.publicKey,
     });
   };
 
   const onDeny = async () => {
     await onCompletion({
       didApprove: false,
-      walletPublicKey: activeWallet.publicKey,
+      walletPublicKey: wallet.publicKey,
     });
   };
-
-  const walletTitle = activeWallet.name
-    ? activeWallet.name
-    : walletAddressDisplay(activeWallet.publicKey);
 
   return (
     <WithApproval
@@ -119,7 +115,7 @@ export function ApproveOrigin({
           <div className={classes.title}>Do you want to connect?</div>
         </div>
       }
-      wallet={activeWallet.publicKey.toString()}
+      wallet={wallet.publicKey.toString()}
       onConfirm={onConfirm}
       onDeny={onDeny}
     >
@@ -194,7 +190,16 @@ function WalletSelector({
         </Button>
         <div style={{ flex: 1 }} />
       </div>
-      <WithMiniDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
+      <WithMiniDrawer
+        openDrawer={openDrawer}
+        setOpenDrawer={setOpenDrawer}
+        backdropProps={{
+          style: {
+            opacity: 0.8,
+            background: "#18181b",
+          },
+        }}
+      >
         <BlockchainWalletList value={value} onChange={onChange} />
       </WithMiniDrawer>
     </>
@@ -212,12 +217,30 @@ function BlockchainWalletList({
     name: string;
   }) => void;
 }) {
+  const theme = useCustomTheme();
+  const { close } = useDrawerContext();
   const wallets = useAllWalletsPerBlockchain(value.blockchain as Blockchain);
   return (
-    <div>
-      {wallets.map((wallet: any) => (
-        <div>{wallet.publicKey}</div>
-      ))}
+    <div
+      style={{
+        padding: "16px",
+        overflow: "hidden",
+        background: theme.custom.colors.backgroundBackdrop,
+      }}
+    >
+      <WalletList
+        wallets={wallets}
+        clickWallet={(v: any) => {
+          onChange(v);
+          close();
+        }}
+        style={{
+          borderRadius: "10px",
+          overflow: "hidden",
+          marginLeft: 0,
+          marginRight: 0,
+        }}
+      />
     </div>
   );
 }
