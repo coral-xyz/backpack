@@ -850,7 +850,15 @@ export class Backend {
     const [publicKey, name] = await this.keyringStore.deriveNextKey(blockchain);
 
     if (jwtEnabled) {
-      await this._addPublicKeyToAccount(blockchain, publicKey);
+      try {
+        await this._addPublicKeyToAccount(blockchain, publicKey);
+      } catch {
+        // Something went wrong persisting to server, roll back changes to the
+        // keyring. This is not a complete rollback of state changes, because
+        // the next account index gets incremented. This is the correct behaviour
+        // because it should allow for sensible retries on conflicts.
+        this.keyringKeyDelete(blockchain, publicKey);
+      }
     }
 
     this.events.emit(BACKEND_EVENT, {
@@ -1006,7 +1014,13 @@ export class Backend {
     );
 
     if (jwtEnabled) {
-      await this._addPublicKeyToAccount(blockchain, publicKey);
+      try {
+        await this._addPublicKeyToAccount(blockchain, publicKey);
+      } catch {
+        // Something went wrong persisting to server, roll back changes to the
+        // keyring.
+        this.keyringKeyDelete(blockchain, publicKey);
+      }
     }
 
     this.events.emit(BACKEND_EVENT, {
@@ -1070,7 +1084,13 @@ export class Backend {
       publicKey
     );
     if (jwtEnabled) {
-      await this._addPublicKeyToAccount(blockchain, publicKey, signature);
+      try {
+        await this._addPublicKeyToAccount(blockchain, publicKey, signature);
+      } catch {
+        // Something went wrong persisting to server, roll back changes to the
+        // keyring.
+        this.keyringKeyDelete(blockchain, publicKey);
+      }
     }
     // Set the active wallet to the newly added public key
     await this.activeWalletUpdate(publicKey, blockchain);
@@ -1134,13 +1154,6 @@ export class Backend {
     });
 
     if (!response.ok) {
-      // Something went wrong persisting to server, roll back changes to the
-      // keyring. Note that for HD keyrings this is not a complete rollback
-      // of state changes, because the next account index gets incremented.
-      // This is the correct behaviour because it should allow for sensible
-      // retries on conflicts.
-      this.keyringKeyDelete(blockchain, publicKey);
-
       throw new Error((await response.json()).msg);
     }
   }
@@ -1276,14 +1289,23 @@ export class Backend {
     blockchain: Blockchain,
     derivationPath: DerivationPath,
     accountIndex: number,
-    publicKey?: string
+    publicKey?: string,
+    signature?: string
   ): Promise<void> {
-    await this.keyringStore.blockchainKeyringAdd(
+    const newPublicKey = await this.keyringStore.blockchainKeyringAdd(
       blockchain,
       derivationPath,
       accountIndex,
       publicKey
     );
+    if (jwtEnabled) {
+      try {
+        await this._addPublicKeyToAccount(blockchain, newPublicKey, signature);
+      } catch {
+        // Roll back the added blockchain keyring
+        await this.keyringStore.blockchainKeyringRemove(blockchain);
+      }
+    }
     // Automatically enable the newly added blockchain
     await this.enabledBlockchainsAdd(blockchain);
   }

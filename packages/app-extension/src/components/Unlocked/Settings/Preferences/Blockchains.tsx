@@ -66,10 +66,12 @@ export function PreferencesBlockchains({
         } else {
           // Mnemonic based keyring. This is the simple case because we don't
           // need to prompt for the user to open their Ledger app to get the
-          // required public key.
+          // required public key. We also don't need a signature to prove
+          // ownership of the public key because that can't be done
+          // transparently by the backend.
           await background.request({
             method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
-            params: [blockchain, DerivationPath.Default, 0, undefined],
+            params: [blockchain, DerivationPath.Default, 0],
           });
         }
       } else {
@@ -92,6 +94,7 @@ export function PreferencesBlockchains({
         result.derivationPath,
         result.accountIndex,
         result.publicKey,
+        result.signature,
       ],
     });
     setOpenDrawer(false);
