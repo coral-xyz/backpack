@@ -1,3 +1,6 @@
+import { useState } from "react";
+import type { FeeConfig } from "@coral-xyz/common";
+import { Blockchain } from "@coral-xyz/common";
 import {
   PrimaryButton,
   ProxyImage,
@@ -9,6 +12,8 @@ import _CheckIcon from "@mui/icons-material/Check";
 import _CloseIcon from "@mui/icons-material/Close";
 
 import { walletAddressDisplay } from "../../../components/common";
+
+import { SolanaFeeConfigControls } from "./SolanaFeeConfigControls";
 
 const useStyles = styles((theme) => ({
   contentContainer: {
@@ -50,17 +55,20 @@ export function WithApproval({
   onConfirmLabel = "Connect",
   onDeny,
   children,
+  blockchain,
 }: {
   origin: string;
   originTitle: string;
   title?: React.ReactNode;
   wallet: string;
-  onConfirm: () => void;
+  onConfirm: (feeConfig?: FeeConfig) => void;
   onConfirmLabel?: string;
   onDeny: () => void;
   children: React.ReactNode;
+  blockchain?: Blockchain;
 }) {
   const classes = useStyles();
+  const [feeConfig, setFeeConfig] = useState<FeeConfig | null>(null);
   return (
     <div
       style={{
@@ -79,6 +87,13 @@ export function WithApproval({
         />
         {children}
       </div>
+      {blockchain === Blockchain.SOLANA && (
+        <SolanaFeeConfigControls
+          onUpdate={(f) => {
+            setFeeConfig(f ?? null);
+          }}
+        />
+      )}
       <div
         style={{
           marginLeft: "16px",
@@ -92,7 +107,10 @@ export function WithApproval({
           <SecondaryButton label="Deny" onClick={onDeny} />
         </div>
         <div style={{ width: "167.5px" }}>
-          <PrimaryButton label={onConfirmLabel} onClick={onConfirm} />
+          <PrimaryButton
+            label={onConfirmLabel}
+            onClick={() => onConfirm(feeConfig ? feeConfig : undefined)}
+          />
         </div>
       </div>
     </div>

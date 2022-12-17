@@ -123,3 +123,6 @@ export type ImportedDerivationPath = {
   account: number;
   publicKey: string;
 };
+
+export type SolanaFeeConfig = { computeUnits: number; priorityFee: number };
+export type FeeConfig = SolanaFeeConfig;

@@ -1,4 +1,6 @@
 import { Suspense, useEffect, useState } from "react";
+import type {
+  FeeConfig} from "@coral-xyz/common";
 import {
   Blockchain,
   PLUGIN_REQUEST_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
@@ -20,6 +22,7 @@ import {
   Loading,
   PrimaryButton,
   SecondaryButton,
+  TextInput,
 } from "@coral-xyz/react-common";
 import {
   useActivePublicKeys,
@@ -30,7 +33,7 @@ import {
   useTransactionRequest,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { Typography } from "@mui/material";
+import { Checkbox, Typography } from "@mui/material";
 import * as anchor from "@project-serum/anchor";
 import { useConnection } from "@solana/wallet-adapter-react";
 import type { ConfirmOptions, SendOptions } from "@solana/web3.js";
@@ -40,6 +43,7 @@ import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
 import { Scrollbar } from "../common/Layout/Scrollbar";
 import { TransactionData } from "../common/TransactionData";
 
+import { SolanaFeeConfigControls } from "./Approvals/SolanaFeeConfigControls";
 import { ErrorTransaction } from "./XnftPopovers/ErrorTransaction";
 import { Sending } from "./XnftPopovers/Sending";
 import { Success } from "./XnftPopovers/Success";
@@ -334,6 +338,7 @@ function SendTransactionRequest({
   const [txState, setTxState] = useState<
     "approve" | "confirming" | "succeeded" | "failed"
   >("approve");
+  const [feeConfig, setFeeConfig] = useState<FeeConfig | null>(null);
 
   //
   // Executes when the modal clicks "Approve" in the drawer popup
@@ -345,7 +350,7 @@ function SendTransactionRequest({
     background
       .request({
         method: uiRpcMethod,
-        params: [transactionToSend, publicKey],
+        params: [transactionToSend, publicKey, feeConfig],
       })
       .then(async (signature) => {
         setSignature(signature);
@@ -466,6 +471,11 @@ function SendTransactionRequest({
               transactionData={transactionData}
             />
           </div>
+          {blockchain === "solana" && (
+            <SolanaFeeConfigControls
+              onUpdate={(f) => setFeeConfig(f ?? null)}
+            />
+          )}
         </Scrollbar>
       )}
     </Request>

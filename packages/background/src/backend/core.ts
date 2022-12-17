@@ -6,6 +6,7 @@ import type {
   FEATURE_GATES_MAP,
   KeyringInit,
   KeyringType,
+  SolanaFeeConfig,
   XnftPreference,
 } from "@coral-xyz/common";
 import {
@@ -14,6 +15,7 @@ import {
   BACKPACK_FEATURE_JWT,
   BACKPACK_FEATURE_USERNAMES,
   Blockchain,
+  deserializeLegacyTransaction,
   deserializeTransaction,
   EthereumConnectionUrl,
   EthereumExplorer,
@@ -61,9 +63,11 @@ import type {
   SimulateTransactionConfig,
 } from "@solana/web3.js";
 import {
+  ComputeBudgetProgram,
   PublicKey,
   Transaction,
   TransactionInstruction,
+  VersionedTransaction,
 } from "@solana/web3.js";
 import { validateMnemonic as _validateMnemonic } from "bip39";
 import { ethers } from "ethers";
@@ -116,10 +120,15 @@ export class Backend {
   async solanaSignAndSendTx(
     txStr: string,
     walletAddress: string,
-    options?: SendOptions
+    options?: SendOptions,
+    feeConfig?: SolanaFeeConfig
   ): Promise<string> {
     // Sign the transaction.
-    const signature = await this.solanaSignTransaction(txStr, walletAddress);
+    const signature = await this.solanaSignTransaction(
+      txStr,
+      walletAddress,
+      feeConfig
+    );
     const pubkey = new PublicKey(walletAddress);
     const tx = deserializeTransaction(txStr);
     tx.addSignature(pubkey, Buffer.from(bs58.decode(signature)));
@@ -150,9 +159,24 @@ export class Backend {
   // Returns the signature.
   async solanaSignTransaction(
     txStr: string,
-    walletAddress: string
+    walletAddress: string,
+    feeConfig?: SolanaFeeConfig
   ): Promise<string> {
-    const tx = deserializeTransaction(txStr);
+    let tx = deserializeTransaction(txStr);
+    if (feeConfig && tx.version !== "legacy") {
+      const transaction = deserializeLegacyTransaction(txStr);
+      const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
+        units: feeConfig.computeUnits,
+      });
+
+      const addPriorityFee = ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: feeConfig.priorityFee,
+      });
+
+      transaction.add(modifyComputeUnits);
+      transaction.add(addPriorityFee);
+      tx = deserializeTransaction(transaction.serialize());
+    }
     const message = tx.message.serialize();
     const txMessage = bs58.encode(message);
     const blockchainKeyring =

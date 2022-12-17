@@ -1,5 +1,6 @@
 import { Suspense, useEffect } from "react";
-import type { Blockchain } from "@coral-xyz/common";
+import type { Blockchain ,
+  FeeConfig} from "@coral-xyz/common";
 import {
   EXTENSION_HEIGHT,
   EXTENSION_WIDTH,
@@ -196,10 +197,14 @@ function QueryApproveTransaction() {
           title={title!}
           tx={tx}
           wallet={wallet}
-          onCompletion={async (transaction: any) => {
+          onCompletion={async (transaction: any, feeConfig?: FeeConfig) => {
             await background.response({
               id: requestId,
-              result: transaction,
+              result: {
+                didApprove: transaction ? true : false,
+                transaction,
+                feeConfig,
+              },
             });
           }}
         />
