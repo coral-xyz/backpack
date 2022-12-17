@@ -7,6 +7,7 @@ import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
 import {
   blockchainBalancesSorted,
   useActiveWallets,
+  useAllWalletsPerBlockchain,
   useBlockchainConnectionUrl,
   useBlockchainLogo,
   useEnabledBlockchains,
@@ -16,7 +17,6 @@ import { styles } from "@coral-xyz/themes";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { Button as MuiButton, Skeleton } from "@mui/material";
 
-import { TextField } from "../../plugin/Component";
 import {
   BalancesTable,
   BalancesTableCell,
@@ -156,10 +156,20 @@ export function TokenTables({
   const filteredBlockchains =
     blockchains?.filter((b) => enabledBlockchains.includes(b)) ||
     enabledBlockchains;
-
+  const wallets = useAllWalletsPerBlockchain();
   return (
     <>
-      {filteredBlockchains.map((blockchain: Blockchain) => (
+      {wallets.map(({ publicKey, blockchain }: any) => (
+        <BlockchainWalletTokenTable
+          key={blockchain}
+          blockchain={blockchain}
+          onClickRow={onClickRow}
+          searchFilter={searchFilter}
+          customFilter={customFilter}
+          wallet={{ publicKey }}
+        />
+      ))}
+      {/*filteredBlockchains.map((blockchain: Blockchain) => (
         <TokenTable
           key={blockchain}
           blockchain={blockchain}
@@ -167,7 +177,7 @@ export function TokenTables({
           searchFilter={searchFilter}
           customFilter={customFilter}
         />
-      ))}
+      ))*/}
     </>
   );
 }
@@ -187,12 +197,43 @@ export function TokenTable({
   customFilter?: (token: Token) => boolean;
   displayWalletHeader?: boolean;
 }) {
+  const activeWallets = useActiveWallets();
+  const wallet = activeWallets.filter((w) => w.blockchain === blockchain)[0];
+
+  return (
+    <BlockchainWalletTokenTable
+      blockchain={blockchain}
+      onClickRow={onClickRow}
+      tokenAccounts={tokenAccounts}
+      searchFilter={searchFilter}
+      customFilter={customFilter}
+      displayWalletHeader={displayWalletHeader}
+      wallet={wallet}
+    />
+  );
+}
+
+export function BlockchainWalletTokenTable({
+  wallet,
+  blockchain,
+  onClickRow,
+  tokenAccounts,
+  searchFilter = "",
+  customFilter = () => true,
+  displayWalletHeader = true,
+}: {
+  wallet: { publicKey: string };
+  blockchain: Blockchain;
+  onClickRow: (blockchain: Blockchain, token: Token) => void;
+  tokenAccounts?: ReturnType<typeof useBlockchainTokensSorted>;
+  searchFilter?: string;
+  customFilter?: (token: Token) => boolean;
+  displayWalletHeader?: boolean;
+}) {
   const classes = useStyles();
   const title = toTitleCase(blockchain);
   const blockchainLogo = useBlockchainLogo(blockchain);
   const connectionUrl = useBlockchainConnectionUrl(blockchain);
-  const activeWallets = useActiveWallets();
-  const wallet = activeWallets.filter((w) => w.blockchain === blockchain)[0];
 
   const [_tokenAccounts, _, isLoading] = tokenAccounts
     ? [tokenAccounts, "hasValue"]
