@@ -262,3 +262,41 @@ export const TextInput = ({
     </>
   );
 };
+
+export const SmallInput = ({
+  value,
+  onChange,
+  placeholder,
+}: {
+  value: string;
+  onChange: (e: any) => void;
+  placeholder: string;
+}) => {
+  const theme = useCustomTheme();
+  return (
+    <TextField
+      inputProps={{
+        style: {
+          textAlign: "right",
+          padding: 2,
+          background: theme.custom.colors.background,
+          borderRadius: 0,
+          outline: "none",
+          color: theme.custom.colors.fontColor2,
+        },
+      }}
+      style={{
+        marginBottom: 5,
+        width: 100,
+        padding: 0,
+        borderRadius: 0,
+        border: "none",
+        outline: "none",
+      }}
+      placeholder={placeholder}
+      type="text"
+      value={value}
+      onChange={onChange}
+    />
+  );
+};

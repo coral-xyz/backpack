@@ -1,4 +1,4 @@
-import type { Blockchain , FeeConfig } from "@coral-xyz/common";
+import type { Blockchain, FeeConfig } from "@coral-xyz/common";
 import { Loading } from "@coral-xyz/react-common";
 import { useTransactionData, useWalletBlockchain } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
@@ -80,7 +80,8 @@ export function ApproveTransaction({
   const classes = useStyles();
   const blockchain = useWalletBlockchain(wallet);
   const transactionData = useTransactionData(blockchain as Blockchain, tx);
-  const { loading, balanceChanges, transaction } = transactionData;
+  const { loading, balanceChanges, transaction, solanaFeeConfig } =
+    transactionData;
 
   if (loading) {
     return <Loading />;
@@ -116,8 +117,8 @@ export function ApproveTransaction({
       )
     : {};
 
-  const onConfirm = async (feeConfig?: FeeConfig) => {
-    await onCompletion(transaction, feeConfig);
+  const onConfirm = async () => {
+    await onCompletion(transaction, solanaFeeConfig);
   };
 
   const onDeny = async () => {

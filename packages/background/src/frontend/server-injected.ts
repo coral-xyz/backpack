@@ -351,7 +351,7 @@ async function handleSolanaSignAndSendTx(
   }
 
   let resp: RpcResponse<string>;
-  const { didApprove, feeConfig } = uiResp.result;
+  const { didApprove } = uiResp.result;
 
   try {
     // Only sign if the user clicked approve.
@@ -359,8 +359,7 @@ async function handleSolanaSignAndSendTx(
       const sig = await ctx.backend.solanaSignAndSendTx(
         tx,
         walletAddress,
-        options,
-        feeConfig
+        options
       );
       resp = [sig];
     }
@@ -400,16 +399,12 @@ async function handleSolanaSignTx(
   }
 
   let resp: RpcResponse<string>;
-  const { didApprove, feeConfig } = uiResp.result;
+  const { didApprove } = uiResp.result;
 
   try {
     // Only sign if the user clicked approve.
     if (didApprove) {
-      const sig = await ctx.backend.solanaSignTransaction(
-        tx,
-        walletAddress,
-        feeConfig
-      );
+      const sig = await ctx.backend.solanaSignTransaction(tx, walletAddress);
       resp = [sig];
     }
   } catch (err) {

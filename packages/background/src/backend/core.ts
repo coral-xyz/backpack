@@ -120,15 +120,10 @@ export class Backend {
   async solanaSignAndSendTx(
     txStr: string,
     walletAddress: string,
-    options?: SendOptions,
-    feeConfig?: SolanaFeeConfig
+    options?: SendOptions
   ): Promise<string> {
     // Sign the transaction.
-    const signature = await this.solanaSignTransaction(
-      txStr,
-      walletAddress,
-      feeConfig
-    );
+    const signature = await this.solanaSignTransaction(txStr, walletAddress);
     const pubkey = new PublicKey(walletAddress);
     const tx = deserializeTransaction(txStr);
     tx.addSignature(pubkey, Buffer.from(bs58.decode(signature)));
@@ -159,31 +154,20 @@ export class Backend {
   // Returns the signature.
   async solanaSignTransaction(
     txStr: string,
-    walletAddress: string,
-    feeConfig?: SolanaFeeConfig
+    walletAddress: string
   ): Promise<string> {
     let tx = deserializeTransaction(txStr);
-    if (feeConfig && tx.version !== "legacy") {
-      const transaction = deserializeLegacyTransaction(txStr);
-      const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
-        units: feeConfig.computeUnits,
-      });
-
-      const addPriorityFee = ComputeBudgetProgram.setComputeUnitPrice({
-        microLamports: feeConfig.priorityFee,
-      });
-
-      transaction.add(modifyComputeUnits);
-      transaction.add(addPriorityFee);
-      tx = deserializeTransaction(transaction.serialize());
-    }
     const message = tx.message.serialize();
     const txMessage = bs58.encode(message);
     const blockchainKeyring =
       this.keyringStore.activeUserKeyring.keyringForBlockchain(
         Blockchain.SOLANA
       );
-    return await blockchainKeyring.signTransaction(txMessage, walletAddress);
+    const signature = await blockchainKeyring.signTransaction(
+      txMessage,
+      walletAddress
+    );
+    return signature;
   }
 
   async solanaSignMessage(msg: string, walletAddress: string): Promise<string> {

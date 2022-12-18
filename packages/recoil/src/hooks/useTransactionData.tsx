@@ -1,4 +1,7 @@
+import type { Dispatch, SetStateAction} from "react";
 import { useEffect, useState } from "react";
+import type {
+  SolanaFeeConfig} from "@coral-xyz/common";
 import {
   Blockchain,
   deserializeTransaction,
@@ -26,6 +29,8 @@ const DEFAULT_GAS_LIMIT = BigNumber.from("150000");
 type TransactionData = {
   loading: boolean;
   transaction: string;
+  solanaFeeConfig?: SolanaFeeConfig;
+  setSolanaFeeConfig?: Dispatch<SetStateAction<SolanaFeeConfig | null>>;
   transactionOverrides?: TransactionOverrides;
   setTransactionOverrides?: (overrides: object) => void;
   from: string;
@@ -231,6 +236,10 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
     publicKey: walletPublicKey.toString(),
     blockchain: Blockchain.SOLANA,
   });
+  const [solanaFeeConfig, setSolanaFeeConfig] = useState<SolanaFeeConfig>({
+    priorityFee: 0,
+    computeUnits: 100000,
+  });
 
   const [loading, setLoading] = useState(true);
   const [simulationError, setSimulationError] = useState(false);
@@ -330,5 +339,7 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
     balanceChanges,
     network: "Solana",
     networkFee: ethers.utils.formatUnits(estimatedTxFee, 9),
+    solanaFeeConfig,
+    setSolanaFeeConfig,
   };
 }

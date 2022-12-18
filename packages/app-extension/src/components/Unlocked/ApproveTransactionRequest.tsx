@@ -1,8 +1,9 @@
 import { Suspense, useEffect, useState } from "react";
-import type {
-  FeeConfig} from "@coral-xyz/common";
+const { base58: bs58 } = ethers.utils;
 import {
   Blockchain,
+  deserializeLegacyTransaction,
+  deserializeTransaction,
   PLUGIN_REQUEST_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
   PLUGIN_REQUEST_ETHEREUM_SIGN_MESSAGE,
   PLUGIN_REQUEST_ETHEREUM_SIGN_TRANSACTION,
@@ -37,6 +38,8 @@ import { Checkbox, Typography } from "@mui/material";
 import * as anchor from "@project-serum/anchor";
 import { useConnection } from "@solana/wallet-adapter-react";
 import type { ConfirmOptions, SendOptions } from "@solana/web3.js";
+import { ComputeBudgetProgram } from "@solana/web3.js";
+import { ethers } from "ethers";
 
 import { walletAddressDisplay } from "../common";
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
@@ -332,13 +335,17 @@ function SendTransactionRequest({
   const background = useBackgroundClient();
   const pluginUrl = usePluginUrl(request?.xnftAddress);
   const transactionData = useTransactionData(blockchain, transaction);
-  const { loading, transaction: transactionToSend, from } = transactionData;
+  const {
+    loading,
+    transaction: transactionToSend,
+    from,
+    solanaFeeConfig,
+  } = transactionData;
   const solanaCtx = useSolanaCtx();
   const [signature, setSignature] = useState("");
   const [txState, setTxState] = useState<
     "approve" | "confirming" | "succeeded" | "failed"
   >("approve");
-  const [feeConfig, setFeeConfig] = useState<FeeConfig | null>(null);
 
   //
   // Executes when the modal clicks "Approve" in the drawer popup
@@ -347,10 +354,28 @@ function SendTransactionRequest({
   // transaction specific settings (i.e. Etheruem gas).
   //
   const onConfirm = () => {
+    const feeConfig = solanaFeeConfig;
+    let tx = deserializeTransaction(transactionToSend);
+    if (feeConfig && feeConfig.priorityFee && tx.version === "legacy") {
+      const transaction = deserializeLegacyTransaction(transactionToSend);
+      const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
+        units: feeConfig.computeUnits,
+      });
+
+      const addPriorityFee = ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: feeConfig.priorityFee,
+      });
+
+      transaction.add(modifyComputeUnits);
+      transaction.add(addPriorityFee);
+      tx = deserializeTransaction(
+        bs58.encode(transaction.serialize({ requireAllSignatures: false }))
+      );
+    }
     background
       .request({
         method: uiRpcMethod,
-        params: [transactionToSend, publicKey, feeConfig],
+        params: [bs58.encode(tx.serialize()), publicKey],
       })
       .then(async (signature) => {
         setSignature(signature);
@@ -380,7 +405,9 @@ function SendTransactionRequest({
           onResolve(signature);
         }
       })
-      .catch(onReject);
+      .catch((e: any) => {
+        onReject();
+      });
   };
 
   //
@@ -471,11 +498,6 @@ function SendTransactionRequest({
               transactionData={transactionData}
             />
           </div>
-          {blockchain === "solana" && (
-            <SolanaFeeConfigControls
-              onUpdate={(f) => setFeeConfig(f ?? null)}
-            />
-          )}
         </Scrollbar>
       )}
     </Request>

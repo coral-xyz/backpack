@@ -1,6 +1,5 @@
 import { useState } from "react";
-import type { FeeConfig } from "@coral-xyz/common";
-import { Blockchain } from "@coral-xyz/common";
+import type { Blockchain,FeeConfig  } from "@coral-xyz/common";
 import {
   PrimaryButton,
   ProxyImage,
@@ -61,14 +60,13 @@ export function WithApproval({
   originTitle: string;
   title?: React.ReactNode;
   wallet: string;
-  onConfirm: (feeConfig?: FeeConfig) => void;
+  onConfirm: () => void;
   onConfirmLabel?: string;
   onDeny: () => void;
   children: React.ReactNode;
   blockchain?: Blockchain;
 }) {
   const classes = useStyles();
-  const [feeConfig, setFeeConfig] = useState<FeeConfig | null>(null);
   return (
     <div
       style={{
@@ -87,13 +85,6 @@ export function WithApproval({
         />
         {children}
       </div>
-      {blockchain === Blockchain.SOLANA && (
-        <SolanaFeeConfigControls
-          onUpdate={(f) => {
-            setFeeConfig(f ?? null);
-          }}
-        />
-      )}
       <div
         style={{
           marginLeft: "16px",
@@ -107,10 +98,7 @@ export function WithApproval({
           <SecondaryButton label="Deny" onClick={onDeny} />
         </div>
         <div style={{ width: "167.5px" }}>
-          <PrimaryButton
-            label={onConfirmLabel}
-            onClick={() => onConfirm(feeConfig ? feeConfig : undefined)}
-          />
+          <PrimaryButton label={onConfirmLabel} onClick={() => onConfirm()} />
         </div>
       </div>
     </div>
