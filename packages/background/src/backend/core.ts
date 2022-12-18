@@ -195,9 +195,8 @@ export class Backend {
     );
   }
 
-  solanaDisconnect() {
-    // todo
-    return SUCCESS_RESPONSE;
+  async disconnect(origin: string): Promise<string> {
+    return await this.approvedOriginsDelete(origin);
   }
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -778,6 +777,12 @@ export class Backend {
       }
     }
     return namedPublicKeys;
+  }
+
+  public activeWalletForBlockchain(b: Blockchain): string | undefined {
+    return this.keyringStore.activeUserKeyring
+      .keyringForBlockchain(b)
+      .getActiveWallet();
   }
 
   private async activeWallets(): Promise<Array<string>> {

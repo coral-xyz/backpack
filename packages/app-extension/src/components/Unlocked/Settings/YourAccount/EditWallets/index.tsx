@@ -9,7 +9,8 @@ import { Typography } from "@mui/material";
 
 import { WalletAddress } from "../../../../common";
 import { useNavStack } from "../../../../common/Layout/NavStack";
-import { AddConnectWalletButton, ImportTypeBadge } from "../..";
+import { ImportTypeBadge } from "../../../../common/WalletList";
+import { AddConnectWalletButton } from "../..";
 
 export function EditWallets() {
   const nav = useNavStack();

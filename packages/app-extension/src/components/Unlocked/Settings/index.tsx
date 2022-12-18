@@ -19,8 +19,10 @@ import {
   List,
   ListItem,
   PrimaryButton,
-ProxyImage,  PushDetail,
- TextInput  } from "@coral-xyz/react-common";
+  ProxyImage,
+  PushDetail,
+  TextInput,
+} from "@coral-xyz/react-common";
 import type { WalletPublicKeys } from "@coral-xyz/recoil";
 import {
   useActiveWallets,
@@ -50,6 +52,10 @@ import {
   SubtextParagraph,
   WalletAddress,
 } from "../../../components/common";
+import {
+  ImportTypeBadge,
+  WalletList as _WalletList,
+} from "../../../components/common/WalletList";
 import {
   CloseButton,
   useDrawerContext,
@@ -382,11 +388,11 @@ function WalletList({
   const blockchainLogo = useBlockchainLogo(blockchain);
   const [showAll, setShowAll] = useState(false);
 
-  const clickWallet = (publicKey: string) => {
+  const clickWallet = (wallet: any) => {
     background
       .request({
         method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-        params: [publicKey, blockchain],
+        params: [wallet.publicKey, blockchain],
       })
       .then(() => close())
       .catch(console.error);
@@ -548,124 +554,18 @@ function WalletList({
           </ListItem>
         </div>
         {showAll && (
-          <div style={{}}>
-            <List
-              style={{
-                borderRadius: 0,
-                marginLeft: 0,
-                marginRight: 0,
-              }}
-            >
-              {keys.map(
-                (
-                  {
-                    name,
-                    publicKey,
-                    type,
-                  }: { name: string; publicKey: string; type: string },
-                  idx: number
-                ) => {
-                  return (
-                    <ListItem
-                      key={publicKey.toString()}
-                      onClick={() => clickWallet(publicKey)}
-                      isFirst={false}
-                      isLast={idx === keys.length - 1}
-                      style={{
-                        paddingTop: "16px",
-                        paddingBottom: "16px",
-                        paddingLeft: "12px",
-                        paddingRight: "12px",
-                        height: "48px",
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          width: "100%",
-                          marginLeft: "20px",
-                        }}
-                      >
-                        <div
-                          style={{
-                            display: "flex",
-                          }}
-                        >
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "center",
-                              flexDirection: "column",
-                              marginRight: "4px",
-                            }}
-                          >
-                            <WalletAddress
-                              name={name}
-                              publicKey={publicKey}
-                              style={{
-                                fontWeight: 500,
-                                lineHeight: "24px",
-                                fontSize: "16px",
-                              }}
-                              nameStyle={{
-                                whiteSpace: "nowrap",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                maxWidth: "75px",
-                              }}
-                            />
-                          </div>
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "center",
-                              flexDirection: "column",
-                            }}
-                          >
-                            <ImportTypeBadge type={type} />
-                          </div>
-                        </div>
-                      </div>
-                    </ListItem>
-                  );
-                }
-              )}
-            </List>
-          </div>
+          <_WalletList
+            wallets={keys}
+            clickWallet={clickWallet}
+            style={{
+              borderRadius: 0,
+              marginLeft: 0,
+              marginRight: 0,
+            }}
+          />
         )}
       </div>
       {showAll && <AddConnectWalletButton blockchain={blockchain} />}
-    </div>
-  );
-}
-
-export function ImportTypeBadge({ type }: { type: string }) {
-  const theme = useCustomTheme();
-  return type === "derived" ? (
-    <></>
-  ) : (
-    <div
-      style={{
-        paddingLeft: "10px",
-        paddingRight: "10px",
-        paddingTop: "2px",
-        paddingBottom: "2px",
-        backgroundColor: theme.custom.colors.bg2,
-        height: "20px",
-        borderRadius: "10px",
-      }}
-    >
-      <Typography
-        style={{
-          color: theme.custom.colors.fontColor,
-          fontSize: "12px",
-          lineHeight: "16px",
-          fontWeight: 600,
-        }}
-      >
-        {type === "imported" ? "IMPORTED" : "HARDWARE"}
-      </Typography>
     </div>
   );
 }
