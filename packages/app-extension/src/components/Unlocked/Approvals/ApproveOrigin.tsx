@@ -28,7 +28,7 @@ import {
 } from "../../../components/common/Layout/Drawer";
 import { WalletList } from "../../common/WalletList";
 
-import { displayOriginTitle, OriginConnectable,WithApprovalButtons } from ".";
+import { displayOriginTitle, OriginConnectable, WithApprovalButtons } from ".";
 
 const useStyles = styles((theme) => ({
   title: {
@@ -121,8 +121,8 @@ export function ApproveOrigin({
           >
             <div
               style={{
-                marginBottom: "24px",
                 marginTop: "24px",
+                marginBottom: "16px",
               }}
             >
               <div className={classes.title}>{displayOriginTitle(title)}</div>
