@@ -3,7 +3,7 @@ import {
   ProxyImage,
   SecondaryButton,
 } from "@coral-xyz/react-common";
-import { useAvatarUrl, useUser,useWalletName } from "@coral-xyz/recoil";
+import { useAvatarUrl, useUser, useWalletName } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 import _CheckIcon from "@mui/icons-material/Check";
 import _CloseIcon from "@mui/icons-material/Close";
@@ -157,9 +157,6 @@ function Connectable({
             maxHeight: "100%",
           }}
           src={icon}
-          onError={(event: any) => {
-            event.current.target.src = UNKNOWN_ICON_SRC;
-          }}
         />
       </div>
       <div className={classes.connectableTitle}>{title}</div>

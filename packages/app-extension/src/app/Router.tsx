@@ -165,10 +165,7 @@ function QueryApproval() {
           origin={origin}
           title={title}
           blockchain={blockchain}
-          onCompletion={async (result: {
-            didApprove: boolean;
-            walletPublicKey: string;
-          }) => {
+          onCompletion={async (result: { didApprove: boolean }) => {
             await background.response({
               id: requestId,
               result,
