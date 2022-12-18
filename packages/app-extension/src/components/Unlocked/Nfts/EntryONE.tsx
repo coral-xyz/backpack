@@ -1,11 +1,5 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { useLocation, useSearchParams } from "react-router-dom";
-import { UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE } from "@coral-xyz/common";
-import {
-  useBackgroundClient,
-  useOpenPlugin,
-  useUpdateSearchParams,
-} from "@coral-xyz/recoil";
+import { useLayoutEffect, useRef, useState } from "react";
+import { useOpenPlugin } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 import { Skeleton } from "@mui/material";
 import Card from "@mui/material/Card";
@@ -21,8 +15,8 @@ const useStyles = styles((theme) => ({
     borderRadius: "12px",
     border: theme.custom.colors.border,
     height: "117px",
-    cursor: "pinter",
     overflow: "hidden",
+    backgroundColor: "transparent !important",
     "&:hover": {
       cursor: "pointer",
     },
