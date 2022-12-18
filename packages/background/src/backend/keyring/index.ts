@@ -115,6 +115,8 @@ export class KeyringStore {
               stopAutoLockCountdownTimer();
               lock();
             }, SECONDS_UNTIL_LOCK_WHEN_CLOSED * 1000);
+          } else {
+            startAutoLockCountdownTimer();
           }
         });
       });
@@ -140,11 +142,6 @@ export class KeyringStore {
                   secondsUntilAutoLock =
                     autoLockSecs || store.DEFAULT_LOCK_INTERVAL_SECS;
               }
-              console.log({
-                autoLockSecs,
-                autoLockOption,
-                secondsUntilAutoLock,
-              });
               startAutoLockCountdownTimer();
             });
         },
