@@ -221,7 +221,7 @@ function OnboardingCreateOrImportWalletScreen({
                 navigation.push("MnemonicInput");
               }}
             >
-              I already have an account
+              I already have a wallet
             </SubtextParagraph>
           </View>
         </View>

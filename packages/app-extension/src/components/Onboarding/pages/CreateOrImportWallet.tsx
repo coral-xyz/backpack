@@ -39,7 +39,7 @@ export const CreateOrImportWallet = ({
           />
         </Box>
         <SubtextParagraph onClick={() => onNext("import")}>
-          I already have an account
+          I already have a wallet
         </SubtextParagraph>
       </Box>
     </div>
