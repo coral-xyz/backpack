@@ -1,9 +1,6 @@
 import { useState } from "react";
-import type {
-  Blockchain} from "@coral-xyz/common";
-import {
-  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-} from "@coral-xyz/common";
+import type { Blockchain } from "@coral-xyz/common";
+import { UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE } from "@coral-xyz/common";
 import {
   useAllWalletsPerBlockchain,
   useApproveOrigin,
@@ -29,7 +26,7 @@ import {
 } from "../../../components/common/Layout/Drawer";
 import { WalletList } from "../../common/WalletList";
 
-import { WithApproval } from ".";
+import { displayOriginTitle,WithApproval } from ".";
 
 const useStyles = styles((theme) => ({
   title: {
@@ -38,7 +35,7 @@ const useStyles = styles((theme) => ({
     lineHeight: "32px",
     color: theme.custom.colors.fontColor,
     marginBottom: "24px",
-    marginTop: "14px",
+    marginTop: "24px",
     textAlign: "center",
   },
   listDescription: {
@@ -103,43 +100,60 @@ export function ApproveOrigin({
   };
 
   return (
-    <WithApproval
-      origin={origin}
-      originTitle={title}
-      title={
-        <div>
-          <WalletSelector blockchain={blockchain} />
-          <div className={classes.title}>Wallet Connect</div>
-        </div>
-      }
-      wallet={wallet.publicKey.toString()}
-      onConfirm={onConfirm}
-      onDeny={onDeny}
+    <div
+      style={{
+        height: "100%",
+        flexDirection: "column",
+        display: "flex",
+      }}
     >
-      <>
-        <Typography className={classes.listDescription}>
-          This app would like to
-        </Typography>
-        <List className={classes.listRoot}>
-          <ListItem className={classes.listItemRoot}>
-            <ListItemIcon className={classes.listItemIconRoot}>
-              <CheckIcon />
-            </ListItemIcon>
-            View wallet balance & activity
-          </ListItem>
-          <ListItem className={classes.listItemRoot}>
-            <ListItemIcon className={classes.listItemIconRoot}>
-              <CheckIcon />
-            </ListItemIcon>
-            Request approval for transactions
-          </ListItem>
-        </List>
-      </>
-    </WithApproval>
+      <WalletSelector blockchain={blockchain} />
+      <div style={{ flex: 1 }}>
+        <WithApproval
+          origin={origin}
+          originTitle={title}
+          title={<div className={classes.title}>Backpack Connect</div>}
+          wallet={wallet.publicKey.toString()}
+          onConfirm={onConfirm}
+          onDeny={onDeny}
+        >
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              marginLeft: "16px",
+              marginRight: "16px",
+            }}
+          >
+            <div>
+              <Typography className={classes.listDescription}>
+                This app would like to
+              </Typography>
+              <List className={classes.listRoot}>
+                <ListItem className={classes.listItemRoot}>
+                  <ListItemIcon className={classes.listItemIconRoot}>
+                    <CheckIcon />
+                  </ListItemIcon>
+                  View wallet balance & activity
+                </ListItem>
+                <ListItem className={classes.listItemRoot}>
+                  <ListItemIcon className={classes.listItemIconRoot}>
+                    <CheckIcon />
+                  </ListItemIcon>
+                  Request approval for transactions
+                </ListItem>
+              </List>
+            </div>
+          </div>
+        </WithApproval>
+      </div>
+    </div>
   );
 }
 
 function WalletSelector({ blockchain }: { blockchain: Blockchain }) {
+  const theme = useCustomTheme();
   const background = useBackgroundClient();
   const [openDrawer, setOpenDrawer] = useState(false);
   const activeWallet = useBlockchainActiveWallet(blockchain);
@@ -151,7 +165,11 @@ function WalletSelector({ blockchain }: { blockchain: Blockchain }) {
   };
 
   return (
-    <>
+    <div
+      style={{
+        borderBottom: `solid 1pt ${theme.custom.colors.border}`,
+      }}
+    >
       <WalletSelectorButton
         wallet={activeWallet}
         onClick={() => setOpenDrawer(!openDrawer)}
@@ -168,7 +186,7 @@ function WalletSelector({ blockchain }: { blockchain: Blockchain }) {
       >
         <BlockchainWalletList value={activeWallet} onChange={onChange} />
       </WithMiniDrawer>
-    </>
+    </div>
   );
 }
 
