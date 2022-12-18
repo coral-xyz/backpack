@@ -229,33 +229,41 @@ function BlockchainWalletList({
         background: theme.custom.colors.backgroundBackdrop,
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          background: theme.custom.colors.backgroundBackdrop,
-        }}
-      >
+      <div style={{ display: "flex" }}>
+        <div style={{ flex: 1 }} />
         <div
           style={{
             display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
+            marginBottom: "16px",
           }}
         >
-          <img
-            src={networkIcon}
+          <div
             style={{
-              width: "16px",
-              height: "16px",
-              marginLeft: "8px",
-              marginRight: "8px",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
             }}
-          />
+          >
+            <img
+              src={networkIcon}
+              style={{
+                width: "20px",
+                height: "20px",
+                marginRight: "8px",
+              }}
+            />
+          </div>
+          <Typography
+            style={{
+              color: theme.custom.colors.fontColor,
+              fontSize: "20px",
+            }}
+          >
+            {value.blockchain.slice(0, 1).toUpperCase() +
+              value.blockchain.slice(1).toLowerCase()}
+          </Typography>
         </div>
-        <Typography>
-          {value.blockchain.slice(0, 1).toUpperCase() +
-            value.blockchain.slice(1).toLowerCase()}
-        </Typography>
+        <div style={{ flex: 1 }} />
       </div>
       <WalletList
         disableIconPadding={true}
