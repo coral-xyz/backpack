@@ -1,17 +1,13 @@
 import { useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
-import { UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE } from "@coral-xyz/common";
 import { ProxyImage } from "@coral-xyz/react-common";
 import {
-  useAllWalletsPerBlockchain,
   useApproveOrigin,
   useAvatarUrl,
-  useBackgroundClient,
   useBlockchainActiveWallet,
-  useBlockchainLogo,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { ExpandMore } from "@mui/icons-material";
+import { ExpandMore, Settings } from "@mui/icons-material";
 import _CheckIcon from "@mui/icons-material/Check";
 import {
   Button,
@@ -22,11 +18,7 @@ import {
 } from "@mui/material";
 
 import { WalletAddress } from "../../../components/common";
-import {
-  useDrawerContext,
-  WithMiniDrawer,
-} from "../../../components/common/Layout/Drawer";
-import { WalletList } from "../../common/WalletList";
+import { WalletDrawerNavStack } from "../../common/WalletList";
 
 import { displayOriginTitle, OriginConnectable, WithApprovalButtons } from ".";
 
@@ -169,46 +161,34 @@ function ApproveOriginTable() {
 }
 
 function WalletSelector({ blockchain }: { blockchain: Blockchain }) {
-  const background = useBackgroundClient();
   const [openDrawer, setOpenDrawer] = useState(false);
-  const activeWallet = useBlockchainActiveWallet(blockchain);
-  const onChange = async (w: any) => {
-    await background.request({
-      method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-      params: [w.publicKey.toString(), w.blockchain],
-    });
-  };
-
   return (
     <div>
       <WalletSelectorButton
-        wallet={activeWallet}
+        blockchain={blockchain}
         onClick={() => setOpenDrawer(!openDrawer)}
       />
-      <WithMiniDrawer
+      <WalletDrawerNavStack
         openDrawer={openDrawer}
         setOpenDrawer={setOpenDrawer}
-        backdropProps={{
-          style: {
-            opacity: 0.8,
-            background: "#18181b",
-          },
-        }}
-      >
-        <BlockchainWalletList value={activeWallet} onChange={onChange} />
-      </WithMiniDrawer>
+        filter={(w: { blockchain: string; name: string; publicKey: string }) =>
+          w.blockchain === blockchain
+        }
+      />
     </div>
   );
 }
 
 function WalletSelectorButton({
-  wallet,
+  blockchain,
   onClick,
 }: {
-  wallet: { blockchain: string; publicKey: string; name: string };
+  blockchain: Blockchain;
   onClick: () => void;
 }) {
   const theme = useCustomTheme();
+  const wallet = useBlockchainActiveWallet(blockchain);
+
   return (
     <div
       style={{
@@ -251,8 +231,6 @@ function WalletSelectorButton({
 
 function AvatarWithBlockchainImage({ blockchain }: { blockchain: Blockchain }) {
   const avatarUrl = useAvatarUrl(32);
-  // eslint-disable-next-line
-  const blockchainIcon = useBlockchainLogo(blockchain);
   // TODO: use this blockchain icon here.
   return (
     <ProxyImage
@@ -264,58 +242,6 @@ function AvatarWithBlockchainImage({ blockchain }: { blockchain: Blockchain }) {
         marginRight: "16px",
       }}
     />
-  );
-}
-
-function BlockchainWalletList({
-  value,
-  onChange,
-}: {
-  value: { blockchain: string; publicKey: string; name: string };
-  onChange: (wallet: {
-    blockchain: string;
-    publicKey: string;
-    name: string;
-  }) => void;
-}) {
-  const theme = useCustomTheme();
-  const { close } = useDrawerContext();
-  const wallets = useAllWalletsPerBlockchain(value.blockchain as Blockchain);
-  return (
-    <div
-      style={{
-        padding: "16px",
-        paddingBottom: "24px",
-        background: theme.custom.colors.backgroundBackdrop,
-      }}
-    >
-      <Typography
-        style={{
-          color: theme.custom.colors.fontColor,
-          fontSize: "18px",
-          lineHeight: "24px",
-          marginBottom: "16px",
-          textAlign: "center",
-        }}
-      >
-        Select wallet
-      </Typography>
-      <WalletList
-        disableIconPadding={true}
-        wallets={wallets}
-        clickWallet={(v: any) => {
-          onChange(v);
-          close();
-        }}
-        style={{
-          borderRadius: "10px",
-          overflow: "hidden",
-          marginLeft: 0,
-          marginRight: 0,
-        }}
-        selectedWalletPublicKey={value.publicKey}
-      />
-    </div>
   );
 }
 

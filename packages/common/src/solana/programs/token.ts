@@ -11,7 +11,6 @@ import { MintLayout } from "@solana/spl-token";
 import type { Connection } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
 
-import { BACKEND_API_URL } from "../../constants";
 import type {
   ReplaceTypes,
   SolanaTokenAccount,
@@ -270,16 +269,15 @@ export async function fetchSplMetadataUri(
           setTimeout(() => {
             reject(new Error("timeout"));
           }, 6000);
+          const uri = t.account.data.uri;
           try {
             const resp = await fetch(
-              `https://swr.xnfts.dev/web/${externalResourceUri(
-                t.account.data.uri
-              )}`
+              `https://swr.xnfts.dev/web/${externalResourceUri(uri)}`
             );
             resolve(resp);
           } catch (err) {
             try {
-              const resp = await fetch(externalResourceUri(t.account.data.uri));
+              const resp = await fetch(externalResourceUri(uri));
               resolve(resp);
             } catch (e) {
               reject(err);

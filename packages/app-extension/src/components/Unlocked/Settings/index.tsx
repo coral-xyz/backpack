@@ -347,11 +347,9 @@ function SettingsMenu() {
 }
 
 function _SettingsContent() {
-  const { close } = useDrawerContext();
   return (
     <div>
       <AvatarHeader />
-      <WalletLists close={close} />
       <SettingsList />
     </div>
   );

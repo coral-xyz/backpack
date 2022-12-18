@@ -200,7 +200,13 @@ enum SwapState {
   ERROR,
 }
 
-export function Swap({ blockchain }: { blockchain: Blockchain }) {
+export function Swap({
+  blockchain,
+  publicKey,
+}: {
+  blockchain: Blockchain;
+  publicKey?: string;
+}) {
   const nav = useNavStack();
   useEffect(() => {
     nav.setTitle("Swap");
@@ -210,10 +216,18 @@ export function Swap({ blockchain }: { blockchain: Blockchain }) {
     throw new Error("only Solana swaps are supported currently");
   }
 
-  return <_Swap blockchain={blockchain ?? Blockchain.SOLANA} />;
+  return (
+    <_Swap blockchain={blockchain ?? Blockchain.SOLANA} publicKey={publicKey} />
+  );
 }
 
-function _Swap({ blockchain }: { blockchain: Blockchain }) {
+function _Swap({
+  blockchain,
+  publicKey,
+}: {
+  blockchain: Blockchain;
+  publicKey?: string;
+}) {
   const classes = useStyles();
   const { toAmount, swapToFromMints } = useSwapContext();
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -245,7 +259,7 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
               left: "24px",
             }}
           />
-          <InputTextField />
+          <InputTextField publicKey={publicKey} />
         </div>
         <div className={classes.bottomHalfWrapper}>
           <div className={classes.bottomHalf}>
@@ -315,7 +329,7 @@ const SwapConfirmationCard: React.FC<{
   );
 };
 
-function InputTextField() {
+function InputTextField({ publicKey }: { publicKey?: string }) {
   const classes = useStyles();
   const {
     fromAmount,
@@ -340,7 +354,7 @@ function InputTextField() {
       <TokenInputField
         type="number"
         placeholder="0"
-        endAdornment={<InputTokenSelectorButton />}
+        endAdornment={<InputTokenSelectorButton publicKey={publicKey} />}
         rootClass={classes.fromFieldRoot}
         value={fromAmount}
         setValue={setFromAmount}
@@ -714,7 +728,7 @@ function SwapTokensButton({
   );
 }
 
-function InputTokenSelectorButton() {
+function InputTokenSelectorButton({ publicKey }: { publicKey?: string }) {
   const { inputTokenAccounts, fromMint, setFromMint } = useSwapContext();
   const tokenAccountsFiltered = inputTokenAccounts.filter((token: Token) => {
     if (token.mint && token.mint === SOL_NATIVE_MINT) {
@@ -730,6 +744,7 @@ function InputTokenSelectorButton() {
       selectedMint={fromMint}
       tokenAccounts={tokenAccountsFiltered}
       setMint={setFromMint}
+      publicKey={publicKey}
     />
   );
 }
@@ -752,6 +767,7 @@ function TokenSelectorButton({
   tokenAccounts,
   setMint,
   displayWalletHeader,
+  publicKey,
 }: any) {
   const classes = useStyles();
   const nav = useNavStack();
@@ -768,6 +784,7 @@ function TokenSelectorButton({
             setMint: (...args: any) => setMint(...args),
             tokenAccounts,
             displayWalletHeader,
+            publicKey,
           })
         }
         style={{
@@ -792,12 +809,12 @@ export function SelectToken({
   setMint,
   tokenAccounts,
   customFilter,
-  displayWalletHeader,
+  publicKey,
 }: {
   setMint: (mint: string) => void;
   tokenAccounts: Token[];
   customFilter: (token: Token) => boolean;
-  displayWalletHeader: boolean;
+  publicKey?: string;
 }) {
   const nav = useNavStack();
   const onClickRow = (_blockchain: Blockchain, token: Token) => {
@@ -811,11 +828,10 @@ export function SelectToken({
 
   return (
     <SearchableTokenTable
-      blockchain={Blockchain.SOLANA}
       onClickRow={onClickRow}
       tokenAccounts={tokenAccounts}
       customFilter={customFilter}
-      displayWalletHeader={displayWalletHeader}
+      publicKey={publicKey}
     />
   );
 }

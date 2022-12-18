@@ -7,12 +7,14 @@ import { atom, selector, selectorFamily } from "recoil";
 import type { WalletPublicKeys } from "../types";
 
 import { backgroundClient } from "./client";
+import { enabledBlockchains, isAggregateWallets } from "./preferences";
 
 /**
  * All public key data associated with the currently active username.
  * All the other pieces of wallet data are derived via selectors from this atom.
  */
 export const walletPublicKeyData = atom<{
+  activeBlockchain: Blockchain;
   activePublicKeys: Array<string>;
   publicKeys: WalletPublicKeys;
 }>({
@@ -27,6 +29,134 @@ export const walletPublicKeyData = atom<{
       });
     },
   }),
+});
+
+export const activeBlockchain = selector<Blockchain>({
+  key: "activeBlockchain",
+  get: ({ get }) => {
+    const data = get(walletPublicKeyData);
+    return data.activeBlockchain;
+  },
+});
+
+// All wallets enabled in the wallet. Not necessarily shown by the UI.
+export const allWallets = selector<
+  Array<{
+    name: string;
+    type: string;
+    publicKey: string;
+    blockchain: Blockchain;
+  }>
+>({
+  key: "allWallets",
+  get: ({ get }) => {
+    const _enabledBlockchains = get(enabledBlockchains);
+    let wallets: Array<any> = [];
+
+    if (_enabledBlockchains.includes(Blockchain.SOLANA)) {
+      const solanaWallets = get(allWalletsPerBlockchain(Blockchain.SOLANA));
+      wallets = wallets.concat(solanaWallets);
+    }
+    if (_enabledBlockchains.includes(Blockchain.ETHEREUM)) {
+      const ethereumWallets = get(allWalletsPerBlockchain(Blockchain.ETHEREUM));
+      wallets = wallets.concat(ethereumWallets);
+    }
+
+    return wallets;
+  },
+});
+
+// All wallets to display in the UI at any given time.
+export const allWalletsDisplayed = selector<
+  Array<{
+    name: string;
+    type: string;
+    publicKey: string;
+    blockchain: Blockchain;
+  }>
+>({
+  key: "allWalletsDisplayed",
+  get: ({ get }) => {
+    const _isAggregateWallets = get(isAggregateWallets);
+    if (_isAggregateWallets) {
+      return get(allWallets);
+    } else {
+      return [get(activeWallet)];
+    }
+  },
+});
+
+export const allWalletsPerBlockchain = selectorFamily<
+  Array<{
+    name: string;
+    type: string;
+    publicKey: string;
+    blockchain: Blockchain;
+  }>,
+  Blockchain
+>({
+  key: "allWalletsPerBlockchain",
+  get:
+    (blockchain) =>
+    ({ get }) => {
+      const keyrings = get(walletPublicKeys);
+      const keyring = keyrings[blockchain]!;
+      return keyring.hdPublicKeys
+        .map((k: any) => ({ ...k, blockchain, type: "derived" }))
+        .concat(
+          keyring.importedPublicKeys.map((k: any) => ({
+            ...k,
+            type: "imported",
+            blockchain,
+          }))
+        )
+        .concat(
+          keyring.ledgerPublicKeys.map((k: any) => ({
+            ...k,
+            blockchain,
+            type: "hardware",
+          }))
+        );
+    },
+});
+
+export const activeWallet = selector<{
+  publicKey: string;
+  name: string;
+  blockchain: Blockchain;
+  type: string;
+}>({
+  key: "activeWallet",
+  get: ({ get }) => {
+    const data = get(walletPublicKeyData);
+
+    //
+    // Get all the pubkeys for the active blockchain.
+    //
+    const { ledgerPublicKeys, importedPublicKeys, hdPublicKeys } =
+      data.publicKeys[data.activeBlockchain];
+
+    //
+    // Pluck out the currently active wallet for that blockchain.
+    //
+    const wallet = hdPublicKeys
+      .map((k) => ({ ...k, type: "derived" }))
+      .concat(ledgerPublicKeys.map((k) => ({ ...k, type: "hardware" })))
+      .concat(importedPublicKeys.map((k) => ({ ...k, type: "imported" })))
+      .find((pk) => data.activePublicKeys.indexOf(pk.publicKey) >= 0);
+
+    if (!wallet) {
+      throw new Error("active wallet not found");
+    }
+
+    //
+    //
+    //
+    return {
+      blockchain: data.activeBlockchain,
+      ...wallet,
+    };
+  },
 });
 
 /**

@@ -208,6 +208,7 @@ export function __Button({ onClick, style, children }: any) {
 
 export function ScrollBarImpl(props: any) {
   const theme = useCustomTheme();
+
   return (
     <>
       <Scrollbars

@@ -18,6 +18,8 @@ import {
   EthereumConnectionUrl,
   EthereumExplorer,
   getAddMessage,
+  NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED,
+  NOTIFICATION_AGGREGATE_WALLETS_UPDATED,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_AUTO_LOCK_SETTINGS_UPDATED,
   NOTIFICATION_BLOCKCHAIN_DISABLED,
@@ -765,17 +767,29 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  async keyringStoreReadAllPubkeyData(): Promise<any> {
+  async keyringStoreReadAllPubkeyData(): Promise<{
+    activeBlockchain: Blockchain;
+    activePublicKeys: Array<string>;
+    publicKeys: any; // todo: type
+  }> {
     const activePublicKeys = await this.activeWallets();
     const publicKeys = await this.keyringStoreReadAllPubkeys();
+    const activeBlockchain =
+      this.keyringStore.activeUserKeyring.activeBlockchain;
     return {
+      activeBlockchain,
       activePublicKeys,
       publicKeys,
     };
   }
 
   // Returns all pubkeys available for signing.
-  async keyringStoreReadAllPubkeys(): Promise<any> {
+  async keyringStoreReadAllPubkeys(): Promise<{
+    [blockchain: string]: {
+      publicKey: string;
+      name: string;
+    };
+  }> {
     const publicKeys = await this.keyringStore.publicKeys();
     const namedPublicKeys = {};
     for (const [blockchain, blockchainKeyring] of Object.entries(publicKeys)) {
@@ -823,7 +837,10 @@ export class Backend {
   ): Promise<string> {
     const keyring =
       this.keyringStore.activeUserKeyring.keyringForBlockchain(blockchain);
+
+    const oldBlockchain = this.keyringStore.activeUserKeyring.activeBlockchain;
     const oldActivePublicKey = keyring.getActiveWallet();
+
     await this.keyringStore.activeWalletUpdate(newActivePublicKey, blockchain);
 
     if (newActivePublicKey !== oldActivePublicKey) {
@@ -846,6 +863,16 @@ export class Backend {
           },
         });
       }
+    }
+
+    if (blockchain !== oldBlockchain) {
+      this.events.emit(BACKEND_EVENT, {
+        name: NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED,
+        data: {
+          oldBlockchain,
+          newBlockchain: blockchain,
+        },
+      });
     }
 
     return SUCCESS_RESPONSE;
@@ -1255,6 +1282,22 @@ export class Backend {
       name: NOTIFICATION_DEVELOPER_MODE_UPDATED,
       data: {
         developerMode,
+      },
+    });
+    return SUCCESS_RESPONSE;
+  }
+
+  async aggregateWalletsUpdate(aggregateWallets: boolean): Promise<string> {
+    const uuid = this.keyringStore.activeUserKeyring.uuid;
+    const data = await store.getWalletDataForUser(uuid);
+    await store.setWalletDataForUser(uuid, {
+      ...data,
+      aggregateWallets,
+    });
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_AGGREGATE_WALLETS_UPDATED,
+      data: {
+        aggregateWallets,
       },
     });
     return SUCCESS_RESPONSE;

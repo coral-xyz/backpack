@@ -3,6 +3,7 @@ import { useSetRecoilState } from "recoil";
 
 import * as atoms from "../atoms";
 import {
+  useActiveSolanaWallet,
   useBackgroundClient,
   useConnectionBackgroundClient,
   useNavigationSegue,
@@ -10,7 +11,9 @@ import {
 } from "../hooks";
 
 export function PluginManager(props: any) {
-  const plugins = usePlugins();
+  // TODO
+  const { publicKey } = useActiveSolanaWallet();
+  const plugins = usePlugins(publicKey);
   const segue = useNavigationSegue();
   const setTransactionRequest = useSetRecoilState(atoms.transactionRequest);
   const backgroundClient = useBackgroundClient();

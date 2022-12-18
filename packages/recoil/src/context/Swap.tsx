@@ -17,7 +17,12 @@ import { BigNumber, ethers } from "ethers";
 
 import { blockchainTokenData } from "../atoms/balance";
 import { JUPITER_BASE_URL, jupiterInputMints } from "../atoms/solana/jupiter";
-import { useLoader, useSolanaCtx, useSplTokenRegistry } from "../hooks";
+import {
+  useActiveSolanaWallet,
+  useLoader,
+  useSolanaCtx,
+  useSplTokenRegistry,
+} from "../hooks";
 
 const { Zero } = ethers.constants;
 const DEFAULT_DEBOUNCE_DELAY = 400;
@@ -80,20 +85,29 @@ function useDebounce(value: any, wait = DEFAULT_DEBOUNCE_DELAY) {
 export function SwapProvider({
   blockchain,
   tokenAddress,
+  publicKey,
   children,
 }: {
   blockchain: Blockchain;
   tokenAddress?: string;
+  publicKey?: string;
   children: React.ReactNode;
 }) {
   const tokenRegistry = useSplTokenRegistry();
-  const [inputTokenAccounts] = useLoader(jupiterInputMints, []);
+  // todo
+  publicKey = publicKey ?? useActiveSolanaWallet().publicKey;
+  const [inputTokenAccounts] = useLoader(jupiterInputMints({ publicKey }), []);
   const solanaCtx = useSolanaCtx();
   const { backgroundClient, connection, walletPublicKey } = solanaCtx;
+
+  // If the publicKey was given in the params, use it because it's for the multi wallet
+  // aggregate view.
+  publicKey = publicKey ?? walletPublicKey.toString();
+
   const [token] = tokenAddress
     ? useLoader(
         blockchainTokenData({
-          publicKey: solanaCtx.walletPublicKey.toString(),
+          publicKey,
           blockchain,
           tokenAddress,
         }),
@@ -130,11 +144,11 @@ export function SwapProvider({
 
   const fromToken = associatedTokenAddress(
     new PublicKey(fromMint),
-    walletPublicKey
+    new PublicKey(publicKey)
   );
   const toToken = associatedTokenAddress(
     new PublicKey(toMint),
-    walletPublicKey
+    new PublicKey(publicKey)
   );
   const fromMintInfo = tokenRegistry.get(fromMint)!;
   const toMintInfo = tokenRegistry.get(toMint)!;
@@ -293,7 +307,7 @@ export function SwapProvider({
       return (
         await generateWrapSolTx(
           solanaCtx,
-          walletPublicKey,
+          new PublicKey(publicKey!),
           fromAmount!.toNumber()
         )
       ).toString("base64");
@@ -302,7 +316,7 @@ export function SwapProvider({
       return (
         await generateUnwrapSolTx(
           solanaCtx,
-          walletPublicKey,
+          new PublicKey(publicKey!),
           fromAmount!.toNumber()
         )
       ).toString("base64");
@@ -318,7 +332,7 @@ export function SwapProvider({
         body: JSON.stringify({
           route,
           wrapUnwrapSOL: true,
-          userPublicKey: walletPublicKey,
+          userPublicKey: new PublicKey(publicKey!),
         }),
       });
       const transactions = await response.json();

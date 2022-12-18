@@ -12,7 +12,15 @@ import { useNavStack } from "../../../../common/Layout/NavStack";
 import { ImportTypeBadge } from "../../../../common/WalletList";
 import { AddConnectWalletButton } from "../..";
 
-export function EditWallets() {
+export function EditWallets({
+  filter,
+}: {
+  filter?: (w: {
+    name: string;
+    publicKey: string;
+    blockchain: string;
+  }) => boolean;
+}) {
   const nav = useNavStack();
   const blockchainKeyrings = useWalletPublicKeys();
 
@@ -32,6 +40,7 @@ export function EditWallets() {
           key={blockchain}
           blockchain={blockchain as Blockchain}
           keyring={keyring}
+          filter={filter}
         />
       ))}
       {/* Hack to add margin bottom. */}
@@ -43,25 +52,42 @@ export function EditWallets() {
 function WalletList({
   blockchain,
   keyring,
+  filter,
 }: {
   blockchain: Blockchain;
   keyring: any;
+  filter?: (w: {
+    name: string;
+    publicKey: string;
+    blockchain: string;
+  }) => boolean;
 }) {
   const theme = useCustomTheme();
-  const flattenedWallets = [
-    ...keyring.hdPublicKeys.map((k: any) => ({ ...k, type: "derived" })),
+  let flattenedWallets = [
+    ...keyring.hdPublicKeys.map((k: any) => ({
+      ...k,
+      type: "derived",
+      blockchain,
+    })),
     ...keyring.importedPublicKeys.map((k: any) => ({
       ...k,
+      blockchain,
       type: "imported",
     })),
     ...keyring.ledgerPublicKeys.map((k: any) => ({
       ...k,
       type: "ledger",
+      blockchain,
     })),
   ];
+  if (filter) {
+    flattenedWallets = flattenedWallets.filter(filter);
+  }
 
   // TODO: replace placeholder wallet avatar with stored image when available
-  return (
+  return flattenedWallets.length === 0 ? (
+    <></>
+  ) : (
     <div style={{ marginBottom: "16px" }}>
       <Typography
         style={{

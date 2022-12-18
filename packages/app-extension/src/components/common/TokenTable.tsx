@@ -2,20 +2,17 @@ import { useEffect, useState } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList as WindowedList } from "react-window";
 import type { Blockchain } from "@coral-xyz/common";
-import { toTitleCase, walletAddressDisplay } from "@coral-xyz/common";
 import { TextInput } from "@coral-xyz/react-common";
 import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
 import {
   blockchainBalancesSorted,
   useActiveWallets,
+  useAllWalletsDisplayed,
   useBlockchainConnectionUrl,
-  useBlockchainLogo,
-  useEnabledBlockchains,
   useLoader,
 } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import { Button as MuiButton, Skeleton } from "@mui/material";
+import { Skeleton } from "@mui/material";
 
 import {
   BalancesTable,
@@ -24,8 +21,6 @@ import {
   BalancesTableHead,
   BalancesTableRow,
 } from "../Unlocked/Balances";
-
-import { WithCopyTooltip } from "./WithCopyTooltip";
 
 export type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
 
@@ -44,28 +39,8 @@ const useStyles = styles((theme) => ({
       },
     },
   },
-  addressButton: {
-    padding: 0,
-    color: theme.custom.colors.secondary,
-    textTransform: "none",
-    fontWeight: 500,
-    lineHeight: "24px",
-    fontSize: "14px",
-    marginLeft: "8px",
-    "&:hover": {
-      backgroundColor: "transparent",
-      "& svg": {
-        visibility: "visible",
-      },
-    },
-  },
   skeleton: {
     background: "rgba(0,0,0,0.15)",
-  },
-  copyIcon: {
-    visibility: "hidden",
-    width: "16px",
-    marginLeft: "6px",
   },
 }));
 
@@ -101,17 +76,15 @@ export function SearchableTokenTables({
 }
 
 export function SearchableTokenTable({
-  blockchain,
   onClickRow,
   tokenAccounts,
+  publicKey,
   customFilter = () => true,
-  displayWalletHeader = true,
 }: {
-  blockchain: Blockchain;
   onClickRow: (blockchain: Blockchain, token: Token) => void;
+  publicKey?: string;
   tokenAccounts?: ReturnType<typeof useBlockchainTokensSorted>;
   customFilter: (token: Token) => boolean;
-  displayWalletHeader?: boolean;
 }) {
   const classes = useStyles();
   const [searchFilter, setSearchFilter] = useState("");
@@ -128,70 +101,73 @@ export function SearchableTokenTable({
           },
         }}
       />
-      <TokenTable
-        blockchain={blockchain}
+      <TokenTables
+        publicKey={publicKey}
         onClickRow={onClickRow}
         tokenAccounts={tokenAccounts}
         searchFilter={searchFilter}
         customFilter={customFilter}
-        displayWalletHeader={displayWalletHeader}
       />
     </>
   );
 }
 
 export function TokenTables({
-  blockchains,
   onClickRow,
+  tokenAccounts,
+  publicKey,
   searchFilter = "",
   customFilter = () => true,
 }: {
-  blockchains?: Array<Blockchain>;
-  onClickRow: (blockchain: Blockchain, token: Token) => void;
+  onClickRow: (blockchain: Blockchain, token: Token, publicKey: string) => void;
+  publicKey?: string;
   searchFilter?: string;
+  tokenAccounts?: ReturnType<typeof useBlockchainTokensSorted>;
   customFilter?: (token: Token) => boolean;
 }) {
-  const enabledBlockchains = useEnabledBlockchains();
-  const filteredBlockchains =
-    blockchains?.filter((b) => enabledBlockchains.includes(b)) ||
-    enabledBlockchains;
-
+  const wallets = useAllWalletsDisplayed().filter((wallet) =>
+    !publicKey ? true : wallet.publicKey === publicKey
+  );
   return (
     <>
-      {filteredBlockchains.map((blockchain: Blockchain) => (
-        <TokenTable
-          key={blockchain}
-          blockchain={blockchain}
-          onClickRow={onClickRow}
-          searchFilter={searchFilter}
-          customFilter={customFilter}
-        />
-      ))}
+      {wallets.map(
+        (wallet: {
+          blockchain: Blockchain;
+          publicKey: string;
+          type: string;
+          name: string;
+        }) => (
+          <WalletTokenTable
+            key={wallet.publicKey.toString()}
+            blockchain={wallet.blockchain}
+            onClickRow={onClickRow}
+            searchFilter={searchFilter}
+            customFilter={customFilter}
+            wallet={wallet}
+            tokenAccounts={tokenAccounts}
+          />
+        )
+      )}
     </>
   );
 }
 
-export function TokenTable({
+export function WalletTokenTable({
   blockchain,
   onClickRow,
   tokenAccounts,
+  wallet,
   searchFilter = "",
   customFilter = () => true,
-  displayWalletHeader = true,
 }: {
   blockchain: Blockchain;
-  onClickRow: (blockchain: Blockchain, token: Token) => void;
+  onClickRow: (blockchain: Blockchain, token: Token, publicKey: string) => void;
+  wallet: { name: string; publicKey: string };
   tokenAccounts?: ReturnType<typeof useBlockchainTokensSorted>;
   searchFilter?: string;
   customFilter?: (token: Token) => boolean;
-  displayWalletHeader?: boolean;
 }) {
-  const classes = useStyles();
-  const title = toTitleCase(blockchain);
-  const blockchainLogo = useBlockchainLogo(blockchain);
   const connectionUrl = useBlockchainConnectionUrl(blockchain);
-  const activeWallets = useActiveWallets();
-  const wallet = activeWallets.filter((w) => w.blockchain === blockchain)[0];
 
   const [_tokenAccounts, , isLoading] = tokenAccounts
     ? [tokenAccounts, "hasValue"]
@@ -205,7 +181,6 @@ export function TokenTable({
       );
 
   const [search, setSearch] = useState(searchFilter);
-  const [tooltipOpen, setTooltipOpen] = useState(false);
 
   const searchLower = search.toLowerCase();
   const tokenAccountsFiltered = _tokenAccounts
@@ -220,12 +195,6 @@ export function TokenTable({
   useEffect(() => {
     setSearch(searchFilter);
   }, [searchFilter]);
-
-  const onCopy = () => {
-    setTooltipOpen(true);
-    setTimeout(() => setTooltipOpen(false), 1000);
-    navigator.clipboard.writeText(wallet.publicKey.toString());
-  };
 
   const useVirtualization = tokenAccountsFiltered.length > 100;
   // Note: if this fixed height changes in react-xnft-renderer it'll need to be changed here
@@ -243,28 +212,7 @@ export function TokenTable({
 
   return (
     <BalancesTable style={tableStyle}>
-      <BalancesTableHead
-        props={{
-          title,
-          iconUrl: blockchainLogo,
-          disableToggle: false,
-          subtitle: displayWalletHeader && (
-            <WithCopyTooltip tooltipOpen={tooltipOpen}>
-              <MuiButton
-                disableRipple
-                className={classes.addressButton}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onCopy();
-                }}
-              >
-                {walletAddressDisplay(wallet?.publicKey)}
-                <ContentCopyIcon className={classes.copyIcon} />
-              </MuiButton>
-            </WithCopyTooltip>
-          ),
-        }}
-      />
+      <BalancesTableHead blockchain={blockchain} wallet={wallet} />
       <BalancesTableContent style={useVirtualization ? { height: "100%" } : {}}>
         {isLoading ? (
           <SkeletonRows />
@@ -280,7 +228,12 @@ export function TokenTable({
                   itemData={{
                     tokenList: tokenAccountsFiltered,
                     blockchain,
-                    onClickRow: (token: Token) => onClickRow(blockchain, token),
+                    onClickRow: (token: Token) =>
+                      onClickRow(
+                        blockchain,
+                        token,
+                        wallet.publicKey.toString()
+                      ),
                   }}
                   overscanCount={12}
                 >
@@ -295,7 +248,9 @@ export function TokenTable({
               <TokenRow
                 key={token.address}
                 token={token}
-                onClick={(token) => onClickRow(blockchain, token)}
+                onClick={(token) =>
+                  onClickRow(blockchain, token, wallet.publicKey.toString())
+                }
               />
             ))}
           </>

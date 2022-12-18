@@ -26,6 +26,7 @@ export type WalletData = {
   enabledBlockchains: Array<Blockchain>;
   darkMode: boolean;
   developerMode: boolean;
+  aggregateWallets: boolean;
   solana: SolanaData;
   ethereum?: EthereumData;
 } & DeprecatedWalletDataDoNotUse;
@@ -60,3 +61,4 @@ function key(uuid: string): string {
 
 export const DEFAULT_DARK_MODE = false;
 export const DEFAULT_DEVELOPER_MODE = false;
+export const DEFAULT_AGGREGATE_WALLETS = true;

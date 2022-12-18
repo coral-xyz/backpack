@@ -1,20 +1,28 @@
 import { useMemo } from "react";
 import { EmptyState } from "@coral-xyz/react-common";
-import { nftCollectionsWithIds } from "@coral-xyz/recoil";
+import {
+  isAggregateWallets,
+  nftCollectionsWithIds,
+  useActiveWallet,
+  useAllWalletsDisplayed,
+} from "@coral-xyz/recoil";
 import { Image as ImageIcon } from "@mui/icons-material";
-import { useRecoilValueLoadable } from "recoil";
+import { useRecoilValue, useRecoilValueLoadable } from "recoil";
 
 import { useIsONELive } from "../../../hooks/useIsONELive";
-import {} from "../Balances";
+import { _BalancesTableHead } from "../Balances/Balances";
 
 import EntryONE from "./EntryONE";
 import { NftTable } from "./NftTable";
 
 export function Nfts() {
   const isONELive = useIsONELive();
+  const activeWallet = useActiveWallet();
+  const wallets = useAllWalletsDisplayed();
+  const _isAggregateWallets = useRecoilValue(isAggregateWallets);
   const { contents, state } = useRecoilValueLoadable(nftCollectionsWithIds);
   const isLoading = state === "loading";
-  const collections = (state === "hasValue" && contents) || {};
+  const collections = (state === "hasValue" && contents) || null;
 
   const NFTList = useMemo(() => {
     return (
@@ -24,13 +32,32 @@ export function Nfts() {
             ? [{ height: 129, key: "oneEntry", component: <EntryONE /> }]
             : []
         }
-        blockchainCollections={Object.entries(collections)}
+        blockchainCollections={
+          collections
+            ? Object.entries(collections).map(([publicKey, c]) => ({
+                publicKey,
+                blockchain: c.blockchain,
+                collectionWithIds: c.collectionWithIds,
+              }))
+            : wallets.map((w) => ({ ...w, collectionWithIds: null }))
+        }
       />
     );
   }, [isONELive, collections]);
 
-  const isEmpty =
-    false || (Object.values(collections).flat().length === 0 && !isLoading);
+  const nftCount = collections
+    ? Object.values(collections)
+        .flat()
+        .reduce(
+          (acc, c) =>
+            c.collectionWithIds === null
+              ? acc
+              : c.collectionWithIds.length + acc,
+          0
+        )
+    : 0;
+  const isEmpty = nftCount === 0 && !isLoading;
+
   return (
     <div
       style={{
@@ -50,6 +77,16 @@ export function Nfts() {
             buttonText={"Browse Magic Eden"}
             onClick={() => window.open("https://magiceden.io")}
             verticallyCentered={!isONELive}
+            header={
+              !_isAggregateWallets && (
+                <_BalancesTableHead
+                  blockchain={activeWallet.blockchain}
+                  wallet={activeWallet}
+                  showContent={true}
+                  setShowContent={() => {}}
+                />
+              )
+            }
           />
         </>
       ) : (

@@ -18,13 +18,18 @@ export type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
 export function Balances() {
   const { push } = useNavigation();
 
-  const onClickTokenRow = (blockchain: Blockchain, token: Token) => {
+  const onClickTokenRow = (
+    blockchain: Blockchain,
+    token: Token,
+    publicKey: string
+  ) => {
     push({
       title: `${toTitleCase(blockchain)} / ${token.ticker}`,
       componentId: NAV_COMPONENT_TOKEN,
       componentProps: {
         blockchain,
-        address: token.address,
+        tokenAddress: token.address,
+        publicKey,
       },
     });
   };

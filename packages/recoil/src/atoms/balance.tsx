@@ -13,8 +13,14 @@ import {
   solanaFungibleTokenBalance,
   solanaFungibleTokenNativeBalance,
 } from "./solana/token";
-import { enabledBlockchains } from "./preferences";
-import { ethereumPublicKey, solanaPublicKey } from "./wallet";
+import { enabledBlockchains, isAggregateWallets } from "./preferences";
+import {
+  activeWallet,
+  allWallets,
+  allWalletsDisplayed,
+  ethereumPublicKey,
+  solanaPublicKey,
+} from "./wallet";
 
 /**
  * Return token balances sorted by usd notional balances.
@@ -182,17 +188,13 @@ export const blockchainTotalBalance = selectorFamily<
 export const totalBalance = selector({
   key: "totalBalance",
   get: ({ get }) => {
-    const totals = get(enabledBlockchains).reduce(
+    const wallets = get(allWalletsDisplayed);
+    const totals = wallets.reduce(
       (
         acc: { totalBalance: number; totalChange: number },
-        blockchain: Blockchain
+        wallet: { publicKey: string; blockchain: Blockchain }
       ) => {
-        let publicKey: string;
-        if (blockchain === Blockchain.SOLANA) {
-          publicKey = get(solanaPublicKey)!;
-        } else {
-          publicKey = get(ethereumPublicKey)!;
-        }
+        const { publicKey, blockchain } = wallet;
         const total = get(blockchainTotalBalance({ publicKey, blockchain }));
         return {
           totalBalance: acc.totalBalance + total.totalBalance,

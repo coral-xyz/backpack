@@ -44,7 +44,7 @@ export const ethereumBalances = atomFamily<
 
 // Native ETH balance
 export const ethBalance = atom<BigNumber>({
-  key: "ethereumBalance",
+  key: "ethBalance",
   default: selector({
     key: "ethereumBalanceDefault",
     get: ({ get }: any) => {
@@ -58,7 +58,7 @@ export const ethBalance = atom<BigNumber>({
 
 // ERC20 Token Balances
 export const erc20Balances = selector({
-  key: "ethereumTokenBalances",
+  key: "erc20Balances",
   get: async ({ get }: any) => {
     const publicKey = get(ethereumPublicKey);
     if (!publicKey) {

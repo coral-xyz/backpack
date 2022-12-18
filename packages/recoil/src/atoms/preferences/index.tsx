@@ -71,6 +71,14 @@ export const autoLockSettings = selector<{
   },
 });
 
+export const isAggregateWallets = selector<boolean>({
+  key: "isAggregateWallets",
+  get: async ({ get }) => {
+    const p = get(preferences);
+    return !!p.aggregateWallets;
+  },
+});
+
 export const approvedOrigins = selector<Array<string>>({
   key: "approvedOrigins",
   get: async ({ get }) => {

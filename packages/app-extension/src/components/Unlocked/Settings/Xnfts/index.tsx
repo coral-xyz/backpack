@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { XNFT_GG_LINK } from "@coral-xyz/common";
 import { EmptyState, ProxyImage, PushDetail } from "@coral-xyz/react-common";
-import { useAppIcons } from "@coral-xyz/recoil";
+import { useActiveSolanaWallet, useAppIcons } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Apps } from "@mui/icons-material";
 import { Typography } from "@mui/material";
@@ -12,7 +12,9 @@ import { SettingsList } from "../../../common/Settings/List";
 export function XnftSettings() {
   const nav = useNavStack();
   const theme = useCustomTheme();
-  const xnfts = useAppIcons();
+  // TODO:
+  const { publicKey } = useActiveSolanaWallet();
+  const xnfts = useAppIcons(publicKey);
   const settingsMenu = {} as any;
   xnfts.forEach((xnft) => {
     const pubkeyStr = xnft.install.publicKey.toString();

@@ -165,7 +165,7 @@ export namespace SearchParamsFor {
     props: {};
   }
   export interface Token {
-    props: { address: string; blockchain: Blockchain };
+    props: { tokenAddress: string; blockchain: Blockchain; publicKey: string };
   }
 }
 
