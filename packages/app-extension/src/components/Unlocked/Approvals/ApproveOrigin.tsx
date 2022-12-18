@@ -1,9 +1,11 @@
 import { useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import { UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE } from "@coral-xyz/common";
+import { ProxyImage } from "@coral-xyz/react-common";
 import {
   useAllWalletsPerBlockchain,
   useApproveOrigin,
+  useAvatarUrl,
   useBackgroundClient,
   useBlockchainActiveWallet,
   useBlockchainLogo,
@@ -26,7 +28,7 @@ import {
 } from "../../../components/common/Layout/Drawer";
 import { WalletList } from "../../common/WalletList";
 
-import { displayOriginTitle,WithApproval } from ".";
+import { displayOriginTitle, OriginConnectable, WithApprovalButtons } from ".";
 
 const useStyles = styles((theme) => ({
   title: {
@@ -34,8 +36,6 @@ const useStyles = styles((theme) => ({
     fontSize: "24px",
     lineHeight: "32px",
     color: theme.custom.colors.fontColor,
-    marginBottom: "24px",
-    marginTop: "24px",
     textAlign: "center",
   },
   listDescription: {
@@ -109,51 +109,68 @@ export function ApproveOrigin({
     >
       <WalletSelector blockchain={blockchain} />
       <div style={{ flex: 1 }}>
-        <WithApproval
-          origin={origin}
-          originTitle={title}
-          title={<div className={classes.title}>Backpack Connect</div>}
-          wallet={wallet.publicKey.toString()}
-          onConfirm={onConfirm}
-          onDeny={onDeny}
-        >
+        <WithApprovalButtons onConfirm={onConfirm} onDeny={onDeny}>
           <div
             style={{
               flex: 1,
               display: "flex",
               flexDirection: "column",
-              marginLeft: "16px",
-              marginRight: "16px",
+              marginLeft: "32px",
+              marginRight: "32px",
             }}
           >
-            <div>
-              <Typography className={classes.listDescription}>
-                This app would like to
-              </Typography>
-              <List className={classes.listRoot}>
-                <ListItem className={classes.listItemRoot}>
-                  <ListItemIcon className={classes.listItemIconRoot}>
-                    <CheckIcon />
-                  </ListItemIcon>
-                  View wallet balance & activity
-                </ListItem>
-                <ListItem className={classes.listItemRoot}>
-                  <ListItemIcon className={classes.listItemIconRoot}>
-                    <CheckIcon />
-                  </ListItemIcon>
-                  Request approval for transactions
-                </ListItem>
-              </List>
+            <div
+              style={{
+                marginTop: "24px",
+                marginBottom: "16px",
+              }}
+            >
+              <div className={classes.title}>{displayOriginTitle(title)}</div>
+              <div className={classes.title}>wants to connect</div>
             </div>
+            <OriginConnectable
+              origin={origin}
+              originTitle={title}
+              style={{
+                marginBottom: "32px",
+                marginLeft: "auto",
+                marginRight: "auto",
+              }}
+            />
+            <ApproveOriginTable />
           </div>
-        </WithApproval>
+        </WithApprovalButtons>
       </div>
     </div>
   );
 }
 
+function ApproveOriginTable() {
+  const classes = useStyles();
+  return (
+    <div>
+      <Typography className={classes.listDescription}>
+        This app would like to
+      </Typography>
+      <List className={classes.listRoot}>
+        <ListItem className={classes.listItemRoot}>
+          <ListItemIcon className={classes.listItemIconRoot}>
+            <CheckIcon />
+          </ListItemIcon>
+          View wallet balance & activity
+        </ListItem>
+        <ListItem className={classes.listItemRoot}>
+          <ListItemIcon className={classes.listItemIconRoot}>
+            <CheckIcon />
+          </ListItemIcon>
+          Request approval for transactions
+        </ListItem>
+      </List>
+    </div>
+  );
+}
+
 function WalletSelector({ blockchain }: { blockchain: Blockchain }) {
-  const theme = useCustomTheme();
   const background = useBackgroundClient();
   const [openDrawer, setOpenDrawer] = useState(false);
   const activeWallet = useBlockchainActiveWallet(blockchain);
@@ -165,11 +182,7 @@ function WalletSelector({ blockchain }: { blockchain: Blockchain }) {
   };
 
   return (
-    <div
-      style={{
-        borderBottom: `solid 1pt ${theme.custom.colors.border}`,
-      }}
-    >
+    <div>
       <WalletSelectorButton
         wallet={activeWallet}
         onClick={() => setOpenDrawer(!openDrawer)}
@@ -217,6 +230,9 @@ function WalletSelectorButton({
         }}
         onClick={onClick}
       >
+        <AvatarWithBlockchainImage
+          blockchain={wallet.blockchain as Blockchain}
+        />
         <WalletAddress
           publicKey={wallet.publicKey}
           name={wallet.name}
@@ -232,6 +248,23 @@ function WalletSelectorButton({
       </Button>
       <div style={{ flex: 1 }} />
     </div>
+  );
+}
+
+function AvatarWithBlockchainImage({ blockchain }: { blockchain: Blockchain }) {
+  const avatarUrl = useAvatarUrl(32);
+  const blockchainIcon = useBlockchainLogo(blockchain);
+  // TODO: use this blockchain icon here.
+  return (
+    <ProxyImage
+      src={avatarUrl}
+      style={{
+        width: "32px",
+        height: "32px",
+        borderRadius: "16px",
+        marginRight: "16px",
+      }}
+    />
   );
 }
 
@@ -257,7 +290,17 @@ function BlockchainWalletList({
         background: theme.custom.colors.backgroundBackdrop,
       }}
     >
-      <BlockchainHeader blockchain={value.blockchain as Blockchain} />
+      <Typography
+        style={{
+          color: theme.custom.colors.fontColor,
+          fontSize: "18px",
+          lineHeight: "24px",
+          marginBottom: "16px",
+          textAlign: "center",
+        }}
+      >
+        Select wallet
+      </Typography>
       <WalletList
         disableIconPadding={true}
         wallets={wallets}
@@ -273,53 +316,6 @@ function BlockchainWalletList({
         }}
         selectedWalletPublicKey={value.publicKey}
       />
-    </div>
-  );
-}
-
-function BlockchainHeader({ blockchain }: { blockchain: Blockchain }) {
-  const networkIcon = useBlockchainLogo(blockchain);
-  const theme = useCustomTheme();
-  return (
-    <div
-      style={{
-        display: "flex",
-        marginBottom: "16px",
-      }}
-    >
-      <div style={{ flex: 1 }} />
-      <div
-        style={{
-          display: "flex",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-          }}
-        >
-          <img
-            src={networkIcon}
-            style={{
-              width: "20px",
-              height: "20px",
-              marginRight: "8px",
-            }}
-          />
-        </div>
-        <Typography
-          style={{
-            color: theme.custom.colors.fontColor,
-            fontSize: "20px",
-          }}
-        >
-          {blockchain.slice(0, 1).toUpperCase() +
-            blockchain.slice(1).toLowerCase()}
-        </Typography>
-      </div>
-      <div style={{ flex: 1 }} />
     </div>
   );
 }
