@@ -12,9 +12,6 @@ import { walletAddressDisplay } from "../../../components/common";
 import { UNKNOWN_ICON_SRC } from "../../common/Icon";
 
 const useStyles = styles((theme) => ({
-  contentContainer: {
-    margin: "0 16px",
-  },
   connectablesContainer: {
     display: "flex",
     flexDirection: "row",
@@ -61,7 +58,40 @@ export function WithApproval({
   onDeny: () => void;
   children: React.ReactNode;
 }) {
-  const classes = useStyles();
+  return (
+    <WithApprovalButtons
+      onConfirm={onConfirm}
+      onConfirmLabel={onConfirmLabel}
+      onDeny={onDeny}
+    >
+      <div
+        style={{
+          margin: "0 16px",
+        }}
+      >
+        {title}
+        <OriginWalletConnectIcons
+          wallet={wallet}
+          origin={origin}
+          originTitle={originTitle}
+        />
+        {children}
+      </div>
+    </WithApprovalButtons>
+  );
+}
+
+export function WithApprovalButtons({
+  onConfirm,
+  onConfirmLabel = "Connect",
+  onDeny,
+  children,
+}: {
+  onConfirm: () => void;
+  onConfirmLabel?: string;
+  onDeny: () => void;
+  children: React.ReactNode;
+}) {
   return (
     <div
       style={{
@@ -71,15 +101,7 @@ export function WithApproval({
         justifyContent: "space-between",
       }}
     >
-      <div className={classes.contentContainer}>
-        {title}
-        <OriginWalletConnectIcons
-          wallet={wallet}
-          origin={origin}
-          originTitle={originTitle}
-        />
-        {children}
-      </div>
+      {children}
       <div
         style={{
           marginLeft: "16px",
@@ -114,18 +136,9 @@ export function OriginWalletConnectIcons({
   const avatarUrl = useAvatarUrl(56);
   const { username } = useUser();
 
-  // This uses a Google API for favicon retrieval, do we want to parse the page ourselves?
-  const siteIcon = `https://www.google.com/s2/favicons?domain=${origin}&sz=180`;
-
   return (
     <div className={classes.connectablesContainer}>
-      <Connectable
-        title={displayOriginTitle(originTitle)}
-        description={new URL(origin).host}
-        icon={
-          origin.startsWith("http://localhost") ? UNKNOWN_ICON_SRC : siteIcon
-        }
-      />
+      <OriginConnectable origin={origin} originTitle={originTitle} />
       <Connectable
         title={username}
         description={`${walletName} (${walletAddressDisplay(wallet)})`}
@@ -135,18 +148,41 @@ export function OriginWalletConnectIcons({
   );
 }
 
-function Connectable({
+export function OriginConnectable({
+  originTitle,
+  origin,
+  style,
+}: {
+  origin: string;
+  originTitle: string;
+  style?: React.CSSProperties;
+}) {
+  // This uses a Google API for favicon retrieval, do we want to parse the page ourselves?
+  const siteIcon = `https://www.google.com/s2/favicons?domain=${origin}&sz=180`;
+  return (
+    <Connectable
+      style={style}
+      title={displayOriginTitle(originTitle)}
+      description={new URL(origin).host}
+      icon={origin.startsWith("http://localhost") ? UNKNOWN_ICON_SRC : siteIcon}
+    />
+  );
+}
+
+export function Connectable({
   title,
   description,
   icon,
+  style,
 }: {
   title: string;
   description: string;
   icon: string;
+  style?: React.CSSProperties;
 }) {
   const classes = useStyles();
   return (
-    <div className={classes.connectable}>
+    <div className={classes.connectable} style={style}>
       <div className={classes.connectableIcon}>
         <ProxyImage
           style={{
