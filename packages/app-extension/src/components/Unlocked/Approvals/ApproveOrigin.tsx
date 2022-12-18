@@ -1,8 +1,13 @@
 import { useState } from "react";
-import type { Blockchain } from "@coral-xyz/common";
+import type {
+  Blockchain} from "@coral-xyz/common";
+import {
+  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
+} from "@coral-xyz/common";
 import {
   useAllWalletsPerBlockchain,
   useApproveOrigin,
+  useBackgroundClient,
   useBlockchainActiveWallet,
   useBlockchainLogo,
 } from "@coral-xyz/recoil";
@@ -82,24 +87,18 @@ export function ApproveOrigin({
   const classes = useStyles();
   const approveOrigin = useApproveOrigin();
   const activeWallet = useBlockchainActiveWallet(blockchain);
-  const [wallet, setWallet] = useState<{
-    publicKey: string;
-    name: string;
-    blockchain: string;
-  }>(activeWallet);
+  const wallet = activeWallet;
 
   const onConfirm = async () => {
     await approveOrigin(origin);
     await onCompletion({
       didApprove: true,
-      walletPublicKey: wallet.publicKey,
     });
   };
 
   const onDeny = async () => {
     await onCompletion({
       didApprove: false,
-      walletPublicKey: wallet.publicKey,
     });
   };
 
@@ -109,11 +108,8 @@ export function ApproveOrigin({
       originTitle={title}
       title={
         <div>
-          <WalletSelector
-            value={wallet}
-            onChange={(wallet) => setWallet(wallet)}
-          />
-          <div className={classes.title}>Do you want to connect?</div>
+          <WalletSelector blockchain={blockchain} />
+          <div className={classes.title}>Wallet Connect</div>
         </div>
       }
       wallet={wallet.publicKey.toString()}
@@ -143,54 +139,23 @@ export function ApproveOrigin({
   );
 }
 
-function WalletSelector({
-  value,
-  onChange,
-}: {
-  value: { blockchain: string; publicKey: string; name: string };
-  onChange: (v: {
-    blockchain: string;
-    publicKey: string;
-    name: string;
-  }) => void;
-}) {
-  const theme = useCustomTheme();
+function WalletSelector({ blockchain }: { blockchain: Blockchain }) {
+  const background = useBackgroundClient();
   const [openDrawer, setOpenDrawer] = useState(false);
+  const activeWallet = useBlockchainActiveWallet(blockchain);
+  const onChange = async (w: any) => {
+    await background.request({
+      method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
+      params: [w.publicKey.toString(), w.blockchain],
+    });
+  };
+
   return (
     <>
-      <div
-        style={{
-          paddingTop: "10px",
-          paddingBottom: "10px",
-          display: "flex",
-        }}
-      >
-        <div style={{ flex: 1 }} />
-        <Button
-          disableRipple
-          style={{
-            padding: 0,
-            textTransform: "none",
-            color: theme.custom.colors.fontColor,
-            fontSize: "18px",
-          }}
-          onClick={() => setOpenDrawer(!openDrawer)}
-        >
-          <WalletAddress
-            publicKey={value.publicKey}
-            name={value.name}
-            nameStyle={{
-              color: theme.custom.colors.fontColor,
-            }}
-          />
-          <ExpandMore
-            style={{
-              color: theme.custom.colors.icon,
-            }}
-          />
-        </Button>
-        <div style={{ flex: 1 }} />
-      </div>
+      <WalletSelectorButton
+        wallet={activeWallet}
+        onClick={() => setOpenDrawer(!openDrawer)}
+      />
       <WithMiniDrawer
         openDrawer={openDrawer}
         setOpenDrawer={setOpenDrawer}
@@ -201,9 +166,54 @@ function WalletSelector({
           },
         }}
       >
-        <BlockchainWalletList value={value} onChange={onChange} />
+        <BlockchainWalletList value={activeWallet} onChange={onChange} />
       </WithMiniDrawer>
     </>
+  );
+}
+
+function WalletSelectorButton({
+  wallet,
+  onClick,
+}: {
+  wallet: { blockchain: string; publicKey: string; name: string };
+  onClick: () => void;
+}) {
+  const theme = useCustomTheme();
+  return (
+    <div
+      style={{
+        paddingTop: "10px",
+        paddingBottom: "10px",
+        display: "flex",
+      }}
+    >
+      <div style={{ flex: 1 }} />
+      <Button
+        disableRipple
+        style={{
+          padding: 0,
+          textTransform: "none",
+          color: theme.custom.colors.fontColor,
+          fontSize: "18px",
+        }}
+        onClick={onClick}
+      >
+        <WalletAddress
+          publicKey={wallet.publicKey}
+          name={wallet.name}
+          nameStyle={{
+            color: theme.custom.colors.fontColor,
+          }}
+        />
+        <ExpandMore
+          style={{
+            color: theme.custom.colors.icon,
+          }}
+        />
+      </Button>
+      <div style={{ flex: 1 }} />
+    </div>
   );
 }
 
@@ -221,50 +231,15 @@ function BlockchainWalletList({
   const theme = useCustomTheme();
   const { close } = useDrawerContext();
   const wallets = useAllWalletsPerBlockchain(value.blockchain as Blockchain);
-  const networkIcon = useBlockchainLogo(value.blockchain as Blockchain);
   return (
     <div
       style={{
         padding: "16px",
+        paddingBottom: "24px",
         background: theme.custom.colors.backgroundBackdrop,
       }}
     >
-      <div style={{ display: "flex" }}>
-        <div style={{ flex: 1 }} />
-        <div
-          style={{
-            display: "flex",
-            marginBottom: "16px",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-            }}
-          >
-            <img
-              src={networkIcon}
-              style={{
-                width: "20px",
-                height: "20px",
-                marginRight: "8px",
-              }}
-            />
-          </div>
-          <Typography
-            style={{
-              color: theme.custom.colors.fontColor,
-              fontSize: "20px",
-            }}
-          >
-            {value.blockchain.slice(0, 1).toUpperCase() +
-              value.blockchain.slice(1).toLowerCase()}
-          </Typography>
-        </div>
-        <div style={{ flex: 1 }} />
-      </div>
+      <BlockchainHeader blockchain={value.blockchain as Blockchain} />
       <WalletList
         disableIconPadding={true}
         wallets={wallets}
@@ -280,6 +255,53 @@ function BlockchainWalletList({
         }}
         selectedWalletPublicKey={value.publicKey}
       />
+    </div>
+  );
+}
+
+function BlockchainHeader({ blockchain }: { blockchain: Blockchain }) {
+  const networkIcon = useBlockchainLogo(blockchain);
+  const theme = useCustomTheme();
+  return (
+    <div
+      style={{
+        display: "flex",
+        marginBottom: "16px",
+      }}
+    >
+      <div style={{ flex: 1 }} />
+      <div
+        style={{
+          display: "flex",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+          }}
+        >
+          <img
+            src={networkIcon}
+            style={{
+              width: "20px",
+              height: "20px",
+              marginRight: "8px",
+            }}
+          />
+        </div>
+        <Typography
+          style={{
+            color: theme.custom.colors.fontColor,
+            fontSize: "20px",
+          }}
+        >
+          {blockchain.slice(0, 1).toUpperCase() +
+            blockchain.slice(1).toLowerCase()}
+        </Typography>
+      </div>
+      <div style={{ flex: 1 }} />
     </div>
   );
 }
