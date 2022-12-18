@@ -5,7 +5,9 @@
   "source": "src/index.ts ",
   "types": "dist/esm/index.d.ts",
   "scripts": {
-    "build": "tsc && tsc-alias"
+    "build": "tsc && tsc-alias",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
+    "lint:fix": "yarn run lint --fix"
   },
   "license": "MIT",
   "dependencies": {
