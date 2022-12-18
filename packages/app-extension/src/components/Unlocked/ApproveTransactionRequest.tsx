@@ -41,6 +41,7 @@ import type { ConfirmOptions, SendOptions } from "@solana/web3.js";
 import { ComputeBudgetProgram } from "@solana/web3.js";
 import { ethers } from "ethers";
 
+import { sanitizeTransactionWithFeeConfig } from "../../utils/solana";
 import { walletAddressDisplay } from "../common";
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
 import { Scrollbar } from "../common/Layout/Scrollbar";
@@ -355,23 +356,7 @@ function SendTransactionRequest({
   //
   const onConfirm = () => {
     const feeConfig = solanaFeeConfig;
-    let tx = deserializeTransaction(transactionToSend);
-    if (feeConfig && feeConfig.priorityFee && tx.version === "legacy") {
-      const transaction = deserializeLegacyTransaction(transactionToSend);
-      const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
-        units: feeConfig.computeUnits,
-      });
-
-      const addPriorityFee = ComputeBudgetProgram.setComputeUnitPrice({
-        microLamports: feeConfig.priorityFee,
-      });
-
-      transaction.add(modifyComputeUnits);
-      transaction.add(addPriorityFee);
-      tx = deserializeTransaction(
-        bs58.encode(transaction.serialize({ requireAllSignatures: false }))
-      );
-    }
+    const tx = sanitizeTransactionWithFeeConfig(transactionToSend, feeConfig);
     background
       .request({
         method: uiRpcMethod,
