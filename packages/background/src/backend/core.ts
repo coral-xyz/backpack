@@ -1138,6 +1138,7 @@ export class Backend {
   ) {
     // Persist the newly added public key to the Backpack API
     if (!signature) {
+      // Signature should only be undefined for non hardware wallets
       signature = await this.signMessageForPublicKey(
         blockchain,
         bs58.encode(Buffer.from(getAddMessage(publicKey), "utf-8")),

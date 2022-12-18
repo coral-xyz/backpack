@@ -267,7 +267,8 @@ async function handle<T = any>(
         params[0],
         params[1],
         params[2],
-        params[3]
+        params[3],
+        params[4]
       );
     case UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ:
       return await handleBlockchainKeyringsRead(ctx);
