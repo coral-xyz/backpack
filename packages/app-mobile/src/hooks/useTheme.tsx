@@ -70,6 +70,10 @@ const DANGER_COLOR = "#DC2626";
 export const darkTheme: any = {
   // ...baseTheme,
   custom: {
+    borderRadius: {
+      large: 12,
+      medium: 8,
+    },
     colors: {
       brandColor: BRAND_COLOR,
       background: BACKGROUND_COLOR_0,
@@ -133,6 +137,10 @@ export const darkTheme: any = {
 export const lightTheme: any = {
   // ...baseTheme,
   custom: {
+    borderRadius: {
+      large: 12,
+      medium: 8,
+    },
     colors: {
       brandColor: LIGHT_BRAND_COLOR,
       backgroundBackdrop: LIGHT_BACKGROUND_BACKDROP_COLOR,

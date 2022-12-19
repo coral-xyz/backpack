@@ -81,7 +81,11 @@ export function WalletListItem({
     >
       <View style={styles.listItemLeft}>
         <WalletAddressLabel name={name} publicKey={publicKey} />
-        {type ? <ImportTypeBadge type={type} /> : null}
+        {type ? (
+          <Margin left={8}>
+            <ImportTypeBadge type={type} />
+          </Margin>
+        ) : null}
       </View>
       {icon ? icon : null}
     </Pressable>

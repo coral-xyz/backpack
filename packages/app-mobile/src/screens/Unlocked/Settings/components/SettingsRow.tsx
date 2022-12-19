@@ -122,6 +122,7 @@ export function SettingsRowText({
 }
 
 export function SettingsRow({
+  disabled = false,
   label,
   onPress,
   icon,
@@ -130,16 +131,23 @@ export function SettingsRow({
   label: string;
   onPress: () => void;
   icon?: JSX.Element;
-  detailIcon: null | JSX.Element;
+  detailIcon?: null | JSX.Element;
+  disabled?: boolean;
 }) {
   const theme = useTheme();
   return (
-    <Pressable onPress={() => onPress()}>
+    <Pressable disabled={disabled} onPress={() => onPress()}>
       <RowContainer>
         <View style={styles.leftSide}>
           {icon ? <Margin right={12}>{icon}</Margin> : null}
           <Text
-            style={[styles.label, { color: theme.custom.colors.fontColor }]}
+            style={[
+              styles.label,
+              {
+                opacity: disabled ? 0.5 : 1,
+                color: theme.custom.colors.fontColor,
+              },
+            ]}
           >
             {label}
           </Text>
