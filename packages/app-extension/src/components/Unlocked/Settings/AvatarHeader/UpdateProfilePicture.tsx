@@ -38,9 +38,9 @@ export function UpdateProfilePicture({
 }) {
   const [tempAvatar, setTempAvatar] = useState<tempAvatar | null>(null);
   const [loading, setLoading] = useState(false);
-  const setNewAvatar = useSetRecoilState(newAvatarAtom);
   const avatarUrl = useAvatarUrl();
   const { username } = useUser();
+  const setNewAvatar = useSetRecoilState(newAvatarAtom(username));
   const theme = useCustomTheme();
   // const wallets = useActiveWallets();
   // const wallets = useWalletPublicKeys();
@@ -257,7 +257,7 @@ const FakeDrawer = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   flexGrow: 1,
-  backgroundColor: theme.custom.colors.bg3,
+  backgroundColor: theme.custom.colors.nav,
   flex: 1,
   borderTop: `${theme.custom.colors.borderFull}`,
   paddingBottom: "0px",
@@ -273,7 +273,7 @@ const ButtonsOverlay = styled("div")(({ theme }) => ({
   bottom: "0px",
   display: "flex",
   zIndex: "1",
-  background: "rgba(255,255,255, 0.8)",
+  background: theme.custom.colors.nav,
   alignItems: "stretch",
   width: "100%",
   transition: "max-height ease-out 200ms",
