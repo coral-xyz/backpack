@@ -1,6 +1,9 @@
 import { Suspense, useEffect } from "react";
-import type { Blockchain } from "@coral-xyz/common";
+import type { Blockchain, FeeConfig } from "@coral-xyz/common";
+const { base58: bs58 } = ethers.utils;
 import {
+  deserializeLegacyTransaction,
+  deserializeTransaction,
   EXTENSION_HEIGHT,
   EXTENSION_WIDTH,
   getLogger,
@@ -23,6 +26,8 @@ import {
 } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 import { Block as BlockIcon } from "@mui/icons-material";
+import { ComputeBudgetProgram } from "@solana/web3.js";
+import { ethers } from "ethers";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { refreshXnftPreferences } from "../api/preferences";
@@ -37,6 +42,7 @@ import {
 } from "../components/Unlocked/Approvals/ApproveTransaction";
 import { WithAuth } from "../components/Unlocked/WithAuth";
 import { refreshFeatureGates } from "../gates/FEATURES";
+import { sanitizeTransactionWithFeeConfig } from "../utils/solana";
 
 import "./App.css";
 
@@ -196,10 +202,28 @@ function QueryApproveTransaction() {
           title={title!}
           tx={tx}
           wallet={wallet}
-          onCompletion={async (transaction: any) => {
+          onCompletion={async (txStr: any, feeConfig?: FeeConfig) => {
+            if (!txStr) {
+              await background.response({
+                id: requestId,
+                result: {
+                  didApprove: false,
+                },
+              });
+              return;
+            }
+            const sanitizedTxStr = sanitizeTransactionWithFeeConfig(
+              txStr,
+              blockchain,
+              feeConfig
+            );
             await background.response({
               id: requestId,
-              result: transaction,
+              result: {
+                didApprove: true,
+                transaction: sanitizedTxStr,
+                feeConfig,
+              },
             });
           }}
         />

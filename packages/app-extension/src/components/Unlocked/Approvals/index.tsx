@@ -1,3 +1,5 @@
+import { useState } from "react";
+import type { Blockchain, FeeConfig } from "@coral-xyz/common";
 import {
   PrimaryButton,
   ProxyImage,
@@ -5,8 +7,6 @@ import {
 } from "@coral-xyz/react-common";
 import { useAvatarUrl, useUser, useWalletName } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
-import _CheckIcon from "@mui/icons-material/Check";
-import _CloseIcon from "@mui/icons-material/Close";
 
 import { walletAddressDisplay } from "../../../components/common";
 import { UNKNOWN_ICON_SRC } from "../../common/Icon";
@@ -48,6 +48,7 @@ export function WithApproval({
   onConfirmLabel = "Connect",
   onDeny,
   children,
+  blockchain,
 }: {
   origin: string;
   originTitle: string;
@@ -57,6 +58,7 @@ export function WithApproval({
   onConfirmLabel?: string;
   onDeny: () => void;
   children: React.ReactNode;
+  blockchain?: Blockchain;
 }) {
   return (
     <WithApprovalButtons
@@ -115,7 +117,7 @@ export function WithApprovalButtons({
           <SecondaryButton label="Deny" onClick={onDeny} />
         </div>
         <div style={{ width: "167.5px" }}>
-          <PrimaryButton label={onConfirmLabel} onClick={onConfirm} />
+          <PrimaryButton label={onConfirmLabel} onClick={() => onConfirm()} />
         </div>
       </div>
     </div>

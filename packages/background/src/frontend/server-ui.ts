@@ -9,6 +9,7 @@ import type {
   FEATURE_GATES_MAP,
   RpcRequest,
   RpcResponse,
+  SolanaFeeConfig,
   XnftPreference,
 } from "@coral-xyz/common";
 import {

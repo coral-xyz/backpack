@@ -1,6 +1,9 @@
 import { Suspense, useEffect, useState } from "react";
+const { base58: bs58 } = ethers.utils;
 import {
   Blockchain,
+  deserializeLegacyTransaction,
+  deserializeTransaction,
   PLUGIN_REQUEST_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
   PLUGIN_REQUEST_ETHEREUM_SIGN_MESSAGE,
   PLUGIN_REQUEST_ETHEREUM_SIGN_TRANSACTION,
@@ -20,6 +23,7 @@ import {
   Loading,
   PrimaryButton,
   SecondaryButton,
+  TextInput,
 } from "@coral-xyz/react-common";
 import {
   useActivePublicKeys,
@@ -30,11 +34,14 @@ import {
   useTransactionRequest,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { Typography } from "@mui/material";
+import { Checkbox, Typography } from "@mui/material";
 import * as anchor from "@project-serum/anchor";
 import { useConnection } from "@solana/wallet-adapter-react";
 import type { ConfirmOptions, SendOptions } from "@solana/web3.js";
+import { ComputeBudgetProgram } from "@solana/web3.js";
+import { ethers } from "ethers";
 
+import { sanitizeTransactionWithFeeConfig } from "../../utils/solana";
 import { walletAddressDisplay } from "../common";
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
 import { Scrollbar } from "../common/Layout/Scrollbar";
@@ -328,7 +335,12 @@ function SendTransactionRequest({
   const background = useBackgroundClient();
   const pluginUrl = usePluginUrl(request?.xnftAddress);
   const transactionData = useTransactionData(blockchain, transaction);
-  const { loading, transaction: transactionToSend, from } = transactionData;
+  const {
+    loading,
+    transaction: transactionToSend,
+    from,
+    solanaFeeConfig,
+  } = transactionData;
   const solanaCtx = useSolanaCtx();
   const [signature, setSignature] = useState("");
   const [txState, setTxState] = useState<
@@ -342,10 +354,16 @@ function SendTransactionRequest({
   // transaction specific settings (i.e. Etheruem gas).
   //
   const onConfirm = () => {
+    const feeConfig = solanaFeeConfig;
+    const sanitizedTx = sanitizeTransactionWithFeeConfig(
+      transactionToSend,
+      blockchain,
+      feeConfig
+    );
     background
       .request({
         method: uiRpcMethod,
-        params: [transactionToSend, publicKey],
+        params: [sanitizedTx, publicKey],
       })
       .then(async (signature) => {
         setSignature(signature);
@@ -375,7 +393,9 @@ function SendTransactionRequest({
           onResolve(signature);
         }
       })
-      .catch(onReject);
+      .catch((e: any) => {
+        onReject();
+      });
   };
 
   //

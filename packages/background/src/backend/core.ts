@@ -6,6 +6,7 @@ import type {
   FEATURE_GATES_MAP,
   KeyringInit,
   KeyringType,
+  SolanaFeeConfig,
   XnftPreference,
 } from "@coral-xyz/common";
 import {
@@ -14,6 +15,7 @@ import {
   BACKPACK_FEATURE_JWT,
   BACKPACK_FEATURE_USERNAMES,
   Blockchain,
+  deserializeLegacyTransaction,
   deserializeTransaction,
   EthereumConnectionUrl,
   EthereumExplorer,
@@ -61,9 +63,11 @@ import type {
   SimulateTransactionConfig,
 } from "@solana/web3.js";
 import {
+  ComputeBudgetProgram,
   PublicKey,
   Transaction,
   TransactionInstruction,
+  VersionedTransaction,
 } from "@solana/web3.js";
 import { validateMnemonic as _validateMnemonic } from "bip39";
 import { ethers } from "ethers";
@@ -152,14 +156,18 @@ export class Backend {
     txStr: string,
     walletAddress: string
   ): Promise<string> {
-    const tx = deserializeTransaction(txStr);
+    let tx = deserializeTransaction(txStr);
     const message = tx.message.serialize();
     const txMessage = bs58.encode(message);
     const blockchainKeyring =
       this.keyringStore.activeUserKeyring.keyringForBlockchain(
         Blockchain.SOLANA
       );
-    return await blockchainKeyring.signTransaction(txMessage, walletAddress);
+    const signature = await blockchainKeyring.signTransaction(
+      txMessage,
+      walletAddress
+    );
+    return signature;
   }
 
   async solanaSignMessage(msg: string, walletAddress: string): Promise<string> {
