@@ -153,7 +153,7 @@ export function TransactionData({
       : {}),
     ...(network === "Solana" && developerMode
       ? {
-          "Compute units": {
+          "Max Compute units": {
             onClick: () => {},
             detail: (
               <>
@@ -183,7 +183,7 @@ export function TransactionData({
             button: false,
             classes: menuItemClasses,
           },
-          "Priority fee": {
+          "Priority fee (micro lamports)": {
             onClick: () => {},
             detail: (
               <>
@@ -216,7 +216,8 @@ export function TransactionData({
                 <Typography>
                   {(transactionData.solanaFeeConfig?.computeUnits
                     ? (transactionData.solanaFeeConfig.computeUnits || 0) *
-                      (transactionData.solanaFeeConfig.priorityFee || 0)
+                      (transactionData.solanaFeeConfig.priorityFee / 1000000 ||
+                        0)
                     : 0) / LAMPORTS_PER_SOL}{" "}
                   SOL
                 </Typography>

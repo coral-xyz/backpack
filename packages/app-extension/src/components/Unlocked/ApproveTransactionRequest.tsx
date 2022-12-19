@@ -356,11 +356,15 @@ function SendTransactionRequest({
   //
   const onConfirm = () => {
     const feeConfig = solanaFeeConfig;
-    const tx = sanitizeTransactionWithFeeConfig(transactionToSend, feeConfig);
+    const sanitizedTx = sanitizeTransactionWithFeeConfig(
+      transactionToSend,
+      blockchain,
+      feeConfig
+    );
     background
       .request({
         method: uiRpcMethod,
-        params: [bs58.encode(tx.serialize()), publicKey],
+        params: [sanitizedTx, publicKey],
       })
       .then(async (signature) => {
         setSignature(signature);

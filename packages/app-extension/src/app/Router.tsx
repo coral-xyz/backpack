@@ -212,12 +212,16 @@ function QueryApproveTransaction() {
               });
               return;
             }
-            const tx = sanitizeTransactionWithFeeConfig(txStr, feeConfig);
+            const sanitizedTxStr = sanitizeTransactionWithFeeConfig(
+              txStr,
+              blockchain,
+              feeConfig
+            );
             await background.response({
               id: requestId,
               result: {
                 didApprove: true,
-                transaction: tx,
+                transaction: sanitizedTxStr,
                 feeConfig,
               },
             });
