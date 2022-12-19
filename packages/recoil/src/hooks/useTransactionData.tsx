@@ -1,9 +1,9 @@
-import type { Dispatch, SetStateAction} from "react";
+import type { Dispatch, SetStateAction } from "react";
 import { useEffect, useState } from "react";
-import type {
-  SolanaFeeConfig} from "@coral-xyz/common";
+import type { SolanaFeeConfig } from "@coral-xyz/common";
 import {
   Blockchain,
+  deserializeLegacyTransaction,
   deserializeTransaction,
   UI_RPC_METHOD_SOLANA_SIMULATE,
 } from "@coral-xyz/common";
@@ -11,7 +11,12 @@ import type { TransactionRequest } from "@ethersproject/abstract-provider";
 import type { UnsignedTransaction } from "@ethersproject/transactions";
 import { AccountLayout, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import type { Message } from "@solana/web3.js";
-import { PublicKey } from "@solana/web3.js";
+import {
+  ComputeBudgetInstruction,
+  ComputeBudgetProgram,
+  LAMPORTS_PER_SOL,
+  PublicKey,
+} from "@solana/web3.js";
 import { BigNumber, ethers } from "ethers";
 
 import {
@@ -29,8 +34,10 @@ const DEFAULT_GAS_LIMIT = BigNumber.from("150000");
 type TransactionData = {
   loading: boolean;
   transaction: string;
-  solanaFeeConfig?: SolanaFeeConfig;
-  setSolanaFeeConfig?: Dispatch<SetStateAction<SolanaFeeConfig | null>>;
+  solanaFeeConfig?: { config: SolanaFeeConfig; disabled: boolean };
+  setSolanaFeeConfig?: Dispatch<
+    SetStateAction<{ config: SolanaFeeConfig; disabled: boolean } | null>
+  >;
   transactionOverrides?: TransactionOverrides;
   setTransactionOverrides?: (overrides: object) => void;
   from: string;
@@ -236,9 +243,15 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
     publicKey: walletPublicKey.toString(),
     blockchain: Blockchain.SOLANA,
   });
-  const [solanaFeeConfig, setSolanaFeeConfig] = useState<SolanaFeeConfig>({
-    priorityFee: 0,
-    computeUnits: 100000,
+  const [solanaFeeConfig, setSolanaFeeConfig] = useState<{
+    config: SolanaFeeConfig;
+    disabled: boolean;
+  }>({
+    config: {
+      priorityFee: 0,
+      computeUnits: 100000,
+    },
+    disabled: false,
   });
 
   const [loading, setLoading] = useState(true);
@@ -261,7 +274,47 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
       }
       setEstimatedTxFee(fee || 5000);
     };
+    const refreshSolanaConfig = () => {
+      const transaction = deserializeTransaction(serializedTx);
+      if (transaction.version === "legacy") {
+        const transaction = deserializeLegacyTransaction(serializedTx);
+        // transaction.instructions.forEach(x => x.programId)
+        transaction.instructions.forEach((ix) => {
+          if (ix.programId.equals(ComputeBudgetProgram.programId)) {
+            try {
+              const decodedUnits =
+                ComputeBudgetInstruction.decodeSetComputeUnitLimit(ix);
+              setSolanaFeeConfig((x) => ({
+                ...x,
+                config: {
+                  ...x.config,
+                  computeUnits: decodedUnits.units,
+                },
+                disabled: true,
+              }));
+            } catch (e) {
+              console.warn(`ix is not of type compute unit`);
+            }
+            try {
+              const decodedParams =
+                ComputeBudgetInstruction.decodeSetComputeUnitPrice(ix);
+              setSolanaFeeConfig((x) => ({
+                ...x,
+                config: {
+                  ...x.config,
+                  priorityFee: decodedParams.microLamports,
+                },
+                disabled: true,
+              }));
+            } catch (e) {
+              console.warn(`ix is not of type priority fee`);
+            }
+          }
+        });
+      }
+    };
     estimateTxFee();
+    refreshSolanaConfig();
   }, [serializedTx]);
 
   useEffect(() => {
