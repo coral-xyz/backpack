@@ -106,7 +106,7 @@ export class KeyringStore {
           clearTimeout(lockImmediatelyWhenClosedCountdown);
       };
 
-      chrome.runtime.onConnect.addListener((port) => {
+      globalThis.chrome?.runtime.onConnect.addListener((port) => {
         port.onDisconnect.addListener(() => {
           // Force-enable the auto-lock countdown if the popup is closed
           autoLockIsEnabled = true;
