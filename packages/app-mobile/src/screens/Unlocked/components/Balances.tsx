@@ -1,6 +1,13 @@
+// TODO(peter) one thing we might need to make sure is that when we wrap these FlatLists in a ScrollView, we can't nest virtualized lists.
+// This means we might just use the scrollview directly from within a flatlist by using ListHeaderComponent and ListFooterComponent
 import React, { useEffect, useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
-import { ListRowSeparator, Margin, ProxyImage } from "@components";
+import {
+  ListRowSeparator,
+  Margin,
+  ProxyImage,
+  StyledTextInput,
+} from "@components";
 import type { Blockchain } from "@coral-xyz/common";
 import { formatUSD, walletAddressDisplay } from "@coral-xyz/common";
 import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
@@ -16,6 +23,32 @@ import * as Clipboard from "expo-clipboard";
 
 import type { Token } from "./index";
 import { TableHeader } from "./index";
+
+export function SearchableTokenTables({
+  onPressRow,
+  customFilter = () => true,
+}: {
+  onPressRow: (blockchain: Blockchain, token: Token) => void;
+  customFilter: (token: Token) => boolean;
+}) {
+  const [searchFilter, setSearchFilter] = useState("");
+  return (
+    <>
+      <Margin bottom={12}>
+        <StyledTextInput
+          placeholder="Search"
+          value={searchFilter}
+          onChangeText={setSearchFilter}
+        />
+      </Margin>
+      <TokenTables
+        searchFilter={searchFilter}
+        onPressRow={onPressRow}
+        customFilter={customFilter}
+      />
+    </>
+  );
+}
 
 // Renders each blockchain section
 export function TokenTables({
@@ -35,7 +68,7 @@ export function TokenTables({
     enabledBlockchains;
 
   return (
-    <View style={{ padding: 8, flex: 1 }}>
+    <View>
       {filteredBlockchains.map((blockchain: Blockchain) => {
         return (
           <Margin key={blockchain} bottom={12}>
@@ -82,7 +115,10 @@ function TokenTable({
   const [rawTokenAccounts, _, isLoading] = tokenAccounts
     ? [tokenAccounts, "hasValue"]
     : useLoader(
-        blockchainBalancesSorted(blockchain),
+        blockchainBalancesSorted({
+          publicKey: wallet.publicKey.toString(),
+          blockchain,
+        }),
         [],
         [wallet.publicKey, connectionUrl]
       );
@@ -124,7 +160,6 @@ function TokenTable({
 
       {expanded ? (
         <FlatList
-          initialNumToRender={4}
           scrollEnabled={false}
           data={tokenAccountsFiltered}
           keyExtractor={(item) => item.address}

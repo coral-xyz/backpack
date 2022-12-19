@@ -408,6 +408,8 @@ export const SOLANA_CONNECTION_RPC_GET_CONFIRMED_SIGNATURES_FOR_ADDRESS_2 =
   "solana-get-confirmed-signatures-for-address-2";
 export const SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS =
   "solana-custom-spl-token-accounts";
+export const SOLANA_CONNECTION_RPC_CUSTOM_SPL_METADATA_URI =
+  "solana-custom-spl-metadata-uri";
 export const SOLANA_CONNECTION_RPC_GET_PROGRAM_ACCOUNTS =
   "solana-get-program-accounts";
 export const SOLANA_CONNECTION_RPC_GET_FEE_FOR_MESSAGE =
@@ -509,7 +511,7 @@ export const SIMULATOR_PORT = 9933;
 export const NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS = 890880;
 export const TOKEN_ACCOUNT_RENT_EXEMPTION_LAMPORTS = 2039280;
 
-export const DISCORD_INVITE_LINK = "https://discord.gg/RfwUqWrn7T";
+export const DISCORD_INVITE_LINK = "https://discord.gg/RhKxgS8SaD";
 export const TWITTER_LINK = "https://twitter.com/xNFT_Backpack";
 export const XNFT_GG_LINK = "https://xnft.gg";
 export const BACKPACK_LINK = "https://backpack.app";
@@ -518,3 +520,8 @@ export const ALCHEMY_ETHEREUM_MAINNET_API_KEY =
   "DlJr6QuBC2EaE-L60-iqQQGq9hi9-XSZ";
 
 export const BACKEND_API_URL = "https://backpack-api.xnfts.dev";
+export const REALTIME_API_URL = "https://backend-ws.xnfts.dev";
+export const MESSAGING_COMMUNICATION_PUSH = "MESSAGING_COMMUNICATION_PUSH";
+export const MESSAGING_COMMUNICATION_FETCH = "MESSAGING_COMMUNICATION_FETCH";
+export const MESSAGING_COMMUNICATION_FETCH_RESPONSE =
+  "MESSAGING_COMMUNICATION_FETCH_RESPONSE";

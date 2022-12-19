@@ -1,11 +1,13 @@
-import { SERVER_HTTP_URL, SERVER_URL } from "./config";
-import EventEmitter from "eventemitter3";
+import type {
+  FromServer,
+  ToServer} from "@coral-xyz/common";
 import {
   CHAT_MESSAGES,
-  FromServer,
-  ToServer,
   WS_READY,
 } from "@coral-xyz/common";
+import EventEmitter from "eventemitter3";
+
+import { SERVER_HTTP_URL, SERVER_URL } from "./config";
 
 export const SIGNALING_CONNECTED = "SIGNALING_CONNECTED";
 
@@ -16,9 +18,7 @@ export class Signaling extends EventEmitter {
     super();
   }
 
-  async initWs() {
-    const res = await fetch(`${SERVER_HTTP_URL}/cookie`);
-    const jwt = (await res.json()).jwt;
+  async initWs(jwt: string) {
     const ws = new WebSocket(`${SERVER_URL}?jwt=${jwt}`);
     ws.addEventListener("open", () => {
       // this.emit(SIGNALING_CONNECTED);

@@ -1,12 +1,9 @@
 import { NAV_COMPONENT_MESSAGE_PROFILE } from "@coral-xyz/common";
+import { isFirstLastListItemStyle,ProxyImage } from "@coral-xyz/react-common";
 import { useNavigation } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { List, ListItem } from "@mui/material";
-
-import { isFirstLastListItemStyle } from "../../common";
-import { useNavStack } from "../../common/Layout/NavStack";
-import { ProxyImage } from "../../common/ProxyImage";
 
 import { useStyles } from "./styles";
 

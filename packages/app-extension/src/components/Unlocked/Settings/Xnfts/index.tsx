@@ -1,14 +1,13 @@
 import { useEffect } from "react";
 import { XNFT_GG_LINK } from "@coral-xyz/common";
+import { ProxyImage, PushDetail } from "@coral-xyz/react-common";
 import { useAppIcons } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Apps } from "@mui/icons-material";
 import { Typography } from "@mui/material";
 
-import { PushDetail } from "../../../common";
 import { EmptyState } from "../../../common/EmptyState";
 import { useNavStack } from "../../../common/Layout/NavStack";
-import { ProxyImage } from "../../../common/ProxyImage";
 import { SettingsList } from "../../../common/Settings/List";
 
 export function XnftSettings() {

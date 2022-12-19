@@ -15,16 +15,26 @@ import {
   SOL_NATIVE_MINT,
   toTitleCase,
 } from "@coral-xyz/common";
+import {
+  CheckIcon,
+  CrossIcon,
+  DangerButton,
+  Loading,
+  PrimaryButton,
+  SecondaryButton,
+ TextInput } from "@coral-xyz/react-common";
 import type { TokenData } from "@coral-xyz/recoil";
 import {
   blockchainTokenData,
   useAnchorContext,
+  useBlockchainActiveWallet,
   useBlockchainConnectionUrl,
   useBlockchainExplorer,
   useBlockchainTokenAccount,
   useEthereumCtx,
   useLoader,
   useNavigation,
+  useSolanaCtx,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
@@ -32,16 +42,8 @@ import type { Connection } from "@solana/web3.js";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { BigNumber, ethers } from "ethers";
 
-import {
-  DangerButton,
-  Loading,
-  PrimaryButton,
-  SecondaryButton,
-  TextFieldLabel,
-} from "../../../common";
+import { TextFieldLabel } from "../../../common";
 import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
-import { CheckIcon, CrossIcon } from "../../../common/Icon";
-import { TextInput } from "../../../common/Inputs";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { useNavStack } from "../../../common/Layout/NavStack";
 import { MaxLabel } from "../../../common/MaxLabel";
@@ -115,7 +117,12 @@ export function SendButton({
   blockchain: Blockchain;
   address: string;
 }) {
-  const token = useBlockchainTokenAccount(blockchain, address);
+  const wallet = useBlockchainActiveWallet(blockchain);
+  const token = useBlockchainTokenAccount({
+    publicKey: wallet.publicKey.toString(),
+    blockchain,
+    tokenAddress: address,
+  });
   return (
     <WithHeaderButton
       label={"Send"}
@@ -141,7 +148,15 @@ export function SendLoader({
   blockchain: Blockchain;
   address: string;
 }) {
-  const [token] = useLoader(blockchainTokenData({ blockchain, address }), null);
+  const wallet = useBlockchainActiveWallet(blockchain);
+  const [token] = useLoader(
+    blockchainTokenData({
+      publicKey: wallet.publicKey.toString(),
+      blockchain,
+      tokenAddress: address,
+    }),
+    null
+  );
   if (!token) return <></>;
   return <Send blockchain={blockchain} token={token} />;
 }

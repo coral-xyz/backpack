@@ -9,11 +9,11 @@ import {
   View,
 } from "react-native";
 import { SvgUri } from "react-native-svg";
+import type { Blockchain } from "@coral-xyz/common";
 import { proxyImageUrl, walletAddressDisplay } from "@coral-xyz/common";
 import { useAvatarUrl } from "@coral-xyz/recoil";
+import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@hooks";
-import type { BigNumber } from "ethers";
-import { ethers } from "ethers";
 import * as Clipboard from "expo-clipboard";
 
 export { ActionCard } from "./ActionCard";
@@ -25,7 +25,7 @@ export { PasswordInput } from "./PasswordInput";
 export { default as ResetAppButton } from "./ResetAppButton";
 export { StyledTextInput } from "./StyledTextInput";
 export { TokenAmountHeader } from "./TokenAmountHeader";
-export { TokenInputField } from "./TokenInputField";
+export { StyledTokenTextInput } from "./TokenInputField";
 import { ContentCopyIcon, RedBackpack } from "@components/Icon";
 //
 // function getRandomColor() { var letters = "0123456789ABCDEF";
@@ -67,7 +67,8 @@ export function Screen({
         {
           flex: 1,
           backgroundColor: theme.custom.colors.background,
-          padding: 12,
+          paddingHorizontal: 16,
+          paddingVertical: 16,
         },
         style,
       ]}
@@ -84,14 +85,16 @@ export function BaseButton({
   onPress,
   disabled,
   loading,
+  icon,
   ...props
 }: {
   label: string;
   buttonStyle?: StyleProp<ViewStyle>;
   labelStyle?: StyleProp<TextStyle>;
   onPress: () => void;
-  disabled: boolean;
+  disabled?: boolean;
   loading?: boolean;
+  icon?: JSX.Element;
 }) {
   const theme = useTheme();
   return (
@@ -104,6 +107,7 @@ export function BaseButton({
           borderRadius: 12,
           justifyContent: "center",
           alignItems: "center",
+          flexDirection: "row",
           width: "100%",
           opacity: disabled ? 50 : 100, // TODO(peter)
         },
@@ -127,6 +131,7 @@ export function BaseButton({
       >
         {loading ? "loading..." : label} {disabled ? "(disabled)" : ""}
       </Text>
+      {icon}
     </Pressable>
   );
 }
@@ -164,12 +169,14 @@ export function SecondaryButton({
   onPress,
   disabled,
   loading,
+  icon,
   ...props
 }: {
   label: string;
   onPress: () => void;
-  disabled: boolean;
+  disabled?: boolean;
   loading?: boolean;
+  icon?: JSX.Element;
 }) {
   const theme = useTheme();
   return (
@@ -182,6 +189,7 @@ export function SecondaryButton({
       labelStyle={{
         color: theme.custom.colors.secondaryButtonTextColor,
       }}
+      icon={icon}
       {...props}
     />
   );
@@ -595,12 +603,7 @@ export function CopyWalletFieldInput({
   publicKey: string;
 }): JSX.Element {
   const theme = useTheme();
-
-  // We use a different publicKey layout here than walletAddressDisplay
-  const walletDisplay =
-    publicKey.toString().slice(0, 12) +
-    "..." +
-    publicKey.toString().slice(publicKey.toString().length - 12);
+  const walletDisplay = walletAddressDisplay(publicKey, 12);
 
   return (
     <View
@@ -635,117 +638,181 @@ export function CopyWalletFieldInput({
   );
 }
 
-export function InputFieldLabel({
-  leftLabel,
-  rightLabel,
-  rightLabelComponent,
-  style,
-}: {
-  leftLabel: string;
-  rightLabel?: string;
-  rightLabelComponent?: JSX.Element;
-  style?: StyleProp<ViewStyle>;
-}): JSX.Element {
-  const theme = useTheme();
+export function Loading(props: any): JSX.Element {
+  return <ActivityIndicator {...props} />;
+}
+
+export function CopyButton({ text }: { text: string }): JSX.Element {
   return (
-    <View style={[inputFieldLabelStyles.container, style]}>
+    <SecondaryButton
+      label="Copy"
+      onPress={async () => {
+        await Clipboard.setStringAsync(text);
+        Alert.alert("Copied to clipboard");
+      }}
+      icon={<ContentCopyIcon size={18} />}
+    />
+  );
+}
+
+export function ImportTypeBadge({
+  type,
+}: {
+  type: string;
+}): JSX.Element | null {
+  const theme = useTheme();
+  if (type === "derived") {
+    return null;
+  }
+
+  return (
+    <View
+      style={[
+        {
+          backgroundColor: theme.custom.colors.bg2,
+          borderRadius: 10,
+          paddingHorizontal: 12,
+          paddingVertical: 2,
+        },
+      ]}
+    >
       <Text
-        style={[
-          inputFieldLabelStyles.leftLabel,
-          {
-            color: theme.custom.colors.fontColor,
-          },
-        ]}
+        style={{
+          color: theme.custom.colors.fontColor,
+          fontSize: 12,
+          fontWeight: "600",
+        }}
       >
-        {leftLabel}
+        {type === "imported" ? "IMPORTED" : "HARDWARE"}
       </Text>
-      {rightLabelComponent ? (
-        rightLabelComponent
-      ) : (
-        <Text
-          style={[
-            inputFieldLabelStyles.rightLabel,
-            {
-              color: theme.custom.colors.interactiveIconsActive,
-            },
-          ]}
-        >
-          {rightLabel}
-        </Text>
-      )}
     </View>
   );
 }
 
-const inputFieldLabelStyles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 8,
-  },
-  leftLabel: {
-    fontSize: 16,
-    lineHeight: 16,
-    fontWeight: "500",
-  },
-  rightLabel: {
-    fontWeight: "500",
-    fontSize: 12,
-    lineHeight: 16,
-  },
-});
-
-export const InputFieldMaxLabel = ({
-  amount,
-  onSetAmount,
-  decimals,
+export function AddConnectWalletButton({
+  blockchain,
+  onPress,
 }: {
-  amount: BigNumber | null;
-  onSetAmount: (amount: BigNumber) => void;
-  decimals: number;
-}) => {
+  blockchain: Blockchain;
+  onPress: (blockchain: Blockchain) => void;
+}): JSX.Element {
   const theme = useTheme();
+
   return (
     <Pressable
-      style={inputFieldMaxLabelStyles.container}
-      onPress={() => amount && onSetAmount(amount)}
+      onPress={() => {
+        onPress(blockchain);
+      }}
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+      }}
     >
+      <Margin right={8}>
+        <MaterialIcons
+          name="add-circle"
+          size={24}
+          color={theme.custom.colors.secondary}
+        />
+      </Margin>
       <Text
-        style={[
-          inputFieldMaxLabelStyles.label,
-          { color: theme.custom.colors.secondary },
-        ]}
+        style={{
+          color: theme.custom.colors.secondary,
+        }}
       >
-        Max:{" "}
-      </Text>
-      <Text
-        style={[
-          inputFieldMaxLabelStyles.label,
-          {
-            color: theme.custom.colors.fontColor,
-          },
-        ]}
-      >
-        {amount !== null ? ethers.utils.formatUnits(amount, decimals) : "-"}
+        Add / Connect Wallet
       </Text>
     </Pressable>
   );
-};
+}
 
-const inputFieldMaxLabelStyles = StyleSheet.create({
+export function TwoButtonFooter({
+  leftButton,
+  rightButton,
+}: {
+  leftButton: JSX.Element;
+  rightButton: JSX.Element;
+}): JSX.Element {
+  return (
+    <View style={twoButtonFooterStyles.container}>
+      <View style={{ flex: 1, marginRight: 8 }}>{leftButton}</View>
+      <View style={{ flex: 1, marginLeft: 8 }}>{rightButton}</View>
+    </View>
+  );
+}
+
+const twoButtonFooterStyles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "flex-end",
-  },
-  label: {
-    fontWeight: "500",
-    fontSize: 12,
-    lineHeight: 16,
   },
 });
 
-export function Loading(props: any): JSX.Element {
-  return <ActivityIndicator {...props} />;
+export function HeaderIconSubtitle({
+  icon,
+  title,
+  subtitle,
+}: {
+  icon: JSX.Element;
+  title: string;
+  subtitle?: string;
+}): JSX.Element {
+  return (
+    <View style={headerIconSubtitleStyles.container}>
+      <Margin bottom={16}>{icon}</Margin>
+      <Header text={title} />
+      {subtitle ? <SubtextParagraph>{subtitle}</SubtextParagraph> : null}
+    </View>
+  );
 }
+
+const headerIconSubtitleStyles = StyleSheet.create({
+  container: {
+    alignItems: "center",
+    marginBottom: 24,
+  },
+});
+
+export function RoundedContainerGroup({
+  children,
+  style,
+  disableTopRadius = false,
+  disableBottomRadius = false,
+}: {
+  children: JSX.Element;
+  style: StyleProp<ViewStyle>;
+  disableTopRadius?: boolean;
+  disableBottomRadius?: boolean;
+}): JSX.Element {
+  const theme = useTheme();
+  return (
+    <View
+      style={[
+        roundedContainerStyles.container,
+        {
+          borderColor: theme.custom.colors.borderFull,
+        },
+        disableTopRadius ? roundedContainerStyles.disableTopRadius : null,
+        disableBottomRadius ? roundedContainerStyles.disableBottomRadius : null,
+        style,
+      ]}
+    >
+      {children}
+    </View>
+  );
+}
+
+const roundedContainerStyles = StyleSheet.create({
+  container: {
+    overflow: "hidden",
+    borderRadius: 12,
+  },
+  disableTopRadius: {
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+  },
+  disableBottomRadius: {
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+  },
+});

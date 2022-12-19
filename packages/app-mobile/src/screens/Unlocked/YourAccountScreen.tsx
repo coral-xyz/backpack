@@ -2,8 +2,6 @@ import { Screen } from "@components";
 import { useKeyringType } from "@coral-xyz/recoil";
 import { SettingsList } from "@screens/Unlocked/Settings/components/SettingsMenuList";
 
-function FieldTextInput() {}
-
 export function YourAccountScreen({ navigation }) {
   const keyringType = useKeyringType();
 
@@ -22,7 +20,7 @@ export function YourAccountScreen({ navigation }) {
         }
       : {}),
     Logout: {
-      onPress: () => navigation.push("logout"),
+      onPress: () => navigation.push("reset-warning"),
     },
   };
 

@@ -1,6 +1,5 @@
+import { PrimaryButton, SecondaryButton } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
-
-import { PrimaryButton, SecondaryButton } from "..";
 
 export function BottomCard({
   onButtonClick,

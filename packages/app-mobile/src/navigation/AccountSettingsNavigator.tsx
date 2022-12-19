@@ -1,13 +1,6 @@
 import { useEffect, useState } from "react";
 import { Alert, Text, View } from "react-native";
-import {
-  Header,
-  Margin,
-  PrimaryButton,
-  Screen,
-  StyledTextInput,
-  SubtextParagraph,
-} from "@components";
+import { Screen } from "@components";
 import type { Blockchain, ChannelAppUiClient } from "@coral-xyz/common";
 import {
   DerivationPath,
@@ -20,11 +13,10 @@ import {
   UI_RPC_METHOD_BLOCKCHAINS_ENABLED_DELETE,
   UI_RPC_METHOD_ETHEREUM_CHAIN_ID_UPDATE,
   UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE,
-  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-  UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
   UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE,
   UI_RPC_METHOD_SOLANA_EXPLORER_UPDATE,
+  walletAddressDisplay,
 } from "@coral-xyz/common";
 import {
   useBackgroundClient,
@@ -34,11 +26,18 @@ import {
   useSolanaCommitment,
   useSolanaConnectionUrl,
   useSolanaExplorer,
-  useWalletPublicKeys,
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
-import AccountSettingsScreen from "@screens/Unlocked/Settings/AccountSettingsScreen";
+import { ImportPrivateKeyScreen } from "@screens/ImportPrivateKeyScreen";
+import {
+  LogoutWarningScreen,
+  ResetWarningScreen,
+} from "@screens/ResetWarningScreen";
+import { EditWalletDetailScreen } from "@screens/Unlocked/EditWalletDetailScreen";
+import { EditWalletsScreen } from "@screens/Unlocked/EditWalletsScreen";
+import { ForgotPasswordScreen } from "@screens/Unlocked/ForgotPasswordScreen";
+import { RenameWalletScreen } from "@screens/Unlocked/RenameWalletScreen";
 import { AddConnectWalletScreen } from "@screens/Unlocked/Settings/AddConnectWalletScreen";
 import { ChangePasswordScreen } from "@screens/Unlocked/Settings/ChangePasswordScreen";
 import { SettingsList } from "@screens/Unlocked/Settings/components/SettingsMenuList";
@@ -49,12 +48,20 @@ import {
 } from "@screens/Unlocked/Settings/components/SettingsRow";
 import { PreferencesScreen } from "@screens/Unlocked/Settings/PreferencesScreen";
 import { PreferencesTrustedSitesScreen } from "@screens/Unlocked/Settings/PreferencesTrustedSitesScreen";
+import { ProfileScreen } from "@screens/Unlocked/Settings/ProfileScreen";
+import {
+  ShowPrivateKeyScreen,
+  ShowPrivateKeyWarningScreen,
+} from "@screens/Unlocked/ShowPrivateKeyScreen";
+import {
+  ShowRecoveryPhraseScreen,
+  ShowRecoveryPhraseWarningScreen,
+} from "@screens/Unlocked/ShowRecoveryPhraseScreen";
 import { YourAccountScreen } from "@screens/Unlocked/YourAccountScreen";
 import type { Commitment } from "@solana/web3.js";
 import { ethers } from "ethers";
-
-import { validateSecretKey } from "../lib/validateSecretKey";
 const { hexlify } = ethers.utils;
+import { useTheme } from "@hooks";
 
 const Stack = createStackNavigator();
 
@@ -67,17 +74,32 @@ function DummyScreen() {
 }
 
 export default function AccountSettingsNavigator() {
+  const theme = useTheme();
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: true,
+        headerTintColor: theme.custom.colors.fontColor,
+      }}
+    >
       <Stack.Screen
-        options={{ title: "Profile" }}
-        name="AccountSettingsHome"
-        component={AccountSettingsScreen}
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          headerShown: true,
+          headerTitle: "",
+          headerTransparent: true,
+          headerTintColor: theme.custom.colors.fontColor,
+          headerBackTitle: "Back",
+        }}
       />
       <Stack.Screen
-        options={{ title: "Your Account" }}
         name="YourAccount"
         component={YourAccountScreen}
+        options={{
+          title: "Your Account",
+          headerBackTitle: "Profile",
+        }}
       />
       <Stack.Screen
         options={{ title: "Change password" }}
@@ -105,27 +127,27 @@ export default function AccountSettingsNavigator() {
         component={PreferencesEthereumCustomRpcUrl}
       />
       <Stack.Screen
-        options={{ title: "Preferences" }}
+        options={{ title: "Solana Preferences" }}
         name="PreferencesSolana"
         component={PreferencesSolana}
       />
       <Stack.Screen
-        options={{ title: "Preferences" }}
+        // options={{ title: "Preferences" }}
         name="PreferencesSolanaConnection"
         component={PreferencesSolanaConnection}
       />
       <Stack.Screen
-        options={{ title: "Preferences" }}
+        // options={{ title: "Preferences" }}
         name="PreferencesSolanaCommitment"
         component={PreferencesSolanaCommitment}
       />
       <Stack.Screen
-        options={{ title: "Preferences" }}
+        // options={{ title: "Preferences" }}
         name="PreferencesSolanaExplorer"
         component={PreferencesSolanaExplorer}
       />
       <Stack.Screen
-        options={{ title: "Preferences" }}
+        // options={{ title: "Preferences" }}
         name="PreferencesSolanaCustomRpcUrl"
         component={PreferencesSolanaCustomRpcUrl}
       />
@@ -140,20 +162,66 @@ export default function AccountSettingsNavigator() {
         component={DummyScreen}
       />
       <Stack.Screen
-        options={{ title: "Add / Connect Wallet" }}
-        name="AddConnectWallet"
-        component={AddConnectWalletScreen}
-      />
-      <Stack.Screen
         options={{ title: "Waiting Room" }}
         name="WaitingRoom"
         component={DummyScreen}
       />
       <Stack.Screen
-        options={{ title: "Import private key" }}
-        name="ImportSecretKey"
-        component={ImportSecretKeyScreen}
+        options={{ title: "Import Private Key" }}
+        name="import-private-key"
+        component={ImportPrivateKeyScreen}
       />
+      <Stack.Screen name="reset-warning" component={ResetWarningScreen} />
+      <Stack.Screen
+        name="show-secret-phrase-warning"
+        component={ShowRecoveryPhraseWarningScreen}
+        options={{ title: "Secret Recovery Phrase" }}
+      />
+      <Stack.Screen
+        name="show-secret-phrase"
+        component={ShowRecoveryPhraseScreen}
+      />
+      <Stack.Screen
+        name="show-private-key-warning"
+        component={ShowPrivateKeyWarningScreen}
+        options={{ title: "Warning" }}
+      />
+      <Stack.Screen
+        name="show-private-key"
+        component={ShowPrivateKeyScreen}
+        options={{ title: "Show Private Key" }}
+      />
+      <Stack.Screen
+        name="edit-wallets"
+        component={EditWalletsScreen}
+        options={{ title: "Edit Wallets" }}
+      />
+      <Stack.Screen
+        name="edit-wallets-rename"
+        component={RenameWalletScreen}
+        options={{ title: "Rename Wallet" }}
+      />
+      <Stack.Screen
+        name="edit-wallets-wallet-detail"
+        component={EditWalletDetailScreen}
+        options={({ route }) => {
+          const { name, publicKey } = route.params;
+          return {
+            title: `${name} (${walletAddressDisplay(publicKey)})`,
+          };
+        }}
+      />
+      <Stack.Screen
+        options={{ title: "Add / Connect Wallet" }}
+        name="add-wallet"
+        component={AddConnectWalletScreen}
+      />
+      <Stack.Group
+        screenOptions={{ presentation: "modal", headerShown: false }}
+      >
+        <Stack.Screen name="forgot-password" component={ForgotPasswordScreen} />
+        <Stack.Screen name="logout-warning" component={LogoutWarningScreen} />
+      </Stack.Group>
     </Stack.Navigator>
   );
 }
@@ -161,7 +229,6 @@ export default function AccountSettingsNavigator() {
 function PreferencesSolanaCustomRpcUrl({ navigation }) {
   const background = useBackgroundClient();
   const [rpcUrl, setRpcUrl] = useState("");
-
   const [rpcUrlError, setRpcUrlError] = useState(false);
 
   const changeNetwork = () => {
@@ -542,6 +609,7 @@ function PreferencesEthereum({ route, navigation }) {
 }
 
 function PreferencesBlockchain({ blockchain }: { blockchain: Blockchain }) {
+  const [error, setError] = useState<string | null>(null);
   const background = useBackgroundClient();
   const enabledBlockchains = useEnabledBlockchains();
   const keyringType = useKeyringType();
@@ -580,11 +648,17 @@ function PreferencesBlockchain({ blockchain }: { blockchain: Blockchain }) {
         } else {
           // Mnemonic based keyring. This is the simple case because we don't
           // need to prompt for the user to open their Ledger app to get the
-          // required public key.
-          await background.request({
-            method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
-            params: [blockchain, DerivationPath.Default, 0, undefined],
-          });
+          // required public key. We also don't need a signature to prove
+          // ownership of the public key because that can't be done
+          // transparently by the backend.
+          try {
+            await background.request({
+              method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
+              params: [blockchain, DerivationPath.Default, 0],
+            });
+          } catch (error) {
+            setError("Wallet address is used by another Backpack account.");
+          }
         }
       } else {
         // Keyring exists for blockchain, just enable it
@@ -597,116 +671,13 @@ function PreferencesBlockchain({ blockchain }: { blockchain: Blockchain }) {
   };
 
   return (
-    <SettingsRowSwitch
-      onPress={(value: boolean) => _onPress(value)}
-      label="Enable Blockchain"
-      value={isEnabled}
-    />
-  );
-}
-
-export function ImportSecretKeyScreen({ route }) {
-  const { blockchain } = route.params;
-  const background = useBackgroundClient();
-  const existingPublicKeys = useWalletPublicKeys();
-  const [name, setName] = useState("dev");
-  const [secretKey, setSecretKey] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [newPublicKey, setNewPublicKey] = useState("");
-
-  useEffect(() => {
-    // Clear error on form input changes
-    setError(null);
-  }, [name, secretKey]);
-
-  const save = async () => {
-    let secretKeyHex;
-    try {
-      secretKeyHex = validateSecretKey(
-        blockchain,
-        secretKey,
-        existingPublicKeys
-      );
-    } catch (e) {
-      setError((e as Error).message);
-      return;
-    }
-
-    const publicKey = await background.request({
-      method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
-      params: [blockchain, secretKeyHex, name],
-    });
-
-    await background.request({
-      method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-      params: [publicKey, blockchain],
-    });
-
-    Alert.alert("success", publicKey);
-
-    setNewPublicKey(publicKey);
-  };
-
-  return (
-    <Screen style={{ justifyContent: "space-between" }}>
-      <Text>
-        {JSON.stringify({
-          name,
-          blockchain,
-          secretKey,
-          error,
-          newPublicKey,
-        })}
-      </Text>
-      <View>
-        <Header text="Import private key" />
-        <Margin bottom={32}>
-          <SubtextParagraph>
-            Enter your private key. It will be encrypted and stored on your
-            device.
-          </SubtextParagraph>
-        </Margin>
-        <Margin bottom={16}>
-          <StyledTextInput
-            autoFocus={true}
-            placeholder="Name"
-            value={name}
-            onChangeText={(text) => setName(text)}
-          />
-        </Margin>
-        <StyledTextInput
-          height={140}
-          multiline={true}
-          placeholder="Enter private key"
-          value={secretKey}
-          onChangeText={(text) => {
-            setSecretKey(text);
-          }}
-        />
-      </View>
-      <PrimaryButton
-        onPress={() => save()}
-        label="Import"
-        disabled={secretKey.length === 0}
+    <>
+      <SettingsRowSwitch
+        onPress={(value: boolean) => _onPress(value)}
+        label="Enable Blockchain"
+        value={isEnabled}
       />
-    </Screen>
+      {error}
+    </>
   );
 }
-
-// <ConfirmCreateWallet
-//   blockchain={blockchain}
-//   publicKey={newPublicKey}
-//   setOpenDrawer={setOpenDrawer}
-// />
-
-// <WithMiniDrawer
-//   openDrawer={openDrawer}
-//   setOpenDrawer={setOpenDrawer}
-//   backdropProps={{
-//     style: {
-//       opacity: 0.8,
-//       background: "#18181b",
-//     },
-//   }}
-// >
-// </WithMiniDrawer>

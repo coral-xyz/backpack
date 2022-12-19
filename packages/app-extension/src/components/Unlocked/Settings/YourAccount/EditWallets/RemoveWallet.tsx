@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import { UI_RPC_METHOD_KEYRING_KEY_DELETE } from "@coral-xyz/common";
+import {
+  CheckIcon,
+  PrimaryButton,
+  SecondaryButton,
+  WarningIcon,
+} from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
 
-import { PrimaryButton, SecondaryButton } from "../../../../common";
-import { CheckIcon, WarningIcon } from "../../../../common/Icon";
 import { WithMiniDrawer } from "../../../../common/Layout/Drawer";
 import { useNavStack } from "../../../../common/Layout/NavStack";
 

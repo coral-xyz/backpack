@@ -11,8 +11,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@coral-xyz/recoil": "*",
     "@coral-xyz/themes": "*",
+    "@coral-xyz/common": "*",
     "@giphy/js-fetch-api": "^4.4.0",
     "@giphy/react-components": "^6.2.0",
     "@mui/icons-material": "^5.10.14",

@@ -1,9 +1,18 @@
-import type { EventEmitter, Notification } from "@coral-xyz/common";
+import type {
+  CustomSplTokenAccountsResponse,
+  EventEmitter,
+  Notification,
+  SolanaTokenAccountWithKeyString,
+  SplNftMetadataString,
+  TokenMetadataString,
+} from "@coral-xyz/common";
 import {
   BACKEND_EVENT,
+  BackgroundSolanaConnection,
   Blockchain,
   confirmTransaction,
   customSplTokenAccounts,
+  fetchSplMetadataUri,
   getLogger,
   NOTIFICATION_BLOCKCHAIN_DISABLED,
   NOTIFICATION_BLOCKCHAIN_ENABLED,
@@ -82,7 +91,6 @@ import type {
   VoteAccountStatus,
 } from "@solana/web3.js";
 import { Connection, PublicKey } from "@solana/web3.js";
-import { encode } from "bs58";
 
 import type { CachedValue } from "../types";
 
@@ -92,6 +100,7 @@ export const LOAD_SPL_TOKENS_REFRESH_INTERVAL = 10 * 1000;
 export const RECENT_BLOCKHASH_REFRESH_INTERVAL = 10 * 1000;
 // Time until cached values expire. This is arbitrary.
 const CACHE_EXPIRY = 15000;
+const NFT_CACHE_EXPIRY = 15 * 60000;
 
 export function start(events: EventEmitter): SolanaConnectionBackend {
   const b = new SolanaConnectionBackend(events);
@@ -215,24 +224,10 @@ export class SolanaConnectionBackend {
   // the data is still fresh.
   //
   private async startPolling(activeWallet: PublicKey) {
+    const connection = new Connection(this.url!); // Unhooked connection.
     this.pollIntervals.push(
       setInterval(async () => {
-        const _data = await customSplTokenAccounts(
-          this.connection!,
-          activeWallet
-        );
-        const data = {
-          ..._data,
-          tokenAccountsMap: _data.tokenAccountsMap.map((t: any) => {
-            return [
-              t[0],
-              {
-                ...t[1],
-                mint: t[1].mint.toString(),
-              },
-            ];
-          }),
-        };
+        const data = await customSplTokenAccounts(connection, activeWallet);
         const key = JSON.stringify({
           url: this.url,
           method: "customSplTokenAccounts",
@@ -247,9 +242,8 @@ export class SolanaConnectionBackend {
           data: {
             connectionUrl: this.url,
             publicKey: activeWallet.toString(),
-            customSplTokenAccounts: {
-              ...data,
-            },
+            customSplTokenAccounts:
+              BackgroundSolanaConnection.customSplTokenAccountsToJson(data),
           },
         });
       }, LOAD_SPL_TOKENS_REFRESH_INTERVAL)
@@ -291,6 +285,10 @@ export class SolanaConnectionBackend {
 
       // Only use cached values at most 15 seconds old.
       const value = this.cache.get(key);
+      //
+      // This should never expire, but some projects use mutable urls rather
+      // than IPFS or Arweave :(.
+      //
       if (value && value.ts + CACHE_EXPIRY > Date.now()) {
         return value.value;
       }
@@ -307,7 +305,9 @@ export class SolanaConnectionBackend {
   // Custom endpoints.
   //////////////////////////////////////////////////////////////////////////////
 
-  async customSplTokenAccounts(publicKey: PublicKey): Promise<any> {
+  async customSplTokenAccounts(
+    publicKey: PublicKey
+  ): Promise<CustomSplTokenAccountsResponse> {
     const key = JSON.stringify({
       url: this.url,
       method: "customSplTokenAccounts",
@@ -318,6 +318,27 @@ export class SolanaConnectionBackend {
       return value.value;
     }
     const resp = await customSplTokenAccounts(this.connection!, publicKey);
+    this.cache.set(key, {
+      ts: Date.now(),
+      value: resp,
+    });
+    return resp;
+  }
+
+  async customSplMetadataUri(
+    nftTokens: Array<SolanaTokenAccountWithKeyString>,
+    nftTokenMetadata: Array<TokenMetadataString | null>
+  ): Promise<Array<[string, SplNftMetadataString]>> {
+    const key = JSON.stringify({
+      url: this.url,
+      method: "customSplMetadataUri",
+      args: [nftTokens.map((t) => t.key).sort()],
+    });
+    const value = this.cache.get(key);
+    if (value && value.ts + NFT_CACHE_EXPIRY > Date.now()) {
+      return value.value;
+    }
+    const resp = await fetchSplMetadataUri(nftTokens, nftTokenMetadata);
     this.cache.set(key, {
       ts: Date.now(),
       value: resp,

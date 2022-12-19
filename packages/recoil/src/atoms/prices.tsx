@@ -7,7 +7,7 @@ import type { TokenDisplay } from "../types";
 
 import { erc20Balances } from "./ethereum/token";
 import { solanaConnectionUrl } from "./solana/preferences";
-import { customSplTokenAccounts } from "./solana/token";
+import { solanaFungibleTokenAccounts } from "./solana/token";
 import { splTokenRegistry } from "./solana/token-registry";
 import { solanaPublicKey } from "./wallet";
 
@@ -47,27 +47,30 @@ export const splMintsToCoingeckoId = equalSelector({
   get: ({ get }: any) => {
     const connectionUrl = get(solanaConnectionUrl);
     const publicKey = get(solanaPublicKey);
-    const { splTokenAccounts } = get(
-      customSplTokenAccounts({ connectionUrl, publicKey })
+    const _fungibleTokenAccounts = get(
+      solanaFungibleTokenAccounts({ connectionUrl, publicKey })
     );
     const tokenRegistry = get(splTokenRegistry);
-    return [...splTokenAccounts.values()].reduce((acc, splTokenAccount) => {
-      const mint = splTokenAccount.mint.toString();
-      // Use override if one is available
-      if (coingeckoIdOverride[mint]) {
-        acc.set(mint, coingeckoIdOverride[mint]);
+    return [..._fungibleTokenAccounts.values()].reduce(
+      (acc, splTokenAccount) => {
+        const mint = splTokenAccount.mint.toString();
+        // Use override if one is available
+        if (coingeckoIdOverride[mint]) {
+          acc.set(mint, coingeckoIdOverride[mint]);
+          return acc;
+        }
+        const tokenInfo = tokenRegistry.get(mint);
+        if (
+          tokenInfo &&
+          tokenInfo.extensions &&
+          tokenInfo.extensions.coingeckoId
+        ) {
+          acc.set(mint, tokenInfo.extensions.coingeckoId);
+        }
         return acc;
-      }
-      const tokenInfo = tokenRegistry.get(mint);
-      if (
-        tokenInfo &&
-        tokenInfo.extensions &&
-        tokenInfo.extensions.coingeckoId
-      ) {
-        acc.set(mint, tokenInfo.extensions.coingeckoId);
-      }
-      return acc;
-    }, new Map());
+      },
+      new Map()
+    );
   },
   // Map equality
   equals: (m1, m2) =>

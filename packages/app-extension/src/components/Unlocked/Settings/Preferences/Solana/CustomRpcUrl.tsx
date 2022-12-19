@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
 import { UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE } from "@coral-xyz/common";
+import {
+  InputListItem,
+  Inputs,
+  List,
+  ListItem,
+  PrimaryButton,
+} from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { TextField, Typography } from "@mui/material";
 
-import { List, ListItem, PrimaryButton } from "../../../../common";
-import { InputListItem, Inputs } from "../../../../common/Inputs";
 import { useDrawerContext } from "../../../../common/Layout/Drawer";
 import { useNavStack } from "../../../../common/Layout/NavStack";
 

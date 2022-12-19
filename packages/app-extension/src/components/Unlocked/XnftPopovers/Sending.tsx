@@ -1,13 +1,12 @@
 import type { Blockchain } from "@coral-xyz/common";
 import { explorerUrl } from "@coral-xyz/common";
+import { Loading, SecondaryButton } from "@coral-xyz/react-common";
 import {
   useBlockchainConnectionUrl,
   useBlockchainExplorer,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
-
-import { Loading, SecondaryButton } from "../../common";
 
 export function Sending({
   blockchain,

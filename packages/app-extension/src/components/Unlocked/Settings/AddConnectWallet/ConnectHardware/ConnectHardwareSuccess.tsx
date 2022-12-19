@@ -1,12 +1,7 @@
+import { PrimaryButton,SuccessIcon } from "@coral-xyz/react-common";
 import { Box } from "@mui/material";
 
-import {
-  Header,
-  HeaderIcon,
-  PrimaryButton,
-  SubtextParagraph,
-} from "../../../../common";
-import { SuccessIcon } from "../../../../common/Icon";
+import { Header, HeaderIcon, SubtextParagraph } from "../../../../common";
 
 export function ConnectHardwareSuccess({ onNext }: { onNext: () => void }) {
   return (

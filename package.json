@@ -46,7 +46,11 @@
       "eslint --fix"
     ]
   },
+  "overrides": {
+    "react-refresh": "0.11.0"
+  },
   "resolutions": {
+    "react-refresh": "0.11.0",
     "@solana/web3.js": "1.63.1",
     "parcel": "2.7.0",
     "prettier": "2.7.1",

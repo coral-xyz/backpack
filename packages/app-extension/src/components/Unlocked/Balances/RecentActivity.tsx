@@ -1,6 +1,7 @@
 import { Suspense, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import { explorerUrl } from "@coral-xyz/common";
+import { isFirstLastListItemStyle, Loading } from "@coral-xyz/react-common";
 import {
   useActiveEthereumWallet,
   useActiveSolanaWallet,
@@ -16,14 +17,12 @@ import { Bolt, CallMade, Check, Clear } from "@mui/icons-material";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import { IconButton, List, ListItem, Typography } from "@mui/material";
 
-import { Loading } from "../../common";
 import { EmptyState } from "../../common/EmptyState";
 import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
 import {
   NavStackEphemeral,
   NavStackScreen,
 } from "../../common/Layout/NavStack";
-import { isFirstLastListItemStyle } from "../../common/List";
 
 const useStyles = styles((theme) => ({
   recentActivityLabel: {
@@ -364,10 +363,11 @@ function NoRecentActivityLabel({ minimize }: { minimize: boolean }) {
       }}
     >
       <EmptyState
-        icon={(props: any) => <Bolt {...props} />}
+        icon={(props: any) => <FormatListBulletedIcon {...props} />}
         title={"No Recent Activity"}
-        subtitle={"Get started by adding your first xNFT"}
-        buttonText={"Browse the xNFT Library"}
+        subtitle={
+          "Your transactions and app activity will show up here when you start using Backpack!"
+        }
         onClick={() => window.open("https://xnft.gg")}
         contentStyle={{
           marginBottom: minimize !== true ? "64px" : 0, // Tab height offset.

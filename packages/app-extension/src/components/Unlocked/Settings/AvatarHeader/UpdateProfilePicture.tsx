@@ -1,36 +1,33 @@
 import { useState } from "react";
 import type { Blockchain, Nft, NftCollection } from "@coral-xyz/common";
+import { BACKEND_API_URL } from "@coral-xyz/common";
 import {
-  BACKEND_API_URL,
-  toTitleCase,
-  // UI_RPC_METHOD_USER_AVATAR_UPDATE,
-  walletAddressDisplay,
-} from "@coral-xyz/common";
+  Loading,
+  PrimaryButton,
+  ProxyImage,
+  SecondaryButton,
+} from "@coral-xyz/react-common";
 import {
   newAvatarAtom,
   nftCollections,
-  useActiveWallets,
   useAvatarUrl,
-  useBlockchainLogo,
   useUser,
-  useWalletPublicKeys,
 } from "@coral-xyz/recoil";
 import { styled, useCustomTheme } from "@coral-xyz/themes";
-import { ExpandLess, ExpandMore } from "@mui/icons-material";
-import { CardHeader, CircularProgress, Grid } from "@mui/material";
+import { CircularProgress, Grid } from "@mui/material";
 import Collapse from "@mui/material/Collapse";
 import Typography from "@mui/material/Typography";
-import { resolve } from "dns";
-import { useRecoilValueLoadable, useSetRecoilState, waitForAll } from "recoil";
+import { useRecoilValueLoadable, useSetRecoilState } from "recoil";
 
-import { Loading, PrimaryButton, SecondaryButton } from "../../../common";
 import { Scrollbar } from "../../../common/Layout/Scrollbar";
-import { ProxyImage } from "../../../common/ProxyImage";
+
+import { BlockchainHeader } from "./BlockchainHeader";
 
 type tempAvatar = {
   url: string;
   id: string;
 };
+
 export function UpdateProfilePicture({
   setOpenDrawer,
 }: {
@@ -41,6 +38,7 @@ export function UpdateProfilePicture({
   const setNewAvatar = useSetRecoilState(newAvatarAtom);
   const avatarUrl = useAvatarUrl();
   const { username } = useUser();
+  const theme = useCustomTheme();
   // const wallets = useActiveWallets();
   // const wallets = useWalletPublicKeys();
   const collections = useRecoilValueLoadable(nftCollections);
@@ -50,7 +48,12 @@ export function UpdateProfilePicture({
       <AvatarWrapper>
         <Avatar src={tempAvatar?.url || avatarUrl} />
       </AvatarWrapper>
-      <Typography style={{ textAlign: "center" }}>{`@${username}`}</Typography>
+      <Typography
+        style={{
+          textAlign: "center",
+          color: theme.custom.colors.fontColor,
+        }}
+      >{`@${username}`}</Typography>
       <FakeDrawer>
         <Scrollbar
           style={{
@@ -172,7 +175,7 @@ function BlockchainNFTs({
       <Collapse in={showContent}>
         <Grid
           container
-          style={{ padding: "0px 16px 16px 16px" }}
+          style={{ padding: "12px 16px 16px 16px" }}
           spacing={{ xs: 2, ms: 2, md: 2, lg: 2 }}
         >
           {nfts.map((nft, index) => {
@@ -212,91 +215,6 @@ function BlockchainNFTs({
   );
 }
 
-function BlockchainHeader({
-  setShowContent,
-  showContent,
-  blockchain,
-}: {
-  setShowContent: (showContent: boolean) => void;
-  showContent: boolean;
-  blockchain: Blockchain;
-}) {
-  const blockchainLogo = useBlockchainLogo(blockchain);
-  const title = toTitleCase(blockchain);
-  const theme = useCustomTheme();
-  const wallets = useActiveWallets();
-  const wallet = wallets.find((wallet) => wallet.blockchain === blockchain);
-
-  return (
-    <CardHeader
-      onClick={() => setShowContent(!showContent)}
-      style={{
-        padding: "8px 16px",
-        cursor: "pointer",
-      }}
-      avatar={
-        blockchainLogo && (
-          <ProxyImage
-            src={blockchainLogo}
-            style={{
-              width: "12px",
-              borderRadius: "2px",
-              color: theme.custom.colors.secondary,
-            }}
-          />
-        )
-      }
-      title={
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-            }}
-          >
-            <Typography
-              style={{
-                fontWeight: 500,
-                lineHeight: "24px",
-                fontSize: "14px",
-                display: "flex",
-                justifyContent: "center",
-                flexDirection: "column",
-              }}
-            >
-              {title}
-            </Typography>
-            {wallet && (
-              <Typography
-                style={{
-                  fontWeight: 500,
-                  lineHeight: "24px",
-                  fontSize: "14px",
-                  display: "flex",
-                  justifyContent: "center",
-                  flexDirection: "column",
-                  marginLeft: "8px",
-                }}
-              >
-                {walletAddressDisplay(wallet.publicKey)}
-              </Typography>
-            )}
-          </div>
-          {showContent ? (
-            <ExpandLess sx={{ width: "18px" }} />
-          ) : (
-            <ExpandMore sx={{ width: "18px" }} />
-          )}
-        </div>
-      }
-    />
-  );
-}
-
 const Container = styled("div")(({ theme }) => ({
   position: "relative",
   display: "flex",
@@ -326,6 +244,7 @@ const FakeDrawer = styled("div")(({ theme }) => ({
   borderTopRightRadius: "12px",
   marginTop: "16px",
   zIndex: "0",
+  overflow: "hidden",
 }));
 const ButtonsOverlay = styled("div")(({ theme }) => ({
   position: "absolute",

@@ -1,16 +1,11 @@
 import { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
+import { HardwareWalletIcon, PrimaryButton } from "@coral-xyz/react-common";
 import type Transport from "@ledgerhq/hw-transport";
 import TransportWebHid from "@ledgerhq/hw-transport-webhid";
 import { Box } from "@mui/material";
 
-import {
-  Header,
-  HeaderIcon,
-  PrimaryButton,
-  SubtextParagraph,
-} from "../../../../common";
-import { HardwareWalletIcon } from "../../../../common/Icon";
+import { Header, HeaderIcon, SubtextParagraph } from "../../../../common";
 
 import { ConnectHardwareApp } from "./ConnectHardwareApp";
 import { ConnectHardwareFailure } from "./ConnectHardwareFailure";

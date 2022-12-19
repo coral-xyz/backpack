@@ -1,7 +1,6 @@
+import { List, ListItem, PushDetail } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
-
-import { List, ListItem, PushDetail } from "../../common";
 
 export function SettingsList({
   style,

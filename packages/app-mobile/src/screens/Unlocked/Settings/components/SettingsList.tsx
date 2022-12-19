@@ -1,4 +1,4 @@
-import { Margin } from "@components";
+import { Margin, RoundedContainerGroup } from "@components";
 import {
   BACKPACK_FEATURE_XNFT,
   Blockchain,
@@ -16,7 +16,6 @@ import {
   IconLaunchDetail,
   IconLeft,
   IconPushDetail,
-  RoundedContainer,
   SettingsRow,
 } from "./SettingsRow";
 
@@ -54,6 +53,7 @@ export function SettingsList() {
       onPress: () => navigation.push("xNFTSettings"),
       icon: <IconLeft name="apps" />,
       detailIcon: <IconPushDetail />,
+      disabled: true,
     });
   }
 
@@ -70,6 +70,7 @@ export function SettingsList() {
       onPress: () => navigation.push("WaitingRoom"),
       icon: <IconLeft name="people" />,
       detailIcon: <IconPushDetail />,
+      disabled: true,
     },
     {
       label: "Need help? Hop into Discord",
@@ -82,7 +83,7 @@ export function SettingsList() {
   return (
     <>
       <Margin vertical={12}>
-        <RoundedContainer>
+        <RoundedContainerGroup>
           {settingsMenu.map((item) => {
             return (
               <SettingsRow
@@ -94,9 +95,9 @@ export function SettingsList() {
               />
             );
           })}
-        </RoundedContainer>
+        </RoundedContainerGroup>
       </Margin>
-      <RoundedContainer>
+      <RoundedContainerGroup>
         {discordList.map((item) => {
           return (
             <SettingsRow
@@ -107,7 +108,7 @@ export function SettingsList() {
             />
           );
         })}
-      </RoundedContainer>
+      </RoundedContainerGroup>
     </>
   );
 }

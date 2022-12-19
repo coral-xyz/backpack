@@ -1,6 +1,9 @@
 import { Text, View } from "react-native";
 import { NavHeader } from "@components";
+import { IconCloseModal } from "@components/Icon";
+import { toTitleCase } from "@coral-xyz/common";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useTheme } from "@hooks";
 import AccountSettingsNavigator from "@navigation/AccountSettingsNavigator";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { getHeaderTitle } from "@react-navigation/elements";
@@ -14,28 +17,38 @@ import {
 import { NFTCollectiblesNavigator } from "@screens/Unlocked/NftCollectiblesScreen";
 import { RecentActivityScreen } from "@screens/Unlocked/RecentActivityScreen";
 import {
-  SelectSendTokenModal,
-  SendTokenModal,
+  SendTokenDetailScreen,
+  SendTokenListScreen,
 } from "@screens/Unlocked/SendTokenScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-export default function UnlockedNavigator() {
+export default function UnlockedNavigator(): JSX.Element {
+  const theme = useTheme();
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Group>
         <Stack.Screen name="Tabs" component={UnlockedBottomTabNavigator} />
+        <Stack.Screen
+          name="AccountSettings"
+          component={AccountSettingsNavigator}
+          options={{
+            headerShown: false,
+          }}
+        />
       </Stack.Group>
       <Stack.Group screenOptions={{ presentation: "modal", headerShown: true }}>
         <Stack.Screen
-          name="AccountSettingsModal"
-          component={AccountSettingsNavigator}
-        />
-        <Stack.Screen
-          name="RecentActivityModal"
-          options={{ title: "Recent Activity" }}
+          name="RecentActivity"
           component={RecentActivityScreen}
+          options={{
+            title: "Recent Activity",
+            headerBackTitleVisible: false,
+            headerTransparent: true,
+            headerTintColor: theme.custom.colors.fontColor,
+            headerBackImage: IconCloseModal,
+          }}
         />
         <Stack.Screen
           options={{ title: "Deposit" }}
@@ -50,14 +63,16 @@ export default function UnlockedNavigator() {
         <Stack.Screen
           options={{ title: "Select Token" }}
           name="SendSelectTokenModal"
-          component={SelectSendTokenModal}
+          component={SendTokenListScreen}
         />
         <Stack.Screen
           name="SendTokenModal"
-          component={SendTokenModal}
+          component={SendTokenDetailScreen}
           options={({ route }) => {
+            const { blockchain, token } = route.params;
+            const title = `Send ${toTitleCase(blockchain)} / ${token.ticker}`;
             return {
-              title: route.params.title,
+              title,
             };
           }}
         />

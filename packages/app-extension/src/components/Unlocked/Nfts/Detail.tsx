@@ -9,6 +9,11 @@ import {
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
 } from "@coral-xyz/common";
 import {
+List, ListItem ,   NegativeButton,
+  PrimaryButton,
+ProxyImage,  SecondaryButton,
+ TextInput  } from "@coral-xyz/react-common";
+import {
   nftMetadata,
   useAnchorContext,
   useBackgroundClient,
@@ -28,9 +33,7 @@ import { IconButton, Popover, Typography } from "@mui/material";
 import { PublicKey } from "@solana/web3.js";
 import { BigNumber } from "ethers";
 
-import { NegativeButton, PrimaryButton, SecondaryButton } from "../../common";
 import { ApproveTransactionDrawer } from "../../common/ApproveTransactionDrawer";
-import { TextInput } from "../../common/Inputs";
 import {
   CloseButton,
   useDrawerContext,
@@ -40,8 +43,6 @@ import {
   NavStackEphemeral,
   NavStackScreen,
 } from "../../common/Layout/NavStack";
-import { List, ListItem } from "../../common/List";
-import { ProxyImage } from "../../common/ProxyImage";
 import { SendEthereumConfirmationCard } from "../Balances/TokensWidget/Ethereum";
 import {
   Error as ErrorConfirmation,

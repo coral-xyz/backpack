@@ -7,11 +7,11 @@ import {
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
   UI_RPC_METHOD_USER_JWT_UPDATE,
 } from "@coral-xyz/common";
+import { Loading } from "@coral-xyz/react-common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { ethers } from "ethers";
 
 import { useAuthentication } from "../../hooks/useAuthentication";
-import { Loading } from "../common";
 import { WithDrawer } from "../common/Layout/Drawer";
 import { HardwareOnboard } from "../Onboarding/pages/HardwareOnboard";
 

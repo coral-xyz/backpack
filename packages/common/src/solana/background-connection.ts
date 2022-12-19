@@ -75,6 +75,7 @@ import type { BackgroundClient } from "../channel";
 import {
   SOLANA_CONNECTION_GET_MULTIPLE_ACCOUNTS_INFO,
   SOLANA_CONNECTION_RPC_CONFIRM_TRANSACTION,
+  SOLANA_CONNECTION_RPC_CUSTOM_SPL_METADATA_URI,
   SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
   SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO,
   SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO_AND_CONTEXT,
@@ -99,6 +100,10 @@ import {
   SOLANA_CONNECTION_RPC_SEND_RAW_TRANSACTION,
 } from "../constants";
 
+import type {
+  CustomSplTokenAccountsResponse,
+  CustomSplTokenAccountsResponseString,
+} from "./programs/token";
 import { addressLookupTableAccountParser } from "./rpc-helpers";
 import type {
   SolanaTokenAccountWithKey,
@@ -126,44 +131,91 @@ export class BackgroundSolanaConnection extends Connection {
     this._backgroundClient = backgroundClient;
   }
 
-  async customSplTokenAccounts(publicKey: PublicKey): Promise<{
-    tokenAccountsMap: [string, SolanaTokenAccountWithKeyString][];
-    tokenMetadata: (TokenMetadataString | null)[];
-    nftMetadata: [string, SplNftMetadataString][];
-    mintsMap: [string, RawMint][];
-  }> {
+  async customSplMetadataUri(
+    nftTokens: Array<SolanaTokenAccountWithKeyString>,
+    nftTokenMetadata: Array<TokenMetadataString | null>
+  ): Promise<Array<[string, SplNftMetadataString]>> {
+    return await this._backgroundClient.request({
+      method: SOLANA_CONNECTION_RPC_CUSTOM_SPL_METADATA_URI,
+      params: [nftTokens, nftTokenMetadata],
+    });
+  }
+
+  async customSplTokenAccounts(
+    publicKey: PublicKey
+  ): Promise<CustomSplTokenAccountsResponseString> {
     const resp = await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
       params: [publicKey.toString()],
     });
-    const _resp =
-      BackgroundSolanaConnection.customSplTokenAccountsFromJson(resp);
-    return _resp;
+    return BackgroundSolanaConnection.customSplTokenAccountsFromJson(resp);
   }
 
-  static customSplTokenAccountsFromJson(json: any) {
+  static customSplTokenAccountsFromJson(
+    json: any
+  ): CustomSplTokenAccountsResponseString {
     return {
-      ...json,
-      tokenAccountsMap: json.tokenAccountsMap.map((t: any) => {
-        return [
-          t[0],
-          {
-            ...t[1],
-            amount: new BN(t[1].amount),
-          },
-        ];
-      }),
       mintsMap: json.mintsMap.map((m: any) => {
         return [
           m[0],
           {
             ...m[1],
-            freezeAuthority: new PublicKey(m[1].freezeAuthority),
-            mintAuthority: new PublicKey(m[1].mintAuthority),
-            // todo: should transform the supply here
+            supply: BigInt(m[1].supply),
           },
         ];
       }),
+      fts: {
+        ...json.fts,
+        fungibleTokens: json.fts.fungibleTokens.map((t: any) => {
+          return {
+            ...t,
+            amount: new BN(t.amount),
+          };
+        }),
+      },
+      nfts: {
+        ...json.nfts,
+        nftTokens: json.nfts.nftTokens.map((t: any) => {
+          return {
+            ...t,
+            amount: new BN(t.amount),
+          };
+        }),
+      },
+    };
+  }
+
+  static customSplTokenAccountsToJson(_resp: CustomSplTokenAccountsResponse) {
+    return {
+      mintsMap: _resp.mintsMap.map((m) => {
+        return [
+          m[0],
+          m[1] === null
+            ? null
+            : {
+                ...m[1],
+                supply: m[1].supply.toString(),
+              },
+        ];
+      }),
+      fts: {
+        fungibleTokens: _resp.fts.fungibleTokens.map((t) => {
+          return {
+            ...t,
+            amount: t.amount.toString(),
+          };
+        }),
+        fungibleTokenMetadata: _resp.fts.fungibleTokenMetadata,
+      },
+      nfts: {
+        nftTokens: _resp.nfts.nftTokens.map((t) => {
+          return {
+            ...t,
+            amount: t.amount.toString(),
+          };
+        }),
+        nftTokenMetadata: _resp.nfts.nftTokenMetadata,
+      },
     };
   }
 

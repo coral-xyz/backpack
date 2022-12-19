@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
+import {
+  Backpack,
+  PrimaryButton,
+  RedBackpack,
+  TextInput,
+} from "@coral-xyz/react-common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
-import { useCustomTheme } from "@coral-xyz/themes";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
-
-import { PrimaryButton } from "../common";
-import { Backpack, RedBackpack } from "../common/Icon";
-import { TextInput } from "../common/Inputs";
 
 import { LockedMenu } from "./LockedMenu";
 

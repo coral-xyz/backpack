@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Blockchain, toTitleCase } from "@coral-xyz/common";
+import { ProxyImage } from "@coral-xyz/react-common";
 import {
   SOL_LOGO_URI,
   useActiveWallets,
@@ -11,7 +12,6 @@ import { Button as MuiButton, ListItemIcon, Typography } from "@mui/material";
 
 import { TextField, walletAddressDisplay } from "../../../common";
 import { useNavStack } from "../../../common/Layout/NavStack";
-import { ProxyImage } from "../../../common/ProxyImage";
 import { WithCopyTooltip } from "../../../common/WithCopyTooltip";
 import {
   BalancesTable,

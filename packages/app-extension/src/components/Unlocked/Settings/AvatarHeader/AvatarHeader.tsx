@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ProxyImage } from "@coral-xyz/react-common";
 import { useAvatarUrl } from "@coral-xyz/recoil";
 import { styled } from "@coral-xyz/themes";
 import { Edit } from "@mui/icons-material";
@@ -8,7 +9,6 @@ import {
   NavStackEphemeral,
   NavStackScreen,
 } from "../../../common/Layout/NavStack";
-import { ProxyImage } from "../../../common/ProxyImage";
 
 import { UpdateProfilePicture } from "./UpdateProfilePicture";
 

@@ -8,6 +8,7 @@ import {
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
 } from "@coral-xyz/common";
+import { CheckIcon, HardwareWalletIcon } from "@coral-xyz/react-common";
 import {
   useBackgroundClient,
   useKeyringType,
@@ -19,7 +20,6 @@ import { AddCircle, ArrowCircleDown } from "@mui/icons-material";
 import { Box, Grid, Typography } from "@mui/material";
 
 import { Header, SubtextParagraph } from "../../../common";
-import { CheckIcon, HardwareWalletIcon } from "../../../common/Icon";
 import { ActionCard } from "../../../common/Layout/ActionCard";
 import {
   useDrawerContext,

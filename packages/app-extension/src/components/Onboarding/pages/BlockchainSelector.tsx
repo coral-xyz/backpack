@@ -1,7 +1,8 @@
 import { Blockchain } from "@coral-xyz/common";
+import { PrimaryButton } from "@coral-xyz/react-common";
 import { Box, Grid, Typography } from "@mui/material";
 
-import { Header, PrimaryButton, SubtextParagraph } from "../../common";
+import { Header, SubtextParagraph } from "../../common";
 import { ActionCard } from "../../common/Layout/ActionCard";
 
 export const BlockchainSelector = ({

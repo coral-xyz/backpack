@@ -17,6 +17,11 @@ import {
   UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION,
 } from "@coral-xyz/common";
 import {
+  Loading,
+  PrimaryButton,
+  SecondaryButton,
+} from "@coral-xyz/react-common";
+import {
   useActivePublicKeys,
   useBackgroundClient,
   usePluginUrl,
@@ -30,12 +35,7 @@ import * as anchor from "@project-serum/anchor";
 import { useConnection } from "@solana/wallet-adapter-react";
 import type { ConfirmOptions, SendOptions } from "@solana/web3.js";
 
-import {
-  Loading,
-  PrimaryButton,
-  SecondaryButton,
-  walletAddressDisplay,
-} from "../common";
+import { walletAddressDisplay } from "../common";
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
 import { Scrollbar } from "../common/Layout/Scrollbar";
 import { TransactionData } from "../common/TransactionData";

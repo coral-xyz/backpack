@@ -1,7 +1,6 @@
+import { isFirstLastListItemStyle } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { List, ListItem, Skeleton } from "@mui/material";
-
-import { isFirstLastListItemStyle } from "../../common";
 
 export function MessagesSkeleton() {
   const theme = useCustomTheme();

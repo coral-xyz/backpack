@@ -327,14 +327,33 @@ export class KeyringStore {
     accountIndex: number,
     publicKey?: string,
     persist = true
-  ): Promise<void> {
-    this.activeUserKeyring.blockchainKeyringAdd(
+  ): Promise<string> {
+    // If this is a mnemonic based keyring the public key being returned is
+    // unknown, if it is a ledger it will just be the same as `publicKey`
+    const newPublicKey = this.activeUserKeyring.blockchainKeyringAdd(
       blockchain,
       derivationPath,
       accountIndex,
-      publicKey,
-      persist
+      publicKey
     );
+    if (persist) {
+      await this.persist();
+    }
+    return newPublicKey;
+  }
+
+  /**
+   * Remove a keyring. This shouldn't be exposed to the client as it can
+   * use the blockchain disable method to soft remove a keyring and still be
+   * able to enable it later without any reonboarding (signatures, etc). It
+   * is used by the backend to revert state changes for non atomic call
+   * sequences.
+   */
+  public async blockchainKeyringRemove(
+    blockchain: Blockchain,
+    persist = true
+  ): Promise<void> {
+    this.activeUserKeyring.blockchainKeyringRemove(blockchain);
     if (persist) {
       await this.persist();
     }
@@ -555,9 +574,7 @@ class UserKeyring {
         blockchainKeyring.blockchain,
         blockchainKeyring.derivationPath,
         blockchainKeyring.accountIndex,
-        blockchainKeyring.publicKey,
-        // Don't persist, as we persist manually later
-        false
+        blockchainKeyring.publicKey
       );
     }
     return kr;
@@ -664,15 +681,19 @@ class UserKeyring {
     blockchain: Blockchain,
     derivationPath: DerivationPath,
     accountIndex: number,
-    publicKey?: string,
-    persist = true
-  ): Promise<void> {
+    publicKey?: string
+  ): Promise<string> {
     const keyring = keyringForBlockchain(blockchain);
+    let newPublicKey: string;
     if (this.mnemonic) {
       // Initialising using a mnemonic
-      await keyring.initFromMnemonic(this.mnemonic, derivationPath, [
-        accountIndex,
-      ]);
+      const wallets = await keyring.initFromMnemonic(
+        this.mnemonic,
+        derivationPath,
+        [accountIndex]
+      );
+      // Set the newly created public key for return
+      newPublicKey = wallets[0][0];
     } else {
       if (!publicKey)
         throw new Error(
@@ -686,8 +707,16 @@ class UserKeyring {
           publicKey,
         },
       ]);
+      // This is the same as the public key that was passed in, it is returned
+      // unchanged
+      newPublicKey = publicKey;
     }
     this.blockchains.set(blockchain, keyring);
+    return newPublicKey;
+  }
+
+  public async blockchainKeyringRemove(blockchain: Blockchain): Promise<void> {
+    this.blockchains.delete(blockchain);
   }
 
   public async importSecretKey(

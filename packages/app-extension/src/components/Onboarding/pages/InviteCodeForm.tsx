@@ -1,11 +1,11 @@
 import { type FormEvent, useCallback, useEffect, useState } from "react";
+import { PrimaryButton,TextInput } from "@coral-xyz/react-common";
 import { styles } from "@coral-xyz/themes";
 import { ArrowForward } from "@mui/icons-material";
 import { Box } from "@mui/material";
 import { createPopup } from "@typeform/embed";
 
-import { PrimaryButton, SubtextParagraph } from "../../common";
-import { TextInput } from "../../common/Inputs";
+import { SubtextParagraph } from "../../common";
 import { getWaitlistId, setWaitlistId } from "../../common/WaitingRoom";
 import { BackpackHeader } from "../../Locked";
 

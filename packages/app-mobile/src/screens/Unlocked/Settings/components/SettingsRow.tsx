@@ -1,23 +1,8 @@
+import type { StyleProp, ViewStyle } from "react-native";
 import { Image, Pressable, StyleSheet, Switch, Text, View } from "react-native";
 import { Margin, WalletAddressLabel } from "@components";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@hooks";
-
-export function RoundedContainer({ children }) {
-  const theme = useTheme();
-  return (
-    <View
-      style={[
-        styles.roundedContainer,
-        {
-          borderColor: theme.custom.colors.borderFull,
-        },
-      ]}
-    >
-      {children}
-    </View>
-  );
-}
 
 export function IconPushDetail() {
   const theme = useTheme();
@@ -50,6 +35,17 @@ export function IconLeft({ name }) {
   const theme = useTheme();
   return (
     <MaterialIcons name={name} color={theme.custom.colors.icon} size={24} />
+  );
+}
+
+export function IconCopyContent() {
+  const theme = useTheme();
+  return (
+    <MaterialIcons
+      name="content-copy"
+      color={theme.custom.colors.icon}
+      size={24}
+    />
   );
 }
 
@@ -126,6 +122,7 @@ export function SettingsRowText({
 }
 
 export function SettingsRow({
+  disabled = false,
   label,
   onPress,
   icon,
@@ -134,16 +131,23 @@ export function SettingsRow({
   label: string;
   onPress: () => void;
   icon?: JSX.Element;
-  detailIcon: null | JSX.Element;
+  detailIcon?: null | JSX.Element;
+  disabled?: boolean;
 }) {
   const theme = useTheme();
   return (
-    <Pressable onPress={() => onPress()}>
+    <Pressable disabled={disabled} onPress={() => onPress()}>
       <RowContainer>
         <View style={styles.leftSide}>
           {icon ? <Margin right={12}>{icon}</Margin> : null}
           <Text
-            style={[styles.label, { color: theme.custom.colors.fontColor }]}
+            style={[
+              styles.label,
+              {
+                opacity: disabled ? 0.5 : 1,
+                color: theme.custom.colors.fontColor,
+              },
+            ]}
           >
             {label}
           </Text>
@@ -154,40 +158,7 @@ export function SettingsRow({
   );
 }
 
-export function SettingsWalletRow({
-  icon,
-  name,
-  publicKey,
-  onPress,
-}: {
-  icon: any; // TODO(any)
-  name: string;
-  publicKey: string;
-  onPress: () => void;
-}) {
-  return (
-    <Pressable onPress={() => onPress()}>
-      <RowContainer>
-        <View style={styles.leftSide}>
-          <Margin right={12}>
-            <Image
-              source={icon}
-              style={{ width: 24, height: 24, borderRadius: 48 }}
-            />
-          </Margin>
-          <WalletAddressLabel name={name} publicKey={publicKey} />
-        </View>
-        <IconExpand collapsed={true} />
-      </RowContainer>
-    </Pressable>
-  );
-}
-
 const styles = StyleSheet.create({
-  roundedContainer: {
-    overflow: "hidden",
-    borderRadius: 12,
-  },
   container: {
     paddingHorizontal: 12,
     height: 48,

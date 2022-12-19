@@ -1,6 +1,11 @@
 import type { FormEvent } from "react";
 import { useEffect, useState } from "react";
 import { UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC } from "@coral-xyz/common";
+import {
+  DangerButton,
+  EyeIcon,
+  SecondaryButton,
+ TextInput,  WarningIcon } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import ChatIcon from "@mui/icons-material/Chat";
@@ -9,20 +14,11 @@ import LockOpenIcon from "@mui/icons-material/LockOpen";
 import WebIcon from "@mui/icons-material/Web";
 import { Box, List, ListItem, ListItemIcon } from "@mui/material";
 
-import {
-  DangerButton,
-  Header,
-  HeaderIcon,
-  SecondaryButton,
-  SubtextParagraph,
-  TextField,
-} from "../../../common";
+import { Header, HeaderIcon, SubtextParagraph } from "../../../common";
 import {
   CopyButton,
   MnemonicInputFields,
 } from "../../../common/Account/MnemonicInput";
-import { EyeIcon, WarningIcon } from "../../../common/Icon";
-import { TextInput } from "../../../common/Inputs";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { useNavStack } from "../../../common/Layout/NavStack";
 

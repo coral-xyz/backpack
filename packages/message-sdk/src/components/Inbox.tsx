@@ -1,12 +1,9 @@
 import { useEffect, useState } from "react";
 import type { EnrichedInboxDb } from "@coral-xyz/common";
-import {
-  BACKEND_API_URL,
-  NAV_COMPONENT_MESSAGE_REQUESTS,
-} from "@coral-xyz/common";
-import { useNavigation } from "@coral-xyz/recoil";
+import { BACKEND_API_URL } from "@coral-xyz/common";
+import { TextInput } from "@coral-xyz/react-common";
 
-import { TextInput } from "../../common/Inputs";
+import { ParentCommunicationManager } from "../ParentCommunicationManager";
 
 import { MessageList } from "./MessageList";
 import { MessagesSkeleton } from "./MessagesSkeleton";
@@ -24,7 +21,9 @@ export function Inbox() {
   >([]);
 
   const init = async () => {
-    const res = await fetch(`${BACKEND_API_URL}/inbox?areConnected=true`);
+    const res = await ParentCommunicationManager.getInstance().fetch(
+      `${BACKEND_API_URL}/inbox?areConnected=true`
+    );
     const json = await res.json();
     setMessagesLoading(false);
     setActiveChats(json.chats || []);
@@ -42,6 +41,7 @@ export function Inbox() {
 
   return (
     <div className={classes.container}>
+      <div style={{ height: 8 }}></div>
       <TextInput
         className={classes.searchField}
         placeholder={"Search"}
@@ -51,7 +51,7 @@ export function Inbox() {
           setSearchFilter(prefix);
           if (prefix.length >= 3) {
             //TODO debounce
-            const res = await fetch(
+            const res = await ParentCommunicationManager.getInstance().fetch(
               `${BACKEND_API_URL}/users?usernamePrefix=${prefix}`
             );
             const json = await res.json();

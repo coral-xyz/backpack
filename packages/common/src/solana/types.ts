@@ -1,6 +1,6 @@
-//import type { metadata } from "@project-serum/token";
 import type { Metadata } from "@metaplex-foundation/mpl-token-metadata";
 import type { IdlAccounts, SplToken } from "@project-serum/anchor";
+import type { RawMint } from "@solana/spl-token";
 import type { TokenAccountsFilter } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
 
@@ -36,9 +36,11 @@ type ReplaceType<Type, FromType, ToType> = Type extends FromType // FromType?
   ? ReplaceTypes<Type, FromType, ToType> // Yes
   : Type; // No, leave it alone
 
-type ReplaceTypes<ObjType extends object, FromType, ToType> = {
+export type ReplaceTypes<ObjType extends object, FromType, ToType> = {
   [KeyType in keyof ObjType]: ReplaceType<ObjType[KeyType], FromType, ToType>;
 };
+
+export type RawMintString = ReplaceTypes<RawMint, PublicKey, string>;
 
 export type SolanaTokenAccountWithKeyString = ReplaceTypes<
   SolanaTokenAccountWithKey,

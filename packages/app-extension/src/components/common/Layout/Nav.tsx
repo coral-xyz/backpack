@@ -1,10 +1,9 @@
 import React, { Suspense, useState } from "react";
+import { Loading } from "@coral-xyz/react-common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ArrowBack } from "@mui/icons-material";
 import KeyboardArrowDownSharpIcon from "@mui/icons-material/KeyboardArrowDownSharp";
 import { IconButton, Typography } from "@mui/material";
-
-import { Loading } from "../";
 
 import { Scrollbar } from "./Scrollbar";
 
@@ -49,6 +48,7 @@ export function WithNav({
   navbarStyle = {},
   navContentStyle = {},
   notchViewComponent,
+  noScrollbars,
 }: {
   title?: string;
   navButtonLeft?: React.ReactNode;
@@ -57,6 +57,7 @@ export function WithNav({
   navbarStyle?: React.CSSProperties;
   navContentStyle?: React.CSSProperties;
   notchViewComponent?: React.ReactElement | null;
+  noScrollbars?: boolean;
 }) {
   return (
     <>
@@ -67,7 +68,11 @@ export function WithNav({
         navButtonRight={navButtonRight}
         style={navbarStyle}
       />
-      <NavContent style={navContentStyle} renderComponent={children} />
+      <NavContent
+        style={navContentStyle}
+        noScrollbars={noScrollbars}
+        renderComponent={children}
+      />
     </>
   );
 }
@@ -163,19 +168,26 @@ export function NavBackButton({ onClick }: { onClick: () => void }) {
 export function NavContent({
   renderComponent,
   style,
+  noScrollbars,
 }: {
   renderComponent?: React.ReactNode;
+  noScrollbars?: boolean;
   style?: any;
 }) {
   const _style = {
     flex: 1,
     ...style,
   };
+
   return (
     <div className="nav-content-style" style={_style}>
-      <Scrollbar>
+      {noScrollbars ? (
         <Suspense fallback={<Loading />}>{renderComponent}</Suspense>
-      </Scrollbar>
+      ) : (
+        <Scrollbar>
+          <Suspense fallback={<Loading />}>{renderComponent}</Suspense>
+        </Scrollbar>
+      )}
     </div>
   );
 }

@@ -14,6 +14,7 @@
     "start": "yarn build"
   },
   "dependencies": {
+    "@cardinal/creator-standard": "^2.1.10",
     "@cardinal/token-manager": "^1.7.9",
     "@coral-xyz/common-public": "*",
     "@metaplex-foundation/mpl-token-metadata": "^2.5.2",
@@ -30,8 +31,7 @@
     "ethers": "^5.7.0",
     "eventemitter3": "^4.0.7",
     "expo-secure-store": "^11.2.0",
-    "uuid": "^8.3.2",
-    "zustand": "^4.0.0-rc.2"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.203",

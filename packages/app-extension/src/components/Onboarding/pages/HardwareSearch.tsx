@@ -4,13 +4,14 @@
 import { useEffect, useState } from "react";
 import type { DerivationPath } from "@coral-xyz/common";
 import { accountDerivationPath, Blockchain } from "@coral-xyz/common";
+import { Loading, PrimaryButton } from "@coral-xyz/react-common";
 import Ethereum from "@ledgerhq/hw-app-eth";
 import Solana from "@ledgerhq/hw-app-solana";
 import type Transport from "@ledgerhq/hw-transport";
 import { Box } from "@mui/material";
 import * as anchor from "@project-serum/anchor";
 
-import { Header, Loading, PrimaryButton, SubtextParagraph } from "../../common";
+import { Header, SubtextParagraph } from "../../common";
 import type { SelectedAccount } from "../../common/Account/ImportAccounts";
 
 import { DERIVATION_PATHS, LOAD_PUBKEY_AMOUNT } from "./MnemonicSearch";

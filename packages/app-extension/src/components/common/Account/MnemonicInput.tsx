@@ -3,6 +3,7 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
   UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
 } from "@coral-xyz/common";
+import { PrimaryButton, SecondaryButton } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
@@ -16,15 +17,8 @@ import {
 } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 
-import {
-  CheckboxForm,
-  Header,
-  PrimaryButton,
-  SecondaryButton,
-  SubtextParagraph,
-} from "../../common";
+import { CheckboxForm, Header, SubtextParagraph } from "../../common";
 import { WithCopyTooltip } from "../../common/WithCopyTooltip";
-
 const useStyles = makeStyles((theme: any) => ({
   mnemonicInputRoot: {
     border: `${theme.custom.colors.borderFull}`,

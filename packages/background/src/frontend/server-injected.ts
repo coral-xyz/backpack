@@ -175,7 +175,7 @@ async function handle<T = any>(
     case SOLANA_RPC_METHOD_CONNECT:
       return await handleConnect(ctx, Blockchain.SOLANA);
     case SOLANA_RPC_METHOD_DISCONNECT:
-      return handleDisconnect(ctx, Blockchain.SOLANA);
+      return await handleDisconnect(ctx, Blockchain.SOLANA);
     case SOLANA_RPC_METHOD_SIGN_AND_SEND_TX:
       return await handleSolanaSignAndSendTx(
         ctx,
@@ -244,7 +244,7 @@ async function handleConnect(
         blockchain
       );
     });
-    didApprove = !resp.windowClosed && resp.result;
+    didApprove = !resp.windowClosed && resp.result.didApprove;
   } else {
     if (await ctx.backend.isApprovedOrigin(origin)) {
       logger.debug("origin approved so automatically connecting");
@@ -260,7 +260,7 @@ async function handleConnect(
           blockchain
         );
       });
-      didApprove = !resp.windowClosed && resp.result;
+      didApprove = !resp.windowClosed && resp.result.didApprove;
     }
   }
 
@@ -272,16 +272,18 @@ async function handleConnect(
 
   // If the user approved and unlocked, then we're connected.
   if (didApprove) {
-    const activeWallet = (await ctx.backend.blockchainActiveWallets())[
-      blockchain
-    ];
     const user = await ctx.backend.userRead();
+    const publicKey = ctx.backend.activeWalletForBlockchain(blockchain);
     if (blockchain === Blockchain.ETHEREUM) {
       const connectionUrl = await ctx.backend.ethereumConnectionUrlRead(
         user.uuid
       );
       const chainId = await ctx.backend.ethereumChainIdRead();
-      const data = { publicKey: activeWallet, connectionUrl, chainId };
+      const data = {
+        publicKey,
+        connectionUrl,
+        chainId,
+      };
       ctx.events.emit(BACKEND_EVENT, {
         name: NOTIFICATION_ETHEREUM_CONNECTED,
         data,
@@ -291,7 +293,7 @@ async function handleConnect(
       const connectionUrl = await ctx.backend.solanaConnectionUrlRead(
         user.uuid
       );
-      const data = { publicKey: activeWallet, connectionUrl };
+      const data = { publicKey, connectionUrl };
       ctx.events.emit(BACKEND_EVENT, {
         name: NOTIFICATION_SOLANA_CONNECTED,
         data,
@@ -307,18 +309,16 @@ function getTabTitle(ctx) {
   return ctx.sender.tab?.title ?? `Xnft from ${ctx.sender.origin}`;
 }
 
-function handleDisconnect(
+async function handleDisconnect(
   ctx: Context<Backend>,
   blockchain: Blockchain
-): RpcResponse<string> {
-  let resp;
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.disconnect(ctx.sender.origin);
   if (blockchain === Blockchain.SOLANA) {
-    resp = ctx.backend.solanaDisconnect();
     ctx.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_SOLANA_DISCONNECTED,
     });
   } else if (blockchain === Blockchain.ETHEREUM) {
-    // resp = ctx.backend.ethereumDisconnect();
     ctx.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_ETHEREUM_DISCONNECTED,
     });

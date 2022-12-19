@@ -1,12 +1,7 @@
+import { HardwareWalletIcon, PrimaryButton } from "@coral-xyz/react-common";
 import { Box } from "@mui/material";
 
-import {
-  Header,
-  HeaderIcon,
-  PrimaryButton,
-  SubtextParagraph,
-} from "../../../../common";
-import { HardwareWalletIcon } from "../../../../common/Icon";
+import { Header, HeaderIcon, SubtextParagraph } from "../../../../common";
 
 export function ConnectHardwareWelcome({ onNext }: { onNext: () => void }) {
   return (
