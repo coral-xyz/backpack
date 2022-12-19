@@ -86,7 +86,9 @@ export const xnfts = atomFamily<
         return xnfts.map((xnft) => {
           return {
             ...xnft,
-            url: xnftUrl(xnft.metadataBlob.properties.bundle),
+            url: xnftUrl(
+              xnft.metadataBlob.xnft.manifest.entrypoints.default.web
+            ),
             iconUrl: externalResourceUri(xnft.metadataBlob.image),
             activeWallet: _activeWallets[Blockchain.SOLANA],
             activeWallets: _activeWallets,
