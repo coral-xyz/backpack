@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { Blockchain, Nft, NftCollection } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import {
+  ImageIcon,
   Loading,
   PrimaryButton,
   ProxyImage,
@@ -14,11 +15,13 @@ import {
   useUser,
 } from "@coral-xyz/recoil";
 import { styled, useCustomTheme } from "@coral-xyz/themes";
+import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import { CircularProgress, Grid } from "@mui/material";
 import Collapse from "@mui/material/Collapse";
 import Typography from "@mui/material/Typography";
 import { useRecoilValueLoadable, useSetRecoilState } from "recoil";
 
+import { EmptyState } from "../../../common/EmptyState";
 import { Scrollbar } from "../../../common/Layout/Scrollbar";
 
 import { BlockchainHeader } from "./BlockchainHeader";
@@ -58,8 +61,27 @@ export function UpdateProfilePicture({
         <Scrollbar
           style={{
             height: "100%",
+            background: theme.custom.colors.nav,
           }}
         >
+          {collections.state === "hasValue" &&
+            Object.entries(collections.contents).reduce(
+              (acc, [, collection]) => acc + collection.length,
+              0
+            ) === 0 && (
+              <EmptyState
+                icon={(props: any) => <ImageIcon {...props} />}
+                title={"No NFTs to use"}
+                subtitle={"Get started with your first NFT"}
+                onClick={() => window.open("https://magiceden.io/")}
+                contentStyle={{
+                  marginBottom: 0,
+                  color: "inherit",
+                  border: "none",
+                }}
+                buttonText={"Browse Magic Eden"}
+              />
+            )}
           <div
             style={{
               paddingBottom: tempAvatar ? "80px" : "0px",
