@@ -61,7 +61,7 @@ export const useAuthentication = () => {
     | {
         id: string;
         publicKeys: Array<{ blockchain: Blockchain; publicKey: string }>;
-        isAuthenticated: Boolean;
+        isAuthenticated: boolean;
       }
     | undefined
   > => {
