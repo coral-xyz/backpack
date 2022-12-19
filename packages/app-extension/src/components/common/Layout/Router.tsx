@@ -13,8 +13,6 @@ import {
 import {
   MESSAGING_COMMUNICATION_FETCH,
   MESSAGING_COMMUNICATION_PUSH,
-  TAB_SET,
-  UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
 } from "@coral-xyz/common/src/constants";
 import {
   ChatScreen,
@@ -27,15 +25,12 @@ import { Loading } from "@coral-xyz/react-common";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import {
   PluginManager,
-  useBackgroundClient,
   useClosePlugin,
   useDarkMode,
   useDecodedSearchParams,
   useFeatureGates,
-  useFreshPlugin,
   useNavigation,
   useRedirectUrl,
-  useUpdateSearchParams,
   useUser,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";

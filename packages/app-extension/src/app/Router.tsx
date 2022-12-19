@@ -1,9 +1,6 @@
 import { Suspense, useEffect } from "react";
 import type { Blockchain, FeeConfig } from "@coral-xyz/common";
-const { base58: bs58 } = ethers.utils;
 import {
-  deserializeLegacyTransaction,
-  deserializeTransaction,
   EXTENSION_HEIGHT,
   EXTENSION_WIDTH,
   getLogger,
@@ -26,8 +23,6 @@ import {
 } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 import { Block as BlockIcon } from "@mui/icons-material";
-import { ComputeBudgetProgram } from "@solana/web3.js";
-import { ethers } from "ethers";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { refreshXnftPreferences } from "../api/preferences";
