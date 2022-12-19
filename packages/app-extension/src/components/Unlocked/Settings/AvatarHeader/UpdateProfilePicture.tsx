@@ -35,9 +35,9 @@ export function UpdateProfilePicture({
 }) {
   const [tempAvatar, setTempAvatar] = useState<tempAvatar | null>(null);
   const [loading, setLoading] = useState(false);
-  const setNewAvatar = useSetRecoilState(newAvatarAtom);
   const avatarUrl = useAvatarUrl();
   const { username } = useUser();
+  const setNewAvatar = useSetRecoilState(newAvatarAtom(username));
   const theme = useCustomTheme();
   // const wallets = useActiveWallets();
   // const wallets = useWalletPublicKeys();
