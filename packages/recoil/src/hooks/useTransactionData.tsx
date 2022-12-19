@@ -278,7 +278,6 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
       const transaction = deserializeTransaction(serializedTx);
       if (transaction.version === "legacy") {
         const transaction = deserializeLegacyTransaction(serializedTx);
-        // transaction.instructions.forEach(x => x.programId)
         transaction.instructions.forEach((ix) => {
           if (ix.programId.equals(ComputeBudgetProgram.programId)) {
             try {
