@@ -11,7 +11,7 @@
     "eject": "expo eject",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
     "lint:fix": "yarn run lint --fix",
-    "postinstall": "npx patch-package"
+    "postinstall": "npx patch-package && cd ../../ && patch-package"
   },
   "dependencies": {
     "@cardinal/payment-manager": "^1.7.9",
