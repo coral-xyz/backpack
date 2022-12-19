@@ -35,16 +35,6 @@ Promise.allSettled =
       )
     ));
 
-const LOCALHOST_WEBVIEW_URI = "http://localhost:9333";
-
-const WEBVIEW_URI = (() => {
-  if (process.env.NODE_ENV === "production") {
-    return Constants.expoConfig.extra.url || alert("No WEBVIEW_URI");
-  } else {
-    return Constants.expoConfig.extra.url || LOCALHOST_WEBVIEW_URI;
-  }
-})();
-
 function WrappedApp() {
   return (
     <SafeAreaView style={styles.container}>
@@ -93,7 +83,7 @@ function Background() {
         cacheMode="LOAD_CACHE_ELSE_NETWORK"
         ref={ref}
         source={{
-          uri: WEBVIEW_URI,
+          uri: Constants.expoConfig.extra.url,
         }}
         onMessage={(event) => {
           const msg = JSON.parse(event.nativeEvent.data);
