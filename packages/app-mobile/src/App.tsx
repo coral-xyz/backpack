@@ -29,22 +29,22 @@ function Providers({ children }: { children: JSX.Element }) {
 
 export default function App() {
   const isLoadingComplete = useLoadedAssets();
-  const background = useBackgroundClient();
+  // const background = useBackgroundClient();
   const colorScheme = useColorScheme();
-  const user = useUser();
+  // const user = useUser();
 
   // uncomment this later for proper loading
-  useEffect(() => {
-    async function unlock() {
-      const password = "backpack";
-      await background.request({
-        method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-        params: [password, user.uuid, user.username],
-      });
-    }
-
-    unlock();
-  }, []);
+  // useEffect(() => {
+  //   async function unlock() {
+  //     const password = "backpack";
+  //     await background.request({
+  //       method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
+  //       params: [password, user.uuid, user.username],
+  //     });
+  //   }
+  //
+  //   unlock();
+  // }, []);
 
   if (!isLoadingComplete) {
     return null;
