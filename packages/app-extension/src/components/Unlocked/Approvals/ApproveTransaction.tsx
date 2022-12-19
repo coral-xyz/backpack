@@ -62,6 +62,9 @@ const useStyles = styles((theme) => ({
   positive: {
     color: theme.custom.colors.positive,
   },
+  txMenuItemRoot: {
+    height: "36px !important",
+  },
 }));
 
 export function ApproveTransaction({
@@ -139,13 +142,16 @@ export function ApproveTransaction({
       {loading ? (
         <Loading />
       ) : (
-        <div style={{ marginTop: "24px" }}>
+        <div
+          style={{ marginTop: "24px", marginLeft: "8px", marginRight: "8px" }}
+        >
           <Typography className={classes.listDescription}>
             Transaction details
           </Typography>
           <TransactionData
             transactionData={transactionData}
             menuItems={menuItems}
+            menuItemClasses={{ root: classes.txMenuItemRoot }}
           />
         </div>
       )}

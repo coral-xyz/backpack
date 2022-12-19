@@ -248,6 +248,7 @@ export function TransactionData({
             color: theme.custom.colors.negative,
             marginTop: "8px",
             textAlign: "center",
+            fontSize: "14px",
           }}
         >
           This transaction is unlikely to succeed.

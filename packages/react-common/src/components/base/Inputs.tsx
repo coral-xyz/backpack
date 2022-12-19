@@ -272,6 +272,7 @@ export const SmallInput = ({
   onChange: (e: any) => void;
   placeholder: string;
 }) => {
+  const classes = useStyles();
   const theme = useCustomTheme();
   return (
     <TextField
@@ -285,8 +286,10 @@ export const SmallInput = ({
           color: theme.custom.colors.fontColor2,
         },
       }}
+      classes={{
+        root: classes.textFieldRoot,
+      }}
       style={{
-        marginBottom: 5,
         width: 100,
         padding: 0,
         borderRadius: 5,
