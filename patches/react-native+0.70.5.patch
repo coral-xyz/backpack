@@ -49,10 +49,10 @@ index 6c41ce1..f1f5b80 100755
 +        "$NODE_BINARY" "scripts/generate-codegen-artifacts.js" --path "$RCT_SCRIPT_APP_PATH" --outputPath "$TEMP_OUTPUT_DIR" --fabricEnabled "$RCT_SCRIPT_FABRIC_ENABLED" --configFileDir "$RCT_SCRIPT_CONFIG_FILE_DIR" --nodeBinary "$NODE_BINARY"
      popd >/dev/null || exit 1
  }
-
+ 
 @@ -108,7 +104,7 @@ moveOutputs () {
      mkdir -p "$RCT_SCRIPT_OUTPUT_DIR"
-
+ 
      # Copy all output to output_dir
 -    cp -R "$TEMP_OUTPUT_DIR/" "$RCT_SCRIPT_OUTPUT_DIR" || exit 1
 +    cp -R "$TEMP_OUTPUT_DIR/." "$RCT_SCRIPT_OUTPUT_DIR" || exit 1
