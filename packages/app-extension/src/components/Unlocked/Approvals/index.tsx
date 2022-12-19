@@ -1,5 +1,4 @@
-import { useState } from "react";
-import type { Blockchain, FeeConfig } from "@coral-xyz/common";
+import type { Blockchain } from "@coral-xyz/common";
 import {
   PrimaryButton,
   ProxyImage,
@@ -23,12 +22,6 @@ const useStyles = styles((theme) => ({
     flexDirection: "column",
     alignItems: "center",
     width: "50%",
-  },
-  connectableIcon: {
-    width: "56px",
-    height: "56px",
-    borderRadius: "50%",
-    marginBottom: "4px",
   },
   connectableTitle: {
     color: theme.custom.colors.fontColor,
@@ -140,8 +133,13 @@ export function OriginWalletConnectIcons({
 
   return (
     <div className={classes.connectablesContainer}>
-      <OriginConnectable origin={origin} originTitle={originTitle} />
+      <OriginConnectable
+        kind={"medium"}
+        origin={origin}
+        originTitle={originTitle}
+      />
       <Connectable
+        kind={"medium"}
         title={username}
         description={`${walletName} (${walletAddressDisplay(wallet)})`}
         icon={avatarUrl}
@@ -154,15 +152,18 @@ export function OriginConnectable({
   originTitle,
   origin,
   style,
+  kind = "small",
 }: {
   origin: string;
   originTitle: string;
+  kind?: "small" | "medium";
   style?: React.CSSProperties;
 }) {
   // This uses a Google API for favicon retrieval, do we want to parse the page ourselves?
   const siteIcon = `https://www.google.com/s2/favicons?domain=${origin}&sz=180`;
   return (
     <Connectable
+      kind={kind}
       style={style}
       title={displayOriginTitle(originTitle)}
       description={new URL(origin).host}
@@ -176,21 +177,31 @@ export function Connectable({
   description,
   icon,
   style,
+  kind = "small",
 }: {
   title: string;
   description: string;
   icon: string;
+  kind?: "small" | "medium";
   style?: React.CSSProperties;
 }) {
   const classes = useStyles();
   return (
     <div className={classes.connectable} style={style}>
-      <div className={classes.connectableIcon}>
+      <div
+        className={classes.connectableIcon}
+        style={{
+          width: kind === "small" ? "56px" : "80px",
+          height: kind === "small" ? "56px" : "80px",
+          borderRadius: "50%",
+          marginBottom: kind === "small" ? "4px" : "8px",
+        }}
+      >
         <ProxyImage
           style={{
-            width: "56px",
-            height: "56px",
-            borderRadius: "28px",
+            width: kind === "small" ? "56px" : "80px",
+            height: kind === "small" ? "56px" : "80px",
+            borderRadius: "50%",
             maxWidth: "100%",
             maxHeight: "100%",
           }}
