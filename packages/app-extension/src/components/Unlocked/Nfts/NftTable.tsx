@@ -393,6 +393,8 @@ const ItemRow = function ({
               style={{
                 position: "relative",
                 width: "153.5px",
+                height: "153.5px",
+                overflow: "hidden",
                 margin: "0px 6px",
               }}
             >
