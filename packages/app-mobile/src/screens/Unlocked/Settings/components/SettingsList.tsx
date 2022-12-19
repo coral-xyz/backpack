@@ -53,6 +53,7 @@ export function SettingsList() {
       onPress: () => navigation.push("xNFTSettings"),
       icon: <IconLeft name="apps" />,
       detailIcon: <IconPushDetail />,
+      disabled: true,
     });
   }
 
@@ -69,6 +70,7 @@ export function SettingsList() {
       onPress: () => navigation.push("WaitingRoom"),
       icon: <IconLeft name="people" />,
       detailIcon: <IconPushDetail />,
+      disabled: true,
     },
     {
       label: "Need help? Hop into Discord",
