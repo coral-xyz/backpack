@@ -138,12 +138,13 @@ async function handle<T = any>(
   // User did something so restart the auto-lock countdown
   ctx.backend.keyringStoreAutoLockCountdownRestart();
 
-  // TODO: make more robust
-  // toggles whether the auto-lock is enabled or not, this
-  // is to ensure it's disabled when an xnft is open
-  const toggleAutoLockEnabled = (str: string) =>
+  /**
+   * Enables or disables Auto-lock functionality to ensure
+   * the wallet stays unlocked when an xNFT is being used
+   **/
+  const toggleAutoLockEnabled = (url: string) =>
     ctx.backend.keyringStoreAutoLockCountdownToggle(
-      !str.includes("xnftAddress")
+      !url.includes("xnftAddress")
     );
 
   const { method, params } = msg;
@@ -229,12 +230,19 @@ async function handle<T = any>(
     case UI_RPC_METHOD_NAVIGATION_POP:
       return await handleNavigationPop(ctx);
     case UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE:
-      if (params[0]) toggleAutoLockEnabled(params[0]);
+      if (params[0]) {
+        // The URL has changed, enable/disable auto-lock depending
+        // on whether the first parameter is an xNFT URL
+        toggleAutoLockEnabled(params[0]);
+      }
       return await handleNavigationCurrentUrlUpdate(ctx, params[0], params[1]);
     case UI_RPC_METHOD_NAVIGATION_READ:
       const navigationData = await handleNavRead(ctx);
-      // TODO: make more robust
-      if (navigationData) toggleAutoLockEnabled(JSON.stringify(navigationData));
+      if (navigationData) {
+        // Usually called when the user unlocks Backpack and they are
+        // immediately using an xNFT that was opened in the previous session
+        toggleAutoLockEnabled(JSON.stringify(navigationData));
+      }
       return navigationData;
     case UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE:
       return await handleNavigationActiveTabUpdate(ctx, params[0]);
