@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { Blockchain,FeeConfig  } from "@coral-xyz/common";
+import type { Blockchain, FeeConfig } from "@coral-xyz/common";
 import {
   PrimaryButton,
   ProxyImage,
@@ -7,12 +7,8 @@ import {
 } from "@coral-xyz/react-common";
 import { useAvatarUrl, useWalletName } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
-import _CheckIcon from "@mui/icons-material/Check";
-import _CloseIcon from "@mui/icons-material/Close";
 
 import { walletAddressDisplay } from "../../../components/common";
-
-import { SolanaFeeConfigControls } from "./SolanaFeeConfigControls";
 
 const useStyles = styles((theme) => ({
   contentContainer: {

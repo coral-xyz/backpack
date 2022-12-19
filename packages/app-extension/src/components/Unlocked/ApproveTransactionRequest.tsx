@@ -47,7 +47,6 @@ import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
 import { Scrollbar } from "../common/Layout/Scrollbar";
 import { TransactionData } from "../common/TransactionData";
 
-import { SolanaFeeConfigControls } from "./Approvals/SolanaFeeConfigControls";
 import { ErrorTransaction } from "./XnftPopovers/ErrorTransaction";
 import { Sending } from "./XnftPopovers/Sending";
 import { Success } from "./XnftPopovers/Success";
