@@ -318,7 +318,7 @@ export const lightTheme: Partial<Theme> & { custom: { colors: CustomColors } } =
         secondary: LIGHT_FONT_COLOR_1,
         primaryButton: LIGHT_BRAND_COLOR,
         primaryButtonTextColor: LIGHT_BACKGROUND_COLOR_1,
-        secondaryButton: LIGHT_BACKGROUND_COLOR_2,
+        secondaryButton: LIGHT_BACKGROUND_COLOR_1,
         secondaryButtonTextColor: LIGHT_FONT_COLOR,
         buttonFontColor: LIGHT_BUTTON_FONT_COLOR,
         textInputBorderFull: `solid 2px ${LIGHT_BACKGROUND_COLOR_0}`,
