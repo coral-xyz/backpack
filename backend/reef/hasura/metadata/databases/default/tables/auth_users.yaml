@@ -43,6 +43,7 @@ insert_permissions:
       check: {}
       columns:
         - invitation_id
+        - referrer_id
         - username
         - waitlist_id
 select_permissions:

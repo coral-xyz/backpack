@@ -94,6 +94,17 @@ router.post("/", async (req, res) => {
     });
   }
 
+  const referrerId = await (async () => {
+    try {
+      if (req.cookies.referrer) {
+        return (await getUser(req.cookies.referrer))?.id as string;
+      }
+    } catch (err) {
+      // TODO: log this failed referral
+    }
+    return undefined;
+  })();
+
   const user = await createUser(
     username,
     blockchainPublicKeys.map((b) => ({
@@ -102,7 +113,8 @@ router.post("/", async (req, res) => {
       blockchain: b.blockchain as Blockchain,
     })),
     inviteCode,
-    waitlistId
+    waitlistId,
+    referrerId
   );
 
   let jwt: string;

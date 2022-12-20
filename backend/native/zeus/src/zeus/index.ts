@@ -2840,6 +2840,7 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    referrer_id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
     username?: ValueTypes["citext"] | undefined | null | Variable<any, string>;
     waitlist_id?: string | undefined | null | Variable<any, string>;
   };
@@ -6758,6 +6759,7 @@ export type ResolverInputTypes = {
       | ResolverInputTypes["auth_users_obj_rel_insert_input"]
       | undefined
       | null;
+    referrer_id?: ResolverInputTypes["uuid"] | undefined | null;
     username?: ResolverInputTypes["citext"] | undefined | null;
     waitlist_id?: string | undefined | null;
   };
@@ -9618,6 +9620,7 @@ export type ModelTypes = {
       | undefined;
     referrals?: ModelTypes["auth_users_arr_rel_insert_input"] | undefined;
     referrer?: ModelTypes["auth_users_obj_rel_insert_input"] | undefined;
+    referrer_id?: ModelTypes["uuid"] | undefined;
     username?: ModelTypes["citext"] | undefined;
     waitlist_id?: string | undefined;
   };
@@ -11326,6 +11329,7 @@ export type GraphQLTypes = {
       | undefined;
     referrals?: GraphQLTypes["auth_users_arr_rel_insert_input"] | undefined;
     referrer?: GraphQLTypes["auth_users_obj_rel_insert_input"] | undefined;
+    referrer_id?: GraphQLTypes["uuid"] | undefined;
     username?: GraphQLTypes["citext"] | undefined;
     waitlist_id?: string | undefined;
   };

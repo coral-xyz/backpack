@@ -405,6 +405,7 @@ export const AllTypesProps: Record<string, any> = {
     public_keys: "auth_public_keys_arr_rel_insert_input",
     referrals: "auth_users_arr_rel_insert_input",
     referrer: "auth_users_obj_rel_insert_input",
+    referrer_id: "uuid",
     username: "citext",
   },
   auth_users_max_order_by: {
