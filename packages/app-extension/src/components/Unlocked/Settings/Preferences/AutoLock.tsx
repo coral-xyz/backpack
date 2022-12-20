@@ -1,16 +1,12 @@
 import { useEffect, useState } from "react";
-import { UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE } from "@coral-xyz/common";
+import { UI_RPC_METHOD_KEYRING_AUTO_LOCK_SETTINGS_UPDATE } from "@coral-xyz/common";
 import {
   ListItem,
   PrimaryButton,
   SecondaryButton,
   TextInput,
 } from "@coral-xyz/react-common";
-import {
-  useAutoLockOption,
-  useAutoLockSecs,
-  useBackgroundClient,
-} from "@coral-xyz/recoil";
+import { useAutoLockSettings, useBackgroundClient } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { LockClock } from "@mui/icons-material";
 import { Typography } from "@mui/material";
@@ -22,8 +18,8 @@ import { Checkmark } from "./Solana/ConnectionSwitch";
 export function PreferencesAutoLock() {
   const nav = useNavStack();
   const theme = useCustomTheme();
-  const autoLockOption = useAutoLockOption();
-  const autoLockSecs = useAutoLockSecs();
+  const { seconds: autoLockSecs, option: autoLockOption } =
+    useAutoLockSettings();
   const background = useBackgroundClient();
   const [minutes, setMinutes] = useState(autoLockSecs / 60.0);
   const [option, setOption] = useState(autoLockOption);
@@ -41,13 +37,13 @@ export function PreferencesAutoLock() {
     if (!option && minutes > 0) {
       const secs = Math.round(minutes * 60);
       await background.request({
-        method: UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE,
+        method: UI_RPC_METHOD_KEYRING_AUTO_LOCK_SETTINGS_UPDATE,
         params: [secs, undefined],
       });
       nav.pop();
     } else {
       await background.request({
-        method: UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE,
+        method: UI_RPC_METHOD_KEYRING_AUTO_LOCK_SETTINGS_UPDATE,
         params: [undefined, option],
       });
       nav.pop();

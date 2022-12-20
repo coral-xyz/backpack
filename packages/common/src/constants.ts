@@ -110,10 +110,10 @@ export const UI_RPC_METHOD_KEYNAME_READ = "ui-rpc-method-keyname-read";
 export const UI_RPC_METHOD_KEYNAME_UPDATE = "ui-rpc-method-keyname-update";
 export const UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE =
   "ui-rpc-method-keyring-active-wallet-update";
-export const UI_RPC_METHOD_KEYRING_AUTOLOCK_READ =
-  "ui-rpc-method-autolock-read";
-export const UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE =
-  "ui-rpc-method-autolock-update";
+export const UI_RPC_METHOD_KEYRING_AUTO_LOCK_SETTINGS_READ =
+  "ui-rpc-method-auto-lock-settings-read";
+export const UI_RPC_METHOD_KEYRING_AUTO_LOCK_SETTINGS_UPDATE =
+  "ui-rpc-method-auto-lock-settings-update";
 export const UI_RPC_METHOD_KEYRING_DERIVE_WALLET =
   "ui-rpc-method-keyring-derive";
 export const UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC =
@@ -244,10 +244,8 @@ export const UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION =
 
 export const NOTIFICATION_APPROVED_ORIGINS_UPDATE =
   "notification-approved-origins-update";
-export const NOTIFICATION_AUTO_LOCK_OPTION_UPDATED =
-  "notification-auto-lock-option-updated";
-export const NOTIFICATION_AUTO_LOCK_SECS_UPDATED =
-  "notification-auto-lock-secs-updated";
+export const NOTIFICATION_AUTO_LOCK_SETTINGS_UPDATED =
+  "notification-auto-lock-settings-updated";
 export const NOTIFICATION_BLOCKCHAIN_DISABLED =
   "notification-blockchain-disabled";
 export const NOTIFICATION_XNFT_PREFERENCE_UPDATED =

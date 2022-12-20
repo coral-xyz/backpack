@@ -127,23 +127,30 @@ export class KeyringStore {
           // user's preferences and start the countdown timer.
           store
             .getWalletDataForUser(this.activeUserUuid!)
-            .then(({ autoLockSecs, autoLockOption }) => {
-              switch (autoLockOption) {
-                case "never":
-                  shouldLockImmediatelyWhenClosed = false;
-                  secondsUntilAutoLock = undefined;
-                  break;
-                case "onClose":
-                  shouldLockImmediatelyWhenClosed = true;
-                  secondsUntilAutoLock = undefined;
-                  break;
-                default:
-                  shouldLockImmediatelyWhenClosed = false;
-                  secondsUntilAutoLock =
-                    autoLockSecs || store.DEFAULT_LOCK_INTERVAL_SECS;
+            .then(
+              ({
+                autoLockSettings: {
+                  seconds: autoLockSecs,
+                  option: autoLockOption,
+                },
+              }) => {
+                switch (autoLockOption) {
+                  case "never":
+                    shouldLockImmediatelyWhenClosed = false;
+                    secondsUntilAutoLock = undefined;
+                    break;
+                  case "onClose":
+                    shouldLockImmediatelyWhenClosed = true;
+                    secondsUntilAutoLock = undefined;
+                    break;
+                  default:
+                    shouldLockImmediatelyWhenClosed = false;
+                    secondsUntilAutoLock =
+                      autoLockSecs || store.DEFAULT_AUTO_LOCK_INTERVAL_SECS;
+                }
+                startAutoLockCountdownTimer();
               }
-              startAutoLockCountdownTimer();
-            });
+            );
         },
         restart: () => {
           // Reset the countdown timer and start it again.
@@ -351,13 +358,15 @@ export class KeyringStore {
     });
   }
 
-  public async autoLockUpdate(autoLockSecs: number, autoLockOption?) {
+  public async autoLockUpdate(seconds?: number, option?: string) {
     return await this.withUnlock(async () => {
       const data = await store.getWalletDataForUser(this.activeUserUuid!);
       await store.setWalletDataForUser(this.activeUserUuid!, {
         ...data,
-        autoLockSecs,
-        autoLockOption,
+        autoLockSettings: {
+          seconds,
+          option,
+        },
       });
 
       this.autoLockCountdown.start();
@@ -903,7 +912,10 @@ class UserKeyring {
 
 export function defaultPreferences(enabledBlockchains: any): any {
   return {
-    autoLockSecs: store.DEFAULT_LOCK_INTERVAL_SECS,
+    autoLockSettings: {
+      seconds: store.DEFAULT_AUTO_LOCK_INTERVAL_SECS,
+      option: undefined,
+    },
     approvedOrigins: [],
     enabledBlockchains,
     darkMode: DEFAULT_DARK_MODE,

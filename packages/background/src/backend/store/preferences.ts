@@ -1,9 +1,4 @@
 import type { Blockchain } from "@coral-xyz/common";
-import type {
-  autoLockOption,
-  autoLockSecs,
-  ExtractRecoilType,
-} from "@coral-xyz/recoil";
 import type { Commitment } from "@solana/web3.js";
 
 import { LocalStorageDb } from "./db";
@@ -18,8 +13,10 @@ const STORE_KEY_WALLET_DATA = "wallet-data";
 export type WalletData = {
   // Deprecated. Don't use this.
   username?: string;
-  autoLockSecs?: ExtractRecoilType<typeof autoLockSecs>;
-  autoLockOption?: ExtractRecoilType<typeof autoLockOption>;
+  autoLockSettings: {
+    seconds?: number;
+    option?: string;
+  };
   approvedOrigins: Array<string>;
   enabledBlockchains: Array<Blockchain>;
   darkMode: boolean;
@@ -56,6 +53,6 @@ function key(uuid: string): string {
   return `${STORE_KEY_WALLET_DATA}_${uuid}`;
 }
 
-export const DEFAULT_LOCK_INTERVAL_SECS = 15 * 60;
+export const DEFAULT_AUTO_LOCK_INTERVAL_SECS = 15 * 60;
 export const DEFAULT_DARK_MODE = false;
 export const DEFAULT_DEVELOPER_MODE = false;
