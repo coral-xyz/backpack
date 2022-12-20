@@ -133,5 +133,5 @@ export type ImportedDerivationPath = {
   publicKey: string;
 };
 
-export type SolanaFeeConfig = { computeUnits: number; priorityFee: number };
+export type SolanaFeeConfig = { computeUnits: number; priorityFee: bigint };
 export type FeeConfig = SolanaFeeConfig;
