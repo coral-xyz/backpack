@@ -9,12 +9,16 @@ import {
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
 } from "@coral-xyz/common";
 import {
-List, ListItem ,   NegativeButton,
+  List,
+  ListItem,
+  NegativeButton,
   PrimaryButton,
-ProxyImage,  SecondaryButton,
- TextInput  } from "@coral-xyz/react-common";
+  ProxyImage,
+  SecondaryButton,
+  TextInput,
+} from "@coral-xyz/react-common";
 import {
-  nftMetadata,
+  nftById,
   useAnchorContext,
   useBackgroundClient,
   useDecodedSearchParams,
@@ -32,6 +36,7 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { IconButton, Popover, Typography } from "@mui/material";
 import { PublicKey } from "@solana/web3.js";
 import { BigNumber } from "ethers";
+import { useRecoilValueLoadable } from "recoil";
 
 import { ApproveTransactionDrawer } from "../../common/ApproveTransactionDrawer";
 import {
@@ -54,12 +59,12 @@ import { SendSolanaConfirmationCard } from "../Balances/TokensWidget/Solana";
 const logger = getLogger("app-extension/nft-detail");
 
 export function NftsDetail({ nftId }: { nftId: string }) {
-  const [nfts] = useLoader(nftMetadata, new Map());
-  const nft = nfts.get(nftId);
+  const { contents, state } = useRecoilValueLoadable(nftById(nftId));
+  const nft = (state === "hasValue" && contents) || null;
 
   // Hack: needed because this is undefined due to framer-motion animation.
   if (!nftId) {
-    return <></>;
+    return null;
   }
 
   // TODO: this is hit when the NFT has been transferred out and
@@ -68,7 +73,7 @@ export function NftsDetail({ nftId }: { nftId: string }) {
   //
   //       Should probably just pop the stack here or redirect.
   if (!nft) {
-    return <></>;
+    return null;
   }
 
   return (
@@ -373,7 +378,6 @@ export function NftOptionsButton() {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [openDrawer, setOpenDrawer] = useState(false);
   const searchParams = useDecodedSearchParams();
-  const [nfts] = useLoader(nftMetadata, new Map());
   const [wasBurnt, setWasBurnt] = useState(false);
 
   useEffect(() => {
@@ -391,9 +395,12 @@ export function NftOptionsButton() {
   }, [openDrawer, wasBurnt, background]);
 
   // @ts-ignore
-  const nft: any = nfts.get(searchParams.props.nftId);
+  const nftId: string = searchParams.props.nftId;
+  const { contents, state } = useRecoilValueLoadable(nftById(nftId));
+  const nft = (state === "hasValue" && contents) || null;
 
-  const isEthereum = nft && nft.contractAddress;
+  // @ts-ignore
+  const isEthereum: boolean = nft && nft.contractAddress;
 
   const explorer = isEthereum ? useEthereumExplorer() : useSolanaExplorer();
 
