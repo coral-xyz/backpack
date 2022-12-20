@@ -1,10 +1,6 @@
 const projectID = "55bf074d-0473-4e61-9d9d-ecf570704635";
 const packageName = "peterpme.coral.backpack";
 
-const WEBWORKER_URL =
-  "https://coral-xyz.github.io/backpack/background-scripts/e4e357a7/service-worker-loader.html";
-// process.env.WEBWORKER_URL;
-
 export default {
   name: "Backpack",
   slug: "backpack",
@@ -44,7 +40,7 @@ export default {
     favicon: "./assets/favicon.png",
   },
   extra: {
-    url: WEBWORKER_URL,
+    url: "http://localhost:9333",
     eas: {
       projectId: projectID,
     },
