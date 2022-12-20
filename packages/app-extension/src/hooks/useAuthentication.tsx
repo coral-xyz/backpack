@@ -56,7 +56,7 @@ export const useAuthentication = () => {
    */
   const checkAuthentication = async (
     username: string,
-    jwt: string
+    jwt?: string
   ): Promise<
     | {
         id: string;
