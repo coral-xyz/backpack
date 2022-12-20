@@ -142,10 +142,11 @@ function MessagesNative() {
   const isDarkMode = useDarkMode();
   const { uuid, username } = useUser();
   const { props } = useDecodedSearchParams<any>();
-  const { push } = useNavigation();
+  const { push, pop } = useNavigation();
 
   useEffect(() => {
     ParentCommunicationManager.getInstance().setNativePush(push);
+    ParentCommunicationManager.getInstance().setNativePop(pop);
   }, []);
 
   if (hash.startsWith("/messages/chat")) {

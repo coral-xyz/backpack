@@ -67,6 +67,7 @@ export const ChatScreen = ({
         requested={friendshipValue.requested}
         remoteUserId={userId}
         blocked={friendshipValue.blocked}
+        remoteRequested={friendshipValue.remoteRequested}
         spam={friendshipValue.spam}
         setRequested={(updatedValue: boolean) =>
           setFriendshipValue((x: any) => ({

@@ -23,6 +23,7 @@ interface ChatRoomProps {
   setBlocked?: any;
   isDarkMode: boolean;
   jwt: string;
+  remoteRequested: boolean;
 }
 
 export const ChatRoom = ({
@@ -110,6 +111,7 @@ export const ChatRoom = ({
       username={username}
       areFriends={areFriends}
       requested={requested}
+      remoteRequested={remoteRequested}
       remoteUserId={remoteUserId || ""}
       type={type}
       spam={spam}

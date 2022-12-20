@@ -32,6 +32,7 @@ export const useStyles = styles((theme) => ({
   container: {
     marginLeft: "16px",
     marginRight: "16px",
+    height: "100%",
   },
   roundBtn: {
     marginLeft: 8,

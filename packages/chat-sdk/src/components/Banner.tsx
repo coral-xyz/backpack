@@ -15,6 +15,7 @@ export const Banner = () => {
     blocked,
     setRequested,
     setSpam,
+    remoteRequested,
   } = useChatContext();
   const classes = useStyles();
 
@@ -65,7 +66,9 @@ export const Banner = () => {
                 setRequested(true);
               }}
             >
-              Send Friend Request
+              {remoteRequested
+                ? "Accept Contact Request"
+                : "Send Contact Request"}
             </div>
           )}
           <div
@@ -82,7 +85,7 @@ export const Banner = () => {
               setSpam(true);
             }}
           >
-            Mark as spam
+            Mark as Spam
           </div>
           <br />
         </div>

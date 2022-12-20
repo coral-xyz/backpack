@@ -20,6 +20,7 @@ type ChatContext = {
   username: string;
   areFriends: boolean;
   requested: boolean;
+  remoteRequested: boolean;
   remoteUserId: string;
   type: SubscriptionType;
   blocked?: boolean;
@@ -50,6 +51,7 @@ export function ChatProvider(props: {
   username: string;
   areFriends: boolean;
   requested: boolean;
+  remoteRequested: boolean;
   remoteUserId: string;
   type: SubscriptionType;
   blocked?: boolean;
@@ -81,6 +83,7 @@ export function ChatProvider(props: {
         setSpam: props.setSpam,
         setBlocked: props.setBlocked,
         isDarkMode: props.isDarkMode,
+        remoteRequested: props.remoteRequested,
       }}
     >
       {props.children}
