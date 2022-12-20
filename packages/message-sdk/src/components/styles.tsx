@@ -89,7 +89,6 @@ export const useStyles = styles((theme) => ({
   },
   timestamp: {
     fontSize: 14,
-    minWidth: 60,
     color: theme.custom.colors.fontColor2,
   },
   smallTitle: {

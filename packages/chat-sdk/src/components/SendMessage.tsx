@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme: any) =>
       color: theme.custom.colors.fontColor2,
     },
     icon: {
-      color: theme.custom.colors.fontColor2,
+      color: theme.custom.colors.icon,
     },
     textInputRoot: {
       color: theme.custom.colors.fontColor2,
@@ -94,6 +94,8 @@ export const SendMessage = ({ messageRef }: any) => {
     activeReply,
     setActiveReply,
     isDarkMode,
+    type,
+    remoteUsername,
   } = useChatContext();
 
   const sendMessage = (messageTxt, messageKind: "text" | "gif" = "text") => {
@@ -183,7 +185,11 @@ export const SendMessage = ({ messageRef }: any) => {
             ? classes.textFieldInputColor
             : classes.textFieldInputColorEmpty
         }`}
-        placeholder={"Your message..."}
+        placeholder={
+          type === "individual"
+            ? `Message @${remoteUsername}`
+            : "Your message ..."
+        }
         value={messageContent}
         id="standard-text"
         InputProps={{

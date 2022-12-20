@@ -103,7 +103,7 @@ export function ChatListItem({
         paddingLeft: "16px",
         paddingRight: "16px",
         display: "flex",
-        height: "80px",
+        height: "72px",
         backgroundColor: isUnread
           ? theme.custom.colors.unreadBackground
           : theme.custom.colors.nav,

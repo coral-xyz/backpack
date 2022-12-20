@@ -1,13 +1,8 @@
-import type {
-  FromServer,
-  ToServer} from "@coral-xyz/common";
-import {
-  CHAT_MESSAGES,
-  WS_READY,
-} from "@coral-xyz/common";
+import type { FromServer, ToServer } from "@coral-xyz/common";
+import { CHAT_MESSAGES, WS_READY } from "@coral-xyz/common";
 import EventEmitter from "eventemitter3";
 
-import { SERVER_HTTP_URL, SERVER_URL } from "./config";
+import { SERVER_URL } from "./config";
 
 export const SIGNALING_CONNECTED = "SIGNALING_CONNECTED";
 

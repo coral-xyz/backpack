@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 import { ChatRoom } from "@coral-xyz/chat-sdk";
-import { BACKEND_API_URL, REALTIME_API_URL } from "@coral-xyz/common";
+import type {
+  Friendship} from "@coral-xyz/common";
+import {
+  BACKEND_API_URL,
+  REALTIME_API_URL,
+} from "@coral-xyz/common";
+import { friendship, useFriendship } from "@coral-xyz/recoil";
+import { useRecoilState } from "recoil";
 
 import { ParentCommunicationManager } from "../ParentCommunicationManager";
 
@@ -15,27 +22,10 @@ export const ChatScreen = ({
   uuid: string;
   username: string;
 }) => {
-  const [friendshipValue, setFriendshipValue] = useState<any>();
-  const [jwt, setJwt] = useState("");
+  const [friendshipValue, setFriendshipValue] =
+    useRecoilState<Friendship | null>(friendship({ userId }));
 
-  const fetchFriendship = async () => {
-    const res = await ParentCommunicationManager.getInstance().fetch(
-      `${BACKEND_API_URL}/inbox`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ to: userId }),
-      }
-    );
-    const json = await res.json();
-    setFriendshipValue({
-      id: json.friendshipId,
-      areFriends: json.areFriends,
-      blocked: json.blocked,
-      requested: json.requested,
-      spam: json.spam,
-    });
-  };
+  const [jwt, setJwt] = useState("");
 
   const fetchJwt = async () => {
     const res = await ParentCommunicationManager.getInstance().fetch(
@@ -46,7 +36,6 @@ export const ChatScreen = ({
   };
 
   useEffect(() => {
-    fetchFriendship();
     fetchJwt();
   }, []);
 
@@ -60,7 +49,8 @@ export const ChatScreen = ({
       <ChatRoom
         jwt={jwt}
         type={"individual"}
-        username={username || ""}
+        remoteUsername={username}
+        username={""}
         roomId={friendshipValue.id}
         userId={uuid}
         areFriends={friendshipValue.areFriends}

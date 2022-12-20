@@ -13,23 +13,25 @@ interface ChatRoomProps {
   mode?: "fullscreen" | "minimized";
   type: SubscriptionType;
   username: string;
+  remoteUsername?: string;
   areFriends?: boolean;
   requested?: boolean;
   remoteUserId?: string;
   blocked?: boolean;
+  remoteRequested?: boolean;
   spam?: boolean;
   setRequested?: any;
   setSpam?: any;
   setBlocked?: any;
   isDarkMode: boolean;
   jwt: string;
-  remoteRequested: boolean;
 }
 
 export const ChatRoom = ({
   roomId,
   userId,
   username,
+  remoteUsername,
   type = "collection",
   mode = "fullscreen",
   areFriends = true,
@@ -42,6 +44,7 @@ export const ChatRoom = ({
   setBlocked,
   isDarkMode,
   jwt,
+  remoteRequested = false,
 }: ChatRoomProps) => {
   const [chatManager, setChatManager] = useState<ChatManager | null>(null);
   // TODO: Make state propogte from outside the state since this'll be expensive
@@ -120,6 +123,7 @@ export const ChatRoom = ({
       setSpam={setSpam}
       setBlocked={setBlocked}
       isDarkMode={isDarkMode}
+      remoteUsername={remoteUsername}
     >
       <FullScreenChat />
     </ChatProvider>

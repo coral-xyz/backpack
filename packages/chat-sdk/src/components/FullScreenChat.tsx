@@ -38,6 +38,9 @@ export const FullScreenChat = () => {
   useEffect(() => {
     if (messageRef.current && autoScroll) {
       messageRef.current.scrollTop = messageRef.current.scrollHeight;
+      setTimeout(() => {
+        messageRef.current.scrollTop = messageRef.current.scrollHeight;
+      }, 500);
     }
   }, [chats, autoScroll]);
 

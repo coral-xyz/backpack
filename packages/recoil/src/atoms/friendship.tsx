@@ -25,6 +25,7 @@ export const friendship = atomFamily<Friendship | null, { userId: string }>({
             blocked: json.blocked,
             requested: json.requested,
             spam: json.spam,
+            remoteRequested: json.remoteRequested,
           };
         } catch (e) {
           return null;

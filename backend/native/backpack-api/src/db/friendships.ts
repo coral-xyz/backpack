@@ -141,14 +141,14 @@ export const getFriendships = async ({
           are_friends: { _eq: false },
           user1_interacted: { _eq: false },
           user1_blocked_user2: { _eq: false },
-          last_message: { _neq: null },
+          user2_interacted: { _eq: true },
         },
         {
           user2: { _eq: uuid },
           are_friends: { _eq: false },
           user2_interacted: { _eq: false },
           user2_blocked_user1: { _eq: false },
-          last_message: { _neq: null },
+          user1_interacted: { _eq: true },
         },
       ],
     };
@@ -295,11 +295,25 @@ export async function setFriendship({
   to: string;
   sendRequest: boolean;
 }) {
-  if (!sendRequest) {
-    return deleteFriendRequest({ from, to });
-  }
-
   const { user1, user2 } = getSortedUsers(from, to);
+  if (!sendRequest) {
+    await chain("mutation")({
+      update_auth_friendships: [
+        {
+          _set: {
+            are_friends: false,
+          },
+          where: {
+            user1: { _eq: user1 },
+            user2: { _eq: user2 },
+          },
+        },
+        { affected_rows: true },
+      ],
+    });
+    await deleteFriendRequest({ from, to });
+    return;
+  }
 
   const existingFriendship = await chain("query")({
     auth_friendships: [

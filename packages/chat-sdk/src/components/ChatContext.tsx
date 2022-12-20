@@ -29,6 +29,7 @@ type ChatContext = {
   setSpam?: any;
   setBlocked?: any;
   isDarkMode: boolean;
+  remoteUsername?: string;
 };
 
 export const _ChatContext = React.createContext<ChatContext | null>(null);
@@ -60,6 +61,7 @@ export function ChatProvider(props: {
   setSpam?: any;
   setBlocked?: any;
   isDarkMode: boolean;
+  remoteUsername?: string;
 }) {
   return (
     <_ChatContext.Provider
@@ -84,6 +86,7 @@ export function ChatProvider(props: {
         setBlocked: props.setBlocked,
         isDarkMode: props.isDarkMode,
         remoteRequested: props.remoteRequested,
+        remoteUsername: props.remoteUsername,
       }}
     >
       {props.children}

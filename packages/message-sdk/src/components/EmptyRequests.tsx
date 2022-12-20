@@ -1,7 +1,6 @@
 import { EmptyState } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 
 import { ParentCommunicationManager } from "../ParentCommunicationManager";
 
