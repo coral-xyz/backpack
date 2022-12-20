@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import express from "express";
 
-import { clearCookie, setCookie } from "../../auth/util";
+import { clearCookie, setJWTCookie } from "../../auth/util";
 import { getUser } from "../../db/users";
 import { validateSignature } from "../../validation/signature";
 
@@ -45,7 +45,7 @@ router.post("/", async (req, res) => {
     return res.status(403).json({ msg: "invalid user id" });
   }
 
-  const jwt = await setCookie(req, res, user.id as string);
+  const jwt = await setJWTCookie(req, res, user.id as string);
 
   return res.json({ ...user, jwt });
 });

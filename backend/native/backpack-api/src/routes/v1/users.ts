@@ -5,7 +5,7 @@ import express from "express";
 import jwt from "jsonwebtoken";
 
 import { extractUserId, optionallyExtractUserId } from "../../auth/middleware";
-import { setCookie } from "../../auth/util";
+import { setJWTCookie } from "../../auth/util";
 import {
   createUser,
   createUserPublicKey,
@@ -107,7 +107,7 @@ router.post("/", async (req, res) => {
 
   let jwt: string;
   if (user) {
-    jwt = await setCookie(req, res, user.id as string);
+    jwt = await setJWTCookie(req, res, user.id as string);
   } else {
     return res.status(500).json({ msg: "Error creating user account" });
   }
