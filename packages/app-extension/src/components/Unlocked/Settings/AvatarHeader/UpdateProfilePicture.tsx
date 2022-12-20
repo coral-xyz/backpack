@@ -2,12 +2,11 @@ import { useState } from "react";
 import type { Blockchain, Nft, NftCollection } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import {
-  ImageIcon,
+ EmptyState,  ImageIcon,
   Loading,
   PrimaryButton,
   ProxyImage,
-  SecondaryButton,
-} from "@coral-xyz/react-common";
+  SecondaryButton } from "@coral-xyz/react-common";
 import {
   newAvatarAtom,
   nftCollections,
@@ -21,7 +20,6 @@ import Collapse from "@mui/material/Collapse";
 import Typography from "@mui/material/Typography";
 import { useRecoilValueLoadable, useSetRecoilState } from "recoil";
 
-import { EmptyState } from "../../../common/EmptyState";
 import { Scrollbar } from "../../../common/Layout/Scrollbar";
 
 import { BlockchainHeader } from "./BlockchainHeader";

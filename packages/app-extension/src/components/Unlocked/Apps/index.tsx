@@ -4,7 +4,7 @@ import {
   TAB_APPS,
   UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
 } from "@coral-xyz/common";
-import { ProxyImage } from "@coral-xyz/react-common";
+import { EmptyState,ProxyImage  } from "@coral-xyz/react-common";
 import {
   filteredPlugins,
   useActiveWallets,
@@ -17,8 +17,6 @@ import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import { Block as BlockIcon } from "@mui/icons-material";
 import { Button, Grid, Skeleton, Typography } from "@mui/material";
 import { getSvgPath } from "figma-squircle";
-
-import { EmptyState } from "../../common/EmptyState";
 
 const ICON_WIDTH = 64;
 

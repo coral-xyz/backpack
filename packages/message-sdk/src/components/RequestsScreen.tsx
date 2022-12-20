@@ -30,7 +30,7 @@ export const RequestsScreen = () => {
     <div className={classes.container}>
       <br />
       <div
-        className={classes.smallTitle}
+        className={classes.smallTitle2}
         style={{
           display: "flex",
           justifyContent: "center",
@@ -45,6 +45,7 @@ export const RequestsScreen = () => {
       {!messagesLoading && activeChats.length !== 0 && (
         <MessageList activeChats={activeChats} />
       )}
+      {!messagesLoading && activeChats.length === 0 && <div></div>}
     </div>
   );
 };

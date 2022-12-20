@@ -1,12 +1,14 @@
 import { Suspense, useEffect, useState } from "react";
 import type { EnrichedNotification } from "@coral-xyz/common";
-import { isFirstLastListItemStyle, Loading , ProxyImage } from "@coral-xyz/react-common";
+import {
+ EmptyState,  isFirstLastListItemStyle,
+  Loading,
+  ProxyImage } from "@coral-xyz/react-common";
 import { useRecentNotifications } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { IconButton, List, ListItem, Typography } from "@mui/material";
 
-import { EmptyState } from "../../common/EmptyState";
 import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
 import {
   NavStackEphemeral,

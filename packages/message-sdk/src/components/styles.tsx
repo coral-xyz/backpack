@@ -95,6 +95,11 @@ export const useStyles = styles((theme) => ({
     color: theme.custom.colors.smallTextColor,
     fontWeight: 600,
   },
+  smallTitle2: {
+    color: theme.custom.colors.smallTextColor,
+    fontWeight: 500,
+    fontSize: 16,
+  },
   smallSubTitle: {
     color: theme.custom.colors.smallTextColor,
     fontWeight: 500,

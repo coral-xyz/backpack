@@ -1,4 +1,5 @@
 export * from "./DangerButton";
+export * from "./EmptyState";
 export * from "./Inputs";
 export * from "./List";
 export * from "./Loading";
