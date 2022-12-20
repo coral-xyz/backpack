@@ -6,7 +6,6 @@ import type {
   FEATURE_GATES_MAP,
   KeyringInit,
   KeyringType,
-  SolanaFeeConfig,
   XnftPreference,
 } from "@coral-xyz/common";
 import {
@@ -15,7 +14,6 @@ import {
   BACKPACK_FEATURE_JWT,
   BACKPACK_FEATURE_USERNAMES,
   Blockchain,
-  deserializeLegacyTransaction,
   deserializeTransaction,
   EthereumConnectionUrl,
   EthereumExplorer,
@@ -63,11 +61,9 @@ import type {
   SimulateTransactionConfig,
 } from "@solana/web3.js";
 import {
-  ComputeBudgetProgram,
   PublicKey,
   Transaction,
   TransactionInstruction,
-  VersionedTransaction,
 } from "@solana/web3.js";
 import { validateMnemonic as _validateMnemonic } from "bip39";
 import { ethers } from "ethers";
