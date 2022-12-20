@@ -5,7 +5,8 @@ import express from "express";
 import jwt from "jsonwebtoken";
 
 import { extractUserId, optionallyExtractUserId } from "../../auth/middleware";
-import { setJWTCookie } from "../../auth/util";
+import { clearCookie, setJWTCookie } from "../../auth/util";
+import { REFERRER_COOKIE_NAME } from "../../config";
 import {
   createUser,
   createUserPublicKey,
@@ -143,6 +144,8 @@ router.post("/", async (req, res) => {
       console.error({ slackWebhook: err });
     }
   }
+
+  clearCookie(res, REFERRER_COOKIE_NAME);
 
   return res.json({ id: user.id, msg: "ok", jwt });
 });

@@ -1,6 +1,7 @@
 import express from "express";
 
 import { setCookieOnResponse } from "../../auth/util";
+import { CHROME_STORE_URL, REFERRER_COOKIE_NAME } from "../../config";
 import { getUserByUsername } from "../../db/users";
 
 const router = express.Router();
@@ -11,10 +12,8 @@ const router = express.Router();
  */
 router.get("/:username", async (req, res) => {
   const user = await getUserByUsername(req.params.username);
-  setCookieOnResponse(req, res, "referrer", String(user.id));
-  return res.redirect(
-    "https://chrome.google.com/webstore/detail/backpack/aflkmfhebedbjioipglgcbcmnbpgliof"
-  );
+  setCookieOnResponse(req, res, REFERRER_COOKIE_NAME, String(user.id));
+  return res.redirect(CHROME_STORE_URL);
 });
 
 export default router;
