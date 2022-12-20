@@ -248,7 +248,7 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
     disabled: boolean;
   }>({
     config: {
-      priorityFee: 0,
+      priorityFee: BigInt(0),
       computeUnits: 100000,
     },
     disabled: false,
@@ -301,7 +301,7 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
                 ...x,
                 config: {
                   ...x.config,
-                  priorityFee: decodedParams.microLamports,
+                  priorityFee: BigInt(decodedParams.microLamports),
                 },
                 disabled: true,
               }));
