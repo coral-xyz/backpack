@@ -103,9 +103,11 @@ export function WalletAddress({ publicKey, name, style, nameStyle }: any) {
       <Typography style={{ ...nameStyle, marginRight: "8px" }}>
         {name}
       </Typography>
-      <Typography style={{ color: theme.custom.colors.secondary }}>
-        ({walletAddressDisplay(publicKey)})
-      </Typography>
+      {publicKey && (
+        <Typography style={{ color: theme.custom.colors.secondary }}>
+          ({walletAddressDisplay(publicKey)})
+        </Typography>
+      )}
     </div>
   );
 }

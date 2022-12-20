@@ -8,7 +8,7 @@ import {
   StyledTextInput,
   SubtextParagraph,
 } from "@components";
-import { Field } from "@components/Form";
+import { InputField } from "@components/Form";
 import { UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY } from "@coral-xyz/common";
 import { useBackgroundClient, useWalletPublicKeys } from "@coral-xyz/recoil";
 import { validateSecretKey } from "@lib/validateSecretKey";
@@ -63,7 +63,7 @@ export function ImportPrivateKeyScreen({ route }) {
             device.
           </SubtextParagraph>
         </Margin>
-        <Field label="Wallet Name" hasError={hasError("name")}>
+        <InputField label="Wallet Name" hasError={hasError("name")}>
           <Controller
             name="name"
             control={control}
@@ -81,8 +81,8 @@ export function ImportPrivateKeyScreen({ route }) {
               />
             )}
           />
-        </Field>
-        <Field label="Private Key" hasError={hasError("privateKey")}>
+        </InputField>
+        <InputField label="Private Key" hasError={hasError("privateKey")}>
           <Controller
             name="privateKey"
             control={control}
@@ -100,7 +100,7 @@ export function ImportPrivateKeyScreen({ route }) {
               />
             )}
           />
-        </Field>
+        </InputField>
       </View>
       <PrimaryButton
         onPress={handleSubmit(onSubmit)}

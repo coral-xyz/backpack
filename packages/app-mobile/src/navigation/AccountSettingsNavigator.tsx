@@ -229,7 +229,6 @@ export default function AccountSettingsNavigator() {
 function PreferencesSolanaCustomRpcUrl({ navigation }) {
   const background = useBackgroundClient();
   const [rpcUrl, setRpcUrl] = useState("");
-
   const [rpcUrlError, setRpcUrlError] = useState(false);
 
   const changeNetwork = () => {
@@ -610,6 +609,7 @@ function PreferencesEthereum({ route, navigation }) {
 }
 
 function PreferencesBlockchain({ blockchain }: { blockchain: Blockchain }) {
+  const [error, setError] = useState<string | null>(null);
   const background = useBackgroundClient();
   const enabledBlockchains = useEnabledBlockchains();
   const keyringType = useKeyringType();
@@ -648,11 +648,17 @@ function PreferencesBlockchain({ blockchain }: { blockchain: Blockchain }) {
         } else {
           // Mnemonic based keyring. This is the simple case because we don't
           // need to prompt for the user to open their Ledger app to get the
-          // required public key.
-          await background.request({
-            method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
-            params: [blockchain, DerivationPath.Default, 0, undefined],
-          });
+          // required public key. We also don't need a signature to prove
+          // ownership of the public key because that can't be done
+          // transparently by the backend.
+          try {
+            await background.request({
+              method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
+              params: [blockchain, DerivationPath.Default, 0],
+            });
+          } catch (error) {
+            setError("Wallet address is used by another Backpack account.");
+          }
         }
       } else {
         // Keyring exists for blockchain, just enable it
@@ -665,10 +671,13 @@ function PreferencesBlockchain({ blockchain }: { blockchain: Blockchain }) {
   };
 
   return (
-    <SettingsRowSwitch
-      onPress={(value: boolean) => _onPress(value)}
-      label="Enable Blockchain"
-      value={isEnabled}
-    />
+    <>
+      <SettingsRowSwitch
+        onPress={(value: boolean) => _onPress(value)}
+        label="Enable Blockchain"
+        value={isEnabled}
+      />
+      {error}
+    </>
   );
 }

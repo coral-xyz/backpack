@@ -13,6 +13,7 @@ import {
   getUser,
   getUserByUsername,
   getUsersByPrefix,
+  getUsersByPublicKeys,
   updateUserAvatar,
 } from "../../db/users";
 import { getOrcreateXnftSecret } from "../../db/xnftSecrets";
@@ -79,27 +80,30 @@ router.post("/", async (req, res) => {
     }
   }
 
-  let user;
-  try {
-    user = await createUser(
-      username,
-      blockchainPublicKeys.map((b) => ({
-        ...b,
-        // Cast blockchain to correct type
-        blockchain: b.blockchain as Blockchain,
-      })),
-      inviteCode,
-      waitlistId
-    );
-  } catch (error) {
-    for (const _error of error.response.errors) {
-      if (_error.extensions.code === "constraint-violation") {
-        return res
-          .status(409)
-          .json({ msg: "Wallet address is used by another Backpack account" });
-      }
-    }
+  // Check for conflicts
+  const conflictingUsers = await getUsersByPublicKeys(
+    blockchainPublicKeys.map((b) => ({
+      blockchain: b.blockchain as Blockchain,
+      publicKey: b.publicKey,
+    }))
+  );
+  if (conflictingUsers.length > 0) {
+    // Another user already uses this public key
+    return res.status(409).json({
+      msg: "Wallet address is used by another Backpack account",
+    });
   }
+
+  const user = await createUser(
+    username,
+    blockchainPublicKeys.map((b) => ({
+      ...b,
+      // Cast blockchain to correct type
+      blockchain: b.blockchain as Blockchain,
+    })),
+    inviteCode,
+    waitlistId
+  );
 
   let jwt: string;
   if (user) {
@@ -234,21 +238,27 @@ router.post(
       return res.status(400).json({ msg: `Invalid signature` });
     }
 
-    try {
-      await createUserPublicKey({
-        userId: req.id!,
-        blockchain: blockchain as Blockchain,
-        publicKey,
-      });
-    } catch (error) {
-      for (const _error of error.response.errors) {
-        if (_error.extensions.code === "constraint-violation") {
-          return res.status(409).json({
-            msg: "Wallet address is used by another Backpack account",
-          });
-        }
+    const conflictingUsers = await getUsersByPublicKeys([
+      { blockchain: blockchain as Blockchain, publicKey },
+    ]);
+    if (conflictingUsers.length > 0) {
+      if (conflictingUsers[0].user_id === req.id) {
+        // User already has the public key added, not a real conflict and
+        // nothing to do
+        return res.status(204).end();
+      } else {
+        // A proper conflict
+        return res.status(409).json({
+          msg: "Wallet address is used by another Backpack account",
+        });
       }
     }
+
+    await createUserPublicKey({
+      userId: req.id!,
+      blockchain: blockchain as Blockchain,
+      publicKey,
+    });
 
     return res.status(201).end();
   }

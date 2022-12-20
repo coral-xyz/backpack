@@ -1,6 +1,9 @@
 import { Controller } from "react-hook-form";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import type { StyleProp, ViewStyle } from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { useTheme } from "@hooks";
+import type { BigNumber } from "ethers";
+import { ethers } from "ethers";
 
 // Wraps multiple components in one singular input group with a shared border
 export function InputGroup({
@@ -107,27 +110,138 @@ const styles = StyleSheet.create({
 });
 
 // Simple label with a text input
-export function Field({
-  label,
+export function InputField({
+  leftLabel,
+  rightLabel,
+  rightLabelComponent,
   children,
   hasError,
 }: {
-  label: string;
+  leftLabel: string;
+  rightLabel?: string;
+  rightLabelComponent?: JSX.Element;
   children: JSX.Element;
   hasError?: boolean;
 }): JSX.Element {
-  const theme = useTheme();
   return (
     <View style={{ marginBottom: 24 }}>
-      <Text
-        style={[
-          { fontSize: 16, fontWeight: "500", marginBottom: 8 },
-          { color: theme.custom.colors.fontColor },
-        ]}
-      >
-        {label}
-      </Text>
+      <InputFieldLabel
+        leftLabel={leftLabel}
+        rightLabel={rightLabel}
+        rightLabelComponent={rightLabelComponent}
+      />
       <View>{children}</View>
     </View>
   );
 }
+
+export function InputFieldLabel({
+  leftLabel,
+  rightLabel,
+  rightLabelComponent,
+  style,
+}: {
+  leftLabel: string;
+  rightLabel?: string;
+  rightLabelComponent?: JSX.Element;
+  style?: StyleProp<ViewStyle>;
+}): JSX.Element {
+  const theme = useTheme();
+  return (
+    <View style={[inputFieldLabelStyles.container, style]}>
+      <Text
+        style={[
+          inputFieldLabelStyles.leftLabel,
+          {
+            color: theme.custom.colors.fontColor,
+          },
+        ]}
+      >
+        {leftLabel}
+      </Text>
+      {rightLabelComponent ? (
+        rightLabelComponent
+      ) : (
+        <Text
+          style={[
+            inputFieldLabelStyles.rightLabel,
+            {
+              color: theme.custom.colors.interactiveIconsActive,
+            },
+          ]}
+        >
+          {rightLabel}
+        </Text>
+      )}
+    </View>
+  );
+}
+
+const inputFieldLabelStyles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
+  leftLabel: {
+    fontSize: 16,
+    lineHeight: 16,
+    fontWeight: "500",
+  },
+  rightLabel: {
+    fontWeight: "500",
+    fontSize: 12,
+    lineHeight: 16,
+  },
+});
+
+export const InputFieldMaxLabel = ({
+  amount,
+  onSetAmount,
+  decimals,
+}: {
+  amount: BigNumber | null;
+  onSetAmount: (amount: BigNumber) => void;
+  decimals: number;
+}) => {
+  const theme = useTheme();
+  return (
+    <Pressable
+      style={inputFieldMaxLabelStyles.container}
+      onPress={() => amount && onSetAmount(amount)}
+    >
+      <Text
+        style={[
+          inputFieldMaxLabelStyles.label,
+          { color: theme.custom.colors.secondary },
+        ]}
+      >
+        Max:{" "}
+      </Text>
+      <Text
+        style={[
+          inputFieldMaxLabelStyles.label,
+          {
+            color: theme.custom.colors.fontColor,
+          },
+        ]}
+      >
+        {amount !== null ? ethers.utils.formatUnits(amount, decimals) : "-"}
+      </Text>
+    </Pressable>
+  );
+};
+
+const inputFieldMaxLabelStyles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+  },
+  label: {
+    fontWeight: "500",
+    fontSize: 12,
+    lineHeight: 16,
+  },
+});

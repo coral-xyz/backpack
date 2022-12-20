@@ -6,6 +6,7 @@ import type {
   FEATURE_GATES_MAP,
   KeyringInit,
   KeyringType,
+  SolanaFeeConfig,
   XnftPreference,
 } from "@coral-xyz/common";
 import {
@@ -14,6 +15,7 @@ import {
   BACKPACK_FEATURE_JWT,
   BACKPACK_FEATURE_USERNAMES,
   Blockchain,
+  deserializeLegacyTransaction,
   deserializeTransaction,
   EthereumConnectionUrl,
   EthereumExplorer,
@@ -61,9 +63,11 @@ import type {
   SimulateTransactionConfig,
 } from "@solana/web3.js";
 import {
+  ComputeBudgetProgram,
   PublicKey,
   Transaction,
   TransactionInstruction,
+  VersionedTransaction,
 } from "@solana/web3.js";
 import { validateMnemonic as _validateMnemonic } from "bip39";
 import { ethers } from "ethers";
@@ -152,14 +156,18 @@ export class Backend {
     txStr: string,
     walletAddress: string
   ): Promise<string> {
-    const tx = deserializeTransaction(txStr);
+    let tx = deserializeTransaction(txStr);
     const message = tx.message.serialize();
     const txMessage = bs58.encode(message);
     const blockchainKeyring =
       this.keyringStore.activeUserKeyring.keyringForBlockchain(
         Blockchain.SOLANA
       );
-    return await blockchainKeyring.signTransaction(txMessage, walletAddress);
+    const signature = await blockchainKeyring.signTransaction(
+      txMessage,
+      walletAddress
+    );
+    return signature;
   }
 
   async solanaSignMessage(msg: string, walletAddress: string): Promise<string> {
@@ -195,9 +203,8 @@ export class Backend {
     );
   }
 
-  solanaDisconnect() {
-    // todo
-    return SUCCESS_RESPONSE;
+  async disconnect(origin: string): Promise<string> {
+    return await this.approvedOriginsDelete(origin);
   }
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -780,6 +787,12 @@ export class Backend {
     return namedPublicKeys;
   }
 
+  public activeWalletForBlockchain(b: Blockchain): string | undefined {
+    return this.keyringStore.activeUserKeyring
+      .keyringForBlockchain(b)
+      .getActiveWallet();
+  }
+
   private async activeWallets(): Promise<Array<string>> {
     return await this.keyringStore.activeWallets();
   }
@@ -850,7 +863,16 @@ export class Backend {
     const [publicKey, name] = await this.keyringStore.deriveNextKey(blockchain);
 
     if (jwtEnabled) {
-      await this._addPublicKeyToAccount(blockchain, publicKey);
+      try {
+        await this._addPublicKeyToAccount(blockchain, publicKey);
+      } catch (error) {
+        // Something went wrong persisting to server, roll back changes to the
+        // keyring. This is not a complete rollback of state changes, because
+        // the next account index gets incremented. This is the correct behaviour
+        // because it should allow for sensible retries on conflicts.
+        this.keyringKeyDelete(blockchain, publicKey);
+        throw error;
+      }
     }
 
     this.events.emit(BACKEND_EVENT, {
@@ -1006,7 +1028,14 @@ export class Backend {
     );
 
     if (jwtEnabled) {
-      await this._addPublicKeyToAccount(blockchain, publicKey);
+      try {
+        await this._addPublicKeyToAccount(blockchain, publicKey);
+      } catch (error) {
+        // Something went wrong persisting to server, roll back changes to the
+        // keyring.
+        this.keyringKeyDelete(blockchain, publicKey);
+        throw error;
+      }
     }
 
     this.events.emit(BACKEND_EVENT, {
@@ -1070,7 +1099,14 @@ export class Backend {
       publicKey
     );
     if (jwtEnabled) {
-      await this._addPublicKeyToAccount(blockchain, publicKey, signature);
+      try {
+        await this._addPublicKeyToAccount(blockchain, publicKey, signature);
+      } catch (error) {
+        // Something went wrong persisting to server, roll back changes to the
+        // keyring.
+        this.keyringKeyDelete(blockchain, publicKey);
+        throw error;
+      }
     }
     // Set the active wallet to the newly added public key
     await this.activeWalletUpdate(publicKey, blockchain);
@@ -1115,6 +1151,7 @@ export class Backend {
   ) {
     // Persist the newly added public key to the Backpack API
     if (!signature) {
+      // Signature should only be undefined for non hardware wallets
       signature = await this.signMessageForPublicKey(
         blockchain,
         bs58.encode(Buffer.from(getAddMessage(publicKey), "utf-8")),
@@ -1134,13 +1171,6 @@ export class Backend {
     });
 
     if (!response.ok) {
-      // Something went wrong persisting to server, roll back changes to the
-      // keyring. Note that for HD keyrings this is not a complete rollback
-      // of state changes, because the next account index gets incremented.
-      // This is the correct behaviour because it should allow for sensible
-      // retries on conflicts.
-      this.keyringKeyDelete(blockchain, publicKey);
-
       throw new Error((await response.json()).msg);
     }
   }
@@ -1276,14 +1306,24 @@ export class Backend {
     blockchain: Blockchain,
     derivationPath: DerivationPath,
     accountIndex: number,
-    publicKey?: string
+    publicKey?: string,
+    signature?: string
   ): Promise<void> {
-    await this.keyringStore.blockchainKeyringAdd(
+    const newPublicKey = await this.keyringStore.blockchainKeyringAdd(
       blockchain,
       derivationPath,
       accountIndex,
       publicKey
     );
+    if (jwtEnabled) {
+      try {
+        await this._addPublicKeyToAccount(blockchain, newPublicKey, signature);
+      } catch (error) {
+        // Roll back the added blockchain keyring
+        await this.keyringStore.blockchainKeyringRemove(blockchain);
+        throw error;
+      }
+    }
     // Automatically enable the newly added blockchain
     await this.enabledBlockchainsAdd(blockchain);
   }

@@ -41,7 +41,7 @@ export function Inbox() {
 
   return (
     <div className={classes.container}>
-      <div style={{ height: 16 }}></div>
+      <div style={{ height: 8 }}></div>
       <TextInput
         className={classes.searchField}
         placeholder={"Search"}

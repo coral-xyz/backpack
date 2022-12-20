@@ -14,6 +14,7 @@ import {
   useEnabledBlockchains,
   useKeyringType,
 } from "@coral-xyz/recoil";
+import { Typography } from "@mui/material";
 
 import { WithDrawer } from "../../../common/Layout/Drawer";
 import { SettingsList } from "../../../common/Settings/List";
@@ -29,6 +30,7 @@ export function PreferencesBlockchains({
 }) {
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const background = useBackgroundClient();
   const enabledBlockchains = useEnabledBlockchains();
   const keyringType = useKeyringType();
@@ -66,11 +68,17 @@ export function PreferencesBlockchains({
         } else {
           // Mnemonic based keyring. This is the simple case because we don't
           // need to prompt for the user to open their Ledger app to get the
-          // required public key.
-          await background.request({
-            method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
-            params: [blockchain, DerivationPath.Default, 0, undefined],
-          });
+          // required public key. We also don't need a signature to prove
+          // ownership of the public key because that can't be done
+          // transparently by the backend.
+          try {
+            await background.request({
+              method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
+              params: [blockchain, DerivationPath.Default, 0],
+            });
+          } catch (error) {
+            setError("Wallet address is used by another Backpack account.");
+          }
         }
       } else {
         // Keyring exists for blockchain, just enable it
@@ -85,15 +93,20 @@ export function PreferencesBlockchains({
   const handleHardwareOnboardComplete = async (
     result: BlockchainKeyringInit
   ) => {
-    await background.request({
-      method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
-      params: [
-        result.blockchain,
-        result.derivationPath,
-        result.accountIndex,
-        result.publicKey,
-      ],
-    });
+    try {
+      await background.request({
+        method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
+        params: [
+          result.blockchain,
+          result.derivationPath,
+          result.accountIndex,
+          result.publicKey,
+          result.signature,
+        ],
+      });
+    } catch (error) {
+      setError("Wallet address is used by another Backpack account.");
+    }
     setOpenDrawer(false);
   };
 
@@ -118,6 +131,11 @@ export function PreferencesBlockchains({
       >
         <div>
           <SettingsList menuItems={menuItems} />
+          {error && (
+            <Typography style={{ color: "red", margin: "12px 24px" }}>
+              {error}
+            </Typography>
+          )}
         </div>
       </WithCopyTooltip>
       <WithDrawer

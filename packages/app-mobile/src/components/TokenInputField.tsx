@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react";
+import type { TextInputProps } from "react-native";
 import { StyledTextInput } from "@components";
 import type { BigNumber } from "ethers";
 import { ethers } from "ethers";
 
-export function TokenInputField({
+export function StyledTokenTextInput({
   decimals,
-  // value,
-  // setValue,
+  defaultValue,
+  onChangeText,
   ...props
 }: {
   decimals: number;
-  // value: string;
-  // setValue: (amount: BigNumber | null) => void,
+  defaultValue: BigNumber | null;
+  onChangeText: (value: BigNumber | null) => void;
+  props: TextInputProps;
 }) {
   const [focused, setFocused] = useState(false);
   const [inputValue, setInputValue] = useState<string | null>(null);
@@ -21,26 +23,21 @@ export function TokenInputField({
     setInputValue(null);
   }, [focused]);
 
-  // Truncate token input fields to the native decimals of the token to prevent
-  // floats
-  const handleTokenInput = (
-    amount: string,
-    decimals: number,
-    setValue: (amount: BigNumber | null) => void
-  ) => {
+  const handleChangeText = (amount: string) => {
     if (amount !== "") {
       const decimalIndex = amount.indexOf(".");
-      // Restrict the input field to the same amount of decimals as the token
       const truncatedAmount =
         decimalIndex >= 0
           ? amount.substring(0, decimalIndex) +
             amount.substring(decimalIndex, decimalIndex + decimals + 1)
           : amount;
+
       setInputValue(truncatedAmount);
-      setValue(ethers.utils.parseUnits(truncatedAmount, decimals));
+      const v = ethers.utils.parseUnits(truncatedAmount, decimals);
+      onChangeText(v);
     } else {
       setInputValue(null);
-      setValue(null);
+      onChangeText(null);
     }
   };
 
@@ -49,34 +46,19 @@ export function TokenInputField({
   let value;
   if (focused && inputValue) {
     value = inputValue;
-  } else if (props.value) {
-    value = ethers.utils.formatUnits(props.value, decimals);
+  } else if (defaultValue) {
+    value = ethers.utils.formatUnits(defaultValue, decimals);
   } else {
     value = "";
   }
 
   return (
     <StyledTextInput
-      {...props}
-      value={value}
-      // Override default TextField setValue with function to truncate decimal inputs
-      onChangeText={(amount) => {
-        console.log("onChangeText:amount", amount);
-        handleTokenInput(
-          amount,
-          // e.target.value,
-          // e.target.value.replace("-", ""),
-          decimals,
-          props.setValue
-        );
-      }}
+      defaultValue={value}
+      onChangeText={handleChangeText}
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}
-      // inputProps={{
-      //   ...props.inputProps,
-      //   onFocus: () => setFocused(true),
-      //   onBlur: () => setFocused(false),
-      // }}
+      {...props}
     />
   );
 }

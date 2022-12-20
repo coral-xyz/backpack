@@ -1,6 +1,7 @@
 import { Text, View } from "react-native";
 import { NavHeader } from "@components";
 import { IconCloseModal } from "@components/Icon";
+import { toTitleCase } from "@coral-xyz/common";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTheme } from "@hooks";
 import AccountSettingsNavigator from "@navigation/AccountSettingsNavigator";
@@ -16,8 +17,8 @@ import {
 import { NFTCollectiblesNavigator } from "@screens/Unlocked/NftCollectiblesScreen";
 import { RecentActivityScreen } from "@screens/Unlocked/RecentActivityScreen";
 import {
-  SelectSendTokenScreen,
-  SendTokenScreen,
+  SendTokenDetailScreen,
+  SendTokenListScreen,
 } from "@screens/Unlocked/SendTokenScreen";
 
 const Tab = createBottomTabNavigator();
@@ -62,14 +63,16 @@ export default function UnlockedNavigator(): JSX.Element {
         <Stack.Screen
           options={{ title: "Select Token" }}
           name="SendSelectTokenModal"
-          component={SelectSendTokenScreen}
+          component={SendTokenListScreen}
         />
         <Stack.Screen
           name="SendTokenModal"
-          component={SendTokenScreen}
+          component={SendTokenDetailScreen}
           options={({ route }) => {
+            const { blockchain, token } = route.params;
+            const title = `Send ${toTitleCase(blockchain)} / ${token.ticker}`;
             return {
-              title: route.params.title,
+              title,
             };
           }}
         />

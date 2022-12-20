@@ -61,3 +61,24 @@ export function useWalletBlockchain(address: string): string {
   }
   throw new Error("key not found");
 }
+
+export function useAllWalletsPerBlockchain(blockchain: Blockchain) {
+  const keyrings = useWalletPublicKeys();
+  const keyring = keyrings[blockchain]!;
+  return keyring.hdPublicKeys
+    .map((k: any) => ({ ...k, blockchain, type: "derived" }))
+    .concat(
+      keyring.importedPublicKeys.map((k: any) => ({
+        ...k,
+        type: "imported",
+        blockchain,
+      }))
+    )
+    .concat(
+      keyring.ledgerPublicKeys.map((k: any) => ({
+        ...k,
+        blockchain,
+        type: "hardware",
+      }))
+    );
+}

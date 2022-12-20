@@ -27,6 +27,7 @@ export const UserList = ({
     >
       {users.map((user, index) => (
         <UserListItem
+          key={user.id}
           user={user}
           isFirst={index === 0}
           isLast={index === users.length - 1}
