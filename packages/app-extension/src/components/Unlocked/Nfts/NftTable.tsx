@@ -273,10 +273,7 @@ export function NftTable({
                   numberOfItemsPerRow,
                   prependItems
                 );
-                return useMemo(
-                  () => (row ? <div style={style}>{row.component}</div> : null),
-                  [row?.key]
-                );
+                return row ? <div style={style}>{row.component}</div> : null;
               }}
             </VariableSizeList>
           </div>

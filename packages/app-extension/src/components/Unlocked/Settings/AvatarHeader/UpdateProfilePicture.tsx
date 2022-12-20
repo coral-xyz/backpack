@@ -56,118 +56,116 @@ export function UpdateProfilePicture({
     (acc, [, collection]) => acc + (collection ?? []).length,
     0
   );
-  return useMemo(() => {
-    return (
-      <Container>
-        <AvatarWrapper>
-          <Avatar src={tempAvatar?.url || avatarUrl} />
-        </AvatarWrapper>
-        <Typography
+  return (
+    <Container>
+      <AvatarWrapper>
+        <Avatar src={tempAvatar?.url || avatarUrl} />
+      </AvatarWrapper>
+      <Typography
+        style={{
+          textAlign: "center",
+          color: theme.custom.colors.fontColor,
+        }}
+      >{`@${username}`}</Typography>
+      <FakeDrawer>
+        <Scrollbar
           style={{
-            textAlign: "center",
-            color: theme.custom.colors.fontColor,
-          }}
-        >{`@${username}`}</Typography>
-        <FakeDrawer>
-          <Scrollbar
-            style={{
-              height: "100%",
-              background: theme.custom.colors.nav,
-            }}
-          >
-            {state === "loading" ? (
-              <Loading size={50} />
-            ) : numberOfNFTs === 0 ? (
-              <EmptyState
-                icon={(props: any) => <ImageIcon {...props} />}
-                title={"No NFTs to use"}
-                subtitle={"Get started with your first NFT"}
-                onClick={() => window.open("https://magiceden.io/")}
-                contentStyle={{
-                  marginBottom: 0,
-                  color: "inherit",
-                  border: "none",
-                }}
-                buttonText={"Browse Magic Eden"}
-              />
-            ) : (
-              <div
-                style={{
-                  paddingBottom: tempAvatar ? "80px" : "0px",
-                  transition: "padding ease-out 200ms",
-                }}
-              >
-                {Object.entries(collections ?? {}).map(
-                  ([blockchain, collection]) => (
-                    <BlockchainNFTs
-                      key={blockchain}
-                      blockchain={blockchain as Blockchain}
-                      collections={collection as NftCollectionWithIds[]}
-                      isLoading={false}
-                      tempAvatar={tempAvatar}
-                      setTempAvatar={setTempAvatar}
-                    />
-                  )
-                )}
-              </div>
-            )}
-          </Scrollbar>
-        </FakeDrawer>
-        <ButtonsOverlay
-          style={{
-            maxHeight: tempAvatar ? "100px" : "0px",
+            height: "100%",
+            background: theme.custom.colors.nav,
           }}
         >
-          <SecondaryButton
-            label={"Cancel"}
-            onClick={() => {
+          {state === "loading" ? (
+            <Loading size={50} />
+          ) : numberOfNFTs === 0 ? (
+            <EmptyState
+              icon={(props: any) => <ImageIcon {...props} />}
+              title={"No NFTs to use"}
+              subtitle={"Get started with your first NFT"}
+              onClick={() => window.open("https://magiceden.io/")}
+              contentStyle={{
+                marginBottom: 0,
+                color: "inherit",
+                border: "none",
+              }}
+              buttonText={"Browse Magic Eden"}
+            />
+          ) : (
+            <div
+              style={{
+                paddingBottom: tempAvatar ? "80px" : "0px",
+                transition: "padding ease-out 200ms",
+              }}
+            >
+              {Object.entries(collections ?? {}).map(
+                ([blockchain, collection]) => (
+                  <BlockchainNFTs
+                    key={blockchain}
+                    blockchain={blockchain as Blockchain}
+                    collections={collection as NftCollectionWithIds[]}
+                    isLoading={false}
+                    tempAvatar={tempAvatar}
+                    setTempAvatar={setTempAvatar}
+                  />
+                )
+              )}
+            </div>
+          )}
+        </Scrollbar>
+      </FakeDrawer>
+      <ButtonsOverlay
+        style={{
+          maxHeight: tempAvatar ? "100px" : "0px",
+        }}
+      >
+        <SecondaryButton
+          label={"Cancel"}
+          onClick={() => {
+            setTempAvatar(null);
+          }}
+          style={{
+            margin: "16px",
+          }}
+        />
+        <PrimaryButton
+          label={
+            loading ? (
+              <CircularProgress
+                size={24}
+                sx={{ color: "white", display: "flex", alignSelf: "center" }}
+              />
+            ) : (
+              "Update"
+            )
+          }
+          onClick={async () => {
+            if (tempAvatar) {
+              setLoading(true);
+              await fetch(BACKEND_API_URL + "/users/avatar", {
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                method: "POST",
+                body: JSON.stringify({ avatar: tempAvatar.id }),
+              });
+              await fetch(
+                "https://swr.xnfts.dev/avatars/" + username + "?bust_cache=1"
+              ); // bust edge cache
+              setNewAvatar(tempAvatar);
               setTempAvatar(null);
-            }}
-            style={{
-              margin: "16px",
-            }}
-          />
-          <PrimaryButton
-            label={
-              loading ? (
-                <CircularProgress
-                  size={24}
-                  sx={{ color: "white", display: "flex", alignSelf: "center" }}
-                />
-              ) : (
-                "Update"
-              )
+              setOpenDrawer(false);
             }
-            onClick={async () => {
-              if (tempAvatar) {
-                setLoading(true);
-                await fetch(BACKEND_API_URL + "/users/avatar", {
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  method: "POST",
-                  body: JSON.stringify({ avatar: tempAvatar.id }),
-                });
-                await fetch(
-                  "https://swr.xnfts.dev/avatars/" + username + "?bust_cache=1"
-                ); // bust edge cache
-                setNewAvatar(tempAvatar);
-                setTempAvatar(null);
-                setOpenDrawer(false);
-              }
-            }}
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              margin: "16px",
-              marginLeft: "0px",
-            }}
-          />
-        </ButtonsOverlay>
-      </Container>
-    );
-  }, [collections]);
+          }}
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            margin: "16px",
+            marginLeft: "0px",
+          }}
+        />
+      </ButtonsOverlay>
+    </Container>
+  );
 }
 
 const BlockchainNFTs = React.memo(function BlockchainNFTs({
