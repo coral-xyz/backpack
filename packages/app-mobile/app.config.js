@@ -40,7 +40,7 @@ export default {
     favicon: "./assets/favicon.png",
   },
   extra: {
-    url: "http://localhost:9333",
+    webviewUrl: "http://localhost:9333",
     eas: {
       projectId: projectID,
     },
