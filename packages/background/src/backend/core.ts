@@ -749,6 +749,10 @@ export class Backend {
     this.keyringStore.autoLockCountdownRestart();
   }
 
+  keyringStoreAutoLockReset() {
+    this.keyringStore.autoLockCountdownReset();
+  }
+
   keyringStoreLock() {
     this.keyringStore.lock();
     this.events.emit(BACKEND_EVENT, {

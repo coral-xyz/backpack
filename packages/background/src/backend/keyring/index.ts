@@ -18,7 +18,7 @@ import {
   SolanaCluster,
   SolanaExplorer,
 } from "@coral-xyz/common";
-import type { ExtractRecoilType, KeyringStoreState } from "@coral-xyz/recoil";
+import type { KeyringStoreState } from "@coral-xyz/recoil";
 import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
 import { generateMnemonic } from "bip39";
 
@@ -387,6 +387,10 @@ export class KeyringStore {
 
   public autoLockCountdownRestart() {
     this.autoLockCountdown.restart();
+  }
+
+  public autoLockCountdownReset() {
+    this.autoLockCountdown.start();
   }
 
   ///////////////////////////////////////////////////////////////////////////////

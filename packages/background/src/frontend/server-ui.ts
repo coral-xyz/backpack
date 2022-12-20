@@ -319,7 +319,9 @@ async function handle<T = any>(
       return await handleUsernameAccountCreate(ctx, ...params);
     case UI_RPC_METHOD_ACTIVE_USER_UPDATE:
       // @ts-ignore
-      return await handleActiveUserUpdate(ctx, ...params);
+      const response = await handleActiveUserUpdate(ctx, ...params);
+      ctx.backend.keyringStoreAutoLockReset();
+      return response;
     case UI_RPC_METHOD_USER_LOGOUT:
       // @ts-ignore
       return await handleUserLogout(ctx, ...params);
