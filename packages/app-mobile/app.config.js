@@ -1,6 +1,15 @@
 const projectID = "55bf074d-0473-4e61-9d9d-ecf570704635";
 const packageName = "peterpme.coral.backpack";
 
+const Config = {
+  webviewUrl: "http://localhost:9333",
+};
+
+if (process.env.APP_ENV === "production") {
+  const commitHash = process.env.EAS_BUILD_GIT_COMMIT_HASH.substring(0, 7);
+  Config.webviewUrl = `https://coral-xyz.github.io/backpack/background-scripts/${commitHash}/service-worker-loader.html`;
+}
+
 export default {
   name: "Backpack",
   slug: "backpack",
@@ -8,7 +17,6 @@ export default {
   version: "0.1.0",
   orientation: "portrait",
   icon: "./assets/icon.png",
-  userInterfaceStyle: "dark",
   splash: {
     image: "./assets/splash.png",
     resizeMode: "cover",
@@ -40,7 +48,7 @@ export default {
     favicon: "./assets/favicon.png",
   },
   extra: {
-    webviewUrl: "http://localhost:9333",
+    webviewUrl: Config.webviewUrl,
     eas: {
       projectId: projectID,
     },
