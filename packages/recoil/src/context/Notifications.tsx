@@ -86,11 +86,11 @@ export function NotificationsProvider(props: any) {
   const setPreferences = useSetRecoilState(atoms.preferences);
   const setFeatureGates = useSetRecoilState(atoms.featureGates);
 
-  const setAutoLockOption = (autoLockOption) => {
+  const setAutoLockSettings = (autoLockSettings) => {
     setPreferences((current) => {
       return {
         ...current,
-        autoLockOption,
+        autoLockSettings,
       };
     });
   };
@@ -471,7 +471,7 @@ export function NotificationsProvider(props: any) {
     };
 
     const handleAutoLockSettingsUpdated = (notif: Notification) => {
-      setAutoLockOption(notif.data.autoLockSettings);
+      setAutoLockSettings(notif.data.autoLockSettings);
     };
 
     const handleXnftPreferenceUpdated = (notif: Notification) => {

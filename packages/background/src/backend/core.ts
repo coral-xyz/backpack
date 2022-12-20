@@ -1078,12 +1078,14 @@ export class Backend {
     seconds?: number,
     option?: string
   ): Promise<string> {
-    await this.keyringStore.autoLockUpdate(seconds, option);
+    await this.keyringStore.autoLockSettingsUpdate(seconds, option);
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_AUTO_LOCK_SETTINGS_UPDATED,
       data: {
-        seconds,
-        option,
+        autoLockSettings: {
+          seconds,
+          option,
+        },
       },
     });
     return SUCCESS_RESPONSE;

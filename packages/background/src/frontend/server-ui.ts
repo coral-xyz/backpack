@@ -631,7 +631,7 @@ async function handleKeyringAutoLockSettingsRead(
 
 async function handleKeyringAutoLockSettingsUpdate(
   ctx: Context<Backend>,
-  seconds: number,
+  seconds?: number,
   option?: string
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.keyringAutoLockSettingsUpdate(seconds, option);

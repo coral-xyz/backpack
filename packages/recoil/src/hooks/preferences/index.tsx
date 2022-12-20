@@ -24,7 +24,7 @@ export function useApproveOrigin(): (origin: string) => Promise<void> {
   };
 }
 
-export function useAutoLockSettings(): { seconds: number; option?: string } {
+export function useAutoLockSettings() {
   return useRecoilValue(atoms.autoLockSettings);
 }
 

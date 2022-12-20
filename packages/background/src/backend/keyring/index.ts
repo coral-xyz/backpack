@@ -19,7 +19,10 @@ import {
   SolanaExplorer,
 } from "@coral-xyz/common";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
-import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
+import {
+  DEFAULT_AUTO_LOCK_INTERVAL_SECS,
+  KeyringStoreStateEnum,
+} from "@coral-xyz/recoil";
 import { generateMnemonic } from "bip39";
 
 import type { KeyringStoreJson, User, UserKeyringJson } from "../store";
@@ -127,30 +130,23 @@ export class KeyringStore {
           // user's preferences and start the countdown timer.
           store
             .getWalletDataForUser(this.activeUserUuid!)
-            .then(
-              ({
-                autoLockSettings: {
-                  seconds: autoLockSecs,
-                  option: autoLockOption,
-                },
-              }) => {
-                switch (autoLockOption) {
-                  case "never":
-                    shouldLockImmediatelyWhenClosed = false;
-                    secondsUntilAutoLock = undefined;
-                    break;
-                  case "onClose":
-                    shouldLockImmediatelyWhenClosed = true;
-                    secondsUntilAutoLock = undefined;
-                    break;
-                  default:
-                    shouldLockImmediatelyWhenClosed = false;
-                    secondsUntilAutoLock =
-                      autoLockSecs || store.DEFAULT_AUTO_LOCK_INTERVAL_SECS;
-                }
-                startAutoLockCountdownTimer();
+            .then(({ autoLockSettings }) => {
+              switch (autoLockSettings.option) {
+                case "never":
+                  shouldLockImmediatelyWhenClosed = false;
+                  secondsUntilAutoLock = undefined;
+                  break;
+                case "onClose":
+                  shouldLockImmediatelyWhenClosed = true;
+                  secondsUntilAutoLock = undefined;
+                  break;
+                default:
+                  shouldLockImmediatelyWhenClosed = false;
+                  secondsUntilAutoLock =
+                    autoLockSettings.seconds || DEFAULT_AUTO_LOCK_INTERVAL_SECS;
               }
-            );
+              startAutoLockCountdownTimer();
+            });
         },
         restart: () => {
           // Reset the countdown timer and start it again.
@@ -358,7 +354,7 @@ export class KeyringStore {
     });
   }
 
-  public async autoLockUpdate(seconds?: number, option?: string) {
+  public async autoLockSettingsUpdate(seconds?: number, option?: string) {
     return await this.withUnlock(async () => {
       const data = await store.getWalletDataForUser(this.activeUserUuid!);
       await store.setWalletDataForUser(this.activeUserUuid!, {
@@ -913,7 +909,7 @@ class UserKeyring {
 export function defaultPreferences(enabledBlockchains: any): any {
   return {
     autoLockSettings: {
-      seconds: store.DEFAULT_AUTO_LOCK_INTERVAL_SECS,
+      seconds: DEFAULT_AUTO_LOCK_INTERVAL_SECS,
       option: undefined,
     },
     approvedOrigins: [],

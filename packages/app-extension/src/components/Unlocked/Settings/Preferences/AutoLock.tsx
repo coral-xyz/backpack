@@ -18,11 +18,12 @@ import { Checkmark } from "./Solana/ConnectionSwitch";
 export function PreferencesAutoLock() {
   const nav = useNavStack();
   const theme = useCustomTheme();
-  const { seconds: autoLockSecs, option: autoLockOption } =
-    useAutoLockSettings();
+  const settings = useAutoLockSettings();
   const background = useBackgroundClient();
-  const [minutes, setMinutes] = useState(autoLockSecs / 60.0);
-  const [option, setOption] = useState(autoLockOption);
+  const [minutes, setMinutes] = useState(
+    settings.seconds ? settings.seconds / 60.0 : undefined
+  );
+  const [option, setOption] = useState(settings.option);
 
   useEffect(() => {
     nav.setTitle("Auto-lock timer");
@@ -34,27 +35,25 @@ export function PreferencesAutoLock() {
 
   const save = async (e?: React.FormEvent) => {
     e?.preventDefault();
-    if (!option && minutes > 0) {
-      const secs = Math.round(minutes * 60);
-      await background.request({
-        method: UI_RPC_METHOD_KEYRING_AUTO_LOCK_SETTINGS_UPDATE,
-        params: [secs, undefined],
-      });
-      nav.pop();
-    } else {
-      await background.request({
-        method: UI_RPC_METHOD_KEYRING_AUTO_LOCK_SETTINGS_UPDATE,
-        params: [undefined, option],
-      });
-      nav.pop();
-    }
+    const params = (() => {
+      if (!option && minutes) {
+        const secs = Math.round(minutes * 60);
+        return [secs, undefined];
+      } else {
+        return [undefined, option];
+      }
+    })();
+    await background.request({
+      method: UI_RPC_METHOD_KEYRING_AUTO_LOCK_SETTINGS_UPDATE,
+      params,
+    });
+    nav.pop();
   };
 
   const options = [
-    // { text: "15 min" },
     { id: "never", text: "Never" },
     { id: "onClose", text: "Every time I close Backpack" },
-  ] satisfies { id: typeof autoLockOption; text: string }[];
+  ] satisfies { id: typeof settings.option; text: string }[];
 
   return (
     <form
@@ -155,7 +154,7 @@ export function PreferencesAutoLock() {
         <PrimaryButton
           label="Set"
           type="submit"
-          disabled={!option && minutes <= 0}
+          disabled={!option && !minutes}
         />
       </div>
     </form>
