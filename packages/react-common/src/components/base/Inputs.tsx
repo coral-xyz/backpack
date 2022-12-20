@@ -26,6 +26,11 @@ const useStyles = styles((theme) => ({
   textFieldInputColor: {
     color: theme.custom.colors.fontColor2,
   },
+  smallInput: {
+    "& .Mui-disabled": {
+      "-webkit-text-fill-color": theme.custom.colors.fontColor2,
+    },
+  },
   listParent: {
     border: (props) =>
       overrideErrBorder(
@@ -267,15 +272,18 @@ export const SmallInput = ({
   value,
   onChange,
   placeholder,
+  disabled,
 }: {
   value: string;
   onChange: (e: any) => void;
   placeholder: string;
+  disabled?: boolean;
 }) => {
   const classes = useStyles();
   const theme = useCustomTheme();
   return (
     <TextField
+      disabled={disabled}
       inputProps={{
         style: {
           textAlign: "right",
@@ -296,6 +304,7 @@ export const SmallInput = ({
         border: "none",
         outline: "none",
       }}
+      className={classes.smallInput}
       placeholder={placeholder}
       type="text"
       value={value}

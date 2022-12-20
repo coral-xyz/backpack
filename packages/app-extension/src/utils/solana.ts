@@ -4,7 +4,10 @@ import {
   deserializeLegacyTransaction,
   deserializeTransaction,
 } from "@coral-xyz/common";
-import { ComputeBudgetProgram } from "@solana/web3.js";
+import {
+  ComputeBudgetInstruction,
+  ComputeBudgetProgram,
+} from "@solana/web3.js";
 import { ethers } from "ethers";
 
 const { base58: bs58 } = ethers.utils;
@@ -12,22 +15,23 @@ const { base58: bs58 } = ethers.utils;
 export const sanitizeTransactionWithFeeConfig = (
   txStr: string,
   blockchain: Blockchain,
-  feeConfig?: SolanaFeeConfig
+  feeConfig?: { disabled: boolean; config: SolanaFeeConfig }
 ) => {
   let tx = deserializeTransaction(txStr);
   if (
     blockchain === Blockchain.SOLANA &&
     feeConfig &&
-    feeConfig.priorityFee &&
-    tx.version === "legacy"
+    feeConfig?.config.priorityFee &&
+    tx.version === "legacy" &&
+    !feeConfig.disabled
   ) {
     const transaction = deserializeLegacyTransaction(txStr);
     const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
-      units: feeConfig.computeUnits,
+      units: feeConfig.config.computeUnits,
     });
 
     const addPriorityFee = ComputeBudgetProgram.setComputeUnitPrice({
-      microLamports: feeConfig.priorityFee,
+      microLamports: feeConfig.config.priorityFee,
     });
 
     transaction.add(modifyComputeUnits);
