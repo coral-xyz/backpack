@@ -83,7 +83,7 @@ function Background() {
         cacheMode="LOAD_CACHE_ELSE_NETWORK"
         ref={ref}
         source={{
-          uri: Constants.expoConfig.extra.url,
+          uri: Constants.expoConfig.extra.webWorkerUrl,
         }}
         onMessage={(event) => {
           const msg = JSON.parse(event.nativeEvent.data);

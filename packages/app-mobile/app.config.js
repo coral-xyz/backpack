@@ -1,9 +1,16 @@
+const { execSync } = require("child_process");
+
+function getLastCommitHash() {
+  const output = execSync("git rev-parse HEAD").toString();
+  return output.substring(0, 7);
+}
+
 const projectID = "55bf074d-0473-4e61-9d9d-ecf570704635";
 const packageName = "peterpme.coral.backpack";
 
 const localhostUrl = "http://localhost:9333";
 const baseUrl = "https://coral-xyz.github.io/backpack/background-scripts/";
-const commitHash = process.env.COMMIT_HASH;
+const commitHash = getLastCommitHash();
 const webWorkerUrl = `${baseUrl}/${commitHash}/service-worker-loader.html`;
 
 const Config = {
