@@ -292,6 +292,7 @@ export const SmallInput = ({
           borderRadius: 5,
           outline: "none",
           color: theme.custom.colors.fontColor2,
+          fontSize: "14px",
         },
       }}
       classes={{
