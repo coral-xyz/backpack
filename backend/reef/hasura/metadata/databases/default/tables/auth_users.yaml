@@ -5,6 +5,9 @@ object_relationships:
   - name: invitation
     using:
       foreign_key_constraint_on: invitation_id
+  - name: referrer
+    using:
+      foreign_key_constraint_on: referrer_id
   - name: twitter_user
     using:
       foreign_key_constraint_on:
@@ -26,6 +29,13 @@ array_relationships:
         column: user_id
         table:
           name: public_keys
+          schema: auth
+  - name: referrals
+    using:
+      foreign_key_constraint_on:
+        column: referrer_id
+        table:
+          name: users
           schema: auth
 insert_permissions:
   - role: auth_worker

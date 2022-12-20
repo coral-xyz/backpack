@@ -2622,6 +2622,76 @@ export type ValueTypes = {
       },
       ValueTypes["auth_public_keys_aggregate"]
     ];
+    referrals?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_users_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_users_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_users_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_users"]
+    ];
+    referrals_aggregate?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_users_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_users_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_users_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_users_aggregate"]
+    ];
+    /** An object relationship */
+    referrer?: ValueTypes["auth_users"];
     username?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
@@ -2631,6 +2701,27 @@ export type ValueTypes = {
     nodes?: ValueTypes["auth_users"];
     __typename?: boolean | `@${string}`;
   }>;
+  ["auth_users_aggregate_bool_exp"]: {
+    count?:
+      | ValueTypes["auth_users_aggregate_bool_exp_count"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  ["auth_users_aggregate_bool_exp_count"]: {
+    arguments?:
+      | Array<ValueTypes["auth_users_select_column"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    distinct?: boolean | undefined | null | Variable<any, string>;
+    filter?:
+      | ValueTypes["auth_users_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    predicate: ValueTypes["Int_comparison_exp"] | Variable<any, string>;
+  };
   /** aggregate fields of "auth.users" */
   ["auth_users_aggregate_fields"]: AliasType<{
     count?: [
@@ -2648,6 +2739,30 @@ export type ValueTypes = {
     min?: ValueTypes["auth_users_min_fields"];
     __typename?: boolean | `@${string}`;
   }>;
+  /** order by aggregate values of table "auth.users" */
+  ["auth_users_aggregate_order_by"]: {
+    count?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    max?:
+      | ValueTypes["auth_users_max_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    min?:
+      | ValueTypes["auth_users_min_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** input type for inserting array relation for remote table "auth.users" */
+  ["auth_users_arr_rel_insert_input"]: {
+    data: Array<ValueTypes["auth_users_insert_input"]> | Variable<any, string>;
+    /** upsert condition */
+    on_conflict?:
+      | ValueTypes["auth_users_on_conflict"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
   /** Boolean expression to filter rows from the table "auth.users". All fields are combined with a logical 'AND'. */
   ["auth_users_bool_exp"]: {
     _and?:
@@ -2680,6 +2795,21 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    referrals?:
+      | ValueTypes["auth_users_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    referrals_aggregate?:
+      | ValueTypes["auth_users_aggregate_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    referrer?:
+      | ValueTypes["auth_users_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     username?:
       | ValueTypes["citext_comparison_exp"]
       | undefined
@@ -2700,6 +2830,16 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    referrals?:
+      | ValueTypes["auth_users_arr_rel_insert_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    referrer?:
+      | ValueTypes["auth_users_obj_rel_insert_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
     username?: ValueTypes["citext"] | undefined | null | Variable<any, string>;
     waitlist_id?: string | undefined | null | Variable<any, string>;
   };
@@ -2709,12 +2849,30 @@ export type ValueTypes = {
     username?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
+  /** order by max() on columns of table "auth.users" */
+  ["auth_users_max_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    username?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
   /** aggregate min on columns */
   ["auth_users_min_fields"]: AliasType<{
     id?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
+  /** order by min() on columns of table "auth.users" */
+  ["auth_users_min_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    username?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
   /** response of any mutation on the table "auth.users" */
   ["auth_users_mutation_response"]: AliasType<{
     /** number of rows affected by the mutation */
@@ -2750,6 +2908,16 @@ export type ValueTypes = {
     id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     public_keys_aggregate?:
       | ValueTypes["auth_public_keys_aggregate_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    referrals_aggregate?:
+      | ValueTypes["auth_users_aggregate_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    referrer?:
+      | ValueTypes["auth_users_order_by"]
       | undefined
       | null
       | Variable<any, string>;
@@ -6448,6 +6616,54 @@ export type ResolverInputTypes = {
       },
       ResolverInputTypes["auth_public_keys_aggregate"]
     ];
+    referrals?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_users_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_users_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?: ResolverInputTypes["auth_users_bool_exp"] | undefined | null;
+      },
+      ResolverInputTypes["auth_users"]
+    ];
+    referrals_aggregate?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_users_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_users_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?: ResolverInputTypes["auth_users_bool_exp"] | undefined | null;
+      },
+      ResolverInputTypes["auth_users_aggregate"]
+    ];
+    /** An object relationship */
+    referrer?: ResolverInputTypes["auth_users"];
     username?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
@@ -6457,6 +6673,21 @@ export type ResolverInputTypes = {
     nodes?: ResolverInputTypes["auth_users"];
     __typename?: boolean | `@${string}`;
   }>;
+  ["auth_users_aggregate_bool_exp"]: {
+    count?:
+      | ResolverInputTypes["auth_users_aggregate_bool_exp_count"]
+      | undefined
+      | null;
+  };
+  ["auth_users_aggregate_bool_exp_count"]: {
+    arguments?:
+      | Array<ResolverInputTypes["auth_users_select_column"]>
+      | undefined
+      | null;
+    distinct?: boolean | undefined | null;
+    filter?: ResolverInputTypes["auth_users_bool_exp"] | undefined | null;
+    predicate: ResolverInputTypes["Int_comparison_exp"];
+  };
   /** aggregate fields of "auth.users" */
   ["auth_users_aggregate_fields"]: AliasType<{
     count?: [
@@ -6473,6 +6704,21 @@ export type ResolverInputTypes = {
     min?: ResolverInputTypes["auth_users_min_fields"];
     __typename?: boolean | `@${string}`;
   }>;
+  /** order by aggregate values of table "auth.users" */
+  ["auth_users_aggregate_order_by"]: {
+    count?: ResolverInputTypes["order_by"] | undefined | null;
+    max?: ResolverInputTypes["auth_users_max_order_by"] | undefined | null;
+    min?: ResolverInputTypes["auth_users_min_order_by"] | undefined | null;
+  };
+  /** input type for inserting array relation for remote table "auth.users" */
+  ["auth_users_arr_rel_insert_input"]: {
+    data: Array<ResolverInputTypes["auth_users_insert_input"]>;
+    /** upsert condition */
+    on_conflict?:
+      | ResolverInputTypes["auth_users_on_conflict"]
+      | undefined
+      | null;
+  };
   /** Boolean expression to filter rows from the table "auth.users". All fields are combined with a logical 'AND'. */
   ["auth_users_bool_exp"]: {
     _and?: Array<ResolverInputTypes["auth_users_bool_exp"]> | undefined | null;
@@ -6487,6 +6733,12 @@ export type ResolverInputTypes = {
       | ResolverInputTypes["auth_public_keys_aggregate_bool_exp"]
       | undefined
       | null;
+    referrals?: ResolverInputTypes["auth_users_bool_exp"] | undefined | null;
+    referrals_aggregate?:
+      | ResolverInputTypes["auth_users_aggregate_bool_exp"]
+      | undefined
+      | null;
+    referrer?: ResolverInputTypes["auth_users_bool_exp"] | undefined | null;
     username?: ResolverInputTypes["citext_comparison_exp"] | undefined | null;
   };
   /** unique or primary key constraints on table "auth.users" */
@@ -6498,6 +6750,14 @@ export type ResolverInputTypes = {
       | ResolverInputTypes["auth_public_keys_arr_rel_insert_input"]
       | undefined
       | null;
+    referrals?:
+      | ResolverInputTypes["auth_users_arr_rel_insert_input"]
+      | undefined
+      | null;
+    referrer?:
+      | ResolverInputTypes["auth_users_obj_rel_insert_input"]
+      | undefined
+      | null;
     username?: ResolverInputTypes["citext"] | undefined | null;
     waitlist_id?: string | undefined | null;
   };
@@ -6507,12 +6767,22 @@ export type ResolverInputTypes = {
     username?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
+  /** order by max() on columns of table "auth.users" */
+  ["auth_users_max_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    username?: ResolverInputTypes["order_by"] | undefined | null;
+  };
   /** aggregate min on columns */
   ["auth_users_min_fields"]: AliasType<{
     id?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
+  /** order by min() on columns of table "auth.users" */
+  ["auth_users_min_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    username?: ResolverInputTypes["order_by"] | undefined | null;
+  };
   /** response of any mutation on the table "auth.users" */
   ["auth_users_mutation_response"]: AliasType<{
     /** number of rows affected by the mutation */
@@ -6543,6 +6813,11 @@ export type ResolverInputTypes = {
       | ResolverInputTypes["auth_public_keys_aggregate_order_by"]
       | undefined
       | null;
+    referrals_aggregate?:
+      | ResolverInputTypes["auth_users_aggregate_order_by"]
+      | undefined
+      | null;
+    referrer?: ResolverInputTypes["auth_users_order_by"] | undefined | null;
     username?: ResolverInputTypes["order_by"] | undefined | null;
   };
   /** primary key columns input for table: auth.users */
@@ -9277,6 +9552,12 @@ export type ModelTypes = {
     public_keys: Array<ModelTypes["auth_public_keys"]>;
     /** An aggregate relationship */
     public_keys_aggregate: ModelTypes["auth_public_keys_aggregate"];
+    /** An array relationship */
+    referrals: Array<ModelTypes["auth_users"]>;
+    /** An aggregate relationship */
+    referrals_aggregate: ModelTypes["auth_users_aggregate"];
+    /** An object relationship */
+    referrer?: ModelTypes["auth_users"] | undefined;
     username: ModelTypes["citext"];
   };
   /** aggregated selection of "auth.users" */
@@ -9284,11 +9565,32 @@ export type ModelTypes = {
     aggregate?: ModelTypes["auth_users_aggregate_fields"] | undefined;
     nodes: Array<ModelTypes["auth_users"]>;
   };
+  ["auth_users_aggregate_bool_exp"]: {
+    count?: ModelTypes["auth_users_aggregate_bool_exp_count"] | undefined;
+  };
+  ["auth_users_aggregate_bool_exp_count"]: {
+    arguments?: Array<ModelTypes["auth_users_select_column"]> | undefined;
+    distinct?: boolean | undefined;
+    filter?: ModelTypes["auth_users_bool_exp"] | undefined;
+    predicate: ModelTypes["Int_comparison_exp"];
+  };
   /** aggregate fields of "auth.users" */
   ["auth_users_aggregate_fields"]: {
     count: number;
     max?: ModelTypes["auth_users_max_fields"] | undefined;
     min?: ModelTypes["auth_users_min_fields"] | undefined;
+  };
+  /** order by aggregate values of table "auth.users" */
+  ["auth_users_aggregate_order_by"]: {
+    count?: ModelTypes["order_by"] | undefined;
+    max?: ModelTypes["auth_users_max_order_by"] | undefined;
+    min?: ModelTypes["auth_users_min_order_by"] | undefined;
+  };
+  /** input type for inserting array relation for remote table "auth.users" */
+  ["auth_users_arr_rel_insert_input"]: {
+    data: Array<ModelTypes["auth_users_insert_input"]>;
+    /** upsert condition */
+    on_conflict?: ModelTypes["auth_users_on_conflict"] | undefined;
   };
   /** Boolean expression to filter rows from the table "auth.users". All fields are combined with a logical 'AND'. */
   ["auth_users_bool_exp"]: {
@@ -9300,6 +9602,11 @@ export type ModelTypes = {
     public_keys_aggregate?:
       | ModelTypes["auth_public_keys_aggregate_bool_exp"]
       | undefined;
+    referrals?: ModelTypes["auth_users_bool_exp"] | undefined;
+    referrals_aggregate?:
+      | ModelTypes["auth_users_aggregate_bool_exp"]
+      | undefined;
+    referrer?: ModelTypes["auth_users_bool_exp"] | undefined;
     username?: ModelTypes["citext_comparison_exp"] | undefined;
   };
   ["auth_users_constraint"]: auth_users_constraint;
@@ -9309,6 +9616,8 @@ export type ModelTypes = {
     public_keys?:
       | ModelTypes["auth_public_keys_arr_rel_insert_input"]
       | undefined;
+    referrals?: ModelTypes["auth_users_arr_rel_insert_input"] | undefined;
+    referrer?: ModelTypes["auth_users_obj_rel_insert_input"] | undefined;
     username?: ModelTypes["citext"] | undefined;
     waitlist_id?: string | undefined;
   };
@@ -9317,10 +9626,20 @@ export type ModelTypes = {
     id?: ModelTypes["uuid"] | undefined;
     username?: ModelTypes["citext"] | undefined;
   };
+  /** order by max() on columns of table "auth.users" */
+  ["auth_users_max_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+    username?: ModelTypes["order_by"] | undefined;
+  };
   /** aggregate min on columns */
   ["auth_users_min_fields"]: {
     id?: ModelTypes["uuid"] | undefined;
     username?: ModelTypes["citext"] | undefined;
+  };
+  /** order by min() on columns of table "auth.users" */
+  ["auth_users_min_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+    username?: ModelTypes["order_by"] | undefined;
   };
   /** response of any mutation on the table "auth.users" */
   ["auth_users_mutation_response"]: {
@@ -9347,6 +9666,10 @@ export type ModelTypes = {
     public_keys_aggregate?:
       | ModelTypes["auth_public_keys_aggregate_order_by"]
       | undefined;
+    referrals_aggregate?:
+      | ModelTypes["auth_users_aggregate_order_by"]
+      | undefined;
+    referrer?: ModelTypes["auth_users_order_by"] | undefined;
     username?: ModelTypes["order_by"] | undefined;
   };
   /** primary key columns input for table: auth.users */
@@ -10934,6 +11257,12 @@ export type GraphQLTypes = {
     public_keys: Array<GraphQLTypes["auth_public_keys"]>;
     /** An aggregate relationship */
     public_keys_aggregate: GraphQLTypes["auth_public_keys_aggregate"];
+    /** An array relationship */
+    referrals: Array<GraphQLTypes["auth_users"]>;
+    /** An aggregate relationship */
+    referrals_aggregate: GraphQLTypes["auth_users_aggregate"];
+    /** An object relationship */
+    referrer?: GraphQLTypes["auth_users"] | undefined;
     username: GraphQLTypes["citext"];
   };
   /** aggregated selection of "auth.users" */
@@ -10942,12 +11271,33 @@ export type GraphQLTypes = {
     aggregate?: GraphQLTypes["auth_users_aggregate_fields"] | undefined;
     nodes: Array<GraphQLTypes["auth_users"]>;
   };
+  ["auth_users_aggregate_bool_exp"]: {
+    count?: GraphQLTypes["auth_users_aggregate_bool_exp_count"] | undefined;
+  };
+  ["auth_users_aggregate_bool_exp_count"]: {
+    arguments?: Array<GraphQLTypes["auth_users_select_column"]> | undefined;
+    distinct?: boolean | undefined;
+    filter?: GraphQLTypes["auth_users_bool_exp"] | undefined;
+    predicate: GraphQLTypes["Int_comparison_exp"];
+  };
   /** aggregate fields of "auth.users" */
   ["auth_users_aggregate_fields"]: {
     __typename: "auth_users_aggregate_fields";
     count: number;
     max?: GraphQLTypes["auth_users_max_fields"] | undefined;
     min?: GraphQLTypes["auth_users_min_fields"] | undefined;
+  };
+  /** order by aggregate values of table "auth.users" */
+  ["auth_users_aggregate_order_by"]: {
+    count?: GraphQLTypes["order_by"] | undefined;
+    max?: GraphQLTypes["auth_users_max_order_by"] | undefined;
+    min?: GraphQLTypes["auth_users_min_order_by"] | undefined;
+  };
+  /** input type for inserting array relation for remote table "auth.users" */
+  ["auth_users_arr_rel_insert_input"]: {
+    data: Array<GraphQLTypes["auth_users_insert_input"]>;
+    /** upsert condition */
+    on_conflict?: GraphQLTypes["auth_users_on_conflict"] | undefined;
   };
   /** Boolean expression to filter rows from the table "auth.users". All fields are combined with a logical 'AND'. */
   ["auth_users_bool_exp"]: {
@@ -10959,6 +11309,11 @@ export type GraphQLTypes = {
     public_keys_aggregate?:
       | GraphQLTypes["auth_public_keys_aggregate_bool_exp"]
       | undefined;
+    referrals?: GraphQLTypes["auth_users_bool_exp"] | undefined;
+    referrals_aggregate?:
+      | GraphQLTypes["auth_users_aggregate_bool_exp"]
+      | undefined;
+    referrer?: GraphQLTypes["auth_users_bool_exp"] | undefined;
     username?: GraphQLTypes["citext_comparison_exp"] | undefined;
   };
   /** unique or primary key constraints on table "auth.users" */
@@ -10969,6 +11324,8 @@ export type GraphQLTypes = {
     public_keys?:
       | GraphQLTypes["auth_public_keys_arr_rel_insert_input"]
       | undefined;
+    referrals?: GraphQLTypes["auth_users_arr_rel_insert_input"] | undefined;
+    referrer?: GraphQLTypes["auth_users_obj_rel_insert_input"] | undefined;
     username?: GraphQLTypes["citext"] | undefined;
     waitlist_id?: string | undefined;
   };
@@ -10978,11 +11335,21 @@ export type GraphQLTypes = {
     id?: GraphQLTypes["uuid"] | undefined;
     username?: GraphQLTypes["citext"] | undefined;
   };
+  /** order by max() on columns of table "auth.users" */
+  ["auth_users_max_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+    username?: GraphQLTypes["order_by"] | undefined;
+  };
   /** aggregate min on columns */
   ["auth_users_min_fields"]: {
     __typename: "auth_users_min_fields";
     id?: GraphQLTypes["uuid"] | undefined;
     username?: GraphQLTypes["citext"] | undefined;
+  };
+  /** order by min() on columns of table "auth.users" */
+  ["auth_users_min_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+    username?: GraphQLTypes["order_by"] | undefined;
   };
   /** response of any mutation on the table "auth.users" */
   ["auth_users_mutation_response"]: {
@@ -11010,6 +11377,10 @@ export type GraphQLTypes = {
     public_keys_aggregate?:
       | GraphQLTypes["auth_public_keys_aggregate_order_by"]
       | undefined;
+    referrals_aggregate?:
+      | GraphQLTypes["auth_users_aggregate_order_by"]
+      | undefined;
+    referrer?: GraphQLTypes["auth_users_order_by"] | undefined;
     username?: GraphQLTypes["order_by"] | undefined;
   };
   /** primary key columns input for table: auth.users */
@@ -11991,9 +12362,15 @@ type ZEUS_VARIABLES = {
   ["auth_stripe_onramp_stream_cursor_value_input"]: ValueTypes["auth_stripe_onramp_stream_cursor_value_input"];
   ["auth_stripe_onramp_update_column"]: ValueTypes["auth_stripe_onramp_update_column"];
   ["auth_stripe_onramp_updates"]: ValueTypes["auth_stripe_onramp_updates"];
+  ["auth_users_aggregate_bool_exp"]: ValueTypes["auth_users_aggregate_bool_exp"];
+  ["auth_users_aggregate_bool_exp_count"]: ValueTypes["auth_users_aggregate_bool_exp_count"];
+  ["auth_users_aggregate_order_by"]: ValueTypes["auth_users_aggregate_order_by"];
+  ["auth_users_arr_rel_insert_input"]: ValueTypes["auth_users_arr_rel_insert_input"];
   ["auth_users_bool_exp"]: ValueTypes["auth_users_bool_exp"];
   ["auth_users_constraint"]: ValueTypes["auth_users_constraint"];
   ["auth_users_insert_input"]: ValueTypes["auth_users_insert_input"];
+  ["auth_users_max_order_by"]: ValueTypes["auth_users_max_order_by"];
+  ["auth_users_min_order_by"]: ValueTypes["auth_users_min_order_by"];
   ["auth_users_obj_rel_insert_input"]: ValueTypes["auth_users_obj_rel_insert_input"];
   ["auth_users_on_conflict"]: ValueTypes["auth_users_on_conflict"];
   ["auth_users_order_by"]: ValueTypes["auth_users_order_by"];
