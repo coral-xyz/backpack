@@ -19,18 +19,13 @@ export class Signaling extends EventEmitter {
   async initWs(jwt: string) {
     this.jwt = jwt;
     const ws = new WebSocket(`${SERVER_URL}?jwt=${jwt}`);
-    ws.addEventListener("open", () => {
-      console.log("open");
-      // this.emit(SIGNALING_CONNECTED);
-    });
+    ws.addEventListener("open", () => {});
 
     ws.addEventListener("message", (event) => {
-      console.log("message");
       this.handleMessage(event.data);
     });
 
     ws.addEventListener("close", () => {
-      console.log("inside close");
       if (!this.destroyed) {
         this.emit(RECONNECTING);
         setTimeout(() => {
