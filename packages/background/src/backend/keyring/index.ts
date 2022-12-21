@@ -130,8 +130,8 @@ export class KeyringStore {
           // user's preferences and start the countdown timer.
           store
             .getWalletDataForUser(this.activeUserUuid!)
-            .then(({ autoLockSettings }) => {
-              switch (autoLockSettings.option) {
+            .then(({ autoLockSettings, autoLockSecs }) => {
+              switch (autoLockSettings?.option) {
                 case "never":
                   shouldLockImmediatelyWhenClosed = false;
                   secondsUntilAutoLock = undefined;
@@ -143,7 +143,12 @@ export class KeyringStore {
                 default:
                   shouldLockImmediatelyWhenClosed = false;
                   secondsUntilAutoLock =
-                    autoLockSettings.seconds || DEFAULT_AUTO_LOCK_INTERVAL_SECS;
+                    // Try to use read the new style (>0.4.0) value first
+                    autoLockSettings?.seconds ||
+                    // if that doesn't exist check for a legacy (<=0.4.0) value
+                    autoLockSecs ||
+                    // otherwise fall back to the default value
+                    DEFAULT_AUTO_LOCK_INTERVAL_SECS;
               }
               startAutoLockCountdownTimer();
             });

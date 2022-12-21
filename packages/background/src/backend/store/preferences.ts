@@ -14,7 +14,7 @@ const STORE_KEY_WALLET_DATA = "wallet-data";
 // Legacy types. Don't use these.
 type DeprecatedWalletDataDoNotUse = {
   username?: string;
-  autoLockSecs?: number;
+  autoLockSecs?: number; // Used in releases <=0.4.0
 };
 
 export type WalletData = {
