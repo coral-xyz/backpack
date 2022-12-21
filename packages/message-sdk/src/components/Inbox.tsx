@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { EnrichedInboxDb } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import { TextInput } from "@coral-xyz/react-common";
+import { useUser } from "@coral-xyz/recoil";
 
 import { ParentCommunicationManager } from "../ParentCommunicationManager";
 
@@ -12,6 +13,7 @@ import { UserList } from "./UserList";
 
 export function Inbox() {
   const classes = useStyles();
+  const { uuid } = useUser();
   const [searchFilter, setSearchFilter] = useState("");
   const [messagesLoading, setMessagesLoading] = useState(true);
   const [activeChats, setActiveChats] = useState<EnrichedInboxDb[]>([]);
@@ -32,7 +34,7 @@ export function Inbox() {
 
   useEffect(() => {
     init();
-  }, []);
+  }, [uuid]);
 
   const searchedUsersDistinct = searchResults.filter(
     (result) =>
