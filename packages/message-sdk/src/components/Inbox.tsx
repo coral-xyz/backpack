@@ -88,15 +88,21 @@ export function Inbox() {
         (activeChats.filter((x) => x.remoteUsername.includes(searchFilter))
           .length > 0 ||
           requestCount > 0) && (
-          <MessageList
-            requestCount={searchFilter.length < 3 ? requestCount : 0}
-            activeChats={activeChats.filter((x) =>
-              x.remoteUsername.includes(searchFilter)
+          <>
+            {searchFilter.length >= 3 && (
+              <div className={classes.topLabel}>Your contacts</div>
             )}
-          />
+            <MessageList
+              requestCount={searchFilter.length < 3 ? requestCount : 0}
+              activeChats={activeChats.filter((x) =>
+                x.remoteUsername.includes(searchFilter)
+              )}
+            />
+          </>
         )}
       {searchFilter.length >= 3 && searchedUsersDistinct.length !== 0 && (
-        <div style={{ marginTop: 10 }}>
+        <div style={{ marginTop: 30 }}>
+          <div className={classes.topLabel}>Other people</div>
           <UserList users={searchedUsersDistinct} />
         </div>
       )}

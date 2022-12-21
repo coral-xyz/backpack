@@ -3,6 +3,8 @@ import type { SubscriptionType } from "@coral-xyz/common";
 
 import type { EnrichedMessage } from "../ChatManager";
 import { ChatManager } from "../ChatManager";
+import { RECONNECTING, SIGNALING_CONNECTED } from "../Signaling";
+import { merge } from "../utils";
 
 import { ChatProvider } from "./ChatContext";
 import { FullScreenChat } from "./FullScreenChat";
@@ -47,6 +49,7 @@ export const ChatRoom = ({
   remoteRequested = false,
 }: ChatRoomProps) => {
   const [chatManager, setChatManager] = useState<ChatManager | null>(null);
+  const [reconnecting, setReconnecting] = useState(false);
   // TODO: Make state propogte from outside the state since this'll be expensive
   const [chats, setChats] = useState<EnrichedMessage[]>([]);
   const [loading, setLoading] = useState(true);
@@ -66,10 +69,10 @@ export const ChatRoom = ({
         jwt,
         (messages) => {
           setLoading(false);
-          setChats((m) => [...m, ...messages]);
+          setChats((m) => merge(m, messages));
         },
         (messages) => {
-          setChats((m) => [...messages, ...m]);
+          setChats((m) => merge(m, messages));
         },
         (messages) => {
           setChats((m) =>
@@ -91,6 +94,14 @@ export const ChatRoom = ({
           );
         }
       );
+
+      chatManager.on(RECONNECTING, () => {
+        setReconnecting(true);
+      });
+
+      chatManager.on(SIGNALING_CONNECTED, () => {
+        setReconnecting(false);
+      });
 
       setChatManager(chatManager);
 
@@ -124,6 +135,7 @@ export const ChatRoom = ({
       setBlocked={setBlocked}
       isDarkMode={isDarkMode}
       remoteUsername={remoteUsername}
+      reconnecting={reconnecting}
     >
       <FullScreenChat />
     </ChatProvider>

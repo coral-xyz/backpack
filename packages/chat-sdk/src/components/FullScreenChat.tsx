@@ -39,7 +39,9 @@ export const FullScreenChat = () => {
     if (messageRef.current && autoScroll) {
       messageRef.current.scrollTop = messageRef.current.scrollHeight;
       setTimeout(() => {
-        messageRef.current.scrollTop = messageRef.current.scrollHeight;
+        if (messageRef.current) {
+          messageRef.current.scrollTop = messageRef.current.scrollHeight;
+        }
       }, 500);
     }
   }, [chats, autoScroll]);
@@ -65,7 +67,6 @@ export const FullScreenChat = () => {
           }}
         >
           <Banner />
-          <br />
           {loading && <MessagesSkeleton />}
           {!loading && chats?.length === 0 && <EmptyChat />}
           {!loading && chats?.length !== 0 && <ChatMessages />}

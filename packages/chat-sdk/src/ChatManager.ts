@@ -4,8 +4,9 @@ import type {
   SubscriptionType,
 } from "@coral-xyz/common";
 import { BACKEND_API_URL, CHAT_MESSAGES, SUBSCRIBE } from "@coral-xyz/common";
+import EventEmitter from "eventemitter3";
 
-import { Signaling, SIGNALING_CONNECTED } from "./Signaling";
+import { RECONNECTING, Signaling, SIGNALING_CONNECTED } from "./Signaling";
 
 export interface EnrichedMessage extends MessageWithMetadata {
   direction: "send" | "recv";
@@ -14,7 +15,7 @@ export interface EnrichedMessage extends MessageWithMetadata {
 
 const DEBOUNCE_INTERVAL_MS = 500;
 
-export class ChatManager {
+export class ChatManager extends EventEmitter {
   private roomId: string;
   private userId: string;
   private onMessages: (messages: Message[]) => void;
@@ -37,6 +38,7 @@ export class ChatManager {
     onMessagesPrepend: (messages: EnrichedMessage[]) => void,
     onLocalMessageReceived: (messages: EnrichedMessage[]) => void
   ) {
+    super();
     this.roomId = roomId;
     this.userId = userId;
     this.onMessages = onMessages;
@@ -85,6 +87,9 @@ export class ChatManager {
 
   async init(jwt: string) {
     await this.signaling.initWs(jwt);
+    this.signaling.addListener(RECONNECTING, () => {
+      this.emit(RECONNECTING);
+    });
     this.signaling.addListener(SIGNALING_CONNECTED, () => {
       this.signaling.send({
         type: SUBSCRIBE,
@@ -93,6 +98,7 @@ export class ChatManager {
           room: this.roomId,
         },
       });
+      this.emit(SIGNALING_CONNECTED);
     });
     this.signaling.addListener(
       CHAT_MESSAGES,

@@ -8,6 +8,7 @@
     "@coral-xyz/chat-sdk": "*",
     "@coral-xyz/common": "*",
     "@coral-xyz/react-common": "*",
+    "@coral-xyz/recoil": "*",
     "@coral-xyz/themes": "*",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",

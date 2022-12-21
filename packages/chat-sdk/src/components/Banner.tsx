@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import { toast } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
@@ -18,8 +17,19 @@ export const Banner = () => {
     setSpam,
     remoteRequested,
     remoteUsername,
+    reconnecting,
   } = useChatContext();
   const classes = useStyles();
+
+  if (reconnecting) {
+    return (
+      <TextBanner
+        fixed={true}
+        type={"danger"}
+        title={"Network connection error"}
+      />
+    );
+  }
 
   if (spam) {
     return (
@@ -116,16 +126,18 @@ function TextBanner({
   buttonText,
   onClick,
   type,
+  fixed = false,
 }: {
   title: String;
   buttonText?: string;
   onClick?: () => void;
   type: "danger" | "normal" | "disabled";
+  fixed?: boolean;
 }) {
   const theme = useCustomTheme();
   const classes = useStyles({ type });
   return (
-    <div>
+    <div style={fixed ? { position: "absolute", top: 0, width: "100%" } : {}}>
       <div
         className={`${classes.noContactBanner} ${classes.horizontalCenter} ${classes.text}`}
         style={{
@@ -146,14 +158,18 @@ function TextBanner({
             }}
           />
         )}{" "}
-        {title}
-        {buttonText && (
-          <div style={{ marginLeft: 10, cursor: "pointer" }} onClick={onClick}>
-            {buttonText}
-          </div>
-        )}
+        <div style={{ marginTop: type !== "disabled" ? 1 : 0 }}>
+          {title}
+          {buttonText && (
+            <div
+              style={{ marginLeft: 10, cursor: "pointer" }}
+              onClick={onClick}
+            >
+              {buttonText}
+            </div>
+          )}
+        </div>
       </div>
-      <br />
     </div>
   );
 }
