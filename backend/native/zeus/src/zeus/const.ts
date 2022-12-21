@@ -354,38 +354,11 @@ export const AllTypesProps: Record<string, any> = {
       order_by: "auth_public_keys_order_by",
       where: "auth_public_keys_bool_exp",
     },
-    referrals: {
-      distinct_on: "auth_users_select_column",
-      order_by: "auth_users_order_by",
-      where: "auth_users_bool_exp",
-    },
-    referrals_aggregate: {
-      distinct_on: "auth_users_select_column",
-      order_by: "auth_users_order_by",
-      where: "auth_users_bool_exp",
-    },
-  },
-  auth_users_aggregate_bool_exp: {
-    count: "auth_users_aggregate_bool_exp_count",
-  },
-  auth_users_aggregate_bool_exp_count: {
-    arguments: "auth_users_select_column",
-    filter: "auth_users_bool_exp",
-    predicate: "Int_comparison_exp",
   },
   auth_users_aggregate_fields: {
     count: {
       columns: "auth_users_select_column",
     },
-  },
-  auth_users_aggregate_order_by: {
-    count: "order_by",
-    max: "auth_users_max_order_by",
-    min: "auth_users_min_order_by",
-  },
-  auth_users_arr_rel_insert_input: {
-    data: "auth_users_insert_input",
-    on_conflict: "auth_users_on_conflict",
   },
   auth_users_bool_exp: {
     _and: "auth_users_bool_exp",
@@ -394,27 +367,13 @@ export const AllTypesProps: Record<string, any> = {
     id: "uuid_comparison_exp",
     public_keys: "auth_public_keys_bool_exp",
     public_keys_aggregate: "auth_public_keys_aggregate_bool_exp",
-    referrals: "auth_users_bool_exp",
-    referrals_aggregate: "auth_users_aggregate_bool_exp",
-    referrer: "auth_users_bool_exp",
     username: "citext_comparison_exp",
   },
   auth_users_constraint: "enum" as const,
   auth_users_insert_input: {
     invitation_id: "uuid",
     public_keys: "auth_public_keys_arr_rel_insert_input",
-    referrals: "auth_users_arr_rel_insert_input",
-    referrer: "auth_users_obj_rel_insert_input",
-    referrer_id: "uuid",
     username: "citext",
-  },
-  auth_users_max_order_by: {
-    id: "order_by",
-    username: "order_by",
-  },
-  auth_users_min_order_by: {
-    id: "order_by",
-    username: "order_by",
   },
   auth_users_obj_rel_insert_input: {
     data: "auth_users_insert_input",
@@ -428,8 +387,6 @@ export const AllTypesProps: Record<string, any> = {
   auth_users_order_by: {
     id: "order_by",
     public_keys_aggregate: "auth_public_keys_aggregate_order_by",
-    referrals_aggregate: "auth_users_aggregate_order_by",
-    referrer: "auth_users_order_by",
     username: "order_by",
   },
   auth_users_pk_columns_input: {
@@ -1201,9 +1158,6 @@ export const ReturnTypes: Record<string, any> = {
     id: "uuid",
     public_keys: "auth_public_keys",
     public_keys_aggregate: "auth_public_keys_aggregate",
-    referrals: "auth_users",
-    referrals_aggregate: "auth_users_aggregate",
-    referrer: "auth_users",
     username: "citext",
   },
   auth_users_aggregate: {
