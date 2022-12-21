@@ -2,7 +2,7 @@ import createStyles from "@mui/styles/createStyles";
 import _makeStyles from "@mui/styles/makeStyles";
 import useTheme from "@mui/styles/useTheme";
 import type { CreateMUIStyled, Theme } from "@mui/system";
-import { styled as muiStyled } from "@mui/system";
+import muiStyled from "@mui/system/styled";
 
 export const HOVER_OPACITY = 0.8;
 
