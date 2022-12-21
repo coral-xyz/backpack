@@ -10,6 +10,8 @@ import { equalSelectorFamily } from "../equals";
 
 import { ethereumNftCollections } from "./ethereum/nft";
 import { solanaNftCollections } from "./solana/nft";
+import { enabledBlockchains } from "./preferences";
+import { activeEthereumWallet, activeWallets } from "./wallet";
 
 type NftIDs = string[];
 export const nftsByIds = equalSelectorFamily<Array<Nft | null>, NftIDs>({
@@ -44,7 +46,8 @@ export const nftCollectionsWithIds = selector<{
   key: "nftCollectionsWithIds",
   get: ({ get }) => {
     const collections = get(nftCollections);
-    return {
+    const blockchains = get(enabledBlockchains);
+    const collectionsWithIds = {
       [Blockchain.SOLANA]:
         collections.solana?.map((collection) => {
           return {
@@ -60,6 +63,13 @@ export const nftCollectionsWithIds = selector<{
           };
         }) ?? null,
     };
+    // filter disabled blockchains
+    Object.keys(collectionsWithIds).forEach((key: Blockchain) => {
+      if (!blockchains.includes(key)) {
+        delete collectionsWithIds[key];
+      }
+    });
+    return collectionsWithIds;
   },
 });
 
