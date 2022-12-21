@@ -21,8 +21,11 @@ document.addEventListener("keypress", async function onPress(event) {
   //
   if (BACKPACK_FEATURE_POP_MODE) {
     if (event.key === "g" && event.ctrlKey) {
-      await openPopupWindow("popup.html");
-      window.close();
+      const currentWindow = await chrome.windows.getCurrent();
+      const popupWindow = await openPopupWindow("popup.html");
+      if (currentWindow.id !== popupWindow.id) {
+        window.close();
+      }
     }
   }
 });
