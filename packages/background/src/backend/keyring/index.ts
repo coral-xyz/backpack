@@ -419,7 +419,7 @@ export class KeyringStore {
   ): Promise<string> {
     // If this is a mnemonic based keyring the public key being returned is
     // unknown, if it is a ledger it will just be the same as `publicKey`
-    const newPublicKey = this.activeUserKeyring.blockchainKeyringAdd(
+    const newPublicKey = await this.activeUserKeyring.blockchainKeyringAdd(
       blockchain,
       derivationPath,
       accountIndex,
@@ -442,7 +442,7 @@ export class KeyringStore {
     blockchain: Blockchain,
     persist = true
   ): Promise<void> {
-    this.activeUserKeyring.blockchainKeyringRemove(blockchain);
+    await this.activeUserKeyring.blockchainKeyringRemove(blockchain);
     if (persist) {
       await this.persist();
     }
