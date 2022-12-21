@@ -26,6 +26,7 @@ import {
   MnemonicInputFields,
   PasswordInput,
   PrimaryButton,
+  RoundedContainerGroup,
   Screen,
   StyledText,
   StyledTextInput,
@@ -75,7 +76,6 @@ import type { StackScreenProps } from "@react-navigation/stack";
 import { createStackNavigator } from "@react-navigation/stack";
 import {
   IconLaunchDetail,
-  RoundedContainer,
   SettingsRow,
 } from "@screens/Unlocked/Settings/components/SettingsRow";
 import { encode } from "bs58";
@@ -235,7 +235,7 @@ function OnboardingCreateOrImportWalletScreen({
           backgroundColor: theme.custom.colors.background,
         }}
       >
-        <RoundedContainer>
+        <RoundedContainerGroup>
           <FlatList
             data={menuOptions}
             scrollEnabled={false}
@@ -250,7 +250,7 @@ function OnboardingCreateOrImportWalletScreen({
               );
             }}
           />
-        </RoundedContainer>
+        </RoundedContainerGroup>
       </BottomSheetModal>
     </>
   );
