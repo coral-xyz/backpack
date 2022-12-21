@@ -58,40 +58,43 @@ export class BrowserRuntimeExtension {
 
   public static async openWindow(options: chrome.windows.CreateData) {
     return new Promise(async (resolve, reject) => {
-      const popupWindowId: number =
-        (await BrowserRuntimeCommon.getLocalStorage("popupWindowId")) ?? 0;
-
       // TODO: `browser` support
+      // try to reuse existing popup window
       try {
-        // try to reuse existing popup window
-        const popupWindow = await chrome?.windows.get(popupWindowId);
+        const popupWindowId: number | undefined =
+          await BrowserRuntimeCommon.getLocalStorage("popupWindowId");
 
-        if (popupWindow) {
-          const tabs = await chrome.tabs.query({ windowId: popupWindowId });
-          if (tabs.length === 1) {
-            const tab = tabs[0];
-            const url: string = Array.isArray(options.url)
-              ? options.url[0]
-              : options.url!;
-            const updatedTab = await chrome.tabs.update(tab.id!, { url });
+        if (popupWindowId) {
+          const popupWindow = await chrome?.windows.get(popupWindowId);
 
-            if (updatedTab) {
-              const popupWindow = await chrome?.windows.update(
-                updatedTab.windowId,
-                { focused: true }
-              );
-              return resolve(popupWindow);
-            } else {
-              const error = BrowserRuntimeCommon.checkForError();
-              return reject(error);
+          if (popupWindow) {
+            const tabs = await chrome.tabs.query({ windowId: popupWindowId });
+
+            if (tabs.length === 1) {
+              const tab = tabs[0];
+              const url: string = Array.isArray(options.url)
+                ? options.url[0]!
+                : options.url!;
+              const updatedTab = await chrome.tabs.update(tab.id!, { url });
+
+              if (updatedTab) {
+                const popupWindow = await chrome?.windows.update(
+                  updatedTab.windowId,
+                  { focused: true }
+                );
+                return resolve(popupWindow);
+              } else {
+                const error = BrowserRuntimeCommon.checkForError();
+                return reject(error);
+              }
             }
           }
         }
       } catch (e) {
         // fall through to create new window
       }
+      // if nothign to reuse create new window.
       try {
-        // if nothign to reuse create new window.
         const newPopupWindow = await chrome?.windows.create(options);
         if (newPopupWindow) {
           BrowserRuntimeCommon.setLocalStorage(
