@@ -80,6 +80,7 @@ jobs:
           BACKPACK_FEATURE_MULTICHAIN: "true"
           BACKPACK_FEATURE_USERNAMES: "true"
           BACKPACK_FEATURE_XNFT: "true"
+          BACKPACK_FEATURE_JWT: "true"
           # CI!=true so that build warnings aren't treated like errors (for now)
           CI: ""
         run: yarn build
