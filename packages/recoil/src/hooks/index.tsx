@@ -11,7 +11,6 @@ export * from "./useBlockchain";
 export * from "./useFeatureGates";
 export * from "./useFriendship";
 export * from "./useLoader";
-export * from "./useNftMetadata";
 export * from "./usePriceData";
 export * from "./useRecentNotifications";
 export * from "./useTotalBalance";
