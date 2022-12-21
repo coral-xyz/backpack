@@ -878,7 +878,7 @@ export class Backend {
         // keyring. This is not a complete rollback of state changes, because
         // the next account index gets incremented. This is the correct behaviour
         // because it should allow for sensible retries on conflicts.
-        this.keyringKeyDelete(blockchain, publicKey);
+        await this.keyringKeyDelete(blockchain, publicKey);
         throw error;
       }
     }
@@ -1041,7 +1041,7 @@ export class Backend {
       } catch (error) {
         // Something went wrong persisting to server, roll back changes to the
         // keyring.
-        this.keyringKeyDelete(blockchain, publicKey);
+        await this.keyringKeyDelete(blockchain, publicKey);
         throw error;
       }
     }
@@ -1118,7 +1118,7 @@ export class Backend {
       } catch (error) {
         // Something went wrong persisting to server, roll back changes to the
         // keyring.
-        this.keyringKeyDelete(blockchain, publicKey);
+        await this.keyringKeyDelete(blockchain, publicKey);
         throw error;
       }
     }
