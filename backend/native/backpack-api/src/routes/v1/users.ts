@@ -5,7 +5,8 @@ import express from "express";
 import jwt from "jsonwebtoken";
 
 import { extractUserId, optionallyExtractUserId } from "../../auth/middleware";
-import { setCookie } from "../../auth/util";
+import { clearCookie, setJWTCookie } from "../../auth/util";
+import { REFERRER_COOKIE_NAME } from "../../config";
 import {
   createUser,
   createUserPublicKey,
@@ -94,6 +95,17 @@ router.post("/", async (req, res) => {
     });
   }
 
+  const referrerId = await (async () => {
+    try {
+      if (req.cookies.referrer) {
+        return (await getUser(req.cookies.referrer))?.id as string;
+      }
+    } catch (err) {
+      // TODO: log this failed referral
+    }
+    return undefined;
+  })();
+
   const user = await createUser(
     username,
     blockchainPublicKeys.map((b) => ({
@@ -102,12 +114,13 @@ router.post("/", async (req, res) => {
       blockchain: b.blockchain as Blockchain,
     })),
     inviteCode,
-    waitlistId
+    waitlistId,
+    referrerId
   );
 
   let jwt: string;
   if (user) {
-    jwt = await setCookie(req, res, user.id as string);
+    jwt = await setJWTCookie(req, res, user.id as string);
   } else {
     return res.status(500).json({ msg: "Error creating user account" });
   }
@@ -131,6 +144,8 @@ router.post("/", async (req, res) => {
       console.error({ slackWebhook: err });
     }
   }
+
+  clearCookie(res, REFERRER_COOKIE_NAME);
 
   return res.json({ id: user.id, msg: "ok", jwt });
 });
