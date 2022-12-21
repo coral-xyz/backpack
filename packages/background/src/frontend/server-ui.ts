@@ -9,7 +9,6 @@ import type {
   FEATURE_GATES_MAP,
   RpcRequest,
   RpcResponse,
-  SolanaFeeConfig,
   XnftPreference,
 } from "@coral-xyz/common";
 import {
@@ -42,8 +41,8 @@ import {
   UI_RPC_METHOD_KEYNAME_READ,
   UI_RPC_METHOD_KEYNAME_UPDATE,
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-  UI_RPC_METHOD_KEYRING_AUTOLOCK_READ,
-  UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE,
+  UI_RPC_METHOD_KEYRING_AUTO_LOCK_SETTINGS_READ,
+  UI_RPC_METHOD_KEYRING_AUTO_LOCK_SETTINGS_UPDATE,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC,
   UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY,
@@ -135,6 +134,18 @@ async function handle<T = any>(
 ): Promise<RpcResponse<T>> {
   logger.debug(`handle rpc ${msg.method}`, msg);
 
+  // User did something so restart the auto-lock countdown
+  ctx.backend.keyringStoreAutoLockCountdownRestart();
+
+  /**
+   * Enables or disables Auto-lock functionality to ensure
+   * the wallet stays unlocked when an xNFT is being used
+   **/
+  const toggleAutoLockEnabled = (url: string) =>
+    ctx.backend.keyringStoreAutoLockCountdownToggle(
+      !url.includes("xnftAddress")
+    );
+
   const { method, params } = msg;
   switch (method) {
     //
@@ -180,10 +191,14 @@ async function handle<T = any>(
       return await handleValidateMnemonic(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC:
       return handleKeyringExportMnemonic(ctx, params[0]);
-    case UI_RPC_METHOD_KEYRING_AUTOLOCK_READ:
-      return await handleKeyringAutolockRead(ctx, params[0]);
-    case UI_RPC_METHOD_KEYRING_AUTOLOCK_UPDATE:
-      return await handleKeyringAutolockUpdate(ctx, params[0]);
+    case UI_RPC_METHOD_KEYRING_AUTO_LOCK_SETTINGS_READ:
+      return await handleKeyringAutoLockSettingsRead(ctx, params[0]);
+    case UI_RPC_METHOD_KEYRING_AUTO_LOCK_SETTINGS_UPDATE:
+      return await handleKeyringAutoLockSettingsUpdate(
+        ctx,
+        params[0],
+        params[1]
+      );
     case UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE:
       return await handleMnemonicCreate(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_TYPE_READ:
@@ -218,9 +233,20 @@ async function handle<T = any>(
     case UI_RPC_METHOD_NAVIGATION_POP:
       return await handleNavigationPop(ctx);
     case UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE:
+      if (params[0]) {
+        // The URL has changed, enable/disable auto-lock depending
+        // on whether the first parameter is an xNFT URL
+        toggleAutoLockEnabled(params[0]);
+      }
       return await handleNavigationCurrentUrlUpdate(ctx, params[0], params[1]);
     case UI_RPC_METHOD_NAVIGATION_READ:
-      return await handleNavRead(ctx);
+      const navigationData = await handleNavRead(ctx);
+      if (navigationData) {
+        // Usually called when the user unlocks Backpack and they are
+        // immediately using an xNFT that was opened in the previous session
+        toggleAutoLockEnabled(JSON.stringify(navigationData));
+      }
+      return navigationData;
     case UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE:
       return await handleNavigationActiveTabUpdate(ctx, params[0]);
     case UI_RPC_METHOD_NAVIGATION_TO_ROOT:
@@ -296,7 +322,9 @@ async function handle<T = any>(
       return await handleUsernameAccountCreate(ctx, ...params);
     case UI_RPC_METHOD_ACTIVE_USER_UPDATE:
       // @ts-ignore
-      return await handleActiveUserUpdate(ctx, ...params);
+      const response = await handleActiveUserUpdate(ctx, ...params);
+      ctx.backend.keyringStoreAutoLockReset();
+      return response;
     case UI_RPC_METHOD_USER_LOGOUT:
       // @ts-ignore
       return await handleUserLogout(ctx, ...params);
@@ -593,19 +621,20 @@ function handleKeyringExportMnemonic(
   return [resp];
 }
 
-async function handleKeyringAutolockRead(
+async function handleKeyringAutoLockSettingsRead(
   ctx: Context<Backend>,
   uuid: string
-): Promise<RpcResponse<number>> {
-  const resp = await ctx.backend.keyringAutolockRead(uuid);
+): Promise<RpcResponse<number | undefined>> {
+  const resp = await ctx.backend.keyringAutoLockSettingsRead(uuid);
   return [resp];
 }
 
-async function handleKeyringAutolockUpdate(
+async function handleKeyringAutoLockSettingsUpdate(
   ctx: Context<Backend>,
-  autolockSecs: number
+  seconds?: number,
+  option?: string
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.keyringAutolockUpdate(autolockSecs);
+  const resp = await ctx.backend.keyringAutoLockSettingsUpdate(seconds, option);
   return [resp];
 }
 
