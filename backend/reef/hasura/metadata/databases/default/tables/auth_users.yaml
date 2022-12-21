@@ -30,7 +30,7 @@ array_relationships:
         table:
           name: public_keys
           schema: auth
-  - name: referrals
+  - name: referred_users
     using:
       foreign_key_constraint_on:
         column: referrer_id
