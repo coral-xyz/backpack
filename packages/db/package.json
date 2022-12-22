@@ -1,0 +1,25 @@
+{
+  "name": "@coral-xyz/db",
+  "version": "0.1.0",
+  "module": "dist/esm/index.js",
+  "source": "src/index.ts ",
+  "types": "dist/esm/index.d.ts",
+  "scripts": {
+    "build": "tsc && tsc-alias"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "dexie": "^3.2.2",
+    "@coral-xyz/common": "*",
+    "@coral-xyz/recoil": "*",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "typescript": "~4.9.3"
+  },
+  "targets": {
+    "module": false,
+    "main": false,
+    "types": false
+  }
+}
