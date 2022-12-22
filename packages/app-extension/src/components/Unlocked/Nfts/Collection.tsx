@@ -44,14 +44,14 @@ function _Grid({ id }: { id: string }) {
     <Grid container spacing={{ xs: 2, ms: 2, md: 2, lg: 2 }}>
       {collection.items.map((nftId) => (
         <Grid item xs={6} sm={4} md={3} lg={2} key={nftId}>
-          <NftCard nft={nftId} />
+          <NftCard nftId={nftId} />
         </Grid>
       ))}
     </Grid>
   );
 }
 
-function NftCard({ nftId }: any) {
+function NftCard({ nftId }: { nftId: string }) {
   const { contents, state } = useRecoilValueLoadable(nftById(nftId));
   const nft = (state === "hasValue" && contents) || null;
 
