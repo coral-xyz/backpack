@@ -78,7 +78,10 @@ export function ApproveTransaction({
   title: string;
   tx: string | null;
   wallet: string;
-  onCompletion: (transaction: any, feeConfig?: FeeConfig) => Promise<void>;
+  onCompletion: (
+    transaction: any,
+    feeConfig?: { config: FeeConfig; disabled: boolean }
+  ) => Promise<void>;
 }) {
   const classes = useStyles();
   const blockchain = useWalletBlockchain(wallet);

@@ -59,7 +59,6 @@ jobs:
           BACKPACK_CONFIG_LOG_LEVEL: "info"
           BACKPACK_FEATURE_LIGHT_MODE: "true"
           BACKPACK_FEATURE_POP_MODE: "true"
-          BACKPACK_FEATURE_MULTICHAIN: "true"
           BACKPACK_FEATURE_XNFT: "true"
           # CI!=true so that build warnings aren't treated like errors (for now)
           CI: ""
@@ -77,9 +76,9 @@ jobs:
           BACKPACK_CONFIG_LOG_LEVEL: "info"
           BACKPACK_FEATURE_LIGHT_MODE: "true"
           BACKPACK_FEATURE_POP_MODE: "true"
-          BACKPACK_FEATURE_MULTICHAIN: "true"
           BACKPACK_FEATURE_USERNAMES: "true"
           BACKPACK_FEATURE_XNFT: "true"
+          BACKPACK_FEATURE_JWT: "true"
           # CI!=true so that build warnings aren't treated like errors (for now)
           CI: ""
         run: yarn build

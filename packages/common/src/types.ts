@@ -39,6 +39,15 @@ export type NftCollection = {
   items: Nft[];
 };
 
+export type NftCollectionWithIds = {
+  id: string;
+  name: string;
+  symbol: string;
+  tokenType: string;
+  totalSupply: string;
+  items: string[];
+};
+
 export type Nft = {
   id: string;
   blockchain: Blockchain;
@@ -124,5 +133,5 @@ export type ImportedDerivationPath = {
   publicKey: string;
 };
 
-export type SolanaFeeConfig = { computeUnits: number; priorityFee: number };
+export type SolanaFeeConfig = { computeUnits: number; priorityFee: bigint };
 export type FeeConfig = SolanaFeeConfig;

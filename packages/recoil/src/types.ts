@@ -6,6 +6,7 @@ import {
   TAB_SWAP,
 } from "@coral-xyz/common";
 import type { BigNumber } from "ethers";
+import type { RecoilValueReadOnly } from "recoil";
 
 import { makeUrl } from "./hooks";
 
@@ -72,3 +73,7 @@ export function makeDefaultNav() {
   });
   return defaultNav;
 }
+
+export type ExtractRecoilType<P> = P extends RecoilValueReadOnly<infer T>
+  ? T
+  : never;

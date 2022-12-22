@@ -362,12 +362,17 @@ export const traverseResponse = ({
     ) {
       return o;
     }
-    return Object.fromEntries(
-      Object.entries(o).map(([k, v]) => [
-        k,
-        ibb(k, v, [...p, purifyGraphQLKey(k)]),
-      ])
+    const entries = Object.entries(o).map(
+      ([k, v]) => [k, ibb(k, v, [...p, purifyGraphQLKey(k)])] as const
     );
+    const objectFromEntries = entries.reduce<Record<string, unknown>>(
+      (a, [k, v]) => {
+        a[k] = v;
+        return a;
+      },
+      {}
+    );
+    return objectFromEntries;
   };
   return ibb;
 };
@@ -816,9 +821,13 @@ type IsInterfaced<
                 : DST[P],
               SCLR
             >
-          : Record<string, unknown>
+          : IsArray<
+              R,
+              "__typename" extends keyof DST ? { __typename: true } : never,
+              SCLR
+            >
         : never;
-    }[keyof DST] & {
+    }[keyof SRC] & {
       [P in keyof Omit<
         Pick<
           SRC,

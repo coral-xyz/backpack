@@ -324,6 +324,9 @@ function PluginDrawer() {
   const closePlugin = useClosePlugin();
 
   const pluginProps = searchParams.get("pluginProps");
+
+  // Auto-lock functionality is dependent on checking if the URL contains
+  // "xnftAddress", if this changes then please verify that it still works
   const { xnftAddress } = JSON.parse(decodeURIComponent(pluginProps ?? "{}"));
 
   useEffect(() => {

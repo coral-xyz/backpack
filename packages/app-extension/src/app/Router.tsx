@@ -197,7 +197,10 @@ function QueryApproveTransaction() {
           title={title!}
           tx={tx}
           wallet={wallet}
-          onCompletion={async (txStr: any, feeConfig?: FeeConfig) => {
+          onCompletion={async (
+            txStr: any,
+            feeConfig?: { config: FeeConfig; disabled: boolean }
+          ) => {
             if (!txStr) {
               await background.response({
                 id: requestId,

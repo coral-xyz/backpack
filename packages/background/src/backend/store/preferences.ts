@@ -10,17 +10,25 @@ const STORE_KEY_WALLET_DATA = "wallet-data";
  *
  * Note: this data is not encrypted on the client.
  */
-export type WalletData = {
-  // Deprecated. Don't use this.
+
+// Legacy types. Don't use these.
+type DeprecatedWalletDataDoNotUse = {
   username?: string;
-  autoLockSecs: number;
+  autoLockSecs?: number; // Used in releases <=0.4.0
+};
+
+export type WalletData = {
+  autoLockSettings: {
+    seconds?: number;
+    option?: string;
+  };
   approvedOrigins: Array<string>;
   enabledBlockchains: Array<Blockchain>;
   darkMode: boolean;
   developerMode: boolean;
   solana: SolanaData;
   ethereum?: EthereumData;
-};
+} & DeprecatedWalletDataDoNotUse;
 
 type SolanaData = {
   explorer: string;
@@ -50,6 +58,5 @@ function key(uuid: string): string {
   return `${STORE_KEY_WALLET_DATA}_${uuid}`;
 }
 
-export const DEFAULT_LOCK_INTERVAL_SECS = 15 * 60;
 export const DEFAULT_DARK_MODE = false;
 export const DEFAULT_DEVELOPER_MODE = false;
