@@ -160,7 +160,7 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
     this.accountIndices = accountIndices;
   }
 
-  public deleteKeyIfNeeded(publicKey: string) {
+  public deletePublicKey(publicKey: string) {
     const idx = this.keypairs.findIndex(
       (kp) => kp.publicKey.toString() === publicKey
     );
@@ -170,11 +170,10 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
     if (this.keypairs.length <= 1) {
       throw new Error("cannot delete the last key in the hd keyring");
     }
-    super.deletePublicKey(publicKey);
     this.accountIndices = this.accountIndices
       .slice(0, idx)
       .concat(this.accountIndices.slice(idx + 1));
-    return idx;
+    super.deletePublicKey(publicKey);
   }
 
   public deriveNext(): [string, number] {
