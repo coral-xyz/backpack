@@ -36,18 +36,35 @@ export const getOrCreateFriendship = async ({
     ],
     auth_friend_requests: [
       {
-        where: { from: { _eq: from }, to: { _eq: to } },
+        where: {
+          _or: [
+            { from: { _eq: from }, to: { _eq: to } },
+            { from: { _eq: to }, to: { _eq: from } },
+          ],
+        },
         limit: 1,
       },
-      { id: true },
+      { id: true, from: true, to: true },
     ],
   });
+
+  const requested = existingFriendship.auth_friend_requests.find(
+    (x) => x.from === from
+  )
+    ? true
+    : false;
+  const remote_requested = existingFriendship.auth_friend_requests.find(
+    (x) => x.from === to
+  )
+    ? true
+    : false;
 
   if (existingFriendship.auth_friendships[0]?.id) {
     return {
       id: existingFriendship.auth_friendships[0]?.id,
       are_friends: existingFriendship.auth_friendships[0]?.are_friends,
-      requested: existingFriendship.auth_friend_requests[0] ? true : false,
+      requested,
+      remote_requested,
       spam: existingFriendship.auth_friendships[0]?.[spamLabel] ? true : false,
       blocked: existingFriendship.auth_friendships[0]?.[blockedLabel]
         ? true
@@ -75,7 +92,8 @@ export const getOrCreateFriendship = async ({
     return {
       id: response.insert_auth_friendships_one?.id,
       are_friends: false,
-      requested: false,
+      requested,
+      remote_requested,
       spam: false,
       blocked: false,
     };
@@ -123,12 +141,14 @@ export const getFriendships = async ({
           are_friends: { _eq: false },
           user1_interacted: { _eq: false },
           user1_blocked_user2: { _eq: false },
+          user2_interacted: { _eq: true },
         },
         {
           user2: { _eq: uuid },
           are_friends: { _eq: false },
           user2_interacted: { _eq: false },
           user2_blocked_user1: { _eq: false },
+          user1_interacted: { _eq: true },
         },
       ],
     };
@@ -275,11 +295,25 @@ export async function setFriendship({
   to: string;
   sendRequest: boolean;
 }) {
-  if (!sendRequest) {
-    return deleteFriendRequest({ from, to });
-  }
-
   const { user1, user2 } = getSortedUsers(from, to);
+  if (!sendRequest) {
+    await chain("mutation")({
+      update_auth_friendships: [
+        {
+          _set: {
+            are_friends: false,
+          },
+          where: {
+            user1: { _eq: user1 },
+            user2: { _eq: user2 },
+          },
+        },
+        { affected_rows: true },
+      ],
+    });
+    await deleteFriendRequest({ from, to });
+    return;
+  }
 
   const existingFriendship = await chain("query")({
     auth_friendships: [

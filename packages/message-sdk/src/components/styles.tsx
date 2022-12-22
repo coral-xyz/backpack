@@ -19,6 +19,12 @@ export const useStyles = styles((theme) => ({
   icon: {
     background: theme.custom.colors.textBackground,
   },
+  topLabel: {
+    fontSize: 14,
+    color: theme.custom.colors.smallTextColor,
+    marginLeft: 4,
+    marginBottom: 4,
+  },
   iconInner: {
     background: theme.custom.colors.fontColor,
   },
@@ -32,6 +38,7 @@ export const useStyles = styles((theme) => ({
   container: {
     marginLeft: "16px",
     marginRight: "16px",
+    height: "100%",
   },
   roundBtn: {
     marginLeft: 8,
@@ -88,12 +95,16 @@ export const useStyles = styles((theme) => ({
   },
   timestamp: {
     fontSize: 14,
-    minWidth: 60,
     color: theme.custom.colors.fontColor2,
   },
   smallTitle: {
     color: theme.custom.colors.smallTextColor,
     fontWeight: 600,
+  },
+  smallTitle2: {
+    color: theme.custom.colors.smallTextColor,
+    fontWeight: 500,
+    fontSize: 16,
   },
   smallSubTitle: {
     color: theme.custom.colors.smallTextColor,

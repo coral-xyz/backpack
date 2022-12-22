@@ -25,6 +25,7 @@ export const useStyles = styles((theme) => ({
   },
   strongText: {
     color: theme.custom.colors.fontColor2,
-    fontWeight: 700,
+    fontWeight: 600,
+    fontSize: 14,
   },
 }));

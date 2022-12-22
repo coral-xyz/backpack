@@ -12,6 +12,7 @@ import {
   QUERY_LOCKED,
   toTitleCase,
 } from "@coral-xyz/common";
+import { EmptyState } from "@coral-xyz/react-common";
 import {
   KeyringStoreStateEnum,
   useApprovedOrigins,
@@ -26,7 +27,6 @@ import { Block as BlockIcon } from "@mui/icons-material";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { refreshXnftPreferences } from "../api/preferences";
-import { EmptyState } from "../components/common/EmptyState";
 import { Locked } from "../components/Locked";
 import { Unlocked } from "../components/Unlocked";
 import { ApproveMessage } from "../components/Unlocked/Approvals/ApproveMessage";

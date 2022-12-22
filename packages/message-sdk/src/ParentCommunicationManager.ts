@@ -14,6 +14,7 @@ export class ParentCommunicationManager {
     [counter: number]: { resolve: any; reject: any };
   };
   private nativePush?: (props: any) => {};
+  private nativePop?: () => {};
 
   private constructor() {
     if (IFRAME_HOSTED) {
@@ -49,6 +50,10 @@ export class ParentCommunicationManager {
     this.nativePush = push;
   }
 
+  public setNativePop(pop: any) {
+    this.nativePop = pop;
+  }
+
   public static getInstance() {
     if (!this.instance) {
       this.instance = new ParentCommunicationManager();
@@ -76,6 +81,10 @@ export class ParentCommunicationManager {
     } else {
       return fetch(url, args);
     }
+  }
+
+  pop() {
+    this.nativePop?.();
   }
 
   push(props: { title: string; componentId: string; componentProps: any }) {

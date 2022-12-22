@@ -1,6 +1,7 @@
 import { Suspense, useState } from "react";
 import type { EnrichedNotification } from "@coral-xyz/common";
 import {
+  EmptyState,
   isFirstLastListItemStyle,
   Loading,
   ProxyImage,
@@ -10,7 +11,6 @@ import { styles, useCustomTheme } from "@coral-xyz/themes";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { IconButton, List, ListItem, Typography } from "@mui/material";
 
-import { EmptyState } from "../../common/EmptyState";
 import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
 import {
   NavStackEphemeral,
@@ -383,7 +383,9 @@ function NoNotificationsLabel({ minimize }: { minimize: boolean }) {
       <EmptyState
         icon={(props: any) => <NotificationsIcon {...props} />}
         title={"No Notifications"}
-        subtitle={"Install xnfts to receive notifications"}
+        subtitle={
+          "These come from xNFTs, but you don't have any apps installed."
+        }
         buttonText={"Browse the xNFT Library"}
         onClick={() => window.open("https://xnft.gg")}
         contentStyle={{

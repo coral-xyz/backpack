@@ -1,11 +1,10 @@
 import React from "react";
 import type { BackgroundClient } from "@coral-xyz/common";
 import { UI_RPC_METHOD_NAVIGATION_TO_DEFAULT } from "@coral-xyz/common";
+import { EmptyState } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
-
-import { EmptyState } from "../components/common/EmptyState";
 
 interface State {
   err: boolean;

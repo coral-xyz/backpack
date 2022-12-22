@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import type { Blockchain, NftCollectionWithIds } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import {
+  EmptyState,
   ImageIcon,
   Loading,
   PrimaryButton,
@@ -21,7 +22,6 @@ import Collapse from "@mui/material/Collapse";
 import Typography from "@mui/material/Typography";
 import { useRecoilValueLoadable, useSetRecoilState } from "recoil";
 
-import { EmptyState } from "../../../common/EmptyState";
 import { Scrollbar } from "../../../common/Layout/Scrollbar";
 
 import { BlockchainHeader } from "./BlockchainHeader";

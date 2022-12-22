@@ -1,10 +1,10 @@
 import { useMemo } from "react";
+import { EmptyState, Loading } from "@coral-xyz/react-common";
 import { nftCollectionsWithIds } from "@coral-xyz/recoil";
 import { Image as ImageIcon } from "@mui/icons-material";
 import { useRecoilValueLoadable } from "recoil";
 
 import { useIsONELive } from "../../../hooks/useIsONELive";
-import { EmptyState } from "../../common/EmptyState";
 import {} from "../Balances";
 
 import EntryONE from "./EntryONE";

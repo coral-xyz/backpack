@@ -53,7 +53,7 @@ export function PreferencesAutoLock() {
   const options = [
     { id: "never", text: "Never" },
     { id: "onClose", text: "Every time I close Backpack" },
-  ] satisfies { id: typeof settings.option; text: string }[];
+  ] as { id: typeof settings.option; text: string }[];
 
   return (
     <form

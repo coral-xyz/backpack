@@ -12,7 +12,7 @@ export const EmptyChat = () => {
     <div>
       <div
         className={classes.horizontalCenter}
-        style={{ marginBottom: 16, marginTop: 10 }}
+        style={{ marginBottom: 16, marginTop: 20 }}
       >
         <IconButton className={classes.contactIconOuter} size={"large"}>
           <TextsmsIcon style={{ color: theme.custom.colors.fontColor }} />

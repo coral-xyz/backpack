@@ -59,23 +59,25 @@ const useStyles = makeStyles((theme: any) =>
       display: "flex",
       flexDirection: "row",
       alignItems: "flex-start",
-      padding: "12px 19px",
+      padding: "8px 19px",
     },
     messageLeft: {
       borderRadius: "16px 16px 16px 0px",
       color: theme.custom.colors.fontColor4,
       overflowWrap: "break-word",
+      fontSize: 14,
     },
     messageRightContainer: {
       display: "flex",
       flexDirection: "column",
       alignItems: "flex-end",
-      padding: "12px 16px",
+      padding: "8px 16px",
     },
     messageRight: {
       borderRadius: "16px 16px 0px 16px",
       color: theme.custom.colors.background,
       overflowWrap: "break-word",
+      fontSize: 14,
     },
     hoverParent: {
       "&:hover $hoverChild, & .Mui-focused $hoverChild": {
@@ -268,7 +270,7 @@ function MessageLeft(props) {
               props.messageKind === "gif"
                 ? "transparent"
                 : theme.custom.colors.bg4,
-            padding: props.messageKind === "gif" ? "0px 0px" : "12px 16px",
+            padding: props.messageKind === "gif" ? "0px 0px" : "8px 16px",
           }}
         >
           {props.messageKind === "gif" ? (
@@ -350,7 +352,7 @@ function MessageRight(props) {
                 props.messageKind === "gif"
                   ? "transparent"
                   : theme.custom.colors.fontColor2,
-              padding: props.messageKind === "gif" ? "0px 0px" : "12px 16px",
+              padding: props.messageKind === "gif" ? "0px 0px" : "8px 16px",
             }}
           >
             {props.messageKind === "gif" ? (
