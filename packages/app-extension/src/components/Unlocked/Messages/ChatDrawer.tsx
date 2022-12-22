@@ -1,11 +1,7 @@
 import type { Friendship } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import { toast } from "@coral-xyz/react-common";
-import {
-  friendship,
- friendship,   SearchParamsFor,
-  useDecodedSearchParams,
-useDecodedSearchParams } from "@coral-xyz/recoil";
+import { friendship, useDecodedSearchParams } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 import BlockIcon from "@mui/icons-material/Block";
 import InfoIcon from "@mui/icons-material/Info";

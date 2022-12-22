@@ -1,9 +1,5 @@
-import { useSearchParams } from "react-router-dom";
-import {
-  Blockchain,
- Blockchain,  TAB_APPS,
-  UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE } from "@coral-xyz/common";
-import { EmptyState, ProxyImage , ProxyImage } from "@coral-xyz/react-common";
+import { Blockchain } from "@coral-xyz/common";
+import { EmptyState, ProxyImage } from "@coral-xyz/react-common";
 import {
   filteredPlugins,
   useActiveWallets,
