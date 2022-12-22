@@ -108,24 +108,30 @@ export function Inbox() {
           <UserList users={searchedUsersDistinct} />
         </div>
       )}
-      {!messagesLoading && searchFilter.length < 3 && activeChats.length === 0 && (
-        <div
-          style={{
-            flexGrow: 1,
-            justifyContent: "center",
-            flexDirection: "column",
-            display: "flex",
-            paddingBottom: 50,
-          }}
-        >
-          {" "}
-          <EmptyState
-            icon={(props: any) => <ChatBubbleIcon {...props} />}
-            title={"No messages"}
-            subtitle={"Search for someone to send a message to!"}
-          />
-        </div>
-      )}
+      {!messagesLoading &&
+        searchFilter.length < 3 &&
+        activeChats.length === 0 && (
+          <div
+            style={{
+              flexGrow: 1,
+              justifyContent: "center",
+              flexDirection: "column",
+              display: "flex",
+              paddingBottom: 50,
+            }}
+          >
+            {" "}
+            <EmptyState
+              icon={(props: any) => <ChatBubbleIcon {...props} />}
+              title={"No messages"}
+              subtitle={"Search for someone to send a message!"}
+              style={{
+                paddingLeft: 0,
+                paddingRight: 0,
+              }}
+            />
+          </div>
+        )}
     </div>
   );
 }

@@ -9,9 +9,10 @@ export const EmptyState: React.FC<{
   subtitle: string;
   buttonText?: string;
   onClick?: () => void;
-  contentStyle?: React.CSSProperties;
   minimize?: boolean;
   verticallyCentered?: boolean;
+  contentStyle?: React.CSSProperties;
+  style?: React.CSSProperties;
 }> = ({
   icon,
   title,
@@ -19,6 +20,7 @@ export const EmptyState: React.FC<{
   buttonText,
   onClick,
   contentStyle,
+  style,
   minimize,
   verticallyCentered = true,
 }) => {
@@ -34,6 +36,7 @@ export const EmptyState: React.FC<{
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
+        ...style,
       }}
     >
       <div
