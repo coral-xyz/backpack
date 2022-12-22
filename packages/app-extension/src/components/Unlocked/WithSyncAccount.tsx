@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Blockchain, BlockchainKeyringInit } from "@coral-xyz/common";
+import type { Blockchain } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
   getAddMessage,
@@ -8,9 +8,6 @@ import {
 import { Loading } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { ethers } from "ethers";
-
-import { WithDrawer } from "../common/Layout/Drawer";
-import { HardwareOnboard } from "../Onboarding/pages/HardwareOnboard";
 
 const { base58 } = ethers.utils;
 
@@ -32,60 +29,49 @@ export function WithSyncAccount({
   const background = useBackgroundClient();
   const [loading, setLoading] = useState(true);
 
-  const [openDrawer, setOpenDrawer] = useState(false);
-  // Public key/signature pairs that are required to sync the state of the
-  // server public key data with the client data.
-  const [requiredSignatures, setRequiredSignatures] = useState<
-    Array<{
-      blockchain: Blockchain;
-      publicKey: string;
-      hardware: boolean;
-    }>
-  >(
-    // Signatures are required for all wallets that exist on the client that
-    // do not exist on the server
-    clientPublicKeys
-      .filter((c) => {
-        // Filter to client public keys that don't exist on the server
-        const existsServer = serverPublicKeys.find(
-          (s) => s.blockchain === c.blockchain && s.publicKey === c.publicKey
-        );
-        return !existsServer;
-      })
-      .map((c) => {
-        return {
-          ...c,
-          signature: undefined,
-        };
-      })
-  );
-
   /**
    * Sign all transparently signable add messages with the required public keys.
    */
   useEffect(() => {
     (async () => {
       if (jwtEnabled) {
-        if (requiredSignatures.length === 0) {
+        // Public key/signature pairs that are required to sync the state of the
+        // server public key data with the client data.
+        const danglingPublicKeys = clientPublicKeys.filter((c) => {
+          // Filter to client public keys that don't exist on the server
+          const existsServer = serverPublicKeys.find(
+            (s) => s.blockchain === c.blockchain && s.publicKey === c.publicKey
+          );
+          return !existsServer;
+        });
+
+        if (danglingPublicKeys.length === 0) {
           // Nothing left to sign
           setLoading(false);
         } else {
-          for (const requiredSignature of requiredSignatures) {
-            if (requiredSignature.hardware) continue;
-            addPublicKeyToAccount(
-              requiredSignature.blockchain,
-              requiredSignature.publicKey
-            );
+          for (const danglingPublicKey of danglingPublicKeys) {
+            // TODO - skip hardware wallets for now
+            if (danglingPublicKey.hardware) {
+              removePublicKeyFromAccount(
+                danglingPublicKey.blockchain,
+                danglingPublicKey.publicKey
+              );
+            } else {
+              addPublicKeyToAccount(
+                danglingPublicKey.blockchain,
+                danglingPublicKey.publicKey
+              );
+            }
           }
-          setRequiredSignatures(requiredSignatures.filter((r) => r.hardware));
         }
       } else {
         // No JWT enabled, finish
         setLoading(false);
       }
     })();
-  }, [requiredSignatures]);
+  }, []);
 
+  // Add a public key to a Backpack account
   const addPublicKeyToAccount = async (
     blockchain: Blockchain,
     publicKey: string,
@@ -118,6 +104,7 @@ export function WithSyncAccount({
     }
   };
 
+  // Remove a public key from a Backapck account
   const removePublicKeyFromAccount = async (
     blockchain: Blockchain,
     publicKey: string
@@ -139,61 +126,5 @@ export function WithSyncAccount({
     }
   };
 
-  const nextHardwareSignature = requiredSignatures.find((r) => r.hardware);
-
-  return (
-    <>
-      {loading ? <Loading /> : { children }}
-      {nextHardwareSignature && (
-        <WithDrawer
-          openDrawer={openDrawer}
-          setOpenDrawer={setOpenDrawer}
-          paperStyles={{
-            height: "calc(100% - 56px)",
-            borderTopLeftRadius: "12px",
-            borderTopRightRadius: "12px",
-          }}
-        >
-          <HardwareOnboard
-            blockchain={nextHardwareSignature.blockchain}
-            action="search"
-            searchPublicKey={nextHardwareSignature.publicKey}
-            signMessage={getAddMessage(nextHardwareSignature.publicKey)}
-            signText="Sign the message to authenticate with Backpack."
-            onSkip={() => {
-              removePublicKeyFromAccount(
-                nextHardwareSignature.blockchain,
-                nextHardwareSignature.publicKey
-              );
-              // Remove the added public key from required signatures
-              setRequiredSignatures(
-                requiredSignatures.filter(
-                  (c) =>
-                    c.blockchain === nextHardwareSignature.blockchain &&
-                    c.publicKey === nextHardwareSignature.publicKey &&
-                    c.hardware
-                )
-              );
-            }}
-            onComplete={(keyringInit: BlockchainKeyringInit) => {
-              addPublicKeyToAccount(
-                keyringInit.blockchain,
-                keyringInit.publicKey,
-                keyringInit.signature
-              );
-              // Remove the added public key from required signatures
-              setRequiredSignatures(
-                requiredSignatures.filter(
-                  (c) =>
-                    c.blockchain === nextHardwareSignature.blockchain &&
-                    c.publicKey === nextHardwareSignature.publicKey &&
-                    c.hardware
-                )
-              );
-            }}
-          />
-        </WithDrawer>
-      )}
-    </>
-  );
+  return loading ? <Loading /> : children;
 }
