@@ -50,13 +50,17 @@ export function WithSyncAccount({
           setLoading(false);
         } else {
           for (const danglingPublicKey of danglingPublicKeys) {
-            // TODO - skip hardware wallets for now
             if (danglingPublicKey.hardware) {
+              // Remove hardware public keys if they are not on the server
+              // They can be added again through settings to capture the
+              // signature
               removePublicKeyFromAccount(
                 danglingPublicKey.blockchain,
                 danglingPublicKey.publicKey
               );
             } else {
+              // Sync all transparently signable public keys by adding them
+              // to the server
               addPublicKeyToAccount(
                 danglingPublicKey.blockchain,
                 danglingPublicKey.publicKey
