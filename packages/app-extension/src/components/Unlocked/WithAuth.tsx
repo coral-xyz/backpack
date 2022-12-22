@@ -20,7 +20,7 @@ import { WithSyncAccount } from "./WithSyncAccount";
 const { base58 } = ethers.utils;
 
 export function WithAuth({ children }: { children: React.ReactElement }) {
-  const { authenticate, checkAuthentication, getSigners, getAuthSigner } =
+  const { authenticate, checkAuthentication, getAuthSigner } =
     useAuthentication();
   const background = useBackgroundClient();
   const user = useUser();
@@ -33,15 +33,12 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
     userId: string;
   } | null>(null);
   const [authSignature, setAuthSignature] = useState<string | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [clientPublicKeys, setClientPublicKeys] = useState<
-    Array<{ blockchain: Blockchain; publicKey: string; hardware: boolean }>
-  >([]);
   const [loading, setLoading] = useState(true);
   const [openDrawer, setOpenDrawer] = useState(false);
-  const [serverPublicKeys, setServerPublicKeys] = useState<
-    Array<{ blockchain: Blockchain; publicKey: string }>
-  >([]);
+  const [serverAccountState, setServerAccountState] = useState<{
+    isAuthenticated: boolean;
+    publicKeys: Array<{ blockchain: Blockchain; publicKey: string }>;
+  } | null>(null);
 
   const jwtEnabled = !!(BACKPACK_FEATURE_USERNAMES && BACKPACK_FEATURE_JWT);
 
@@ -55,14 +52,13 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
         // Already authenticated or not using JWTs
         setLoading(false);
       } else {
-        setAuthSignature(null);
         setLoading(true);
+        setAuthSignature(null);
         const result = await checkAuthentication(user.username, user.jwt);
         // These set state calls should be batched
-        setClientPublicKeys(await getSigners());
         if (result) {
-          setIsAuthenticated(result.isAuthenticated);
-          setServerPublicKeys(result.publicKeys);
+          const { isAuthenticated, publicKeys } = result;
+          setServerAccountState({ isAuthenticated, publicKeys });
         }
       }
     })();
@@ -74,10 +70,10 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
    * and the server and set the auth data.
    */
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (serverAccountState && !serverAccountState.isAuthenticated) {
       (async () => {
         const authData = await getAuthSigner(
-          serverPublicKeys.map((p) => p.publicKey)
+          serverAccountState.publicKeys.map((p) => p.publicKey)
         );
         if (authData) {
           setAuthData({
@@ -90,7 +86,7 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
     } else {
       setLoading(false);
     }
-  }, [isAuthenticated, serverPublicKeys]);
+  }, [serverAccountState]);
 
   /**
    * When an auth signer is found, take the required action to get a signature.
@@ -142,14 +138,12 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
     <>
       {loading ? (
         <Loading />
-      ) : (
-        <WithSyncAccount
-          jwtEnabled={jwtEnabled}
-          clientPublicKeys={clientPublicKeys}
-          serverPublicKeys={serverPublicKeys}
-        >
+      ) : jwtEnabled && serverAccountState ? (
+        <WithSyncAccount serverPublicKeys={serverAccountState.publicKeys}>
           {children}
         </WithSyncAccount>
+      ) : (
+        children
       )}
       {authData && (
         <WithDrawer
