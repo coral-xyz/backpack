@@ -44,6 +44,19 @@ router.get("/", extractUserId, ensureHasRoomAccess, async (req, res) => {
   res.json({ chats: enrichedChats });
 });
 
+router.get("/after", extractUserId, ensureHasRoomAccess, async (req, res) => {
+  // @ts-ignore
+  const room: string = req.query.room;
+  // @ts-ignore
+  const type: SubscriptionType = req.query.type;
+  const limit = req.query.limit || 50;
+  const lastMessageId = req.query.lastMessage || -1;
+  // @ts-ignore
+  const chats = await getChats({ room, type, lastMessageId, limit });
+  const enrichedChats = await enrichMessages(room, type, chats);
+  res.json({ chats: enrichedChats });
+});
+
 const enrichMessages = async (
   room: string,
   type: SubscriptionType,

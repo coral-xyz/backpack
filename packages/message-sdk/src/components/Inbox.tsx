@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { EnrichedInboxDb } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
+import { useActiveChats } from "@coral-xyz/db";
 import { EmptyState, TextInput } from "@coral-xyz/react-common";
 import { useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
@@ -20,7 +21,9 @@ export function Inbox() {
   const { uuid } = useUser();
   const [searchFilter, setSearchFilter] = useState("");
   const [messagesLoading, setMessagesLoading] = useState(true);
-  const [activeChats, setActiveChats] = useState<EnrichedInboxDb[]>([]);
+  const activeChats = useActiveChats(uuid) || [];
+  const setActiveChats = () => {};
+  // const [activeChats, setActiveChats] = useState<EnrichedInboxDb[]>([]);
   const [requestCount, setRequestCount] = useState(0);
   const [searchResults, setSearchResults] = useState<
     { image: string; id: string; username: string }[]
@@ -108,24 +111,27 @@ export function Inbox() {
           <UserList users={searchedUsersDistinct} />
         </div>
       )}
-      {!messagesLoading && searchFilter.length < 3 && activeChats.length === 0 && (
-        <div
-          style={{
-            flexGrow: 1,
-            justifyContent: "center",
-            flexDirection: "column",
-            display: "flex",
-            paddingBottom: 50,
-          }}
-        >
-          {" "}
-          <EmptyState
-            icon={(props: any) => <ChatBubbleIcon {...props} />}
-            title={"No messages"}
-            subtitle={"Search for someone to send a message to!"}
-          />
-        </div>
-      )}
+      {!messagesLoading &&
+        searchFilter.length < 3 &&
+        requestCount === 0 &&
+        activeChats.length === 0 && (
+          <div
+            style={{
+              flexGrow: 1,
+              justifyContent: "center",
+              flexDirection: "column",
+              display: "flex",
+              paddingBottom: 50,
+            }}
+          >
+            {" "}
+            <EmptyState
+              icon={(props: any) => <ChatBubbleIcon {...props} />}
+              title={"No messages"}
+              subtitle={"Search for someone to send a message to!"}
+            />
+          </div>
+        )}
     </div>
   );
 }

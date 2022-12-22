@@ -1,4 +1,5 @@
 import type {
+  EnrichedMessage,
   Message,
   MessageWithMetadata,
   SubscriptionType,
@@ -7,11 +8,6 @@ import { BACKEND_API_URL, CHAT_MESSAGES, SUBSCRIBE } from "@coral-xyz/common";
 import EventEmitter from "eventemitter3";
 
 import { RECONNECTING, Signaling, SIGNALING_CONNECTED } from "./Signaling";
-
-export interface EnrichedMessage extends MessageWithMetadata {
-  direction: "send" | "recv";
-  received?: boolean;
-}
 
 const DEBOUNCE_INTERVAL_MS = 500;
 

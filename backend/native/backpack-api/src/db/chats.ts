@@ -13,15 +13,17 @@ export const getChats = async ({
   room,
   type,
   lastChatId,
+  limit = 10,
 }: {
   room: string;
   type: SubscriptionType;
   lastChatId: number;
+  limit: number;
 }): Promise<Message[]> => {
   const response = await chain("query")({
     chats: [
       {
-        limit: 10,
+        limit,
         //@ts-ignore
         order_by: [{ created_at: "desc" }],
         where: {

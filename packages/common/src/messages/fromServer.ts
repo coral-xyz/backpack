@@ -13,6 +13,8 @@ export interface Message {
   message_kind: "gif" | "text";
   created_at: string;
   parent_client_generated_uuid?: string;
+  room: string;
+  type: SubscriptionType;
 }
 
 export interface MessageWithMetadata extends Message {
@@ -21,6 +23,11 @@ export interface MessageWithMetadata extends Message {
   parent_message_text?: string;
   parent_message_author_username?: string;
   parent_message_author_uuid?: string;
+}
+
+export interface EnrichedMessage extends MessageWithMetadata {
+  direction: "send" | "recv";
+  received?: boolean;
 }
 
 export type ReceiveChat = {
