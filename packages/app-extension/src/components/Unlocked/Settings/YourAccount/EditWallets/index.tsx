@@ -1,13 +1,18 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
-import { toTitleCase } from "@coral-xyz/common";
+import {
+  BACKPACK_FEATURE_JWT,
+  BACKPACK_FEATURE_USERNAMES,
+  toTitleCase,
+  walletAddressDisplay,
+} from "@coral-xyz/common";
 import { List, ListItem } from "@coral-xyz/react-common";
-import { useWalletPublicKeys } from "@coral-xyz/recoil";
+import { useUser, useWalletPublicKeys } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { MoreHoriz } from "@mui/icons-material";
 import { Typography } from "@mui/material";
 
-import { WalletAddress } from "../../../../common";
+import { useAuthentication } from "../../../../../hooks/useAuthentication";
 import { useNavStack } from "../../../../common/Layout/NavStack";
 import { ImportTypeBadge } from "../../../../common/WalletList";
 import { AddConnectWalletButton } from "../..";
@@ -15,14 +20,34 @@ import { AddConnectWalletButton } from "../..";
 export function EditWallets() {
   const nav = useNavStack();
   const blockchainKeyrings = useWalletPublicKeys();
+  const { checkAuthentication } = useAuthentication();
+  const { username } = useUser();
+  const [serverPublicKeys, setServerPublicKeys] = useState<
+    Array<{ blockchain: Blockchain; publicKey: string }>
+  >([]);
 
   useEffect(() => {
     const title = nav.title;
-    nav.setTitle("Edit wallets");
+    nav.setTitle("Edit Wallets");
 
     return () => {
       nav.setTitle(title);
     };
+  }, []);
+
+  /**
+   * Retrieve the list of public keys from the server
+   */
+  useEffect(() => {
+    const jwtEnabled = !!(BACKPACK_FEATURE_USERNAMES && BACKPACK_FEATURE_JWT);
+    (async () => {
+      if (jwtEnabled) {
+        const result = await checkAuthentication(username);
+        if (result) {
+          setServerPublicKeys(result.publicKeys);
+        }
+      }
+    })();
   }, []);
 
   return (
@@ -31,6 +56,9 @@ export function EditWallets() {
         <WalletList
           key={blockchain}
           blockchain={blockchain as Blockchain}
+          serverPublicKeys={serverPublicKeys
+            .filter((s) => s.blockchain === blockchain)
+            .map((s) => s.publicKey)}
           keyring={keyring}
         />
       ))}
@@ -43,11 +71,14 @@ export function EditWallets() {
 function WalletList({
   blockchain,
   keyring,
+  serverPublicKeys,
 }: {
   blockchain: Blockchain;
   keyring: any;
+  serverPublicKeys: Array<string>;
 }) {
   const theme = useCustomTheme();
+
   const flattenedWallets = [
     ...keyring.hdPublicKeys.map((k: any) => ({ ...k, type: "derived" })),
     ...keyring.importedPublicKeys.map((k: any) => ({
@@ -56,11 +87,24 @@ function WalletList({
     })),
     ...keyring.ledgerPublicKeys.map((k: any) => ({
       ...k,
-      type: "ledger",
+      type: "hardware",
     })),
   ];
 
-  // TODO: replace placeholder wallet avatar with stored image when available
+  // Dehydrated public keys are keys that exist on the server but cannot be
+  // used on the client as we don't have signing data, e.g. mnemonic, private
+  // key or ledger derivation path
+  const dehydratedPublicKeys = serverPublicKeys
+    .filter(
+      (serverPublicKey) =>
+        !flattenedWallets.find((key: any) => key.publicKey === serverPublicKey)
+    )
+    .map((publicKey) => ({
+      name: "",
+      publicKey,
+      type: "dehydrated",
+    }));
+
   return (
     <div style={{ marginBottom: "16px" }}>
       <Typography
@@ -80,18 +124,20 @@ function WalletList({
           borderRadius: "10px",
         }}
       >
-        {flattenedWallets.map(({ name, publicKey, type }, idx) => (
-          <WalletListItem
-            blockchain={blockchain}
-            key={publicKey.toString()}
-            name={name}
-            publicKey={publicKey}
-            type={type}
-            isFirst={idx === 0}
-            isLast={idx === flattenedWallets.length - 1}
-            showDetailMenu={true}
-          />
-        ))}
+        {flattenedWallets
+          .concat(dehydratedPublicKeys)
+          .map(({ name, publicKey, type }, idx) => (
+            <WalletListItem
+              blockchain={blockchain}
+              key={publicKey}
+              name={name}
+              publicKey={publicKey}
+              type={type}
+              isFirst={idx === 0}
+              isLast={idx === flattenedWallets.length - 1}
+              showDetailMenu={true}
+            />
+          ))}
       </List>
       <div
         style={{
@@ -145,13 +191,21 @@ export const WalletListItem: React.FC<{
       onClick={
         onClick
           ? onClick
-          : () =>
-              nav.push("edit-wallets-wallet-detail", {
-                blockchain,
-                publicKey,
-                name,
-                type,
-              })
+          : () => {
+              if (type === "dehydrated") {
+                nav.push("edit-wallets-recover", {
+                  blockchain,
+                  publicKey,
+                });
+              } else {
+                nav.push("edit-wallets-wallet-detail", {
+                  blockchain,
+                  publicKey,
+                  name,
+                  type,
+                });
+              }
+            }
       }
       style={{ height: "48px", display: "flex", width: "100%" }}
     >
