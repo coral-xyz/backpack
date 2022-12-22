@@ -1,13 +1,7 @@
 import { walletAddressDisplay } from "@coral-xyz/common";
 import type { CustomTheme } from "@coral-xyz/themes";
 import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
-import {
-  Box,
-  Button,
-  Checkbox as _Checkbox,
-  CircularProgress,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Checkbox as _Checkbox, Typography } from "@mui/material";
 import type { BigNumber } from "ethers";
 import { ethers } from "ethers";
 
@@ -100,9 +94,11 @@ export function WalletAddress({ publicKey, name, style, nameStyle }: any) {
         ...style,
       }}
     >
-      <Typography style={{ ...nameStyle, marginRight: "8px" }}>
-        {name}
-      </Typography>
+      {name && (
+        <Typography style={{ ...nameStyle, marginRight: "8px" }}>
+          {name}
+        </Typography>
+      )}
       {publicKey && (
         <Typography style={{ color: theme.custom.colors.secondary }}>
           ({walletAddressDisplay(publicKey)})
