@@ -4,7 +4,6 @@ import {
   BACKPACK_FEATURE_JWT,
   BACKPACK_FEATURE_USERNAMES,
   toTitleCase,
-  walletAddressDisplay,
 } from "@coral-xyz/common";
 import { List, ListItem } from "@coral-xyz/react-common";
 import { useUser, useWalletPublicKeys } from "@coral-xyz/recoil";
@@ -13,6 +12,7 @@ import { MoreHoriz } from "@mui/icons-material";
 import { Typography } from "@mui/material";
 
 import { useAuthentication } from "../../../../../hooks/useAuthentication";
+import { WalletAddress } from "../../../../common";
 import { useNavStack } from "../../../../common/Layout/NavStack";
 import { ImportTypeBadge } from "../../../../common/WalletList";
 import { AddConnectWalletButton } from "../..";
