@@ -1,6 +1,6 @@
-import type { CustomTheme} from "@coral-xyz/themes";
-import { styles } from "@coral-xyz/themes";
-import { CircularProgress } from "@mui/material";
+import type { CustomTheme } from "@coral-xyz/themes";
+import { styles } from "@coral-xyz/themes/";
+import CircularProgress from "@mui/material/CircularProgress";
 const useStyles = styles((theme: CustomTheme) => ({
   circle: {
     stroke: "url(#linearColors)",

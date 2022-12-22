@@ -1,6 +1,8 @@
 import React, { lazy, Suspense } from "react";
 import ReactDOM from "react-dom";
-import { BACKPACK_FEATURE_POP_MODE, openPopupWindow } from "@coral-xyz/common";
+import { openPopupWindow } from "@coral-xyz/common/dist/esm/browser";
+import { BACKPACK_FEATURE_POP_MODE } from "@coral-xyz/common/dist/esm/generated-config";
+import { Loading } from "@coral-xyz/react-common/dist/esm/components/base/Loading";
 
 import "./index.css";
 
@@ -19,8 +21,11 @@ document.addEventListener("keypress", async function onPress(event) {
   //
   if (BACKPACK_FEATURE_POP_MODE) {
     if (event.key === "g" && event.ctrlKey) {
-      await openPopupWindow("popup.html");
-      window.close();
+      const currentWindow = await chrome.windows.getCurrent();
+      const popupWindow = await openPopupWindow("popup.html");
+      if (currentWindow.id !== popupWindow.id) {
+        window.close();
+      }
     }
   }
 });
@@ -30,7 +35,7 @@ document.addEventListener("keypress", async function onPress(event) {
 //
 ReactDOM.render(
   <React.StrictMode>
-    <Suspense fallback={null}>
+    <Suspense fallback={<Loading />}>
       <App />
     </Suspense>
     <Suspense fallback={null}>
