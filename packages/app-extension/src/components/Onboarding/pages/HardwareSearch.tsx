@@ -22,7 +22,6 @@ export const HardwareSearch = ({
   publicKey,
   onNext,
   onRetry,
-  onSkip,
 }: {
   blockchain: Blockchain;
   transport: Transport;
@@ -30,7 +29,6 @@ export const HardwareSearch = ({
   onNext: (accounts: SelectedAccount[], derivationPath: DerivationPath) => void;
   onError?: (error: Error) => void;
   onRetry: () => void;
-  onSkip?: () => void;
 }) => {
   const [error, setError] = useState(false);
 
