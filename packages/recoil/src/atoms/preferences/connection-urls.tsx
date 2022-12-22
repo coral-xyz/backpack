@@ -1,7 +1,8 @@
-import { atom, selector } from "recoil";
 import { Blockchain } from "@coral-xyz/common";
-import { solanaConnectionUrl } from "../solana";
+import { atom, selector } from "recoil";
+
 import { ethereumConnectionUrl } from "../ethereum";
+import { solanaConnectionUrl } from "../solana";
 
 export const connectionUrls = atom<{ [key: string]: string | null }>({
   key: "connectionUrls",
