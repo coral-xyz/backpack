@@ -29,7 +29,6 @@ export function useHardwareOnboardSteps({
   signMessage,
   signText,
   successComponent,
-  onSkip,
   onComplete,
   nextStep,
   prevStep,
@@ -40,7 +39,6 @@ export function useHardwareOnboardSteps({
   signMessage: string | ((publicKey: string) => string);
   signText: string;
   successComponent?: React.ReactElement;
-  onSkip: () => void;
   onComplete: (keyringInit: BlockchainKeyringInit) => void;
   nextStep: () => void;
   prevStep: () => void;
@@ -100,7 +98,6 @@ export function useHardwareOnboardSteps({
           blockchain={blockchain!}
           transport={transport!}
           publicKey={searchPublicKey!}
-          onSkip={onSkip}
           onNext={async (
             accounts: SelectedAccount[],
             derivationPath: DerivationPath
@@ -182,7 +179,6 @@ export function HardwareOnboard({
   signMessage,
   signText,
   successComponent,
-  onSkip,
   onComplete,
   onClose,
 }: {
@@ -192,7 +188,6 @@ export function HardwareOnboard({
   signMessage: string | ((publicKey: string) => string);
   signText: string;
   successComponent?: React.ReactElement;
-  onSkip?: () => void;
   onComplete: (keyringInit: BlockchainKeyringInit) => void;
   onClose?: () => void;
 }) {
@@ -205,7 +200,6 @@ export function HardwareOnboard({
     signMessage,
     signText,
     successComponent,
-    onSkip,
     onComplete,
     nextStep,
     prevStep,
