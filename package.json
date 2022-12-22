@@ -21,6 +21,8 @@
     "build": "env-cmd --silent turbo run build",
     "e2e": "env-cmd --silent turbo run e2e",
     "clean": "npx rimraf {.,backend,examples,packages,node_modules}/**/{.parcel-cache,.turbo,build,dist,node_modules,yarn-error.log} packages/app-extension/dev",
+    "start:ext": "env-cmd turbo run start --filter=@coral-xyz/app-extension...",
+    "build:ext": "env-cmd turbo run build --filter=@coral-xyz/app-extension...",
     "start:mobile": "env-cmd --silent turbo run start --filter=@coral-xyz/app-mobile... --filter=@coral-xyz/background...",
     "build:mobile": "env-cmd --silent turbo run build --filter=@coral-xyz/app-mobile... --filter=@coral-xyz/background...",
     "postinstall": "yarn-deduplicate --scopes @babel @mui @typescript-eslint @types @react-native-community @react-navigation && if [ -d \"packages/app-mobile\" ]; then patch-package && cd packages/app-mobile && patch-package ; fi"
