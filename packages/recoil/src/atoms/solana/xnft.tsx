@@ -1,10 +1,8 @@
 import {
   BACKPACK_CONFIG_XNFT_PROXY,
   Blockchain,
-  fetchXnfts,
-  SIMULATOR_PORT,
-} from "@coral-xyz/common";
-import { externalResourceUri } from "@coral-xyz/common-public";
+ externalResourceUri,  fetchXnfts,
+  SIMULATOR_PORT } from "@coral-xyz/common";
 import { PublicKey } from "@solana/web3.js";
 import { atom, selector } from "recoil";
 

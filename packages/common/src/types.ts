@@ -135,3 +135,18 @@ export type ImportedDerivationPath = {
 
 export type SolanaFeeConfig = { computeUnits: number; priorityFee: bigint };
 export type FeeConfig = SolanaFeeConfig;
+
+export type RpcRequest = {
+  id?: number;
+  method: string;
+  params: any[];
+};
+
+export type Event = any;
+
+export interface XnftMetadata {
+  isDarkMode: boolean;
+  username?: string;
+  avatarUrl: string;
+  jwt?: string;
+}

@@ -22,7 +22,6 @@ version=$1
 
 main () {
 		update_package packages/common/
-		update_package packages/common-public/
 		update_package packages/themes/
 		update_package packages/react-xnft/
 		update_package packages/xnft-cli/

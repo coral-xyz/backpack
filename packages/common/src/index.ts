@@ -1,7 +1,6 @@
-import type { RpcRequest } from "@coral-xyz/common-public";
 import type { PublicKey } from "@solana/web3.js";
 
-import type { Context, EventEmitter, RpcResponse } from "./types";
+import type { Context, EventEmitter, RpcRequest, RpcResponse } from "./types";
 
 export * from "./browser";
 export * from "./channel";
@@ -10,15 +9,16 @@ export * from "./crypto";
 export * from "./ethereum";
 export * from "./explorer";
 export * from "./feature-gates";
+// Generated pre-build step.
+export * from "./generated-config";
+export * from "./logging";
 export * from "./messages";
 export * from "./notifications";
 export * from "./plugin";
 export * from "./solana";
 export * from "./types";
-export * from "@coral-xyz/common-public";
-
-// Generated pre-build step.
-export * from "./generated-config";
+export * from "./utils";
+export * from "./zustand-store";
 
 // Utility to transform the handler API into something a little more friendly.
 export function withContext<Backend>(

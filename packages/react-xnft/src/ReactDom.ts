@@ -1,4 +1,4 @@
-import { getLogger } from "@coral-xyz/common-public";
+import { getLogger } from "@coral-xyz/common";
 
 import type {
   Element,

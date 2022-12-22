@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 import type { OpaqueHandle } from "react-reconciler";
 import ReactReconciler, { HostConfig } from "react-reconciler";
-import type { Event } from "@coral-xyz/common-public";
-import { getLogger } from "@coral-xyz/common-public";
+import type { Event } from "@coral-xyz/common";
+import { getLogger } from "@coral-xyz/common";
 import { EventEmitter } from "eventemitter3";
 
 import { NAV_STACK } from "./Context";

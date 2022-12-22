@@ -1,13 +1,6 @@
-import {
-  generateUniqueId,
-  getLogger,
-  IS_MOBILE,
-  isServiceWorker,
-  vanillaStore,
-} from "@coral-xyz/common-public";
 import EventEmitter from "eventemitter3";
 // use expo-secure-store if in react-native, otherwise fake-expo-secure-store.ts
-import { deleteItemAsync, getItemAsync, setItemAsync } from "expo-secure-store";
+import { getItemAsync, setItemAsync } from "expo-secure-store";
 
 import {
   MOBILE_CHANNEL_BG_REQUEST,
@@ -18,6 +11,9 @@ import {
   MOBILE_CHANNEL_FE_RESPONSE_INNER,
   MOBILE_CHANNEL_HOST_RPC_REQUEST,
 } from "../constants";
+import { getLogger } from "../logging";
+import { generateUniqueId, IS_MOBILE, isServiceWorker } from "../utils";
+import { vanillaStore } from "../zustand-store";
 
 import { BrowserRuntimeCommon } from "./common";
 

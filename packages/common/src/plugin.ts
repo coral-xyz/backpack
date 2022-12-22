@@ -1,5 +1,3 @@
-import type { Event, XnftMetadata } from "@coral-xyz/common-public";
-import { getLogger } from "@coral-xyz/common-public";
 import type { ConfirmOptions, PublicKey, SendOptions } from "@solana/web3.js";
 
 import { openPopupWindow } from "./browser/extension";
@@ -39,7 +37,8 @@ import {
   UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_GET,
   UI_RPC_METHOD_PLUGIN_LOCAL_STORAGE_PUT,
 } from "./constants";
-import type { RpcResponse, XnftPreference } from "./types";
+import { getLogger } from "./logging";
+import type { Event, RpcResponse, XnftMetadata, XnftPreference } from "./types";
 import { Blockchain } from "./types";
 
 const logger = getLogger("common/plugin");

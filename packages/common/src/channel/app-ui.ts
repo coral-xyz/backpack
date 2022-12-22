@@ -3,11 +3,9 @@
 // the background script.
 //
 
-import type { RpcRequest } from "@coral-xyz/common-public";
-import { generateUniqueId } from "@coral-xyz/common-public";
-
 import { BrowserRuntimeCommon } from "../browser";
-import type { Notification, RpcResponse } from "../types";
+import type { Notification, RpcRequest, RpcResponse } from "../types";
+import { generateUniqueId } from "../utils";
 
 export interface BackgroundClient {
   request<T = any>({ method, params }: RpcRequest): Promise<RpcResponse<T>>;

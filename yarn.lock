@@ -1283,6 +1283,25 @@
     stream-browserify "^3.0.0"
     util "^0.12.4"
 
+"@coral-xyz/common-public@*":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@coral-xyz/common-public/-/common-public-0.0.1.tgz#af901490bb73cf39fa03dda976f1dc55327d4d37"
+  integrity sha512-mdkIpM+zFqO6hGPEYZdBlTYwOae0Tlfo+ysM3s8XpRXSvLK83JY561OFqiHMadr1TGQVglT3iTAdHjo+mjwhzw==
+  dependencies:
+    "@project-serum/anchor" "^0.23.0"
+    "@project-serum/token" "^0.1.0"
+    "@solana/buffer-layout" "^4.0.0"
+    "@solana/spl-token" "^0.1.0"
+    "@solana/spl-token-registry" "^0.2.3225"
+    "@solana/wallet-adapter-base" "^0.9.9"
+    "@solana/web3.js" "^1.37.1"
+    bn.js "^5.2.1"
+    bs58 "^5.0.0"
+    eventemitter3 "^4.0.7"
+    expo-secure-store "^11.2.0"
+    uuid "^8.3.2"
+    zustand "^4.0.0-rc.2"
+
 "@coral-xyz/xnft-cli@*", "@coral-xyz/xnft-cli@^0.0.1":
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/@coral-xyz/xnft-cli/-/xnft-cli-0.0.1.tgz#dfda912320d433743ffa75f0c6146e75c8580c7d"
@@ -5321,7 +5340,7 @@
   dependencies:
     cross-fetch "3.0.6"
 
-"@solana/spl-token@0.1.8", "@solana/spl-token@^0.1.6", "@solana/spl-token@^0.1.8":
+"@solana/spl-token@0.1.8", "@solana/spl-token@^0.1.0", "@solana/spl-token@^0.1.6", "@solana/spl-token@^0.1.8":
   version "0.1.8"
   resolved "https://registry.yarnpkg.com/@solana/spl-token/-/spl-token-0.1.8.tgz#f06e746341ef8d04165e21fc7f555492a2a0faa6"
   integrity sha512-LZmYCKcPQDtJgecvWOgT/cnoIQPWjdH+QVyzPcFvyDUiT0DiRjZaam4aqNUyvchLFhzgunv3d9xOoyE34ofdoQ==
@@ -5379,6 +5398,13 @@
   version "0.9.19"
   resolved "https://registry.yarnpkg.com/@solana/wallet-adapter-base/-/wallet-adapter-base-0.9.19.tgz#8b493705cabdc641824853405f79781f9ddc1bd5"
   integrity sha512-c/F3xyuSNDUjbYM6E4be5bMx9YmNqE6XIpLcM9U3ohviwDF8hO+v5N8KSvnMaztL4Lr6+TEtCLi3Q5AT0r06JA==
+  dependencies:
+    eventemitter3 "^4.0.0"
+
+"@solana/wallet-adapter-base@^0.9.9":
+  version "0.9.20"
+  resolved "https://registry.yarnpkg.com/@solana/wallet-adapter-base/-/wallet-adapter-base-0.9.20.tgz#42a3a2f42db9f6a41e36a132ee5a06a0bd3784f0"
+  integrity sha512-ZvnhJ4EJk61oyuBH/a9tMpUfeWQ3g3Cc0Nzl1NzE4SdqEhiNoEW8HXDig9HMemZ9bIEUxIpPWxp+SwjVl0u+rg==
   dependencies:
     eventemitter3 "^4.0.0"
 
@@ -20543,7 +20569,7 @@ react@^17.0.0, react@^17.0.2:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
 
-react@^18.1.0, react@^18.2.0:
+react@^18.1.0:
   version "18.2.0"
   resolved "https://registry.yarnpkg.com/react/-/react-18.2.0.tgz#555bd98592883255fa00de14f1151a917b5d77d5"
   integrity sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==

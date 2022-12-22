@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Event, XnftMetadata } from "@coral-xyz/common-public";
+import type { Event, XnftMetadata } from "@coral-xyz/common";
 import type { Connection, PublicKey } from "@solana/web3.js";
 
 /*

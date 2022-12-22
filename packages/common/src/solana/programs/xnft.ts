@@ -1,9 +1,10 @@
-import { externalResourceUri } from "@coral-xyz/common-public";
 import { Metadata } from "@metaplex-foundation/mpl-token-metadata";
 import type { Provider } from "@project-serum/anchor";
 import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
+
+import { externalResourceUri } from "../../utils";
 
 export const XNFT_PROGRAM_ID = new PublicKey(
   "BaHSGaf883GA3u8qSC5wNigcXyaScJLSBJZbALWvPcjs"

@@ -230,13 +230,6 @@ jobs:
           token: ${{ secrets.NPM_ACCESS_TOKEN }}
           tag: latest
           package: packages/common/package.json
-      - name: "publish to npm: common-public"
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: JS-DevTools/npm-publish@v1
-        with:
-          token: ${{ secrets.NPM_ACCESS_TOKEN }}
-          tag: latest
-          package: packages/common-public/package.json
       - name: "publish to npm: themes"
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: JS-DevTools/npm-publish@v1
