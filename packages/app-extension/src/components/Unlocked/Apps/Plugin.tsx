@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import type { Plugin } from "@coral-xyz/common";
 import { MoreIcon, PowerIcon } from "@coral-xyz/react-common";
 import {
