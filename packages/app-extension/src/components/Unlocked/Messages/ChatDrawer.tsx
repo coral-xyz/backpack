@@ -1,11 +1,6 @@
-import { useSearchParams } from "react-router-dom";
 import type { Friendship } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
-import {
-  friendship,
-  SearchParamsFor,
-  useDecodedSearchParams,
-} from "@coral-xyz/recoil";
+import { friendship, useDecodedSearchParams } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 import BlockIcon from "@mui/icons-material/Block";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";

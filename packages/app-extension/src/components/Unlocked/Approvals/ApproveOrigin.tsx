@@ -251,7 +251,8 @@ function WalletSelectorButton({
 
 function AvatarWithBlockchainImage({ blockchain }: { blockchain: Blockchain }) {
   const avatarUrl = useAvatarUrl(32);
-  // const blockchainIcon = useBlockchainLogo(blockchain);
+  // eslint-disable-next-line
+  const blockchainIcon = useBlockchainLogo(blockchain);
   // TODO: use this blockchain icon here.
   return (
     <ProxyImage

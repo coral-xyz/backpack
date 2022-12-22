@@ -20,7 +20,7 @@ export function XnftSettings() {
     settingsMenu[pubkeyStr] = {
       label: xnft.title,
       onClick: () => nav.push("xnfts-detail", { xnft }),
-      icon: (props: any) => (
+      icon: () => (
         <ProxyImage
           style={{
             marginRight: "12px",

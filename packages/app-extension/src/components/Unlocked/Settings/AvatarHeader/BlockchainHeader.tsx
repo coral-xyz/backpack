@@ -99,7 +99,7 @@ const Wallet = styled(Typography)(({ theme }) => ({
   marginLeft: "8px",
 }));
 
-const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
+const StyledCardHeader = styled(CardHeader)(() => ({
   padding: "6px 16px",
   cursor: "pointer",
   width: "100%",

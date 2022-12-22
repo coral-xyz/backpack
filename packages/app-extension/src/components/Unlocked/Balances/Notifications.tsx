@@ -1,6 +1,10 @@
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useState } from "react";
 import type { EnrichedNotification } from "@coral-xyz/common";
-import { isFirstLastListItemStyle, Loading , ProxyImage } from "@coral-xyz/react-common";
+import {
+  isFirstLastListItemStyle,
+  Loading,
+  ProxyImage,
+} from "@coral-xyz/react-common";
 import { useRecentNotifications } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import NotificationsIcon from "@mui/icons-material/Notifications";
@@ -98,7 +102,7 @@ export function NotificationButton() {
         <div style={{ height: "100%" }}>
           <NavStackEphemeral
             initialRoute={{ name: "root" }}
-            options={(_args) => ({ title: "Notifications" })}
+            options={() => ({ title: "Notifications" })}
             navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
           >
             <NavStackScreen

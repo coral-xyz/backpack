@@ -225,7 +225,7 @@ function Request({ onConfirm, onReject, buttonsDisabled, children }: any) {
         />
         <PrimaryButton
           disabled={buttonsDisabled}
-          onClick={(event) => onConfirm()}
+          onClick={() => onConfirm()}
           label="Approve"
           type="submit"
           data-testid="Send"
@@ -386,7 +386,7 @@ function SendTransactionRequest({
           onResolve(signature);
         }
       })
-      .catch((e: any) => {
+      .catch(() => {
         onReject();
       });
   };

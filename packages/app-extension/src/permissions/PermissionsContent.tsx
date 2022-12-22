@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
 import { styles } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
 
-const useStyles = styles((theme) => ({
+const useStyles = styles(() => ({
   containerDiv: {
     height: `100vh`,
     width: "100vw",

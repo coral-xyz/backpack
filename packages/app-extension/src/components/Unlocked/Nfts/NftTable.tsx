@@ -1,22 +1,15 @@
-import React, {
-  AllHTMLAttributes,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useRef, useState } from "react";
 import Autosizer from "react-virtualized-auto-sizer";
-import type { ListChildComponentProps } from "react-window";
 import { VariableSizeList } from "react-window";
-import type { Blockchain, Nft, NftCollection } from "@coral-xyz/common";
+import type { Blockchain, NftCollection } from "@coral-xyz/common";
 import {
   NAV_COMPONENT_NFT_COLLECTION,
   NAV_COMPONENT_NFT_DETAIL,
 } from "@coral-xyz/common";
 import type { NftCollectionWithIds } from "@coral-xyz/common/src/types";
-import { nftsByIds, useLoader, useNavigation } from "@coral-xyz/recoil";
+import { nftsByIds, useNavigation } from "@coral-xyz/recoil";
 import { styled } from "@coral-xyz/themes";
-import { Skeleton, Typography } from "@mui/material";
+import { Skeleton } from "@mui/material";
 import { useRecoilValueLoadable } from "recoil";
 
 import { Scrollbar } from "../../common/Layout/Scrollbar";

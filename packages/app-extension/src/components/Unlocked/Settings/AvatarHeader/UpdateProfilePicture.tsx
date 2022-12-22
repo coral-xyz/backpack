@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import type { Blockchain, NftCollectionWithIds } from "@coral-xyz/common";
-import { BACKEND_API_URL, Nft, NftCollection } from "@coral-xyz/common";
+import { BACKEND_API_URL } from "@coral-xyz/common";
 import {
   ImageIcon,
   Loading,
@@ -12,21 +12,14 @@ import {
   newAvatarAtom,
   nftById,
   nftCollectionsWithIds,
-  nftsByIds,
   useAvatarUrl,
-  useLoader,
   useUser,
 } from "@coral-xyz/recoil";
 import { styled, useCustomTheme } from "@coral-xyz/themes";
-import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import { CircularProgress, Grid } from "@mui/material";
 import Collapse from "@mui/material/Collapse";
 import Typography from "@mui/material/Typography";
-import {
-  useRecoilValue,
-  useRecoilValueLoadable,
-  useSetRecoilState,
-} from "recoil";
+import { useRecoilValueLoadable, useSetRecoilState } from "recoil";
 
 import { EmptyState } from "../../../common/EmptyState";
 import { Scrollbar } from "../../../common/Layout/Scrollbar";
@@ -265,7 +258,7 @@ function RenderNFT({
   );
 }
 
-const Container = styled("div")(({ theme }) => ({
+const Container = styled("div")(() => ({
   position: "relative",
   display: "flex",
   flexDirection: "column",
@@ -307,7 +300,7 @@ const ButtonsOverlay = styled("div")(({ theme }) => ({
   transition: "max-height ease-out 200ms",
 }));
 
-const Avatar = styled(ProxyImage)(({ theme }) => ({
+const Avatar = styled(ProxyImage)(() => ({
   borderRadius: "40px",
   width: "64px",
   height: "64px",

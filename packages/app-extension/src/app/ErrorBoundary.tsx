@@ -33,7 +33,7 @@ const useStyles = styles((theme) => {
 class ErrorBoundaryWithHooks extends React.Component<Props, State> {
   state = { err: false };
 
-  static getDerivedStateFromError(_error: Error) {
+  static getDerivedStateFromError() {
     return { err: true };
   }
 
