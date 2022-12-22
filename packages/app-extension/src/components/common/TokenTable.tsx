@@ -17,7 +17,6 @@ import { styles } from "@coral-xyz/themes";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { Button as MuiButton, Skeleton } from "@mui/material";
 
-import { TextField } from "../../plugin/Component";
 import {
   BalancesTable,
   BalancesTableCell,
@@ -194,7 +193,7 @@ export function TokenTable({
   const activeWallets = useActiveWallets();
   const wallet = activeWallets.filter((w) => w.blockchain === blockchain)[0];
 
-  const [_tokenAccounts, _, isLoading] = tokenAccounts
+  const [_tokenAccounts, , isLoading] = tokenAccounts
     ? [tokenAccounts, "hasValue"]
     : useLoader(
         blockchainBalancesSorted({

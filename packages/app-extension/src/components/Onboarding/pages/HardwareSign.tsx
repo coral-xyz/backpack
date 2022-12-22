@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Blockchain, DerivationPath } from "@coral-xyz/common";
-import {
-  toTitleCase,
-  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-} from "@coral-xyz/common";
-import { HardwareWalletIcon,PrimaryButton } from "@coral-xyz/react-common";
+import { UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY } from "@coral-xyz/common";
+import { HardwareWalletIcon, PrimaryButton } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { Box } from "@mui/material";
 import { encode } from "bs58";

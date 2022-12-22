@@ -2,7 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 
 import { validateRoom } from "../db/friendships";
 
-import { clearCookie, setCookie, validateJwt } from "./util";
+import { clearCookie, setJWTCookie, validateJwt } from "./util";
 
 export const ensureHasRoomAccess = async (
   req: Request,
@@ -46,7 +46,7 @@ export const extractUserId = async (
       const payloadRes = await validateJwt(jwt);
       if (payloadRes.payload.sub) {
         // Extend cookie
-        setCookie(req, res, payloadRes.payload.sub);
+        setJWTCookie(req, res, payloadRes.payload.sub);
         // Set id on request
         req.id = payloadRes.payload.sub;
         next();
@@ -95,7 +95,7 @@ export const optionallyExtractUserId = (allowQueryString: boolean) => {
         const payloadRes = await validateJwt(jwt);
         if (payloadRes.payload.sub) {
           // Extend cookie or set it if not set
-          setCookie(req, res, payloadRes.payload.sub);
+          setJWTCookie(req, res, payloadRes.payload.sub);
           // Set id on request
           req.id = payloadRes.payload.sub;
         }

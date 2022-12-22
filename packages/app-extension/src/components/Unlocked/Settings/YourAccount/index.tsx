@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useKeyringType } from "@coral-xyz/recoil";
 
-import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { useNavStack } from "../../../common/Layout/NavStack";
 import { SettingsList } from "../../../common/Settings/List";
 

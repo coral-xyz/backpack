@@ -8,8 +8,6 @@ import {
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
 
-import { TokenAmountHeader } from "../../common/TokenAmountHeader";
-
 export function Success({
   blockchain,
   signature,

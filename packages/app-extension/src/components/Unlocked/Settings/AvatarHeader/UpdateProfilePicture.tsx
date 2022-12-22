@@ -1,20 +1,22 @@
-import { useState } from "react";
-import type { Blockchain, Nft, NftCollection } from "@coral-xyz/common";
+import React, { useMemo, useState } from "react";
+import type { Blockchain, NftCollectionWithIds } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import {
- EmptyState,  ImageIcon,
+  EmptyState,
+  ImageIcon,
   Loading,
   PrimaryButton,
   ProxyImage,
-  SecondaryButton } from "@coral-xyz/react-common";
+  SecondaryButton,
+} from "@coral-xyz/react-common";
 import {
   newAvatarAtom,
-  nftCollections,
+  nftById,
+  nftCollectionsWithIds,
   useAvatarUrl,
   useUser,
 } from "@coral-xyz/recoil";
 import { styled, useCustomTheme } from "@coral-xyz/themes";
-import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import { CircularProgress, Grid } from "@mui/material";
 import Collapse from "@mui/material/Collapse";
 import Typography from "@mui/material/Typography";
@@ -40,10 +42,13 @@ export function UpdateProfilePicture({
   const { username } = useUser();
   const setNewAvatar = useSetRecoilState(newAvatarAtom(username));
   const theme = useCustomTheme();
-  // const wallets = useActiveWallets();
-  // const wallets = useWalletPublicKeys();
-  const collections = useRecoilValueLoadable(nftCollections);
+  const { contents, state } = useRecoilValueLoadable(nftCollectionsWithIds);
+  const collections = (state === "hasValue" && contents) || null;
 
+  const numberOfNFTs = Object.entries(collections ?? {}).reduce(
+    (acc, [, collection]) => acc + (collection ?? []).length,
+    0
+  );
   return (
     <Container>
       <AvatarWrapper>
@@ -62,47 +67,42 @@ export function UpdateProfilePicture({
             background: theme.custom.colors.nav,
           }}
         >
-          {collections.state === "hasValue" &&
-            Object.entries(collections.contents).reduce(
-              (acc, [, collection]) => acc + collection.length,
-              0
-            ) === 0 && (
-              <EmptyState
-                icon={(props: any) => <ImageIcon {...props} />}
-                title={"No NFTs to use"}
-                subtitle={"Get started with your first NFT"}
-                onClick={() => window.open("https://magiceden.io/")}
-                contentStyle={{
-                  marginBottom: 0,
-                  color: "inherit",
-                  border: "none",
-                }}
-                buttonText={"Browse Magic Eden"}
-              />
-            )}
-          <div
-            style={{
-              paddingBottom: tempAvatar ? "80px" : "0px",
-              transition: "padding ease-out 200ms",
-            }}
-          >
-            {collections.state === "hasValue" ? (
-              Object.entries(collections.contents).map(
+          {state === "loading" ? (
+            <Loading size={50} />
+          ) : numberOfNFTs === 0 ? (
+            <EmptyState
+              icon={(props: any) => <ImageIcon {...props} />}
+              title={"No NFTs to use"}
+              subtitle={"Get started with your first NFT"}
+              onClick={() => window.open("https://magiceden.io/")}
+              contentStyle={{
+                marginBottom: 0,
+                color: "inherit",
+                border: "none",
+              }}
+              buttonText={"Browse Magic Eden"}
+            />
+          ) : (
+            <div
+              style={{
+                paddingBottom: tempAvatar ? "80px" : "0px",
+                transition: "padding ease-out 200ms",
+              }}
+            >
+              {Object.entries(collections ?? {}).map(
                 ([blockchain, collection]) => (
                   <BlockchainNFTs
                     key={blockchain}
                     blockchain={blockchain as Blockchain}
-                    collections={collection as NftCollection[]}
-                    isLoading={collections.state !== "hasValue"}
+                    collections={collection as NftCollectionWithIds[]}
+                    isLoading={false}
                     tempAvatar={tempAvatar}
                     setTempAvatar={setTempAvatar}
                   />
                 )
-              )
-            ) : (
-              <Loading style={{ marginTop: "50px" }}></Loading>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </Scrollbar>
       </FakeDrawer>
       <ButtonsOverlay
@@ -161,7 +161,7 @@ export function UpdateProfilePicture({
   );
 }
 
-function BlockchainNFTs({
+const BlockchainNFTs = React.memo(function BlockchainNFTs({
   blockchain,
   collections,
   isLoading,
@@ -169,14 +169,14 @@ function BlockchainNFTs({
   setTempAvatar,
 }: {
   blockchain: Blockchain;
-  collections: NftCollection[];
+  collections: NftCollectionWithIds[];
   isLoading: boolean;
   tempAvatar: tempAvatar | null;
   setTempAvatar: (tempAvatar: tempAvatar) => void;
 }) {
   const [showContent, setShowContent] = useState(true);
 
-  const nfts = collections.reduce<Nft[]>((flat, collection) => {
+  const nftsIds = collections.reduce<string[]>((flat, collection) => {
     flat.push(...collection.items);
     return flat;
   }, []);
@@ -198,44 +198,67 @@ function BlockchainNFTs({
           style={{ padding: "12px 16px 16px 16px" }}
           spacing={{ xs: 2, ms: 2, md: 2, lg: 2 }}
         >
-          {nfts.map((nft, index) => {
-            return (
-              <StyledProxyImage
-                key={index}
-                onClick={() => {
-                  console.log(nft);
-
-                  const avatarId =
-                    nft.blockchain === "solana"
-                      ? // @ts-ignore
-                        nft.mint
-                      : nft.id;
-
-                  setTempAvatar({
-                    url: nft.imageUrl,
-                    id: `${nft.blockchain}/${avatarId}`,
-                  });
-                }}
-                style={{
-                  width: "72px",
-                  height: "72px",
-                  borderRadius: "40px",
-                  margin: "16px 0px 0px 16px",
-                  border:
-                    tempAvatar?.url === nft.imageUrl ? "3px solid black" : "",
-                }}
-                src={nft.imageUrl}
-                removeOnError={true}
-              />
-            );
-          })}
+          {nftsIds.map((nftId) => (
+            <RenderNFT
+              key={nftId}
+              nftId={nftId}
+              tempAvatar={tempAvatar}
+              setTempAvatar={setTempAvatar}
+            />
+          ))}
         </Grid>
       </Collapse>
     </>
   );
+});
+
+function RenderNFT({
+  nftId,
+  tempAvatar,
+  setTempAvatar,
+}: {
+  nftId: string;
+  setTempAvatar: (tempAvatar: tempAvatar) => void;
+  tempAvatar: tempAvatar | null;
+}) {
+  const { contents, state } = useRecoilValueLoadable(nftById(nftId));
+  const nft = (state === "hasValue" && contents) || null;
+
+  return useMemo(
+    () =>
+      !nft ? null : (
+        <StyledProxyImage
+          key={nftId}
+          onClick={() => {
+            console.log(nft);
+
+            const avatarId =
+              nft.blockchain === "solana"
+                ? // @ts-ignore
+                  nft.mint
+                : nft.id;
+
+            setTempAvatar({
+              url: nft.imageUrl,
+              id: `${nft.blockchain}/${avatarId}`,
+            });
+          }}
+          style={{
+            width: "72px",
+            height: "72px",
+            borderRadius: "40px",
+            margin: "16px 0px 0px 16px",
+            border: tempAvatar?.url === nft.imageUrl ? "3px solid black" : "",
+          }}
+          src={nft.imageUrl}
+          removeOnError={true}
+        />
+      ),
+    [nft]
+  );
 }
 
-const Container = styled("div")(({ theme }) => ({
+const Container = styled("div")(() => ({
   position: "relative",
   display: "flex",
   flexDirection: "column",
@@ -277,7 +300,7 @@ const ButtonsOverlay = styled("div")(({ theme }) => ({
   transition: "max-height ease-out 200ms",
 }));
 
-const Avatar = styled(ProxyImage)(({ theme }) => ({
+const Avatar = styled(ProxyImage)(() => ({
   borderRadius: "40px",
   width: "64px",
   height: "64px",
@@ -291,7 +314,9 @@ const AvatarWrapper = styled("div")(({ theme }) => ({
   boxSizing: "border-box",
   position: "relative",
   borderRadius: "50px",
-  border: `3px dashed ${theme.custom.colors.avatarIconBackground}`,
+  backgroundImage: `url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='100' ry='100' stroke='${encodeURIComponent(
+    theme.custom.colors.avatarIconBackground
+  )}' stroke-width='5' stroke-dasharray='8%25%2c 13%25' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e")`,
   padding: "6px",
   width: "82px",
   height: "82px",

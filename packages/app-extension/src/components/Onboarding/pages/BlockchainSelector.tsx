@@ -364,6 +364,7 @@ function BscIcon() {
   );
 }
 
+// eslint-disable-next-line
 function AvalancheIcon() {
   return (
     <svg
@@ -394,6 +395,7 @@ function AvalancheIcon() {
   );
 }
 
+// eslint-disable-next-line
 function CosmosIcon() {
   return (
     <svg

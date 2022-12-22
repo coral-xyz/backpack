@@ -158,9 +158,11 @@ export function TransactionData({
             detail: (
               <>
                 <SmallInput
+                  disabled={transactionData.solanaFeeConfig?.disabled}
                   placeholder="Compute units"
                   value={
-                    transactionData.solanaFeeConfig.computeUnits.toString() || 0
+                    transactionData.solanaFeeConfig?.config?.computeUnits.toString() ||
+                    0
                   }
                   onChange={(e: any) => {
                     const computeUnits = parseInt(e.target.value || "0");
@@ -172,10 +174,13 @@ export function TransactionData({
                       return;
                     }
                     const updatedValue = {
-                      ...(transactionData.solanaFeeConfig || {}),
+                      ...(transactionData.solanaFeeConfig?.config || {}),
                       computeUnits: computeUnits,
                     };
-                    transactionData.setSolanaFeeConfig(updatedValue);
+                    transactionData.setSolanaFeeConfig((x: any) => ({
+                      config: updatedValue,
+                      disabled: x.disabled,
+                    }));
                   }}
                 />
               </>
@@ -188,9 +193,11 @@ export function TransactionData({
             detail: (
               <>
                 <SmallInput
+                  disabled={transactionData.solanaFeeConfig?.disabled}
                   placeholder="Priority fee"
                   value={
-                    transactionData.solanaFeeConfig.priorityFee?.toString() || 0
+                    transactionData.solanaFeeConfig.config?.priorityFee?.toString() ||
+                    0
                   }
                   onChange={(e: any) => {
                     const priorityFee = parseInt(e.target.value || "0");
@@ -198,10 +205,13 @@ export function TransactionData({
                       return;
                     }
                     const updatedValue = {
-                      ...(transactionData.solanaFeeConfig || {}),
-                      priorityFee: priorityFee,
+                      ...(transactionData.solanaFeeConfig?.config || {}),
+                      priorityFee: BigInt(priorityFee),
                     };
-                    transactionData.setSolanaFeeConfig(updatedValue);
+                    transactionData.setSolanaFeeConfig((x: any) => ({
+                      disabled: x.disabled,
+                      config: updatedValue,
+                    }));
                   }}
                 />
               </>
@@ -214,11 +224,14 @@ export function TransactionData({
             detail: (
               <>
                 <Typography>
-                  {(transactionData.solanaFeeConfig?.computeUnits
-                    ? (transactionData.solanaFeeConfig.computeUnits || 0) *
-                      (transactionData.solanaFeeConfig.priorityFee / 1000000 ||
-                        0)
-                    : 0) / LAMPORTS_PER_SOL}{" "}
+                  {transactionData.solanaFeeConfig?.config?.computeUnits
+                    ? transactionData.solanaFeeConfig?.config?.computeUnits *
+                      (Number(
+                        transactionData.solanaFeeConfig?.config?.priorityFee
+                      ) /
+                        LAMPORTS_PER_SOL /
+                        1000000 || 0)
+                    : 0}{" "}
                   SOL
                 </Typography>
               </>

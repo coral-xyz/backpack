@@ -1,28 +1,23 @@
-import React, {
-  AllHTMLAttributes,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useRef, useState } from "react";
 import Autosizer from "react-virtualized-auto-sizer";
-import type { ListChildComponentProps } from "react-window";
 import { VariableSizeList } from "react-window";
 import type { Blockchain, NftCollection } from "@coral-xyz/common";
 import {
   NAV_COMPONENT_NFT_COLLECTION,
   NAV_COMPONENT_NFT_DETAIL,
 } from "@coral-xyz/common";
-import { useNavigation } from "@coral-xyz/recoil";
+import type { NftCollectionWithIds } from "@coral-xyz/common/src/types";
+import { nftsByIds, useNavigation } from "@coral-xyz/recoil";
 import { styled } from "@coral-xyz/themes";
-import { Skeleton, Typography } from "@mui/material";
+import { Skeleton } from "@mui/material";
+import { useRecoilValueLoadable } from "recoil";
 
 import { Scrollbar } from "../../common/Layout/Scrollbar";
 import { BlockchainHeader } from "../Settings/AvatarHeader/BlockchainHeader";
 
 import { GridCard } from "./Common";
 
-type BlockchainCollections = [string, NftCollection[] | null][];
+type BlockchainCollections = [string, NftCollectionWithIds[] | null][];
 type CollapsedCollections = boolean[];
 
 type Row = {
@@ -38,7 +33,7 @@ type collapseSingleCollection = (
 ) => void;
 
 const getNumberOfRowsInCollection = (
-  items: NftCollection[] | null,
+  items: NftCollectionWithIds[] | null,
   itemsPerRow: number,
   isCollapsed: boolean
 ) => {
@@ -226,6 +221,7 @@ export function NftTable({
               key={JSON.stringify({
                 blockchainCollections,
                 numberOfItemsPerRow,
+                prependItems: prependItems.length,
               })}
               ref={ref}
               itemKey={(i) => {
@@ -270,10 +266,7 @@ export function NftTable({
                   numberOfItemsPerRow,
                   prependItems
                 );
-                return useMemo(
-                  () => (row ? <div style={style}>{row.component}</div> : null),
-                  [row?.key]
-                );
+                return row ? <div style={style}>{row.component}</div> : null;
               }}
             </VariableSizeList>
           </div>
@@ -373,7 +366,7 @@ const ItemRow = function ({
       ? itemsPerRow
       : collectionItems.length % itemsPerRow;
 
-  const items: NftCollection[] = new Array(itemsPerRow).fill(null);
+  const items: NftCollectionWithIds[] = new Array(itemsPerRow).fill(null);
   for (let i = itemStartIndex; i < itemStartIndex + numberOfItems; i++) {
     items[i - itemStartIndex] = collectionItems[i];
   }
@@ -437,11 +430,23 @@ const CustomCard = styled("div")(
     })
 );
 
-function NftCollectionCard({ collection }: { collection: NftCollection }) {
+function NftCollectionCard({
+  collection,
+}: {
+  collection: NftCollectionWithIds;
+}) {
+  const { contents, state } = useRecoilValueLoadable(
+    nftsByIds(collection.items)
+  );
+  const items = (state === "hasValue" && contents) || null;
+
   const { push } = useNavigation();
   // Display the first NFT in the collection as the thumbnail in the grid
-  const collectionDisplayNft = collection.items[0];
+  const collectionDisplayNft = items?.find((nft) => !!nft) ?? null;
 
+  if (!collectionDisplayNft) {
+    return null;
+  }
   const onClick = () => {
     if (collection.items.length === 1) {
       if (!collectionDisplayNft.name || !collectionDisplayNft.id) {

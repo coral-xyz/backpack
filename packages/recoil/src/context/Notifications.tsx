@@ -10,7 +10,7 @@ import {
   ChannelAppUi,
   getLogger,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
-  NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
+  NOTIFICATION_AUTO_LOCK_SETTINGS_UPDATED,
   NOTIFICATION_BLOCKCHAIN_DISABLED,
   NOTIFICATION_BLOCKCHAIN_ENABLED,
   NOTIFICATION_DARK_MODE_UPDATED,
@@ -86,11 +86,11 @@ export function NotificationsProvider(props: any) {
   const setPreferences = useSetRecoilState(atoms.preferences);
   const setFeatureGates = useSetRecoilState(atoms.featureGates);
 
-  const setAutoLockSecs = (autoLockSecs: number) => {
+  const setAutoLockSettings = (autoLockSettings) => {
     setPreferences((current) => {
       return {
         ...current,
-        autoLockSecs,
+        autoLockSettings,
       };
     });
   };
@@ -239,8 +239,8 @@ export function NotificationsProvider(props: any) {
         case NOTIFICATION_NAVIGATION_URL_DID_CHANGE:
           handleNavigationUrlDidChange(notif);
           break;
-        case NOTIFICATION_AUTO_LOCK_SECS_UPDATED:
-          handleAutoLockSecsUpdated(notif);
+        case NOTIFICATION_AUTO_LOCK_SETTINGS_UPDATED:
+          handleAutoLockSettingsUpdated(notif);
           break;
         case NOTIFICATION_XNFT_PREFERENCE_UPDATED:
           handleXnftPreferenceUpdated(notif);
@@ -470,8 +470,8 @@ export function NotificationsProvider(props: any) {
       navigate(notif.data.url);
     };
 
-    const handleAutoLockSecsUpdated = (notif: Notification) => {
-      setAutoLockSecs(notif.data.autoLockSecs);
+    const handleAutoLockSettingsUpdated = (notif: Notification) => {
+      setAutoLockSettings(notif.data.autoLockSettings);
     };
 
     const handleXnftPreferenceUpdated = (notif: Notification) => {

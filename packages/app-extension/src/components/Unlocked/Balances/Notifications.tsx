@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useState } from "react";
 import type { EnrichedNotification } from "@coral-xyz/common";
 import {
   EmptyState,
@@ -102,7 +102,7 @@ export function NotificationButton() {
         <div style={{ height: "100%" }}>
           <NavStackEphemeral
             initialRoute={{ name: "root" }}
-            options={(_args) => ({ title: "Notifications" })}
+            options={() => ({ title: "Notifications" })}
             navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
           >
             <NavStackScreen

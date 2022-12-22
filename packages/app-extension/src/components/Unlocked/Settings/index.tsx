@@ -683,8 +683,8 @@ function SettingsList() {
   if (BACKPACK_FEATURE_POP_MODE) {
     settingsMenu.push({
       label: "Pop Window",
-      onClick: () => {
-        openPopupWindow("popup.html");
+      onClick: async () => {
+        await openPopupWindow("popup.html");
         window.close();
       },
       icon: (props: any) => <WindowIcon {...props} />,

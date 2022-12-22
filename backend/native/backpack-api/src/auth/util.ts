@@ -17,7 +17,7 @@ export const clearCookie = (res: Response, cookieName: string) => {
   res.clearCookie(cookieName);
 };
 
-export const setCookie = async (
+export const setJWTCookie = async (
   req: Request,
   res: Response,
   userId: string
@@ -33,7 +33,18 @@ export const setCookie = async (
     .setIssuedAt()
     .sign(secret);
 
-  res.cookie("jwt", jwt, {
+  setCookieOnResponse(req, res, "jwt", jwt);
+
+  return jwt;
+};
+
+export const setCookieOnResponse = async (
+  req: Request,
+  res: Response,
+  cookieName: string,
+  cookieValue: string
+) => {
+  res.cookie(cookieName, cookieValue, {
     secure: true,
     httpOnly: true,
     sameSite: "strict",
@@ -43,6 +54,4 @@ export const setCookie = async (
     path: "/",
     maxAge: 60 * 60 * 24 * 365, // approx 1 year
   });
-
-  return jwt;
 };

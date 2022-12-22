@@ -1,4 +1,3 @@
-import type { Blockchain } from "@coral-xyz/common";
 import {
   PrimaryButton,
   ProxyImage,
@@ -41,7 +40,6 @@ export function WithApproval({
   onConfirmLabel = "Connect",
   onDeny,
   children,
-  blockchain,
 }: {
   origin: string;
   originTitle: string;
@@ -51,7 +49,6 @@ export function WithApproval({
   onConfirmLabel?: string;
   onDeny: () => void;
   children: React.ReactNode;
-  blockchain?: Blockchain;
 }) {
   return (
     <WithApprovalButtons

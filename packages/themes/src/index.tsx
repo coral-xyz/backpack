@@ -206,9 +206,9 @@ export const darkTheme: Partial<Theme> & { custom: { colors: CustomColors } } =
         border1: BACKGROUND_COLOR_2,
         border: BACKGROUND_COLOR_1, // Don't use this.
         borderColor: BORDER_COLOR,
-        textInputBorderFull: `solid 2pt rgba(255, 255, 255, 0.1)`,
-        textInputBorderFocussed: `solid 2pt rgba(255, 255, 255, 0.1)`,
-        textInputBorderHovered: `solid 2pt rgba(255, 255, 255, 0.1)`,
+        textInputBorderFull: `solid 2pt ${BACKGROUND_COLOR_1}`,
+        textInputBorderFocussed: `solid 2pt ${BACKGROUND_COLOR_1}`,
+        textInputBorderHovered: `solid 2pt ${BACKGROUND_COLOR_1}`,
         borderFull: `solid 2px ${BACKGROUND_COLOR_1}`,
         borderButton: `solid 2px ${BACKGROUND_COLOR_1}`,
         textFieldTextColor: FONT_COLOR_2,

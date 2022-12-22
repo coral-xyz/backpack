@@ -1,44 +1,12 @@
 import { useEffect, useState } from "react";
 import { UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE } from "@coral-xyz/common";
-import {
-  InputListItem,
-  Inputs,
-  List,
-  ListItem,
-  PrimaryButton,
-} from "@coral-xyz/react-common";
+import { InputListItem, Inputs, PrimaryButton } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { TextField, Typography } from "@mui/material";
 
 import { useDrawerContext } from "../../../../common/Layout/Drawer";
 import { useNavStack } from "../../../../common/Layout/NavStack";
 
-const useStyles = styles((theme) => ({
-  textFieldRoot: {
-    color: theme.custom.colors.secondary,
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        border: "none",
-        color: theme.custom.colors.secondary,
-      },
-    },
-  },
-  listParent: {
-    border: `2px solid black`,
-    "&:hover": {
-      border: `2px solid red !important`,
-    },
-    "&:focussed": {
-      border: `2px solid yellow !important`,
-    },
-    borderRadius: "10px",
-  },
-}));
-
 export function PreferenceSolanaCustomRpcUrl() {
-  const classes = useStyles();
-  const theme = useCustomTheme();
   const { close } = useDrawerContext();
   const nav = useNavStack();
   const background = useBackgroundClient();

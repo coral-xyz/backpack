@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { XNFT_GG_LINK } from "@coral-xyz/common";
-import { EmptyState,ProxyImage, PushDetail  } from "@coral-xyz/react-common";
+import { EmptyState, ProxyImage, PushDetail } from "@coral-xyz/react-common";
 import { useAppIcons } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Apps } from "@mui/icons-material";
@@ -19,7 +19,7 @@ export function XnftSettings() {
     settingsMenu[pubkeyStr] = {
       label: xnft.title,
       onClick: () => nav.push("xnfts-detail", { xnft }),
-      icon: (props: any) => (
+      icon: () => (
         <ProxyImage
           style={{
             marginRight: "12px",

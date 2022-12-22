@@ -15,7 +15,7 @@ const LedgerIframe = () => {
   useEffect(() => {
     let handleMessage: (event: MessageEvent) => void;
 
-    navigator.serviceWorker.ready.then((_registration) => {
+    navigator.serviceWorker.ready.then(() => {
       //
       // Response: relays message from the injected ledger iframe to the
       //           background script.

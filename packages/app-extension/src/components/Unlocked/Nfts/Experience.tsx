@@ -6,7 +6,7 @@ import { useDarkMode, useNavigation, useUser } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 
-const useStyles = styles((theme) => ({
+const useStyles = styles(() => ({
   container: {
     width: "100%",
     height: "100%",

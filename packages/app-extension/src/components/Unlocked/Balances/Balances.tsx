@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { formatUSD, proxyImageUrl } from "@coral-xyz/common";
-import { useDeveloperMode } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import {
@@ -149,9 +148,6 @@ const useStyles = styles((theme) => ({
 export function BalancesTableCell({ props }: any) {
   const { icon, title, subtitle, usdValue, percentChange } = props;
   const classes = useStyles();
-  const isDeveloperMode = useDeveloperMode();
-  const [displayCell, setDisplayCell] = useState(true);
-  const [domNode, setDomNode] = useState<any>(null);
 
   const positive = percentChange && percentChange > 0 ? true : false;
   const negative = percentChange && percentChange < 0 ? true : false;
@@ -164,13 +160,8 @@ export function BalancesTableCell({ props }: any) {
     // pass
   }
 
-  return !displayCell ? null : (
-    <div
-      ref={(current) => {
-        setDomNode(current);
-      }}
-      className={classes.balancesTableCellContainer}
-    >
+  return (
+    <div className={classes.balancesTableCellContainer}>
       {!!icon && (
         <ListItemIcon
           className={classes.tokenListItemIcon}
@@ -221,7 +212,7 @@ export function BalancesTableCell({ props }: any) {
   );
 }
 
-export function BalancesTable({ props, style, children }: any) {
+export function BalancesTable({ style, children }: any) {
   const classes = useStyles();
   return (
     <BalancesTableProvider>
@@ -330,7 +321,7 @@ export function BalancesTableHead({ props, style }: any) {
   );
 }
 
-export function BalancesTableContent({ props, style, children }: any) {
+export function BalancesTableContent({ style, children }: any) {
   const classes = useStyles();
   const { showContent } = useBalancesContext();
   return (
@@ -367,14 +358,7 @@ export function BalancesTableRow({
   );
 }
 
-function __BalancesTableRow({
-  id,
-  props,
-  style,
-  children,
-  childrenRenderer,
-  onClick,
-}: any) {
+function __BalancesTableRow({ style, children, onClick }: any) {
   const classes = useStyles();
   return (
     <ListItem
