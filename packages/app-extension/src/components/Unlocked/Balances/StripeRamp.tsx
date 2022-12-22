@@ -35,9 +35,9 @@ export const StripeRamp = ({
   blockchain: Blockchain;
   publicKey: string;
 }) => {
-  const [loading, setLoading] = useState(false);
+  const [, setLoading] = useState(false);
   const [err, setErr] = useState("");
-  const [clientSecret, setClientSecret] = useState(false);
+  const [, setClientSecret] = useState(false);
   const nav = useNavStack();
   const classes = useStyles();
 

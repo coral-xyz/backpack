@@ -192,7 +192,9 @@ export function useNavStack(): NavStackContext {
 }
 
 export function NavStackScreen({
+  // eslint-disable-next-line
   name,
+  // eslint-disable-next-line
   component,
 }: {
   name: string;

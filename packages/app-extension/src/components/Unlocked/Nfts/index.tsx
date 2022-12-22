@@ -1,20 +1,7 @@
 import { useMemo } from "react";
-import type { Blockchain, NftCollection } from "@coral-xyz/common";
-import { Loading } from "@coral-xyz/react-common";
-import {
-  nftCollectionsWithIds,
-  useActiveWallets,
-  useEnabledBlockchains,
-  useLoader,
-} from "@coral-xyz/recoil";
+import { nftCollectionsWithIds } from "@coral-xyz/recoil";
 import { Image as ImageIcon } from "@mui/icons-material";
-import {
-  RecoilValue,
-  selectorFamily,
-  UnwrapRecoilValue,
-  useRecoilValue,
-  useRecoilValueLoadable,
-} from "recoil";
+import { useRecoilValueLoadable } from "recoil";
 
 import { useIsONELive } from "../../../hooks/useIsONELive";
 import { EmptyState } from "../../common/EmptyState";

@@ -380,6 +380,7 @@ function useNavBar() {
   }
 
   if (isRoot) {
+    /**
     const emoji = pathname.startsWith("/balances")
       ? "💰"
       : pathname.startsWith("/apps")
@@ -387,6 +388,7 @@ function useNavBar() {
       : pathname.startsWith("/messages")
       ? "💬"
       : "🎨";
+    **/
     navButtonRight = <SettingsButton />;
     navButtonLeft = (
       <div style={{ display: "flex" }}>

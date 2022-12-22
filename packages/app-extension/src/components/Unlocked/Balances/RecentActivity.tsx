@@ -13,7 +13,7 @@ import {
   useRecentTransactions,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { Bolt, CallMade, Check, Clear } from "@mui/icons-material";
+import { CallMade, Check, Clear } from "@mui/icons-material";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import { IconButton, List, ListItem, Typography } from "@mui/material";
 
@@ -110,7 +110,7 @@ export function RecentActivityButton() {
         <div style={{ height: "100%" }}>
           <NavStackEphemeral
             initialRoute={{ name: "root" }}
-            options={(_args) => ({ title: "Recent Activity" })}
+            options={() => ({ title: "Recent Activity" })}
             navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
           >
             <NavStackScreen

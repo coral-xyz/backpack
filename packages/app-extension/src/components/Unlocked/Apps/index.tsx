@@ -1,9 +1,4 @@
-import { useSearchParams } from "react-router-dom";
-import {
-  Blockchain,
-  TAB_APPS,
-  UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
-} from "@coral-xyz/common";
+import { Blockchain } from "@coral-xyz/common";
 import { ProxyImage } from "@coral-xyz/react-common";
 import {
   filteredPlugins,
@@ -11,7 +6,6 @@ import {
   useEnabledBlockchains,
   useLoader,
   useOpenPlugin,
-  useUpdateSearchParams,
 } from "@coral-xyz/recoil";
 import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import { Block as BlockIcon } from "@mui/icons-material";
@@ -79,7 +73,7 @@ function PluginGrid() {
   const activeWallets = useActiveWallets();
   const openPlugin = useOpenPlugin();
 
-  const [plugins, _, isLoading] = useLoader(
+  const [plugins, , isLoading] = useLoader(
     filteredPlugins,
     [],
     // Note this reloads on any change to the active wallets, which reloads

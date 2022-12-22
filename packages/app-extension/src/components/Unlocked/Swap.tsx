@@ -404,7 +404,6 @@ const InsufficientBalanceButton = () => {
 };
 
 const ConfirmSwapButton = ({
-  blockchain,
   ...buttonProps
 }: {
   blockchain: Blockchain;

@@ -4,10 +4,7 @@ import {
   deserializeLegacyTransaction,
   deserializeTransaction,
 } from "@coral-xyz/common";
-import {
-  ComputeBudgetInstruction,
-  ComputeBudgetProgram,
-} from "@solana/web3.js";
+import { ComputeBudgetProgram } from "@solana/web3.js";
 import { ethers } from "ethers";
 
 const { base58: bs58 } = ethers.utils;

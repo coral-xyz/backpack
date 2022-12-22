@@ -2,7 +2,7 @@ import { ProxyImage } from "@coral-xyz/react-common";
 import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import { Button, Typography } from "@mui/material";
 
-const useStyles = styles((theme) => ({
+const useStyles = styles(() => ({
   button: {
     "&:hover": {
       opacity: HOVER_OPACITY,

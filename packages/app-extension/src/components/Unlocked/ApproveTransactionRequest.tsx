@@ -1,9 +1,6 @@
 import { Suspense, useEffect, useState } from "react";
-const { base58: bs58 } = ethers.utils;
 import {
   Blockchain,
-  deserializeLegacyTransaction,
-  deserializeTransaction,
   PLUGIN_REQUEST_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
   PLUGIN_REQUEST_ETHEREUM_SIGN_MESSAGE,
   PLUGIN_REQUEST_ETHEREUM_SIGN_TRANSACTION,
@@ -23,7 +20,6 @@ import {
   Loading,
   PrimaryButton,
   SecondaryButton,
-  TextInput,
 } from "@coral-xyz/react-common";
 import {
   useActivePublicKeys,
@@ -34,12 +30,9 @@ import {
   useTransactionRequest,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { Checkbox, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import * as anchor from "@project-serum/anchor";
-import { useConnection } from "@solana/wallet-adapter-react";
 import type { ConfirmOptions, SendOptions } from "@solana/web3.js";
-import { ComputeBudgetProgram } from "@solana/web3.js";
-import { ethers } from "ethers";
 
 import { sanitizeTransactionWithFeeConfig } from "../../utils/solana";
 import { walletAddressDisplay } from "../common";
@@ -232,7 +225,7 @@ function Request({ onConfirm, onReject, buttonsDisabled, children }: any) {
         />
         <PrimaryButton
           disabled={buttonsDisabled}
-          onClick={(event) => onConfirm()}
+          onClick={() => onConfirm()}
           label="Approve"
           type="submit"
           data-testid="Send"
@@ -393,7 +386,7 @@ function SendTransactionRequest({
           onResolve(signature);
         }
       })
-      .catch((e: any) => {
+      .catch(() => {
         onReject();
       });
   };

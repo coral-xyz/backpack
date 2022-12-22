@@ -1,9 +1,8 @@
 import type { NftCollectionWithIds } from "@coral-xyz/common";
-import { Blockchain, NAV_COMPONENT_NFT_DETAIL } from "@coral-xyz/common";
+import { NAV_COMPONENT_NFT_DETAIL } from "@coral-xyz/common";
 import {
   nftById,
   nftCollectionsWithIds,
-  useLoader,
   useNavigation,
 } from "@coral-xyz/recoil";
 import { Grid } from "@mui/material";

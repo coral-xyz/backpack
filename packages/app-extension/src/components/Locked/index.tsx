@@ -7,7 +7,7 @@ import {
   TextInput,
 } from "@coral-xyz/react-common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { useCustomTheme } from "@coral-xyz/themes";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
 

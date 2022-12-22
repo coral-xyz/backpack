@@ -25,7 +25,6 @@ import {
   useEthereumConnectionUrl,
   useEthereumCtx,
   useEthereumExplorer,
-  useLoader,
   useSolanaConnectionUrl,
   useSolanaCtx,
   useSolanaExplorer,
@@ -193,11 +192,7 @@ function SendScreen({ nft }: { nft: any }) {
   const [destinationAddress, setDestinationAddress] = useState("");
   const [openConfirm, setOpenConfirm] = useState(false);
   const [wasSent, setWasSent] = useState(false);
-  const {
-    isValidAddress,
-    isErrorAddress,
-    isFreshAddress: _,
-  } = useIsValidAddress(
+  const { isValidAddress, isErrorAddress } = useIsValidAddress(
     nft.blockchain,
     destinationAddress,
     solanaProvider.connection,

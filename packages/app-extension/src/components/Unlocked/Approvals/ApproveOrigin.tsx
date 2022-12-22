@@ -83,8 +83,6 @@ export function ApproveOrigin({
 }: any) {
   const classes = useStyles();
   const approveOrigin = useApproveOrigin();
-  const activeWallet = useBlockchainActiveWallet(blockchain);
-  const wallet = activeWallet;
 
   const onConfirm = async () => {
     await approveOrigin(origin);
@@ -253,6 +251,7 @@ function WalletSelectorButton({
 
 function AvatarWithBlockchainImage({ blockchain }: { blockchain: Blockchain }) {
   const avatarUrl = useAvatarUrl(32);
+  // eslint-disable-next-line
   const blockchainIcon = useBlockchainLogo(blockchain);
   // TODO: use this blockchain icon here.
   return (
