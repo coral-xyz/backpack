@@ -82,6 +82,8 @@ export function NotificationsProvider(props: any) {
   const setKeyringStoreState = useSetRecoilState(atoms.keyringStoreState);
   const setActiveUser = useSetRecoilState(atoms.user);
   const resetAllUsers = useResetRecoilState(atoms.allUsers);
+  const resetNftCollections = useResetRecoilState(atoms.nftCollections);
+
   // Preferences.
   const setPreferences = useSetRecoilState(atoms.preferences);
   const setFeatureGates = useSetRecoilState(atoms.featureGates);
@@ -570,6 +572,7 @@ export function NotificationsProvider(props: any) {
       setWalletData(notif.data.walletData);
       setActiveUser(notif.data.user);
       resetAllUsers();
+      resetNftCollections();
     };
 
     const handleRemovedUser = (notif: Notification) => {
