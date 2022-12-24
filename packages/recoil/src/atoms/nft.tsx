@@ -133,11 +133,10 @@ export const nftCollections = atom<{
         [Blockchain.ETHEREUM]: null,
       });
       pollLocalData(true);
-      onSet((_, __, isReset) => {
-        if (isReset) {
-          clearTimeout(timeout);
-          pollLocalData();
-        }
+      onSet((oldValue) => {
+        setSelf(oldValue);
+        clearTimeout(timeout);
+        pollLocalData();
       });
       return () => {
         clearTimeout(timeout);
