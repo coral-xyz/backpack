@@ -2,7 +2,6 @@ import React, { lazy, Suspense } from "react";
 import ReactDOM from "react-dom";
 import { openPopupWindow } from "@coral-xyz/common/dist/esm/browser";
 import { BACKPACK_FEATURE_POP_MODE } from "@coral-xyz/common/dist/esm/generated-config";
-import { Loading } from "@coral-xyz/react-common/dist/esm/components/base/Loading";
 
 import "./index.css";
 
@@ -35,7 +34,7 @@ document.addEventListener("keypress", async function onPress(event) {
 //
 ReactDOM.render(
   <React.StrictMode>
-    <Suspense fallback={<Loading />}>
+    <Suspense fallback={null}>
       <App />
     </Suspense>
     <Suspense fallback={null}>
