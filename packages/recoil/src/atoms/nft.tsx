@@ -97,13 +97,14 @@ const nftMetadata = selector<Map<string, Nft>>({
  * Poll local NFT data and create list of all as source for nftById(s) atoms
  * This atom breaks to global app rerender due to blockchain data polling.
  */
-const nftCollections = atom<{
+export const nftCollections = atom<{
   [Blockchain.SOLANA]: NftCollection[] | null;
   [Blockchain.ETHEREUM]: NftCollection[] | null;
 }>({
   key: "nftCollections",
   effects: [
-    ({ setSelf, getPromise }) => {
+    ({ setSelf, onSet, getPromise }) => {
+      let timeout;
       const pollLocalData = async (isInitial?: boolean) => {
         try {
           const [solana, ethereum, currentValue] = await Promise.all([
@@ -122,13 +123,23 @@ const nftCollections = atom<{
           // ensure polling continues even on error.
           console.error(e);
         }
-        setTimeout(() => requestAnimationFrame(() => pollLocalData()), 1000);
+        timeout = setTimeout(
+          () => requestAnimationFrame(() => pollLocalData()),
+          1000
+        );
       };
       setSelf({
         [Blockchain.SOLANA]: null,
         [Blockchain.ETHEREUM]: null,
       });
       pollLocalData(true);
+      onSet(() => {
+        clearTimeout(timeout);
+        pollLocalData();
+      });
+      return () => {
+        clearTimeout(timeout);
+      };
     },
   ],
 });
