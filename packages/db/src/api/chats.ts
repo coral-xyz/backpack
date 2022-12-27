@@ -1,10 +1,9 @@
 import type {
   EnrichedMessage,
   MessageWithMetadata,
-  SubscriptionType} from "@coral-xyz/common";
-import {
-  BACKEND_API_URL
+  SubscriptionType,
 } from "@coral-xyz/common";
+import { BACKEND_API_URL } from "@coral-xyz/common";
 
 import { bulkAddChats, clearChats, latestReceivedMessage } from "../db/chats";
 
@@ -12,9 +11,9 @@ export const refreshChatsFor = async (
   uuid: string,
   room: string,
   type: SubscriptionType
-): Promise<EnrichedMessage[]> => {
+) => {
   const lastMessage = await latestReceivedMessage(uuid, room, type);
-  const response = await fetch(`${BACKEND_API_URL}/chats/after`, {
+  const response = await fetch(`${BACKEND_API_URL}/chats`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -22,15 +21,16 @@ export const refreshChatsFor = async (
     body: JSON.stringify({
       room: room,
       type,
-      lastMessageId: lastMessage.id,
+      timestampAfter: lastMessage.created_at,
       limit: 40,
     }),
   });
+
   const json = await response.json();
   const chats: MessageWithMetadata[] = json.chats;
 
   if (chats.length >= 40) {
-    clearChats(uuid, room, type);
+    await clearChats(uuid, room, type);
   }
 
   await bulkAddChats(
@@ -39,6 +39,7 @@ export const refreshChatsFor = async (
       ...chat,
       direction: uuid === chat.uuid ? "send" : "recv",
       received: true,
+      from_http_server: true,
     }))
   );
 };

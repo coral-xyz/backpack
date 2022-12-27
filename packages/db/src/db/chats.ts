@@ -9,7 +9,7 @@ export const latestReceivedMessage = async (
 ) => {
   return (
     await getDb(uuid)
-      .messages.where({ room: roomId, type: type })
+      .messages.where({ room: roomId, type: type, from_http_server: true })
       .limit(1)
       .reverse()
       .sortBy("created_at")
@@ -21,5 +21,5 @@ export const bulkAddChats = (uuid: string, chats: EnrichedMessage[]) => {
 };
 
 export const clearChats = (uuid: string, room: string, type: string) => {
-  getDb(uuid).messages.bulkDelete({ room });
+  return getDb(uuid).messages.where({ room }).delete();
 };

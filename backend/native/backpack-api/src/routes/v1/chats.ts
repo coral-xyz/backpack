@@ -8,7 +8,6 @@ import express from "express";
 import { ensureHasRoomAccess, extractUserId } from "../../auth/middleware";
 import { getChats, getChatsFromParentGuids } from "../../db/chats";
 import { updateLastReadIndividual } from "../../db/friendships";
-import { getUsers } from "../../db/users";
 
 const router = express.Router();
 
@@ -35,49 +34,51 @@ router.post(
 );
 
 router.get("/", extractUserId, ensureHasRoomAccess, async (req, res) => {
-  const room = req.query.room;
-  const type = req.query.type;
-  const lastChatId = req.query.lastChatId || 10000000000;
-  // @ts-ignore
-  const chats = await getChats({ room, type, lastChatId });
-  const enrichedChats = await enrichMessages(room, type, chats);
-  res.json({ chats: enrichedChats });
-});
-
-router.get("/after", extractUserId, ensureHasRoomAccess, async (req, res) => {
   // @ts-ignore
   const room: string = req.query.room;
   // @ts-ignore
   const type: SubscriptionType = req.query.type;
-  const limit = req.query.limit || 50;
-  const lastMessageId = req.query.lastMessage || -1;
   // @ts-ignore
-  const chats = await getChats({ room, type, lastMessageId, limit });
-  const enrichedChats = await enrichMessages(room, type, chats);
+  const timestampBefore = req.query.timestampBefore
+    ? new Date(req.query.timestampBefore)
+    : new Date();
+  // @ts-ignore
+  const timestampAfter = req.query.timestampAfter
+    ? new Date(req.query.timestampAfter)
+    : new Date(0);
+
+  // @ts-ignore
+  const chats = await getChats({ room, type, timestampBefore, timestampAfter });
+  const enrichedChats = await enrichMessages(chats, room, type);
   res.json({ chats: enrichedChats });
 });
 
-const enrichMessages = async (
+export const enrichMessages = async (
+  messages: Message[],
   room: string,
-  type: SubscriptionType,
-  messages: Message[]
+  type: SubscriptionType
 ): Promise<MessageWithMetadata[]> => {
   const replyIds: string[] = messages.map(
     (m) => m.parent_client_generated_uuid || ""
   );
-  let replyToMessageMappings = new Map<
-      string,
-      {
-        parent_message_text: string;
-        parent_message_author_username: string;
-        parent_message_author_uuid: string;
-      }
-    >(),
-    userIdMappings = new Map<string, { username: string }>();
 
   const uniqueReplyIds = replyIds
     .filter((x, index) => replyIds.indexOf(x) === index)
     .filter((x) => x);
+
+  const replyToMessageMappings: Map<
+    string,
+    {
+      parent_message_text: string;
+      parent_message_author_uuid: string;
+    }
+  > = new Map<
+    string,
+    {
+      parent_message_text: string;
+      parent_message_author_uuid: string;
+    }
+  >();
 
   if (uniqueReplyIds.length) {
     const parentReplies = await getChatsFromParentGuids(
@@ -85,7 +86,6 @@ const enrichMessages = async (
       type,
       uniqueReplyIds
     );
-    userIdMappings = await enrichUsernames([...messages, ...parentReplies]);
     uniqueReplyIds.forEach((replyId) => {
       const reply = parentReplies.find(
         (x) => x.client_generated_uuid === replyId
@@ -94,31 +94,19 @@ const enrichMessages = async (
         replyToMessageMappings.set(replyId, {
           parent_message_text: reply.message,
           parent_message_author_uuid: reply.uuid || "",
-          parent_message_author_username:
-            userIdMappings.get(reply.uuid || "")?.username || "",
         });
       } else {
         console.log(`reply with id ${replyId} not found`);
       }
     });
-  } else {
-    userIdMappings = await enrichUsernames(messages);
   }
 
   return messages.map((message) => {
-    const username = userIdMappings.get(message.uuid || "")?.username || "";
-    const image = `https://avatars.xnfts.dev/v1/${username}`;
     return {
       ...message,
-      username,
-      image,
       parent_message_text: message.parent_client_generated_uuid
         ? replyToMessageMappings.get(message.parent_client_generated_uuid || "")
             ?.parent_message_text
-        : undefined,
-      parent_message_author_username: message.parent_client_generated_uuid
-        ? replyToMessageMappings.get(message.parent_client_generated_uuid || "")
-            ?.parent_message_author_username
         : undefined,
       parent_message_author_uuid: message.parent_client_generated_uuid
         ? replyToMessageMappings.get(message.parent_client_generated_uuid || "")
@@ -126,22 +114,6 @@ const enrichMessages = async (
         : undefined,
     };
   });
-};
-
-const enrichUsernames = async (messages: Message[]) => {
-  const userIds: string[] = messages.map((m) => m.uuid || "");
-  const userIdMappings = new Map<string, { username: string }>();
-  const uniqueUserIds = userIds
-    .filter((x, index) => userIds.indexOf(x) === index)
-    .filter((x) => !userIdMappings.get(x || ""));
-
-  if (uniqueUserIds.length) {
-    const metadatas = await getUsers(uniqueUserIds);
-    metadatas.forEach(({ id, username }) =>
-      userIdMappings.set(id, { username })
-    );
-  }
-  return userIdMappings;
 };
 
 export default router;

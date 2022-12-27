@@ -12,13 +12,16 @@ const chain = Chain(CHAT_HASURA_URL, {
 export const getChats = async ({
   room,
   type,
-  lastChatId,
+  timestampBefore,
+  timestampAfter,
   limit = 10,
 }: {
   room: string;
   type: SubscriptionType;
   lastChatId: number;
   limit: number;
+  timestampBefore: Date;
+  timestampAfter: Date;
 }): Promise<Message[]> => {
   const response = await chain("query")({
     chats: [
@@ -30,8 +33,9 @@ export const getChats = async ({
           room: { _eq: room },
           //@ts-ignore
           type: { _eq: type },
-          id: {
-            _lt: lastChatId,
+          created_at: {
+            _lte: timestampBefore,
+            _gte: timestampAfter,
           },
         },
       },

@@ -11,8 +11,7 @@ import { ScrollBarImpl } from "./ScrollbarImpl";
 import { SendMessage } from "./SendMessage";
 import { useStyles } from "./styles";
 export const FullScreenChat = () => {
-  const { chatManager, loading, areFriends, requested, chats } =
-    useChatContext();
+  const { loading, chats } = useChatContext();
   const [autoScroll, setAutoScroll] = useState(true);
   const theme = useCustomTheme();
 
@@ -30,7 +29,7 @@ export const FullScreenChat = () => {
         }
       }
       if (elem.scrollTop === 0) {
-        chatManager?.fetchMoreChats();
+        // chatManager?.fetchMoreChats();
       }
     }
   }

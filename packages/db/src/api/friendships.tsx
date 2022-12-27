@@ -12,9 +12,11 @@ export const refreshFriendships = async (uuid: string) => {
   );
   const json = await res.json();
   const chats: EnrichedInboxDb[] = json.chats;
-  chats.forEach((chat) => {
-    db.inbox.put(chat);
-  });
+  if (chats) {
+    chats?.forEach((chat) => {
+      db.inbox.put(chat);
+    });
+  }
 };
 
 export const blockUser = async (uuid: string, to: string, blocked: boolean) => {

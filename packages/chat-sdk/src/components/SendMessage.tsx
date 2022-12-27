@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import { CHAT_MESSAGES } from "@coral-xyz/common";
+import { SubscriptionType } from "@coral-xyz/common/src/messages/toServer";
+import { SignalingManager } from "@coral-xyz/db";
 import { GiphyFetch } from "@giphy/js-fetch-api";
 import { Carousel } from "@giphy/react-components";
 import GifIcon from "@mui/icons-material/Gif";
@@ -87,10 +90,8 @@ export const SendMessage = ({ messageRef }: any) => {
   const [emojiPicker, setEmojiPicker] = useState(false);
   const [gifPicker, setGifPicker] = useState(false);
   const {
-    chatManager,
-    setChats,
     userId,
-    username,
+    roomId,
     activeReply,
     setActiveReply,
     isDarkMode,
@@ -99,38 +100,31 @@ export const SendMessage = ({ messageRef }: any) => {
   } = useChatContext();
 
   const sendMessage = (messageTxt, messageKind: "text" | "gif" = "text") => {
-    if (chatManager && messageTxt) {
+    if (messageTxt) {
       setActiveReply({
         parent_username: "",
         parent_client_generated_uuid: null,
         text: "",
       });
       const client_generated_uuid = uuidv4();
-      chatManager?.send(
-        messageTxt,
-        client_generated_uuid,
-        messageKind,
-        activeReply.parent_client_generated_uuid
-          ? activeReply.parent_client_generated_uuid
-          : undefined
-      );
-      setChats((x) => [
-        ...x,
-        {
-          message: messageTxt,
-          client_generated_uuid,
-          received: false,
-          uuid: userId,
-          message_kind: messageKind,
-          username,
-          image: `https://avatars.xnfts.dev/v1/${username}`,
-          parent_client_generated_uuid:
-            activeReply.parent_client_generated_uuid,
-          parent_message_author_uuid: activeReply.parent_message_author_uuid,
-          parent_message_text: activeReply.text,
-          parent_message_author_username: activeReply.parent_username,
+      SignalingManager.getInstance()?.send({
+        type: CHAT_MESSAGES,
+        payload: {
+          messages: [
+            {
+              client_generated_uuid: client_generated_uuid,
+              message: messageTxt,
+              message_kind: messageKind,
+              parent_client_generated_uuid:
+                activeReply.parent_client_generated_uuid
+                  ? activeReply.parent_client_generated_uuid
+                  : undefined,
+            },
+          ],
+          type: type,
+          room: roomId,
         },
-      ]);
+      });
       setMessageContent("");
     }
   };

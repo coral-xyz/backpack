@@ -1,5 +1,4 @@
 import type { CHAT_MESSAGES, SUBSCRIBE, UNSUBSCRIBE } from "./fromServer";
-import { Message } from "./fromServer";
 
 export type SubscriptionType = "collection" | "individual";
 export type SubscriptionMessage = {
@@ -7,19 +6,21 @@ export type SubscriptionMessage = {
   room: string;
 };
 
+export type SendMessagePayload = {
+  messages: {
+    client_generated_uuid: string;
+    message: string;
+    message_kind: "gif" | "text";
+    parent_client_generated_uuid?: string;
+  }[];
+  type: SubscriptionType;
+  room: string;
+};
+
 export type ToServer =
   | {
       type: typeof CHAT_MESSAGES;
-      payload: {
-        messages: {
-          client_generated_uuid: string;
-          message: string;
-          message_kind: string;
-          parent_client_generated_uuid?: string;
-        }[];
-        type: SubscriptionType;
-        room: string;
-      };
+      payload: SendMessagePayload;
     }
   | {
       type: typeof SUBSCRIBE;

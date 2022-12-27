@@ -13,8 +13,10 @@ import {
   deleteUserPublicKey,
   getUser,
   getUserByUsername,
+  getUsers,
   getUsersByPrefix,
   getUsersByPublicKeys,
+  getUsersMetadata,
   updateUserAvatar,
 } from "../../db/users";
 import { getOrcreateXnftSecret } from "../../db/xnftSecrets";
@@ -289,6 +291,11 @@ router.post("/avatar", extractUserId, async (req: Request, res: Response) => {
   });
 
   return res.status(201).end();
+});
+
+router.post("/metadata", async (req: Request, res: Response) => {
+  const users = await getUsers(req.body.uuids);
+  return res.json({ users });
 });
 
 export default router;
