@@ -184,7 +184,7 @@ export function ChatMessages() {
           return (
             <MessageLine
               timestamp={chat.created_at}
-              key={chat.id}
+              key={chat.client_generated_uuid}
               message={chat.message}
               received={chat.received}
               messageKind={chat.message_kind}
@@ -205,7 +205,7 @@ export function ChatMessages() {
             <>
               <MessageLeft
                 timestamp={chat.created_at}
-                key={chat.id}
+                key={chat.client_generated_uuid}
                 message={chat.message}
                 received={chat.received}
                 messageKind={chat.message_kind}
@@ -215,7 +215,7 @@ export function ChatMessages() {
                 client_generated_uuid={chat.client_generated_uuid}
                 parent_message_text={chat.parent_message_text}
                 parent_message_author_username={
-                  chat.parent_message_author_username
+                  "" //TODO: Flow this from userDB
                 }
                 parent_message_author_uuid={chat.parent_message_author_uuid}
               />
@@ -225,7 +225,7 @@ export function ChatMessages() {
         return (
           <MessageRight
             timestamp={chat.created_at}
-            key={chat.id}
+            key={chat.client_generated_uuid}
             message={chat.message}
             received={chat.received}
             userId={chat.uuid}
@@ -234,7 +234,7 @@ export function ChatMessages() {
             username={chat.username}
             client_generated_uuid={chat.client_generated_uuid}
             parent_message_text={chat.parent_message_text}
-            parent_message_author_username={chat.parent_message_author_username}
+            parent_message_author_username={""} // TODO: Flow this from user index db
             parent_message_author_uuid={chat.parent_message_author_uuid}
           />
         );

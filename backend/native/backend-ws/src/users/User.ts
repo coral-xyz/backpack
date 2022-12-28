@@ -1,6 +1,4 @@
-import type {
-  FromServer,
-  ToServer} from "@coral-xyz/common";
+import type { FromServer, ToServer } from "@coral-xyz/common";
 import {
   CHAT_MESSAGES,
   SUBSCRIBE,
@@ -12,7 +10,6 @@ import type { SubscriptionType } from "@coral-xyz/common/dist/esm/messages/toSer
 import type WebSocket from "ws";
 
 import { validateRoom } from "../db/friendships";
-import { Redis } from "../redis/Redis";
 import { RedisSubscriptionManager } from "../subscriptions/RedisSubscriptionManager";
 
 export class User {

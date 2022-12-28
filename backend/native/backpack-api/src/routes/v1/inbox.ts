@@ -106,7 +106,15 @@ export async function enrichFriendships(
     const remoteUsername =
       (metadatas.find((x) => x.id === remoteUserId)?.username as string) || "";
 
+    const unread =
+      friendship.last_message_sender === remoteUserId &&
+      friendship.last_message_client_uuid !==
+        (friendship.user1 === uuid
+          ? friendship.user1_last_read_message_id
+          : friendship.user2_last_read_message_id);
+
     return {
+      id: friendship.id,
       friendshipId: friendship.id,
       last_message: friendship.last_message,
       last_message_timestamp: friendship.last_message_timestamp,
@@ -125,6 +133,7 @@ export async function enrichFriendships(
       blocked: blocked ? 1 : 0,
       interacted: interacted ? 1 : 0,
       remoteInteracted: remoteInteracted ? 1 : 0,
+      unread: unread ? 1 : 0,
     };
   });
 }

@@ -20,7 +20,6 @@ export const getUsers = async (
       {
         id: true,
         username: true,
-        avatar_nft: true,
       },
     ],
   });

@@ -1,6 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import type { SubscriptionType } from "@coral-xyz/common";
-import { refreshChatsFor, useRoomChatsWithMetadata } from "@coral-xyz/db";
+import { SUBSCRIBE, UNSUBSCRIBE } from "@coral-xyz/common";
+import {
+  refreshChatsFor,
+  SignalingManager,
+  useRoomChatsWithMetadata,
+} from "@coral-xyz/db";
 
 import { ChatProvider } from "./ChatContext";
 import { FullScreenChat } from "./FullScreenChat";
@@ -45,7 +50,6 @@ export const ChatRoom = ({
   // const [chatManager, setChatManager] = useState<ChatManager | null>(null);
   const [reconnecting, setReconnecting] = useState(false);
   // TODO: Make state propogte from outside the state since this'll be expensive
-  const [loading, setLoading] = useState(true);
   const [activeReply, setActiveReply] = useState({
     parent_username: "",
     parent_client_generated_uuid: null,
@@ -57,63 +61,45 @@ export const ChatRoom = ({
   useEffect(() => {
     if (roomId) {
       refreshChatsFor(userId, roomId, type)
-        .then(() => setLoading(false))
-        .catch((e) => setLoading(false));
-      // const chatManager = new ChatManager(
-      //   userId,
-      //   roomId,
-      //   type,
-      //   jwt,
-      //   (messages) => {
-      //     setLoading(false);
-      //     setChats((m) => merge(m, messages));
-      //   },
-      //   (messages) => {
-      //     setChats((m) => merge(m, messages));
-      //   },
-      //   (messages) => {
-      //     setChats((m) =>
-      //       m.map((message) => {
-      //         if (message.uuid !== userId) {
-      //           return message;
-      //         }
-      //         const receivedMessage = messages.find(
-      //           (x) => x.client_generated_uuid === message.client_generated_uuid
-      //         );
-      //         if (receivedMessage) {
-      //           return {
-      //             ...message,
-      //             received: true,
-      //           };
-      //         }
-      //         return message;
-      //       })
-      //     );
-      //   }
-      // );
-      //
-      // chatManager.on(RECONNECTING, () => {
-      //   setReconnecting(true);
-      // });
-      //
-      // chatManager.on(SIGNALING_CONNECTED, () => {
-      //   setReconnecting(false);
-      // });
-      //
-      // setChatManager(chatManager);
-      //
-      // return () => {
-      //   chatManager.destroy();
-      // };
+        .then(() => {})
+        .catch((e) => {});
     }
-    return () => {};
   }, [roomId, userId, type]);
+
+  useEffect(() => {
+    if (roomId) {
+      SignalingManager.getInstance().send({
+        type: SUBSCRIBE,
+        payload: {
+          type,
+          room: roomId,
+        },
+      });
+      return () => {
+        SignalingManager.getInstance().send({
+          type: UNSUBSCRIBE,
+          payload: {
+            type,
+            room: roomId,
+          },
+        });
+      };
+    }
+  }, [roomId]);
+
+  useEffect(() => {
+    if (chats && chats.length) {
+      SignalingManager.getInstance().debouncedUpdateLastRead(
+        chats[chats.length - 1]
+      );
+    }
+  }, [chats]);
 
   return (
     <ChatProvider
       activeReply={activeReply}
       setActiveReply={setActiveReply}
-      loading={loading}
+      loading={!chats}
       roomId={roomId}
       chats={chats}
       userId={userId}

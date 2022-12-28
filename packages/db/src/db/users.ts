@@ -8,5 +8,5 @@ export const getNewUsers = async (uuid: string, uuids: string[]) => {
 };
 
 export const bulkAddUsers = (uuid: string, users: UserMetadata[]) => {
-  getDb(uuid).users.bulkAdd(users);
+  getDb(uuid).users.bulkPut(users);
 };

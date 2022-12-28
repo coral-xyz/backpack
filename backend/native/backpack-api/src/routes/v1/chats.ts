@@ -38,13 +38,13 @@ router.get("/", extractUserId, ensureHasRoomAccess, async (req, res) => {
   const room: string = req.query.room;
   // @ts-ignore
   const type: SubscriptionType = req.query.type;
-  // @ts-ignore
   const timestampBefore = req.query.timestampBefore
-    ? new Date(req.query.timestampBefore)
+    ? // @ts-ignore
+      new Date(parseInt(req.query.timestampBefore))
     : new Date();
-  // @ts-ignore
   const timestampAfter = req.query.timestampAfter
-    ? new Date(req.query.timestampAfter)
+    ? // @ts-ignore
+      new Date(parseInt(req.query.timestampAfter))
     : new Date(0);
 
   // @ts-ignore
@@ -112,6 +112,7 @@ export const enrichMessages = async (
         ? replyToMessageMappings.get(message.parent_client_generated_uuid || "")
             ?.parent_message_author_uuid
         : undefined,
+      created_at: new Date(message.created_at).getTime().toString(),
     };
   });
 };

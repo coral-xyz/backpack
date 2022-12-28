@@ -42,6 +42,8 @@ export const getChats = async ({
       {
         id: true,
         uuid: true,
+        type: true,
+        room: true,
         message: true,
         client_generated_uuid: true,
         message_kind: true,
@@ -51,9 +53,28 @@ export const getChats = async ({
     ],
   });
 
-  return (
-    response.chats.sort((a, b) => (a.created_at < b.created_at ? -1 : 1)) || []
-  );
+  const chats: Message[] = [];
+
+  if (!response.chats) {
+    return [];
+  }
+
+  response.chats.map((chat) => {
+    if (!chat) {
+      return;
+    }
+    chats.push({
+      uuid: chat.uuid,
+      message: chat.message,
+      client_generated_uuid: chat.client_generated_uuid,
+      message_kind: chat.message_kind,
+      created_at: chat.created_at,
+      parent_client_generated_uuid: chat.parent_client_generated_uuid,
+      room: chat.room,
+      type: chat.type,
+    });
+  });
+  return chats;
 };
 
 export const getChatsFromParentGuids = async (

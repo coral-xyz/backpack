@@ -4,8 +4,6 @@ import type {
   SubscriptionType,
 } from "@coral-xyz/common";
 
-import type { ChatManager, EnrichedMessage } from "../ChatManager";
-
 type ChatContext = {
   setActiveReply: any;
   activeReply: {

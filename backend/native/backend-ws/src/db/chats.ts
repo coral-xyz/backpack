@@ -99,5 +99,7 @@ export const postChat = (
         id: true,
       },
     ],
-  }).catch((e) => console.log(`Error while adding chat msg to DB ${e}`));
+  })
+    .then((x) => console.log(x))
+    .catch((e) => console.log(`Error while adding chat msg to DB ${e}`));
 };

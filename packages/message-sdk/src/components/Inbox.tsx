@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { EnrichedInboxDb } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
-import { useActiveChats } from "@coral-xyz/db";
+import { useActiveChats, useRequestsCount } from "@coral-xyz/db";
 import { EmptyState, TextInput } from "@coral-xyz/react-common";
 import { useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
@@ -20,29 +20,14 @@ export function Inbox() {
   const classes = useStyles();
   const { uuid } = useUser();
   const [searchFilter, setSearchFilter] = useState("");
-  const [messagesLoading, setMessagesLoading] = useState(true);
+  const [messagesLoading, setMessagesLoading] = useState(false);
   const activeChats = useActiveChats(uuid) || [];
-  const setActiveChats = () => {};
   // const [activeChats, setActiveChats] = useState<EnrichedInboxDb[]>([]);
-  const [requestCount, setRequestCount] = useState(0);
+  const requestCount = useRequestsCount(uuid);
   const [searchResults, setSearchResults] = useState<
     { image: string; id: string; username: string }[]
   >([]);
   const theme = useCustomTheme();
-
-  const init = async () => {
-    const res = await ParentCommunicationManager.getInstance().fetch(
-      `${BACKEND_API_URL}/inbox?areConnected=true`
-    );
-    const json = await res.json();
-    setMessagesLoading(false);
-    setActiveChats(json.chats || []);
-    setRequestCount(json.requestCount || 0);
-  };
-
-  useEffect(() => {
-    init();
-  }, [uuid]);
 
   const searchedUsersDistinct = searchResults.filter(
     (result) =>

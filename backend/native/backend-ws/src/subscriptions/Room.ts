@@ -65,6 +65,7 @@ export const enrichMessages = async (
         ? replyToMessageMappings.get(message.parent_client_generated_uuid || "")
             ?.parent_message_author_uuid
         : undefined,
+      created_at: new Date(message.created_at).getTime().toString(),
     };
   });
 };

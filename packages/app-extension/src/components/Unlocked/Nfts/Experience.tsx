@@ -38,21 +38,8 @@ export const NftsExperience = ({ id }: any) => {
 
 export function NftChat({ id }: any) {
   const { username } = useUser();
-  const [jwt, setJwt] = useState("");
   const isDarkMode = useDarkMode();
 
-  const fetchJwt = async () => {
-    const res = await fetch(`${REALTIME_API_URL}/cookie`);
-    const jwt = (await res.json()).jwt;
-    setJwt(jwt);
-  };
-
-  useEffect(() => {
-    fetchJwt();
-  });
-  if (!jwt) {
-    return <div></div>;
-  }
   return (
     <ChatRoom
       username={username || ""}
@@ -60,7 +47,6 @@ export function NftChat({ id }: any) {
       roomId={id}
       userId={"asdadsas"}
       isDarkMode={isDarkMode}
-      jwt={jwt}
     />
   );
 }

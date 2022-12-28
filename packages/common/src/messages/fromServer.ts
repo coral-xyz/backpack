@@ -1,6 +1,6 @@
 import type { ToPubsub } from "./ToPubsub";
 import type { SubscriptionType } from "./toServer";
-export const CHAT_MESSAGES = "CHAT_MESSAGEES";
+export const CHAT_MESSAGES = "CHAT_MESSAGES";
 export const SUBSCRIBE = "SUBSCRIBE";
 export const UNSUBSCRIBE = "UNSUBSCRIBE";
 export const WS_READY = "WS_READY";
@@ -24,7 +24,7 @@ export interface MessageWithMetadata extends Message {
 export interface EnrichedMessage extends MessageWithMetadata {
   direction: "send" | "recv";
   received?: boolean;
-  from_http_server: boolean;
+  from_http_server: 0 | 1;
 }
 
 export interface EnrichedMessageWithMetadata extends EnrichedMessage {

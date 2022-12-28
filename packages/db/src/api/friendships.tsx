@@ -27,7 +27,7 @@ export const blockUser = async (uuid: string, to: string, blocked: boolean) => {
     },
     body: JSON.stringify({ to, block: blocked }),
   });
-  await updateFriendship(uuid, to, { blocked });
+  await updateFriendship(uuid, to, { blocked: blocked ? 1 : 0 });
 };
 
 export const markSpam = async (uuid: string, to: string, spam: boolean) => {
@@ -38,5 +38,5 @@ export const markSpam = async (uuid: string, to: string, spam: boolean) => {
     },
     body: JSON.stringify({ to, spam }),
   });
-  await updateFriendship(uuid, to, { spam });
+  await updateFriendship(uuid, to, { spam: spam ? 1 : 0 });
 };

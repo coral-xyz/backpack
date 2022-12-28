@@ -295,7 +295,13 @@ router.post("/avatar", extractUserId, async (req: Request, res: Response) => {
 
 router.post("/metadata", async (req: Request, res: Response) => {
   const users = await getUsers(req.body.uuids);
-  return res.json({ users });
+  return res.json({
+    users: (users || []).map((user) => ({
+      uuid: user.id,
+      username: user.username,
+      image: "https://swr.xnfts.dev/avatars/" + user.username,
+    })),
+  });
 });
 
 export default router;

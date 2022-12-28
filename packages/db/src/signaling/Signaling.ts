@@ -12,6 +12,8 @@ export class Signaling extends EventEmitter {
   destroyed = false;
   jwt: string;
   uuid: string;
+  private bufferedMessages: ToServer[] = [];
+  private state: "connected" | "disconnected" = "disconnected";
 
   constructor(uuid: string) {
     super();
@@ -23,13 +25,18 @@ export class Signaling extends EventEmitter {
     const res = await fetch(`${REALTIME_API_URL}/cookie`);
     this.jwt = (await res.json()).jwt;
     const ws = new WebSocket(`${SERVER_URL}?jwt=${this.jwt}`);
-    ws.addEventListener("open", () => {});
+    ws.addEventListener("open", () => {
+      this.state = "connected";
+      this.bufferedMessages.forEach((x) => this.send(x));
+      this.bufferedMessages = [];
+    });
 
     ws.addEventListener("message", (event) => {
       this.handleMessage(event.data);
     });
 
     ws.addEventListener("close", () => {
+      this.state = "disconnected";
       if (!this.destroyed) {
         this.emit(RECONNECTING);
         setTimeout(() => {
@@ -68,6 +75,11 @@ export class Signaling extends EventEmitter {
   }
 
   send(message: ToServer) {
+    if (this.state === "disconnected") {
+      this.bufferedMessages.push(message);
+      return;
+    }
+    console.error("sending message");
     this.ws.send(
       JSON.stringify({
         ...message,

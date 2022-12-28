@@ -1,11 +1,5 @@
-import type {
-  SubscriptionType,
-  ToPubsub} from "@coral-xyz/common";
-import {
-  CHAT_MESSAGES,
-  FromServer,
-  ToServer,
-} from "@coral-xyz/common";
+import type { SubscriptionType, ToPubsub } from "@coral-xyz/common";
+import { CHAT_MESSAGES, FromServer, ToServer } from "@coral-xyz/common";
 import type { RedisClientType } from "redis";
 import { createClient } from "redis";
 
@@ -35,6 +29,9 @@ export class RedisSubscriptionManager {
     this.publisher = createClient({
       url: REDIS_URL,
     });
+    //TODO: add reconnection and buffering logic here?
+    this.publisher.connect();
+    this.subscriber.connect();
     this.subscriptions = new Map<string, string[]>();
     this.reverseSubscriptions = new Map<string, { [userId: string]: User }>();
     this.postSubscriptions = new Map<

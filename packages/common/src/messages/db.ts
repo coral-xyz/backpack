@@ -20,6 +20,7 @@ export interface EnrichedInboxDb extends InboxDb {
   interacted: 0 | 1;
   remoteInteracted: 0 | 1;
   areFriends: 0 | 1;
+  unread: 0 | 1;
   friendshipId: string;
 }
 
