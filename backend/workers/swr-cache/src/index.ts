@@ -140,6 +140,17 @@ const executeRequest: (c: ExecutionContext, env: Env) => ExecuteRequest =
       return response;
     }
 
+    if (service === "avatars") {
+      const path = url.pathname.slice(1).split("/");
+      // remove cache_bust path segment
+      if (path.length === 2) {
+        path.pop();
+      }
+      url.pathname = `/${path.join("/")}`;
+      // url.host = `${service}.backpack.workers.dev`;
+      // return fetch(new Request(url, req));
+    }
+
     url.host = `${service}.backpack.workers.dev`;
     console.log(service, url.toString());
     return fetch(new Request(url, req));

@@ -1,8 +1,7 @@
-import type { Blockchain } from "@coral-xyz/common";
+import type { Blockchain, FeeConfig } from "@coral-xyz/common";
 import { Loading } from "@coral-xyz/react-common";
 import { useTransactionData, useWalletBlockchain } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
-import _CheckIcon from "@mui/icons-material/Check";
 import { Typography } from "@mui/material";
 import { BigNumber, ethers } from "ethers";
 
@@ -26,25 +25,6 @@ const useStyles = styles((theme) => ({
     fontSize: "14px",
     marginBottom: "8px",
   },
-  listRoot: {
-    color: theme.custom.colors.fontColor,
-    padding: "0",
-    borderRadius: "4px",
-    fontSize: "14px",
-  },
-  listItemRoot: {
-    alignItems: "start",
-    border: `${theme.custom.colors.borderFull}`,
-    borderRadius: "4px",
-    background: theme.custom.colors.nav,
-    padding: "8px",
-  },
-  listItemIconRoot: {
-    minWidth: "inherit",
-    height: "20px",
-    width: "20px",
-    marginRight: "8px",
-  },
   warning: {
     color: theme.custom.colors.negative,
     fontSize: "14px",
@@ -62,6 +42,9 @@ const useStyles = styles((theme) => ({
   positive: {
     color: theme.custom.colors.positive,
   },
+  txMenuItemRoot: {
+    height: "36px !important",
+  },
 }));
 
 export function ApproveTransaction({
@@ -75,12 +58,16 @@ export function ApproveTransaction({
   title: string;
   tx: string | null;
   wallet: string;
-  onCompletion: (transaction: any) => Promise<void>;
+  onCompletion: (
+    transaction: any,
+    feeConfig?: { config: FeeConfig; disabled: boolean }
+  ) => Promise<void>;
 }) {
   const classes = useStyles();
   const blockchain = useWalletBlockchain(wallet);
   const transactionData = useTransactionData(blockchain as Blockchain, tx);
-  const { loading, balanceChanges, transaction } = transactionData;
+  const { loading, balanceChanges, transaction, solanaFeeConfig } =
+    transactionData;
 
   if (loading) {
     return <Loading />;
@@ -117,7 +104,7 @@ export function ApproveTransaction({
     : {};
 
   const onConfirm = async () => {
-    await onCompletion(transaction);
+    await onCompletion(transaction, solanaFeeConfig);
   };
 
   const onDeny = async () => {
@@ -137,13 +124,16 @@ export function ApproveTransaction({
       {loading ? (
         <Loading />
       ) : (
-        <div style={{ marginTop: "24px" }}>
+        <div
+          style={{ marginTop: "24px", marginLeft: "8px", marginRight: "8px" }}
+        >
           <Typography className={classes.listDescription}>
             Transaction details
           </Typography>
           <TransactionData
             transactionData={transactionData}
             menuItems={menuItems}
+            menuItemClasses={{ root: classes.txMenuItemRoot }}
           />
         </div>
       )}
@@ -154,14 +144,15 @@ export function ApproveTransaction({
 export function ApproveAllTransactions({
   origin,
   title,
-  txs,
   wallet,
+  // eslint-disable-next-line
+  txs,
   onCompletion,
 }: {
   origin: string;
   title: string;
-  txs: string;
   wallet: string;
+  txs: Array<string>;
   onCompletion: (confirmed: boolean) => void;
 }) {
   const classes = useStyles();

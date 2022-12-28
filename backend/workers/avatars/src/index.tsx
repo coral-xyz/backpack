@@ -37,7 +37,7 @@ const avatarQuery = (username: string) => `query Avatar {
   }
 }`;
 
-app.get("/:username", async (c) => {
+app.get("/:username/:cache_bust?", async (c) => {
   const username = c.req.param("username");
   const jwt = c.env.PUBLIC_AVATAR_JWT;
   const hasuraUrl = c.env.HASURA_URL;

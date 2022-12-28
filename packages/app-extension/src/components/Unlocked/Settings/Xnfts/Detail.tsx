@@ -1,20 +1,20 @@
 import { useEffect, useState } from "react";
 import {
-  BACKEND_API_URL,
   Blockchain,
   confirmTransaction,
   explorerUrl,
   getLogger,
   Solana,
-  UI_RPC_METHOD_GET_XNFT_PREFERENCES,
-  UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
   UI_RPC_METHOD_SET_XNFT_PREFERENCES,
 } from "@coral-xyz/common";
 import {
- CheckIcon ,   LaunchDetail,
+  CheckIcon,
+  LaunchDetail,
   Loading,
   NegativeButton,
-ProxyImage,  SecondaryButton } from "@coral-xyz/react-common";
+  ProxyImage,
+  SecondaryButton,
+} from "@coral-xyz/react-common";
 import {
   useBackgroundClient,
   useNavigation,
@@ -25,7 +25,7 @@ import {
   xnftPreference as xnftPreferenceAtom,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { Button, CircularProgress, Link, Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import { PublicKey } from "@solana/web3.js";
 import { useRecoilValue } from "recoil";
 

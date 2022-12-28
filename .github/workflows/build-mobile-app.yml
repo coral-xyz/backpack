@@ -38,9 +38,20 @@ jobs:
         with:
           expo-token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: 👷 Install packages for mobile
+      - name: 👷 Build packages (edge)
+        env:
+          BACKPACK_CONFIG_VERSION: "${{ env.RELEASE_PREFIX }}-latest-edge-${{ github.run_number }}"
+          BACKPACK_CONFIG_LOG_LEVEL: "info"
+          BACKPACK_FEATURE_LIGHT_MODE: "true"
+          BACKPACK_FEATURE_POP_MODE: "true"
+          BACKPACK_FEATURE_MULTICHAIN: "true"
+          BACKPACK_FEATURE_XNFT: "true"
+          # CI!=true so that build warnings aren't treated like errors (for now)
+          CI: ""
         run: yarn build:mobile
 
       - name: 🚀 Build mobile
         working-directory: packages/app-mobile
+        env:
+          APP_ENV: "production"
         run: eas build --non-interactive --wait --platform=${{ github.event.inputs.platform }} --profile=${{ github.event.inputs.profile }}

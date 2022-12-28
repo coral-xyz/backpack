@@ -22,7 +22,8 @@ import {
   Loading,
   PrimaryButton,
   SecondaryButton,
- TextInput } from "@coral-xyz/react-common";
+  TextInput,
+} from "@coral-xyz/react-common";
 import type { TokenData } from "@coral-xyz/recoil";
 import {
   blockchainTokenData,
@@ -34,7 +35,6 @@ import {
   useEthereumCtx,
   useLoader,
   useNavigation,
-  useSolanaCtx,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
@@ -169,7 +169,6 @@ export function Send({
   token: TokenData;
 }) {
   const classes = useStyles() as any;
-  const { close } = useDrawerContext();
   const { title, setTitle } = useNavStack();
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
@@ -188,7 +187,6 @@ export function Send({
 
   const {
     isValidAddress,
-    isFreshAddress: _,
     isErrorAddress,
     normalizedAddress: destinationAddress,
   } = useIsValidAddress(

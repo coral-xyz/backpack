@@ -37,10 +37,12 @@ jobs:
           BACKPACK_FEATURE_XNFT: "true"
           # CI!=true so that build warnings aren't treated like errors (for now)
           CI: ""
-        run: yarn build
+        run: yarn build:mobile
 
       - name: 🚀 Publish preview
         working-directory: packages/app-mobile
+        env:
+          APP_ENV: "production"
         run: eas update --branch preview --message=pr-${{ github.event.number }}
 
       # - name: 💬 Comment preview

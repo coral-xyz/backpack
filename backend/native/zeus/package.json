@@ -17,5 +17,8 @@
     "tsc": "^2.0.4",
     "tsc-alias": "^1.7.1",
     "typescript": "~4.9.3"
+  },
+  "devDependencies": {
+    "graphql-zeus": "^5.2.3"
   }
 }

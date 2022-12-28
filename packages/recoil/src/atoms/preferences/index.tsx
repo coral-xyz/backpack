@@ -55,11 +55,19 @@ export const isDeveloperMode = selector<boolean>({
   },
 });
 
-export const autoLockSecs = selector<number>({
-  key: "autoLockSecs",
+export const autoLockSettings = selector<{
+  seconds?: number;
+  option?: "never" | "onClose";
+}>({
+  key: "autoLockSettings",
   get: async ({ get }) => {
     const p = get(preferences);
-    return p.autoLockSecs;
+    return (
+      p.autoLockSettings || {
+        seconds: p.autoLockSecs || DEFAULT_AUTO_LOCK_INTERVAL_SECS,
+        option: undefined,
+      }
+    );
   },
 });
 
@@ -121,6 +129,8 @@ export const allUsers = selector({
     }
   },
 });
+
+export const DEFAULT_AUTO_LOCK_INTERVAL_SECS = 15 * 60;
 
 // This atom is used for nothing other than re-triggering the allUsers fetch.
 export const allUsersTrigger = atom<number>({

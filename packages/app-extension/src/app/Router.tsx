@@ -1,5 +1,5 @@
 import { Suspense, useEffect } from "react";
-import type { Blockchain } from "@coral-xyz/common";
+import type { Blockchain, FeeConfig } from "@coral-xyz/common";
 import {
   EXTENSION_HEIGHT,
   EXTENSION_WIDTH,
@@ -12,6 +12,7 @@ import {
   QUERY_LOCKED,
   toTitleCase,
 } from "@coral-xyz/common";
+import { EmptyState } from "@coral-xyz/react-common";
 import {
   KeyringStoreStateEnum,
   useApprovedOrigins,
@@ -26,7 +27,6 @@ import { Block as BlockIcon } from "@mui/icons-material";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { refreshXnftPreferences } from "../api/preferences";
-import { EmptyState } from "../components/common/EmptyState";
 import { Locked } from "../components/Locked";
 import { Unlocked } from "../components/Unlocked";
 import { ApproveMessage } from "../components/Unlocked/Approvals/ApproveMessage";
@@ -37,6 +37,7 @@ import {
 } from "../components/Unlocked/Approvals/ApproveTransaction";
 import { WithAuth } from "../components/Unlocked/WithAuth";
 import { refreshFeatureGates } from "../gates/FEATURES";
+import { sanitizeTransactionWithFeeConfig } from "../utils/solana";
 
 import "./App.css";
 
@@ -196,10 +197,31 @@ function QueryApproveTransaction() {
           title={title!}
           tx={tx}
           wallet={wallet}
-          onCompletion={async (transaction: any) => {
+          onCompletion={async (
+            txStr: any,
+            feeConfig?: { config: FeeConfig; disabled: boolean }
+          ) => {
+            if (!txStr) {
+              await background.response({
+                id: requestId,
+                result: {
+                  didApprove: false,
+                },
+              });
+              return;
+            }
+            const sanitizedTxStr = sanitizeTransactionWithFeeConfig(
+              txStr,
+              blockchain,
+              feeConfig
+            );
             await background.response({
               id: requestId,
-              result: transaction,
+              result: {
+                didApprove: true,
+                transaction: sanitizedTxStr,
+                feeConfig,
+              },
             });
           }}
         />

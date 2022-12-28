@@ -2,7 +2,7 @@ import { ProxyImage } from "@coral-xyz/react-common";
 import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import { Button, Typography } from "@mui/material";
 
-const useStyles = styles((theme) => ({
+const useStyles = styles(() => ({
   button: {
     "&:hover": {
       opacity: HOVER_OPACITY,
@@ -13,6 +13,9 @@ const useStyles = styles((theme) => ({
 export function GridCard({ onClick, nft, subtitle }: any) {
   const classes = useStyles();
   const theme = useCustomTheme();
+  if (!nft) {
+    return null;
+  }
   return (
     <Button
       className={classes.button}
@@ -24,8 +27,8 @@ export function GridCard({ onClick, nft, subtitle }: any) {
         borderRadius: "8px",
         position: "relative",
         overflow: "hidden",
-        minWidth: "150px",
-        minHeight: "150px",
+        minWidth: "153.5px",
+        minHeight: "153.5px",
         aspectRatio: "1",
       }}
     >

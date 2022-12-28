@@ -32,9 +32,9 @@ import {
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
 import * as anchor from "@project-serum/anchor";
-import { useConnection } from "@solana/wallet-adapter-react";
 import type { ConfirmOptions, SendOptions } from "@solana/web3.js";
 
+import { sanitizeTransactionWithFeeConfig } from "../../utils/solana";
 import { walletAddressDisplay } from "../common";
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
 import { Scrollbar } from "../common/Layout/Scrollbar";
@@ -225,7 +225,7 @@ function Request({ onConfirm, onReject, buttonsDisabled, children }: any) {
         />
         <PrimaryButton
           disabled={buttonsDisabled}
-          onClick={(event) => onConfirm()}
+          onClick={() => onConfirm()}
           label="Approve"
           type="submit"
           data-testid="Send"
@@ -328,7 +328,12 @@ function SendTransactionRequest({
   const background = useBackgroundClient();
   const pluginUrl = usePluginUrl(request?.xnftAddress);
   const transactionData = useTransactionData(blockchain, transaction);
-  const { loading, transaction: transactionToSend, from } = transactionData;
+  const {
+    loading,
+    transaction: transactionToSend,
+    from,
+    solanaFeeConfig,
+  } = transactionData;
   const solanaCtx = useSolanaCtx();
   const [signature, setSignature] = useState("");
   const [txState, setTxState] = useState<
@@ -342,10 +347,16 @@ function SendTransactionRequest({
   // transaction specific settings (i.e. Etheruem gas).
   //
   const onConfirm = () => {
+    const feeConfig = solanaFeeConfig;
+    const sanitizedTx = sanitizeTransactionWithFeeConfig(
+      transactionToSend,
+      blockchain,
+      feeConfig
+    );
     background
       .request({
         method: uiRpcMethod,
-        params: [transactionToSend, publicKey],
+        params: [sanitizedTx, publicKey],
       })
       .then(async (signature) => {
         setSignature(signature);
@@ -375,7 +386,9 @@ function SendTransactionRequest({
           onResolve(signature);
         }
       })
-      .catch(onReject);
+      .catch(() => {
+        onReject();
+      });
   };
 
   //

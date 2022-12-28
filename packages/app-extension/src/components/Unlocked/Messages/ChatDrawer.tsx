@@ -1,13 +1,10 @@
-import { useSearchParams } from "react-router-dom";
 import type { Friendship } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
-import {
-  friendship,
-  SearchParamsFor,
-  useDecodedSearchParams,
-} from "@coral-xyz/recoil";
+import { toast } from "@coral-xyz/react-common";
+import { friendship, useDecodedSearchParams } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 import BlockIcon from "@mui/icons-material/Block";
+import InfoIcon from "@mui/icons-material/Info";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import { Drawer, ListItem, Typography } from "@mui/material";
 import { useRecoilState } from "recoil";
@@ -44,6 +41,7 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
         setFriendshipValue((x: any) => ({
           ...x,
           blocked: updatedValue,
+          requested: updatedValue ? false : x.requested,
         }));
         await fetch(`${BACKEND_API_URL}/friends/block`, {
           method: "POST",
@@ -52,13 +50,19 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
           },
           body: JSON.stringify({ to: userId, block: updatedValue }),
         });
+        if (updatedValue) {
+          toast.success(
+            "Blocked",
+            `@${remoteUsername} shouldn’t be showing up in your DMs from now on.`
+          );
+        }
         setOpenDrawer(false);
       },
     },
   ];
   if (friendshipValue?.areFriends) {
     menuItems.push({
-      title: `Remove ${remoteUsername} from contacts.`,
+      title: `Remove from contacts`,
       icon: <RemoveCircleIcon className={classes.icon} />,
       onClick: async () => {
         await fetch(`${BACKEND_API_URL}/friends/unfriend`, {
@@ -71,6 +75,31 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
         setFriendshipValue((x: any) => ({
           ...x,
           areFriends: false,
+        }));
+        toast.success(
+          "Contact removed",
+          `We've removed @${remoteUsername} from your contacts.`
+        );
+        setOpenDrawer(false);
+      },
+    });
+  }
+  if (friendshipValue?.areFriends || friendshipValue?.requested) {
+    menuItems.push({
+      title: friendshipValue?.spam ? `Remove spam` : `Mark as spam`,
+      icon: <InfoIcon className={classes.icon} />,
+      onClick: async () => {
+        const updatedValue = !friendshipValue?.spam;
+        await fetch(`${BACKEND_API_URL}/friends/spam`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ to: userId, spam: updatedValue }),
+        });
+        setFriendshipValue((x: any) => ({
+          ...x,
+          spam: updatedValue,
         }));
         setOpenDrawer(false);
       },

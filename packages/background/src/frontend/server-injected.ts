@@ -351,13 +351,13 @@ async function handleSolanaSignAndSendTx(
   }
 
   let resp: RpcResponse<string>;
-  const didApprove = uiResp.result;
+  const { didApprove, transaction } = uiResp.result;
 
   try {
     // Only sign if the user clicked approve.
     if (didApprove) {
       const sig = await ctx.backend.solanaSignAndSendTx(
-        tx,
+        transaction,
         walletAddress,
         options
       );
@@ -399,12 +399,15 @@ async function handleSolanaSignTx(
   }
 
   let resp: RpcResponse<string>;
-  const didApprove = uiResp.result;
+  const { didApprove, transaction } = uiResp.result;
 
   try {
     // Only sign if the user clicked approve.
     if (didApprove) {
-      const sig = await ctx.backend.solanaSignTransaction(tx, walletAddress);
+      const sig = await ctx.backend.solanaSignTransaction(
+        transaction,
+        walletAddress
+      );
       resp = [sig];
     }
   } catch (err) {
@@ -444,7 +447,7 @@ async function handleSolanaSignAllTxs(
   }
 
   let resp: RpcResponse<string>;
-  const didApprove = uiResp.result;
+  const { didApprove } = uiResp.result;
 
   try {
     // Sign all if user clicked approve.
@@ -561,12 +564,12 @@ async function handleEthereumSignAndSendTx(
   let resp: RpcResponse<string>;
   // The transaction may be modified and returned as result to accomodate user
   // tweaked gas settings/nonce.
-  const approvedTransaction = uiResp.result;
+  const { didApprove } = uiResp.result;
   try {
     // Only sign if the user clicked approve.
-    if (approvedTransaction) {
+    if (didApprove) {
       const sig = await ctx.backend.ethereumSignAndSendTransaction(
-        approvedTransaction,
+        tx,
         walletAddress
       );
       resp = [sig];
@@ -610,15 +613,12 @@ async function handleEthereumSignTx(
   let resp: RpcResponse<string>;
   // The transaction may be modified and returned as result to accomodate user
   // tweaked gas settings/nonce.
-  const approvedTransaction = uiResp.result;
+  const { didApprove } = uiResp.result;
 
   try {
     // Only sign if the user clicked approve.
-    if (approvedTransaction) {
-      const sig = await ctx.backend.ethereumSignTransaction(
-        approvedTransaction,
-        walletAddress
-      );
+    if (didApprove) {
+      const sig = await ctx.backend.ethereumSignTransaction(tx, walletAddress);
       resp = [sig];
     }
   } catch (err) {

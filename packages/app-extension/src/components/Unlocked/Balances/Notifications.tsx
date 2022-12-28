@@ -1,12 +1,16 @@
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useState } from "react";
 import type { EnrichedNotification } from "@coral-xyz/common";
-import { isFirstLastListItemStyle, Loading , ProxyImage } from "@coral-xyz/react-common";
+import {
+  EmptyState,
+  isFirstLastListItemStyle,
+  Loading,
+  ProxyImage,
+} from "@coral-xyz/react-common";
 import { useRecentNotifications } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { IconButton, List, ListItem, Typography } from "@mui/material";
 
-import { EmptyState } from "../../common/EmptyState";
 import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
 import {
   NavStackEphemeral,
@@ -98,7 +102,7 @@ export function NotificationButton() {
         <div style={{ height: "100%" }}>
           <NavStackEphemeral
             initialRoute={{ name: "root" }}
-            options={(_args) => ({ title: "Notifications" })}
+            options={() => ({ title: "Notifications" })}
             navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
           >
             <NavStackScreen
@@ -379,7 +383,9 @@ function NoNotificationsLabel({ minimize }: { minimize: boolean }) {
       <EmptyState
         icon={(props: any) => <NotificationsIcon {...props} />}
         title={"No Notifications"}
-        subtitle={"Install xnfts to receive notifications"}
+        subtitle={
+          "These come from xNFTs, but you don't have any apps installed."
+        }
         buttonText={"Browse the xNFT Library"}
         onClick={() => window.open("https://xnft.gg")}
         contentStyle={{

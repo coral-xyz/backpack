@@ -13,8 +13,6 @@ import {
 import {
   MESSAGING_COMMUNICATION_FETCH,
   MESSAGING_COMMUNICATION_PUSH,
-  TAB_SET,
-  UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
 } from "@coral-xyz/common/src/constants";
 import {
   ChatScreen,
@@ -27,15 +25,12 @@ import { Loading } from "@coral-xyz/react-common";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import {
   PluginManager,
-  useBackgroundClient,
   useClosePlugin,
   useDarkMode,
   useDecodedSearchParams,
   useFeatureGates,
-  useFreshPlugin,
   useNavigation,
   useRedirectUrl,
-  useUpdateSearchParams,
   useUser,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
@@ -142,10 +137,11 @@ function MessagesNative() {
   const isDarkMode = useDarkMode();
   const { uuid, username } = useUser();
   const { props } = useDecodedSearchParams<any>();
-  const { push } = useNavigation();
+  const { push, pop } = useNavigation();
 
   useEffect(() => {
     ParentCommunicationManager.getInstance().setNativePush(push);
+    ParentCommunicationManager.getInstance().setNativePop(pop);
   }, []);
 
   if (hash.startsWith("/messages/chat")) {
@@ -329,6 +325,9 @@ function PluginDrawer() {
   const closePlugin = useClosePlugin();
 
   const pluginProps = searchParams.get("pluginProps");
+
+  // Auto-lock functionality is dependent on checking if the URL contains
+  // "xnftAddress", if this changes then please verify that it still works
   const { xnftAddress } = JSON.parse(decodeURIComponent(pluginProps ?? "{}"));
 
   useEffect(() => {
@@ -382,6 +381,7 @@ function useNavBar() {
   }
 
   if (isRoot) {
+    /**
     const emoji = pathname.startsWith("/balances")
       ? "💰"
       : pathname.startsWith("/apps")
@@ -389,6 +389,7 @@ function useNavBar() {
       : pathname.startsWith("/messages")
       ? "💬"
       : "🎨";
+    **/
     navButtonRight = <SettingsButton />;
     navButtonLeft = (
       <div style={{ display: "flex" }}>

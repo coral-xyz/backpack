@@ -136,7 +136,8 @@ export const createUser = async (
   username: string,
   blockchainPublicKeys: Array<{ blockchain: Blockchain; publicKey: string }>,
   inviteCode?: string,
-  waitlistId?: string | null
+  waitlistId?: string | null,
+  referrerId?: string
 ) => {
   const response = await chain("mutation")({
     insert_auth_users_one: [
@@ -151,6 +152,7 @@ export const createUser = async (
           },
           invitation_id: inviteCode,
           waitlist_id: waitlistId,
+          referrer_id: referrerId,
         },
       },
       {

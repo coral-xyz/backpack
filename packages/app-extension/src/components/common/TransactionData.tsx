@@ -1,9 +1,14 @@
 import { useEffect, useRef, useState } from "react";
-import { PrimaryButton, SecondaryButton } from "@coral-xyz/react-common";
-import { useEthereumFeeData } from "@coral-xyz/recoil";
+import {
+  PrimaryButton,
+  SecondaryButton,
+  SmallInput,
+} from "@coral-xyz/react-common";
+import { useDeveloperMode, useEthereumFeeData } from "@coral-xyz/recoil";
 import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
 import { Button, Skeleton, TextField, Typography } from "@mui/material";
+import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { ethers } from "ethers";
 
 import { WithMiniDrawer } from "./Layout/Drawer";
@@ -105,6 +110,7 @@ export function TransactionData({
   } = transactionData;
   const [ethSettingsDrawerOpen, setEthSettingsDrawerOpen] = useState(false);
   const [mode, setMode] = useState<TransactionMode>("normal");
+  const developerMode = useDeveloperMode();
 
   // The default transaction data that appears on all transactions
   const defaultMenuItems = {
@@ -145,6 +151,96 @@ export function TransactionData({
           },
         }
       : {}),
+    ...(network === "Solana" && developerMode
+      ? {
+          "Max Compute units": {
+            onClick: () => {},
+            detail: (
+              <>
+                <SmallInput
+                  disabled={transactionData.solanaFeeConfig?.disabled}
+                  placeholder="Compute units"
+                  value={
+                    transactionData.solanaFeeConfig?.config?.computeUnits.toString() ||
+                    0
+                  }
+                  onChange={(e: any) => {
+                    const computeUnits = parseInt(e.target.value || "0");
+                    if (
+                      computeUnits < 0 ||
+                      computeUnits > 1200000 ||
+                      isNaN(parseInt(e.target.value))
+                    ) {
+                      return;
+                    }
+                    const updatedValue = {
+                      ...(transactionData.solanaFeeConfig?.config || {}),
+                      computeUnits: computeUnits,
+                    };
+                    transactionData.setSolanaFeeConfig((x: any) => ({
+                      config: updatedValue,
+                      disabled: x.disabled,
+                    }));
+                  }}
+                />
+              </>
+            ),
+            button: false,
+            classes: menuItemClasses,
+          },
+          "Priority fee (micro lamports)": {
+            onClick: () => {},
+            detail: (
+              <>
+                <SmallInput
+                  disabled={transactionData.solanaFeeConfig?.disabled}
+                  placeholder="Priority fee"
+                  value={
+                    transactionData.solanaFeeConfig.config?.priorityFee?.toString() ||
+                    0
+                  }
+                  onChange={(e: any) => {
+                    const priorityFee = parseInt(e.target.value || "0");
+                    if (priorityFee < 0 || isNaN(parseInt(e.target.value))) {
+                      return;
+                    }
+                    const updatedValue = {
+                      ...(transactionData.solanaFeeConfig?.config || {}),
+                      priorityFee: BigInt(priorityFee),
+                    };
+                    transactionData.setSolanaFeeConfig((x: any) => ({
+                      disabled: x.disabled,
+                      config: updatedValue,
+                    }));
+                  }}
+                />
+              </>
+            ),
+            button: false,
+            classes: menuItemClasses,
+          },
+          "Max Priority fee": {
+            onClick: () => {},
+            detail: (
+              <>
+                <Typography>
+                  {transactionData.solanaFeeConfig?.config?.computeUnits
+                    ? transactionData.solanaFeeConfig?.config?.computeUnits *
+                      (Number(
+                        transactionData.solanaFeeConfig?.config?.priorityFee
+                      ) /
+                        LAMPORTS_PER_SOL /
+                        1000000 || 0)
+                    : 0}{" "}
+                  SOL
+                </Typography>
+              </>
+            ),
+            button: false,
+            classes: menuItemClasses,
+          },
+        }
+      : {}),
   };
 
   return (
@@ -165,6 +261,7 @@ export function TransactionData({
             color: theme.custom.colors.negative,
             marginTop: "8px",
             textAlign: "center",
+            fontSize: "14px",
           }}
         >
           This transaction is unlikely to succeed.

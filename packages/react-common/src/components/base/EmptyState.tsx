@@ -1,6 +1,7 @@
-import { PrimaryButton } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
+
+import { PrimaryButton } from "./PrimaryButton";
 
 export const EmptyState: React.FC<{
   icon: (props: any) => React.ReactNode;
@@ -8,9 +9,10 @@ export const EmptyState: React.FC<{
   subtitle: string;
   buttonText?: string;
   onClick?: () => void;
-  contentStyle?: React.CSSProperties;
   minimize?: boolean;
   verticallyCentered?: boolean;
+  contentStyle?: React.CSSProperties;
+  style?: React.CSSProperties;
 }> = ({
   icon,
   title,
@@ -18,6 +20,7 @@ export const EmptyState: React.FC<{
   buttonText,
   onClick,
   contentStyle,
+  style,
   minimize,
   verticallyCentered = true,
 }) => {
@@ -33,6 +36,7 @@ export const EmptyState: React.FC<{
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
+        ...style,
       }}
     >
       <div

@@ -19,7 +19,7 @@ import {
   EthereumExplorer,
   getAddMessage,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
-  NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
+  NOTIFICATION_AUTO_LOCK_SETTINGS_UPDATED,
   NOTIFICATION_BLOCKCHAIN_DISABLED,
   NOTIFICATION_BLOCKCHAIN_ENABLED,
   NOTIFICATION_DARK_MODE_UPDATED,
@@ -152,14 +152,18 @@ export class Backend {
     txStr: string,
     walletAddress: string
   ): Promise<string> {
-    const tx = deserializeTransaction(txStr);
+    let tx = deserializeTransaction(txStr);
     const message = tx.message.serialize();
     const txMessage = bs58.encode(message);
     const blockchainKeyring =
       this.keyringStore.activeUserKeyring.keyringForBlockchain(
         Blockchain.SOLANA
       );
-    return await blockchainKeyring.signTransaction(txMessage, walletAddress);
+    const signature = await blockchainKeyring.signTransaction(
+      txMessage,
+      walletAddress
+    );
+    return signature;
   }
 
   async solanaSignMessage(msg: string, walletAddress: string): Promise<string> {
@@ -732,6 +736,18 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
+  keyringStoreAutoLockCountdownToggle(enable: boolean) {
+    this.keyringStore.autoLockCountdownToggle(enable);
+  }
+
+  keyringStoreAutoLockCountdownRestart() {
+    this.keyringStore.autoLockCountdownRestart();
+  }
+
+  keyringStoreAutoLockReset() {
+    this.keyringStore.autoLockCountdownReset();
+  }
+
   keyringStoreLock() {
     this.keyringStore.lock();
     this.events.emit(BACKEND_EVENT, {
@@ -862,7 +878,7 @@ export class Backend {
         // keyring. This is not a complete rollback of state changes, because
         // the next account index gets incremented. This is the correct behaviour
         // because it should allow for sensible retries on conflicts.
-        this.keyringKeyDelete(blockchain, publicKey);
+        await this.keyringKeyDelete(blockchain, publicKey);
         throw error;
       }
     }
@@ -1025,7 +1041,7 @@ export class Backend {
       } catch (error) {
         // Something went wrong persisting to server, roll back changes to the
         // keyring.
-        this.keyringKeyDelete(blockchain, publicKey);
+        await this.keyringKeyDelete(blockchain, publicKey);
         throw error;
       }
     }
@@ -1053,17 +1069,23 @@ export class Backend {
     return this.keyringStore.exportMnemonic(password);
   }
 
-  async keyringAutolockRead(uuid: string): Promise<number> {
+  async keyringAutoLockSettingsRead(uuid: string) {
     const data = await store.getWalletDataForUser(uuid);
-    return data.autoLockSecs;
+    return data.autoLockSettings;
   }
 
-  async keyringAutolockUpdate(autoLockSecs: number): Promise<string> {
-    await this.keyringStore.autoLockUpdate(autoLockSecs);
+  async keyringAutoLockSettingsUpdate(
+    seconds?: number,
+    option?: string
+  ): Promise<string> {
+    await this.keyringStore.autoLockSettingsUpdate(seconds, option);
     this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
+      name: NOTIFICATION_AUTO_LOCK_SETTINGS_UPDATED,
       data: {
-        autoLockSecs,
+        autoLockSettings: {
+          seconds,
+          option,
+        },
       },
     });
     return SUCCESS_RESPONSE;
@@ -1096,7 +1118,7 @@ export class Backend {
       } catch (error) {
         // Something went wrong persisting to server, roll back changes to the
         // keyring.
-        this.keyringKeyDelete(blockchain, publicKey);
+        await this.keyringKeyDelete(blockchain, publicKey);
         throw error;
       }
     }

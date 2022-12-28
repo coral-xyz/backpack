@@ -85,7 +85,7 @@ const AvatarWrapper = styled("div")(({ theme }) => ({
   },
 }));
 
-const EditOverlay = styled("div")(({ theme }) => ({
+const EditOverlay = styled("div")(() => ({
   position: "absolute",
   top: "0px",
   left: "0px",

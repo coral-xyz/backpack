@@ -21,5 +21,6 @@ export interface Friendship {
   areFriends: boolean;
   blocked: boolean;
   requested: boolean;
+  remoteRequested: boolean;
   spam: boolean;
 }

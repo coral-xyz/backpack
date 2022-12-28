@@ -61,11 +61,11 @@ export const NotificationPermissions = () => {
             // Set appropriate app states.
             return;
           }
-          const response = await saveSubscription(subscription);
+          await saveSubscription(subscription);
           setPermissionGranted(true);
           setInProgress(false);
         })
-        .catch(function (err) {
+        .catch(function () {
           setPermissionGranted(false);
           setInProgress(false);
         });

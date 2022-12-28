@@ -1,16 +1,13 @@
 import React, { useEffect } from "react";
-import type {
-  Blockchain,
-  FEATURE_GATES_MAP,
-  Notification,
-} from "@coral-xyz/common";
+import type { FEATURE_GATES_MAP, Notification } from "@coral-xyz/common";
 import {
   BackgroundSolanaConnection,
+  Blockchain,
   CHANNEL_POPUP_NOTIFICATIONS,
   ChannelAppUi,
   getLogger,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
-  NOTIFICATION_AUTO_LOCK_SECS_UPDATED,
+  NOTIFICATION_AUTO_LOCK_SETTINGS_UPDATED,
   NOTIFICATION_BLOCKCHAIN_DISABLED,
   NOTIFICATION_BLOCKCHAIN_ENABLED,
   NOTIFICATION_DARK_MODE_UPDATED,
@@ -82,15 +79,22 @@ export function NotificationsProvider(props: any) {
   const setKeyringStoreState = useSetRecoilState(atoms.keyringStoreState);
   const setActiveUser = useSetRecoilState(atoms.user);
   const resetAllUsers = useResetRecoilState(atoms.allUsers);
+  const _setNftCollections = useSetRecoilState(atoms.nftCollections);
+  const resetNftCollections = () => {
+    _setNftCollections({
+      [Blockchain.SOLANA]: null,
+      [Blockchain.ETHEREUM]: null,
+    });
+  };
   // Preferences.
   const setPreferences = useSetRecoilState(atoms.preferences);
   const setFeatureGates = useSetRecoilState(atoms.featureGates);
 
-  const setAutoLockSecs = (autoLockSecs: number) => {
+  const setAutoLockSettings = (autoLockSettings) => {
     setPreferences((current) => {
       return {
         ...current,
-        autoLockSecs,
+        autoLockSettings,
       };
     });
   };
@@ -239,8 +243,8 @@ export function NotificationsProvider(props: any) {
         case NOTIFICATION_NAVIGATION_URL_DID_CHANGE:
           handleNavigationUrlDidChange(notif);
           break;
-        case NOTIFICATION_AUTO_LOCK_SECS_UPDATED:
-          handleAutoLockSecsUpdated(notif);
+        case NOTIFICATION_AUTO_LOCK_SETTINGS_UPDATED:
+          handleAutoLockSettingsUpdated(notif);
           break;
         case NOTIFICATION_XNFT_PREFERENCE_UPDATED:
           handleXnftPreferenceUpdated(notif);
@@ -470,8 +474,8 @@ export function NotificationsProvider(props: any) {
       navigate(notif.data.url);
     };
 
-    const handleAutoLockSecsUpdated = (notif: Notification) => {
-      setAutoLockSecs(notif.data.autoLockSecs);
+    const handleAutoLockSettingsUpdated = (notif: Notification) => {
+      setAutoLockSettings(notif.data.autoLockSettings);
     };
 
     const handleXnftPreferenceUpdated = (notif: Notification) => {
@@ -570,6 +574,7 @@ export function NotificationsProvider(props: any) {
       setWalletData(notif.data.walletData);
       setActiveUser(notif.data.user);
       resetAllUsers();
+      resetNftCollections();
     };
 
     const handleRemovedUser = (notif: Notification) => {

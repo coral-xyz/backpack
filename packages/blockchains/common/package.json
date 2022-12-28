@@ -22,6 +22,7 @@
     "@coral-xyz/blockchain-solana": "*"
   },
   "devDependencies": {
+    "@coral-xyz/blockchain-keyring": "*",
     "eslint-config-custom": "*",
     "typescript": "~4.9.3"
   }

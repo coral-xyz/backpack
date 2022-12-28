@@ -20,6 +20,7 @@ type ChatContext = {
   username: string;
   areFriends: boolean;
   requested: boolean;
+  remoteRequested: boolean;
   remoteUserId: string;
   type: SubscriptionType;
   blocked?: boolean;
@@ -28,6 +29,8 @@ type ChatContext = {
   setSpam?: any;
   setBlocked?: any;
   isDarkMode: boolean;
+  remoteUsername?: string;
+  reconnecting: boolean;
 };
 
 export const _ChatContext = React.createContext<ChatContext | null>(null);
@@ -50,6 +53,7 @@ export function ChatProvider(props: {
   username: string;
   areFriends: boolean;
   requested: boolean;
+  remoteRequested: boolean;
   remoteUserId: string;
   type: SubscriptionType;
   blocked?: boolean;
@@ -58,6 +62,8 @@ export function ChatProvider(props: {
   setSpam?: any;
   setBlocked?: any;
   isDarkMode: boolean;
+  remoteUsername?: string;
+  reconnecting: boolean;
 }) {
   return (
     <_ChatContext.Provider
@@ -81,6 +87,9 @@ export function ChatProvider(props: {
         setSpam: props.setSpam,
         setBlocked: props.setBlocked,
         isDarkMode: props.isDarkMode,
+        remoteRequested: props.remoteRequested,
+        remoteUsername: props.remoteUsername,
+        reconnecting: props.reconnecting,
       }}
     >
       {props.children}

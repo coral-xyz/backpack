@@ -145,7 +145,7 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
           <ContactSection
             icon={<LockIcon style={{ color: theme.custom.colors.icon }} />}
             title={"Contact pending request"}
-            subtitle={`You can still message and send crypto to @${user.username}.`}
+            subtitle={`You can still message and send things to @${user.username}.`}
           />
         )}
         {!friendship && !requestSent && (
@@ -170,16 +170,10 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
               justifyContent: "space-between",
             }}
           >
-            <SecondaryButton
-              label={"Cancel"}
+            <PrimaryButton
+              label={"Cancel Pending Request"}
               style={{ margin: 3 }}
               onClick={() => sendFriendRequest(false)}
-            />
-            <PrimaryButton
-              disabled
-              style={{ margin: 3 }}
-              label={"Requested"}
-              onClick={() => sendFriendRequest(true)}
             />
           </div>
         )}

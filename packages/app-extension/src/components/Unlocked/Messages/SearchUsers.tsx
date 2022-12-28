@@ -9,7 +9,7 @@ import { UserList } from "./UserList";
 export const SearchUsers = () => {
   const classes = useStyles();
   const [searchFilter, setSearchFilter] = useState("");
-  const [contactsLoading, setContactsLoading] = useState(true);
+  const [, setContactsLoading] = useState(true);
   const [contacts, setContacts] = useState<EnrichedInboxDb[]>([]);
   const filteredContacts = contacts
     .filter((x: EnrichedInboxDb) => x.remoteUsername.includes(searchFilter))

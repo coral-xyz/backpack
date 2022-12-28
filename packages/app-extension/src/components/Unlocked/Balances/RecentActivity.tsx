@@ -1,7 +1,11 @@
 import { Suspense, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import { explorerUrl } from "@coral-xyz/common";
-import { isFirstLastListItemStyle, Loading } from "@coral-xyz/react-common";
+import {
+  EmptyState,
+  isFirstLastListItemStyle,
+  Loading,
+} from "@coral-xyz/react-common";
 import {
   useActiveEthereumWallet,
   useActiveSolanaWallet,
@@ -13,11 +17,10 @@ import {
   useRecentTransactions,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { Bolt, CallMade, Check, Clear } from "@mui/icons-material";
+import { CallMade, Check, Clear } from "@mui/icons-material";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import { IconButton, List, ListItem, Typography } from "@mui/material";
 
-import { EmptyState } from "../../common/EmptyState";
 import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
 import {
   NavStackEphemeral,
@@ -110,7 +113,7 @@ export function RecentActivityButton() {
         <div style={{ height: "100%" }}>
           <NavStackEphemeral
             initialRoute={{ name: "root" }}
-            options={(_args) => ({ title: "Recent Activity" })}
+            options={() => ({ title: "Recent Activity" })}
             navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
           >
             <NavStackScreen

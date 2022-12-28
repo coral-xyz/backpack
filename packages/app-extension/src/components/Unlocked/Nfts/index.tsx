@@ -1,18 +1,10 @@
 import { useMemo } from "react";
-import type { Blockchain, NftCollection } from "@coral-xyz/common";
-import { Loading } from "@coral-xyz/react-common";
-import {
-  nftCollections,
-  useActiveWallets,
-  useEnabledBlockchains,
-  useLoader,
-} from "@coral-xyz/recoil";
+import { EmptyState, Loading } from "@coral-xyz/react-common";
+import { nftCollectionsWithIds } from "@coral-xyz/recoil";
 import { Image as ImageIcon } from "@mui/icons-material";
-import type { UnwrapRecoilValue } from "recoil";
-import { RecoilValue, selectorFamily, useRecoilValue } from "recoil";
+import { useRecoilValueLoadable } from "recoil";
 
 import { useIsONELive } from "../../../hooks/useIsONELive";
-import { EmptyState } from "../../common/EmptyState";
 import {} from "../Balances";
 
 import EntryONE from "./EntryONE";
@@ -20,23 +12,10 @@ import { NftTable } from "./NftTable";
 
 export function Nfts() {
   const isONELive = useIsONELive();
-  const activeWallets = useActiveWallets();
-  const enabledBlockchains = useEnabledBlockchains();
-  const [collections, _, isLoading] = useLoader<
-    UnwrapRecoilValue<typeof nftCollections> | { [k: string]: null }
-  >(
-    nftCollections,
-    Object.fromEntries(enabledBlockchains.map((b: Blockchain) => [b, null])),
-    // Note this reloads on any change to the active wallets, which reloads
-    // NFTs for both blockchains.
-    // TODO Make this reload for only the relevant blockchain
-    [activeWallets]
-  );
+  const { contents, state } = useRecoilValueLoadable(nftCollectionsWithIds);
+  const isLoading = state === "loading";
+  const collections = (state === "hasValue" && contents) || {};
 
-  // const collections = {..._collections, ethereum: []};
-  // const collections = Object.fromEntries(
-  //   enabledBlockchains.map((b: Blockchain) => [b, null])
-  // );
   const NFTList = useMemo(() => {
     return (
       <NftTable
@@ -48,7 +27,7 @@ export function Nfts() {
         blockchainCollections={Object.entries(collections)}
       />
     );
-  }, [isONELive, JSON.stringify(collections)]);
+  }, [isONELive, collections]);
 
   const isEmpty =
     false || (Object.values(collections).flat().length === 0 && !isLoading);
