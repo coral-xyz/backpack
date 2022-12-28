@@ -4,9 +4,6 @@ import {
   getNameAccountKey,
   NameRegistryState,
 } from "@bonfida/spl-name-service";
-<<<<<<< HEAD
-import { TldParser } from "@onsol/tldparser";
-=======
 import {
   Blockchain,
   ETH_NATIVE_MINT,
@@ -35,9 +32,11 @@ import {
   useEthereumCtx,
   useLoader,
   useNavigation,
+  useSolanaCtx,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
+import { TldParser } from "@onsol/tldparser";
 import type { Connection } from "@solana/web3.js";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { BigNumber, ethers } from "ethers";
@@ -53,7 +52,6 @@ import { TokenInputField } from "../../../common/TokenInput";
 import { SendEthereumConfirmationCard } from "./Ethereum";
 import { SendSolanaConfirmationCard } from "./Solana";
 import { WithHeaderButton } from "./Token";
->>>>>>> upstream/master
 
 const useStyles = styles((theme) => ({
   container: {
@@ -169,6 +167,7 @@ export function Send({
   token: TokenData;
 }) {
   const classes = useStyles() as any;
+  const { close } = useDrawerContext();
   const { title, setTitle } = useNavStack();
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
@@ -187,6 +186,7 @@ export function Send({
 
   const {
     isValidAddress,
+    isFreshAddress: _,
     isErrorAddress,
     normalizedAddress: destinationAddress,
   } = useIsValidAddress(
