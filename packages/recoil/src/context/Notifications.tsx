@@ -1,11 +1,8 @@
 import React, { useEffect } from "react";
-import type {
-  Blockchain,
-  FEATURE_GATES_MAP,
-  Notification,
-} from "@coral-xyz/common";
+import type { FEATURE_GATES_MAP, Notification } from "@coral-xyz/common";
 import {
   BackgroundSolanaConnection,
+  Blockchain,
   CHANNEL_POPUP_NOTIFICATIONS,
   ChannelAppUi,
   getLogger,
@@ -82,6 +79,13 @@ export function NotificationsProvider(props: any) {
   const setKeyringStoreState = useSetRecoilState(atoms.keyringStoreState);
   const setActiveUser = useSetRecoilState(atoms.user);
   const resetAllUsers = useResetRecoilState(atoms.allUsers);
+  const _setNftCollections = useSetRecoilState(atoms.nftCollections);
+  const resetNftCollections = () => {
+    _setNftCollections({
+      [Blockchain.SOLANA]: null,
+      [Blockchain.ETHEREUM]: null,
+    });
+  };
   // Preferences.
   const setPreferences = useSetRecoilState(atoms.preferences);
   const setFeatureGates = useSetRecoilState(atoms.featureGates);
@@ -570,6 +574,7 @@ export function NotificationsProvider(props: any) {
       setWalletData(notif.data.walletData);
       setActiveUser(notif.data.user);
       resetAllUsers();
+      resetNftCollections();
     };
 
     const handleRemovedUser = (notif: Notification) => {

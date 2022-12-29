@@ -113,7 +113,7 @@ export function Inbox() {
             <EmptyState
               icon={(props: any) => <ChatBubbleIcon {...props} />}
               title={"No messages"}
-              subtitle={"Search for someone to send a message to!"}
+              subtitle={"Search for someone to send a message!"}
             />
           </div>
         )}
