@@ -27,6 +27,8 @@ interface ChatRoomProps {
   setSpam?: any;
   setBlocked?: any;
   isDarkMode: boolean;
+  nftMint?: string;
+  publicKey?: string;
 }
 
 export const ChatRoom = ({
@@ -46,6 +48,8 @@ export const ChatRoom = ({
   setBlocked,
   isDarkMode,
   remoteRequested = false,
+  nftMint,
+  publicKey,
 }: ChatRoomProps) => {
   const [reconnecting, setReconnecting] = useState(false);
   // TODO: Make state propogte from outside the state since this'll be expensive
@@ -75,6 +79,8 @@ export const ChatRoom = ({
           payload: {
             type,
             room: roomId,
+            mint: nftMint,
+            publicKey,
           },
         });
       }, 250);
@@ -84,6 +90,8 @@ export const ChatRoom = ({
           payload: {
             type,
             room: roomId,
+            mint: nftMint,
+            publicKey,
           },
         });
       };
@@ -105,7 +113,7 @@ export const ChatRoom = ({
       setActiveReply={setActiveReply}
       loading={!chats}
       roomId={roomId}
-      chats={chats}
+      chats={chats || []}
       userId={userId}
       username={username}
       areFriends={areFriends}

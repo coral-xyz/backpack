@@ -23,7 +23,7 @@ export function Inbox() {
   const [messagesLoading, setMessagesLoading] = useState(false);
   const activeChats = useActiveChats(uuid) || [];
   // const [activeChats, setActiveChats] = useState<EnrichedInboxDb[]>([]);
-  const requestCount = useRequestsCount(uuid);
+  const requestCount = useRequestsCount(uuid) || 0;
   const [searchResults, setSearchResults] = useState<
     { image: string; id: string; username: string }[]
   >([]);

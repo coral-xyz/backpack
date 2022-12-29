@@ -79,7 +79,8 @@ export function GridCard({
                 title: subtitle.name || "",
                 componentId: NAV_COMPONENT_NFT_CHAT,
                 componentProps: {
-                  id: metadataCollectionId,
+                  collectionId: metadataCollectionId,
+                  nftMint: nft.mint,
                 },
               });
               e.stopPropagation();

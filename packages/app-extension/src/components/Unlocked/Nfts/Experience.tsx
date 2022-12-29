@@ -1,8 +1,17 @@
 import { useEffect, useState } from "react";
 import { ChatRoom } from "@coral-xyz/chat-sdk";
-import { NAV_COMPONENT_NFT_CHAT, REALTIME_API_URL } from "@coral-xyz/common";
+import {
+  BACKEND_API_URL,
+  NAV_COMPONENT_NFT_CHAT,
+  REALTIME_API_URL,
+} from "@coral-xyz/common";
 import { PrimaryButton } from "@coral-xyz/react-common";
-import { useDarkMode, useNavigation, useUser } from "@coral-xyz/recoil";
+import {
+  useActiveSolanaWallet,
+  useDarkMode,
+  useNavigation,
+  useUser,
+} from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 
@@ -36,19 +45,36 @@ export const NftsExperience = ({ id }: any) => {
   );
 };
 
-export function NftChat({ id }: any) {
+export function NftChat({ collectionId, nftMint }: any) {
   const { username, uuid } = useUser();
   const isDarkMode = useDarkMode();
+  const { publicKey } = useActiveSolanaWallet();
 
-  console.error(id);
+  useEffect(() => {
+    fetch(`${BACKEND_API_URL}/nft/bulk`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        publicKey: publicKey,
+        nfts: [
+          {
+            collectionId: collectionId,
+            nftId: nftMint,
+          },
+        ],
+      }),
+    });
+  }, []);
 
   return (
     <ChatRoom
       username={username || ""}
       type={"collection"}
-      roomId={id || "-"}
+      roomId={collectionId || "-"}
       userId={uuid}
       isDarkMode={isDarkMode}
+      publicKey={publicKey}
+      nftMint={nftMint}
     />
   );
 }

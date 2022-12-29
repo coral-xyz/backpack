@@ -28,8 +28,17 @@ export class SignalingManager {
   private signaling?: Signaling;
   private uuid = "";
   updateLastReadTimeout: { [room: string]: number };
-  private postSubscribes: Set<{ room: string; type: SubscriptionType }> =
-    new Set<{ room: string; type: SubscriptionType }>();
+  private postSubscribes: Set<{
+    room: string;
+    type: SubscriptionType;
+    mint: string;
+    publicKey: string;
+  }> = new Set<{
+    room: string;
+    type: SubscriptionType;
+    mint: string;
+    publicKey: string;
+  }>();
 
   private constructor() {}
 
@@ -75,12 +84,14 @@ export class SignalingManager {
     );
 
     this.signaling?.on(WS_READY, () => {
-      this.postSubscribes.forEach(({ room, type }) => {
+      this.postSubscribes.forEach(({ room, type, mint, publicKey }) => {
         this.send({
           type: SUBSCRIBE,
           payload: {
             room,
             type,
+            mint,
+            publicKey,
           },
         });
       });
@@ -149,12 +160,16 @@ export class SignalingManager {
       this.postSubscribes.add({
         room: message.payload.room,
         type: message.payload.type,
+        mint: message.payload.mint || "",
+        publicKey: message.payload.publicKey || "",
       });
     }
     if (message.type === UNSUBSCRIBE) {
       this.postSubscribes.delete({
         room: message.payload.room,
         type: message.payload.type,
+        mint: message.payload.mint || "",
+        publicKey: message.payload.publicKey || "",
       });
     }
   }

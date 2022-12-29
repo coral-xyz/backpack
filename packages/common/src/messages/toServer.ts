@@ -27,6 +27,8 @@ export type ToServer =
       payload: {
         type: SubscriptionType;
         room: string;
+        publicKey?: string;
+        mint?: string;
       };
     }
   | {
@@ -34,5 +36,7 @@ export type ToServer =
       payload: {
         type: SubscriptionType;
         room: string;
+        publicKey?: string;
+        mint?: string;
       };
     };

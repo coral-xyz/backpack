@@ -19,7 +19,7 @@ export class RedisSubscriptionManager {
   private reverseSubscriptions: Map<string, { [userId: string]: User }>;
   private postSubscriptions: Map<
     string,
-    { user1: string; user2: string } | string
+    { user1: string; user2: string } | boolean
   >;
 
   private constructor() {
@@ -36,7 +36,7 @@ export class RedisSubscriptionManager {
     this.reverseSubscriptions = new Map<string, { [userId: string]: User }>();
     this.postSubscriptions = new Map<
       string,
-      { user1: string; user2: string } | string
+      { user1: string; user2: string } | boolean
     >();
   }
 
@@ -57,6 +57,7 @@ export class RedisSubscriptionManager {
       [user.id]: user,
     });
     if (Object.keys(this.reverseSubscriptions.get(room) || {})?.length === 1) {
+      console.log(`subscribing message from ${room}`);
       // This is the first subscriber to this room
       this.subscriber.subscribe(room, (payload) => {
         try {
@@ -94,7 +95,7 @@ export class RedisSubscriptionManager {
     id: string,
     type: SubscriptionType,
     room: string,
-    roomValidation: { user1: string; user2: string } | string
+    roomValidation: { user1: string; user2: string } | boolean
   ) {
     this.postSubscriptions.set(`${id}-${type}-${room}`, roomValidation);
   }
@@ -166,20 +167,28 @@ export class RedisSubscriptionManager {
       )
     )[0];
 
-    this.publish(
-      `INDIVIDUAL_${
-        userId === roomValidation?.user1
-          ? roomValidation?.user2
-          : roomValidation?.user1
-      }`,
-      type,
-      {
+    if (type === "individual") {
+      this.publish(
+        `INDIVIDUAL_${
+          userId === roomValidation?.user1
+            ? roomValidation?.user2
+            : roomValidation?.user1
+        }`,
+        {
+          type: CHAT_MESSAGES,
+          payload: {
+            messages: [emittedMessage],
+          },
+        }
+      );
+    } else {
+      this.publish(`COLLECTION_${room}`, {
         type: CHAT_MESSAGES,
         payload: {
           messages: [emittedMessage],
         },
-      }
-    );
+      });
+    }
 
     setTimeout(async () => {
       await Redis.getInstance().send(
@@ -195,9 +204,8 @@ export class RedisSubscriptionManager {
     }, 1000);
   }
 
-  publish(room: string, type: SubscriptionType, message: ToPubsub) {
-    if (type === "individual") {
-      this.publisher.publish(room, JSON.stringify(message));
-    }
+  publish(room: string, message: ToPubsub) {
+    console.log(`publishing message to ${room}`);
+    this.publisher.publish(room, JSON.stringify(message));
   }
 }

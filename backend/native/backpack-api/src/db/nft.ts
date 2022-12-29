@@ -8,29 +8,23 @@ const chain = Chain(HASURA_URL, {
   },
 });
 
-export const addNfts = ({
-  nftId,
-  collectionId,
-}: {
-  nftId: string;
-  collectionId: string;
-}) => {
-  const response = await chain("mutation")({
-    insert_auth_friendships_one: [
+export const addNfts = async (
+  publicKey: string,
+  nfts: {
+    nftId: string;
+    collectionId: string;
+  }[]
+) => {
+  await chain("mutation")({
+    insert_auth_user_nfts: [
       {
-        object: {
-          user1,
-          user2,
-          are_friends: false,
-        },
-        on_conflict: {
-          //@ts-ignore
-          update_columns: ["are_friends"],
-          //@ts-ignore
-          constraint: "friendships_pkey",
-        },
+        objects: nfts.map((nft) => ({
+          collection_id: nft.collectionId,
+          nft_id: nft.nftId,
+          public_key: publicKey,
+        })),
       },
-      { id: true },
+      { affected_rows: true },
     ],
   });
 };

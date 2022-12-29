@@ -10,6 +10,7 @@ import type { SubscriptionType } from "@coral-xyz/common/dist/esm/messages/toSer
 import type WebSocket from "ws";
 
 import { validateRoom } from "../db/friendships";
+import { getNftCollections, validateCollectionOwnership } from "../db/nfts";
 import { RedisSubscriptionManager } from "../subscriptions/RedisSubscriptionManager";
 
 export class User {
@@ -28,7 +29,7 @@ export class User {
     this.initHandlers();
   }
 
-  private initHandlers() {
+  private async initHandlers() {
     this.ws.on("message", async (data: string) => {
       // TODO: add rate limiting
       try {
@@ -38,10 +39,19 @@ export class User {
         console.log("Could not parse message " + e);
       }
     });
+
     this.send({ type: WS_READY, payload: {} });
     RedisSubscriptionManager.getInstance().subscribe(
       this,
       `INDIVIDUAL_${this.userId}`
+    );
+    const collections = await getNftCollections(this.userId);
+    const uniqueCollections = collections
+      .filter((x, index) => collections.indexOf(x) === index)
+      .filter((x) => x);
+
+    uniqueCollections.forEach((c) =>
+      RedisSubscriptionManager.getInstance().subscribe(this, `COLLECTION_${c}`)
     );
   }
 
@@ -69,7 +79,7 @@ export class User {
         });
         break;
       case SUBSCRIBE:
-        let roomValidation = "";
+        let roomValidation = false;
         if (message.payload.type === "individual") {
           // @ts-ignore
           roomValidation = await validateRoom(
@@ -83,10 +93,13 @@ export class User {
             );
             return;
           }
-        }
-
-        if (message.payload.type === "collection") {
-          // TODO: auth check for collection post #1589
+        } else {
+          roomValidation = await validateCollectionOwnership(
+            this.userId,
+            message.payload.publicKey || "",
+            message.payload.mint || "",
+            message.payload.room
+          );
         }
 
         this.subscriptions.push(message.payload);
@@ -116,9 +129,6 @@ export class User {
   }
 
   destroy() {
-    // this.subscriptions.forEach((subscription) =>
-    //   SubscriptionManager.getInstance().unsubscribe(this, subscription)
-    // );
     RedisSubscriptionManager.getInstance().userLeft(this.id);
     this.subscriptions.forEach((s) =>
       RedisSubscriptionManager.getInstance().postUnsubscribe(
