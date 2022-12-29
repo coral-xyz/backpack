@@ -47,7 +47,6 @@ export const ChatRoom = ({
   isDarkMode,
   remoteRequested = false,
 }: ChatRoomProps) => {
-  // const [chatManager, setChatManager] = useState<ChatManager | null>(null);
   const [reconnecting, setReconnecting] = useState(false);
   // TODO: Make state propogte from outside the state since this'll be expensive
   const [activeReply, setActiveReply] = useState({
@@ -68,13 +67,17 @@ export const ChatRoom = ({
 
   useEffect(() => {
     if (roomId) {
-      SignalingManager.getInstance().send({
-        type: SUBSCRIBE,
-        payload: {
-          type,
-          room: roomId,
-        },
-      });
+      window.setTimeout(() => {
+        // TODO : remote this timeout, caused because unsubsribe cleanup
+        // is slow and 2 subsequent re-renders calls unsubscribe very slowly
+        SignalingManager.getInstance().send({
+          type: SUBSCRIBE,
+          payload: {
+            type,
+            room: roomId,
+          },
+        });
+      }, 250);
       return () => {
         SignalingManager.getInstance().send({
           type: UNSUBSCRIBE,
@@ -85,6 +88,7 @@ export const ChatRoom = ({
         });
       };
     }
+    return () => {};
   }, [roomId]);
 
   useEffect(() => {

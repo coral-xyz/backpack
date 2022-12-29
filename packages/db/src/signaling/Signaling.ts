@@ -79,7 +79,6 @@ export class Signaling extends EventEmitter {
       this.bufferedMessages.push(message);
       return;
     }
-    console.error("sending message");
     this.ws.send(
       JSON.stringify({
         ...message,

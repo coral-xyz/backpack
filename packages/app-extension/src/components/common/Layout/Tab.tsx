@@ -9,20 +9,24 @@ import {
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
 } from "@coral-xyz/common";
+import { useUnreadGlobal } from "@coral-xyz/db";
 import {
   BalancesIcon,
   GridIcon,
   ImageIcon,
-  MessageIcon,
+  MessageBubbleIcon,
+  MessageBubbleUnreadIcon,
 } from "@coral-xyz/react-common";
 import {
   useBackgroundClient,
   useFeatureGates,
   useTab,
+  useUser,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
+import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
+import MarkChatUnreadIcon from "@mui/icons-material/MarkChatUnread";
 import { Tab, Tabs } from "@mui/material";
-
 const TAB_HEIGHT = 64;
 
 const useStyles = styles((theme) => ({
@@ -86,9 +90,11 @@ export function WithTabs(props: any) {
 function TabBar() {
   const classes = useStyles();
   const theme = useCustomTheme();
+  const { uuid } = useUser();
   const tab = useTab();
   const background = useBackgroundClient();
   const featureGates = useFeatureGates();
+  const messagesUnread = useUnreadGlobal(uuid);
 
   const onTabClick = (tabValue: string) => {
     if (tabValue === tab) {
@@ -190,17 +196,31 @@ function TabBar() {
             tab === TAB_MESSAGES ? classes.activeTab : ""
           }`}
           icon={
-            <MessageIcon
-              fill={
-                tab === TAB_MESSAGES
-                  ? theme.custom.colors.brandColor
-                  : theme.custom.colors.icon
-              }
-              style={{
-                width: "20px",
-                height: "20px",
-              }}
-            />
+            !messagesUnread ? (
+              <MessageBubbleIcon
+                fill={
+                  tab === TAB_MESSAGES
+                    ? theme.custom.colors.brandColor
+                    : theme.custom.colors.icon
+                }
+                style={{
+                  width: "20px",
+                  height: "20px",
+                }}
+              />
+            ) : (
+              <MessageBubbleUnreadIcon
+                fill={
+                  tab === TAB_MESSAGES
+                    ? theme.custom.colors.brandColor
+                    : theme.custom.colors.icon
+                }
+                style={{
+                  width: "20px",
+                  height: "20px",
+                }}
+              />
+            )
           }
         />
       )}

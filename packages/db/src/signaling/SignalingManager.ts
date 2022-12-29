@@ -128,6 +128,22 @@ export class SignalingManager {
           type: message.payload.type,
         }))
       );
+      message.payload.messages.forEach(async (m) => {
+        if (message.payload.type === "individual") {
+          const friendship = await getFriendshipByRoom(
+            this.uuid,
+            parseInt(message.payload.room)
+          );
+          if (friendship?.remoteUserId) {
+            updateFriendship(this.uuid, friendship?.remoteUserId, {
+              last_message_sender: this.uuid,
+              last_message: m.message,
+              last_message_timestamp: new Date().toISOString(),
+              unread: 0,
+            });
+          }
+        }
+      });
     }
     if (message.type === SUBSCRIBE) {
       this.postSubscribes.add({

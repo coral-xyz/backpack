@@ -9,9 +9,10 @@
   },
   "license": "MIT",
   "dependencies": {
-    "dexie": "^3.2.2",
     "@coral-xyz/common": "*",
     "@coral-xyz/recoil": "*",
+    "dexie": "^3.2.2",
+    "dexie-react-hooks": "^1.1.1",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

@@ -27,6 +27,14 @@ export const useRequestsCount = (uuid: string) => {
   return count;
 };
 
+export const useUnreadGlobal = (uuid: string) => {
+  const count = useLiveQuery(async () => {
+    return getDb(uuid).inbox.where({ unread: 1 }).count();
+  });
+
+  return (count || 0) > 0 ? true : false;
+};
+
 export const useRequests = (uuid: string) => {
   const reqs = useLiveQuery(async () => {
     return getDb(uuid).inbox.where({ areFriends: 0, interacted: 0 }).toArray();
