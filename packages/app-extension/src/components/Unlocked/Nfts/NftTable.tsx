@@ -474,7 +474,7 @@ function NftCollectionCard({
 
   return (
     <GridCard
-      chatEnabled={true}
+      metadataCollectionId={collection.metadataCollectionId}
       onClick={onClick}
       nft={collectionDisplayNft}
       subtitle={{ name: collection.name, length: collection.items.length }}

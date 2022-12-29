@@ -15,7 +15,12 @@ const useStyles = styles(() => ({
   },
 }));
 
-export function GridCard({ onClick, nft, subtitle, chatEnabled }: any) {
+export function GridCard({
+  onClick,
+  nft,
+  subtitle,
+  metadataCollectionId,
+}: any) {
   const classes = useStyles();
   const theme = useCustomTheme();
   const { push } = useNavigation();
@@ -49,7 +54,7 @@ export function GridCard({ onClick, nft, subtitle, chatEnabled }: any) {
         removeOnError={true}
         src={nft.imageUrl}
       />
-      {chatEnabled && (
+      {metadataCollectionId && (
         <div
           style={{
             backgroundColor: theme.custom.colors.nav,
@@ -74,7 +79,7 @@ export function GridCard({ onClick, nft, subtitle, chatEnabled }: any) {
                 title: subtitle.name || "",
                 componentId: NAV_COMPONENT_NFT_CHAT,
                 componentProps: {
-                  id: "collectionDisplayNft.id",
+                  id: metadataCollectionId,
                 },
               });
               e.stopPropagation();

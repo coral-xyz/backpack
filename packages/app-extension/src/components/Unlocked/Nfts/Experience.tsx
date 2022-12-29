@@ -37,15 +37,17 @@ export const NftsExperience = ({ id }: any) => {
 };
 
 export function NftChat({ id }: any) {
-  const { username } = useUser();
+  const { username, uuid } = useUser();
   const isDarkMode = useDarkMode();
+
+  console.error(id);
 
   return (
     <ChatRoom
       username={username || ""}
       type={"collection"}
-      roomId={id}
-      userId={"asdadsas"}
+      roomId={id || "-"}
+      userId={uuid}
       isDarkMode={isDarkMode}
     />
   );

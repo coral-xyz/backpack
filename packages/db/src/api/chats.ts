@@ -25,7 +25,7 @@ export const refreshChatsFor = async (
   );
 
   const json = await response.json();
-  const chats: MessageWithMetadata[] = json.chats;
+  const chats: MessageWithMetadata[] = json?.chats || [];
 
   if (chats.length >= 40) {
     await clearChats(uuid, room, type);
