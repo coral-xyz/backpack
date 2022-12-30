@@ -27,6 +27,7 @@ jobs:
         with:
           expo-token: ${{ secrets.EXPO_TOKEN }}
 
+      # Edge builds don't include stuff like username onboarding
       - name: 👷 Build packages (edge)
         env:
           BACKPACK_CONFIG_VERSION: "${{ env.RELEASE_PREFIX }}-latest-edge-${{ github.run_number }}"
