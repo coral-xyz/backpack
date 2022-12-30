@@ -1,4 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { NAV_COMPONENT_MESSAGE_PROFILE } from "@coral-xyz/common";
+import { useNavigation, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { GiphyFetch } from "@giphy/js-fetch-api";
 import { Gif as GifComponent } from "@giphy/react-components";
@@ -8,7 +10,6 @@ import { createStyles, makeStyles } from "@mui/styles";
 import { useChatContext } from "./ChatContext";
 import { ReplyIcon } from "./Icons";
 import { ReplyContainer } from "./ReplyContainer";
-
 // use @giphy/js-fetch-api to fetch gifs, instantiate with your api key
 const gf = new GiphyFetch("SjZwwCn1e394TKKjrMJWb2qQRNcqW8ro");
 
@@ -38,6 +39,7 @@ const useStyles = makeStyles((theme: any) =>
       width: theme.spacing(4),
       height: theme.spacing(4),
       borderRadius: "4px",
+      cursor: "pointer",
     },
     messageLine: {
       display: "flex",
@@ -128,10 +130,12 @@ const GifDemo = ({
 };
 
 export const MessageLine = (props) => {
+  const { push } = useNavigation();
   const message = props.message ? props.message : "";
   const timestamp = props.timestamp
     ? new Date(parseInt(props.timestamp))
     : new Date();
+  const { uuid } = useUser();
 
   const photoURL = props.image;
   const displayName = props.username;
@@ -147,11 +151,25 @@ export const MessageLine = (props) => {
     return hours + ":" + minutes + " " + ampm;
   }
 
+  const openProfilePage = (props: { uuid: string }) => {
+    if (uuid === props.uuid) {
+      return;
+    }
+    push({
+      title: `@${displayName}`,
+      componentId: NAV_COMPONENT_MESSAGE_PROFILE,
+      componentProps: {
+        userId: props.uuid,
+      },
+    });
+  };
+
   return (
     <>
       <div className={classes.messageRow}>
         {photoURL ? (
           <img
+            onClick={() => openProfilePage(props.uuid)}
             alt={displayName}
             className={classes.avatar}
             src={photoURL}
@@ -161,7 +179,11 @@ export const MessageLine = (props) => {
         )}
         <div className={classes.messageLine}>
           <div>
-            <div className={classes.displayName} style={{ color: props.color }}>
+            <div
+              onClick={() => openProfilePage(props.uuid)}
+              className={classes.displayName}
+              style={{ color: props.color }}
+            >
               {displayName ? (
                 `@${displayName}`
               ) : (
@@ -208,6 +230,7 @@ export function ChatMessages() {
               messageKind={chat.message_kind}
               image={chat.image}
               username={chat.username}
+              uuid={chat.uuid}
             />
           );
         })}
