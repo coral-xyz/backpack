@@ -1,4 +1,4 @@
-name: preview
+name: app-mobile preview
 
 on:
   pull_request:
@@ -13,17 +13,17 @@ concurrency:
 jobs:
   mobile:
     name: Preview App
-    timeout-minutes: 40
+    timeout-minutes: 45
     runs-on: ubuntu-latest
     steps:
       # Checkout must come before a custom action
       - name: 🏗 Setup repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 2
+          fetch-depth: 1
 
       - name: 🏗 Setup monorepo
-        uses: ./.github/actions/setup-monorepo
+        uses: ./.github/actions/app-mobile-monorepo-setup
         with:
           expo-token: ${{ secrets.EXPO_TOKEN }}
 
