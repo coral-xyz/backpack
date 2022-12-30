@@ -100,7 +100,11 @@ export class SignalingManager {
     this.signaling?.on(RECONNECTING, () => {});
   }
 
-  debouncedUpdateLastRead(latestMessage: EnrichedMessageWithMetadata) {
+  debouncedUpdateLastRead(
+    latestMessage: EnrichedMessageWithMetadata,
+    publicKey?: string,
+    mint?: string
+  ) {
     if (latestMessage) {
       if (this.updateLastReadTimeout[latestMessage.room]) {
         window.clearTimeout(this.updateLastReadTimeout[latestMessage.room]);
@@ -111,7 +115,9 @@ export class SignalingManager {
           latestMessage.client_generated_uuid,
           latestMessage.room,
           latestMessage.type,
-          latestMessage.uuid
+          latestMessage.uuid,
+          publicKey,
+          mint
         );
       }, DEBOUNCE_INTERVAL_MS);
     }

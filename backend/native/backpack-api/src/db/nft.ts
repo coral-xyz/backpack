@@ -35,9 +35,6 @@ export const validateCollectionOwnership = async (
   mint: string,
   collection: string
 ): Promise<boolean> => {
-  console.log("mint");
-  console.log(mint);
-  console.log(collection);
   const response = await chain("query")({
     auth_public_keys: [
       {

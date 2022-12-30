@@ -1,4 +1,4 @@
-import { processMessage } from "./processors";
+import { processFannedOutMessage, processMessage } from "./processors";
 import { Redis } from "./Redis";
 
 export const processQueue = async () => {
@@ -27,6 +27,8 @@ const processResponse = async (response: string) => {
       case "message":
         await processMessage(payload);
         break;
+      case "fanned-out-group-message":
+        await processFannedOutMessage(payload);
     }
   } catch (e) {
     console.log(`ERROR: while processing queue`);

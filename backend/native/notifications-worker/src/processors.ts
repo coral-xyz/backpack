@@ -1,8 +1,11 @@
 import type { SubscriptionType } from "@coral-xyz/common";
 
 import { getMessages } from "./db/chats";
+import { getLatestReadMessage } from "./db/collection_messages";
 import { getFriendship } from "./db/friendships";
+import { getAllUsersInCollection } from "./db/nft";
 import { notify } from "./notifier";
+import { Redis } from "./Redis";
 
 export const processMessage = async ({
   type,
@@ -10,7 +13,7 @@ export const processMessage = async ({
   client_generated_uuid,
 }: {
   type: SubscriptionType;
-  room: number;
+  room: number | string;
   client_generated_uuid: string;
 }) => {
   if (type === "individual") {
@@ -58,6 +61,43 @@ export const processMessage = async ({
       }
     }
   } else {
-    // TODO: fan out bulk notifications via redis
+    const uuids = await getAllUsersInCollection(room as string);
+    uuids.map(async (uuid) => {
+      await Redis.getInstance().send(
+        JSON.stringify({
+          type: "fanned-out-group-message",
+          payload: {
+            uuid,
+            room: room,
+            client_generated_uuid: client_generated_uuid,
+          },
+        })
+      );
+    });
+  }
+};
+
+export const processFannedOutMessage = async ({
+  uuid,
+  room,
+  client_generated_uuid,
+}: {
+  uuid: string;
+  room: string;
+  client_generated_uuid: string;
+}) => {
+  const lastReadMessage = await getLatestReadMessage(uuid, room);
+
+  const messages = await getMessages({
+    client_generated_uuid,
+    lastReadMessage: lastReadMessage ? lastReadMessage : "",
+  });
+
+  if (
+    !lastReadMessage ||
+    new Date(messages[lastReadMessage].created_at) <
+      new Date(messages[client_generated_uuid].created_at)
+  ) {
+    await notify(uuid, `New Message`, messages[client_generated_uuid].message);
   }
 };

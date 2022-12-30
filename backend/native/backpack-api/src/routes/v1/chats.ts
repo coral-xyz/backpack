@@ -7,7 +7,10 @@ import express from "express";
 
 import { ensureHasRoomAccess, extractUserId } from "../../auth/middleware";
 import { getChats, getChatsFromParentGuids } from "../../db/chats";
-import { updateLastReadIndividual } from "../../db/friendships";
+import {
+  updateLastReadGroup,
+  updateLastReadIndividual,
+} from "../../db/friendships";
 
 const router = express.Router();
 
@@ -24,6 +27,8 @@ router.post(
     const uuid: string = req.id;
     //@ts-ignore
     const type: SubscriptionType = req.body.type;
+    // @ts-ignore
+    const room: string = req.query.room;
 
     if (type === "individual") {
       await updateLastReadIndividual(
@@ -32,6 +37,8 @@ router.post(
         client_generated_uuid,
         user1 === uuid ? "1" : "2"
       );
+    } else {
+      await updateLastReadGroup(uuid, room, client_generated_uuid);
     }
     res.json({});
   }

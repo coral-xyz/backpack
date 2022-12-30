@@ -102,7 +102,9 @@ export const ChatRoom = ({
   useEffect(() => {
     if (chats && chats.length) {
       SignalingManager.getInstance().debouncedUpdateLastRead(
-        chats[chats.length - 1]
+        chats[chats.length - 1],
+        publicKey,
+        nftMint
       );
     }
   }, [chats]);

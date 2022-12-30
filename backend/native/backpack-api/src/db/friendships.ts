@@ -591,6 +591,33 @@ export const validateRoom = async (uuid: string, roomId: number) => {
   return null;
 };
 
+export const updateLastReadGroup = async (
+  uuid: string,
+  room: string,
+  client_generated_uuid: string
+) => {
+  await chain("mutation")({
+    insert_auth_collection_messages: [
+      {
+        objects: [
+          {
+            uuid,
+            collection_id: room,
+            last_read_message_id: client_generated_uuid,
+          },
+        ],
+        on_conflict: {
+          //@ts-ignore
+          update_columns: ["last_read_message_id"],
+          //@ts-ignore
+          constraint: "collection_messages_pkey",
+        },
+      },
+      { affected_rows: true },
+    ],
+  });
+};
+
 export const updateLastReadIndividual = async (
   user1: string,
   user2: string,
