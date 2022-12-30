@@ -474,7 +474,7 @@ function NftCollectionCard({
 
   return (
     <GridCard
-      // metadataCollectionId={collection.metadataCollectionId}
+      // metadataCollectionIdbd={collection.metadataCollectionId}
       metadataCollectionId={false}
       onClick={onClick}
       nft={collectionDisplayNft}
