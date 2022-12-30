@@ -9,6 +9,14 @@ insert_permissions:
         - collection_id
         - last_read_message_id
         - uuid
+select_permissions:
+  - role: auth_worker
+    permission:
+      columns:
+        - collection_id
+        - last_read_message_id
+        - uuid
+      filter: {}
 update_permissions:
   - role: auth_worker
     permission:
