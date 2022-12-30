@@ -1,4 +1,4 @@
-name: preview
+name: app-mobile preview
 
 on:
   pull_request:
