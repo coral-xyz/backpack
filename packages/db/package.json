@@ -16,7 +16,8 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "typescript": "~4.9.3"
+    "typescript": "~4.9.3",
+    "parcel": "^2.7.0"
   },
   "targets": {
     "module": false,
