@@ -1,5 +1,4 @@
-name: Setup Monorepo
-description: Prepare and install everything for the monorepo
+name: app-mobile monorepo setup
 
 inputs:
   eas-version:
