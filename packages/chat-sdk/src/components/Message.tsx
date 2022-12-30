@@ -161,7 +161,7 @@ export const MessageLine = (props) => {
         )}
         <div className={classes.messageLine}>
           <div>
-            <div className={classes.displayName}>
+            <div className={classes.displayName} style={{ color: props.color }}>
               {displayName ? (
                 `@${displayName}`
               ) : (
@@ -193,12 +193,14 @@ export const MessageLine = (props) => {
 
 export function ChatMessages() {
   const { chats, type, userId } = useChatContext();
+  const theme = useCustomTheme();
   if (type !== "individual") {
     return (
       <div>
         {chats.map((chat) => {
           return (
             <MessageLine
+              color={chat.color || theme.custom.colors.fontColor2}
               timestamp={chat.created_at}
               key={chat.client_generated_uuid}
               message={chat.message}

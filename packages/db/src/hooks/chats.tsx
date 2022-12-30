@@ -74,5 +74,6 @@ export const useRoomChatsWithMetadata = (
     ...chat,
     image: users?.find((x) => x?.uuid === chat.uuid)?.image || "",
     username: users?.find((x) => x?.uuid === chat.uuid)?.username || "",
+    color: users?.find((x) => x?.uuid === chat.uuid)?.color,
   }));
 };

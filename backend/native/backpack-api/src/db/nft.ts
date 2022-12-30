@@ -26,5 +26,58 @@ export const addNfts = async (
       },
       { affected_rows: true },
     ],
+  }).catch((e) => {});
+};
+
+export const validateCollectionOwnership = async (
+  uuid: string,
+  publicKey: string,
+  mint: string,
+  collection: string
+): Promise<boolean> => {
+  console.log("mint");
+  console.log(mint);
+  console.log(collection);
+  const response = await chain("query")({
+    auth_public_keys: [
+      {
+        where: {
+          public_key: { _eq: publicKey },
+        },
+        limit: 100,
+      },
+      {
+        user_id: true,
+      },
+    ],
   });
+
+  if (response.auth_public_keys[0]?.user_id !== uuid) {
+    return false;
+  }
+
+  const returnedCollection = await getNftCollection({ mint, publicKey });
+
+  return returnedCollection === collection;
+};
+
+export const getNftCollection = async ({
+  mint,
+  publicKey,
+}: {
+  mint: string;
+  publicKey: string;
+}) => {
+  const response = await chain("query")({
+    auth_user_nfts_by_pk: [
+      {
+        nft_id: mint,
+        public_key: publicKey,
+      },
+      {
+        collection_id: true,
+      },
+    ],
+  });
+  return response.auth_user_nfts_by_pk?.collection_id || "";
 };

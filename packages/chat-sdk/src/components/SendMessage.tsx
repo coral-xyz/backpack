@@ -1,23 +1,15 @@
 import { useEffect, useState } from "react";
 import { CHAT_MESSAGES } from "@coral-xyz/common";
-import { SubscriptionType } from "@coral-xyz/common/src/messages/toServer";
 import { SignalingManager } from "@coral-xyz/db";
-import { GiphyFetch } from "@giphy/js-fetch-api";
-import { Carousel } from "@giphy/react-components";
-import GifIcon from "@mui/icons-material/Gif";
 import SendIcon from "@mui/icons-material/Send";
-import SentimentVerySatisfiedIcon from "@mui/icons-material/SentimentVerySatisfied";
 import { IconButton, TextField } from "@mui/material";
 import { createStyles, makeStyles } from "@mui/styles";
-import EmojiPicker, { Theme } from "emoji-picker-react";
 import { v4 as uuidv4 } from "uuid";
 
 import { useChatContext } from "./ChatContext";
+import { EmojiPickerComponent } from "./EmojiPicker";
+import { GifPicker } from "./GifPicker";
 import { ReplyContainer } from "./ReplyContainer";
-
-// use @giphy/js-fetch-api to fetch gifs, instantiate with your api key
-const gf = new GiphyFetch("SjZwwCn1e394TKKjrMJWb2qQRNcqW8ro");
-const fetchGifs = (offset: number) => gf.trending({ offset, limit: 10 });
 
 const useStyles = makeStyles((theme: any) =>
   createStyles({
@@ -189,22 +181,19 @@ export const SendMessage = ({ messageRef }: any) => {
         InputProps={{
           endAdornment: (
             <>
-              <IconButton>
-                {" "}
-                <SentimentVerySatisfiedIcon
-                  className={classes.icon}
-                  onClick={() => setEmojiPicker((x) => !x)}
-                />{" "}
-              </IconButton>
-              <IconButton>
-                {" "}
-                <GifIcon
-                  className={classes.icon}
-                  onClick={(e) => {
-                    setGifPicker((x) => !x);
-                  }}
-                />{" "}
-              </IconButton>
+              <EmojiPickerComponent
+                setEmojiPicker={setEmojiPicker}
+                emojiPicker={emojiPicker}
+                setGifPicker={setGifPicker}
+                setMessageContent={setMessageContent}
+              />
+              <GifPicker
+                sendMessage={sendMessage}
+                setGifPicker={setGifPicker}
+                gifPicker={gifPicker}
+                setEmojiPicker={setEmojiPicker}
+              />
+
               <IconButton>
                 {" "}
                 <SendIcon
@@ -217,30 +206,6 @@ export const SendMessage = ({ messageRef }: any) => {
         }}
         onChange={(e) => setMessageContent(e.target.value)}
       />
-      {emojiPicker && (
-        <EmojiPicker
-          theme={isDarkMode ? Theme.DARK : Theme.LIGHT}
-          height={400}
-          width={"100%"}
-          onEmojiClick={(e) => setMessageContent((x) => x + e.emoji)}
-        />
-      )}
-      {gifPicker && (
-        <>
-          {/*
-             //@ts-ignore*/}
-          <Carousel
-            onGifClick={(x, e) => {
-              sendMessage(x.id, "gif");
-              setGifPicker(false);
-              e.preventDefault();
-            }}
-            gifHeight={200}
-            gutter={6}
-            fetchGifs={fetchGifs}
-          />
-        </>
-      )}
     </div>
   );
 };

@@ -30,12 +30,14 @@ export interface EnrichedMessage extends MessageWithMetadata {
 export interface EnrichedMessageWithMetadata extends EnrichedMessage {
   username: string;
   image: string;
+  color?: string;
 }
 
 export interface UserMetadata {
   uuid: string;
   image: string;
   username: string;
+  color?: string;
 }
 
 export type ReceiveChat = {
