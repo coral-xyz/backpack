@@ -8,6 +8,9 @@ export const AllTypesProps: Record<string, any> = {
     _and: "auth_collection_messages_bool_exp",
     _not: "auth_collection_messages_bool_exp",
     _or: "auth_collection_messages_bool_exp",
+    collection_id: "String_comparison_exp",
+    last_read_message_id: "String_comparison_exp",
+    uuid: "String_comparison_exp",
   },
   auth_collection_messages_constraint: "enum" as const,
   auth_collection_messages_insert_input: {},
@@ -16,7 +19,19 @@ export const AllTypesProps: Record<string, any> = {
     update_columns: "auth_collection_messages_update_column",
     where: "auth_collection_messages_bool_exp",
   },
+  auth_collection_messages_order_by: {
+    collection_id: "order_by",
+    last_read_message_id: "order_by",
+    uuid: "order_by",
+  },
+  auth_collection_messages_pk_columns_input: {},
+  auth_collection_messages_select_column: "enum" as const,
   auth_collection_messages_set_input: {},
+  auth_collection_messages_stream_cursor_input: {
+    initial_value: "auth_collection_messages_stream_cursor_value_input",
+    ordering: "cursor_ordering",
+  },
+  auth_collection_messages_stream_cursor_value_input: {},
   auth_collection_messages_update_column: "enum" as const,
   auth_collection_messages_updates: {
     _set: "auth_collection_messages_set_input",
@@ -627,6 +642,7 @@ export const AllTypesProps: Record<string, any> = {
     delete_auth_collection_messages: {
       where: "auth_collection_messages_bool_exp",
     },
+    delete_auth_collection_messages_by_pk: {},
     delete_auth_friend_requests: {
       where: "auth_friend_requests_bool_exp",
     },
@@ -653,6 +669,10 @@ export const AllTypesProps: Record<string, any> = {
     delete_auth_xnft_preferences_by_pk: {},
     insert_auth_collection_messages: {
       objects: "auth_collection_messages_insert_input",
+      on_conflict: "auth_collection_messages_on_conflict",
+    },
+    insert_auth_collection_messages_one: {
+      object: "auth_collection_messages_insert_input",
       on_conflict: "auth_collection_messages_on_conflict",
     },
     insert_auth_friend_requests: {
@@ -738,6 +758,10 @@ export const AllTypesProps: Record<string, any> = {
     update_auth_collection_messages: {
       _set: "auth_collection_messages_set_input",
       where: "auth_collection_messages_bool_exp",
+    },
+    update_auth_collection_messages_by_pk: {
+      _set: "auth_collection_messages_set_input",
+      pk_columns: "auth_collection_messages_pk_columns_input",
     },
     update_auth_collection_messages_many: {
       updates: "auth_collection_messages_updates",
@@ -834,6 +858,12 @@ export const AllTypesProps: Record<string, any> = {
   },
   order_by: "enum" as const,
   query_root: {
+    auth_collection_messages: {
+      distinct_on: "auth_collection_messages_select_column",
+      order_by: "auth_collection_messages_order_by",
+      where: "auth_collection_messages_bool_exp",
+    },
+    auth_collection_messages_by_pk: {},
     auth_friend_requests: {
       distinct_on: "auth_friend_requests_select_column",
       order_by: "auth_friend_requests_order_by",
@@ -923,6 +953,16 @@ export const AllTypesProps: Record<string, any> = {
     },
   },
   subscription_root: {
+    auth_collection_messages: {
+      distinct_on: "auth_collection_messages_select_column",
+      order_by: "auth_collection_messages_order_by",
+      where: "auth_collection_messages_bool_exp",
+    },
+    auth_collection_messages_by_pk: {},
+    auth_collection_messages_stream: {
+      cursor: "auth_collection_messages_stream_cursor_input",
+      where: "auth_collection_messages_bool_exp",
+    },
     auth_friend_requests: {
       distinct_on: "auth_friend_requests_select_column",
       order_by: "auth_friend_requests_order_by",
@@ -1084,8 +1124,14 @@ export const ReturnTypes: Record<string, any> = {
     ttl: "Int",
     refresh: "Boolean",
   },
+  auth_collection_messages: {
+    collection_id: "String",
+    last_read_message_id: "String",
+    uuid: "String",
+  },
   auth_collection_messages_mutation_response: {
     affected_rows: "Int",
+    returning: "auth_collection_messages",
   },
   auth_friend_requests: {
     from: "String",
@@ -1373,6 +1419,7 @@ export const ReturnTypes: Record<string, any> = {
   mutation_root: {
     delete_auth_collection_messages:
       "auth_collection_messages_mutation_response",
+    delete_auth_collection_messages_by_pk: "auth_collection_messages",
     delete_auth_friend_requests: "auth_friend_requests_mutation_response",
     delete_auth_friend_requests_by_pk: "auth_friend_requests",
     delete_auth_friendships: "auth_friendships_mutation_response",
@@ -1389,6 +1436,7 @@ export const ReturnTypes: Record<string, any> = {
     delete_auth_xnft_preferences_by_pk: "auth_xnft_preferences",
     insert_auth_collection_messages:
       "auth_collection_messages_mutation_response",
+    insert_auth_collection_messages_one: "auth_collection_messages",
     insert_auth_friend_requests: "auth_friend_requests_mutation_response",
     insert_auth_friend_requests_one: "auth_friend_requests",
     insert_auth_friendships: "auth_friendships_mutation_response",
@@ -1413,6 +1461,7 @@ export const ReturnTypes: Record<string, any> = {
     insert_auth_xnft_secrets_one: "auth_xnft_secrets",
     update_auth_collection_messages:
       "auth_collection_messages_mutation_response",
+    update_auth_collection_messages_by_pk: "auth_collection_messages",
     update_auth_collection_messages_many:
       "auth_collection_messages_mutation_response",
     update_auth_friendships: "auth_friendships_mutation_response",
@@ -1442,6 +1491,8 @@ export const ReturnTypes: Record<string, any> = {
     update_auth_xnft_secrets_many: "auth_xnft_secrets_mutation_response",
   },
   query_root: {
+    auth_collection_messages: "auth_collection_messages",
+    auth_collection_messages_by_pk: "auth_collection_messages",
     auth_friend_requests: "auth_friend_requests",
     auth_friend_requests_by_pk: "auth_friend_requests",
     auth_friendships: "auth_friendships",
@@ -1469,6 +1520,9 @@ export const ReturnTypes: Record<string, any> = {
     invitations_aggregate: "invitations_aggregate",
   },
   subscription_root: {
+    auth_collection_messages: "auth_collection_messages",
+    auth_collection_messages_by_pk: "auth_collection_messages",
+    auth_collection_messages_stream: "auth_collection_messages",
     auth_friend_requests: "auth_friend_requests",
     auth_friend_requests_by_pk: "auth_friend_requests",
     auth_friend_requests_stream: "auth_friend_requests",
