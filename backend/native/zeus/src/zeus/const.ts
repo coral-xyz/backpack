@@ -4,6 +4,24 @@ export const AllTypesProps: Record<string, any> = {
   Boolean_comparison_exp: {},
   Int_comparison_exp: {},
   String_comparison_exp: {},
+  auth_collection_messages_bool_exp: {
+    _and: "auth_collection_messages_bool_exp",
+    _not: "auth_collection_messages_bool_exp",
+    _or: "auth_collection_messages_bool_exp",
+  },
+  auth_collection_messages_constraint: "enum" as const,
+  auth_collection_messages_insert_input: {},
+  auth_collection_messages_on_conflict: {
+    constraint: "auth_collection_messages_constraint",
+    update_columns: "auth_collection_messages_update_column",
+    where: "auth_collection_messages_bool_exp",
+  },
+  auth_collection_messages_set_input: {},
+  auth_collection_messages_update_column: "enum" as const,
+  auth_collection_messages_updates: {
+    _set: "auth_collection_messages_set_input",
+    where: "auth_collection_messages_bool_exp",
+  },
   auth_friend_requests_bool_exp: {
     _and: "auth_friend_requests_bool_exp",
     _not: "auth_friend_requests_bool_exp",
@@ -606,6 +624,9 @@ export const AllTypesProps: Record<string, any> = {
     id: "uuid",
   },
   mutation_root: {
+    delete_auth_collection_messages: {
+      where: "auth_collection_messages_bool_exp",
+    },
     delete_auth_friend_requests: {
       where: "auth_friend_requests_bool_exp",
     },
@@ -630,6 +651,10 @@ export const AllTypesProps: Record<string, any> = {
       where: "auth_xnft_preferences_bool_exp",
     },
     delete_auth_xnft_preferences_by_pk: {},
+    insert_auth_collection_messages: {
+      objects: "auth_collection_messages_insert_input",
+      on_conflict: "auth_collection_messages_on_conflict",
+    },
     insert_auth_friend_requests: {
       objects: "auth_friend_requests_insert_input",
       on_conflict: "auth_friend_requests_on_conflict",
@@ -709,6 +734,13 @@ export const AllTypesProps: Record<string, any> = {
     insert_auth_xnft_secrets_one: {
       object: "auth_xnft_secrets_insert_input",
       on_conflict: "auth_xnft_secrets_on_conflict",
+    },
+    update_auth_collection_messages: {
+      _set: "auth_collection_messages_set_input",
+      where: "auth_collection_messages_bool_exp",
+    },
+    update_auth_collection_messages_many: {
+      updates: "auth_collection_messages_updates",
     },
     update_auth_friendships: {
       _inc: "auth_friendships_inc_input",
@@ -1052,6 +1084,9 @@ export const ReturnTypes: Record<string, any> = {
     ttl: "Int",
     refresh: "Boolean",
   },
+  auth_collection_messages_mutation_response: {
+    affected_rows: "Int",
+  },
   auth_friend_requests: {
     from: "String",
     id: "Int",
@@ -1336,6 +1371,8 @@ export const ReturnTypes: Record<string, any> = {
     id: "uuid",
   },
   mutation_root: {
+    delete_auth_collection_messages:
+      "auth_collection_messages_mutation_response",
     delete_auth_friend_requests: "auth_friend_requests_mutation_response",
     delete_auth_friend_requests_by_pk: "auth_friend_requests",
     delete_auth_friendships: "auth_friendships_mutation_response",
@@ -1350,6 +1387,8 @@ export const ReturnTypes: Record<string, any> = {
     delete_auth_user_nfts_by_pk: "auth_user_nfts",
     delete_auth_xnft_preferences: "auth_xnft_preferences_mutation_response",
     delete_auth_xnft_preferences_by_pk: "auth_xnft_preferences",
+    insert_auth_collection_messages:
+      "auth_collection_messages_mutation_response",
     insert_auth_friend_requests: "auth_friend_requests_mutation_response",
     insert_auth_friend_requests_one: "auth_friend_requests",
     insert_auth_friendships: "auth_friendships_mutation_response",
@@ -1372,6 +1411,10 @@ export const ReturnTypes: Record<string, any> = {
     insert_auth_xnft_preferences_one: "auth_xnft_preferences",
     insert_auth_xnft_secrets: "auth_xnft_secrets_mutation_response",
     insert_auth_xnft_secrets_one: "auth_xnft_secrets",
+    update_auth_collection_messages:
+      "auth_collection_messages_mutation_response",
+    update_auth_collection_messages_many:
+      "auth_collection_messages_mutation_response",
     update_auth_friendships: "auth_friendships_mutation_response",
     update_auth_friendships_by_pk: "auth_friendships",
     update_auth_friendships_many: "auth_friendships_mutation_response",
