@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { GiphyFetch } from "@giphy/js-fetch-api";
 import { Gif as GifComponent } from "@giphy/react-components";
+import { Skeleton } from "@mui/material";
 import { createStyles, makeStyles } from "@mui/styles";
 
 import { useChatContext } from "./ChatContext";
@@ -128,11 +129,12 @@ const GifDemo = ({
 
 export const MessageLine = (props) => {
   const message = props.message ? props.message : "";
-  const timestamp = props.timestamp ? new Date(props.timestamp) : new Date();
-  const photoURL =
-    props.image ||
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSYU3l2Xh_TvhuYraxr8HILzhActNrm6Ja63jjO5I&s";
-  const displayName = props.username || "-";
+  const timestamp = props.timestamp
+    ? new Date(parseInt(props.timestamp))
+    : new Date();
+
+  const photoURL = props.image;
+  const displayName = props.username;
   const classes = useStyles();
 
   function formatAMPM(date) {
@@ -148,10 +150,24 @@ export const MessageLine = (props) => {
   return (
     <>
       <div className={classes.messageRow}>
-        <img alt={displayName} className={classes.avatar} src={photoURL}></img>
+        {photoURL ? (
+          <img
+            alt={displayName}
+            className={classes.avatar}
+            src={photoURL}
+          ></img>
+        ) : (
+          <Skeleton variant="circular" width={40} height={40} />
+        )}
         <div className={classes.messageLine}>
           <div>
-            <div className={classes.displayName}>@{displayName}</div>
+            <div className={classes.displayName}>
+              {displayName ? (
+                `@${displayName}`
+              ) : (
+                <Skeleton width={30} height={20} style={{ marginTop: "0px" }} />
+              )}
+            </div>
             <div className={classes.messageContainer}>
               <div>
                 <p className={classes.messageContent}>

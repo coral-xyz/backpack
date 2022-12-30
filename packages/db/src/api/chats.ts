@@ -12,13 +12,18 @@ import { updateFriendship } from "../db/friends";
 export const refreshChatsFor = async (
   uuid: string,
   room: string,
-  type: SubscriptionType
+  type: SubscriptionType,
+  nftMint?: string,
+  publicKey?: string // To avoid DB calls on the backend
 ) => {
   const lastMessage = await latestReceivedMessage(uuid, room, type);
   const response = await fetch(
     `${BACKEND_API_URL}/chat?room=${room}&type=${type}&limit=40&timestampAfter=${
-      lastMessage?.created_at ? new Date(lastMessage?.created_at).getTime() : 0
-    }`,
+      lastMessage?.created_at &&
+      !isNaN(new Date(lastMessage?.created_at).getTime())
+        ? new Date(lastMessage?.created_at).getTime()
+        : 0
+    }&mint=${nftMint}&publicKey=${publicKey}`,
     {
       method: "GET",
     }
@@ -45,17 +50,17 @@ export const refreshChatsFor = async (
 export const fetchMoreChatsFor = async (
   uuid: string,
   room: string,
-  type: SubscriptionType
+  type: SubscriptionType,
+  nftMint?: string,
+  publicKey?: string // To avoid DB calls on the backend
 ) => {
   const oldestMessage = await oldestReceivedMessage(uuid, room, type);
-  console.error(room);
-  console.error(type);
-  console.error("oldestMessage");
-  console.log(oldestMessage);
   const response = await fetch(
     `${BACKEND_API_URL}/chat?room=${room}&type=${type}&limit=40&timestampBefore=${
-      oldestMessage?.created_at || new Date().getTime()
-    }`,
+      oldestMessage?.created_at && !isNaN(parseInt(oldestMessage?.created_at))
+        ? oldestMessage?.created_at
+        : new Date().getTime()
+    }&mint=${nftMint}&publicKey=${publicKey}`,
     {
       method: "GET",
     }

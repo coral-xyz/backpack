@@ -22,13 +22,17 @@ router.post(
     const { user1, user2 } = req.roomMetadata;
     //@ts-ignore
     const uuid: string = req.id;
+    //@ts-ignore
+    const type: SubscriptionType = req.body.type;
 
-    await updateLastReadIndividual(
-      user1,
-      user2,
-      client_generated_uuid,
-      user1 === uuid ? "1" : "2"
-    );
+    if (type === "individual") {
+      await updateLastReadIndividual(
+        user1,
+        user2,
+        client_generated_uuid,
+        user1 === uuid ? "1" : "2"
+      );
+    }
     res.json({});
   }
 );
@@ -112,7 +116,7 @@ export const enrichMessages = async (
         ? replyToMessageMappings.get(message.parent_client_generated_uuid || "")
             ?.parent_message_author_uuid
         : undefined,
-      created_at: new Date().getTime().toString(),
+      created_at: new Date(message.created_at).getTime().toString(),
     };
   });
 };

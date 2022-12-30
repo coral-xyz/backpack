@@ -63,7 +63,7 @@ export const ChatRoom = ({
 
   useEffect(() => {
     if (roomId) {
-      refreshChatsFor(userId, roomId, type)
+      refreshChatsFor(userId, roomId, type, nftMint, publicKey)
         .then(() => {})
         .catch((e) => {});
     }
@@ -129,6 +129,8 @@ export const ChatRoom = ({
       isDarkMode={isDarkMode}
       remoteUsername={remoteUsername}
       reconnecting={reconnecting}
+      nftMint={nftMint}
+      publicKey={publicKey}
     >
       <FullScreenChat />
     </ChatProvider>

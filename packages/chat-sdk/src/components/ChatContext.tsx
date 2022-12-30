@@ -30,6 +30,8 @@ type ChatContext = {
   isDarkMode: boolean;
   remoteUsername?: string;
   reconnecting: boolean;
+  nftMint?: string;
+  publicKey?: string;
 };
 
 export const _ChatContext = React.createContext<ChatContext | null>(null);
@@ -61,6 +63,8 @@ export function ChatProvider(props: {
   isDarkMode: boolean;
   remoteUsername?: string;
   reconnecting: boolean;
+  nftMint?: string;
+  publicKey?: string;
 }) {
   return (
     <_ChatContext.Provider
@@ -85,6 +89,8 @@ export function ChatProvider(props: {
         remoteRequested: props.remoteRequested,
         remoteUsername: props.remoteUsername,
         reconnecting: props.reconnecting,
+        nftMint: props.nftMint,
+        publicKey: props.publicKey,
       }}
     >
       {props.children}

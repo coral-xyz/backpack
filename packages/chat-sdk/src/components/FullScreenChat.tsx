@@ -12,7 +12,8 @@ import { ScrollBarImpl } from "./ScrollbarImpl";
 import { SendMessage } from "./SendMessage";
 
 export const FullScreenChat = () => {
-  const { loading, chats, userId, roomId, type } = useChatContext();
+  const { loading, chats, userId, roomId, type, nftMint, publicKey } =
+    useChatContext();
   const [autoScroll, setAutoScroll] = useState(true);
   const theme = useCustomTheme();
 
@@ -30,7 +31,7 @@ export const FullScreenChat = () => {
         }
       }
       if (elem.scrollTop === 0) {
-        fetchMoreChatsFor(userId, roomId, type);
+        fetchMoreChatsFor(userId, roomId, type, nftMint, publicKey);
       }
     }
   }

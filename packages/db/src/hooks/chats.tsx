@@ -60,7 +60,7 @@ export const useRoomChatsWithMetadata = (
   type: SubscriptionType
 ): EnrichedMessageWithMetadata[] | undefined => {
   const chats = useRoomChats(uuid, room, type);
-  const users = useUsers(uuid, chats?.map((chat) => chat.uuid) || []);
+  const users = useUsers(uuid, chats || []);
 
   useEffect(() => {
     const userIds = chats?.map((chat) => chat.uuid) || [];
@@ -72,7 +72,7 @@ export const useRoomChatsWithMetadata = (
 
   return chats?.map((chat) => ({
     ...chat,
-    image: users?.find((x) => x?.uuid)?.image || "",
-    username: users?.find((x) => x?.uuid)?.username || "",
+    image: users?.find((x) => x?.uuid === chat.uuid)?.image || "",
+    username: users?.find((x) => x?.uuid === chat.uuid)?.username || "",
   }));
 };
