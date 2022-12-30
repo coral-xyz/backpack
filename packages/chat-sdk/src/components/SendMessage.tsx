@@ -14,9 +14,11 @@ import { ReplyContainer } from "./ReplyContainer";
 const useStyles = makeStyles((theme: any) =>
   createStyles({
     outerDiv: {
-      padding: 10,
+      padding: 2,
       background: theme.custom.colors.textBackground,
       backdropFilter: "blur(6px)",
+      borderTopLeftRadius: 15,
+      borderTopRightRadius: 15,
     },
     text: {
       color: theme.custom.colors.fontColor2,
