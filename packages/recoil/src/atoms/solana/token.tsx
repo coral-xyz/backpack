@@ -11,7 +11,7 @@ import {
 } from "@coral-xyz/common";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { PublicKey } from "@solana/web3.js";
-import { BigNumber } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { atomFamily, selectorFamily } from "recoil";
 
 import type { TokenData, TokenNativeData } from "../../types";
@@ -340,7 +340,13 @@ export const solanaFungibleTokenBalance = selectorFamily<
 
       const price = get(priceData(nativeTokenBalance.priceMint)) as any;
       const usdBalance =
-        (price?.usd ?? 0) * parseFloat(nativeTokenBalance.displayBalance);
+        (price?.usd ?? 0) *
+        parseFloat(
+          ethers.utils.formatUnits(
+            nativeTokenBalance.nativeBalance,
+            nativeTokenBalance.decimals
+          )
+        );
       const oldUsdBalance =
         usdBalance === 0
           ? 0

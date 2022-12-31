@@ -4,7 +4,7 @@ import {
   toDisplayBalance,
 } from "@coral-xyz/common";
 import type { TokenInfo } from "@solana/spl-token-registry";
-import { BigNumber } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { atom, atomFamily, selector, selectorFamily } from "recoil";
 
 import type { TokenData, TokenNativeData } from "../../types";
@@ -119,7 +119,13 @@ export const ethereumTokenBalance = selectorFamily<TokenData | null, string>({
 
       const price = get(priceData(contractAddress)) as any;
       const usdBalance =
-        (price?.usd ?? 0) * parseFloat(nativeTokenBalance.displayBalance);
+        (price?.usd ?? 0) *
+        parseFloat(
+          ethers.utils.formatUnits(
+            nativeTokenBalance.nativeBalance,
+            nativeTokenBalance.decimals
+          )
+        );
       const oldUsdBalance =
         usdBalance === 0
           ? 0

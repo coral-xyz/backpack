@@ -1,5 +1,5 @@
-import { ProxyImage } from "@coral-xyz/react-common";
 import { toDisplayBalance } from "@coral-xyz/common";
+import { ProxyImage } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
 import type { BigNumber } from "ethers";
