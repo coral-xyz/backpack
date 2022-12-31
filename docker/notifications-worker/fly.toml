@@ -16,7 +16,7 @@ dockerfile = "./docker/notifications-worker/Dockerfile"
 
 [[services]]
   http_checks = []
-  internal_port = 8080
+  internal_port = 8083
   processes = ["app"]
   protocol = "tcp"
   script_checks = []
