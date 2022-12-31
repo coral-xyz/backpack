@@ -1,11 +1,7 @@
-import { useEffect, useState } from "react";
 import { ChatRoom } from "@coral-xyz/chat-sdk";
 import type { Friendship } from "@coral-xyz/common";
-import { BACKEND_API_URL, REALTIME_API_URL } from "@coral-xyz/common";
 import { friendship } from "@coral-xyz/recoil";
 import { useRecoilState } from "recoil";
-
-import { ParentCommunicationManager } from "../ParentCommunicationManager";
 
 export const ChatScreen = ({
   userId,

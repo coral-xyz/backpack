@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { BACKEND_API_URL, NAV_COMPONENT_MESSAGE_CHAT } from "@coral-xyz/common";
+import { useDbUser } from "@coral-xyz/db";
 import {
   Loading,
   MessageIcon,
@@ -7,6 +8,7 @@ import {
   ProxyImage,
   SecondaryButton,
 } from "@coral-xyz/react-common";
+import { useUser } from "@coral-xyz/recoil";
 // import { useNavigation } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
@@ -19,6 +21,7 @@ import { ParentCommunicationManager } from "../ParentCommunicationManager";
 import { useStyles } from "./styles";
 
 export const ProfileScreen = ({ userId }: { userId: string }) => {
+  const { uuid } = useUser();
   const [friendship, setFriendship] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
   const [user, setUser] = useState<{
@@ -29,6 +32,8 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
   const [loading, setLoading] = useState(true);
   const classes = useStyles();
   const theme = useCustomTheme();
+  const userMetadata = useDbUser(uuid, userId);
+
   async function getChatRoom() {
     const res = await ParentCommunicationManager.getInstance().fetch(
       `${BACKEND_API_URL}/friends?userId=${userId}`
@@ -80,7 +85,7 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
     >
       <div style={{ flex: 1 }}>
         <div className={classes.horizontalCenter}>
-          <ProxyImage className={classes.topImage} src={user.image} />
+          <ProxyImage className={classes.topImage} src={userMetadata?.image} />
         </div>
         <br />
         <div className={classes.horizontalCenter}>

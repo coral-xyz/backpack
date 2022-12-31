@@ -2,7 +2,6 @@ import type { FromServer, ToServer } from "@coral-xyz/common";
 import {
   CHAT_MESSAGES,
   SUBSCRIBE,
-  ToPubsub,
   UNSUBSCRIBE,
   WS_READY,
 } from "@coral-xyz/common";

@@ -50,22 +50,6 @@ export function NftChat({ collectionId, nftMint }: any) {
   const isDarkMode = useDarkMode();
   const { publicKey } = useActiveSolanaWallet();
 
-  useEffect(() => {
-    fetch(`${BACKEND_API_URL}/nft/bulk`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        publicKey: publicKey,
-        nfts: [
-          {
-            collectionId: collectionId,
-            nftId: nftMint,
-          },
-        ],
-      }),
-    });
-  }, []);
-
   return (
     <ChatRoom
       username={username || ""}

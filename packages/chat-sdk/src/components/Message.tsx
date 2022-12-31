@@ -169,7 +169,7 @@ export const MessageLine = (props) => {
       <div className={classes.messageRow}>
         {photoURL ? (
           <img
-            onClick={() => openProfilePage(props.uuid)}
+            onClick={() => openProfilePage({ uuid: props.uuid })}
             alt={displayName}
             className={classes.avatar}
             src={photoURL}
@@ -180,7 +180,7 @@ export const MessageLine = (props) => {
         <div className={classes.messageLine}>
           <div>
             <div
-              onClick={() => openProfilePage(props.uuid)}
+              onClick={() => openProfilePage({ uuid: props.uuid })}
               className={classes.displayName}
               style={{ color: props.color }}
             >
