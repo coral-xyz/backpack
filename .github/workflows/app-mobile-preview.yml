@@ -20,7 +20,7 @@ jobs:
       - name: 🏗 Setup repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 1
+          fetch-depth: 2
 
       - name: 🏗 Setup monorepo
         uses: ./.github/actions/app-mobile-monorepo-setup
@@ -44,7 +44,8 @@ jobs:
         working-directory: packages/app-mobile
         env:
           APP_ENV: "production"
-        run: eas update --branch preview --message=pr-${{ github.event.number }}
+          COMMIT_HASH: ${{ github.sha }}
+        run: eas update --branch preview --message=${{ github.sha }}
 
       # - name: 💬 Comment preview
       #   uses: expo/expo-github-action/preview-comment@v7
