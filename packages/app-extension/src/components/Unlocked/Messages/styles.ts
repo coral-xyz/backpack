@@ -99,4 +99,10 @@ export const useStyles = styles((theme) => ({
   contactIconOuter: {
     background: theme.custom.colors.textBorder,
   },
+  menuItem: {
+    fontWeight: 400,
+    fontSize: 14,
+    color: theme.custom.colors.fontColor,
+    padding: "12px 16px",
+  },
 }));

@@ -1,8 +1,17 @@
 import { useEffect, useState } from "react";
 import { ChatRoom } from "@coral-xyz/chat-sdk";
-import { NAV_COMPONENT_NFT_CHAT, REALTIME_API_URL } from "@coral-xyz/common";
+import {
+  BACKEND_API_URL,
+  NAV_COMPONENT_NFT_CHAT,
+  REALTIME_API_URL,
+} from "@coral-xyz/common";
 import { PrimaryButton } from "@coral-xyz/react-common";
-import { useDarkMode, useNavigation, useUser } from "@coral-xyz/recoil";
+import {
+  useActiveSolanaWallet,
+  useDarkMode,
+  useNavigation,
+  useUser,
+} from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 
@@ -36,31 +45,20 @@ export const NftsExperience = ({ id }: any) => {
   );
 };
 
-export function NftChat({ id }: any) {
-  const { username } = useUser();
-  const [jwt, setJwt] = useState("");
+export function NftChat({ collectionId, nftMint }: any) {
+  const { username, uuid } = useUser();
   const isDarkMode = useDarkMode();
+  const { publicKey } = useActiveSolanaWallet();
 
-  const fetchJwt = async () => {
-    const res = await fetch(`${REALTIME_API_URL}/cookie`);
-    const jwt = (await res.json()).jwt;
-    setJwt(jwt);
-  };
-
-  useEffect(() => {
-    fetchJwt();
-  });
-  if (!jwt) {
-    return <div></div>;
-  }
   return (
     <ChatRoom
       username={username || ""}
       type={"collection"}
-      roomId={id}
-      userId={"asdadsas"}
+      roomId={collectionId || "-"}
+      userId={uuid}
       isDarkMode={isDarkMode}
-      jwt={jwt}
+      publicKey={publicKey}
+      nftMint={nftMint}
     />
   );
 }

@@ -9,6 +9,7 @@
     "@coral-xyz/background": "*",
     "@coral-xyz/chat-sdk": "*",
     "@coral-xyz/common": "*",
+    "@coral-xyz/db": "*",
     "@coral-xyz/message-sdk": "*",
     "@coral-xyz/react-common": "*",
     "@coral-xyz/react-xnft-dom-renderer": "*",

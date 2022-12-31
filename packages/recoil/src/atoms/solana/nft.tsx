@@ -26,23 +26,25 @@ export const solanaNftCollections = selector<NftCollection[]>({
     //
     const collections = new Map<string, SolanaCollection>();
     for (const value of metadata.values()) {
-      let [collectionId, collection] = (() => {
+      let [collectionId, collection, metadataCollectionId] = (() => {
         // TODO: figure out a better way to group collections, e.g. a whitelist by creator?
         if (value.tokenMetaUriData.collection) {
           const collectionId = value.tokenMetaUriData.collection.name as string;
+          const metadataCollectionId = value.metadata.collection?.key || "";
           const collection = collections.get(
             value.tokenMetaUriData.collection.name
           );
-          return [collectionId, collection];
+          return [collectionId, collection, metadataCollectionId];
         } else {
           // TODO.
-          return ["No Collection", collections.get("No Collection")];
+          return ["No Collection", collections.get("No Collection"), ""];
         }
       })();
       if (!collection) {
         collections.set(collectionId, {
           // TODO this can collide easily, better field for an ID?
           id: collectionId,
+          metadataCollectionId,
           name: collectionId,
           symbol: value.metadata.data.symbol,
           tokenType: "",

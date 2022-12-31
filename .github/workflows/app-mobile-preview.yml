@@ -1,4 +1,4 @@
-name: preview
+name: app-mobile preview
 
 on:
   pull_request:
@@ -13,7 +13,7 @@ concurrency:
 jobs:
   mobile:
     name: Preview App
-    timeout-minutes: 40
+    timeout-minutes: 45
     runs-on: ubuntu-latest
     steps:
       # Checkout must come before a custom action
@@ -23,10 +23,11 @@ jobs:
           fetch-depth: 2
 
       - name: 🏗 Setup monorepo
-        uses: ./.github/actions/setup-monorepo
+        uses: ./.github/actions/app-mobile-monorepo-setup
         with:
           expo-token: ${{ secrets.EXPO_TOKEN }}
 
+      # Edge builds don't include stuff like username onboarding
       - name: 👷 Build packages (edge)
         env:
           BACKPACK_CONFIG_VERSION: "${{ env.RELEASE_PREFIX }}-latest-edge-${{ github.run_number }}"
@@ -43,7 +44,8 @@ jobs:
         working-directory: packages/app-mobile
         env:
           APP_ENV: "production"
-        run: eas update --branch preview --message=pr-${{ github.event.number }}
+          COMMIT_HASH: ${{ github.sha }}
+        run: eas update --branch preview --message=${{ github.sha }}
 
       # - name: 💬 Comment preview
       #   uses: expo/expo-github-action/preview-comment@v7

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import type { EnrichedInboxDb } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
+import { useRequests } from "@coral-xyz/db";
+import { useUser } from "@coral-xyz/recoil";
 
 import { ParentCommunicationManager } from "../ParentCommunicationManager";
 
@@ -10,22 +12,9 @@ import { MessagesSkeleton } from "./MessagesSkeleton";
 import { useStyles } from "./styles";
 
 export const RequestsScreen = () => {
-  const [messagesLoading, setMessagesLoading] = useState(true);
-  const [activeChats, setActiveChats] = useState<EnrichedInboxDb[]>([]);
+  const { uuid } = useUser();
+  const activeChats = useRequests(uuid) || [];
   const classes = useStyles();
-
-  const init = async () => {
-    const res = await ParentCommunicationManager.getInstance().fetch(
-      `${BACKEND_API_URL}/inbox?areConnected=false`
-    );
-    const json = await res.json();
-    setMessagesLoading(false);
-    setActiveChats(json.chats || []);
-  };
-
-  useEffect(() => {
-    init();
-  }, []);
 
   return (
     <div
@@ -44,11 +33,8 @@ export const RequestsScreen = () => {
         These are not from your contacts. Click into a message to reply or view
         their profile.
       </div>
-      {messagesLoading && <MessagesSkeleton />}
-      {!messagesLoading && activeChats.length !== 0 && (
-        <MessageList activeChats={activeChats} />
-      )}
-      {!messagesLoading && activeChats.length === 0 && <EmptyRequests />}
+      {activeChats.length !== 0 && <MessageList activeChats={activeChats} />}
+      {activeChats.length === 0 && <EmptyRequests />}
     </div>
   );
 };

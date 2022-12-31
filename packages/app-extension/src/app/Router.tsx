@@ -12,6 +12,7 @@ import {
   QUERY_LOCKED,
   toTitleCase,
 } from "@coral-xyz/common";
+import { SignalingManager } from "@coral-xyz/db";
 import { EmptyState } from "@coral-xyz/react-common";
 import {
   KeyringStoreStateEnum,
@@ -21,6 +22,7 @@ import {
   useBootstrapFast,
   useEnabledBlockchains,
   useKeyringStoreState,
+  useUser,
 } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 import { Block as BlockIcon } from "@mui/icons-material";
@@ -54,6 +56,11 @@ export function Router() {
 function _Router() {
   const needsOnboarding =
     useKeyringStoreState() === KeyringStoreStateEnum.NeedsOnboarding;
+  const { uuid } = useUser();
+
+  useEffect(() => {
+    SignalingManager.getInstance().updateUuid(uuid);
+  }, [uuid]);
 
   useEffect(() => {
     // if the user needs onboarding then open the expanded view
