@@ -31,7 +31,7 @@ import {
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
 import { useDrawerContext } from "../common/Layout/Drawer";
 import { useNavStack } from "../common/Layout/NavStack";
-import { MaxSwapLabel } from "../common/MaxSwapLabel";
+import { MaxLabel } from "../common/MaxLabel";
 import { TokenAmountHeader } from "../common/TokenAmountHeader";
 import { TokenInputField } from "../common/TokenInput";
 import type { Token } from "../common/TokenTable";
