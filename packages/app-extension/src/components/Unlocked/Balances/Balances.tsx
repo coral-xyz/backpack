@@ -132,9 +132,10 @@ const useStyles = styles((theme) => ({
   },
   tokenBalanceChangeNegative: {
     fontWeight: 500,
-    fontSize: "12px",
+    fontSize: "14px",
     color: theme.custom.colors.negative,
     float: "right",
+    lineHeight: "20px",
   },
   tokenListItemIconRoot: {
     minWidth: "44px",
