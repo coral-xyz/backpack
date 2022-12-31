@@ -1,4 +1,5 @@
 import React, { Suspense, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { Loading } from "@coral-xyz/react-common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ArrowBack } from "@mui/icons-material";
@@ -49,6 +50,8 @@ export function WithNav({
   navContentStyle = {},
   notchViewComponent,
   noScrollbars,
+  image,
+  onClick,
 }: {
   title?: string;
   navButtonLeft?: React.ReactNode;
@@ -58,12 +61,16 @@ export function WithNav({
   navContentStyle?: React.CSSProperties;
   notchViewComponent?: React.ReactElement | null;
   noScrollbars?: boolean;
+  image?: string;
+  onClick?: any;
 }) {
   return (
     <>
       <NavBar
         notchViewComponent={notchViewComponent}
         title={title || ""}
+        image={image}
+        onClick={onClick}
         navButtonLeft={navButtonLeft}
         navButtonRight={navButtonRight}
         style={navbarStyle}
@@ -83,8 +90,12 @@ export function NavBar({
   navButtonRight,
   style = {},
   notchViewComponent,
+  image,
+  onClick,
 }: {
   title: string;
+  image?: string;
+  onClick?: any;
   navButtonLeft: React.ReactNode;
   navButtonRight: React.ReactNode;
   style?: any;
@@ -105,6 +116,8 @@ export function NavBar({
         <div style={{ position: "relative", width: "100%", display: "flex" }}>
           <NavButton button={navButtonLeft} />
           <CenterDisplay
+            image={image}
+            onClick={onClick}
             title={title}
             notchViewComponent={notchViewComponent}
           />
@@ -195,9 +208,13 @@ export function NavContent({
 function CenterDisplay({
   title,
   notchViewComponent,
+  image,
+  onClick,
 }: {
   title: string;
   notchViewComponent?: React.ReactElement | null;
+  image?: string;
+  onClick?: any;
 }) {
   const [notchEnabled, setNotchEnabled] = useState(false);
   const notchViewComponentWithProps = notchViewComponent
@@ -215,8 +232,13 @@ function CenterDisplay({
           margin: "0 auto",
           display: "flex",
           alignItems: "center",
+          cursor: onClick ? "pointer" : "",
         }}
+        onClick={onClick ? onClick : () => {}}
       >
+        {image && (
+          <img style={{ width: 25, height: 25, marginRight: 5 }} src={image} />
+        )}
         <NavTitleLabel title={title} />
         {notchViewComponent && (
           <KeyboardArrowDownSharpIcon

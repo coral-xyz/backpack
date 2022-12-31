@@ -1,13 +1,19 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Autosizer from "react-virtualized-auto-sizer";
 import { VariableSizeList } from "react-window";
 import type { Blockchain, NftCollection } from "@coral-xyz/common";
 import {
+  BACKEND_API_URL,
   NAV_COMPONENT_NFT_COLLECTION,
   NAV_COMPONENT_NFT_DETAIL,
 } from "@coral-xyz/common";
+import { NAV_COMPONENT_NFT_CHAT } from "@coral-xyz/common/dist/esm/constants";
 import type { NftCollectionWithIds } from "@coral-xyz/common/src/types";
-import { nftsByIds, useNavigation } from "@coral-xyz/recoil";
+import {
+  nftsByIds,
+  useActiveSolanaWallet,
+  useNavigation,
+} from "@coral-xyz/recoil";
 import { styled } from "@coral-xyz/themes";
 import { Skeleton } from "@mui/material";
 import { useRecoilValueLoadable } from "recoil";
@@ -19,6 +25,8 @@ import { GridCard } from "./Common";
 
 type BlockchainCollections = [string, NftCollectionWithIds[] | null][];
 type CollapsedCollections = boolean[];
+
+const ONE_COLLECTION_ID = "Dw74YSxTKVXsztPm3TmwbnfLK8KVaCZw69jVu4LE6uJe";
 
 type Row = {
   height: number;
@@ -439,15 +447,48 @@ function NftCollectionCard({
     nftsByIds(collection.items)
   );
   const items = (state === "hasValue" && contents) || null;
+  const { publicKey } = useActiveSolanaWallet();
 
   const { push } = useNavigation();
   // Display the first NFT in the collection as the thumbnail in the grid
   const collectionDisplayNft = items?.find((nft) => !!nft) ?? null;
 
+  useEffect(() => {
+    if (collection.metadataCollectionId !== ONE_COLLECTION_ID) {
+      return;
+    }
+    fetch(`${BACKEND_API_URL}/nft/bulk`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        publicKey: publicKey,
+        nfts: [
+          {
+            collectionId: collection.metadataCollectionId,
+            // @ts-ignore
+            nftId: collectionDisplayNft?.mint,
+          },
+        ],
+      }),
+    });
+  }, [collection.metadataCollectionId]);
+
   if (!collectionDisplayNft) {
     return null;
   }
   const onClick = () => {
+    if (collection.metadataCollectionId === ONE_COLLECTION_ID) {
+      push({
+        title: "ONE Holders Chat",
+        componentId: NAV_COMPONENT_NFT_CHAT,
+        componentProps: {
+          collectionId: collection.metadataCollectionId,
+          //@ts-ignore
+          nftMint: collectionDisplayNft?.mint,
+        },
+      });
+      return;
+    }
     if (collection.items.length === 1) {
       if (!collectionDisplayNft.name || !collectionDisplayNft.id) {
         throw new Error("invalid NFT data");
@@ -474,6 +515,8 @@ function NftCollectionCard({
 
   return (
     <GridCard
+      // metadataCollectionIdbd={collection.metadataCollectionId}
+      metadataCollectionId={false}
       onClick={onClick}
       nft={collectionDisplayNft}
       subtitle={{ name: collection.name, length: collection.items.length }}

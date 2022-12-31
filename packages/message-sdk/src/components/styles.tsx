@@ -30,6 +30,7 @@ export const useStyles = styles((theme) => ({
   },
   topImage: {
     maxWidth: "25vw",
+    maxHeight: "25vh",
   },
   horizontalCenter: {
     display: "flex",

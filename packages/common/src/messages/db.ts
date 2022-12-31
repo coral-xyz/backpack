@@ -1,4 +1,5 @@
 export interface InboxDb {
+  id: string;
   last_message?: string;
   last_message_timestamp?: string;
   last_message_sender?: string;
@@ -14,6 +15,13 @@ export interface EnrichedInboxDb extends InboxDb {
   remoteUsername: string;
   remoteUserImage: string;
   remoteUserId: string;
+  spam: 0 | 1;
+  blocked: 0 | 1;
+  interacted: 0 | 1;
+  remoteInteracted: 0 | 1;
+  areFriends: 0 | 1;
+  unread: 0 | 1;
+  friendshipId: string;
 }
 
 export interface Friendship {

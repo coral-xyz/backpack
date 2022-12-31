@@ -1,4 +1,4 @@
-import type { EnrichedMessage } from "../ChatManager";
+import type { EnrichedMessage } from "@coral-xyz/common";
 
 export const merge = (
   originalMessages: EnrichedMessage[],

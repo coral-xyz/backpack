@@ -37,6 +37,7 @@ export type NftCollection = {
   tokenType: string;
   totalSupply: string;
   items: Nft[];
+  metadataCollectionId?: string;
 };
 
 export type NftCollectionWithIds = {
@@ -46,6 +47,7 @@ export type NftCollectionWithIds = {
   tokenType: string;
   totalSupply: string;
   items: string[];
+  metadataCollectionId?: string;
 };
 
 export type Nft = {

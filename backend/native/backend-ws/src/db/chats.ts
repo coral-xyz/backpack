@@ -70,3 +70,36 @@ export const getChatsFromParentGuids = async (
   });
   return response.chats || [];
 };
+
+export const postChat = (
+  room: string,
+  message: string,
+  uuid: string,
+  message_kind: "gif" | "text",
+  client_generated_uuid: string,
+  type: SubscriptionType,
+  parent_client_generated_uuid?: string
+) => {
+  chain("mutation")({
+    insert_chats_one: [
+      {
+        object: {
+          username: "",
+          room,
+          message: message,
+          uuid,
+          message_kind,
+          client_generated_uuid,
+          parent_client_generated_uuid,
+          type: type,
+          created_at: new Date(),
+        },
+      },
+      {
+        id: true,
+      },
+    ],
+  })
+    .then((x) => console.log(x))
+    .catch((e) => console.log(`Error while adding chat msg to DB ${e}`));
+};

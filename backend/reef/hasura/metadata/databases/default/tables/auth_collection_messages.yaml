@@ -1,0 +1,32 @@
+table:
+  name: collection_messages
+  schema: auth
+insert_permissions:
+  - role: auth_worker
+    permission:
+      check: {}
+      columns:
+        - collection_id
+        - last_read_message_id
+        - uuid
+select_permissions:
+  - role: auth_worker
+    permission:
+      columns:
+        - collection_id
+        - last_read_message_id
+        - uuid
+      filter: {}
+update_permissions:
+  - role: auth_worker
+    permission:
+      columns:
+        - collection_id
+        - last_read_message_id
+        - uuid
+      filter: {}
+      check: null
+delete_permissions:
+  - role: auth_worker
+    permission:
+      filter: {}

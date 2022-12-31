@@ -100,6 +100,56 @@ export const getOrCreateFriendship = async ({
   }
 };
 
+export const getAllFriendships = async ({
+  uuid,
+  limit,
+  offset,
+}: {
+  uuid: string;
+  limit: number;
+  offset: number;
+}) => {
+  const response = await chain("query")({
+    auth_friendships: [
+      {
+        where: {
+          _or: [
+            {
+              user1: { _eq: uuid },
+            },
+            {
+              user2: { _eq: uuid },
+            },
+          ],
+        },
+        limit,
+        offset,
+        //@ts-ignore
+        order_by: [{ last_message_timestamp: "desc" }],
+      },
+      {
+        id: true,
+        are_friends: true,
+        user1: true,
+        user2: true,
+        last_message_timestamp: true,
+        last_message: true,
+        last_message_sender: true,
+        last_message_client_uuid: true,
+        user1_last_read_message_id: true,
+        user2_last_read_message_id: true,
+        user1_blocked_user2: true,
+        user2_blocked_user1: true,
+        user1_spam_user2: true,
+        user2_spam_user1: true,
+        user1_interacted: true,
+        user2_interacted: true,
+      },
+    ],
+  });
+  return response.auth_friendships;
+};
+
 export const getFriendships = async ({
   uuid,
   limit,
@@ -539,6 +589,33 @@ export const validateRoom = async (uuid: string, roomId: number) => {
   }
 
   return null;
+};
+
+export const updateLastReadGroup = async (
+  uuid: string,
+  room: string,
+  client_generated_uuid: string
+) => {
+  await chain("mutation")({
+    insert_auth_collection_messages: [
+      {
+        objects: [
+          {
+            uuid,
+            collection_id: room,
+            last_read_message_id: client_generated_uuid,
+          },
+        ],
+        on_conflict: {
+          //@ts-ignore
+          update_columns: ["last_read_message_id"],
+          //@ts-ignore
+          constraint: "collection_messages_pkey",
+        },
+      },
+      { affected_rows: true },
+    ],
+  });
 };
 
 export const updateLastReadIndividual = async (

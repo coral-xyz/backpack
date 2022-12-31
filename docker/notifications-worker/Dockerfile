@@ -8,6 +8,7 @@ COPY ["backend/native/notifications-worker", "./backend/native/notifications-wor
 COPY ["backend/native/zeus", "./backend/native/zeus"]
 COPY ["backend/native/chat-zeus", "./backend/native/chat-zeus"]
 COPY ["backend/native/tsconfig.json", "./backend/native/tsconfig.json"]
+COPY ["packages/db", "./packages/db"]
 COPY ["packages/chat-sdk", "./packages/chat-sdk"]
 COPY ["packages/common", "./packages/common"]
 COPY ["packages/common-public", "./packages/common-public"]

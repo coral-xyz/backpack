@@ -1,7 +1,8 @@
 import React, { useContext } from "react";
-import type { SubscriptionType } from "@coral-xyz/common";
-
-import type { ChatManager, EnrichedMessage } from "../ChatManager";
+import type {
+  EnrichedMessageWithMetadata,
+  SubscriptionType,
+} from "@coral-xyz/common";
 
 type ChatContext = {
   setActiveReply: any;
@@ -11,10 +12,8 @@ type ChatContext = {
     parent_username: string;
     parent_message_author_uuid: string;
   };
-  chatManager: ChatManager | null;
   roomId: string;
-  chats: EnrichedMessage[];
-  setChats: any;
+  chats: EnrichedMessageWithMetadata[];
   userId: string;
   loading: boolean;
   username: string;
@@ -31,6 +30,8 @@ type ChatContext = {
   isDarkMode: boolean;
   remoteUsername?: string;
   reconnecting: boolean;
+  nftMint?: string;
+  publicKey?: string;
 };
 
 export const _ChatContext = React.createContext<ChatContext | null>(null);
@@ -43,11 +44,9 @@ export function ChatProvider(props: {
     parent_username: string;
     parent_message_author_uuid: string;
   };
-  chatManager: ChatManager | null;
   roomId: string;
-  chats: EnrichedMessage[];
+  chats: EnrichedMessageWithMetadata[];
   userId: string;
-  setChats: any;
   children: any;
   loading: boolean;
   username: string;
@@ -64,16 +63,16 @@ export function ChatProvider(props: {
   isDarkMode: boolean;
   remoteUsername?: string;
   reconnecting: boolean;
+  nftMint?: string;
+  publicKey?: string;
 }) {
   return (
     <_ChatContext.Provider
       value={{
         setActiveReply: props.setActiveReply,
         activeReply: props.activeReply,
-        chatManager: props.chatManager,
         roomId: props.roomId,
         chats: props.chats,
-        setChats: props.setChats,
         userId: props.userId,
         loading: props.loading,
         username: props.username,
@@ -90,6 +89,8 @@ export function ChatProvider(props: {
         remoteRequested: props.remoteRequested,
         remoteUsername: props.remoteUsername,
         reconnecting: props.reconnecting,
+        nftMint: props.nftMint,
+        publicKey: props.publicKey,
       }}
     >
       {props.children}

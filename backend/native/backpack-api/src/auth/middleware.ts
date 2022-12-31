@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 
 import { validateRoom } from "../db/friendships";
+import { validateCollectionOwnership } from "../db/nft";
 
 import { clearCookie, setJWTCookie, validateJwt } from "./util";
 
@@ -11,6 +12,9 @@ export const ensureHasRoomAccess = async (
 ) => {
   const room = req.query.room;
   const type = req.query.type;
+  const publicKey = req.query.publicKey;
+  const mint = req.query.mint;
+
   if (type === "individual") {
     const roomMetadata = await validateRoom(req.id!, room);
     if (roomMetadata) {
@@ -21,8 +25,19 @@ export const ensureHasRoomAccess = async (
       return res.status(403).json({ msg: "you dont have access" });
     }
   } else {
-    // TODO: auth check for collection post #1589
-    next();
+    const hasAccess = await validateCollectionOwnership(
+      req.id!,
+      publicKey!,
+      mint!,
+      room!
+    );
+    if (hasAccess) {
+      // @ts-ignore
+      req.roomMetadata = {};
+      next();
+    } else {
+      return res.status(403).json({ msg: "you dont have access" });
+    }
   }
 };
 

@@ -25,4 +25,8 @@ export class Redis {
     const response = await this.client.lPop(NOTIFICATIONS_QUEUE);
     return response || "";
   }
+
+  async send(message: string) {
+    await this.client.rPush(NOTIFICATIONS_QUEUE, message);
+  }
 }

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { fetchMoreChatsFor } from "@coral-xyz/db";
 import { useCustomTheme } from "@coral-xyz/themes";
 import InfoIcon from "@mui/icons-material/Info";
 
@@ -9,9 +10,9 @@ import { ChatMessages } from "./Message";
 import { MessagesSkeleton } from "./MessagesSkeleton";
 import { ScrollBarImpl } from "./ScrollbarImpl";
 import { SendMessage } from "./SendMessage";
-import { useStyles } from "./styles";
+
 export const FullScreenChat = () => {
-  const { chatManager, loading, areFriends, requested, chats } =
+  const { loading, chats, userId, roomId, type, nftMint, publicKey } =
     useChatContext();
   const [autoScroll, setAutoScroll] = useState(true);
   const theme = useCustomTheme();
@@ -30,7 +31,7 @@ export const FullScreenChat = () => {
         }
       }
       if (elem.scrollTop === 0) {
-        chatManager?.fetchMoreChats();
+        fetchMoreChatsFor(userId, roomId, type, nftMint, publicKey);
       }
     }
   }
@@ -62,7 +63,7 @@ export const FullScreenChat = () => {
           ref={messageRef}
           style={{
             overflowY: "scroll",
-            height: "calc(100% - 67px)",
+            height: "calc(100% - 47px)",
             background: theme.custom.colors.bg3,
           }}
         >

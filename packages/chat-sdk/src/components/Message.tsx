@@ -1,13 +1,15 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { NAV_COMPONENT_MESSAGE_PROFILE } from "@coral-xyz/common";
+import { useNavigation, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { GiphyFetch } from "@giphy/js-fetch-api";
 import { Gif as GifComponent } from "@giphy/react-components";
+import { Skeleton } from "@mui/material";
 import { createStyles, makeStyles } from "@mui/styles";
 
 import { useChatContext } from "./ChatContext";
 import { ReplyIcon } from "./Icons";
 import { ReplyContainer } from "./ReplyContainer";
-
 // use @giphy/js-fetch-api to fetch gifs, instantiate with your api key
 const gf = new GiphyFetch("SjZwwCn1e394TKKjrMJWb2qQRNcqW8ro");
 
@@ -37,6 +39,7 @@ const useStyles = makeStyles((theme: any) =>
       width: theme.spacing(4),
       height: theme.spacing(4),
       borderRadius: "4px",
+      cursor: "pointer",
     },
     messageLine: {
       display: "flex",
@@ -127,12 +130,15 @@ const GifDemo = ({
 };
 
 export const MessageLine = (props) => {
+  const { push } = useNavigation();
   const message = props.message ? props.message : "";
-  const timestamp = props.timestamp ? new Date(props.timestamp) : new Date();
-  const photoURL =
-    props.image ||
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSYU3l2Xh_TvhuYraxr8HILzhActNrm6Ja63jjO5I&s";
-  const displayName = props.username || "-";
+  const timestamp = props.timestamp
+    ? new Date(parseInt(props.timestamp))
+    : new Date();
+  const { uuid } = useUser();
+
+  const photoURL = props.image;
+  const displayName = props.username;
   const classes = useStyles();
 
   function formatAMPM(date) {
@@ -145,13 +151,45 @@ export const MessageLine = (props) => {
     return hours + ":" + minutes + " " + ampm;
   }
 
+  const openProfilePage = (props: { uuid: string }) => {
+    if (uuid === props.uuid) {
+      return;
+    }
+    push({
+      title: `@${displayName}`,
+      componentId: NAV_COMPONENT_MESSAGE_PROFILE,
+      componentProps: {
+        userId: props.uuid,
+      },
+    });
+  };
+
   return (
     <>
       <div className={classes.messageRow}>
-        <img alt={displayName} className={classes.avatar} src={photoURL}></img>
+        {photoURL ? (
+          <img
+            onClick={() => openProfilePage({ uuid: props.uuid })}
+            alt={displayName}
+            className={classes.avatar}
+            src={photoURL}
+          ></img>
+        ) : (
+          <Skeleton variant="circular" width={40} height={40} />
+        )}
         <div className={classes.messageLine}>
           <div>
-            <div className={classes.displayName}>@{displayName}</div>
+            <div
+              onClick={() => openProfilePage({ uuid: props.uuid })}
+              className={classes.displayName}
+              style={{ color: props.color, cursor: "pointer" }}
+            >
+              {displayName ? (
+                `@${displayName}`
+              ) : (
+                <Skeleton width={30} height={20} style={{ marginTop: "0px" }} />
+              )}
+            </div>
             <div className={classes.messageContainer}>
               <div>
                 <p className={classes.messageContent}>
@@ -176,26 +214,27 @@ export const MessageLine = (props) => {
 };
 
 export function ChatMessages() {
-  const { chats, type, userId } = useChatContext();
-  if (type !== "individual") {
-    return (
-      <div>
-        {chats.map((chat) => {
-          return (
-            <MessageLine
-              timestamp={chat.created_at}
-              key={chat.id}
-              message={chat.message}
-              received={chat.received}
-              messageKind={chat.message_kind}
-              image={chat.image}
-              username={chat.username}
-            />
-          );
-        })}
-      </div>
-    );
-  }
+  const { chats, userId } = useChatContext();
+  const theme = useCustomTheme();
+  return (
+    <div style={{ padding: 5 }}>
+      {chats.map((chat) => {
+        return (
+          <MessageLine
+            color={chat.color || theme.custom.colors.fontColor2}
+            timestamp={chat.created_at}
+            key={chat.client_generated_uuid}
+            message={chat.message}
+            received={chat.received}
+            messageKind={chat.message_kind}
+            image={chat.image}
+            username={chat.username}
+            uuid={chat.uuid}
+          />
+        );
+      })}
+    </div>
+  );
 
   return (
     <div>
@@ -205,7 +244,7 @@ export function ChatMessages() {
             <>
               <MessageLeft
                 timestamp={chat.created_at}
-                key={chat.id}
+                key={chat.client_generated_uuid}
                 message={chat.message}
                 received={chat.received}
                 messageKind={chat.message_kind}
@@ -215,7 +254,7 @@ export function ChatMessages() {
                 client_generated_uuid={chat.client_generated_uuid}
                 parent_message_text={chat.parent_message_text}
                 parent_message_author_username={
-                  chat.parent_message_author_username
+                  "" //TODO: Flow this from userDB
                 }
                 parent_message_author_uuid={chat.parent_message_author_uuid}
               />
@@ -225,7 +264,7 @@ export function ChatMessages() {
         return (
           <MessageRight
             timestamp={chat.created_at}
-            key={chat.id}
+            key={chat.client_generated_uuid}
             message={chat.message}
             received={chat.received}
             userId={chat.uuid}
@@ -234,7 +273,7 @@ export function ChatMessages() {
             username={chat.username}
             client_generated_uuid={chat.client_generated_uuid}
             parent_message_text={chat.parent_message_text}
-            parent_message_author_username={chat.parent_message_author_username}
+            parent_message_author_username={""} // TODO: Flow this from user index db
             parent_message_author_uuid={chat.parent_message_author_uuid}
           />
         );
