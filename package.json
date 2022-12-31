@@ -1,16 +1,19 @@
 {
   "name": "backpack",
   "private": true,
-  "workspaces": [
-    "backend/workers/*",
-    "backend/native/*",
-    "examples/clients/*",
-    "examples",
-    "examples/xnft/*",
-    "packages/*",
-    "packages/blockchains/*",
-    "web"
-  ],
+  "workspaces": {
+    "packages": [
+      "backend/workers/*",
+      "backend/native/*",
+      "examples/clients/*",
+      "examples",
+      "examples/xnft/*",
+      "packages/*",
+      "packages/blockchains/*",
+      "web"
+    ],
+    "nohoist": ["examples/**", "packages/app-mobile/**"]
+  },
   "scripts": {
     "lint": "turbo run lint --filter=!@coral-xyz/app-mobile",
     "lint:fix": "turbo run lint:fix --filter=!@coral-xyz/app-mobile",
