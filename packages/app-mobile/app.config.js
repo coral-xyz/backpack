@@ -1,15 +1,19 @@
 const { execSync } = require("child_process");
 
 function getLastCommitHash() {
+  if (process.env.EAS_BUILD_GIT_COMMIT_HASH) {
+    return process.env.EAS_BUILD_GIT_COMMIT_HASH.substring(0, 7);
+  }
+
+  if (process.env.COMMIT_HASH) {
+    return process.env.COMMIT_HASH.trim().substring(0, 7);
+  }
+
   try {
     const output = execSync("git rev-parse HEAD").toString();
     return output.substring(0, 7);
-  } catch (error) {
-    if (process.env.EAS_BUILD_GIT_COMMIT_HASH) {
-      return process.env.EAS_BUILD_GIT_COMMIT_HASH.substring(0, 7);
-    } else {
-      return "6ed26f6"; // falls back to a recent commit hash until we have a better solution
-    }
+  } catch (_) {
+    return "6ed26f6"; // falls back to a recent commit hash until we have a better solution
   }
 }
 
