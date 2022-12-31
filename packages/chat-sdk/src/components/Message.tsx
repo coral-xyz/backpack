@@ -182,7 +182,7 @@ export const MessageLine = (props) => {
             <div
               onClick={() => openProfilePage({ uuid: props.uuid })}
               className={classes.displayName}
-              style={{ color: props.color }}
+              style={{ color: props.color, cursor: "pointer" }}
             >
               {displayName ? (
                 `@${displayName}`
