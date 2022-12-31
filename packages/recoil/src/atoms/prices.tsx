@@ -2,14 +2,12 @@ import { ETH_NATIVE_MINT } from "@coral-xyz/common";
 import { ethers } from "ethers";
 import { atomFamily, selector, selectorFamily } from "recoil";
 
-import { equalSelector } from "../equals";
-import type { TokenDisplay } from "../types";
+import { equalSelector, equalSelectorFamily } from "../equals";
 
 import { erc20Balances } from "./ethereum/token";
 import { solanaConnectionUrl } from "./solana/preferences";
 import { solanaFungibleTokenAccounts } from "./solana/token";
 import { splTokenRegistry } from "./solana/token-registry";
-import { solanaPublicKey } from "./wallet";
 
 const baseCoingeckoParams = {
   vs_currencies: "usd",
@@ -19,59 +17,85 @@ const baseCoingeckoParams = {
   include_last_updated_at: "true",
 };
 
-export const priceData = atomFamily<TokenDisplay | null, string>({
-  key: "priceData",
-  default: selectorFamily({
-    key: "priceDataDefault",
-    get:
-      (address: string) =>
-      ({ get }: any) => {
-        const allPrices = new Map([
-          ...get(pricesForIds),
-          ...get(pricesForErc20Addresses),
-        ]);
-        return allPrices.get(address) as TokenDisplay;
-      },
-  }),
-});
-
 // TODO move this to a remote API so it can be updated without updating
 // the app
 const coingeckoIdOverride = {
   DUSTawucrTsGU8hcqRdHDCbuYhCPADMLM2VcCb8VnFnQ: "dust-protocol",
 };
 
+// Coingecko API query for all Coingecko IDs (for Solana).
+export const solanaPricesForIds = selectorFamily<
+  Map<string, any>,
+  { publicKey: string }
+>({
+  key: "pricesFoIds",
+  get:
+    ({ publicKey }) =>
+    async ({ get }) => {
+      const ids = get(coingeckoIds({ publicKey }));
+      if (ids.length === 0) return new Map();
+      const params = {
+        ...baseCoingeckoParams,
+        ids,
+      } as any;
+      const queryString = new URLSearchParams(params).toString();
+      try {
+        const resp = await fetch(
+          `https://api.coingecko.com/api/v3/simple/price?${queryString}`
+        );
+        const json = await resp.json();
+        const coingeckoIdToAddressMap = get(
+          coingeckoIdToAddress({ publicKey })
+        );
+        return new Map(
+          // Transform the response from id -> price data to addresss -> price data
+          Object.keys(json).map((id) => [
+            coingeckoIdToAddressMap.get(id),
+            json[id],
+          ])
+        ) as Map<string, any>;
+      } catch (err) {
+        console.error("error querying all Coingecko IDs", err);
+        return new Map();
+      }
+    },
+});
+
 // Map of SPL mint addresses to Coingecko ID
-export const splMintsToCoingeckoId = equalSelector({
+const splMintsToCoingeckoId = equalSelectorFamily<
+  Map<string, string>,
+  { publicKey: string }
+>({
   key: "splMintsToCoingeckoId",
-  get: ({ get }: any) => {
-    const connectionUrl = get(solanaConnectionUrl);
-    const publicKey = get(solanaPublicKey);
-    const _fungibleTokenAccounts = get(
-      solanaFungibleTokenAccounts({ connectionUrl, publicKey })
-    );
-    const tokenRegistry = get(splTokenRegistry);
-    return [..._fungibleTokenAccounts.values()].reduce(
-      (acc, splTokenAccount) => {
-        const mint = splTokenAccount.mint.toString();
-        // Use override if one is available
-        if (coingeckoIdOverride[mint]) {
-          acc.set(mint, coingeckoIdOverride[mint]);
+  get:
+    ({ publicKey }: { publicKey: string }) =>
+    ({ get }: any) => {
+      const connectionUrl = get(solanaConnectionUrl);
+      const _fungibleTokenAccounts = get(
+        solanaFungibleTokenAccounts({ connectionUrl, publicKey })
+      );
+      const tokenRegistry = get(splTokenRegistry);
+      return [..._fungibleTokenAccounts.values()].reduce(
+        (acc, splTokenAccount) => {
+          const mint = splTokenAccount.mint.toString();
+          // Use override if one is available
+          if (coingeckoIdOverride[mint]) {
+            acc.set(mint, coingeckoIdOverride[mint]);
+            return acc;
+          }
+          const tokenInfo = tokenRegistry.get(mint);
+          if (
+            tokenInfo &&
+            tokenInfo.extensions &&
+            tokenInfo.extensions.coingeckoId
+          ) {
+            acc.set(mint, tokenInfo.extensions.coingeckoId);
+          }
           return acc;
-        }
-        const tokenInfo = tokenRegistry.get(mint);
-        if (
-          tokenInfo &&
-          tokenInfo.extensions &&
-          tokenInfo.extensions.coingeckoId
-        ) {
-          acc.set(mint, tokenInfo.extensions.coingeckoId);
-        }
-        return acc;
-      },
-      new Map()
-    );
-  },
+        },
+        new Map()
+      );
+    },
   // Map equality
   equals: (m1, m2) =>
     m1.size === m2.size &&
@@ -89,38 +113,55 @@ export const ethAddressToCoingeckoId = selector<Map<string, string>>({
 });
 
 // Map of addresses to Coingecko ID (any blockchain)
-export const addressToCoingeckoId = selector({
+export const addressToCoingeckoId = selectorFamily<
+  Map<string, string>,
+  { publicKey: string }
+>({
   key: "addressToCoingeckoId",
-  get: ({ get }: any) => {
-    return new Map([
-      ...get(splMintsToCoingeckoId),
-      ...get(ethAddressToCoingeckoId),
-    ]);
-  },
+  get:
+    ({ publicKey }) =>
+    ({ get }: any) => {
+      return new Map([
+        ...get(splMintsToCoingeckoId({ publicKey })),
+        ...get(ethAddressToCoingeckoId),
+      ]);
+    },
 });
 
 // Map of Coingecko IDs to addresses (any blockchain)
-export const coingeckoIdToAddress = selector({
+export const coingeckoIdToAddress = selectorFamily<
+  Map<string, string>,
+  { publicKey: string }
+>({
   key: "coingeckoIdToAddress",
-  get: ({ get }: any) => {
-    return new Map(
-      [...get(addressToCoingeckoId).entries()].map(([a, b]) => [b, a])
-    );
-  },
+  get:
+    ({ publicKey }) =>
+    ({ get }: any) => {
+      return new Map(
+        [...get(addressToCoingeckoId({ publicKey })).entries()].map(
+          ([a, b]) => [b, a]
+        )
+      );
+    },
 });
 
 // The list of all Coingecko token IDs prices need to be loaded for.
 // This is determined by the list of all tokens in the wallet.
-export const coingeckoIds = selector({
+export const coingeckoIds = selectorFamily<
+  Array<string>,
+  { publicKey: string }
+>({
   key: "coingeckoIds",
-  get: ({ get }: any) => {
-    const allIds = [
-      ...get(splMintsToCoingeckoId).values(),
-      ...get(ethAddressToCoingeckoId).values(),
-    ].flat();
-    // Deduplicate
-    return [...new Set(allIds)];
-  },
+  get:
+    ({ publicKey }) =>
+    ({ get }: any) => {
+      const allIds = [
+        ...get(splMintsToCoingeckoId({ publicKey })).values(),
+        ...get(ethAddressToCoingeckoId).values(),
+      ].flat();
+      // Deduplicate
+      return [...new Set(allIds)];
+    },
 });
 
 // The list of all Ethereum ERC20 contract addresses prices need to be loaded
@@ -139,39 +180,8 @@ export const erc20ContractAddresses = equalSelector({
   equals: (a1, a2) => JSON.stringify(a1) === JSON.stringify(a2),
 });
 
-// Coingecko API query for all Coingecko IDs
-const pricesForIds = selector({
-  key: "pricesFoIds",
-  get: async ({ get }: any) => {
-    const ids = get(coingeckoIds);
-    if (ids.length === 0) return {};
-    const params = {
-      ...baseCoingeckoParams,
-      ids,
-    };
-    const queryString = new URLSearchParams(params).toString();
-    try {
-      const resp = await fetch(
-        `https://api.coingecko.com/api/v3/simple/price?${queryString}`
-      );
-      const json = await resp.json();
-      const coingeckoIdToAddressMap = get(coingeckoIdToAddress);
-      return new Map(
-        // Transform the response from id -> price data to addresss -> price data
-        Object.keys(json).map((id) => [
-          coingeckoIdToAddressMap.get(id),
-          json[id],
-        ])
-      );
-    } catch (err) {
-      console.error("error querying all Coingecko IDs", err);
-      return new Map();
-    }
-  },
-});
-
 // Coingecko API query for all ERC20 contract addresses
-const pricesForErc20Addresses = selector({
+export const pricesForErc20Addresses = selector({
   key: "pricesForErc20Addresses",
   get: async ({ get }: any) => {
     const contractAddresses = get(erc20ContractAddresses);

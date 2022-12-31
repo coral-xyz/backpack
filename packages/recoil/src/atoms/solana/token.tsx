@@ -15,7 +15,7 @@ import { BigNumber, ethers } from "ethers";
 import { atomFamily, selectorFamily } from "recoil";
 
 import type { TokenData, TokenNativeData } from "../../types";
-import { priceData } from "../prices";
+import { solanaPricesForIds } from "../prices";
 
 import { solanaConnectionUrl } from "./preferences";
 import { splTokenRegistry } from "./token-registry";
@@ -338,7 +338,9 @@ export const solanaFungibleTokenBalance = selectorFamily<
         return null;
       }
 
-      const price = get(priceData(nativeTokenBalance.priceMint)) as any;
+      const price = get(solanaPricesForIds({ publicKey })).get(
+        nativeTokenBalance.priceMint
+      ) as any;
       const usdBalance =
         (price?.usd ?? 0) *
         parseFloat(
