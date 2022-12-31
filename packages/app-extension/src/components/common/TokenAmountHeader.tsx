@@ -1,8 +1,8 @@
+import { toDisplayBalance } from "@coral-xyz/common";
 import { ProxyImage } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
 import type { BigNumber } from "ethers";
-import { ethers } from "ethers";
 
 //
 // Displays token amount header with logo.
@@ -19,7 +19,7 @@ export const TokenAmountHeader: React.FC<{
 }> = ({ style, token, amount, displayLogo = true }) => {
   const theme = useCustomTheme();
 
-  const formattedAmount = ethers.utils.formatUnits(amount, token.decimals);
+  const formattedAmount = toDisplayBalance(amount, token.decimals, false);
   const maxChars = displayLogo ? 10 : 12;
   const maybeTruncatedAmount =
     formattedAmount.length > maxChars

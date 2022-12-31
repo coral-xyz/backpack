@@ -1,6 +1,6 @@
+import { toDisplayBalance } from "@coral-xyz/common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import type { BigNumber } from "ethers";
-import { ethers } from "ethers";
 
 const useStyles = styles((theme) => ({
   wrapper: {
@@ -37,7 +37,7 @@ export const MaxLabel = ({
       onClick={() => amount && onSetAmount(amount)}
     >
       <span style={{ color: theme.custom.colors.secondary }}>Max: </span>
-      {amount !== null ? ethers.utils.formatUnits(amount, decimals) : "-"}
+      {amount !== null ? toDisplayBalance(amount, decimals) : "-"}
     </div>
   );
 };

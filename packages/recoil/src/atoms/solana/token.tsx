@@ -4,15 +4,18 @@ import type {
   SplNftMetadataString,
   TokenMetadataString,
 } from "@coral-xyz/common";
-import { SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
+import {
+  SOL_NATIVE_MINT,
+  toDisplayBalance,
+  WSOL_MINT,
+} from "@coral-xyz/common";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { PublicKey } from "@solana/web3.js";
 import { BigNumber, ethers } from "ethers";
-import { atomFamily, selector, selectorFamily } from "recoil";
+import { atomFamily, selectorFamily } from "recoil";
 
 import type { TokenData, TokenNativeData } from "../../types";
 import { priceData } from "../prices";
-import { solanaPublicKey } from "../wallet";
 
 import { solanaConnectionUrl } from "./preferences";
 import { splTokenRegistry } from "./token-registry";
@@ -250,7 +253,7 @@ export const solanaFungibleTokenNativeBalance = selectorFamily<
       // Calculate balances.
       //
       const nativeBalance = BigNumber.from(tokenAccount.amount.toString());
-      const displayBalance = ethers.utils.formatUnits(nativeBalance, decimals);
+      const displayBalance = toDisplayBalance(nativeBalance, decimals);
       const priceMint =
         tokenAccount.mint.toString() === WSOL_MINT
           ? SOL_NATIVE_MINT
@@ -337,7 +340,13 @@ export const solanaFungibleTokenBalance = selectorFamily<
 
       const price = get(priceData(nativeTokenBalance.priceMint)) as any;
       const usdBalance =
-        (price?.usd ?? 0) * parseFloat(nativeTokenBalance.displayBalance);
+        (price?.usd ?? 0) *
+        parseFloat(
+          ethers.utils.formatUnits(
+            nativeTokenBalance.nativeBalance,
+            nativeTokenBalance.decimals
+          )
+        );
       const oldUsdBalance =
         usdBalance === 0
           ? 0

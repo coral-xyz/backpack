@@ -3,6 +3,7 @@ import {
   Blockchain,
   ETH_NATIVE_MINT,
   SOL_NATIVE_MINT,
+  toDisplayBalance,
   WSOL_MINT,
 } from "@coral-xyz/common";
 import {
@@ -30,7 +31,7 @@ import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
 import { BottomCard } from "../common/Layout/BottomCard";
 import { useDrawerContext } from "../common/Layout/Drawer";
 import { useNavStack } from "../common/Layout/NavStack";
-import { MaxSwapLabel } from "../common/MaxSwapLabel";
+import { MaxLabel } from "../common/MaxLabel";
 import { TokenAmountHeader } from "../common/TokenAmountHeader";
 import { TokenInputField } from "../common/TokenInput";
 import type { Token } from "../common/TokenTable";
@@ -329,7 +330,7 @@ function InputTextField() {
       <TextFieldLabel
         leftLabel={"Sending"}
         rightLabelComponent={
-          <MaxSwapLabel
+          <MaxLabel
             amount={availableForSwap}
             onSetAmount={setFromAmount}
             decimals={fromMintInfo.decimals}
@@ -636,19 +637,21 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
   };
 
   const rate = fromAmount.gt(Zero)
-    ? scale(
-        FixedNumber.from(toAmountWithFees).divUnsafe(
-          FixedNumber.from(fromAmount)
-        ),
-        decimalDifference
-      ).toString()
+    ? ethers.utils.commify(
+        scale(
+          FixedNumber.from(toAmountWithFees).divUnsafe(
+            FixedNumber.from(fromAmount)
+          ),
+          decimalDifference
+        ).toString()
+      )
     : "0";
 
   const rows = [];
   if (!compact) {
     rows.push([
       "You Pay",
-      `${ethers.utils.formatUnits(fromAmount, fromMintInfo.decimals)} ${
+      `${toDisplayBalance(fromAmount, fromMintInfo.decimals)} ${
         fromMintInfo.symbol
       }`,
     ]);
