@@ -1,6 +1,6 @@
 import { ETH_NATIVE_MINT } from "@coral-xyz/common";
 import { ethers } from "ethers";
-import { atomFamily, selector, selectorFamily } from "recoil";
+import { selector, selectorFamily } from "recoil";
 
 import { equalSelector, equalSelectorFamily } from "../equals";
 
@@ -21,6 +21,7 @@ const baseCoingeckoParams = {
 // the app
 const coingeckoIdOverride = {
   DUSTawucrTsGU8hcqRdHDCbuYhCPADMLM2VcCb8VnFnQ: "dust-protocol",
+  DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263: "bonk",
 };
 
 // Coingecko API query for all Coingecko IDs (for Solana).
