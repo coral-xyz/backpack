@@ -35,6 +35,7 @@ import {
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
+import { TldParser } from "@onsol/tldparser";
 import type { Connection } from "@solana/web3.js";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { BigNumber, ethers } from "ethers";
@@ -556,6 +557,24 @@ export function useIsValidAddress(
           }
         }
 
+        // ANS by ONSOL
+        if (!pubkey && address.split(".").length === 2) {
+          try {
+            // address would be e.g. miester.poor
+            const parser = new TldParser(solanaConnection);
+            const owner = await parser.getOwnerFromDomainTld(address);
+            if (!owner) {
+              setAddressError(true);
+              // Not a valid domain don't bother continuing since it has a dot in it.
+              return;
+            }
+            pubkey = owner;
+          } catch (e) {
+            setAddressError(true);
+            return;
+          }
+        }
+        
         if (!pubkey) {
           // Solana address validation
           try {

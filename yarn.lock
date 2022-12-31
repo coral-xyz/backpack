@@ -4031,6 +4031,18 @@
     mkdirp "^1.0.4"
     rimraf "^3.0.2"
 
+"@onsol/tldparser@^0.3.3":
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/@onsol/tldparser/-/tldparser-0.3.3.tgz#4dd1df4f3cfb3f677527c0929002c342b3a8cd71"
+  integrity sha512-Daf2vudmYzouqHineedg4l/tZ8PoqJ3jNgGi7eEahHDoS2desOudy4x7hV6DzkQZ+9696Sh6Zpu+/QatIF4/wg==
+  dependencies:
+    "@solana/buffer-layout" "^4.0.0"
+    "@solana/web3.js" "^1.17.0"
+    bigint-buffer "^1.1.5"
+    bn.js "^5.0.0"
+    borsh "^0.7.0"
+    buffer "6.0.1"
+
 "@parcel/bundler-default@2.7.0":
   version "2.7.0"
   resolved "https://registry.yarnpkg.com/@parcel/bundler-default/-/bundler-default-2.7.0.tgz#17d94be7185f29773aa21454063cbba3cdc03d49"
