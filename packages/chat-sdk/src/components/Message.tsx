@@ -217,7 +217,7 @@ export function ChatMessages() {
   const { chats, userId } = useChatContext();
   const theme = useCustomTheme();
   return (
-    <div>
+    <div style={{ padding: 5 }}>
       {chats.map((chat) => {
         return (
           <MessageLine

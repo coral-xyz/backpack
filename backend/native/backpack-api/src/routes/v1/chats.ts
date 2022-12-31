@@ -57,9 +57,16 @@ router.get("/", extractUserId, ensureHasRoomAccess, async (req, res) => {
     ? // @ts-ignore
       new Date(parseInt(req.query.timestampAfter))
     : new Date(0);
+  const limit = req.query.limit ? parseInt(req.query.limit) : 10;
 
   // @ts-ignore
-  const chats = await getChats({ room, type, timestampBefore, timestampAfter });
+  const chats = await getChats({
+    room,
+    type,
+    timestampBefore,
+    timestampAfter,
+    limit,
+  });
   const enrichedChats = await enrichMessages(chats, room, type);
   res.json({ chats: enrichedChats });
 });
