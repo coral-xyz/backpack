@@ -3,6 +3,7 @@ import http from "http";
 import url from "url";
 import { WebSocketServer } from "ws";
 
+import { RedisSubscriptionManager } from "./subscriptions/RedisSubscriptionManager";
 import { UserManager } from "./users/UserManager";
 import { extractUserId } from "./auth";
 import { PORT } from "./config";
@@ -54,3 +55,5 @@ process.on("uncaughtException", function (err) {
 });
 
 server.listen(port);
+
+const instance = RedisSubscriptionManager.getInstance();
