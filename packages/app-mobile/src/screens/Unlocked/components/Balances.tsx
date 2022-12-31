@@ -300,13 +300,6 @@ export function TokenRow({
     subtitle = `${token.displayBalance.toLocaleString()} ${subtitle}`;
   }
 
-  let trim;
-  try {
-    trim = `${subtitle.split(".")[0]}.${subtitle.split(".")[1].slice(0, 5)}`;
-  } catch {
-    // pass
-  }
-
   return (
     <Pressable
       onPress={() => onPressRow(blockchain, token)}
@@ -330,7 +323,7 @@ export function TokenRow({
               { color: theme.custom.colors.secondary },
             ]}
           >
-            {trim ? trim : subtitle}
+            {subtitle}
           </Text>
         </View>
       </View>

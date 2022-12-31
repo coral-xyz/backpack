@@ -1,3 +1,5 @@
+import { ethers, BigNumber } from "ethers";
+import type { BigNumberish } from "@ethersproject/bignumber";
 import { v1 } from "uuid";
 
 import { IMAGE_PROXY_URL } from "./constants";
@@ -69,4 +71,24 @@ export function proxyImageUrl(url: string): string {
     return `${IMAGE_PROXY_URL}/insecure/rs:fit:400:400:0:0/plain/${url}`;
   }
   return url;
+}
+
+export function toDisplayBalance(
+  nativeBalance: BigNumber,
+  decimals: BigNumberish,
+  truncate = true
+): string {
+  let displayBalance = ethers.utils.formatUnits(nativeBalance, decimals);
+
+  if (truncate) {
+    try {
+      displayBalance = `${displayBalance.split(".")[0]}.${displayBalance
+        .split(".")[1]
+        .slice(0, 5)}`;
+    } catch {
+      // pass
+    }
+  }
+
+  return ethers.utils.commify(displayBalance);
 }

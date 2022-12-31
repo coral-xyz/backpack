@@ -1,6 +1,10 @@
-import { ETH_NATIVE_MINT, fetchEthereumTokenBalances } from "@coral-xyz/common";
+import {
+  ETH_NATIVE_MINT,
+  fetchEthereumTokenBalances,
+  toDisplayBalance,
+} from "@coral-xyz/common";
 import type { TokenInfo } from "@solana/spl-token-registry";
-import { BigNumber, ethers } from "ethers";
+import { BigNumber } from "ethers";
 import { atom, atomFamily, selector, selectorFamily } from "recoil";
 
 import type { TokenData, TokenNativeData } from "../../types";
@@ -87,7 +91,7 @@ export const ethereumTokenNativeBalance = selectorFamily<
       const nativeBalance = ethTokenBalances.get(contractAddress)
         ? BigNumber.from(ethTokenBalances.get(contractAddress))
         : BigNumber.from(0);
-      const displayBalance = ethers.utils.formatUnits(nativeBalance, decimals);
+      const displayBalance = toDisplayBalance(nativeBalance, decimals);
 
       return {
         name,
