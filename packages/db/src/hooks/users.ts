@@ -1,6 +1,7 @@
-import { EnrichedMessageWithMetadata } from "@coral-xyz/common";
+import type { UserMetadata } from "@coral-xyz/common";
 import { useLiveQuery } from "dexie-react-hooks";
 
+import { refreshUsers } from "../api/users";
 import { getDb } from "../db";
 
 export const useUsers = (uuid: string, chats: any[]) => {
@@ -13,4 +14,19 @@ export const useUsers = (uuid: string, chats: any[]) => {
   }, [chats]);
 
   return reqs || [];
+};
+
+export const useDbUser = (
+  uuid: string,
+  remoteUserId: string
+): UserMetadata | undefined => {
+  const reqs = useLiveQuery(async () => {
+    if (!remoteUserId) {
+      return {};
+    }
+    refreshUsers(uuid, [remoteUserId]);
+    return getDb(uuid).users.get(uuid);
+  }, [uuid, remoteUserId]);
+
+  return reqs as UserMetadata | undefined;
 };

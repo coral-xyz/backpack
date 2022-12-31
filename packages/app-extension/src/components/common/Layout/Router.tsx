@@ -6,14 +6,18 @@ import {
   useLocation,
   useSearchParams,
 } from "react-router-dom";
+import type {
+  SubscriptionType} from "@coral-xyz/common";
 import {
   MESSAGE_IFRAME_ENABLED,
   MESSAGING_COMMUNICATION_FETCH_RESPONSE,
+  NAV_COMPONENT_MESSAGE_PROFILE
 } from "@coral-xyz/common";
 import {
   MESSAGING_COMMUNICATION_FETCH,
   MESSAGING_COMMUNICATION_PUSH,
 } from "@coral-xyz/common/src/constants";
+import { useDbUser } from "@coral-xyz/db";
 import {
   ChatScreen,
   Inbox,
@@ -43,6 +47,7 @@ import { PluginApp } from "../../Unlocked/Apps/Plugin";
 import { Balances } from "../../Unlocked/Balances";
 import { Token } from "../../Unlocked/Balances/TokensWidget/Token";
 import { ChatDrawer } from "../../Unlocked/Messages/ChatDrawer";
+import { MessageOptions } from "../../Unlocked/Messages/MessageOptions";
 import { Nfts } from "../../Unlocked/Nfts";
 import { NftsCollection } from "../../Unlocked/Nfts/Collection";
 import { NftOptionsButton, NftsDetail } from "../../Unlocked/Nfts/Detail";
@@ -272,13 +277,25 @@ function SwapPage() {
 function NavScreen({
   component,
   noScrollbars,
+  messageProps,
 }: {
   noScrollbars?: boolean;
   component: React.ReactNode;
+  messageProps?: {
+    type: SubscriptionType;
+    remoteUuid?: string;
+    room?: string;
+  };
 }) {
   const { title, isRoot, pop } = useNavigation();
-  const { style, navButtonLeft, navButtonRight, notchViewComponent } =
-    useNavBar();
+  const {
+    style,
+    navButtonLeft,
+    navButtonRight,
+    notchViewComponent,
+    image,
+    onClick,
+  } = useNavBar();
 
   const _navButtonLeft = navButtonLeft ? (
     navButtonLeft
@@ -301,6 +318,8 @@ function NavScreen({
       >
         <WithNav
           title={title}
+          image={image}
+          onClick={onClick}
           notchViewComponent={notchViewComponent}
           navButtonLeft={_navButtonLeft}
           navButtonRight={navButtonRight}
@@ -366,9 +385,12 @@ function WithMotionWrapper({ children }: { children: any }) {
 }
 
 function useNavBar() {
-  let { isRoot } = useNavigation();
+  let { isRoot, push } = useNavigation();
   const pathname = useLocation().pathname;
   const theme = useCustomTheme();
+  const { props }: any = useDecodedSearchParams(); // TODO: fix type
+  const { uuid } = useUser();
+  const image: string | undefined = useDbUser(uuid, props.userId)?.image;
 
   let navButtonLeft = null as any;
   let navButtonRight = null as any;
@@ -417,18 +439,35 @@ function useNavBar() {
     navButtonRight = null;
   } else if (pathname === "/nfts/detail") {
     navButtonRight = <NftOptionsButton />;
+  } else if (pathname === "/messages/chat") {
+    navButtonRight = <MessageOptions />;
   }
 
-  const notchViewComponent =
-    pathname === "/messages/chat" ? (
-      <ChatDrawer setOpenDrawer={() => {}} />
-    ) : null;
+  let onClick;
+  if (pathname === "/messages/chat") {
+    onClick = () => {
+      push({
+        title: `@${props.username}`,
+        componentId: NAV_COMPONENT_MESSAGE_PROFILE,
+        componentProps: {
+          userId: props.userId,
+        },
+      });
+    };
+  }
+
+  const notchViewComponent = null;
+  // pathname === "/messages/chat" ? (
+  //   <ChatDrawer setOpenDrawer={() => {}} />
+  // ) : null;
 
   return {
     navButtonRight,
     navButtonLeft,
     style: navStyle,
     notchViewComponent,
+    image: pathname === "/messages/chat" ? image : undefined,
+    onClick,
   };
 }
 
