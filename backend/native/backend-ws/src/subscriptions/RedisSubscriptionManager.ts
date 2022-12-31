@@ -2,7 +2,6 @@ import type { SubscriptionType, ToPubsub } from "@coral-xyz/common";
 import { CHAT_MESSAGES, FromServer, ToServer } from "@coral-xyz/common";
 import type { RedisClientType } from "redis";
 import { createClient } from "redis";
-
 import { REDIS_URL } from "../config";
 import { postChat } from "../db/chats";
 import { updateLatestMessage } from "../db/friendships";
