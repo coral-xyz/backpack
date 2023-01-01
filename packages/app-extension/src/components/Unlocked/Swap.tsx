@@ -265,17 +265,15 @@ function _Swap({
           <div className={classes.bottomHalf}>
             <div>
               <OutputTextField />
-              {!!toAmount && toAmount.gt(Zero) && (
-                <div
-                  style={{
-                    marginTop: "24px",
-                    marginLeft: "8px",
-                    marginRight: "8px",
-                  }}
-                >
-                  <SwapInfo />
-                </div>
-              )}
+              <div
+                style={{
+                  marginTop: "24px",
+                  marginLeft: "8px",
+                  marginRight: "8px",
+                }}
+              >
+                <SwapInfo />
+              </div>
             </div>
             <ConfirmSwapButton type="submit" blockchain={blockchain} />
           </div>
@@ -604,8 +602,6 @@ function SwapReceiveAmount() {
 }
 
 function SwapInfo({ compact = true }: { compact?: boolean }) {
-  const classes = useStyles();
-  const theme = useCustomTheme();
   const {
     fromAmount,
     toAmount,
@@ -635,7 +631,20 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     );
   }
 
-  if (!fromAmount || !toAmount) return <></>;
+  if (!fromAmount || !toAmount) {
+    return (
+      <Rows
+        {...{
+          compact,
+          from: "Wallet 1",
+          youPay: "-",
+          rate: "-",
+          priceImpact: "-",
+          networkFee: "-",
+        }}
+      />
+    );
+  }
 
   const decimalDifference = fromMintInfo.decimals - toMintInfo.decimals;
   const toAmountWithFees = toAmount.sub(swapFee);
@@ -661,39 +670,55 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
       )
     : "0";
 
+  return (
+    <Rows
+      {...{
+        compact,
+        from: "Wallet 1",
+        youPay: `${toDisplayBalance(fromAmount, fromMintInfo.decimals)} ${
+          fromMintInfo.symbol
+        }`,
+        rate: `1 ${fromMintInfo.symbol} = ${rate} ${toMintInfo.symbol}`,
+        priceImpact: `${
+          priceImpactPct === 0
+            ? 0
+            : priceImpactPct > 0.1
+            ? priceImpactPct.toFixed(2)
+            : "< 0.1"
+        }%`,
+        networkFee: transactionFee
+          ? `${ethers.utils.formatUnits(transactionFee, 9)} SOL`
+          : "-",
+      }}
+    />
+  );
+}
+
+function Rows({
+  from,
+  youPay,
+  rate,
+  networkFee,
+  priceImpact,
+  compact,
+}: {
+  from: string;
+  youPay: any;
+  rate: any;
+  priceImpact: any;
+  networkFee: any;
+  compact?: boolean;
+}) {
+  const classes = useStyles();
+
   const rows = [];
+  rows.push(["From", from]);
   if (!compact) {
-    rows.push([
-      "You Pay",
-      `${toDisplayBalance(fromAmount, fromMintInfo.decimals)} ${
-        fromMintInfo.symbol
-      }`,
-    ]);
+    rows.push(["You Pay", youPay]);
   }
-  rows.push([
-    "Rate",
-    `1 ${fromMintInfo.symbol} = ${rate} ${toMintInfo.symbol}`,
-  ]);
-  rows.push([
-    "Network Fee",
-    transactionFee ? `${ethers.utils.formatUnits(transactionFee, 9)} SOL` : "-",
-  ]);
-  if (!compact) {
-    rows.push([
-      "Backpack Fee",
-      <span style={{ color: theme.custom.colors.secondary }}>FREE</span>,
-    ]);
-  }
-  rows.push([
-    "Price Impact",
-    `${
-      priceImpactPct === 0
-        ? 0
-        : priceImpactPct > 0.1
-        ? priceImpactPct.toFixed(2)
-        : "< 0.1"
-    }%`,
-  ]);
+  rows.push(["Rate", rate]);
+  rows.push(["Network Fee", networkFee]);
+  rows.push(["Price Impact", priceImpact]);
 
   return (
     <>
