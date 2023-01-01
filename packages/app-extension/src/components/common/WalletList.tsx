@@ -155,6 +155,7 @@ export function WalletDrawerNavStack({
       paperProps={{
         sx: {
           height: miniDrawerRoot ? undefined : "90%",
+          maxHeight: "90%",
           borderTopLeftRadius: miniDrawerRoot ? "12px" : 0,
           borderTopRightRadius: miniDrawerRoot ? "12px" : 0,
         },
