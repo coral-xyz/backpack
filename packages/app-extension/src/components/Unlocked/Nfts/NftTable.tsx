@@ -199,8 +199,10 @@ const LoadingRow = function ({ itemsPerRow }: { itemsPerRow: number }) {
               style={{
                 position: "relative",
                 width: "153.5px",
-                height: "110px",
+                height: "153.5px",
                 margin: "0px 6px",
+                borderRadius: "8px",
+                overflow: "hidden",
               }}
             >
               <Skeleton
@@ -499,7 +501,7 @@ const getItemForIndex = (
 
   if (!collectionItems) {
     return {
-      height: 122,
+      height: 165.5,
       key: `loading${blockchainIndex}${itemsPerRow}`,
       component: <LoadingRow itemsPerRow={itemsPerRow} />,
     };
