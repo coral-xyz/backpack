@@ -14,6 +14,9 @@ export function useSolanaNftCollections({
   );
 }
 
-export function useEthereumNftCollections(): Array<any> {
-  return useRecoilValue(atoms.ethereumNftCollections);
+export function useEthereumNftCollections(publicKey: string): Array<any> {
+  const connectionUrl = useRecoilValue(atoms.ethereumConnectionUrl);
+  return useRecoilValue(
+    atoms.ethereumNftCollections({ publicKey, connectionUrl })
+  );
 }

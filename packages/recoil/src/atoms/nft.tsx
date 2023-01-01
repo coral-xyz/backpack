@@ -40,7 +40,7 @@ export const nftCollections = atomFamily<
         const collection =
           wallet!.blockchain === Blockchain.SOLANA
             ? get(solanaNftCollections({ publicKey, connectionUrl }))
-            : get(ethereumNftCollections);
+            : get(ethereumNftCollections({ publicKey, connectionUrl }));
         return {
           collection,
           blockchain: wallet!.blockchain,
@@ -63,7 +63,7 @@ export const nftCollections = atomFamily<
                 getPromise(
                   wallet.blockchain === Blockchain.SOLANA
                     ? solanaNftCollections({ publicKey, connectionUrl })
-                    : ethereumNftCollections
+                    : ethereumNftCollections({ publicKey, connectionUrl })
                 ),
                 isInitial
                   ? null
