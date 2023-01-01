@@ -373,8 +373,10 @@ function NoRecentActivityLabel({ minimize }: { minimize: boolean }) {
         }
         onClick={() => window.open("https://xnft.gg")}
         contentStyle={{
-          marginBottom: minimize !== true ? "64px" : 0, // Tab height offset.
           color: minimize ? theme.custom.colors.secondary : "inherit",
+        }}
+        innerStyle={{
+          marginBottom: minimize !== true ? "64px" : 0, // Tab height offset.
         }}
         minimize={minimize}
       />

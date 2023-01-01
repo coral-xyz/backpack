@@ -14,6 +14,7 @@ export const EmptyState: React.FC<{
   verticallyCentered?: boolean;
   contentStyle?: React.CSSProperties;
   style?: React.CSSProperties;
+  innerStyle?: React.CSSProperties;
 }> = ({
   icon,
   header,
@@ -23,6 +24,7 @@ export const EmptyState: React.FC<{
   onClick,
   contentStyle,
   style,
+  innerStyle,
   minimize,
   verticallyCentered = true,
 }) => {
@@ -47,6 +49,7 @@ export const EmptyState: React.FC<{
           background: theme.custom.colors.nav,
           border: `${theme.custom.colors.borderFull}`,
           overflow: "hidden",
+          ...innerStyle,
         }}
       >
         {header}

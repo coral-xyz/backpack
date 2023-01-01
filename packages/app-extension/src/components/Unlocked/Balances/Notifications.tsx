@@ -388,8 +388,10 @@ function NoNotificationsLabel({ minimize }: { minimize: boolean }) {
         }
         buttonText={"Browse the xNFT Library"}
         onClick={() => window.open("https://xnft.gg")}
-        contentStyle={{
+        innerStyle={{
           marginBottom: minimize !== true ? "64px" : 0, // Tab height offset.
+        }}
+        contentStyle={{
           color: minimize ? theme.custom.colors.secondary : "inherit",
         }}
         minimize={minimize}
