@@ -142,6 +142,7 @@ function TokenHeader({
           blockchain={blockchain}
           address={tokenAddress}
           publicKey={publicKey}
+          swapEnabled={blockchain === Blockchain.SOLANA}
         />
       </div>
     </div>

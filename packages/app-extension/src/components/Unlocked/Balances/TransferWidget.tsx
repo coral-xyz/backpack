@@ -1,16 +1,12 @@
+import type {
+  Blockchain} from "@coral-xyz/common";
 import {
-  Blockchain,
   ETH_NATIVE_MINT,
   SOL_NATIVE_MINT,
   STRIPE_ENABLED,
 } from "@coral-xyz/common";
 import { Dollar } from "@coral-xyz/react-common";
-import {
-  SwapProvider,
-  useActiveWallet,
-  useEnabledBlockchains,
-  useFeatureGates,
-} from "@coral-xyz/recoil";
+import { SwapProvider, useFeatureGates } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ArrowDownward, ArrowUpward, SwapHoriz } from "@mui/icons-material";
 import { Typography } from "@mui/material";
@@ -31,28 +27,26 @@ export function TransferWidget({
   address,
   publicKey,
   rampEnabled,
+  swapEnabled,
 }: {
   blockchain?: Blockchain;
   address?: string;
   publicKey?: string;
   rampEnabled: boolean;
+  swapEnabled: boolean;
 }) {
-  const enabledBlockchains = useEnabledBlockchains();
   const featureGates = useFeatureGates();
   const enableOnramp =
     featureGates && featureGates[STRIPE_ENABLED] && rampEnabled;
-  const renderSwap =
-    blockchain !== Blockchain.ETHEREUM &&
-    enabledBlockchains.includes(Blockchain.SOLANA);
 
   return (
     <div
       style={{
         display: "flex",
         width:
-          enableOnramp && renderSwap
+          enableOnramp && swapEnabled
             ? "256px"
-            : renderSwap || enableOnramp
+            : swapEnabled || enableOnramp
             ? "188px"
             : "120px",
         marginLeft: "auto",
@@ -72,7 +66,7 @@ export function TransferWidget({
         address={address}
         publicKey={publicKey}
       />
-      {false && renderSwap && (
+      {swapEnabled && (
         <>
           <div style={{ width: "16px" }} />
           <SwapButton
