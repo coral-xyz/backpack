@@ -104,7 +104,6 @@ export function SwapProvider({
   publicKey = publicKey ?? useActiveSolanaWallet().publicKey;
 
   const [inputTokenAccounts] = useLoader(jupiterInputMints({ publicKey }), []);
-  console.log("ARMANI SWAP PROVIDER", publicKey, inputTokenAccounts);
   const solanaCtx = useSolanaCtx();
   const { backgroundClient, connection, walletPublicKey } = solanaCtx;
 
