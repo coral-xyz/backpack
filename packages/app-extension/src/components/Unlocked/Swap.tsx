@@ -15,7 +15,7 @@ import {
   SecondaryButton,
 } from "@coral-xyz/react-common";
 import {
-  useActiveWallet,
+  isAggregateWallets,
   useJupiterOutputMints,
   useSplTokenRegistry,
   useSwapContext,
@@ -26,6 +26,7 @@ import { ExpandMore, SwapVert } from "@mui/icons-material";
 import type { Button } from "@mui/material";
 import { IconButton, InputAdornment, Typography } from "@mui/material";
 import { ethers, FixedNumber } from "ethers";
+import { useRecoilValue } from "recoil";
 
 import { Button as XnftButton } from "../../plugin/Component";
 import { TextField, TextFieldLabel } from "../common";
@@ -202,13 +203,7 @@ enum SwapState {
   ERROR,
 }
 
-export function Swap({
-  blockchain,
-  publicKey,
-}: {
-  blockchain: Blockchain;
-  publicKey?: string;
-}) {
+export function Swap({ blockchain }: { blockchain: Blockchain }) {
   const nav = useNavStack();
   useEffect(() => {
     nav.setTitle("Swap");
@@ -218,18 +213,10 @@ export function Swap({
     throw new Error("only Solana swaps are supported currently");
   }
 
-  return (
-    <_Swap blockchain={blockchain ?? Blockchain.SOLANA} publicKey={publicKey} />
-  );
+  return <_Swap blockchain={blockchain ?? Blockchain.SOLANA} />;
 }
 
-function _Swap({
-  blockchain,
-  publicKey,
-}: {
-  blockchain: Blockchain;
-  publicKey?: string;
-}) {
+function _Swap({ blockchain }: { blockchain: Blockchain }) {
   const classes = useStyles();
   const { toAmount, swapToFromMints } = useSwapContext();
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -261,7 +248,7 @@ function _Swap({
               left: "24px",
             }}
           />
-          <InputTextField publicKey={publicKey} />
+          <InputTextField />
         </div>
         <div className={classes.bottomHalfWrapper}>
           <div className={classes.bottomHalf}>
@@ -274,7 +261,7 @@ function _Swap({
                   marginRight: "8px",
                 }}
               >
-                <SwapInfo publicKey={publicKey} />
+                <SwapInfo />
               </div>
             </div>
             <ConfirmSwapButton type="submit" blockchain={blockchain} />
@@ -329,7 +316,7 @@ const SwapConfirmationCard: React.FC<{
   );
 };
 
-function InputTextField({ publicKey }: { publicKey?: string }) {
+function InputTextField() {
   const classes = useStyles();
   const {
     fromAmount,
@@ -354,7 +341,7 @@ function InputTextField({ publicKey }: { publicKey?: string }) {
       <TokenInputField
         type="number"
         placeholder="0"
-        endAdornment={<InputTokenSelectorButton publicKey={publicKey} />}
+        endAdornment={<InputTokenSelectorButton />}
         rootClass={classes.fromFieldRoot}
         value={fromAmount}
         setValue={setFromAmount}
@@ -603,14 +590,9 @@ function SwapReceiveAmount() {
   );
 }
 
-function SwapInfo({
-  publicKey,
-  compact = true,
-}: {
-  publicKey?: string;
-  compact?: boolean;
-}) {
+function SwapInfo({ compact = true }: { compact?: boolean }) {
   const {
+    publicKey,
     fromAmount,
     toAmount,
     fromMintInfo,
@@ -622,7 +604,7 @@ function SwapInfo({
     swapFee,
   } = useSwapContext();
 
-  const name = publicKey ? useWalletName(publicKey) : useActiveWallet().name;
+  const name = useWalletName(publicKey);
 
   // Loading indicator when routes are being loaded due to polling
   if (isLoadingRoutes || isLoadingTransactions) {
@@ -763,47 +745,29 @@ function SwapTokensButton({
   );
 }
 
-function InputTokenSelectorButton({ publicKey }: { publicKey?: string }) {
+function InputTokenSelectorButton() {
   const { inputTokenAccounts, fromMint, setFromMint } = useSwapContext();
-  const tokenAccountsFiltered = inputTokenAccounts.filter((token: Token) => {
-    if (token.mint && token.mint === SOL_NATIVE_MINT) {
-      return true;
-    }
-    if (token.address && token.address === ETH_NATIVE_MINT) {
-      return true;
-    }
-    return !token.nativeBalance.isZero();
-  });
   return (
     <TokenSelectorButton
       selectedMint={fromMint}
-      tokenAccounts={tokenAccountsFiltered}
+      input={true}
       setMint={setFromMint}
-      publicKey={publicKey}
     />
   );
 }
 
 function OutputTokenSelectorButton() {
   const { fromMint, toMint, setToMint } = useSwapContext();
-  const tokenAccounts = useJupiterOutputMints(fromMint);
   return (
     <TokenSelectorButton
       selectedMint={toMint}
-      tokenAccounts={tokenAccounts}
       setMint={setToMint}
-      displayWalletHeader={false}
+      input={false}
     />
   );
 }
 
-function TokenSelectorButton({
-  selectedMint,
-  tokenAccounts,
-  setMint,
-  displayWalletHeader,
-  publicKey,
-}: any) {
+function TokenSelectorButton({ selectedMint, setMint, input }: any) {
   const classes = useStyles();
   const nav = useNavStack();
   const tokenRegistry = useSplTokenRegistry();
@@ -817,9 +781,7 @@ function TokenSelectorButton({
         onClick={() =>
           nav.push("select-token", {
             setMint: (...args: any) => setMint(...args),
-            tokenAccounts,
-            displayWalletHeader,
-            publicKey,
+            input,
           })
         }
         style={{
@@ -840,18 +802,30 @@ function TokenSelectorButton({
   );
 }
 
-export function SelectToken({
+export function SwapSelectToken({
   setMint,
-  tokenAccounts,
   customFilter,
-  publicKey,
+  input,
 }: {
   setMint: (mint: string) => void;
-  tokenAccounts: Token[];
   customFilter: (token: Token) => boolean;
-  publicKey?: string;
+  input: boolean;
 }) {
   const nav = useNavStack();
+  const { fromMint, isAggregateSwapper, publicKey, inputTokenAccounts } =
+    useSwapContext();
+  const tokenAccounts = !input
+    ? useJupiterOutputMints(fromMint)
+    : inputTokenAccounts.filter((token: Token) => {
+        if (token.mint && token.mint === SOL_NATIVE_MINT) {
+          return true;
+        }
+        if (token.address && token.address === ETH_NATIVE_MINT) {
+          return true;
+        }
+        return !token.nativeBalance.isZero();
+      });
+  const walletFilter = isAggregateSwapper ? undefined : publicKey;
   const onClickRow = (_blockchain: Blockchain, token: Token) => {
     setMint(token.mint!);
     nav.pop();
@@ -861,12 +835,14 @@ export function SelectToken({
     nav.setTitle("Select Token");
   }, [nav]);
 
+  // TODO: add an on cilck handler that changes the swap provider's publicKey.
+
   return (
     <SearchableTokenTable
       onClickRow={onClickRow}
       tokenAccounts={tokenAccounts}
       customFilter={customFilter}
-      publicKey={publicKey}
+      publicKey={walletFilter}
     />
   );
 }

@@ -7,6 +7,7 @@ import {
 import { Dollar } from "@coral-xyz/react-common";
 import {
   SwapProvider,
+  useActiveWallet,
   useEnabledBlockchains,
   useFeatureGates,
 } from "@coral-xyz/recoil";
@@ -17,7 +18,7 @@ import { Typography } from "@mui/material";
 import { useNavStack } from "../../common/Layout/NavStack";
 import type { Token } from "../../common/TokenTable";
 import { SearchableTokenTables } from "../../common/TokenTable";
-import { SelectToken, Swap } from "../../Unlocked/Swap";
+import { Swap,SwapSelectToken } from "../../Unlocked/Swap";
 
 import { Deposit } from "./TokensWidget/Deposit";
 import { Ramp } from "./TokensWidget/Ramp";
@@ -121,16 +122,12 @@ function SwapButton({
             title: `Swap`,
             props: {
               blockchain,
-              publicKey,
             },
           },
           {
             title: `Select Token`,
             name: "select-token",
-            component: (props: any) => <SelectToken {...props} />,
-            props: {
-              publicKey,
-            },
+            component: (props: any) => <SwapSelectToken {...props} />,
           },
         ]}
       />

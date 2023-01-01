@@ -41,6 +41,8 @@ type JupiterRoute = {
 };
 
 type SwapContext = {
+  isAggregateSwapper: boolean;
+  publicKey: string;
   fromAmount: BigNumber | undefined;
   setFromAmount: (a: BigNumber | undefined) => void;
   toAmount: BigNumber | undefined;
@@ -94,9 +96,15 @@ export function SwapProvider({
   children: React.ReactNode;
 }) {
   const tokenRegistry = useSplTokenRegistry();
-  // todo
+  // If the given publicKey is undefined, then we are in the context
+  // of an aggregate view swapper. If it is defined, then we are eiether
+  // in a single wallet view, or we have scoped the swapper to a single wallet.
+  const isAggregateSwapper = publicKey === undefined;
+  // Aggregate view swapper can just default to the current (global) active key.
   publicKey = publicKey ?? useActiveSolanaWallet().publicKey;
+
   const [inputTokenAccounts] = useLoader(jupiterInputMints({ publicKey }), []);
+  console.log("ARMANI SWAP PROVIDER", publicKey, inputTokenAccounts);
   const solanaCtx = useSolanaCtx();
   const { backgroundClient, connection, walletPublicKey } = solanaCtx;
 
@@ -412,6 +420,8 @@ export function SwapProvider({
   return (
     <_SwapContext.Provider
       value={{
+        isAggregateSwapper,
+        publicKey,
         fromAmount,
         setFromAmount,
         toAmount,
