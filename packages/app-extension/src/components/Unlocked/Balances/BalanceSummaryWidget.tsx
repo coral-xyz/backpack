@@ -149,7 +149,7 @@ export function BalanceSummaryWidget() {
               <>
                 {totalChange > 0 ? "+" : ""}
                 {Number.isFinite(percentChange)
-                  ? `${percentChange.toFixed(2)}%`
+                  ? `${percentChange?.toFixed(2)}%`
                   : "0.00%"}
               </>
             )}

@@ -168,51 +168,61 @@ export const coingeckoIds = selectorFamily<
 
 // The list of all Ethereum ERC20 contract addresses prices need to be loaded
 // for.
-export const erc20ContractAddresses = equalSelector({
+export const erc20ContractAddresses = equalSelectorFamily<
+  Array<string>,
+  { publicKey: string }
+>({
   key: "erc20ContractAddresses",
-  get: ({ get }: any) => {
-    const balances = get(erc20Balances);
-    const addresses = [...balances.keys()].filter(
-      // TODO figure out how ETH_NATIVE_MINT ends up in this array
-      (k: string) => k !== ETH_NATIVE_MINT
-    );
-    addresses.sort();
-    return addresses;
-  },
+  get:
+    ({ publicKey }) =>
+    ({ get }: any) => {
+      const balances = get(erc20Balances({ publicKey }));
+      const addresses = [...balances.keys()].filter(
+        // TODO figure out how ETH_NATIVE_MINT ends up in this array
+        (k: string) => k !== ETH_NATIVE_MINT
+      );
+      addresses.sort();
+      return addresses;
+    },
   equals: (a1, a2) => JSON.stringify(a1) === JSON.stringify(a2),
 });
 
 // Coingecko API query for all ERC20 contract addresses
-export const pricesForErc20Addresses = selector({
+export const pricesForErc20Addresses = selectorFamily<
+  Map<string, any>,
+  { publicKey: string }
+>({
   key: "pricesForErc20Addresses",
-  get: async ({ get }: any) => {
-    const contractAddresses = get(erc20ContractAddresses);
-    if (contractAddresses.length === 0) {
-      // No contract addresses, nothing to query
-      return new Map();
-    }
-    const params = {
-      ...baseCoingeckoParams,
-      contract_addresses: contractAddresses,
-    };
-    const queryString = new URLSearchParams(params).toString();
-    try {
-      const resp = await fetch(
-        `https://api.coingecko.com/api/v3/simple/token_price/ethereum?${queryString}`
-      );
-      const json = await resp.json();
-      return new Map(
-        // Transform the response from id -> price data to addresss -> price data
-        Object.keys(json).map((address) => [
-          ethers.utils.getAddress(address),
-          json[address],
-        ])
-      );
-    } catch (err) {
-      console.error("error querying all ER20 tokens", err);
-      return new Map();
-    }
-  },
+  get:
+    ({ publicKey }) =>
+    async ({ get }: any) => {
+      const contractAddresses = get(erc20ContractAddresses({ publicKey }));
+      if (contractAddresses.length === 0) {
+        // No contract addresses, nothing to query
+        return new Map();
+      }
+      const params = {
+        ...baseCoingeckoParams,
+        contract_addresses: contractAddresses,
+      };
+      const queryString = new URLSearchParams(params).toString();
+      try {
+        const resp = await fetch(
+          `https://api.coingecko.com/api/v3/simple/token_price/ethereum?${queryString}`
+        );
+        const json = await resp.json();
+        return new Map(
+          // Transform the response from id -> price data to addresss -> price data
+          Object.keys(json).map((address) => [
+            ethers.utils.getAddress(address),
+            json[address],
+          ])
+        );
+      } catch (err) {
+        console.error("error querying all ER20 tokens", err);
+        return new Map();
+      }
+    },
 });
 
 // Retrieve only the Etheruem price. Useful for transaction approval screens

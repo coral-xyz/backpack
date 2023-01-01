@@ -34,54 +34,55 @@ export const ethereumBalances = atomFamily<
         publicKey: string;
       }) =>
       ({ get }: any) => {
-        const balanceMap = get(erc20Balances);
+        const balanceMap = get(erc20Balances({ publicKey }));
         // Add ETH balance at dummy address
-        balanceMap.set(ETH_NATIVE_MINT, get(ethBalance));
+        balanceMap.set(ETH_NATIVE_MINT, get(ethBalance({ publicKey })));
         return balanceMap;
       },
   }),
 });
 
 // Native ETH balance
-export const ethBalance = atom<BigNumber>({
+export const ethBalance = atomFamily<BigNumber, { publicKey: string }>({
   key: "ethBalance",
-  default: selector({
+  default: selectorFamily({
     key: "ethereumBalanceDefault",
-    get: ({ get }: any) => {
-      const publicKey = get(ethereumPublicKey);
-      if (!publicKey) return BigNumber.from(0);
-      const provider = get(ethersContext).provider;
-      return provider.getBalance(publicKey);
-    },
+    get:
+      ({ publicKey }) =>
+      ({ get }: any) => {
+        const provider = get(ethersContext).provider;
+        return provider.getBalance(publicKey);
+      },
   }),
 });
 
 // ERC20 Token Balances
-export const erc20Balances = selector({
+export const erc20Balances = selectorFamily<
+  Map<string, any>,
+  { publicKey: string }
+>({
   key: "erc20Balances",
-  get: async ({ get }: any) => {
-    const publicKey = get(ethereumPublicKey);
-    if (!publicKey) {
-      return new Map();
-    }
-    const provider = get(ethersContext).provider;
-    return await fetchEthereumTokenBalances(provider, publicKey);
-  },
+  get:
+    ({ publicKey }) =>
+    async ({ get }: any) => {
+      const provider = get(ethersContext).provider;
+      return await fetchEthereumTokenBalances(provider, publicKey);
+    },
 });
 
 export const ethereumTokenNativeBalance = selectorFamily<
   TokenNativeData | null,
-  string
+  { publicKey: string; tokenAddress: string }
 >({
   key: "ethereumTokenNativeBalance",
   get:
-    (contractAddress: string) =>
+    ({ publicKey, tokenAddress }) =>
     ({ get }) => {
-      const publicKey = get(ethereumPublicKey);
+      const contractAddress = tokenAddress;
       const connectionUrl = get(ethereumConnectionUrl);
       const ethTokenMetadata = get(ethereumTokenMetadata)();
       const ethTokenBalances: Map<String, BigNumber> = get(
-        ethereumBalances({ connectionUrl, publicKey: publicKey! })
+        ethereumBalances({ connectionUrl, publicKey })
       );
 
       const tokenMetadata =
@@ -105,19 +106,25 @@ export const ethereumTokenNativeBalance = selectorFamily<
     },
 });
 
-export const ethereumTokenBalance = selectorFamily<TokenData | null, string>({
+export const ethereumTokenBalance = selectorFamily<
+  TokenData | null,
+  { publicKey: string; tokenAddress: string }
+>({
   key: "ethereumTokenBalance",
   get:
-    (contractAddress: string) =>
+    ({ publicKey, tokenAddress }) =>
     ({ get }) => {
+      const contractAddress = tokenAddress;
       const nativeTokenBalance = get(
-        ethereumTokenNativeBalance(contractAddress)
+        ethereumTokenNativeBalance({ publicKey, tokenAddress })
       );
       if (!nativeTokenBalance) {
         return null;
       }
 
-      const price = get(pricesForErc20Addresses).get(contractAddress) as any;
+      const price = get(pricesForErc20Addresses({ publicKey })).get(
+        contractAddress
+      ) as any;
       const usdBalance =
         (price?.usd ?? 0) *
         parseFloat(
