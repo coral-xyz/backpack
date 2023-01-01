@@ -8,7 +8,7 @@ import { BigNumber, ethers } from "ethers";
 import { atom, atomFamily, selector, selectorFamily } from "recoil";
 
 import type { TokenData, TokenNativeData } from "../../types";
-import { pricesForErc20Addresses } from "../prices";
+import { ethereumPrice, pricesForErc20Addresses } from "../prices";
 import { ethereumPublicKey } from "../wallet";
 
 import { ethereumConnectionUrl } from "./preferences";
@@ -122,9 +122,12 @@ export const ethereumTokenBalance = selectorFamily<
         return null;
       }
 
-      const price = get(pricesForErc20Addresses({ publicKey })).get(
-        contractAddress
-      ) as any;
+      const price =
+        contractAddress === ETH_NATIVE_MINT
+          ? get(ethereumPrice)
+          : (get(pricesForErc20Addresses({ publicKey })).get(
+              contractAddress
+            ) as any);
       const usdBalance =
         (price?.usd ?? 0) *
         parseFloat(

@@ -18,7 +18,7 @@ import { Typography } from "@mui/material";
 import { useNavStack } from "../../common/Layout/NavStack";
 import type { Token } from "../../common/TokenTable";
 import { SearchableTokenTables } from "../../common/TokenTable";
-import { Swap,SwapSelectToken } from "../../Unlocked/Swap";
+import { Swap, SwapSelectToken } from "../../Unlocked/Swap";
 
 import { Deposit } from "./TokensWidget/Deposit";
 import { Ramp } from "./TokensWidget/Ramp";
@@ -72,7 +72,7 @@ export function TransferWidget({
         address={address}
         publicKey={publicKey}
       />
-      {renderSwap && (
+      {false && renderSwap && (
         <>
           <div style={{ width: "16px" }} />
           <SwapButton
@@ -98,11 +98,7 @@ function SwapButton({
   const theme = useCustomTheme();
 
   return (
-    <SwapProvider
-      blockchain={Blockchain.SOLANA}
-      tokenAddress={address}
-      publicKey={publicKey}
-    >
+    <SwapProvider tokenAddress={address} publicKey={publicKey}>
       <TransferButton
         label={"Swap"}
         labelComponent={

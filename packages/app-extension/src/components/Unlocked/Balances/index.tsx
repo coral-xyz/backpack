@@ -5,11 +5,12 @@ import {
   SOL_NATIVE_MINT,
   toTitleCase,
 } from "@coral-xyz/common";
-import type {
-  useBlockchainTokensSorted} from "@coral-xyz/recoil";
+import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
 import {
- useActiveWallet,  useIsAggregateWallets,
-useNavigation } from "@coral-xyz/recoil";
+  useActiveWallet,
+  useIsAggregateWallets,
+  useNavigation,
+} from "@coral-xyz/recoil";
 
 import { TokenTables } from "../../common/TokenTable";
 
@@ -21,7 +22,7 @@ export type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
 export function Balances() {
   const { push } = useNavigation();
   const isAggregate = useIsAggregateWallets();
-  const publicKey = isAggregate ? undefined : useActiveWallet().publicKey;
+  const publicKey = useActiveWallet().publicKey; // TODO
 
   const onClickTokenRow = (
     blockchain: Blockchain,

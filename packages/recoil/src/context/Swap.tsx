@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import type { Blockchain } from "@coral-xyz/common";
 import {
   associatedTokenAddress,
+  Blockchain,
   confirmTransaction,
   generateUnwrapSolTx,
   generateWrapSolTx,
@@ -19,6 +19,7 @@ import { blockchainTokenData } from "../atoms/balance";
 import { JUPITER_BASE_URL, jupiterInputMints } from "../atoms/solana/jupiter";
 import {
   useActiveSolanaWallet,
+  useAllWallets,
   useLoader,
   useSolanaCtx,
   useSplTokenRegistry,
@@ -85,31 +86,29 @@ function useDebounce(value: any, wait = DEFAULT_DEBOUNCE_DELAY) {
 }
 
 export function SwapProvider({
-  blockchain,
   tokenAddress,
   publicKey,
   children,
 }: {
-  blockchain: Blockchain;
   tokenAddress?: string;
   publicKey?: string;
   children: React.ReactNode;
 }) {
   const tokenRegistry = useSplTokenRegistry();
+  const blockchain = Blockchain.SOLANA; // Solana only at the moment.
+  const wallet = useAllWallets().find(
+    (w) => w.blockchain === blockchain && w.publicKey === publicKey
+  );
   // If the given publicKey is undefined, then we are in the context
   // of an aggregate view swapper. If it is defined, then we are eiether
   // in a single wallet view, or we have scoped the swapper to a single wallet.
   const isAggregateSwapper = publicKey === undefined;
   // Aggregate view swapper can just default to the current (global) active key.
-  publicKey = publicKey ?? useActiveSolanaWallet().publicKey;
+  publicKey = wallet ? wallet.publicKey : useActiveSolanaWallet().publicKey;
 
   const [inputTokenAccounts] = useLoader(jupiterInputMints({ publicKey }), []);
   const solanaCtx = useSolanaCtx();
-  const { backgroundClient, connection, walletPublicKey } = solanaCtx;
-
-  // If the publicKey was given in the params, use it because it's for the multi wallet
-  // aggregate view.
-  publicKey = publicKey ?? walletPublicKey.toString();
+  const { backgroundClient, connection } = solanaCtx;
 
   const [token] = tokenAddress
     ? useLoader(
@@ -409,7 +408,7 @@ export function SwapProvider({
       method: UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
       params: [
         bs58.encode(Buffer.from(serializedTransaction, "base64")),
-        walletPublicKey,
+        publicKey,
       ],
     });
     await confirmTransaction(connection, signature, "confirmed");
