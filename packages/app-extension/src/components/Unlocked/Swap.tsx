@@ -633,7 +633,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
 
   if (!fromAmount || !toAmount) {
     return (
-      <Rows
+      <SwapInfoRows
         {...{
           compact,
           from: "Wallet 1",
@@ -671,7 +671,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     : "0";
 
   return (
-    <Rows
+    <SwapInfoRows
       {...{
         compact,
         from: "Wallet 1",
@@ -694,7 +694,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
   );
 }
 
-function Rows({
+function SwapInfoRows({
   from,
   youPay,
   rate,
