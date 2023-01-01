@@ -15,9 +15,11 @@ import {
   SecondaryButton,
 } from "@coral-xyz/react-common";
 import {
+  useActiveWallet,
   useJupiterOutputMints,
   useSplTokenRegistry,
   useSwapContext,
+  useWalletName,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ExpandMore, SwapVert } from "@mui/icons-material";
@@ -272,7 +274,7 @@ function _Swap({
                   marginRight: "8px",
                 }}
               >
-                <SwapInfo />
+                <SwapInfo publicKey={publicKey} />
               </div>
             </div>
             <ConfirmSwapButton type="submit" blockchain={blockchain} />
@@ -601,7 +603,13 @@ function SwapReceiveAmount() {
   );
 }
 
-function SwapInfo({ compact = true }: { compact?: boolean }) {
+function SwapInfo({
+  publicKey,
+  compact = true,
+}: {
+  publicKey?: string;
+  compact?: boolean;
+}) {
   const {
     fromAmount,
     toAmount,
@@ -613,6 +621,8 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     transactionFee,
     swapFee,
   } = useSwapContext();
+
+  const name = publicKey ? useWalletName(publicKey) : useActiveWallet().name;
 
   // Loading indicator when routes are being loaded due to polling
   if (isLoadingRoutes || isLoadingTransactions) {
@@ -636,7 +646,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
       <SwapInfoRows
         {...{
           compact,
-          from: "Wallet 1",
+          from: name,
           youPay: "-",
           rate: "-",
           priceImpact: "-",
@@ -674,7 +684,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     <SwapInfoRows
       {...{
         compact,
-        from: "Wallet 1",
+        from: name,
         youPay: `${toDisplayBalance(fromAmount, fromMintInfo.decimals)} ${
           fromMintInfo.symbol
         }`,
