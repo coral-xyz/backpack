@@ -1,12 +1,14 @@
+import type { Xnft } from "@coral-xyz/common";
+import { IDL } from "@coral-xyz/common";
+import type { Provider } from "@project-serum/anchor";
+import { Program } from "@project-serum/anchor";
+import { Connection,PublicKey } from "@solana/web3.js";
 import express from "express";
+
 import { authMiddleware, authSignatureMiddleware } from "../auth/middleware";
 import { getUserIdFromPubkey } from "../db/users";
-import { isXnftOwner } from "../solana";
-import { PublicKey, Connection } from "@solana/web3.js";
-import { IDL, Xnft } from "@coral-xyz/common";
-import { Program } from "@project-serum/anchor";
-import type { Provider } from "@project-serum/anchor";
 import { createXnftSecret, fetchXnftSecret } from "../db/xnftSecrets";
+import { isXnftOwner } from "../solana";
 
 export const XNFT_PROGRAM_ID = new PublicKey(
   "BaHSGaf883GA3u8qSC5wNigcXyaScJLSBJZbALWvPcjs"
@@ -22,7 +24,7 @@ router.get("/accessSecret", authSignatureMiddleware, async (req, res) => {
   //@ts-ignore
   const publicKey: string = req.publicKey;
   //@ts-ignore
-  const xnftId = req.query.xnftId;
+  const xnftId: string = req.query.xnftId;
   if (!(await isXnftOwner(publicKey, xnftId))) {
     return res.status(403).json({
       msg: "You don't own this xnft",

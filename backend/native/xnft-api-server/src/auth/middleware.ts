@@ -1,7 +1,8 @@
-import { Errors } from "../errors";
-import nacl from "tweetnacl";
 import bs58 from "bs58";
+import nacl from "tweetnacl";
+
 import { fetchXnftFromSecret } from "../db/xnftSecrets";
+import { Errors } from "../errors";
 
 export const xnftMiddleware = async (req, res, next) => {
   const authorizationHeader = req.headers["authorization"];
@@ -29,23 +30,24 @@ export const authSignatureMiddleware = (req, res, next) => {
   const publicKey = req.body.publicKey;
 
   if (
-    timestamp < new Date().getTime() ||
-    timestamp > new Date().getTime() + 60 * 1000
+    timestamp > new Date().getTime() ||
+    timestamp > new Date().getTime() + 360 * 1000
   ) {
-    return res.status(403).json({ msg: "Expired message, please try again" });
+    return res.status(403).json({ msg: "Expired timestamp, please try again" });
   }
   const message = `You are trying to log into Backpack at ${timestamp}`;
 
   try {
     const verified = nacl.sign.detached.verify(
       new TextEncoder().encode(message),
-      bs58.decode(signature),
+      new Uint8Array(signature),
       bs58.decode(publicKey)
     );
     if (!verified) {
       throw new Error("Signature verification failed");
     }
   } catch (e) {
+    console.log(e);
     return res.status(403).json({ msg: "Signature verification failed" });
   }
   req.publicKey = publicKey;
