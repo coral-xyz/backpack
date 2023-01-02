@@ -1,0 +1,14 @@
+{
+  "name": "@coral-xyz/ts-config",
+  "version": "1.0.0",
+  "description": "Shared configuration files for TypeScript projects.",
+  "keywords": [
+    "typescript",
+    "tsconfig"
+  ],
+  "author": "Coral",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  }
+}
