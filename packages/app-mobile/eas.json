@@ -6,6 +6,9 @@
     "monorepo": {
       "node": "18.12.0"
     },
+    "production": {
+      "extends": "monorepo"
+    },
     "preview": {
       "extends": "monorepo",
       "channel": "preview",

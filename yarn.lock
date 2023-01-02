@@ -6128,7 +6128,7 @@
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-0.0.51.tgz#cfd70924a25a3fd32b218e5e420e6897e1ac4f40"
   integrity sha512-CuPgU6f3eT/XgKKPqKd/gLZV1Xmvf1a2R5POBOGQa6uv82xpls89HU5zKeVoyR8XzHd1RGNOlQlvUe3CFkjWNQ==
 
-"@types/express-serve-static-core@*", "@types/express-serve-static-core@^4.17.18", "@types/express-serve-static-core@^4.17.31", "@types/express-serve-static-core@^4.17.9":
+"@types/express-serve-static-core@*", "@types/express-serve-static-core@^4.17.31", "@types/express-serve-static-core@^4.17.9":
   version "4.17.32"
   resolved "https://registry.yarnpkg.com/@types/express-serve-static-core/-/express-serve-static-core-4.17.32.tgz#93dda387f5516af616d8d3f05f2c4c79d81e1b82"
   integrity sha512-aI5h/VOkxOF2Z1saPy0Zsxs5avets/iaiAJYznQFm5By/pamU31xWKL//epiF4OfUA2qTOc9PV6tCUjhO8wlZA==
@@ -6417,7 +6417,7 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-native@0.70.6", "@types/react-native@^0.70.6", "@types/react-native@~0.70.6":
+"@types/react-native@0.70.6", "@types/react-native@~0.70.6":
   version "0.70.6"
   resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.70.6.tgz#0d1bc3014111f64f13e0df643aec2ab03f021fdb"
   integrity sha512-ynQ2jj0km9d7dbnyKqVdQ6Nti7VQ8SLTA/KKkkS5+FnvGyvij2AOo1/xnkBR/jnSNXuzrvGVzw2n0VWfppmfKw==
@@ -12909,10 +12909,10 @@ expo-keep-awake@~11.0.1:
   resolved "https://registry.yarnpkg.com/expo-keep-awake/-/expo-keep-awake-11.0.1.tgz#ee354465892a94040ffe09901b85b469e7d54fb3"
   integrity sha512-44ZjgLE4lnce2d40Pv8xsjMVc6R5GvgHOwZfkLYtGmgYG9TYrEJeEj5UfSeweXPL3pBFhXKfFU8xpGYMaHdP0A==
 
-expo-linking@~3.2.3:
-  version "3.2.3"
-  resolved "https://registry.yarnpkg.com/expo-linking/-/expo-linking-3.2.3.tgz#7b493a7fea2aadafc88a42e2fc6a5a4ba6d47df9"
-  integrity sha512-PgiWCao9TecLOPdtWyiNSY+UQGAwdjFx4KbHd1YsF0KnM1CJ2idcaHpDRlQPWSNmDebUZYN461/dVtJi9b2krg==
+expo-linking@~3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/expo-linking/-/expo-linking-3.3.0.tgz#3860af9da374f0187db75036f353ca6fe9231a15"
+  integrity sha512-wXPzI2kijnql2L2F6i8zP1zINTkYlcRXyh1iV3P6Bt57v6yZiiniZBnb6grJVj19LOmluNs0PYrbX1ZsHBChCg==
   dependencies:
     "@types/qs" "^6.5.3"
     expo-constants "~14.0.0"
@@ -20702,7 +20702,7 @@ rechoir@^0.8.0:
   dependencies:
     resolve "^1.20.0"
 
-recoil@0.7.5, recoil@^0.7.5:
+recoil@^0.7.5:
   version "0.7.5"
   resolved "https://registry.yarnpkg.com/recoil/-/recoil-0.7.5.tgz#9a33a03350cfd99e08bdd5b73bfc8b8b9ee751b9"
   integrity sha512-GVShsj5+M/2GULWBs5WBJGcsNis/d3YvDiaKjYh3mLKXftjtmk9kfaQ8jwjoIXySCwn8/RhgJ4Sshwgzj2UpFA==
@@ -23151,13 +23151,6 @@ twrnc@^3.3.3:
   version "3.3.3"
   resolved "https://registry.yarnpkg.com/twrnc/-/twrnc-3.3.3.tgz#0d6dbb3d3d89e7d68458414371538a1d7b2fd794"
   integrity sha512-kVak8PwvQe1NwVwgXboYdCrKkfoxsZGHSHbJ4oifWBjxDHbrazBIBszU5uICUV90uCUIrpEXkaYqg3TVbkonLw==
-  dependencies:
-    tailwindcss ">=2.0.0"
-
-twrnc@^3.4.1:
-  version "3.4.1"
-  resolved "https://registry.yarnpkg.com/twrnc/-/twrnc-3.4.1.tgz#0bdd3f7f507565eb9ba380b1818e3bcc309c4ff8"
-  integrity sha512-sx06LpxIE11siE9mlK7qsXeNE9Hk0dU1ACEQztgdR0/V/kDm+U9XJ1L0ibtvqEstX8R5o1NzKrpHPewgvCn5ZA==
   dependencies:
     tailwindcss ">=2.0.0"
 

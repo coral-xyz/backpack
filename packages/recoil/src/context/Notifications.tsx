@@ -1,5 +1,9 @@
 import React, { useEffect } from "react";
-import type {   Blockchain,FEATURE_GATES_MAP, Notification } from "@coral-xyz/common";
+import type {
+  Blockchain,
+  FEATURE_GATES_MAP,
+  Notification,
+} from "@coral-xyz/common";
 import {
   BackgroundSolanaConnection,
   CHANNEL_POPUP_NOTIFICATIONS,

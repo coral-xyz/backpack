@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from "react";
-import type {
-  Blockchain} from "@coral-xyz/common";
-import {
-  formatUSD,
-  proxyImageUrl,
-  toTitleCase,
-} from "@coral-xyz/common";
+import type { Blockchain } from "@coral-xyz/common";
+import { formatUSD, proxyImageUrl, toTitleCase } from "@coral-xyz/common";
 import { isAggregateWallets, useBlockchainLogo } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
