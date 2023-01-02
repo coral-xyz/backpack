@@ -53,34 +53,32 @@ export const nftCollections = atomFamily<
       let timeout;
       getPromise(allWallets).then((_allWallets) => {
         const pollLocalData = async (isInitial?: boolean) => {
-          if (publicKey) {
-            const wallet = _allWallets.find((w) => w.publicKey === publicKey);
-            if (!wallet) {
-              throw new Error("invariant violation");
+          const wallet = _allWallets.find((w) => w.publicKey === publicKey);
+          if (!wallet) {
+            throw new Error("invariant violation");
+          }
+          try {
+            const [collection, currentValue] = await Promise.all([
+              getPromise(
+                wallet.blockchain === Blockchain.SOLANA
+                  ? solanaNftCollections({ publicKey, connectionUrl })
+                  : ethereumNftCollections({ publicKey, connectionUrl })
+              ),
+              isInitial
+                ? null
+                : getPromise(nftCollections({ publicKey, connectionUrl })),
+            ]);
+            const newValue = {
+              collection,
+              blockchain: wallet.blockchain,
+              publicKey,
+            };
+            if (JSON.stringify(newValue) !== JSON.stringify(currentValue)) {
+              setSelf(newValue);
             }
-            try {
-              const [collection, currentValue] = await Promise.all([
-                getPromise(
-                  wallet.blockchain === Blockchain.SOLANA
-                    ? solanaNftCollections({ publicKey, connectionUrl })
-                    : ethereumNftCollections({ publicKey, connectionUrl })
-                ),
-                isInitial
-                  ? null
-                  : getPromise(nftCollections({ publicKey, connectionUrl })),
-              ]);
-              const newValue = {
-                collection,
-                blockchain: wallet.blockchain,
-                publicKey,
-              };
-              if (JSON.stringify(newValue) !== JSON.stringify(currentValue)) {
-                setSelf(newValue);
-              }
-            } catch (e) {
-              // ensure polling continues even on error.
-              console.error(e);
-            }
+          } catch (e) {
+            // ensure polling continues even on error.
+            console.error(e);
           }
           timeout = setTimeout(
             () => requestAnimationFrame(() => pollLocalData()),
