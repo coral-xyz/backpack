@@ -12,7 +12,16 @@
       "packages/blockchains/*",
       "web"
     ],
-    "nohoist": ["examples/**", "packages/app-mobile/**"]
+    "nohoist": [
+      "**/react-native",
+      "**/react-native/**",
+      "**/react-native-scripts",
+      "**/react-native-scripts/**",
+      "**/expo",
+      "**/expo/**",
+      "**/jest-expo",
+      "**/jest-expo/**"
+    ]
   },
   "scripts": {
     "lint": "turbo run lint --filter=!@coral-xyz/app-mobile",
@@ -28,7 +37,7 @@
     "build:ext": "env-cmd turbo run build --filter=@coral-xyz/app-extension...",
     "start:mobile": "env-cmd --silent turbo run start --filter=@coral-xyz/app-mobile... --filter=@coral-xyz/background...",
     "build:mobile": "env-cmd --silent turbo run build --filter=@coral-xyz/app-mobile... --filter=@coral-xyz/background...",
-    "postinstall": "yarn-deduplicate --scopes @babel @mui @typescript-eslint @types @react-native-community @react-navigation && if [ -d \"packages/app-mobile\" ]; then patch-package && cd packages/app-mobile && patch-package ; fi"
+    "postinstall": "yarn-deduplicate --scopes @babel @mui @typescript-eslint @types @react-native-community @react-navigation"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.31.0",

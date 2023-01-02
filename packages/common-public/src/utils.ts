@@ -1,5 +1,6 @@
-import { ethers, BigNumber } from "ethers";
 import type { BigNumberish } from "@ethersproject/bignumber";
+import type { BigNumber } from "ethers";
+import { ethers } from "ethers";
 import { v1 } from "uuid";
 
 import { IMAGE_PROXY_URL } from "./constants";

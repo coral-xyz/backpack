@@ -1,5 +1,5 @@
 diff --git a/node_modules/react-native/scripts/react_native_pods_utils/script_phases.sh b/node_modules/react-native/scripts/react_native_pods_utils/script_phases.sh
-index 6c41ce1..f1f5b80 100755
+index 6c41ce1..08efd2a 100755
 --- a/node_modules/react-native/scripts/react_native_pods_utils/script_phases.sh
 +++ b/node_modules/react-native/scripts/react_native_pods_utils/script_phases.sh
 @@ -13,8 +13,6 @@ GENERATED_SCHEMA_FILE="$GENERATED_SRCS_DIR/schema.json"
@@ -32,9 +32,9 @@ index 6c41ce1..f1f5b80 100755
  }
  
 +find_codegen () {
-+    CODEGEN_CLI_PATH=$("$NODE_BINARY" --print "require('path').dirname(require.resolve('@react-native/codegen/package.json'))")
++    CODEGEN_CLI_PATH=$("$NODE_BINARY" --print "require('path').dirname(require.resolve('react-native-codegen/package.json'))")
 +    if ! [ -d "$CODEGEN_CLI_PATH" ]; then
-+        error "error: Could not determine @react-native/codegen location, using node module resolution. Try running 'yarn install' or 'npm install' in your project root."
++        error "error: Could not determine react-native-codegen location, using node module resolution. Try running 'yarn install' or 'npm install' in your project root."
 +    fi
 +}
 +

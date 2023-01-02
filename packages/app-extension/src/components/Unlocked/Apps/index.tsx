@@ -219,7 +219,7 @@ function _WalletXnftGrid({
   };
   return (
     <>
-      <BalancesTableHead blockchain={wallet.blockchain} wallet={wallet} />
+      <BalancesTableHead wallet={wallet} />
       {showContent && (
         <div
           style={{

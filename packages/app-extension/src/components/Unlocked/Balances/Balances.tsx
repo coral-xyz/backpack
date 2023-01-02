@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from "react";
-import type {
-  Blockchain} from "@coral-xyz/common";
-import {
-  formatUSD,
-  proxyImageUrl,
-  toTitleCase,
-} from "@coral-xyz/common";
+import type { Blockchain } from "@coral-xyz/common";
+import { formatUSD, proxyImageUrl, toTitleCase } from "@coral-xyz/common";
 import { isAggregateWallets, useBlockchainLogo } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
@@ -248,18 +243,16 @@ export function useBalancesContext() {
 }
 
 export function BalancesTableHead({
-  blockchain,
   disableToggle,
   wallet,
 }: {
-  blockchain: Blockchain;
-  wallet: { name: string; publicKey: string };
+  wallet: { name: string; publicKey: string; blockchain: Blockchain };
   disableToggle?: boolean;
 }) {
   const { showContent, setShowContent } = useBalancesContext();
   return (
     <_BalancesTableHead
-      blockchain={blockchain}
+      blockchain={wallet.blockchain}
       disableToggle={disableToggle}
       wallet={wallet}
       showContent={showContent}

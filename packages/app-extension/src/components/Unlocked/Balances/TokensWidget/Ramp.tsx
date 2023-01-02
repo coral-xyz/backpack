@@ -203,7 +203,7 @@ export function RampCard({
   const name = useWalletName(publicKey);
   return (
     <BalancesTable>
-      <BalancesTableHead blockchain={blockchain} wallet={{ name, publicKey }} />
+      <BalancesTableHead wallet={{ name, publicKey, blockchain }} />
       <BalancesTableContent>
         {RAMP_SUPPORTED_TOKENS[blockchain]
           .filter(

@@ -584,7 +584,7 @@ export function useIsValidAddress(
             return;
           }
         }
-        
+
         if (!pubkey) {
           // Solana address validation
           try {
