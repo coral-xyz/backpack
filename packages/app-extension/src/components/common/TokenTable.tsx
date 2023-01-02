@@ -133,7 +133,6 @@ export function TokenTables({
         }) => (
           <WalletTokenTable
             key={wallet.publicKey.toString()}
-            blockchain={wallet.blockchain}
             onClickRow={onClickRow}
             searchFilter={searchFilter}
             customFilter={customFilter}
@@ -147,22 +146,20 @@ export function TokenTables({
 }
 
 export function WalletTokenTable({
-  blockchain,
   onClickRow,
   tokenAccounts,
   wallet,
   searchFilter = "",
   customFilter = () => true,
 }: {
-  blockchain: Blockchain;
   onClickRow: (blockchain: Blockchain, token: Token, publicKey: string) => void;
-  wallet: { name: string; publicKey: string };
+  wallet: { name: string; publicKey: string; blockchain: Blockchain };
   tokenAccounts?: ReturnType<typeof useBlockchainTokensSorted>;
   searchFilter?: string;
   customFilter?: (token: Token) => boolean;
 }) {
+  const blockchain = wallet.blockchain;
   const connectionUrl = useBlockchainConnectionUrl(blockchain);
-
   const [_tokenAccounts, , isLoading] = tokenAccounts
     ? [tokenAccounts, "hasValue"]
     : useLoader(
@@ -206,7 +203,7 @@ export function WalletTokenTable({
 
   return (
     <BalancesTable style={tableStyle}>
-      <BalancesTableHead blockchain={blockchain} wallet={wallet} />
+      <BalancesTableHead wallet={wallet} />
       <BalancesTableContent style={useVirtualization ? { height: "100%" } : {}}>
         {isLoading ? (
           <SkeletonRows />

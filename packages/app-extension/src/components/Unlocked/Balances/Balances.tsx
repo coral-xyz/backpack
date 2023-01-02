@@ -243,18 +243,16 @@ export function useBalancesContext() {
 }
 
 export function BalancesTableHead({
-  blockchain,
   disableToggle,
   wallet,
 }: {
-  blockchain: Blockchain;
-  wallet: { name: string; publicKey: string };
+  wallet: { name: string; publicKey: string; blockchain: Blockchain };
   disableToggle?: boolean;
 }) {
   const { showContent, setShowContent } = useBalancesContext();
   return (
     <_BalancesTableHead
-      blockchain={blockchain}
+      blockchain={wallet.blockchain}
       disableToggle={disableToggle}
       wallet={wallet}
       showContent={showContent}
