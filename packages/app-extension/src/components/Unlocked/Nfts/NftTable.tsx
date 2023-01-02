@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Autosizer from "react-virtualized-auto-sizer";
 import { VariableSizeList } from "react-window";
 import type { Blockchain, NftCollection } from "@coral-xyz/common";
@@ -10,20 +10,23 @@ import {
 import { NAV_COMPONENT_NFT_CHAT } from "@coral-xyz/common/dist/esm/constants";
 import type { NftCollectionWithIds } from "@coral-xyz/common/src/types";
 import {
-  nftsByIds,
-  useActiveSolanaWallet,
+  useAllWallets,
+  useBlockchainConnectionUrl,
   useNavigation,
 } from "@coral-xyz/recoil";
 import { styled } from "@coral-xyz/themes";
 import { Skeleton } from "@mui/material";
-import { useRecoilValueLoadable } from "recoil";
 
 import { Scrollbar } from "../../common/Layout/Scrollbar";
-import { BlockchainHeader } from "../Settings/AvatarHeader/BlockchainHeader";
+import { _BalancesTableHead } from "../Balances/Balances";
 
 import { GridCard } from "./Common";
 
-type BlockchainCollections = [string, NftCollectionWithIds[] | null][];
+type BlockchainCollections = Array<{
+  publicKey: string;
+  blockchain: Blockchain;
+  collectionWithIds: NftCollectionWithIds[] | null;
+}>;
 type CollapsedCollections = boolean[];
 
 const ONE_COLLECTION_ID = "Dw74YSxTKVXsztPm3TmwbnfLK8KVaCZw69jVu4LE6uJe";
@@ -39,150 +42,6 @@ type collapseSingleCollection = (
   blockchainCollectionIndex: number,
   isCollapsed: boolean
 ) => void;
-
-const getNumberOfRowsInCollection = (
-  items: NftCollectionWithIds[] | null,
-  itemsPerRow: number,
-  isCollapsed: boolean
-) => {
-  let numberOfRowsInCollection = 0;
-
-  if (items) {
-    numberOfRowsInCollection = Math.ceil(items.length! / itemsPerRow);
-  } else {
-    // loading: when items == null -> show 1 item;
-    numberOfRowsInCollection = 1;
-  }
-
-  if (isCollapsed) {
-    numberOfRowsInCollection = -1;
-  }
-  return numberOfRowsInCollection;
-};
-
-const getItemForIndex = (
-  index: number,
-  blockchainCollections: BlockchainCollections,
-  collapsedCollections: CollapsedCollections,
-  collapseSingleCollection: collapseSingleCollection,
-  itemsPerRow: number,
-  prependItems: Row[]
-): Row | null => {
-  if (index < prependItems.length) {
-    return prependItems[index];
-  }
-  index = index - prependItems.length;
-
-  let result = 0;
-  const blockchainIndex = blockchainCollections.findIndex((collection, i) => {
-    const items = collection[1];
-    const isCollapsed = collapsedCollections[i];
-
-    const numberOfRowsInCollection = getNumberOfRowsInCollection(
-      items,
-      itemsPerRow,
-      isCollapsed
-    );
-
-    if (numberOfRowsInCollection === 0) {
-      return false;
-    }
-
-    if (result + numberOfRowsInCollection + 2 <= index) {
-      result += numberOfRowsInCollection + 2; // rows + header & footer
-      return false;
-    } else {
-      return true;
-    }
-  });
-
-  if (blockchainIndex < 0) {
-    return null;
-  }
-
-  const isCollapsed = collapsedCollections[blockchainIndex];
-  const collection = blockchainCollections[blockchainIndex];
-  const collectionItems = collection[1];
-
-  const numberOfRowsInCollection = getNumberOfRowsInCollection(
-    collectionItems,
-    itemsPerRow,
-    isCollapsed
-  );
-
-  const wrappedCollectionGroupIndex = index - result;
-  const collectionGroupIndex = wrappedCollectionGroupIndex - 1; // remove header;
-
-  if (wrappedCollectionGroupIndex === 0) {
-    return {
-      height: isCollapsed ? 52 : 36,
-      key: `header${blockchainIndex}`,
-      component: (
-        <HeaderRow
-          listIndex={index}
-          blockchainIndex={blockchainIndex}
-          blockchainCollections={blockchainCollections}
-          isCollapsed={collapsedCollections[blockchainIndex]}
-          collapseSingleCollection={collapseSingleCollection}
-        />
-      ),
-    };
-  }
-  if (collectionGroupIndex >= numberOfRowsInCollection) {
-    return {
-      height: 24,
-      key: `footer${blockchainIndex}`,
-      component: <FooterRow />,
-    };
-  }
-  const startIndex = collectionGroupIndex * itemsPerRow;
-
-  if (!collectionItems) {
-    return {
-      height: 122,
-      key: `loading${blockchainIndex}${itemsPerRow}`,
-      component: <LoadingRow itemsPerRow={itemsPerRow} />,
-    };
-  }
-
-  return {
-    height: 165.5,
-    key: `items${blockchainIndex}${startIndex}${itemsPerRow}`,
-    component: (
-      <ItemRow
-        itemStartIndex={startIndex}
-        blockchainIndex={blockchainIndex}
-        blockchainCollections={blockchainCollections}
-        itemsPerRow={itemsPerRow}
-      />
-    ),
-  };
-};
-
-const getNumberOfItems = (
-  collections: BlockchainCollections,
-  collapsedCollections: CollapsedCollections,
-  itemsPerRow: number,
-  prependItems: Row[]
-) => {
-  const count = prependItems.length;
-  return collections.reduce((count, collection, i) => {
-    const items = collection[1];
-    const isCollapsed = collapsedCollections[i];
-
-    // loading when items == null -> show 1 item;
-    const numberOfRowsInCollection = getNumberOfRowsInCollection(
-      items,
-      itemsPerRow,
-      isCollapsed
-    );
-
-    if (numberOfRowsInCollection == 0) {
-      return count;
-    }
-    return count + numberOfRowsInCollection + 2;
-  }, count);
-};
 
 export function NftTable({
   blockchainCollections,
@@ -284,7 +143,7 @@ export function NftTable({
   );
 }
 
-const HeaderRow = function ({
+const HeaderRow = function HeaderRow({
   listIndex,
   blockchainIndex,
   blockchainCollections,
@@ -297,16 +156,20 @@ const HeaderRow = function ({
   isCollapsed: boolean;
   collapseSingleCollection: collapseSingleCollection;
 }) {
-  const [blockchain] = blockchainCollections[blockchainIndex];
+  const c = blockchainCollections[blockchainIndex];
+  const blockchain = c.blockchain;
+  const wallets = useAllWallets();
+  const wallet = wallets.find((wallet) => wallet.publicKey === c.publicKey);
   return (
     <>
       <CustomCard top={true} bottom={isCollapsed}>
-        <BlockchainHeader
+        <_BalancesTableHead
+          blockchain={blockchain as Blockchain}
+          wallet={wallet!}
+          showContent={!isCollapsed}
           setShowContent={(isCollapsed) => {
             collapseSingleCollection(listIndex, blockchainIndex, !isCollapsed);
           }}
-          showContent={!isCollapsed}
-          blockchain={blockchain as Blockchain}
         />
       </CustomCard>
     </>
@@ -336,8 +199,10 @@ const LoadingRow = function ({ itemsPerRow }: { itemsPerRow: number }) {
               style={{
                 position: "relative",
                 width: "153.5px",
-                height: "110px",
+                height: "153.5px",
                 margin: "0px 6px",
+                borderRadius: "8px",
+                overflow: "hidden",
               }}
             >
               <Skeleton
@@ -367,7 +232,10 @@ const ItemRow = function ({
   itemsPerRow: number;
   blockchainCollections: BlockchainCollections;
 }) {
-  const collectionItems = blockchainCollections[blockchainIndex][1]!;
+  const c = blockchainCollections[blockchainIndex];
+  const collectionItems = c.collectionWithIds!;
+
+  const connectionUrl = useBlockchainConnectionUrl(c.blockchain);
 
   const numberOfItems =
     itemStartIndex + itemsPerRow <= collectionItems.length
@@ -378,6 +246,7 @@ const ItemRow = function ({
   for (let i = itemStartIndex; i < itemStartIndex + numberOfItems; i++) {
     items[i - itemStartIndex] = collectionItems[i];
   }
+
   return (
     <CustomCard top={false} bottom={false}>
       <div
@@ -391,6 +260,7 @@ const ItemRow = function ({
         {items.map((collection) => {
           return (
             <div
+              key={collection ? collection.id : null}
               style={{
                 position: "relative",
                 width: "153.5px",
@@ -399,7 +269,13 @@ const ItemRow = function ({
                 margin: "0px 6px",
               }}
             >
-              {collection && <NftCollectionCard collection={collection} />}
+              {collection && (
+                <NftCollectionCard
+                  publicKey={c.publicKey}
+                  connectionUrl={connectionUrl}
+                  collection={collection}
+                />
+              )}
             </div>
           );
         })}
@@ -439,19 +315,17 @@ const CustomCard = styled("div")(
 );
 
 function NftCollectionCard({
+  publicKey,
+  connectionUrl,
   collection,
 }: {
+  publicKey: string;
+  connectionUrl: string;
   collection: NftCollectionWithIds;
 }) {
-  const { contents, state } = useRecoilValueLoadable(
-    nftsByIds(collection.items)
-  );
-  const items = (state === "hasValue" && contents) || null;
-  const { publicKey } = useActiveSolanaWallet();
-
   const { push } = useNavigation();
   // Display the first NFT in the collection as the thumbnail in the grid
-  const collectionDisplayNft = items?.find((nft) => !!nft) ?? null;
+  const collectionDisplayNft = collection.items?.find((nft) => !!nft) ?? null;
 
   useEffect(() => {
     if (collection.metadataCollectionId !== ONE_COLLECTION_ID) {
@@ -499,6 +373,8 @@ function NftCollectionCard({
         componentId: NAV_COMPONENT_NFT_DETAIL,
         componentProps: {
           nftId: collectionDisplayNft.id,
+          publicKey,
+          connectionUrl,
         },
       });
     } else {
@@ -508,6 +384,8 @@ function NftCollectionCard({
         componentId: NAV_COMPONENT_NFT_COLLECTION,
         componentProps: {
           id: collection.id,
+          publicKey,
+          connectionUrl,
         },
       });
     }
@@ -523,3 +401,147 @@ function NftCollectionCard({
     />
   );
 }
+
+const getNumberOfRowsInCollection = (
+  items: NftCollectionWithIds[] | null,
+  itemsPerRow: number,
+  isCollapsed: boolean
+) => {
+  let numberOfRowsInCollection = 0;
+
+  if (items) {
+    numberOfRowsInCollection = Math.ceil(items.length! / itemsPerRow);
+  } else {
+    // loading: when items == null -> show 1 item;
+    numberOfRowsInCollection = 1;
+  }
+
+  if (isCollapsed) {
+    numberOfRowsInCollection = -1;
+  }
+  return numberOfRowsInCollection;
+};
+
+const getItemForIndex = (
+  index: number,
+  blockchainCollections: BlockchainCollections,
+  collapsedCollections: CollapsedCollections,
+  collapseSingleCollection: collapseSingleCollection,
+  itemsPerRow: number,
+  prependItems: Row[]
+): Row | null => {
+  if (index < prependItems.length) {
+    return prependItems[index];
+  }
+  index = index - prependItems.length;
+
+  let result = 0;
+  const blockchainIndex = blockchainCollections.findIndex((collection, i) => {
+    const items = collection.collectionWithIds;
+    const isCollapsed = collapsedCollections[i];
+
+    const numberOfRowsInCollection = getNumberOfRowsInCollection(
+      items,
+      itemsPerRow,
+      isCollapsed
+    );
+
+    if (numberOfRowsInCollection === 0) {
+      return false;
+    }
+
+    if (result + numberOfRowsInCollection + 2 <= index) {
+      result += numberOfRowsInCollection + 2; // rows + header & footer
+      return false;
+    } else {
+      return true;
+    }
+  });
+
+  if (blockchainIndex < 0) {
+    return null;
+  }
+
+  const isCollapsed = collapsedCollections[blockchainIndex];
+  const collection = blockchainCollections[blockchainIndex];
+  const collectionItems = collection ? collection.collectionWithIds : null;
+
+  const numberOfRowsInCollection = getNumberOfRowsInCollection(
+    collectionItems,
+    itemsPerRow,
+    isCollapsed
+  );
+
+  const wrappedCollectionGroupIndex = index - result;
+  const collectionGroupIndex = wrappedCollectionGroupIndex - 1; // remove header;
+
+  if (wrappedCollectionGroupIndex === 0) {
+    return {
+      height: isCollapsed ? 52 : 36,
+      key: `header${blockchainIndex}`,
+      component: (
+        <HeaderRow
+          listIndex={index}
+          blockchainIndex={blockchainIndex}
+          blockchainCollections={blockchainCollections}
+          isCollapsed={collapsedCollections[blockchainIndex]}
+          collapseSingleCollection={collapseSingleCollection}
+        />
+      ),
+    };
+  }
+  if (collectionGroupIndex >= numberOfRowsInCollection) {
+    return {
+      height: 24,
+      key: `footer${blockchainIndex}`,
+      component: <FooterRow />,
+    };
+  }
+  const startIndex = collectionGroupIndex * itemsPerRow;
+
+  if (!collectionItems) {
+    return {
+      height: 165.5,
+      key: `loading${blockchainIndex}${itemsPerRow}`,
+      component: <LoadingRow itemsPerRow={itemsPerRow} />,
+    };
+  }
+
+  return {
+    height: 165.5,
+    key: `items${blockchainIndex}${startIndex}${itemsPerRow}`,
+    component: (
+      <ItemRow
+        itemStartIndex={startIndex}
+        blockchainIndex={blockchainIndex}
+        blockchainCollections={blockchainCollections}
+        itemsPerRow={itemsPerRow}
+      />
+    ),
+  };
+};
+
+const getNumberOfItems = (
+  collections: BlockchainCollections,
+  collapsedCollections: CollapsedCollections,
+  itemsPerRow: number,
+  prependItems: Row[]
+) => {
+  const count = prependItems.length;
+  return collections.reduce((count, collection, i) => {
+    const items = collection.collectionWithIds;
+    const isCollapsed = collapsedCollections[i];
+
+    // loading when items == null -> show 1 item;
+    const numberOfRowsInCollection = getNumberOfRowsInCollection(
+      items,
+      itemsPerRow,
+      isCollapsed
+    );
+
+    if (numberOfRowsInCollection == 0) {
+      return count;
+    }
+    return count + numberOfRowsInCollection + 2;
+  }, count);
+};

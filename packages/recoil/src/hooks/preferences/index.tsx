@@ -36,6 +36,10 @@ export function useDeveloperMode(): boolean {
   return useRecoilValue(atoms.isDeveloperMode)!;
 }
 
+export function useIsAggregateWallets(): boolean {
+  return useRecoilValue(atoms.isAggregateWallets);
+}
+
 export function useConnectionUrls() {
   return useRecoilValue(atoms.connectionUrls);
 }

@@ -1,5 +1,6 @@
-import { ethers, BigNumber } from "ethers";
 import type { BigNumberish } from "@ethersproject/bignumber";
+import type { BigNumber } from "ethers";
+import { ethers } from "ethers";
 import { v1 } from "uuid";
 
 import { IMAGE_PROXY_URL } from "./constants";
@@ -57,6 +58,9 @@ export function isServiceWorker(): boolean {
  * SVG sanitization, etc.
  */
 export function externalResourceUri(uri: string): string {
+  if (uri) {
+    uri = uri.replace(/\0/g, "");
+  }
   if (uri && uri.startsWith("ipfs://")) {
     return uri.replace("ipfs://", "https://ipfs.io/ipfs/");
   }

@@ -12,7 +12,6 @@ export * from "./useSolanaCommitment";
 export * from "./useSolanaConnection";
 export * from "./useSolanaExplorer";
 export * from "./useSplTokenRegistry";
-export * from "./useXnfts";
 
 export function useSolanaTokenMint({
   publicKey,

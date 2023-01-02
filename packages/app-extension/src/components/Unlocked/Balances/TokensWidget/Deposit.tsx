@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import { Blockchain } from "@coral-xyz/common";
 import { SecondaryButton } from "@coral-xyz/react-common";
-import { useActiveWallets, useBlockchainLogo } from "@coral-xyz/recoil";
+import {
+  useActiveWallets,
+  useAllWalletsDisplayed,
+  useBlockchainLogo,
+  useWalletName,
+} from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import QrCodeIcon from "@mui/icons-material/QrCode";
@@ -13,16 +18,23 @@ import { useNavStack } from "../../../common/Layout/NavStack";
 import { WithCopyTooltip } from "../../../common/WithCopyTooltip";
 
 export function Deposit({ ...props }: any) {
-  if (props.blockchain) {
+  const activeWallets = useAllWalletsDisplayed();
+
+  if (activeWallets.length === 1) {
+    const { blockchain, publicKey } = activeWallets[0];
+    return <_Deposit blockchain={blockchain} publicKey={publicKey} />;
+  }
+
+  if (props.blockchain && props.publicKey) {
     return <_Deposit {...props} />;
   }
-  return <DepositMultichain {...props} />;
+  return <DepositMultiWallet {...props} />;
 }
 
-function DepositMultichain() {
+function DepositMultiWallet() {
   const nav = useNavStack();
   const { close } = useDrawerContext();
-  const activeWallets = useActiveWallets();
+  const activeWallets = useAllWalletsDisplayed();
 
   useEffect(() => {
     nav.setStyle({
@@ -32,7 +44,7 @@ function DepositMultichain() {
   return (
     <div
       style={{
-        height: "100%",
+        height: activeWallets.length <= 3 ? "100%" : undefined, // Hack. We do this to force the close button to the bottom.
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
@@ -40,11 +52,7 @@ function DepositMultichain() {
         paddingBottom: "16px",
       }}
     >
-      <div
-        style={{
-          flex: 1,
-        }}
-      >
+      <div>
         {activeWallets.map(({ blockchain, name, publicKey }) => (
           <BlockchainDepositCard
             key={blockchain}
@@ -54,6 +62,7 @@ function DepositMultichain() {
           />
         ))}
       </div>
+      <div style={{ flex: 1 }} />
       <SecondaryButton label="Close" onClick={() => close()} />
     </div>
   );
@@ -362,30 +371,27 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-export function _Deposit({ ...props }: any) {
+export function _Deposit({
+  blockchain,
+  publicKey,
+}: {
+  blockchain: Blockchain;
+  publicKey: string;
+}) {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const activeWallets = useActiveWallets();
   const [tooltipOpen, setTooltipOpen] = useState(false);
-  const activeWallet = activeWallets.find(
-    (w) => w.blockchain === props.blockchain
-  );
-
-  if (!activeWallet) {
-    return <></>;
-  }
+  const name = useWalletName(publicKey);
 
   const walletDisplay =
-    activeWallet.publicKey.toString().slice(0, 12) +
+    publicKey.toString().slice(0, 12) +
     "..." +
-    activeWallet.publicKey
-      .toString()
-      .slice(activeWallet.publicKey.toString().length - 12);
+    publicKey.toString().slice(publicKey.toString().length - 12);
 
   const onCopy = () => {
     setTooltipOpen(true);
     setTimeout(() => setTooltipOpen(false), 1000);
-    navigator.clipboard.writeText(activeWallet.publicKey.toString());
+    navigator.clipboard.writeText(publicKey.toString());
   };
 
   return (
@@ -406,7 +412,7 @@ export function _Deposit({ ...props }: any) {
         }}
       >
         <QrCode
-          data={activeWallet.publicKey.toString()}
+          data={publicKey.toString()}
           style={{ width: "180px", height: "180px", padding: "7.83px" }}
         />
       </div>
@@ -419,7 +425,7 @@ export function _Deposit({ ...props }: any) {
             color: theme.custom.colors.fontColor,
           }}
         >
-          {activeWallet.name}
+          {name}
         </Typography>
         <div
           style={{
@@ -458,10 +464,10 @@ export function _Deposit({ ...props }: any) {
       </div>
       <div>
         <Typography className={classes.subtext}>
-          {activeWallet.blockchain === Blockchain.SOLANA && (
+          {blockchain === Blockchain.SOLANA && (
             <>This address can only receive SOL and SPL tokens on Solana.</>
           )}
-          {activeWallet.blockchain === Blockchain.ETHEREUM && (
+          {blockchain === Blockchain.ETHEREUM && (
             <>This address can only receive ETH and ERC20 tokens on Ethereum.</>
           )}
         </Typography>

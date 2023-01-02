@@ -227,7 +227,15 @@ function QueryApproveTransaction() {
               result: {
                 didApprove: true,
                 transaction: sanitizedTxStr,
-                feeConfig,
+                feeConfig: !feeConfig
+                  ? undefined
+                  : {
+                      ...feeConfig,
+                      config: {
+                        ...feeConfig.config,
+                        priorityFee: feeConfig.config.priorityFee.toString(),
+                      },
+                    },
               },
             });
           }}

@@ -11,7 +11,15 @@ import { useRecoilValueLoadable } from "recoil";
 
 import { GridCard } from "./Common";
 
-export function NftsCollection({ id }: { id: string }) {
+export function NftsCollection({
+  publicKey,
+  connectionUrl,
+  id,
+}: {
+  publicKey: string;
+  connectionUrl: string;
+  id: string;
+}) {
   return (
     <div
       style={{
@@ -19,17 +27,26 @@ export function NftsCollection({ id }: { id: string }) {
         paddingRight: "16px",
       }}
     >
-      <_Grid id={id} />
+      <_Grid publicKey={publicKey} connectionUrl={connectionUrl} id={id} />
     </div>
   );
 }
 
-function _Grid({ id }: { id: string }) {
+function _Grid({
+  publicKey,
+  connectionUrl,
+  id,
+}: {
+  publicKey: string;
+  connectionUrl: string;
+  id: string;
+}) {
   const { contents, state } = useRecoilValueLoadable<
     UnwrapRecoilValue<typeof nftCollectionsWithIds>
   >(nftCollectionsWithIds);
-  const collections = (state === "hasValue" && contents) || null;
-  const collection = Object.values(collections ?? {})
+  const c = (state === "hasValue" && contents) || null;
+  const collection = Object.values(c ?? {})
+    .map((c) => c.collectionWithIds!)
     .flat()
     .find((c: NftCollectionWithIds | null) => c?.id === id);
 
@@ -42,17 +59,35 @@ function _Grid({ id }: { id: string }) {
 
   return (
     <Grid container spacing={{ xs: 2, ms: 2, md: 2, lg: 2 }}>
-      {collection.items.map((nftId) => (
-        <Grid item xs={6} sm={4} md={3} lg={2} key={nftId}>
-          <NftCard nftId={nftId} />
+      {collection.items.map((nft) => (
+        <Grid item xs={6} sm={4} md={3} lg={2} key={nft.id}>
+          <NftCard
+            publicKey={publicKey}
+            connectionUrl={connectionUrl}
+            nftId={nft.id}
+          />
         </Grid>
       ))}
     </Grid>
   );
 }
 
-function NftCard({ nftId }: { nftId: string }) {
-  const { contents, state } = useRecoilValueLoadable(nftById(nftId));
+function NftCard({
+  publicKey,
+  connectionUrl,
+  nftId,
+}: {
+  publicKey: string;
+  connectionUrl: string;
+  nftId: string;
+}) {
+  const { contents, state } = useRecoilValueLoadable(
+    nftById({
+      publicKey,
+      connectionUrl,
+      nftId,
+    })
+  );
   const nft = (state === "hasValue" && contents) || null;
 
   const { push } = useNavigation();
@@ -62,6 +97,8 @@ function NftCard({ nftId }: { nftId: string }) {
       componentId: NAV_COMPONENT_NFT_DETAIL,
       componentProps: {
         nftId,
+        publicKey,
+        connectionUrl,
       },
     });
   };

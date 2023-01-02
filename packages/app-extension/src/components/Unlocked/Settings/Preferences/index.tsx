@@ -1,8 +1,10 @@
 import { useEffect } from "react";
 import {
   BACKPACK_CONFIG_VERSION,
+  BACKPACK_FEATURE_AGGREGATE_WALLETS,
   BACKPACK_FEATURE_LIGHT_MODE,
   Blockchain,
+  UI_RPC_METHOD_SETTINGS_AGGREGATE_WALLETS_UPDATE,
   UI_RPC_METHOD_SETTINGS_DARK_MODE_UPDATE,
   UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_UPDATE,
 } from "@coral-xyz/common";
@@ -11,6 +13,7 @@ import {
   useBlockchainLogo,
   useDarkMode,
   useDeveloperMode,
+  useIsAggregateWallets,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Switch, Typography } from "@mui/material";
@@ -24,6 +27,7 @@ export function Preferences() {
   const background = useBackgroundClient();
   const isDarkMode = useDarkMode();
   const isDeveloperMode = useDeveloperMode();
+  const isAggregateWallets = useIsAggregateWallets();
 
   const onDarkModeSwitch = async (isDarkMode: boolean) => {
     await background.request({
@@ -36,6 +40,13 @@ export function Preferences() {
     await background.request({
       method: UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_UPDATE,
       params: [isDeveloperMode],
+    });
+  };
+
+  const onAggregateWalletsSwitch = async (isAggregateWallets: boolean) => {
+    await background.request({
+      method: UI_RPC_METHOD_SETTINGS_AGGREGATE_WALLETS_UPDATE,
+      params: [isAggregateWallets],
     });
   };
 
@@ -72,6 +83,18 @@ export function Preferences() {
       />
     ),
   };
+
+  if (BACKPACK_FEATURE_AGGREGATE_WALLETS) {
+    menuItems["Aggregate Wallets"] = {
+      onClick: () => onAggregateWalletsSwitch(!isAggregateWallets),
+      detail: (
+        <ModeSwitch
+          enabled={isAggregateWallets}
+          onSwitch={(enabled) => onAggregateWalletsSwitch(enabled)}
+        />
+      ),
+    };
+  }
 
   const blockchainMenuItems: any = {
     Solana: {

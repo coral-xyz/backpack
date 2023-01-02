@@ -13,8 +13,7 @@ import {
   solanaFungibleTokenBalance,
   solanaFungibleTokenNativeBalance,
 } from "./solana/token";
-import { enabledBlockchains } from "./preferences";
-import { ethereumPublicKey, solanaPublicKey } from "./wallet";
+import { allWalletsDisplayed } from "./wallet";
 
 /**
  * Return token balances sorted by usd notional balances.
@@ -92,7 +91,7 @@ export const blockchainTokenNativeData = selectorFamily<
             solanaFungibleTokenNativeBalance({ tokenAddress, publicKey })
           );
         case Blockchain.ETHEREUM:
-          return get(ethereumTokenNativeBalance(tokenAddress));
+          return get(ethereumTokenNativeBalance({ tokenAddress, publicKey }));
         default:
           throw new Error(`unsupported blockchain: ${blockchain}`);
       }
@@ -114,7 +113,7 @@ export const blockchainTokenData = selectorFamily<
         case Blockchain.SOLANA:
           return get(solanaFungibleTokenBalance({ publicKey, tokenAddress }));
         case Blockchain.ETHEREUM:
-          return get(ethereumTokenBalance(tokenAddress));
+          return get(ethereumTokenBalance({ publicKey, tokenAddress }));
         default:
           throw new Error(`unsupported blockchain: ${blockchain}`);
       }
@@ -125,7 +124,7 @@ export const blockchainTokenData = selectorFamily<
  * Selects a blockchain token list based on a network string.
  */
 export const blockchainTokenAddresses = selectorFamily<
-  any,
+  Array<string>,
   { publicKey: string; blockchain: Blockchain }
 >({
   key: "blockchainTokenAddresses",
@@ -179,20 +178,20 @@ export const blockchainTotalBalance = selectorFamily<
 /**
  * Total asset balance in USD, change in USD, and percent change for all blockchains.
  */
-export const totalBalance = selector({
+export const totalBalance = selector<{
+  totalBalance: number;
+  totalChange: number;
+  percentChange?: number;
+}>({
   key: "totalBalance",
   get: ({ get }) => {
-    const totals = get(enabledBlockchains).reduce(
+    const wallets = get(allWalletsDisplayed);
+    const totals = wallets.reduce(
       (
         acc: { totalBalance: number; totalChange: number },
-        blockchain: Blockchain
+        wallet: { publicKey: string; blockchain: Blockchain }
       ) => {
-        let publicKey: string;
-        if (blockchain === Blockchain.SOLANA) {
-          publicKey = get(solanaPublicKey)!;
-        } else {
-          publicKey = get(ethereumPublicKey)!;
-        }
+        const { publicKey, blockchain } = wallet;
         const total = get(blockchainTotalBalance({ publicKey, blockchain }));
         return {
           totalBalance: acc.totalBalance + total.totalBalance,

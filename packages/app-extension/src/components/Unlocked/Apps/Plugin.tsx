@@ -1,6 +1,7 @@
 import type { Plugin } from "@coral-xyz/common";
 import { MoreIcon, PowerIcon } from "@coral-xyz/react-common";
 import {
+  useActiveSolanaWallet,
   useFreshPlugin,
   usePlugins,
   xnftPreference as xnftPreferenceAtom,
@@ -21,7 +22,8 @@ export function PluginApp({
   xnftAddress: string;
   closePlugin: () => void;
 }) {
-  const plugins = usePlugins();
+  const { publicKey } = useActiveSolanaWallet(); // TODO: aggregate wallet considerations.
+  const plugins = usePlugins(publicKey);
 
   if (!plugins) {
     return null;

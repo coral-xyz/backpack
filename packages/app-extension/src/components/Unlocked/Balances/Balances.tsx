@@ -1,8 +1,11 @@
-import React, { useState } from "react";
-import { formatUSD, proxyImageUrl } from "@coral-xyz/common";
-import { styles } from "@coral-xyz/themes";
+import React, { useEffect, useState } from "react";
+import type { Blockchain } from "@coral-xyz/common";
+import { formatUSD, proxyImageUrl, toTitleCase } from "@coral-xyz/common";
+import { isAggregateWallets, useBlockchainLogo } from "@coral-xyz/recoil";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import {
+  Button as MuiButton,
   Card,
   CardContent,
   CardHeader,
@@ -11,9 +14,10 @@ import {
   ListItemIcon,
   Typography,
 } from "@mui/material";
+import { useRecoilValue } from "recoil";
 
-import { Button } from "../../../plugin";
 import { UNKNOWN_ICON_SRC } from "../../common/Icon";
+import { WalletDrawerButton } from "../../common/WalletList";
 
 const useStyles = styles((theme) => ({
   blockchainLogo: {
@@ -40,11 +44,6 @@ const useStyles = styles((theme) => ({
     paddingRight: "16px",
     height: "36px",
     width: "100%",
-  },
-  hover: {
-    "&:hover": {
-      cursor: "pointer",
-    },
   },
   cardHeaderTitle: {
     fontWeight: 500,
@@ -215,7 +214,7 @@ export function BalancesTable({ style, children }: any) {
   );
 }
 
-function BalancesTableProvider(props: any) {
+export function BalancesTableProvider(props: any) {
   const [showContent, setShowContent] = useState(true);
   return (
     <_BalancesTableContext.Provider
@@ -243,21 +242,55 @@ export function useBalancesContext() {
   return ctx;
 }
 
-export function BalancesTableHead({ props, style }: any) {
-  const { subtitle, title, iconUrl, disableToggle } = props;
-  const classes = useStyles();
+export function BalancesTableHead({
+  blockchain,
+  disableToggle,
+  wallet,
+}: {
+  blockchain: Blockchain;
+  wallet: { name: string; publicKey: string };
+  disableToggle?: boolean;
+}) {
   const { showContent, setShowContent } = useBalancesContext();
   return (
-    <Button
+    <_BalancesTableHead
+      blockchain={blockchain}
+      disableToggle={disableToggle}
+      wallet={wallet}
+      showContent={showContent}
+      setShowContent={setShowContent}
+    />
+  );
+}
+
+export function _BalancesTableHead({
+  blockchain,
+  disableToggle,
+  wallet,
+  showContent,
+  setShowContent,
+}: {
+  blockchain: Blockchain;
+  wallet: { name: string; publicKey: string };
+  disableToggle?: boolean;
+  showContent: boolean;
+  setShowContent: (b: boolean) => void;
+}) {
+  const classes = useStyles();
+  const theme = useCustomTheme();
+  const title = toTitleCase(blockchain);
+  const iconUrl = useBlockchainLogo(blockchain);
+  const _isAggregateWallets = useRecoilValue(isAggregateWallets);
+  return (
+    <div
       style={{
         width: "100%",
         borderRadius: 0,
         padding: 0,
-        ...style,
+        backgroundColor: theme.custom.colors.nav,
       }}
     >
       <CardHeader
-        onClick={() => !disableToggle && setShowContent(!showContent)}
         avatar={
           iconUrl ? (
             <ProxyImage className={classes.blockchainLogo} src={iconUrl} />
@@ -273,6 +306,7 @@ export function BalancesTableHead({ props, style }: any) {
             <div
               style={{
                 display: "flex",
+                width: "100%",
               }}
             >
               <Typography
@@ -287,29 +321,36 @@ export function BalancesTableHead({ props, style }: any) {
               >
                 {title}
               </Typography>
-              {subtitle}
+              <WalletDrawerButton wallet={wallet} />
             </div>
-            {!disableToggle && (
-              <>
+            {_isAggregateWallets && (
+              <MuiButton
+                disableRipple
+                style={{
+                  width: "18px",
+                  minWidth: "18px",
+                  marginLeft: "8px",
+                  padding: 0,
+                }}
+                onClick={() => !disableToggle && setShowContent(!showContent)}
+              >
                 {showContent ? (
                   <ExpandLess className={classes.expand} />
                 ) : (
                   <ExpandMore className={classes.expand} />
                 )}
-              </>
+              </MuiButton>
             )}
           </div>
         }
         classes={{
-          root: `${classes.cardHeaderRoot} ${
-            disableToggle ? "" : classes.hover
-          }`,
+          root: `${classes.cardHeaderRoot}`,
           content: classes.cardHeaderContent,
           title: classes.cardHeaderTitle,
           avatar: classes.cardHeaderAvatar,
         }}
       />
-    </Button>
+    </div>
   );
 }
 

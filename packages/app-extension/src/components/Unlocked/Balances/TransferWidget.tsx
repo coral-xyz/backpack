@@ -1,5 +1,5 @@
+import type { Blockchain } from "@coral-xyz/common";
 import {
-  Blockchain,
   ETH_NATIVE_MINT,
   SOL_NATIVE_MINT,
   STRIPE_ENABLED,
@@ -7,7 +7,7 @@ import {
 import { Dollar } from "@coral-xyz/react-common";
 import {
   SwapProvider,
-  useEnabledBlockchains,
+  useActiveSolanaWallet,
   useFeatureGates,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
@@ -17,7 +17,7 @@ import { Typography } from "@mui/material";
 import { useNavStack } from "../../common/Layout/NavStack";
 import type { Token } from "../../common/TokenTable";
 import { SearchableTokenTables } from "../../common/TokenTable";
-import { SelectToken, Swap } from "../../Unlocked/Swap";
+import { Swap, SwapSelectToken } from "../../Unlocked/Swap";
 
 import { Deposit } from "./TokensWidget/Deposit";
 import { Ramp } from "./TokensWidget/Ramp";
@@ -28,28 +28,28 @@ import { StripeRamp } from "./StripeRamp";
 export function TransferWidget({
   blockchain,
   address,
+  publicKey,
   rampEnabled,
+  swapEnabled,
 }: {
   blockchain?: Blockchain;
   address?: string;
+  publicKey?: string;
   rampEnabled: boolean;
+  swapEnabled: boolean;
 }) {
-  const enabledBlockchains = useEnabledBlockchains();
   const featureGates = useFeatureGates();
   const enableOnramp =
     featureGates && featureGates[STRIPE_ENABLED] && rampEnabled;
-  const renderSwap =
-    blockchain !== Blockchain.ETHEREUM &&
-    enabledBlockchains.includes(Blockchain.SOLANA);
 
   return (
     <div
       style={{
         display: "flex",
         width:
-          enableOnramp && renderSwap
+          enableOnramp && swapEnabled
             ? "256px"
-            : renderSwap || enableOnramp
+            : swapEnabled || enableOnramp
             ? "188px"
             : "120px",
         marginLeft: "auto",
@@ -62,13 +62,21 @@ export function TransferWidget({
           <div style={{ width: "16px" }} />
         </>
       )}
-      <ReceiveButton blockchain={blockchain} />
+      <ReceiveButton blockchain={blockchain} publicKey={publicKey} />
       <div style={{ width: "16px" }} />
-      <SendButton blockchain={blockchain} address={address} />
-      {renderSwap && (
+      <SendButton
+        blockchain={blockchain}
+        address={address}
+        publicKey={publicKey}
+      />
+      {swapEnabled && (
         <>
           <div style={{ width: "16px" }} />
-          <SwapButton blockchain={blockchain} address={address} />
+          <SwapButton
+            blockchain={blockchain}
+            address={address}
+            publicKey={publicKey}
+          />
         </>
       )}
     </div>
@@ -78,14 +86,18 @@ export function TransferWidget({
 function SwapButton({
   blockchain,
   address,
+  publicKey,
 }: {
   blockchain?: Blockchain;
   address?: string;
+  publicKey?: string;
 }) {
   const theme = useCustomTheme();
+  // Aggregate view swapper can just default to the current (global) active key.
+  publicKey = publicKey ?? useActiveSolanaWallet().publicKey;
 
   return (
-    <SwapProvider blockchain={Blockchain.SOLANA} tokenAddress={address}>
+    <SwapProvider tokenAddress={address}>
       <TransferButton
         label={"Swap"}
         labelComponent={
@@ -110,7 +122,7 @@ function SwapButton({
           {
             title: `Select Token`,
             name: "select-token",
-            component: (props: any) => <SelectToken {...props} />,
+            component: (props: any) => <SwapSelectToken {...props} />,
           },
         ]}
       />
@@ -121,9 +133,11 @@ function SwapButton({
 function SendButton({
   blockchain,
   address,
+  publicKey,
 }: {
   blockchain?: Blockchain;
   address?: string;
+  publicKey?: string;
 }) {
   const theme = useCustomTheme();
   return (
@@ -149,6 +163,7 @@ function SendButton({
                 props: {
                   blockchain,
                   address,
+                  publicKey,
                 },
               },
             ]
@@ -169,7 +184,13 @@ function SendButton({
   );
 }
 
-function ReceiveButton({ blockchain }: { blockchain?: Blockchain }) {
+function ReceiveButton({
+  blockchain,
+  publicKey,
+}: {
+  blockchain?: Blockchain;
+  publicKey?: string;
+}) {
   const theme = useCustomTheme();
   return (
     <TransferButton
@@ -191,6 +212,7 @@ function ReceiveButton({ blockchain }: { blockchain?: Blockchain }) {
           name: "deposit",
           props: {
             blockchain,
+            publicKey,
           },
         },
       ]}

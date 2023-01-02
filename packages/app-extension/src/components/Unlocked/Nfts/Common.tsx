@@ -107,6 +107,7 @@ export function GridCard({
           }}
         >
           <Typography
+            component="div"
             style={{
               display: "flex",
               justifyContent: "space-between",

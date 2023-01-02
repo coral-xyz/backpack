@@ -15,9 +15,11 @@ import {
   SecondaryButton,
 } from "@coral-xyz/react-common";
 import {
+  useActiveSolanaWallet,
   useJupiterOutputMints,
   useSplTokenRegistry,
   useSwapContext,
+  useWalletName,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ExpandMore, SwapVert } from "@mui/icons-material";
@@ -251,17 +253,15 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
           <div className={classes.bottomHalf}>
             <div>
               <OutputTextField />
-              {!!toAmount && toAmount.gt(Zero) && (
-                <div
-                  style={{
-                    marginTop: "24px",
-                    marginLeft: "8px",
-                    marginRight: "8px",
-                  }}
-                >
-                  <SwapInfo />
-                </div>
-              )}
+              <div
+                style={{
+                  marginTop: "24px",
+                  marginLeft: "8px",
+                  marginRight: "8px",
+                }}
+              >
+                <SwapInfo />
+              </div>
             </div>
             <ConfirmSwapButton type="submit" blockchain={blockchain} />
           </div>
@@ -590,8 +590,6 @@ function SwapReceiveAmount() {
 }
 
 function SwapInfo({ compact = true }: { compact?: boolean }) {
-  const classes = useStyles();
-  const theme = useCustomTheme();
   const {
     fromAmount,
     toAmount,
@@ -603,6 +601,8 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     transactionFee,
     swapFee,
   } = useSwapContext();
+
+  const { name } = useActiveSolanaWallet();
 
   // Loading indicator when routes are being loaded due to polling
   if (isLoadingRoutes || isLoadingTransactions) {
@@ -621,7 +621,20 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     );
   }
 
-  if (!fromAmount || !toAmount) return <></>;
+  if (!fromAmount || !toAmount) {
+    return (
+      <SwapInfoRows
+        {...{
+          compact,
+          from: name,
+          youPay: "-",
+          rate: "-",
+          priceImpact: "-",
+          networkFee: "-",
+        }}
+      />
+    );
+  }
 
   const decimalDifference = fromMintInfo.decimals - toMintInfo.decimals;
   const toAmountWithFees = toAmount.sub(swapFee);
@@ -647,39 +660,55 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
       )
     : "0";
 
+  return (
+    <SwapInfoRows
+      {...{
+        compact,
+        from: name,
+        youPay: `${toDisplayBalance(fromAmount, fromMintInfo.decimals)} ${
+          fromMintInfo.symbol
+        }`,
+        rate: `1 ${fromMintInfo.symbol} = ${rate} ${toMintInfo.symbol}`,
+        priceImpact: `${
+          priceImpactPct === 0
+            ? 0
+            : priceImpactPct > 0.1
+            ? priceImpactPct.toFixed(2)
+            : "< 0.1"
+        }%`,
+        networkFee: transactionFee
+          ? `${ethers.utils.formatUnits(transactionFee, 9)} SOL`
+          : "-",
+      }}
+    />
+  );
+}
+
+function SwapInfoRows({
+  from,
+  youPay,
+  rate,
+  networkFee,
+  priceImpact,
+  compact,
+}: {
+  from: React.ReactNode;
+  youPay: any;
+  rate: any;
+  priceImpact: any;
+  networkFee: any;
+  compact?: boolean;
+}) {
+  const classes = useStyles();
+
   const rows = [];
+  rows.push(["From", from]);
   if (!compact) {
-    rows.push([
-      "You Pay",
-      `${toDisplayBalance(fromAmount, fromMintInfo.decimals)} ${
-        fromMintInfo.symbol
-      }`,
-    ]);
+    rows.push(["You Pay", youPay]);
   }
-  rows.push([
-    "Rate",
-    `1 ${fromMintInfo.symbol} = ${rate} ${toMintInfo.symbol}`,
-  ]);
-  rows.push([
-    "Network Fee",
-    transactionFee ? `${ethers.utils.formatUnits(transactionFee, 9)} SOL` : "-",
-  ]);
-  if (!compact) {
-    rows.push([
-      "Backpack Fee",
-      <span style={{ color: theme.custom.colors.secondary }}>FREE</span>,
-    ]);
-  }
-  rows.push([
-    "Price Impact",
-    `${
-      priceImpactPct === 0
-        ? 0
-        : priceImpactPct > 0.1
-        ? priceImpactPct.toFixed(2)
-        : "< 0.1"
-    }%`,
-  ]);
+  rows.push(["Rate", rate]);
+  rows.push(["Network Fee", networkFee]);
+  rows.push(["Price Impact", priceImpact]);
 
   return (
     <>
@@ -715,44 +744,36 @@ function SwapTokensButton({
 }
 
 function InputTokenSelectorButton() {
-  const { inputTokenAccounts, fromMint, setFromMint } = useSwapContext();
-  const tokenAccountsFiltered = inputTokenAccounts.filter((token: Token) => {
-    if (token.mint && token.mint === SOL_NATIVE_MINT) {
-      return true;
-    }
-    if (token.address && token.address === ETH_NATIVE_MINT) {
-      return true;
-    }
-    return !token.nativeBalance.isZero();
-  });
+  const { fromMint, setFromMint } = useSwapContext();
   return (
     <TokenSelectorButton
       selectedMint={fromMint}
-      tokenAccounts={tokenAccountsFiltered}
+      input={true}
       setMint={setFromMint}
     />
   );
 }
 
 function OutputTokenSelectorButton() {
-  const { fromMint, toMint, setToMint } = useSwapContext();
-  const tokenAccounts = useJupiterOutputMints(fromMint);
+  const { toMint, setToMint } = useSwapContext();
   return (
     <TokenSelectorButton
       selectedMint={toMint}
-      tokenAccounts={tokenAccounts}
       setMint={setToMint}
-      displayWalletHeader={false}
+      input={false}
     />
   );
 }
 
 function TokenSelectorButton({
   selectedMint,
-  tokenAccounts,
   setMint,
-  displayWalletHeader,
-}: any) {
+  input,
+}: {
+  selectedMint: any;
+  setMint: any;
+  input: boolean;
+}) {
   const classes = useStyles();
   const nav = useNavStack();
   const tokenRegistry = useSplTokenRegistry();
@@ -766,8 +787,7 @@ function TokenSelectorButton({
         onClick={() =>
           nav.push("select-token", {
             setMint: (...args: any) => setMint(...args),
-            tokenAccounts,
-            displayWalletHeader,
+            input,
           })
         }
         style={{
@@ -788,18 +808,28 @@ function TokenSelectorButton({
   );
 }
 
-export function SelectToken({
+export function SwapSelectToken({
   setMint,
-  tokenAccounts,
   customFilter,
-  displayWalletHeader,
+  input,
 }: {
   setMint: (mint: string) => void;
-  tokenAccounts: Token[];
   customFilter: (token: Token) => boolean;
-  displayWalletHeader: boolean;
+  input: boolean;
 }) {
   const nav = useNavStack();
+  const { fromMint, inputTokenAccounts } = useSwapContext();
+  const tokenAccounts = !input
+    ? useJupiterOutputMints(fromMint)
+    : inputTokenAccounts.filter((token: Token) => {
+        if (token.mint && token.mint === SOL_NATIVE_MINT) {
+          return true;
+        }
+        if (token.address && token.address === ETH_NATIVE_MINT) {
+          return true;
+        }
+        return !token.nativeBalance.isZero();
+      });
   const onClickRow = (_blockchain: Blockchain, token: Token) => {
     setMint(token.mint!);
     nav.pop();
@@ -811,11 +841,9 @@ export function SelectToken({
 
   return (
     <SearchableTokenTable
-      blockchain={Blockchain.SOLANA}
       onClickRow={onClickRow}
       tokenAccounts={tokenAccounts}
       customFilter={customFilter}
-      displayWalletHeader={displayWalletHeader}
     />
   );
 }
