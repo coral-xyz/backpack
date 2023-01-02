@@ -11,7 +11,7 @@ import {
 } from "../hooks";
 
 export function PluginManager(props: any) {
-  // TODO
+  // TODO: aggregate views.
   const { publicKey } = useActiveSolanaWallet();
   const plugins = usePlugins(publicKey);
   const segue = useNavigationSegue();

@@ -33,8 +33,8 @@ export const solanaNftCollections = selectorFamily<
           // TODO: figure out a better way to group collections, e.g. a whitelist by creator?
           if (value.tokenMetaUriData.collection) {
             const collectionId = value.tokenMetaUriData.collection
-																			.name as string;
-						const metadataCollectionId = value.metadata.collection?.key || "";
+              .name as string;
+            const metadataCollectionId = value.metadata.collection?.key || "";
             const collection = collections.get(
               value.tokenMetaUriData.collection.name
             );
@@ -48,7 +48,7 @@ export const solanaNftCollections = selectorFamily<
           collections.set(collectionId, {
             // TODO this can collide easily, better field for an ID?
             id: collectionId,
-						metadataCollectionId,
+            metadataCollectionId,
             name: collectionId,
             symbol: value.metadata.data.symbol,
             tokenType: "",

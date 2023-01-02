@@ -21,9 +21,10 @@ import {
   SecondaryButton,
   TextInput,
 } from "@coral-xyz/react-common";
-import type { TokenData} from "@coral-xyz/recoil";
-import {   blockchainTokenData,
-useActiveWallet ,
+import type { TokenData } from "@coral-xyz/recoil";
+import {
+  blockchainTokenData,
+  useActiveWallet,
   useAnchorContext,
   useBlockchainActiveWallet,
   useBlockchainConnectionUrl,
@@ -113,11 +114,13 @@ export function SendButton({
 }: {
   blockchain: Blockchain;
   address: string;
-  publicKey?: string;
+  publicKey: string;
 }) {
-  const wallet = useBlockchainActiveWallet(blockchain);
+  // publicKey should only be undefined if the user is in single-wallet mode
+  // (rather than aggregate mode).
+  publicKey = publicKey ?? useActiveWallet().publicKey;
   const token = useBlockchainTokenAccount({
-    publicKey: wallet.publicKey.toString(),
+    publicKey,
     blockchain,
     tokenAddress: address,
   });

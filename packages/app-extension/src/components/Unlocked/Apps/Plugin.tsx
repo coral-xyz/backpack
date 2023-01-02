@@ -22,7 +22,7 @@ export function PluginApp({
   xnftAddress: string;
   closePlugin: () => void;
 }) {
-  const { publicKey } = useActiveSolanaWallet(); // TODO
+  const { publicKey } = useActiveSolanaWallet(); // TODO: aggregate wallet considerations.
   const plugins = usePlugins(publicKey);
 
   if (!plugins) {

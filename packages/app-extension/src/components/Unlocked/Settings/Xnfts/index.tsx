@@ -12,7 +12,7 @@ import { SettingsList } from "../../../common/Settings/List";
 export function XnftSettings() {
   const nav = useNavStack();
   const theme = useCustomTheme();
-  // TODO:
+  // TODO: Aggregate view.
   const { publicKey } = useActiveSolanaWallet();
   const xnfts = useAppIcons(publicKey);
   const settingsMenu = {} as any;

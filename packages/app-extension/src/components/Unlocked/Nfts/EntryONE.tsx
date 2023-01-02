@@ -72,7 +72,6 @@ export default function EntryONE() {
   const classes = useStyles();
   const openPlugin = useOpenPlugin();
 
-  /*
   useLayoutEffect(() => {
     if (!ref.current) {
       return;
@@ -90,7 +89,6 @@ export default function EntryONE() {
       }
     };
   }, []);
-	*/
 
   const isLoading = false || !imageLoaded || isONELive === "loading";
 

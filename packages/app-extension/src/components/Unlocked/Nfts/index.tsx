@@ -39,7 +39,8 @@ export function Nfts() {
                 blockchain: c.blockchain,
                 collectionWithIds: c.collectionWithIds,
               }))
-            : wallets.map((w) => ({ ...w, collectionWithIds: null }))
+            : // Set some empty collections so that the loading indicator displays.
+              wallets.map((w) => ({ ...w, collectionWithIds: null }))
         }
       />
     );
