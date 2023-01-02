@@ -5,15 +5,8 @@ import {
   SOL_NATIVE_MINT,
   toTitleCase,
 } from "@coral-xyz/common";
-import type {
-  useBlockchainTokensSorted} from "@coral-xyz/recoil";
-import {
-  useActiveWallet,
-  useAllWalletsDisplayed,
-  useEnabledBlockchains,
-  useIsAggregateWallets,
-  useNavigation,
-} from "@coral-xyz/recoil";
+import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
+import { useAllWalletsDisplayed, useNavigation } from "@coral-xyz/recoil";
 
 import { TokenTables } from "../../common/TokenTable";
 
@@ -24,12 +17,9 @@ export type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
 
 export function Balances() {
   const { push } = useNavigation();
-  //const isAggregate = useIsAggregateWallets();
-  const publicKey = useActiveWallet().publicKey; // TODO
-  const enabledBlockchains = useEnabledBlockchains();
   const swapEnabled =
     useAllWalletsDisplayed().find((w) => w.blockchain === Blockchain.SOLANA) !==
-      undefined && enabledBlockchains.includes(Blockchain.SOLANA);
+    undefined;
 
   const onClickTokenRow = (
     blockchain: Blockchain,
@@ -56,11 +46,7 @@ export function Balances() {
           marginBottom: "32px",
         }}
       >
-        <TransferWidget
-          rampEnabled={true}
-          publicKey={publicKey}
-          swapEnabled={swapEnabled}
-        />
+        <TransferWidget rampEnabled={true} swapEnabled={swapEnabled} />
       </div>
       <TokenTables
         onClickRow={onClickTokenRow}
