@@ -1,14 +1,12 @@
 import { Suspense, useState } from "react";
-import type { Blockchain } from "@coral-xyz/common";
-import { explorerUrl } from "@coral-xyz/common";
+import { Blockchain,explorerUrl } from "@coral-xyz/common";
 import {
   EmptyState,
   isFirstLastListItemStyle,
   Loading,
 } from "@coral-xyz/react-common";
 import {
-  useActiveEthereumWallet,
-  useActiveSolanaWallet,
+  useActiveWallet,
   useBlockchainConnectionUrl,
   useBlockchainExplorer,
   useBlockchainLogo,
@@ -128,26 +126,18 @@ export function RecentActivityButton() {
 }
 
 export function RecentActivity() {
-  const activeEthereumWallet = useActiveEthereumWallet();
-  const activeSolanaWallet = useActiveSolanaWallet();
-
-  // TODO: aggregated here.
-
-  const recentEthereumTransactions = activeEthereumWallet
-    ? useRecentEthereumTransactions({
-        address: activeEthereumWallet.publicKey,
-      })
-    : [];
-  const recentSolanaTransactions = activeSolanaWallet
-    ? useRecentSolanaTransactions({
-        address: activeSolanaWallet.publicKey,
-      })
-    : [];
-
-  const mergedTransactions = [
-    ...recentEthereumTransactions,
-    ...recentSolanaTransactions,
-  ].sort((a, b) => b.date.getTime() - a.date.getTime());
+  const activeWallet = useActiveWallet();
+  const recentTransactions =
+    activeWallet.blockchain === Blockchain.SOLANA
+      ? useRecentSolanaTransactions({
+          address: activeWallet.publicKey,
+        })
+      : useRecentEthereumTransactions({
+          address: activeWallet.publicKey,
+        });
+  const mergedTransactions = [...recentTransactions].sort(
+    (a, b) => b.date.getTime() - a.date.getTime()
+  );
 
   return (
     <Suspense fallback={<RecentActivityLoading />}>
