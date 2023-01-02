@@ -28,6 +28,7 @@ import { generateMnemonic } from "bip39";
 import type { KeyringStoreJson, User, UserKeyringJson } from "../store";
 import * as store from "../store";
 import {
+  DEFAULT_AGGREGATE_WALLETS,
   DEFAULT_DARK_MODE,
   DEFAULT_DEVELOPER_MODE,
   DefaultKeyname,
@@ -639,6 +640,7 @@ class UserKeyring {
   username: string;
   uuid: string;
   private mnemonic?: string;
+  activeBlockchain: Blockchain;
 
   ///////////////////////////////////////////////////////////////////////////////
   // Initialization.
@@ -666,6 +668,13 @@ class UserKeyring {
         blockchainKeyring.publicKey
       );
     }
+
+    //
+    // Set the active wallet to be the first keyring.
+    //
+    const { blockchain, publicKey } = keyringInit.blockchainKeyrings[0];
+    kr.activeBlockchain = blockchain;
+
     return kr;
   }
 
@@ -827,6 +836,8 @@ class UserKeyring {
   ) {
     const keyring = this.keyringForBlockchain(blockchain);
     await keyring.activeWalletUpdate(newActivePublicKey);
+
+    this.activeBlockchain = blockchain;
   }
 
   /**
@@ -885,13 +896,14 @@ class UserKeyring {
     return {
       uuid: this.uuid,
       username: this.username,
+      activeBlockchain: this.activeBlockchain,
       mnemonic: this.mnemonic,
       blockchains,
     };
   }
 
   public static fromJson(json: UserKeyringJson): UserKeyring {
-    const { uuid, username, mnemonic, blockchains } = json;
+    const { uuid, username, activeBlockchain, mnemonic, blockchains } = json;
 
     const u = new UserKeyring();
     u.uuid = uuid;
@@ -906,6 +918,7 @@ class UserKeyring {
         return [blockchain, blockchainKeyring];
       })
     );
+    u.activeBlockchain = activeBlockchain ?? Object.keys(blockchains)[0];
 
     return u;
   }
@@ -921,6 +934,7 @@ export function defaultPreferences(enabledBlockchains: any): any {
     enabledBlockchains,
     darkMode: DEFAULT_DARK_MODE,
     developerMode: DEFAULT_DEVELOPER_MODE,
+    aggregateWallets: DEFAULT_AGGREGATE_WALLETS,
     solana: {
       explorer: SolanaExplorer.DEFAULT,
       cluster: SolanaCluster.DEFAULT,

@@ -5,6 +5,7 @@ import { PrimaryButton } from "./PrimaryButton";
 
 export const EmptyState: React.FC<{
   icon: (props: any) => React.ReactNode;
+  header?: React.ReactNode;
   title: string;
   subtitle: string;
   buttonText?: string;
@@ -13,14 +14,17 @@ export const EmptyState: React.FC<{
   verticallyCentered?: boolean;
   contentStyle?: React.CSSProperties;
   style?: React.CSSProperties;
+  innerStyle?: React.CSSProperties;
 }> = ({
   icon,
+  header,
   title,
   subtitle,
   buttonText,
   onClick,
   contentStyle,
   style,
+  innerStyle,
   minimize,
   verticallyCentered = true,
 }) => {
@@ -43,56 +47,64 @@ export const EmptyState: React.FC<{
         style={{
           borderRadius: "12px",
           background: theme.custom.colors.nav,
-          padding: "16px",
           border: `${theme.custom.colors.borderFull}`,
-          ...contentStyle,
+          overflow: "hidden",
+          ...innerStyle,
         }}
       >
-        {icon({
-          style: {
-            color: theme.custom.colors.icon,
-            width: "56px",
-            height: "56px",
-            display: "block",
-            marginLeft: "auto",
-            marginRight: "auto",
-            marginBottom: "16px",
-          },
-        })}
-        <Typography
+        {header}
+        <div
           style={{
-            fontSize: "24px",
-            lineHeight: "32px",
-            textAlign: "center",
-            fontWeight: 500,
-            color: theme.custom.colors.fontColor,
+            padding: "16px",
+            ...contentStyle,
           }}
         >
-          {title}
-        </Typography>
-        {minimize !== true && (
+          {icon({
+            style: {
+              color: theme.custom.colors.icon,
+              width: "56px",
+              height: "56px",
+              display: "block",
+              marginLeft: "auto",
+              marginRight: "auto",
+              marginBottom: "16px",
+            },
+          })}
           <Typography
             style={{
-              marginTop: "8px",
-              color: theme.custom.colors.secondary,
+              fontSize: "24px",
+              lineHeight: "32px",
               textAlign: "center",
-              fontSize: "16px",
-              lineHeight: "24px",
               fontWeight: 500,
+              color: theme.custom.colors.fontColor,
             }}
           >
-            {subtitle}
+            {title}
           </Typography>
-        )}
-        {minimize !== true && buttonText && (
-          <PrimaryButton
-            onClick={onClick}
-            label={buttonText}
-            style={{
-              marginTop: "40px",
-            }}
-          />
-        )}
+          {minimize !== true && (
+            <Typography
+              style={{
+                marginTop: "8px",
+                color: theme.custom.colors.secondary,
+                textAlign: "center",
+                fontSize: "16px",
+                lineHeight: "24px",
+                fontWeight: 500,
+              }}
+            >
+              {subtitle}
+            </Typography>
+          )}
+          {minimize !== true && buttonText && (
+            <PrimaryButton
+              onClick={onClick}
+              label={buttonText}
+              style={{
+                marginTop: "40px",
+              }}
+            />
+          )}
+        </div>
       </div>
     </div>
   );

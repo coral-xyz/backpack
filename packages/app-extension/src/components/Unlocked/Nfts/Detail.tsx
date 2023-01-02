@@ -22,10 +22,8 @@ import {
   useAnchorContext,
   useBackgroundClient,
   useDecodedSearchParams,
-  useEthereumConnectionUrl,
   useEthereumCtx,
   useEthereumExplorer,
-  useSolanaConnectionUrl,
   useSolanaCtx,
   useSolanaExplorer,
 } from "@coral-xyz/recoil";
@@ -57,8 +55,18 @@ import { SendSolanaConfirmationCard } from "../Balances/TokensWidget/Solana";
 
 const logger = getLogger("app-extension/nft-detail");
 
-export function NftsDetail({ nftId }: { nftId: string }) {
-  const { contents, state } = useRecoilValueLoadable(nftById(nftId));
+export function NftsDetail({
+  publicKey,
+  connectionUrl,
+  nftId,
+}: {
+  publicKey: string;
+  connectionUrl: string;
+  nftId: string;
+}) {
+  const { contents, state } = useRecoilValueLoadable(
+    nftById({ publicKey, connectionUrl, nftId })
+  );
   const nft = (state === "hasValue" && contents) || null;
 
   // Hack: needed because this is undefined due to framer-motion animation.
@@ -391,17 +399,20 @@ export function NftOptionsButton() {
 
   // @ts-ignore
   const nftId: string = searchParams.props.nftId;
-  const { contents, state } = useRecoilValueLoadable(nftById(nftId));
+  // @ts-ignore
+  const publicKey: string = searchParams.props.publicKey;
+  // @ts-ignore
+  const connectionUrl: string = searchParams.props.connectionUrl;
+
+  const { contents, state } = useRecoilValueLoadable(
+    nftById({ publicKey, connectionUrl, nftId })
+  );
   const nft = (state === "hasValue" && contents) || null;
 
   // @ts-ignore
   const isEthereum: boolean = nft && nft.contractAddress;
 
   const explorer = isEthereum ? useEthereumExplorer() : useSolanaExplorer();
-
-  const connectionUrl = isEthereum
-    ? useEthereumConnectionUrl()
-    : useSolanaConnectionUrl();
 
   const onClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);

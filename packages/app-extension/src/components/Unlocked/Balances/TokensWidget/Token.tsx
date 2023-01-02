@@ -4,7 +4,6 @@ import type { SearchParamsFor } from "@coral-xyz/recoil";
 import {
   blockchainTokenData,
   useActiveEthereumWallet,
-  useBlockchainActiveWallet,
   useLoader,
 } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
@@ -50,17 +49,23 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-export function Token({ blockchain, address }: SearchParamsFor.Token["props"]) {
+export function Token({
+  blockchain,
+  tokenAddress,
+  publicKey,
+}: SearchParamsFor.Token["props"]) {
   const ethereumWallet = useActiveEthereumWallet();
   // Hack: This is hit for some reason due to the framer-motion animation.
-  if (!blockchain || !address) {
+  if (!blockchain || !tokenAddress) {
     return <></>;
   }
 
   const activityAddress =
-    blockchain === Blockchain.ETHEREUM ? ethereumWallet.publicKey : address;
+    blockchain === Blockchain.ETHEREUM
+      ? ethereumWallet.publicKey
+      : tokenAddress;
   const contractAddresses =
-    blockchain === Blockchain.ETHEREUM ? [address] : undefined;
+    blockchain === Blockchain.ETHEREUM ? [tokenAddress] : undefined;
 
   return (
     <div
@@ -70,7 +75,11 @@ export function Token({ blockchain, address }: SearchParamsFor.Token["props"]) {
         flexDirection: "column",
       }}
     >
-      <TokenHeader blockchain={blockchain} address={address} />
+      <TokenHeader
+        blockchain={blockchain}
+        tokenAddress={tokenAddress}
+        publicKey={publicKey}
+      />
       <RecentActivityList
         blockchain={blockchain}
         address={activityAddress}
@@ -82,14 +91,17 @@ export function Token({ blockchain, address }: SearchParamsFor.Token["props"]) {
   );
 }
 
-function TokenHeader({ blockchain, address }: SearchParamsFor.Token["props"]) {
+function TokenHeader({
+  blockchain,
+  tokenAddress,
+  publicKey,
+}: SearchParamsFor.Token["props"]) {
   const classes = useStyles();
-  const wallet = useBlockchainActiveWallet(blockchain);
   const [token] = useLoader(
     blockchainTokenData({
-      publicKey: wallet.publicKey.toString(),
+      publicKey,
       blockchain,
-      tokenAddress: address,
+      tokenAddress,
     }),
     null
   );
@@ -128,7 +140,9 @@ function TokenHeader({ blockchain, address }: SearchParamsFor.Token["props"]) {
             (blockchain === Blockchain.ETHEREUM && token.ticker === "ETH")
           }
           blockchain={blockchain}
-          address={address}
+          address={tokenAddress}
+          publicKey={publicKey}
+          swapEnabled={blockchain === Blockchain.SOLANA}
         />
       </div>
     </div>

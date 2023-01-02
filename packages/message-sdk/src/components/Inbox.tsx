@@ -37,9 +37,8 @@ export function Inbox() {
   return (
     <div
       className={classes.container}
-      style={{ display: "flex", flexDirection: "column" }}
+      style={{ marginTop: "8px", display: "flex", flexDirection: "column" }}
     >
-      <div style={{ height: 8 }}></div>
       <TextInput
         className={classes.searchField}
         placeholder={"Search for people"}

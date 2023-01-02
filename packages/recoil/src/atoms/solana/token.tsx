@@ -15,7 +15,7 @@ import { BigNumber, ethers } from "ethers";
 import { atomFamily, selectorFamily } from "recoil";
 
 import type { TokenData, TokenNativeData } from "../../types";
-import { priceData } from "../prices";
+import { solanaPricesForIds } from "../prices";
 
 import { solanaConnectionUrl } from "./preferences";
 import { splTokenRegistry } from "./token-registry";
@@ -57,7 +57,6 @@ export const customSplTokenAccounts = atomFamily({
         try {
           const { mintsMap, fts, nfts } =
             await connection.customSplTokenAccounts(new PublicKey(publicKey));
-
           return {
             splTokenMints: new Map(mintsMap),
             nfts,
@@ -145,6 +144,34 @@ export const solanaNftUriData = selectorFamily<
     },
 });
 
+export const solanaFungibleTokenUriData = selectorFamily<
+  Map<string, SplNftMetadataString>,
+  {
+    connectionUrl: string;
+    publicKey: string;
+  }
+>({
+  key: "solanaFungibleTokenUriData",
+  get:
+    ({
+      connectionUrl,
+      publicKey,
+    }: {
+      connectionUrl: string;
+      publicKey: string;
+    }) =>
+    async ({ get }) => {
+      const { connection } = get(anchorContext);
+      const { fts } = get(customSplTokenAccounts({ connectionUrl, publicKey }));
+      const { fungibleTokens, fungibleTokenMetadata } = fts;
+      const nftMetadata = await connection.customSplMetadataUri(
+        fungibleTokens,
+        fungibleTokenMetadata
+      );
+      return new Map(nftMetadata);
+    },
+});
+
 /**
  * Store the info from the SPL Token Account owned by the connected wallet.
  */
@@ -205,6 +232,7 @@ export const solanaFungibleTokenNativeBalance = selectorFamily<
   get:
     ({ tokenAddress, publicKey }) =>
     ({ get }: any) => {
+      const connectionUrl = get(solanaConnectionUrl)!;
       const tokenAccount = get(
         solanaTokenAccountsMap({ tokenAddress, publicKey })
       );
@@ -213,8 +241,8 @@ export const solanaFungibleTokenNativeBalance = selectorFamily<
       }
       const tokenMint = get(solanaTokenMint({ tokenAddress, publicKey }));
       const tokenMetadata = get(
-        solanaFungibleTokenMetadata({ tokenAddress, publicKey })
-      );
+        solanaFungibleTokenUriData({ publicKey, connectionUrl })
+      ).get(tokenAddress);
       const tokenRegistry = get(splTokenRegistry)!;
       const tokenRegistryItem = tokenRegistry.get(tokenAccount.mint.toString());
 
@@ -228,12 +256,14 @@ export const solanaFungibleTokenNativeBalance = selectorFamily<
         decimals,
       } = tokenMint &&
       tokenMetadata &&
-      tokenMetadata.account &&
-      tokenMetadata.account.data
+      tokenMetadata.metadata &&
+      tokenMetadata.metadata.data
         ? {
-            symbol: tokenMetadata.account.data.symbol.replace(/\0/g, ""),
-            logoURI: tokenMetadata.account.data.uri.replace(/\0/g, ""),
-            name: tokenMetadata.account.data.name.replace(/\0/g, ""),
+            symbol: tokenMetadata.metadata.data.symbol.replace(/\0/g, ""),
+            logoURI:
+              tokenMetadata.tokenMetaUriData.image ??
+              tokenMetadata.metadata.data.uri.replace(/\0/g, ""),
+            name: tokenMetadata.metadata.data.name.replace(/\0/g, ""),
             decimals: tokenMint.decimals,
           }
         : tokenRegistryItem ?? ({} as TokenInfo);
@@ -298,31 +328,6 @@ export const solanaTokenMint = selectorFamily<
     },
 });
 
-const solanaFungibleTokenMetadata = selectorFamily<
-  TokenMetadataString | null,
-  { tokenAddress: string; publicKey: string }
->({
-  key: "solanaFungibleTokenMetadata",
-  get:
-    ({ tokenAddress, publicKey }) =>
-    ({ get }) => {
-      const tokenAccount = get(
-        solanaTokenAccountsMap({ tokenAddress, publicKey })
-      );
-      if (!tokenAccount) {
-        return null;
-      }
-      const connectionUrl = get(solanaConnectionUrl)!;
-      const { fts } = get(customSplTokenAccounts({ connectionUrl, publicKey }));
-      return (
-        fts.fungibleTokenMetadata.find(
-          (m: TokenMetadataString) =>
-            m !== null && m.account.mint === tokenAccount.mint.toString()
-        ) ?? null
-      );
-    },
-});
-
 export const solanaFungibleTokenBalance = selectorFamily<
   TokenData | null,
   { tokenAddress: string; publicKey: string }
@@ -338,7 +343,9 @@ export const solanaFungibleTokenBalance = selectorFamily<
         return null;
       }
 
-      const price = get(priceData(nativeTokenBalance.priceMint)) as any;
+      const price = get(solanaPricesForIds({ publicKey })).get(
+        nativeTokenBalance.priceMint
+      ) as any;
       const usdBalance =
         (price?.usd ?? 0) *
         parseFloat(

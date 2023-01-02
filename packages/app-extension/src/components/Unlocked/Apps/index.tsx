@@ -2,15 +2,26 @@ import { Blockchain } from "@coral-xyz/common";
 import { EmptyState, ProxyImage } from "@coral-xyz/react-common";
 import {
   filteredPlugins,
-  useActiveWallets,
+  isAggregateWallets,
+  useActiveWallet,
+  useAllWalletsDisplayed,
   useEnabledBlockchains,
   useLoader,
   useOpenPlugin,
+  useSolanaConnectionUrl,
 } from "@coral-xyz/recoil";
 import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import { Block as BlockIcon } from "@mui/icons-material";
 import { Button, Grid, Skeleton, Typography } from "@mui/material";
 import { getSvgPath } from "figma-squircle";
+import { useRecoilValue, waitForAll } from "recoil";
+
+import {
+  _BalancesTableHead,
+  BalancesTableHead,
+  BalancesTableProvider,
+  useBalancesContext,
+} from "../Balances/Balances";
 
 const ICON_WIDTH = 64;
 
@@ -67,87 +78,194 @@ export function Apps() {
 }
 
 function PluginGrid() {
-  const theme = useCustomTheme();
-  const activeWallets = useActiveWallets();
-  const openPlugin = useOpenPlugin();
-
-  const [plugins, , isLoading] = useLoader(
-    filteredPlugins,
+  const _isAggregateWallets = useRecoilValue(isAggregateWallets);
+  const activeWallet = useActiveWallet();
+  const wallets = useAllWalletsDisplayed();
+  const solanaWallets = wallets.filter(
+    (wallet) => wallet.blockchain === Blockchain.SOLANA
+  );
+  const connectionUrl = useSolanaConnectionUrl();
+  const [pluginsForAllWallets, , isLoading] = useLoader(
+    waitForAll(
+      solanaWallets.map((wallet) =>
+        filteredPlugins({ publicKey: wallet.publicKey, connectionUrl })
+      )
+    ),
     [],
-    // Note this reloads on any change to the active wallets, which reloads
-    // NFTs for both blockchains.
-    // TODO Make this reload for only the relevant blockchain
-    [activeWallets]
+    [connectionUrl]
   );
 
-  const onClickPlugin = (p: any) => {
-    openPlugin(p.install.account.xnft.toString());
-  };
+  //
+  // If the only displayed wallet is an Ethereum wallet, tell the user it's not supported.
+  //
+  if (wallets.length === 1) {
+    const wallet = wallets[0];
+    if (wallet.blockchain === Blockchain.ETHEREUM) {
+      return (
+        <EmptyState
+          icon={(props: any) => <BlockIcon {...props} />}
+          title={"Ethereum xNFTs not yet supported"}
+          subtitle={"Switch to Solana to use xNFTs"}
+          buttonText={""}
+          onClick={() => {}}
+          header={
+            // Only show the wallet switcher if we are in single wallet mode.
+            !_isAggregateWallets && (
+              <_BalancesTableHead
+                blockchain={wallet.blockchain}
+                wallet={wallet}
+                showContent={true}
+                setShowContent={() => {}}
+              />
+            )
+          }
+        />
+      );
+    }
+  }
 
-  if (!isLoading && plugins.length === 0) {
+  //
+  // Direct the user to xNFT.gg if there are no plugins available.
+  //
+  const pluginCount = pluginsForAllWallets.reduce(
+    (acc, walletPlugins) => walletPlugins.length + acc,
+    0
+  );
+  if (!isLoading && pluginCount === 0) {
     return (
       <EmptyState
         icon={(props: any) => <BlockIcon {...props} />}
-        title={"No xNFTS"}
+        title={"No xNFTs"}
         subtitle={"Get started with your first xNFT"}
         buttonText={"Browse xNFTs"}
         onClick={() => window.open("https://xnft.gg")}
+        header={
+          !_isAggregateWallets && (
+            <_BalancesTableHead
+              blockchain={activeWallet.blockchain}
+              wallet={activeWallet}
+              showContent={true}
+              setShowContent={() => {}}
+            />
+          )
+        }
       />
     );
   }
 
+  //
+  // Render all the Solana wallet xNFTs.
+  //
   return (
+    <>
+      {solanaWallets.map((wallet: any) => {
+        return <WalletXnftGrid key={wallet.publicKey} wallet={wallet} />;
+      })}
+    </>
+  );
+}
+
+function WalletXnftGrid({
+  wallet,
+}: {
+  wallet: { publicKey: string; name: string; blockchain: Blockchain };
+}) {
+  const theme = useCustomTheme();
+  const connectionUrl = useSolanaConnectionUrl(); // TODO
+  const [plugins, , isLoading] = useLoader(
+    filteredPlugins({ publicKey: wallet.publicKey, connectionUrl }),
+    [],
+    [wallet]
+  );
+
+  return !isLoading && plugins.length === 0 ? (
+    <></>
+  ) : (
     <div
       style={{
-        paddingLeft: "12px",
-        paddingRight: "12px",
-        paddingBottom: "12px",
+        marginLeft: "12px",
+        marginRight: "12px",
+        marginBottom: "12px",
+        borderRadius: "10px",
+        overflow: "hidden",
+        border: `${theme.custom.colors.borderFull}`,
       }}
     >
-      <div
-        style={{
-          paddingTop: "18px",
-          paddingBottom: "18px",
-          paddingLeft: "10px",
-          paddingRight: "10px",
-          background: theme.custom.colors.nav,
-          border: `${theme.custom.colors.borderFull}`,
-          borderRadius: "10px",
-        }}
-      >
-        <Grid container>
-          {isLoading
-            ? Array.from(Array(10).keys()).map((_, idx) => {
-                return (
-                  <Grid
-                    item
-                    key={idx}
-                    xs={3}
-                    style={{
-                      marginTop: idx >= 4 ? "24px" : 0,
-                    }}
-                  >
-                    <SkeletonAppIcon />
-                  </Grid>
-                );
-              })
-            : plugins.map((p: any, idx: number) => {
-                return (
-                  <Grid
-                    item
-                    key={p.url}
-                    xs={3}
-                    style={{
-                      marginTop: idx >= 4 ? "24px" : 0,
-                    }}
-                  >
-                    <PluginIcon plugin={p} onClick={() => onClickPlugin(p)} />
-                  </Grid>
-                );
-              })}
-        </Grid>
-      </div>
+      <BalancesTableProvider>
+        <_WalletXnftGrid
+          isLoading={isLoading}
+          plugins={plugins}
+          wallet={wallet}
+        />
+      </BalancesTableProvider>
     </div>
+  );
+}
+
+function _WalletXnftGrid({
+  wallet,
+  isLoading,
+  plugins,
+}: {
+  wallet: { publicKey: string; name: string; blockchain: Blockchain };
+  isLoading: boolean;
+  plugins: Array<any>;
+}) {
+  const theme = useCustomTheme();
+  const openPlugin = useOpenPlugin();
+  const { showContent } = useBalancesContext();
+  const onClickPlugin = (p: any) => {
+    openPlugin(p.install.account.xnft.toString());
+  };
+  return (
+    <>
+      <BalancesTableHead blockchain={wallet.blockchain} wallet={wallet} />
+      {showContent && (
+        <div
+          style={{
+            paddingTop: "8px",
+            paddingBottom: "18px",
+            paddingLeft: "10px",
+            paddingRight: "10px",
+            background: theme.custom.colors.nav,
+            borderBottomLeftRadius: "10px",
+            borderBottomRightRadius: "10px",
+          }}
+        >
+          <Grid container>
+            {isLoading
+              ? Array.from(Array(4).keys()).map((_, idx) => {
+                  return (
+                    <Grid
+                      item
+                      key={idx}
+                      xs={3}
+                      style={{
+                        marginTop: idx >= 4 ? "24px" : 0,
+                      }}
+                    >
+                      <SkeletonAppIcon />
+                    </Grid>
+                  );
+                })
+              : plugins.map((p: any, idx: number) => {
+                  return (
+                    <Grid
+                      item
+                      key={p.url}
+                      xs={3}
+                      style={{
+                        marginTop: idx >= 4 ? "24px" : 0,
+                      }}
+                    >
+                      <PluginIcon plugin={p} onClick={() => onClickPlugin(p)} />
+                    </Grid>
+                  );
+                })}
+          </Grid>
+        </div>
+      )}
+    </>
   );
 }
 

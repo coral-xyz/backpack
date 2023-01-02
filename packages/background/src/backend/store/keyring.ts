@@ -1,4 +1,4 @@
-import type { BlockchainKeyringJson } from "@coral-xyz/common";
+import type { Blockchain,BlockchainKeyringJson } from "@coral-xyz/common";
 
 import type { SecretPayload } from "../keyring/crypto";
 import * as crypto from "../keyring/crypto";
@@ -21,6 +21,7 @@ export type KeyringStoreJson = {
 export type UserKeyringJson = {
   uuid: string;
   username: string;
+  activeBlockchain: Blockchain;
   mnemonic?: string;
   blockchains: {
     [key: string]: BlockchainKeyringJson;

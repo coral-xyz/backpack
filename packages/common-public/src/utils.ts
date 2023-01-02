@@ -57,6 +57,9 @@ export function isServiceWorker(): boolean {
  * SVG sanitization, etc.
  */
 export function externalResourceUri(uri: string): string {
+  if (uri) {
+    uri = uri.replace(/\0/g, "");
+  }
   if (uri && uri.startsWith("ipfs://")) {
     return uri.replace("ipfs://", "https://ipfs.io/ipfs/");
   }

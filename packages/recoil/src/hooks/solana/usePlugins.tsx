@@ -22,10 +22,16 @@ import {
   useUpdateSearchParams,
 } from "../";
 
-import { useAnchorContext } from "./useSolanaConnection";
+import {
+  useAnchorContext,
+  useSolanaConnectionUrl,
+} from "./useSolanaConnection";
 
-export function useAppIcons() {
-  const xnftLoadable = useRecoilValueLoadable(atoms.filteredPlugins);
+export function useAppIcons(publicKey: string) {
+  const connectionUrl = useSolanaConnectionUrl();
+  const xnftLoadable = useRecoilValueLoadable(
+    atoms.filteredPlugins({ publicKey, connectionUrl })
+  );
   const xnftData =
     xnftLoadable.state === "hasValue"
       ? (xnftLoadable.contents as Array<any>)
@@ -33,8 +39,11 @@ export function useAppIcons() {
   return xnftData;
 }
 
-export function usePlugins(): Array<Plugin> | null {
-  const xnftLoadable = useRecoilValueLoadable(atoms.plugins);
+export function usePlugins(publicKey: string): Array<Plugin> | null {
+  const connectionUrl = useSolanaConnectionUrl();
+  const xnftLoadable = useRecoilValueLoadable(
+    atoms.plugins({ publicKey, connectionUrl })
+  );
 
   if (xnftLoadable.state === "hasValue") {
     return xnftLoadable.contents.map((p) => getPlugin(p));

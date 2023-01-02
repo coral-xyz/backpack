@@ -3,7 +3,6 @@ import type { TokenInfo } from "@solana/spl-token-registry";
 import { selector, selectorFamily } from "recoil";
 
 import { blockchainBalancesSorted } from "../balance";
-import { solanaPublicKey } from "../wallet";
 
 import { SOL_LOGO_URI, splTokenRegistry } from "./token-registry";
 
@@ -46,22 +45,23 @@ export const allJupiterInputMints = selector({
 
 // Jupiter tokens that can be swapped *from* owned by the currently active
 // wallet.
-export const jupiterInputMints = selector({
+export const jupiterInputMints = selectorFamily({
   key: "jupiterInputMints",
-  get: async ({ get }) => {
-    const inputMints = get(allJupiterInputMints);
-    const publicKey = get(solanaPublicKey)!;
-    const walletTokens = get(
-      blockchainBalancesSorted({
-        publicKey,
-        blockchain: Blockchain.SOLANA,
-      })
-    );
-    // Only allow tokens that Jupiter allows as well as native SOL.
-    return walletTokens.filter(
-      (t: any) => inputMints.includes(t.mint) || t.mint === SOL_NATIVE_MINT
-    );
-  },
+  get:
+    ({ publicKey }: { publicKey: string }) =>
+    async ({ get }) => {
+      const inputMints = get(allJupiterInputMints);
+      const walletTokens = get(
+        blockchainBalancesSorted({
+          publicKey,
+          blockchain: Blockchain.SOLANA,
+        })
+      );
+      // Only allow tokens that Jupiter allows as well as native SOL.
+      return walletTokens.filter(
+        (t: any) => inputMints.includes(t.mint) || t.mint === SOL_NATIVE_MINT
+      );
+    },
 });
 
 export const jupiterOutputMints = selectorFamily({

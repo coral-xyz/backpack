@@ -1,12 +1,12 @@
-import type { Blockchain } from "@coral-xyz/common";
 import {
+  Blockchain,
   ETH_NATIVE_MINT,
   NAV_COMPONENT_TOKEN,
   SOL_NATIVE_MINT,
   toTitleCase,
 } from "@coral-xyz/common";
 import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
-import { useNavigation } from "@coral-xyz/recoil";
+import { useAllWalletsDisplayed, useNavigation } from "@coral-xyz/recoil";
 
 import { TokenTables } from "../../common/TokenTable";
 
@@ -17,14 +17,22 @@ export type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
 
 export function Balances() {
   const { push } = useNavigation();
+  const swapEnabled =
+    useAllWalletsDisplayed().find((w) => w.blockchain === Blockchain.SOLANA) !==
+    undefined;
 
-  const onClickTokenRow = (blockchain: Blockchain, token: Token) => {
+  const onClickTokenRow = (
+    blockchain: Blockchain,
+    token: Token,
+    publicKey: string
+  ) => {
     push({
       title: `${toTitleCase(blockchain)} / ${token.ticker}`,
       componentId: NAV_COMPONENT_TOKEN,
       componentProps: {
         blockchain,
-        address: token.address,
+        tokenAddress: token.address,
+        publicKey,
       },
     });
   };
@@ -38,7 +46,7 @@ export function Balances() {
           marginBottom: "32px",
         }}
       >
-        <TransferWidget rampEnabled={true} />
+        <TransferWidget rampEnabled={true} swapEnabled={swapEnabled} />
       </div>
       <TokenTables
         onClickRow={onClickTokenRow}

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import type { Blockchain } from "@coral-xyz/common";
 import {
   associatedTokenAddress,
+  Blockchain,
   confirmTransaction,
   generateUnwrapSolTx,
   generateWrapSolTx,
@@ -78,22 +78,25 @@ function useDebounce(value: any, wait = DEFAULT_DEBOUNCE_DELAY) {
 }
 
 export function SwapProvider({
-  blockchain,
   tokenAddress,
   children,
 }: {
-  blockchain: Blockchain;
   tokenAddress?: string;
   children: React.ReactNode;
 }) {
   const tokenRegistry = useSplTokenRegistry();
-  const [inputTokenAccounts] = useLoader(jupiterInputMints, []);
+  const blockchain = Blockchain.SOLANA; // Solana only at the moment.
   const solanaCtx = useSolanaCtx();
   const { backgroundClient, connection, walletPublicKey } = solanaCtx;
+  const [inputTokenAccounts] = useLoader(
+    jupiterInputMints({ publicKey: walletPublicKey.toString() }),
+    []
+  );
+
   const [token] = tokenAddress
     ? useLoader(
         blockchainTokenData({
-          publicKey: solanaCtx.walletPublicKey.toString(),
+          publicKey: walletPublicKey.toString(),
           blockchain,
           tokenAddress,
         }),

@@ -24,6 +24,7 @@ import {
 import type { TokenData } from "@coral-xyz/recoil";
 import {
   blockchainTokenData,
+  useActiveWallet,
   useAnchorContext,
   useBlockchainActiveWallet,
   useBlockchainConnectionUrl,
@@ -108,15 +109,19 @@ const useStyles = styles((theme) => ({
 }));
 
 export function SendButton({
+  publicKey,
   blockchain,
   address,
 }: {
   blockchain: Blockchain;
   address: string;
+  publicKey: string;
 }) {
-  const wallet = useBlockchainActiveWallet(blockchain);
+  // publicKey should only be undefined if the user is in single-wallet mode
+  // (rather than aggregate mode).
+  publicKey = publicKey ?? useActiveWallet().publicKey;
   const token = useBlockchainTokenAccount({
-    publicKey: wallet.publicKey.toString(),
+    publicKey,
     blockchain,
     tokenAddress: address,
   });
@@ -131,6 +136,7 @@ export function SendButton({
           props: {
             blockchain,
             address,
+            publicKey,
           },
         },
       ]}
@@ -139,16 +145,20 @@ export function SendButton({
 }
 
 export function SendLoader({
+  publicKey,
   blockchain,
   address,
 }: {
+  publicKey?: string;
   blockchain: Blockchain;
   address: string;
 }) {
-  const wallet = useBlockchainActiveWallet(blockchain);
+  // publicKey should only be undefined if the user is in single-wallet mode
+  // (rather than aggregate mode).
+  const publicKeyStr = publicKey ?? useActiveWallet().publicKey;
   const [token] = useLoader(
     blockchainTokenData({
-      publicKey: wallet.publicKey.toString(),
+      publicKey: publicKeyStr,
       blockchain,
       tokenAddress: address,
     }),

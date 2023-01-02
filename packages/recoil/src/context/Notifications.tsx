@@ -1,11 +1,12 @@
 import React, { useEffect } from "react";
-import type { FEATURE_GATES_MAP, Notification } from "@coral-xyz/common";
+import type {   Blockchain,FEATURE_GATES_MAP, Notification } from "@coral-xyz/common";
 import {
   BackgroundSolanaConnection,
-  Blockchain,
   CHANNEL_POPUP_NOTIFICATIONS,
   ChannelAppUi,
   getLogger,
+  NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED,
+  NOTIFICATION_AGGREGATE_WALLETS_UPDATED,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_AUTO_LOCK_SETTINGS_UPDATED,
   NOTIFICATION_BLOCKCHAIN_DISABLED,
@@ -38,7 +39,11 @@ import {
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
 } from "@coral-xyz/common";
 import type { Commitment } from "@solana/web3.js";
-import { useResetRecoilState, useSetRecoilState } from "recoil";
+import {
+  useRecoilCallback,
+  useResetRecoilState,
+  useSetRecoilState,
+} from "recoil";
 
 import * as atoms from "../atoms";
 import { allPlugins } from "../hooks";
@@ -68,7 +73,15 @@ export function NotificationsProvider(props: any) {
       };
     });
   };
-  const setActiveWallets = (activePublicKeys) => {
+  const setActiveBlockchain = (activeBlockchain) => {
+    setWalletData((current) => {
+      return {
+        ...current,
+        activeBlockchain,
+      };
+    });
+  };
+  const setActivePublicKeys = (activePublicKeys) => {
     setWalletData((current) => {
       return {
         ...current,
@@ -79,13 +92,36 @@ export function NotificationsProvider(props: any) {
   const setKeyringStoreState = useSetRecoilState(atoms.keyringStoreState);
   const setActiveUser = useSetRecoilState(atoms.user);
   const resetAllUsers = useResetRecoilState(atoms.allUsers);
-  const _setNftCollections = useSetRecoilState(atoms.nftCollections);
-  const resetNftCollections = () => {
+  /*
+  const _setNftCollections = useRecoilCallback(
+    ({ snapshot, set }) =>
+      ({
+        publicKey,
+        connectionUrl,
+        nftCollections,
+      }: {
+        publicKey: string;
+        connectionUrl: string;
+        nftCollections: any;
+      }) => {
+        set(atoms.nftCollections({ publicKey, connectionUrl }), nftCollections);
+      },
+    []
+  );
+  const resetNftCollections = ({
+    publicKey,
+    connectionUrl,
+  }: {
+    publicKey: string;
+    connectionUrl: string;
+  }) => {
     _setNftCollections({
-      [Blockchain.SOLANA]: null,
-      [Blockchain.ETHEREUM]: null,
+      publicKey,
+      connectionUrl,
+      nftCollections: null,
     });
   };
+	*/
   // Preferences.
   const setPreferences = useSetRecoilState(atoms.preferences);
   const setFeatureGates = useSetRecoilState(atoms.featureGates);
@@ -111,6 +147,14 @@ export function NotificationsProvider(props: any) {
       return {
         ...current,
         developerMode,
+      };
+    });
+  };
+  const setIsAggregateWallets = (aggregateWallets: boolean) => {
+    setPreferences((current) => {
+      return {
+        ...current,
+        aggregateWallets,
       };
     });
   };
@@ -255,6 +299,9 @@ export function NotificationsProvider(props: any) {
         case NOTIFICATION_DEVELOPER_MODE_UPDATED:
           handleIsDeveloperModeUpdated(notif);
           break;
+        case NOTIFICATION_AGGREGATE_WALLETS_UPDATED:
+          handleAggregateWalletsUpdated(notif);
+          break;
         case NOTIFICATION_SOLANA_EXPLORER_UPDATED:
           handleSolanaExplorerUpdated(notif);
           break;
@@ -302,6 +349,9 @@ export function NotificationsProvider(props: any) {
           break;
         case NOTIFICATION_KEYRING_STORE_REMOVED_USER:
           handleRemovedUser(notif);
+          break;
+        case NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED:
+          handleActiveBlockchainUpdated(notif);
           break;
         default:
           break;
@@ -353,6 +403,7 @@ export function NotificationsProvider(props: any) {
         );
 
         return {
+          ...current,
           activePublicKeys,
           publicKeys,
         };
@@ -409,6 +460,7 @@ export function NotificationsProvider(props: any) {
         const activePublicKeys = [...current.activePublicKeys, publicKey];
 
         return {
+          ...current,
           activePublicKeys,
           publicKeys,
         };
@@ -449,6 +501,7 @@ export function NotificationsProvider(props: any) {
         const activePublicKeys = [...current.activePublicKeys, publicKey];
 
         return {
+          ...current,
           activePublicKeys,
           publicKeys,
         };
@@ -459,7 +512,13 @@ export function NotificationsProvider(props: any) {
       allPlugins().forEach((p) => {
         p.pushSolanaPublicKeyChangedNotification(notif.data.activeWallet);
       });
-      setActiveWallets(notif.data.activeWallets);
+      setActivePublicKeys(notif.data.activeWallets);
+      /*
+      resetNftCollections({
+				publicKey,
+				connectionUrl,
+			});
+			*/
     };
 
     const handleReset = (_notif: Notification) => {
@@ -490,6 +549,10 @@ export function NotificationsProvider(props: any) {
       setIsDeveloperMode(notif.data.developerMode);
     };
 
+    const handleAggregateWalletsUpdated = (notif: Notification) => {
+      setIsAggregateWallets(notif.data.aggregateWallets);
+    };
+
     const handleSolanaExplorerUpdated = (notif: Notification) => {
       setSolanaExplorer(notif.data.explorer);
     };
@@ -515,11 +578,18 @@ export function NotificationsProvider(props: any) {
       });
     };
 
+    const handleActiveBlockchainUpdated = (notif: Notification) => {
+      setActiveBlockchain(notif.data.newBlockchain);
+    };
+
     const handleEthereumActiveWalletUpdated = (notif: Notification) => {
       allPlugins().forEach((p) => {
         p.pushEthereumPublicKeyChangedNotification(notif.data.activeWallet);
       });
-      setActiveWallets(notif.data.activeWallets);
+      setActivePublicKeys(notif.data.activeWallets);
+      /*
+      resetNftCollections();
+			*/
     };
 
     const handleEthereumTokensDidUpdate = (notif: Notification) => {
@@ -574,7 +644,7 @@ export function NotificationsProvider(props: any) {
       setWalletData(notif.data.walletData);
       setActiveUser(notif.data.user);
       resetAllUsers();
-      resetNftCollections();
+      //      resetNftCollections();
     };
 
     const handleRemovedUser = (notif: Notification) => {

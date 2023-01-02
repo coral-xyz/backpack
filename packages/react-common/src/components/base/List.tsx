@@ -46,6 +46,7 @@ export function ListItem({
   isFirst,
   isLast,
   id,
+  disableBottomBorder = undefined,
   onClick = undefined,
   button = true,
   borderColor,
@@ -80,7 +81,7 @@ export function ListItem({
         </div>
         {detail}
       </MuiListItem>
-      {!isLast && (
+      {!isLast && !disableBottomBorder && (
         <Divider
           style={{
             backgroundColor: borderColor
