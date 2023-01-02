@@ -5,7 +5,11 @@ import {
   STRIPE_ENABLED,
 } from "@coral-xyz/common";
 import { Dollar } from "@coral-xyz/react-common";
-import { SwapProvider, useFeatureGates } from "@coral-xyz/recoil";
+import {
+  SwapProvider,
+  useActiveSolanaWallet,
+  useFeatureGates,
+} from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ArrowDownward, ArrowUpward, SwapHoriz } from "@mui/icons-material";
 import { Typography } from "@mui/material";
@@ -89,6 +93,9 @@ function SwapButton({
   publicKey?: string;
 }) {
   const theme = useCustomTheme();
+  // Aggregate view swapper can just default to the current (global) active key.
+  publicKey = publicKey ?? useActiveSolanaWallet().publicKey;
+
   return (
     <SwapProvider tokenAddress={address} publicKey={publicKey}>
       <TransferButton

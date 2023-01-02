@@ -17,13 +17,7 @@ import { BigNumber, ethers } from "ethers";
 
 import { blockchainTokenData } from "../atoms/balance";
 import { JUPITER_BASE_URL, jupiterInputMints } from "../atoms/solana/jupiter";
-import {
-  useActiveSolanaWallet,
-  useAllWallets,
-  useLoader,
-  useSolanaCtx,
-  useSplTokenRegistry,
-} from "../hooks";
+import { useLoader, useSolanaCtx, useSplTokenRegistry } from "../hooks";
 
 const { Zero } = ethers.constants;
 const DEFAULT_DEBOUNCE_DELAY = 400;
@@ -42,7 +36,6 @@ type JupiterRoute = {
 };
 
 type SwapContext = {
-  isAggregateSwapper: boolean;
   publicKey: string;
   fromAmount: BigNumber | undefined;
   setFromAmount: (a: BigNumber | undefined) => void;
@@ -91,21 +84,11 @@ export function SwapProvider({
   children,
 }: {
   tokenAddress?: string;
-  publicKey?: string;
+  publicKey: string;
   children: React.ReactNode;
 }) {
   const tokenRegistry = useSplTokenRegistry();
   const blockchain = Blockchain.SOLANA; // Solana only at the moment.
-  const wallet = useAllWallets().find(
-    (w) => w.blockchain === blockchain && w.publicKey === publicKey
-  );
-  // If the given publicKey is undefined, then we are in the context
-  // of an aggregate view swapper. If it is defined, then we are eiether
-  // in a single wallet view, or we have scoped the swapper to a single wallet.
-  const isAggregateSwapper = publicKey === undefined;
-  // Aggregate view swapper can just default to the current (global) active key.
-  publicKey = wallet ? wallet.publicKey : useActiveSolanaWallet().publicKey;
-
   const [inputTokenAccounts] = useLoader(jupiterInputMints({ publicKey }), []);
   const solanaCtx = useSolanaCtx();
   const { backgroundClient, connection } = solanaCtx;
@@ -418,7 +401,6 @@ export function SwapProvider({
   return (
     <_SwapContext.Provider
       value={{
-        isAggregateSwapper,
         publicKey,
         fromAmount,
         setFromAmount,

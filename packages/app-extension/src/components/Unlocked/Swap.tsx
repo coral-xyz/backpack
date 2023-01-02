@@ -818,8 +818,7 @@ export function SwapSelectToken({
   input: boolean;
 }) {
   const nav = useNavStack();
-  const { fromMint, isAggregateSwapper, publicKey, inputTokenAccounts } =
-    useSwapContext();
+  const { fromMint, publicKey, inputTokenAccounts } = useSwapContext();
   const tokenAccounts = !input
     ? useJupiterOutputMints(fromMint)
     : inputTokenAccounts.filter((token: Token) => {
@@ -831,7 +830,7 @@ export function SwapSelectToken({
         }
         return !token.nativeBalance.isZero();
       });
-  const walletFilter = isAggregateSwapper ? undefined : publicKey;
+  const walletFilter = publicKey;
   const onClickRow = (_blockchain: Blockchain, token: Token) => {
     setMint(token.mint!);
     nav.pop();
