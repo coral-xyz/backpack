@@ -80,19 +80,15 @@ function NavStackInner({
   return (
     <AnimatePresence initial={false}>
       <WithMotion id={activeRoute.name} navAction={activeRoute.navAction}>
-        {activeScreen.props.disableNav ? (
-          activeScreen.props.component({ ...(activeRoute.props ?? {}) })
-        ) : (
-          <WithNav
-            title={title}
-            navButtonLeft={_navButtonLeft}
-            navButtonRight={navButtonRight}
-            navbarStyle={style}
-            navContentStyle={contentStyle}
-          >
-            {activeScreen.props.component({ ...(activeRoute.props ?? {}) })}
-          </WithNav>
-        )}
+        <WithNav
+          title={title}
+          navButtonLeft={_navButtonLeft}
+          navButtonRight={navButtonRight}
+          navbarStyle={style}
+          navContentStyle={contentStyle}
+        >
+          {activeScreen.props.component({ ...(activeRoute.props ?? {}) })}
+        </WithNav>
       </WithMotion>
     </AnimatePresence>
   );
@@ -200,11 +196,9 @@ export function NavStackScreen({
   name,
   // eslint-disable-next-line
   component,
-  disableNav,
 }: {
   name: string;
   component: (props: any) => React.ReactNode;
-  disableNav?: boolean;
 }) {
   return <></>;
 }

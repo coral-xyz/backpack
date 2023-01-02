@@ -15,7 +15,6 @@ import {
   SecondaryButton,
 } from "@coral-xyz/react-common";
 import {
-  isAggregateWallets,
   useJupiterOutputMints,
   useSplTokenRegistry,
   useSwapContext,
@@ -26,7 +25,6 @@ import { ExpandMore, SwapVert } from "@mui/icons-material";
 import type { Button } from "@mui/material";
 import { IconButton, InputAdornment, Typography } from "@mui/material";
 import { ethers, FixedNumber } from "ethers";
-import { useRecoilValue } from "recoil";
 
 import { Button as XnftButton } from "../../plugin/Component";
 import { TextField, TextFieldLabel } from "../common";
@@ -694,7 +692,7 @@ function SwapInfoRows({
   priceImpact,
   compact,
 }: {
-  from: string;
+  from: React.ReactNode;
   youPay: any;
   rate: any;
   priceImpact: any;
@@ -746,7 +744,7 @@ function SwapTokensButton({
 }
 
 function InputTokenSelectorButton() {
-  const { inputTokenAccounts, fromMint, setFromMint } = useSwapContext();
+  const { fromMint, setFromMint } = useSwapContext();
   return (
     <TokenSelectorButton
       selectedMint={fromMint}
@@ -757,7 +755,7 @@ function InputTokenSelectorButton() {
 }
 
 function OutputTokenSelectorButton() {
-  const { fromMint, toMint, setToMint } = useSwapContext();
+  const { toMint, setToMint } = useSwapContext();
   return (
     <TokenSelectorButton
       selectedMint={toMint}
@@ -767,7 +765,15 @@ function OutputTokenSelectorButton() {
   );
 }
 
-function TokenSelectorButton({ selectedMint, setMint, input }: any) {
+function TokenSelectorButton({
+  selectedMint,
+  setMint,
+  input,
+}: {
+  selectedMint: any;
+  setMint: any;
+  input: boolean;
+}) {
   const classes = useStyles();
   const nav = useNavStack();
   const tokenRegistry = useSplTokenRegistry();
@@ -846,3 +852,5 @@ export function SwapSelectToken({
     />
   );
 }
+
+//{/*		  disableWalletSelector={!isAggregateSwapper}*/}

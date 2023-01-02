@@ -1,5 +1,4 @@
 import React, { Suspense, useState } from "react";
-import { useLocation } from "react-router-dom";
 import { Loading } from "@coral-xyz/react-common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ArrowBack } from "@mui/icons-material";

@@ -29,6 +29,7 @@ import { RemoveWallet } from "../Unlocked/Settings/YourAccount/EditWallets/Remov
 import { RenameWallet } from "../Unlocked/Settings/YourAccount/EditWallets/RenameWallet";
 import { WalletDetail } from "../Unlocked/Settings/YourAccount/EditWallets/WalletDetail";
 
+import { Scrollbar } from "./Layout/Scrollbar";
 import { HardwareIcon, ImportedIcon, MnemonicIcon } from "./Icon";
 import { WithCopyTooltip } from "./WithCopyTooltip";
 
@@ -147,17 +148,14 @@ export function WalletDrawerNavStack({
   }) => boolean;
 }) {
   const theme = useCustomTheme();
-  const [miniDrawerRoot, setMiniDrawerRoot] = useState(false);
   return (
     <WithMiniDrawer
       openDrawer={openDrawer}
       setOpenDrawer={setOpenDrawer}
       paperProps={{
         sx: {
-          height: miniDrawerRoot ? undefined : "90%",
-          maxHeight: "90%",
-          borderTopLeftRadius: miniDrawerRoot ? "12px" : 0,
-          borderTopRightRadius: miniDrawerRoot ? "12px" : 0,
+          height: "90%",
+          background: theme.custom.colors.backgroundBackdrop,
         },
       }}
       backdropProps={{
@@ -173,7 +171,9 @@ export function WalletDrawerNavStack({
           background: theme.custom.colors.backgroundBackdrop,
         }}
       >
-        <WalletNavStack filter={filter} setMiniDrawerRoot={setMiniDrawerRoot} />
+        <Scrollbar>
+          <WalletNavStack filter={filter} />
+        </Scrollbar>
       </div>
     </WithMiniDrawer>
   );
@@ -181,14 +181,12 @@ export function WalletDrawerNavStack({
 
 function WalletNavStack({
   filter,
-  setMiniDrawerRoot,
 }: {
   filter?: (w: {
     blockchain: Blockchain;
     publicKey: string;
     name: string;
   }) => boolean;
-  setMiniDrawerRoot?: (b: boolean) => void;
 }) {
   return (
     <NavStackEphemeral
@@ -196,27 +194,14 @@ function WalletNavStack({
       options={() => ({ title: "" })}
     >
       <NavStackScreen
-        disableNav={true}
         name={"root"}
-        component={(props: any) => {
-          useEffect(() => {
-            if (setMiniDrawerRoot) {
-              setMiniDrawerRoot(true);
-            }
-          }, [props, setMiniDrawerRoot]);
-          return <AllWalletsList filter={filter} {...props} />;
-        }}
+        component={(props: any) => (
+          <AllWalletsList filter={filter} {...props} />
+        )}
       />
       <NavStackScreen
         name={"edit-wallets"}
-        component={(props: any) => {
-          useEffect(() => {
-            if (setMiniDrawerRoot) {
-              setMiniDrawerRoot(false);
-            }
-          }, [props, setMiniDrawerRoot]);
-          return <EditWallets filter={filter} {...props} />;
-        }}
+        component={(props: any) => <EditWallets filter={filter} {...props} />}
       />
       <NavStackScreen
         name={"edit-wallets-wallet-detail"}
@@ -243,12 +228,47 @@ function WalletNavStack({
 }
 
 function AllWalletsList({ filter }: { filter?: (w: any) => boolean }) {
+  const { setTitle, setNavButtonRight } = useNavStack();
   const activeWallet = useBlockchainActiveWallet(Blockchain.SOLANA);
   let wallets = useAllWallets();
+
+  useEffect(() => {
+    setNavButtonRight(<WalletSettingsButton />);
+    setTitle("Wallets");
+    return () => {
+      setNavButtonRight(null);
+    };
+  }, []);
+
   if (filter) {
     wallets = wallets.filter(filter);
   }
   return <_WalletList activeWallet={activeWallet} wallets={wallets} />;
+}
+
+function WalletSettingsButton() {
+  const theme = useCustomTheme();
+  const { push } = useNavStack();
+  return (
+    <Button
+      onClick={() => {
+        push("edit-wallets");
+      }}
+      disableElevation
+      disableRipple
+      style={{
+        minWidth: "24px",
+        width: "24px",
+        height: "24px",
+      }}
+    >
+      <Settings
+        style={{
+          color: theme.custom.colors.icon,
+        }}
+      />
+    </Button>
+  );
 }
 
 function _WalletList({
@@ -258,7 +278,6 @@ function _WalletList({
   activeWallet: any;
   wallets: any;
 }) {
-  const theme = useCustomTheme();
   const { close } = useDrawerContext();
   const background = useBackgroundClient();
 
@@ -278,11 +297,10 @@ function _WalletList({
     <div
       style={{
         padding: "16px",
-        paddingBottom: "16px",
-        background: theme.custom.colors.backgroundBackdrop,
+        paddingTop: 0,
+        //background: theme.custom.colors.backgroundBackdrop,
       }}
     >
-      <WalletListHeader />
       <WalletList
         wallets={wallets}
         clickWallet={(v) => {
@@ -297,51 +315,6 @@ function _WalletList({
         }}
         selectedWalletPublicKey={activeWallet.publicKey}
       />
-    </div>
-  );
-}
-
-function WalletListHeader() {
-  const theme = useCustomTheme();
-  const { push } = useNavStack();
-
-  return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        marginBottom: "16px",
-      }}
-    >
-      <div />
-      <Typography
-        style={{
-          color: theme.custom.colors.fontColor,
-          fontSize: "18px",
-          lineHeight: "24px",
-          textAlign: "center",
-        }}
-      >
-        Wallets
-      </Typography>
-      <Button
-        onClick={() => {
-          push("edit-wallets");
-        }}
-        disableElevation
-        disableRipple
-        style={{
-          minWidth: "24px",
-          width: "24px",
-          height: "24px",
-        }}
-      >
-        <Settings
-          style={{
-            color: theme.custom.colors.icon,
-          }}
-        />
-      </Button>
     </div>
   );
 }

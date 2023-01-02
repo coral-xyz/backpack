@@ -1,5 +1,4 @@
-import type {
-  Blockchain} from "@coral-xyz/common";
+import type { Blockchain } from "@coral-xyz/common";
 import {
   ETH_NATIVE_MINT,
   SOL_NATIVE_MINT,
@@ -90,7 +89,6 @@ function SwapButton({
   publicKey?: string;
 }) {
   const theme = useCustomTheme();
-
   return (
     <SwapProvider tokenAddress={address} publicKey={publicKey}>
       <TransferButton

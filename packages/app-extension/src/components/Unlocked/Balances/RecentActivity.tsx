@@ -131,6 +131,8 @@ export function RecentActivity() {
   const activeEthereumWallet = useActiveEthereumWallet();
   const activeSolanaWallet = useActiveSolanaWallet();
 
+  // TODO: aggregated here.
+
   const recentEthereumTransactions = activeEthereumWallet
     ? useRecentEthereumTransactions({
         address: activeEthereumWallet.publicKey,
