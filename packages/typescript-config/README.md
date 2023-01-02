@@ -1,8 +1,6 @@
 ## Base configuration
 
-> You can disable the TypeScript setup in Expo CLI with the environment variable `EXPO_NO_TYPESCRIPT_SETUP=1`
-
-A project's **tsconfig.json** should extend the `expo/tsconfig.base` by default. This sets the following default [compiler options][tsc-compileroptions] (which can be overwritten in your project's **tsconfig.json**):
+A project's **tsconfig.json** should extend the `coral-xyz/tsconfig.base` by default. This sets the following default [compiler options][tsc-compileroptions] (which can be overwritten in your project's **tsconfig.json**):
 
 - `"allowJs"`: `true`
   - Allow JavaScript files to be compiled. If you project requires more strictness, you can disable this.
