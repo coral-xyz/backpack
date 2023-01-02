@@ -12,7 +12,16 @@
       "packages/blockchains/*",
       "web"
     ],
-    "nohoist": ["examples/**", "packages/app-mobile/**"]
+    "nohoist": [
+      "**/react-native",
+      "**/react-native/**",
+      "**/react-native-scripts",
+      "**/react-native-scripts/**",
+      "**/expo",
+      "**/expo/**",
+      "**/jest-expo",
+      "**/jest-expo/**"
+    ]
   },
   "scripts": {
     "lint": "turbo run lint --filter=!@coral-xyz/app-mobile",
