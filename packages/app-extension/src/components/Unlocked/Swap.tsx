@@ -841,8 +841,6 @@ export function SwapSelectToken({
     nav.setTitle("Select Token");
   }, [nav]);
 
-  // TODO: add an on cilck handler that changes the swap provider's publicKey.
-
   return (
     <SearchableTokenTable
       onClickRow={onClickRow}
@@ -852,5 +850,3 @@ export function SwapSelectToken({
     />
   );
 }
-
-//{/*		  disableWalletSelector={!isAggregateSwapper}*/}

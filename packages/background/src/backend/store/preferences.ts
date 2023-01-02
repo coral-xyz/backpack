@@ -61,4 +61,4 @@ function key(uuid: string): string {
 
 export const DEFAULT_DARK_MODE = false;
 export const DEFAULT_DEVELOPER_MODE = false;
-export const DEFAULT_AGGREGATE_WALLETS = true;
+export const DEFAULT_AGGREGATE_WALLETS = false;
