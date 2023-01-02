@@ -78,11 +78,9 @@ export function SearchableTokenTables({
 export function SearchableTokenTable({
   onClickRow,
   tokenAccounts,
-  publicKey,
   customFilter = () => true,
 }: {
   onClickRow: (blockchain: Blockchain, token: Token) => void;
-  publicKey?: string;
   tokenAccounts?: ReturnType<typeof useBlockchainTokensSorted>;
   customFilter: (token: Token) => boolean;
 }) {
@@ -102,7 +100,6 @@ export function SearchableTokenTable({
         }}
       />
       <TokenTables
-        publicKey={publicKey}
         onClickRow={onClickRow}
         tokenAccounts={tokenAccounts}
         searchFilter={searchFilter}
@@ -115,7 +112,6 @@ export function SearchableTokenTable({
 export function TokenTables({
   onClickRow,
   tokenAccounts,
-  publicKey,
   searchFilter = "",
   customFilter = () => true,
 }: {
@@ -125,9 +121,7 @@ export function TokenTables({
   tokenAccounts?: ReturnType<typeof useBlockchainTokensSorted>;
   customFilter?: (token: Token) => boolean;
 }) {
-  const wallets = useAllWalletsDisplayed().filter((wallet) =>
-    !publicKey ? true : wallet.publicKey === publicKey
-  );
+  const wallets = useAllWalletsDisplayed();
   return (
     <>
       {wallets.map(

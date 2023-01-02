@@ -97,7 +97,7 @@ function SwapButton({
   publicKey = publicKey ?? useActiveSolanaWallet().publicKey;
 
   return (
-    <SwapProvider tokenAddress={address} publicKey={publicKey}>
+    <SwapProvider tokenAddress={address}>
       <TransferButton
         label={"Swap"}
         labelComponent={

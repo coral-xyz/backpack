@@ -36,7 +36,6 @@ type JupiterRoute = {
 };
 
 type SwapContext = {
-  publicKey: string;
   fromAmount: BigNumber | undefined;
   setFromAmount: (a: BigNumber | undefined) => void;
   toAmount: BigNumber | undefined;
@@ -80,23 +79,24 @@ function useDebounce(value: any, wait = DEFAULT_DEBOUNCE_DELAY) {
 
 export function SwapProvider({
   tokenAddress,
-  publicKey,
   children,
 }: {
   tokenAddress?: string;
-  publicKey: string;
   children: React.ReactNode;
 }) {
   const tokenRegistry = useSplTokenRegistry();
   const blockchain = Blockchain.SOLANA; // Solana only at the moment.
-  const [inputTokenAccounts] = useLoader(jupiterInputMints({ publicKey }), []);
   const solanaCtx = useSolanaCtx();
-  const { backgroundClient, connection } = solanaCtx;
+  const { backgroundClient, connection, walletPublicKey } = solanaCtx;
+  const [inputTokenAccounts] = useLoader(
+    jupiterInputMints({ publicKey: walletPublicKey.toString() }),
+    []
+  );
 
   const [token] = tokenAddress
     ? useLoader(
         blockchainTokenData({
-          publicKey,
+          publicKey: walletPublicKey.toString(),
           blockchain,
           tokenAddress,
         }),
@@ -133,11 +133,11 @@ export function SwapProvider({
 
   const fromToken = associatedTokenAddress(
     new PublicKey(fromMint),
-    new PublicKey(publicKey)
+    walletPublicKey
   );
   const toToken = associatedTokenAddress(
     new PublicKey(toMint),
-    new PublicKey(publicKey)
+    walletPublicKey
   );
   const fromMintInfo = tokenRegistry.get(fromMint)!;
   const toMintInfo = tokenRegistry.get(toMint)!;
@@ -296,7 +296,7 @@ export function SwapProvider({
       return (
         await generateWrapSolTx(
           solanaCtx,
-          new PublicKey(publicKey!),
+          walletPublicKey,
           fromAmount!.toNumber()
         )
       ).toString("base64");
@@ -305,7 +305,7 @@ export function SwapProvider({
       return (
         await generateUnwrapSolTx(
           solanaCtx,
-          new PublicKey(publicKey!),
+          walletPublicKey,
           fromAmount!.toNumber()
         )
       ).toString("base64");
@@ -321,7 +321,7 @@ export function SwapProvider({
         body: JSON.stringify({
           route,
           wrapUnwrapSOL: true,
-          userPublicKey: new PublicKey(publicKey!),
+          userPublicKey: walletPublicKey,
         }),
       });
       const transactions = await response.json();
@@ -391,7 +391,7 @@ export function SwapProvider({
       method: UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
       params: [
         bs58.encode(Buffer.from(serializedTransaction, "base64")),
-        publicKey,
+        walletPublicKey,
       ],
     });
     await confirmTransaction(connection, signature, "confirmed");
@@ -401,7 +401,6 @@ export function SwapProvider({
   return (
     <_SwapContext.Provider
       value={{
-        publicKey,
         fromAmount,
         setFromAmount,
         toAmount,

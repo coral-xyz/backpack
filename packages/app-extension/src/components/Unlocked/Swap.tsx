@@ -15,6 +15,7 @@ import {
   SecondaryButton,
 } from "@coral-xyz/react-common";
 import {
+  useActiveSolanaWallet,
   useJupiterOutputMints,
   useSplTokenRegistry,
   useSwapContext,
@@ -590,7 +591,6 @@ function SwapReceiveAmount() {
 
 function SwapInfo({ compact = true }: { compact?: boolean }) {
   const {
-    publicKey,
     fromAmount,
     toAmount,
     fromMintInfo,
@@ -602,7 +602,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     swapFee,
   } = useSwapContext();
 
-  const name = useWalletName(publicKey);
+  const { name } = useActiveSolanaWallet();
 
   // Loading indicator when routes are being loaded due to polling
   if (isLoadingRoutes || isLoadingTransactions) {
@@ -818,7 +818,7 @@ export function SwapSelectToken({
   input: boolean;
 }) {
   const nav = useNavStack();
-  const { fromMint, publicKey, inputTokenAccounts } = useSwapContext();
+  const { fromMint, inputTokenAccounts } = useSwapContext();
   const tokenAccounts = !input
     ? useJupiterOutputMints(fromMint)
     : inputTokenAccounts.filter((token: Token) => {
@@ -830,7 +830,6 @@ export function SwapSelectToken({
         }
         return !token.nativeBalance.isZero();
       });
-  const walletFilter = publicKey;
   const onClickRow = (_blockchain: Blockchain, token: Token) => {
     setMint(token.mint!);
     nav.pop();
@@ -845,7 +844,6 @@ export function SwapSelectToken({
       onClickRow={onClickRow}
       tokenAccounts={tokenAccounts}
       customFilter={customFilter}
-      publicKey={walletFilter}
     />
   );
 }
