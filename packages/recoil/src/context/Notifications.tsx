@@ -69,11 +69,11 @@ const logger = getLogger("notifications-provider");
 //
 export function NotificationsProvider(props: any) {
   const setWalletData = useSetRecoilState(atoms.walletPublicKeyData);
-  const setWalletPublicKeys = (publicKeys) => {
+  const setWalletPublicKeysWithFn = (publicKeysFn) => {
     setWalletData((current) => {
       return {
         ...current,
-        publicKeys,
+        publicKeys: publicKeysFn(current.publicKeys),
       };
     });
   };
@@ -96,7 +96,6 @@ export function NotificationsProvider(props: any) {
   const setKeyringStoreState = useSetRecoilState(atoms.keyringStoreState);
   const setActiveUser = useSetRecoilState(atoms.user);
   const resetAllUsers = useResetRecoilState(atoms.allUsers);
-  /*
   const _setNftCollections = useRecoilCallback(
     ({ snapshot, set }) =>
       ({
@@ -125,7 +124,7 @@ export function NotificationsProvider(props: any) {
       nftCollections: null,
     });
   };
-	*/
+
   // Preferences.
   const setPreferences = useSetRecoilState(atoms.preferences);
   const setFeatureGates = useSetRecoilState(atoms.featureGates);
@@ -415,7 +414,7 @@ export function NotificationsProvider(props: any) {
     };
 
     const handleKeynameUpdate = (notif: Notification) => {
-      setWalletPublicKeys((current: any) => {
+      setWalletPublicKeysWithFn((current: any) => {
         // Using JSON for a deep copy
         const next: WalletPublicKeys = JSON.parse(JSON.stringify(current));
         for (const keyring of Object.values(next)) {
@@ -517,6 +516,7 @@ export function NotificationsProvider(props: any) {
         p.pushSolanaPublicKeyChangedNotification(notif.data.activeWallet);
       });
       setActivePublicKeys(notif.data.activeWallets);
+
       /*
       resetNftCollections({
 				publicKey,
@@ -591,9 +591,7 @@ export function NotificationsProvider(props: any) {
         p.pushEthereumPublicKeyChangedNotification(notif.data.activeWallet);
       });
       setActivePublicKeys(notif.data.activeWallets);
-      /*
-      resetNftCollections();
-			*/
+      //      resetNftCollections();
     };
 
     const handleEthereumTokensDidUpdate = (notif: Notification) => {
