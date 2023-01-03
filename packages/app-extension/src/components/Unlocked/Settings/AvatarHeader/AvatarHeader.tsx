@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ProxyImage } from "@coral-xyz/react-common";
-import { useAvatarUrl } from "@coral-xyz/recoil";
+import { useActiveWallet, useAvatarUrl, useIsAggregateWallets } from "@coral-xyz/recoil";
 import { styled } from "@coral-xyz/themes";
 import { Edit } from "@mui/icons-material";
 
@@ -9,6 +9,7 @@ import {
   NavStackEphemeral,
   NavStackScreen,
 } from "../../../common/Layout/NavStack";
+import { WalletDrawerButton } from "../../../common/WalletList";
 
 import { UpdateProfilePicture } from "./UpdateProfilePicture";
 
@@ -17,13 +18,15 @@ const title = "Change Profile Picture";
 export function AvatarHeader() {
   const [openDrawer, setOpenDrawer] = useState(false);
   const avatarUrl = useAvatarUrl(64);
+	const _isAggregateWallets = useIsAggregateWallets();
+	const activeWallet = useActiveWallet();
 
   const onClick = () => {
     setOpenDrawer(true);
   };
 
   return (
-    <div style={{ marginTop: "16px", marginBottom: "36px" }}>
+    <div style={{ marginTop: "12px", marginBottom: "24px" }}>
       <AvatarWrapper onClick={onClick}>
         <ProxyImage
           key={avatarUrl}
@@ -42,6 +45,16 @@ export function AvatarHeader() {
           <Edit />
         </EditOverlay>
       </AvatarWrapper>
+			{!_isAggregateWallets && (
+				<div style={{ display: 'flex', marginTop: '8px', }}>
+					<div style={{ flex: 1 }} />
+					<WalletDrawerButton wallet={activeWallet} style={{
+						justifyContent: 'center',
+						marginLeft: 0,
+					}} />
+					<div style={{ flex: 1 }} />
+				</div>
+			)}
       <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
         <div style={{ height: "100%" }}>
           <NavStackEphemeral

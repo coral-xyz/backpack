@@ -41,7 +41,6 @@ const useStyles = styles((theme) => ({
     fontWeight: 500,
     lineHeight: "24px",
     fontSize: "14px",
-    marginLeft: "8px",
     "&:hover": {
       backgroundColor: "transparent",
       "& svg": {
@@ -103,6 +102,7 @@ function WalletButton({
         flex: 1,
         display: "flex",
         justifyContent: "space-between",
+				marginLeft: "8px",
         ...style,
       }}
     >
