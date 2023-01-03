@@ -15,7 +15,29 @@
     "isolatedModules": true,
     "noEmit": true,
     "downlevelIteration": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "paths": {
+      "@coral-xyz/background": ["../background"],
+      "@coral-xyz/chat-sdk": ["../chat-sdk"],
+      "@coral-xyz/common": ["../common"],
+      "@coral-xyz/db": ["../db"],
+      "@coral-xyz/message-sdk": ["../message-sdk"],
+      "@coral-xyz/react-common": ["../react-common"],
+      "@coral-xyz/react-xnft-dom-renderer": ["../react-xnft-dom-renderer"],
+      "@coral-xyz/recoil": ["../recoil"],
+      "@coral-xyz/themes": ["../themes"]
+    }
   },
-  "include": ["src", "webpack.config.js"]
+  "include": ["src", "webpack.config.js"],
+  "references": [
+    { "path": "../background" },
+    { "path": "../chat-sdk" },
+    { "path": "../common" },
+    { "path": "../db" },
+    { "path": "../message-sdk" },
+    { "path": "../react-common" },
+    { "path": "../react-xnft-dom-renderer" },
+    { "path": "../recoil" },
+    { "path": "../themes" }
+  ]
 }
