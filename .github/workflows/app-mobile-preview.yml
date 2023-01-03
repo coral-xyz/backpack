@@ -17,12 +17,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Checkout must come before a custom action
-      - name: 🏗 Setup repository
+      - name: 🏗 Checkout
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 2
 
-      - name: 🏗 Setup monorepo
+      - name: 🏗 Install & Cache Dependencies
+        uses: ./.github/actions/monorepo-install
+
+      - name: 🏗 Setup Expo
         uses: ./.github/actions/app-mobile-monorepo-setup
         with:
           expo-token: ${{ secrets.EXPO_TOKEN }}
