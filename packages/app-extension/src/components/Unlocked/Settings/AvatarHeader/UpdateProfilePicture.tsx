@@ -82,6 +82,9 @@ export function UpdateProfilePicture({
                 color: "inherit",
                 border: "none",
               }}
+              innerStyle={{
+                border: "none",
+              }}
               buttonText={"Browse Magic Eden"}
             />
           ) : (
