@@ -1,5 +1,3 @@
-const [IGNORE, WARNING, ERROR] = [0, 1, 2];
-
 module.exports = {
   root: true,
   extends: [
