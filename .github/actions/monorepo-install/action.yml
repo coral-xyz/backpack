@@ -12,3 +12,4 @@ runs:
 
     - name: 📦 Install dependencies
       run: yarn install --frozen-lockfile --prefer-offline
+      shell: bash
