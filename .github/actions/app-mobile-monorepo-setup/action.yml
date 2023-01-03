@@ -16,5 +16,18 @@ runs:
       uses: expo/expo-github-action@v7
       with:
         eas-version: ${{ inputs.eas-version }}
-        expo-version: ${{ inputs.expo-version }}
+        # expo-version: ${{ inputs.expo-version }}
         token: ${{ inputs.expo-token }}
+
+    # Edge builds don't include stuff like username onboarding
+    - name: 👷 Build Packages (edge)
+      env:
+        BACKPACK_CONFIG_VERSION: "${{ env.RELEASE_PREFIX }}-latest-edge-${{ github.run_number }}"
+        BACKPACK_CONFIG_LOG_LEVEL: "info"
+        BACKPACK_FEATURE_LIGHT_MODE: "true"
+        BACKPACK_FEATURE_POP_MODE: "true"
+        BACKPACK_FEATURE_MULTICHAIN: "true"
+        BACKPACK_FEATURE_XNFT: "true"
+        # CI!=true so that build warnings aren't treated like errors (for now)
+        CI: ""
+      run: yarn build:mobile

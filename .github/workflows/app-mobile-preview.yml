@@ -23,25 +23,12 @@ jobs:
       - name: 🏗 Install & Cache Dependencies
         uses: ./.github/actions/monorepo-install
 
-      - name: 🏗 Setup Expo
+      - name: 🏗 Setup & Build Monorepo (mobile)
         uses: ./.github/actions/app-mobile-monorepo-setup
         with:
           expo-token: ${{ secrets.EXPO_TOKEN }}
 
-      # Edge builds don't include stuff like username onboarding
-      - name: 👷 Build packages (edge)
-        env:
-          BACKPACK_CONFIG_VERSION: "${{ env.RELEASE_PREFIX }}-latest-edge-${{ github.run_number }}"
-          BACKPACK_CONFIG_LOG_LEVEL: "info"
-          BACKPACK_FEATURE_LIGHT_MODE: "true"
-          BACKPACK_FEATURE_POP_MODE: "true"
-          BACKPACK_FEATURE_MULTICHAIN: "true"
-          BACKPACK_FEATURE_XNFT: "true"
-          # CI!=true so that build warnings aren't treated like errors (for now)
-          CI: ""
-        run: yarn build:mobile
-
-      - name: 🚀 Publish preview
+      - name: 🚀 Publish Preview
         working-directory: packages/app-mobile
         env:
           APP_ENV: "production"
