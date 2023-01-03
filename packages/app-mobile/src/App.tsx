@@ -56,7 +56,7 @@ function Main(): JSX.Element | null {
   const onLayoutRootView = useCallback(async () => {
     if (appIsReady) {
       // This tells the splash screen to hide immediately! If we call this after
-      // `setAppIsReady`, then we may see a blank screen while the app is
+      // `setAppIsReady`, we may see a blank screen while the app is
       // loading its initial state and rendering its first pixels. So instead,
       // we hide the splash screen once we know the root view has already
       // performed layout.
@@ -91,8 +91,7 @@ function Main(): JSX.Element | null {
         style={[
           styles.container,
           { backgroundColor: theme.custom.colors.background },
-        ]}
-      >
+        ]}>
         <StatusBar style={theme.colorScheme === "dark" ? "light" : "dark"} />
         <Navigation colorScheme={theme.colorScheme} />
       </SafeAreaView>
@@ -136,8 +135,8 @@ function BackgroundHiddenWebView(): JSX.Element {
       <WebView
         ref={ref}
         cacheMode="LOAD_CACHE_ELSE_NETWORK"
-        cacheEnabled={true}
-        limitsNavigationsToAppBoundDomains={true}
+        cacheEnabled
+        limitsNavigationsToAppBoundDomains
         source={{ uri: Constants?.expoConfig?.extra?.webviewUrl }}
         onMessage={(event) => {
           const msg = JSON.parse(event.nativeEvent.data);
