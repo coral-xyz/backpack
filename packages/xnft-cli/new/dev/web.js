@@ -12,9 +12,9 @@ module.exports = (program) => {
     .command("web")
     .argument("[entrypoint]", "entrypoint name", "default")
     .option("-x, --xnft <string>", "Path to xnft.json file")
-    .action(async (entrypoint, { xnft: xnftPath }) => {
+    .action(async (entrypoint, { xnft: xnftPath = "./xnft.json" }) => {
       console.debug(`👀 watching`);
-      xnftPath = path.resolve(xnftPath ?? "./xnft.json");
+      xnftPath = path.resolve(xnftPath);
       const basePath = path.dirname(xnftPath);
       const xnft = await getXnftWithGlobs(xnftPath);
 

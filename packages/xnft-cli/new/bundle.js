@@ -9,12 +9,14 @@ const { readFile, writeFile, mkdir } = promises;
 module.exports = (program) => {
   program
     .command("bundle")
-    .argument("[xnftPath]", "xnft.json file")
+    .option("-x, --xnft <string>", "Path to xnft.json file")
     .option("-d, --dest <string>", "Destination path")
-    .action(async function (xnftPath) {
-      xnftPath = path.resolve(xnftPath ?? "./xnft.json");
-      const options = this.opts();
-      const dest = options.dest ?? "xnft-bundle.zip";
+    .action(async function ({
+      xnft: xnftPath = "./xnft.json",
+      dest = "xnft-bundle.zip",
+    }) {
+      console.log(xnftPath, dest);
+      xnftPath = path.resolve(xnftPath);
       const basePath = path.dirname(xnftPath);
       const destPath = path.join(
         process.cwd(),
@@ -27,7 +29,9 @@ module.exports = (program) => {
         cwd: basePath,
         absolute: true,
       });
+
       console.log(xnft.globs);
+
       const zip = new JSZip();
 
       await Promise.all(
