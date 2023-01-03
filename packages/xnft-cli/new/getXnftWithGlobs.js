@@ -12,19 +12,17 @@ module.exports = async (xnftPath) => {
 
   Object.values(xnft.entrypoints).forEach((entrypoint) => {
     Object.values(entrypoint).forEach((filePath) => {
-      if (typeof filePath === "string") {
-        const stats = statSync(filePath);
-        if (stats.isDirectory()) {
-          include.push(path.join(filePath, "/**/*"));
-        } else {
-          const dir = path.dirname(filePath);
-          include.push(path.join(dir, "/**/*"));
-        }
+      const stats = statSync(filePath);
+      if (stats.isDirectory()) {
+        include.push(path.join(filePath, "/**/*"));
       } else {
-        include.push(path.join(filePath.root, "/**/*"));
+        const dir = path.dirname(filePath);
+        include.push(path.join(dir, "/**/*"));
       }
     });
   });
+
+  console.log(include);
 
   return {
     ...xnft,

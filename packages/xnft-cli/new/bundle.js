@@ -15,7 +15,6 @@ module.exports = (program) => {
       xnft: xnftPath = "./xnft.json",
       dest = "xnft-bundle.zip",
     }) {
-      console.log(xnftPath, dest);
       xnftPath = path.resolve(xnftPath);
       const basePath = path.dirname(xnftPath);
       const destPath = path.join(
@@ -29,8 +28,6 @@ module.exports = (program) => {
         cwd: basePath,
         absolute: true,
       });
-
-      console.log(xnft.globs);
 
       const zip = new JSZip();
 

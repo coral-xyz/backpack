@@ -75,15 +75,11 @@ module.exports = (program) => {
       const app = express();
       const port = simulatorPort;
 
-      let entry = xnft.entrypoints[entrypoint].web;
-      entry =
-        typeof entry === "string" ? entry : path.join(entry.root, entry.index);
-      const stats = fs.statSync(entry);
-      const index = stats.isDirectory()
-        ? path.join(entry, "index.html")
-        : entry;
+      const entry = xnft.entrypoints[entrypoint].web;
 
-      app.use("/", express.static(path.dirname(findTarget(index))));
+      app.use(express.static(basePath));
+
+      app.use("/", express.static(path.join(basePath, entry)));
 
       app.listen(port, () => {
         console.log(`listening on port ${port}`);
