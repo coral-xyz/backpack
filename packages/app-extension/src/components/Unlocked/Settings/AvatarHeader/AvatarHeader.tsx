@@ -12,6 +12,7 @@ import {
 
 import { UpdateProfilePicture } from "./UpdateProfilePicture";
 
+console.log("hi");
 const title = "Change Profile Picture";
 
 export function AvatarHeader() {
