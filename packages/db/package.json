@@ -5,7 +5,7 @@
   "source": "src/index.ts ",
   "types": "dist/esm/index.d.ts",
   "scripts": {
-    "build": "tsc && tsc-alias"
+    "build": "tsc -b && tsc-alias"
   },
   "license": "MIT",
   "dependencies": {

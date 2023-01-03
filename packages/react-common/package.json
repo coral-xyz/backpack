@@ -5,13 +5,13 @@
   "source": "src/index.ts ",
   "types": "dist/esm/index.d.ts",
   "scripts": {
-    "build": "tsc && tsc-alias"
+    "build": "tsc -b && tsc-alias"
   },
   "license": "MIT",
   "dependencies": {
+    "@coral-xyz/common": "*",
     "@coral-xyz/recoil": "*",
     "@coral-xyz/themes": "*",
-    "@coral-xyz/common": "*",
     "@mui/icons-material": "^5.10.14",
     "@mui/material": "^5.10.14",
     "emoji-picker-react": "^4.4.5",
@@ -19,7 +19,6 @@
     "graphql-ws": "^5.11.2",
     "react": "^17.0.2",
     "react-custom-scrollbars": "^4.2.1",
-    "tsc": "^2.0.4",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

@@ -7,7 +7,7 @@
   "react-native": "dist/rn/index.js",
   "types": "dist/esm/index.d.ts",
   "scripts": {
-    "build": "./scripts/config.sh && tsc && tsc-alias && tsc -p tsconfig.rn.json",
+    "build": "./scripts/config.sh && tsc -b && tsc-alias && tsc -p tsconfig.rn.json",
     "dev": "tsc --watch",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
     "lint:fix": "yarn run lint --fix",

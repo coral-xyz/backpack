@@ -1,6 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
+    "disableReferencedProjectLoad": false,
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "composite": true,
