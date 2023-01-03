@@ -16,6 +16,7 @@
   "dependencies": {
     "@cardinal/payment-manager": "^1.7.9",
     "@cardinal/token-manager": "^1.7.9",
+    "@coral-xyz/react-common2": "*",
     "@coral-xyz/common": "*",
     "@coral-xyz/recoil": "*",
     "@ethersproject/shims": "^5.7.0",

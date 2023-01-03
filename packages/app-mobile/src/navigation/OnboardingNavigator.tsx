@@ -68,6 +68,7 @@ import {
   UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
   XNFT_GG_LINK,
 } from "@coral-xyz/common";
+import { Hello } from "@coral-xyz/react-common2";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
@@ -207,6 +208,7 @@ function OnboardingCreateOrImportWalletScreen({
             alignItems: "center",
           }}
         >
+          <Hello name="Peter" />
           <PrimaryButton
             label="Create a new wallet"
             onPress={() => {
