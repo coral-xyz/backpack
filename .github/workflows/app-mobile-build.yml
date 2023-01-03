@@ -33,9 +33,6 @@ jobs:
       - name: 🏗 Checkout
         uses: actions/checkout@v3
 
-      - name: 🏗 Install & Cache Dependencies
-        uses: ./.github/actions/monorepo-install
-
       - name: 🏗 Setup & Build Monorepo (mobile)
         uses: ./.github/actions/app-mobile-monorepo-setup
         with:

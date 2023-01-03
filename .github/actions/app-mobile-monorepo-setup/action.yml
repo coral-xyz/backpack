@@ -12,6 +12,9 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: 🏗 Install & Cache Dependencies
+      uses: ./.github/actions/monorepo-install
+
     - name: 🏗 Setup Expo
       uses: expo/expo-github-action@v7
       with:
