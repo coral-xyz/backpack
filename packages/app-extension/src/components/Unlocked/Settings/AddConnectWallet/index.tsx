@@ -39,6 +39,11 @@ export function AddConnectWalletMenu({
   const [openDrawer, setOpenDrawer] = useState(false);
   const [newPublicKey, setNewPublicKey] = useState("");
 
+  // Lock to ensure that the create new wallet button cannot be accidentally
+  // spammed or double clicked, which is undesireable as it creates more wallets
+  // than the user expects.
+  const [lockCreateButton, setLockCreateButton] = useState(false);
+
   useEffect(() => {
     const prevTitle = nav.title;
     nav.setTitle("");
@@ -74,12 +79,17 @@ export function AddConnectWalletMenu({
                   }
                   text="Create a new wallet"
                   onClick={async () => {
+                    if (lockCreateButton) {
+                      return;
+                    }
+                    setLockCreateButton(true);
                     const publicKey = await background.request({
                       method: UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
                       params: [blockchain],
                     });
                     setNewPublicKey(publicKey);
                     setOpenDrawer(true);
+                    setLockCreateButton(false);
                   }}
                 />
               </Grid>
