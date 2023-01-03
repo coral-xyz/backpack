@@ -1,23 +1,25 @@
 {
-  "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
-    "baseUrl": ".",
-    "composite": true,
-    "declaration": true,
-    "declarationMap": true,
-    "emitDecoratorMetadata": true,
-    "esModuleInterop": true,
-    "experimentalDecorators": true,
-    "jsx": "react-jsx",
-    "module": "es2022",
-    "moduleResolution": "node",
-    "noImplicitAny": false,
-    "noImplicitReturns": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "sourceMap": true,
-    "strictNullChecks": true,
-    "target": "es2019"
-  },
-  "exclude": ["**/*.js", "**/dist/**/*"]
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "files": [],
+  "include": [],
+  "references": [
+    { "path": "packages/background" },
+    { "path": "packages/blockchains" },
+    { "path": "packages/chat-sdk" },
+    { "path": "packages/common" },
+    { "path": "packages/common-public" },
+    { "path": "packages/db" },
+    { "path": "packages/deptool" },
+    { "path": "packages/ledger-injection" },
+    { "path": "packages/message-sdk" },
+    { "path": "packages/provider-core" },
+    { "path": "packages/provider-injection" },
+    { "path": "packages/react-common" },
+    { "path": "packages/react-xnft" },
+    { "path": "packages/react-xnft-dom-renderer" },
+    { "path": "packages/recoil" },
+    { "path": "packages/themes" },
+    { "path": "packages/wallet-standard" },
+    { "path": "packages/xnft-cli" }
+  ]
 }

@@ -6,7 +6,7 @@
   "react-native": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -b",
     "build:html": "parcel build src/service-worker-loader.html --dist-dir build --no-source-maps",
     "dev": "tsc --watch",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
