@@ -11,16 +11,16 @@
       "@hooks/*": ["src/hooks/*"],
       "@lib/*": ["src/lib/*"],
       "@screens/*": ["src/screens/*"],
-      "@coral-xyz/recoil": ["../packages/recoil"],
-      "@coral-xyz/common": ["../packages/common"],
-      "@coral-xyz/background": ["../packages/background"],
-      "@coral-xyz/themes": ["../packages/themes"]
+      "@coral-xyz/recoil": ["../recoil"],
+      "@coral-xyz/common": ["../common"],
+      "@coral-xyz/background": ["../background"],
+      "@coral-xyz/themes": ["../themes"]
     }
   },
   "references": [
-    { "path": "../packages/recoil" },
-    { "path": "../packages/common" },
-    { "path": "../packages/background" },
-    { "path": "../packages/themes" }
+    { "path": "../recoil" },
+    { "path": "../common" },
+    { "path": "../background" },
+    { "path": "../themes" }
   ]
 }
