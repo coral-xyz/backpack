@@ -37,15 +37,11 @@
     "build:ext": "env-cmd turbo run build --filter=@coral-xyz/app-extension...",
     "start:mobile": "env-cmd --silent turbo run start --filter=@coral-xyz/app-mobile... --filter=@coral-xyz/background...",
     "build:mobile": "env-cmd --silent turbo run build --filter=@coral-xyz/app-mobile... --filter=@coral-xyz/background...",
-    "postinstall": "yarn-deduplicate --scopes @babel @mui @typescript-eslint @types @react-native-community @react-navigation"
+    "postinstall": "yarn-deduplicate --scopes @babel @mui @typescript-eslint @types @react-native-community @react-navigation @emotion"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.31.0",
-    "@typescript-eslint/parser": "^5.31.0",
     "env-cmd": "^10.1.0",
-    "eslint": "^8.20.0",
-    "eslint-plugin-only-warn": "^1.0.3",
-    "eslint-plugin-react": "^7.30.1",
+    "eslint": "^8.31.0",
     "husky": "^8.0.1",
     "lint-staged": "^12.4.1",
     "prettier": "^2.8.1",
