@@ -53,8 +53,10 @@ const useStyles = styles((theme) => ({
 
 export function WalletDrawerButton({
   wallet,
+  style,
 }: {
   wallet: { name: string; publicKey: string };
+  style?: React.CSSProperties;
 }) {
   const [openDrawer, setOpenDrawer] = useState(false);
 
@@ -66,6 +68,7 @@ export function WalletDrawerButton({
           e.stopPropagation();
           setOpenDrawer(true);
         }}
+        style={style}
       />
       <WalletDrawerNavStack
         openDrawer={openDrawer}
@@ -78,9 +81,11 @@ export function WalletDrawerButton({
 function WalletButton({
   wallet,
   onClick,
+  style,
 }: {
   wallet: { name: string; publicKey: string };
   onClick: (e: any) => void;
+  style?: React.CSSProperties;
 }) {
   const classes = useStyles();
   const theme = useCustomTheme();
@@ -98,6 +103,7 @@ function WalletButton({
         flex: 1,
         display: "flex",
         justifyContent: "space-between",
+        ...style,
       }}
     >
       <Button disableRipple className={classes.addressButton} onClick={onClick}>

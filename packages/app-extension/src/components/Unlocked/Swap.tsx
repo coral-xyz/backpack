@@ -16,6 +16,7 @@ import {
 } from "@coral-xyz/react-common";
 import {
   useActiveSolanaWallet,
+  useActiveWallet,
   useJupiterOutputMints,
   useSplTokenRegistry,
   useSwapContext,
@@ -38,6 +39,7 @@ import { TokenAmountHeader } from "../common/TokenAmountHeader";
 import { TokenInputField } from "../common/TokenInput";
 import type { Token } from "../common/TokenTable";
 import { SearchableTokenTable } from "../common/TokenTable";
+import { WalletDrawerButton } from "../common/WalletList";
 
 const { Zero } = ethers.constants;
 
@@ -602,8 +604,6 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     swapFee,
   } = useSwapContext();
 
-  const { name } = useActiveSolanaWallet();
-
   // Loading indicator when routes are being loaded due to polling
   if (isLoadingRoutes || isLoadingTransactions) {
     return (
@@ -626,7 +626,6 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
       <SwapInfoRows
         {...{
           compact,
-          from: name,
           youPay: "-",
           rate: "-",
           priceImpact: "-",
@@ -664,7 +663,6 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     <SwapInfoRows
       {...{
         compact,
-        from: name,
         youPay: `${toDisplayBalance(fromAmount, fromMintInfo.decimals)} ${
           fromMintInfo.symbol
         }`,
@@ -685,14 +683,12 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
 }
 
 function SwapInfoRows({
-  from,
   youPay,
   rate,
   networkFee,
   priceImpact,
   compact,
 }: {
-  from: React.ReactNode;
   youPay: any;
   rate: any;
   priceImpact: any;
@@ -700,9 +696,12 @@ function SwapInfoRows({
   compact?: boolean;
 }) {
   const classes = useStyles();
-
+  const wallet = useActiveWallet();
   const rows = [];
-  rows.push(["From", from]);
+  rows.push([
+    "Wallet",
+    <WalletDrawerButton wallet={wallet} style={{ height: "20px" }} />,
+  ]);
   if (!compact) {
     rows.push(["You Pay", youPay]);
   }
