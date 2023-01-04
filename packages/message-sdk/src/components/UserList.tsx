@@ -1,5 +1,19 @@
-import { NAV_COMPONENT_MESSAGE_PROFILE } from "@coral-xyz/common";
-import { isFirstLastListItemStyle, ProxyImage } from "@coral-xyz/react-common";
+import {
+  sendFriendRequest,
+  unFriend,
+} from "@coral-xyz/app-extension/src/api/friendship";
+import type {
+  RemoteUserData} from "@coral-xyz/common";
+import {
+  NAV_COMPONENT_MESSAGE_PROFILE
+} from "@coral-xyz/common";
+import { updateFriendshipIfExists } from "@coral-xyz/db";
+import {
+  isFirstLastListItemStyle,
+  PrimaryButton,
+  ProxyImage,
+} from "@coral-xyz/react-common";
+import { useUser } from "@coral-xyz/recoil";
 // import { useNavigation } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
@@ -9,11 +23,7 @@ import { ParentCommunicationManager } from "../ParentCommunicationManager";
 
 import { useStyles } from "./styles";
 
-export const UserList = ({
-  users,
-}: {
-  users: { image: string; id: string; username: string }[];
-}) => {
+export const UserList = ({ users }: { users: RemoteUserData[] }) => {
   const theme = useCustomTheme();
 
   return (
@@ -42,12 +52,13 @@ function UserListItem({
   isFirst,
   isLast,
 }: {
-  user: { image: string; id: string; username: string };
+  user: RemoteUserData;
   isFirst: boolean;
   isLast: boolean;
 }) {
   const theme = useCustomTheme();
   const classes = useStyles();
+  const { uuid } = useUser();
   return (
     <ListItem
       button
@@ -98,11 +109,43 @@ function UserListItem({
             </div>
             <div className={classes.userText}>{user.username}</div>
           </div>
-          <div className={classes.hoverChild}>
-            <ArrowForwardIcon
-              fontSize={"small"}
-              style={{ marginTop: 4, color: theme.custom.colors.fontColor }}
-            />
+          <div>
+            <div
+              onClick={async () => {
+                if (user.areFriends) {
+                  await unFriend({ to: user.id });
+                  await updateFriendshipIfExists(uuid, user.id, {
+                    areFriends: 0,
+                    requested: 0,
+                  });
+                } else if (user.requested) {
+                  await sendFriendRequest({ to: user.id, sendRequest: false });
+                  await updateFriendshipIfExists(uuid, user.id, {
+                    requested: 0,
+                  });
+                } else if (user.remoteRequested) {
+                  await sendFriendRequest({ to: user.id, sendRequest: true });
+                  await updateFriendshipIfExists(uuid, user.id, {
+                    requested: 0,
+                    areFriends: 1,
+                  });
+                } else {
+                  await sendFriendRequest({ to: user.id, sendRequest: true });
+                  await updateFriendshipIfExists(uuid, user.id, {
+                    requested: 1,
+                  });
+                }
+              }}
+            >
+              {user.areFriends
+                ? "Unfriend"
+                : user.requested
+                ? "Cancel Request"
+                : user.remoteRequested
+                ? "Accept Request"
+                : "Send Request"}{" "}
+            </div>
+            q
           </div>
         </div>
       </div>

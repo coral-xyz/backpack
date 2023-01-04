@@ -359,6 +359,7 @@ function NftCollectionCard({
           collectionId: collection.metadataCollectionId,
           //@ts-ignore
           nftMint: collectionDisplayNft?.mint,
+          title: "ONE Holders Chat",
         },
       });
       return;

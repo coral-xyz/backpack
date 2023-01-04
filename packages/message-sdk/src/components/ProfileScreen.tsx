@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { sendFriendRequest } from "@coral-xyz/app-extension/src/api/friendship";
 import { BACKEND_API_URL, NAV_COMPONENT_MESSAGE_CHAT } from "@coral-xyz/common";
 import { useDbUser } from "@coral-xyz/db";
 import {
@@ -45,17 +46,11 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
     setLoading(false);
   }
 
-  const sendFriendRequest = async (sendRequest: boolean) => {
-    await ParentCommunicationManager.getInstance().fetch(
-      `${BACKEND_API_URL}/friends/request`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ to: userId, sendRequest }),
-      }
-    );
+  const send = async (sendRequest: boolean) => {
+    await sendFriendRequest({
+      to: userId,
+      sendRequest,
+    });
     setRequestSent(sendRequest);
   };
 
@@ -163,7 +158,7 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
         {!friendship && !requestSent && (
           <PrimaryButton
             label={"Request to add contact"}
-            onClick={() => sendFriendRequest(true)}
+            onClick={() => send(true)}
           />
         )}
         {!friendship && requestSent && (
@@ -176,7 +171,7 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
             <PrimaryButton
               label={"Cancel Pending Request"}
               style={{ margin: 3 }}
-              onClick={() => sendFriendRequest(false)}
+              onClick={() => send(false)}
             />
           </div>
         )}

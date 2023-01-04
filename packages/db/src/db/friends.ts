@@ -53,3 +53,17 @@ export const getFriendshipByUserId = async (
     await getDb(uuid).inbox.where({ remoteUserId }).limit(1).toArray()
   )[0];
 };
+
+export const updateFriendshipIfExists = async (
+  uuid: string,
+  remoteUserId: string,
+  updatedProps: {
+    areFriends?: 0 | 1;
+    requested?: 0 | 1;
+  }
+) => {
+  const friendship = await getFriendshipByUserId(uuid, remoteUserId);
+  if (friendship) {
+    await getDb(uuid).inbox.update(remoteUserId, updatedProps);
+  }
+};

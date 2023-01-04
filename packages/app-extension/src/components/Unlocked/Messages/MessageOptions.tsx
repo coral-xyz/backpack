@@ -9,6 +9,8 @@ import { Fade, Menu, MenuItem } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import { useRecoilState } from "recoil";
 
+import { sendFriendRequest, unFriend } from "../../../api/friendship";
+
 import { useStyles } from "./styles";
 
 export const MessageOptions = () => {
@@ -28,17 +30,8 @@ export const MessageOptions = () => {
     setAnchorEl(null);
   };
 
-  const sendFriendRequest = async (sendRequest: boolean) => {
-    await ParentCommunicationManager.getInstance().fetch(
-      `${BACKEND_API_URL}/friends/request`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ to: userId, sendRequest }),
-      }
-    );
+  const send = async (sendRequest: boolean) => {
+    await sendFriendRequest({ to: userId, sendRequest });
     setFriendshipValue((x: any) => ({
       ...x,
       requested: sendRequest,
@@ -65,13 +58,7 @@ export const MessageOptions = () => {
           disabled={friendshipValue?.blocked}
           onClick={async () => {
             if (friendshipValue?.areFriends) {
-              await fetch(`${BACKEND_API_URL}/friends/unfriend`, {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ to: userId }),
-              });
+              await unFriend({ to: userId });
               setFriendshipValue((x: any) => ({
                 ...x,
                 areFriends: false,
@@ -82,9 +69,9 @@ export const MessageOptions = () => {
               );
             } else {
               if (friendshipValue?.requested) {
-                sendFriendRequest(false);
+                send(false);
               } else {
-                sendFriendRequest(true);
+                send(true);
                 toast.success(
                   friendshipValue?.remoteRequested
                     ? "You both said hot 🔥"
@@ -127,7 +114,7 @@ export const MessageOptions = () => {
             if (updatedValue) {
               toast.success(
                 "Blocked",
-                `@${remoteUsername} shouldn’t be showing up in your DMs from now on.`
+                `@${remoteUsername} shouldn't be showing up in your DMs from now on.`
               );
             }
             handleClose();

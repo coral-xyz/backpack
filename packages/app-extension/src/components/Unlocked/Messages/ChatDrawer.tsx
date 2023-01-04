@@ -1,16 +1,20 @@
-import type { Friendship } from "@coral-xyz/common";
+import { useEffect, useState } from "react";
+import type { RemoteUserData } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
-import { toast } from "@coral-xyz/react-common";
-import { friendship, useDecodedSearchParams } from "@coral-xyz/recoil";
+import {
+  useActiveSolanaWallet,
+  useDecodedSearchParams,
+} from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
-import BlockIcon from "@mui/icons-material/Block";
-import InfoIcon from "@mui/icons-material/Info";
-import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import { Drawer, ListItem, Typography } from "@mui/material";
-import { useRecoilState } from "recoil";
+
+import { SearchBox } from "./SearchBox";
+import { UserList } from "./UserList";
+import { UserListSkeleton } from "./UserListSkeleton";
+
 export const useStyles = styles((theme) => ({
   container: {
-    padding: 16,
+    padding: 0,
     backgroundColor: `${theme.custom.colors.nav}`,
     color: theme.custom.colors.fontColor2,
   },
@@ -20,119 +24,115 @@ export const useStyles = styles((theme) => ({
     height: "24px",
     width: "24px",
   },
+  horizontalCenter: {
+    justifyContent: "center",
+    display: "flex",
+  },
+  title: {
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  drawerContainer: {
+    padding: 10,
+    height: "80vh",
+  },
+  drawer: {
+    "& .MuiDrawer-paper": {
+      borderTopLeftRadius: "15px",
+      borderTopRightRadius: "15px",
+    },
+  },
 }));
 
 export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
   const classes = useStyles();
+  const [offset, setOffset] = useState(0);
   const { props }: any = useDecodedSearchParams();
-  const userId = props.userId;
-  const remoteUsername = props.username;
-  const [friendshipValue, setFriendshipValue] =
-    useRecoilState<Friendship | null>(friendship({ userId }));
+  const { publicKey } = useActiveSolanaWallet();
+  const [members, setMembers] = useState<RemoteUserData[]>([]);
+  const [searchFilter, setSearchFilter] = useState("");
+  const [count, setCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [staticMembers, setStaticMembers] = useState<RemoteUserData[]>([]);
 
-  const menuItems = [
-    {
-      title: friendshipValue?.blocked
-        ? `Unblock ${remoteUsername}`
-        : `Block ${remoteUsername}`,
-      icon: <BlockIcon className={classes.icon} />,
-      onClick: async () => {
-        const updatedValue = !friendshipValue?.blocked;
-        setFriendshipValue((x: any) => ({
-          ...x,
-          blocked: updatedValue,
-          requested: updatedValue ? false : x.requested,
-        }));
-        await fetch(`${BACKEND_API_URL}/friends/block`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ to: userId, block: updatedValue }),
-        });
-        if (updatedValue) {
-          toast.success(
-            "Blocked",
-            `@${remoteUsername} shouldn’t be showing up in your DMs from now on.`
-          );
-        }
-        setOpenDrawer(false);
-      },
-    },
-  ];
-  if (friendshipValue?.areFriends) {
-    menuItems.push({
-      title: `Remove from contacts`,
-      icon: <RemoveCircleIcon className={classes.icon} />,
-      onClick: async () => {
-        await fetch(`${BACKEND_API_URL}/friends/unfriend`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ to: userId }),
-        });
-        setFriendshipValue((x: any) => ({
-          ...x,
-          areFriends: false,
-        }));
-        toast.success(
-          "Contact removed",
-          `We've removed @${remoteUsername} from your contacts.`
-        );
-        setOpenDrawer(false);
-      },
+  const init = async (prefix = "") => {
+    const response = await fetch(
+      `${BACKEND_API_URL}/nft/members?room=${props.collectionId}&mint=${props.nftMint}&publicKey=${publicKey}&type=collection&limit=20&offset=${offset}&prefix=${prefix}`,
+      {
+        method: "GET",
+      }
+    );
+    const json = await response.json();
+    setMembers(json.members);
+    setCount(json.count);
+    setLoading(false);
+    setStaticMembers((members) => {
+      if (members.length === 0) {
+        return json.members.slice(0, 4);
+      }
+      return members;
     });
-  }
-  if (friendshipValue?.areFriends || friendshipValue?.requested) {
-    menuItems.push({
-      title: friendshipValue?.spam ? `Remove spam` : `Mark as spam`,
-      icon: <InfoIcon className={classes.icon} />,
-      onClick: async () => {
-        const updatedValue = !friendshipValue?.spam;
-        await fetch(`${BACKEND_API_URL}/friends/spam`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ to: userId, spam: updatedValue }),
-        });
-        setFriendshipValue((x: any) => ({
-          ...x,
-          spam: updatedValue,
-        }));
-        setOpenDrawer(false);
-      },
-    });
-  }
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
 
   return (
-    <Drawer anchor={"bottom"} open={true} onClose={() => setOpenDrawer(false)}>
-      <div className={classes.container}>
-        {menuItems.map((item) => (
-          <ListItem
-            key={""}
-            onClick={item.onClick}
-            style={{
-              height: "44px",
-              padding: "12px",
-              cursor: "pointer",
-            }}
-            className={classes.item}
-          >
-            {item.icon}
-            <Typography
-              style={{
-                fontWeight: 500,
-                fontSize: "16px",
-                lineHeight: "24px",
+    <Drawer
+      className={classes.drawer}
+      anchor={"bottom"}
+      open={true}
+      onClose={() => setOpenDrawer(false)}
+    >
+      <div className={classes.drawerContainer}>
+        <div className={classes.horizontalCenter}>
+          <Typography variant={"h5"} className={classes.title}>
+            {props.title}
+          </Typography>
+        </div>
+        {loading && <UserListSkeleton />}
+        {!loading && (
+          <>
+            {count && <MembersList count={count} members={staticMembers} />}
+            <SearchBox
+              onChange={(prefix: string) => {
+                if (prefix.length >= 3) {
+                  init(prefix);
+                }
+                setSearchFilter(prefix);
               }}
-            >
-              {item.title}
-            </Typography>
-          </ListItem>
-        ))}
+            />
+            <div className={classes.container}>
+              <UserList
+                setMembers={setMembers}
+                users={members.filter((x) =>
+                  x.username
+                    ?.toLocaleLowerCase()
+                    .includes(searchFilter?.toLocaleLowerCase())
+                )}
+              />
+            </div>
+          </>
+        )}
       </div>
     </Drawer>
   );
 };
+
+function MembersList({
+  count,
+  members,
+}: {
+  count: number;
+  members: RemoteUserData[];
+}) {
+  return (
+    <div style={{ justifyContent: "center", display: "flex" }}>
+      {members.map((member) => (
+        <img src={member.image} style={{ height: 20 }} />
+      ))}
+      {count} members
+    </div>
+  );
+}

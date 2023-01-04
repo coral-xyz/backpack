@@ -81,6 +81,7 @@ export function GridCard({
                 componentProps: {
                   collectionId: metadataCollectionId,
                   nftMint: nft.mint,
+                  title: subtitle.name || "",
                 },
               });
               e.stopPropagation();

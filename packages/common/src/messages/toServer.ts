@@ -40,3 +40,12 @@ export type ToServer =
         mint?: string;
       };
     };
+
+export interface RemoteUserData {
+  id: string;
+  image: string;
+  areFriends: boolean;
+  requested: boolean;
+  remoteRequested: boolean;
+  username: string;
+}
