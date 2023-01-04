@@ -1,5 +1,5 @@
 import { Suspense, useCallback, useRef } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 import {
@@ -49,12 +49,35 @@ function Providers({ children }: { children: JSX.Element }): JSX.Element {
   );
 }
 
+function ServiceWorkerErrorScreen({ onLayoutRootView }: any): JSX.Element {
+  return (
+    <View
+      onLayout={onLayoutRootView}
+      style={{
+        backgroundColor: "#8b0000",
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+      }}>
+      <Text>The service worker failed to load.</Text>
+      <Text>
+        {JSON.stringify(
+          { uri: Constants?.expoConfig?.extra?.webviewUrl },
+          null,
+          2
+        )}
+      </Text>
+    </View>
+  );
+}
+
 function Main(): JSX.Element | null {
   const theme = useTheme();
-  const appIsReady = useLoadedAssets();
+  const appLoadingStatus = useLoadedAssets();
 
   const onLayoutRootView = useCallback(async () => {
-    if (appIsReady) {
+    // If the service worker isn't running, show an error screen.
+    if (appLoadingStatus === "error" || appLoadingStatus === "ready") {
       // This tells the splash screen to hide immediately! If we call this after
       // `setAppIsReady`, then we may see a blank screen while the app is
       // loading its initial state and rendering its first pixels. So instead,
@@ -62,9 +85,13 @@ function Main(): JSX.Element | null {
       // performed layout!
       await SplashScreen.hideAsync();
     }
-  }, [appIsReady]);
+  }, [appLoadingStatus]);
 
-  if (!appIsReady) {
+  if (appLoadingStatus === "error") {
+    return <ServiceWorkerErrorScreen onLayoutRootView={onLayoutRootView} />;
+  }
+
+  if (appLoadingStatus === "loading") {
     return null;
   }
 
