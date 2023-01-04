@@ -46,7 +46,6 @@ export type NftCollectionWithIds = {
   symbol: string;
   tokenType: string;
   totalSupply: string;
-  items: Nft[];
   itemIds: string[];
   metadataCollectionId?: string;
 };
