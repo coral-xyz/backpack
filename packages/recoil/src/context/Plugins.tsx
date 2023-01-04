@@ -7,6 +7,7 @@ import {
   useBackgroundClient,
   useConnectionBackgroundClient,
   useNavigationSegue,
+  useOpenPlugin,
   usePlugins,
 } from "../hooks";
 
@@ -18,7 +19,7 @@ export function PluginManager(props: any) {
   const setTransactionRequest = useSetRecoilState(atoms.transactionRequest);
   const backgroundClient = useBackgroundClient();
   const connectionBackgroundClient = useConnectionBackgroundClient();
-
+  const openPlugin = useOpenPlugin();
   //
   // Bootup all the plugins on the initial render.
   //
@@ -32,6 +33,7 @@ export function PluginManager(props: any) {
           request: setTransactionRequest,
           backgroundClient,
           connectionBackgroundClient,
+          openPlugin,
         });
       });
   }, [plugins]);

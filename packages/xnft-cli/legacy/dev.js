@@ -16,6 +16,7 @@ module.exports = (program) => {
 
       const app = express();
       const port = simulatorPort;
+      let html = "";
 
       if (iframe) {
         // If an iframe URL has been provided then serve the iframe xNFT example,
