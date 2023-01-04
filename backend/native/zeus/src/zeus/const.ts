@@ -376,6 +376,11 @@ export const AllTypesProps: Record<string, any> = {
     _set: "auth_stripe_onramp_set_input",
     where: "auth_stripe_onramp_bool_exp",
   },
+  auth_user_nfts_aggregate_fields: {
+    count: {
+      columns: "auth_user_nfts_select_column",
+    },
+  },
   auth_user_nfts_bool_exp: {
     _and: "auth_user_nfts_bool_exp",
     _not: "auth_user_nfts_bool_exp",
@@ -915,6 +920,11 @@ export const AllTypesProps: Record<string, any> = {
       order_by: "auth_user_nfts_order_by",
       where: "auth_user_nfts_bool_exp",
     },
+    auth_user_nfts_aggregate: {
+      distinct_on: "auth_user_nfts_select_column",
+      order_by: "auth_user_nfts_order_by",
+      where: "auth_user_nfts_bool_exp",
+    },
     auth_user_nfts_by_pk: {},
     auth_users: {
       distinct_on: "auth_users_select_column",
@@ -1034,6 +1044,11 @@ export const AllTypesProps: Record<string, any> = {
       where: "auth_stripe_onramp_bool_exp",
     },
     auth_user_nfts: {
+      distinct_on: "auth_user_nfts_select_column",
+      order_by: "auth_user_nfts_order_by",
+      where: "auth_user_nfts_bool_exp",
+    },
+    auth_user_nfts_aggregate: {
       distinct_on: "auth_user_nfts_select_column",
       order_by: "auth_user_nfts_order_by",
       where: "auth_user_nfts_bool_exp",
@@ -1338,6 +1353,25 @@ export const ReturnTypes: Record<string, any> = {
     nft_id: "String",
     public_key: "String",
   },
+  auth_user_nfts_aggregate: {
+    aggregate: "auth_user_nfts_aggregate_fields",
+    nodes: "auth_user_nfts",
+  },
+  auth_user_nfts_aggregate_fields: {
+    count: "Int",
+    max: "auth_user_nfts_max_fields",
+    min: "auth_user_nfts_min_fields",
+  },
+  auth_user_nfts_max_fields: {
+    collection_id: "String",
+    nft_id: "String",
+    public_key: "String",
+  },
+  auth_user_nfts_min_fields: {
+    collection_id: "String",
+    nft_id: "String",
+    public_key: "String",
+  },
   auth_user_nfts_mutation_response: {
     affected_rows: "Int",
     returning: "auth_user_nfts",
@@ -1508,6 +1542,7 @@ export const ReturnTypes: Record<string, any> = {
     auth_stripe_onramp: "auth_stripe_onramp",
     auth_stripe_onramp_by_pk: "auth_stripe_onramp",
     auth_user_nfts: "auth_user_nfts",
+    auth_user_nfts_aggregate: "auth_user_nfts_aggregate",
     auth_user_nfts_by_pk: "auth_user_nfts",
     auth_users: "auth_users",
     auth_users_aggregate: "auth_users_aggregate",
@@ -1544,6 +1579,7 @@ export const ReturnTypes: Record<string, any> = {
     auth_stripe_onramp_by_pk: "auth_stripe_onramp",
     auth_stripe_onramp_stream: "auth_stripe_onramp",
     auth_user_nfts: "auth_user_nfts",
+    auth_user_nfts_aggregate: "auth_user_nfts_aggregate",
     auth_user_nfts_by_pk: "auth_user_nfts",
     auth_user_nfts_stream: "auth_user_nfts",
     auth_users: "auth_users",

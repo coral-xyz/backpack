@@ -2696,6 +2696,29 @@ export type ValueTypes = {
     public_key?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
+  /** aggregated selection of "auth.user_nfts" */
+  ["auth_user_nfts_aggregate"]: AliasType<{
+    aggregate?: ValueTypes["auth_user_nfts_aggregate_fields"];
+    nodes?: ValueTypes["auth_user_nfts"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** aggregate fields of "auth.user_nfts" */
+  ["auth_user_nfts_aggregate_fields"]: AliasType<{
+    count?: [
+      {
+        columns?:
+          | Array<ValueTypes["auth_user_nfts_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string>;
+        distinct?: boolean | undefined | null | Variable<any, string>;
+      },
+      boolean | `@${string}`
+    ];
+    max?: ValueTypes["auth_user_nfts_max_fields"];
+    min?: ValueTypes["auth_user_nfts_min_fields"];
+    __typename?: boolean | `@${string}`;
+  }>;
   /** Boolean expression to filter rows from the table "auth.user_nfts". All fields are combined with a logical 'AND'. */
   ["auth_user_nfts_bool_exp"]: {
     _and?:
@@ -2737,6 +2760,20 @@ export type ValueTypes = {
     nft_id?: string | undefined | null | Variable<any, string>;
     public_key?: string | undefined | null | Variable<any, string>;
   };
+  /** aggregate max on columns */
+  ["auth_user_nfts_max_fields"]: AliasType<{
+    collection_id?: boolean | `@${string}`;
+    nft_id?: boolean | `@${string}`;
+    public_key?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** aggregate min on columns */
+  ["auth_user_nfts_min_fields"]: AliasType<{
+    collection_id?: boolean | `@${string}`;
+    nft_id?: boolean | `@${string}`;
+    public_key?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
   /** response of any mutation on the table "auth.user_nfts" */
   ["auth_user_nfts_mutation_response"]: AliasType<{
     /** number of rows affected by the mutation */
@@ -4871,6 +4908,40 @@ export type ValueTypes = {
       },
       ValueTypes["auth_user_nfts"]
     ];
+    auth_user_nfts_aggregate?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_user_nfts_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_user_nfts_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_user_nfts_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_user_nfts_aggregate"]
+    ];
     auth_user_nfts_by_pk?: [
       {
         nft_id: string | Variable<any, string>;
@@ -5641,6 +5712,40 @@ export type ValueTypes = {
           | Variable<any, string>;
       },
       ValueTypes["auth_user_nfts"]
+    ];
+    auth_user_nfts_aggregate?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_user_nfts_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_user_nfts_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_user_nfts_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_user_nfts_aggregate"]
     ];
     auth_user_nfts_by_pk?: [
       {
@@ -7250,6 +7355,28 @@ export type ResolverInputTypes = {
     public_key?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
+  /** aggregated selection of "auth.user_nfts" */
+  ["auth_user_nfts_aggregate"]: AliasType<{
+    aggregate?: ResolverInputTypes["auth_user_nfts_aggregate_fields"];
+    nodes?: ResolverInputTypes["auth_user_nfts"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** aggregate fields of "auth.user_nfts" */
+  ["auth_user_nfts_aggregate_fields"]: AliasType<{
+    count?: [
+      {
+        columns?:
+          | Array<ResolverInputTypes["auth_user_nfts_select_column"]>
+          | undefined
+          | null;
+        distinct?: boolean | undefined | null;
+      },
+      boolean | `@${string}`
+    ];
+    max?: ResolverInputTypes["auth_user_nfts_max_fields"];
+    min?: ResolverInputTypes["auth_user_nfts_min_fields"];
+    __typename?: boolean | `@${string}`;
+  }>;
   /** Boolean expression to filter rows from the table "auth.user_nfts". All fields are combined with a logical 'AND'. */
   ["auth_user_nfts_bool_exp"]: {
     _and?:
@@ -7276,6 +7403,20 @@ export type ResolverInputTypes = {
     nft_id?: string | undefined | null;
     public_key?: string | undefined | null;
   };
+  /** aggregate max on columns */
+  ["auth_user_nfts_max_fields"]: AliasType<{
+    collection_id?: boolean | `@${string}`;
+    nft_id?: boolean | `@${string}`;
+    public_key?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** aggregate min on columns */
+  ["auth_user_nfts_min_fields"]: AliasType<{
+    collection_id?: boolean | `@${string}`;
+    nft_id?: boolean | `@${string}`;
+    public_key?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
   /** response of any mutation on the table "auth.user_nfts" */
   ["auth_user_nfts_mutation_response"]: AliasType<{
     /** number of rows affected by the mutation */
@@ -8849,6 +8990,32 @@ export type ResolverInputTypes = {
       },
       ResolverInputTypes["auth_user_nfts"]
     ];
+    auth_user_nfts_aggregate?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_user_nfts_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_user_nfts_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_user_nfts_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_user_nfts_aggregate"]
+    ];
     auth_user_nfts_by_pk?: [
       { nft_id: string; public_key: string },
       ResolverInputTypes["auth_user_nfts"]
@@ -9415,6 +9582,32 @@ export type ResolverInputTypes = {
           | null;
       },
       ResolverInputTypes["auth_user_nfts"]
+    ];
+    auth_user_nfts_aggregate?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_user_nfts_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_user_nfts_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_user_nfts_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_user_nfts_aggregate"]
     ];
     auth_user_nfts_by_pk?: [
       { nft_id: string; public_key: string },
@@ -10630,6 +10823,17 @@ export type ModelTypes = {
     nft_id: string;
     public_key: string;
   };
+  /** aggregated selection of "auth.user_nfts" */
+  ["auth_user_nfts_aggregate"]: {
+    aggregate?: ModelTypes["auth_user_nfts_aggregate_fields"] | undefined;
+    nodes: Array<ModelTypes["auth_user_nfts"]>;
+  };
+  /** aggregate fields of "auth.user_nfts" */
+  ["auth_user_nfts_aggregate_fields"]: {
+    count: number;
+    max?: ModelTypes["auth_user_nfts_max_fields"] | undefined;
+    min?: ModelTypes["auth_user_nfts_min_fields"] | undefined;
+  };
   /** Boolean expression to filter rows from the table "auth.user_nfts". All fields are combined with a logical 'AND'. */
   ["auth_user_nfts_bool_exp"]: {
     _and?: Array<ModelTypes["auth_user_nfts_bool_exp"]> | undefined;
@@ -10642,6 +10846,18 @@ export type ModelTypes = {
   ["auth_user_nfts_constraint"]: auth_user_nfts_constraint;
   /** input type for inserting data into table "auth.user_nfts" */
   ["auth_user_nfts_insert_input"]: {
+    collection_id?: string | undefined;
+    nft_id?: string | undefined;
+    public_key?: string | undefined;
+  };
+  /** aggregate max on columns */
+  ["auth_user_nfts_max_fields"]: {
+    collection_id?: string | undefined;
+    nft_id?: string | undefined;
+    public_key?: string | undefined;
+  };
+  /** aggregate min on columns */
+  ["auth_user_nfts_min_fields"]: {
     collection_id?: string | undefined;
     nft_id?: string | undefined;
     public_key?: string | undefined;
@@ -11366,6 +11582,8 @@ export type ModelTypes = {
     auth_stripe_onramp_by_pk?: ModelTypes["auth_stripe_onramp"] | undefined;
     /** fetch data from the table: "auth.user_nfts" */
     auth_user_nfts: Array<ModelTypes["auth_user_nfts"]>;
+    /** fetch aggregated fields from the table: "auth.user_nfts" */
+    auth_user_nfts_aggregate: ModelTypes["auth_user_nfts_aggregate"];
     /** fetch data from the table: "auth.user_nfts" using primary key columns */
     auth_user_nfts_by_pk?: ModelTypes["auth_user_nfts"] | undefined;
     /** fetch data from the table: "auth.users" */
@@ -11448,6 +11666,8 @@ export type ModelTypes = {
     auth_stripe_onramp_stream: Array<ModelTypes["auth_stripe_onramp"]>;
     /** fetch data from the table: "auth.user_nfts" */
     auth_user_nfts: Array<ModelTypes["auth_user_nfts"]>;
+    /** fetch aggregated fields from the table: "auth.user_nfts" */
+    auth_user_nfts_aggregate: ModelTypes["auth_user_nfts_aggregate"];
     /** fetch data from the table: "auth.user_nfts" using primary key columns */
     auth_user_nfts_by_pk?: ModelTypes["auth_user_nfts"] | undefined;
     /** fetch data from the table in a streaming manner: "auth.user_nfts" */
@@ -12539,6 +12759,19 @@ export type GraphQLTypes = {
     nft_id: string;
     public_key: string;
   };
+  /** aggregated selection of "auth.user_nfts" */
+  ["auth_user_nfts_aggregate"]: {
+    __typename: "auth_user_nfts_aggregate";
+    aggregate?: GraphQLTypes["auth_user_nfts_aggregate_fields"] | undefined;
+    nodes: Array<GraphQLTypes["auth_user_nfts"]>;
+  };
+  /** aggregate fields of "auth.user_nfts" */
+  ["auth_user_nfts_aggregate_fields"]: {
+    __typename: "auth_user_nfts_aggregate_fields";
+    count: number;
+    max?: GraphQLTypes["auth_user_nfts_max_fields"] | undefined;
+    min?: GraphQLTypes["auth_user_nfts_min_fields"] | undefined;
+  };
   /** Boolean expression to filter rows from the table "auth.user_nfts". All fields are combined with a logical 'AND'. */
   ["auth_user_nfts_bool_exp"]: {
     _and?: Array<GraphQLTypes["auth_user_nfts_bool_exp"]> | undefined;
@@ -12552,6 +12785,20 @@ export type GraphQLTypes = {
   ["auth_user_nfts_constraint"]: auth_user_nfts_constraint;
   /** input type for inserting data into table "auth.user_nfts" */
   ["auth_user_nfts_insert_input"]: {
+    collection_id?: string | undefined;
+    nft_id?: string | undefined;
+    public_key?: string | undefined;
+  };
+  /** aggregate max on columns */
+  ["auth_user_nfts_max_fields"]: {
+    __typename: "auth_user_nfts_max_fields";
+    collection_id?: string | undefined;
+    nft_id?: string | undefined;
+    public_key?: string | undefined;
+  };
+  /** aggregate min on columns */
+  ["auth_user_nfts_min_fields"]: {
+    __typename: "auth_user_nfts_min_fields";
     collection_id?: string | undefined;
     nft_id?: string | undefined;
     public_key?: string | undefined;
@@ -13326,6 +13573,8 @@ export type GraphQLTypes = {
     auth_stripe_onramp_by_pk?: GraphQLTypes["auth_stripe_onramp"] | undefined;
     /** fetch data from the table: "auth.user_nfts" */
     auth_user_nfts: Array<GraphQLTypes["auth_user_nfts"]>;
+    /** fetch aggregated fields from the table: "auth.user_nfts" */
+    auth_user_nfts_aggregate: GraphQLTypes["auth_user_nfts_aggregate"];
     /** fetch data from the table: "auth.user_nfts" using primary key columns */
     auth_user_nfts_by_pk?: GraphQLTypes["auth_user_nfts"] | undefined;
     /** fetch data from the table: "auth.users" */
@@ -13411,6 +13660,8 @@ export type GraphQLTypes = {
     auth_stripe_onramp_stream: Array<GraphQLTypes["auth_stripe_onramp"]>;
     /** fetch data from the table: "auth.user_nfts" */
     auth_user_nfts: Array<GraphQLTypes["auth_user_nfts"]>;
+    /** fetch aggregated fields from the table: "auth.user_nfts" */
+    auth_user_nfts_aggregate: GraphQLTypes["auth_user_nfts_aggregate"];
     /** fetch data from the table: "auth.user_nfts" using primary key columns */
     auth_user_nfts_by_pk?: GraphQLTypes["auth_user_nfts"] | undefined;
     /** fetch data from the table in a streaming manner: "auth.user_nfts" */

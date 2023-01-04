@@ -17,6 +17,7 @@ select_permissions:
         - nft_id
         - public_key
       filter: {}
+      allow_aggregations: true
 delete_permissions:
   - role: auth_worker
     permission:
