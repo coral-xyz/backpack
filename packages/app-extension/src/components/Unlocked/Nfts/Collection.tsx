@@ -59,12 +59,12 @@ function _Grid({
 
   return (
     <Grid container spacing={{ xs: 2, ms: 2, md: 2, lg: 2 }}>
-      {collection.items.map((nft) => (
-        <Grid item xs={6} sm={4} md={3} lg={2} key={nft.id}>
+      {collection.itemIds.map((nftId) => (
+        <Grid item xs={6} sm={4} md={3} lg={2} key={nftId}>
           <NftCard
             publicKey={publicKey}
             connectionUrl={connectionUrl}
-            nftId={nft.id}
+            nftId={nftId}
           />
         </Grid>
       ))}

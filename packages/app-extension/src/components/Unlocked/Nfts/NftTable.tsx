@@ -10,12 +10,14 @@ import {
 import { NAV_COMPONENT_NFT_CHAT } from "@coral-xyz/common/dist/esm/constants";
 import type { NftCollectionWithIds } from "@coral-xyz/common/src/types";
 import {
+  nftById,
   useAllWallets,
   useBlockchainConnectionUrl,
   useNavigation,
 } from "@coral-xyz/recoil";
 import { styled } from "@coral-xyz/themes";
 import { Skeleton } from "@mui/material";
+import { useRecoilValue } from "recoil";
 
 import { Scrollbar } from "../../common/Layout/Scrollbar";
 import { _BalancesTableHead } from "../Balances/Balances";
@@ -322,9 +324,19 @@ function NftCollectionCard({
   connectionUrl: string;
   collection: NftCollectionWithIds;
 }) {
+  if (collection.itemIds.length < 0) {
+    throw new Error("invariant violation no collection items");
+  }
   const { push } = useNavigation();
   // Display the first NFT in the collection as the thumbnail in the grid
-  const collectionDisplayNft = collection.items?.find((nft) => !!nft) ?? null;
+  const collectionDisplayNftId = collection.itemIds?.find((nftId) => !!nftId)!;
+  const collectionDisplayNft = useRecoilValue(
+    nftById({
+      publicKey,
+      connectionUrl,
+      nftId: collectionDisplayNftId,
+    })
+  );
 
   useEffect(() => {
     if (collection.metadataCollectionId !== ONE_COLLECTION_ID) {
@@ -363,7 +375,7 @@ function NftCollectionCard({
       });
       return;
     }
-    if (collection.items.length === 1) {
+    if (collection.itemIds.length === 1) {
       if (!collectionDisplayNft.name || !collectionDisplayNft.id) {
         throw new Error("invalid NFT data");
       }
@@ -397,7 +409,7 @@ function NftCollectionCard({
       metadataCollectionId={false}
       onClick={onClick}
       nft={collectionDisplayNft}
-      subtitle={{ name: collection.name, length: collection.items.length }}
+      subtitle={{ name: collection.name, length: collection.itemIds.length }}
     />
   );
 }
