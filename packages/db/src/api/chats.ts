@@ -102,6 +102,7 @@ export const updateLastRead = (
   if (type === "individual" && uuid !== sender) {
     updateFriendship(uuid, sender, {
       unread: 0,
+      interacted: 1,
     });
   }
 };

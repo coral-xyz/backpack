@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { fetchMoreChatsFor } from "@coral-xyz/db";
 import { useCustomTheme } from "@coral-xyz/themes";
-import InfoIcon from "@mui/icons-material/Info";
 
 import { Banner } from "./Banner";
 import { useChatContext } from "./ChatContext";
@@ -74,7 +73,7 @@ export const FullScreenChat = () => {
         </div>
       </ScrollBarImpl>
       <div style={{ position: "absolute", bottom: 0, width: "100%" }}>
-        <SendMessage messageRef={messageRef} />
+        <SendMessage />
       </div>
     </div>
   );

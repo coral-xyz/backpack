@@ -116,9 +116,33 @@ export const getAllFriendships = async ({
           _or: [
             {
               user1: { _eq: uuid },
+              // Only show users if either users have interacted with each other or they are friends
+              _or: [
+                {
+                  user1_interacted: { _eq: true },
+                },
+                {
+                  user2_interacted: { _eq: true },
+                },
+                {
+                  are_friends: { _eq: true },
+                },
+              ],
             },
             {
               user2: { _eq: uuid },
+              // Only show users if either users have interacted with each other or they are friends
+              _or: [
+                {
+                  user1_interacted: { _eq: true },
+                },
+                {
+                  user2_interacted: { _eq: true },
+                },
+                {
+                  are_friends: { _eq: true },
+                },
+              ],
             },
           ],
         },
