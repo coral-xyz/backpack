@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Friendship } from "@coral-xyz/common";
-import { BACKEND_API_URL } from "@coral-xyz/common";
+import { BACKEND_API_URL , sendFriendRequest, unFriend } from "@coral-xyz/common";
 import { ParentCommunicationManager } from "@coral-xyz/message-sdk";
 import { toast } from "@coral-xyz/react-common";
 import { friendship, useDecodedSearchParams } from "@coral-xyz/recoil";
@@ -8,8 +8,6 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { Fade, Menu, MenuItem } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import { useRecoilState } from "recoil";
-
-import { sendFriendRequest, unFriend } from "../../../api/friendship";
 
 import { useStyles } from "./styles";
 

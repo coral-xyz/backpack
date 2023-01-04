@@ -1,4 +1,4 @@
-import { BACKEND_API_URL } from "@coral-xyz/common";
+import { BACKEND_API_URL } from "../constants";
 
 export const sendFriendRequest = async ({
   sendRequest,

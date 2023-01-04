@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { sendFriendRequest } from "@coral-xyz/app-extension/src/api/friendship";
-import { BACKEND_API_URL, NAV_COMPONENT_MESSAGE_CHAT } from "@coral-xyz/common";
+import { BACKEND_API_URL, NAV_COMPONENT_MESSAGE_CHAT,sendFriendRequest  } from "@coral-xyz/common";
 import { useDbUser } from "@coral-xyz/db";
 import {
   Loading,

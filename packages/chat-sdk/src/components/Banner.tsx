@@ -1,5 +1,4 @@
-import { sendFriendRequest } from "@coral-xyz/app-extension/src/api/friendship";
-import { BACKEND_API_URL } from "@coral-xyz/common";
+import { BACKEND_API_URL,sendFriendRequest  } from "@coral-xyz/common";
 import { toast } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import InfoIcon from "@mui/icons-material/Info";

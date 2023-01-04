@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import type { EnrichedInboxDb, RemoteUserData } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import { useContacts } from "@coral-xyz/db";
+import { UserList } from "@coral-xyz/message-sdk";
 import { TextInput } from "@coral-xyz/react-common";
 import { useUser } from "@coral-xyz/recoil";
 
 import { useStyles } from "./styles";
-import { UserList } from "./UserList";
 
 export const SearchUsers = () => {
   const { uuid } = useUser();

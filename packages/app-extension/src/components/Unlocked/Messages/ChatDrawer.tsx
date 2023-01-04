@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import type { RemoteUserData } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
+import { UserList } from "@coral-xyz/message-sdk";
 import {
   useActiveSolanaWallet,
   useDecodedSearchParams,
 } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
-import { Drawer, ListItem, Typography } from "@mui/material";
+import { Drawer, Typography } from "@mui/material";
 
 import { SearchBox } from "./SearchBox";
-import { UserList } from "./UserList";
 import { UserListSkeleton } from "./UserListSkeleton";
 
 export const useStyles = styles((theme) => ({
