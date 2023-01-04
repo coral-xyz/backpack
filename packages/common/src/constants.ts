@@ -464,6 +464,8 @@ export const LEDGER_METHOD_ETHEREUM_SIGN_EIP712_HASHED_MESSAGE =
 
 export const PLUGIN_RPC_METHOD_WINDOW_OPEN = "rpc-method-window-open";
 
+export const PLUGIN_RPC_METHOD_PLUGIN_OPEN = "rpc-method-plugin-open";
+
 export const PLUGIN_RPC_METHOD_POP_OUT = "rpc-method-pop-out";
 
 export const BACKGROUND_SERVICE_WORKER_READY = "service-worker-ready";
@@ -481,12 +483,14 @@ export const TAB_SWAP = "swap";
 export const TAB_NFTS = "nfts";
 export const TAB_MESSAGES = "messages";
 export const TAB_APPS = "apps";
+export const TAB_PLUGINS = "plugins";
 export const TAB_SET = new Set([
   TAB_BALANCES,
   TAB_SWAP,
   TAB_NFTS,
   TAB_APPS,
   TAB_MESSAGES,
+  TAB_PLUGINS,
 ]);
 
 export const NAV_COMPONENT_TOKEN = "balances/token";

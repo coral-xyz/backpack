@@ -1,13 +1,14 @@
-import {
-  View,
-  TextField,
-  Image,
-  Text,
-  ScrollBar,
-  Button,
-  useNavigation,
-} from "react-xnft";
 import React, { useState } from "react";
+import {
+  Button,
+  Image,
+  ScrollBar,
+  Text,
+  TextField,
+  useNavigation,
+  View,
+} from "react-xnft";
+import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import {
   useRecoilState,
   useRecoilStateLoadable,
@@ -15,18 +16,18 @@ import {
   useResetRecoilState,
   useSetRecoilState,
 } from "recoil";
-import getGatewayUri from "./_utils/getGatewayUri";
-import { XnftWithMetadata } from "./_types/XnftWithMetadata";
-import Rating from "./Rating";
-import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
-import InstallIcon from "./Icons/InstallIcon";
-import reviewsAtom from "./_atoms/reviewsAtom";
-import CenteredLoader from "./CenteredLoader";
-import { IDL } from "./_utils/xnftIDL";
-import getProgram from "./_utils/getProgram";
-import xnftsAtom from "./_atoms/xnftsAtom";
-import getAllxNFTs from "./_utils/getAllXnfts";
+
 import installedAppAtom from "./_atoms/installedAppAtom";
+import reviewsAtom from "./_atoms/reviewsAtom";
+import xnftsAtom from "./_atoms/xnftsAtom";
+import type { XnftWithMetadata } from "./_types/XnftWithMetadata";
+import getAllxNFTs from "./_utils/getAllXnfts";
+import getGatewayUri from "./_utils/getGatewayUri";
+import getProgram from "./_utils/getProgram";
+import { IDL } from "./_utils/xnftIDL";
+import InstallIcon from "./Icons/InstallIcon";
+import CenteredLoader from "./CenteredLoader";
+import Rating from "./Rating";
 
 const tabs = [
   { name: "Screenshots" },
@@ -70,6 +71,9 @@ function AppDetails({ app }: { app: XnftWithMetadata }) {
     await window.xnft.solana.sendAndConfirm(tx);
     setInstalledApps([...installedApps, app.publicKey.toString()]);
   };
+  const open = async () => {
+    window.xnft.openPlugin(app.publicKey);
+  };
   return (
     <View tw="pb-2">
       <View tw="flex gap-6 py-2 px-4">
@@ -97,17 +101,28 @@ function AppDetails({ app }: { app: XnftWithMetadata }) {
           {!app.account.suspended && (
             <View tw="flex items-center gap-4">
               {!installed ? (
-                <Button
-                  onClick={() => install()}
-                  tw="flex items-center gap-2.5 bg-white py-2 text-[#374151] px-3 rounded text-xs font-medium tracking-wide"
-                >
-                  {price === 0 ? "Free" : `${price / LAMPORTS_PER_SOL} SOL`}
-                  {!installed && <InstallIcon size={16} color={"#374151"} />}
-                </Button>
+                <>
+                  <Button
+                    onClick={() => install()}
+                    tw="flex items-center gap-2.5 bg-white py-2 text-[#374151] px-3 rounded text-xs font-medium tracking-wide"
+                  >
+                    {price === 0 ? "Free" : `${price / LAMPORTS_PER_SOL} SOL`}
+                    <InstallIcon size={16} color={"#374151"} />
+                  </Button>
+                  <Button
+                    onClick={open}
+                    tw="rounded bg-[#27272A] text-white px-3 rounded text-xs font-medium tracking-wide"
+                  >
+                    Preview
+                  </Button>
+                </>
               ) : (
                 <>
-                  <Button tw="rounded bg-[#27272A] px-3 rounded text-xs font-medium tracking-wide">
-                    Installed
+                  <Button
+                    onClick={open}
+                    tw="rounded bg-[#27272A] text-white px-3 rounded text-xs font-medium tracking-wide"
+                  >
+                    Open
                   </Button>
                   <Button
                     onClick={() => {
