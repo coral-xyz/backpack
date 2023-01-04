@@ -1,6 +1,17 @@
 table:
   name: user_nfts
   schema: auth
+object_relationships:
+  - name: publicKeyByBlockchainPublicKey
+    using:
+      manual_configuration:
+        column_mapping:
+          blockchain: blockchain
+          public_key: public_key
+        insertion_order: null
+        remote_table:
+          name: public_keys
+          schema: auth
 insert_permissions:
   - role: auth_worker
     permission:
