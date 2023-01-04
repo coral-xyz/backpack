@@ -42,6 +42,7 @@ import {
   Settings,
   Tab as WindowIcon,
 } from "@mui/icons-material";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import { Box, IconButton, Typography } from "@mui/material";
 import { Keypair } from "@solana/web3.js";
 import * as bs58 from "bs58";
@@ -643,6 +644,15 @@ function SettingsList() {
       .catch(console.error);
   };
 
+  const walletsMenu = [
+    {
+      label: "Manage Wallets",
+      onClick: () => nav.push("edit-wallets"),
+      icon: (props: any) => <AccountBalanceWalletIcon {...props} />,
+      detailIcon: <PushDetail />,
+    },
+  ];
+
   const settingsMenu = [
     {
       label: "Your Account",
@@ -657,6 +667,16 @@ function SettingsList() {
       detailIcon: <PushDetail />,
     },
   ];
+
+  if (featureGates[MESSAGES_ENABLED]) {
+    settingsMenu.push({
+      label: "Contacts",
+      onClick: () => nav.push("contacts-list"),
+      icon: (props: any) => <ContactsIcon {...props} />,
+      detailIcon: <PushDetail />,
+    });
+  }
+
   if (BACKPACK_FEATURE_XNFT) {
     settingsMenu.push({
       label: "xNFTs",
@@ -705,20 +725,62 @@ function SettingsList() {
     },
   ];
 
-  const contactList = [
-    {
-      label: "Contacts",
-      onClick: () => nav.push("contacts-list"),
-      icon: (props: any) => <ContactsIcon {...props} />,
-      detailIcon: <PushDetail />,
-    },
-  ];
-
   return (
     <>
       <List
         style={{
           marginTop: "24px",
+          marginBottom: "16px",
+          border: `${theme.custom.colors.borderFull}`,
+          borderRadius: "10px",
+        }}
+      >
+        {walletsMenu.map((s, idx) => {
+          return (
+            <ListItem
+              key={s.label}
+              isFirst={idx === 0}
+              isLast={idx === walletsMenu.length - 1}
+              onClick={s.onClick}
+              id={s.label}
+              style={{
+                height: "44px",
+                padding: "12px",
+              }}
+              detail={s.detailIcon}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  flex: 1,
+                }}
+              >
+                {s.icon({
+                  style: {
+                    color: theme.custom.colors.icon,
+                    height: "24px",
+                    width: "24px",
+                  },
+                  fill: theme.custom.colors.icon,
+                })}
+                <Typography
+                  style={{
+                    marginLeft: "8px",
+                    fontWeight: 500,
+                    fontSize: "16px",
+                    lineHeight: "24px",
+                  }}
+                >
+                  {s.label}
+                </Typography>
+              </div>
+            </ListItem>
+          );
+        })}
+      </List>
+      <List
+        style={{
+          marginTop: "12px",
           marginBottom: "16px",
           border: `${theme.custom.colors.borderFull}`,
           borderRadius: "10px",
@@ -767,64 +829,9 @@ function SettingsList() {
           );
         })}
       </List>
-
-      {featureGates[MESSAGES_ENABLED] && (
-        <List
-          style={{
-            marginTop: "24px",
-            marginBottom: "16px",
-            border: `${theme.custom.colors.borderFull}`,
-            borderRadius: "10px",
-          }}
-        >
-          {contactList.map((s, idx) => {
-            return (
-              <ListItem
-                key={s.label}
-                isFirst={idx === 0}
-                isLast={idx === discordList.length - 1}
-                onClick={s.onClick}
-                id={s.label}
-                style={{
-                  height: "44px",
-                  padding: "12px",
-                }}
-                detail={s.detailIcon}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    flex: 1,
-                  }}
-                >
-                  {s.icon({
-                    style: {
-                      color: theme.custom.colors.icon,
-                      height: "24px",
-                      width: "24px",
-                    },
-                    fill: theme.custom.colors.icon,
-                  })}
-                  <Typography
-                    style={{
-                      marginLeft: "8px",
-                      fontWeight: 500,
-                      fontSize: "16px",
-                      lineHeight: "24px",
-                    }}
-                  >
-                    {s.label}
-                  </Typography>
-                </div>
-              </ListItem>
-            );
-          })}
-        </List>
-      )}
-
       <List
         style={{
-          marginTop: "24px",
+          marginTop: "12px",
           marginBottom: "16px",
           border: `${theme.custom.colors.borderFull}`,
           borderRadius: "10px",

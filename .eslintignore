@@ -1,0 +1,8 @@
+**/node_modules/**
+**/dist/**
+**/build/**
+**/dev/**
+
+**/.expo/**
+**/.next/**
+**/__generated__/**
