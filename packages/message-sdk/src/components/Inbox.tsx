@@ -77,7 +77,10 @@ export function Inbox() {
       {searchFilter.length >= 3 && searchedUsersDistinct.length !== 0 && (
         <div style={{ marginTop: 30 }}>
           <div className={classes.topLabel}>Other people</div>
-          <UserList users={searchedUsersDistinct} />
+          <UserList
+            users={searchedUsersDistinct}
+            setMembers={setSearchResults}
+          />
         </div>
       )}
       {!messagesLoading &&

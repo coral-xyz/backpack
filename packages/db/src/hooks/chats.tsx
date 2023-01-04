@@ -35,7 +35,9 @@ export const useActiveChats = (uuid: string) => {
 
 export const useRequestsCount = (uuid: string) => {
   const count = useLiveQuery(async () => {
-    return getDb(uuid).inbox.where({ areFriends: 0, interacted: 0 }).count();
+    return getDb(uuid)
+      .inbox.where({ areFriends: 0, interacted: 0, remoteInteracted: 1 })
+      .count();
   });
 
   return count;
@@ -53,7 +55,9 @@ export const useUnreadGlobal = (uuid: string) => {
 
 export const useRequests = (uuid: string) => {
   const activeChats = useLiveQuery(async () => {
-    return getDb(uuid).inbox.where({ areFriends: 0, interacted: 0 }).toArray();
+    return getDb(uuid)
+      .inbox.where({ areFriends: 0, interacted: 0, remoteInteracted: 1 })
+      .toArray();
   });
 
   const users = useUsers(uuid, activeChats || []);
