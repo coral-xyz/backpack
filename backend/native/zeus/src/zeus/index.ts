@@ -13846,6 +13846,7 @@ export const enum auth_notifications_update_column {
 }
 /** unique or primary key constraints on table "auth.public_keys" */
 export const enum auth_public_keys_constraint {
+  public_keys_blockchain_public_key_key = "public_keys_blockchain_public_key_key",
   public_keys_pkey = "public_keys_pkey",
 }
 /** select columns of table "auth.public_keys" */
