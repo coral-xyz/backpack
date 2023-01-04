@@ -3,7 +3,6 @@ import { SearchBox } from "@coral-xyz/app-extension/src/components/Unlocked/Mess
 import type { RemoteUserData } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import { useActiveChats, useRequestsCount } from "@coral-xyz/db";
-import { UserList } from "@coral-xyz/message-sdk";
 import { EmptyState, TextInput } from "@coral-xyz/react-common";
 import { useUser } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
@@ -16,6 +15,7 @@ import { ParentCommunicationManager } from "../ParentCommunicationManager";
 import { MessageList } from "./MessageList";
 import { MessagesSkeleton } from "./MessagesSkeleton";
 import { useStyles } from "./styles";
+import { UserList } from "./UserList";
 
 export function Inbox() {
   const classes = useStyles();
