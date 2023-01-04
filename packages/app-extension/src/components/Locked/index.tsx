@@ -8,7 +8,7 @@ import {
   RedBackpack,
   TextInput,
 } from "@coral-xyz/react-common";
-import { Hello } from "@coral-xyz/react-common2";
+import { Hello } from "@coral-xyz/react-xplat";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Visibility, VisibilityOff } from "@mui/icons-material";

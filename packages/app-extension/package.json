@@ -12,7 +12,7 @@
     "@coral-xyz/db": "*",
     "@coral-xyz/message-sdk": "*",
     "@coral-xyz/react-common": "*",
-    "@coral-xyz/react-common2": "*",
+    "@coral-xyz/react-xplat": "*",
     "@coral-xyz/react-xnft-dom-renderer": "*",
     "@coral-xyz/recoil": "*",
     "@coral-xyz/themes": "*",

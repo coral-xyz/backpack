@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "react-common2": ["./src/index"]
+      "react-xplat": ["./src/index"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,

@@ -1,5 +1,5 @@
 {
-  "name": "@coral-xyz/react-common2",
+  "name": "@coral-xyz/react-xplat",
   "version": "0.1.0",
   "description": "x-plat library",
   "main": "dist/commonjs/index",
