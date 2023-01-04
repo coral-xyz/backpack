@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { BACKEND_API_URL } from "@coral-xyz/common";
-import { ParentCommunicationManager } from "@coral-xyz/message-sdk";
 import { TextInput } from "@coral-xyz/react-common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import SearchIcon from "@mui/icons-material/Search";

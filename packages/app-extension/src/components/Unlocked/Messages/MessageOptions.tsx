@@ -1,7 +1,10 @@
 import { useState } from "react";
 import type { Friendship } from "@coral-xyz/common";
-import { BACKEND_API_URL , sendFriendRequest, unFriend } from "@coral-xyz/common";
-import { ParentCommunicationManager } from "@coral-xyz/message-sdk";
+import {
+  BACKEND_API_URL,
+  sendFriendRequest,
+  unFriend,
+} from "@coral-xyz/common";
 import { toast } from "@coral-xyz/react-common";
 import { friendship, useDecodedSearchParams } from "@coral-xyz/recoil";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
