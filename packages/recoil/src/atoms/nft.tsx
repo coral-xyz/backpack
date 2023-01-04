@@ -18,7 +18,7 @@ import { allWallets, allWalletsDisplayed } from "./wallet";
  * Poll local NFT data and create list of all as source for nftById(s) atoms
  * This atom breaks to global app rerender due to blockchain data polling.
  */
-export const nftCollections = atomFamily<
+const nftCollections = atomFamily<
   {
     blockchain: Blockchain | null;
     collection: NftCollection[] | null;
@@ -120,6 +120,7 @@ export const nftCollectionsWithIds = selector<{
         })
       )
     );
+
     const collectionWithIds: any = {};
     collectionsForAllWallets.forEach((c) => {
       collectionWithIds[c.publicKey!] = {

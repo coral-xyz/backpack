@@ -96,6 +96,7 @@ export function NotificationsProvider(props: any) {
   const setKeyringStoreState = useSetRecoilState(atoms.keyringStoreState);
   const setActiveUser = useSetRecoilState(atoms.user);
   const resetAllUsers = useResetRecoilState(atoms.allUsers);
+  /*
   const _setNftCollections = useRecoilCallback(
     ({ snapshot, set }) =>
       ({
@@ -124,7 +125,7 @@ export function NotificationsProvider(props: any) {
       nftCollections: null,
     });
   };
-
+	*/
   // Preferences.
   const setPreferences = useSetRecoilState(atoms.preferences);
   const setFeatureGates = useSetRecoilState(atoms.featureGates);

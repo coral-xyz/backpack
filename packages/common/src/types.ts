@@ -30,16 +30,6 @@ export type RecentTransaction = {
   didError: boolean;
 };
 
-export type NftCollection = {
-  id: string;
-  name: string;
-  symbol: string;
-  tokenType: string;
-  totalSupply: string;
-  items: Nft[];
-  metadataCollectionId?: string;
-};
-
 export type NftCollectionWithIds = {
   id: string;
   name: string;

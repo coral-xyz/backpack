@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Autosizer from "react-virtualized-auto-sizer";
 import { VariableSizeList } from "react-window";
-import type { Blockchain, NftCollection } from "@coral-xyz/common";
+import type { Blockchain } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
   NAV_COMPONENT_NFT_COLLECTION,
@@ -182,7 +182,7 @@ const FooterRow = function () {
 };
 
 const LoadingRow = function ({ itemsPerRow }: { itemsPerRow: number }) {
-  const items: NftCollection[] = new Array(itemsPerRow).fill(null);
+  const items = new Array(itemsPerRow).fill(null);
 
   return (
     <CustomCard top={false} bottom={false}>
