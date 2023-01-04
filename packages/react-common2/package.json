@@ -1,22 +1,20 @@
 {
   "name": "@coral-xyz/react-common2",
   "version": "0.1.0",
-  "description": "test",
-  "main": "build/commonjs/index",
-  "module": "build/module/index",
-  "types": "build/typescript/index.d.ts",
+  "description": "x-plat library",
+  "main": "dist/commonjs/index",
+  "module": "dist/module/index",
+  "types": "dist/typescript/index.d.ts",
   "react-native": "src/index",
   "source": "src/index",
   "files": [
     "src",
-    "build"
+    "dist"
   ],
   "scripts": {
     "test": "jest",
     "typecheck": "tsc --noEmit",
-    "prepack": "bob build",
-    "example": "yarn --cwd example",
-    "bootstrap": "yarn example && yarn install"
+    "build": "bob build"
   },
   "devDependencies": {
     "@types/jest": "^28.1.2",
@@ -31,12 +29,10 @@
     "react": "*",
     "react-native": "*"
   },
-  "packageManager": "^yarn@1.22.17",
   "react-native-builder-bob": {
     "source": "src",
-    "output": "build",
+    "output": "dist",
     "targets": [
-      "commonjs",
       "module",
       [
         "typescript",

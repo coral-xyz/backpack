@@ -1,4 +1,6 @@
 import { useState } from "react";
+// @ts-ignore
+import { Text } from "react-native";
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
 import {
   Backpack,
@@ -6,6 +8,7 @@ import {
   RedBackpack,
   TextInput,
 } from "@coral-xyz/react-common";
+import { Hello } from "@coral-xyz/react-common2";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
@@ -170,6 +173,9 @@ export function BackpackHeader({
       >
         <AlphaLabel />
       </Box>
+      <Hello name="Peter" />
+      <Hello name="GGG" />
+      <Text style={{ fontSize: 18, color: "black" }}>Hey !!! !</Text>
       <Backpack fill={theme.custom.colors.fontColor} />
       <Typography
         sx={{

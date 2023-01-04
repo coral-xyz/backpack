@@ -114,7 +114,7 @@ const options = {
       },
       {
         test: /\.[jt]sx?$/,
-        exclude: /node_modules/,
+        exclude: /node_modules\/(?!react-native-web)/,
         use: {
           loader: require.resolve("swc-loader"),
           options: {
@@ -142,6 +142,9 @@ const options = {
     ],
   },
   resolve: {
+    alias: {
+      "react-native$": "react-native-web",
+    },
     extensions: fileExtensions
       .map((extension) => "." + extension)
       .concat([".js", ".jsx", ".ts", ".tsx", ".css"]),
