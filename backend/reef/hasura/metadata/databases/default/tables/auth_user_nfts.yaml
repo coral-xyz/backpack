@@ -6,6 +6,7 @@ insert_permissions:
     permission:
       check: {}
       columns:
+        - blockchain
         - collection_id
         - nft_id
         - public_key
@@ -13,6 +14,7 @@ select_permissions:
   - role: auth_worker
     permission:
       columns:
+        - blockchain
         - collection_id
         - nft_id
         - public_key

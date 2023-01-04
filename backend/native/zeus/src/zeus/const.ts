@@ -385,6 +385,7 @@ export const AllTypesProps: Record<string, any> = {
     _and: "auth_user_nfts_bool_exp",
     _not: "auth_user_nfts_bool_exp",
     _or: "auth_user_nfts_bool_exp",
+    blockchain: "String_comparison_exp",
     collection_id: "String_comparison_exp",
     nft_id: "String_comparison_exp",
     public_key: "String_comparison_exp",
@@ -397,6 +398,7 @@ export const AllTypesProps: Record<string, any> = {
     where: "auth_user_nfts_bool_exp",
   },
   auth_user_nfts_order_by: {
+    blockchain: "order_by",
     collection_id: "order_by",
     nft_id: "order_by",
     public_key: "order_by",
@@ -1349,6 +1351,7 @@ export const ReturnTypes: Record<string, any> = {
     returning: "auth_stripe_onramp",
   },
   auth_user_nfts: {
+    blockchain: "String",
     collection_id: "String",
     nft_id: "String",
     public_key: "String",
@@ -1363,11 +1366,13 @@ export const ReturnTypes: Record<string, any> = {
     min: "auth_user_nfts_min_fields",
   },
   auth_user_nfts_max_fields: {
+    blockchain: "String",
     collection_id: "String",
     nft_id: "String",
     public_key: "String",
   },
   auth_user_nfts_min_fields: {
+    blockchain: "String",
     collection_id: "String",
     nft_id: "String",
     public_key: "String",

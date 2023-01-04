@@ -2691,6 +2691,7 @@ export type ValueTypes = {
   };
   /** columns and relationships of "auth.user_nfts" */
   ["auth_user_nfts"]: AliasType<{
+    blockchain?: boolean | `@${string}`;
     collection_id?: boolean | `@${string}`;
     nft_id?: boolean | `@${string}`;
     public_key?: boolean | `@${string}`;
@@ -2736,6 +2737,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    blockchain?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     collection_id?:
       | ValueTypes["String_comparison_exp"]
       | undefined
@@ -2756,12 +2762,14 @@ export type ValueTypes = {
   ["auth_user_nfts_constraint"]: auth_user_nfts_constraint;
   /** input type for inserting data into table "auth.user_nfts" */
   ["auth_user_nfts_insert_input"]: {
+    blockchain?: string | undefined | null | Variable<any, string>;
     collection_id?: string | undefined | null | Variable<any, string>;
     nft_id?: string | undefined | null | Variable<any, string>;
     public_key?: string | undefined | null | Variable<any, string>;
   };
   /** aggregate max on columns */
   ["auth_user_nfts_max_fields"]: AliasType<{
+    blockchain?: boolean | `@${string}`;
     collection_id?: boolean | `@${string}`;
     nft_id?: boolean | `@${string}`;
     public_key?: boolean | `@${string}`;
@@ -2769,6 +2777,7 @@ export type ValueTypes = {
   }>;
   /** aggregate min on columns */
   ["auth_user_nfts_min_fields"]: AliasType<{
+    blockchain?: boolean | `@${string}`;
     collection_id?: boolean | `@${string}`;
     nft_id?: boolean | `@${string}`;
     public_key?: boolean | `@${string}`;
@@ -2796,6 +2805,11 @@ export type ValueTypes = {
   };
   /** Ordering options when selecting data from "auth.user_nfts". */
   ["auth_user_nfts_order_by"]: {
+    blockchain?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     collection_id?:
       | ValueTypes["order_by"]
       | undefined
@@ -2825,6 +2839,7 @@ export type ValueTypes = {
   };
   /** Initial value of the column from where the streaming should start */
   ["auth_user_nfts_stream_cursor_value_input"]: {
+    blockchain?: string | undefined | null | Variable<any, string>;
     collection_id?: string | undefined | null | Variable<any, string>;
     nft_id?: string | undefined | null | Variable<any, string>;
     public_key?: string | undefined | null | Variable<any, string>;
@@ -7350,6 +7365,7 @@ export type ResolverInputTypes = {
   };
   /** columns and relationships of "auth.user_nfts" */
   ["auth_user_nfts"]: AliasType<{
+    blockchain?: boolean | `@${string}`;
     collection_id?: boolean | `@${string}`;
     nft_id?: boolean | `@${string}`;
     public_key?: boolean | `@${string}`;
@@ -7388,6 +7404,7 @@ export type ResolverInputTypes = {
       | Array<ResolverInputTypes["auth_user_nfts_bool_exp"]>
       | undefined
       | null;
+    blockchain?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     collection_id?:
       | ResolverInputTypes["String_comparison_exp"]
       | undefined
@@ -7399,12 +7416,14 @@ export type ResolverInputTypes = {
   ["auth_user_nfts_constraint"]: auth_user_nfts_constraint;
   /** input type for inserting data into table "auth.user_nfts" */
   ["auth_user_nfts_insert_input"]: {
+    blockchain?: string | undefined | null;
     collection_id?: string | undefined | null;
     nft_id?: string | undefined | null;
     public_key?: string | undefined | null;
   };
   /** aggregate max on columns */
   ["auth_user_nfts_max_fields"]: AliasType<{
+    blockchain?: boolean | `@${string}`;
     collection_id?: boolean | `@${string}`;
     nft_id?: boolean | `@${string}`;
     public_key?: boolean | `@${string}`;
@@ -7412,6 +7431,7 @@ export type ResolverInputTypes = {
   }>;
   /** aggregate min on columns */
   ["auth_user_nfts_min_fields"]: AliasType<{
+    blockchain?: boolean | `@${string}`;
     collection_id?: boolean | `@${string}`;
     nft_id?: boolean | `@${string}`;
     public_key?: boolean | `@${string}`;
@@ -7433,6 +7453,7 @@ export type ResolverInputTypes = {
   };
   /** Ordering options when selecting data from "auth.user_nfts". */
   ["auth_user_nfts_order_by"]: {
+    blockchain?: ResolverInputTypes["order_by"] | undefined | null;
     collection_id?: ResolverInputTypes["order_by"] | undefined | null;
     nft_id?: ResolverInputTypes["order_by"] | undefined | null;
     public_key?: ResolverInputTypes["order_by"] | undefined | null;
@@ -7448,6 +7469,7 @@ export type ResolverInputTypes = {
   };
   /** Initial value of the column from where the streaming should start */
   ["auth_user_nfts_stream_cursor_value_input"]: {
+    blockchain?: string | undefined | null;
     collection_id?: string | undefined | null;
     nft_id?: string | undefined | null;
     public_key?: string | undefined | null;
@@ -10819,6 +10841,7 @@ export type ModelTypes = {
   };
   /** columns and relationships of "auth.user_nfts" */
   ["auth_user_nfts"]: {
+    blockchain: string;
     collection_id?: string | undefined;
     nft_id: string;
     public_key: string;
@@ -10839,6 +10862,7 @@ export type ModelTypes = {
     _and?: Array<ModelTypes["auth_user_nfts_bool_exp"]> | undefined;
     _not?: ModelTypes["auth_user_nfts_bool_exp"] | undefined;
     _or?: Array<ModelTypes["auth_user_nfts_bool_exp"]> | undefined;
+    blockchain?: ModelTypes["String_comparison_exp"] | undefined;
     collection_id?: ModelTypes["String_comparison_exp"] | undefined;
     nft_id?: ModelTypes["String_comparison_exp"] | undefined;
     public_key?: ModelTypes["String_comparison_exp"] | undefined;
@@ -10846,18 +10870,21 @@ export type ModelTypes = {
   ["auth_user_nfts_constraint"]: auth_user_nfts_constraint;
   /** input type for inserting data into table "auth.user_nfts" */
   ["auth_user_nfts_insert_input"]: {
+    blockchain?: string | undefined;
     collection_id?: string | undefined;
     nft_id?: string | undefined;
     public_key?: string | undefined;
   };
   /** aggregate max on columns */
   ["auth_user_nfts_max_fields"]: {
+    blockchain?: string | undefined;
     collection_id?: string | undefined;
     nft_id?: string | undefined;
     public_key?: string | undefined;
   };
   /** aggregate min on columns */
   ["auth_user_nfts_min_fields"]: {
+    blockchain?: string | undefined;
     collection_id?: string | undefined;
     nft_id?: string | undefined;
     public_key?: string | undefined;
@@ -10877,6 +10904,7 @@ export type ModelTypes = {
   };
   /** Ordering options when selecting data from "auth.user_nfts". */
   ["auth_user_nfts_order_by"]: {
+    blockchain?: ModelTypes["order_by"] | undefined;
     collection_id?: ModelTypes["order_by"] | undefined;
     nft_id?: ModelTypes["order_by"] | undefined;
     public_key?: ModelTypes["order_by"] | undefined;
@@ -10891,6 +10919,7 @@ export type ModelTypes = {
   };
   /** Initial value of the column from where the streaming should start */
   ["auth_user_nfts_stream_cursor_value_input"]: {
+    blockchain?: string | undefined;
     collection_id?: string | undefined;
     nft_id?: string | undefined;
     public_key?: string | undefined;
@@ -12755,6 +12784,7 @@ export type GraphQLTypes = {
   /** columns and relationships of "auth.user_nfts" */
   ["auth_user_nfts"]: {
     __typename: "auth_user_nfts";
+    blockchain: string;
     collection_id?: string | undefined;
     nft_id: string;
     public_key: string;
@@ -12777,6 +12807,7 @@ export type GraphQLTypes = {
     _and?: Array<GraphQLTypes["auth_user_nfts_bool_exp"]> | undefined;
     _not?: GraphQLTypes["auth_user_nfts_bool_exp"] | undefined;
     _or?: Array<GraphQLTypes["auth_user_nfts_bool_exp"]> | undefined;
+    blockchain?: GraphQLTypes["String_comparison_exp"] | undefined;
     collection_id?: GraphQLTypes["String_comparison_exp"] | undefined;
     nft_id?: GraphQLTypes["String_comparison_exp"] | undefined;
     public_key?: GraphQLTypes["String_comparison_exp"] | undefined;
@@ -12785,6 +12816,7 @@ export type GraphQLTypes = {
   ["auth_user_nfts_constraint"]: auth_user_nfts_constraint;
   /** input type for inserting data into table "auth.user_nfts" */
   ["auth_user_nfts_insert_input"]: {
+    blockchain?: string | undefined;
     collection_id?: string | undefined;
     nft_id?: string | undefined;
     public_key?: string | undefined;
@@ -12792,6 +12824,7 @@ export type GraphQLTypes = {
   /** aggregate max on columns */
   ["auth_user_nfts_max_fields"]: {
     __typename: "auth_user_nfts_max_fields";
+    blockchain?: string | undefined;
     collection_id?: string | undefined;
     nft_id?: string | undefined;
     public_key?: string | undefined;
@@ -12799,6 +12832,7 @@ export type GraphQLTypes = {
   /** aggregate min on columns */
   ["auth_user_nfts_min_fields"]: {
     __typename: "auth_user_nfts_min_fields";
+    blockchain?: string | undefined;
     collection_id?: string | undefined;
     nft_id?: string | undefined;
     public_key?: string | undefined;
@@ -12819,6 +12853,7 @@ export type GraphQLTypes = {
   };
   /** Ordering options when selecting data from "auth.user_nfts". */
   ["auth_user_nfts_order_by"]: {
+    blockchain?: GraphQLTypes["order_by"] | undefined;
     collection_id?: GraphQLTypes["order_by"] | undefined;
     nft_id?: GraphQLTypes["order_by"] | undefined;
     public_key?: GraphQLTypes["order_by"] | undefined;
@@ -12834,6 +12869,7 @@ export type GraphQLTypes = {
   };
   /** Initial value of the column from where the streaming should start */
   ["auth_user_nfts_stream_cursor_value_input"]: {
+    blockchain?: string | undefined;
     collection_id?: string | undefined;
     nft_id?: string | undefined;
     public_key?: string | undefined;
@@ -13887,6 +13923,7 @@ export const enum auth_user_nfts_constraint {
 }
 /** select columns of table "auth.user_nfts" */
 export const enum auth_user_nfts_select_column {
+  blockchain = "blockchain",
   collection_id = "collection_id",
   nft_id = "nft_id",
   public_key = "public_key",
