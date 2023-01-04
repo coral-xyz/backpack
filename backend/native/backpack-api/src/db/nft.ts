@@ -84,18 +84,24 @@ export const getNftMembers = async (
   prefix: string,
   limit: number,
   offset: number
-): Promise<{ users: string[]; count: number }> => {
+): Promise<{ users: { id: string; username: string }[]; count: number }> => {
   const response = await chain("query")({
-    auth_user_nfts: [
+    auth_users: [
       {
         where: {
-          collection_id: { _eq: collectionId },
+          username: { _like: `${prefix}%` },
+          public_keys: {
+            user_nfts: {
+              collection_id: { _eq: collectionId },
+            },
+          },
         },
         limit,
         offset,
       },
       {
-        public_key: true,
+        id: true,
+        username: true,
       },
     ],
     auth_user_nfts_aggregate: [
@@ -112,7 +118,11 @@ export const getNftMembers = async (
     ],
   });
   return {
-    users: response.auth_user_nfts?.map((x) => x.public_key) || [],
+    users:
+      response.auth_users?.map((x) => ({
+        id: x.id,
+        username: x.username,
+      })) || [],
     count: response.auth_user_nfts_aggregate?.aggregate?.count || 0,
   };
 };

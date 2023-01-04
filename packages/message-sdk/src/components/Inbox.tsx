@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { SearchBox } from "@coral-xyz/app-extension/src/components/Unlocked/Messages/SearchBox";
-import type { EnrichedInboxDb } from "@coral-xyz/common";
+import type { RemoteUserData } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import { useActiveChats, useRequestsCount } from "@coral-xyz/db";
 import { EmptyState, TextInput } from "@coral-xyz/react-common";
@@ -24,9 +24,7 @@ export function Inbox() {
   const activeChats = useActiveChats(uuid) || [];
   // const [activeChats, setActiveChats] = useState<EnrichedInboxDb[]>([]);
   const requestCount = useRequestsCount(uuid) || 0;
-  const [searchResults, setSearchResults] = useState<
-    { image: string; id: string; username: string }[]
-  >([]);
+  const [searchResults, setSearchResults] = useState<RemoteUserData[]>([]);
   const theme = useCustomTheme();
   const [searchFilter, setSearchFilter] = useState("");
 

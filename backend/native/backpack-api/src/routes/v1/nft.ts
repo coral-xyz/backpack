@@ -3,6 +3,7 @@ import { Blockchain } from "@coral-xyz/common";
 import express from "express";
 
 import { ensureHasRoomAccess, extractUserId } from "../../auth/middleware";
+import { getFriendshipStatus } from "../../db/friendships";
 import { addNfts, getNftCollection, getNftMembers } from "../../db/nft";
 import {
   getUsers,
@@ -55,26 +56,41 @@ router.get("/members", extractUserId, ensureHasRoomAccess, async (req, res) => {
   // @ts-ignore
   const prefix: string = req.query.prefix || "";
 
-  const members_public_keys = await getNftMembers(
+  const { count, users } = await getNftMembers(
     collectionId,
     prefix,
     limit,
     offset
   );
-  const members_data = await getUsersByPublicKeys(
-    members_public_keys.users.map((publicKey) => ({
-      blockchain: Blockchain.SOLANA,
-      publicKey,
-    }))
-  );
-  const members: RemoteUserData[] = await getUsersWithFriendshipStatus(
-    members_data.map((x) => x.user_id as string),
+
+  const memberFriendships: {
+    id: string;
+    areFriends: boolean;
+    requested: boolean;
+    remoteRequested: boolean;
+  }[] = await getFriendshipStatus(
+    users.map((x) => x.id as string),
     uuid
   );
 
+  const members: RemoteUserData[] = users
+    .filter((x) => x.id !== uuid)
+    .map(({ id, username }) => {
+      const friendship = memberFriendships.find((x) => x.id === id);
+
+      return {
+        id,
+        username,
+        image: `https://swr.xnfts.dev/avatars/${username}`,
+        requested: friendship?.requested || false,
+        remoteRequested: friendship?.remoteRequested || false,
+        areFriends: friendship?.areFriends || false,
+      };
+    });
+
   res.json({
-    members: members.filter((x) => x.id !== uuid),
-    count: members_public_keys.count,
+    members: members,
+    count,
   });
 });
 

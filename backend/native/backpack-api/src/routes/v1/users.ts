@@ -1,5 +1,9 @@
-import type { Blockchain } from "@coral-xyz/common";
-import { getAddMessage, getCreateMessage } from "@coral-xyz/common";
+import type { Blockchain ,
+  RemoteUserData} from "@coral-xyz/common";
+import {
+  getAddMessage,
+  getCreateMessage
+} from "@coral-xyz/common";
 import type { Request, Response } from "express";
 import express from "express";
 import jwt from "jsonwebtoken";
@@ -7,6 +11,7 @@ import jwt from "jsonwebtoken";
 import { extractUserId, optionallyExtractUserId } from "../../auth/middleware";
 import { clearCookie, setJWTCookie } from "../../auth/util";
 import { REFERRER_COOKIE_NAME } from "../../config";
+import { getFriendshipStatus } from "../../db/friendships";
 import {
   createUser,
   createUserPublicKey,
@@ -35,18 +40,35 @@ router.get("/", extractUserId, async (req, res) => {
   // @ts-ignore
   const uuid = req.id as string;
 
-  await getUsersByPrefix({ usernamePrefix, uuid })
-    .then((users) => {
-      res.json({
-        users: users.map((user) => ({
-          ...user,
-          image: `https://avatars.xnfts.dev/v1/${user.username}`,
-        })),
-      });
-    })
-    .catch(() => {
-      res.status(511).json({ msg: "Error while fetching users" });
+  const users = await getUsersByPrefix({ usernamePrefix, uuid });
+  const friendships: {
+    id: string;
+    areFriends: boolean;
+    requested: boolean;
+    remoteRequested: boolean;
+  }[] = await getFriendshipStatus(
+    users.map((x) => x.id as string),
+    uuid
+  );
+
+  const usersWithFriendshipMetadata: RemoteUserData[] = users
+    .filter((x) => x.id !== uuid)
+    .map(({ id, username }) => {
+      const friendship = friendships.find((x) => x.id === id);
+
+      return {
+        id,
+        username,
+        image: `https://swr.xnfts.dev/avatars/${username}`,
+        requested: friendship?.requested || false,
+        remoteRequested: friendship?.remoteRequested || false,
+        areFriends: friendship?.areFriends || false,
+      };
     });
+
+  res.json({
+    users: usersWithFriendshipMetadata,
+  });
 });
 
 router.get("/jwt/xnft", extractUserId, async (req, res) => {

@@ -284,6 +284,67 @@ export const getFriendships = async ({
   };
 };
 
+export const getFriendshipStatus = async (
+  userIds: string[],
+  myuserId: string
+): Promise<
+  {
+    id: string;
+    areFriends: boolean;
+    requested: boolean;
+    remoteRequested: boolean;
+  }[]
+> => {
+  const response = await chain("query")({
+    auth_friendships: [
+      {
+        where: {
+          _or: [
+            { user1: { _eq: myuserId }, user2: { _in: userIds } },
+            { user1: { _in: userIds }, user2: { _eq: myuserId } },
+          ],
+        },
+      },
+      {
+        are_friends: true,
+        user1: true,
+        user2: true,
+      },
+    ],
+    auth_friend_requests: [
+      {
+        where: {
+          _or: [
+            { from: { _eq: myuserId }, to: { _in: userIds } },
+            { from: { _in: userIds }, to: { _eq: myuserId } },
+          ],
+        },
+      },
+      {
+        id: true,
+        from: true,
+        to: true,
+      },
+    ],
+  });
+
+  return userIds.map((userId) => {
+    const friendship = response.auth_friendships.find(
+      (x) => x.user1 === userId || x.user2 === userId
+    );
+    const requests = response.auth_friend_requests.find(
+      (x) => x.from === userId || x.to === userId
+    );
+
+    return {
+      id: userId,
+      areFriends: friendship?.are_friends ? true : false,
+      requested: requests?.from === myuserId ? true : false,
+      remoteRequested: requests?.from === userId ? true : false,
+    };
+  });
+};
+
 export async function unfriend({ from, to }: { from: string; to: string }) {
   const { user1, user2 } = getSortedUsers(from, to);
   await chain("mutation")({
