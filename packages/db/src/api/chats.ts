@@ -20,8 +20,8 @@ export const refreshChatsFor = async (
   const response = await fetch(
     `${BACKEND_API_URL}/chat?room=${room}&type=${type}&limit=40&timestampAfter=${
       lastMessage?.created_at &&
-      !isNaN(new Date(lastMessage?.created_at).getTime())
-        ? new Date(lastMessage?.created_at).getTime()
+      !isNaN(new Date(parseInt(lastMessage?.created_at)).getTime())
+        ? new Date(parseInt(lastMessage?.created_at)).getTime()
         : 0
     }&mint=${nftMint}&publicKey=${publicKey}`,
     {

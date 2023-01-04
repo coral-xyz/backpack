@@ -38,8 +38,8 @@ const useStyles = makeStyles((theme: any) =>
     avatar: {
       width: theme.spacing(4),
       height: theme.spacing(4),
-      borderRadius: "4px",
       cursor: "pointer",
+      borderRadius: "50%"
     },
     messageLine: {
       display: "flex",

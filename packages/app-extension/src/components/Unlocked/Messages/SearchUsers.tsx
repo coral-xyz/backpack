@@ -5,12 +5,14 @@ import { TextInput } from "@coral-xyz/react-common";
 
 import { useStyles } from "./styles";
 import { UserList } from "./UserList";
+import { useContacts } from "@coral-xyz/db";
+import {useUser} from "@coral-xyz/recoil";
 
 export const SearchUsers = () => {
+  const {uuid} = useUser();
   const classes = useStyles();
   const [searchFilter, setSearchFilter] = useState("");
-  const [, setContactsLoading] = useState(true);
-  const [contacts, setContacts] = useState<EnrichedInboxDb[]>([]);
+  const contacts = useContacts(uuid);
   const filteredContacts = contacts
     .filter((x: EnrichedInboxDb) => x.remoteUsername.includes(searchFilter))
     .map((x: EnrichedInboxDb) => ({
@@ -18,18 +20,6 @@ export const SearchUsers = () => {
       id: x.remoteUserId,
       username: x.remoteUsername,
     }));
-
-  const fetchFriends = async () => {
-    const res = await fetch(`${BACKEND_API_URL}/friends/all`);
-    const json = await res.json();
-    setContactsLoading(false);
-    const chats: EnrichedInboxDb[] = json.chats;
-    setContacts(chats || []);
-  };
-
-  useEffect(() => {
-    fetchFriends();
-  }, []);
 
   return (
     <div className={classes.container}>

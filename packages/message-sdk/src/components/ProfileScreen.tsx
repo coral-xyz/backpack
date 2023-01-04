@@ -6,10 +6,8 @@ import {
   MessageIcon,
   PrimaryButton,
   ProxyImage,
-  SecondaryButton,
 } from "@coral-xyz/react-common";
 import { useUser } from "@coral-xyz/recoil";
-// import { useNavigation } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import LockIcon from "@mui/icons-material/Lock";
