@@ -62,7 +62,7 @@ export const FullScreenChat = () => {
           ref={messageRef}
           style={{
             overflowY: "scroll",
-            height: "calc(100% - 47px)",
+            height: "calc(100% - 40px)",
             background: theme.custom.colors.bg3,
           }}
         >

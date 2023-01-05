@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme: any) =>
       width: theme.spacing(4),
       height: theme.spacing(4),
       cursor: "pointer",
-      borderRadius: "50%"
+      borderRadius: "50%",
     },
     messageLine: {
       display: "flex",
@@ -194,7 +194,7 @@ export const MessageLine = (props) => {
               <div>
                 <p className={classes.messageContent}>
                   {props.messageKind === "gif" ? (
-                    <GifDemo id={message} width={300} />
+                    <GifDemo id={message} width={220} />
                   ) : (
                     message
                   )}

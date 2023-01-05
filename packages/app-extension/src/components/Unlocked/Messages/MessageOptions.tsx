@@ -7,6 +7,7 @@ import {
 } from "@coral-xyz/common";
 import { toast } from "@coral-xyz/react-common";
 import { friendship, useDecodedSearchParams } from "@coral-xyz/recoil";
+import { useCustomTheme } from "@coral-xyz/themes";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { Fade, Menu, MenuItem } from "@mui/material";
 import Divider from "@mui/material/Divider";
@@ -20,6 +21,7 @@ export const MessageOptions = () => {
   const remoteUsername = props.username;
   const [friendshipValue, setFriendshipValue] =
     useRecoilState<Friendship | null>(friendship({ userId }));
+  const theme = useCustomTheme();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -42,9 +44,11 @@ export const MessageOptions = () => {
 
   return (
     <div>
-      <MoreHorizIcon onClick={handleClick} style={{ cursor: "pointer" }} />
+      <MoreHorizIcon
+        onClick={handleClick}
+        style={{ cursor: "pointer", color: theme.custom.colors.icon }}
+      />
       <Menu
-        style={{ paddingTop: 0, paddingBottom: 0, minWidth: 184 }}
         id="fade-menu"
         MenuListProps={{
           "aria-labelledby": "fade-button",
@@ -53,96 +57,99 @@ export const MessageOptions = () => {
         open={open}
         onClose={handleClose}
         TransitionComponent={Fade}
+        className={classes.menu}
       >
-        <MenuItem
-          className={classes.menuItem}
-          disabled={friendshipValue?.blocked}
-          onClick={async () => {
-            if (friendshipValue?.areFriends) {
-              await unFriend({ to: userId });
+        <div style={{ background: theme.custom.colors.background }}>
+          <MenuItem
+            className={classes.menuItem}
+            disabled={friendshipValue?.blocked}
+            onClick={async () => {
+              if (friendshipValue?.areFriends) {
+                await unFriend({ to: userId });
+                setFriendshipValue((x: any) => ({
+                  ...x,
+                  areFriends: false,
+                }));
+                toast.success(
+                  "Contact removed",
+                  `We've removed @${remoteUsername} from your contacts.`
+                );
+              } else {
+                if (friendshipValue?.requested) {
+                  send(false);
+                } else {
+                  send(true);
+                  toast.success(
+                    friendshipValue?.remoteRequested
+                      ? "You both said hot 🔥"
+                      : "Contact requested",
+                    friendshipValue?.remoteRequested
+                      ? "Just kidding! You are now mutual contacts."
+                      : `We'll let ${remoteUsername} know you want to connect.`
+                  );
+                }
+              }
+              handleClose();
+            }}
+          >
+            {friendshipValue?.areFriends
+              ? "Remove from contacts"
+              : friendshipValue?.requested
+              ? "Cancel Pending Request"
+              : friendshipValue?.remoteRequested
+              ? "Accept Contact Request"
+              : "Add to contacts"}
+          </MenuItem>
+          <Divider style={{ marginTop: 0, marginBottom: 0 }} />
+          <MenuItem
+            className={classes.menuItem}
+            disabled={friendshipValue?.spam}
+            onClick={async () => {
+              const updatedValue = !friendshipValue?.blocked;
               setFriendshipValue((x: any) => ({
                 ...x,
-                areFriends: false,
+                blocked: updatedValue,
+                requested: updatedValue ? false : x.requested,
               }));
-              toast.success(
-                "Contact removed",
-                `We've removed @${remoteUsername} from your contacts.`
-              );
-            } else {
-              if (friendshipValue?.requested) {
-                send(false);
-              } else {
-                send(true);
+              await fetch(`${BACKEND_API_URL}/friends/block`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ to: userId, block: updatedValue }),
+              });
+              if (updatedValue) {
                 toast.success(
-                  friendshipValue?.remoteRequested
-                    ? "You both said hot 🔥"
-                    : "Contact requested",
-                  friendshipValue?.remoteRequested
-                    ? "Just kidding! You are now mutual contacts."
-                    : `We'll let ${remoteUsername} know you want to connect.`
+                  "Blocked",
+                  `@${remoteUsername} shouldn't be showing up in your DMs from now on.`
                 );
               }
-            }
-            handleClose();
-          }}
-        >
-          {friendshipValue?.areFriends
-            ? "Remove from contacts"
-            : friendshipValue?.requested
-            ? "Cancel Pending Request"
-            : friendshipValue?.remoteRequested
-            ? "Accept Contact Request"
-            : "Add to contacts"}
-        </MenuItem>
-        <Divider style={{ marginTop: 0, marginBottom: 0 }} />
-        <MenuItem
-          className={classes.menuItem}
-          disabled={friendshipValue?.spam}
-          onClick={async () => {
-            const updatedValue = !friendshipValue?.blocked;
-            setFriendshipValue((x: any) => ({
-              ...x,
-              blocked: updatedValue,
-              requested: updatedValue ? false : x.requested,
-            }));
-            await fetch(`${BACKEND_API_URL}/friends/block`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ to: userId, block: updatedValue }),
-            });
-            if (updatedValue) {
-              toast.success(
-                "Blocked",
-                `@${remoteUsername} shouldn't be showing up in your DMs from now on.`
-              );
-            }
-            handleClose();
-          }}
-        >
-          {friendshipValue?.blocked ? "Unblock" : "Block"}
-        </MenuItem>
-        <MenuItem
-          className={classes.menuItem}
-          onClick={async () => {
-            const updatedValue = !friendshipValue?.spam;
-            await fetch(`${BACKEND_API_URL}/friends/spam`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ to: userId, spam: updatedValue }),
-            });
-            setFriendshipValue((x: any) => ({
-              ...x,
-              spam: updatedValue,
-            }));
-            handleClose();
-          }}
-        >
-          {friendshipValue?.spam ? `Remove spam` : `Mark as spam`}
-        </MenuItem>
+              handleClose();
+            }}
+          >
+            {friendshipValue?.blocked ? "Unblock" : "Block"}
+          </MenuItem>
+          <MenuItem
+            className={classes.menuItem}
+            onClick={async () => {
+              const updatedValue = !friendshipValue?.spam;
+              await fetch(`${BACKEND_API_URL}/friends/spam`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ to: userId, spam: updatedValue }),
+              });
+              setFriendshipValue((x: any) => ({
+                ...x,
+                spam: updatedValue,
+              }));
+              handleClose();
+            }}
+          >
+            {friendshipValue?.spam ? `Remove spam` : `Mark as spam`}
+          </MenuItem>
+        </div>
       </Menu>
     </div>
   );

@@ -1,4 +1,5 @@
-import { Suspense, useEffect } from "react";
+import React, { Suspense, useEffect } from "react";
+import { ToastContainer } from "react-toastify";
 import type { Blockchain, FeeConfig } from "@coral-xyz/common";
 import {
   EXTENSION_HEIGHT,
@@ -24,7 +25,7 @@ import {
   useKeyringStoreState,
   useUser,
 } from "@coral-xyz/recoil";
-import { styles } from "@coral-xyz/themes";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Block as BlockIcon } from "@mui/icons-material";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -46,9 +47,15 @@ import "./App.css";
 const logger = getLogger("router");
 
 export function Router() {
+  const theme = useCustomTheme();
   return (
     <WithSuspense>
-      <_Router />
+      <>
+        <ToastContainer
+          toastStyle={{ backgroundColor: theme.custom.colors.background }}
+        />
+        <_Router />
+      </>
     </WithSuspense>
   );
 }

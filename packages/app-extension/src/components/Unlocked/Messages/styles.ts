@@ -105,4 +105,13 @@ export const useStyles = styles((theme) => ({
     color: theme.custom.colors.fontColor,
     padding: "12px 16px",
   },
+  menu: {
+    "& .MuiList-root": {
+      padding: 0,
+    },
+    paddingTop: 0,
+    paddingBottom: 0,
+    minWidth: 184,
+    color: theme.custom.colors.fontColor,
+  },
 }));
