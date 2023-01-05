@@ -3,9 +3,10 @@ import { DiscordIcon } from "@components/Icon";
 import {
   BACKPACK_FEATURE_XNFT,
   DISCORD_INVITE_LINK,
+  MESSAGES_ENABLED,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
 } from "@coral-xyz/common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
+import { useBackgroundClient, useFeatureGates } from "@coral-xyz/recoil";
 import { useTheme } from "@hooks";
 import { useNavigation } from "@react-navigation/native";
 import * as Linking from "expo-linking";
@@ -18,6 +19,7 @@ import {
 } from "./SettingsRow";
 
 export function SettingsList() {
+  const featureGates = useFeatureGates();
   const background = useBackgroundClient();
   const navigation = useNavigation();
   const theme = useTheme();
@@ -54,6 +56,15 @@ export function SettingsList() {
       detailIcon: <IconPushDetail />,
     },
   ];
+
+  if (featureGates[MESSAGES_ENABLED]) {
+    settingsMenu.push({
+      label: "Contacts",
+      onPress: () => navigation.push("contacts-list"),
+      icon: <IconLeft name="people" />,
+      detailIcon: <IconPushDetail />,
+    });
+  }
 
   if (BACKPACK_FEATURE_XNFT) {
     settingsMenu.push({
