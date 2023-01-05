@@ -3,6 +3,7 @@ import { useLocation, useSearchParams } from "react-router-dom";
 import {
   fetchXnft,
   TAB_SET,
+  TAB_XNFT,
   UI_RPC_METHOD_NAVIGATION_POP,
   UI_RPC_METHOD_NAVIGATION_PUSH,
 } from "@coral-xyz/common";
@@ -62,24 +63,21 @@ export function useClosePlugin(): () => void {
     background
       .request({
         method: UI_RPC_METHOD_NAVIGATION_POP,
-        params: [],
+        params: [TAB_XNFT],
       })
       .catch(console.error);
   };
 }
 
 export function useOpenPlugin(): (xnftAddress: string) => void {
-  const [searchParams] = useSearchParams();
   const background = useRecoilValue(atoms.backgroundClient);
-  const location = useLocation();
 
   return (xnftAddress) => {
-    searchParams.set("pluginProps", JSON.stringify({ xnftAddress }));
-    const url = `${location.pathname}?${searchParams.toString()}`;
+    const url = `xnft/${xnftAddress}`;
     background
       .request({
         method: UI_RPC_METHOD_NAVIGATION_PUSH,
-        params: [url],
+        params: [url, TAB_XNFT],
       })
       .catch(console.error);
   };

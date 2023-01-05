@@ -6,12 +6,11 @@ import {
   useLocation,
   useSearchParams,
 } from "react-router-dom";
-import type {
-  SubscriptionType} from "@coral-xyz/common";
+import type { SubscriptionType } from "@coral-xyz/common";
 import {
   MESSAGE_IFRAME_ENABLED,
   MESSAGING_COMMUNICATION_FETCH_RESPONSE,
-  NAV_COMPONENT_MESSAGE_PROFILE
+  NAV_COMPONENT_MESSAGE_PROFILE,
 } from "@coral-xyz/common";
 import {
   MESSAGING_COMMUNICATION_FETCH,
@@ -56,36 +55,42 @@ import { SettingsButton } from "../../Unlocked/Settings";
 
 import { NavBackButton, WithNav } from "./Nav";
 import { WithMotion } from "./NavStack";
+import { XnftAppStack } from "./XnftAppStack";
 
 export function Router() {
   const location = useLocation();
   return (
-    <AnimatePresence initial={false}>
-      <Routes location={location} key={location.pathname}>
-        <Route path="/balances" element={<BalancesPage />} />
-        <Route path="/balances/token" element={<TokenPage />} />
-        <Route path={"/messages/*"} element={<Messages />} />
-        <Route path="/apps" element={<AppsPage />} />
-        <Route path="/nfts" element={<NftsPage />} />
-        {/*<Route path="/swap" element={<SwapPage />} />*/}
-        <Route path="/nfts/collection" element={<NftsCollectionPage />} />
-        <Route path="/nfts/experience" element={<NftsExperiencePage />} />
-        <Route path="/nfts/chat" element={<NftsChatPage />} />
-        <Route path="/nfts/detail" element={<NftsDetailPage />} />
-        <Route path="*" element={<Redirect />} />
-      </Routes>
-    </AnimatePresence>
+    <PluginManager>
+      <AnimatePresence initial={false}>
+        <Routes location={location} key={location.pathname}>
+          <Route path="/balances" element={<BalancesPage />} />
+          <Route path="/balances/token" element={<TokenPage />} />
+          <Route path={"/messages/*"} element={<Messages />} />
+          <Route path="/apps" element={<AppsPage />} />
+          <Route path="/nfts" element={<NftsPage />} />
+          {/*<Route path="/swap" element={<SwapPage />} />*/}
+          <Route path="/nfts/collection" element={<NftsCollectionPage />} />
+          <Route path="/nfts/experience" element={<NftsExperiencePage />} />
+          <Route path="/nfts/chat" element={<NftsChatPage />} />
+          <Route path="/nfts/detail" element={<NftsDetailPage />} />
+          <Route path="/xnft/:xnftAddress" element={<XnftAppStack />} />
+          <Route path="*" element={<Redirect />} />
+        </Routes>
+      </AnimatePresence>
+    </PluginManager>
   );
 }
 
 export function Redirect() {
   let url = useRedirectUrl();
-  const [searchParams] = useSearchParams();
-  const pluginProps = searchParams.get("pluginProps");
-  if (pluginProps) {
-    // TODO: probably want to use some API to append the search param instead.
-    url = `${url}&pluginProps=${encodeURIComponent(pluginProps)}`;
-  }
+  console.log("REDIRECT", url);
+  // const [searchParams] = useSearchParams();
+  // const pluginProps = searchParams.get("pluginProps");
+  // console.log(pluginProps)
+  // if (pluginProps) {
+  //   // TODO: probably want to use some API to append the search param instead.
+  //   url = `${url}&pluginProps=${encodeURIComponent(pluginProps)}`;
+  // }
   return <Navigate to={url} replace />;
 }
 
@@ -327,10 +332,8 @@ function NavScreen({
           noScrollbars={noScrollbars}
         >
           <NavBootstrap>
-            <PluginManager>
-              {component}
-              <PluginDrawer />
-            </PluginManager>
+            {component}
+            {/* <PluginDrawer /> */}
           </NavBootstrap>
         </WithNav>
       </div>
@@ -390,7 +393,7 @@ function useNavBar() {
   const theme = useCustomTheme();
   const { props }: any = useDecodedSearchParams(); // TODO: fix type
   const { uuid } = useUser();
-  const image: string | undefined = useDbUser(uuid, props.userId)?.image;
+  const image: string | undefined = useDbUser(uuid, props?.userId)?.image;
 
   let navButtonLeft = null as any;
   let navButtonRight = null as any;
