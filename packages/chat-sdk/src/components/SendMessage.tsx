@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme: any) =>
         },
       },
       "& .MuiInputBase-input": {
-        padding: "10px 14px 10px 2px",
+        padding: "10px 14px 10px 14px",
       },
     },
     textFieldInputColorEmpty: {
@@ -203,21 +203,10 @@ export const SendMessage = () => {
         value={messageContent}
         id="standard-text"
         InputProps={{
-          startAdornment: (
+          endAdornment: (
             <>
               {emojiMenuOpen ? (
                 <>
-                  <IconButton
-                    size={"small"}
-                    style={{ color: theme.custom.colors.icon }}
-                    onClick={(e) => {
-                      setEmojiMenuOpen(false);
-                    }}
-                  >
-                    <CancelIcon
-                      style={{ color: theme.custom.colors.icon, fontSize: 20 }}
-                    />
-                  </IconButton>
                   <EmojiPickerComponent
                     setEmojiPicker={setEmojiPicker}
                     emojiPicker={emojiPicker}
@@ -230,6 +219,17 @@ export const SendMessage = () => {
                     gifPicker={gifPicker}
                     setEmojiPicker={setEmojiPicker}
                   />
+                  <IconButton
+                    size={"small"}
+                    style={{ color: theme.custom.colors.icon }}
+                    onClick={(e) => {
+                      setEmojiMenuOpen(false);
+                    }}
+                  >
+                    <CancelIcon
+                      style={{ color: theme.custom.colors.icon, fontSize: 20 }}
+                    />
+                  </IconButton>
                   {/*<IconButton>*/}
                   {/*  {" "}*/}
                   {/*  <SendIcon*/}

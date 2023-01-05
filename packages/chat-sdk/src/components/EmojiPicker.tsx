@@ -41,11 +41,13 @@ export const EmojiPickerComponent = ({
         anchorEl={anchorEl}
         onClose={() => setEmojiPicker(false)}
         anchorOrigin={{
-          vertical: "bottom",
+          vertical: "top",
           horizontal: "right",
         }}
+        style={{ marginBottom: 10 }}
       >
         <EmojiPicker
+          previewConfig={{ showPreview: false }}
           theme={isDarkMode ? Theme.DARK : Theme.LIGHT}
           height={400}
           width={"100%"}
