@@ -155,6 +155,8 @@ export const UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE =
 export const UI_RPC_METHOD_NAVIGATION_POP = "ui-rpc-method-navigation-pop";
 export const UI_RPC_METHOD_NAVIGATION_PUSH = "ui-rpc-method-navigation-push";
 export const UI_RPC_METHOD_NAVIGATION_READ = "ui-rpc-method-navigation-read";
+export const UI_RPC_METHOD_NAVIGATION_READ_URL =
+  "ui-rpc-method-navigation-read-url";
 export const UI_RPC_METHOD_NAVIGATION_TO_ROOT =
   "ui-rpc-method-navigation-to-root";
 export const UI_RPC_METHOD_NAVIGATION_TO_DEFAULT =
@@ -483,14 +485,14 @@ export const TAB_SWAP = "swap";
 export const TAB_NFTS = "nfts";
 export const TAB_MESSAGES = "messages";
 export const TAB_APPS = "apps";
-export const TAB_PLUGINS = "plugins";
+export const TAB_XNFT = "xnft";
 export const TAB_SET = new Set([
   TAB_BALANCES,
   TAB_SWAP,
   TAB_NFTS,
   TAB_APPS,
   TAB_MESSAGES,
-  TAB_PLUGINS,
+  TAB_XNFT,
 ]);
 
 export const NAV_COMPONENT_TOKEN = "balances/token";
@@ -502,6 +504,7 @@ export const NAV_COMPONENT_CONTACTS = "contacts";
 export const NAV_COMPONENT_MESSAGE_CHAT = "messages/chat";
 export const NAV_COMPONENT_MESSAGE_PROFILE = "messages/profile";
 export const NAV_COMPONENT_MESSAGE_REQUESTS = "messages/requests";
+export const NAV_COMPONENT_XNFT = "xnft/*";
 
 export const BACKEND_EVENT = "backend-event";
 
