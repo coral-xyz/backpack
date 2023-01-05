@@ -16,7 +16,7 @@ import {
 } from "@coral-xyz/common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { createStackNavigator } from "@react-navigation/stack";
-import { Linking } from "expo-linking";
+import * as Linking from "expo-linking";
 
 import { ErrorMessage } from "../components/ErrorMessage";
 import { PasswordInput } from "../components/PasswordInput";
@@ -35,8 +35,7 @@ export default function LockedNavigator() {
         headerShown: false,
         headerTitle: "",
         presentation: "modal",
-      }}
-    >
+      }}>
       <Stack.Screen name="Locked" component={LockedScreen} />
       <Stack.Screen name="HelpMenuModal" component={LockedHelpMenuModal} />
     </Stack.Navigator>
@@ -87,8 +86,7 @@ function LockedHelpMenuModal({ navigation }) {
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
-        }}
-      >
+        }}>
         <Button title={label} onPress={onPress} />
       </View>
     );
@@ -104,12 +102,11 @@ function LockedHelpMenuModal({ navigation }) {
   );
 }
 
-const LockedScreen = ({ navigation }) => {
+function LockedScreen({ navigation }: any): JSX.Element {
   const background = useBackgroundClient();
-  const user = useUser();
+  const user = useUser(); // TODO look into why this breaks
 
   const { control, handleSubmit, formState, setError } = useForm<FormData>();
-
   const { errors, isValid } = formState;
 
   const onSubmit = async ({ password }: FormData) => {
@@ -154,4 +151,4 @@ const LockedScreen = ({ navigation }) => {
       </View>
     </Screen>
   );
-};
+}
