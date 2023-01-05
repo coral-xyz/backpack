@@ -1,12 +1,13 @@
-import { useEffect, useState } from "react";
-import { Alert, Text, View } from "react-native";
-import { Screen } from "@components";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import { ProxyImage, Screen } from "@components";
 import type { Blockchain, ChannelAppUiClient } from "@coral-xyz/common";
 import {
   DerivationPath,
   EthereumConnectionUrl,
   SolanaCluster,
   SolanaExplorer,
+  UI_RPC_METHOD_ACTIVE_USER_UPDATE,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
   UI_RPC_METHOD_BLOCKCHAINS_ENABLED_ADD,
@@ -19,6 +20,8 @@ import {
   walletAddressDisplay,
 } from "@coral-xyz/common";
 import {
+  useAllUsers,
+  useAvatarUrl,
   useBackgroundClient,
   useEnabledBlockchains,
   useEthereumConnectionUrl,
@@ -26,6 +29,7 @@ import {
   useSolanaCommitment,
   useSolanaConnectionUrl,
   useSolanaExplorer,
+  useUser,
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -61,6 +65,7 @@ import { YourAccountScreen } from "@screens/Unlocked/YourAccountScreen";
 import type { Commitment } from "@solana/web3.js";
 import { ethers } from "ethers";
 const { hexlify } = ethers.utils;
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTheme } from "@hooks";
 
 const Stack = createStackNavigator();
@@ -73,24 +78,213 @@ function DummyScreen() {
   return <View style={{ flex: 1, backgroundColor: "red" }} />;
 }
 
-export default function AccountSettingsNavigator() {
+const Astyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 24,
+    justifyContent: "center",
+    backgroundColor: "grey",
+  },
+  contentContainer: {
+    flex: 1,
+    alignItems: "center",
+  },
+});
+
+function AccountDropdownHeader(): JSX.Element {
+  const user = useUser();
+  // const theme = useTheme();
+
+  // ref
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+
+  // variables
+  const snapPoints = useMemo(() => ["25%"], []);
+
+  // callbacks
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
+
+  const handleSheetChanges = useCallback((index: number) => {
+    console.log("handleSheetChanges", index);
+  }, []);
+
+  return (
+    <>
+      <View
+        style={{
+          height: 44,
+          backgroundColor: "yellow",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: 8,
+        }}>
+        <Text> h</Text>
+        <Pressable
+          onPress={handlePresentModalPress}
+          style={{
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+          }}>
+          <Text>@49e5e035</Text>
+          <Text>@{user.username}</Text>
+          <MaterialIcons name="check" size={24} style={{ marginLeft: 4 }} />
+        </Pressable>
+        <Text> g</Text>
+      </View>
+      <BottomSheetModal
+        ref={bottomSheetModalRef}
+        index={0}
+        snapPoints={snapPoints}
+        onChange={handleSheetChanges}>
+        <View style={Astyles.contentContainer}>
+          <Text>Awesome 🎉</Text>
+        </View>
+      </BottomSheetModal>
+    </>
+  );
+}
+
+function UserAccountMenu(): JSX.Element {
+  const theme = useTheme();
+  return (
+    <View
+      style={{
+        backgroundColor: theme.custom.colors.backgroundBackdrop,
+        padding: 16,
+      }}>
+      <Text
+        style={{
+          marginTop: 8,
+          marginBottom: 16,
+          fontSize: 18,
+          lineHeight: 24,
+          color: theme.custom.colors.fontColor,
+        }}>
+        Accounts
+      </Text>
+      <UsersList />
+    </View>
+  );
+}
+
+function UsersList(): JSX.Element {
+  const theme = useTheme();
+  const users = useAllUsers();
+  const _user = useUser();
+  return (
+    <View
+      style={{
+        borderColor: theme.custom.colors.borderFull,
+        borderRadius: 12,
+      }}>
+      {users.map(({ username, uuid }: any, idx: number) => (
+        <UserAccountListItem
+          key={username}
+          uuid={uuid}
+          isFirst={idx === 0}
+          isLast={idx === users.length - 1}
+          username={username}
+          isActive={_user.username === username}
+        />
+      ))}
+    </View>
+  );
+}
+
+function UserAccountListItem({
+  uuid,
+  username,
+  isActive,
+}: {
+  uuid: string;
+  username: string;
+  isActive: boolean;
+}): JSX.Element {
+  const theme = useTheme();
+  const avatarUrl = useAvatarUrl(24, username);
+  const background = useBackgroundClient();
+  // const drawer = useDrawerContext();
+  return (
+    <SettingsRow
+      onPress={async () => {
+        await background.request({
+          method: UI_RPC_METHOD_ACTIVE_USER_UPDATE,
+          params: [uuid],
+        });
+        // drawer.close();
+      }}>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+        }}>
+        <View>
+          <MiniAvatarIcon avatarUrl={avatarUrl} />
+          <Text
+            style={{
+              marginLeft: 12,
+              color: theme.custom.colors.fontColor,
+              justifyContent: "center",
+            }}>
+            @{username}
+          </Text>
+        </View>
+        {isActive && <IconCheckmark />}
+      </View>
+    </SettingsRow>
+  );
+}
+
+function MiniAvatarIcon({ avatarUrl }: { avatarUrl: string }) {
+  const theme = useTheme();
+  // PCA test ProxyImage
+  return (
+    <View
+      style={{
+        backgroundColor: theme.custom.colors.avatarIconBackground,
+        width: 28,
+        height: 28,
+        borderRadius: 14,
+        justifyContent: "center",
+      }}>
+      <ProxyImage
+        src={avatarUrl}
+        style={{
+          width: 24,
+          height: 24,
+          borderRadius: 12,
+        }}
+      />
+    </View>
+  );
+}
+
+export default function AccountSettingsNavigator(): JSX.Element {
   const theme = useTheme();
   return (
     <Stack.Navigator
-      screenOptions={{
-        headerShown: true,
-        headerTintColor: theme.custom.colors.fontColor,
-      }}
-    >
+      screenOptions={
+        {
+          // headerShown: true,
+          // headerTintColor: theme.custom.colors.fontColor,
+        }
+      }>
       <Stack.Screen
         name="Profile"
         component={ProfileScreen}
         options={{
-          headerShown: true,
-          headerTitle: "",
-          headerTransparent: true,
-          headerTintColor: theme.custom.colors.fontColor,
-          headerBackTitle: "Back",
+          header: () => {
+            return <AccountDropdownHeader />;
+          },
+          // headerShown: true,
+          // headerTitle: "",
+          // headerTransparent: true,
+          // headerTintColor: theme.custom.colors.fontColor,
+          // headerBackTitle: "Back",
         }}
       />
       <Stack.Screen
@@ -217,8 +411,7 @@ export default function AccountSettingsNavigator() {
         component={AddConnectWalletScreen}
       />
       <Stack.Group
-        screenOptions={{ presentation: "modal", headerShown: false }}
-      >
+        screenOptions={{ presentation: "modal", headerShown: false }}>
         <Stack.Screen name="forgot-password" component={ForgotPasswordScreen} />
         <Stack.Screen name="logout-warning" component={LogoutWarningScreen} />
       </Stack.Group>
