@@ -60,6 +60,7 @@ import { XnftAppStack } from "./XnftAppStack";
 
 export function Router() {
   const location = useLocation();
+  console.log("LOCATION", location);
   return (
     <PluginManager>
       <AnimatePresence initial={false}>
@@ -299,6 +300,7 @@ function NavScreen({
   };
 }) {
   const { title, isRoot, pop } = useNavigation();
+  console.log("NAVsCREEN", title, isRoot, pop);
   const {
     style,
     navButtonLeft,
@@ -337,47 +339,10 @@ function NavScreen({
           navbarStyle={style}
           noScrollbars={noScrollbars}
         >
-          <NavBootstrap>
-            {component}
-            {/* <PluginDrawer /> */}
-          </NavBootstrap>
+          <NavBootstrap>{component}</NavBootstrap>
         </WithNav>
       </div>
     </WithMotionWrapper>
-  );
-}
-
-function PluginDrawer() {
-  const [openDrawer, setOpenDrawer] = useState(false);
-  const [searchParams] = useSearchParams();
-  const closePlugin = useClosePlugin();
-
-  const pluginProps = searchParams.get("pluginProps");
-
-  // Auto-lock functionality is dependent on checking if the URL contains
-  // "xnftAddress", if this changes then please verify that it still works
-  const { xnftAddress } = JSON.parse(decodeURIComponent(pluginProps ?? "{}"));
-
-  useEffect(() => {
-    if (xnftAddress) {
-      setOpenDrawer(true);
-    }
-  }, [xnftAddress]);
-
-  return (
-    <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-      <Suspense fallback={<Loading />}>
-        {xnftAddress && (
-          <PluginApp
-            xnftAddress={xnftAddress}
-            closePlugin={() => {
-              setOpenDrawer(false);
-              setTimeout(closePlugin, 100);
-            }}
-          />
-        )}
-      </Suspense>
-    </WithDrawer>
   );
 }
 
