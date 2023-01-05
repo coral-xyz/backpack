@@ -27,8 +27,6 @@ import {
 import { Loading } from "@coral-xyz/react-common";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import {
-  PluginManager,
-  useClosePlugin,
   useDarkMode,
   useDecodedSearchParams,
   useFeatureGates,
@@ -82,14 +80,6 @@ export function Router() {
 
 export function Redirect() {
   let url = useRedirectUrl();
-  console.log("REDIRECT", url);
-  // const [searchParams] = useSearchParams();
-  // const pluginProps = searchParams.get("pluginProps");
-  // console.log(pluginProps)
-  // if (pluginProps) {
-  //   // TODO: probably want to use some API to append the search param instead.
-  //   url = `${url}&pluginProps=${encodeURIComponent(pluginProps)}`;
-  // }
   return <Navigate to={url} replace />;
 }
 
