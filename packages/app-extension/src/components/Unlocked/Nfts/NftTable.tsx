@@ -6,9 +6,13 @@ import {
   BACKEND_API_URL,
   NAV_COMPONENT_NFT_COLLECTION,
   NAV_COMPONENT_NFT_DETAIL,
+  SolanaTokenAccountWithKey,
+  TokenMetadata,
 } from "@coral-xyz/common";
 import { NAV_COMPONENT_NFT_CHAT } from "@coral-xyz/common/dist/esm/constants";
 import type { NftCollectionWithIds } from "@coral-xyz/common/src/types";
+import type {
+  Collection} from "@coral-xyz/recoil";
 import {
   nftById,
   useAllWallets,
@@ -24,10 +28,9 @@ import { _BalancesTableHead } from "../Balances/Balances";
 
 import { GridCard } from "./Common";
 
-type BlockchainCollections = Array<{
+type AllWalletCollections = Array<{
   publicKey: string;
-  blockchain: Blockchain;
-  collectionWithIds: NftCollectionWithIds[] | null;
+  collections: null | Array<Collection>;
 }>;
 type CollapsedCollections = boolean[];
 
@@ -49,7 +52,7 @@ export function NftTable({
   prependItems = [],
 }: {
   prependItems?: Row[];
-  blockchainCollections: BlockchainCollections;
+  blockchainCollections: AllWalletCollections;
 }) {
   const [collapsedCollections, setCollapsedCollections] =
     useState<CollapsedCollections>(
@@ -153,14 +156,14 @@ const HeaderRow = function HeaderRow({
 }: {
   listIndex: number;
   blockchainIndex: number;
-  blockchainCollections: BlockchainCollections;
+  blockchainCollections: AllWalletCollections;
   isCollapsed: boolean;
   collapseSingleCollection: collapseSingleCollection;
 }) {
   const c = blockchainCollections[blockchainIndex];
-  const blockchain = c.blockchain;
   const wallets = useAllWallets();
   const wallet = wallets.find((wallet) => wallet.publicKey === c.publicKey);
+  const blockchain = wallet?.blockchain;
   return (
     <>
       <CustomCard top={true} bottom={isCollapsed}>
@@ -231,19 +234,23 @@ const ItemRow = function ({
   blockchainIndex: number;
   itemStartIndex: number;
   itemsPerRow: number;
-  blockchainCollections: BlockchainCollections;
+  blockchainCollections: AllWalletCollections;
 }) {
   const c = blockchainCollections[blockchainIndex];
-  const collectionItems = c.collectionWithIds!;
 
-  const connectionUrl = useBlockchainConnectionUrl(c.blockchain);
+  const wallets = useAllWallets();
+  const wallet = wallets.find((wallet) => wallet.publicKey === c.publicKey);
+  const blockchain = wallet?.blockchain!;
+
+  const collectionItems = c.collections.itemIds;
+  const connectionUrl = useBlockchainConnectionUrl(blockchain);
 
   const numberOfItems =
     itemStartIndex + itemsPerRow <= collectionItems.length
       ? itemsPerRow
       : collectionItems.length % itemsPerRow;
 
-  const items: NftCollectionWithIds[] = new Array(itemsPerRow).fill(null);
+  const items: any = new Array(itemsPerRow).fill(null);
   for (let i = itemStartIndex; i < itemStartIndex + numberOfItems; i++) {
     items[i - itemStartIndex] = collectionItems[i];
   }
@@ -436,7 +443,7 @@ const getNumberOfRowsInCollection = (
 
 const getItemForIndex = (
   index: number,
-  blockchainCollections: BlockchainCollections,
+  blockchainCollections: AllWalletCollections,
   collapsedCollections: CollapsedCollections,
   collapseSingleCollection: collapseSingleCollection,
   itemsPerRow: number,
@@ -534,7 +541,7 @@ const getItemForIndex = (
 };
 
 const getNumberOfItems = (
-  collections: BlockchainCollections,
+  collections: AllWalletCollections,
   collapsedCollections: CollapsedCollections,
   itemsPerRow: number,
   prependItems: Row[]

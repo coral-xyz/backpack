@@ -2,90 +2,175 @@ import type {
   Nft,
   NftCollection,
   NftCollectionWithIds,
+  RawMintString,
   SolanaTokenAccountWithKey,
-  TokenMetadata} from "@coral-xyz/common";
-import {
-  Blockchain
+  SolanaTokenAccountWithKeyString,
+  TokenMetadata,
+  TokenMetadataString,
 } from "@coral-xyz/common";
+import { Blockchain , externalResourceUri } from "@coral-xyz/common";
 import { atom, atomFamily, selector, selectorFamily, waitForAll } from "recoil";
 
 import { equalSelectorFamily } from "../equals";
 
 import { ethereumNftCollections } from "./ethereum/nft";
+import { anchorContext , solanaConnectionUrl } from "./solana/index";
 import { customSplTokenAccounts } from "./solana/token";
 import { ethereumConnectionUrl } from "./ethereum";
-import { solanaConnectionUrl } from "./solana";
-import { allWalletsDisplayed } from "./wallet";
+import { allWallets,allWalletsDisplayed } from "./wallet";
 
-export const nftCollectionsWithIds = selector<{
-  [publicKey: string]: {
+export const nftCollectionsWithIds = selector<
+  Array<{
     publicKey: string;
-    blockchain: Blockchain;
-    nfts: {
-      [metadataPublicKey: string]: {
-        nftToken: SolanaTokenAccountWithKey;
-        nftTokenMetadata: TokenMetadata | null;
-      };
-    };
-    // Metadata PublicKey.
-    itemIds: Array<string | null>;
-  };
-}>({
+    collections: Array<Collection>;
+  }>
+>({
   key: "nftCollectionsWithIds",
   get: ({ get }) => {
     const wallets = get(allWalletsDisplayed);
-    const collectionsForAllWallets = get(
+    const allWalletCollections = get(
       waitForAll(
-        wallets.map(({ publicKey, blockchain }) => {
-          let connectionUrl: string;
-          if (blockchain === Blockchain.SOLANA) {
-            connectionUrl = get(solanaConnectionUrl);
-          } else {
-            connectionUrl = get(ethereumConnectionUrl);
-          }
-          return customSplTokenAccounts({ publicKey, connectionUrl });
+        wallets.map(({ publicKey }) => {
+          return solanaMetadataMap({ publicKey });
         })
       )
-    ).map(({ nfts }, index) => {
-      const _nfts = {};
+    )
+      .map(intoSolanaCollectionsMap)
+      .map(({ publicKey, collections }) => {
+        return {
+          publicKey,
+          collections: Object.values(collections),
+        };
+      });
+    return allWalletCollections;
+  },
+});
+
+// Returns the nft metadata map for a given public key.
+// Maps metadata pubkey -> account data.
+const solanaMetadataMap = selectorFamily<MetadataMap, { publicKey: string }>({
+  key: "metadataMap",
+  get:
+    ({ publicKey }) =>
+    ({ get }) => {
+      const connectionUrl = get(solanaConnectionUrl);
+      const { nfts } = get(
+        customSplTokenAccounts({ publicKey, connectionUrl })
+      );
+
+      // Transform into the map now.
+      const nftMap = {};
       for (let k = 0; k < nfts.nftTokens.length; k += 1) {
         const nftToken = nfts.nftTokens[k];
         const nftTokenMetadata = nfts.nftTokenMetadata[k]!;
-        _nfts[nftTokenMetadata.publicKey] = {
+        nftMap[nftTokenMetadata.publicKey] = {
+          metadataPublicKey: nftTokenMetadata.publicKey,
           nftToken,
           nftTokenMetadata,
         };
       }
       return {
-        ...wallets[index],
-        nfts: _nfts,
-        itemIds: nfts.nftTokenMetadata.map((t) => t?.publicKey.toString()),
+        publicKey,
+        metadata: nftMap,
       };
-    });
-    const collectionWithIds: any = {};
-    collectionsForAllWallets.forEach((c) => {
-      collectionWithIds[c.publicKey!] = {
-        ...c,
-      };
-    });
-    return collectionWithIds;
-  },
+    },
 });
 
+//       itemIds: nfts.nftTokenMetadata.map((t) => t?.publicKey.toString()),
+
 export const nftById = equalSelectorFamily<
-  Nft | null,
+  Nft,
   { publicKey: string; connectionUrl: string; nftId: string }
 >({
   key: "nftById",
   get:
     ({ publicKey, connectionUrl, nftId }) =>
-    ({ get }) => {
-      const collectionsAllWallets = get(nftCollectionsWithIds);
-      const collections = collectionsAllWallets[publicKey];
-      const { nftToken, nftTokenMetadata } = collections.nfts[nftId];
-
-      // TODO
-      return {} as { publicKey: string; connectionUrl: string; nftId: string };
+    async ({ get }) => {
+      const { connection } = get(anchorContext);
+      const metadataMap = get(solanaMetadataMap({ publicKey }));
+      const { nftToken, nftTokenMetadata } = metadataMap[nftId];
+      const [_, uriData] = await connection.customSplMetadataUri(
+        [nftToken],
+        [nftTokenMetadata]
+      )[0];
+      return {
+        id: uriData.publicKey,
+        blockchain: Blockchain.SOLANA,
+        publicKey: uriData.publicKey,
+        mint: uriData.metadata.mint,
+        name: uriData.metadata.data.name ?? uriData.tokenMetaUriData.name,
+        description: uriData.tokenMetaUriData.description,
+        externalUrl: externalResourceUri(
+          uriData.tokenMetaUriData.external_url?.replace(/\0/g, "")
+        ),
+        imageUrl: externalResourceUri(
+          uriData.tokenMetaUriData.image?.replace(/\0/g, "")
+        ),
+        attributes: uriData.tokenMetaUriData.attributes?.map(
+          (a: { trait_type: string; uriData: string }) => ({
+            traitType: a.trait_type,
+            value: a.uriData,
+          })
+        ),
+      };
     },
   equals: (m1, m2) => JSON.stringify(m1) === JSON.stringify(m2),
 });
+
+////////////////////////////////////
+
+// Given all the token account data for a given wallet, transform into a
+// collection array for UI presentation.
+function intoSolanaCollectionsMap(metadataMap: MetadataMap): {
+  publicKey: string;
+  collections: {
+    [collectionId: string]: Collection;
+  };
+} {
+  const collections = {};
+
+  Object.values(metadataMap.metadata).forEach((value) => {
+    const [collectionId, collection, metadataCollectionId] = (() => {
+      // todo
+      return ["No Collection", collections["No Collection"], ""];
+    })();
+    if (!collection) {
+      collections[collectionId] = {
+        // TODO this can collide easily, better field for an ID?
+        id: collectionId,
+        metadataCollectionId,
+        name: collectionId,
+        symbol: value.nftTokenMetadata?.account.data.symbol,
+        tokenType: "",
+        totalSupply: "",
+        items: [],
+      };
+    }
+    collections[collectionId]!.items.push(value.nftTokenMetadata?.publicKey);
+  });
+
+  return {
+    publicKey: metadataMap.publicKey,
+    collections,
+  };
+}
+
+export type Collection = {
+  id: string;
+  metadataCollectionId: string;
+  symbol: string;
+  tokenType: string;
+  totalSuppl: string;
+  itemIds: Array<string>;
+};
+
+type MetadataMap = {
+  publicKey: string;
+  metadata: {
+    [metadataPublicKey: string]: {
+      metadataPublicKey: string;
+      nftToken: SolanaTokenAccountWithKey;
+      nftTokenMetadata: TokenMetadata | null;
+    };
+  };
+};

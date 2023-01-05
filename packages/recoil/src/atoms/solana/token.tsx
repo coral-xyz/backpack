@@ -40,6 +40,7 @@ export const customSplTokenAccounts = atomFamily({
       async ({
         get,
       }): Promise<{
+        publicKey: string;
         splTokenMints: Map<string, RawMintString | null>;
         nfts: {
           nftTokens: Array<SolanaTokenAccountWithKeyString>;
@@ -58,6 +59,7 @@ export const customSplTokenAccounts = atomFamily({
           const { mintsMap, fts, nfts } =
             await connection.customSplTokenAccounts(new PublicKey(publicKey));
           return {
+            publicKey,
             splTokenMints: new Map(mintsMap),
             nfts,
             fts,
@@ -65,6 +67,7 @@ export const customSplTokenAccounts = atomFamily({
         } catch (error) {
           console.error("could not fetch solana token data", error);
           return {
+            publicKey,
             splTokenMints: new Map(),
             nfts: {
               nftTokens: [],

@@ -33,14 +33,8 @@ export function Nfts() {
             : []
         }
         blockchainCollections={
-          collections
-            ? Object.entries(collections).map(([publicKey, c]) => ({
-                publicKey,
-                blockchain: c.blockchain,
-                collectionWithIds: c.collectionWithIds,
-              }))
-            : // Set some empty collections so that the loading indicator displays.
-              wallets.map((w) => ({ ...w, collectionWithIds: null }))
+          collections ??
+          wallets.map((w) => ({ publicKey: w.publicKey, collections: null }))
         }
       />
     );
