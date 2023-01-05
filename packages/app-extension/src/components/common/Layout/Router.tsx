@@ -59,25 +59,24 @@ import { XnftAppStack } from "./XnftAppStack";
 
 export function Router() {
   const location = useLocation();
+  console.log("LOCATION", location);
   return (
-    <PluginManager>
-      <AnimatePresence initial={false}>
-        <Routes location={location} key={location.pathname}>
-          <Route path="/balances" element={<BalancesPage />} />
-          <Route path="/balances/token" element={<TokenPage />} />
-          <Route path={"/messages/*"} element={<Messages />} />
-          <Route path="/apps" element={<AppsPage />} />
-          <Route path="/nfts" element={<NftsPage />} />
-          {/*<Route path="/swap" element={<SwapPage />} />*/}
-          <Route path="/nfts/collection" element={<NftsCollectionPage />} />
-          <Route path="/nfts/experience" element={<NftsExperiencePage />} />
-          <Route path="/nfts/chat" element={<NftsChatPage />} />
-          <Route path="/nfts/detail" element={<NftsDetailPage />} />
-          <Route path="/xnft/:xnftAddress" element={<XnftAppStack />} />
-          <Route path="*" element={<Redirect />} />
-        </Routes>
-      </AnimatePresence>
-    </PluginManager>
+    <AnimatePresence initial={false}>
+      <Routes location={location} key={location.pathname}>
+        <Route path="/balances" element={<BalancesPage />} />
+        <Route path="/balances/token" element={<TokenPage />} />
+        <Route path={"/messages/*"} element={<Messages />} />
+        <Route path="/apps" element={<AppsPage />} />
+        <Route path="/nfts" element={<NftsPage />} />
+        {/*<Route path="/swap" element={<SwapPage />} />*/}
+        <Route path="/nfts/collection" element={<NftsCollectionPage />} />
+        <Route path="/nfts/experience" element={<NftsExperiencePage />} />
+        <Route path="/nfts/chat" element={<NftsChatPage />} />
+        <Route path="/nfts/detail" element={<NftsDetailPage />} />
+        <Route path="/xnft/:xnftAddress" element={<XnftAppStack />} />
+        <Route path="*" element={<Redirect />} />
+      </Routes>
+    </AnimatePresence>
   );
 }
 
@@ -293,6 +292,7 @@ function NavScreen({
   };
 }) {
   const { title, isRoot, pop } = useNavigation();
+  console.log("NAVsCREEN", title, isRoot, pop);
   const {
     style,
     navButtonLeft,
@@ -331,47 +331,10 @@ function NavScreen({
           navbarStyle={style}
           noScrollbars={noScrollbars}
         >
-          <NavBootstrap>
-            {component}
-            {/* <PluginDrawer /> */}
-          </NavBootstrap>
+          <NavBootstrap>{component}</NavBootstrap>
         </WithNav>
       </div>
     </WithMotionWrapper>
-  );
-}
-
-function PluginDrawer() {
-  const [openDrawer, setOpenDrawer] = useState(false);
-  const [searchParams] = useSearchParams();
-  const closePlugin = useClosePlugin();
-
-  const pluginProps = searchParams.get("pluginProps");
-
-  // Auto-lock functionality is dependent on checking if the URL contains
-  // "xnftAddress", if this changes then please verify that it still works
-  const { xnftAddress } = JSON.parse(decodeURIComponent(pluginProps ?? "{}"));
-
-  useEffect(() => {
-    if (xnftAddress) {
-      setOpenDrawer(true);
-    }
-  }, [xnftAddress]);
-
-  return (
-    <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-      <Suspense fallback={<Loading />}>
-        {xnftAddress && (
-          <PluginApp
-            xnftAddress={xnftAddress}
-            closePlugin={() => {
-              setOpenDrawer(false);
-              setTimeout(closePlugin, 100);
-            }}
-          />
-        )}
-      </Suspense>
-    </WithDrawer>
   );
 }
 
