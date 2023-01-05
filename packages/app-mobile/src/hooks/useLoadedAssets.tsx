@@ -37,6 +37,7 @@ export function useLoadedAssets(): status {
     // sets a error loading screen if something didn't load correctly
     if (secondsPassed > 7 && isLoadingComplete === "loading") {
       setLoadingComplete("error");
+      clearTimeout(id);
     }
 
     return () => clearTimeout(id);
