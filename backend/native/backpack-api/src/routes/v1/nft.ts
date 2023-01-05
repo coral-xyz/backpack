@@ -4,12 +4,8 @@ import express from "express";
 
 import { ensureHasRoomAccess, extractUserId } from "../../auth/middleware";
 import { getFriendshipStatus } from "../../db/friendships";
-import { addNfts, getNftCollection, getNftMembers } from "../../db/nft";
-import {
-  getUsers,
-  getUsersByPublicKeys,
-  getUsersWithFriendshipStatus,
-} from "../../db/users";
+import { addNfts, getNftMembers } from "../../db/nft";
+import { getUsersByPublicKeys } from "../../db/users";
 import { validateOwnership } from "../../utils/metaplex";
 
 const router = express.Router();

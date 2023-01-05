@@ -10,7 +10,7 @@ import {
 
 export const refreshFriendships = async (uuid: string) => {
   const db = getDb(uuid);
-  const res = await fetch(`${BACKEND_API_URL}/inbox/all`);
+  const res = await fetch(`${BACKEND_API_URL}/inbox/all?uuid=${uuid}`);
   const json = await res.json();
   const chats: EnrichedInboxDb[] = json.chats;
   if (chats) {

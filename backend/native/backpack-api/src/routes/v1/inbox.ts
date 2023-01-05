@@ -58,6 +58,12 @@ router.get("/all", extractUserId, async (req, res) => {
   const limit: number = req.query.limit || 50;
   //@ts-ignore
   const offset: number = req.query.limit || 0;
+  //@ts-ignore
+  const userSpecifiedId: string = req.query.uuid;
+
+  if (uuid !== userSpecifiedId) {
+    return res.json({ chats: [] });
+  }
 
   const friendships = await getAllFriendships({
     uuid,
