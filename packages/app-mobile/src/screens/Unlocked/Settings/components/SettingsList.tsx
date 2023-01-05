@@ -1,16 +1,14 @@
 import { Margin, RoundedContainerGroup } from "@components";
+import { DiscordIcon } from "@components/Icon";
 import {
   BACKPACK_FEATURE_XNFT,
-  Blockchain,
   DISCORD_INVITE_LINK,
-  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-  UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useTheme } from "@hooks";
 import { useNavigation } from "@react-navigation/native";
-import { Linking } from "expo-linking";
+import * as Linking from "expo-linking";
 
 import {
   IconLaunchDetail,
@@ -22,6 +20,7 @@ import {
 export function SettingsList() {
   const background = useBackgroundClient();
   const navigation = useNavigation();
+  const theme = useTheme();
 
   const lockWallet = () => {
     background
@@ -31,6 +30,15 @@ export function SettingsList() {
       })
       .catch(console.error);
   };
+
+  const walletsMenu = [
+    {
+      label: "Manage Wallets",
+      onPress: () => navigation.push("edit-wallets"),
+      icon: <IconLeft name="account-balance-wallet" />,
+      detailIcon: <IconPushDetail />,
+    },
+  ];
 
   const settingsMenu = [
     {
@@ -53,7 +61,6 @@ export function SettingsList() {
       onPress: () => navigation.push("xNFTSettings"),
       icon: <IconLeft name="apps" />,
       detailIcon: <IconPushDetail />,
-      disabled: true,
     });
   }
 
@@ -66,23 +73,31 @@ export function SettingsList() {
 
   const discordList = [
     {
-      label: "Waiting Room",
-      onPress: () => navigation.push("WaitingRoom"),
-      icon: <IconLeft name="people" />,
-      detailIcon: <IconPushDetail />,
-      disabled: true,
-    },
-    {
       label: "Need help? Hop into Discord",
       onPress: () => Linking.openURL(DISCORD_INVITE_LINK),
-      icon: <IconLeft name="people" />,
+      icon: <DiscordIcon color={theme.custom.colors.icon} />,
       detailIcon: <IconLaunchDetail />,
     },
   ];
 
   return (
     <>
-      <Margin vertical={12}>
+      <Margin bottom={24}>
+        <RoundedContainerGroup>
+          {walletsMenu.map((item) => {
+            return (
+              <SettingsRow
+                key={item.label}
+                label={item.label}
+                onPress={item.onPress}
+                icon={item.icon}
+                detailIcon={item.detailIcon}
+              />
+            );
+          })}
+        </RoundedContainerGroup>
+      </Margin>
+      <Margin bottom={24}>
         <RoundedContainerGroup>
           {settingsMenu.map((item) => {
             return (

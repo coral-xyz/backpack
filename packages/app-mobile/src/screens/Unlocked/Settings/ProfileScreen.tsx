@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Alert, SectionList, StyleSheet, Text, View } from "react-native";
+import { SectionList, View } from "react-native";
 import {
   AddConnectWalletButton,
   Avatar,
@@ -9,17 +9,8 @@ import {
 } from "@components";
 import { ExpandCollapseIcon } from "@components/Icon";
 import type { Blockchain } from "@coral-xyz/common";
-import {
-  toTitleCase,
-  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-} from "@coral-xyz/common";
-import {
-  useActiveWallets,
-  useBackgroundClient,
-  useUser,
-  useWalletPublicKeys,
-} from "@coral-xyz/recoil";
-import { useTheme } from "@hooks";
+import { toTitleCase } from "@coral-xyz/common";
+import { useActiveWallets, useWalletPublicKeys } from "@coral-xyz/recoil";
 import { WalletListItem } from "@screens/Unlocked/EditWalletsScreen";
 import { SettingsList } from "@screens/Unlocked/Settings/components/SettingsList";
 
@@ -29,70 +20,22 @@ type Wallet = {
   type: string;
 };
 
-export function ProfileScreen({ navigation }): JSX.Element {
-  const background = useBackgroundClient();
-
-  const handlePressItem = async (blockchain: Blockchain, wallet: Wallet) => {
-    try {
-      await background.request({
-        method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-        params: [wallet.publicKey, blockchain],
-      });
-
-      Alert.alert("Active wallet updated");
-
-      navigation.goBack();
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handlePressAddWallet = (blockchain: Blockchain) => {
-    navigation.push("add-wallet", { blockchain });
-  };
-
+export function ProfileScreen(): JSX.Element {
   return (
     <Screen style={{ paddingTop: 32 }}>
-      <WalletLists
-        onPressItem={handlePressItem}
-        onPressAddWallet={handlePressAddWallet}
-      />
+      <AvatarHeader />
+      <SettingsList />
     </Screen>
   );
 }
 
-function AvatarHeader() {
-  const { username } = useUser();
-  const theme = useTheme();
+function AvatarHeader(): JSX.Element {
   return (
     <View style={{ alignItems: "center", marginBottom: 24 }}>
       <Avatar />
-      {username ? (
-        <Text
-          style={[
-            styles.usernameText,
-            {
-              color: theme.custom.colors.fontColor,
-            },
-          ]}
-        >
-          gm @{username}
-        </Text>
-      ) : null}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  usernameText: {
-    textAlign: "center",
-    fontWeight: "500",
-    fontSize: 18,
-    lineHeight: 28,
-    marginTop: 8,
-    marginBottom: 12,
-  },
-});
 
 function buildSectionList(blockchainKeyrings: any, activeWallets: any[]) {
   return Object.entries(blockchainKeyrings).map(([blockchain, keyring]) => {
@@ -123,9 +66,13 @@ function buildSectionList(blockchainKeyrings: any, activeWallets: any[]) {
 }
 
 function WalletLists({
+  ListHeaderComponent,
+  ListFooterComponent,
   onPressItem,
   onPressAddWallet,
 }: {
+  ListHeaderComponent?: JSX.Element;
+  ListFooterComponent?: JSX.Element;
   onPressItem: (blockchain: Blockchain, wallet: Wallet) => void;
   onPressAddWallet: (blockchain: Blockchain) => void;
 }): JSX.Element {
@@ -165,8 +112,7 @@ function WalletLists({
         return (
           <RoundedContainerGroup
             disableTopRadius={!isFirst}
-            disableBottomRadius={disableBottomRadius}
-          >
+            disableBottomRadius={disableBottomRadius}>
             <WalletListItem
               name={wallet.name}
               publicKey={wallet.publicKey}
@@ -188,8 +134,8 @@ function WalletLists({
           />
         </Margin>
       )}
-      ListHeaderComponent={AvatarHeader}
-      ListFooterComponent={SettingsList}
+      ListHeaderComponent={ListHeaderComponent}
+      ListFooterComponent={ListFooterComponent}
     />
   );
 }
