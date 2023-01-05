@@ -6,11 +6,14 @@ import {
   useActiveSolanaWallet,
   useDecodedSearchParams,
 } from "@coral-xyz/recoil";
-import { styles } from "@coral-xyz/themes";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Drawer, Typography } from "@mui/material";
 
 import { SearchBox } from "./SearchBox";
 import { UserListSkeleton } from "./UserListSkeleton";
+
+const LIMIT = 25;
+let debouncedTimer = 0;
 
 export const useStyles = styles((theme) => ({
   container: {
@@ -31,6 +34,7 @@ export const useStyles = styles((theme) => ({
   title: {
     marginTop: 20,
     marginBottom: 20,
+    color: theme.custom.colors.fontColor4,
   },
   drawerContainer: {
     padding: 10,
@@ -46,18 +50,28 @@ export const useStyles = styles((theme) => ({
 
 export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
   const classes = useStyles();
-  const [offset, setOffset] = useState(0);
   const { props }: any = useDecodedSearchParams();
   const { publicKey } = useActiveSolanaWallet();
   const [members, setMembers] = useState<RemoteUserData[]>([]);
   const [searchFilter, setSearchFilter] = useState("");
+  const [offset, setOffset] = useState(0);
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [staticMembers, setStaticMembers] = useState<RemoteUserData[]>([]);
+  const theme = useCustomTheme();
 
-  const init = async (prefix = "") => {
+  const debouncedInit = (prefix: string, offset: number) => {
+    clearTimeout(debouncedTimer);
+    debouncedTimer = setTimeout(() => {
+      init(prefix, offset);
+    }, 250);
+  };
+
+  const init = async (prefix = "", offset = 0) => {
+    setLoading(true);
+    setOffset(offset);
     const response = await fetch(
-      `${BACKEND_API_URL}/nft/members?room=${props.collectionId}&mint=${props.nftMint}&publicKey=${publicKey}&type=collection&limit=20&offset=${offset}&prefix=${prefix}`,
+      `${BACKEND_API_URL}/nft/members?room=${props.collectionId}&mint=${props.nftMint}&publicKey=${publicKey}&type=collection&limit=${LIMIT}&offset=${offset}&prefix=${prefix}`,
       {
         method: "GET",
       }
@@ -72,6 +86,7 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
       }
       return members;
     });
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -91,27 +106,61 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
             {props.title}
           </Typography>
         </div>
+        {count && <MembersList count={count} members={staticMembers} />}
+        <SearchBox
+          onChange={(prefix: string) => {
+            setSearchFilter(prefix);
+            debouncedInit(prefix, 0);
+          }}
+        />
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            color: theme.custom.colors.smallTextColor,
+          }}
+        >
+          <div
+            style={{ padding: 5, cursor: "pointer" }}
+            onClick={() => {
+              debouncedInit(searchFilter, Math.max(offset - 1, 0));
+            }}
+          >
+            {offset !== 0 ? "Prev" : ""}
+          </div>
+          {/* TODO: clean up this logic */}
+          {members.length === LIMIT && (
+            <div
+              style={{ padding: 5, cursor: "pointer" }}
+              onClick={() => {
+                debouncedInit(searchFilter, offset + 1);
+              }}
+            >
+              Next
+            </div>
+          )}
+        </div>
+
         {loading && <UserListSkeleton />}
         {!loading && (
           <>
-            {count && <MembersList count={count} members={staticMembers} />}
-            <SearchBox
-              onChange={(prefix: string) => {
-                if (prefix.length >= 3) {
-                  init(prefix);
-                }
-                setSearchFilter(prefix);
-              }}
-            />
             <div className={classes.container}>
-              <UserList
-                setMembers={setMembers}
-                users={members.filter((x) =>
-                  x.username
-                    ?.toLocaleLowerCase()
-                    .includes(searchFilter?.toLocaleLowerCase())
-                )}
-              />
+              {members.filter((x) =>
+                x.username
+                  ?.toLocaleLowerCase()
+                  .includes(searchFilter?.toLocaleLowerCase())
+              ).length !== 0 ? (
+                <UserList
+                  setMembers={setMembers}
+                  users={members.filter((x) =>
+                    x.username
+                      ?.toLocaleLowerCase()
+                      .includes(searchFilter?.toLocaleLowerCase())
+                  )}
+                />
+              ) : (
+                <></>
+              )}
             </div>
           </>
         )}
@@ -127,12 +176,19 @@ function MembersList({
   count: number;
   members: RemoteUserData[];
 }) {
+  const theme = useCustomTheme();
   return (
-    <div style={{ justifyContent: "center", display: "flex" }}>
+    <div
+      style={{ justifyContent: "center", display: "flex", paddingBottom: 25 }}
+    >
       {members.map((member) => (
-        <img src={member.image} style={{ height: 20 }} />
+        <img src={member.image} style={{ height: 25 }} />
       ))}
-      {count} members
+      <div
+        style={{ color: theme.custom.colors.smallTextColor, paddingLeft: 10 }}
+      >
+        {count} members
+      </div>
     </div>
   );
 }
