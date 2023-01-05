@@ -33,28 +33,43 @@ export function Inbox() {
       !activeChats.map((x) => x.remoteUsername).includes(result.username)
   );
 
+  const handleContactSearch = async () => {
+    if (searchFilter.length >= 3) {
+      const response = await ParentCommunicationManager.getInstance().fetch(
+        `${BACKEND_API_URL}/users?usernamePrefix=${searchFilter}`
+      );
+      const json = await response.json();
+      setSearchResults(
+        json.users.sort((a, b) =>
+          a.username.length < b.username.length ? -1 : 1
+        ) || []
+      );
+    } else {
+      setSearchResults([]);
+    }
+  };
+
+  //for debouncing
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchFilter === "") {
+        return;
+      }
+
+      handleContactSearch();
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [searchFilter]);
+
   return (
     <div
       className={classes.container}
       style={{ marginTop: "8px", display: "flex", flexDirection: "column" }}
     >
       <SearchBox
-        onChange={async (prefix) => {
+        onChange={async (prefix: string) => {
           setSearchFilter(prefix);
-          if (prefix.length >= 3) {
-            //TODO debounce
-            const res = await ParentCommunicationManager.getInstance().fetch(
-              `${BACKEND_API_URL}/users?usernamePrefix=${prefix}`
-            );
-            const json = await res.json();
-            setSearchResults(
-              json.users.sort((a, b) =>
-                a.username.length < b.username.length ? -1 : 1
-              ) || []
-            );
-          } else {
-            setSearchResults([]);
-          }
         }}
       />
       {messagesLoading && <MessagesSkeleton />}
