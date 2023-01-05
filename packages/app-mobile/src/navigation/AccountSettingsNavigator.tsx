@@ -1,7 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { StyleProp, ViewStyle } from "react-native";
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
-import { Avatar, ProxyImage, RoundedContainerGroup, Screen } from "@components";
+import {
+  Avatar,
+  Margin,
+  ProxyImage,
+  RoundedContainerGroup,
+  Screen,
+} from "@components";
 import { ExpandCollapseIcon, IconCheckmark } from "@components/Icon";
 import type { Blockchain, ChannelAppUiClient } from "@coral-xyz/common";
 import {
@@ -33,6 +39,7 @@ import {
   useSolanaExplorer,
   useUser,
 } from "@coral-xyz/recoil";
+import { MaterialIcons } from "@expo/vector-icons";
 import { HeaderBackButton } from "@react-navigation/elements";
 import { createStackNavigator } from "@react-navigation/stack";
 import { ImportPrivateKeyScreen } from "@screens/ImportPrivateKeyScreen";
@@ -164,7 +171,33 @@ function UserAccountMenu({ onDismiss }: () => void): JSX.Element {
         Accounts
       </Text>
       <UsersList onDismiss={onDismiss} />
+      <Margin vertical={12}>
+        <AddAnotherAccountButton />
+      </Margin>
     </View>
+  );
+}
+
+function AddAnotherAccountButton() {
+  return (
+    <Pressable
+      disabled
+      style={{ flexDirection: "row", alignItems: "center" }}
+      onPress={() => {
+        // openAddUserAccount();
+      }}>
+      <MaterialIcons name="add" size={28} style={{ marginRight: 4 }} />
+      <Text
+        style={{
+          fontSize: 16,
+          color: "inherit",
+          display: "flex",
+          justifyContent: "center",
+          flexDirection: "column",
+        }}>
+        Add Another Account
+      </Text>
+    </Pressable>
   );
 }
 

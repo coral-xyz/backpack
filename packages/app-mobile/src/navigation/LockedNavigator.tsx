@@ -102,12 +102,11 @@ function LockedHelpMenuModal({ navigation }) {
   );
 }
 
-const LockedScreen = ({ navigation }) => {
+function LockedScreen({ navigation }: any): JSX.Element {
   const background = useBackgroundClient();
   const user = useUser(); // TODO look into why this breaks
 
   const { control, handleSubmit, formState, setError } = useForm<FormData>();
-
   const { errors, isValid } = formState;
 
   const onSubmit = async ({ password }: FormData) => {
@@ -152,4 +151,4 @@ const LockedScreen = ({ navigation }) => {
       </View>
     </Screen>
   );
-};
+}
