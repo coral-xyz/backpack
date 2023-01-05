@@ -48,6 +48,9 @@ const useStyles = styles((theme) => ({
     padding: "8px",
     marginBottom: "1px",
     border: `${theme.custom.colors.borderFull}`,
+    "&:hover": {
+      background: "#fff !important",
+    },
   },
   listItemIconRoot: {
     minWidth: "inherit",
