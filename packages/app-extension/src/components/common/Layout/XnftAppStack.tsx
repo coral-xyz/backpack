@@ -1,7 +1,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useLocation, useParams, useSearchParams } from "react-router-dom";
 import { Loading } from "@coral-xyz/react-common";
-import { PluginManager, useClosePlugin } from "@coral-xyz/recoil";
+import { useClosePlugin } from "@coral-xyz/recoil";
 import { motion } from "framer-motion";
 
 import { PluginApp } from "../../Unlocked/Apps/Plugin";
@@ -28,32 +28,30 @@ export function XnftAppStack() {
   }, [xnftAddress]);
 
   return (
-    <PluginManager>
-      <motion.div
-        key={xnftAddress}
-        style={{
-          height: "100%",
-          display: "flex",
-          flexDirection: "column",
-          flex: 1,
-        }}
-        variants={XNFT_MOTION}
-        initial={!navAction || navAction === "pop" ? {} : "initial"}
-        animate={"animate"}
-        exit={!navAction || navAction === "push" ? {} : "exit"}
-      >
-        <Suspense fallback={<Loading />}>
-          {xnftAddress && (
-            <PluginApp
-              xnftAddress={xnftAddress}
-              closePlugin={() => {
-                closePlugin();
-              }}
-            />
-          )}
-        </Suspense>
-      </motion.div>
-    </PluginManager>
+    <motion.div
+      key={xnftAddress}
+      style={{
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        flex: 1,
+      }}
+      variants={XNFT_MOTION}
+      initial={!navAction || navAction === "pop" ? {} : "initial"}
+      animate={"animate"}
+      exit={!navAction || navAction === "push" ? {} : "exit"}
+    >
+      <Suspense fallback={<Loading />}>
+        {xnftAddress && (
+          <PluginApp
+            xnftAddress={xnftAddress}
+            closePlugin={() => {
+              closePlugin();
+            }}
+          />
+        )}
+      </Suspense>
+    </motion.div>
   );
 }
 

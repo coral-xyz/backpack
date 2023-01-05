@@ -1,15 +1,20 @@
 import type { Plugin } from "@coral-xyz/common";
 import { MoreIcon, PowerIcon } from "@coral-xyz/react-common";
 import {
+  transactionRequest,
   useActiveSolanaWallet,
+  useBackgroundClient,
+  useConnectionBackgroundClient,
   useFreshPlugin,
+  useNavigationSegue,
+  useOpenPlugin,
   usePlugins,
   xnftPreference as xnftPreferenceAtom,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Button, Divider } from "@mui/material";
 import { PublicKey } from "@solana/web3.js";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 
 import { PluginRenderer } from "../../../plugin/Renderer";
 
@@ -24,6 +29,11 @@ export function PluginApp({
 }) {
   const { publicKey } = useActiveSolanaWallet(); // TODO: aggregate wallet considerations.
   const plugins = usePlugins(publicKey);
+  const segue = useNavigationSegue();
+  const setTransactionRequest = useSetRecoilState(transactionRequest);
+  const backgroundClient = useBackgroundClient();
+  const connectionBackgroundClient = useConnectionBackgroundClient();
+  const openPlugin = useOpenPlugin();
 
   if (!plugins) {
     return null;
@@ -34,6 +44,16 @@ export function PluginApp({
       <DisplayFreshPlugin xnftAddress={xnftAddress} closePlugin={closePlugin} />
     );
   }
+
+  plugin.setHostApi({
+    push: segue.push,
+    pop: segue.pop,
+    request: setTransactionRequest,
+    backgroundClient,
+    connectionBackgroundClient,
+    openPlugin,
+  });
+
   if (xnftAddress === PublicKey.default.toString()) {
     return <Simulator plugin={plugin} closePlugin={closePlugin} />;
   }
