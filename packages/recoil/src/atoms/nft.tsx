@@ -2,106 +2,33 @@ import type {
   Nft,
   NftCollection,
   NftCollectionWithIds,
+  SolanaTokenAccountWithKey,
+  TokenMetadata} from "@coral-xyz/common";
+import {
+  Blockchain
 } from "@coral-xyz/common";
-import { Blockchain } from "@coral-xyz/common";
 import { atom, atomFamily, selector, selectorFamily, waitForAll } from "recoil";
 
 import { equalSelectorFamily } from "../equals";
 
 import { ethereumNftCollections } from "./ethereum/nft";
-import { solanaNftCollections } from "./solana/nft";
+import { customSplTokenAccounts } from "./solana/token";
 import { ethereumConnectionUrl } from "./ethereum";
 import { solanaConnectionUrl } from "./solana";
-import { allWallets, allWalletsDisplayed } from "./wallet";
-
-/**
- * Poll local NFT data and create list of all as source for nftById(s) atoms
- * This atom breaks to global app rerender due to blockchain data polling.
- */
-const nftCollections = atomFamily<
-  {
-    blockchain: Blockchain | null;
-    collection: NftCollection[] | null;
-    publicKey: string | null;
-  },
-  {
-    publicKey: string;
-    connectionUrl: string;
-  }
->({
-  key: "nftCollections",
-  default: selectorFamily({
-    key: "nftCollectionsDefault",
-    get:
-      ({ publicKey, connectionUrl }) =>
-      ({ get }) => {
-        const wallets = get(allWallets);
-        const wallet = wallets.find((w) => w.publicKey === publicKey);
-        const collection =
-          wallet!.blockchain === Blockchain.SOLANA
-            ? get(solanaNftCollections({ publicKey, connectionUrl }))
-            : get(ethereumNftCollections({ publicKey, connectionUrl }));
-        return {
-          collection,
-          blockchain: wallet!.blockchain,
-          publicKey,
-        };
-      },
-  }),
-  effects: ({ publicKey, connectionUrl }) => [
-    ({ setSelf, onSet, getPromise }) => {
-      let timeout;
-      getPromise(allWallets).then((_allWallets) => {
-        const pollLocalData = async (isInitial?: boolean) => {
-          const wallet = _allWallets.find((w) => w.publicKey === publicKey);
-          if (!wallet) {
-            throw new Error("invariant violation");
-          }
-          try {
-            const [collection, currentValue] = await Promise.all([
-              getPromise(
-                wallet.blockchain === Blockchain.SOLANA
-                  ? solanaNftCollections({ publicKey, connectionUrl })
-                  : ethereumNftCollections({ publicKey, connectionUrl })
-              ),
-              isInitial
-                ? null
-                : getPromise(nftCollections({ publicKey, connectionUrl })),
-            ]);
-            const newValue = {
-              collection,
-              blockchain: wallet.blockchain,
-              publicKey,
-            };
-            if (JSON.stringify(newValue) !== JSON.stringify(currentValue)) {
-              setSelf(newValue);
-            }
-          } catch (e) {
-            // ensure polling continues even on error.
-            console.error(e);
-          }
-          timeout = setTimeout(
-            () => requestAnimationFrame(() => pollLocalData()),
-            1000
-          );
-        };
-        pollLocalData(true);
-        onSet(() => {
-          clearTimeout(timeout);
-          pollLocalData();
-        });
-      });
-      return () => {
-        clearTimeout(timeout);
-      };
-    },
-  ],
-});
+import { allWalletsDisplayed } from "./wallet";
 
 export const nftCollectionsWithIds = selector<{
   [publicKey: string]: {
+    publicKey: string;
     blockchain: Blockchain;
-    collectionWithIds: Array<NftCollectionWithIds> | null;
+    nfts: {
+      [metadataPublicKey: string]: {
+        nftToken: SolanaTokenAccountWithKey;
+        nftTokenMetadata: TokenMetadata | null;
+      };
+    };
+    // Metadata PublicKey.
+    itemIds: Array<string | null>;
   };
 }>({
   key: "nftCollectionsWithIds",
@@ -116,63 +43,33 @@ export const nftCollectionsWithIds = selector<{
           } else {
             connectionUrl = get(ethereumConnectionUrl);
           }
-          return nftCollections({ publicKey, connectionUrl });
+          return customSplTokenAccounts({ publicKey, connectionUrl });
         })
       )
-    );
-
+    ).map(({ nfts }, index) => {
+      const _nfts = {};
+      for (let k = 0; k < nfts.nftTokens.length; k += 1) {
+        const nftToken = nfts.nftTokens[k];
+        const nftTokenMetadata = nfts.nftTokenMetadata[k]!;
+        _nfts[nftTokenMetadata.publicKey] = {
+          nftToken,
+          nftTokenMetadata,
+        };
+      }
+      return {
+        ...wallets[index],
+        nfts: _nfts,
+        itemIds: nfts.nftTokenMetadata.map((t) => t?.publicKey.toString()),
+      };
+    });
     const collectionWithIds: any = {};
     collectionsForAllWallets.forEach((c) => {
       collectionWithIds[c.publicKey!] = {
-        blockchain: c.blockchain,
-        // TODO: c.collection is null and throwing an error
-        collectionWithIds: c!.collection!.map((c) => ({
-          ...c,
-          itemIds: c.items.map((item) => item.id),
-        })),
+        ...c,
       };
     });
     return collectionWithIds;
   },
-});
-
-/**
- * Flat list of all nfts as source for nftById(s) atoms
- */
-const nftMetadata = selectorFamily<
-  Map<string, Nft>,
-  {
-    publicKey: string;
-    connectionUrl: string;
-  }
->({
-  key: "nftMetadata",
-  get:
-    ({ publicKey, connectionUrl }) =>
-    ({ get }: any) => {
-      const collections = get(nftCollections({ publicKey, connectionUrl }));
-      return new Map(
-        collections
-          .collection!.map((c: NftCollection) => c.items)
-          .flat()
-          .map((nft: Nft) => [nft.id, nft])
-      );
-    },
-});
-
-type NftIDs = string[];
-export const nftsByIds = equalSelectorFamily<
-  Array<Nft | null>,
-  { publicKey: string; connectionUrl: string; nftIds: NftIDs }
->({
-  key: "nftsById",
-  get:
-    ({ nftIds, publicKey, connectionUrl }) =>
-    ({ get }) => {
-      const metadataById = get(nftMetadata({ publicKey, connectionUrl }));
-      return nftIds.map((nftId) => metadataById.get(nftId) ?? null);
-    },
-  equals: (m1, m2) => JSON.stringify(m1) === JSON.stringify(m2),
 });
 
 export const nftById = equalSelectorFamily<
@@ -183,8 +80,12 @@ export const nftById = equalSelectorFamily<
   get:
     ({ publicKey, connectionUrl, nftId }) =>
     ({ get }) => {
-      const metadataById = get(nftMetadata({ publicKey, connectionUrl }));
-      return metadataById.get(nftId) ?? null;
+      const collectionsAllWallets = get(nftCollectionsWithIds);
+      const collections = collectionsAllWallets[publicKey];
+      const { nftToken, nftTokenMetadata } = collections.nfts[nftId];
+
+      // TODO
+      return {} as { publicKey: string; connectionUrl: string; nftId: string };
     },
   equals: (m1, m2) => JSON.stringify(m1) === JSON.stringify(m2),
 });

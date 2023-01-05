@@ -45,21 +45,20 @@ function _Grid({
     UnwrapRecoilValue<typeof nftCollectionsWithIds>
   >(nftCollectionsWithIds);
   const c = (state === "hasValue" && contents) || null;
-  const collection = Object.values(c ?? {})
-    .map((c) => c.collectionWithIds!)
-    .flat()
-    .find((c: NftCollectionWithIds | null) => c?.id === id);
+  const collectionIds = Object.values(c ?? {})
+    .map((c) => c.itemIds!)
+    .flat();
 
   // Hack: id can be undefined due to framer-motion animation, and
   // collection can be undefined when looking at a collection not in current
   // wallet.
-  if (id === undefined || !collection) {
+  if (id === undefined || !collectionIds) {
     return null;
   }
 
   return (
     <Grid container spacing={{ xs: 2, ms: 2, md: 2, lg: 2 }}>
-      {collection.itemIds.map((nftId) => (
+      {collectionIds.map((nftId) => (
         <Grid item xs={6} sm={4} md={3} lg={2} key={nftId}>
           <NftCard
             publicKey={publicKey}

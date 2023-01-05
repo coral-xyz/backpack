@@ -8,7 +8,7 @@ interface SolanaCollection extends NftCollection {
   items: (Nft & { publicKey: string; mint: string })[];
 }
 
-export const solanaNftCollections = selectorFamily<
+const solanaNftCollections = selectorFamily<
   NftCollection[],
   {
     publicKey: string;

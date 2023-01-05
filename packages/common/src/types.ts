@@ -1,3 +1,4 @@
+import type { SolanaTokenAccountWithKey, TokenMetadata } from "./solana/types";
 import type { DerivationPath } from "./crypto";
 
 export type Context<Backend> = {
@@ -41,6 +42,19 @@ export type NftCollection = {
 };
 
 export type NftCollectionWithIds = {
+  [publicKey: string]: {
+    publicKey: string;
+    blockchain: Blockchain;
+    nfts: {
+      [metadataPublicKey: string]: {
+        nftToken: SolanaTokenAccountWithKey;
+        nftTokenMetadata: TokenMetadata | null;
+      };
+    };
+    // Metadata PublicKey.
+    itemIds: Array<string | null>;
+  };
+  /*
   id: string;
   name: string;
   symbol: string;
@@ -48,6 +62,7 @@ export type NftCollectionWithIds = {
   totalSupply: string;
   itemIds: string[];
   metadataCollectionId?: string;
+*/
 };
 
 export type Nft = {
