@@ -6,7 +6,7 @@ import { getDb } from "../db";
 
 export const useUsers = (uuid: string, chats: any[]) => {
   const reqs = useLiveQuery(async () => {
-    const userUuids = chats?.map((chat) => chat.uuid) || [];
+    const userUuids = chats?.map((chat) => chat.remoteUserId || chat.uuid) || [];
     const uniqueUserUuids = userUuids.filter(
       (x, index) => userUuids.indexOf(x) === index
     );
@@ -25,7 +25,7 @@ export const useDbUser = (
       return {};
     }
     refreshUsers(uuid, [remoteUserId]);
-    return getDb(uuid).users.get(uuid);
+    return getDb(uuid).users.get(remoteUserId);
   }, [uuid, remoteUserId]);
 
   return reqs as UserMetadata | undefined;

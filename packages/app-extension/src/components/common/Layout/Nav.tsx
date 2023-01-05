@@ -236,7 +236,7 @@ function CenterDisplay({
         onClick={onClick ? onClick : () => {}}
       >
         {image && (
-          <img style={{ width: 25, height: 25, marginRight: 5 }} src={image} />
+          <img style={{ width: 25, height: 25, marginRight: 5, borderRadius: "50%" }} src={image} />
         )}
         <NavTitleLabel title={title} />
         {notchViewComponent && (

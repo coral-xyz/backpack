@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import type { EnrichedInboxDb } from "@coral-xyz/common";
+import { SearchBox } from "@coral-xyz/app-extension/src/components/Unlocked/Messages/SearchBox";
+import type { RemoteUserData } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import { useActiveChats, useRequestsCount } from "@coral-xyz/db";
 import { EmptyState, TextInput } from "@coral-xyz/react-common";
 import { useUser } from "@coral-xyz/recoil";
-import { useCustomTheme } from "@coral-xyz/themes";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import SearchIcon from "@mui/icons-material/Search";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -19,15 +20,13 @@ import { UserList } from "./UserList";
 export function Inbox() {
   const classes = useStyles();
   const { uuid } = useUser();
-  const [searchFilter, setSearchFilter] = useState("");
   const [messagesLoading, setMessagesLoading] = useState(false);
   const activeChats = useActiveChats(uuid) || [];
   // const [activeChats, setActiveChats] = useState<EnrichedInboxDb[]>([]);
   const requestCount = useRequestsCount(uuid) || 0;
-  const [searchResults, setSearchResults] = useState<
-    { image: string; id: string; username: string }[]
-  >([]);
+  const [searchResults, setSearchResults] = useState<RemoteUserData[]>([]);
   const theme = useCustomTheme();
+  const [searchFilter, setSearchFilter] = useState("");
 
   const searchedUsersDistinct = searchResults.filter(
     (result) =>
@@ -39,17 +38,8 @@ export function Inbox() {
       className={classes.container}
       style={{ marginTop: "8px", display: "flex", flexDirection: "column" }}
     >
-      <TextInput
-        className={classes.searchField}
-        placeholder={"Search for people"}
-        value={searchFilter}
-        startAdornment={
-          <InputAdornment position="start">
-            <SearchIcon style={{ color: theme.custom.colors.icon }} />
-          </InputAdornment>
-        }
-        setValue={async (e) => {
-          const prefix = e.target.value;
+      <SearchBox
+        onChange={async (prefix) => {
           setSearchFilter(prefix);
           if (prefix.length >= 3) {
             //TODO debounce
@@ -65,11 +55,6 @@ export function Inbox() {
           } else {
             setSearchResults([]);
           }
-        }}
-        inputProps={{
-          style: {
-            height: "48px",
-          },
         }}
       />
       {messagesLoading && <MessagesSkeleton />}
@@ -92,7 +77,10 @@ export function Inbox() {
       {searchFilter.length >= 3 && searchedUsersDistinct.length !== 0 && (
         <div style={{ marginTop: 30 }}>
           <div className={classes.topLabel}>Other people</div>
-          <UserList users={searchedUsersDistinct} />
+          <UserList
+            users={searchedUsersDistinct}
+            setMembers={setSearchResults}
+          />
         </div>
       )}
       {!messagesLoading &&

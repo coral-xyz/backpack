@@ -3,7 +3,6 @@ import type {
   EnrichedMessageWithMetadata,
   SubscriptionType,
 } from "@coral-xyz/common";
-import { EnrichedMessage } from "@coral-xyz/common";
 import { useLiveQuery } from "dexie-react-hooks";
 
 import { refreshUsers } from "../api/users";
@@ -15,13 +14,30 @@ export const useActiveChats = (uuid: string) => {
   const activeChats = useLiveQuery(async () => {
     return getDb(uuid).inbox.where({ blocked: 0, interacted: 1 }).toArray();
   });
+  const users = useUsers(uuid, activeChats || []);
 
-  return activeChats;
+  useEffect(() => {
+    const userIds = activeChats?.map((chat) => chat.remoteUserId) || [];
+    const uniqueUserIds = userIds
+      .filter((x, index) => userIds.indexOf(x) === index)
+      .filter((x) => x);
+    refreshUsers(uuid, uniqueUserIds);
+  }, [activeChats]);
+
+  return activeChats?.map((chat) => ({
+    ...chat,
+    remoteUserImage:
+      users?.find((x) => x?.uuid === chat.remoteUserId)?.image || "",
+    remoteUsername:
+      users?.find((x) => x?.uuid === chat.remoteUserId)?.username || "",
+  }));
 };
 
 export const useRequestsCount = (uuid: string) => {
   const count = useLiveQuery(async () => {
-    return getDb(uuid).inbox.where({ areFriends: 0, interacted: 0 }).count();
+    return getDb(uuid)
+      .inbox.where({ areFriends: 0, interacted: 0, remoteInteracted: 1 })
+      .count();
   });
 
   return count;
@@ -29,18 +45,38 @@ export const useRequestsCount = (uuid: string) => {
 
 export const useUnreadGlobal = (uuid: string) => {
   const count = useLiveQuery(async () => {
-    return getDb(uuid).inbox.where({ unread: 1 }).count();
+    return getDb(uuid)
+      .inbox.where({ unread: 1, blocked: 0, interacted: 1 })
+      .count();
   });
 
   return (count || 0) > 0 ? true : false;
 };
 
 export const useRequests = (uuid: string) => {
-  const reqs = useLiveQuery(async () => {
-    return getDb(uuid).inbox.where({ areFriends: 0, interacted: 0 }).toArray();
+  const activeChats = useLiveQuery(async () => {
+    return getDb(uuid)
+      .inbox.where({ areFriends: 0, interacted: 0, remoteInteracted: 1 })
+      .toArray();
   });
 
-  return reqs;
+  const users = useUsers(uuid, activeChats || []);
+
+  useEffect(() => {
+    const userIds = activeChats?.map((chat) => chat.remoteUserId) || [];
+    const uniqueUserIds = userIds
+      .filter((x, index) => userIds.indexOf(x) === index)
+      .filter((x) => x);
+    refreshUsers(uuid, uniqueUserIds);
+  }, [activeChats]);
+
+  return activeChats?.map((chat) => ({
+    ...chat,
+    remoteUserImage:
+      users?.find((x) => x?.uuid === chat.remoteUserId)?.image || "",
+    remoteUsername:
+      users?.find((x) => x?.uuid === chat.remoteUserId)?.username || "",
+  }));
 };
 
 export const useRoomChats = (

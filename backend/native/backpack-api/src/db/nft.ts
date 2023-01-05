@@ -78,3 +78,51 @@ export const getNftCollection = async ({
   });
   return response.auth_user_nfts_by_pk?.collection_id || "";
 };
+
+export const getNftMembers = async (
+  collectionId: string,
+  prefix: string,
+  limit: number,
+  offset: number
+): Promise<{ users: { id: string; username: string }[]; count: number }> => {
+  const response = await chain("query")({
+    auth_users: [
+      {
+        where: {
+          username: { _like: `${prefix}%` },
+          public_keys: {
+            user_nfts: {
+              collection_id: { _eq: collectionId },
+            },
+          },
+        },
+        limit,
+        offset,
+      },
+      {
+        id: true,
+        username: true,
+      },
+    ],
+    auth_user_nfts_aggregate: [
+      {
+        where: {
+          collection_id: { _eq: collectionId },
+        },
+      },
+      {
+        aggregate: {
+          count: true,
+        },
+      },
+    ],
+  });
+  return {
+    users:
+      response.auth_users?.map((x) => ({
+        id: x.id,
+        username: x.username,
+      })) || [],
+    count: response.auth_user_nfts_aggregate?.aggregate?.count || 0,
+  };
+};

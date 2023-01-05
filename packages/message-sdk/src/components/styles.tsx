@@ -31,6 +31,7 @@ export const useStyles = styles((theme) => ({
   topImage: {
     maxWidth: "25vw",
     maxHeight: "25vh",
+    borderRadius: "50%"
   },
   horizontalCenter: {
     display: "flex",
@@ -66,7 +67,7 @@ export const useStyles = styles((theme) => ({
   iconCircularBig: {
     width: "40px",
     height: "40px",
-    borderRadius: "16px",
+    borderRadius: "20px",
     marginRight: "8px",
     color: theme.custom.colors.positive,
   },

@@ -42,7 +42,7 @@ import {
   Settings,
   Tab as WindowIcon,
 } from "@mui/icons-material";
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import { Box, IconButton, Typography } from "@mui/material";
 import { Keypair } from "@solana/web3.js";
 import * as bs58 from "bs58";
@@ -644,12 +644,14 @@ function SettingsList() {
       .catch(console.error);
   };
 
-  const walletsMenu = [{
-    label: "Manage Wallets",
-    onClick: () => nav.push("edit-wallets"),
-    icon: (props: any) => <AccountBalanceWalletIcon {...props} />,
-    detailIcon: <PushDetail />,
-  }];
+  const walletsMenu = [
+    {
+      label: "Manage Wallets",
+      onClick: () => nav.push("edit-wallets"),
+      icon: (props: any) => <AccountBalanceWalletIcon {...props} />,
+      detailIcon: <PushDetail />,
+    },
+  ];
 
   const settingsMenu = [
     {
@@ -666,14 +668,14 @@ function SettingsList() {
     },
   ];
 
-	if (featureGates[MESSAGES_ENABLED]) {
-		settingsMenu.push({
+  if (featureGates[MESSAGES_ENABLED]) {
+    settingsMenu.push({
       label: "Contacts",
       onClick: () => nav.push("contacts-list"),
       icon: (props: any) => <ContactsIcon {...props} />,
       detailIcon: <PushDetail />,
     });
-	}
+  }
 
   if (BACKPACK_FEATURE_XNFT) {
     settingsMenu.push({

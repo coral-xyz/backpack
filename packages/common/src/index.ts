@@ -3,6 +3,7 @@ import type { PublicKey } from "@solana/web3.js";
 
 import type { Context, EventEmitter, RpcResponse } from "./types";
 
+export * from "./api";
 export * from "./browser";
 export * from "./channel";
 export * from "./constants";

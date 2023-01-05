@@ -102,7 +102,7 @@ function WalletButton({
         flex: 1,
         display: "flex",
         justifyContent: "space-between",
-				marginLeft: "8px",
+        marginLeft: "8px",
         ...style,
       }}
     >

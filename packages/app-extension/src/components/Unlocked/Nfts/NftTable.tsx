@@ -29,8 +29,7 @@ type BlockchainCollections = Array<{
 }>;
 type CollapsedCollections = boolean[];
 
-const ONE_COLLECTION_ID = "Dw74YSxTKVXsztPm3TmwbnfLK8KVaCZw69jVu4LE6uJe";
-
+const ONE_COLLECTION_ID = "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj";
 type Row = {
   height: number;
   key: string;
@@ -359,6 +358,7 @@ function NftCollectionCard({
           collectionId: collection.metadataCollectionId,
           //@ts-ignore
           nftMint: collectionDisplayNft?.mint,
+          title: "ONE Holders Chat",
         },
       });
       return;

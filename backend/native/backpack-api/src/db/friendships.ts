@@ -116,9 +116,33 @@ export const getAllFriendships = async ({
           _or: [
             {
               user1: { _eq: uuid },
+              // Only show users if either users have interacted with each other or they are friends
+              _or: [
+                {
+                  user1_interacted: { _eq: true },
+                },
+                {
+                  user2_interacted: { _eq: true },
+                },
+                {
+                  are_friends: { _eq: true },
+                },
+              ],
             },
             {
               user2: { _eq: uuid },
+              // Only show users if either users have interacted with each other or they are friends
+              _or: [
+                {
+                  user1_interacted: { _eq: true },
+                },
+                {
+                  user2_interacted: { _eq: true },
+                },
+                {
+                  are_friends: { _eq: true },
+                },
+              ],
             },
           ],
         },
@@ -258,6 +282,67 @@ export const getFriendships = async ({
     friendships: response.auth_friendships ?? [],
     requestCount: response.auth_friendships_aggregate.aggregate?.count || 0,
   };
+};
+
+export const getFriendshipStatus = async (
+  userIds: string[],
+  myuserId: string
+): Promise<
+  {
+    id: string;
+    areFriends: boolean;
+    requested: boolean;
+    remoteRequested: boolean;
+  }[]
+> => {
+  const response = await chain("query")({
+    auth_friendships: [
+      {
+        where: {
+          _or: [
+            { user1: { _eq: myuserId }, user2: { _in: userIds } },
+            { user1: { _in: userIds }, user2: { _eq: myuserId } },
+          ],
+        },
+      },
+      {
+        are_friends: true,
+        user1: true,
+        user2: true,
+      },
+    ],
+    auth_friend_requests: [
+      {
+        where: {
+          _or: [
+            { from: { _eq: myuserId }, to: { _in: userIds } },
+            { from: { _in: userIds }, to: { _eq: myuserId } },
+          ],
+        },
+      },
+      {
+        id: true,
+        from: true,
+        to: true,
+      },
+    ],
+  });
+
+  return userIds.map((userId) => {
+    const friendship = response.auth_friendships.find(
+      (x) => x.user1 === userId || x.user2 === userId
+    );
+    const requests = response.auth_friend_requests.find(
+      (x) => x.from === userId || x.to === userId
+    );
+
+    return {
+      id: userId,
+      areFriends: friendship?.are_friends ? true : false,
+      requested: requests?.from === myuserId ? true : false,
+      remoteRequested: requests?.from === userId ? true : false,
+    };
+  });
 };
 
 export async function unfriend({ from, to }: { from: string; to: string }) {

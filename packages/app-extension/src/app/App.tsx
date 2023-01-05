@@ -1,6 +1,5 @@
 import React from "react";
 import { HashRouter } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
 import {
   NotificationsProvider,
   useBackgroundKeepAlive,
@@ -43,7 +42,6 @@ function _App() {
     <WithTheme>
       <NotificationsProvider>
         <ErrorBoundary>
-          <ToastContainer />
           <Router />
         </ErrorBoundary>
       </NotificationsProvider>
