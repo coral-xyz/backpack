@@ -4,7 +4,7 @@ import { IconCloseModal } from "@components/Icon";
 import { toTitleCase } from "@coral-xyz/common";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTheme } from "@hooks";
-import AccountSettingsNavigator from "@navigation/AccountSettingsNavigator";
+import { AccountSettingsNavigator } from "@navigation/AccountSettingsNavigator";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { getHeaderTitle } from "@react-navigation/elements";
 import { createStackNavigator } from "@react-navigation/stack";

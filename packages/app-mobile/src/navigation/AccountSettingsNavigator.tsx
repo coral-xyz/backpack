@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { StyleProp, ViewStyle } from "react-native";
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
-import { ProxyImage, Screen } from "@components";
+import { Avatar, ProxyImage, RoundedContainerGroup, Screen } from "@components";
+import { ExpandCollapseIcon, IconCheckmark } from "@components/Icon";
 import type { Blockchain, ChannelAppUiClient } from "@coral-xyz/common";
 import {
   DerivationPath,
@@ -31,7 +33,7 @@ import {
   useSolanaExplorer,
   useUser,
 } from "@coral-xyz/recoil";
-import { MaterialIcons } from "@expo/vector-icons";
+import { HeaderBackButton } from "@react-navigation/elements";
 import { createStackNavigator } from "@react-navigation/stack";
 import { ImportPrivateKeyScreen } from "@screens/ImportPrivateKeyScreen";
 import {
@@ -70,44 +72,28 @@ import { useTheme } from "@hooks";
 
 const Stack = createStackNavigator();
 
-function IconCheckmark() {
-  return <MaterialIcons name="check" size={32} />;
-}
-
 function DummyScreen() {
   return <View style={{ flex: 1, backgroundColor: "red" }} />;
 }
 
-const Astyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 24,
-    justifyContent: "center",
-    backgroundColor: "grey",
-  },
-  contentContainer: {
-    flex: 1,
-    alignItems: "center",
-  },
-});
-
-function AccountDropdownHeader(): JSX.Element {
+function AccountDropdownHeader({
+  navigation,
+  options,
+}: {
+  navigation: any;
+  options: any;
+}): JSX.Element {
+  const theme = useTheme();
   const user = useUser();
-  // const theme = useTheme();
-
-  // ref
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-
-  // variables
   const snapPoints = useMemo(() => ["25%"], []);
 
-  // callbacks
-  const handlePresentModalPress = useCallback(() => {
+  const handleShowModal = useCallback(() => {
     bottomSheetModalRef.current?.present();
   }, []);
 
-  const handleSheetChanges = useCallback((index: number) => {
-    console.log("handleSheetChanges", index);
+  const handleDismissModal = useCallback(() => {
+    bottomSheetModalRef.current?.dismiss();
   }, []);
 
   return (
@@ -115,46 +101,57 @@ function AccountDropdownHeader(): JSX.Element {
       <View
         style={{
           height: 44,
-          backgroundColor: "yellow",
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
           padding: 8,
         }}>
-        <Text> h</Text>
+        <HeaderBackButton
+          label={options.headerBackTitle}
+          onPress={() => navigation.goBack()}
+          tintColor={options.headerTintColor}
+        />
         <Pressable
-          onPress={handlePresentModalPress}
+          onPress={handleShowModal}
           style={{
             flexDirection: "row",
             justifyContent: "center",
             alignItems: "center",
           }}>
-          <Text>@49e5e035</Text>
-          <Text>@{user.username}</Text>
-          <MaterialIcons name="check" size={24} style={{ marginLeft: 4 }} />
+          <Text
+            style={{
+              fontSize: 16,
+              color: theme.custom.colors.fontColor,
+            }}>
+            @{user.username}
+          </Text>
+          <ExpandCollapseIcon
+            isExpanded={false}
+            color={theme.custom.colors.icon}
+          />
         </Pressable>
-        <Text> g</Text>
+        <View style={{ width: 33 }} />
       </View>
       <BottomSheetModal
         ref={bottomSheetModalRef}
         index={0}
         snapPoints={snapPoints}
-        onChange={handleSheetChanges}>
-        <View style={Astyles.contentContainer}>
-          <Text>Awesome 🎉</Text>
-        </View>
+        backgroundStyle={{
+          backgroundColor: theme.custom.colors.backgroundBackdrop,
+        }}>
+        <UserAccountMenu onDismiss={handleDismissModal} />
       </BottomSheetModal>
     </>
   );
 }
 
-function UserAccountMenu(): JSX.Element {
+function UserAccountMenu({ onDismiss }: () => void): JSX.Element {
   const theme = useTheme();
   return (
     <View
       style={{
         backgroundColor: theme.custom.colors.backgroundBackdrop,
-        padding: 16,
+        paddingHorizontal: 16,
       }}>
       <Text
         style={{
@@ -166,32 +163,37 @@ function UserAccountMenu(): JSX.Element {
         }}>
         Accounts
       </Text>
-      <UsersList />
+      <UsersList onDismiss={onDismiss} />
     </View>
   );
 }
 
-function UsersList(): JSX.Element {
-  const theme = useTheme();
+function UsersList({ onDismiss }: () => void): JSX.Element {
+  const background = useBackgroundClient();
   const users = useAllUsers();
   const _user = useUser();
+
+  const handlePressItem = async (uuid: string) => {
+    await background.request({
+      method: UI_RPC_METHOD_ACTIVE_USER_UPDATE,
+      params: [uuid],
+    });
+
+    onDismiss();
+  };
+
   return (
-    <View
-      style={{
-        borderColor: theme.custom.colors.borderFull,
-        borderRadius: 12,
-      }}>
+    <RoundedContainerGroup>
       {users.map(({ username, uuid }: any, idx: number) => (
         <UserAccountListItem
           key={username}
           uuid={uuid}
-          isFirst={idx === 0}
-          isLast={idx === users.length - 1}
           username={username}
           isActive={_user.username === username}
+          onPress={handlePressItem}
         />
       ))}
-    </View>
+    </RoundedContainerGroup>
   );
 }
 
@@ -199,71 +201,24 @@ function UserAccountListItem({
   uuid,
   username,
   isActive,
+  onPress,
 }: {
   uuid: string;
   username: string;
   isActive: boolean;
+  onPress: (uuid: string) => void;
 }): JSX.Element {
-  const theme = useTheme();
-  const avatarUrl = useAvatarUrl(24, username);
-  const background = useBackgroundClient();
-  // const drawer = useDrawerContext();
   return (
     <SettingsRow
-      onPress={async () => {
-        await background.request({
-          method: UI_RPC_METHOD_ACTIVE_USER_UPDATE,
-          params: [uuid],
-        });
-        // drawer.close();
-      }}>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-        }}>
-        <View>
-          <MiniAvatarIcon avatarUrl={avatarUrl} />
-          <Text
-            style={{
-              marginLeft: 12,
-              color: theme.custom.colors.fontColor,
-              justifyContent: "center",
-            }}>
-            @{username}
-          </Text>
-        </View>
-        {isActive && <IconCheckmark />}
-      </View>
-    </SettingsRow>
+      icon={<Avatar size={24} />}
+      label={`@${username}`}
+      detailIcon={isActive ? <IconCheckmark size={24} /> : null}
+      onPress={() => onPress(uuid)}
+    />
   );
 }
 
-function MiniAvatarIcon({ avatarUrl }: { avatarUrl: string }) {
-  const theme = useTheme();
-  // PCA test ProxyImage
-  return (
-    <View
-      style={{
-        backgroundColor: theme.custom.colors.avatarIconBackground,
-        width: 28,
-        height: 28,
-        borderRadius: 14,
-        justifyContent: "center",
-      }}>
-      <ProxyImage
-        src={avatarUrl}
-        style={{
-          width: 24,
-          height: 24,
-          borderRadius: 12,
-        }}
-      />
-    </View>
-  );
-}
-
-export default function AccountSettingsNavigator(): JSX.Element {
+export function AccountSettingsNavigator(): JSX.Element {
   const theme = useTheme();
   return (
     <Stack.Navigator
@@ -277,14 +232,18 @@ export default function AccountSettingsNavigator(): JSX.Element {
         name="Profile"
         component={ProfileScreen}
         options={{
-          header: () => {
-            return <AccountDropdownHeader />;
+          header: ({ navigation, options }) => {
+            return (
+              <AccountDropdownHeader
+                navigation={navigation}
+                options={options}
+              />
+            );
           },
           // headerShown: true,
-          // headerTitle: "",
           // headerTransparent: true,
-          // headerTintColor: theme.custom.colors.fontColor,
-          // headerBackTitle: "Back",
+          headerTintColor: theme.custom.colors.fontColor,
+          headerBackTitle: "Back",
         }}
       />
       <Stack.Screen
@@ -452,7 +411,7 @@ function PreferencesSolanaCustomRpcUrl({ navigation }) {
   }, [rpcUrl]);
 
   // return (
-  //   <div style={{ paddingTop: "16px", height: "100%" }}>
+  //   <div style={{ paddingTop: 16, height: "100%" }}>
   //     <form
   //       onSubmit={changeNetwork}
   //       style={{ display: "flex", height: "100%", flexDirection: "column" }}
@@ -682,7 +641,7 @@ function PreferencesEthereumCustomRpcUrl({ navigation }) {
     await changeNetwork(background, rpcUrl, chainId);
   }
 
-  // <div style={{ paddingTop: "16px", height: "100%" }}>
+  // <div style={{ paddingTop: 16, height: "100%" }}>
   //   <form
   //     onSubmit={async () => {
   //         await changeNetwork(background, rpcUrl, chainId);
