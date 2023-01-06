@@ -1,4 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Avatar, Margin } from "@components";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@hooks";
@@ -10,6 +11,7 @@ export function NavHeader({
   title: string;
   navigation: any;
 }) {
+  const insets = useSafeAreaInsets();
   const theme = useTheme();
   const emoji = title.startsWith("Balances")
     ? "💰"
@@ -20,10 +22,14 @@ export function NavHeader({
   return (
     <View
       style={[
-        { backgroundColor: theme.custom.colors.background },
+        {
+          backgroundColor: theme.custom.colors.background,
+          marginTop: insets.top,
+          paddingLeft: insets.left + 12,
+          paddingRight: insets.right + 12,
+        },
         styles.container,
-      ]}
-    >
+      ]}>
       <View style={styles.centeredRow}>
         <Text style={styles.emoji}>{emoji}</Text>
         <Text style={[{ color: theme.custom.colors.fontColor }, styles.title]}>

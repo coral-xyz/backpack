@@ -103,6 +103,8 @@ function LockedHelpMenuModal({ navigation }) {
 }
 
 function LockedScreen({ navigation }: any): JSX.Element {
+  // TODO figure out why this isn't working
+  // return <View style={{ flex: 1, backgroundColor: "green" }} />;
   const background = useBackgroundClient();
   const user = useUser(); // TODO look into why this breaks
 

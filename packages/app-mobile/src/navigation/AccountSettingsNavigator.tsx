@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Alert, Text, View } from "react-native";
-import { Screen } from "@components";
+import { Row,Screen } from "@components";
 import { IconCheckmark } from "@components/Icon";
 import type { Blockchain, ChannelAppUiClient } from "@coral-xyz/common";
 import {
@@ -73,27 +73,14 @@ function DummyScreen() {
 export function AccountSettingsNavigator(): JSX.Element {
   const theme = useTheme();
   return (
-    <Stack.Navigator
-      screenOptions={
-        {
-          // headerShown: true,
-          // headerTintColor: theme.custom.colors.fontColor,
-        }
-      }>
+    <Stack.Navigator initialRouteName="Profile">
       <Stack.Screen
         name="Profile"
         component={ProfileScreen}
         options={{
-          header: ({ navigation, options }) => {
-            return (
-              <AccountDropdownHeader
-                navigation={navigation}
-                options={options}
-              />
-            );
-          },
-          // headerShown: true,
-          // headerTransparent: true,
+          headerTitle: ({ navigation, options }) => (
+            <AccountDropdownHeader navigation={navigation} options={options} />
+          ),
           headerTintColor: theme.custom.colors.fontColor,
           headerBackTitle: "Back",
         }}

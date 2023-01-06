@@ -71,8 +71,7 @@ export function Screen({
           paddingVertical: 16,
         },
         style,
-      ]}
-    >
+      ]}>
       {children}
     </View>
   );
@@ -115,8 +114,7 @@ export function BaseButton({
       ]}
       disabled={disabled}
       onPress={onPress}
-      {...props}
-    >
+      {...props}>
       <Text
         style={[
           {
@@ -127,8 +125,7 @@ export function BaseButton({
             opacity: disabled ? 50 : 100, // TODO(peter)
           },
           labelStyle,
-        ]}
-      >
+        ]}>
         {loading ? "loading..." : label} {disabled ? "(disabled)" : ""}
       </Text>
       {icon}
@@ -260,8 +257,7 @@ export function Header({ text }: { text: string }) {
         fontSize: 24,
         fontWeight: "500",
         lineHeight: 32,
-      }}
-    >
+      }}>
       {text}
     </Text>
   );
@@ -287,8 +283,7 @@ export function SubtextParagraph({
           color: theme.custom.colors.subtext,
         },
         style,
-      ]}
-    >
+      ]}>
       {children}
     </Text>
   );
@@ -354,8 +349,7 @@ export function EmptyState({
           textAlign: "center",
           fontWeight: "500",
           color: theme.custom.colors.fontColor,
-        }}
-      >
+        }}>
         {title}
       </Typography>
       {minimize !== true && (
@@ -367,8 +361,7 @@ export function EmptyState({
             fontSize: 16,
             lineHeight: 24,
             fontWeight: "500",
-          }}
-        >
+          }}>
           {subtitle}
         </Typography>
       )}
@@ -495,8 +488,7 @@ export function Avatar({ size = 64 }: { size?: number }): JSX.Element {
         padding: 3,
         width: outerSize,
         height: outerSize,
-      }}
-    >
+      }}>
       <SvgUri width={size} height={size} uri={avatarUrl} />
     </View>
   );
@@ -510,8 +502,7 @@ export function Debug({ data }: any): JSX.Element {
         style={{
           color: theme.custom.colors.fontColor,
           fontFamily: "monospace",
-        }}
-      >
+        }}>
         {JSON.stringify(data, null, 2)}
       </Text>
     </View>
@@ -530,8 +521,7 @@ export function DummyScreen({ route }) {
         backgroundColor: generateRandomHexColor(),
         alignItems: "center",
         justifyContent: "center",
-      }}
-    >
+      }}>
       <Text>Dummy Screen</Text>
       <Debug data={{ route: route.params }} />
     </View>
@@ -547,8 +537,7 @@ export function FullScreenLoading() {
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
-      }}
-    >
+      }}>
       <ActivityIndicator size="large" color={theme.custom.colors.fontColor} />
     </View>
   );
@@ -567,8 +556,7 @@ export function WelcomeLogoHeader() {
           fontSize: 42,
           textAlign: "center",
           color: theme.custom.colors.fontColor,
-        }}
-      >
+        }}>
         Backpack
       </Text>
       <Margin top={8}>
@@ -578,8 +566,7 @@ export function WelcomeLogoHeader() {
             fontSize: 16,
             fontWeight: "500",
             color: theme.custom.colors.secondary,
-          }}
-        >
+          }}>
           A home for your xNFTs
         </Text>
       </Margin>
@@ -617,12 +604,10 @@ export function CopyWalletFieldInput({
           padding: 8,
           borderWidth: 2,
         },
-      ]}
-    >
+      ]}>
       <Margin right={12}>
         <Text
-          style={{ fontWeight: "500", color: theme.custom.colors.fontColor }}
-        >
+          style={{ fontWeight: "500", color: theme.custom.colors.fontColor }}>
           {walletDisplay}
         </Text>
       </Margin>
@@ -630,8 +615,7 @@ export function CopyWalletFieldInput({
         onPress={async () => {
           await Clipboard.setStringAsync(publicKey);
           Alert.alert("Copied to clipboard", publicKey);
-        }}
-      >
+        }}>
         <ContentCopyIcon />
       </Pressable>
     </View>
@@ -674,15 +658,13 @@ export function ImportTypeBadge({
           paddingHorizontal: 12,
           paddingVertical: 2,
         },
-      ]}
-    >
+      ]}>
       <Text
         style={{
           color: theme.custom.colors.fontColor,
           fontSize: 12,
           fontWeight: "600",
-        }}
-      >
+        }}>
         {type === "imported" ? "IMPORTED" : "HARDWARE"}
       </Text>
     </View>
@@ -706,8 +688,7 @@ export function AddConnectWalletButton({
       style={{
         flexDirection: "row",
         alignItems: "center",
-      }}
-    >
+      }}>
       <Margin right={8}>
         <MaterialIcons
           name="add-circle"
@@ -718,8 +699,7 @@ export function AddConnectWalletButton({
       <Text
         style={{
           color: theme.custom.colors.secondary,
-        }}
-      >
+        }}>
         Add / Connect Wallet
       </Text>
     </Pressable>
@@ -795,8 +775,7 @@ export function RoundedContainerGroup({
         disableTopRadius ? roundedContainerStyles.disableTopRadius : null,
         disableBottomRadius ? roundedContainerStyles.disableBottomRadius : null,
         style,
-      ]}
-    >
+      ]}>
       {children}
     </View>
   );
@@ -814,5 +793,20 @@ const roundedContainerStyles = StyleSheet.create({
   disableBottomRadius: {
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
+  },
+});
+
+export function Row({
+  children,
+}: {
+  children: JSX.Element | JSX.Element[];
+}): JSX.Element {
+  return <View style={rowStyles.container}>{children}</View>;
+}
+
+const rowStyles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
   },
 });

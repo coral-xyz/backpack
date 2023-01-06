@@ -1,6 +1,6 @@
 import { Suspense, useCallback, useRef } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 import {
   BACKGROUND_SERVICE_WORKER_READY,
@@ -58,8 +58,7 @@ function ServiceWorkerErrorScreen({ onLayoutRootView }: any): JSX.Element {
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
-      }}
-    >
+      }}>
       <Text>The service worker failed to load.</Text>
       <Text>
         {JSON.stringify(
@@ -114,7 +113,7 @@ function Main(): JSX.Element | null {
 
   return (
     <Providers>
-      <SafeAreaView
+      <View
         onLayout={onLayoutRootView}
         style={[
           styles.container,
@@ -124,11 +123,10 @@ function Main(): JSX.Element | null {
                 ? "orange"
                 : theme.custom.colors.background,
           },
-        ]}
-      >
+        ]}>
         <StatusBar style={theme.colorScheme === "dark" ? "light" : "dark"} />
         <RootNavigation colorScheme={theme.colorScheme} />
-      </SafeAreaView>
+      </View>
     </Providers>
   );
 }
