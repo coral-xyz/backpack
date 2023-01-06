@@ -49,7 +49,8 @@ const useStyles = styles((theme) => ({
     marginBottom: "1px",
     border: `${theme.custom.colors.borderFull}`,
     "&:hover": {
-      background: "#fff !important",
+      background: `${theme.custom.colors.hoverBackground} !important`,
+      opacity: "1",
     },
   },
   listItemIconRoot: {
