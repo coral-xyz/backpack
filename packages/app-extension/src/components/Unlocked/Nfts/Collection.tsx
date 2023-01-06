@@ -1,4 +1,3 @@
-import type { NftCollectionWithIds } from "@coral-xyz/common";
 import { NAV_COMPONENT_NFT_DETAIL } from "@coral-xyz/common";
 import {
   nftById,
@@ -45,25 +44,28 @@ function _Grid({
     UnwrapRecoilValue<typeof nftCollectionsWithIds>
   >(nftCollectionsWithIds);
   const c = (state === "hasValue" && contents) || null;
-  const collectionIds = Object.values(c ?? {})
-    .map((c) => c.itemIds!)
-    .flat();
+  const collection = !c
+    ? null
+    : c
+        .map((c: any) => c.collections!)
+        .flat()
+        .find((c: any) => c.id === id);
 
   // Hack: id can be undefined due to framer-motion animation, and
   // collection can be undefined when looking at a collection not in current
   // wallet.
-  if (id === undefined || !collectionIds) {
+  if (id === undefined || !collection) {
     return null;
   }
 
   return (
     <Grid container spacing={{ xs: 2, ms: 2, md: 2, lg: 2 }}>
-      {collectionIds.map((nftId) => (
-        <Grid item xs={6} sm={4} md={3} lg={2} key={nftId}>
+      {collection.itemIds.map((collectionId: string) => (
+        <Grid item xs={6} sm={4} md={3} lg={2} key={collectionId}>
           <NftCard
             publicKey={publicKey}
             connectionUrl={connectionUrl}
-            nftId={nftId}
+            nftId={collectionId}
           />
         </Grid>
       ))}

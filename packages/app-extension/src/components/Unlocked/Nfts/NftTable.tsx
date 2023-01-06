@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Autosizer from "react-virtualized-auto-sizer";
 import { VariableSizeList } from "react-window";
-import type { Blockchain } from "@coral-xyz/common";
+import type { Blockchain,NftCollection } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
   NAV_COMPONENT_NFT_COLLECTION,
@@ -10,9 +10,6 @@ import {
   TokenMetadata,
 } from "@coral-xyz/common";
 import { NAV_COMPONENT_NFT_CHAT } from "@coral-xyz/common/dist/esm/constants";
-import type { NftCollectionWithIds } from "@coral-xyz/common/src/types";
-import type {
-  Collection} from "@coral-xyz/recoil";
 import {
   nftById,
   useAllWallets,
@@ -30,7 +27,7 @@ import { GridCard } from "./Common";
 
 type AllWalletCollections = Array<{
   publicKey: string;
-  collections: null | Array<Collection>;
+  collections: null | Array<NftCollection>;
 }>;
 type CollapsedCollections = boolean[];
 
@@ -242,7 +239,7 @@ const ItemRow = function ({
   const wallet = wallets.find((wallet) => wallet.publicKey === c.publicKey);
   const blockchain = wallet?.blockchain!;
 
-  const collectionItems = c.collections.itemIds;
+  const collectionItems = c.collections!;
   const connectionUrl = useBlockchainConnectionUrl(blockchain);
 
   const numberOfItems =
@@ -265,7 +262,7 @@ const ItemRow = function ({
           flex: "0 0 auto",
         }}
       >
-        {items.map((collection) => {
+        {items.map((collection: NftCollection) => {
           return (
             <div
               key={collection ? collection.id : null}
@@ -329,7 +326,7 @@ function NftCollectionCard({
 }: {
   publicKey: string;
   connectionUrl: string;
-  collection: NftCollectionWithIds;
+  collection: NftCollection;
 }) {
   if (collection.itemIds.length < 0) {
     throw new Error("invariant violation no collection items");
@@ -399,7 +396,7 @@ function NftCollectionCard({
     } else {
       // Multiple items in connection, display a grid
       push({
-        title: collection.name,
+        title: "TODO", // TODO: collection.name,
         componentId: NAV_COMPONENT_NFT_COLLECTION,
         componentProps: {
           id: collection.id,
@@ -412,17 +409,19 @@ function NftCollectionCard({
 
   return (
     <GridCard
-      // metadataCollectionIdbd={collection.metadataCollectionId}
       metadataCollectionId={false}
       onClick={onClick}
       nft={collectionDisplayNft}
-      subtitle={{ name: collection.name, length: collection.itemIds.length }}
+      subtitle={{
+        name: "TODO " /*collection.name*/,
+        length: collection.itemIds.length,
+      }}
     />
   );
 }
 
 const getNumberOfRowsInCollection = (
-  items: NftCollectionWithIds[] | null,
+  items: Array<NftCollection> | null,
   itemsPerRow: number,
   isCollapsed: boolean
 ) => {
@@ -456,7 +455,7 @@ const getItemForIndex = (
 
   let result = 0;
   const blockchainIndex = blockchainCollections.findIndex((collection, i) => {
-    const items = collection.collectionWithIds;
+    const items = collection.collections;
     const isCollapsed = collapsedCollections[i];
 
     const numberOfRowsInCollection = getNumberOfRowsInCollection(
@@ -483,7 +482,7 @@ const getItemForIndex = (
 
   const isCollapsed = collapsedCollections[blockchainIndex];
   const collection = blockchainCollections[blockchainIndex];
-  const collectionItems = collection ? collection.collectionWithIds : null;
+  const collectionItems = collection ? collection.collections : null;
 
   const numberOfRowsInCollection = getNumberOfRowsInCollection(
     collectionItems,
@@ -548,7 +547,7 @@ const getNumberOfItems = (
 ) => {
   const count = prependItems.length;
   return collections.reduce((count, collection, i) => {
-    const items = collection.collectionWithIds;
+    const items = collection.collections;
     const isCollapsed = collapsedCollections[i];
 
     // loading when items == null -> show 1 item;

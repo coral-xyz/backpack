@@ -33,36 +33,11 @@ export type RecentTransaction = {
 
 export type NftCollection = {
   id: string;
-  name: string;
+  metadataCollectionId: string;
   symbol: string;
   tokenType: string;
   totalSupply: string;
-  items: Nft[];
-  metadataCollectionId?: string;
-};
-
-export type NftCollectionWithIds = {
-  [publicKey: string]: {
-    publicKey: string;
-    blockchain: Blockchain;
-    nfts: {
-      [metadataPublicKey: string]: {
-        nftToken: SolanaTokenAccountWithKey;
-        nftTokenMetadata: TokenMetadata | null;
-      };
-    };
-    // Metadata PublicKey.
-    itemIds: Array<string | null>;
-  };
-  /*
-  id: string;
-  name: string;
-  symbol: string;
-  tokenType: string;
-  totalSupply: string;
-  itemIds: string[];
-  metadataCollectionId?: string;
-*/
+  itemIds: Array<string>;
 };
 
 export type Nft = {

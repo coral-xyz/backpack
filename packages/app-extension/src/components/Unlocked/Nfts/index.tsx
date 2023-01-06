@@ -41,15 +41,10 @@ export function Nfts() {
   }, [isONELive, collections]);
 
   const nftCount = collections
-    ? Object.values(collections)
+    ? collections
+        .map((c: any) => c.collections)
         .flat()
-        .reduce(
-          (acc, c) =>
-            c.collectionWithIds === null
-              ? acc
-              : c.collectionWithIds.length + acc,
-          0
-        )
+        .reduce((acc, c) => (c === null ? acc : c.itemIds.length + acc), 0)
     : 0;
   const isEmpty = nftCount === 0 && !isLoading;
 
