@@ -29,9 +29,7 @@ export const nftCollectionsWithIds = selector<
     const wallets = get(allWalletsDisplayed);
     const allWalletCollections = get(
       waitForAll(
-        wallets.map(({ publicKey }) => {
-          return solanaMetadataMap({ publicKey });
-        })
+        wallets.map(({ publicKey }) => solanaMetadataMap({ publicKey }))
       )
     )
       .map(intoSolanaCollectionsMap)
@@ -41,7 +39,6 @@ export const nftCollectionsWithIds = selector<
           collections: Object.values(collections),
         };
       });
-    console.log("ARMANI HERE", allWalletCollections);
     return allWalletCollections;
   },
 });
@@ -57,19 +54,19 @@ const solanaMetadataMap = selectorFamily<MetadataMap, { publicKey: string }>({
       const { nfts } = get(
         customSplTokenAccounts({ publicKey, connectionUrl })
       );
-
       // Transform into the map now.
       const nftMap = {};
       for (let k = 0; k < nfts.nftTokens.length; k += 1) {
         const nftToken = nfts.nftTokens[k];
         const nftTokenMetadata = nfts.nftTokenMetadata[k]!;
-        nftMap[nftTokenMetadata.publicKey] = {
-          metadataPublicKey: nftTokenMetadata.publicKey,
-          nftToken,
-          nftTokenMetadata,
-        };
+        if (nftTokenMetadata) {
+          nftMap[nftTokenMetadata.publicKey] = {
+            metadataPublicKey: nftTokenMetadata.publicKey,
+            nftToken,
+            nftTokenMetadata,
+          };
+        }
       }
-      console.log("ARMANI RETURN", nftMap);
       return {
         publicKey,
         metadata: nftMap,
@@ -89,30 +86,39 @@ export const nftById = equalSelectorFamily<
     async ({ get }) => {
       const { connection } = get(anchorContext);
       const metadataMap = get(solanaMetadataMap({ publicKey }));
-      const { nftToken, nftTokenMetadata } = metadataMap[nftId];
-      const [_, uriData] = await connection.customSplMetadataUri(
+      const { nftToken, nftTokenMetadata } = metadataMap.metadata[nftId];
+      const resp = await connection.customSplMetadataUri(
         [nftToken],
         [nftTokenMetadata]
       )[0];
+      const [_, uriData] = resp ?? [];
       return {
-        id: uriData.publicKey,
+        id: nftTokenMetadata?.publicKey ?? "",
         blockchain: Blockchain.SOLANA,
-        publicKey: uriData.publicKey,
-        mint: uriData.metadata.mint,
-        name: uriData.metadata.data.name ?? uriData.tokenMetaUriData.name,
-        description: uriData.tokenMetaUriData.description,
-        externalUrl: externalResourceUri(
-          uriData.tokenMetaUriData.external_url?.replace(/\0/g, "")
-        ),
-        imageUrl: externalResourceUri(
-          uriData.tokenMetaUriData.image?.replace(/\0/g, "")
-        ),
-        attributes: uriData.tokenMetaUriData.attributes?.map(
-          (a: { trait_type: string; uriData: string }) => ({
-            traitType: a.trait_type,
-            value: a.uriData,
-          })
-        ),
+        publicKey: nftTokenMetadata?.publicKey,
+        mint: nftTokenMetadata?.account.mint,
+        name:
+          nftTokenMetadata?.account.data.name ??
+          (uriData ? uriData.tokenMetaUriData.name : ""),
+        description: uriData ? uriData.tokenMetaUriData.description : "",
+        externalUrl: uriData
+          ? externalResourceUri(
+              uriData.tokenMetaUriData.external_url?.replace(/\0/g, "")
+            )
+          : "",
+        imageUrl: uriData
+          ? externalResourceUri(
+              uriData.tokenMetaUriData.image?.replace(/\0/g, "")
+            )
+          : "",
+        attributes: uriData
+          ? uriData.tokenMetaUriData.attributes?.map(
+              (a: { trait_type: string; uriData: string }) => ({
+                traitType: a.trait_type,
+                value: a.uriData,
+              })
+            )
+          : [],
       };
     },
   equals: (m1, m2) => JSON.stringify(m1) === JSON.stringify(m2),
@@ -128,7 +134,6 @@ function intoSolanaCollectionsMap(metadataMap: MetadataMap): {
     [collectionId: string]: NftCollection;
   };
 } {
-  console.log("ARMANI METADATAMAP ", metadataMap);
   const collections = {};
 
   Object.values(metadataMap.metadata).forEach((value) => {
@@ -145,13 +150,11 @@ function intoSolanaCollectionsMap(metadataMap: MetadataMap): {
         symbol: value.nftTokenMetadata?.account.data.symbol,
         tokenType: "",
         totalSupply: "",
-        items: [],
+        itemIds: [],
       };
     }
-    collections[collectionId]!.items.push(value.nftTokenMetadata?.publicKey);
+    collections[collectionId]!.itemIds.push(value.nftTokenMetadata?.publicKey);
   });
-
-  console.log("ARMANI RESP", collections, metadataMap.publicKey);
 
   return {
     publicKey: metadataMap.publicKey,
@@ -164,8 +167,8 @@ type MetadataMap = {
   metadata: {
     [metadataPublicKey: string]: {
       metadataPublicKey: string;
-      nftToken: SolanaTokenAccountWithKey;
-      nftTokenMetadata: TokenMetadata | null;
+      nftToken: SolanaTokenAccountWithKeyString;
+      nftTokenMetadata: TokenMetadataString | null;
     };
   };
 };

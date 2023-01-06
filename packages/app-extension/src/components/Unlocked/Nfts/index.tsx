@@ -22,7 +22,7 @@ export function Nfts() {
   const _isAggregateWallets = useRecoilValue(isAggregateWallets);
   const { contents, state } = useRecoilValueLoadable(nftCollectionsWithIds);
   const isLoading = state === "loading";
-  const collections = (state === "hasValue" && contents) || null;
+  const allWalletCollections = (state === "hasValue" && contents) || null;
 
   const NFTList = useMemo(() => {
     return (
@@ -33,15 +33,15 @@ export function Nfts() {
             : []
         }
         blockchainCollections={
-          collections ??
-          wallets.map((w) => ({ publicKey: w.publicKey, collections: null }))
+          allWalletCollections ??
+          wallets.map((w) => ({ publicKey: w.publicKey, collections: null })) // Still loading.
         }
       />
     );
-  }, [isONELive, collections]);
+  }, [isONELive, allWalletCollections]);
 
-  const nftCount = collections
-    ? collections
+  const nftCount = allWalletCollections
+    ? allWalletCollections
         .map((c: any) => c.collections)
         .flat()
         .reduce((acc, c) => (c === null ? acc : c.itemIds.length + acc), 0)

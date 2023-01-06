@@ -329,21 +329,28 @@ export class SolanaConnectionBackend {
     nftTokens: Array<SolanaTokenAccountWithKeyString>,
     nftTokenMetadata: Array<TokenMetadataString | null>
   ): Promise<Array<[string, SplNftMetadataString]>> {
-    const key = JSON.stringify({
-      url: this.url,
-      method: "customSplMetadataUri",
-      args: [nftTokens.map((t) => t.key).sort()],
-    });
-    const value = this.cache.get(key);
-    if (value && value.ts + NFT_CACHE_EXPIRY > Date.now()) {
-      return value.value;
+    try {
+      console.log("ARMAIN CUSTOM SPL META", nftTokens, nftTokenMetadata);
+      const key = JSON.stringify({
+        url: this.url,
+        method: "customSplMetadataUri",
+        args: [nftTokens.map((t) => t.key).sort()],
+      });
+      const value = this.cache.get(key);
+      if (value && value.ts + NFT_CACHE_EXPIRY > Date.now()) {
+        return value.value;
+      }
+      const resp = await fetchSplMetadataUri(nftTokens, nftTokenMetadata);
+      console.log("ARMANI RESP", resp);
+      this.cache.set(key, {
+        ts: Date.now(),
+        value: resp,
+      });
+      return resp;
+    } catch (err) {
+      console.log("ARMANI SB ERR", err);
+      throw err;
     }
-    const resp = await fetchSplMetadataUri(nftTokens, nftTokenMetadata);
-    this.cache.set(key, {
-      ts: Date.now(),
-      value: resp,
-    });
-    return resp;
   }
 
   //////////////////////////////////////////////////////////////////////////////
