@@ -1,5 +1,6 @@
 - "!include appstore_pending_curator_reviews.yaml"
 - "!include auth_collection_messages.yaml"
+- "!include auth_collections.yaml"
 - "!include auth_friend_requests.yaml"
 - "!include auth_friendships.yaml"
 - "!include auth_invitations.yaml"

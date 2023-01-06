@@ -43,6 +43,12 @@ export const validateRoom = async (uuid: string, roomId: number) => {
   return null;
 };
 
+export const updateLatestMessageGroup = async (
+  roomId: number,
+  message: string,
+  client_generated_uuid: string
+) => {};
+
 export const updateLatestMessage = async (
   roomId: number,
   message: string,

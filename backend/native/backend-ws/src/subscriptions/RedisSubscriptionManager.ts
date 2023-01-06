@@ -2,6 +2,7 @@ import type { SubscriptionType, ToPubsub } from "@coral-xyz/common";
 import { CHAT_MESSAGES, FromServer, ToServer } from "@coral-xyz/common";
 import type { RedisClientType } from "redis";
 import { createClient } from "redis";
+
 import { REDIS_URL } from "../config";
 import { postChat } from "../db/chats";
 import { updateLatestMessage } from "../db/friendships";
@@ -143,6 +144,12 @@ export class RedisSubscriptionManager {
         msg.message_kind === "gif" ? "GIF" : msg.message,
         userId,
         roomValidation,
+        msg.client_generated_uuid
+      );
+    } else {
+      updateLatestMessageGroup(
+        room,
+        msg.message_kind === "gif" ? "GIF" : msg.message,
         msg.client_generated_uuid
       );
     }
