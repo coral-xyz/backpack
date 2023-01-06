@@ -6,6 +6,7 @@ import * as Font from "expo-font";
 type status = "loading" | "ready" | "error";
 
 export function useLoadedAssets(): status {
+  const [intervalId, setIntervalId] = React.useState(0);
   const [secondsPassed, setSecondsPassed] = React.useState(0);
   const [isLoadingComplete, setLoadingComplete] =
     React.useState<status>("loading");
@@ -28,21 +29,20 @@ export function useLoadedAssets(): status {
       }
     }
   }, [webviewLoaded]);
-
-  React.useEffect(() => {
-    const id = setTimeout(() => {
-      console.log("hey");
-      // sets a error loading screen if something didn't load correctly
-      if (secondsPassed > 7 && isLoadingComplete === "loading") {
-        setLoadingComplete("error");
-        clearTimeout(id);
-      }
-
-      setSecondsPassed(secondsPassed + 1);
-    }, 1000);
-
-    return () => clearTimeout(id);
-  }, [secondsPassed]);
+  //
+  // React.useEffect(() => {
+  //   const intervalId = setInterval(() => {
+  //     setSecondsPassed(secondsPassed + 1);
+  //   }, 1000);
+  //
+  //   // sets a error loading screen if something didn't load correctly
+  //   if (secondsPassed > 7 && isLoadingComplete === "loading") {
+  //     setLoadingComplete("error");
+  //     clearInterval(intervalId);
+  //   }
+  //
+  //   return () => clearInterval(intervalId);
+  // }, [secondsPassed]);
 
   return isLoadingComplete;
 }

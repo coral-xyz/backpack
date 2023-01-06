@@ -33,9 +33,6 @@ export default function UnlockedNavigator(): JSX.Element {
         <Stack.Screen
           name="AccountSettings"
           component={AccountSettingsNavigator}
-          // options={{
-          //   headerShown: false,
-          // }}
         />
       </Stack.Group>
       <Stack.Group screenOptions={{ presentation: "modal", headerShown: true }}>
@@ -128,8 +125,7 @@ function UnlockedBottomTabNavigator() {
         },
         tabBarActiveTintColor: "#333",
         tabBarInactiveTintColor: "gray",
-      })}
-    >
+      })}>
       <Tab.Screen name="Balances" component={BalancesNavigator} />
       <Tab.Screen name="Applications" component={AppListScreen} />
       <Tab.Screen name="Collectibles" component={NFTCollectiblesNavigator} />
