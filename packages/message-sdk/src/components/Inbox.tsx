@@ -33,6 +33,14 @@ export function Inbox() {
       !activeChats.map((x) => x.remoteUsername).includes(result.username)
   );
 
+  let debouncedTimer;
+  const debouncedInit = () => {
+    clearTimeout(debouncedTimer);
+    debouncedTimer = setTimeout(() => {
+      handleContactSearch();
+    }, 250);
+  };
+
   const handleContactSearch = async () => {
     if (searchFilter.length >= 3) {
       const response = await ParentCommunicationManager.getInstance().fetch(
@@ -49,19 +57,6 @@ export function Inbox() {
     }
   };
 
-  //for debouncing
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (searchFilter === "") {
-        return;
-      }
-
-      handleContactSearch();
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [searchFilter]);
-
   return (
     <div
       className={classes.container}
@@ -70,6 +65,7 @@ export function Inbox() {
       <SearchBox
         onChange={async (prefix: string) => {
           setSearchFilter(prefix);
+          debouncedInit();
         }}
       />
       {messagesLoading && <MessagesSkeleton />}
