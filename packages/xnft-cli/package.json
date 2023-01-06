@@ -28,7 +28,8 @@
     "express": "^4.18.1",
     "fast-glob": "^3.2.12",
     "jszip": "^3.10.1",
-    "node-stdlib-browser": "^1.2.0"
+    "node-stdlib-browser": "^1.2.0",
+    "zod": "^3.20.2"
   },
   "devDependencies": {
     "eslint-config-custom": "*",
