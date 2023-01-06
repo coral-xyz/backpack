@@ -12,7 +12,10 @@ import { useUsers } from "./users";
 
 export const useActiveChats = (uuid: string) => {
   const activeChats = useLiveQuery(async () => {
-    return getDb(uuid).inbox.where({ blocked: 0, interacted: 1 }).toArray();
+    return getDb(uuid)
+      .inbox.where({ blocked: 0, interacted: 1 })
+      .reverse()
+      .sortBy("last_message_timestamp");
   });
   const users = useUsers(uuid, activeChats || []);
 

@@ -2,13 +2,12 @@ import { useEffect, useState } from "react";
 import { SearchBox } from "@coral-xyz/app-extension/src/components/Unlocked/Messages/SearchBox";
 import type { RemoteUserData } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
-import { useActiveChats, useRequestsCount } from "@coral-xyz/db";
+import { refreshFriendships, useActiveChats } from "@coral-xyz/db";
 import { EmptyState, TextInput } from "@coral-xyz/react-common";
-import { useUser } from "@coral-xyz/recoil";
+import { useFriendships, useRequestsCount, useUser } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
-import SearchIcon from "@mui/icons-material/Search";
-import InputAdornment from "@mui/material/InputAdornment";
+import { useRecoilState } from "recoil";
 
 import { ParentCommunicationManager } from "../ParentCommunicationManager";
 
@@ -20,18 +19,22 @@ import { UserList } from "./UserList";
 export function Inbox() {
   const classes = useStyles();
   const { uuid } = useUser();
-  const [messagesLoading, setMessagesLoading] = useState(false);
-  const activeChats = useActiveChats(uuid) || [];
-  // const [activeChats, setActiveChats] = useState<EnrichedInboxDb[]>([]);
-  const requestCount = useRequestsCount(uuid) || 0;
+  const activeChats = useFriendships({ uuid });
+  const requestCount = useRequestsCount({ uuid });
   const [searchResults, setSearchResults] = useState<RemoteUserData[]>([]);
-  const theme = useCustomTheme();
   const [searchFilter, setSearchFilter] = useState("");
+  const [refreshing, setRefreshing] = useState(true);
 
   const searchedUsersDistinct = searchResults.filter(
     (result) =>
-      !activeChats.map((x) => x.remoteUsername).includes(result.username)
+      !activeChats?.map((x) => x.remoteUsername).includes(result.username)
   );
+
+  useEffect(() => {
+    refreshFriendships(uuid)
+      .then(() => setRefreshing(false))
+      .catch(() => setRefreshing(false));
+  }, [uuid]);
 
   return (
     <div
@@ -46,19 +49,26 @@ export function Inbox() {
             const res = await ParentCommunicationManager.getInstance().fetch(
               `${BACKEND_API_URL}/users?usernamePrefix=${prefix}`
             );
-            const json = await res.json();
-            setSearchResults(
-              json.users.sort((a, b) =>
-                a.username.length < b.username.length ? -1 : 1
-              ) || []
-            );
+            try {
+              const json = await res.json();
+              setSearchResults(
+                json.users.sort((a, b) =>
+                  a.username.length < b.username.length ? -1 : 1
+                ) || []
+              );
+            } catch (e) {
+              console.error(e);
+            }
           } else {
             setSearchResults([]);
           }
         }}
       />
-      {messagesLoading && <MessagesSkeleton />}
-      {!messagesLoading &&
+      {(!activeChats || (refreshing && !activeChats.length)) && (
+        <MessagesSkeleton />
+      )}
+      {activeChats &&
+        (activeChats.length || !refreshing) &&
         (activeChats.filter((x) => x.remoteUsername.includes(searchFilter))
           .length > 0 ||
           requestCount > 0) && (
@@ -83,7 +93,8 @@ export function Inbox() {
           />
         </div>
       )}
-      {!messagesLoading &&
+      {activeChats &&
+        (activeChats.length || !refreshing) &&
         searchFilter.length < 3 &&
         requestCount === 0 &&
         activeChats.length === 0 && (

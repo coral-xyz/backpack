@@ -17,7 +17,11 @@ import {
 
 import { updateLastRead } from "../api";
 import { bulkAddChats } from "../db/chats";
-import { getFriendshipByRoom, updateFriendship } from "../db/friends";
+import {
+  createDefaultFriendship,
+  getFriendshipByRoom,
+  updateFriendship,
+} from "../db/friends";
 
 import { RECONNECTING, Signaling } from "./Signaling";
 
@@ -69,7 +73,6 @@ export class SignalingManager {
               this.uuid,
               parseInt(message.room)
             );
-            console.log(friendship);
             if (friendship?.remoteUserId) {
               updateFriendship(this.uuid, friendship?.remoteUserId, {
                 last_message_sender: message.uuid,
@@ -77,6 +80,22 @@ export class SignalingManager {
                 last_message_timestamp: new Date().toISOString(),
                 unread: 1,
               });
+            } else {
+              if (message.uuid !== this.uuid) {
+                await createDefaultFriendship(
+                  this.uuid,
+                  message.uuid,
+                  {
+                    last_message_sender: message.uuid,
+                    last_message_timestamp: new Date().toISOString(),
+                    last_message: message.message,
+                    last_message_client_uuid: message.uuid,
+                  },
+                  {
+                    remoteInteracted: 1,
+                  }
+                );
+              }
             }
           }
         });

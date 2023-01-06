@@ -1,5 +1,6 @@
 import type { Friendship } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
+import type { EnrichedInboxDb } from "@coral-xyz/common/dist/esm/messages/db";
 import { atomFamily, selectorFamily } from "recoil";
 
 export const friendship = atomFamily<Friendship | null, { userId: string }>({
@@ -30,6 +31,33 @@ export const friendship = atomFamily<Friendship | null, { userId: string }>({
         } catch (e) {
           return null;
         }
+      },
+  }),
+});
+
+export const friendships = atomFamily<
+  EnrichedInboxDb[] | null | undefined,
+  { uuid: string }
+>({
+  key: "friendships",
+  default: selectorFamily({
+    key: "friendshipsDefault",
+    get:
+      ({ uuid }: { uuid: string }) =>
+      async ({ get }: any) => {
+        return [];
+      },
+  }),
+});
+
+export const requestCount = atomFamily<number, { uuid: string }>({
+  key: "requestCount",
+  default: selectorFamily({
+    key: "requestCountDefault",
+    get:
+      ({ uuid }: { uuid: string }) =>
+      async ({ get }: any) => {
+        return 0;
       },
   }),
 });

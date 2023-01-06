@@ -56,5 +56,7 @@ export const createEmptyFriendship = async (
   if (existingFriendship) {
     return;
   }
-  await createDefaultFriendship(uuid, remoteUserId, props);
+  await createDefaultFriendship(uuid, remoteUserId, props, {
+    interacted: 1,
+  });
 };
