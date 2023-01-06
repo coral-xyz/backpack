@@ -26,7 +26,7 @@ router.post(
     //@ts-ignore
     const uuid: string = req.id;
     //@ts-ignore
-    const type: SubscriptionType = req.body.type;
+    const type: SubscriptionType = req.query.type;
     // @ts-ignore
     const room: string = req.query.room;
 

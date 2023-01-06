@@ -20,6 +20,7 @@ export function GridCard({
   nft,
   subtitle,
   metadataCollectionId,
+  showNotificationBubble,
 }: any) {
   const classes = useStyles();
   const theme = useCustomTheme();
@@ -44,6 +45,7 @@ export function GridCard({
         aspectRatio: "1",
       }}
     >
+      {showNotificationBubble && "Notificcation!!! go read message"}
       <ProxyImage
         style={{
           width: "100%",

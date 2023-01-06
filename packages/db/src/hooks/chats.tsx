@@ -116,3 +116,11 @@ export const useRoomChatsWithMetadata = (
     color: users?.find((x) => x?.uuid === chat.uuid)?.color,
   }));
 };
+
+export const getNftCollectionGroups = (uuid: string) => {
+  const groups = useLiveQuery(async () => {
+    return getDb(uuid).collections.toArray();
+  });
+
+  return groups;
+};

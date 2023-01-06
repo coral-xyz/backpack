@@ -16,7 +16,7 @@ import {
 } from "@coral-xyz/common";
 
 import { updateLastRead } from "../api";
-import { bulkAddChats } from "../db/chats";
+import { bulkAddChats, createOrUpdateCollection } from "../db/chats";
 import {
   createDefaultFriendship,
   getFriendshipByRoom,
@@ -97,6 +97,13 @@ export class SignalingManager {
                 );
               }
             }
+          } else {
+            // group chat
+            await createOrUpdateCollection(this.uuid, {
+              collectionId: message.room,
+              last_message: message.message,
+              last_message_client_uuid: message.uuid,
+            });
           }
         });
       }

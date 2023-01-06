@@ -49,3 +49,10 @@ export interface RemoteUserData {
   remoteRequested: boolean;
   username: string;
 }
+
+export interface CollectionChatData {
+  collectionId: string;
+  lastReadMessage?: string;
+  lastMessage?: string;
+  lastMessageUuid?: string;
+}
