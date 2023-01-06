@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useActiveChats, useRequestsCount } from "@coral-xyz/db";
-import { friendships,requestCount, useUser  } from "@coral-xyz/recoil";
+import { friendships, requestCount, useUser } from "@coral-xyz/recoil";
 import { useRecoilState } from "recoil";
 
 export const DbRecoilSync = () => {
@@ -22,8 +22,6 @@ export const DbRecoilSync = () => {
   }, [uuid, activeChats, friendshipValue, setFriendshipsValue]);
 
   useEffect(() => {
-    console.error("count is ");
-    console.error(count);
     if (count !== requestCountValue) {
       setRequestCountValue(count || 0);
     }
