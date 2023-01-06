@@ -5,27 +5,36 @@ const { NOTFOUND } = require("dns");
 const { object, string, array, record, any, union, literal } = require("zod");
 const { readFile, writeFile, mkdir } = promises;
 
+const platforms = ["web", "android", "ios"];
+const sizes = ["sm", "md", "lg"];
+
 const xnftJson = object({
   name: string(),
   description: string(),
   icon: record(
-    string().refine((key) => ["sm", "md", "lg"].includes(key), {
-      message: "Available sizes: sm, md, lg",
+    string().refine((key) => sizes.includes(key), {
+      message: "Available sizes: " + sizes.join(", "),
     }),
     string()
-  ),
-  screenshots: array(string()),
+  ).optional(),
+  screenshots: array(string()).optional(),
+  splash: array(string()).optional(),
   entrypoints: record(
     record(
-      string().refine((key) => ["web", "android", "ios"].includes(key), {
-        message: "Available platforms: web, android, ios",
+      string().refine((key) => platforms.includes(key), {
+        message: "Available platforms: " + platforms.join(", "),
       }),
       string()
-    )
+    ).refine((entrypoint) => Object.keys(entrypoint).length > 0, {
+      message:
+        "Must provide at least one platform (" +
+        platforms.join(", ") +
+        ") per entrypoint.",
+    })
   ).refine((entrypoints) => !!entrypoints.default, {
     message: "Must provide a 'default' entrypoint.",
   }),
-  props: any(),
+  props: any().optional(),
 });
 
 module.exports = async (xnftPath) => {
@@ -34,8 +43,9 @@ module.exports = async (xnftPath) => {
 
   const include = [
     path.basename(xnftPath),
-    ...Object.values(xnft.icon),
-    ...xnft.screenshots,
+    ...Object.values(xnft.icon ?? {}),
+    ...Object.values(xnft.splash ?? {}),
+    ...(xnft.screenshots ?? []),
   ];
 
   Object.values(xnft.entrypoints).forEach((entrypoint) => {
