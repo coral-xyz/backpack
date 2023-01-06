@@ -24,7 +24,7 @@ import { RecoilRoot } from "recoil";
 SplashScreen.preventAutoHideAsync();
 
 import { useLoadedAssets } from "./hooks/useLoadedAssets";
-import Navigation from "./navigation";
+import { RootNavigation } from "./navigation/RootNavigator";
 
 export function App(): JSX.Element {
   return (
@@ -58,7 +58,8 @@ function ServiceWorkerErrorScreen({ onLayoutRootView }: any): JSX.Element {
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
-      }}>
+      }}
+    >
       <Text>The service worker failed to load.</Text>
       <Text>
         {JSON.stringify(
@@ -117,10 +118,16 @@ function Main(): JSX.Element | null {
         onLayout={onLayoutRootView}
         style={[
           styles.container,
-          { backgroundColor: theme.custom.colors.background },
-        ]}>
+          {
+            backgroundColor:
+              process.env.NODE_ENV === "development"
+                ? "orange"
+                : theme.custom.colors.background,
+          },
+        ]}
+      >
         <StatusBar style={theme.colorScheme === "dark" ? "light" : "dark"} />
-        <Navigation colorScheme={theme.colorScheme} />
+        <RootNavigation colorScheme={theme.colorScheme} />
       </SafeAreaView>
     </Providers>
   );

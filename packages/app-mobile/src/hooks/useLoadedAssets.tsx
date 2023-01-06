@@ -31,14 +31,15 @@ export function useLoadedAssets(): status {
 
   React.useEffect(() => {
     const id = setTimeout(() => {
+      console.log("hey");
+      // sets a error loading screen if something didn't load correctly
+      if (secondsPassed > 7 && isLoadingComplete === "loading") {
+        setLoadingComplete("error");
+        clearTimeout(id);
+      }
+
       setSecondsPassed(secondsPassed + 1);
     }, 1000);
-
-    // sets a error loading screen if something didn't load correctly
-    if (secondsPassed > 7 && isLoadingComplete === "loading") {
-      setLoadingComplete("error");
-      clearTimeout(id);
-    }
 
     return () => clearTimeout(id);
   }, [secondsPassed]);

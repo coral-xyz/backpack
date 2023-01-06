@@ -88,7 +88,7 @@ export default function UnlockedNavigator(): JSX.Element {
 
 function RecentActivityModal() {
   return (
-    <View style={{ flex: 1, backgroundColor: "green", alignItems: "center" }}>
+    <View style={{ flex: 1, backgroundColor: "pink", alignItems: "center" }}>
       <Text>Recent Activity</Text>
     </View>
   );
@@ -128,7 +128,8 @@ function UnlockedBottomTabNavigator() {
         },
         tabBarActiveTintColor: "#333",
         tabBarInactiveTintColor: "gray",
-      })}>
+      })}
+    >
       <Tab.Screen name="Balances" component={BalancesNavigator} />
       <Tab.Screen name="Applications" component={AppListScreen} />
       <Tab.Screen name="Collectibles" component={NFTCollectiblesNavigator} />
