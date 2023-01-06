@@ -5,7 +5,10 @@ import { createClient } from "redis";
 
 import { REDIS_URL } from "../config";
 import { postChat } from "../db/chats";
-import { updateLatestMessage } from "../db/friendships";
+import {
+  updateLatestMessage,
+  updateLatestMessageGroup,
+} from "../db/friendships";
 import { Redis } from "../redis/Redis";
 import type { User } from "../users/User";
 

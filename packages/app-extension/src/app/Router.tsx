@@ -13,7 +13,11 @@ import {
   QUERY_LOCKED,
   toTitleCase,
 } from "@coral-xyz/common";
-import { refreshFriendships, SignalingManager } from "@coral-xyz/db";
+import {
+  refreshFriendships,
+  refreshGroups,
+  SignalingManager,
+} from "@coral-xyz/db";
 import { EmptyState } from "@coral-xyz/react-common";
 import {
   KeyringStoreStateEnum,
@@ -70,6 +74,7 @@ function _Router() {
 
   useEffect(() => {
     refreshFriendships(uuid);
+    refreshGroups(uuid).catch((e) => console.error(e));
     SignalingManager.getInstance().updateUuid(uuid);
   }, [uuid]);
 

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { SearchBox } from "@coral-xyz/app-extension/src/components/Unlocked/Messages/SearchBox";
 import type { RemoteUserData } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
-import { refreshFriendships, useActiveChats } from "@coral-xyz/db";
+import { refreshFriendships } from "@coral-xyz/db";
 import { EmptyState, TextInput } from "@coral-xyz/react-common";
 import { useFriendships, useRequestsCount, useUser } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";

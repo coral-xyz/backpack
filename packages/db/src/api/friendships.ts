@@ -26,8 +26,6 @@ export const refreshFriendships = async (uuid: string) => {
 };
 
 export const refreshGroups = async (uuid: string) => {
-  const db = getDb(uuid);
-
   try {
     const response = await fetch(`${BACKEND_API_URL}/nft/bulk`, {
       method: "GET",

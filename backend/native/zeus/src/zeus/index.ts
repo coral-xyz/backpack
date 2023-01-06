@@ -15102,6 +15102,7 @@ export const enum auth_collection_messages_update_column {
 }
 /** unique or primary key constraints on table "auth.collections" */
 export const enum auth_collections_constraint {
+  collections_collection_id_type_key = "collections_collection_id_type_key",
   collections_pkey = "collections_pkey",
   collections_type = "collections_type",
 }

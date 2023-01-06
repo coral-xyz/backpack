@@ -35,10 +35,14 @@ export const clearChats = (uuid: string, room: string, type: string) => {
   return getDb(uuid).messages.where({ room }).delete();
 };
 
-export const createOrUpdateCollection = (
+export const createOrUpdateCollection = async (
   uuid: string,
   data: CollectionChatData
 ) => {
   const db = getDb(uuid);
-  db.collections.put(data);
+  if (await db.collections.get(data.collectionId)) {
+    db.collections.update(data.collectionId, data);
+  } else {
+    db.collections.put(data);
+  }
 };

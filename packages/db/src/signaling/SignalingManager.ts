@@ -101,8 +101,8 @@ export class SignalingManager {
             // group chat
             await createOrUpdateCollection(this.uuid, {
               collectionId: message.room,
-              last_message: message.message,
-              last_message_client_uuid: message.uuid,
+              lastMessage: message.message,
+              lastMessageUuid: message.client_generated_uuid,
             });
           }
         });
