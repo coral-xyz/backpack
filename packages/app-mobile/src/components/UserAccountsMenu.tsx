@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useRef } from "react";
 import { Pressable, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Avatar, Margin, RoundedContainerGroup } from "@components";
 import { ExpandCollapseIcon, IconCheckmark } from "@components/Icon";
 import { UI_RPC_METHOD_ACTIVE_USER_UPDATE } from "@coral-xyz/common";
@@ -17,6 +18,7 @@ export function AccountDropdownHeader({
   navigation: any;
   options: any;
 }): JSX.Element {
+  const insets = useSafeAreaInsets();
   const theme = useTheme();
   const user = useUser();
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
@@ -32,40 +34,26 @@ export function AccountDropdownHeader({
 
   return (
     <>
-      <View
+      <Pressable
+        onPress={handleShowModal}
         style={{
-          height: 44,
           flexDirection: "row",
+          justifyContent: "center",
           alignItems: "center",
-          justifyContent: "space-between",
-          padding: 8,
         }}>
-        <HeaderBackButton
-          label={options.headerBackTitle}
-          onPress={() => navigation.goBack()}
-          tintColor={options.headerTintColor}
-        />
-        <Pressable
-          onPress={handleShowModal}
+        <Text
           style={{
-            flexDirection: "row",
-            justifyContent: "center",
-            alignItems: "center",
+            fontSize: 17,
+            fontWeight: "600",
+            color: theme.custom.colors.fontColor,
           }}>
-          <Text
-            style={{
-              fontSize: 16,
-              color: theme.custom.colors.fontColor,
-            }}>
-            @{user.username}
-          </Text>
-          <ExpandCollapseIcon
-            isExpanded={false}
-            color={theme.custom.colors.icon}
-          />
-        </Pressable>
-        <View style={{ width: 33 }} />
-      </View>
+          @{user.username}
+        </Text>
+        <ExpandCollapseIcon
+          isExpanded={false}
+          color={theme.custom.colors.icon}
+        />
+      </Pressable>
       <BottomSheetModal
         ref={bottomSheetModalRef}
         index={0}
@@ -92,7 +80,7 @@ function UserAccountMenu({ onDismiss }: () => void): JSX.Element {
           marginTop: 8,
           marginBottom: 16,
           fontSize: 18,
-          lineHeight: 24,
+          fontWeight: "600",
           color: theme.custom.colors.fontColor,
         }}>
         Accounts

@@ -14,6 +14,7 @@ import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
 import {
   blockchainBalancesSorted,
   useActiveWallets,
+  useAllWalletsDisplayed,
   useBlockchainConnectionUrl,
   useEnabledBlockchains,
   useLoader,
@@ -52,47 +53,50 @@ export function SearchableTokenTables({
 
 // Renders each blockchain section
 export function TokenTables({
-  blockchains,
   onPressRow,
   searchFilter = "",
   customFilter = () => true,
+  tokenAccounts,
 }: {
-  blockchains?: Array<Blockchain>;
   onPressRow: (blockchain: Blockchain, token: Token) => void;
   searchFilter?: string;
   customFilter?: (token: Token) => boolean;
+  tokenAccounts?: ReturnType<typeof useBlockchainTokensSorted>;
 }) {
-  const enabledBlockchains = useEnabledBlockchains();
-  const filteredBlockchains =
-    blockchains?.filter((b) => enabledBlockchains.includes(b)) ||
-    enabledBlockchains;
-
+  const wallets = useAllWalletsDisplayed();
   return (
-    <View>
-      {filteredBlockchains.map((blockchain: Blockchain) => {
-        return (
-          <Margin key={blockchain} bottom={12}>
-            <TokenTable
-              blockchain={blockchain}
-              onPressRow={onPressRow}
-              searchFilter={searchFilter}
-              customFilter={customFilter}
-            />
-          </Margin>
-        );
-      })}
-    </View>
+    <>
+      {wallets.map(
+        (wallet: {
+          blockchain: Blockchain;
+          publicKey: string;
+          type: string;
+          name: string;
+        }) => (
+          <WalletTokenTable
+            key={wallet.publicKey.toString()}
+            onPressRow={onPressRow}
+            searchFilter={searchFilter}
+            customFilter={customFilter}
+            wallet={wallet}
+            blockchain={wallet.blockchain}
+            tokenAccounts={tokenAccounts}
+          />
+        )
+      )}
+    </>
   );
 }
 
 // Renders the header (expand/collapse) as well as the list of tokens
-function TokenTable({
+function WalletTokenTable({
   blockchain,
   onPressRow,
   tokenAccounts,
   searchFilter = "",
   customFilter = () => true,
   displayWalletHeader = true,
+  wallet,
 }: {
   blockchain: Blockchain;
   onPressRow: (blockchain: Blockchain, token: Token) => void;
@@ -100,6 +104,7 @@ function TokenTable({
   searchFilter?: string;
   customFilter?: (token: Token) => boolean;
   displayWalletHeader?: boolean;
+  wallet: { name: string; publicKey: string };
 }): JSX.Element {
   const theme = useTheme();
   const [search, setSearch] = useState(searchFilter);
@@ -109,9 +114,6 @@ function TokenTable({
   };
 
   const connectionUrl = useBlockchainConnectionUrl(blockchain);
-  const activeWallets = useActiveWallets();
-  const wallet = activeWallets.filter((w) => w.blockchain === blockchain)[0];
-
   const [rawTokenAccounts, _, isLoading] = tokenAccounts
     ? [tokenAccounts, "hasValue"]
     : useLoader(
@@ -170,6 +172,7 @@ function TokenTable({
                 onPressRow={onPressRow}
                 blockchain={blockchain}
                 token={token}
+                walletPublicKey={wallet.publicKey.toString()}
               />
             );
           }}
@@ -287,10 +290,16 @@ export function TokenRow({
   onPressRow,
   token,
   blockchain,
+  walletPublicKey,
 }: {
-  onPressRow: (blockchain: Blockchain, token: Token) => void;
+  onPressRow: (
+    blockchain: Blockchain,
+    token: Token,
+    walletPublicKey: string
+  ) => void;
   token: Token;
   blockchain: Blockchain;
+  walletPublicKey: string;
 }): JSX.Element {
   const theme = useTheme();
   const { name, recentUsdBalanceChange, logo: iconUrl } = token;
@@ -302,7 +311,7 @@ export function TokenRow({
 
   return (
     <Pressable
-      onPress={() => onPressRow(blockchain, token)}
+      onPress={() => onPressRow(blockchain, token, walletPublicKey)}
       style={styles.rowContainer}
     >
       <View style={{ flexDirection: "row" }}>

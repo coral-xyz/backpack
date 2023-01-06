@@ -22,7 +22,7 @@ type Wallet = {
 
 export function ProfileScreen(): JSX.Element {
   return (
-    <Screen style={{ paddingTop: 32 }}>
+    <Screen>
       <AvatarHeader />
       <SettingsList />
     </Screen>

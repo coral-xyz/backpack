@@ -33,9 +33,6 @@ export default function UnlockedNavigator(): JSX.Element {
         <Stack.Screen
           name="AccountSettings"
           component={AccountSettingsNavigator}
-          // options={{
-          //   headerShown: false,
-          // }}
         />
       </Stack.Group>
       <Stack.Group screenOptions={{ presentation: "modal", headerShown: true }}>
@@ -88,7 +85,7 @@ export default function UnlockedNavigator(): JSX.Element {
 
 function RecentActivityModal() {
   return (
-    <View style={{ flex: 1, backgroundColor: "green", alignItems: "center" }}>
+    <View style={{ flex: 1, backgroundColor: "pink", alignItems: "center" }}>
       <Text>Recent Activity</Text>
     </View>
   );
