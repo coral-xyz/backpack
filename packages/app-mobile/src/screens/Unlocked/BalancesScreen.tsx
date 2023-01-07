@@ -21,6 +21,10 @@ import { TokenTables, UsdBalanceAndPercentChange } from "./components/Balances";
 import { BalanceSummaryWidget } from "./components/BalanceSummaryWidget";
 import type { Token } from "./components/index";
 
+function WalletPickerScreen() {
+  return <View style={{ flex: 1, backgroundColor: "red" }} />;
+}
+
 const Stack = createStackNavigator();
 export function BalancesNavigator() {
   return (
@@ -28,6 +32,7 @@ export function BalancesNavigator() {
       initialRouteName="BalanceList"
       screenOptions={{ presentation: "modal" }}
     >
+      <Stack.Screen name="wallet-picker" component={WalletPickerScreen} />
       <Stack.Group screenOptions={{ headerShown: false }}>
         <Stack.Screen name="BalanceList" component={BalanceListScreen} />
       </Stack.Group>

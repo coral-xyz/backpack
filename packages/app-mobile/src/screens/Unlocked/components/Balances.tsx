@@ -6,8 +6,10 @@ import {
   ListRowSeparator,
   Margin,
   ProxyImage,
+  Row,
   StyledTextInput,
 } from "@components";
+import { ExpandCollapseIcon } from "@components/Icon";
 import type { Blockchain } from "@coral-xyz/common";
 import { formatUSD, walletAddressDisplay } from "@coral-xyz/common";
 import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
@@ -20,6 +22,7 @@ import {
   useLoader,
 } from "@coral-xyz/recoil";
 import { useTheme } from "@hooks";
+import { useNavigation } from "@react-navigation/native";
 import * as Clipboard from "expo-clipboard";
 
 import type { Token } from "./index";
@@ -95,7 +98,6 @@ function WalletTokenTable({
   tokenAccounts,
   searchFilter = "",
   customFilter = () => true,
-  displayWalletHeader = true,
   wallet,
 }: {
   blockchain: Blockchain;
@@ -103,9 +105,9 @@ function WalletTokenTable({
   tokenAccounts?: ReturnType<typeof useBlockchainTokensSorted>;
   searchFilter?: string;
   customFilter?: (token: Token) => boolean;
-  displayWalletHeader?: boolean;
   wallet: { name: string; publicKey: string };
 }): JSX.Element {
+  const navigation = useNavigation();
   const theme = useTheme();
   const [search, setSearch] = useState(searchFilter);
   const [expanded, setExpanded] = React.useState(true);
@@ -152,11 +154,11 @@ function WalletTokenTable({
         onPress={onPressExpand}
         visible={expanded}
         subtitle={
-          displayWalletHeader ? (
-            <Margin left={6}>
-              <CopyWalletAddressSubtitle publicKey={wallet.publicKey} />
-            </Margin>
-          ) : undefined
+          <WalletPickerButton
+            onPress={() => {
+              navigation.navigate("wallet-picker");
+            }}
+          />
         }
       />
 
@@ -179,6 +181,19 @@ function WalletTokenTable({
         />
       ) : null}
     </View>
+  );
+}
+
+function WalletPickerButton({ onPress }): JSX.Element {
+  return (
+    <Pressable onPress={onPress}>
+      <Margin left={4}>
+        <Row>
+          <Text>dev 1</Text>
+          <ExpandCollapseIcon size={16} isExpanded={false} />
+        </Row>
+      </Margin>
+    </Pressable>
   );
 }
 
