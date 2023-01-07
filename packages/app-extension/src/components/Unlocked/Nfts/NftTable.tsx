@@ -344,7 +344,6 @@ function NftCollectionCard({
       nftId: collectionDisplayNftId,
     })
   );
-
   useEffect(() => {
     if (collection.metadataCollectionId !== ONE_COLLECTION_ID) {
       return;
@@ -399,7 +398,7 @@ function NftCollectionCard({
     } else {
       // Multiple items in connection, display a grid
       push({
-        title: "TODO", // TODO: collection.name,
+        title: collectionDisplayNft.collectionName,
         componentId: NAV_COMPONENT_NFT_COLLECTION,
         componentProps: {
           id: collection.id,
@@ -416,7 +415,7 @@ function NftCollectionCard({
       onClick={onClick}
       nft={collectionDisplayNft}
       subtitle={{
-        name: "TODO " /*collection.name*/,
+        name: collectionDisplayNft.collectionName,
         length: collection.itemIds.length,
       }}
     />

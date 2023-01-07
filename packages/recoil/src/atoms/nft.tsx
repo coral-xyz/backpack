@@ -7,7 +7,9 @@ import type {
   TokenMetadata,
   TokenMetadataString,
 } from "@coral-xyz/common";
-import { Blockchain, externalResourceUri } from "@coral-xyz/common";
+import { Blockchain, externalResourceUri,metadataAddress  } from "@coral-xyz/common";
+import { MetadataData } from "@metaplex-foundation/mpl-token-metadata";
+import { PublicKey } from "@solana/web3.js";
 import { atom, atomFamily, selector, selectorFamily, waitForAll } from "recoil";
 
 import { equalSelectorFamily } from "../equals";
@@ -90,6 +92,23 @@ export const nftById = equalSelectorFamily<
         [nftTokenMetadata]
       );
       const [_, uriData] = resp[0] ?? [];
+      const collectionName = (() => {
+        if (!uriData) {
+          return "";
+        } else if (uriData.metadata.collection) {
+          // TODO: there is a verified boolean on the object. We should probably check it.
+          const metadata = get(
+            solanaNftCollection({
+              collectionPublicKey: uriData.metadata.collection.key.toString(),
+            })
+          );
+          return metadata.data.name;
+        } else if (uriData.tokenMetaUriData.collection) {
+          return uriData.tokenMetaUriData?.collection?.name;
+        } else {
+          return uriData.metadata.data.name;
+        }
+      })();
       const nft = {
         id: nftTokenMetadata?.publicKey ?? "",
         blockchain: Blockchain.SOLANA,
@@ -111,31 +130,39 @@ export const nftById = equalSelectorFamily<
           : "",
         attributes: uriData
           ? uriData.tokenMetaUriData.attributes?.map(
-              (a: { trait_type: string; uriData: string }) => ({
+              (a: { trait_type: string; value: string }) => ({
                 traitType: a.trait_type,
-                value: a.uriData,
+                value: a.value,
               })
             )
           : [],
+        collectionName,
       };
       return nft;
     },
   equals: (m1, m2) => JSON.stringify(m1) === JSON.stringify(m2),
 });
 
-export const collectionTitle = selectorFamily<string, string>({
-  key: "collectionTitle",
+export const solanaNftCollection = selectorFamily<
+  MetadataData,
+  { collectionPublicKey: string }
+>({
+  key: "solanaNftCollection",
   get:
-    (collectionId) =>
-    ({ get }) => {
-      // 1. get the collection's nft list
-      // 2. get the first nft from it
-      // 3. get the metadata fromt he nftby
-      // 4. if there's a collection standard, then fetch it
-      // 5. no collection standard, then use the uri data
-
-      // TODO
-      return "";
+    ({ collectionPublicKey }) =>
+    async ({ get }) => {
+      const { connection } = get(anchorContext);
+      const collectionMetadataPublicKey = await metadataAddress(
+        new PublicKey(collectionPublicKey)
+      );
+      const account = await connection.getAccountInfo(
+        collectionMetadataPublicKey
+      );
+      if (account === null) {
+        return null;
+      }
+      const metadata = MetadataData.deserialize(account.data);
+      return metadata;
     },
 });
 

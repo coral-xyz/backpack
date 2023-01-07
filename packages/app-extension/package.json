@@ -21,6 +21,7 @@
     "@ledgerhq/hw-app-solana": "^6.27.2",
     "@ledgerhq/hw-transport": "^6.24.1",
     "@ledgerhq/hw-transport-webhid": "^6.24.1",
+    "@metaplex-foundation/mpl-token-metadata": "^2.5.2",
     "@mui/icons-material": "^5.8.0",
     "@mui/material": "^5.8.1",
     "@mui/styles": "^5.8.4",
