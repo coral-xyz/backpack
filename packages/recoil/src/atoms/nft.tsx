@@ -39,7 +39,6 @@ export const nftCollectionsWithIds = selector<
           collections: Object.values(collections),
         };
       });
-    console.log("ARMANI CALCULATING");
     return allWalletCollections;
   },
 });
@@ -124,6 +123,22 @@ export const nftById = equalSelectorFamily<
   equals: (m1, m2) => JSON.stringify(m1) === JSON.stringify(m2),
 });
 
+export const collectionTitle = selectorFamily<string, string>({
+  key: "collectionTitle",
+  get:
+    (collectionId) =>
+    ({ get }) => {
+      // 1. get the collection's nft list
+      // 2. get the first nft from it
+      // 3. get the metadata fromt he nftby
+      // 4. if there's a collection standard, then fetch it
+      // 5. no collection standard, then use the uri data
+
+      // TODO
+      return "";
+    },
+});
+
 ////////////////////////////////////////////////////////////////////////////////
 // Non-atom utils and types.
 ////////////////////////////////////////////////////////////////////////////////
@@ -139,9 +154,7 @@ function intoSolanaCollectionsMap(metadataMap: MetadataMap): {
   const collections = {};
   Object.values(metadataMap.metadata).forEach((value) => {
     const [collectionId, metadataCollectionId] = (() => {
-      const collectionId = JSON.stringify(
-        value.nftTokenMetadata?.account.data.creators
-      );
+      const collectionId = extractCollectionId(value.nftTokenMetadata!);
       const metadataCollectionId =
         value.nftTokenMetadata?.account.collection?.key || "";
       return [collectionId, metadataCollectionId];
@@ -175,3 +188,7 @@ type MetadataMap = {
     };
   };
 };
+
+function extractCollectionId(tokenMetadata: TokenMetadataString): string {
+  return JSON.stringify(tokenMetadata.account.data.creators);
+}
