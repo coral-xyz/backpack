@@ -7,7 +7,11 @@ import type {
   TokenMetadata,
   TokenMetadataString,
 } from "@coral-xyz/common";
-import { Blockchain, externalResourceUri,metadataAddress  } from "@coral-xyz/common";
+import {
+  Blockchain,
+  externalResourceUri,
+  metadataAddress,
+} from "@coral-xyz/common";
 import { MetadataData } from "@metaplex-foundation/mpl-token-metadata";
 import { PublicKey } from "@solana/web3.js";
 import { atom, atomFamily, selector, selectorFamily, waitForAll } from "recoil";
@@ -83,6 +87,19 @@ export const nftById = equalSelectorFamily<
   key: "nftById",
   get:
     ({ publicKey, connectionUrl, nftId }) =>
+    ({ get }) => {
+      return get(solanaNftById({ publicKey, connectionUrl, nftId }));
+    },
+  equals: (m1, m2) => JSON.stringify(m1) === JSON.stringify(m2),
+});
+
+export const solanaNftById = equalSelectorFamily<
+  Nft,
+  { publicKey: string; connectionUrl: string; nftId: string }
+>({
+  key: "nftById",
+  get:
+    ({ publicKey, connectionUrl, nftId }) =>
     async ({ get }) => {
       const { connection } = get(anchorContext);
       const metadataMap = get(solanaMetadataMap({ publicKey }));
@@ -143,7 +160,7 @@ export const nftById = equalSelectorFamily<
   equals: (m1, m2) => JSON.stringify(m1) === JSON.stringify(m2),
 });
 
-export const solanaNftCollection = selectorFamily<
+const solanaNftCollection = selectorFamily<
   MetadataData,
   { collectionPublicKey: string }
 >({
