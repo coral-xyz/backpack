@@ -1,10 +1,7 @@
 import type {
   Nft,
   NftCollection,
-  RawMintString,
-  SolanaTokenAccountWithKey,
   SolanaTokenAccountWithKeyString,
-  TokenMetadata,
   TokenMetadataString,
 } from "@coral-xyz/common";
 import {
@@ -14,7 +11,7 @@ import {
 } from "@coral-xyz/common";
 import { MetadataData } from "@metaplex-foundation/mpl-token-metadata";
 import { PublicKey } from "@solana/web3.js";
-import { atom, atomFamily, selector, selectorFamily, waitForAll } from "recoil";
+import { selectorFamily } from "recoil";
 
 import { equalSelectorFamily } from "../../equals";
 
