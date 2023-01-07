@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { Margin, Screen, TokenAmountHeader } from "@components";
 import { TransferWidget } from "@components/Unlocked/Balances/TransferWidget";
 import {
@@ -16,23 +16,19 @@ import {
 } from "@coral-xyz/recoil";
 import { createStackNavigator } from "@react-navigation/stack";
 import { RecentActivityList } from "@screens/Unlocked/RecentActivityScreen";
+import { WalletListScreen } from "@screens/Unlocked/WalletListScreen";
 
 import { TokenTables, UsdBalanceAndPercentChange } from "./components/Balances";
 import { BalanceSummaryWidget } from "./components/BalanceSummaryWidget";
 import type { Token } from "./components/index";
-
-function WalletPickerScreen() {
-  return <View style={{ flex: 1, backgroundColor: "red" }} />;
-}
 
 const Stack = createStackNavigator();
 export function BalancesNavigator() {
   return (
     <Stack.Navigator
       initialRouteName="BalanceList"
-      screenOptions={{ presentation: "modal" }}
-    >
-      <Stack.Screen name="wallet-picker" component={WalletPickerScreen} />
+      screenOptions={{ presentation: "modal" }}>
+      <Stack.Screen name="wallet-picker" component={WalletListScreen} />
       <Stack.Group screenOptions={{ headerShown: false }}>
         <Stack.Screen name="BalanceList" component={BalanceListScreen} />
       </Stack.Group>
@@ -132,7 +128,7 @@ function BalanceDetailScreen({ route, navigation }) {
         blockchain={blockchain}
         address={activityAddress}
         contractAddresses={contractAddresses}
-        minimize={true}
+        minimize
         style={{ marginTop: 0 }}
       />
     </Screen>
