@@ -135,15 +135,17 @@ function intoSolanaCollectionsMap(metadataMap: MetadataMap): {
   };
 } {
   const collections = {};
-
   Object.values(metadataMap.metadata).forEach((value) => {
-    const [collectionId, collection, metadataCollectionId] = (() => {
-      // todo
-      return ["No Collection", collections["No Collection"], ""];
+    const [collectionId, metadataCollectionId] = (() => {
+      const collectionId = JSON.stringify(
+        value.nftTokenMetadata?.account.data.creators
+      );
+      const metadataCollectionId =
+        value.nftTokenMetadata?.account.collection?.key || "";
+      return [collectionId, metadataCollectionId];
     })();
-    if (!collection) {
+    if (!collections[collectionId]) {
       collections[collectionId] = {
-        // TODO this can collide easily, better field for an ID?
         id: collectionId,
         metadataCollectionId,
         name: collectionId,
@@ -155,7 +157,7 @@ function intoSolanaCollectionsMap(metadataMap: MetadataMap): {
     }
     collections[collectionId]!.itemIds.push(value.nftTokenMetadata?.publicKey);
   });
-
+  console.log("ARMANI HERE 2", collections);
   return {
     publicKey: metadataMap.publicKey,
     collections,
