@@ -1,4 +1,5 @@
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Row } from "@components";
 import type { Blockchain } from "@coral-xyz/common";
 import {
   // ETH_NATIVE_MINT,
@@ -14,23 +15,20 @@ import { useBlockchainLogo, useTheme } from "@hooks";
 // TODO move this
 export type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
 
-// TODO(peter) children: any
-function LeftSide({ children }: any) {
-  return <View style={styles.leftSide}>{children}</View>;
-}
-
 export function TableHeader({
   onPress,
   visible,
   blockchain,
   disableToggle = false,
   subtitle,
+  rightSide,
 }: {
   blockchain: Blockchain;
   visible: boolean;
   onPress: () => void;
   disableToggle?: boolean;
   subtitle?: JSX.Element;
+  rightSide?: JSX.Element;
 }) {
   const theme = useTheme();
   const title = toTitleCase(blockchain);
@@ -42,18 +40,22 @@ export function TableHeader({
       onPress={onPress}
       style={styles.tableHeader}
     >
-      <LeftSide>
+      <Row>
         <Image style={styles.logoContainer} source={logo} />
         <Text style={[styles.title, { color: theme.custom.colors.fontColor }]}>
           {title}
         </Text>
         {subtitle ? subtitle : null}
-      </LeftSide>
-      <MaterialIcons
-        name={visible ? "keyboard-arrow-up" : "keyboard-arrow-down"}
-        size={18}
-        color={theme.custom.colors.fontColor}
-      />
+      </Row>
+      {rightSide ? (
+        rightSide
+      ) : (
+        <MaterialIcons
+          name={visible ? "keyboard-arrow-up" : "keyboard-arrow-down"}
+          size={18}
+          color={theme.custom.colors.fontColor}
+        />
+      )}
     </Pressable>
   );
 }
@@ -62,10 +64,6 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#eee",
     flex: 1,
-  },
-  leftSide: {
-    flexDirection: "row",
-    alignItems: "center",
   },
   title: {
     fontWeight: "500",

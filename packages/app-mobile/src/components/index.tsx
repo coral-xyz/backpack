@@ -630,12 +630,24 @@ export function CopyButton({ text }: { text: string }): JSX.Element {
   return (
     <SecondaryButton
       label="Copy"
+      icon={<ContentCopyIcon size={18} />}
       onPress={async () => {
         await Clipboard.setStringAsync(text);
         Alert.alert("Copied to clipboard");
       }}
-      icon={<ContentCopyIcon size={18} />}
     />
+  );
+}
+
+export function CopyButtonIcon({ text }: { text: string }): JSX.Element {
+  return (
+    <Pressable
+      onPress={async () => {
+        await Clipboard.setStringAsync(text);
+        Alert.alert("Copied to clipboard");
+      }}>
+      <ContentCopyIcon size={18} />
+    </Pressable>
   );
 }
 
