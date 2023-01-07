@@ -1,4 +1,4 @@
-import type { EthereumNft, NftCollection } from "@coral-xyz/common";
+import type { EthereumNft, Nft,NftCollection } from "@coral-xyz/common";
 import {
   Blockchain,
   EthereumConnectionUrl,
@@ -6,10 +6,13 @@ import {
 } from "@coral-xyz/common";
 import { selectorFamily } from "recoil";
 
+import { equalSelectorFamily } from "../../equals";
 import { allWallets } from "../wallet";
 
-export const ethereumNftCollections = selectorFamily<
-  NftCollection[],
+import { ethereumConnectionUrl } from "./preferences";
+
+const ethereumNftCollections = selectorFamily<
+  { collections: Map<string, NftCollection>; nfts: Map<string, Nft> },
   { publicKey: string; connectionUrl: string }
 >({
   key: "ethereumNftCollections",
@@ -17,13 +20,20 @@ export const ethereumNftCollections = selectorFamily<
     ({ publicKey, connectionUrl }) =>
     async ({ get }) => {
       const wallet = get(allWallets).find((w) => w.publicKey === publicKey);
-      if (!wallet) return [];
+      if (!wallet) {
+        return {
+          collections: new Map(),
+          nfts: new Map(),
+        };
+      }
 
       const url = `${EthereumConnectionUrl.MAINNET}/nft/getNFTs?owner=${wallet.publicKey}`;
       const response = await fetch(url);
       const data = await response.json();
 
-      const collections: Map<string, any> = new Map();
+      const collections: Map<string, NftCollection> = new Map();
+      const nfts: Map<string, Nft> = new Map();
+
       for (const nft of data.ownedNfts) {
         if (!nft.contractMetadata) continue;
         const collectionId = nft.contract.address;
@@ -31,16 +41,20 @@ export const ethereumNftCollections = selectorFamily<
         if (!collection) {
           collections.set(collectionId, {
             id: collectionId,
-            name: nft.contractMetadata.name,
+            metadataCollectionId: collectionId,
             symbol: nft.contractMetadata.symbol,
             tokenType: nft.contractMetadata.tokenType,
             totalSupply: nft.contractMetadata.totalSupply,
-            items: [],
+            itemIds: [],
           });
         }
-        collections.get(collectionId).items.push({
-          // Token ID is not unique so prepend with contract address
-          id: `${nft.contract.address}/${nft.id.tokenId}`,
+        const c = collections.get(collectionId)!;
+        // Token ID is not unique so prepend with contract address
+        const id = `${nft.contract.address}/${nft.id.tokenId}`;
+        c.itemIds.push(id);
+
+        nfts.set(id, {
+          id,
           blockchain: Blockchain.ETHEREUM,
           tokenId: nft.id.tokenId,
           contractAddress: nft.contract.address,
@@ -58,21 +72,49 @@ export const ethereumNftCollections = selectorFamily<
                 value: a.value,
               })
             ),
-        } as EthereumNft);
+          collectionName: nft.contractMetadata.name,
+        });
       }
 
-      //
-      // Sort for consistent UI presentation.
-      //
-      return [...collections.values()]
-        .sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0))
-        .map((c) => {
-          return {
-            ...c,
-            items: c.items.sort((a: EthereumNft, b: EthereumNft) =>
-              a.id > b.id ? 1 : b.id > a.id ? -1 : 0
-            ),
-          };
-        });
+      return { collections, nfts };
     },
+});
+
+export const ethereumWalletCollections = selectorFamily<
+  {
+    publicKey: string;
+    collections: Array<NftCollection>;
+  },
+  { publicKey: string }
+>({
+  key: "ethereumWalletCollections",
+  get:
+    ({ publicKey }) =>
+    ({ get }) => {
+      const connectionUrl = get(ethereumConnectionUrl);
+      const { collections } = get(
+        ethereumNftCollections({ publicKey, connectionUrl })
+      );
+
+      return {
+        publicKey,
+        collections: [...collections.values()],
+      };
+    },
+});
+
+export const ethereumNftById = equalSelectorFamily<
+  Nft,
+  { publicKey: string; connectionUrl: string; nftId: string }
+>({
+  key: "nftById",
+  get:
+    ({ publicKey, connectionUrl, nftId }) =>
+    ({ get }) => {
+      const { nfts } = get(
+        ethereumNftCollections({ publicKey, connectionUrl })
+      );
+      return nfts.get(nftId)!;
+    },
+  equals: (m1, m2) => JSON.stringify(m1) === JSON.stringify(m2),
 });

@@ -38,6 +38,7 @@ export type NftCollection = {
   tokenType: string;
   totalSupply: string;
   itemIds: Array<string>;
+  items?: { [id: string]: Nft }; // Not expected to be defined.
 };
 
 export type Nft = {
@@ -50,6 +51,8 @@ export type Nft = {
   imageData?: string;
   attributes?: NftAttribute[];
   collectionName: string;
+  tokenId?: string; // Ethereum only.
+  contractAddress?: string;
 };
 
 export type SolanaNft = Nft & {

@@ -4,15 +4,12 @@ import {
   externalResourceUri,
   metadataAddress,
 } from "@coral-xyz/common";
-import { MetadataData } from "@metaplex-foundation/mpl-token-metadata";
-import { PublicKey } from "@solana/web3.js";
 import { atom, atomFamily, selector, selectorFamily, waitForAll } from "recoil";
 
 import { equalSelectorFamily } from "../equals";
 
-import { ethereumNftCollections } from "./ethereum/nft";
-import { ethereumConnectionUrl } from "./ethereum";
-import { solanaNftById,solanaWalletCollections } from "./solana";
+import { ethereumNftById, ethereumWalletCollections } from "./ethereum/nft";
+import { solanaNftById, solanaWalletCollections } from "./solana";
 import { allWallets, allWalletsDisplayed } from "./wallet";
 
 export const nftCollectionsWithIds = selector<
@@ -26,7 +23,13 @@ export const nftCollectionsWithIds = selector<
     const wallets = get(allWalletsDisplayed);
     const allWalletCollections = get(
       waitForAll(
-        wallets.map(({ publicKey }) => solanaWalletCollections({ publicKey }))
+        wallets.map(({ blockchain, publicKey }) => {
+          if (blockchain === Blockchain.SOLANA) {
+            return solanaWalletCollections({ publicKey });
+          } else {
+            return ethereumWalletCollections({ publicKey });
+          }
+        })
       )
     );
     return allWalletCollections;
@@ -41,7 +44,13 @@ export const nftById = equalSelectorFamily<
   get:
     ({ publicKey, connectionUrl, nftId }) =>
     ({ get }) => {
-      return get(solanaNftById({ publicKey, connectionUrl, nftId }));
+      const wallets = get(allWallets);
+      const { blockchain } = wallets.find((w) => w.publicKey === publicKey)!;
+      if (blockchain === Blockchain.SOLANA) {
+        return get(solanaNftById({ publicKey, connectionUrl, nftId }));
+      } else {
+        return get(ethereumNftById({ publicKey, connectionUrl, nftId }));
+      }
     },
   equals: (m1, m2) => JSON.stringify(m1) === JSON.stringify(m2),
 });
