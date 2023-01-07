@@ -35,18 +35,32 @@ export const nftCollectionsWithIds = selector<
     const wallets = get(allWalletsDisplayed);
     const allWalletCollections = get(
       waitForAll(
-        wallets.map(({ publicKey }) => solanaMetadataMap({ publicKey }))
+        wallets.map(({ publicKey }) => solanaWalletCollections({ publicKey }))
       )
-    )
-      .map(intoSolanaCollectionsMap)
-      .map(({ publicKey, collections }) => {
-        return {
-          publicKey,
-          collections: Object.values(collections),
-        };
-      });
+    );
     return allWalletCollections;
   },
+});
+
+const solanaWalletCollections = selectorFamily<
+  {
+    publicKey: string;
+    collections: Array<NftCollection>;
+  },
+  { publicKey: string }
+>({
+  key: "solanaWalletCollections",
+  get:
+    ({ publicKey }) =>
+    ({ get }) => {
+      const metadataMap = get(solanaMetadataMap({ publicKey }));
+      const { publicKey: pk, collections } =
+        intoSolanaCollectionsMap(metadataMap);
+      return {
+        publicKey: pk,
+        collections: Object.values(collections),
+      };
+    },
 });
 
 // Returns the nft metadata map for a given public key.
