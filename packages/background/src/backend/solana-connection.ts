@@ -228,7 +228,6 @@ export class SolanaConnectionBackend {
     let lastData = "";
     this.pollIntervals.push(
       setInterval(async () => {
-        console.log("armani poll update");
         const data = await customSplTokenAccounts(connection, activeWallet);
         const currentData = JSON.stringify(data);
         if (currentData === lastData) {

@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import Autosizer from "react-virtualized-auto-sizer";
 import { VariableSizeList } from "react-window";
-import type { Blockchain,NftCollection } from "@coral-xyz/common";
+import type { Blockchain, NftCollection } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
   NAV_COMPONENT_NFT_COLLECTION,
@@ -10,6 +10,7 @@ import {
   TokenMetadata,
 } from "@coral-xyz/common";
 import { NAV_COMPONENT_NFT_CHAT } from "@coral-xyz/common/dist/esm/constants";
+import { Loading } from "@coral-xyz/react-common";
 import {
   nftById,
   useAllWallets,
@@ -275,11 +276,13 @@ const ItemRow = function ({
               }}
             >
               {collection && (
-                <NftCollectionCard
-                  publicKey={c.publicKey}
-                  connectionUrl={connectionUrl}
-                  collection={collection}
-                />
+                <Suspense fallback={<Loading />}>
+                  <NftCollectionCard
+                    publicKey={c.publicKey}
+                    connectionUrl={connectionUrl}
+                    collection={collection}
+                  />
+                </Suspense>
               )}
             </div>
           );
