@@ -39,6 +39,7 @@ export const nftCollectionsWithIds = selector<
           collections: Object.values(collections),
         };
       });
+    console.log("ARMANI CALCULATING");
     return allWalletCollections;
   },
 });
@@ -74,8 +75,6 @@ const solanaMetadataMap = selectorFamily<MetadataMap, { publicKey: string }>({
     },
 });
 
-//       itemIds: nfts.nftTokenMetadata.map((t) => t?.publicKey.toString()),
-
 export const nftById = equalSelectorFamily<
   Nft,
   { publicKey: string; connectionUrl: string; nftId: string }
@@ -90,9 +89,9 @@ export const nftById = equalSelectorFamily<
       const resp = await connection.customSplMetadataUri(
         [nftToken],
         [nftTokenMetadata]
-      )[0];
-      const [_, uriData] = resp ?? [];
-      return {
+      );
+      const [_, uriData] = resp[0] ?? [];
+      const nft = {
         id: nftTokenMetadata?.publicKey ?? "",
         blockchain: Blockchain.SOLANA,
         publicKey: nftTokenMetadata?.publicKey,
@@ -120,6 +119,7 @@ export const nftById = equalSelectorFamily<
             )
           : [],
       };
+      return nft;
     },
   equals: (m1, m2) => JSON.stringify(m1) === JSON.stringify(m2),
 });
@@ -157,7 +157,6 @@ function intoSolanaCollectionsMap(metadataMap: MetadataMap): {
     }
     collections[collectionId]!.itemIds.push(value.nftTokenMetadata?.publicKey);
   });
-  console.log("ARMANI HERE 2", collections);
   return {
     publicKey: metadataMap.publicKey,
     collections,

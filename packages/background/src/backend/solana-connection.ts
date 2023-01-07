@@ -225,9 +225,16 @@ export class SolanaConnectionBackend {
   //
   private async startPolling(activeWallet: PublicKey) {
     const connection = new Connection(this.url!); // Unhooked connection.
+    let lastData = "";
     this.pollIntervals.push(
       setInterval(async () => {
+        console.log("armani poll update");
         const data = await customSplTokenAccounts(connection, activeWallet);
+        const currentData = JSON.stringify(data);
+        if (currentData === lastData) {
+          return;
+        }
+        lastData = currentData;
         const key = JSON.stringify({
           url: this.url,
           method: "customSplTokenAccounts",
@@ -329,28 +336,21 @@ export class SolanaConnectionBackend {
     nftTokens: Array<SolanaTokenAccountWithKeyString>,
     nftTokenMetadata: Array<TokenMetadataString | null>
   ): Promise<Array<[string, SplNftMetadataString]>> {
-    try {
-      console.log("ARMAIN CUSTOM SPL META", nftTokens, nftTokenMetadata);
-      const key = JSON.stringify({
-        url: this.url,
-        method: "customSplMetadataUri",
-        args: [nftTokens.map((t) => t.key).sort()],
-      });
-      const value = this.cache.get(key);
-      if (value && value.ts + NFT_CACHE_EXPIRY > Date.now()) {
-        return value.value;
-      }
-      const resp = await fetchSplMetadataUri(nftTokens, nftTokenMetadata);
-      console.log("ARMANI RESP", resp);
-      this.cache.set(key, {
-        ts: Date.now(),
-        value: resp,
-      });
-      return resp;
-    } catch (err) {
-      console.log("ARMANI SB ERR", err);
-      throw err;
+    const key = JSON.stringify({
+      url: this.url,
+      method: "customSplMetadataUri",
+      args: [nftTokens.map((t) => t.key).sort()],
+    });
+    const value = this.cache.get(key);
+    if (value && value.ts + NFT_CACHE_EXPIRY > Date.now()) {
+      return value.value;
     }
+    const resp = await fetchSplMetadataUri(nftTokens, nftTokenMetadata);
+    this.cache.set(key, {
+      ts: Date.now(),
+      value: resp,
+    });
+    return resp;
   }
 
   //////////////////////////////////////////////////////////////////////////////
