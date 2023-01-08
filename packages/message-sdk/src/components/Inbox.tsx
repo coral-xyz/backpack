@@ -17,6 +17,8 @@ import { MessagesSkeleton } from "./MessagesSkeleton";
 import { useStyles } from "./styles";
 import { UserList } from "./UserList";
 
+let debouncedTimer;
+
 export function Inbox() {
   const classes = useStyles();
   const { uuid } = useUser();
@@ -33,7 +35,6 @@ export function Inbox() {
       !activeChats.map((x) => x.remoteUsername).includes(result.username)
   );
 
-  let debouncedTimer;
   const debouncedInit = () => {
     clearTimeout(debouncedTimer);
     debouncedTimer = setTimeout(() => {
