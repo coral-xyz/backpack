@@ -13,7 +13,11 @@ import {
   QUERY_LOCKED,
   toTitleCase,
 } from "@coral-xyz/common";
-import { SignalingManager } from "@coral-xyz/db";
+import {
+  refreshFriendships,
+  refreshGroups,
+  SignalingManager,
+} from "@coral-xyz/db";
 import { EmptyState } from "@coral-xyz/react-common";
 import {
   KeyringStoreStateEnum,
@@ -42,6 +46,8 @@ import { WithAuth } from "../components/Unlocked/WithAuth";
 import { refreshFeatureGates } from "../gates/FEATURES";
 import { sanitizeTransactionWithFeeConfig } from "../utils/solana";
 
+import { DbRecoilSync } from "./DbRecoilSync";
+
 import "./App.css";
 
 const logger = getLogger("router");
@@ -54,6 +60,7 @@ export function Router() {
         <ToastContainer
           toastStyle={{ backgroundColor: theme.custom.colors.background }}
         />
+        <DbRecoilSync />
         <_Router />
       </>
     </WithSuspense>
@@ -66,6 +73,8 @@ function _Router() {
   const { uuid } = useUser();
 
   useEffect(() => {
+    refreshFriendships(uuid);
+    refreshGroups(uuid).catch((e) => console.error(e));
     SignalingManager.getInstance().updateUuid(uuid);
   }, [uuid]);
 
@@ -106,7 +115,6 @@ function PopupView() {
 //
 function PopupRouter() {
   logger.debug("app router search", window.location.search);
-
   //
   // Extract the url query parameters for routing dispatch.
   //

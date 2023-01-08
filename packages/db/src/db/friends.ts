@@ -25,6 +25,10 @@ export const createDefaultFriendship = (
     last_message_timestamp?: string;
     last_message?: string;
     last_message_client_uuid?: string;
+  },
+  dbProps: {
+    interacted?: 0 | 1;
+    remoteInteracted?: 0 | 1;
   }
 ) => {
   //@ts-ignore (object created partially, full object comes from server on refresh)
@@ -36,8 +40,8 @@ export const createDefaultFriendship = (
     unread: 0,
     are_friends: false,
     areFriends: 0,
-    remoteInteracted: 0,
-    interacted: 1,
+    remoteInteracted: dbProps.remoteInteracted ? 1 : 0,
+    interacted: dbProps.interacted ? 1 : 0,
   });
 };
 

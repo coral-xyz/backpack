@@ -1,4 +1,5 @@
 import type {
+  CollectionChatData,
   EnrichedInboxDb,
   EnrichedMessage,
   UserMetadata,
@@ -19,15 +20,17 @@ export class BackpackDb extends Dexie {
   inbox!: Table<EnrichedInboxDb>;
   messages!: Table<EnrichedMessage>;
   users!: Table<UserMetadata>;
+  collections!: Table<CollectionChatData>;
 
   constructor(uuid) {
     super(`DB_${uuid}`);
-    this.version(9).stores({
+    this.version(10).stores({
       inbox:
         "remoteUserId, id, last_message_client_uuid, user1_last_read_message_id, user2_last_read_message_id, blocked, interacted, areFriends, unread",
       messages:
         "client_generated_uuid, room, type, created_at, from_http_server",
       users: "uuid",
+      collections: "collectionId",
     });
   }
 }

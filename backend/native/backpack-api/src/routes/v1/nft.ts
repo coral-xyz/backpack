@@ -1,10 +1,16 @@
-import type { RemoteUserData } from "@coral-xyz/common";
+import type { CollectionChatData, RemoteUserData } from "@coral-xyz/common";
 import { Blockchain } from "@coral-xyz/common";
 import express from "express";
 
 import { ensureHasRoomAccess, extractUserId } from "../../auth/middleware";
 import { getFriendshipStatus } from "../../db/friendships";
-import { addNfts, getNftMembers } from "../../db/nft";
+import {
+  addNfts,
+  getAllCollectionsFor,
+  getCollectionChatMetadata,
+  getLastReadFor,
+  getNftMembers,
+} from "../../db/nft";
 import { getUsersByPublicKeys } from "../../db/users";
 import { validateOwnership } from "../../utils/metaplex";
 
@@ -38,6 +44,37 @@ router.post("/bulk", extractUserId, async (req, res) => {
     nfts.filter((_x: any, index: number) => responses[index])
   );
   res.json({});
+});
+
+router.get("/bulk", extractUserId, async (req, res) => {
+  // @ts-ignore
+  const userId: string = req.id;
+
+  // TODO: optimise this
+  const allCollections = await getAllCollectionsFor(userId);
+  const lastReadMappings = await getLastReadFor(userId, allCollections);
+  const collectionChatMetadata = await getCollectionChatMetadata(
+    allCollections
+  );
+
+  const collections: CollectionChatData = allCollections.map(
+    (collectionId) => ({
+      collectionId,
+      lastReadMessage:
+        lastReadMappings.find((x) => x.collection_id === collectionId)
+          ?.last_read_message_id || null,
+      lastMessage: collectionChatMetadata.find(
+        (x) => x.collection_id === collectionId
+      )?.last_message,
+      lastMessageUuid: collectionChatMetadata.find(
+        (x) => x.collection_id === collectionId
+      )?.last_message_uuid,
+    })
+  );
+
+  res.json({
+    collections,
+  });
 });
 
 router.get("/members", extractUserId, ensureHasRoomAccess, async (req, res) => {

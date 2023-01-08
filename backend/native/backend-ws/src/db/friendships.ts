@@ -43,6 +43,34 @@ export const validateRoom = async (uuid: string, roomId: number) => {
   return null;
 };
 
+export const updateLatestMessageGroup = async (
+  roomId: string,
+  message: string,
+  client_generated_uuid: string
+) => {
+  await chain("mutation")({
+    insert_auth_collections_one: [
+      {
+        object: {
+          type: "nft",
+          collection_id: roomId,
+          last_message_uuid: client_generated_uuid,
+          last_message: message,
+        },
+        on_conflict: {
+          //@ts-ignore
+          update_columns: ["last_message_uuid"],
+          //@ts-ignore
+          constraint: "collections_collection_id_type_key",
+        },
+      },
+      {
+        id: true,
+      },
+    ],
+  });
+};
+
 export const updateLatestMessage = async (
   roomId: number,
   message: string,

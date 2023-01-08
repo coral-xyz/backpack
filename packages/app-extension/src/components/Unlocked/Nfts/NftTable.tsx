@@ -10,12 +10,14 @@ import {
   TokenMetadata,
 } from "@coral-xyz/common";
 import { NAV_COMPONENT_NFT_CHAT } from "@coral-xyz/common/dist/esm/constants";
+import { getNftCollectionGroups } from "@coral-xyz/db";
 import { Loading } from "@coral-xyz/react-common";
 import {
   nftById,
   useAllWallets,
   useBlockchainConnectionUrl,
   useNavigation,
+  useUser,
 } from "@coral-xyz/recoil";
 import { styled } from "@coral-xyz/themes";
 import { Skeleton } from "@mui/material";
@@ -331,9 +333,7 @@ function NftCollectionCard({
   connectionUrl: string;
   collection: NftCollection;
 }) {
-  if (collection.itemIds.length < 0) {
-    throw new Error("invariant violation no collection items");
-  }
+  const { uuid } = useUser();
   const { push } = useNavigation();
   // Display the first NFT in the collection as the thumbnail in the grid
   const collectionDisplayNftId = collection.itemIds?.find((nftId) => !!nftId)!;
@@ -344,11 +344,10 @@ function NftCollectionCard({
       nftId: collectionDisplayNftId,
     })
   );
-  useEffect(() => {
-    if (collection.metadataCollectionId !== ONE_COLLECTION_ID) {
-      return;
-    }
-    fetch(`${BACKEND_API_URL}/nft/bulk`, {
+  const collectionsChatMetadata = getNftCollectionGroups(uuid);
+
+  const init = async () => {
+    await fetch(`${BACKEND_API_URL}/nft/bulk`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -362,6 +361,13 @@ function NftCollectionCard({
         ],
       }),
     });
+  };
+
+  useEffect(() => {
+    if (collection.metadataCollectionId !== ONE_COLLECTION_ID) {
+      return;
+    }
+    init();
   }, [collection.metadataCollectionId]);
 
   if (!collectionDisplayNft) {
@@ -411,6 +417,11 @@ function NftCollectionCard({
 
   return (
     <GridCard
+      showNotificationBubble={collectionsChatMetadata?.find(
+        (x) =>
+          x.collectionId === collection.metadataCollectionId &&
+          x.lastMessageUuid !== x.lastReadMessage
+      )}
       metadataCollectionId={false}
       onClick={onClick}
       nft={collectionDisplayNft}

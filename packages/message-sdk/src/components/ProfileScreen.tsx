@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
-import { BACKEND_API_URL, NAV_COMPONENT_MESSAGE_CHAT,sendFriendRequest  } from "@coral-xyz/common";
+import {
+  BACKEND_API_URL,
+  NAV_COMPONENT_MESSAGE_CHAT,
+  sendFriendRequest,
+} from "@coral-xyz/common";
 import { useDbUser } from "@coral-xyz/db";
 import {
   Loading,
@@ -77,7 +81,9 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
     >
       <div style={{ flex: 1 }}>
         <div className={classes.horizontalCenter}>
-          <ProxyImage className={classes.topImage} src={userMetadata?.image} />
+          <div className={classes.topImageOuter}>
+            <img className={classes.topImage} src={userMetadata?.image} />
+          </div>
         </div>
         <br />
         <div className={classes.horizontalCenter}>

@@ -12,7 +12,10 @@ import { useUsers } from "./users";
 
 export const useActiveChats = (uuid: string) => {
   const activeChats = useLiveQuery(async () => {
-    return getDb(uuid).inbox.where({ blocked: 0, interacted: 1 }).toArray();
+    return getDb(uuid)
+      .inbox.where({ blocked: 0, interacted: 1 })
+      .reverse()
+      .sortBy("last_message_timestamp");
   });
   const users = useUsers(uuid, activeChats || []);
 
@@ -112,4 +115,12 @@ export const useRoomChatsWithMetadata = (
     username: users?.find((x) => x?.uuid === chat.uuid)?.username || "",
     color: users?.find((x) => x?.uuid === chat.uuid)?.color,
   }));
+};
+
+export const getNftCollectionGroups = (uuid: string) => {
+  const groups = useLiveQuery(async () => {
+    return getDb(uuid).collections.toArray();
+  });
+
+  return groups;
 };

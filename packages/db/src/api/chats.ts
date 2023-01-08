@@ -4,6 +4,7 @@ import { BACKEND_API_URL } from "@coral-xyz/common";
 import {
   bulkAddChats,
   clearChats,
+  createOrUpdateCollection,
   latestReceivedMessage,
   oldestReceivedMessage,
 } from "../db/chats";
@@ -102,7 +103,19 @@ export const updateLastRead = (
   if (type === "individual" && uuid !== sender) {
     updateFriendship(uuid, sender, {
       unread: 0,
+    });
+  }
+
+  if (type === "individual" && uuid === sender) {
+    updateFriendship(uuid, sender, {
       interacted: 1,
+    });
+  }
+
+  if (type === "collection") {
+    createOrUpdateCollection(uuid, {
+      collectionId: room,
+      lastReadMessage: client_generated_uuid,
     });
   }
 };

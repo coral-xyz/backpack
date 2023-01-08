@@ -71,7 +71,7 @@ export class Signaling extends EventEmitter {
 
   destroy() {
     this.destroyed = true;
-    this.ws.close();
+    this.ws?.close();
   }
 
   send(message: ToServer) {

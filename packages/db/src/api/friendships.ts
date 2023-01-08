@@ -1,7 +1,8 @@
-import type { EnrichedInboxDb } from "@coral-xyz/common";
+import type { CollectionChatData, EnrichedInboxDb } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 
 import { getDb } from "../db";
+import { createOrUpdateCollection } from "../db/chats";
 import {
   createDefaultFriendship,
   getFriendshipByUserId,
@@ -10,13 +11,33 @@ import {
 
 export const refreshFriendships = async (uuid: string) => {
   const db = getDb(uuid);
-  const res = await fetch(`${BACKEND_API_URL}/inbox/all?uuid=${uuid}`);
-  const json = await res.json();
-  const chats: EnrichedInboxDb[] = json.chats;
-  if (chats) {
-    chats?.forEach((chat) => {
-      db.inbox.put(chat);
+  try {
+    const res = await fetch(`${BACKEND_API_URL}/inbox/all?uuid=${uuid}`);
+    const json = await res.json();
+    const chats: EnrichedInboxDb[] = json.chats;
+    if (chats) {
+      chats?.forEach((chat) => {
+        db.inbox.put(chat);
+      });
+    }
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+export const refreshGroups = async (uuid: string) => {
+  try {
+    const response = await fetch(`${BACKEND_API_URL}/nft/bulk`, {
+      method: "GET",
     });
+
+    const res = await response.json();
+    const collections: CollectionChatData[] = res.collections;
+    collections?.forEach((collection) => {
+      createOrUpdateCollection(uuid, collection);
+    });
+  } catch (e) {
+    console.error(e);
   }
 };
 
@@ -56,5 +77,7 @@ export const createEmptyFriendship = async (
   if (existingFriendship) {
     return;
   }
-  await createDefaultFriendship(uuid, remoteUserId, props);
+  await createDefaultFriendship(uuid, remoteUserId, props, {
+    interacted: 1,
+  });
 };

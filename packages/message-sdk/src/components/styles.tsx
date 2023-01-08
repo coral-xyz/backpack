@@ -28,10 +28,15 @@ export const useStyles = styles((theme) => ({
   iconInner: {
     background: theme.custom.colors.fontColor,
   },
+  topImageOuter: {
+    width: 150,
+    height: 150,
+    borderRadius: "50%",
+    display: "inline-block",
+    overflow: "hidden",
+  },
   topImage: {
-    maxWidth: "25vw",
-    maxHeight: "25vh",
-    borderRadius: "50%"
+    width: 150,
   },
   horizontalCenter: {
     display: "flex",
