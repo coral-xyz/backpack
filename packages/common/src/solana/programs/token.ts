@@ -323,7 +323,7 @@ export async function fetchSplMetadataUri(
   return splNftMetadata;
 }
 
-async function metadataAddress(mint: PublicKey): Promise<PublicKey> {
+export async function metadataAddress(mint: PublicKey): Promise<PublicKey> {
   return (
     await PublicKey.findProgramAddress(
       [

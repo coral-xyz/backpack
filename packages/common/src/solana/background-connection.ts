@@ -349,6 +349,7 @@ export class BackgroundSolanaConnection extends Connection {
     });
   }
 
+  // @ts-ignore
   async confirmTransaction(
     strategy: BlockheightBasedTransactionConfirmationStrategy | string,
     commitment?: Commitment
@@ -702,6 +703,7 @@ export class BackgroundSolanaConnection extends Connection {
     throw new Error("not implemented");
   }
 
+  // @ts-ignore
   getBlock(
     slot: number,
     opts?: {
