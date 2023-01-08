@@ -1,10 +1,6 @@
 import type { Nft, NftCollection } from "@coral-xyz/common";
-import {
-  Blockchain,
-  externalResourceUri,
-  metadataAddress,
-} from "@coral-xyz/common";
-import { atom, atomFamily, selector, selectorFamily, waitForAll } from "recoil";
+import { Blockchain } from "@coral-xyz/common";
+import { selector, waitForAll } from "recoil";
 
 import { equalSelectorFamily } from "../equals";
 
