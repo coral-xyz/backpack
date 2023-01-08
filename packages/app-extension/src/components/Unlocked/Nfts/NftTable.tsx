@@ -10,7 +10,6 @@ import {
   TokenMetadata,
 } from "@coral-xyz/common";
 import { NAV_COMPONENT_NFT_CHAT } from "@coral-xyz/common/dist/esm/constants";
-import type { NftCollectionWithIds } from "@coral-xyz/common/src/types";
 import { getNftCollectionGroups } from "@coral-xyz/db";
 import { Loading } from "@coral-xyz/react-common";
 import {
@@ -337,7 +336,14 @@ function NftCollectionCard({
   const { uuid } = useUser();
   const { push } = useNavigation();
   // Display the first NFT in the collection as the thumbnail in the grid
-  const collectionDisplayNft = collection.items?.find((nft) => !!nft) ?? null;
+  const collectionDisplayNftId = collection.itemIds?.find((nftId) => !!nftId)!;
+  const collectionDisplayNft = useRecoilValue(
+    nftById({
+      publicKey,
+      connectionUrl,
+      nftId: collectionDisplayNftId,
+    })
+  );
   const collectionsChatMetadata = getNftCollectionGroups(uuid);
 
   const init = async () => {
