@@ -82,6 +82,7 @@ export const solanaNftById = equalSelectorFamily<
       const { connection } = get(anchorContext);
       const metadataMap = get(solanaMetadataMap({ publicKey }));
       const { nftToken, nftTokenMetadata } = metadataMap.metadata[nftId];
+
       const resp = await connection.customSplMetadataUri(
         [nftToken],
         [nftTokenMetadata]
@@ -107,7 +108,7 @@ export const solanaNftById = equalSelectorFamily<
       const nft = {
         id: nftTokenMetadata?.publicKey ?? "",
         blockchain: Blockchain.SOLANA,
-        publicKey: nftTokenMetadata?.publicKey,
+        publicKey: nftToken.key,
         mint: nftTokenMetadata?.account.mint,
         name:
           nftTokenMetadata?.account.data.name ??

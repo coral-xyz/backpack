@@ -263,7 +263,7 @@ const ItemRow = function ({
           flex: "0 0 auto",
         }}
       >
-        {items.map((collection: NftCollection) => {
+        {items.map((collection: NftCollection, idx: number) => {
           return (
             <div
               key={collection ? collection.id : null}

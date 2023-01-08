@@ -114,10 +114,12 @@ export class SolanaConnectionBackend {
   private url?: string;
   private pollIntervals: Array<any>;
   private events: EventEmitter;
+  private lastCustomSplTokenAccountsKey: string;
 
   constructor(events: EventEmitter) {
     this.pollIntervals = [];
     this.events = events;
+    this.lastCustomSplTokenAccountsKey = "";
   }
 
   public start() {
@@ -225,45 +227,16 @@ export class SolanaConnectionBackend {
   //
   private async startPolling(activeWallet: PublicKey) {
     const connection = new Connection(this.url!); // Unhooked connection.
-    let lastData = "";
     this.pollIntervals.push(
       setInterval(async () => {
         const data = await customSplTokenAccounts(connection, activeWallet);
+        const dataKey = this.intoCustomSplTokenAccountsKey(data);
 
-        //
-        // We sort the data so that we can have a consistent key when teh data
-        // doesn't change.
-        //
-        const dataKey = {
-          mintsMap: data.mintsMap.sort((a: any, b: any) =>
-            a[0].localeCompare(b[0])
-          ),
-          nfts: {
-            nftTokens: data.nfts.nftTokens.sort((a: any, b: any) =>
-              a.key.toString().localeCompare(b.key.toString())
-            ),
-            nftTokenMetadata: data.nfts.nftTokenMetadata.sort(
-              (a: any, b: any) =>
-                a.key.toString().localeCompare(b.publicKey.toString())
-            ),
-          },
-          fts: {
-            fungibleTokens: data.fts.fungibleTokens.sort((a: any, b: any) =>
-              a.key.toString().localeCompare(b.key.toString())
-            ),
-            fungibleTokenMetadata: data.fts.fungibleTokenMetadata.sort(
-              (a: any, b: any) =>
-                a.key.toString().localeCompare(b.publicKey.toString())
-            ),
-          },
-        };
-        const currentData = JSON.stringify(dataKey, (key, value) => {
-          return typeof value === "bigint" ? value.toString() : value;
-        });
-        if (currentData === lastData) {
+        if (dataKey === this.lastCustomSplTokenAccountsKey) {
           return;
         }
-        lastData = currentData;
+
+        this.lastCustomSplTokenAccountsKey = dataKey;
         const key = JSON.stringify({
           url: this.url,
           method: "customSplTokenAccounts",
@@ -300,6 +273,29 @@ export class SolanaConnectionBackend {
         });
       }, RECENT_BLOCKHASH_REFRESH_INTERVAL)
     );
+  }
+
+  private intoCustomSplTokenAccountsKey(
+    resp: CustomSplTokenAccountsResponse
+  ): string {
+    //
+    // We sort the data so that we can have a consistent key when teh data
+    // doesn't change. We remove the mints and metadata from the key because
+    // it's not neceessary at all when calculating whether something has
+    // changed.
+    //
+    return JSON.stringify({
+      nfts: {
+        nftTokens: resp.nfts.nftTokens.sort((a: any, b: any) =>
+          a.key.toString().localeCompare(b.key.toString())
+        ),
+      },
+      fts: {
+        fungibleTokens: resp.fts.fungibleTokens.sort((a: any, b: any) =>
+          a.key.toString().localeCompare(b.key.toString())
+        ),
+      },
+    });
   }
 
   private stopPolling() {
@@ -354,6 +350,13 @@ export class SolanaConnectionBackend {
       return value.value;
     }
     const resp = await customSplTokenAccounts(this.connection!, publicKey);
+
+    // Set once if the background poller hasn't run yet.
+    if (this.lastCustomSplTokenAccountsKey === "") {
+      this.lastCustomSplTokenAccountsKey =
+        this.intoCustomSplTokenAccountsKey(resp);
+    }
+
     this.cache.set(key, {
       ts: Date.now(),
       value: resp,
