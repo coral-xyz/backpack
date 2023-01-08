@@ -1,6 +1,6 @@
 import { Suspense, useCallback, useRef } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 import {
   BACKGROUND_SERVICE_WORKER_READY,
@@ -24,7 +24,7 @@ import { RecoilRoot } from "recoil";
 SplashScreen.preventAutoHideAsync();
 
 import { useLoadedAssets } from "./hooks/useLoadedAssets";
-import Navigation from "./navigation";
+import { RootNavigation } from "./navigation/RootNavigator";
 
 export function App(): JSX.Element {
   return (
@@ -113,15 +113,20 @@ function Main(): JSX.Element | null {
 
   return (
     <Providers>
-      <SafeAreaView
+      <View
         onLayout={onLayoutRootView}
         style={[
           styles.container,
-          { backgroundColor: theme.custom.colors.background },
+          {
+            backgroundColor:
+              process.env.NODE_ENV === "development"
+                ? "orange"
+                : theme.custom.colors.background,
+          },
         ]}>
         <StatusBar style={theme.colorScheme === "dark" ? "light" : "dark"} />
-        <Navigation colorScheme={theme.colorScheme} />
-      </SafeAreaView>
+        <RootNavigation colorScheme={theme.colorScheme} />
+      </View>
     </Providers>
   );
 }

@@ -22,7 +22,7 @@ export function Nfts() {
   const _isAggregateWallets = useRecoilValue(isAggregateWallets);
   const { contents, state } = useRecoilValueLoadable(nftCollectionsWithIds);
   const isLoading = state === "loading";
-  const collections = (state === "hasValue" && contents) || null;
+  const allWalletCollections = (state === "hasValue" && contents) || null;
 
   const NFTList = useMemo(() => {
     return (
@@ -33,29 +33,18 @@ export function Nfts() {
             : []
         }
         blockchainCollections={
-          collections
-            ? Object.entries(collections).map(([publicKey, c]) => ({
-                publicKey,
-                blockchain: c.blockchain,
-                collectionWithIds: c.collectionWithIds,
-              }))
-            : // Set some empty collections so that the loading indicator displays.
-              wallets.map((w) => ({ ...w, collectionWithIds: null }))
+          allWalletCollections ??
+          wallets.map((w) => ({ publicKey: w.publicKey, collections: null })) // Still loading.
         }
       />
     );
-  }, [isONELive, collections]);
+  }, [isONELive, allWalletCollections]);
 
-  const nftCount = collections
-    ? Object.values(collections)
+  const nftCount = allWalletCollections
+    ? allWalletCollections
+        .map((c: any) => c.collections)
         .flat()
-        .reduce(
-          (acc, c) =>
-            c.collectionWithIds === null
-              ? acc
-              : c.collectionWithIds.length + acc,
-          0
-        )
+        .reduce((acc, c) => (c === null ? acc : c.itemIds.length + acc), 0)
     : 0;
   const isEmpty = nftCount === 0 && !isLoading;
 

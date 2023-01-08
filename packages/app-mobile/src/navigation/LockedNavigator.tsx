@@ -16,7 +16,7 @@ import {
 } from "@coral-xyz/common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { createStackNavigator } from "@react-navigation/stack";
-import { Linking } from "expo-linking";
+import * as Linking from "expo-linking";
 
 import { ErrorMessage } from "../components/ErrorMessage";
 import { PasswordInput } from "../components/PasswordInput";
@@ -104,12 +104,13 @@ function LockedHelpMenuModal({ navigation }) {
   );
 }
 
-const LockedScreen = ({ navigation }) => {
+function LockedScreen({ navigation }: any): JSX.Element {
+  // TODO figure out why this isn't working
+  // return <View style={{ flex: 1, backgroundColor: "green" }} />;
   const background = useBackgroundClient();
-  const user = useUser();
+  const user = useUser(); // TODO look into why this breaks
 
   const { control, handleSubmit, formState, setError } = useForm<FormData>();
-
   const { errors, isValid } = formState;
 
   const onSubmit = async ({ password }: FormData) => {
@@ -154,4 +155,4 @@ const LockedScreen = ({ navigation }) => {
       </View>
     </Screen>
   );
-};
+}

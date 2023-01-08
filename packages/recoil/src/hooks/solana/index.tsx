@@ -3,7 +3,6 @@ import { useRecoilValue } from "recoil";
 
 import * as atoms from "../../atoms";
 
-export * from "./useBlockchainBalances";
 export * from "./useJupiter";
 export * from "./useLoadSplTokens";
 export * from "./usePlugins";
