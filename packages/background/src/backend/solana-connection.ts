@@ -230,6 +230,10 @@ export class SolanaConnectionBackend {
       setInterval(async () => {
         const data = await customSplTokenAccounts(connection, activeWallet);
 
+        //
+        // We sort the data so that we can have a consistent key when teh data
+        // doesn't change.
+        //
         const dataKey = {
           mintsMap: data.mintsMap.sort((a: any, b: any) =>
             a[0].localeCompare(b[0])
