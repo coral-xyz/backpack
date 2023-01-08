@@ -119,7 +119,7 @@ export class BackgroundSolanaConnection extends Connection {
   private _backgroundClient: BackgroundClient;
 
   // Note that this constructor is actually meaningless.
-  // We only useit so that we can subclass Connection.
+  // We only use it so that we can subclass Connection.
   // In reality, the params here are actually read in the context of the
   // background script.
   constructor(
