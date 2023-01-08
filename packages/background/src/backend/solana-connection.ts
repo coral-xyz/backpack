@@ -229,7 +229,33 @@ export class SolanaConnectionBackend {
     this.pollIntervals.push(
       setInterval(async () => {
         const data = await customSplTokenAccounts(connection, activeWallet);
-        const currentData = JSON.stringify(data);
+
+        const dataKey = {
+          mintsMap: data.mintsMap.sort((a: any, b: any) =>
+            a[0].localeCompare(b[0])
+          ),
+          nfts: {
+            nftTokens: data.nfts.nftTokens.sort((a: any, b: any) =>
+              a.key.toString().localeCompare(b.key.toString())
+            ),
+            nftTokenMetadata: data.nfts.nftTokenMetadata.sort(
+              (a: any, b: any) =>
+                a.key.toString().localeCompare(b.publicKey.toString())
+            ),
+          },
+          fts: {
+            fungibleTokens: data.fts.fungibleTokens.sort((a: any, b: any) =>
+              a.key.toString().localeCompare(b.key.toString())
+            ),
+            fungibleTokenMetadata: data.fts.fungibleTokenMetadata.sort(
+              (a: any, b: any) =>
+                a.key.toString().localeCompare(b.publicKey.toString())
+            ),
+          },
+        };
+        const currentData = JSON.stringify(dataKey, (key, value) => {
+          return typeof value === "bigint" ? value.toString() : value;
+        });
         if (currentData === lastData) {
           return;
         }
