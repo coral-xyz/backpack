@@ -127,10 +127,11 @@ export function SettingsList() {
         {discordList.map((item) => {
           return (
             <SettingsRow
+              key={item.label}
+              label={item.label}
               onPress={item.onPress}
               icon={item.icon}
               detailIcon={item.detailIcon}
-              label={item.label}
             />
           );
         })}

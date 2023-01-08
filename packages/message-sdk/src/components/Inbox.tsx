@@ -16,6 +16,8 @@ import { MessagesSkeleton } from "./MessagesSkeleton";
 import { useStyles } from "./styles";
 import { UserList } from "./UserList";
 
+let debouncedTimer;
+
 export function Inbox() {
   const classes = useStyles();
   const { uuid } = useUser();
@@ -36,32 +38,38 @@ export function Inbox() {
       .catch(() => setRefreshing(false));
   }, [uuid]);
 
+  const debouncedInit = () => {
+    clearTimeout(debouncedTimer);
+    debouncedTimer = setTimeout(() => {
+      handleContactSearch();
+    }, 250);
+  };
+
+  const handleContactSearch = async () => {
+    if (searchFilter.length >= 3) {
+      const response = await ParentCommunicationManager.getInstance().fetch(
+        `${BACKEND_API_URL}/users?usernamePrefix=${searchFilter}`
+      );
+      const json = await response.json();
+      setSearchResults(
+        json.users.sort((a, b) =>
+          a.username.length < b.username.length ? -1 : 1
+        ) || []
+      );
+    } else {
+      setSearchResults([]);
+    }
+  };
+
   return (
     <div
       className={classes.container}
       style={{ marginTop: "8px", display: "flex", flexDirection: "column" }}
     >
       <SearchBox
-        onChange={async (prefix) => {
+        onChange={async (prefix: string) => {
           setSearchFilter(prefix);
-          if (prefix.length >= 3) {
-            //TODO debounce
-            const res = await ParentCommunicationManager.getInstance().fetch(
-              `${BACKEND_API_URL}/users?usernamePrefix=${prefix}`
-            );
-            try {
-              const json = await res.json();
-              setSearchResults(
-                json.users.sort((a, b) =>
-                  a.username.length < b.username.length ? -1 : 1
-                ) || []
-              );
-            } catch (e) {
-              console.error(e);
-            }
-          } else {
-            setSearchResults([]);
-          }
+          debouncedInit();
         }}
       />
       {(!activeChats || (refreshing && !activeChats.length)) && (

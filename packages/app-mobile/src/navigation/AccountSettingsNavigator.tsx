@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Alert, Text, View } from "react-native";
-import { Screen } from "@components";
+import { Row,Screen } from "@components";
+import { IconCheckmark } from "@components/Icon";
 import type { Blockchain, ChannelAppUiClient } from "@coral-xyz/common";
 import {
   DerivationPath,
@@ -27,7 +28,6 @@ import {
   useSolanaConnectionUrl,
   useSolanaExplorer,
 } from "@coral-xyz/recoil";
-import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import { ImportPrivateKeyScreen } from "@screens/ImportPrivateKeyScreen";
 import {
@@ -61,34 +61,26 @@ import { YourAccountScreen } from "@screens/Unlocked/YourAccountScreen";
 import type { Commitment } from "@solana/web3.js";
 import { ethers } from "ethers";
 const { hexlify } = ethers.utils;
+import { AccountDropdownHeader } from "@components/UserAccountsMenu";
 import { useTheme } from "@hooks";
 
 const Stack = createStackNavigator();
-
-function IconCheckmark() {
-  return <MaterialIcons name="check" size={32} />;
-}
 
 function DummyScreen() {
   return <View style={{ flex: 1, backgroundColor: "red" }} />;
 }
 
-export default function AccountSettingsNavigator() {
+export function AccountSettingsNavigator(): JSX.Element {
   const theme = useTheme();
   return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: true,
-        headerTintColor: theme.custom.colors.fontColor,
-      }}
-    >
+    <Stack.Navigator initialRouteName="Profile">
       <Stack.Screen
         name="Profile"
         component={ProfileScreen}
         options={{
-          headerShown: true,
-          headerTitle: "",
-          headerTransparent: true,
+          headerTitle: ({ navigation, options }) => (
+            <AccountDropdownHeader navigation={navigation} options={options} />
+          ),
           headerTintColor: theme.custom.colors.fontColor,
           headerBackTitle: "Back",
         }}
@@ -217,8 +209,7 @@ export default function AccountSettingsNavigator() {
         component={AddConnectWalletScreen}
       />
       <Stack.Group
-        screenOptions={{ presentation: "modal", headerShown: false }}
-      >
+        screenOptions={{ presentation: "modal", headerShown: false }}>
         <Stack.Screen name="forgot-password" component={ForgotPasswordScreen} />
         <Stack.Screen name="logout-warning" component={LogoutWarningScreen} />
       </Stack.Group>
@@ -259,7 +250,7 @@ function PreferencesSolanaCustomRpcUrl({ navigation }) {
   }, [rpcUrl]);
 
   // return (
-  //   <div style={{ paddingTop: "16px", height: "100%" }}>
+  //   <div style={{ paddingTop: 16, height: "100%" }}>
   //     <form
   //       onSubmit={changeNetwork}
   //       style={{ display: "flex", height: "100%", flexDirection: "column" }}
@@ -489,7 +480,7 @@ function PreferencesEthereumCustomRpcUrl({ navigation }) {
     await changeNetwork(background, rpcUrl, chainId);
   }
 
-  // <div style={{ paddingTop: "16px", height: "100%" }}>
+  // <div style={{ paddingTop: 16, height: "100%" }}>
   //   <form
   //     onSubmit={async () => {
   //         await changeNetwork(background, rpcUrl, chainId);

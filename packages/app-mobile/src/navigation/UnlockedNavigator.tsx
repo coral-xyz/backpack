@@ -4,7 +4,7 @@ import { IconCloseModal } from "@components/Icon";
 import { toTitleCase } from "@coral-xyz/common";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTheme } from "@hooks";
-import AccountSettingsNavigator from "@navigation/AccountSettingsNavigator";
+import { AccountSettingsNavigator } from "@navigation/AccountSettingsNavigator";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { getHeaderTitle } from "@react-navigation/elements";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -33,9 +33,6 @@ export default function UnlockedNavigator(): JSX.Element {
         <Stack.Screen
           name="AccountSettings"
           component={AccountSettingsNavigator}
-          options={{
-            headerShown: false,
-          }}
         />
       </Stack.Group>
       <Stack.Group screenOptions={{ presentation: "modal", headerShown: true }}>
@@ -88,7 +85,7 @@ export default function UnlockedNavigator(): JSX.Element {
 
 function RecentActivityModal() {
   return (
-    <View style={{ flex: 1, backgroundColor: "green", alignItems: "center" }}>
+    <View style={{ flex: 1, backgroundColor: "pink", alignItems: "center" }}>
       <Text>Recent Activity</Text>
     </View>
   );
@@ -128,8 +125,7 @@ function UnlockedBottomTabNavigator() {
         },
         tabBarActiveTintColor: "#333",
         tabBarInactiveTintColor: "gray",
-      })}
-    >
+      })}>
       <Tab.Screen name="Balances" component={BalancesNavigator} />
       <Tab.Screen name="Applications" component={AppListScreen} />
       <Tab.Screen name="Collectibles" component={NFTCollectiblesNavigator} />
