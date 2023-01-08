@@ -8,6 +8,7 @@ import {
   Blockchain,
   externalResourceUri,
   metadataAddress,
+  UNKNOWN_NFT_ICON_SRC,
 } from "@coral-xyz/common";
 import { MetadataData } from "@metaplex-foundation/mpl-token-metadata";
 import { PublicKey } from "@solana/web3.js";
@@ -105,6 +106,7 @@ export const solanaNftById = equalSelectorFamily<
           return uriData.metadata.data.name;
         }
       })();
+
       const nft = {
         id: nftTokenMetadata?.publicKey ?? "",
         blockchain: Blockchain.SOLANA,
@@ -112,18 +114,19 @@ export const solanaNftById = equalSelectorFamily<
         mint: nftTokenMetadata?.account.mint,
         name:
           nftTokenMetadata?.account.data.name ??
-          (uriData ? uriData.tokenMetaUriData.name : ""),
+          (uriData ? uriData.tokenMetaUriData.name : "Unknown"),
         description: uriData ? uriData.tokenMetaUriData.description : "",
         externalUrl: uriData
           ? externalResourceUri(
               uriData.tokenMetaUriData.external_url?.replace(/\0/g, "")
             )
           : "",
-        imageUrl: uriData
-          ? externalResourceUri(
-              uriData.tokenMetaUriData.image?.replace(/\0/g, "")
-            )
-          : "",
+        imageUrl:
+          uriData && uriData.tokenMetaUriData.image
+            ? externalResourceUri(
+                uriData.tokenMetaUriData.image?.replace(/\0/g, "")
+              )
+            : UNKNOWN_NFT_ICON_SRC,
         attributes: uriData
           ? uriData.tokenMetaUriData.attributes?.map(
               (a: { trait_type: string; value: string }) => ({
@@ -182,7 +185,7 @@ function intoSolanaCollectionsMap(metadataMap: MetadataMap): {
         value.nftTokenMetadata?.account.collection?.key || "";
       return [collectionId, metadataCollectionId];
     })();
-    if (!collections[collectionId]) {
+    if (collectionId && !collections[collectionId]) {
       collections[collectionId] = {
         id: collectionId,
         metadataCollectionId,
@@ -193,7 +196,11 @@ function intoSolanaCollectionsMap(metadataMap: MetadataMap): {
         itemIds: [],
       };
     }
-    collections[collectionId]!.itemIds.push(value.nftTokenMetadata?.publicKey);
+    if (collectionId) {
+      collections[collectionId]!.itemIds.push(
+        value.nftTokenMetadata?.publicKey
+      );
+    }
   });
   return {
     publicKey: metadataMap.publicKey,
@@ -212,6 +219,15 @@ type MetadataMap = {
   };
 };
 
-function extractCollectionId(tokenMetadata: TokenMetadataString): string {
-  return JSON.stringify(tokenMetadata.account.data.creators);
+function extractCollectionId(
+  tokenMetadata: TokenMetadataString
+): string | null {
+  const creators = tokenMetadata.account.data.creators;
+  if (!creators) {
+    return null;
+  }
+  const id = JSON.stringify(
+    [...creators].sort((a, b) => a.address.localeCompare(b.address))
+  );
+  return id;
 }
