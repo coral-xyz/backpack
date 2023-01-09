@@ -31,6 +31,13 @@ import {
 } from "@coral-xyz/recoil";
 import { useBlockchainLogo, useTheme } from "@hooks";
 
+type Wallet = {
+  publicKey: string;
+  blockchain: string;
+  name: string;
+  type: string;
+};
+
 export function WalletListScreen({ navigation, route }): JSX.Element {
   // const { filter } = route.params;
   const activeWallet = useBlockchainActiveWallet(Blockchain.SOLANA);
@@ -41,16 +48,13 @@ export function WalletListScreen({ navigation, route }): JSX.Element {
   //   wallets = wallets.filter(filter);
   // }
 
-  const onSelectWallet = async (w: {
-    publicKey: string;
-    blockchain: string;
-    name: string;
-    type: string;
-  }) => {
+  const onSelectWallet = async (w: Wallet) => {
     await background.request({
       method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
       params: [w.publicKey.toString(), w.blockchain],
     });
+
+    navigation.goBack();
   };
 
   return (
@@ -58,6 +62,7 @@ export function WalletListScreen({ navigation, route }): JSX.Element {
       <FlatList
         data={wallets}
         ItemSeparatorComponent={() => <ListRowSeparator />}
+        keyExtractor={(item) => item.publicKey.toString()}
         renderItem={({ item: wallet }) => {
           return (
             <WalletListItem
@@ -90,32 +95,37 @@ function WalletListItem({
   publicKey: string;
   type: string;
   icon?: JSX.Element | null;
-  onPress: (blockchain: Blockchain, wallet: Wallet) => void;
+  onPress: (wallet: Wallet) => void;
   isSelected: boolean;
 }): JSX.Element {
   const theme = useTheme();
   return (
     <RoundedContainerGroup>
       <Pressable
-        onPress={() => onPress(blockchain, { name, publicKey, type })}
+        onPress={() => onPress({ blockchain, name, publicKey, type })}
         style={[
           styles.listItem,
           {
             backgroundColor: theme.custom.colors.nav,
           },
-        ]}>
+        ]}
+      >
         <View style={styles.listItemLeft}>
           <Margin right={12}>
             <NetworkIcon blockchain={blockchain} />
           </Margin>
           <View>
-            <Text>{name}</Text>
+            <Text
+              style={{ fontSize: 16, fontWeight: isSelected ? "600" : "500" }}
+            >
+              {name}
+            </Text>
             <Row>
               <WalletTypeIcon
                 type={type}
                 fill={isSelected ? theme.custom.colors.secondary : undefined}
               />
-              <Text style={{ fontSize: 12 }}>
+              <Text style={{ fontSize: 14 }}>
                 {walletAddressDisplay(publicKey)}
               </Text>
             </Row>

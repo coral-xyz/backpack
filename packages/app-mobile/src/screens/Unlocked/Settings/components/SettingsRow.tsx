@@ -168,6 +168,7 @@ const styles = StyleSheet.create({
   },
   leftSide: {
     flexDirection: "row",
+    alignItems: "center",
   },
   label: {
     fontWeight: "500",
