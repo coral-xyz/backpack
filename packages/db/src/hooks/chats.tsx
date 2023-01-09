@@ -16,7 +16,7 @@ export const useActiveChats = (uuid: string) => {
       .inbox.where({ blocked: 0, interacted: 1 })
       .reverse()
       .sortBy("last_message_timestamp");
-  });
+  }, [uuid]);
   const users = useUsers(uuid, activeChats || []);
 
   useEffect(() => {
