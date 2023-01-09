@@ -2,6 +2,7 @@ import { Blockchain } from "@coral-xyz/common";
 import { useRecoilValue } from "recoil";
 
 import * as atoms from "../../atoms";
+import { useBackgroundClient } from "../client";
 
 export function useRecentTransactions(
   blockchain: Blockchain,
@@ -9,7 +10,7 @@ export function useRecentTransactions(
   contractAddresses?: Array<string>
 ) {
   if (blockchain === Blockchain.SOLANA) {
-    return useRecoilValue(atoms.recentSolanaTransactions({ address }));
+    return useRecentSolanaTransactions({ address });
   } else if (blockchain === Blockchain.ETHEREUM) {
     return useRecoilValue(
       atoms.recentEthereumTransactions({ address, contractAddresses })
@@ -19,6 +20,7 @@ export function useRecentTransactions(
 }
 
 export function useRecentSolanaTransactions({ address }: { address: string }) {
+  const background = useBackgroundClient();
   return useRecoilValue(atoms.recentSolanaTransactions({ address }));
 }
 

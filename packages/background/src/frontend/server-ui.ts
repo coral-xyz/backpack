@@ -9,7 +9,7 @@ import type {
   FEATURE_GATES_MAP,
   RpcRequest,
   RpcResponse,
-  XnftPreference,
+  XnftPreference
 } from "@coral-xyz/common";
 import {
   BACKEND_EVENT,
@@ -96,15 +96,13 @@ import {
   UI_RPC_METHOD_USER_LOGOUT,
   UI_RPC_METHOD_USER_READ,
   UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
-  withContextPort,
-} from "@coral-xyz/common";
+  withContextPort} from "@coral-xyz/common";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
-import type { Commitment } from "@solana/web3.js";
+import type { Commitment, PublicKey } from "@solana/web3.js";
 
 import type { Backend } from "../backend/core";
 import type { User } from "../backend/store";
 import type { Config, Handle } from "../types";
-
 const logger = getLogger("background-server-ui");
 
 export function start(_cfg: Config, events: EventEmitter, b: Backend): Handle {

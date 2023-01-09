@@ -122,16 +122,21 @@ export const recentSolanaTransactions = atomFamily<
     get:
       ({ address }: { address: string }) =>
       async ({ get }: any) => {
-        const { connection } = get(anchorContext);
-        const recent = await fetchRecentSolanaTransactions(
-          connection,
-          new PublicKey(address)
+        const res = await fetch(
+          `https://api.helius.xyz/v0/addresses/${address}/transactions?api-key=${
+            process.env.BACKPACK_HELIUS_API_KEY ||
+            "6b1ccd35-ba2d-472a-8f54-9ac2c3c40b8b"
+          }&limit-10`
         );
-        return recent.map((t) => ({
+
+        const data = await res.json();
+
+        return data.map((t) => ({
           blockchain: Blockchain.SOLANA,
-          date: new Date(t.blockTime! * 1000),
-          signature: t.transaction.signatures[0],
-          didError: t.meta && t.meta.err ? true : false,
+          date: new Date(t.timestamp! * 1000),
+          signature: t.signature,
+          description: t.description,
+          didError: false,
         }));
       },
   }),

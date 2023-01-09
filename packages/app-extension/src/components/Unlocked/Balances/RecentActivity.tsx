@@ -1,5 +1,5 @@
 import { Suspense, useState } from "react";
-import { Blockchain,explorerUrl } from "@coral-xyz/common";
+import { Blockchain, explorerUrl } from "@coral-xyz/common";
 import {
   EmptyState,
   isFirstLastListItemStyle,
@@ -127,7 +127,7 @@ export function RecentActivityButton() {
 
 export function RecentActivity() {
   const activeWallet = useActiveWallet();
-  const recentTransactions =
+  let recentTransactions =
     activeWallet.blockchain === Blockchain.SOLANA
       ? useRecentSolanaTransactions({
           address: activeWallet.publicKey,
@@ -135,15 +135,23 @@ export function RecentActivity() {
       : useRecentEthereumTransactions({
           address: activeWallet.publicKey,
         });
-  const mergedTransactions = [...recentTransactions].sort(
+
+  const mergedTransactions = [...(recentTransactions || [...[]])].sort(
     (a, b) => b.date.getTime() - a.date.getTime()
   );
-
-  return (
-    <Suspense fallback={<RecentActivityLoading />}>
-      <_RecentActivityList transactions={mergedTransactions} />
-    </Suspense>
-  );
+  if (recentTransactions) {
+    return (
+      <Suspense fallback={<RecentActivityLoading />}>
+        <_RecentActivityList transactions={mergedTransactions} />
+      </Suspense>
+    );
+  } else {
+    return (
+      <Suspense fallback={<RecentActivityLoading />}>
+        <RecentActivityLoading />
+      </Suspense>
+    );
+  }
 }
 
 export function RecentActivityList({
@@ -217,7 +225,7 @@ export function _RecentActivityList({
   // Load transactions if not passed in as a prop
   const transactions = _transactions
     ? _transactions
-    : useRecentTransactions(blockchain!, address!, contractAddresses!);
+    : useRecentTransactions(blockchain!, address!, contractAddresses!) || [];
 
   if (!style) {
     style = {};
@@ -319,6 +327,11 @@ function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
             <Typography className={classes.txDate}>
               {transaction.date.toLocaleDateString()}
             </Typography>
+            {transaction.blockchain == Blockchain.SOLANA && (
+              <Typography className={classes.recentActivityLabel}>
+                {transaction.description}
+              </Typography>
+            )}
           </div>
         </div>
         <div

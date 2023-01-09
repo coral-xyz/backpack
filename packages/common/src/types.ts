@@ -29,6 +29,7 @@ export type RecentTransaction = {
   date: Date;
   signature: string;
   didError: boolean;
+  description?: String;
 };
 
 export type NftCollection = {
