@@ -1,9 +1,5 @@
-import type { Blockchain ,
-  RemoteUserData} from "@coral-xyz/common";
-import {
-  getAddMessage,
-  getCreateMessage
-} from "@coral-xyz/common";
+import type { Blockchain, RemoteUserData } from "@coral-xyz/common";
+import { getAddMessage, getCreateMessage } from "@coral-xyz/common";
 import type { Request, Response } from "express";
 import express from "express";
 import jwt from "jsonwebtoken";
@@ -235,6 +231,16 @@ router.get(
     return res.status(404).json({ msg: "User not found" });
   }
 );
+
+/**
+ * Fetches User detail by id
+ */
+router.get("/userById", extractUserId, async (req: Request, res: Response) => {
+  //@ts-ignore
+  const remoteUserId: string = req.query.remoteUserId;
+  const user = await getUser(remoteUserId);
+  return res.json({ user });
+});
 
 /**
  * Delete a public key/blockchain from the currently authenticated user.

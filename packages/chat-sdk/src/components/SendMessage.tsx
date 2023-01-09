@@ -220,7 +220,7 @@ export const SendMessage = () => {
                     gifPicker={gifPicker}
                     setEmojiPicker={setEmojiPicker}
                   />
-                  <SecureTransfer />
+                  <SecureTransfer remoteUserId={remoteUserId} />
                   <IconButton
                     size={"small"}
                     style={{ color: theme.custom.colors.icon }}

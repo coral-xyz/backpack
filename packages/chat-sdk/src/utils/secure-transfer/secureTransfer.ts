@@ -1,15 +1,12 @@
-import type {
-  BackgroundClient} from "@coral-xyz/common";
+import type { BackgroundClient } from "@coral-xyz/common";
 import {
   confirmTransaction,
   UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
 } from "@coral-xyz/common";
-import type { AnchorProvider, Provider} from "@project-serum/anchor";
-import { BN,Program } from "@project-serum/anchor";
+import type { AnchorProvider, Provider } from "@project-serum/anchor";
+import { BN, Program } from "@project-serum/anchor";
 import { findProgramAddressSync } from "@project-serum/anchor/dist/cjs/utils/pubkey";
-import type {
-  Connection,
-  Transaction} from "@solana/web3.js";
+import type { Connection, Transaction } from "@solana/web3.js";
 import {
   Keypair,
   LAMPORTS_PER_SOL,
@@ -89,21 +86,20 @@ export const createEscrow = async (
     program.programId
   );
 
-  const sendTx = await (
-    await program.methods.send(
-      receiverPubkey,
-      new BN(transferAmount * LAMPORTS_PER_SOL),
-      { twoWay: {} }
-    )
-  )
+  const sendTx = await program.methods
+    .send(receiverPubkey, new BN(transferAmount * LAMPORTS_PER_SOL), {
+      twoWay: {},
+    })
     .accounts({
       secureTransfer: secureTransferAddress[0],
       escrow: findEscrowAddress(
-        new PublicKey(senderPublicKey),
+        senderPublicKey,
         receiverPubkey,
         counter || new BN(0),
         program
       )[0],
+      sender: senderPublicKey,
+      systemProgram: SystemProgram.programId,
     })
     .transaction();
 
