@@ -4,6 +4,7 @@ import { BACKEND_API_URL } from "@coral-xyz/common";
 import {
   bulkAddChats,
   clearChats,
+  createOrUpdateCollection,
   latestReceivedMessage,
   oldestReceivedMessage,
 } from "../db/chats";
@@ -20,8 +21,8 @@ export const refreshChatsFor = async (
   const response = await fetch(
     `${BACKEND_API_URL}/chat?room=${room}&type=${type}&limit=40&timestampAfter=${
       lastMessage?.created_at &&
-      !isNaN(new Date(lastMessage?.created_at).getTime())
-        ? new Date(lastMessage?.created_at).getTime()
+      !isNaN(new Date(parseInt(lastMessage?.created_at)).getTime())
+        ? new Date(parseInt(lastMessage?.created_at)).getTime()
         : 0
     }&mint=${nftMint}&publicKey=${publicKey}`,
     {
@@ -102,6 +103,19 @@ export const updateLastRead = (
   if (type === "individual" && uuid !== sender) {
     updateFriendship(uuid, sender, {
       unread: 0,
+    });
+  }
+
+  if (type === "individual" && uuid === sender) {
+    updateFriendship(uuid, sender, {
+      interacted: 1,
+    });
+  }
+
+  if (type === "collection") {
+    createOrUpdateCollection(uuid, {
+      collectionId: room,
+      lastReadMessage: client_generated_uuid,
     });
   }
 };

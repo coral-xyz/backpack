@@ -1,4 +1,4 @@
-import { BACKEND_API_URL } from "@coral-xyz/common";
+import { BACKEND_API_URL, sendFriendRequest } from "@coral-xyz/common";
 import { toast } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import InfoIcon from "@mui/icons-material/Info";
@@ -76,12 +76,9 @@ export const Banner = () => {
               className={classes.strongText}
               style={{ cursor: "pointer", marginRight: 25 }}
               onClick={async () => {
-                await fetch(`${BACKEND_API_URL}/friends/request`, {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({ to: remoteUserId, sendRequest: true }),
+                await sendFriendRequest({
+                  to: remoteUserId,
+                  sendRequest: true,
                 });
                 setRequested(true);
                 toast.success(

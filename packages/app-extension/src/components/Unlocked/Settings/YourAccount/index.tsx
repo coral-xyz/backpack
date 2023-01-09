@@ -12,9 +12,6 @@ export function YourAccount() {
     "Change Password": {
       onClick: () => nav.push("change-password"),
     },
-    "Edit Wallets": {
-      onClick: () => nav.push("edit-wallets"),
-    },
     ...(keyringType === "mnemonic"
       ? {
           "Show Secret Recovery Phrase": {

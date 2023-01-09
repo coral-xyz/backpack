@@ -78,3 +78,127 @@ export const getNftCollection = async ({
   });
   return response.auth_user_nfts_by_pk?.collection_id || "";
 };
+
+export const getNftMembers = async (
+  collectionId: string,
+  prefix: string,
+  limit: number,
+  offset: number
+): Promise<{ users: { id: string; username: string }[]; count: number }> => {
+  const response = await chain("query")({
+    auth_users: [
+      {
+        where: {
+          username: { _like: `${prefix}%` },
+          public_keys: {
+            user_nfts: {
+              collection_id: { _eq: collectionId },
+            },
+          },
+        },
+        limit,
+        offset,
+      },
+      {
+        id: true,
+        username: true,
+      },
+    ],
+    auth_user_nfts_aggregate: [
+      {
+        where: {
+          collection_id: { _eq: collectionId },
+        },
+      },
+      {
+        aggregate: {
+          count: true,
+        },
+      },
+    ],
+  });
+  return {
+    users:
+      response.auth_users?.map((x) => ({
+        id: x?.id || "",
+        username: x?.username || "",
+      })) || [],
+    count: response.auth_user_nfts_aggregate?.aggregate?.count || 0,
+  };
+};
+
+export const getAllCollectionsFor = async (uuid: string): Promise<string[]> => {
+  const response = await chain("query")({
+    auth_user_nfts: [
+      {
+        where: {
+          publicKeyByBlockchainPublicKey: {
+            user: {
+              id: {
+                _eq: uuid,
+              },
+            },
+          },
+        },
+      },
+      {
+        collection_id: true,
+      },
+    ],
+  });
+  return response.auth_user_nfts.map((x) => x.collection_id || "");
+};
+
+export const getLastReadFor = async (
+  uuid: string,
+  collectionIds: string[]
+): Promise<{ collection_id: string; last_read_message_id: string }[]> => {
+  const response = await chain("query")({
+    auth_collection_messages: [
+      {
+        where: {
+          uuid: { _eq: uuid },
+          collection_id: { _in: collectionIds },
+        },
+      },
+      {
+        collection_id: true,
+        last_read_message_id: true,
+      },
+    ],
+  });
+  return response.auth_collection_messages.map((x) => ({
+    last_read_message_id: x.last_read_message_id || "",
+    collection_id: x.collection_id || "",
+  }));
+};
+
+export const getCollectionChatMetadata = async (
+  collectionIds: string[]
+): Promise<
+  {
+    collection_id: string;
+    last_message: string;
+    last_message_uuid: string;
+  }[]
+> => {
+  const response = await chain("query")({
+    auth_collections: [
+      {
+        where: {
+          collection_id: { _in: collectionIds },
+        },
+      },
+      {
+        collection_id: true,
+        last_message: true,
+        last_message_uuid: true,
+      },
+    ],
+  });
+  return response.auth_collections.map((x) => ({
+    collection_id: x.collection_id || "",
+    last_message: x.last_message || "",
+    last_message_uuid: x.last_message_uuid || "",
+  }));
+};

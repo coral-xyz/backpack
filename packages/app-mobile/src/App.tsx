@@ -1,6 +1,6 @@
 import { Suspense, useCallback, useRef } from "react";
-import { StyleSheet, View } from "react-native";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { StyleSheet, Text, View } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 import {
   BACKGROUND_SERVICE_WORKER_READY,
@@ -24,7 +24,7 @@ import { RecoilRoot } from "recoil";
 SplashScreen.preventAutoHideAsync();
 
 import { useLoadedAssets } from "./hooks/useLoadedAssets";
-import Navigation from "./navigation";
+import { RootNavigation } from "./navigation/RootNavigator";
 
 export function App(): JSX.Element {
   return (
@@ -49,22 +49,49 @@ function Providers({ children }: { children: JSX.Element }): JSX.Element {
   );
 }
 
+function ServiceWorkerErrorScreen({ onLayoutRootView }: any): JSX.Element {
+  return (
+    <View
+      onLayout={onLayoutRootView}
+      style={{
+        backgroundColor: "#8b0000",
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+      }}>
+      <Text>The service worker failed to load.</Text>
+      <Text>
+        {JSON.stringify(
+          { uri: Constants?.expoConfig?.extra?.webviewUrl },
+          null,
+          2
+        )}
+      </Text>
+    </View>
+  );
+}
+
 function Main(): JSX.Element | null {
   const theme = useTheme();
-  const appIsReady = useLoadedAssets();
+  const appLoadingStatus = useLoadedAssets();
 
   const onLayoutRootView = useCallback(async () => {
-    if (appIsReady) {
+    // If the service worker isn't running, show an error screen.
+    if (appLoadingStatus === "error" || appLoadingStatus === "ready") {
       // This tells the splash screen to hide immediately! If we call this after
       // `setAppIsReady`, then we may see a blank screen while the app is
       // loading its initial state and rendering its first pixels. So instead,
       // we hide the splash screen once we know the root view has already
-      // performed layout.
+      // performed layout!
       await SplashScreen.hideAsync();
     }
-  }, [appIsReady]);
+  }, [appLoadingStatus]);
 
-  if (!appIsReady) {
+  if (appLoadingStatus === "error") {
+    return <ServiceWorkerErrorScreen onLayoutRootView={onLayoutRootView} />;
+  }
+
+  if (appLoadingStatus === "loading") {
     return null;
   }
 
@@ -86,16 +113,20 @@ function Main(): JSX.Element | null {
 
   return (
     <Providers>
-      <SafeAreaView
+      <View
         onLayout={onLayoutRootView}
         style={[
           styles.container,
-          { backgroundColor: theme.custom.colors.background },
-        ]}
-      >
+          {
+            backgroundColor:
+              process.env.NODE_ENV === "development"
+                ? "orange"
+                : theme.custom.colors.background,
+          },
+        ]}>
         <StatusBar style={theme.colorScheme === "dark" ? "light" : "dark"} />
-        <Navigation colorScheme={theme.colorScheme} />
-      </SafeAreaView>
+        <RootNavigation colorScheme={theme.colorScheme} />
+      </View>
     </Providers>
   );
 }
@@ -136,8 +167,8 @@ function BackgroundHiddenWebView(): JSX.Element {
       <WebView
         ref={ref}
         cacheMode="LOAD_CACHE_ELSE_NETWORK"
-        cacheEnabled={true}
-        limitsNavigationsToAppBoundDomains={true}
+        cacheEnabled
+        limitsNavigationsToAppBoundDomains
         source={{ uri: Constants?.expoConfig?.extra?.webviewUrl }}
         onMessage={(event) => {
           const msg = JSON.parse(event.nativeEvent.data);

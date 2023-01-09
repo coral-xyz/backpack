@@ -450,7 +450,7 @@ export function MessageBubbleUnreadIcon({ fill = "#99A4B4", ...props }) {
         r="4"
         fill="#E33E3F"
         stroke="white"
-        stroke-width="0"
+        strokeWidth="0"
       />
     </svg>
   );

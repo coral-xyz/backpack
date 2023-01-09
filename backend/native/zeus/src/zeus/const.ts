@@ -37,6 +37,45 @@ export const AllTypesProps: Record<string, any> = {
     _set: "auth_collection_messages_set_input",
     where: "auth_collection_messages_bool_exp",
   },
+  auth_collections_bool_exp: {
+    _and: "auth_collections_bool_exp",
+    _not: "auth_collections_bool_exp",
+    _or: "auth_collections_bool_exp",
+    collection_id: "String_comparison_exp",
+    id: "Int_comparison_exp",
+    last_message: "String_comparison_exp",
+    last_message_uuid: "String_comparison_exp",
+    type: "String_comparison_exp",
+  },
+  auth_collections_constraint: "enum" as const,
+  auth_collections_inc_input: {},
+  auth_collections_insert_input: {},
+  auth_collections_on_conflict: {
+    constraint: "auth_collections_constraint",
+    update_columns: "auth_collections_update_column",
+    where: "auth_collections_bool_exp",
+  },
+  auth_collections_order_by: {
+    collection_id: "order_by",
+    id: "order_by",
+    last_message: "order_by",
+    last_message_uuid: "order_by",
+    type: "order_by",
+  },
+  auth_collections_pk_columns_input: {},
+  auth_collections_select_column: "enum" as const,
+  auth_collections_set_input: {},
+  auth_collections_stream_cursor_input: {
+    initial_value: "auth_collections_stream_cursor_value_input",
+    ordering: "cursor_ordering",
+  },
+  auth_collections_stream_cursor_value_input: {},
+  auth_collections_update_column: "enum" as const,
+  auth_collections_updates: {
+    _inc: "auth_collections_inc_input",
+    _set: "auth_collections_set_input",
+    where: "auth_collections_bool_exp",
+  },
   auth_friend_requests_bool_exp: {
     _and: "auth_friend_requests_bool_exp",
     _not: "auth_friend_requests_bool_exp",
@@ -230,6 +269,18 @@ export const AllTypesProps: Record<string, any> = {
     _set: "auth_notifications_set_input",
     where: "auth_notifications_bool_exp",
   },
+  auth_public_keys: {
+    user_nfts: {
+      distinct_on: "auth_user_nfts_select_column",
+      order_by: "auth_user_nfts_order_by",
+      where: "auth_user_nfts_bool_exp",
+    },
+    user_nfts_aggregate: {
+      distinct_on: "auth_user_nfts_select_column",
+      order_by: "auth_user_nfts_order_by",
+      where: "auth_user_nfts_bool_exp",
+    },
+  },
   auth_public_keys_aggregate_bool_exp: {
     count: "auth_public_keys_aggregate_bool_exp_count",
   },
@@ -273,11 +324,14 @@ export const AllTypesProps: Record<string, any> = {
     public_key: "String_comparison_exp",
     user: "auth_users_bool_exp",
     user_id: "uuid_comparison_exp",
+    user_nfts: "auth_user_nfts_bool_exp",
+    user_nfts_aggregate: "auth_user_nfts_aggregate_bool_exp",
   },
   auth_public_keys_constraint: "enum" as const,
   auth_public_keys_insert_input: {
     user: "auth_users_obj_rel_insert_input",
     user_id: "uuid",
+    user_nfts: "auth_user_nfts_arr_rel_insert_input",
   },
   auth_public_keys_max_order_by: {
     blockchain: "order_by",
@@ -293,6 +347,10 @@ export const AllTypesProps: Record<string, any> = {
     public_key: "order_by",
     user_id: "order_by",
   },
+  auth_public_keys_obj_rel_insert_input: {
+    data: "auth_public_keys_insert_input",
+    on_conflict: "auth_public_keys_on_conflict",
+  },
   auth_public_keys_on_conflict: {
     constraint: "auth_public_keys_constraint",
     update_columns: "auth_public_keys_update_column",
@@ -305,6 +363,7 @@ export const AllTypesProps: Record<string, any> = {
     public_key: "order_by",
     user: "auth_users_order_by",
     user_id: "order_by",
+    user_nfts_aggregate: "auth_user_nfts_aggregate_order_by",
   },
   auth_public_keys_select_column: "enum" as const,
   auth_public_keys_stddev_order_by: {
@@ -376,24 +435,64 @@ export const AllTypesProps: Record<string, any> = {
     _set: "auth_stripe_onramp_set_input",
     where: "auth_stripe_onramp_bool_exp",
   },
+  auth_user_nfts_aggregate_bool_exp: {
+    count: "auth_user_nfts_aggregate_bool_exp_count",
+  },
+  auth_user_nfts_aggregate_bool_exp_count: {
+    arguments: "auth_user_nfts_select_column",
+    filter: "auth_user_nfts_bool_exp",
+    predicate: "Int_comparison_exp",
+  },
+  auth_user_nfts_aggregate_fields: {
+    count: {
+      columns: "auth_user_nfts_select_column",
+    },
+  },
+  auth_user_nfts_aggregate_order_by: {
+    count: "order_by",
+    max: "auth_user_nfts_max_order_by",
+    min: "auth_user_nfts_min_order_by",
+  },
+  auth_user_nfts_arr_rel_insert_input: {
+    data: "auth_user_nfts_insert_input",
+    on_conflict: "auth_user_nfts_on_conflict",
+  },
   auth_user_nfts_bool_exp: {
     _and: "auth_user_nfts_bool_exp",
     _not: "auth_user_nfts_bool_exp",
     _or: "auth_user_nfts_bool_exp",
+    blockchain: "String_comparison_exp",
     collection_id: "String_comparison_exp",
     nft_id: "String_comparison_exp",
+    publicKeyByBlockchainPublicKey: "auth_public_keys_bool_exp",
     public_key: "String_comparison_exp",
   },
   auth_user_nfts_constraint: "enum" as const,
-  auth_user_nfts_insert_input: {},
+  auth_user_nfts_insert_input: {
+    publicKeyByBlockchainPublicKey: "auth_public_keys_obj_rel_insert_input",
+  },
+  auth_user_nfts_max_order_by: {
+    blockchain: "order_by",
+    collection_id: "order_by",
+    nft_id: "order_by",
+    public_key: "order_by",
+  },
+  auth_user_nfts_min_order_by: {
+    blockchain: "order_by",
+    collection_id: "order_by",
+    nft_id: "order_by",
+    public_key: "order_by",
+  },
   auth_user_nfts_on_conflict: {
     constraint: "auth_user_nfts_constraint",
     update_columns: "auth_user_nfts_update_column",
     where: "auth_user_nfts_bool_exp",
   },
   auth_user_nfts_order_by: {
+    blockchain: "order_by",
     collection_id: "order_by",
     nft_id: "order_by",
+    publicKeyByBlockchainPublicKey: "auth_public_keys_order_by",
     public_key: "order_by",
   },
   auth_user_nfts_select_column: "enum" as const,
@@ -643,6 +742,10 @@ export const AllTypesProps: Record<string, any> = {
       where: "auth_collection_messages_bool_exp",
     },
     delete_auth_collection_messages_by_pk: {},
+    delete_auth_collections: {
+      where: "auth_collections_bool_exp",
+    },
+    delete_auth_collections_by_pk: {},
     delete_auth_friend_requests: {
       where: "auth_friend_requests_bool_exp",
     },
@@ -674,6 +777,14 @@ export const AllTypesProps: Record<string, any> = {
     insert_auth_collection_messages_one: {
       object: "auth_collection_messages_insert_input",
       on_conflict: "auth_collection_messages_on_conflict",
+    },
+    insert_auth_collections: {
+      objects: "auth_collections_insert_input",
+      on_conflict: "auth_collections_on_conflict",
+    },
+    insert_auth_collections_one: {
+      object: "auth_collections_insert_input",
+      on_conflict: "auth_collections_on_conflict",
     },
     insert_auth_friend_requests: {
       objects: "auth_friend_requests_insert_input",
@@ -765,6 +876,19 @@ export const AllTypesProps: Record<string, any> = {
     },
     update_auth_collection_messages_many: {
       updates: "auth_collection_messages_updates",
+    },
+    update_auth_collections: {
+      _inc: "auth_collections_inc_input",
+      _set: "auth_collections_set_input",
+      where: "auth_collections_bool_exp",
+    },
+    update_auth_collections_by_pk: {
+      _inc: "auth_collections_inc_input",
+      _set: "auth_collections_set_input",
+      pk_columns: "auth_collections_pk_columns_input",
+    },
+    update_auth_collections_many: {
+      updates: "auth_collections_updates",
     },
     update_auth_friendships: {
       _inc: "auth_friendships_inc_input",
@@ -864,6 +988,12 @@ export const AllTypesProps: Record<string, any> = {
       where: "auth_collection_messages_bool_exp",
     },
     auth_collection_messages_by_pk: {},
+    auth_collections: {
+      distinct_on: "auth_collections_select_column",
+      order_by: "auth_collections_order_by",
+      where: "auth_collections_bool_exp",
+    },
+    auth_collections_by_pk: {},
     auth_friend_requests: {
       distinct_on: "auth_friend_requests_select_column",
       order_by: "auth_friend_requests_order_by",
@@ -915,6 +1045,11 @@ export const AllTypesProps: Record<string, any> = {
       order_by: "auth_user_nfts_order_by",
       where: "auth_user_nfts_bool_exp",
     },
+    auth_user_nfts_aggregate: {
+      distinct_on: "auth_user_nfts_select_column",
+      order_by: "auth_user_nfts_order_by",
+      where: "auth_user_nfts_bool_exp",
+    },
     auth_user_nfts_by_pk: {},
     auth_users: {
       distinct_on: "auth_users_select_column",
@@ -962,6 +1097,16 @@ export const AllTypesProps: Record<string, any> = {
     auth_collection_messages_stream: {
       cursor: "auth_collection_messages_stream_cursor_input",
       where: "auth_collection_messages_bool_exp",
+    },
+    auth_collections: {
+      distinct_on: "auth_collections_select_column",
+      order_by: "auth_collections_order_by",
+      where: "auth_collections_bool_exp",
+    },
+    auth_collections_by_pk: {},
+    auth_collections_stream: {
+      cursor: "auth_collections_stream_cursor_input",
+      where: "auth_collections_bool_exp",
     },
     auth_friend_requests: {
       distinct_on: "auth_friend_requests_select_column",
@@ -1034,6 +1179,11 @@ export const AllTypesProps: Record<string, any> = {
       where: "auth_stripe_onramp_bool_exp",
     },
     auth_user_nfts: {
+      distinct_on: "auth_user_nfts_select_column",
+      order_by: "auth_user_nfts_order_by",
+      where: "auth_user_nfts_bool_exp",
+    },
+    auth_user_nfts_aggregate: {
       distinct_on: "auth_user_nfts_select_column",
       order_by: "auth_user_nfts_order_by",
       where: "auth_user_nfts_bool_exp",
@@ -1132,6 +1282,17 @@ export const ReturnTypes: Record<string, any> = {
   auth_collection_messages_mutation_response: {
     affected_rows: "Int",
     returning: "auth_collection_messages",
+  },
+  auth_collections: {
+    collection_id: "String",
+    id: "Int",
+    last_message: "String",
+    last_message_uuid: "String",
+    type: "String",
+  },
+  auth_collections_mutation_response: {
+    affected_rows: "Int",
+    returning: "auth_collections",
   },
   auth_friend_requests: {
     from: "String",
@@ -1262,6 +1423,8 @@ export const ReturnTypes: Record<string, any> = {
     public_key: "String",
     user: "auth_users",
     user_id: "uuid",
+    user_nfts: "auth_user_nfts",
+    user_nfts_aggregate: "auth_user_nfts_aggregate",
   },
   auth_public_keys_aggregate: {
     aggregate: "auth_public_keys_aggregate_fields",
@@ -1334,6 +1497,29 @@ export const ReturnTypes: Record<string, any> = {
     returning: "auth_stripe_onramp",
   },
   auth_user_nfts: {
+    blockchain: "String",
+    collection_id: "String",
+    nft_id: "String",
+    publicKeyByBlockchainPublicKey: "auth_public_keys",
+    public_key: "String",
+  },
+  auth_user_nfts_aggregate: {
+    aggregate: "auth_user_nfts_aggregate_fields",
+    nodes: "auth_user_nfts",
+  },
+  auth_user_nfts_aggregate_fields: {
+    count: "Int",
+    max: "auth_user_nfts_max_fields",
+    min: "auth_user_nfts_min_fields",
+  },
+  auth_user_nfts_max_fields: {
+    blockchain: "String",
+    collection_id: "String",
+    nft_id: "String",
+    public_key: "String",
+  },
+  auth_user_nfts_min_fields: {
+    blockchain: "String",
     collection_id: "String",
     nft_id: "String",
     public_key: "String",
@@ -1420,6 +1606,8 @@ export const ReturnTypes: Record<string, any> = {
     delete_auth_collection_messages:
       "auth_collection_messages_mutation_response",
     delete_auth_collection_messages_by_pk: "auth_collection_messages",
+    delete_auth_collections: "auth_collections_mutation_response",
+    delete_auth_collections_by_pk: "auth_collections",
     delete_auth_friend_requests: "auth_friend_requests_mutation_response",
     delete_auth_friend_requests_by_pk: "auth_friend_requests",
     delete_auth_friendships: "auth_friendships_mutation_response",
@@ -1437,6 +1625,8 @@ export const ReturnTypes: Record<string, any> = {
     insert_auth_collection_messages:
       "auth_collection_messages_mutation_response",
     insert_auth_collection_messages_one: "auth_collection_messages",
+    insert_auth_collections: "auth_collections_mutation_response",
+    insert_auth_collections_one: "auth_collections",
     insert_auth_friend_requests: "auth_friend_requests_mutation_response",
     insert_auth_friend_requests_one: "auth_friend_requests",
     insert_auth_friendships: "auth_friendships_mutation_response",
@@ -1464,6 +1654,9 @@ export const ReturnTypes: Record<string, any> = {
     update_auth_collection_messages_by_pk: "auth_collection_messages",
     update_auth_collection_messages_many:
       "auth_collection_messages_mutation_response",
+    update_auth_collections: "auth_collections_mutation_response",
+    update_auth_collections_by_pk: "auth_collections",
+    update_auth_collections_many: "auth_collections_mutation_response",
     update_auth_friendships: "auth_friendships_mutation_response",
     update_auth_friendships_by_pk: "auth_friendships",
     update_auth_friendships_many: "auth_friendships_mutation_response",
@@ -1493,6 +1686,8 @@ export const ReturnTypes: Record<string, any> = {
   query_root: {
     auth_collection_messages: "auth_collection_messages",
     auth_collection_messages_by_pk: "auth_collection_messages",
+    auth_collections: "auth_collections",
+    auth_collections_by_pk: "auth_collections",
     auth_friend_requests: "auth_friend_requests",
     auth_friend_requests_by_pk: "auth_friend_requests",
     auth_friendships: "auth_friendships",
@@ -1508,6 +1703,7 @@ export const ReturnTypes: Record<string, any> = {
     auth_stripe_onramp: "auth_stripe_onramp",
     auth_stripe_onramp_by_pk: "auth_stripe_onramp",
     auth_user_nfts: "auth_user_nfts",
+    auth_user_nfts_aggregate: "auth_user_nfts_aggregate",
     auth_user_nfts_by_pk: "auth_user_nfts",
     auth_users: "auth_users",
     auth_users_aggregate: "auth_users_aggregate",
@@ -1523,6 +1719,9 @@ export const ReturnTypes: Record<string, any> = {
     auth_collection_messages: "auth_collection_messages",
     auth_collection_messages_by_pk: "auth_collection_messages",
     auth_collection_messages_stream: "auth_collection_messages",
+    auth_collections: "auth_collections",
+    auth_collections_by_pk: "auth_collections",
+    auth_collections_stream: "auth_collections",
     auth_friend_requests: "auth_friend_requests",
     auth_friend_requests_by_pk: "auth_friend_requests",
     auth_friend_requests_stream: "auth_friend_requests",
@@ -1544,6 +1743,7 @@ export const ReturnTypes: Record<string, any> = {
     auth_stripe_onramp_by_pk: "auth_stripe_onramp",
     auth_stripe_onramp_stream: "auth_stripe_onramp",
     auth_user_nfts: "auth_user_nfts",
+    auth_user_nfts_aggregate: "auth_user_nfts_aggregate",
     auth_user_nfts_by_pk: "auth_user_nfts",
     auth_user_nfts_stream: "auth_user_nfts",
     auth_users: "auth_users",

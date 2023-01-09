@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import type { NftCollectionWithIds } from "@coral-xyz/common";
+import type { NftCollection } from "@coral-xyz/common";
 import { BACKEND_API_URL, Blockchain } from "@coral-xyz/common";
 import {
   EmptyState,
@@ -45,12 +45,15 @@ export function UpdateProfilePicture({
   const setNewAvatar = useSetRecoilState(newAvatarAtom(username));
   const theme = useCustomTheme();
   const { contents, state } = useRecoilValueLoadable(nftCollectionsWithIds);
-  const collections = (state === "hasValue" && contents) || null;
-
-  const numberOfNFTs = Object.entries(collections ?? {}).reduce(
-    (acc, [, c]) => acc + (c.collectionWithIds ?? []).length,
+  const allWalletCollections: Array<{
+    publicKey: string;
+    collections: Array<NftCollection>;
+  }> = (state === "hasValue" && contents) || [];
+  const numberOfNFTs = allWalletCollections.reduce(
+    (acc, c) => acc + (c.collections ?? []).length,
     0
   );
+
   return (
     <Container>
       <AvatarWrapper>
@@ -82,6 +85,9 @@ export function UpdateProfilePicture({
                 color: "inherit",
                 border: "none",
               }}
+              innerStyle={{
+                border: "none",
+              }}
               buttonText={"Browse Magic Eden"}
             />
           ) : (
@@ -91,17 +97,21 @@ export function UpdateProfilePicture({
                 transition: "padding ease-out 200ms",
               }}
             >
-              {Object.entries(collections ?? {}).map(([publicKey, c]) => (
-                <BlockchainNFTs
-                  key={publicKey}
-                  publicKey={publicKey}
-                  blockchain={c.blockchain}
-                  collections={c.collectionWithIds as NftCollectionWithIds[]}
-                  isLoading={false}
-                  tempAvatar={tempAvatar}
-                  setTempAvatar={setTempAvatar}
-                />
-              ))}
+              {allWalletCollections.map(
+                (c: {
+                  publicKey: string;
+                  collections: Array<NftCollection>;
+                }) => (
+                  <BlockchainNFTs
+                    key={c.publicKey}
+                    publicKey={c.publicKey}
+                    collections={c.collections}
+                    isLoading={false}
+                    tempAvatar={tempAvatar}
+                    setTempAvatar={setTempAvatar}
+                  />
+                )
+              )}
             </div>
           )}
         </Scrollbar>
@@ -164,26 +174,25 @@ export function UpdateProfilePicture({
 
 const BlockchainNFTs = React.memo(function BlockchainNFTs({
   publicKey,
-  blockchain,
   collections,
   isLoading,
   tempAvatar,
   setTempAvatar,
 }: {
   publicKey: string;
-  blockchain: Blockchain;
-  collections: NftCollectionWithIds[];
+  collections: Array<NftCollection>;
   isLoading: boolean;
   tempAvatar: tempAvatar | null;
   setTempAvatar: (tempAvatar: tempAvatar) => void;
 }) {
   const [showContent, setShowContent] = useState(true);
+  const wallets = useActiveWallets();
+  const wallet = wallets.find((wallet) => wallet.publicKey === publicKey)!;
+  const blockchain = wallet.blockchain;
   const connectionUrl =
     blockchain === Blockchain.SOLANA
       ? useSolanaConnectionUrl()
       : useEthereumConnectionUrl();
-  const wallets = useActiveWallets();
-  const wallet = wallets.find((wallet) => wallet.blockchain === blockchain);
 
   const nftsIds = collections.reduce<string[]>((flat, collection) => {
     flat.push(...collection.itemIds);

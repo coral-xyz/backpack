@@ -1,35 +1,27 @@
 import { useEffect, useState } from "react";
-import type { EnrichedInboxDb } from "@coral-xyz/common";
+import type { EnrichedInboxDb, RemoteUserData } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
+import { useContacts } from "@coral-xyz/db";
+import { UserList } from "@coral-xyz/message-sdk";
 import { TextInput } from "@coral-xyz/react-common";
+import { useUser } from "@coral-xyz/recoil";
 
 import { useStyles } from "./styles";
-import { UserList } from "./UserList";
 
 export const SearchUsers = () => {
+  const { uuid } = useUser();
   const classes = useStyles();
   const [searchFilter, setSearchFilter] = useState("");
-  const [, setContactsLoading] = useState(true);
-  const [contacts, setContacts] = useState<EnrichedInboxDb[]>([]);
+  const contacts = useContacts(uuid);
+
   const filteredContacts = contacts
     .filter((x: EnrichedInboxDb) => x.remoteUsername.includes(searchFilter))
     .map((x: EnrichedInboxDb) => ({
       image: x.remoteUserImage,
       id: x.remoteUserId,
       username: x.remoteUsername,
+      areFriends: x.areFriends ? true : false,
     }));
-
-  const fetchFriends = async () => {
-    const res = await fetch(`${BACKEND_API_URL}/friends/all`);
-    const json = await res.json();
-    setContactsLoading(false);
-    const chats: EnrichedInboxDb[] = json.chats;
-    setContacts(chats || []);
-  };
-
-  useEffect(() => {
-    fetchFriends();
-  }, []);
 
   return (
     <div className={classes.container}>
@@ -47,7 +39,9 @@ export const SearchUsers = () => {
           },
         }}
       />
-      {filteredContacts.length !== 0 && <UserList users={filteredContacts} />}
+      {filteredContacts.length !== 0 && (
+        <UserList users={filteredContacts as RemoteUserData[]} />
+      )}
     </div>
   );
 };

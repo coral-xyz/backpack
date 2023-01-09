@@ -1,18 +1,23 @@
-import { NAV_COMPONENT_MESSAGE_PROFILE } from "@coral-xyz/common";
+import type { RemoteUserData } from "@coral-xyz/common";
+import {
+  NAV_COMPONENT_MESSAGE_PROFILE,
+  sendFriendRequest,
+  unFriend,
+} from "@coral-xyz/common";
+import { updateFriendshipIfExists } from "@coral-xyz/db";
 import { isFirstLastListItemStyle, ProxyImage } from "@coral-xyz/react-common";
-// import { useNavigation } from "@coral-xyz/recoil";
+import { useNavigation, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { List, ListItem } from "@mui/material";
-
-import { ParentCommunicationManager } from "../ParentCommunicationManager";
 
 import { useStyles } from "./styles";
 
 export const UserList = ({
   users,
+  setMembers,
 }: {
-  users: { image: string; id: string; username: string }[];
+  users: RemoteUserData[];
+  setMembers?: React.Dispatch<React.SetStateAction<RemoteUserData[]>>;
 }) => {
   const theme = useCustomTheme();
 
@@ -27,10 +32,10 @@ export const UserList = ({
     >
       {users.map((user, index) => (
         <UserListItem
-          key={user.id}
           user={user}
           isFirst={index === 0}
           isLast={index === users.length - 1}
+          setMembers={setMembers}
         />
       ))}
     </List>
@@ -41,19 +46,23 @@ function UserListItem({
   user,
   isFirst,
   isLast,
+  setMembers,
 }: {
-  user: { image: string; id: string; username: string };
+  user: RemoteUserData;
   isFirst: boolean;
   isLast: boolean;
+  setMembers?: React.Dispatch<React.SetStateAction<RemoteUserData[]>>;
 }) {
   const theme = useCustomTheme();
+  const { push } = useNavigation();
   const classes = useStyles();
+  const { uuid } = useUser();
   return (
     <ListItem
       button
       disableRipple
       onClick={() => {
-        ParentCommunicationManager.getInstance().push({
+        push({
           title: `@${user.username}`,
           componentId: NAV_COMPONENT_MESSAGE_PROFILE,
           componentProps: {
@@ -83,7 +92,6 @@ function UserListItem({
         }}
       >
         <div
-          className={classes.hoverParent}
           style={{ flex: 1, display: "flex", justifyContent: "space-between" }}
         >
           <div style={{ display: "flex" }}>
@@ -98,11 +106,88 @@ function UserListItem({
             </div>
             <div className={classes.userText}>{user.username}</div>
           </div>
-          <div className={classes.hoverChild}>
-            <ArrowForwardIcon
-              fontSize={"small"}
-              style={{ marginTop: 4, color: theme.custom.colors.fontColor }}
-            />
+          <div>
+            <div
+              onClick={async (e) => {
+                e.stopPropagation();
+                if (user.areFriends) {
+                  await unFriend({ to: user.id });
+                  await updateFriendshipIfExists(uuid, user.id, {
+                    areFriends: 0,
+                    requested: 0,
+                  });
+                  setMembers?.((members) =>
+                    members.map((m) => {
+                      if (m.id === user.id) {
+                        return {
+                          ...m,
+                          areFriends: false,
+                        };
+                      }
+                      return m;
+                    })
+                  );
+                } else if (user.requested) {
+                  await sendFriendRequest({ to: user.id, sendRequest: false });
+                  await updateFriendshipIfExists(uuid, user.id, {
+                    requested: 0,
+                  });
+                  setMembers?.((members) =>
+                    members.map((m) => {
+                      if (m.id === user.id) {
+                        return {
+                          ...m,
+                          requested: false,
+                        };
+                      }
+                      return m;
+                    })
+                  );
+                } else if (user.remoteRequested) {
+                  await sendFriendRequest({ to: user.id, sendRequest: true });
+                  await updateFriendshipIfExists(uuid, user.id, {
+                    requested: 0,
+                    areFriends: 1,
+                  });
+                  setMembers?.((members) =>
+                    members.map((m) => {
+                      if (m.id === user.id) {
+                        return {
+                          ...m,
+                          requested: false,
+                          areFriends: true,
+                        };
+                      }
+                      return m;
+                    })
+                  );
+                } else {
+                  await sendFriendRequest({ to: user.id, sendRequest: true });
+                  await updateFriendshipIfExists(uuid, user.id, {
+                    requested: 1,
+                  });
+                  setMembers?.((members) =>
+                    members.map((m) => {
+                      if (m.id === user.id) {
+                        return {
+                          ...m,
+                          requested: true,
+                        };
+                      }
+                      return m;
+                    })
+                  );
+                }
+              }}
+            >
+              {user.areFriends
+                ? "Unfriend"
+                : user.requested
+                ? "Cancel Request"
+                : user.remoteRequested
+                ? "Accept Request"
+                : "Send Request"}{" "}
+            </div>
           </div>
         </div>
       </div>

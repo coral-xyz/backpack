@@ -1,5 +1,8 @@
 module.exports = {
   root: true,
-  extends: ["custom"],
-  parserOptions: { project: null },
+  extends: ["custom/native"],
+  parserOptions: {
+    tsconfigRootDir: __dirname,
+    project: ["./tsconfig.json"],
+  },
 };

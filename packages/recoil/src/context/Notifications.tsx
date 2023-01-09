@@ -96,34 +96,6 @@ export function NotificationsProvider(props: any) {
   const setKeyringStoreState = useSetRecoilState(atoms.keyringStoreState);
   const setActiveUser = useSetRecoilState(atoms.user);
   const resetAllUsers = useResetRecoilState(atoms.allUsers);
-  const _setNftCollections = useRecoilCallback(
-    ({ snapshot, set }) =>
-      ({
-        publicKey,
-        connectionUrl,
-        nftCollections,
-      }: {
-        publicKey: string;
-        connectionUrl: string;
-        nftCollections: any;
-      }) => {
-        set(atoms.nftCollections({ publicKey, connectionUrl }), nftCollections);
-      },
-    []
-  );
-  const resetNftCollections = ({
-    publicKey,
-    connectionUrl,
-  }: {
-    publicKey: string;
-    connectionUrl: string;
-  }) => {
-    _setNftCollections({
-      publicKey,
-      connectionUrl,
-      nftCollections: null,
-    });
-  };
 
   // Preferences.
   const setPreferences = useSetRecoilState(atoms.preferences);
@@ -516,13 +488,6 @@ export function NotificationsProvider(props: any) {
         p.pushSolanaPublicKeyChangedNotification(notif.data.activeWallet);
       });
       setActivePublicKeys(notif.data.activeWallets);
-
-      /*
-      resetNftCollections({
-				publicKey,
-				connectionUrl,
-			});
-			*/
     };
 
     const handleReset = (_notif: Notification) => {
@@ -591,7 +556,6 @@ export function NotificationsProvider(props: any) {
         p.pushEthereumPublicKeyChangedNotification(notif.data.activeWallet);
       });
       setActivePublicKeys(notif.data.activeWallets);
-      //      resetNftCollections();
     };
 
     const handleEthereumTokensDidUpdate = (notif: Notification) => {

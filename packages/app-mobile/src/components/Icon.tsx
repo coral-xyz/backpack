@@ -18,8 +18,7 @@ export const CheckBadge = (props: SvgProps) => (
     height={18}
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
-    {...props}
-  >
+    {...props}>
     <Path
       d="M9 1.5C4.86 1.5 1.5 4.86 1.5 9c0 4.14 3.36 7.5 7.5 7.5 4.14 0 7.5-3.36 7.5-7.5 0-4.14-3.36-7.5-7.5-7.5ZM6.968 12.217 4.274 9.525a.747.747 0 1 1 1.057-1.058l2.168 2.16 5.16-5.16a.747.747 0 1 1 1.057 1.058l-5.692 5.692a.747.747 0 0 1-1.058 0Z"
       fill="#42C337"
@@ -43,8 +42,7 @@ export const EthereumIcon = (props: SvgProps) => (
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 40 40"
-    {...props}
-  >
+    {...props}>
     <Path
       d="M20 40c11.046 0 20-8.954 20-20S31.046 0 20 0 0 8.954 0 20s8.954 20 20 20Z"
       fill="#627EEA"
@@ -63,8 +61,7 @@ export const SolanaIcon = (props: SvgProps) => (
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 41 40"
-    {...props}
-  >
+    {...props}>
     <Path
       d="M20.5 40c11.046 0 20-8.954 20-20s-8.954-20-20-20S.5 8.954.5 20s8.954 20 20 20Z"
       fill="#000"
@@ -84,8 +81,7 @@ export const SolanaIcon = (props: SvgProps) => (
         y1={30.958}
         x2={31.458}
         y2={9.042}
-        gradientUnits="userSpaceOnUse"
-      >
+        gradientUnits="userSpaceOnUse">
         <Stop />
         <Stop offset={0.2} />
         <Stop offset={1} />
@@ -100,8 +96,7 @@ export const AvalancheIcon = (props: SvgProps) => (
     height={40}
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 40 40"
-    {...props}
-  >
+    {...props}>
     <Path d="M32.335 6.862H7.638v22.447h24.697V6.862Z" fill="#fff" />
     <Path
       d="M39.987 20c0 11.031-8.949 19.973-19.987 19.973C8.962 39.973.013 31.031.013 20 .013 8.969 8.962.027 20 .027 31.038.027 39.987 8.969 39.987 20Zm-25.65 7.948h-3.88c-.814 0-1.217 0-1.463-.157a.985.985 0 0 1-.446-.77c-.015-.29.186-.643.589-1.35l9.577-16.87c.408-.716.614-1.074.874-1.207a.989.989 0 0 1 .894 0c.26.133.466.491.874 1.207l1.969 3.435.01.018c.44.768.663 1.158.76 1.567.108.447.108.918 0 1.364-.098.412-.319.805-.765 1.585l-5.031 8.887-.013.023c-.443.775-.668 1.167-.979 1.464a2.93 2.93 0 0 1-1.193.692c-.408.112-.864.112-1.778.112Zm9.795 0h5.558c.82 0 1.232 0 1.478-.161a.982.982 0 0 0 .447-.776c.014-.28-.183-.62-.569-1.285l-.04-.069-2.784-4.76-.032-.053c-.391-.661-.589-.995-.842-1.124a.978.978 0 0 0-.889 0c-.255.133-.461.48-.869 1.183l-2.774 4.759-.01.016c-.406.7-.609 1.051-.594 1.338.02.314.182.604.447.776.24.156.653.156 1.473.156Z"
@@ -117,8 +112,7 @@ export const PolygonIcon = (props: SvgProps) => (
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 40 40"
-    {...props}
-  >
+    {...props}>
     <Path
       d="M20 40c11.046 0 20-8.954 20-20S31.046 0 20 0 0 8.954 0 20s8.954 20 20 20Z"
       fill="#8247E5"
@@ -137,8 +131,7 @@ export const BscIcon = (props: SvgProps) => (
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 41 40"
-    {...props}
-  >
+    {...props}>
     <Path
       d="M20.5 0c11.047 0 20 8.954 20 20 0 11.047-8.953 20-20 20-11.046 0-20-8.953-20-20 0-11.046 8.954-20 20-20Z"
       fill="#F0B90B"
@@ -166,8 +159,7 @@ export const CosmosIcon = (props: SvgProps) => (
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 45 44"
-    {...props}
-  >
+    {...props}>
     <Path
       d="M22.5.042C34.627.042 44.458 9.873 44.458 22c0 12.127-9.831 21.958-21.958 21.958C10.373 43.958.542 34.127.542 22 .542 9.873 10.373.042 22.5.042Z"
       fill="#171717"
@@ -214,18 +206,26 @@ export function WidgetIcon({
   return <MaterialCommunityIcons name="widgets" color={color} size={size} />;
 }
 
-export function MenuIcon({
-  color = useTheme().custom.colors.fontColor,
-  size = 24,
-}: IconProps): JSX.Element {
-  return <MaterialIcons name="menu" color={color} size={size} />;
+export function MenuIcon({ color, size = 24 }: IconProps): JSX.Element {
+  const theme = useTheme();
+  return (
+    <MaterialIcons
+      name="menu"
+      color={color ? color : theme.custom.colors.fontColor}
+      size={size}
+    />
+  );
 }
 
-export function ContentCopyIcon({
-  color = useTheme().custom.colors.fontColor,
-  size = 24,
-}: IconProps): JSX.Element {
-  return <MaterialIcons name="content-copy" color={color} size={size} />;
+export function ContentCopyIcon({ color, size = 24 }: IconProps): JSX.Element {
+  const theme = useTheme();
+  return (
+    <MaterialIcons
+      name="content-copy"
+      color={color ? color : theme.custom.colors.fontColor}
+      size={size}
+    />
+  );
 }
 
 export const CrossIcon = (props: SvgProps) => (
@@ -235,8 +235,7 @@ export const CrossIcon = (props: SvgProps) => (
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 48 48"
-    {...props}
-  >
+    {...props}>
     <Rect width={48} height={48} rx={24} fill="#E95050" />
     <Path
       d="m33.333 16.547-1.88-1.88L24 22.12l-7.453-7.453-1.88 1.88L22.12 24l-7.453 7.454 1.88 1.88L24 25.88l7.453 7.454 1.88-1.88L25.88 24l7.453-7.453Z"
@@ -257,6 +256,16 @@ export function CheckIcon({ fill = "#35A63A" }: { fill?: string }) {
   );
 }
 
+export function IconCheckmark({
+  size = 32,
+  color,
+}: {
+  size?: number;
+  color?: string;
+}): JSX.Element {
+  return <MaterialIcons name="check" size={size} color={color} />;
+}
+
 export function QuestionIcon({
   fill = "#A1A1AA",
   ...props
@@ -271,8 +280,7 @@ export function QuestionIcon({
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 56 56"
-      {...props}
-    >
+      {...props}>
       <Path
         d="M28.335 5C15.468 5 5 15.468 5 28.335S15.468 51.67 28.335 51.67 51.67 41.202 51.67 28.335 41.202 5 28.335 5Zm-.972 36.947a2.918 2.918 0 0 1 0-5.834 2.918 2.918 0 0 1 0 5.834Zm8.383-17.254c-.601.962-1.742 2.044-3.427 3.245-2.724 2.015-2.65 2.462-2.65 4.286h-4.778c0-1.425-.031-2.52.74-3.852.491-.854 1.393-1.762 2.704-2.723 1.573-1.123 3.102-2.207 3.102-4.093 0-1.767-1.513-2.398-3.28-2.398-1.803 0-3.859.59-6.167 1.768l-1.966-3.947c4.194-2.351 10.814-3.415 14.432-.469 2.657 2.164 2.672 5.97 1.29 8.183Z"
         fill={fill}
@@ -296,8 +304,7 @@ export function WarningIcon({
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 56 56"
       style={{ alignSelf: "center" }}
-      {...props}
-    >
+      {...props}>
       <Path
         d="M10.43 47.842h35.14c3.593 0 5.833-3.897 4.037-7l-17.57-30.357c-1.797-3.103-6.277-3.103-8.074 0L6.393 40.842c-1.796 3.103.444 7 4.037 7ZM28 31.51a2.34 2.34 0 0 1-2.333-2.334V24.51A2.34 2.34 0 0 1 28 22.175a2.34 2.34 0 0 1 2.333 2.334v4.666A2.34 2.34 0 0 1 28 31.51Zm2.333 9.333h-4.666v-4.667h4.666v4.667Z"
         fill={fill}
@@ -321,8 +328,7 @@ export function EyeIcon({
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 40 40"
       style={{ alignSelf: "center" }}
-      {...props}
-    >
+      {...props}>
       <Path
         d="M20 10.783c4.6 0 8.334 3.734 8.334 8.334 0 .85-.167 1.666-.4 2.433l5.1 5.1a19.67 19.67 0 0 0 5.3-7.55C35.45 11.8 28.334 6.617 20 6.617c-2.116 0-4.15.333-6.066.95l3.616 3.616c.784-.233 1.6-.4 2.45-.4ZM4.517 5.217c-.65.65-.65 1.7 0 2.35L7.8 10.85C5.1 13 2.95 15.833 1.667 19.117c2.883 7.316 10 12.5 18.333 12.5 2.534 0 4.95-.5 7.184-1.367l4.533 4.533c.65.65 1.7.65 2.35 0 .65-.65.65-1.7 0-2.35L6.884 5.217a1.68 1.68 0 0 0-2.367 0ZM20 27.45a8.336 8.336 0 0 1-8.333-8.333c0-1.284.3-2.5.817-3.567l2.616 2.617c-.05.3-.1.616-.1.95 0 2.766 2.234 5 5 5 .334 0 .634-.05.95-.117l2.617 2.617A8.02 8.02 0 0 1 20 27.45Zm4.95-8.883a4.948 4.948 0 0 0-4.4-4.4l4.4 4.4Z"
         fill={fill}
@@ -334,16 +340,18 @@ export function EyeIcon({
 export function ExpandCollapseIcon({
   isExpanded,
   size = 24,
+  color,
 }: {
   isExpanded: boolean;
   size?: number;
+  color?: string;
 }): JSX.Element {
   const theme = useTheme();
   return (
     <MaterialIcons
       name={isExpanded ? "keyboard-arrow-up" : "keyboard-arrow-down"}
       size={size}
-      color={theme.custom.colors.fontColor}
+      color={color ? color : theme.custom.colors.fontColor}
     />
   );
 }

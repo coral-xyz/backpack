@@ -20,6 +20,7 @@ export const EmojiPickerComponent = ({
   return (
     <>
       <IconButton
+        size={"small"}
         style={{ color: theme.custom.colors.icon }}
         onClick={(e) => {
           setEmojiPicker((x) => !x);
@@ -31,7 +32,7 @@ export const EmojiPickerComponent = ({
       >
         {" "}
         <SentimentVerySatisfiedIcon
-          style={{ color: theme.custom.colors.icon }}
+          style={{ color: theme.custom.colors.icon, fontSize: 20 }}
         />{" "}
       </IconButton>
       <Popover
@@ -40,11 +41,13 @@ export const EmojiPickerComponent = ({
         anchorEl={anchorEl}
         onClose={() => setEmojiPicker(false)}
         anchorOrigin={{
-          vertical: "bottom",
+          vertical: "top",
           horizontal: "right",
         }}
+        style={{ marginBottom: 10 }}
       >
         <EmojiPicker
+          previewConfig={{ showPreview: false }}
           theme={isDarkMode ? Theme.DARK : Theme.LIGHT}
           height={400}
           width={"100%"}

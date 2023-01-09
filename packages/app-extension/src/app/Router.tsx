@@ -1,4 +1,5 @@
-import { Suspense, useEffect } from "react";
+import React, { Suspense, useEffect } from "react";
+import { ToastContainer } from "react-toastify";
 import type { Blockchain, FeeConfig } from "@coral-xyz/common";
 import {
   EXTENSION_HEIGHT,
@@ -12,7 +13,11 @@ import {
   QUERY_LOCKED,
   toTitleCase,
 } from "@coral-xyz/common";
-import { SignalingManager } from "@coral-xyz/db";
+import {
+  refreshFriendships,
+  refreshGroups,
+  SignalingManager,
+} from "@coral-xyz/db";
 import { EmptyState } from "@coral-xyz/react-common";
 import {
   KeyringStoreStateEnum,
@@ -24,7 +29,7 @@ import {
   useKeyringStoreState,
   useUser,
 } from "@coral-xyz/recoil";
-import { styles } from "@coral-xyz/themes";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Block as BlockIcon } from "@mui/icons-material";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -41,14 +46,23 @@ import { WithAuth } from "../components/Unlocked/WithAuth";
 import { refreshFeatureGates } from "../gates/FEATURES";
 import { sanitizeTransactionWithFeeConfig } from "../utils/solana";
 
+import { DbRecoilSync } from "./DbRecoilSync";
+
 import "./App.css";
 
 const logger = getLogger("router");
 
 export function Router() {
+  const theme = useCustomTheme();
   return (
     <WithSuspense>
-      <_Router />
+      <>
+        <ToastContainer
+          toastStyle={{ backgroundColor: theme.custom.colors.background }}
+        />
+        <DbRecoilSync />
+        <_Router />
+      </>
     </WithSuspense>
   );
 }
@@ -59,6 +73,8 @@ function _Router() {
   const { uuid } = useUser();
 
   useEffect(() => {
+    refreshFriendships(uuid);
+    refreshGroups(uuid).catch((e) => console.error(e));
     SignalingManager.getInstance().updateUuid(uuid);
   }, [uuid]);
 
@@ -99,7 +115,6 @@ function PopupView() {
 //
 function PopupRouter() {
   logger.debug("app router search", window.location.search);
-
   //
   // Extract the url query parameters for routing dispatch.
   //

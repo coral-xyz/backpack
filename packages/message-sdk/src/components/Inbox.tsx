@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import type { EnrichedInboxDb } from "@coral-xyz/common";
+import { SearchBox } from "@coral-xyz/app-extension/src/components/Unlocked/Messages/SearchBox";
+import type { RemoteUserData } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
-import { useActiveChats, useRequestsCount } from "@coral-xyz/db";
+import { refreshFriendships } from "@coral-xyz/db";
 import { EmptyState, TextInput } from "@coral-xyz/react-common";
-import { useUser } from "@coral-xyz/recoil";
-import { useCustomTheme } from "@coral-xyz/themes";
+import { useFriendships, useRequestsCount, useUser } from "@coral-xyz/recoil";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
-import SearchIcon from "@mui/icons-material/Search";
-import InputAdornment from "@mui/material/InputAdornment";
+import { useRecoilState } from "recoil";
 
 import { ParentCommunicationManager } from "../ParentCommunicationManager";
 
@@ -16,64 +16,67 @@ import { MessagesSkeleton } from "./MessagesSkeleton";
 import { useStyles } from "./styles";
 import { UserList } from "./UserList";
 
+let debouncedTimer;
+
 export function Inbox() {
   const classes = useStyles();
   const { uuid } = useUser();
+  const activeChats = useFriendships({ uuid });
+  const requestCount = useRequestsCount({ uuid });
+  const [searchResults, setSearchResults] = useState<RemoteUserData[]>([]);
   const [searchFilter, setSearchFilter] = useState("");
-  const [messagesLoading, setMessagesLoading] = useState(false);
-  const activeChats = useActiveChats(uuid) || [];
-  // const [activeChats, setActiveChats] = useState<EnrichedInboxDb[]>([]);
-  const requestCount = useRequestsCount(uuid) || 0;
-  const [searchResults, setSearchResults] = useState<
-    { image: string; id: string; username: string }[]
-  >([]);
-  const theme = useCustomTheme();
+  const [refreshing, setRefreshing] = useState(true);
 
   const searchedUsersDistinct = searchResults.filter(
     (result) =>
-      !activeChats.map((x) => x.remoteUsername).includes(result.username)
+      !activeChats?.map((x) => x.remoteUsername).includes(result.username)
   );
+
+  useEffect(() => {
+    refreshFriendships(uuid)
+      .then(() => setRefreshing(false))
+      .catch(() => setRefreshing(false));
+  }, [uuid]);
+
+  const debouncedInit = () => {
+    clearTimeout(debouncedTimer);
+    debouncedTimer = setTimeout(() => {
+      handleContactSearch();
+    }, 250);
+  };
+
+  const handleContactSearch = async () => {
+    if (searchFilter.length >= 3) {
+      const response = await ParentCommunicationManager.getInstance().fetch(
+        `${BACKEND_API_URL}/users?usernamePrefix=${searchFilter}`
+      );
+      const json = await response.json();
+      setSearchResults(
+        json.users.sort((a, b) =>
+          a.username.length < b.username.length ? -1 : 1
+        ) || []
+      );
+    } else {
+      setSearchResults([]);
+    }
+  };
 
   return (
     <div
       className={classes.container}
       style={{ marginTop: "8px", display: "flex", flexDirection: "column" }}
     >
-      <TextInput
-        className={classes.searchField}
-        placeholder={"Search for people"}
-        value={searchFilter}
-        startAdornment={
-          <InputAdornment position="start">
-            <SearchIcon style={{ color: theme.custom.colors.icon }} />
-          </InputAdornment>
-        }
-        setValue={async (e) => {
-          const prefix = e.target.value;
+      <SearchBox
+        onChange={async (prefix: string) => {
           setSearchFilter(prefix);
-          if (prefix.length >= 3) {
-            //TODO debounce
-            const res = await ParentCommunicationManager.getInstance().fetch(
-              `${BACKEND_API_URL}/users?usernamePrefix=${prefix}`
-            );
-            const json = await res.json();
-            setSearchResults(
-              json.users.sort((a, b) =>
-                a.username.length < b.username.length ? -1 : 1
-              ) || []
-            );
-          } else {
-            setSearchResults([]);
-          }
-        }}
-        inputProps={{
-          style: {
-            height: "48px",
-          },
+          debouncedInit();
         }}
       />
-      {messagesLoading && <MessagesSkeleton />}
-      {!messagesLoading &&
+      {(!activeChats || (refreshing && !activeChats.length)) && (
+        <MessagesSkeleton />
+      )}
+      {activeChats &&
+        (activeChats.length || !refreshing) &&
         (activeChats.filter((x) => x.remoteUsername.includes(searchFilter))
           .length > 0 ||
           requestCount > 0) && (
@@ -92,10 +95,14 @@ export function Inbox() {
       {searchFilter.length >= 3 && searchedUsersDistinct.length !== 0 && (
         <div style={{ marginTop: 30 }}>
           <div className={classes.topLabel}>Other people</div>
-          <UserList users={searchedUsersDistinct} />
+          <UserList
+            users={searchedUsersDistinct}
+            setMembers={setSearchResults}
+          />
         </div>
       )}
-      {!messagesLoading &&
+      {activeChats &&
+        (activeChats.length || !refreshing) &&
         searchFilter.length < 3 &&
         requestCount === 0 &&
         activeChats.length === 0 && (

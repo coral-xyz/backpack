@@ -23,7 +23,7 @@ export function AvatarHeader() {
   };
 
   return (
-    <div style={{ marginTop: "16px", marginBottom: "36px" }}>
+    <div style={{ marginTop: "12px", marginBottom: "24px" }}>
       <AvatarWrapper onClick={onClick}>
         <ProxyImage
           key={avatarUrl}

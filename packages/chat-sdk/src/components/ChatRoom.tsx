@@ -60,12 +60,17 @@ export const ChatRoom = ({
     text: "",
   });
   const chats = useRoomChatsWithMetadata(userId, roomId, type);
+  const [refreshing, setRefreshing] = useState(true);
 
   useEffect(() => {
     if (roomId) {
       refreshChatsFor(userId, roomId, type, nftMint, publicKey)
-        .then(() => {})
-        .catch((e) => {});
+        .then(() => {
+          setRefreshing(false);
+        })
+        .catch((e) => {
+          setRefreshing(false);
+        });
     }
   }, [roomId, userId, type]);
 
@@ -113,7 +118,7 @@ export const ChatRoom = ({
     <ChatProvider
       activeReply={activeReply}
       setActiveReply={setActiveReply}
-      loading={!chats}
+      loading={!chats || (chats.length === 0 && refreshing)}
       roomId={roomId}
       chats={chats || []}
       userId={userId}

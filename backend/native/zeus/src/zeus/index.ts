@@ -1190,6 +1190,166 @@ export type ValueTypes = {
       | ValueTypes["auth_collection_messages_bool_exp"]
       | Variable<any, string>;
   };
+  /** columns and relationships of "auth.collections" */
+  ["auth_collections"]: AliasType<{
+    collection_id?: boolean | `@${string}`;
+    id?: boolean | `@${string}`;
+    last_message?: boolean | `@${string}`;
+    last_message_uuid?: boolean | `@${string}`;
+    type?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Boolean expression to filter rows from the table "auth.collections". All fields are combined with a logical 'AND'. */
+  ["auth_collections_bool_exp"]: {
+    _and?:
+      | Array<ValueTypes["auth_collections_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    _not?:
+      | ValueTypes["auth_collections_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    _or?:
+      | Array<ValueTypes["auth_collections_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    collection_id?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?:
+      | ValueTypes["Int_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    last_message?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    last_message_uuid?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    type?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** unique or primary key constraints on table "auth.collections" */
+  ["auth_collections_constraint"]: auth_collections_constraint;
+  /** input type for incrementing numeric columns in table "auth.collections" */
+  ["auth_collections_inc_input"]: {
+    id?: number | undefined | null | Variable<any, string>;
+  };
+  /** input type for inserting data into table "auth.collections" */
+  ["auth_collections_insert_input"]: {
+    collection_id?: string | undefined | null | Variable<any, string>;
+    id?: number | undefined | null | Variable<any, string>;
+    last_message?: string | undefined | null | Variable<any, string>;
+    last_message_uuid?: string | undefined | null | Variable<any, string>;
+    type?: string | undefined | null | Variable<any, string>;
+  };
+  /** response of any mutation on the table "auth.collections" */
+  ["auth_collections_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ValueTypes["auth_collections"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "auth.collections" */
+  ["auth_collections_on_conflict"]: {
+    constraint:
+      | ValueTypes["auth_collections_constraint"]
+      | Variable<any, string>;
+    update_columns:
+      | Array<ValueTypes["auth_collections_update_column"]>
+      | Variable<any, string>;
+    where?:
+      | ValueTypes["auth_collections_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Ordering options when selecting data from "auth.collections". */
+  ["auth_collections_order_by"]: {
+    collection_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    last_message?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    last_message_uuid?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    type?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** primary key columns input for table: auth.collections */
+  ["auth_collections_pk_columns_input"]: {
+    id: number | Variable<any, string>;
+  };
+  /** select columns of table "auth.collections" */
+  ["auth_collections_select_column"]: auth_collections_select_column;
+  /** input type for updating data in table "auth.collections" */
+  ["auth_collections_set_input"]: {
+    collection_id?: string | undefined | null | Variable<any, string>;
+    id?: number | undefined | null | Variable<any, string>;
+    last_message?: string | undefined | null | Variable<any, string>;
+    last_message_uuid?: string | undefined | null | Variable<any, string>;
+    type?: string | undefined | null | Variable<any, string>;
+  };
+  /** Streaming cursor of the table "auth_collections" */
+  ["auth_collections_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value:
+      | ValueTypes["auth_collections_stream_cursor_value_input"]
+      | Variable<any, string>;
+    /** cursor ordering */
+    ordering?:
+      | ValueTypes["cursor_ordering"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_collections_stream_cursor_value_input"]: {
+    collection_id?: string | undefined | null | Variable<any, string>;
+    id?: number | undefined | null | Variable<any, string>;
+    last_message?: string | undefined | null | Variable<any, string>;
+    last_message_uuid?: string | undefined | null | Variable<any, string>;
+    type?: string | undefined | null | Variable<any, string>;
+  };
+  /** update columns of table "auth.collections" */
+  ["auth_collections_update_column"]: auth_collections_update_column;
+  ["auth_collections_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?:
+      | ValueTypes["auth_collections_inc_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    /** sets the columns of the filtered rows to the given values */
+    _set?:
+      | ValueTypes["auth_collections_set_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    where: ValueTypes["auth_collections_bool_exp"] | Variable<any, string>;
+  };
   /** columns and relationships of "auth.friend_requests" */
   ["auth_friend_requests"]: AliasType<{
     from?: boolean | `@${string}`;
@@ -2142,6 +2302,74 @@ export type ValueTypes = {
     /** An object relationship */
     user?: ValueTypes["auth_users"];
     user_id?: boolean | `@${string}`;
+    user_nfts?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_user_nfts_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_user_nfts_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_user_nfts_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_user_nfts"]
+    ];
+    user_nfts_aggregate?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_user_nfts_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_user_nfts_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_user_nfts_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_user_nfts_aggregate"]
+    ];
     __typename?: boolean | `@${string}`;
   }>;
   /** aggregated selection of "auth.public_keys" */
@@ -2318,6 +2546,16 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    user_nfts?:
+      | ValueTypes["auth_user_nfts_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    user_nfts_aggregate?:
+      | ValueTypes["auth_user_nfts_aggregate_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
   };
   /** unique or primary key constraints on table "auth.public_keys" */
   ["auth_public_keys_constraint"]: auth_public_keys_constraint;
@@ -2331,6 +2569,11 @@ export type ValueTypes = {
       | null
       | Variable<any, string>;
     user_id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
+    user_nfts?:
+      | ValueTypes["auth_user_nfts_arr_rel_insert_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
   };
   /** aggregate max on columns */
   ["auth_public_keys_max_fields"]: AliasType<{
@@ -2398,6 +2641,16 @@ export type ValueTypes = {
     returning?: ValueTypes["auth_public_keys"];
     __typename?: boolean | `@${string}`;
   }>;
+  /** input type for inserting object relation for remote table "auth.public_keys" */
+  ["auth_public_keys_obj_rel_insert_input"]: {
+    data: ValueTypes["auth_public_keys_insert_input"] | Variable<any, string>;
+    /** upsert condition */
+    on_conflict?:
+      | ValueTypes["auth_public_keys_on_conflict"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
   /** on_conflict condition type for table "auth.public_keys" */
   ["auth_public_keys_on_conflict"]: {
     constraint:
@@ -2436,6 +2689,11 @@ export type ValueTypes = {
       | null
       | Variable<any, string>;
     user_id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    user_nfts_aggregate?:
+      | ValueTypes["auth_user_nfts_aggregate_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
   };
   /** select columns of table "auth.public_keys" */
   ["auth_public_keys_select_column"]: auth_public_keys_select_column;
@@ -2691,11 +2949,84 @@ export type ValueTypes = {
   };
   /** columns and relationships of "auth.user_nfts" */
   ["auth_user_nfts"]: AliasType<{
+    blockchain?: boolean | `@${string}`;
     collection_id?: boolean | `@${string}`;
     nft_id?: boolean | `@${string}`;
+    /** An object relationship */
+    publicKeyByBlockchainPublicKey?: ValueTypes["auth_public_keys"];
     public_key?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
+  /** aggregated selection of "auth.user_nfts" */
+  ["auth_user_nfts_aggregate"]: AliasType<{
+    aggregate?: ValueTypes["auth_user_nfts_aggregate_fields"];
+    nodes?: ValueTypes["auth_user_nfts"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  ["auth_user_nfts_aggregate_bool_exp"]: {
+    count?:
+      | ValueTypes["auth_user_nfts_aggregate_bool_exp_count"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  ["auth_user_nfts_aggregate_bool_exp_count"]: {
+    arguments?:
+      | Array<ValueTypes["auth_user_nfts_select_column"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    distinct?: boolean | undefined | null | Variable<any, string>;
+    filter?:
+      | ValueTypes["auth_user_nfts_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    predicate: ValueTypes["Int_comparison_exp"] | Variable<any, string>;
+  };
+  /** aggregate fields of "auth.user_nfts" */
+  ["auth_user_nfts_aggregate_fields"]: AliasType<{
+    count?: [
+      {
+        columns?:
+          | Array<ValueTypes["auth_user_nfts_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string>;
+        distinct?: boolean | undefined | null | Variable<any, string>;
+      },
+      boolean | `@${string}`
+    ];
+    max?: ValueTypes["auth_user_nfts_max_fields"];
+    min?: ValueTypes["auth_user_nfts_min_fields"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** order by aggregate values of table "auth.user_nfts" */
+  ["auth_user_nfts_aggregate_order_by"]: {
+    count?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    max?:
+      | ValueTypes["auth_user_nfts_max_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    min?:
+      | ValueTypes["auth_user_nfts_min_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** input type for inserting array relation for remote table "auth.user_nfts" */
+  ["auth_user_nfts_arr_rel_insert_input"]: {
+    data:
+      | Array<ValueTypes["auth_user_nfts_insert_input"]>
+      | Variable<any, string>;
+    /** upsert condition */
+    on_conflict?:
+      | ValueTypes["auth_user_nfts_on_conflict"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
   /** Boolean expression to filter rows from the table "auth.user_nfts". All fields are combined with a logical 'AND'. */
   ["auth_user_nfts_bool_exp"]: {
     _and?:
@@ -2713,6 +3044,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    blockchain?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     collection_id?:
       | ValueTypes["String_comparison_exp"]
       | undefined
@@ -2720,6 +3056,11 @@ export type ValueTypes = {
       | Variable<any, string>;
     nft_id?:
       | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    publicKeyByBlockchainPublicKey?:
+      | ValueTypes["auth_public_keys_bool_exp"]
       | undefined
       | null
       | Variable<any, string>;
@@ -2733,9 +3074,69 @@ export type ValueTypes = {
   ["auth_user_nfts_constraint"]: auth_user_nfts_constraint;
   /** input type for inserting data into table "auth.user_nfts" */
   ["auth_user_nfts_insert_input"]: {
+    blockchain?: string | undefined | null | Variable<any, string>;
     collection_id?: string | undefined | null | Variable<any, string>;
     nft_id?: string | undefined | null | Variable<any, string>;
+    publicKeyByBlockchainPublicKey?:
+      | ValueTypes["auth_public_keys_obj_rel_insert_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
     public_key?: string | undefined | null | Variable<any, string>;
+  };
+  /** aggregate max on columns */
+  ["auth_user_nfts_max_fields"]: AliasType<{
+    blockchain?: boolean | `@${string}`;
+    collection_id?: boolean | `@${string}`;
+    nft_id?: boolean | `@${string}`;
+    public_key?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** order by max() on columns of table "auth.user_nfts" */
+  ["auth_user_nfts_max_order_by"]: {
+    blockchain?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    collection_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    nft_id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    public_key?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** aggregate min on columns */
+  ["auth_user_nfts_min_fields"]: AliasType<{
+    blockchain?: boolean | `@${string}`;
+    collection_id?: boolean | `@${string}`;
+    nft_id?: boolean | `@${string}`;
+    public_key?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** order by min() on columns of table "auth.user_nfts" */
+  ["auth_user_nfts_min_order_by"]: {
+    blockchain?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    collection_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    nft_id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    public_key?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
   };
   /** response of any mutation on the table "auth.user_nfts" */
   ["auth_user_nfts_mutation_response"]: AliasType<{
@@ -2759,12 +3160,22 @@ export type ValueTypes = {
   };
   /** Ordering options when selecting data from "auth.user_nfts". */
   ["auth_user_nfts_order_by"]: {
+    blockchain?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     collection_id?:
       | ValueTypes["order_by"]
       | undefined
       | null
       | Variable<any, string>;
     nft_id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    publicKeyByBlockchainPublicKey?:
+      | ValueTypes["auth_public_keys_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     public_key?:
       | ValueTypes["order_by"]
       | undefined
@@ -2788,6 +3199,7 @@ export type ValueTypes = {
   };
   /** Initial value of the column from where the streaming should start */
   ["auth_user_nfts_stream_cursor_value_input"]: {
+    blockchain?: string | undefined | null | Variable<any, string>;
     collection_id?: string | undefined | null | Variable<any, string>;
     nft_id?: string | undefined | null | Variable<any, string>;
     public_key?: string | undefined | null | Variable<any, string>;
@@ -3690,6 +4102,17 @@ export type ValueTypes = {
       },
       ValueTypes["auth_collection_messages"]
     ];
+    delete_auth_collections?: [
+      {
+        /** filter the rows which have to be deleted */
+        where: ValueTypes["auth_collections_bool_exp"] | Variable<any, string>;
+      },
+      ValueTypes["auth_collections_mutation_response"]
+    ];
+    delete_auth_collections_by_pk?: [
+      { id: number | Variable<any, string> },
+      ValueTypes["auth_collections"]
+    ];
     delete_auth_friend_requests?: [
       {
         /** filter the rows which have to be deleted */
@@ -3798,6 +4221,34 @@ export type ValueTypes = {
           | Variable<any, string>;
       },
       ValueTypes["auth_collection_messages"]
+    ];
+    insert_auth_collections?: [
+      {
+        /** the rows to be inserted */
+        objects:
+          | Array<ValueTypes["auth_collections_insert_input"]>
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["auth_collections_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_collections_mutation_response"]
+    ];
+    insert_auth_collections_one?: [
+      {
+        /** the row to be inserted */
+        object:
+          | ValueTypes["auth_collections_insert_input"]
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["auth_collections_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_collections"]
     ];
     insert_auth_friend_requests?: [
       {
@@ -4118,6 +4569,60 @@ export type ValueTypes = {
           | Variable<any, string>;
       },
       ValueTypes["auth_collection_messages_mutation_response"]
+    ];
+    update_auth_collections?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ValueTypes["auth_collections_inc_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ValueTypes["auth_collections_set_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** filter the rows which have to be updated */;
+        where: ValueTypes["auth_collections_bool_exp"] | Variable<any, string>;
+      },
+      ValueTypes["auth_collections_mutation_response"]
+    ];
+    update_auth_collections_by_pk?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ValueTypes["auth_collections_inc_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ValueTypes["auth_collections_set_input"]
+          | undefined
+          | null
+          | Variable<any, string>;
+        pk_columns:
+          | ValueTypes["auth_collections_pk_columns_input"]
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_collections"]
+    ];
+    update_auth_collections_many?: [
+      {
+        /** updates to execute, in order */
+        updates:
+          | Array<ValueTypes["auth_collections_updates"]>
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_collections_mutation_response"]
     ];
     update_auth_friendships?: [
       {
@@ -4535,6 +5040,44 @@ export type ValueTypes = {
       },
       ValueTypes["auth_collection_messages"]
     ];
+    auth_collections?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_collections_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_collections_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_collections_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_collections"]
+    ];
+    auth_collections_by_pk?: [
+      { id: number | Variable<any, string> },
+      ValueTypes["auth_collections"]
+    ];
     auth_friend_requests?: [
       {
         /** distinct select on columns */
@@ -4871,6 +5414,40 @@ export type ValueTypes = {
       },
       ValueTypes["auth_user_nfts"]
     ];
+    auth_user_nfts_aggregate?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_user_nfts_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_user_nfts_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_user_nfts_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_user_nfts_aggregate"]
+    ];
     auth_user_nfts_by_pk?: [
       {
         nft_id: string | Variable<any, string>;
@@ -5161,6 +5738,68 @@ export type ValueTypes = {
           | Variable<any, string>;
       },
       ValueTypes["auth_collection_messages"]
+    ];
+    auth_collections?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_collections_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_collections_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_collections_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_collections"]
+    ];
+    auth_collections_by_pk?: [
+      { id: number | Variable<any, string> },
+      ValueTypes["auth_collections"]
+    ];
+    auth_collections_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size:
+          | number
+          | Variable<
+              any,
+              string
+            > /** cursor to stream the results returned by the query */;
+        cursor:
+          | Array<
+              | ValueTypes["auth_collections_stream_cursor_input"]
+              | undefined
+              | null
+            >
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_collections_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_collections"]
     ];
     auth_friend_requests?: [
       {
@@ -5641,6 +6280,40 @@ export type ValueTypes = {
           | Variable<any, string>;
       },
       ValueTypes["auth_user_nfts"]
+    ];
+    auth_user_nfts_aggregate?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_user_nfts_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_user_nfts_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_user_nfts_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_user_nfts_aggregate"]
     ];
     auth_user_nfts_by_pk?: [
       {
@@ -6175,6 +6848,115 @@ export type ResolverInputTypes = {
       | undefined
       | null;
     where: ResolverInputTypes["auth_collection_messages_bool_exp"];
+  };
+  /** columns and relationships of "auth.collections" */
+  ["auth_collections"]: AliasType<{
+    collection_id?: boolean | `@${string}`;
+    id?: boolean | `@${string}`;
+    last_message?: boolean | `@${string}`;
+    last_message_uuid?: boolean | `@${string}`;
+    type?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Boolean expression to filter rows from the table "auth.collections". All fields are combined with a logical 'AND'. */
+  ["auth_collections_bool_exp"]: {
+    _and?:
+      | Array<ResolverInputTypes["auth_collections_bool_exp"]>
+      | undefined
+      | null;
+    _not?: ResolverInputTypes["auth_collections_bool_exp"] | undefined | null;
+    _or?:
+      | Array<ResolverInputTypes["auth_collections_bool_exp"]>
+      | undefined
+      | null;
+    collection_id?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
+    id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
+    last_message?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
+    last_message_uuid?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
+    type?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+  };
+  /** unique or primary key constraints on table "auth.collections" */
+  ["auth_collections_constraint"]: auth_collections_constraint;
+  /** input type for incrementing numeric columns in table "auth.collections" */
+  ["auth_collections_inc_input"]: {
+    id?: number | undefined | null;
+  };
+  /** input type for inserting data into table "auth.collections" */
+  ["auth_collections_insert_input"]: {
+    collection_id?: string | undefined | null;
+    id?: number | undefined | null;
+    last_message?: string | undefined | null;
+    last_message_uuid?: string | undefined | null;
+    type?: string | undefined | null;
+  };
+  /** response of any mutation on the table "auth.collections" */
+  ["auth_collections_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ResolverInputTypes["auth_collections"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "auth.collections" */
+  ["auth_collections_on_conflict"]: {
+    constraint: ResolverInputTypes["auth_collections_constraint"];
+    update_columns: Array<ResolverInputTypes["auth_collections_update_column"]>;
+    where?: ResolverInputTypes["auth_collections_bool_exp"] | undefined | null;
+  };
+  /** Ordering options when selecting data from "auth.collections". */
+  ["auth_collections_order_by"]: {
+    collection_id?: ResolverInputTypes["order_by"] | undefined | null;
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    last_message?: ResolverInputTypes["order_by"] | undefined | null;
+    last_message_uuid?: ResolverInputTypes["order_by"] | undefined | null;
+    type?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** primary key columns input for table: auth.collections */
+  ["auth_collections_pk_columns_input"]: {
+    id: number;
+  };
+  /** select columns of table "auth.collections" */
+  ["auth_collections_select_column"]: auth_collections_select_column;
+  /** input type for updating data in table "auth.collections" */
+  ["auth_collections_set_input"]: {
+    collection_id?: string | undefined | null;
+    id?: number | undefined | null;
+    last_message?: string | undefined | null;
+    last_message_uuid?: string | undefined | null;
+    type?: string | undefined | null;
+  };
+  /** Streaming cursor of the table "auth_collections" */
+  ["auth_collections_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ResolverInputTypes["auth_collections_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ResolverInputTypes["cursor_ordering"] | undefined | null;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_collections_stream_cursor_value_input"]: {
+    collection_id?: string | undefined | null;
+    id?: number | undefined | null;
+    last_message?: string | undefined | null;
+    last_message_uuid?: string | undefined | null;
+    type?: string | undefined | null;
+  };
+  /** update columns of table "auth.collections" */
+  ["auth_collections_update_column"]: auth_collections_update_column;
+  ["auth_collections_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: ResolverInputTypes["auth_collections_inc_input"] | undefined | null;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: ResolverInputTypes["auth_collections_set_input"] | undefined | null;
+    where: ResolverInputTypes["auth_collections_bool_exp"];
   };
   /** columns and relationships of "auth.friend_requests" */
   ["auth_friend_requests"]: AliasType<{
@@ -6845,6 +7627,58 @@ export type ResolverInputTypes = {
     /** An object relationship */
     user?: ResolverInputTypes["auth_users"];
     user_id?: boolean | `@${string}`;
+    user_nfts?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_user_nfts_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_user_nfts_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_user_nfts_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_user_nfts"]
+    ];
+    user_nfts_aggregate?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_user_nfts_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_user_nfts_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_user_nfts_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_user_nfts_aggregate"]
+    ];
     __typename?: boolean | `@${string}`;
   }>;
   /** aggregated selection of "auth.public_keys" */
@@ -6974,6 +7808,14 @@ export type ResolverInputTypes = {
     public_key?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     user?: ResolverInputTypes["auth_users_bool_exp"] | undefined | null;
     user_id?: ResolverInputTypes["uuid_comparison_exp"] | undefined | null;
+    user_nfts?:
+      | ResolverInputTypes["auth_user_nfts_bool_exp"]
+      | undefined
+      | null;
+    user_nfts_aggregate?:
+      | ResolverInputTypes["auth_user_nfts_aggregate_bool_exp"]
+      | undefined
+      | null;
   };
   /** unique or primary key constraints on table "auth.public_keys" */
   ["auth_public_keys_constraint"]: auth_public_keys_constraint;
@@ -6986,6 +7828,10 @@ export type ResolverInputTypes = {
       | undefined
       | null;
     user_id?: ResolverInputTypes["uuid"] | undefined | null;
+    user_nfts?:
+      | ResolverInputTypes["auth_user_nfts_arr_rel_insert_input"]
+      | undefined
+      | null;
   };
   /** aggregate max on columns */
   ["auth_public_keys_max_fields"]: AliasType<{
@@ -7029,6 +7875,15 @@ export type ResolverInputTypes = {
     returning?: ResolverInputTypes["auth_public_keys"];
     __typename?: boolean | `@${string}`;
   }>;
+  /** input type for inserting object relation for remote table "auth.public_keys" */
+  ["auth_public_keys_obj_rel_insert_input"]: {
+    data: ResolverInputTypes["auth_public_keys_insert_input"];
+    /** upsert condition */
+    on_conflict?:
+      | ResolverInputTypes["auth_public_keys_on_conflict"]
+      | undefined
+      | null;
+  };
   /** on_conflict condition type for table "auth.public_keys" */
   ["auth_public_keys_on_conflict"]: {
     constraint: ResolverInputTypes["auth_public_keys_constraint"];
@@ -7043,6 +7898,10 @@ export type ResolverInputTypes = {
     public_key?: ResolverInputTypes["order_by"] | undefined | null;
     user?: ResolverInputTypes["auth_users_order_by"] | undefined | null;
     user_id?: ResolverInputTypes["order_by"] | undefined | null;
+    user_nfts_aggregate?:
+      | ResolverInputTypes["auth_user_nfts_aggregate_order_by"]
+      | undefined
+      | null;
   };
   /** select columns of table "auth.public_keys" */
   ["auth_public_keys_select_column"]: auth_public_keys_select_column;
@@ -7245,11 +8104,66 @@ export type ResolverInputTypes = {
   };
   /** columns and relationships of "auth.user_nfts" */
   ["auth_user_nfts"]: AliasType<{
+    blockchain?: boolean | `@${string}`;
     collection_id?: boolean | `@${string}`;
     nft_id?: boolean | `@${string}`;
+    /** An object relationship */
+    publicKeyByBlockchainPublicKey?: ResolverInputTypes["auth_public_keys"];
     public_key?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
+  /** aggregated selection of "auth.user_nfts" */
+  ["auth_user_nfts_aggregate"]: AliasType<{
+    aggregate?: ResolverInputTypes["auth_user_nfts_aggregate_fields"];
+    nodes?: ResolverInputTypes["auth_user_nfts"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  ["auth_user_nfts_aggregate_bool_exp"]: {
+    count?:
+      | ResolverInputTypes["auth_user_nfts_aggregate_bool_exp_count"]
+      | undefined
+      | null;
+  };
+  ["auth_user_nfts_aggregate_bool_exp_count"]: {
+    arguments?:
+      | Array<ResolverInputTypes["auth_user_nfts_select_column"]>
+      | undefined
+      | null;
+    distinct?: boolean | undefined | null;
+    filter?: ResolverInputTypes["auth_user_nfts_bool_exp"] | undefined | null;
+    predicate: ResolverInputTypes["Int_comparison_exp"];
+  };
+  /** aggregate fields of "auth.user_nfts" */
+  ["auth_user_nfts_aggregate_fields"]: AliasType<{
+    count?: [
+      {
+        columns?:
+          | Array<ResolverInputTypes["auth_user_nfts_select_column"]>
+          | undefined
+          | null;
+        distinct?: boolean | undefined | null;
+      },
+      boolean | `@${string}`
+    ];
+    max?: ResolverInputTypes["auth_user_nfts_max_fields"];
+    min?: ResolverInputTypes["auth_user_nfts_min_fields"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** order by aggregate values of table "auth.user_nfts" */
+  ["auth_user_nfts_aggregate_order_by"]: {
+    count?: ResolverInputTypes["order_by"] | undefined | null;
+    max?: ResolverInputTypes["auth_user_nfts_max_order_by"] | undefined | null;
+    min?: ResolverInputTypes["auth_user_nfts_min_order_by"] | undefined | null;
+  };
+  /** input type for inserting array relation for remote table "auth.user_nfts" */
+  ["auth_user_nfts_arr_rel_insert_input"]: {
+    data: Array<ResolverInputTypes["auth_user_nfts_insert_input"]>;
+    /** upsert condition */
+    on_conflict?:
+      | ResolverInputTypes["auth_user_nfts_on_conflict"]
+      | undefined
+      | null;
+  };
   /** Boolean expression to filter rows from the table "auth.user_nfts". All fields are combined with a logical 'AND'. */
   ["auth_user_nfts_bool_exp"]: {
     _and?:
@@ -7261,20 +8175,60 @@ export type ResolverInputTypes = {
       | Array<ResolverInputTypes["auth_user_nfts_bool_exp"]>
       | undefined
       | null;
+    blockchain?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     collection_id?:
       | ResolverInputTypes["String_comparison_exp"]
       | undefined
       | null;
     nft_id?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    publicKeyByBlockchainPublicKey?:
+      | ResolverInputTypes["auth_public_keys_bool_exp"]
+      | undefined
+      | null;
     public_key?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
   };
   /** unique or primary key constraints on table "auth.user_nfts" */
   ["auth_user_nfts_constraint"]: auth_user_nfts_constraint;
   /** input type for inserting data into table "auth.user_nfts" */
   ["auth_user_nfts_insert_input"]: {
+    blockchain?: string | undefined | null;
     collection_id?: string | undefined | null;
     nft_id?: string | undefined | null;
+    publicKeyByBlockchainPublicKey?:
+      | ResolverInputTypes["auth_public_keys_obj_rel_insert_input"]
+      | undefined
+      | null;
     public_key?: string | undefined | null;
+  };
+  /** aggregate max on columns */
+  ["auth_user_nfts_max_fields"]: AliasType<{
+    blockchain?: boolean | `@${string}`;
+    collection_id?: boolean | `@${string}`;
+    nft_id?: boolean | `@${string}`;
+    public_key?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** order by max() on columns of table "auth.user_nfts" */
+  ["auth_user_nfts_max_order_by"]: {
+    blockchain?: ResolverInputTypes["order_by"] | undefined | null;
+    collection_id?: ResolverInputTypes["order_by"] | undefined | null;
+    nft_id?: ResolverInputTypes["order_by"] | undefined | null;
+    public_key?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** aggregate min on columns */
+  ["auth_user_nfts_min_fields"]: AliasType<{
+    blockchain?: boolean | `@${string}`;
+    collection_id?: boolean | `@${string}`;
+    nft_id?: boolean | `@${string}`;
+    public_key?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** order by min() on columns of table "auth.user_nfts" */
+  ["auth_user_nfts_min_order_by"]: {
+    blockchain?: ResolverInputTypes["order_by"] | undefined | null;
+    collection_id?: ResolverInputTypes["order_by"] | undefined | null;
+    nft_id?: ResolverInputTypes["order_by"] | undefined | null;
+    public_key?: ResolverInputTypes["order_by"] | undefined | null;
   };
   /** response of any mutation on the table "auth.user_nfts" */
   ["auth_user_nfts_mutation_response"]: AliasType<{
@@ -7292,8 +8246,13 @@ export type ResolverInputTypes = {
   };
   /** Ordering options when selecting data from "auth.user_nfts". */
   ["auth_user_nfts_order_by"]: {
+    blockchain?: ResolverInputTypes["order_by"] | undefined | null;
     collection_id?: ResolverInputTypes["order_by"] | undefined | null;
     nft_id?: ResolverInputTypes["order_by"] | undefined | null;
+    publicKeyByBlockchainPublicKey?:
+      | ResolverInputTypes["auth_public_keys_order_by"]
+      | undefined
+      | null;
     public_key?: ResolverInputTypes["order_by"] | undefined | null;
   };
   /** select columns of table "auth.user_nfts" */
@@ -7307,6 +8266,7 @@ export type ResolverInputTypes = {
   };
   /** Initial value of the column from where the streaming should start */
   ["auth_user_nfts_stream_cursor_value_input"]: {
+    blockchain?: string | undefined | null;
     collection_id?: string | undefined | null;
     nft_id?: string | undefined | null;
     public_key?: string | undefined | null;
@@ -7943,6 +8903,17 @@ export type ResolverInputTypes = {
       { collection_id: string; uuid: string },
       ResolverInputTypes["auth_collection_messages"]
     ];
+    delete_auth_collections?: [
+      {
+        /** filter the rows which have to be deleted */
+        where: ResolverInputTypes["auth_collections_bool_exp"];
+      },
+      ResolverInputTypes["auth_collections_mutation_response"]
+    ];
+    delete_auth_collections_by_pk?: [
+      { id: number },
+      ResolverInputTypes["auth_collections"]
+    ];
     delete_auth_friend_requests?: [
       {
         /** filter the rows which have to be deleted */
@@ -8032,6 +9003,30 @@ export type ResolverInputTypes = {
           | null;
       },
       ResolverInputTypes["auth_collection_messages"]
+    ];
+    insert_auth_collections?: [
+      {
+        /** the rows to be inserted */
+        objects: Array<
+          ResolverInputTypes["auth_collections_insert_input"]
+        > /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["auth_collections_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_collections_mutation_response"]
+    ];
+    insert_auth_collections_one?: [
+      {
+        /** the row to be inserted */
+        object: ResolverInputTypes["auth_collections_insert_input"] /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["auth_collections_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_collections"]
     ];
     insert_auth_friend_requests?: [
       {
@@ -8301,6 +9296,43 @@ export type ResolverInputTypes = {
         updates: Array<ResolverInputTypes["auth_collection_messages_updates"]>;
       },
       ResolverInputTypes["auth_collection_messages_mutation_response"]
+    ];
+    update_auth_collections?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ResolverInputTypes["auth_collections_inc_input"]
+          | undefined
+          | null /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ResolverInputTypes["auth_collections_set_input"]
+          | undefined
+          | null /** filter the rows which have to be updated */;
+        where: ResolverInputTypes["auth_collections_bool_exp"];
+      },
+      ResolverInputTypes["auth_collections_mutation_response"]
+    ];
+    update_auth_collections_by_pk?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ResolverInputTypes["auth_collections_inc_input"]
+          | undefined
+          | null /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ResolverInputTypes["auth_collections_set_input"]
+          | undefined
+          | null;
+        pk_columns: ResolverInputTypes["auth_collections_pk_columns_input"];
+      },
+      ResolverInputTypes["auth_collections"]
+    ];
+    update_auth_collections_many?: [
+      {
+        /** updates to execute, in order */
+        updates: Array<ResolverInputTypes["auth_collections_updates"]>;
+      },
+      ResolverInputTypes["auth_collections_mutation_response"]
     ];
     update_auth_friendships?: [
       {
@@ -8587,6 +9619,36 @@ export type ResolverInputTypes = {
       { collection_id: string; uuid: string },
       ResolverInputTypes["auth_collection_messages"]
     ];
+    auth_collections?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_collections_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_collections_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_collections_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_collections"]
+    ];
+    auth_collections_by_pk?: [
+      { id: number },
+      ResolverInputTypes["auth_collections"]
+    ];
     auth_friend_requests?: [
       {
         /** distinct select on columns */
@@ -8849,6 +9911,32 @@ export type ResolverInputTypes = {
       },
       ResolverInputTypes["auth_user_nfts"]
     ];
+    auth_user_nfts_aggregate?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_user_nfts_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_user_nfts_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_user_nfts_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_user_nfts_aggregate"]
+    ];
     auth_user_nfts_by_pk?: [
       { nft_id: string; public_key: string },
       ResolverInputTypes["auth_user_nfts"]
@@ -9057,6 +10145,52 @@ export type ResolverInputTypes = {
           | null;
       },
       ResolverInputTypes["auth_collection_messages"]
+    ];
+    auth_collections?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_collections_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_collections_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_collections_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_collections"]
+    ];
+    auth_collections_by_pk?: [
+      { id: number },
+      ResolverInputTypes["auth_collections"]
+    ];
+    auth_collections_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size: number /** cursor to stream the results returned by the query */;
+        cursor: Array<
+          | ResolverInputTypes["auth_collections_stream_cursor_input"]
+          | undefined
+          | null
+        > /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_collections_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_collections"]
     ];
     auth_friend_requests?: [
       {
@@ -9415,6 +10549,32 @@ export type ResolverInputTypes = {
           | null;
       },
       ResolverInputTypes["auth_user_nfts"]
+    ];
+    auth_user_nfts_aggregate?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_user_nfts_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_user_nfts_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_user_nfts_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_user_nfts_aggregate"]
     ];
     auth_user_nfts_by_pk?: [
       { nft_id: string; public_key: string },
@@ -9808,6 +10968,95 @@ export type ModelTypes = {
     /** sets the columns of the filtered rows to the given values */
     _set?: ModelTypes["auth_collection_messages_set_input"] | undefined;
     where: ModelTypes["auth_collection_messages_bool_exp"];
+  };
+  /** columns and relationships of "auth.collections" */
+  ["auth_collections"]: {
+    collection_id?: string | undefined;
+    id: number;
+    last_message?: string | undefined;
+    last_message_uuid?: string | undefined;
+    type: string;
+  };
+  /** Boolean expression to filter rows from the table "auth.collections". All fields are combined with a logical 'AND'. */
+  ["auth_collections_bool_exp"]: {
+    _and?: Array<ModelTypes["auth_collections_bool_exp"]> | undefined;
+    _not?: ModelTypes["auth_collections_bool_exp"] | undefined;
+    _or?: Array<ModelTypes["auth_collections_bool_exp"]> | undefined;
+    collection_id?: ModelTypes["String_comparison_exp"] | undefined;
+    id?: ModelTypes["Int_comparison_exp"] | undefined;
+    last_message?: ModelTypes["String_comparison_exp"] | undefined;
+    last_message_uuid?: ModelTypes["String_comparison_exp"] | undefined;
+    type?: ModelTypes["String_comparison_exp"] | undefined;
+  };
+  ["auth_collections_constraint"]: auth_collections_constraint;
+  /** input type for incrementing numeric columns in table "auth.collections" */
+  ["auth_collections_inc_input"]: {
+    id?: number | undefined;
+  };
+  /** input type for inserting data into table "auth.collections" */
+  ["auth_collections_insert_input"]: {
+    collection_id?: string | undefined;
+    id?: number | undefined;
+    last_message?: string | undefined;
+    last_message_uuid?: string | undefined;
+    type?: string | undefined;
+  };
+  /** response of any mutation on the table "auth.collections" */
+  ["auth_collections_mutation_response"]: {
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<ModelTypes["auth_collections"]>;
+  };
+  /** on_conflict condition type for table "auth.collections" */
+  ["auth_collections_on_conflict"]: {
+    constraint: ModelTypes["auth_collections_constraint"];
+    update_columns: Array<ModelTypes["auth_collections_update_column"]>;
+    where?: ModelTypes["auth_collections_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "auth.collections". */
+  ["auth_collections_order_by"]: {
+    collection_id?: ModelTypes["order_by"] | undefined;
+    id?: ModelTypes["order_by"] | undefined;
+    last_message?: ModelTypes["order_by"] | undefined;
+    last_message_uuid?: ModelTypes["order_by"] | undefined;
+    type?: ModelTypes["order_by"] | undefined;
+  };
+  /** primary key columns input for table: auth.collections */
+  ["auth_collections_pk_columns_input"]: {
+    id: number;
+  };
+  ["auth_collections_select_column"]: auth_collections_select_column;
+  /** input type for updating data in table "auth.collections" */
+  ["auth_collections_set_input"]: {
+    collection_id?: string | undefined;
+    id?: number | undefined;
+    last_message?: string | undefined;
+    last_message_uuid?: string | undefined;
+    type?: string | undefined;
+  };
+  /** Streaming cursor of the table "auth_collections" */
+  ["auth_collections_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ModelTypes["auth_collections_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ModelTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_collections_stream_cursor_value_input"]: {
+    collection_id?: string | undefined;
+    id?: number | undefined;
+    last_message?: string | undefined;
+    last_message_uuid?: string | undefined;
+    type?: string | undefined;
+  };
+  ["auth_collections_update_column"]: auth_collections_update_column;
+  ["auth_collections_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: ModelTypes["auth_collections_inc_input"] | undefined;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: ModelTypes["auth_collections_set_input"] | undefined;
+    where: ModelTypes["auth_collections_bool_exp"];
   };
   /** columns and relationships of "auth.friend_requests" */
   ["auth_friend_requests"]: {
@@ -10329,6 +11578,10 @@ export type ModelTypes = {
     /** An object relationship */
     user?: ModelTypes["auth_users"] | undefined;
     user_id?: ModelTypes["uuid"] | undefined;
+    /** An array relationship */
+    user_nfts: Array<ModelTypes["auth_user_nfts"]>;
+    /** An aggregate relationship */
+    user_nfts_aggregate: ModelTypes["auth_user_nfts_aggregate"];
   };
   /** aggregated selection of "auth.public_keys" */
   ["auth_public_keys_aggregate"]: {
@@ -10399,6 +11652,10 @@ export type ModelTypes = {
     public_key?: ModelTypes["String_comparison_exp"] | undefined;
     user?: ModelTypes["auth_users_bool_exp"] | undefined;
     user_id?: ModelTypes["uuid_comparison_exp"] | undefined;
+    user_nfts?: ModelTypes["auth_user_nfts_bool_exp"] | undefined;
+    user_nfts_aggregate?:
+      | ModelTypes["auth_user_nfts_aggregate_bool_exp"]
+      | undefined;
   };
   ["auth_public_keys_constraint"]: auth_public_keys_constraint;
   /** input type for inserting data into table "auth.public_keys" */
@@ -10407,6 +11664,7 @@ export type ModelTypes = {
     public_key?: string | undefined;
     user?: ModelTypes["auth_users_obj_rel_insert_input"] | undefined;
     user_id?: ModelTypes["uuid"] | undefined;
+    user_nfts?: ModelTypes["auth_user_nfts_arr_rel_insert_input"] | undefined;
   };
   /** aggregate max on columns */
   ["auth_public_keys_max_fields"]: {
@@ -10447,6 +11705,12 @@ export type ModelTypes = {
     /** data from the rows affected by the mutation */
     returning: Array<ModelTypes["auth_public_keys"]>;
   };
+  /** input type for inserting object relation for remote table "auth.public_keys" */
+  ["auth_public_keys_obj_rel_insert_input"]: {
+    data: ModelTypes["auth_public_keys_insert_input"];
+    /** upsert condition */
+    on_conflict?: ModelTypes["auth_public_keys_on_conflict"] | undefined;
+  };
   /** on_conflict condition type for table "auth.public_keys" */
   ["auth_public_keys_on_conflict"]: {
     constraint: ModelTypes["auth_public_keys_constraint"];
@@ -10461,6 +11725,9 @@ export type ModelTypes = {
     public_key?: ModelTypes["order_by"] | undefined;
     user?: ModelTypes["auth_users_order_by"] | undefined;
     user_id?: ModelTypes["order_by"] | undefined;
+    user_nfts_aggregate?:
+      | ModelTypes["auth_user_nfts_aggregate_order_by"]
+      | undefined;
   };
   ["auth_public_keys_select_column"]: auth_public_keys_select_column;
   /** aggregate stddev on columns */
@@ -10626,25 +11893,96 @@ export type ModelTypes = {
   };
   /** columns and relationships of "auth.user_nfts" */
   ["auth_user_nfts"]: {
+    blockchain: string;
     collection_id?: string | undefined;
     nft_id: string;
+    /** An object relationship */
+    publicKeyByBlockchainPublicKey?: ModelTypes["auth_public_keys"] | undefined;
     public_key: string;
+  };
+  /** aggregated selection of "auth.user_nfts" */
+  ["auth_user_nfts_aggregate"]: {
+    aggregate?: ModelTypes["auth_user_nfts_aggregate_fields"] | undefined;
+    nodes: Array<ModelTypes["auth_user_nfts"]>;
+  };
+  ["auth_user_nfts_aggregate_bool_exp"]: {
+    count?: ModelTypes["auth_user_nfts_aggregate_bool_exp_count"] | undefined;
+  };
+  ["auth_user_nfts_aggregate_bool_exp_count"]: {
+    arguments?: Array<ModelTypes["auth_user_nfts_select_column"]> | undefined;
+    distinct?: boolean | undefined;
+    filter?: ModelTypes["auth_user_nfts_bool_exp"] | undefined;
+    predicate: ModelTypes["Int_comparison_exp"];
+  };
+  /** aggregate fields of "auth.user_nfts" */
+  ["auth_user_nfts_aggregate_fields"]: {
+    count: number;
+    max?: ModelTypes["auth_user_nfts_max_fields"] | undefined;
+    min?: ModelTypes["auth_user_nfts_min_fields"] | undefined;
+  };
+  /** order by aggregate values of table "auth.user_nfts" */
+  ["auth_user_nfts_aggregate_order_by"]: {
+    count?: ModelTypes["order_by"] | undefined;
+    max?: ModelTypes["auth_user_nfts_max_order_by"] | undefined;
+    min?: ModelTypes["auth_user_nfts_min_order_by"] | undefined;
+  };
+  /** input type for inserting array relation for remote table "auth.user_nfts" */
+  ["auth_user_nfts_arr_rel_insert_input"]: {
+    data: Array<ModelTypes["auth_user_nfts_insert_input"]>;
+    /** upsert condition */
+    on_conflict?: ModelTypes["auth_user_nfts_on_conflict"] | undefined;
   };
   /** Boolean expression to filter rows from the table "auth.user_nfts". All fields are combined with a logical 'AND'. */
   ["auth_user_nfts_bool_exp"]: {
     _and?: Array<ModelTypes["auth_user_nfts_bool_exp"]> | undefined;
     _not?: ModelTypes["auth_user_nfts_bool_exp"] | undefined;
     _or?: Array<ModelTypes["auth_user_nfts_bool_exp"]> | undefined;
+    blockchain?: ModelTypes["String_comparison_exp"] | undefined;
     collection_id?: ModelTypes["String_comparison_exp"] | undefined;
     nft_id?: ModelTypes["String_comparison_exp"] | undefined;
+    publicKeyByBlockchainPublicKey?:
+      | ModelTypes["auth_public_keys_bool_exp"]
+      | undefined;
     public_key?: ModelTypes["String_comparison_exp"] | undefined;
   };
   ["auth_user_nfts_constraint"]: auth_user_nfts_constraint;
   /** input type for inserting data into table "auth.user_nfts" */
   ["auth_user_nfts_insert_input"]: {
+    blockchain?: string | undefined;
+    collection_id?: string | undefined;
+    nft_id?: string | undefined;
+    publicKeyByBlockchainPublicKey?:
+      | ModelTypes["auth_public_keys_obj_rel_insert_input"]
+      | undefined;
+    public_key?: string | undefined;
+  };
+  /** aggregate max on columns */
+  ["auth_user_nfts_max_fields"]: {
+    blockchain?: string | undefined;
     collection_id?: string | undefined;
     nft_id?: string | undefined;
     public_key?: string | undefined;
+  };
+  /** order by max() on columns of table "auth.user_nfts" */
+  ["auth_user_nfts_max_order_by"]: {
+    blockchain?: ModelTypes["order_by"] | undefined;
+    collection_id?: ModelTypes["order_by"] | undefined;
+    nft_id?: ModelTypes["order_by"] | undefined;
+    public_key?: ModelTypes["order_by"] | undefined;
+  };
+  /** aggregate min on columns */
+  ["auth_user_nfts_min_fields"]: {
+    blockchain?: string | undefined;
+    collection_id?: string | undefined;
+    nft_id?: string | undefined;
+    public_key?: string | undefined;
+  };
+  /** order by min() on columns of table "auth.user_nfts" */
+  ["auth_user_nfts_min_order_by"]: {
+    blockchain?: ModelTypes["order_by"] | undefined;
+    collection_id?: ModelTypes["order_by"] | undefined;
+    nft_id?: ModelTypes["order_by"] | undefined;
+    public_key?: ModelTypes["order_by"] | undefined;
   };
   /** response of any mutation on the table "auth.user_nfts" */
   ["auth_user_nfts_mutation_response"]: {
@@ -10661,8 +11999,12 @@ export type ModelTypes = {
   };
   /** Ordering options when selecting data from "auth.user_nfts". */
   ["auth_user_nfts_order_by"]: {
+    blockchain?: ModelTypes["order_by"] | undefined;
     collection_id?: ModelTypes["order_by"] | undefined;
     nft_id?: ModelTypes["order_by"] | undefined;
+    publicKeyByBlockchainPublicKey?:
+      | ModelTypes["auth_public_keys_order_by"]
+      | undefined;
     public_key?: ModelTypes["order_by"] | undefined;
   };
   ["auth_user_nfts_select_column"]: auth_user_nfts_select_column;
@@ -10675,6 +12017,7 @@ export type ModelTypes = {
   };
   /** Initial value of the column from where the streaming should start */
   ["auth_user_nfts_stream_cursor_value_input"]: {
+    blockchain?: string | undefined;
     collection_id?: string | undefined;
     nft_id?: string | undefined;
     public_key?: string | undefined;
@@ -11110,6 +12453,12 @@ export type ModelTypes = {
     delete_auth_collection_messages_by_pk?:
       | ModelTypes["auth_collection_messages"]
       | undefined;
+    /** delete data from the table: "auth.collections" */
+    delete_auth_collections?:
+      | ModelTypes["auth_collections_mutation_response"]
+      | undefined;
+    /** delete single row from the table: "auth.collections" */
+    delete_auth_collections_by_pk?: ModelTypes["auth_collections"] | undefined;
     /** delete data from the table: "auth.friend_requests" */
     delete_auth_friend_requests?:
       | ModelTypes["auth_friend_requests_mutation_response"]
@@ -11160,6 +12509,12 @@ export type ModelTypes = {
     insert_auth_collection_messages_one?:
       | ModelTypes["auth_collection_messages"]
       | undefined;
+    /** insert data into the table: "auth.collections" */
+    insert_auth_collections?:
+      | ModelTypes["auth_collections_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "auth.collections" */
+    insert_auth_collections_one?: ModelTypes["auth_collections"] | undefined;
     /** insert data into the table: "auth.friend_requests" */
     insert_auth_friend_requests?:
       | ModelTypes["auth_friend_requests_mutation_response"]
@@ -11241,6 +12596,16 @@ export type ModelTypes = {
       | Array<
           ModelTypes["auth_collection_messages_mutation_response"] | undefined
         >
+      | undefined;
+    /** update data of the table: "auth.collections" */
+    update_auth_collections?:
+      | ModelTypes["auth_collections_mutation_response"]
+      | undefined;
+    /** update single row of the table: "auth.collections" */
+    update_auth_collections_by_pk?: ModelTypes["auth_collections"] | undefined;
+    /** update multiples rows of table: "auth.collections" */
+    update_auth_collections_many?:
+      | Array<ModelTypes["auth_collections_mutation_response"] | undefined>
       | undefined;
     /** update data of the table: "auth.friendships" */
     update_auth_friendships?:
@@ -11332,6 +12697,10 @@ export type ModelTypes = {
     auth_collection_messages_by_pk?:
       | ModelTypes["auth_collection_messages"]
       | undefined;
+    /** fetch data from the table: "auth.collections" */
+    auth_collections: Array<ModelTypes["auth_collections"]>;
+    /** fetch data from the table: "auth.collections" using primary key columns */
+    auth_collections_by_pk?: ModelTypes["auth_collections"] | undefined;
     /** fetch data from the table: "auth.friend_requests" */
     auth_friend_requests: Array<ModelTypes["auth_friend_requests"]>;
     /** fetch data from the table: "auth.friend_requests" using primary key columns */
@@ -11366,6 +12735,8 @@ export type ModelTypes = {
     auth_stripe_onramp_by_pk?: ModelTypes["auth_stripe_onramp"] | undefined;
     /** fetch data from the table: "auth.user_nfts" */
     auth_user_nfts: Array<ModelTypes["auth_user_nfts"]>;
+    /** fetch aggregated fields from the table: "auth.user_nfts" */
+    auth_user_nfts_aggregate: ModelTypes["auth_user_nfts_aggregate"];
     /** fetch data from the table: "auth.user_nfts" using primary key columns */
     auth_user_nfts_by_pk?: ModelTypes["auth_user_nfts"] | undefined;
     /** fetch data from the table: "auth.users" */
@@ -11400,6 +12771,12 @@ export type ModelTypes = {
     auth_collection_messages_stream: Array<
       ModelTypes["auth_collection_messages"]
     >;
+    /** fetch data from the table: "auth.collections" */
+    auth_collections: Array<ModelTypes["auth_collections"]>;
+    /** fetch data from the table: "auth.collections" using primary key columns */
+    auth_collections_by_pk?: ModelTypes["auth_collections"] | undefined;
+    /** fetch data from the table in a streaming manner: "auth.collections" */
+    auth_collections_stream: Array<ModelTypes["auth_collections"]>;
     /** fetch data from the table: "auth.friend_requests" */
     auth_friend_requests: Array<ModelTypes["auth_friend_requests"]>;
     /** fetch data from the table: "auth.friend_requests" using primary key columns */
@@ -11448,6 +12825,8 @@ export type ModelTypes = {
     auth_stripe_onramp_stream: Array<ModelTypes["auth_stripe_onramp"]>;
     /** fetch data from the table: "auth.user_nfts" */
     auth_user_nfts: Array<ModelTypes["auth_user_nfts"]>;
+    /** fetch aggregated fields from the table: "auth.user_nfts" */
+    auth_user_nfts_aggregate: ModelTypes["auth_user_nfts_aggregate"];
     /** fetch data from the table: "auth.user_nfts" using primary key columns */
     auth_user_nfts_by_pk?: ModelTypes["auth_user_nfts"] | undefined;
     /** fetch data from the table in a streaming manner: "auth.user_nfts" */
@@ -11644,6 +13023,100 @@ export type GraphQLTypes = {
     /** sets the columns of the filtered rows to the given values */
     _set?: GraphQLTypes["auth_collection_messages_set_input"] | undefined;
     where: GraphQLTypes["auth_collection_messages_bool_exp"];
+  };
+  /** columns and relationships of "auth.collections" */
+  ["auth_collections"]: {
+    __typename: "auth_collections";
+    collection_id?: string | undefined;
+    id: number;
+    last_message?: string | undefined;
+    last_message_uuid?: string | undefined;
+    type: string;
+  };
+  /** Boolean expression to filter rows from the table "auth.collections". All fields are combined with a logical 'AND'. */
+  ["auth_collections_bool_exp"]: {
+    _and?: Array<GraphQLTypes["auth_collections_bool_exp"]> | undefined;
+    _not?: GraphQLTypes["auth_collections_bool_exp"] | undefined;
+    _or?: Array<GraphQLTypes["auth_collections_bool_exp"]> | undefined;
+    collection_id?: GraphQLTypes["String_comparison_exp"] | undefined;
+    id?: GraphQLTypes["Int_comparison_exp"] | undefined;
+    last_message?: GraphQLTypes["String_comparison_exp"] | undefined;
+    last_message_uuid?: GraphQLTypes["String_comparison_exp"] | undefined;
+    type?: GraphQLTypes["String_comparison_exp"] | undefined;
+  };
+  /** unique or primary key constraints on table "auth.collections" */
+  ["auth_collections_constraint"]: auth_collections_constraint;
+  /** input type for incrementing numeric columns in table "auth.collections" */
+  ["auth_collections_inc_input"]: {
+    id?: number | undefined;
+  };
+  /** input type for inserting data into table "auth.collections" */
+  ["auth_collections_insert_input"]: {
+    collection_id?: string | undefined;
+    id?: number | undefined;
+    last_message?: string | undefined;
+    last_message_uuid?: string | undefined;
+    type?: string | undefined;
+  };
+  /** response of any mutation on the table "auth.collections" */
+  ["auth_collections_mutation_response"]: {
+    __typename: "auth_collections_mutation_response";
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<GraphQLTypes["auth_collections"]>;
+  };
+  /** on_conflict condition type for table "auth.collections" */
+  ["auth_collections_on_conflict"]: {
+    constraint: GraphQLTypes["auth_collections_constraint"];
+    update_columns: Array<GraphQLTypes["auth_collections_update_column"]>;
+    where?: GraphQLTypes["auth_collections_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "auth.collections". */
+  ["auth_collections_order_by"]: {
+    collection_id?: GraphQLTypes["order_by"] | undefined;
+    id?: GraphQLTypes["order_by"] | undefined;
+    last_message?: GraphQLTypes["order_by"] | undefined;
+    last_message_uuid?: GraphQLTypes["order_by"] | undefined;
+    type?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** primary key columns input for table: auth.collections */
+  ["auth_collections_pk_columns_input"]: {
+    id: number;
+  };
+  /** select columns of table "auth.collections" */
+  ["auth_collections_select_column"]: auth_collections_select_column;
+  /** input type for updating data in table "auth.collections" */
+  ["auth_collections_set_input"]: {
+    collection_id?: string | undefined;
+    id?: number | undefined;
+    last_message?: string | undefined;
+    last_message_uuid?: string | undefined;
+    type?: string | undefined;
+  };
+  /** Streaming cursor of the table "auth_collections" */
+  ["auth_collections_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: GraphQLTypes["auth_collections_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: GraphQLTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["auth_collections_stream_cursor_value_input"]: {
+    collection_id?: string | undefined;
+    id?: number | undefined;
+    last_message?: string | undefined;
+    last_message_uuid?: string | undefined;
+    type?: string | undefined;
+  };
+  /** update columns of table "auth.collections" */
+  ["auth_collections_update_column"]: auth_collections_update_column;
+  ["auth_collections_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: GraphQLTypes["auth_collections_inc_input"] | undefined;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: GraphQLTypes["auth_collections_set_input"] | undefined;
+    where: GraphQLTypes["auth_collections_bool_exp"];
   };
   /** columns and relationships of "auth.friend_requests" */
   ["auth_friend_requests"]: {
@@ -12208,6 +13681,10 @@ export type GraphQLTypes = {
     /** An object relationship */
     user?: GraphQLTypes["auth_users"] | undefined;
     user_id?: GraphQLTypes["uuid"] | undefined;
+    /** An array relationship */
+    user_nfts: Array<GraphQLTypes["auth_user_nfts"]>;
+    /** An aggregate relationship */
+    user_nfts_aggregate: GraphQLTypes["auth_user_nfts_aggregate"];
   };
   /** aggregated selection of "auth.public_keys" */
   ["auth_public_keys_aggregate"]: {
@@ -12289,6 +13766,10 @@ export type GraphQLTypes = {
     public_key?: GraphQLTypes["String_comparison_exp"] | undefined;
     user?: GraphQLTypes["auth_users_bool_exp"] | undefined;
     user_id?: GraphQLTypes["uuid_comparison_exp"] | undefined;
+    user_nfts?: GraphQLTypes["auth_user_nfts_bool_exp"] | undefined;
+    user_nfts_aggregate?:
+      | GraphQLTypes["auth_user_nfts_aggregate_bool_exp"]
+      | undefined;
   };
   /** unique or primary key constraints on table "auth.public_keys" */
   ["auth_public_keys_constraint"]: auth_public_keys_constraint;
@@ -12298,6 +13779,7 @@ export type GraphQLTypes = {
     public_key?: string | undefined;
     user?: GraphQLTypes["auth_users_obj_rel_insert_input"] | undefined;
     user_id?: GraphQLTypes["uuid"] | undefined;
+    user_nfts?: GraphQLTypes["auth_user_nfts_arr_rel_insert_input"] | undefined;
   };
   /** aggregate max on columns */
   ["auth_public_keys_max_fields"]: {
@@ -12341,6 +13823,12 @@ export type GraphQLTypes = {
     /** data from the rows affected by the mutation */
     returning: Array<GraphQLTypes["auth_public_keys"]>;
   };
+  /** input type for inserting object relation for remote table "auth.public_keys" */
+  ["auth_public_keys_obj_rel_insert_input"]: {
+    data: GraphQLTypes["auth_public_keys_insert_input"];
+    /** upsert condition */
+    on_conflict?: GraphQLTypes["auth_public_keys_on_conflict"] | undefined;
+  };
   /** on_conflict condition type for table "auth.public_keys" */
   ["auth_public_keys_on_conflict"]: {
     constraint: GraphQLTypes["auth_public_keys_constraint"];
@@ -12355,6 +13843,9 @@ export type GraphQLTypes = {
     public_key?: GraphQLTypes["order_by"] | undefined;
     user?: GraphQLTypes["auth_users_order_by"] | undefined;
     user_id?: GraphQLTypes["order_by"] | undefined;
+    user_nfts_aggregate?:
+      | GraphQLTypes["auth_user_nfts_aggregate_order_by"]
+      | undefined;
   };
   /** select columns of table "auth.public_keys" */
   ["auth_public_keys_select_column"]: auth_public_keys_select_column;
@@ -12535,26 +14026,103 @@ export type GraphQLTypes = {
   /** columns and relationships of "auth.user_nfts" */
   ["auth_user_nfts"]: {
     __typename: "auth_user_nfts";
+    blockchain: string;
     collection_id?: string | undefined;
     nft_id: string;
+    /** An object relationship */
+    publicKeyByBlockchainPublicKey?:
+      | GraphQLTypes["auth_public_keys"]
+      | undefined;
     public_key: string;
+  };
+  /** aggregated selection of "auth.user_nfts" */
+  ["auth_user_nfts_aggregate"]: {
+    __typename: "auth_user_nfts_aggregate";
+    aggregate?: GraphQLTypes["auth_user_nfts_aggregate_fields"] | undefined;
+    nodes: Array<GraphQLTypes["auth_user_nfts"]>;
+  };
+  ["auth_user_nfts_aggregate_bool_exp"]: {
+    count?: GraphQLTypes["auth_user_nfts_aggregate_bool_exp_count"] | undefined;
+  };
+  ["auth_user_nfts_aggregate_bool_exp_count"]: {
+    arguments?: Array<GraphQLTypes["auth_user_nfts_select_column"]> | undefined;
+    distinct?: boolean | undefined;
+    filter?: GraphQLTypes["auth_user_nfts_bool_exp"] | undefined;
+    predicate: GraphQLTypes["Int_comparison_exp"];
+  };
+  /** aggregate fields of "auth.user_nfts" */
+  ["auth_user_nfts_aggregate_fields"]: {
+    __typename: "auth_user_nfts_aggregate_fields";
+    count: number;
+    max?: GraphQLTypes["auth_user_nfts_max_fields"] | undefined;
+    min?: GraphQLTypes["auth_user_nfts_min_fields"] | undefined;
+  };
+  /** order by aggregate values of table "auth.user_nfts" */
+  ["auth_user_nfts_aggregate_order_by"]: {
+    count?: GraphQLTypes["order_by"] | undefined;
+    max?: GraphQLTypes["auth_user_nfts_max_order_by"] | undefined;
+    min?: GraphQLTypes["auth_user_nfts_min_order_by"] | undefined;
+  };
+  /** input type for inserting array relation for remote table "auth.user_nfts" */
+  ["auth_user_nfts_arr_rel_insert_input"]: {
+    data: Array<GraphQLTypes["auth_user_nfts_insert_input"]>;
+    /** upsert condition */
+    on_conflict?: GraphQLTypes["auth_user_nfts_on_conflict"] | undefined;
   };
   /** Boolean expression to filter rows from the table "auth.user_nfts". All fields are combined with a logical 'AND'. */
   ["auth_user_nfts_bool_exp"]: {
     _and?: Array<GraphQLTypes["auth_user_nfts_bool_exp"]> | undefined;
     _not?: GraphQLTypes["auth_user_nfts_bool_exp"] | undefined;
     _or?: Array<GraphQLTypes["auth_user_nfts_bool_exp"]> | undefined;
+    blockchain?: GraphQLTypes["String_comparison_exp"] | undefined;
     collection_id?: GraphQLTypes["String_comparison_exp"] | undefined;
     nft_id?: GraphQLTypes["String_comparison_exp"] | undefined;
+    publicKeyByBlockchainPublicKey?:
+      | GraphQLTypes["auth_public_keys_bool_exp"]
+      | undefined;
     public_key?: GraphQLTypes["String_comparison_exp"] | undefined;
   };
   /** unique or primary key constraints on table "auth.user_nfts" */
   ["auth_user_nfts_constraint"]: auth_user_nfts_constraint;
   /** input type for inserting data into table "auth.user_nfts" */
   ["auth_user_nfts_insert_input"]: {
+    blockchain?: string | undefined;
+    collection_id?: string | undefined;
+    nft_id?: string | undefined;
+    publicKeyByBlockchainPublicKey?:
+      | GraphQLTypes["auth_public_keys_obj_rel_insert_input"]
+      | undefined;
+    public_key?: string | undefined;
+  };
+  /** aggregate max on columns */
+  ["auth_user_nfts_max_fields"]: {
+    __typename: "auth_user_nfts_max_fields";
+    blockchain?: string | undefined;
     collection_id?: string | undefined;
     nft_id?: string | undefined;
     public_key?: string | undefined;
+  };
+  /** order by max() on columns of table "auth.user_nfts" */
+  ["auth_user_nfts_max_order_by"]: {
+    blockchain?: GraphQLTypes["order_by"] | undefined;
+    collection_id?: GraphQLTypes["order_by"] | undefined;
+    nft_id?: GraphQLTypes["order_by"] | undefined;
+    public_key?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** aggregate min on columns */
+  ["auth_user_nfts_min_fields"]: {
+    __typename: "auth_user_nfts_min_fields";
+    blockchain?: string | undefined;
+    collection_id?: string | undefined;
+    nft_id?: string | undefined;
+    public_key?: string | undefined;
+  };
+  /** order by min() on columns of table "auth.user_nfts" */
+  ["auth_user_nfts_min_order_by"]: {
+    blockchain?: GraphQLTypes["order_by"] | undefined;
+    collection_id?: GraphQLTypes["order_by"] | undefined;
+    nft_id?: GraphQLTypes["order_by"] | undefined;
+    public_key?: GraphQLTypes["order_by"] | undefined;
   };
   /** response of any mutation on the table "auth.user_nfts" */
   ["auth_user_nfts_mutation_response"]: {
@@ -12572,8 +14140,12 @@ export type GraphQLTypes = {
   };
   /** Ordering options when selecting data from "auth.user_nfts". */
   ["auth_user_nfts_order_by"]: {
+    blockchain?: GraphQLTypes["order_by"] | undefined;
     collection_id?: GraphQLTypes["order_by"] | undefined;
     nft_id?: GraphQLTypes["order_by"] | undefined;
+    publicKeyByBlockchainPublicKey?:
+      | GraphQLTypes["auth_public_keys_order_by"]
+      | undefined;
     public_key?: GraphQLTypes["order_by"] | undefined;
   };
   /** select columns of table "auth.user_nfts" */
@@ -12587,6 +14159,7 @@ export type GraphQLTypes = {
   };
   /** Initial value of the column from where the streaming should start */
   ["auth_user_nfts_stream_cursor_value_input"]: {
+    blockchain?: string | undefined;
     collection_id?: string | undefined;
     nft_id?: string | undefined;
     public_key?: string | undefined;
@@ -13052,6 +14625,14 @@ export type GraphQLTypes = {
     delete_auth_collection_messages_by_pk?:
       | GraphQLTypes["auth_collection_messages"]
       | undefined;
+    /** delete data from the table: "auth.collections" */
+    delete_auth_collections?:
+      | GraphQLTypes["auth_collections_mutation_response"]
+      | undefined;
+    /** delete single row from the table: "auth.collections" */
+    delete_auth_collections_by_pk?:
+      | GraphQLTypes["auth_collections"]
+      | undefined;
     /** delete data from the table: "auth.friend_requests" */
     delete_auth_friend_requests?:
       | GraphQLTypes["auth_friend_requests_mutation_response"]
@@ -13106,6 +14687,12 @@ export type GraphQLTypes = {
     insert_auth_collection_messages_one?:
       | GraphQLTypes["auth_collection_messages"]
       | undefined;
+    /** insert data into the table: "auth.collections" */
+    insert_auth_collections?:
+      | GraphQLTypes["auth_collections_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "auth.collections" */
+    insert_auth_collections_one?: GraphQLTypes["auth_collections"] | undefined;
     /** insert data into the table: "auth.friend_requests" */
     insert_auth_friend_requests?:
       | GraphQLTypes["auth_friend_requests_mutation_response"]
@@ -13191,6 +14778,18 @@ export type GraphQLTypes = {
       | Array<
           GraphQLTypes["auth_collection_messages_mutation_response"] | undefined
         >
+      | undefined;
+    /** update data of the table: "auth.collections" */
+    update_auth_collections?:
+      | GraphQLTypes["auth_collections_mutation_response"]
+      | undefined;
+    /** update single row of the table: "auth.collections" */
+    update_auth_collections_by_pk?:
+      | GraphQLTypes["auth_collections"]
+      | undefined;
+    /** update multiples rows of table: "auth.collections" */
+    update_auth_collections_many?:
+      | Array<GraphQLTypes["auth_collections_mutation_response"] | undefined>
       | undefined;
     /** update data of the table: "auth.friendships" */
     update_auth_friendships?:
@@ -13290,6 +14889,10 @@ export type GraphQLTypes = {
     auth_collection_messages_by_pk?:
       | GraphQLTypes["auth_collection_messages"]
       | undefined;
+    /** fetch data from the table: "auth.collections" */
+    auth_collections: Array<GraphQLTypes["auth_collections"]>;
+    /** fetch data from the table: "auth.collections" using primary key columns */
+    auth_collections_by_pk?: GraphQLTypes["auth_collections"] | undefined;
     /** fetch data from the table: "auth.friend_requests" */
     auth_friend_requests: Array<GraphQLTypes["auth_friend_requests"]>;
     /** fetch data from the table: "auth.friend_requests" using primary key columns */
@@ -13326,6 +14929,8 @@ export type GraphQLTypes = {
     auth_stripe_onramp_by_pk?: GraphQLTypes["auth_stripe_onramp"] | undefined;
     /** fetch data from the table: "auth.user_nfts" */
     auth_user_nfts: Array<GraphQLTypes["auth_user_nfts"]>;
+    /** fetch aggregated fields from the table: "auth.user_nfts" */
+    auth_user_nfts_aggregate: GraphQLTypes["auth_user_nfts_aggregate"];
     /** fetch data from the table: "auth.user_nfts" using primary key columns */
     auth_user_nfts_by_pk?: GraphQLTypes["auth_user_nfts"] | undefined;
     /** fetch data from the table: "auth.users" */
@@ -13361,6 +14966,12 @@ export type GraphQLTypes = {
     auth_collection_messages_stream: Array<
       GraphQLTypes["auth_collection_messages"]
     >;
+    /** fetch data from the table: "auth.collections" */
+    auth_collections: Array<GraphQLTypes["auth_collections"]>;
+    /** fetch data from the table: "auth.collections" using primary key columns */
+    auth_collections_by_pk?: GraphQLTypes["auth_collections"] | undefined;
+    /** fetch data from the table in a streaming manner: "auth.collections" */
+    auth_collections_stream: Array<GraphQLTypes["auth_collections"]>;
     /** fetch data from the table: "auth.friend_requests" */
     auth_friend_requests: Array<GraphQLTypes["auth_friend_requests"]>;
     /** fetch data from the table: "auth.friend_requests" using primary key columns */
@@ -13411,6 +15022,8 @@ export type GraphQLTypes = {
     auth_stripe_onramp_stream: Array<GraphQLTypes["auth_stripe_onramp"]>;
     /** fetch data from the table: "auth.user_nfts" */
     auth_user_nfts: Array<GraphQLTypes["auth_user_nfts"]>;
+    /** fetch aggregated fields from the table: "auth.user_nfts" */
+    auth_user_nfts_aggregate: GraphQLTypes["auth_user_nfts_aggregate"];
     /** fetch data from the table: "auth.user_nfts" using primary key columns */
     auth_user_nfts_by_pk?: GraphQLTypes["auth_user_nfts"] | undefined;
     /** fetch data from the table in a streaming manner: "auth.user_nfts" */
@@ -13486,6 +15099,28 @@ export const enum auth_collection_messages_update_column {
   collection_id = "collection_id",
   last_read_message_id = "last_read_message_id",
   uuid = "uuid",
+}
+/** unique or primary key constraints on table "auth.collections" */
+export const enum auth_collections_constraint {
+  collections_collection_id_type_key = "collections_collection_id_type_key",
+  collections_pkey = "collections_pkey",
+  collections_type = "collections_type",
+}
+/** select columns of table "auth.collections" */
+export const enum auth_collections_select_column {
+  collection_id = "collection_id",
+  id = "id",
+  last_message = "last_message",
+  last_message_uuid = "last_message_uuid",
+  type = "type",
+}
+/** update columns of table "auth.collections" */
+export const enum auth_collections_update_column {
+  collection_id = "collection_id",
+  id = "id",
+  last_message = "last_message",
+  last_message_uuid = "last_message_uuid",
+  type = "type",
 }
 /** unique or primary key constraints on table "auth.friend_requests" */
 export const enum auth_friend_requests_constraint {
@@ -13595,6 +15230,7 @@ export const enum auth_notifications_update_column {
 }
 /** unique or primary key constraints on table "auth.public_keys" */
 export const enum auth_public_keys_constraint {
+  public_keys_blockchain_public_key_key = "public_keys_blockchain_public_key_key",
   public_keys_pkey = "public_keys_pkey",
 }
 /** select columns of table "auth.public_keys" */
@@ -13635,6 +15271,7 @@ export const enum auth_user_nfts_constraint {
 }
 /** select columns of table "auth.user_nfts" */
 export const enum auth_user_nfts_select_column {
+  blockchain = "blockchain",
   collection_id = "collection_id",
   nft_id = "nft_id",
   public_key = "public_key",
@@ -13735,6 +15372,19 @@ type ZEUS_VARIABLES = {
   ["auth_collection_messages_stream_cursor_value_input"]: ValueTypes["auth_collection_messages_stream_cursor_value_input"];
   ["auth_collection_messages_update_column"]: ValueTypes["auth_collection_messages_update_column"];
   ["auth_collection_messages_updates"]: ValueTypes["auth_collection_messages_updates"];
+  ["auth_collections_bool_exp"]: ValueTypes["auth_collections_bool_exp"];
+  ["auth_collections_constraint"]: ValueTypes["auth_collections_constraint"];
+  ["auth_collections_inc_input"]: ValueTypes["auth_collections_inc_input"];
+  ["auth_collections_insert_input"]: ValueTypes["auth_collections_insert_input"];
+  ["auth_collections_on_conflict"]: ValueTypes["auth_collections_on_conflict"];
+  ["auth_collections_order_by"]: ValueTypes["auth_collections_order_by"];
+  ["auth_collections_pk_columns_input"]: ValueTypes["auth_collections_pk_columns_input"];
+  ["auth_collections_select_column"]: ValueTypes["auth_collections_select_column"];
+  ["auth_collections_set_input"]: ValueTypes["auth_collections_set_input"];
+  ["auth_collections_stream_cursor_input"]: ValueTypes["auth_collections_stream_cursor_input"];
+  ["auth_collections_stream_cursor_value_input"]: ValueTypes["auth_collections_stream_cursor_value_input"];
+  ["auth_collections_update_column"]: ValueTypes["auth_collections_update_column"];
+  ["auth_collections_updates"]: ValueTypes["auth_collections_updates"];
   ["auth_friend_requests_bool_exp"]: ValueTypes["auth_friend_requests_bool_exp"];
   ["auth_friend_requests_constraint"]: ValueTypes["auth_friend_requests_constraint"];
   ["auth_friend_requests_insert_input"]: ValueTypes["auth_friend_requests_insert_input"];
@@ -13793,6 +15443,7 @@ type ZEUS_VARIABLES = {
   ["auth_public_keys_insert_input"]: ValueTypes["auth_public_keys_insert_input"];
   ["auth_public_keys_max_order_by"]: ValueTypes["auth_public_keys_max_order_by"];
   ["auth_public_keys_min_order_by"]: ValueTypes["auth_public_keys_min_order_by"];
+  ["auth_public_keys_obj_rel_insert_input"]: ValueTypes["auth_public_keys_obj_rel_insert_input"];
   ["auth_public_keys_on_conflict"]: ValueTypes["auth_public_keys_on_conflict"];
   ["auth_public_keys_order_by"]: ValueTypes["auth_public_keys_order_by"];
   ["auth_public_keys_select_column"]: ValueTypes["auth_public_keys_select_column"];
@@ -13819,9 +15470,15 @@ type ZEUS_VARIABLES = {
   ["auth_stripe_onramp_stream_cursor_value_input"]: ValueTypes["auth_stripe_onramp_stream_cursor_value_input"];
   ["auth_stripe_onramp_update_column"]: ValueTypes["auth_stripe_onramp_update_column"];
   ["auth_stripe_onramp_updates"]: ValueTypes["auth_stripe_onramp_updates"];
+  ["auth_user_nfts_aggregate_bool_exp"]: ValueTypes["auth_user_nfts_aggregate_bool_exp"];
+  ["auth_user_nfts_aggregate_bool_exp_count"]: ValueTypes["auth_user_nfts_aggregate_bool_exp_count"];
+  ["auth_user_nfts_aggregate_order_by"]: ValueTypes["auth_user_nfts_aggregate_order_by"];
+  ["auth_user_nfts_arr_rel_insert_input"]: ValueTypes["auth_user_nfts_arr_rel_insert_input"];
   ["auth_user_nfts_bool_exp"]: ValueTypes["auth_user_nfts_bool_exp"];
   ["auth_user_nfts_constraint"]: ValueTypes["auth_user_nfts_constraint"];
   ["auth_user_nfts_insert_input"]: ValueTypes["auth_user_nfts_insert_input"];
+  ["auth_user_nfts_max_order_by"]: ValueTypes["auth_user_nfts_max_order_by"];
+  ["auth_user_nfts_min_order_by"]: ValueTypes["auth_user_nfts_min_order_by"];
   ["auth_user_nfts_on_conflict"]: ValueTypes["auth_user_nfts_on_conflict"];
   ["auth_user_nfts_order_by"]: ValueTypes["auth_user_nfts_order_by"];
   ["auth_user_nfts_select_column"]: ValueTypes["auth_user_nfts_select_column"];

@@ -6,12 +6,11 @@ import {
   useLocation,
   useSearchParams,
 } from "react-router-dom";
-import type {
-  SubscriptionType} from "@coral-xyz/common";
+import type { SubscriptionType } from "@coral-xyz/common";
 import {
   MESSAGE_IFRAME_ENABLED,
   MESSAGING_COMMUNICATION_FETCH_RESPONSE,
-  NAV_COMPONENT_MESSAGE_PROFILE
+  NAV_COMPONENT_MESSAGE_PROFILE,
 } from "@coral-xyz/common";
 import {
   MESSAGING_COMMUNICATION_FETCH,
@@ -390,7 +389,7 @@ function useNavBar() {
   const theme = useCustomTheme();
   const { props }: any = useDecodedSearchParams(); // TODO: fix type
   const { uuid } = useUser();
-  const image: string | undefined = useDbUser(uuid, props.userId)?.image;
+  const image: string | undefined = useDbUser(uuid, props?.userId)?.image;
 
   let navButtonLeft = null as any;
   let navButtonRight = null as any;
@@ -456,10 +455,8 @@ function useNavBar() {
     };
   }
 
-  const notchViewComponent = null;
-  // pathname === "/messages/chat" ? (
-  //   <ChatDrawer setOpenDrawer={() => {}} />
-  // ) : null;
+  const notchViewComponent =
+    pathname === "/nfts/chat" ? <ChatDrawer setOpenDrawer={() => {}} /> : null;
 
   return {
     navButtonRight,

@@ -22,6 +22,7 @@ export const GifPicker = ({
   return (
     <>
       <IconButton
+        size={"small"}
         style={{ color: theme.custom.colors.icon }}
         onClick={(e) => {
           setGifPicker((x) => !x);
@@ -32,7 +33,9 @@ export const GifPicker = ({
         }}
       >
         {" "}
-        <GifIcon style={{ color: theme.custom.colors.icon }} />{" "}
+        <GifIcon
+          style={{ color: theme.custom.colors.icon, fontSize: 20 }}
+        />{" "}
       </IconButton>
       <Popover
         id={"popover2"}

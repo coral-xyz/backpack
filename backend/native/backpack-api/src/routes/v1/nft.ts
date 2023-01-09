@@ -1,8 +1,16 @@
+import type { CollectionChatData, RemoteUserData } from "@coral-xyz/common";
 import { Blockchain } from "@coral-xyz/common";
 import express from "express";
 
-import { extractUserId } from "../../auth/middleware";
-import { addNfts } from "../../db/nft";
+import { ensureHasRoomAccess, extractUserId } from "../../auth/middleware";
+import { getFriendshipStatus } from "../../db/friendships";
+import {
+  addNfts,
+  getAllCollectionsFor,
+  getCollectionChatMetadata,
+  getLastReadFor,
+  getNftMembers,
+} from "../../db/nft";
 import { getUsersByPublicKeys } from "../../db/users";
 import { validateOwnership } from "../../utils/metaplex";
 
@@ -36,6 +44,87 @@ router.post("/bulk", extractUserId, async (req, res) => {
     nfts.filter((_x: any, index: number) => responses[index])
   );
   res.json({});
+});
+
+router.get("/bulk", extractUserId, async (req, res) => {
+  // @ts-ignore
+  const userId: string = req.id;
+
+  // TODO: optimise this
+  const allCollections = await getAllCollectionsFor(userId);
+  const lastReadMappings = await getLastReadFor(userId, allCollections);
+  const collectionChatMetadata = await getCollectionChatMetadata(
+    allCollections
+  );
+
+  const collections: CollectionChatData = allCollections.map(
+    (collectionId) => ({
+      collectionId,
+      lastReadMessage:
+        lastReadMappings.find((x) => x.collection_id === collectionId)
+          ?.last_read_message_id || null,
+      lastMessage: collectionChatMetadata.find(
+        (x) => x.collection_id === collectionId
+      )?.last_message,
+      lastMessageUuid: collectionChatMetadata.find(
+        (x) => x.collection_id === collectionId
+      )?.last_message_uuid,
+    })
+  );
+
+  res.json({
+    collections,
+  });
+});
+
+router.get("/members", extractUserId, ensureHasRoomAccess, async (req, res) => {
+  // @ts-ignore
+  const limit = req.query.limit ? parseInt(req.query.limit) : 20;
+  // @ts-ignore
+  const offset = req.query.offset ? parseInt(req.query.offset) : 0;
+  // @ts-ignore
+  const collectionId: string = req.query.room;
+  // @ts-ignore
+  const uuid: string = req.id;
+  // @ts-ignore
+  const prefix: string = req.query.prefix || "";
+
+  const { count, users } = await getNftMembers(
+    collectionId,
+    prefix,
+    limit,
+    offset
+  );
+
+  const memberFriendships: {
+    id: string;
+    areFriends: boolean;
+    requested: boolean;
+    remoteRequested: boolean;
+  }[] = await getFriendshipStatus(
+    users.map((x) => x.id as string),
+    uuid
+  );
+
+  const members: RemoteUserData[] = users
+    .filter((x) => x.id !== uuid)
+    .map(({ id, username }) => {
+      const friendship = memberFriendships.find((x) => x.id === id);
+
+      return {
+        id,
+        username,
+        image: `https://swr.xnfts.dev/avatars/${username}`,
+        requested: friendship?.requested || false,
+        remoteRequested: friendship?.remoteRequested || false,
+        areFriends: friendship?.areFriends || false,
+      };
+    });
+
+  res.json({
+    members: members,
+    count,
+  });
 });
 
 export default router;

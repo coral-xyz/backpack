@@ -1,3 +1,4 @@
+import type { SolanaTokenAccountWithKey, TokenMetadata } from "./solana/types";
 import type { DerivationPath } from "./crypto";
 
 export type Context<Backend> = {
@@ -32,23 +33,12 @@ export type RecentTransaction = {
 
 export type NftCollection = {
   id: string;
-  name: string;
+  metadataCollectionId: string;
   symbol: string;
   tokenType: string;
   totalSupply: string;
-  items: Nft[];
-  metadataCollectionId?: string;
-};
-
-export type NftCollectionWithIds = {
-  id: string;
-  name: string;
-  symbol: string;
-  tokenType: string;
-  totalSupply: string;
-  items: Nft[];
-  itemIds: string[];
-  metadataCollectionId?: string;
+  itemIds: Array<string>;
+  items?: { [id: string]: Nft }; // Not expected to be defined. Eth only.
 };
 
 export type Nft = {
@@ -60,6 +50,9 @@ export type Nft = {
   imageUrl: string;
   imageData?: string;
   attributes?: NftAttribute[];
+  collectionName: string;
+  tokenId?: string; // Ethereum only.
+  contractAddress?: string; // Ethereum only.
 };
 
 export type SolanaNft = Nft & {

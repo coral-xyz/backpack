@@ -172,11 +172,9 @@ export function BalancesTableCell({ props }: any) {
       <div className={classes.tokenListItemContent}>
         <div className={classes.tokenListItemRow}>
           <Typography className={classes.tokenName}>{title}</Typography>
-          {usdValue && (
-            <Typography className={classes.tokenBalance}>
-              {formatUSD(usdValue)}
-            </Typography>
-          )}
+          <Typography className={classes.tokenBalance}>
+            {usdValue ? formatUSD(usdValue) : "-"}
+          </Typography>
         </div>
         <div className={classes.tokenListItemRow}>
           {subtitle && (
@@ -195,6 +193,11 @@ export function BalancesTableCell({ props }: any) {
           {percentChange !== undefined && neutral && (
             <Typography className={classes.tokenBalanceChangeNeutral}>
               {formatUSD(percentChange.toLocaleString())}
+            </Typography>
+          )}
+          {!usdValue && (
+            <Typography className={classes.tokenBalanceChangeNeutral}>
+              {"-"}
             </Typography>
           )}
         </div>

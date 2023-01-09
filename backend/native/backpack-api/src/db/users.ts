@@ -1,4 +1,4 @@
-import type { Blockchain } from "@coral-xyz/common";
+import type { Blockchain, RemoteUserData } from "@coral-xyz/common";
 import { Chain } from "@coral-xyz/zeus";
 
 import { HASURA_URL, JWT } from "../config";
@@ -174,7 +174,7 @@ export async function getUsersByPrefix({
 }: {
   usernamePrefix: string;
   uuid: string;
-}) {
+}): Promise<{ username: string; id: string }[]> {
   const response = await chain("query")({
     auth_users: [
       {

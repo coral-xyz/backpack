@@ -280,5 +280,5 @@ export function RequestsChatItem({
 
 function UserIcon({ image }: any) {
   const classes = useStyles();
-  return <ProxyImage src={image} className={classes.iconCircularBig} />;
+  return <img src={image} className={classes.iconCircularBig} />;
 }

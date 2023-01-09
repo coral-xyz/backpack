@@ -9,9 +9,6 @@ export function YourAccountScreen({ navigation }) {
     "Change Password": {
       onPress: () => navigation.push("change-password"),
     },
-    "Edit Wallets": {
-      onPress: () => navigation.push("edit-wallets"),
-    },
     ...(keyringType === "mnemonic"
       ? {
           "Show Secret Recovery Phrase": {

@@ -17,7 +17,7 @@ export const ChatScreen = ({
   const [friendshipValue, setFriendshipValue] =
     useRecoilState<Friendship | null>(friendship({ userId }));
 
-  if (!friendshipValue) {
+  if (!friendshipValue || !friendshipValue.id) {
     console.error(`Friendship not found with user ${userId} or jwt not found`);
     return <div></div>;
   }
