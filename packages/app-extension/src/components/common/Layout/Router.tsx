@@ -58,7 +58,6 @@ import { XnftAppStack } from "./XnftAppStack";
 
 export function Router() {
   const location = useLocation();
-  console.log("LOCATION", location);
   return (
     <AnimatePresence initial={false}>
       <Routes location={location} key={location.pathname}>
@@ -292,7 +291,6 @@ function NavScreen({
   };
 }) {
   const { title, isRoot, pop } = useNavigation();
-  console.log("NAVsCREEN", title, isRoot, pop);
   const {
     style,
     navButtonLeft,
