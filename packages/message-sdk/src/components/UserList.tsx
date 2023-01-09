@@ -6,7 +6,7 @@ import {
 } from "@coral-xyz/common";
 import { updateFriendshipIfExists } from "@coral-xyz/db";
 import { isFirstLastListItemStyle, ProxyImage } from "@coral-xyz/react-common";
-import { useNavigation, useUser } from "@coral-xyz/recoil";
+import { useAvatarUrl,useNavigation, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { List, ListItem } from "@mui/material";
 
@@ -102,7 +102,7 @@ function UserListItem({
                 justifyContent: "center",
               }}
             >
-              <UserIcon image={user.image} />
+              <UserIcon username={user.username} />
             </div>
             <div className={classes.userText}>{user.username}</div>
           </div>
@@ -201,7 +201,8 @@ function UserListItem({
   );
 }
 
-function UserIcon({ image }: any) {
+function UserIcon({ username }: any) {
+  const avatarUrl = useAvatarUrl(username);
   const classes = useStyles();
-  return <ProxyImage src={image} className={classes.iconCircular} />;
+  return <ProxyImage src={avatarUrl} className={classes.iconCircular} />;
 }
