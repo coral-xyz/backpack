@@ -60,25 +60,27 @@ export function Router() {
   const location = useLocation();
   console.log("LOCATION", location);
   return (
-    <PluginManager>
-      <AnimatePresence initial={false}>
-        <Routes location={location} key={location.pathname}>
-          <Route path="/balances" element={<BalancesPage />} />
-          <Route path="/balances/token" element={<TokenPage />} />
-          <Route path={"/messages/*"} element={<Messages />} />
-          <Route path="/apps" element={<AppsPage />} />
-          <Route path="/nfts" element={<NftsPage />} />
-          {/*<Route path="/swap" element={<SwapPage />} />*/}
-          <Route path="/nfts/collection" element={<NftsCollectionPage />} />
-          <Route path="/nfts/experience" element={<NftsExperiencePage />} />
-          <Route path="/nfts/chat" element={<NftsChatPage />} />
-          <Route path="/nfts/detail" element={<NftsDetailPage />} />
-          <Route path="/contacts" element={<ContactsPage />} />
-          <Route path="/xnft/:xnftAddress" element={<XnftAppStack />} />
-          <Route path="*" element={<Redirect />} />
-        </Routes>
-      </AnimatePresence>
-    </PluginManager>
+    <AnimatePresence initial={false}>
+      <Routes location={location} key={location.pathname}>
+        <Route path="/balances" element={<BalancesPage />} />
+        <Route path="/balances/token" element={<TokenPage />} />
+        <Route path={"/messages/*"} element={<Messages />} />
+        <Route path="/apps" element={<AppsPage />} />
+        <Route path="/nfts" element={<NftsPage />} />
+        {/*<Route path="/swap" element={<SwapPage />} />*/}
+        <Route path="/nfts/collection" element={<NftsCollectionPage />} />
+        <Route path="/nfts/experience" element={<NftsExperiencePage />} />
+        <Route path="/nfts/chat" element={<NftsChatPage />} />
+        <Route path="/nfts/detail" element={<NftsDetailPage />} />
+        <Route path="/contacts" element={<ContactsPage />} />
+        {/*
+          Auto-lock functionality is dependent on checking if the URL contains
+          "xnft", if this changes then please verify that it still works 
+          */}
+        <Route path="/xnft/:xnftAddress" element={<XnftAppStack />} />
+        <Route path="*" element={<Redirect />} />
+      </Routes>
+    </AnimatePresence>
   );
 }
 
