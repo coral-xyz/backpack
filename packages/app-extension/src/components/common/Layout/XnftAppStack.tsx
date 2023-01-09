@@ -1,56 +1,43 @@
-import { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useLocation, useParams, useSearchParams } from "react-router-dom";
 import { Loading } from "@coral-xyz/react-common";
 import { useClosePlugin } from "@coral-xyz/recoil";
+import { useCustomTheme } from "@coral-xyz/themes";
 import { motion } from "framer-motion";
 
 import { PluginApp } from "../../Unlocked/Apps/Plugin";
 
-import { WithDrawer } from "./Drawer";
-
 export function XnftAppStack() {
   let { xnftAddress } = useParams();
-  const [openDrawer, setOpenDrawer] = useState(false);
   const closePlugin = useClosePlugin();
   const [searchParams] = useSearchParams();
   const navAction = searchParams.get("nav");
-
-  // const pluginProps = searchParams.get("pluginProps");
-
-  // Auto-lock functionality is dependent on checking if the URL contains
-  // "xnftAddress", if this changes then please verify that it still works
-  // const { xnftAddress } = JSON.parse(decodeURIComponent(pluginProps ?? "{}"));
-
-  useEffect(() => {
-    if (xnftAddress) {
-      setOpenDrawer(true);
-    }
-  }, [xnftAddress]);
+  const theme = useCustomTheme();
 
   return (
     <motion.div
       key={xnftAddress}
       style={{
+        background: theme.custom.colors.background,
+        filter: "drop-shadow(5px 5px 10px #666)",
+        position: "relative",
         height: "100%",
+        minHeight: "600px",
         display: "flex",
         flexDirection: "column",
         flex: 1,
       }}
       variants={XNFT_MOTION}
-      initial={!navAction || navAction === "pop" ? {} : "initial"}
+      initial={navAction === "pop" ? {} : "initial"}
       animate={"animate"}
-      exit={!navAction || navAction === "push" ? {} : "exit"}
+      exit={navAction === "push" ? {} : "exit"}
     >
-      <Suspense fallback={<Loading />}>
-        {xnftAddress && (
-          <PluginApp
-            xnftAddress={xnftAddress}
-            closePlugin={() => {
-              closePlugin();
-            }}
-          />
-        )}
-      </Suspense>
+      <PluginApp
+        xnftAddress={xnftAddress}
+        closePlugin={() => {
+          closePlugin();
+        }}
+      />
     </motion.div>
   );
 }
