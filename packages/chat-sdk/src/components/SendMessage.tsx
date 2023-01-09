@@ -14,6 +14,7 @@ import { useChatContext } from "./ChatContext";
 import { EmojiPickerComponent } from "./EmojiPicker";
 import { GifPicker } from "./GifPicker";
 import { ReplyContainer } from "./ReplyContainer";
+import { SecureTransfer } from "./SecureTransfer";
 
 const useStyles = makeStyles((theme: any) =>
   createStyles({
@@ -219,6 +220,7 @@ export const SendMessage = () => {
                     gifPicker={gifPicker}
                     setEmojiPicker={setEmojiPicker}
                   />
+                  <SecureTransfer />
                   <IconButton
                     size={"small"}
                     style={{ color: theme.custom.colors.icon }}
