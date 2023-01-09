@@ -1,0 +1,3 @@
+table:
+  name: secure_transfer_transactions
+  schema: public
