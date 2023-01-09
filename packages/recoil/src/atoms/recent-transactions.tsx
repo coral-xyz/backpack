@@ -123,10 +123,7 @@ export const recentSolanaTransactions = atomFamily<
       ({ address }: { address: string }) =>
       async ({ get }: any) => {
         const res = await fetch(
-          `https://api.helius.xyz/v0/addresses/${address}/transactions?api-key=${
-            process.env.BACKPACK_HELIUS_API_KEY ||
-            "6b1ccd35-ba2d-472a-8f54-9ac2c3c40b8b"
-          }&limit-10`
+          `https://api.helius.xyz/v0/addresses/${address}/transactions?api-key=${process.env.BACKPACK_HELIUS_API_KEY}&limit-10`
         );
 
         const data = await res.json();
