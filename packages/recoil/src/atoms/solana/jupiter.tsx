@@ -6,7 +6,7 @@ import { blockchainBalancesSorted } from "../balance";
 
 import { SOL_LOGO_URI, splTokenRegistry } from "./token-registry";
 
-export const JUPITER_BASE_URL = "https://quote-api.jup.ag/v1/";
+export const JUPITER_BASE_URL = "https://quote-api.jup.ag/v4/";
 
 export const jupiterRouteMap = selector({
   key: "jupiterRouteMap",
