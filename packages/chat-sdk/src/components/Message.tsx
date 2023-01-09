@@ -195,6 +195,8 @@ export const MessageLine = (props) => {
                 <p className={classes.messageContent}>
                   {props.messageKind === "gif" ? (
                     <GifDemo id={message} width={220} />
+                  ) : props.messageKind === "secure-transfer" ? (
+                    <>Secure transfer {JSON.stringify(props.metadata)}</>
                   ) : (
                     message
                   )}
@@ -230,6 +232,7 @@ export function ChatMessages() {
             image={chat.image}
             username={chat.username}
             uuid={chat.uuid}
+            metadata={chat.message_metadata}
           />
         );
       })}

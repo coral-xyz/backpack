@@ -1,5 +1,6 @@
 import type { BackgroundClient } from "@coral-xyz/common";
 import {
+  BACKEND_API_URL,
   confirmTransaction,
   UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
 } from "@coral-xyz/common";
@@ -85,6 +86,12 @@ export const createEscrow = async (
     [new PublicKey(senderPublicKey).toBuffer()],
     program.programId
   );
+  const escrow = findEscrowAddress(
+    senderPublicKey,
+    receiverPubkey,
+    counter || new BN(0),
+    program
+  )[0];
 
   const sendTx = await program.methods
     .send(receiverPubkey, new BN(transferAmount * LAMPORTS_PER_SOL), {
@@ -92,24 +99,21 @@ export const createEscrow = async (
     })
     .accounts({
       secureTransfer: secureTransferAddress[0],
-      escrow: findEscrowAddress(
-        senderPublicKey,
-        receiverPubkey,
-        counter || new BN(0),
-        program
-      )[0],
+      escrow,
       sender: senderPublicKey,
       systemProgram: SystemProgram.programId,
     })
     .transaction();
 
-  const x1 = await sendAndConfirmTransaction(
+  const txSignature = await sendAndConfirmTransaction(
     backgroundClient,
     connection,
     sendTx,
     senderPublicKey.toString()
   );
-  console.log(x1);
+  // TODO: If the API gets missed here we should store the txn somewhere to keep polling
+  // and lazily store in our DB
+  return { signature: txSignature, counter: counter.toString(), escrow };
 };
 
 const sendAndConfirmTransaction = async (

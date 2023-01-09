@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import type { MessageKind, MessageMetadata } from "@coral-xyz/common";
 import { CHAT_MESSAGES } from "@coral-xyz/common";
 import { createEmptyFriendship, SignalingManager } from "@coral-xyz/db";
 import { useUser } from "@coral-xyz/recoil";
@@ -109,7 +110,11 @@ export const SendMessage = () => {
     chats,
   } = useChatContext();
 
-  const sendMessage = (messageTxt, messageKind: "text" | "gif" = "text") => {
+  const sendMessage = (
+    messageTxt,
+    messageKind: MessageKind = "text",
+    messageMetadata?: MessageMetadata
+  ) => {
     if (messageTxt) {
       const client_generated_uuid = uuidv4();
       if (chats.length === 0 && type === "individual") {
@@ -118,7 +123,12 @@ export const SendMessage = () => {
         createEmptyFriendship(uuid, remoteUserId, {
           last_message_sender: uuid,
           last_message_timestamp: new Date().toISOString(),
-          last_message: messageKind === "gif" ? "GIF" : messageTxt,
+          last_message:
+            messageKind === "gif"
+              ? "GIF"
+              : messageKind === "secure-transfer"
+              ? "Secure Transfer"
+              : messageTxt,
           last_message_client_uuid: client_generated_uuid,
         });
       }
@@ -135,6 +145,7 @@ export const SendMessage = () => {
               client_generated_uuid: client_generated_uuid,
               message: messageTxt,
               message_kind: messageKind,
+              message_metadata: messageMetadata,
               parent_client_generated_uuid:
                 activeReply.parent_client_generated_uuid
                   ? activeReply.parent_client_generated_uuid
@@ -220,7 +231,16 @@ export const SendMessage = () => {
                     gifPicker={gifPicker}
                     setEmojiPicker={setEmojiPicker}
                   />
-                  <SecureTransfer remoteUserId={remoteUserId} />
+                  <SecureTransfer
+                    remoteUserId={remoteUserId}
+                    onTxFinalized={({ signature, counter, escrow }) => {
+                      sendMessage("Secure transfer", "secure-transfer", {
+                        signature,
+                        counter,
+                        escrow,
+                      });
+                    }}
+                  />
                   <IconButton
                     size={"small"}
                     style={{ color: theme.custom.colors.icon }}

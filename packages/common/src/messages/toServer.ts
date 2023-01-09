@@ -6,11 +6,20 @@ export type SubscriptionMessage = {
   room: string;
 };
 
+export type MessageKind = "gif" | "text" | "secure-transfer";
+
+export type MessageMetadata = {
+  signature: string;
+  counter: string;
+  escrow: string;
+};
+
 export type SendMessagePayload = {
   messages: {
     client_generated_uuid: string;
     message: string;
-    message_kind: "gif" | "text";
+    message_kind: MessageKind;
+    message_metadata?: MessageMetadata;
     parent_client_generated_uuid?: string;
   }[];
   type: SubscriptionType;

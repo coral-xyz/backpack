@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { BACKEND_API_URL, Blockchain } from "@coral-xyz/common";
+import { TextInput } from "@coral-xyz/react-common";
 import {
   useActiveSolanaWallet,
   useAnchorContext,
@@ -26,7 +27,13 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
-export const SecureTransfer = ({ remoteUserId }: { remoteUserId: string }) => {
+export const SecureTransfer = ({
+  remoteUserId,
+  onTxFinalized,
+}: {
+  remoteUserId: string;
+  onTxFinalized: any;
+}) => {
   const [modal, setModal] = useState(false);
   const { provider, connection } = useAnchorContext();
   const background = useBackgroundClient();
@@ -34,6 +41,7 @@ export const SecureTransfer = ({ remoteUserId }: { remoteUserId: string }) => {
   const [publicKeysLoading, setPublicKeysLoading] = useState(true);
   const [publicKeys, setPublicKeys] = useState<string[]>([]);
   const [selectedPublicKey, setSelectedPublickey] = useState("");
+  const [amount, setAmount] = useState("0");
 
   const refreshUserPubkeys = async () => {
     setPublicKeysLoading(true);
@@ -43,7 +51,7 @@ export const SecureTransfer = ({ remoteUserId }: { remoteUserId: string }) => {
       );
       const data = await res.json();
       setPublicKeys(
-        data.publicKeys
+        data.user.publicKeys
           .filter((x) => x.blockchain === Blockchain.SOLANA)
           .map((x) => x.publicKey)
       );
@@ -76,6 +84,10 @@ export const SecureTransfer = ({ remoteUserId }: { remoteUserId: string }) => {
           <Typography id="transition-modal-title" variant="h6" component="h2">
             Secure transfer
           </Typography>
+          <TextInput
+            value={amount}
+            setValue={(e) => setAmount(e.target.value)}
+          />
           {!publicKeysLoading && (
             <Select
               value={selectedPublicKey}
@@ -87,6 +99,7 @@ export const SecureTransfer = ({ remoteUserId }: { remoteUserId: string }) => {
               ))}
             </Select>
           )}
+          <br />
           <Button
             disabled={publicKeysLoading}
             onClick={async () => {
@@ -96,7 +109,7 @@ export const SecureTransfer = ({ remoteUserId }: { remoteUserId: string }) => {
               ) {
                 return;
               }
-              await createEscrow(
+              const { signature, counter, escrow } = await createEscrow(
                 provider,
                 background,
                 connection,
@@ -104,10 +117,14 @@ export const SecureTransfer = ({ remoteUserId }: { remoteUserId: string }) => {
                 new PublicKey(publicKey),
                 new PublicKey(selectedPublicKey)
               );
-              console.log("done");
+              onTxFinalized({
+                signature,
+                counter,
+                escrow,
+              });
             }}
           >
-            Secure transfer 1 SOL
+            Secure transfer SOL
           </Button>
         </Box>
       </Modal>

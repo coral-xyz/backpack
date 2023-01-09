@@ -171,6 +171,16 @@ router.post("/", async (req, res) => {
 });
 
 /**
+ * Fetches User detail by id
+ */
+router.get("/userById", extractUserId, async (req: Request, res: Response) => {
+  //@ts-ignore
+  const remoteUserId: string = req.query.remoteUserId;
+  const user = await getUser(remoteUserId);
+  return res.json({ user });
+});
+
+/**
  * Get an existing user. Checks authenticated status if a JWT cookie is passed
  * with the request.
  */
@@ -231,16 +241,6 @@ router.get(
     return res.status(404).json({ msg: "User not found" });
   }
 );
-
-/**
- * Fetches User detail by id
- */
-router.get("/userById", extractUserId, async (req: Request, res: Response) => {
-  //@ts-ignore
-  const remoteUserId: string = req.query.remoteUserId;
-  const user = await getUser(remoteUserId);
-  return res.json({ user });
-});
 
 /**
  * Delete a public key/blockchain from the currently authenticated user.

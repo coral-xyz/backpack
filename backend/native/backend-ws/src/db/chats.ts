@@ -1,5 +1,9 @@
 import { Chain } from "@coral-xyz/chat-zeus";
-import type { SubscriptionType } from "@coral-xyz/common";
+import type {
+  MessageKind,
+  MessageMetadata,
+  SubscriptionType,
+} from "@coral-xyz/common";
 
 import { CHAT_HASURA_URL, CHAT_JWT } from "../config";
 
@@ -75,15 +79,33 @@ export const postChat = (
   room: string,
   message: string,
   uuid: string,
-  message_kind: "gif" | "text",
+  message_kind: MessageKind,
   client_generated_uuid: string,
   type: SubscriptionType,
+  messageMetadata?: MessageMetadata,
   parent_client_generated_uuid?: string
 ) => {
+  const secureTransferMutation =
+    message_kind === "secure-transfer"
+      ? {
+          secure_transfer_transactions: {
+            data: [
+              {
+                counter: messageMetadata?.counter || "",
+                escrow: messageMetadata?.escrow || "",
+                signature: messageMetadata?.signature || "",
+                from: "",
+                to: "",
+              },
+            ],
+          },
+        }
+      : {};
   chain("mutation")({
     insert_chats_one: [
       {
         object: {
+          ...secureTransferMutation,
           username: "",
           room,
           message: message,

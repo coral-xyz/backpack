@@ -49,6 +49,16 @@ export const getChats = async ({
         message_kind: true,
         created_at: true,
         parent_client_generated_uuid: true,
+        secure_transfer_transactions: [
+          {
+            limit: 1,
+          },
+          {
+            escrow: true,
+            counter: true,
+            signature: true,
+          },
+        ],
       },
     ],
   });
@@ -72,6 +82,14 @@ export const getChats = async ({
       parent_client_generated_uuid: chat.parent_client_generated_uuid,
       room: chat.room,
       type: chat.type,
+      message_metadata:
+        chat.message_kind === "secure-transfer"
+          ? {
+              escrow: chat.secure_transfer_transactions[0]?.escrow,
+              counter: chat.secure_transfer_transactions[0]?.counter,
+              signature: chat.secure_transfer_transactions[0]?.signature,
+            }
+          : undefined,
     });
   });
   return chats;
