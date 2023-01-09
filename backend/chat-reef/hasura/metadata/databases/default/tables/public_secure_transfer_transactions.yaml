@@ -1,3 +1,31 @@
 table:
   name: secure_transfer_transactions
   schema: public
+insert_permissions:
+  - role: chat
+    permission:
+      check: {}
+      columns:
+        - id
+        - message_id
+        - counter
+        - from
+        - signature
+        - to
+select_permissions:
+  - role: chat
+    permission:
+      columns:
+        - id
+        - message_id
+        - counter
+        - from
+        - signature
+        - to
+      filter: {}
+update_permissions:
+  - role: chat
+    permission:
+      columns: []
+      filter: {}
+      check: null

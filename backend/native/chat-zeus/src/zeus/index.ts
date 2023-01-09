@@ -1056,6 +1056,40 @@ export type ValueTypes = {
     message_kind?: boolean | `@${string}`;
     parent_client_generated_uuid?: boolean | `@${string}`;
     room?: boolean | `@${string}`;
+    secure_transfer_transactions?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["secure_transfer_transactions_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["secure_transfer_transactions_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["secure_transfer_transactions_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["secure_transfer_transactions"]
+    ];
     type?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
     uuid?: boolean | `@${string}`;
@@ -1113,6 +1147,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    secure_transfer_transactions?:
+      | ValueTypes["secure_transfer_transactions_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     type?:
       | ValueTypes["String_comparison_exp"]
       | undefined
@@ -1148,6 +1187,11 @@ export type ValueTypes = {
       | null
       | Variable<any, string>;
     room?: string | undefined | null | Variable<any, string>;
+    secure_transfer_transactions?:
+      | ValueTypes["secure_transfer_transactions_arr_rel_insert_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
     type?: string | undefined | null | Variable<any, string>;
     username?: string | undefined | null | Variable<any, string>;
     uuid?: string | undefined | null | Variable<any, string>;
@@ -1197,6 +1241,11 @@ export type ValueTypes = {
       | null
       | Variable<any, string>;
     room?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    secure_transfer_transactions_aggregate?:
+      | ValueTypes["secure_transfer_transactions_aggregate_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     type?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     username?:
       | ValueTypes["order_by"]
@@ -1275,6 +1324,60 @@ export type ValueTypes = {
       },
       ValueTypes["chats"]
     ];
+    insert_secure_transfer_transactions?: [
+      {
+        /** the rows to be inserted */
+        objects:
+          | Array<ValueTypes["secure_transfer_transactions_insert_input"]>
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["secure_transfer_transactions_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["secure_transfer_transactions_mutation_response"]
+    ];
+    insert_secure_transfer_transactions_one?: [
+      {
+        /** the row to be inserted */
+        object:
+          | ValueTypes["secure_transfer_transactions_insert_input"]
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["secure_transfer_transactions_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["secure_transfer_transactions"]
+    ];
+    update_secure_transfer_transactions?: [
+      {
+        /** filter the rows which have to be updated */
+        where:
+          | ValueTypes["secure_transfer_transactions_bool_exp"]
+          | Variable<any, string>;
+      },
+      ValueTypes["secure_transfer_transactions_mutation_response"]
+    ];
+    update_secure_transfer_transactions_by_pk?: [
+      {
+        pk_columns:
+          | ValueTypes["secure_transfer_transactions_pk_columns_input"]
+          | Variable<any, string>;
+      },
+      ValueTypes["secure_transfer_transactions"]
+    ];
+    update_secure_transfer_transactions_many?: [
+      {
+        /** updates to execute, in order */
+        updates:
+          | Array<ValueTypes["secure_transfer_transactions_updates"]>
+          | Variable<any, string>;
+      },
+      ValueTypes["secure_transfer_transactions_mutation_response"]
+    ];
     __typename?: boolean | `@${string}`;
   }>;
   /** column ordering options */
@@ -1315,8 +1418,361 @@ export type ValueTypes = {
       ValueTypes["chats"]
     ];
     chats_by_pk?: [{ id: number | Variable<any, string> }, ValueTypes["chats"]];
+    secure_transfer_transactions?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["secure_transfer_transactions_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["secure_transfer_transactions_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["secure_transfer_transactions_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["secure_transfer_transactions"]
+    ];
+    secure_transfer_transactions_by_pk?: [
+      { id: number | Variable<any, string> },
+      ValueTypes["secure_transfer_transactions"]
+    ];
     __typename?: boolean | `@${string}`;
   }>;
+  /** columns and relationships of "secure_transfer_transactions" */
+  ["secure_transfer_transactions"]: AliasType<{
+    counter?: boolean | `@${string}`;
+    from?: boolean | `@${string}`;
+    id?: boolean | `@${string}`;
+    message_id?: boolean | `@${string}`;
+    signature?: boolean | `@${string}`;
+    to?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** order by aggregate values of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_aggregate_order_by"]: {
+    avg?:
+      | ValueTypes["secure_transfer_transactions_avg_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    count?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    max?:
+      | ValueTypes["secure_transfer_transactions_max_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    min?:
+      | ValueTypes["secure_transfer_transactions_min_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev?:
+      | ValueTypes["secure_transfer_transactions_stddev_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev_pop?:
+      | ValueTypes["secure_transfer_transactions_stddev_pop_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev_samp?:
+      | ValueTypes["secure_transfer_transactions_stddev_samp_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    sum?:
+      | ValueTypes["secure_transfer_transactions_sum_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    var_pop?:
+      | ValueTypes["secure_transfer_transactions_var_pop_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    var_samp?:
+      | ValueTypes["secure_transfer_transactions_var_samp_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    variance?:
+      | ValueTypes["secure_transfer_transactions_variance_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** input type for inserting array relation for remote table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_arr_rel_insert_input"]: {
+    data:
+      | Array<ValueTypes["secure_transfer_transactions_insert_input"]>
+      | Variable<any, string>;
+    /** upsert condition */
+    on_conflict?:
+      | ValueTypes["secure_transfer_transactions_on_conflict"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by avg() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_avg_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    message_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Boolean expression to filter rows from the table "secure_transfer_transactions". All fields are combined with a logical 'AND'. */
+  ["secure_transfer_transactions_bool_exp"]: {
+    _and?:
+      | Array<ValueTypes["secure_transfer_transactions_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    _not?:
+      | ValueTypes["secure_transfer_transactions_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    _or?:
+      | Array<ValueTypes["secure_transfer_transactions_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    counter?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    from?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?:
+      | ValueTypes["Int_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    message_id?:
+      | ValueTypes["Int_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    signature?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    to?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** unique or primary key constraints on table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_constraint"]: secure_transfer_transactions_constraint;
+  /** input type for inserting data into table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_insert_input"]: {
+    counter?: string | undefined | null | Variable<any, string>;
+    from?: string | undefined | null | Variable<any, string>;
+    id?: number | undefined | null | Variable<any, string>;
+    message_id?: number | undefined | null | Variable<any, string>;
+    signature?: string | undefined | null | Variable<any, string>;
+    to?: string | undefined | null | Variable<any, string>;
+  };
+  /** order by max() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_max_order_by"]: {
+    counter?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    from?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    message_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    signature?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    to?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** order by min() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_min_order_by"]: {
+    counter?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    from?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    message_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    signature?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    to?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** response of any mutation on the table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ValueTypes["secure_transfer_transactions"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_on_conflict"]: {
+    constraint:
+      | ValueTypes["secure_transfer_transactions_constraint"]
+      | Variable<any, string>;
+    update_columns:
+      | Array<ValueTypes["secure_transfer_transactions_update_column"]>
+      | Variable<any, string>;
+    where?:
+      | ValueTypes["secure_transfer_transactions_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Ordering options when selecting data from "secure_transfer_transactions". */
+  ["secure_transfer_transactions_order_by"]: {
+    counter?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    from?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    message_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    signature?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    to?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** primary key columns input for table: secure_transfer_transactions */
+  ["secure_transfer_transactions_pk_columns_input"]: {
+    id: number | Variable<any, string>;
+  };
+  /** select columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_select_column"]: secure_transfer_transactions_select_column;
+  /** order by stddev() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_stddev_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    message_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by stddev_pop() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_stddev_pop_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    message_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by stddev_samp() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_stddev_samp_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    message_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Streaming cursor of the table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value:
+      | ValueTypes["secure_transfer_transactions_stream_cursor_value_input"]
+      | Variable<any, string>;
+    /** cursor ordering */
+    ordering?:
+      | ValueTypes["cursor_ordering"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["secure_transfer_transactions_stream_cursor_value_input"]: {
+    counter?: string | undefined | null | Variable<any, string>;
+    from?: string | undefined | null | Variable<any, string>;
+    id?: number | undefined | null | Variable<any, string>;
+    message_id?: number | undefined | null | Variable<any, string>;
+    signature?: string | undefined | null | Variable<any, string>;
+    to?: string | undefined | null | Variable<any, string>;
+  };
+  /** order by sum() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_sum_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    message_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** placeholder for update columns of table "secure_transfer_transactions" (current role has no relevant permissions) */
+  ["secure_transfer_transactions_update_column"]: secure_transfer_transactions_update_column;
+  ["secure_transfer_transactions_updates"]: {
+    where:
+      | ValueTypes["secure_transfer_transactions_bool_exp"]
+      | Variable<any, string>;
+  };
+  /** order by var_pop() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_var_pop_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    message_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by var_samp() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_var_samp_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    message_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by variance() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_variance_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    message_id?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
   ["subscription_root"]: AliasType<{
     chats?: [
       {
@@ -1372,6 +1828,68 @@ export type ValueTypes = {
           | Variable<any, string>;
       },
       ValueTypes["chats"]
+    ];
+    secure_transfer_transactions?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["secure_transfer_transactions_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["secure_transfer_transactions_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["secure_transfer_transactions_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["secure_transfer_transactions"]
+    ];
+    secure_transfer_transactions_by_pk?: [
+      { id: number | Variable<any, string> },
+      ValueTypes["secure_transfer_transactions"]
+    ];
+    secure_transfer_transactions_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size:
+          | number
+          | Variable<
+              any,
+              string
+            > /** cursor to stream the results returned by the query */;
+        cursor:
+          | Array<
+              | ValueTypes["secure_transfer_transactions_stream_cursor_input"]
+              | undefined
+              | null
+            >
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["secure_transfer_transactions_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["secure_transfer_transactions"]
     ];
     __typename?: boolean | `@${string}`;
   }>;
@@ -1452,6 +1970,34 @@ export type ResolverInputTypes = {
     message_kind?: boolean | `@${string}`;
     parent_client_generated_uuid?: boolean | `@${string}`;
     room?: boolean | `@${string}`;
+    secure_transfer_transactions?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<
+              ResolverInputTypes["secure_transfer_transactions_select_column"]
+            >
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["secure_transfer_transactions_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["secure_transfer_transactions_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["secure_transfer_transactions"]
+    ];
     type?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
     uuid?: boolean | `@${string}`;
@@ -1481,6 +2027,10 @@ export type ResolverInputTypes = {
       | undefined
       | null;
     room?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    secure_transfer_transactions?:
+      | ResolverInputTypes["secure_transfer_transactions_bool_exp"]
+      | undefined
+      | null;
     type?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     username?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     uuid?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
@@ -1496,6 +2046,10 @@ export type ResolverInputTypes = {
     message_kind?: string | undefined | null;
     parent_client_generated_uuid?: string | undefined | null;
     room?: string | undefined | null;
+    secure_transfer_transactions?:
+      | ResolverInputTypes["secure_transfer_transactions_arr_rel_insert_input"]
+      | undefined
+      | null;
     type?: string | undefined | null;
     username?: string | undefined | null;
     uuid?: string | undefined | null;
@@ -1526,6 +2080,10 @@ export type ResolverInputTypes = {
       | undefined
       | null;
     room?: ResolverInputTypes["order_by"] | undefined | null;
+    secure_transfer_transactions_aggregate?:
+      | ResolverInputTypes["secure_transfer_transactions_aggregate_order_by"]
+      | undefined
+      | null;
     type?: ResolverInputTypes["order_by"] | undefined | null;
     username?: ResolverInputTypes["order_by"] | undefined | null;
     uuid?: ResolverInputTypes["order_by"] | undefined | null;
@@ -1582,6 +2140,52 @@ export type ResolverInputTypes = {
       },
       ResolverInputTypes["chats"]
     ];
+    insert_secure_transfer_transactions?: [
+      {
+        /** the rows to be inserted */
+        objects: Array<
+          ResolverInputTypes["secure_transfer_transactions_insert_input"]
+        > /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["secure_transfer_transactions_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["secure_transfer_transactions_mutation_response"]
+    ];
+    insert_secure_transfer_transactions_one?: [
+      {
+        /** the row to be inserted */
+        object: ResolverInputTypes["secure_transfer_transactions_insert_input"] /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["secure_transfer_transactions_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["secure_transfer_transactions"]
+    ];
+    update_secure_transfer_transactions?: [
+      {
+        /** filter the rows which have to be updated */
+        where: ResolverInputTypes["secure_transfer_transactions_bool_exp"];
+      },
+      ResolverInputTypes["secure_transfer_transactions_mutation_response"]
+    ];
+    update_secure_transfer_transactions_by_pk?: [
+      {
+        pk_columns: ResolverInputTypes["secure_transfer_transactions_pk_columns_input"];
+      },
+      ResolverInputTypes["secure_transfer_transactions"]
+    ];
+    update_secure_transfer_transactions_many?: [
+      {
+        /** updates to execute, in order */
+        updates: Array<
+          ResolverInputTypes["secure_transfer_transactions_updates"]
+        >;
+      },
+      ResolverInputTypes["secure_transfer_transactions_mutation_response"]
+    ];
     __typename?: boolean | `@${string}`;
   }>;
   /** column ordering options */
@@ -1611,8 +2215,250 @@ export type ResolverInputTypes = {
       ResolverInputTypes["chats"]
     ];
     chats_by_pk?: [{ id: number }, ResolverInputTypes["chats"]];
+    secure_transfer_transactions?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<
+              ResolverInputTypes["secure_transfer_transactions_select_column"]
+            >
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["secure_transfer_transactions_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["secure_transfer_transactions_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["secure_transfer_transactions"]
+    ];
+    secure_transfer_transactions_by_pk?: [
+      { id: number },
+      ResolverInputTypes["secure_transfer_transactions"]
+    ];
     __typename?: boolean | `@${string}`;
   }>;
+  /** columns and relationships of "secure_transfer_transactions" */
+  ["secure_transfer_transactions"]: AliasType<{
+    counter?: boolean | `@${string}`;
+    from?: boolean | `@${string}`;
+    id?: boolean | `@${string}`;
+    message_id?: boolean | `@${string}`;
+    signature?: boolean | `@${string}`;
+    to?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** order by aggregate values of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_aggregate_order_by"]: {
+    avg?:
+      | ResolverInputTypes["secure_transfer_transactions_avg_order_by"]
+      | undefined
+      | null;
+    count?: ResolverInputTypes["order_by"] | undefined | null;
+    max?:
+      | ResolverInputTypes["secure_transfer_transactions_max_order_by"]
+      | undefined
+      | null;
+    min?:
+      | ResolverInputTypes["secure_transfer_transactions_min_order_by"]
+      | undefined
+      | null;
+    stddev?:
+      | ResolverInputTypes["secure_transfer_transactions_stddev_order_by"]
+      | undefined
+      | null;
+    stddev_pop?:
+      | ResolverInputTypes["secure_transfer_transactions_stddev_pop_order_by"]
+      | undefined
+      | null;
+    stddev_samp?:
+      | ResolverInputTypes["secure_transfer_transactions_stddev_samp_order_by"]
+      | undefined
+      | null;
+    sum?:
+      | ResolverInputTypes["secure_transfer_transactions_sum_order_by"]
+      | undefined
+      | null;
+    var_pop?:
+      | ResolverInputTypes["secure_transfer_transactions_var_pop_order_by"]
+      | undefined
+      | null;
+    var_samp?:
+      | ResolverInputTypes["secure_transfer_transactions_var_samp_order_by"]
+      | undefined
+      | null;
+    variance?:
+      | ResolverInputTypes["secure_transfer_transactions_variance_order_by"]
+      | undefined
+      | null;
+  };
+  /** input type for inserting array relation for remote table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_arr_rel_insert_input"]: {
+    data: Array<
+      ResolverInputTypes["secure_transfer_transactions_insert_input"]
+    >;
+    /** upsert condition */
+    on_conflict?:
+      | ResolverInputTypes["secure_transfer_transactions_on_conflict"]
+      | undefined
+      | null;
+  };
+  /** order by avg() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_avg_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    message_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** Boolean expression to filter rows from the table "secure_transfer_transactions". All fields are combined with a logical 'AND'. */
+  ["secure_transfer_transactions_bool_exp"]: {
+    _and?:
+      | Array<ResolverInputTypes["secure_transfer_transactions_bool_exp"]>
+      | undefined
+      | null;
+    _not?:
+      | ResolverInputTypes["secure_transfer_transactions_bool_exp"]
+      | undefined
+      | null;
+    _or?:
+      | Array<ResolverInputTypes["secure_transfer_transactions_bool_exp"]>
+      | undefined
+      | null;
+    counter?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    from?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
+    message_id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
+    signature?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    to?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+  };
+  /** unique or primary key constraints on table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_constraint"]: secure_transfer_transactions_constraint;
+  /** input type for inserting data into table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_insert_input"]: {
+    counter?: string | undefined | null;
+    from?: string | undefined | null;
+    id?: number | undefined | null;
+    message_id?: number | undefined | null;
+    signature?: string | undefined | null;
+    to?: string | undefined | null;
+  };
+  /** order by max() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_max_order_by"]: {
+    counter?: ResolverInputTypes["order_by"] | undefined | null;
+    from?: ResolverInputTypes["order_by"] | undefined | null;
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    message_id?: ResolverInputTypes["order_by"] | undefined | null;
+    signature?: ResolverInputTypes["order_by"] | undefined | null;
+    to?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by min() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_min_order_by"]: {
+    counter?: ResolverInputTypes["order_by"] | undefined | null;
+    from?: ResolverInputTypes["order_by"] | undefined | null;
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    message_id?: ResolverInputTypes["order_by"] | undefined | null;
+    signature?: ResolverInputTypes["order_by"] | undefined | null;
+    to?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** response of any mutation on the table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ResolverInputTypes["secure_transfer_transactions"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_on_conflict"]: {
+    constraint: ResolverInputTypes["secure_transfer_transactions_constraint"];
+    update_columns: Array<
+      ResolverInputTypes["secure_transfer_transactions_update_column"]
+    >;
+    where?:
+      | ResolverInputTypes["secure_transfer_transactions_bool_exp"]
+      | undefined
+      | null;
+  };
+  /** Ordering options when selecting data from "secure_transfer_transactions". */
+  ["secure_transfer_transactions_order_by"]: {
+    counter?: ResolverInputTypes["order_by"] | undefined | null;
+    from?: ResolverInputTypes["order_by"] | undefined | null;
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    message_id?: ResolverInputTypes["order_by"] | undefined | null;
+    signature?: ResolverInputTypes["order_by"] | undefined | null;
+    to?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** primary key columns input for table: secure_transfer_transactions */
+  ["secure_transfer_transactions_pk_columns_input"]: {
+    id: number;
+  };
+  /** select columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_select_column"]: secure_transfer_transactions_select_column;
+  /** order by stddev() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_stddev_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    message_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by stddev_pop() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_stddev_pop_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    message_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by stddev_samp() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_stddev_samp_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    message_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** Streaming cursor of the table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ResolverInputTypes["secure_transfer_transactions_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ResolverInputTypes["cursor_ordering"] | undefined | null;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["secure_transfer_transactions_stream_cursor_value_input"]: {
+    counter?: string | undefined | null;
+    from?: string | undefined | null;
+    id?: number | undefined | null;
+    message_id?: number | undefined | null;
+    signature?: string | undefined | null;
+    to?: string | undefined | null;
+  };
+  /** order by sum() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_sum_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    message_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** placeholder for update columns of table "secure_transfer_transactions" (current role has no relevant permissions) */
+  ["secure_transfer_transactions_update_column"]: secure_transfer_transactions_update_column;
+  ["secure_transfer_transactions_updates"]: {
+    where: ResolverInputTypes["secure_transfer_transactions_bool_exp"];
+  };
+  /** order by var_pop() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_var_pop_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    message_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by var_samp() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_var_samp_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    message_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by variance() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_variance_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    message_id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
   ["subscription_root"]: AliasType<{
     chats?: [
       {
@@ -1648,6 +2494,54 @@ export type ResolverInputTypes = {
         where?: ResolverInputTypes["chats_bool_exp"] | undefined | null;
       },
       ResolverInputTypes["chats"]
+    ];
+    secure_transfer_transactions?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<
+              ResolverInputTypes["secure_transfer_transactions_select_column"]
+            >
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["secure_transfer_transactions_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["secure_transfer_transactions_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["secure_transfer_transactions"]
+    ];
+    secure_transfer_transactions_by_pk?: [
+      { id: number },
+      ResolverInputTypes["secure_transfer_transactions"]
+    ];
+    secure_transfer_transactions_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size: number /** cursor to stream the results returned by the query */;
+        cursor: Array<
+          | ResolverInputTypes["secure_transfer_transactions_stream_cursor_input"]
+          | undefined
+          | null
+        > /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["secure_transfer_transactions_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["secure_transfer_transactions"]
     ];
     __typename?: boolean | `@${string}`;
   }>;
@@ -1720,6 +2614,10 @@ export type ModelTypes = {
     message_kind?: string | undefined;
     parent_client_generated_uuid?: string | undefined;
     room?: string | undefined;
+    /** fetch data from the table: "secure_transfer_transactions" */
+    secure_transfer_transactions: Array<
+      ModelTypes["secure_transfer_transactions"]
+    >;
     type: string;
     username?: string | undefined;
     uuid?: string | undefined;
@@ -1738,6 +2636,9 @@ export type ModelTypes = {
       | ModelTypes["String_comparison_exp"]
       | undefined;
     room?: ModelTypes["String_comparison_exp"] | undefined;
+    secure_transfer_transactions?:
+      | ModelTypes["secure_transfer_transactions_bool_exp"]
+      | undefined;
     type?: ModelTypes["String_comparison_exp"] | undefined;
     username?: ModelTypes["String_comparison_exp"] | undefined;
     uuid?: ModelTypes["String_comparison_exp"] | undefined;
@@ -1752,6 +2653,9 @@ export type ModelTypes = {
     message_kind?: string | undefined;
     parent_client_generated_uuid?: string | undefined;
     room?: string | undefined;
+    secure_transfer_transactions?:
+      | ModelTypes["secure_transfer_transactions_arr_rel_insert_input"]
+      | undefined;
     type?: string | undefined;
     username?: string | undefined;
     uuid?: string | undefined;
@@ -1778,6 +2682,9 @@ export type ModelTypes = {
     message_kind?: ModelTypes["order_by"] | undefined;
     parent_client_generated_uuid?: ModelTypes["order_by"] | undefined;
     room?: ModelTypes["order_by"] | undefined;
+    secure_transfer_transactions_aggregate?:
+      | ModelTypes["secure_transfer_transactions_aggregate_order_by"]
+      | undefined;
     type?: ModelTypes["order_by"] | undefined;
     username?: ModelTypes["order_by"] | undefined;
     uuid?: ModelTypes["order_by"] | undefined;
@@ -1811,6 +2718,29 @@ export type ModelTypes = {
     insert_chats?: ModelTypes["chats_mutation_response"] | undefined;
     /** insert a single row into the table: "chats" */
     insert_chats_one?: ModelTypes["chats"] | undefined;
+    /** insert data into the table: "secure_transfer_transactions" */
+    insert_secure_transfer_transactions?:
+      | ModelTypes["secure_transfer_transactions_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "secure_transfer_transactions" */
+    insert_secure_transfer_transactions_one?:
+      | ModelTypes["secure_transfer_transactions"]
+      | undefined;
+    /** update data of the table: "secure_transfer_transactions" */
+    update_secure_transfer_transactions?:
+      | ModelTypes["secure_transfer_transactions_mutation_response"]
+      | undefined;
+    /** update single row of the table: "secure_transfer_transactions" */
+    update_secure_transfer_transactions_by_pk?:
+      | ModelTypes["secure_transfer_transactions"]
+      | undefined;
+    /** update multiples rows of table: "secure_transfer_transactions" */
+    update_secure_transfer_transactions_many?:
+      | Array<
+          | ModelTypes["secure_transfer_transactions_mutation_response"]
+          | undefined
+        >
+      | undefined;
   };
   ["order_by"]: order_by;
   ["query_root"]: {
@@ -1818,6 +2748,190 @@ export type ModelTypes = {
     chats: Array<ModelTypes["chats"]>;
     /** fetch data from the table: "chats" using primary key columns */
     chats_by_pk?: ModelTypes["chats"] | undefined;
+    /** fetch data from the table: "secure_transfer_transactions" */
+    secure_transfer_transactions: Array<
+      ModelTypes["secure_transfer_transactions"]
+    >;
+    /** fetch data from the table: "secure_transfer_transactions" using primary key columns */
+    secure_transfer_transactions_by_pk?:
+      | ModelTypes["secure_transfer_transactions"]
+      | undefined;
+  };
+  /** columns and relationships of "secure_transfer_transactions" */
+  ["secure_transfer_transactions"]: {
+    counter: string;
+    from: string;
+    id: number;
+    message_id: number;
+    signature?: string | undefined;
+    to: string;
+  };
+  /** order by aggregate values of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_aggregate_order_by"]: {
+    avg?: ModelTypes["secure_transfer_transactions_avg_order_by"] | undefined;
+    count?: ModelTypes["order_by"] | undefined;
+    max?: ModelTypes["secure_transfer_transactions_max_order_by"] | undefined;
+    min?: ModelTypes["secure_transfer_transactions_min_order_by"] | undefined;
+    stddev?:
+      | ModelTypes["secure_transfer_transactions_stddev_order_by"]
+      | undefined;
+    stddev_pop?:
+      | ModelTypes["secure_transfer_transactions_stddev_pop_order_by"]
+      | undefined;
+    stddev_samp?:
+      | ModelTypes["secure_transfer_transactions_stddev_samp_order_by"]
+      | undefined;
+    sum?: ModelTypes["secure_transfer_transactions_sum_order_by"] | undefined;
+    var_pop?:
+      | ModelTypes["secure_transfer_transactions_var_pop_order_by"]
+      | undefined;
+    var_samp?:
+      | ModelTypes["secure_transfer_transactions_var_samp_order_by"]
+      | undefined;
+    variance?:
+      | ModelTypes["secure_transfer_transactions_variance_order_by"]
+      | undefined;
+  };
+  /** input type for inserting array relation for remote table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_arr_rel_insert_input"]: {
+    data: Array<ModelTypes["secure_transfer_transactions_insert_input"]>;
+    /** upsert condition */
+    on_conflict?:
+      | ModelTypes["secure_transfer_transactions_on_conflict"]
+      | undefined;
+  };
+  /** order by avg() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_avg_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+    message_id?: ModelTypes["order_by"] | undefined;
+  };
+  /** Boolean expression to filter rows from the table "secure_transfer_transactions". All fields are combined with a logical 'AND'. */
+  ["secure_transfer_transactions_bool_exp"]: {
+    _and?:
+      | Array<ModelTypes["secure_transfer_transactions_bool_exp"]>
+      | undefined;
+    _not?: ModelTypes["secure_transfer_transactions_bool_exp"] | undefined;
+    _or?:
+      | Array<ModelTypes["secure_transfer_transactions_bool_exp"]>
+      | undefined;
+    counter?: ModelTypes["String_comparison_exp"] | undefined;
+    from?: ModelTypes["String_comparison_exp"] | undefined;
+    id?: ModelTypes["Int_comparison_exp"] | undefined;
+    message_id?: ModelTypes["Int_comparison_exp"] | undefined;
+    signature?: ModelTypes["String_comparison_exp"] | undefined;
+    to?: ModelTypes["String_comparison_exp"] | undefined;
+  };
+  ["secure_transfer_transactions_constraint"]: secure_transfer_transactions_constraint;
+  /** input type for inserting data into table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_insert_input"]: {
+    counter?: string | undefined;
+    from?: string | undefined;
+    id?: number | undefined;
+    message_id?: number | undefined;
+    signature?: string | undefined;
+    to?: string | undefined;
+  };
+  /** order by max() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_max_order_by"]: {
+    counter?: ModelTypes["order_by"] | undefined;
+    from?: ModelTypes["order_by"] | undefined;
+    id?: ModelTypes["order_by"] | undefined;
+    message_id?: ModelTypes["order_by"] | undefined;
+    signature?: ModelTypes["order_by"] | undefined;
+    to?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by min() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_min_order_by"]: {
+    counter?: ModelTypes["order_by"] | undefined;
+    from?: ModelTypes["order_by"] | undefined;
+    id?: ModelTypes["order_by"] | undefined;
+    message_id?: ModelTypes["order_by"] | undefined;
+    signature?: ModelTypes["order_by"] | undefined;
+    to?: ModelTypes["order_by"] | undefined;
+  };
+  /** response of any mutation on the table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_mutation_response"]: {
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<ModelTypes["secure_transfer_transactions"]>;
+  };
+  /** on_conflict condition type for table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_on_conflict"]: {
+    constraint: ModelTypes["secure_transfer_transactions_constraint"];
+    update_columns: Array<
+      ModelTypes["secure_transfer_transactions_update_column"]
+    >;
+    where?: ModelTypes["secure_transfer_transactions_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "secure_transfer_transactions". */
+  ["secure_transfer_transactions_order_by"]: {
+    counter?: ModelTypes["order_by"] | undefined;
+    from?: ModelTypes["order_by"] | undefined;
+    id?: ModelTypes["order_by"] | undefined;
+    message_id?: ModelTypes["order_by"] | undefined;
+    signature?: ModelTypes["order_by"] | undefined;
+    to?: ModelTypes["order_by"] | undefined;
+  };
+  /** primary key columns input for table: secure_transfer_transactions */
+  ["secure_transfer_transactions_pk_columns_input"]: {
+    id: number;
+  };
+  ["secure_transfer_transactions_select_column"]: secure_transfer_transactions_select_column;
+  /** order by stddev() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_stddev_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+    message_id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by stddev_pop() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_stddev_pop_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+    message_id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by stddev_samp() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_stddev_samp_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+    message_id?: ModelTypes["order_by"] | undefined;
+  };
+  /** Streaming cursor of the table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ModelTypes["secure_transfer_transactions_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ModelTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["secure_transfer_transactions_stream_cursor_value_input"]: {
+    counter?: string | undefined;
+    from?: string | undefined;
+    id?: number | undefined;
+    message_id?: number | undefined;
+    signature?: string | undefined;
+    to?: string | undefined;
+  };
+  /** order by sum() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_sum_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+    message_id?: ModelTypes["order_by"] | undefined;
+  };
+  ["secure_transfer_transactions_update_column"]: secure_transfer_transactions_update_column;
+  ["secure_transfer_transactions_updates"]: {
+    where: ModelTypes["secure_transfer_transactions_bool_exp"];
+  };
+  /** order by var_pop() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_var_pop_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+    message_id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by var_samp() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_var_samp_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+    message_id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by variance() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_variance_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+    message_id?: ModelTypes["order_by"] | undefined;
   };
   ["subscription_root"]: {
     /** fetch data from the table: "chats" */
@@ -1826,6 +2940,18 @@ export type ModelTypes = {
     chats_by_pk?: ModelTypes["chats"] | undefined;
     /** fetch data from the table in a streaming manner: "chats" */
     chats_stream: Array<ModelTypes["chats"]>;
+    /** fetch data from the table: "secure_transfer_transactions" */
+    secure_transfer_transactions: Array<
+      ModelTypes["secure_transfer_transactions"]
+    >;
+    /** fetch data from the table: "secure_transfer_transactions" using primary key columns */
+    secure_transfer_transactions_by_pk?:
+      | ModelTypes["secure_transfer_transactions"]
+      | undefined;
+    /** fetch data from the table in a streaming manner: "secure_transfer_transactions" */
+    secure_transfer_transactions_stream: Array<
+      ModelTypes["secure_transfer_transactions"]
+    >;
   };
   ["timestamptz"]: any;
   /** Boolean expression to compare columns of type "timestamptz". All fields are combined with logical 'AND'. */
@@ -1897,6 +3023,10 @@ export type GraphQLTypes = {
     message_kind?: string | undefined;
     parent_client_generated_uuid?: string | undefined;
     room?: string | undefined;
+    /** fetch data from the table: "secure_transfer_transactions" */
+    secure_transfer_transactions: Array<
+      GraphQLTypes["secure_transfer_transactions"]
+    >;
     type: string;
     username?: string | undefined;
     uuid?: string | undefined;
@@ -1915,6 +3045,9 @@ export type GraphQLTypes = {
       | GraphQLTypes["String_comparison_exp"]
       | undefined;
     room?: GraphQLTypes["String_comparison_exp"] | undefined;
+    secure_transfer_transactions?:
+      | GraphQLTypes["secure_transfer_transactions_bool_exp"]
+      | undefined;
     type?: GraphQLTypes["String_comparison_exp"] | undefined;
     username?: GraphQLTypes["String_comparison_exp"] | undefined;
     uuid?: GraphQLTypes["String_comparison_exp"] | undefined;
@@ -1930,6 +3063,9 @@ export type GraphQLTypes = {
     message_kind?: string | undefined;
     parent_client_generated_uuid?: string | undefined;
     room?: string | undefined;
+    secure_transfer_transactions?:
+      | GraphQLTypes["secure_transfer_transactions_arr_rel_insert_input"]
+      | undefined;
     type?: string | undefined;
     username?: string | undefined;
     uuid?: string | undefined;
@@ -1957,6 +3093,9 @@ export type GraphQLTypes = {
     message_kind?: GraphQLTypes["order_by"] | undefined;
     parent_client_generated_uuid?: GraphQLTypes["order_by"] | undefined;
     room?: GraphQLTypes["order_by"] | undefined;
+    secure_transfer_transactions_aggregate?:
+      | GraphQLTypes["secure_transfer_transactions_aggregate_order_by"]
+      | undefined;
     type?: GraphQLTypes["order_by"] | undefined;
     username?: GraphQLTypes["order_by"] | undefined;
     uuid?: GraphQLTypes["order_by"] | undefined;
@@ -1994,6 +3133,29 @@ export type GraphQLTypes = {
     insert_chats?: GraphQLTypes["chats_mutation_response"] | undefined;
     /** insert a single row into the table: "chats" */
     insert_chats_one?: GraphQLTypes["chats"] | undefined;
+    /** insert data into the table: "secure_transfer_transactions" */
+    insert_secure_transfer_transactions?:
+      | GraphQLTypes["secure_transfer_transactions_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "secure_transfer_transactions" */
+    insert_secure_transfer_transactions_one?:
+      | GraphQLTypes["secure_transfer_transactions"]
+      | undefined;
+    /** update data of the table: "secure_transfer_transactions" */
+    update_secure_transfer_transactions?:
+      | GraphQLTypes["secure_transfer_transactions_mutation_response"]
+      | undefined;
+    /** update single row of the table: "secure_transfer_transactions" */
+    update_secure_transfer_transactions_by_pk?:
+      | GraphQLTypes["secure_transfer_transactions"]
+      | undefined;
+    /** update multiples rows of table: "secure_transfer_transactions" */
+    update_secure_transfer_transactions_many?:
+      | Array<
+          | GraphQLTypes["secure_transfer_transactions_mutation_response"]
+          | undefined
+        >
+      | undefined;
   };
   /** column ordering options */
   ["order_by"]: order_by;
@@ -2003,6 +3165,195 @@ export type GraphQLTypes = {
     chats: Array<GraphQLTypes["chats"]>;
     /** fetch data from the table: "chats" using primary key columns */
     chats_by_pk?: GraphQLTypes["chats"] | undefined;
+    /** fetch data from the table: "secure_transfer_transactions" */
+    secure_transfer_transactions: Array<
+      GraphQLTypes["secure_transfer_transactions"]
+    >;
+    /** fetch data from the table: "secure_transfer_transactions" using primary key columns */
+    secure_transfer_transactions_by_pk?:
+      | GraphQLTypes["secure_transfer_transactions"]
+      | undefined;
+  };
+  /** columns and relationships of "secure_transfer_transactions" */
+  ["secure_transfer_transactions"]: {
+    __typename: "secure_transfer_transactions";
+    counter: string;
+    from: string;
+    id: number;
+    message_id: number;
+    signature?: string | undefined;
+    to: string;
+  };
+  /** order by aggregate values of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_aggregate_order_by"]: {
+    avg?: GraphQLTypes["secure_transfer_transactions_avg_order_by"] | undefined;
+    count?: GraphQLTypes["order_by"] | undefined;
+    max?: GraphQLTypes["secure_transfer_transactions_max_order_by"] | undefined;
+    min?: GraphQLTypes["secure_transfer_transactions_min_order_by"] | undefined;
+    stddev?:
+      | GraphQLTypes["secure_transfer_transactions_stddev_order_by"]
+      | undefined;
+    stddev_pop?:
+      | GraphQLTypes["secure_transfer_transactions_stddev_pop_order_by"]
+      | undefined;
+    stddev_samp?:
+      | GraphQLTypes["secure_transfer_transactions_stddev_samp_order_by"]
+      | undefined;
+    sum?: GraphQLTypes["secure_transfer_transactions_sum_order_by"] | undefined;
+    var_pop?:
+      | GraphQLTypes["secure_transfer_transactions_var_pop_order_by"]
+      | undefined;
+    var_samp?:
+      | GraphQLTypes["secure_transfer_transactions_var_samp_order_by"]
+      | undefined;
+    variance?:
+      | GraphQLTypes["secure_transfer_transactions_variance_order_by"]
+      | undefined;
+  };
+  /** input type for inserting array relation for remote table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_arr_rel_insert_input"]: {
+    data: Array<GraphQLTypes["secure_transfer_transactions_insert_input"]>;
+    /** upsert condition */
+    on_conflict?:
+      | GraphQLTypes["secure_transfer_transactions_on_conflict"]
+      | undefined;
+  };
+  /** order by avg() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_avg_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+    message_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** Boolean expression to filter rows from the table "secure_transfer_transactions". All fields are combined with a logical 'AND'. */
+  ["secure_transfer_transactions_bool_exp"]: {
+    _and?:
+      | Array<GraphQLTypes["secure_transfer_transactions_bool_exp"]>
+      | undefined;
+    _not?: GraphQLTypes["secure_transfer_transactions_bool_exp"] | undefined;
+    _or?:
+      | Array<GraphQLTypes["secure_transfer_transactions_bool_exp"]>
+      | undefined;
+    counter?: GraphQLTypes["String_comparison_exp"] | undefined;
+    from?: GraphQLTypes["String_comparison_exp"] | undefined;
+    id?: GraphQLTypes["Int_comparison_exp"] | undefined;
+    message_id?: GraphQLTypes["Int_comparison_exp"] | undefined;
+    signature?: GraphQLTypes["String_comparison_exp"] | undefined;
+    to?: GraphQLTypes["String_comparison_exp"] | undefined;
+  };
+  /** unique or primary key constraints on table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_constraint"]: secure_transfer_transactions_constraint;
+  /** input type for inserting data into table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_insert_input"]: {
+    counter?: string | undefined;
+    from?: string | undefined;
+    id?: number | undefined;
+    message_id?: number | undefined;
+    signature?: string | undefined;
+    to?: string | undefined;
+  };
+  /** order by max() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_max_order_by"]: {
+    counter?: GraphQLTypes["order_by"] | undefined;
+    from?: GraphQLTypes["order_by"] | undefined;
+    id?: GraphQLTypes["order_by"] | undefined;
+    message_id?: GraphQLTypes["order_by"] | undefined;
+    signature?: GraphQLTypes["order_by"] | undefined;
+    to?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by min() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_min_order_by"]: {
+    counter?: GraphQLTypes["order_by"] | undefined;
+    from?: GraphQLTypes["order_by"] | undefined;
+    id?: GraphQLTypes["order_by"] | undefined;
+    message_id?: GraphQLTypes["order_by"] | undefined;
+    signature?: GraphQLTypes["order_by"] | undefined;
+    to?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** response of any mutation on the table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_mutation_response"]: {
+    __typename: "secure_transfer_transactions_mutation_response";
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<GraphQLTypes["secure_transfer_transactions"]>;
+  };
+  /** on_conflict condition type for table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_on_conflict"]: {
+    constraint: GraphQLTypes["secure_transfer_transactions_constraint"];
+    update_columns: Array<
+      GraphQLTypes["secure_transfer_transactions_update_column"]
+    >;
+    where?: GraphQLTypes["secure_transfer_transactions_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "secure_transfer_transactions". */
+  ["secure_transfer_transactions_order_by"]: {
+    counter?: GraphQLTypes["order_by"] | undefined;
+    from?: GraphQLTypes["order_by"] | undefined;
+    id?: GraphQLTypes["order_by"] | undefined;
+    message_id?: GraphQLTypes["order_by"] | undefined;
+    signature?: GraphQLTypes["order_by"] | undefined;
+    to?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** primary key columns input for table: secure_transfer_transactions */
+  ["secure_transfer_transactions_pk_columns_input"]: {
+    id: number;
+  };
+  /** select columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_select_column"]: secure_transfer_transactions_select_column;
+  /** order by stddev() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_stddev_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+    message_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by stddev_pop() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_stddev_pop_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+    message_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by stddev_samp() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_stddev_samp_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+    message_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** Streaming cursor of the table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: GraphQLTypes["secure_transfer_transactions_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: GraphQLTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["secure_transfer_transactions_stream_cursor_value_input"]: {
+    counter?: string | undefined;
+    from?: string | undefined;
+    id?: number | undefined;
+    message_id?: number | undefined;
+    signature?: string | undefined;
+    to?: string | undefined;
+  };
+  /** order by sum() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_sum_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+    message_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** placeholder for update columns of table "secure_transfer_transactions" (current role has no relevant permissions) */
+  ["secure_transfer_transactions_update_column"]: secure_transfer_transactions_update_column;
+  ["secure_transfer_transactions_updates"]: {
+    where: GraphQLTypes["secure_transfer_transactions_bool_exp"];
+  };
+  /** order by var_pop() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_var_pop_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+    message_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by var_samp() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_var_samp_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+    message_id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by variance() on columns of table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_variance_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+    message_id?: GraphQLTypes["order_by"] | undefined;
   };
   ["subscription_root"]: {
     __typename: "subscription_root";
@@ -2012,6 +3363,18 @@ export type GraphQLTypes = {
     chats_by_pk?: GraphQLTypes["chats"] | undefined;
     /** fetch data from the table in a streaming manner: "chats" */
     chats_stream: Array<GraphQLTypes["chats"]>;
+    /** fetch data from the table: "secure_transfer_transactions" */
+    secure_transfer_transactions: Array<
+      GraphQLTypes["secure_transfer_transactions"]
+    >;
+    /** fetch data from the table: "secure_transfer_transactions" using primary key columns */
+    secure_transfer_transactions_by_pk?:
+      | GraphQLTypes["secure_transfer_transactions"]
+      | undefined;
+    /** fetch data from the table in a streaming manner: "secure_transfer_transactions" */
+    secure_transfer_transactions_stream: Array<
+      GraphQLTypes["secure_transfer_transactions"]
+    >;
   };
   ["timestamptz"]: "scalar" & { name: "timestamptz" };
   /** Boolean expression to compare columns of type "timestamptz". All fields are combined with logical 'AND'. */
@@ -2062,6 +3425,23 @@ export const enum order_by {
   desc_nulls_first = "desc_nulls_first",
   desc_nulls_last = "desc_nulls_last",
 }
+/** unique or primary key constraints on table "secure_transfer_transactions" */
+export const enum secure_transfer_transactions_constraint {
+  secure_transfer_transactions_pkey = "secure_transfer_transactions_pkey",
+}
+/** select columns of table "secure_transfer_transactions" */
+export const enum secure_transfer_transactions_select_column {
+  counter = "counter",
+  from = "from",
+  id = "id",
+  message_id = "message_id",
+  signature = "signature",
+  to = "to",
+}
+/** placeholder for update columns of table "secure_transfer_transactions" (current role has no relevant permissions) */
+export const enum secure_transfer_transactions_update_column {
+  _PLACEHOLDER = "_PLACEHOLDER",
+}
 
 type ZEUS_VARIABLES = {
   ["Int_comparison_exp"]: ValueTypes["Int_comparison_exp"];
@@ -2077,6 +3457,29 @@ type ZEUS_VARIABLES = {
   ["chats_update_column"]: ValueTypes["chats_update_column"];
   ["cursor_ordering"]: ValueTypes["cursor_ordering"];
   ["order_by"]: ValueTypes["order_by"];
+  ["secure_transfer_transactions_aggregate_order_by"]: ValueTypes["secure_transfer_transactions_aggregate_order_by"];
+  ["secure_transfer_transactions_arr_rel_insert_input"]: ValueTypes["secure_transfer_transactions_arr_rel_insert_input"];
+  ["secure_transfer_transactions_avg_order_by"]: ValueTypes["secure_transfer_transactions_avg_order_by"];
+  ["secure_transfer_transactions_bool_exp"]: ValueTypes["secure_transfer_transactions_bool_exp"];
+  ["secure_transfer_transactions_constraint"]: ValueTypes["secure_transfer_transactions_constraint"];
+  ["secure_transfer_transactions_insert_input"]: ValueTypes["secure_transfer_transactions_insert_input"];
+  ["secure_transfer_transactions_max_order_by"]: ValueTypes["secure_transfer_transactions_max_order_by"];
+  ["secure_transfer_transactions_min_order_by"]: ValueTypes["secure_transfer_transactions_min_order_by"];
+  ["secure_transfer_transactions_on_conflict"]: ValueTypes["secure_transfer_transactions_on_conflict"];
+  ["secure_transfer_transactions_order_by"]: ValueTypes["secure_transfer_transactions_order_by"];
+  ["secure_transfer_transactions_pk_columns_input"]: ValueTypes["secure_transfer_transactions_pk_columns_input"];
+  ["secure_transfer_transactions_select_column"]: ValueTypes["secure_transfer_transactions_select_column"];
+  ["secure_transfer_transactions_stddev_order_by"]: ValueTypes["secure_transfer_transactions_stddev_order_by"];
+  ["secure_transfer_transactions_stddev_pop_order_by"]: ValueTypes["secure_transfer_transactions_stddev_pop_order_by"];
+  ["secure_transfer_transactions_stddev_samp_order_by"]: ValueTypes["secure_transfer_transactions_stddev_samp_order_by"];
+  ["secure_transfer_transactions_stream_cursor_input"]: ValueTypes["secure_transfer_transactions_stream_cursor_input"];
+  ["secure_transfer_transactions_stream_cursor_value_input"]: ValueTypes["secure_transfer_transactions_stream_cursor_value_input"];
+  ["secure_transfer_transactions_sum_order_by"]: ValueTypes["secure_transfer_transactions_sum_order_by"];
+  ["secure_transfer_transactions_update_column"]: ValueTypes["secure_transfer_transactions_update_column"];
+  ["secure_transfer_transactions_updates"]: ValueTypes["secure_transfer_transactions_updates"];
+  ["secure_transfer_transactions_var_pop_order_by"]: ValueTypes["secure_transfer_transactions_var_pop_order_by"];
+  ["secure_transfer_transactions_var_samp_order_by"]: ValueTypes["secure_transfer_transactions_var_samp_order_by"];
+  ["secure_transfer_transactions_variance_order_by"]: ValueTypes["secure_transfer_transactions_variance_order_by"];
   ["timestamptz"]: ValueTypes["timestamptz"];
   ["timestamptz_comparison_exp"]: ValueTypes["timestamptz_comparison_exp"];
 };
