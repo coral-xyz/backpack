@@ -93,7 +93,6 @@ function Hero() {
                 className="rounded-xl  shadow-xl shadow-teal-600/30"
               >
                 <source src="/videos/backpack-safari.mp4" type="video/mp4" />
-                <source src="/videos/backpack-chrome.webm" type="video/webm" />
               </video>
             </div>
           </div>
