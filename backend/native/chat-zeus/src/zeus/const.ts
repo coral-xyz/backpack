@@ -129,6 +129,7 @@ export const AllTypesProps: Record<string, any> = {
     _not: "secure_transfer_transactions_bool_exp",
     _or: "secure_transfer_transactions_bool_exp",
     counter: "String_comparison_exp",
+    escrow: "String_comparison_exp",
     from: "String_comparison_exp",
     id: "Int_comparison_exp",
     message_id: "Int_comparison_exp",
@@ -139,6 +140,7 @@ export const AllTypesProps: Record<string, any> = {
   secure_transfer_transactions_insert_input: {},
   secure_transfer_transactions_max_order_by: {
     counter: "order_by",
+    escrow: "order_by",
     from: "order_by",
     id: "order_by",
     message_id: "order_by",
@@ -147,6 +149,7 @@ export const AllTypesProps: Record<string, any> = {
   },
   secure_transfer_transactions_min_order_by: {
     counter: "order_by",
+    escrow: "order_by",
     from: "order_by",
     id: "order_by",
     message_id: "order_by",
@@ -160,6 +163,7 @@ export const AllTypesProps: Record<string, any> = {
   },
   secure_transfer_transactions_order_by: {
     counter: "order_by",
+    escrow: "order_by",
     from: "order_by",
     id: "order_by",
     message_id: "order_by",
@@ -282,6 +286,7 @@ export const ReturnTypes: Record<string, any> = {
   },
   secure_transfer_transactions: {
     counter: "String",
+    escrow: "String",
     from: "String",
     id: "Int",
     message_id: "Int",

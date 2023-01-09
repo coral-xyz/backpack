@@ -604,7 +604,6 @@ export const ResolveFromPath = (
   returns: ReturnTypesType,
   ops: Operations
 ) => {
-  //@ts-ignore
   const ResolvePropsType = (mappedParts: Part[]) => {
     const oKey = ops[mappedParts[0].v];
     const propsP1 = oKey ? props[oKey] : props[mappedParts[0].v];
@@ -1463,6 +1462,7 @@ export type ValueTypes = {
   /** columns and relationships of "secure_transfer_transactions" */
   ["secure_transfer_transactions"]: AliasType<{
     counter?: boolean | `@${string}`;
+    escrow?: boolean | `@${string}`;
     from?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
     message_id?: boolean | `@${string}`;
@@ -1567,6 +1567,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    escrow?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     from?:
       | ValueTypes["String_comparison_exp"]
       | undefined
@@ -1598,6 +1603,7 @@ export type ValueTypes = {
   /** input type for inserting data into table "secure_transfer_transactions" */
   ["secure_transfer_transactions_insert_input"]: {
     counter?: string | undefined | null | Variable<any, string>;
+    escrow?: string | undefined | null | Variable<any, string>;
     from?: string | undefined | null | Variable<any, string>;
     id?: number | undefined | null | Variable<any, string>;
     message_id?: number | undefined | null | Variable<any, string>;
@@ -1607,6 +1613,7 @@ export type ValueTypes = {
   /** order by max() on columns of table "secure_transfer_transactions" */
   ["secure_transfer_transactions_max_order_by"]: {
     counter?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    escrow?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     from?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     message_id?:
@@ -1624,6 +1631,7 @@ export type ValueTypes = {
   /** order by min() on columns of table "secure_transfer_transactions" */
   ["secure_transfer_transactions_min_order_by"]: {
     counter?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    escrow?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     from?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     message_id?:
@@ -1663,6 +1671,7 @@ export type ValueTypes = {
   /** Ordering options when selecting data from "secure_transfer_transactions". */
   ["secure_transfer_transactions_order_by"]: {
     counter?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    escrow?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     from?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     message_id?:
@@ -1726,6 +1735,7 @@ export type ValueTypes = {
   /** Initial value of the column from where the streaming should start */
   ["secure_transfer_transactions_stream_cursor_value_input"]: {
     counter?: string | undefined | null | Variable<any, string>;
+    escrow?: string | undefined | null | Variable<any, string>;
     from?: string | undefined | null | Variable<any, string>;
     id?: number | undefined | null | Variable<any, string>;
     message_id?: number | undefined | null | Variable<any, string>;
@@ -2254,6 +2264,7 @@ export type ResolverInputTypes = {
   /** columns and relationships of "secure_transfer_transactions" */
   ["secure_transfer_transactions"]: AliasType<{
     counter?: boolean | `@${string}`;
+    escrow?: boolean | `@${string}`;
     from?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
     message_id?: boolean | `@${string}`;
@@ -2336,6 +2347,7 @@ export type ResolverInputTypes = {
       | undefined
       | null;
     counter?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    escrow?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     from?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
     message_id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
@@ -2347,6 +2359,7 @@ export type ResolverInputTypes = {
   /** input type for inserting data into table "secure_transfer_transactions" */
   ["secure_transfer_transactions_insert_input"]: {
     counter?: string | undefined | null;
+    escrow?: string | undefined | null;
     from?: string | undefined | null;
     id?: number | undefined | null;
     message_id?: number | undefined | null;
@@ -2356,6 +2369,7 @@ export type ResolverInputTypes = {
   /** order by max() on columns of table "secure_transfer_transactions" */
   ["secure_transfer_transactions_max_order_by"]: {
     counter?: ResolverInputTypes["order_by"] | undefined | null;
+    escrow?: ResolverInputTypes["order_by"] | undefined | null;
     from?: ResolverInputTypes["order_by"] | undefined | null;
     id?: ResolverInputTypes["order_by"] | undefined | null;
     message_id?: ResolverInputTypes["order_by"] | undefined | null;
@@ -2365,6 +2379,7 @@ export type ResolverInputTypes = {
   /** order by min() on columns of table "secure_transfer_transactions" */
   ["secure_transfer_transactions_min_order_by"]: {
     counter?: ResolverInputTypes["order_by"] | undefined | null;
+    escrow?: ResolverInputTypes["order_by"] | undefined | null;
     from?: ResolverInputTypes["order_by"] | undefined | null;
     id?: ResolverInputTypes["order_by"] | undefined | null;
     message_id?: ResolverInputTypes["order_by"] | undefined | null;
@@ -2393,6 +2408,7 @@ export type ResolverInputTypes = {
   /** Ordering options when selecting data from "secure_transfer_transactions". */
   ["secure_transfer_transactions_order_by"]: {
     counter?: ResolverInputTypes["order_by"] | undefined | null;
+    escrow?: ResolverInputTypes["order_by"] | undefined | null;
     from?: ResolverInputTypes["order_by"] | undefined | null;
     id?: ResolverInputTypes["order_by"] | undefined | null;
     message_id?: ResolverInputTypes["order_by"] | undefined | null;
@@ -2430,6 +2446,7 @@ export type ResolverInputTypes = {
   /** Initial value of the column from where the streaming should start */
   ["secure_transfer_transactions_stream_cursor_value_input"]: {
     counter?: string | undefined | null;
+    escrow?: string | undefined | null;
     from?: string | undefined | null;
     id?: number | undefined | null;
     message_id?: number | undefined | null;
@@ -2762,6 +2779,7 @@ export type ModelTypes = {
   /** columns and relationships of "secure_transfer_transactions" */
   ["secure_transfer_transactions"]: {
     counter: string;
+    escrow: string;
     from: string;
     id: number;
     message_id: number;
@@ -2817,6 +2835,7 @@ export type ModelTypes = {
       | Array<ModelTypes["secure_transfer_transactions_bool_exp"]>
       | undefined;
     counter?: ModelTypes["String_comparison_exp"] | undefined;
+    escrow?: ModelTypes["String_comparison_exp"] | undefined;
     from?: ModelTypes["String_comparison_exp"] | undefined;
     id?: ModelTypes["Int_comparison_exp"] | undefined;
     message_id?: ModelTypes["Int_comparison_exp"] | undefined;
@@ -2827,6 +2846,7 @@ export type ModelTypes = {
   /** input type for inserting data into table "secure_transfer_transactions" */
   ["secure_transfer_transactions_insert_input"]: {
     counter?: string | undefined;
+    escrow?: string | undefined;
     from?: string | undefined;
     id?: number | undefined;
     message_id?: number | undefined;
@@ -2836,6 +2856,7 @@ export type ModelTypes = {
   /** order by max() on columns of table "secure_transfer_transactions" */
   ["secure_transfer_transactions_max_order_by"]: {
     counter?: ModelTypes["order_by"] | undefined;
+    escrow?: ModelTypes["order_by"] | undefined;
     from?: ModelTypes["order_by"] | undefined;
     id?: ModelTypes["order_by"] | undefined;
     message_id?: ModelTypes["order_by"] | undefined;
@@ -2845,6 +2866,7 @@ export type ModelTypes = {
   /** order by min() on columns of table "secure_transfer_transactions" */
   ["secure_transfer_transactions_min_order_by"]: {
     counter?: ModelTypes["order_by"] | undefined;
+    escrow?: ModelTypes["order_by"] | undefined;
     from?: ModelTypes["order_by"] | undefined;
     id?: ModelTypes["order_by"] | undefined;
     message_id?: ModelTypes["order_by"] | undefined;
@@ -2869,6 +2891,7 @@ export type ModelTypes = {
   /** Ordering options when selecting data from "secure_transfer_transactions". */
   ["secure_transfer_transactions_order_by"]: {
     counter?: ModelTypes["order_by"] | undefined;
+    escrow?: ModelTypes["order_by"] | undefined;
     from?: ModelTypes["order_by"] | undefined;
     id?: ModelTypes["order_by"] | undefined;
     message_id?: ModelTypes["order_by"] | undefined;
@@ -2905,6 +2928,7 @@ export type ModelTypes = {
   /** Initial value of the column from where the streaming should start */
   ["secure_transfer_transactions_stream_cursor_value_input"]: {
     counter?: string | undefined;
+    escrow?: string | undefined;
     from?: string | undefined;
     id?: number | undefined;
     message_id?: number | undefined;
@@ -3180,6 +3204,7 @@ export type GraphQLTypes = {
   ["secure_transfer_transactions"]: {
     __typename: "secure_transfer_transactions";
     counter: string;
+    escrow: string;
     from: string;
     id: number;
     message_id: number;
@@ -3235,6 +3260,7 @@ export type GraphQLTypes = {
       | Array<GraphQLTypes["secure_transfer_transactions_bool_exp"]>
       | undefined;
     counter?: GraphQLTypes["String_comparison_exp"] | undefined;
+    escrow?: GraphQLTypes["String_comparison_exp"] | undefined;
     from?: GraphQLTypes["String_comparison_exp"] | undefined;
     id?: GraphQLTypes["Int_comparison_exp"] | undefined;
     message_id?: GraphQLTypes["Int_comparison_exp"] | undefined;
@@ -3246,6 +3272,7 @@ export type GraphQLTypes = {
   /** input type for inserting data into table "secure_transfer_transactions" */
   ["secure_transfer_transactions_insert_input"]: {
     counter?: string | undefined;
+    escrow?: string | undefined;
     from?: string | undefined;
     id?: number | undefined;
     message_id?: number | undefined;
@@ -3255,6 +3282,7 @@ export type GraphQLTypes = {
   /** order by max() on columns of table "secure_transfer_transactions" */
   ["secure_transfer_transactions_max_order_by"]: {
     counter?: GraphQLTypes["order_by"] | undefined;
+    escrow?: GraphQLTypes["order_by"] | undefined;
     from?: GraphQLTypes["order_by"] | undefined;
     id?: GraphQLTypes["order_by"] | undefined;
     message_id?: GraphQLTypes["order_by"] | undefined;
@@ -3264,6 +3292,7 @@ export type GraphQLTypes = {
   /** order by min() on columns of table "secure_transfer_transactions" */
   ["secure_transfer_transactions_min_order_by"]: {
     counter?: GraphQLTypes["order_by"] | undefined;
+    escrow?: GraphQLTypes["order_by"] | undefined;
     from?: GraphQLTypes["order_by"] | undefined;
     id?: GraphQLTypes["order_by"] | undefined;
     message_id?: GraphQLTypes["order_by"] | undefined;
@@ -3289,6 +3318,7 @@ export type GraphQLTypes = {
   /** Ordering options when selecting data from "secure_transfer_transactions". */
   ["secure_transfer_transactions_order_by"]: {
     counter?: GraphQLTypes["order_by"] | undefined;
+    escrow?: GraphQLTypes["order_by"] | undefined;
     from?: GraphQLTypes["order_by"] | undefined;
     id?: GraphQLTypes["order_by"] | undefined;
     message_id?: GraphQLTypes["order_by"] | undefined;
@@ -3326,6 +3356,7 @@ export type GraphQLTypes = {
   /** Initial value of the column from where the streaming should start */
   ["secure_transfer_transactions_stream_cursor_value_input"]: {
     counter?: string | undefined;
+    escrow?: string | undefined;
     from?: string | undefined;
     id?: number | undefined;
     message_id?: number | undefined;
@@ -3434,6 +3465,7 @@ export const enum secure_transfer_transactions_constraint {
 /** select columns of table "secure_transfer_transactions" */
 export const enum secure_transfer_transactions_select_column {
   counter = "counter",
+  escrow = "escrow",
   from = "from",
   id = "id",
   message_id = "message_id",
