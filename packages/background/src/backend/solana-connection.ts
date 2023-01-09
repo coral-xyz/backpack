@@ -286,14 +286,18 @@ export class SolanaConnectionBackend {
     //
     return JSON.stringify({
       nfts: {
-        nftTokens: resp.nfts.nftTokens.sort((a: any, b: any) =>
-          a.key.toString().localeCompare(b.key.toString())
-        ),
+        nftTokens: resp.nfts.nftTokens
+          .slice()
+          .sort((a: any, b: any) =>
+            a.key.toString().localeCompare(b.key.toString())
+          ),
       },
       fts: {
-        fungibleTokens: resp.fts.fungibleTokens.sort((a: any, b: any) =>
-          a.key.toString().localeCompare(b.key.toString())
-        ),
+        fungibleTokens: resp.fts.fungibleTokens
+          .slice()
+          .sort((a: any, b: any) =>
+            a.key.toString().localeCompare(b.key.toString())
+          ),
       },
     });
   }
