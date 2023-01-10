@@ -49,18 +49,20 @@ export function RootNavigation({
   colorScheme,
 }: {
   colorScheme: "dark" | "light";
-}) {
+}): JSX.Element {
   return (
     <NavigationContainer
-      theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-    >
+      theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <RootNavigator />
     </NavigationContainer>
   );
 }
 
-function renderScreen(state: string): JSX.Element {
-  switch (state) {
+function RootNavigator(): JSX.Element {
+  const keyringStoreState = useKeyringStoreState();
+  console.log("keyringStoreState", keyringStoreState);
+
+  switch (keyringStoreState) {
     case "needs-onboarding":
       return (
         <ErrorBoundary>
@@ -84,15 +86,4 @@ function renderScreen(state: string): JSX.Element {
     default:
       return <NotFoundScreen />;
   }
-}
-
-function RootNavigator() {
-  const keyringStoreState = useKeyringStoreState();
-  console.log("keyringStoreState", keyringStoreState);
-
-  return (
-    <View style={{ flex: 1, backgroundColor: "pink" }}>
-      {renderScreen(keyringStoreState)}
-    </View>
-  );
 }

@@ -27,7 +27,7 @@ interface FormData {
   password: string;
 }
 
-export default function LockedNavigator() {
+export default function LockedNavigator(): JSX.Element {
   return (
     <Stack.Navigator
       initialRouteName="Locked"
@@ -35,8 +35,7 @@ export default function LockedNavigator() {
         headerShown: false,
         headerTitle: "",
         presentation: "modal",
-      }}
-    >
+      }}>
       <Stack.Screen name="Locked" component={LockedScreen} />
       <Stack.Screen name="HelpMenuModal" component={LockedHelpMenuModal} />
     </Stack.Navigator>
@@ -87,8 +86,7 @@ function LockedHelpMenuModal({ navigation }) {
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
-        }}
-      >
+        }}>
         <Button title={label} onPress={onPress} />
       </View>
     );
