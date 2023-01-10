@@ -1,156 +1,156 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Alert, Button, Text, View } from "react-native";
+import { Alert, DevSettings, StyleSheet, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Margin, PrimaryButton, Screen, WelcomeLogoHeader } from "@components";
 import {
-  Margin,
-  PrimaryButton,
-  ResetAppButton,
-  Screen,
-  SecondaryButton,
-  WelcomeLogoHeader,
-} from "@components";
-import {
-  BACKPACK_LINK,
-  DISCORD_INVITE_LINK,
-  TWITTER_LINK,
-  UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-} from "@coral-xyz/common";
+  BottomSheetHelpModal,
+  HelpModalMenuButton,
+} from "@components/BottomSheetHelpModal";
+import { ErrorMessage } from "@components/ErrorMessage";
+import { PasswordInput } from "@components/PasswordInput";
+import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
-import { createStackNavigator } from "@react-navigation/stack";
-import * as Linking from "expo-linking";
+import { MaterialIcons } from "@expo/vector-icons";
+import { useTheme } from "@hooks";
+import { IconPushDetail } from "@screens/Unlocked/Settings/components/SettingsRow";
+import { deleteItemAsync } from "expo-secure-store";
 
-import { ErrorMessage } from "../components/ErrorMessage";
-import { PasswordInput } from "../components/PasswordInput";
+const maybeResetApp = () => {
+  Alert.alert(
+    "Are your sure?",
+    "This will wipe all data that's been stored in the app",
+    [
+      {
+        text: "Yes",
+        onPress: () => {
+          doReset(true);
+        },
+      },
+      {
+        text: "No",
+        onPress: () => {},
+      },
+    ]
+  );
+};
 
-const Stack = createStackNavigator();
+const doReset = async (shouldReset: boolean) => {
+  if (!shouldReset) {
+    return;
+  }
+  // TODO: don't manually specify this list of keys
+  const stores = [
+    "keyring-store",
+    "keyname-store",
+    "wallet-data",
+    "nav-store7",
+  ];
+  for (const store of stores) {
+    try {
+      await deleteItemAsync(store);
+    } catch (err) {
+      console.error(err);
+      // ignore
+    }
+  }
+
+  DevSettings.reload();
+};
 
 interface FormData {
   password: string;
 }
 
-export default function LockedNavigator(): JSX.Element {
-  return (
-    <Stack.Navigator
-      initialRouteName="Locked"
-      screenOptions={{
-        headerShown: false,
-        headerTitle: "",
-        presentation: "modal",
-      }}>
-      <Stack.Screen name="Locked" component={LockedScreen} />
-      <Stack.Screen name="HelpMenuModal" component={LockedHelpMenuModal} />
-    </Stack.Navigator>
-  );
-}
+export function LockedScreen(): JSX.Element {
+  const theme = useTheme();
+  const insets = useSafeAreaInsets();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const handlePresentModalPress = () => {
+    setIsModalVisible((last) => !last);
+  };
 
-function LockedHelpMenuModal({ navigation }) {
-  const options = [
+  // TODO figure out why this isn't working
+  // return <View style={{ flex: 1, backgroundColor: "red" }} />;
+  // const background = useBackgroundClient();
+  // const user = useUser(); // TODO look into why this breaks
+
+  const { control, handleSubmit, formState, setError } = useForm<FormData>();
+  const { errors } = formState;
+
+  const onSubmit = async ({ password }: FormData) => {
+    // Alert.alert("password", JSON.stringify({ password, formState }));
+    // // TODO: fix issue with uncaught error with incorrect password
+    // try {
+    //   await background.request({
+    //     method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
+    //     params: [password, user.uuid, user.username],
+    //   });
+    // } catch (err) {
+    //   console.error(err);
+    //   setError("password", { message: "Invalid password" });
+    // }
+  };
+
+  const extraOptions = [
     {
-      // icon: <AccountCircleIcon style={{ color: theme.custom.colors.icon }} />,
-      text: "Reset Secret Recovery Phrase",
+      icon: (
+        <MaterialIcons
+          name="people"
+          size={24}
+          color={theme.custom.colors.secondary}
+        />
+      ),
+      label: "Reset Backpack",
+      detailIcon: <IconPushDetail />,
       onPress: () => {
-        navigation.push("Reset");
+        maybeResetApp();
       },
-      // onPress: () => nav.push("reset"),
-      // suffix: (
-      //   <ChevronRightIcon
-      //     style={{
-      //       flexShrink: 1,
-      //       alignSelf: "center",
-      //       color: theme.custom.colors.icon,
-      //     }}
-      //   />
-      // ),
-    },
-    {
-      // icon: <LockIcon style={{ color: theme.custom.colors.icon }} />,
-      text: "Backpack.app",
-      onPress: () => Linking.openURL(BACKPACK_LINK),
-    },
-    {
-      // icon: <TwitterIcon style={{ color: theme.custom.colors.icon }} />,
-      text: "Twitter",
-      onPress: () => Linking.openURL(TWITTER_LINK),
-    },
-    {
-      // icon: <DiscordIcon fill={theme.custom.colors.icon} />,
-      text: "Need help? Hop into Discord",
-      onPress: () => Linking.openURL(DISCORD_INVITE_LINK),
     },
   ];
 
-  function ListItem({ label, onPress }) {
-    return (
-      <View
-        style={{
-          padding: 8,
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}>
-        <Button title={label} onPress={onPress} />
-      </View>
-    );
-  }
   return (
-    <View style={{ flex: 1, alignItems: "center" }}>
-      <View>
-        {options.map((o, idx) => (
-          <ListItem key={idx} label={o.text} onPress={o.onPress} />
-        ))}
-      </View>
-    </View>
+    <>
+      <Screen
+        style={[
+          styles.container,
+          {
+            marginTop: insets.top,
+            marginBottom: insets.bottom,
+          },
+        ]}>
+        <HelpModalMenuButton onPress={handlePresentModalPress} />
+        <Margin top={48} bottom={24}>
+          <WelcomeLogoHeader />
+        </Margin>
+        <View>
+          <Margin bottom={8}>
+            <PasswordInput
+              placeholder="Password"
+              name="password"
+              control={control}
+              rules={{
+                required: "You must enter a password",
+              }}
+            />
+            {errors.password ? <ErrorMessage for={errors.password} /> : null}
+          </Margin>
+          <PrimaryButton label="Unlock" onPress={handleSubmit(onSubmit)} />
+        </View>
+      </Screen>
+      <BottomSheetHelpModal
+        extraOptions={extraOptions}
+        isVisible={isModalVisible}
+        resetVisibility={() => {
+          setIsModalVisible(() => false);
+        }}
+      />
+    </>
   );
 }
 
-function LockedScreen({ navigation }: any): JSX.Element {
-  // TODO figure out why this isn't working
-  // return <View style={{ flex: 1, backgroundColor: "green" }} />;
-  const background = useBackgroundClient();
-  const user = useUser(); // TODO look into why this breaks
-
-  const { control, handleSubmit, formState, setError } = useForm<FormData>();
-  const { errors, isValid } = formState;
-
-  const onSubmit = async ({ password }: FormData) => {
-    Alert.alert("password", JSON.stringify({ password, formState }));
-    // TODO: fix issue with uncaught error with incorrect password
-    try {
-      await background.request({
-        method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-        params: [password, user.uuid, user.username],
-      });
-    } catch (err) {
-      console.error(err);
-      setError("password", { message: "Invalid password" });
-    }
-  };
-
-  return (
-    <Screen style={{ justifyContent: "space-between" }}>
-      <WelcomeLogoHeader />
-      <View>
-        <Margin bottom={8}>
-          <PasswordInput
-            placeholder="Password"
-            name="password"
-            control={control}
-            rules={{
-              required: "You must enter a password",
-            }}
-          />
-          {errors.password ? <ErrorMessage for={errors.password} /> : null}
-        </Margin>
-        <PrimaryButton label="Unlock" onPress={handleSubmit(onSubmit)} />
-        <Margin top={24} bottom={8}>
-          <SecondaryButton
-            label="Open Help"
-            onPress={() => {
-              navigation.push("HelpMenuModal");
-            }}
-          />
-        </Margin>
-        <ResetAppButton />
-      </View>
-    </Screen>
-  );
-}
+const styles = StyleSheet.create({
+  container: {
+    justifyContent: "space-between",
+  },
+});

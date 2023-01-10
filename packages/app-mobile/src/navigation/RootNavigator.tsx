@@ -9,7 +9,7 @@ import {
 
 import { NotFoundScreen } from "../screens/NotFoundScreen";
 
-import LockedNavigator from "./LockedNavigator";
+import { LockedScreen } from "./LockedNavigator";
 import OnboardingNavigator from "./OnboardingNavigator";
 import UnlockedNavigator from "./UnlockedNavigator";
 
@@ -71,11 +71,9 @@ function RootNavigator(): JSX.Element {
       );
     case "locked":
       return (
-        <View style={{ flex: 1, backgroundColor: "pink" }}>
-          <ErrorBoundary>
-            <LockedNavigator />
-          </ErrorBoundary>
-        </View>
+        <ErrorBoundary>
+          <LockedScreen />
+        </ErrorBoundary>
       );
     case "unlocked":
       return (

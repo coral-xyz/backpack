@@ -1,19 +1,9 @@
 // https://github.com/feross/buffer#usage
 // note: the trailing slash is important!
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import type { StyleProp, ViewStyle } from "react-native";
-import {
-  Alert,
-  Button,
-  FlatList,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { Alert, FlatList, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   ActionCard,
@@ -27,13 +17,15 @@ import {
   MnemonicInputFields,
   PasswordInput,
   PrimaryButton,
-  RoundedContainerGroup,
   Screen,
   StyledText,
-  StyledTextInput,
   SubtextParagraph,
   WelcomeLogoHeader,
 } from "@components";
+import {
+  BottomSheetHelpModal,
+  HelpModalMenuButton,
+} from "@components/BottomSheetHelpModal";
 import { ErrorMessage } from "@components/ErrorMessage";
 import {
   AvalancheIcon,
@@ -47,19 +39,13 @@ import {
   TwitterIcon,
   WidgetIcon,
 } from "@components/Icon";
-import type {
-  Blockchain,
-  BlockchainKeyringInit,
-  KeyringInit,
-} from "@coral-xyz/common";
+import type { Blockchain, BlockchainKeyringInit } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
   BACKPACK_FEATURE_USERNAMES,
   BACKPACK_FEATURE_XNFT,
-  BACKPACK_LINK,
   DerivationPath,
   DISCORD_INVITE_LINK,
-  KeyringType,
   toTitleCase,
   TWITTER_LINK,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
@@ -71,24 +57,13 @@ import {
   XNFT_GG_LINK,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
-import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
-import type { BottomSheetBackdropProps } from "@gorhom/bottom-sheet";
-import { BottomSheetBackdrop, BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTheme } from "@hooks/useTheme";
+import { OnboardingProvider, useOnboardingData } from "@lib/OnboardingProvider";
 import type { StackScreenProps } from "@react-navigation/stack";
 import { createStackNavigator } from "@react-navigation/stack";
-import {
-  IconLaunchDetail,
-  SettingsRow,
-} from "@screens/Unlocked/Settings/components/SettingsRow";
 import { encode } from "bs58";
 import * as Linking from "expo-linking";
 import { v4 as uuidv4 } from "uuid";
-
-import {
-  OnboardingProvider,
-  useOnboardingData,
-} from "../lib/OnboardingProvider";
 
 // eslint-disable-next-line
 const Buffer = require("buffer/").Buffer;
@@ -127,8 +102,15 @@ function OnboardingScreen({
   subtitle?: string;
   children?: JSX.Element[] | JSX.Element;
 }) {
+  const insets = useSafeAreaInsets();
   return (
-    <Screen style={styles.container}>
+    <Screen
+      style={[
+        styles.container,
+        {
+          paddingBottom: insets.bottom,
+        },
+      ]}>
       <Margin bottom={24}>
         <Header text={title} />
         {subtitle ? <SubtextParagraph>{subtitle}</SubtextParagraph> : null}
@@ -142,7 +124,6 @@ function OnboardingScreen({
 function OnboardingCreateOrImportWalletScreen({
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "CreateOrImportWallet">) {
-  const theme = useTheme();
   const insets = useSafeAreaInsets();
   const { setOnboardingData } = useOnboardingData();
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -163,22 +144,7 @@ function OnboardingCreateOrImportWalletScreen({
             paddingRight: insets.right,
           },
         ]}>
-        <Pressable
-          onPress={() => {
-            handlePresentModalPress();
-          }}
-          style={{
-            position: "absolute",
-            top: 16,
-            right: 32,
-            zIndex: 999,
-          }}>
-          <MaterialIcons
-            name="menu"
-            size={32}
-            color={theme.custom.colors.fontColor}
-          />
-        </Pressable>
+        <HelpModalMenuButton onPress={handlePresentModalPress} />
         <Margin top={48} bottom={24}>
           <WelcomeLogoHeader />
         </Margin>
@@ -205,110 +171,13 @@ function OnboardingCreateOrImportWalletScreen({
           </Margin>
         </View>
       </Screen>
-      <BottomHelpModal
+      <BottomSheetHelpModal
         isVisible={isModalVisible}
         resetVisibility={() => {
           setIsModalVisible(() => false);
         }}
       />
     </>
-  );
-}
-
-function BottomHelpModal({
-  isVisible,
-  resetVisibility,
-}: {
-  isVisible: boolean;
-  resetVisibility: () => void;
-}): JSX.Element {
-  const theme = useTheme();
-  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-
-  useEffect(() => {
-    function handle() {
-      if (isVisible) {
-        bottomSheetModalRef.current?.present();
-        // Resets visibility since dismissing it is built-in
-        resetVisibility();
-      }
-    }
-
-    handle();
-  }, [isVisible]);
-
-  const snapPoints = useMemo(() => [240], []);
-  const renderBackdrop = useCallback(
-    (props: BottomSheetBackdropProps) => (
-      <BottomSheetBackdrop
-        {...props}
-        pressBehavior="close"
-        appearsOnIndex={0}
-        disappearsOnIndex={-1}
-      />
-    ),
-    []
-  );
-
-  const menuOptions = [
-    {
-      icon: (
-        <MaterialIcons
-          color={theme.custom.colors.secondary}
-          size={24}
-          name="lock"
-        />
-      ),
-      label: "Backpack.app",
-      onPress: () => Linking.openURL(BACKPACK_LINK),
-      detailIcon: <IconLaunchDetail />,
-    },
-    {
-      icon: <TwitterIcon color={theme.custom.colors.secondary} />,
-      label: "Twitter",
-      onPress: () => Linking.openURL(TWITTER_LINK),
-      detailIcon: <IconLaunchDetail />,
-    },
-    {
-      icon: <DiscordIcon color={theme.custom.colors.secondary} />,
-      label: "Need help? Hop into Discord",
-      onPress: () => Linking.openURL(DISCORD_INVITE_LINK),
-      detailIcon: <IconLaunchDetail />,
-    },
-  ];
-
-  return (
-    <BottomSheetModal
-      ref={bottomSheetModalRef}
-      index={0}
-      snapPoints={snapPoints}
-      backdropComponent={renderBackdrop}
-      contentHeight={240}
-      handleStyle={{
-        marginBottom: 12,
-      }}
-      backgroundStyle={{
-        backgroundColor: theme.custom.colors.background,
-      }}>
-      <Margin horizontal={16}>
-        <RoundedContainerGroup>
-          <FlatList
-            data={menuOptions}
-            scrollEnabled={false}
-            renderItem={({ item }) => {
-              return (
-                <SettingsRow
-                  onPress={item.onPress}
-                  icon={item.icon}
-                  detailIcon={item.detailIcon}
-                  label={item.label}
-                />
-              );
-            }}
-          />
-        </RoundedContainerGroup>
-      </Margin>
-    </BottomSheetModal>
   );
 }
 
