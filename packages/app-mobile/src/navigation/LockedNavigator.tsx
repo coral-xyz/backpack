@@ -4,6 +4,7 @@ import {
   Alert,
   DevSettings,
   KeyboardAvoidingView,
+  Platform,
   StyleSheet,
   View,
 } from "react-native";
@@ -111,7 +112,9 @@ export function LockedScreen(): JSX.Element {
 
   return (
     <>
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}>
         <Screen
           style={[
             styles.container,
