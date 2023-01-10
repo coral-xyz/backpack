@@ -604,7 +604,7 @@ export const ResolveFromPath = (
   returns: ReturnTypesType,
   ops: Operations
 ) => {
-  // @ts-ignore
+  //@ts-ignore
   const ResolvePropsType = (mappedParts: Part[]) => {
     const oKey = ops[mappedParts[0].v];
     const propsP1 = oKey ? props[oKey] : props[mappedParts[0].v];
@@ -1356,7 +1356,23 @@ export type ValueTypes = {
     ];
     update_secure_transfer_transactions?: [
       {
-        /** filter the rows which have to be updated */
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ValueTypes["secure_transfer_transactions_inc_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ValueTypes["secure_transfer_transactions_set_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** filter the rows which have to be updated */;
         where:
           | ValueTypes["secure_transfer_transactions_bool_exp"]
           | Variable<any, string>;
@@ -1365,6 +1381,20 @@ export type ValueTypes = {
     ];
     update_secure_transfer_transactions_by_pk?: [
       {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ValueTypes["secure_transfer_transactions_inc_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ValueTypes["secure_transfer_transactions_set_input"]
+          | undefined
+          | null
+          | Variable<any, string>;
         pk_columns:
           | ValueTypes["secure_transfer_transactions_pk_columns_input"]
           | Variable<any, string>;
@@ -1463,7 +1493,9 @@ export type ValueTypes = {
   /** columns and relationships of "secure_transfer_transactions" */
   ["secure_transfer_transactions"]: AliasType<{
     counter?: boolean | `@${string}`;
+    current_state?: boolean | `@${string}`;
     escrow?: boolean | `@${string}`;
+    final_txn_signature?: boolean | `@${string}`;
     from?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
     message_id?: boolean | `@${string}`;
@@ -1568,7 +1600,17 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    current_state?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     escrow?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    final_txn_signature?:
       | ValueTypes["String_comparison_exp"]
       | undefined
       | null
@@ -1601,10 +1643,17 @@ export type ValueTypes = {
   };
   /** unique or primary key constraints on table "secure_transfer_transactions" */
   ["secure_transfer_transactions_constraint"]: secure_transfer_transactions_constraint;
+  /** input type for incrementing numeric columns in table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_inc_input"]: {
+    id?: number | undefined | null | Variable<any, string>;
+    message_id?: number | undefined | null | Variable<any, string>;
+  };
   /** input type for inserting data into table "secure_transfer_transactions" */
   ["secure_transfer_transactions_insert_input"]: {
     counter?: string | undefined | null | Variable<any, string>;
+    current_state?: string | undefined | null | Variable<any, string>;
     escrow?: string | undefined | null | Variable<any, string>;
+    final_txn_signature?: string | undefined | null | Variable<any, string>;
     from?: string | undefined | null | Variable<any, string>;
     id?: number | undefined | null | Variable<any, string>;
     message_id?: number | undefined | null | Variable<any, string>;
@@ -1614,7 +1663,17 @@ export type ValueTypes = {
   /** order by max() on columns of table "secure_transfer_transactions" */
   ["secure_transfer_transactions_max_order_by"]: {
     counter?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    current_state?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     escrow?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    final_txn_signature?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     from?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     message_id?:
@@ -1632,7 +1691,17 @@ export type ValueTypes = {
   /** order by min() on columns of table "secure_transfer_transactions" */
   ["secure_transfer_transactions_min_order_by"]: {
     counter?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    current_state?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     escrow?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    final_txn_signature?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     from?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     message_id?:
@@ -1672,7 +1741,17 @@ export type ValueTypes = {
   /** Ordering options when selecting data from "secure_transfer_transactions". */
   ["secure_transfer_transactions_order_by"]: {
     counter?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    current_state?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     escrow?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    final_txn_signature?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     from?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     message_id?:
@@ -1693,6 +1772,18 @@ export type ValueTypes = {
   };
   /** select columns of table "secure_transfer_transactions" */
   ["secure_transfer_transactions_select_column"]: secure_transfer_transactions_select_column;
+  /** input type for updating data in table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_set_input"]: {
+    counter?: string | undefined | null | Variable<any, string>;
+    current_state?: string | undefined | null | Variable<any, string>;
+    escrow?: string | undefined | null | Variable<any, string>;
+    final_txn_signature?: string | undefined | null | Variable<any, string>;
+    from?: string | undefined | null | Variable<any, string>;
+    id?: number | undefined | null | Variable<any, string>;
+    message_id?: number | undefined | null | Variable<any, string>;
+    signature?: string | undefined | null | Variable<any, string>;
+    to?: string | undefined | null | Variable<any, string>;
+  };
   /** order by stddev() on columns of table "secure_transfer_transactions" */
   ["secure_transfer_transactions_stddev_order_by"]: {
     id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
@@ -1736,7 +1827,9 @@ export type ValueTypes = {
   /** Initial value of the column from where the streaming should start */
   ["secure_transfer_transactions_stream_cursor_value_input"]: {
     counter?: string | undefined | null | Variable<any, string>;
+    current_state?: string | undefined | null | Variable<any, string>;
     escrow?: string | undefined | null | Variable<any, string>;
+    final_txn_signature?: string | undefined | null | Variable<any, string>;
     from?: string | undefined | null | Variable<any, string>;
     id?: number | undefined | null | Variable<any, string>;
     message_id?: number | undefined | null | Variable<any, string>;
@@ -1752,9 +1845,21 @@ export type ValueTypes = {
       | null
       | Variable<any, string>;
   };
-  /** placeholder for update columns of table "secure_transfer_transactions" (current role has no relevant permissions) */
+  /** update columns of table "secure_transfer_transactions" */
   ["secure_transfer_transactions_update_column"]: secure_transfer_transactions_update_column;
   ["secure_transfer_transactions_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?:
+      | ValueTypes["secure_transfer_transactions_inc_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    /** sets the columns of the filtered rows to the given values */
+    _set?:
+      | ValueTypes["secure_transfer_transactions_set_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
     where:
       | ValueTypes["secure_transfer_transactions_bool_exp"]
       | Variable<any, string>;
@@ -2179,13 +2284,30 @@ export type ResolverInputTypes = {
     ];
     update_secure_transfer_transactions?: [
       {
-        /** filter the rows which have to be updated */
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ResolverInputTypes["secure_transfer_transactions_inc_input"]
+          | undefined
+          | null /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ResolverInputTypes["secure_transfer_transactions_set_input"]
+          | undefined
+          | null /** filter the rows which have to be updated */;
         where: ResolverInputTypes["secure_transfer_transactions_bool_exp"];
       },
       ResolverInputTypes["secure_transfer_transactions_mutation_response"]
     ];
     update_secure_transfer_transactions_by_pk?: [
       {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ResolverInputTypes["secure_transfer_transactions_inc_input"]
+          | undefined
+          | null /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ResolverInputTypes["secure_transfer_transactions_set_input"]
+          | undefined
+          | null;
         pk_columns: ResolverInputTypes["secure_transfer_transactions_pk_columns_input"];
       },
       ResolverInputTypes["secure_transfer_transactions"]
@@ -2265,7 +2387,9 @@ export type ResolverInputTypes = {
   /** columns and relationships of "secure_transfer_transactions" */
   ["secure_transfer_transactions"]: AliasType<{
     counter?: boolean | `@${string}`;
+    current_state?: boolean | `@${string}`;
     escrow?: boolean | `@${string}`;
+    final_txn_signature?: boolean | `@${string}`;
     from?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
     message_id?: boolean | `@${string}`;
@@ -2348,7 +2472,15 @@ export type ResolverInputTypes = {
       | undefined
       | null;
     counter?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    current_state?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
     escrow?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    final_txn_signature?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
     from?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
     message_id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
@@ -2357,10 +2489,17 @@ export type ResolverInputTypes = {
   };
   /** unique or primary key constraints on table "secure_transfer_transactions" */
   ["secure_transfer_transactions_constraint"]: secure_transfer_transactions_constraint;
+  /** input type for incrementing numeric columns in table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_inc_input"]: {
+    id?: number | undefined | null;
+    message_id?: number | undefined | null;
+  };
   /** input type for inserting data into table "secure_transfer_transactions" */
   ["secure_transfer_transactions_insert_input"]: {
     counter?: string | undefined | null;
+    current_state?: string | undefined | null;
     escrow?: string | undefined | null;
+    final_txn_signature?: string | undefined | null;
     from?: string | undefined | null;
     id?: number | undefined | null;
     message_id?: number | undefined | null;
@@ -2370,7 +2509,9 @@ export type ResolverInputTypes = {
   /** order by max() on columns of table "secure_transfer_transactions" */
   ["secure_transfer_transactions_max_order_by"]: {
     counter?: ResolverInputTypes["order_by"] | undefined | null;
+    current_state?: ResolverInputTypes["order_by"] | undefined | null;
     escrow?: ResolverInputTypes["order_by"] | undefined | null;
+    final_txn_signature?: ResolverInputTypes["order_by"] | undefined | null;
     from?: ResolverInputTypes["order_by"] | undefined | null;
     id?: ResolverInputTypes["order_by"] | undefined | null;
     message_id?: ResolverInputTypes["order_by"] | undefined | null;
@@ -2380,7 +2521,9 @@ export type ResolverInputTypes = {
   /** order by min() on columns of table "secure_transfer_transactions" */
   ["secure_transfer_transactions_min_order_by"]: {
     counter?: ResolverInputTypes["order_by"] | undefined | null;
+    current_state?: ResolverInputTypes["order_by"] | undefined | null;
     escrow?: ResolverInputTypes["order_by"] | undefined | null;
+    final_txn_signature?: ResolverInputTypes["order_by"] | undefined | null;
     from?: ResolverInputTypes["order_by"] | undefined | null;
     id?: ResolverInputTypes["order_by"] | undefined | null;
     message_id?: ResolverInputTypes["order_by"] | undefined | null;
@@ -2409,7 +2552,9 @@ export type ResolverInputTypes = {
   /** Ordering options when selecting data from "secure_transfer_transactions". */
   ["secure_transfer_transactions_order_by"]: {
     counter?: ResolverInputTypes["order_by"] | undefined | null;
+    current_state?: ResolverInputTypes["order_by"] | undefined | null;
     escrow?: ResolverInputTypes["order_by"] | undefined | null;
+    final_txn_signature?: ResolverInputTypes["order_by"] | undefined | null;
     from?: ResolverInputTypes["order_by"] | undefined | null;
     id?: ResolverInputTypes["order_by"] | undefined | null;
     message_id?: ResolverInputTypes["order_by"] | undefined | null;
@@ -2422,6 +2567,18 @@ export type ResolverInputTypes = {
   };
   /** select columns of table "secure_transfer_transactions" */
   ["secure_transfer_transactions_select_column"]: secure_transfer_transactions_select_column;
+  /** input type for updating data in table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_set_input"]: {
+    counter?: string | undefined | null;
+    current_state?: string | undefined | null;
+    escrow?: string | undefined | null;
+    final_txn_signature?: string | undefined | null;
+    from?: string | undefined | null;
+    id?: number | undefined | null;
+    message_id?: number | undefined | null;
+    signature?: string | undefined | null;
+    to?: string | undefined | null;
+  };
   /** order by stddev() on columns of table "secure_transfer_transactions" */
   ["secure_transfer_transactions_stddev_order_by"]: {
     id?: ResolverInputTypes["order_by"] | undefined | null;
@@ -2447,7 +2604,9 @@ export type ResolverInputTypes = {
   /** Initial value of the column from where the streaming should start */
   ["secure_transfer_transactions_stream_cursor_value_input"]: {
     counter?: string | undefined | null;
+    current_state?: string | undefined | null;
     escrow?: string | undefined | null;
+    final_txn_signature?: string | undefined | null;
     from?: string | undefined | null;
     id?: number | undefined | null;
     message_id?: number | undefined | null;
@@ -2459,9 +2618,19 @@ export type ResolverInputTypes = {
     id?: ResolverInputTypes["order_by"] | undefined | null;
     message_id?: ResolverInputTypes["order_by"] | undefined | null;
   };
-  /** placeholder for update columns of table "secure_transfer_transactions" (current role has no relevant permissions) */
+  /** update columns of table "secure_transfer_transactions" */
   ["secure_transfer_transactions_update_column"]: secure_transfer_transactions_update_column;
   ["secure_transfer_transactions_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?:
+      | ResolverInputTypes["secure_transfer_transactions_inc_input"]
+      | undefined
+      | null;
+    /** sets the columns of the filtered rows to the given values */
+    _set?:
+      | ResolverInputTypes["secure_transfer_transactions_set_input"]
+      | undefined
+      | null;
     where: ResolverInputTypes["secure_transfer_transactions_bool_exp"];
   };
   /** order by var_pop() on columns of table "secure_transfer_transactions" */
@@ -2780,7 +2949,9 @@ export type ModelTypes = {
   /** columns and relationships of "secure_transfer_transactions" */
   ["secure_transfer_transactions"]: {
     counter: string;
+    current_state?: string | undefined;
     escrow: string;
+    final_txn_signature?: string | undefined;
     from: string;
     id: number;
     message_id: number;
@@ -2836,7 +3007,9 @@ export type ModelTypes = {
       | Array<ModelTypes["secure_transfer_transactions_bool_exp"]>
       | undefined;
     counter?: ModelTypes["String_comparison_exp"] | undefined;
+    current_state?: ModelTypes["String_comparison_exp"] | undefined;
     escrow?: ModelTypes["String_comparison_exp"] | undefined;
+    final_txn_signature?: ModelTypes["String_comparison_exp"] | undefined;
     from?: ModelTypes["String_comparison_exp"] | undefined;
     id?: ModelTypes["Int_comparison_exp"] | undefined;
     message_id?: ModelTypes["Int_comparison_exp"] | undefined;
@@ -2844,10 +3017,17 @@ export type ModelTypes = {
     to?: ModelTypes["String_comparison_exp"] | undefined;
   };
   ["secure_transfer_transactions_constraint"]: secure_transfer_transactions_constraint;
+  /** input type for incrementing numeric columns in table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_inc_input"]: {
+    id?: number | undefined;
+    message_id?: number | undefined;
+  };
   /** input type for inserting data into table "secure_transfer_transactions" */
   ["secure_transfer_transactions_insert_input"]: {
     counter?: string | undefined;
+    current_state?: string | undefined;
     escrow?: string | undefined;
+    final_txn_signature?: string | undefined;
     from?: string | undefined;
     id?: number | undefined;
     message_id?: number | undefined;
@@ -2857,7 +3037,9 @@ export type ModelTypes = {
   /** order by max() on columns of table "secure_transfer_transactions" */
   ["secure_transfer_transactions_max_order_by"]: {
     counter?: ModelTypes["order_by"] | undefined;
+    current_state?: ModelTypes["order_by"] | undefined;
     escrow?: ModelTypes["order_by"] | undefined;
+    final_txn_signature?: ModelTypes["order_by"] | undefined;
     from?: ModelTypes["order_by"] | undefined;
     id?: ModelTypes["order_by"] | undefined;
     message_id?: ModelTypes["order_by"] | undefined;
@@ -2867,7 +3049,9 @@ export type ModelTypes = {
   /** order by min() on columns of table "secure_transfer_transactions" */
   ["secure_transfer_transactions_min_order_by"]: {
     counter?: ModelTypes["order_by"] | undefined;
+    current_state?: ModelTypes["order_by"] | undefined;
     escrow?: ModelTypes["order_by"] | undefined;
+    final_txn_signature?: ModelTypes["order_by"] | undefined;
     from?: ModelTypes["order_by"] | undefined;
     id?: ModelTypes["order_by"] | undefined;
     message_id?: ModelTypes["order_by"] | undefined;
@@ -2892,7 +3076,9 @@ export type ModelTypes = {
   /** Ordering options when selecting data from "secure_transfer_transactions". */
   ["secure_transfer_transactions_order_by"]: {
     counter?: ModelTypes["order_by"] | undefined;
+    current_state?: ModelTypes["order_by"] | undefined;
     escrow?: ModelTypes["order_by"] | undefined;
+    final_txn_signature?: ModelTypes["order_by"] | undefined;
     from?: ModelTypes["order_by"] | undefined;
     id?: ModelTypes["order_by"] | undefined;
     message_id?: ModelTypes["order_by"] | undefined;
@@ -2904,6 +3090,18 @@ export type ModelTypes = {
     id: number;
   };
   ["secure_transfer_transactions_select_column"]: secure_transfer_transactions_select_column;
+  /** input type for updating data in table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_set_input"]: {
+    counter?: string | undefined;
+    current_state?: string | undefined;
+    escrow?: string | undefined;
+    final_txn_signature?: string | undefined;
+    from?: string | undefined;
+    id?: number | undefined;
+    message_id?: number | undefined;
+    signature?: string | undefined;
+    to?: string | undefined;
+  };
   /** order by stddev() on columns of table "secure_transfer_transactions" */
   ["secure_transfer_transactions_stddev_order_by"]: {
     id?: ModelTypes["order_by"] | undefined;
@@ -2929,7 +3127,9 @@ export type ModelTypes = {
   /** Initial value of the column from where the streaming should start */
   ["secure_transfer_transactions_stream_cursor_value_input"]: {
     counter?: string | undefined;
+    current_state?: string | undefined;
     escrow?: string | undefined;
+    final_txn_signature?: string | undefined;
     from?: string | undefined;
     id?: number | undefined;
     message_id?: number | undefined;
@@ -2943,6 +3143,10 @@ export type ModelTypes = {
   };
   ["secure_transfer_transactions_update_column"]: secure_transfer_transactions_update_column;
   ["secure_transfer_transactions_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: ModelTypes["secure_transfer_transactions_inc_input"] | undefined;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: ModelTypes["secure_transfer_transactions_set_input"] | undefined;
     where: ModelTypes["secure_transfer_transactions_bool_exp"];
   };
   /** order by var_pop() on columns of table "secure_transfer_transactions" */
@@ -3205,7 +3409,9 @@ export type GraphQLTypes = {
   ["secure_transfer_transactions"]: {
     __typename: "secure_transfer_transactions";
     counter: string;
+    current_state?: string | undefined;
     escrow: string;
+    final_txn_signature?: string | undefined;
     from: string;
     id: number;
     message_id: number;
@@ -3261,7 +3467,9 @@ export type GraphQLTypes = {
       | Array<GraphQLTypes["secure_transfer_transactions_bool_exp"]>
       | undefined;
     counter?: GraphQLTypes["String_comparison_exp"] | undefined;
+    current_state?: GraphQLTypes["String_comparison_exp"] | undefined;
     escrow?: GraphQLTypes["String_comparison_exp"] | undefined;
+    final_txn_signature?: GraphQLTypes["String_comparison_exp"] | undefined;
     from?: GraphQLTypes["String_comparison_exp"] | undefined;
     id?: GraphQLTypes["Int_comparison_exp"] | undefined;
     message_id?: GraphQLTypes["Int_comparison_exp"] | undefined;
@@ -3270,10 +3478,17 @@ export type GraphQLTypes = {
   };
   /** unique or primary key constraints on table "secure_transfer_transactions" */
   ["secure_transfer_transactions_constraint"]: secure_transfer_transactions_constraint;
+  /** input type for incrementing numeric columns in table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_inc_input"]: {
+    id?: number | undefined;
+    message_id?: number | undefined;
+  };
   /** input type for inserting data into table "secure_transfer_transactions" */
   ["secure_transfer_transactions_insert_input"]: {
     counter?: string | undefined;
+    current_state?: string | undefined;
     escrow?: string | undefined;
+    final_txn_signature?: string | undefined;
     from?: string | undefined;
     id?: number | undefined;
     message_id?: number | undefined;
@@ -3283,7 +3498,9 @@ export type GraphQLTypes = {
   /** order by max() on columns of table "secure_transfer_transactions" */
   ["secure_transfer_transactions_max_order_by"]: {
     counter?: GraphQLTypes["order_by"] | undefined;
+    current_state?: GraphQLTypes["order_by"] | undefined;
     escrow?: GraphQLTypes["order_by"] | undefined;
+    final_txn_signature?: GraphQLTypes["order_by"] | undefined;
     from?: GraphQLTypes["order_by"] | undefined;
     id?: GraphQLTypes["order_by"] | undefined;
     message_id?: GraphQLTypes["order_by"] | undefined;
@@ -3293,7 +3510,9 @@ export type GraphQLTypes = {
   /** order by min() on columns of table "secure_transfer_transactions" */
   ["secure_transfer_transactions_min_order_by"]: {
     counter?: GraphQLTypes["order_by"] | undefined;
+    current_state?: GraphQLTypes["order_by"] | undefined;
     escrow?: GraphQLTypes["order_by"] | undefined;
+    final_txn_signature?: GraphQLTypes["order_by"] | undefined;
     from?: GraphQLTypes["order_by"] | undefined;
     id?: GraphQLTypes["order_by"] | undefined;
     message_id?: GraphQLTypes["order_by"] | undefined;
@@ -3319,7 +3538,9 @@ export type GraphQLTypes = {
   /** Ordering options when selecting data from "secure_transfer_transactions". */
   ["secure_transfer_transactions_order_by"]: {
     counter?: GraphQLTypes["order_by"] | undefined;
+    current_state?: GraphQLTypes["order_by"] | undefined;
     escrow?: GraphQLTypes["order_by"] | undefined;
+    final_txn_signature?: GraphQLTypes["order_by"] | undefined;
     from?: GraphQLTypes["order_by"] | undefined;
     id?: GraphQLTypes["order_by"] | undefined;
     message_id?: GraphQLTypes["order_by"] | undefined;
@@ -3332,6 +3553,18 @@ export type GraphQLTypes = {
   };
   /** select columns of table "secure_transfer_transactions" */
   ["secure_transfer_transactions_select_column"]: secure_transfer_transactions_select_column;
+  /** input type for updating data in table "secure_transfer_transactions" */
+  ["secure_transfer_transactions_set_input"]: {
+    counter?: string | undefined;
+    current_state?: string | undefined;
+    escrow?: string | undefined;
+    final_txn_signature?: string | undefined;
+    from?: string | undefined;
+    id?: number | undefined;
+    message_id?: number | undefined;
+    signature?: string | undefined;
+    to?: string | undefined;
+  };
   /** order by stddev() on columns of table "secure_transfer_transactions" */
   ["secure_transfer_transactions_stddev_order_by"]: {
     id?: GraphQLTypes["order_by"] | undefined;
@@ -3357,7 +3590,9 @@ export type GraphQLTypes = {
   /** Initial value of the column from where the streaming should start */
   ["secure_transfer_transactions_stream_cursor_value_input"]: {
     counter?: string | undefined;
+    current_state?: string | undefined;
     escrow?: string | undefined;
+    final_txn_signature?: string | undefined;
     from?: string | undefined;
     id?: number | undefined;
     message_id?: number | undefined;
@@ -3369,9 +3604,13 @@ export type GraphQLTypes = {
     id?: GraphQLTypes["order_by"] | undefined;
     message_id?: GraphQLTypes["order_by"] | undefined;
   };
-  /** placeholder for update columns of table "secure_transfer_transactions" (current role has no relevant permissions) */
+  /** update columns of table "secure_transfer_transactions" */
   ["secure_transfer_transactions_update_column"]: secure_transfer_transactions_update_column;
   ["secure_transfer_transactions_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: GraphQLTypes["secure_transfer_transactions_inc_input"] | undefined;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: GraphQLTypes["secure_transfer_transactions_set_input"] | undefined;
     where: GraphQLTypes["secure_transfer_transactions_bool_exp"];
   };
   /** order by var_pop() on columns of table "secure_transfer_transactions" */
@@ -3466,16 +3705,26 @@ export const enum secure_transfer_transactions_constraint {
 /** select columns of table "secure_transfer_transactions" */
 export const enum secure_transfer_transactions_select_column {
   counter = "counter",
+  current_state = "current_state",
   escrow = "escrow",
+  final_txn_signature = "final_txn_signature",
   from = "from",
   id = "id",
   message_id = "message_id",
   signature = "signature",
   to = "to",
 }
-/** placeholder for update columns of table "secure_transfer_transactions" (current role has no relevant permissions) */
+/** update columns of table "secure_transfer_transactions" */
 export const enum secure_transfer_transactions_update_column {
-  _PLACEHOLDER = "_PLACEHOLDER",
+  counter = "counter",
+  current_state = "current_state",
+  escrow = "escrow",
+  final_txn_signature = "final_txn_signature",
+  from = "from",
+  id = "id",
+  message_id = "message_id",
+  signature = "signature",
+  to = "to",
 }
 
 type ZEUS_VARIABLES = {
@@ -3497,6 +3746,7 @@ type ZEUS_VARIABLES = {
   ["secure_transfer_transactions_avg_order_by"]: ValueTypes["secure_transfer_transactions_avg_order_by"];
   ["secure_transfer_transactions_bool_exp"]: ValueTypes["secure_transfer_transactions_bool_exp"];
   ["secure_transfer_transactions_constraint"]: ValueTypes["secure_transfer_transactions_constraint"];
+  ["secure_transfer_transactions_inc_input"]: ValueTypes["secure_transfer_transactions_inc_input"];
   ["secure_transfer_transactions_insert_input"]: ValueTypes["secure_transfer_transactions_insert_input"];
   ["secure_transfer_transactions_max_order_by"]: ValueTypes["secure_transfer_transactions_max_order_by"];
   ["secure_transfer_transactions_min_order_by"]: ValueTypes["secure_transfer_transactions_min_order_by"];
@@ -3504,6 +3754,7 @@ type ZEUS_VARIABLES = {
   ["secure_transfer_transactions_order_by"]: ValueTypes["secure_transfer_transactions_order_by"];
   ["secure_transfer_transactions_pk_columns_input"]: ValueTypes["secure_transfer_transactions_pk_columns_input"];
   ["secure_transfer_transactions_select_column"]: ValueTypes["secure_transfer_transactions_select_column"];
+  ["secure_transfer_transactions_set_input"]: ValueTypes["secure_transfer_transactions_set_input"];
   ["secure_transfer_transactions_stddev_order_by"]: ValueTypes["secure_transfer_transactions_stddev_order_by"];
   ["secure_transfer_transactions_stddev_pop_order_by"]: ValueTypes["secure_transfer_transactions_stddev_pop_order_by"];
   ["secure_transfer_transactions_stddev_samp_order_by"]: ValueTypes["secure_transfer_transactions_stddev_samp_order_by"];

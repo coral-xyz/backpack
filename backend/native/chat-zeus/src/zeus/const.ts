@@ -79,9 +79,13 @@ export const AllTypesProps: Record<string, any> = {
       on_conflict: "secure_transfer_transactions_on_conflict",
     },
     update_secure_transfer_transactions: {
+      _inc: "secure_transfer_transactions_inc_input",
+      _set: "secure_transfer_transactions_set_input",
       where: "secure_transfer_transactions_bool_exp",
     },
     update_secure_transfer_transactions_by_pk: {
+      _inc: "secure_transfer_transactions_inc_input",
+      _set: "secure_transfer_transactions_set_input",
       pk_columns: "secure_transfer_transactions_pk_columns_input",
     },
     update_secure_transfer_transactions_many: {
@@ -129,7 +133,9 @@ export const AllTypesProps: Record<string, any> = {
     _not: "secure_transfer_transactions_bool_exp",
     _or: "secure_transfer_transactions_bool_exp",
     counter: "String_comparison_exp",
+    current_state: "String_comparison_exp",
     escrow: "String_comparison_exp",
+    final_txn_signature: "String_comparison_exp",
     from: "String_comparison_exp",
     id: "Int_comparison_exp",
     message_id: "Int_comparison_exp",
@@ -137,10 +143,13 @@ export const AllTypesProps: Record<string, any> = {
     to: "String_comparison_exp",
   },
   secure_transfer_transactions_constraint: "enum" as const,
+  secure_transfer_transactions_inc_input: {},
   secure_transfer_transactions_insert_input: {},
   secure_transfer_transactions_max_order_by: {
     counter: "order_by",
+    current_state: "order_by",
     escrow: "order_by",
+    final_txn_signature: "order_by",
     from: "order_by",
     id: "order_by",
     message_id: "order_by",
@@ -149,7 +158,9 @@ export const AllTypesProps: Record<string, any> = {
   },
   secure_transfer_transactions_min_order_by: {
     counter: "order_by",
+    current_state: "order_by",
     escrow: "order_by",
+    final_txn_signature: "order_by",
     from: "order_by",
     id: "order_by",
     message_id: "order_by",
@@ -163,7 +174,9 @@ export const AllTypesProps: Record<string, any> = {
   },
   secure_transfer_transactions_order_by: {
     counter: "order_by",
+    current_state: "order_by",
     escrow: "order_by",
+    final_txn_signature: "order_by",
     from: "order_by",
     id: "order_by",
     message_id: "order_by",
@@ -172,6 +185,7 @@ export const AllTypesProps: Record<string, any> = {
   },
   secure_transfer_transactions_pk_columns_input: {},
   secure_transfer_transactions_select_column: "enum" as const,
+  secure_transfer_transactions_set_input: {},
   secure_transfer_transactions_stddev_order_by: {
     id: "order_by",
     message_id: "order_by",
@@ -195,6 +209,8 @@ export const AllTypesProps: Record<string, any> = {
   },
   secure_transfer_transactions_update_column: "enum" as const,
   secure_transfer_transactions_updates: {
+    _inc: "secure_transfer_transactions_inc_input",
+    _set: "secure_transfer_transactions_set_input",
     where: "secure_transfer_transactions_bool_exp",
   },
   secure_transfer_transactions_var_pop_order_by: {
@@ -286,7 +302,9 @@ export const ReturnTypes: Record<string, any> = {
   },
   secure_transfer_transactions: {
     counter: "String",
+    current_state: "String",
     escrow: "String",
+    final_txn_signature: "String",
     from: "String",
     id: "Int",
     message_id: "Int",
