@@ -46,7 +46,7 @@ export function Inbox() {
   };
 
   const handleContactSearch = async () => {
-    if (searchFilter.length >= 3) {
+    if (searchFilter.length > 1) {
       const response = await ParentCommunicationManager.getInstance().fetch(
         `${BACKEND_API_URL}/users?usernamePrefix=${searchFilter}`
       );
