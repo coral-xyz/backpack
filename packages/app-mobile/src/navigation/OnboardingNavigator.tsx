@@ -14,6 +14,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   ActionCard,
   BaseCheckBoxLabel,
@@ -55,6 +56,7 @@ import {
   BACKEND_API_URL,
   BACKPACK_FEATURE_USERNAMES,
   BACKPACK_FEATURE_XNFT,
+  BACKPACK_LINK,
   DerivationPath,
   DISCORD_INVITE_LINK,
   KeyringType,
@@ -70,7 +72,8 @@ import {
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import type { BottomSheetBackdropProps } from "@gorhom/bottom-sheet";
+import { BottomSheetBackdrop, BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTheme } from "@hooks/useTheme";
 import type { StackScreenProps } from "@react-navigation/stack";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -91,10 +94,12 @@ import {
 const Buffer = require("buffer/").Buffer;
 
 // TODO(peter) fn: any
-function maybeRender(condition: boolean, fn: () => any) {
+function maybeRender(condition: boolean, fn: () => any): JSX.Element | null {
   if (condition) {
     return fn();
   }
+
+  return null;
 }
 
 function getWaitlistId() {
@@ -123,7 +128,7 @@ function OnboardingScreen({
   children?: JSX.Element[] | JSX.Element;
 }) {
   return (
-    <Screen style={{ padding: 24, justifyContent: "space-between" }}>
+    <Screen style={styles.container}>
       <Margin bottom={24}>
         <Header text={title} />
         {subtitle ? <SubtextParagraph>{subtitle}</SubtextParagraph> : null}
@@ -138,17 +143,112 @@ function OnboardingCreateOrImportWalletScreen({
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "CreateOrImportWallet">) {
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
   const { setOnboardingData } = useOnboardingData();
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
+  const handlePresentModalPress = () => {
+    setIsModalVisible((last) => !last);
+  };
+
+  return (
+    <>
+      <Screen
+        style={[
+          styles.container,
+          {
+            marginTop: insets.top,
+            marginBottom: insets.bottom,
+            paddingLeft: insets.left,
+            paddingRight: insets.right,
+          },
+        ]}>
+        <Pressable
+          onPress={() => {
+            handlePresentModalPress();
+          }}
+          style={{
+            position: "absolute",
+            top: 16,
+            right: 32,
+            zIndex: 999,
+          }}>
+          <MaterialIcons
+            name="menu"
+            size={32}
+            color={theme.custom.colors.fontColor}
+          />
+        </Pressable>
+        <Margin top={48} bottom={24}>
+          <WelcomeLogoHeader />
+        </Margin>
+        <View
+          style={{
+            padding: 16,
+            alignItems: "center",
+          }}>
+          <PrimaryButton
+            label="Create a new wallet"
+            onPress={() => {
+              setOnboardingData({ action: "create" });
+              navigation.push("MnemonicInput");
+            }}
+          />
+          <Margin top={8}>
+            <SubtextParagraph
+              onPress={() => {
+                setOnboardingData({ action: "import" });
+                navigation.push("MnemonicInput");
+              }}>
+              I already have a wallet
+            </SubtextParagraph>
+          </Margin>
+        </View>
+      </Screen>
+      <BottomHelpModal
+        isVisible={isModalVisible}
+        resetVisibility={() => {
+          setIsModalVisible(() => false);
+        }}
+      />
+    </>
+  );
+}
+
+function BottomHelpModal({
+  isVisible,
+  resetVisibility,
+}: {
+  isVisible: boolean;
+  resetVisibility: () => void;
+}): JSX.Element {
+  const theme = useTheme();
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
-  // variables
-  const snapPoints = useMemo(() => [200], []);
+  useEffect(() => {
+    function handle() {
+      if (isVisible) {
+        bottomSheetModalRef.current?.present();
+        // Resets visibility since dismissing it is built-in
+        resetVisibility();
+      }
+    }
 
-  // callbacks
-  const handlePresentModalPress = useCallback(() => {
-    bottomSheetModalRef.current?.present();
-  }, []);
+    handle();
+  }, [isVisible]);
+
+  const snapPoints = useMemo(() => [240], []);
+  const renderBackdrop = useCallback(
+    (props: BottomSheetBackdropProps) => (
+      <BottomSheetBackdrop
+        {...props}
+        pressBehavior="close"
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
+      />
+    ),
+    []
+  );
 
   const menuOptions = [
     {
@@ -178,63 +278,19 @@ function OnboardingCreateOrImportWalletScreen({
   ];
 
   return (
-    <>
-      <Screen style={styles.container}>
-        <Pressable
-          onPress={() => {
-            handlePresentModalPress();
-          }}
-          style={{
-            position: "absolute",
-            top: 20,
-            right: 20,
-            zIndex: 999,
-          }}
-        >
-          <MaterialIcons
-            name="menu"
-            size={32}
-            color={theme.custom.colors.fontColor}
-          />
-        </Pressable>
-
-        <Margin top={48} bottom={24}>
-          <WelcomeLogoHeader />
-        </Margin>
-        <View
-          style={{
-            padding: 16,
-            alignItems: "center",
-          }}
-        >
-          <PrimaryButton
-            label="Create a new wallet"
-            onPress={() => {
-              setOnboardingData({ action: "create" });
-              navigation.push("MnemonicInput");
-            }}
-          />
-          <View style={{ paddingVertical: 8 }}>
-            <SubtextParagraph
-              onPress={() => {
-                setOnboardingData({ action: "import" });
-                navigation.push("MnemonicInput");
-              }}
-            >
-              I already have a wallet
-            </SubtextParagraph>
-          </View>
-        </View>
-      </Screen>
-      <BottomSheetModal
-        ref={bottomSheetModalRef}
-        index={0}
-        snapPoints={snapPoints}
-        backgroundStyle={{
-          marginTop: 12,
-          backgroundColor: theme.custom.colors.background,
-        }}
-      >
+    <BottomSheetModal
+      ref={bottomSheetModalRef}
+      index={0}
+      snapPoints={snapPoints}
+      backdropComponent={renderBackdrop}
+      contentHeight={240}
+      handleStyle={{
+        marginBottom: 12,
+      }}
+      backgroundStyle={{
+        backgroundColor: theme.custom.colors.background,
+      }}>
+      <Margin horizontal={16}>
         <RoundedContainerGroup>
           <FlatList
             data={menuOptions}
@@ -251,8 +307,8 @@ function OnboardingCreateOrImportWalletScreen({
             }}
           />
         </RoundedContainerGroup>
-      </BottomSheetModal>
-    </>
+      </Margin>
+    </BottomSheetModal>
   );
 }
 
@@ -293,8 +349,7 @@ function OnboardingKeyringTypeSelectorScreen({
         style={{
           padding: 16,
           alignItems: "center",
-        }}
-      >
+        }}>
         <PrimaryButton
           label={`${toTitleCase(action as string)} with recovery phrase`}
           onPress={() => {
@@ -307,8 +362,7 @@ function OnboardingKeyringTypeSelectorScreen({
             onPress={() => {
               setOnboardingData({ keyringType: "ledger" });
               navigation.push("SelectBlockchain");
-            }}
-          >
+            }}>
             {action === "recover"
               ? "Recover using a hardware wallet"
               : "I have a hardware wallet"}
@@ -598,8 +652,7 @@ function OnboardingBlockchainSelectScreen({
   return (
     <OnboardingScreen
       title="Which network would you like Backpack to use?"
-      subtitle="You can always add additional networks later through the settings menu."
-    >
+      subtitle="You can always add additional networks later through the settings menu.">
       <FlatList
         numColumns={2}
         data={blockchainOptions}
@@ -647,8 +700,7 @@ function OnboardingCreatePasswordScreen({
   return (
     <OnboardingScreen
       title="Create a password"
-      subtitle="It should be at least 8 characters. You'll need this to unlock Backpack."
-    >
+      subtitle="It should be at least 8 characters. You'll need this to unlock Backpack.">
       <View style={{ flex: 1, justifyContent: "flex-start" }}>
         <Debug data={{ isValid, formState }} />
         <Margin bottom={12}>
@@ -847,8 +899,7 @@ function OnboardingFinishedScreen() {
   ) : (
     <OnboardingScreen
       title="You've set up Backpack!"
-      subtitle="Now get started exploring what your Backpack can do."
-    >
+      subtitle="Now get started exploring what your Backpack can do.">
       <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
         {BACKPACK_FEATURE_XNFT && (
           <Cell style={{ paddingRight: 6 }}>
@@ -905,8 +956,7 @@ export default function OnboardingNavigator(): JSX.Element {
             headerTitle: "",
             headerShown: true,
             headerBackTitleVisible: false,
-          }}
-        >
+          }}>
           <Stack.Screen
             name="KeyringTypeSelector"
             component={OnboardingKeyringTypeSelectorScreen}
@@ -937,6 +987,5 @@ export default function OnboardingNavigator(): JSX.Element {
 const styles = StyleSheet.create({
   container: {
     justifyContent: "space-between",
-    paddingTop: 24,
   },
 });
