@@ -18,6 +18,7 @@ import {
   MOBILE_CHANNEL_FE_RESPONSE_INNER,
   MOBILE_CHANNEL_HOST_RPC_REQUEST,
 } from "../constants";
+import type { RpcRequestMsg, RpcResponseData } from "../types";
 
 import { BrowserRuntimeCommon } from "./common";
 
