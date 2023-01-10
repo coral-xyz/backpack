@@ -264,11 +264,11 @@ function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
   const explorer = useBlockchainExplorer(transaction.blockchain);
   const connectionUrl = useBlockchainConnectionUrl(transaction.blockchain);
   const blockchainLogo = useBlockchainLogo(transaction.blockchain);
-
   const onClick = () => {
     window.open(explorerUrl(explorer!, transaction.signature, connectionUrl!));
   };
 
+  // const description = transaction?.details[0]?.description.split(" ");
   return (
     <ListItem
       button
@@ -332,6 +332,7 @@ function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
         >
           <CallMade style={{ color: theme.custom.colors.icon }} />
         </div>
+        <div>{transaction?.details[0]?.description}</div>
       </div>
     </ListItem>
   );
@@ -352,6 +353,7 @@ function RecentActivityListItemIcon({ transaction }: any) {
 
 function NoRecentActivityLabel({ minimize }: { minimize: boolean }) {
   const theme = useCustomTheme();
+
   return (
     <div
       style={{

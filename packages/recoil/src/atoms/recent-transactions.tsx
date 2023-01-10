@@ -4,6 +4,7 @@ import { PublicKey } from "@solana/web3.js";
 import { atomFamily, selectorFamily } from "recoil";
 
 import { ethersContext } from "./ethereum/provider";
+import { fetchRecentSolanaTransactionDetails } from "./solana/recent-transaction-details";
 import { fetchRecentSolanaTransactions } from "./solana/recent-transactions";
 import { anchorContext } from "./solana/wallet";
 
@@ -127,11 +128,16 @@ export const recentSolanaTransactions = atomFamily<
           connection,
           new PublicKey(address)
         );
+
+        const heliusTransactionDetails =
+          await fetchRecentSolanaTransactionDetails(address);
+
         return recent.map((t) => ({
           blockchain: Blockchain.SOLANA,
           date: new Date(t.blockTime! * 1000),
           signature: t.transaction.signatures[0],
           didError: t.meta && t.meta.err ? true : false,
+          details: heliusTransactionDetails,
         }));
       },
   }),
