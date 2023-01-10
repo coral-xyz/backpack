@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme: any) =>
   createStyles({
     outerDiv: {
       padding: 2,
-      background: theme.custom.colors.textBackground,
+      background: theme.custom.colors.textInputBackground,
       backdropFilter: "blur(6px)",
       borderTopLeftRadius: 10,
       borderTopRightRadius: 10,
@@ -30,9 +30,6 @@ const useStyles = makeStyles((theme: any) =>
     wrapText: {
       width: "100%",
     },
-    button: {
-      //margin: theme.spacing(1),
-    },
     textFieldRoot: {
       color: theme.custom.colors.secondary,
       "& .MuiOutlinedInput-root": {
@@ -41,7 +38,6 @@ const useStyles = makeStyles((theme: any) =>
         "border-top-left-radius": 10,
         "& fieldset": {
           border: "none",
-          color: theme.custom.colors.secondary,
         },
       },
       "& .MuiInputBase-input": {
@@ -60,25 +56,14 @@ const useStyles = makeStyles((theme: any) =>
     textInputRoot: {
       "border-top-right-radius": 10,
       "border-top-left-radius": 10,
-      color: theme.custom.colors.fontColor2,
+      color: "red", //theme.custom.colors.fontColor2,
       fontWeight: 500,
       borderRadius: "12px",
       fontSize: "16px",
       lineHeight: "24px",
       "& .MuiOutlinedInput-root": {
-        background: theme.custom.colors.textBackground,
         "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
-          border: () => theme.custom.colors.textInputBorderFocussed,
           outline: "none",
-        },
-        "& fieldset": {
-          border: () => theme.custom.colors.textInputBorderFull,
-        },
-        "&:hover fieldset": {
-          border: () => theme.custom.colors.textInputBorderHovered,
-        },
-        "&.Mui-focused fieldset": {
-          border: () => theme.custom.colors.textInputBorderFocussed,
         },
         "&:active": {
           outline: "none",
