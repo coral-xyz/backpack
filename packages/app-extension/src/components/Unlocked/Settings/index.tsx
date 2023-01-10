@@ -710,7 +710,7 @@ function SettingsList() {
     });
   }
   settingsMenu.push({
-    label: "Lock Wallet",
+    label: "Lock",
     onClick: () => lockWallet(),
     icon: (props: any) => <Lock {...props} />,
     detailIcon: <></>,
