@@ -646,7 +646,7 @@ function SettingsList() {
 
   const walletsMenu = [
     {
-      label: "Manage Wallets",
+      label: "Wallets",
       onClick: () => nav.push("edit-wallets"),
       icon: (props: any) => <AccountBalanceWalletIcon {...props} />,
       detailIcon: <PushDetail />,
