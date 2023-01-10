@@ -7,7 +7,9 @@ insert_permissions:
       check: {}
       columns:
         - counter
+        - current_state
         - escrow
+        - final_txn_signature
         - from
         - id
         - message_id
@@ -18,7 +20,9 @@ select_permissions:
     permission:
       columns:
         - counter
+        - current_state
         - escrow
+        - final_txn_signature
         - from
         - id
         - message_id
@@ -28,6 +32,15 @@ select_permissions:
 update_permissions:
   - role: chat
     permission:
-      columns: []
+      columns:
+        - id
+        - message_id
+        - counter
+        - current_state
+        - escrow
+        - final_txn_signature
+        - from
+        - signature
+        - to
       filter: {}
       check: null
