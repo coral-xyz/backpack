@@ -32,6 +32,10 @@ export const AllTypesProps: Record<string, any> = {
     secure_transfer_transactions:
       "secure_transfer_transactions_arr_rel_insert_input",
   },
+  chats_obj_rel_insert_input: {
+    data: "chats_insert_input",
+    on_conflict: "chats_on_conflict",
+  },
   chats_on_conflict: {
     constraint: "chats_constraint",
     update_columns: "chats_update_column",
@@ -132,6 +136,7 @@ export const AllTypesProps: Record<string, any> = {
     _and: "secure_transfer_transactions_bool_exp",
     _not: "secure_transfer_transactions_bool_exp",
     _or: "secure_transfer_transactions_bool_exp",
+    chat: "chats_bool_exp",
     counter: "String_comparison_exp",
     current_state: "String_comparison_exp",
     escrow: "String_comparison_exp",
@@ -144,7 +149,9 @@ export const AllTypesProps: Record<string, any> = {
   },
   secure_transfer_transactions_constraint: "enum" as const,
   secure_transfer_transactions_inc_input: {},
-  secure_transfer_transactions_insert_input: {},
+  secure_transfer_transactions_insert_input: {
+    chat: "chats_obj_rel_insert_input",
+  },
   secure_transfer_transactions_max_order_by: {
     counter: "order_by",
     current_state: "order_by",
@@ -173,6 +180,7 @@ export const AllTypesProps: Record<string, any> = {
     where: "secure_transfer_transactions_bool_exp",
   },
   secure_transfer_transactions_order_by: {
+    chat: "chats_order_by",
     counter: "order_by",
     current_state: "order_by",
     escrow: "order_by",
@@ -301,6 +309,7 @@ export const ReturnTypes: Record<string, any> = {
     secure_transfer_transactions_by_pk: "secure_transfer_transactions",
   },
   secure_transfer_transactions: {
+    chat: "chats",
     counter: "String",
     current_state: "String",
     escrow: "String",

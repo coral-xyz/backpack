@@ -647,7 +647,7 @@ export const ResolveFromPath = (
       }
     }
   };
-  //@ts-ignore
+  // @ts-ignore
   const ResolveReturnType = (mappedParts: Part[]) => {
     if (mappedParts.length === 0) {
       return "not";
@@ -1206,6 +1206,16 @@ export type ValueTypes = {
     returning?: ValueTypes["chats"];
     __typename?: boolean | `@${string}`;
   }>;
+  /** input type for inserting object relation for remote table "chats" */
+  ["chats_obj_rel_insert_input"]: {
+    data: ValueTypes["chats_insert_input"] | Variable<any, string>;
+    /** upsert condition */
+    on_conflict?:
+      | ValueTypes["chats_on_conflict"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
   /** on_conflict condition type for table "chats" */
   ["chats_on_conflict"]: {
     constraint: ValueTypes["chats_constraint"] | Variable<any, string>;
@@ -1492,6 +1502,8 @@ export type ValueTypes = {
   }>;
   /** columns and relationships of "secure_transfer_transactions" */
   ["secure_transfer_transactions"]: AliasType<{
+    /** An object relationship */
+    chat?: ValueTypes["chats"];
     counter?: boolean | `@${string}`;
     current_state?: boolean | `@${string}`;
     escrow?: boolean | `@${string}`;
@@ -1595,6 +1607,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    chat?:
+      | ValueTypes["chats_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     counter?:
       | ValueTypes["String_comparison_exp"]
       | undefined
@@ -1650,6 +1667,11 @@ export type ValueTypes = {
   };
   /** input type for inserting data into table "secure_transfer_transactions" */
   ["secure_transfer_transactions_insert_input"]: {
+    chat?:
+      | ValueTypes["chats_obj_rel_insert_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
     counter?: string | undefined | null | Variable<any, string>;
     current_state?: string | undefined | null | Variable<any, string>;
     escrow?: string | undefined | null | Variable<any, string>;
@@ -1740,6 +1762,11 @@ export type ValueTypes = {
   };
   /** Ordering options when selecting data from "secure_transfer_transactions". */
   ["secure_transfer_transactions_order_by"]: {
+    chat?:
+      | ValueTypes["chats_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     counter?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     current_state?:
       | ValueTypes["order_by"]
@@ -2180,6 +2207,12 @@ export type ResolverInputTypes = {
     returning?: ResolverInputTypes["chats"];
     __typename?: boolean | `@${string}`;
   }>;
+  /** input type for inserting object relation for remote table "chats" */
+  ["chats_obj_rel_insert_input"]: {
+    data: ResolverInputTypes["chats_insert_input"];
+    /** upsert condition */
+    on_conflict?: ResolverInputTypes["chats_on_conflict"] | undefined | null;
+  };
   /** on_conflict condition type for table "chats" */
   ["chats_on_conflict"]: {
     constraint: ResolverInputTypes["chats_constraint"];
@@ -2386,6 +2419,8 @@ export type ResolverInputTypes = {
   }>;
   /** columns and relationships of "secure_transfer_transactions" */
   ["secure_transfer_transactions"]: AliasType<{
+    /** An object relationship */
+    chat?: ResolverInputTypes["chats"];
     counter?: boolean | `@${string}`;
     current_state?: boolean | `@${string}`;
     escrow?: boolean | `@${string}`;
@@ -2471,6 +2506,7 @@ export type ResolverInputTypes = {
       | Array<ResolverInputTypes["secure_transfer_transactions_bool_exp"]>
       | undefined
       | null;
+    chat?: ResolverInputTypes["chats_bool_exp"] | undefined | null;
     counter?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     current_state?:
       | ResolverInputTypes["String_comparison_exp"]
@@ -2496,6 +2532,7 @@ export type ResolverInputTypes = {
   };
   /** input type for inserting data into table "secure_transfer_transactions" */
   ["secure_transfer_transactions_insert_input"]: {
+    chat?: ResolverInputTypes["chats_obj_rel_insert_input"] | undefined | null;
     counter?: string | undefined | null;
     current_state?: string | undefined | null;
     escrow?: string | undefined | null;
@@ -2551,6 +2588,7 @@ export type ResolverInputTypes = {
   };
   /** Ordering options when selecting data from "secure_transfer_transactions". */
   ["secure_transfer_transactions_order_by"]: {
+    chat?: ResolverInputTypes["chats_order_by"] | undefined | null;
     counter?: ResolverInputTypes["order_by"] | undefined | null;
     current_state?: ResolverInputTypes["order_by"] | undefined | null;
     escrow?: ResolverInputTypes["order_by"] | undefined | null;
@@ -2803,7 +2841,7 @@ export type ModelTypes = {
     message_kind?: string | undefined;
     parent_client_generated_uuid?: string | undefined;
     room?: string | undefined;
-    /** fetch data from the table: "secure_transfer_transactions" */
+    /** An array relationship */
     secure_transfer_transactions: Array<
       ModelTypes["secure_transfer_transactions"]
     >;
@@ -2855,6 +2893,12 @@ export type ModelTypes = {
     affected_rows: number;
     /** data from the rows affected by the mutation */
     returning: Array<ModelTypes["chats"]>;
+  };
+  /** input type for inserting object relation for remote table "chats" */
+  ["chats_obj_rel_insert_input"]: {
+    data: ModelTypes["chats_insert_input"];
+    /** upsert condition */
+    on_conflict?: ModelTypes["chats_on_conflict"] | undefined;
   };
   /** on_conflict condition type for table "chats" */
   ["chats_on_conflict"]: {
@@ -2937,7 +2981,7 @@ export type ModelTypes = {
     chats: Array<ModelTypes["chats"]>;
     /** fetch data from the table: "chats" using primary key columns */
     chats_by_pk?: ModelTypes["chats"] | undefined;
-    /** fetch data from the table: "secure_transfer_transactions" */
+    /** An array relationship */
     secure_transfer_transactions: Array<
       ModelTypes["secure_transfer_transactions"]
     >;
@@ -2948,6 +2992,8 @@ export type ModelTypes = {
   };
   /** columns and relationships of "secure_transfer_transactions" */
   ["secure_transfer_transactions"]: {
+    /** An object relationship */
+    chat: ModelTypes["chats"];
     counter: string;
     current_state?: string | undefined;
     escrow: string;
@@ -3006,6 +3052,7 @@ export type ModelTypes = {
     _or?:
       | Array<ModelTypes["secure_transfer_transactions_bool_exp"]>
       | undefined;
+    chat?: ModelTypes["chats_bool_exp"] | undefined;
     counter?: ModelTypes["String_comparison_exp"] | undefined;
     current_state?: ModelTypes["String_comparison_exp"] | undefined;
     escrow?: ModelTypes["String_comparison_exp"] | undefined;
@@ -3024,6 +3071,7 @@ export type ModelTypes = {
   };
   /** input type for inserting data into table "secure_transfer_transactions" */
   ["secure_transfer_transactions_insert_input"]: {
+    chat?: ModelTypes["chats_obj_rel_insert_input"] | undefined;
     counter?: string | undefined;
     current_state?: string | undefined;
     escrow?: string | undefined;
@@ -3075,6 +3123,7 @@ export type ModelTypes = {
   };
   /** Ordering options when selecting data from "secure_transfer_transactions". */
   ["secure_transfer_transactions_order_by"]: {
+    chat?: ModelTypes["chats_order_by"] | undefined;
     counter?: ModelTypes["order_by"] | undefined;
     current_state?: ModelTypes["order_by"] | undefined;
     escrow?: ModelTypes["order_by"] | undefined;
@@ -3171,7 +3220,7 @@ export type ModelTypes = {
     chats_by_pk?: ModelTypes["chats"] | undefined;
     /** fetch data from the table in a streaming manner: "chats" */
     chats_stream: Array<ModelTypes["chats"]>;
-    /** fetch data from the table: "secure_transfer_transactions" */
+    /** An array relationship */
     secure_transfer_transactions: Array<
       ModelTypes["secure_transfer_transactions"]
     >;
@@ -3254,7 +3303,7 @@ export type GraphQLTypes = {
     message_kind?: string | undefined;
     parent_client_generated_uuid?: string | undefined;
     room?: string | undefined;
-    /** fetch data from the table: "secure_transfer_transactions" */
+    /** An array relationship */
     secure_transfer_transactions: Array<
       GraphQLTypes["secure_transfer_transactions"]
     >;
@@ -3308,6 +3357,12 @@ export type GraphQLTypes = {
     affected_rows: number;
     /** data from the rows affected by the mutation */
     returning: Array<GraphQLTypes["chats"]>;
+  };
+  /** input type for inserting object relation for remote table "chats" */
+  ["chats_obj_rel_insert_input"]: {
+    data: GraphQLTypes["chats_insert_input"];
+    /** upsert condition */
+    on_conflict?: GraphQLTypes["chats_on_conflict"] | undefined;
   };
   /** on_conflict condition type for table "chats" */
   ["chats_on_conflict"]: {
@@ -3396,7 +3451,7 @@ export type GraphQLTypes = {
     chats: Array<GraphQLTypes["chats"]>;
     /** fetch data from the table: "chats" using primary key columns */
     chats_by_pk?: GraphQLTypes["chats"] | undefined;
-    /** fetch data from the table: "secure_transfer_transactions" */
+    /** An array relationship */
     secure_transfer_transactions: Array<
       GraphQLTypes["secure_transfer_transactions"]
     >;
@@ -3408,6 +3463,8 @@ export type GraphQLTypes = {
   /** columns and relationships of "secure_transfer_transactions" */
   ["secure_transfer_transactions"]: {
     __typename: "secure_transfer_transactions";
+    /** An object relationship */
+    chat: GraphQLTypes["chats"];
     counter: string;
     current_state?: string | undefined;
     escrow: string;
@@ -3466,6 +3523,7 @@ export type GraphQLTypes = {
     _or?:
       | Array<GraphQLTypes["secure_transfer_transactions_bool_exp"]>
       | undefined;
+    chat?: GraphQLTypes["chats_bool_exp"] | undefined;
     counter?: GraphQLTypes["String_comparison_exp"] | undefined;
     current_state?: GraphQLTypes["String_comparison_exp"] | undefined;
     escrow?: GraphQLTypes["String_comparison_exp"] | undefined;
@@ -3485,6 +3543,7 @@ export type GraphQLTypes = {
   };
   /** input type for inserting data into table "secure_transfer_transactions" */
   ["secure_transfer_transactions_insert_input"]: {
+    chat?: GraphQLTypes["chats_obj_rel_insert_input"] | undefined;
     counter?: string | undefined;
     current_state?: string | undefined;
     escrow?: string | undefined;
@@ -3537,6 +3596,7 @@ export type GraphQLTypes = {
   };
   /** Ordering options when selecting data from "secure_transfer_transactions". */
   ["secure_transfer_transactions_order_by"]: {
+    chat?: GraphQLTypes["chats_order_by"] | undefined;
     counter?: GraphQLTypes["order_by"] | undefined;
     current_state?: GraphQLTypes["order_by"] | undefined;
     escrow?: GraphQLTypes["order_by"] | undefined;
@@ -3636,7 +3696,7 @@ export type GraphQLTypes = {
     chats_by_pk?: GraphQLTypes["chats"] | undefined;
     /** fetch data from the table in a streaming manner: "chats" */
     chats_stream: Array<GraphQLTypes["chats"]>;
-    /** fetch data from the table: "secure_transfer_transactions" */
+    /** An array relationship */
     secure_transfer_transactions: Array<
       GraphQLTypes["secure_transfer_transactions"]
     >;
@@ -3733,6 +3793,7 @@ type ZEUS_VARIABLES = {
   ["chats_bool_exp"]: ValueTypes["chats_bool_exp"];
   ["chats_constraint"]: ValueTypes["chats_constraint"];
   ["chats_insert_input"]: ValueTypes["chats_insert_input"];
+  ["chats_obj_rel_insert_input"]: ValueTypes["chats_obj_rel_insert_input"];
   ["chats_on_conflict"]: ValueTypes["chats_on_conflict"];
   ["chats_order_by"]: ValueTypes["chats_order_by"];
   ["chats_select_column"]: ValueTypes["chats_select_column"];
