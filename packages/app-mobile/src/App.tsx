@@ -118,10 +118,7 @@ function Main(): JSX.Element | null {
         style={[
           styles.container,
           {
-            backgroundColor:
-              process.env.NODE_ENV === "development"
-                ? "orange"
-                : theme.custom.colors.background,
+            backgroundColor: theme.custom.colors.background,
           },
         ]}>
         <StatusBar style={theme.colorScheme === "dark" ? "light" : "dark"} />
