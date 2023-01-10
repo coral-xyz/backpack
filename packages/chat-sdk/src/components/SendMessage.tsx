@@ -215,10 +215,21 @@ export const SendMessage = () => {
         value={messageContent}
         id="standard-text"
         InputProps={{
-          endAdornment: (
+          startAdornment: (
             <>
               {emojiMenuOpen ? (
                 <>
+                  <IconButton
+                    size={"small"}
+                    style={{ color: theme.custom.colors.icon }}
+                    onClick={(e) => {
+                      setEmojiMenuOpen(false);
+                    }}
+                  >
+                    <CancelIcon
+                      style={{ color: theme.custom.colors.icon, fontSize: 20 }}
+                    />
+                  </IconButton>
                   <EmojiPickerComponent
                     setEmojiPicker={setEmojiPicker}
                     emojiPicker={emojiPicker}
@@ -238,20 +249,10 @@ export const SendMessage = () => {
                         signature,
                         counter,
                         escrow,
+                        current_state: "pending",
                       });
                     }}
                   />
-                  <IconButton
-                    size={"small"}
-                    style={{ color: theme.custom.colors.icon }}
-                    onClick={(e) => {
-                      setEmojiMenuOpen(false);
-                    }}
-                  >
-                    <CancelIcon
-                      style={{ color: theme.custom.colors.icon, fontSize: 20 }}
-                    />
-                  </IconButton>
                   {/*<IconButton>*/}
                   {/*  {" "}*/}
                   {/*  <SendIcon*/}

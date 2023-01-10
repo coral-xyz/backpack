@@ -180,7 +180,10 @@ export class RedisSubscriptionManager {
             created_at: new Date().toString(),
             room,
             type,
-            message_metadata: msg.message_metadata,
+            message_metadata: {
+              ...msg.message_metadata,
+              current_state: "pending",
+            },
           },
         ],
         room,

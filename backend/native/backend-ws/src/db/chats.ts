@@ -96,6 +96,8 @@ export const postChat = (
                 signature: messageMetadata?.signature || "",
                 from: "",
                 to: "",
+                current_state: "pending",
+                message_id: 0,
               },
             ],
           },

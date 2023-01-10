@@ -113,7 +113,11 @@ export const createEscrow = async (
   );
   // TODO: If the API gets missed here we should store the txn somewhere to keep polling
   // and lazily store in our DB
-  return { signature: txSignature, counter: counter.toString(), escrow };
+  return {
+    signature: txSignature,
+    counter: counter.toString(),
+    escrow: escrow.toString(),
+  };
 };
 
 const sendAndConfirmTransaction = async (
@@ -135,6 +139,90 @@ const sendAndConfirmTransaction = async (
   await confirmTransaction(connection, signature, "confirmed");
   return signature;
 };
+
+export const getSecureTransferState = async (
+  provider: Provider,
+  escrowAccountAddress: string
+) => {
+  const program = secureTransferProgram(provider);
+  try {
+    const escrow = await program.account.escrow.fetch(
+      new PublicKey(escrowAccountAddress)
+    );
+    if (escrow === null) {
+      return null;
+    } else {
+      return {
+        amount: escrow.amount.toString(),
+        sender: escrow.sender.toString(),
+        receiver: escrow.receiver.toString(),
+      };
+    }
+  } catch (e) {
+    return null;
+  }
+};
+
+export async function redeem(
+  provider: Provider,
+  backgroundClient: BackgroundClient,
+  connection: Connection,
+  receiverPubkey: PublicKey,
+  senderPubkey: PublicKey,
+  escrow: PublicKey,
+  counter: number
+) {
+  const program = secureTransferProgram(provider);
+  const redeemTx = await program.methods
+    .redeem(new BN(counter))
+    .accounts({
+      escrow,
+      sender: senderPubkey,
+      receiver: receiverPubkey,
+    })
+    .transaction();
+
+  const txSignature = await sendAndConfirmTransaction(
+    backgroundClient,
+    connection,
+    redeemTx,
+    receiverPubkey.toString()
+  );
+  return txSignature;
+}
+
+export async function cancel(
+  provider: Provider,
+  backgroundClient: BackgroundClient,
+  connection: Connection,
+  receiverPubkey: PublicKey,
+  senderPubkey: PublicKey,
+  escrow: PublicKey,
+  counter: number
+) {
+  const program = secureTransferProgram(provider);
+  const secureTransferAddress = findProgramAddressSync(
+    [senderPubkey.toBuffer()],
+    program.programId
+  );
+  const cancelTx = await program.methods
+    .cancel(receiverPubkey, new BN(counter))
+    .accounts({
+      authority: senderPubkey,
+      escrow,
+      secureTransfer: secureTransferAddress[0],
+    })
+    .transaction();
+
+  const txSignature = await sendAndConfirmTransaction(
+    backgroundClient,
+    connection,
+    cancelTx,
+    senderPubkey.toString()
+  );
+
+  return txSignature;
+}
 
 export function secureTransferProgram(
   provider: Provider

@@ -12,6 +12,8 @@ export type MessageMetadata = {
   signature: string;
   counter: string;
   escrow: string;
+  final_txn_signature?: string;
+  current_state: "pending" | "cancelled" | "redeemed";
 };
 
 export type SendMessagePayload = {
