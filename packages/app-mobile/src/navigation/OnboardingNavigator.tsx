@@ -205,12 +205,23 @@ function OnboardingCreateOrImportWalletScreen({
           </Margin>
         </View>
       </Screen>
-      <BottomHelpModal isVisible={isModalVisible} />
+      <BottomHelpModal
+        isVisible={isModalVisible}
+        resetVisibility={() => {
+          setIsModalVisible(() => false);
+        }}
+      />
     </>
   );
 }
 
-function BottomHelpModal({ isVisible }: { isVisible: boolean }): JSX.Element {
+function BottomHelpModal({
+  isVisible,
+  resetVisibility,
+}: {
+  isVisible: boolean;
+  resetVisibility: () => void;
+}): JSX.Element {
   const theme = useTheme();
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
@@ -218,8 +229,8 @@ function BottomHelpModal({ isVisible }: { isVisible: boolean }): JSX.Element {
     function handle() {
       if (isVisible) {
         bottomSheetModalRef.current?.present();
-      } else {
-        bottomSheetModalRef.current?.dismiss();
+        // Resets visibility since dismissing it is built-in
+        resetVisibility();
       }
     }
 
