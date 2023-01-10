@@ -71,12 +71,28 @@ export function startMobileIfNeeded() {
   //
   //////////////////////////////////////////////////////////////////////////////
 
-  BrowserRuntimeCommon.sendMessageToBackground = (msg, cb) => {
-    FrontendRequestManager.request(msg).then(cb);
+  // the actual app -> service worker
+  BrowserRuntimeCommon.sendMessageToBackground = (
+    msg: RpcRequestMsg,
+    cb: (res: RpcResponseData) => void
+  ) => {
+    return FrontendRequestManager.request(msg)
+      .then(cb)
+      .catch((error) => {
+        cb({ error });
+      });
   };
 
-  BrowserRuntimeCommon.sendMessageToAppUi = (msg, cb) => {
-    BackendRequestManager.request(msg).then(cb);
+  // from the service worker -> app
+  BrowserRuntimeCommon.sendMessageToAppUi = (
+    msg: RpcRequestMsg,
+    cb: (res: RpcResponseData) => void
+  ) => {
+    return BackendRequestManager.request(msg)
+      .then(cb)
+      .catch((error) => {
+        cb({ error });
+      });
   };
 
   BrowserRuntimeCommon.addEventListenerFromBackground = (cb) => {

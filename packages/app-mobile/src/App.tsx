@@ -136,18 +136,23 @@ function maybeParseLog({
   data: any;
 }): void {
   try {
-    console.group(channel);
-
     if (channel === "mobile-logs") {
+      console.group(channel);
       const [name, value] = data;
       const color = name.includes("ERROR") ? "red" : "yellow";
       console.log("%c" + name, `color: ${color}`);
       console.log(value);
+      console.groupEnd();
     } else if (channel === "mobile-fe-response") {
+      console.group(channel);
       console.log(data.wrappedEvent.channel);
       console.log(data.wrappedEvent.data);
+      console.groupEnd();
+    } else {
+      console.group(channel);
+      console.log(data);
+      console.groupEnd();
     }
-    console.groupEnd();
   } catch (error) {
     console.error(channel, error);
   }

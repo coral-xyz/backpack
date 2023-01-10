@@ -36,16 +36,15 @@ export function generateUniqueId() {
   return v1();
 }
 
-/**
- * True if we're in the mobile environment.
- */
-export const IS_MOBILE = globalThis.chrome
-  ? // `global.chrome` exists, we're in chromium.
-    false
-  : globalThis.browser
-  ? // `global.browser` exists, we're in FF/safari.
-    false
-  : true;
+export function isMobile(): boolean {
+  if (typeof window !== "undefined" && typeof window.document !== "undefined") {
+    return false;
+  }
+
+  return true;
+}
+
+export const IS_MOBILE = isMobile();
 
 export function isServiceWorker(): boolean {
   return globalThis.clients !== undefined;
