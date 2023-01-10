@@ -324,11 +324,12 @@ function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
               {transaction.signature.slice(0, 4)}...
               {transaction.signature.slice(transaction.signature.length - 5)}
             </Typography>
-            <Typography className={classes.txDate}>
-              {transaction.date.toLocaleDateString()}
-            </Typography>
-            {transaction.blockchain == Blockchain.SOLANA && (
-              <Typography className={classes.recentActivityLabel}>
+            {transaction.blockchain === Blockchain.ETHEREUM ? (
+              <Typography className={classes.txDate}>
+                {transaction.date.toLocaleDateString()}
+              </Typography>
+            ) : (
+              <Typography className={classes.txDate}>
                 {transaction.description}
               </Typography>
             )}
