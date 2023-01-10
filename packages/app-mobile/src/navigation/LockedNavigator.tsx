@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Alert, DevSettings, StyleSheet, View } from "react-native";
+import {
+  Alert,
+  DevSettings,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Margin, PrimaryButton, Screen, WelcomeLogoHeader } from "@components";
 import {
@@ -63,33 +70,27 @@ interface FormData {
 }
 
 export function LockedScreen(): JSX.Element {
+  // TODO figure out why this isn't working
+  // return <View style={{ flex: 1, backgroundColor: "red" }} />;
+  const background = useBackgroundClient();
+  const user = useUser(); // TODO look into why this breaks
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const handlePresentModalPress = () => {
-    setIsModalVisible((last) => !last);
-  };
-
-  // TODO figure out why this isn't working
-  // return <View style={{ flex: 1, backgroundColor: "red" }} />;
-  // const background = useBackgroundClient();
-  // const user = useUser(); // TODO look into why this breaks
-
   const { control, handleSubmit, formState, setError } = useForm<FormData>();
-  const { errors } = formState;
 
+  // TODO errors are broken. They bubble up somewhere. We don't know where
   const onSubmit = async ({ password }: FormData) => {
-    // Alert.alert("password", JSON.stringify({ password, formState }));
-    // // TODO: fix issue with uncaught error with incorrect password
-    // try {
-    //   await background.request({
-    //     method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-    //     params: [password, user.uuid, user.username],
-    //   });
-    // } catch (err) {
-    //   console.error(err);
-    //   setError("password", { message: "Invalid password" });
-    // }
+    try {
+      const res = await background.request({
+        method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
+        params: [password, user.uuid, user.username],
+      });
+      console.log("UNLOCK_res", res);
+    } catch (error) {
+      console.log("UNLOCK_error", error);
+      setError("password", { message: "Invalid password" });
+    }
   };
 
   const extraOptions = [
@@ -111,33 +112,45 @@ export function LockedScreen(): JSX.Element {
 
   return (
     <>
-      <Screen
-        style={[
-          styles.container,
-          {
-            marginTop: insets.top,
-            marginBottom: insets.bottom,
-          },
-        ]}>
-        <HelpModalMenuButton onPress={handlePresentModalPress} />
-        <Margin top={48} bottom={24}>
-          <WelcomeLogoHeader />
-        </Margin>
-        <View>
-          <Margin bottom={8}>
-            <PasswordInput
-              placeholder="Password"
-              name="password"
-              control={control}
-              rules={{
-                required: "You must enter a password",
-              }}
-            />
-            {errors.password ? <ErrorMessage for={errors.password} /> : null}
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}>
+        <Screen
+          style={[
+            styles.container,
+            {
+              marginTop: insets.top,
+              marginBottom: insets.bottom,
+            },
+          ]}>
+          <HelpModalMenuButton
+            onPress={() => {
+              setIsModalVisible((last) => !last);
+            }}
+          />
+          <Margin top={48} bottom={24}>
+            <WelcomeLogoHeader />
           </Margin>
-          <PrimaryButton label="Unlock" onPress={handleSubmit(onSubmit)} />
-        </View>
-      </Screen>
+          <View>
+            <Margin bottom={8}>
+              <PasswordInput
+                returnKeyType="done"
+                autoFocus
+                placeholder="Password"
+                name="password"
+                control={control}
+                rules={{
+                  required: "You must enter a password",
+                }}
+              />
+              {formState.errors.password ? (
+                <ErrorMessage for={formState.errors.password} />
+              ) : null}
+            </Margin>
+            <PrimaryButton label="Unlock" onPress={handleSubmit(onSubmit)} />
+          </View>
+        </Screen>
+      </KeyboardAvoidingView>
       <BottomSheetHelpModal
         extraOptions={extraOptions}
         isVisible={isModalVisible}
