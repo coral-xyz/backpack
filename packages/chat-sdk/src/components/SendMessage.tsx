@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme: any) =>
     textInputRoot: {
       "border-top-right-radius": 10,
       "border-top-left-radius": 10,
-      color: "red", //theme.custom.colors.fontColor2,
+      color: theme.custom.colors.fontColor2,
       fontWeight: 500,
       borderRadius: "12px",
       fontSize: "16px",
