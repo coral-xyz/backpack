@@ -1,0 +1,18 @@
+{
+  "name": "jupiter-proxy",
+  "version": "0.0.0",
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20221111.1",
+    "eslint-config-custom": "*",
+    "wrangler": "^2.7.1"
+  },
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev --experimental-local",
+    "deploy": "wrangler publish"
+  },
+  "dependencies": {
+    "@jup-ag/api": "^4.0.1-alpha.0",
+    "hono": "^2.7.2"
+  }
+}

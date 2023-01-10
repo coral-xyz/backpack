@@ -1,4 +1,9 @@
-import { Blockchain, SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
+import {
+  BACKPACK_FEATURE_REFERRAL_FEES,
+  Blockchain,
+  SOL_NATIVE_MINT,
+  WSOL_MINT,
+} from "@coral-xyz/common";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { selector, selectorFamily } from "recoil";
 
@@ -6,7 +11,9 @@ import { blockchainBalancesSorted } from "../balance";
 
 import { SOL_LOGO_URI, splTokenRegistry } from "./token-registry";
 
-export const JUPITER_BASE_URL = "https://quote-api.jup.ag/v4/";
+export const JUPITER_BASE_URL = BACKPACK_FEATURE_REFERRAL_FEES
+  ? "https://jupiter-proxy.backpack.workers.dev/v4/"
+  : "https://quote-api.jup.ag/v4/";
 
 export const jupiterRouteMap = selector({
   key: "jupiterRouteMap",
