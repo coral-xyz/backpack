@@ -3,9 +3,7 @@ import { CHAT_MESSAGES } from "@coral-xyz/common";
 import { createEmptyFriendship, SignalingManager } from "@coral-xyz/db";
 import { useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import CancelIcon from "@mui/icons-material/Cancel";
-import InfoIcon from "@mui/icons-material/Info";
-import SendIcon from "@mui/icons-material/Send";
+import ArrowForwardIos from "@mui/icons-material/ArrowForwardIos";
 import { IconButton, TextField } from "@mui/material";
 import { createStyles, makeStyles } from "@mui/styles";
 import { v4 as uuidv4 } from "uuid";
@@ -41,7 +39,8 @@ const useStyles = makeStyles((theme: any) =>
         },
       },
       "& .MuiInputBase-input": {
-        padding: "10px 14px 10px 14px",
+        padding: "10px 12px 10px 12px",
+        fontSize: "15px",
       },
     },
     textFieldInputColorEmpty: {
@@ -163,86 +162,97 @@ export const SendMessage = () => {
           text={activeReply.text}
         />
       )}
-      <TextField
-        classes={{
-          root: classes.textFieldRoot,
-        }}
-        inputProps={{
-          className: `${
+      <div style={{ display: "flex" }}>
+        <>
+          {emojiMenuOpen ? (
+            <div style={{ display: "flex" }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                }}
+              ></div>
+              <EmojiPickerComponent
+                setEmojiPicker={setEmojiPicker}
+                emojiPicker={emojiPicker}
+                setGifPicker={setGifPicker}
+                setMessageContent={setMessageContent}
+                buttonStyle={{
+                  height: "28px",
+                }}
+              />
+              <GifPicker
+                sendMessage={sendMessage}
+                setGifPicker={setGifPicker}
+                gifPicker={gifPicker}
+                setEmojiPicker={setEmojiPicker}
+                buttonStyle={{
+                  height: "28px",
+                }}
+              />
+              {/*<IconButton>*/}
+              {/*  {" "}*/}
+              {/*  <SendIcon*/}
+              {/*    className={classes.icon}*/}
+              {/*    onClick={() => sendMessage(messageContent)}*/}
+              {/*  />{" "}*/}
+              {/*</IconButton>*/}
+            </div>
+          ) : (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            >
+              <IconButton
+                size={"small"}
+                style={{ color: theme.custom.colors.icon }}
+                onClick={(e) => {
+                  setEmojiMenuOpen(true);
+                }}
+              >
+                <ArrowForwardIos
+                  style={{
+                    height: "18px",
+                    color: theme.custom.colors.icon,
+                    fontSize: 20,
+                  }}
+                />
+              </IconButton>
+            </div>
+          )}
+        </>
+        <TextField
+          classes={{
+            root: classes.textFieldRoot,
+          }}
+          inputProps={{
+            className: `${
+              messageContent
+                ? classes.textFieldInputColor
+                : classes.textFieldInputColorEmpty
+            }`,
+          }}
+          fullWidth={true}
+          className={`${classes.textInputRoot} ${
             messageContent
               ? classes.textFieldInputColor
               : classes.textFieldInputColorEmpty
-          }`,
-        }}
-        fullWidth={true}
-        className={`${classes.textInputRoot} ${
-          messageContent
-            ? classes.textFieldInputColor
-            : classes.textFieldInputColorEmpty
-        }`}
-        placeholder={
-          type === "individual"
-            ? `Message @${remoteUsername}`
-            : "Your message ..."
-        }
-        value={messageContent}
-        id="standard-text"
-        InputProps={{
-          endAdornment: (
-            <>
-              {emojiMenuOpen ? (
-                <>
-                  <EmojiPickerComponent
-                    setEmojiPicker={setEmojiPicker}
-                    emojiPicker={emojiPicker}
-                    setGifPicker={setGifPicker}
-                    setMessageContent={setMessageContent}
-                  />
-                  <GifPicker
-                    sendMessage={sendMessage}
-                    setGifPicker={setGifPicker}
-                    gifPicker={gifPicker}
-                    setEmojiPicker={setEmojiPicker}
-                  />
-                  <IconButton
-                    size={"small"}
-                    style={{ color: theme.custom.colors.icon }}
-                    onClick={(e) => {
-                      setEmojiMenuOpen(false);
-                    }}
-                  >
-                    <CancelIcon
-                      style={{ color: theme.custom.colors.icon, fontSize: 20 }}
-                    />
-                  </IconButton>
-                  {/*<IconButton>*/}
-                  {/*  {" "}*/}
-                  {/*  <SendIcon*/}
-                  {/*    className={classes.icon}*/}
-                  {/*    onClick={() => sendMessage(messageContent)}*/}
-                  {/*  />{" "}*/}
-                  {/*</IconButton>*/}
-                </>
-              ) : (
-                <>
-                  <IconButton
-                    size={"small"}
-                    style={{ color: theme.custom.colors.icon }}
-                    onClick={(e) => {
-                      setEmojiMenuOpen(true);
-                    }}
-                  >
-                    <InfoIcon
-                      style={{ color: theme.custom.colors.icon, fontSize: 20 }}
-                    />
-                  </IconButton>
-                </>
-              )}
-            </>
-          ),
-        }}
-        onChange={(e) => setMessageContent(e.target.value)}
-      />
+          }`}
+          placeholder={
+            type === "individual"
+              ? `Message @${remoteUsername}`
+              : "Your message ..."
+          }
+          value={messageContent}
+          id="standard-text"
+          onChange={(e) => setMessageContent(e.target.value)}
+          onClick={() => setEmojiMenuOpen(false)}
+        />
+      </div>
     </div>
   );
 };
