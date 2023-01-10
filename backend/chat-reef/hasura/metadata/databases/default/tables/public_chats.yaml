@@ -5,7 +5,7 @@ array_relationships:
   - name: secure_transfer_transactions
     using:
       foreign_key_constraint_on:
-        column: message_id
+        column: message_client_generated_uuid
         table:
           name: secure_transfer_transactions
           schema: public

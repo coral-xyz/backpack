@@ -647,7 +647,7 @@ export const ResolveFromPath = (
       }
     }
   };
-  // @ts-ignore
+  //@ts-ignore
   const ResolveReturnType = (mappedParts: Part[]) => {
     if (mappedParts.length === 0) {
       return "not";
@@ -1510,6 +1510,7 @@ export type ValueTypes = {
     final_txn_signature?: boolean | `@${string}`;
     from?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
+    message_client_generated_uuid?: boolean | `@${string}`;
     message_id?: boolean | `@${string}`;
     signature?: boolean | `@${string}`;
     to?: boolean | `@${string}`;
@@ -1642,6 +1643,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    message_client_generated_uuid?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     message_id?:
       | ValueTypes["Int_comparison_exp"]
       | undefined
@@ -1678,6 +1684,11 @@ export type ValueTypes = {
     final_txn_signature?: string | undefined | null | Variable<any, string>;
     from?: string | undefined | null | Variable<any, string>;
     id?: number | undefined | null | Variable<any, string>;
+    message_client_generated_uuid?:
+      | string
+      | undefined
+      | null
+      | Variable<any, string>;
     message_id?: number | undefined | null | Variable<any, string>;
     signature?: string | undefined | null | Variable<any, string>;
     to?: string | undefined | null | Variable<any, string>;
@@ -1698,6 +1709,11 @@ export type ValueTypes = {
       | Variable<any, string>;
     from?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    message_client_generated_uuid?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     message_id?:
       | ValueTypes["order_by"]
       | undefined
@@ -1726,6 +1742,11 @@ export type ValueTypes = {
       | Variable<any, string>;
     from?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    message_client_generated_uuid?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     message_id?:
       | ValueTypes["order_by"]
       | undefined
@@ -1781,6 +1802,11 @@ export type ValueTypes = {
       | Variable<any, string>;
     from?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    message_client_generated_uuid?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     message_id?:
       | ValueTypes["order_by"]
       | undefined
@@ -1807,6 +1833,11 @@ export type ValueTypes = {
     final_txn_signature?: string | undefined | null | Variable<any, string>;
     from?: string | undefined | null | Variable<any, string>;
     id?: number | undefined | null | Variable<any, string>;
+    message_client_generated_uuid?:
+      | string
+      | undefined
+      | null
+      | Variable<any, string>;
     message_id?: number | undefined | null | Variable<any, string>;
     signature?: string | undefined | null | Variable<any, string>;
     to?: string | undefined | null | Variable<any, string>;
@@ -1859,6 +1890,11 @@ export type ValueTypes = {
     final_txn_signature?: string | undefined | null | Variable<any, string>;
     from?: string | undefined | null | Variable<any, string>;
     id?: number | undefined | null | Variable<any, string>;
+    message_client_generated_uuid?:
+      | string
+      | undefined
+      | null
+      | Variable<any, string>;
     message_id?: number | undefined | null | Variable<any, string>;
     signature?: string | undefined | null | Variable<any, string>;
     to?: string | undefined | null | Variable<any, string>;
@@ -2427,6 +2463,7 @@ export type ResolverInputTypes = {
     final_txn_signature?: boolean | `@${string}`;
     from?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
+    message_client_generated_uuid?: boolean | `@${string}`;
     message_id?: boolean | `@${string}`;
     signature?: boolean | `@${string}`;
     to?: boolean | `@${string}`;
@@ -2519,6 +2556,10 @@ export type ResolverInputTypes = {
       | null;
     from?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
+    message_client_generated_uuid?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
     message_id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
     signature?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     to?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
@@ -2539,6 +2580,7 @@ export type ResolverInputTypes = {
     final_txn_signature?: string | undefined | null;
     from?: string | undefined | null;
     id?: number | undefined | null;
+    message_client_generated_uuid?: string | undefined | null;
     message_id?: number | undefined | null;
     signature?: string | undefined | null;
     to?: string | undefined | null;
@@ -2551,6 +2593,10 @@ export type ResolverInputTypes = {
     final_txn_signature?: ResolverInputTypes["order_by"] | undefined | null;
     from?: ResolverInputTypes["order_by"] | undefined | null;
     id?: ResolverInputTypes["order_by"] | undefined | null;
+    message_client_generated_uuid?:
+      | ResolverInputTypes["order_by"]
+      | undefined
+      | null;
     message_id?: ResolverInputTypes["order_by"] | undefined | null;
     signature?: ResolverInputTypes["order_by"] | undefined | null;
     to?: ResolverInputTypes["order_by"] | undefined | null;
@@ -2563,6 +2609,10 @@ export type ResolverInputTypes = {
     final_txn_signature?: ResolverInputTypes["order_by"] | undefined | null;
     from?: ResolverInputTypes["order_by"] | undefined | null;
     id?: ResolverInputTypes["order_by"] | undefined | null;
+    message_client_generated_uuid?:
+      | ResolverInputTypes["order_by"]
+      | undefined
+      | null;
     message_id?: ResolverInputTypes["order_by"] | undefined | null;
     signature?: ResolverInputTypes["order_by"] | undefined | null;
     to?: ResolverInputTypes["order_by"] | undefined | null;
@@ -2595,6 +2645,10 @@ export type ResolverInputTypes = {
     final_txn_signature?: ResolverInputTypes["order_by"] | undefined | null;
     from?: ResolverInputTypes["order_by"] | undefined | null;
     id?: ResolverInputTypes["order_by"] | undefined | null;
+    message_client_generated_uuid?:
+      | ResolverInputTypes["order_by"]
+      | undefined
+      | null;
     message_id?: ResolverInputTypes["order_by"] | undefined | null;
     signature?: ResolverInputTypes["order_by"] | undefined | null;
     to?: ResolverInputTypes["order_by"] | undefined | null;
@@ -2613,6 +2667,7 @@ export type ResolverInputTypes = {
     final_txn_signature?: string | undefined | null;
     from?: string | undefined | null;
     id?: number | undefined | null;
+    message_client_generated_uuid?: string | undefined | null;
     message_id?: number | undefined | null;
     signature?: string | undefined | null;
     to?: string | undefined | null;
@@ -2647,6 +2702,7 @@ export type ResolverInputTypes = {
     final_txn_signature?: string | undefined | null;
     from?: string | undefined | null;
     id?: number | undefined | null;
+    message_client_generated_uuid?: string | undefined | null;
     message_id?: number | undefined | null;
     signature?: string | undefined | null;
     to?: string | undefined | null;
@@ -2993,13 +3049,14 @@ export type ModelTypes = {
   /** columns and relationships of "secure_transfer_transactions" */
   ["secure_transfer_transactions"]: {
     /** An object relationship */
-    chat: ModelTypes["chats"];
+    chat?: ModelTypes["chats"] | undefined;
     counter: string;
     current_state?: string | undefined;
     escrow: string;
     final_txn_signature?: string | undefined;
     from: string;
     id: number;
+    message_client_generated_uuid?: string | undefined;
     message_id: number;
     signature?: string | undefined;
     to: string;
@@ -3059,6 +3116,9 @@ export type ModelTypes = {
     final_txn_signature?: ModelTypes["String_comparison_exp"] | undefined;
     from?: ModelTypes["String_comparison_exp"] | undefined;
     id?: ModelTypes["Int_comparison_exp"] | undefined;
+    message_client_generated_uuid?:
+      | ModelTypes["String_comparison_exp"]
+      | undefined;
     message_id?: ModelTypes["Int_comparison_exp"] | undefined;
     signature?: ModelTypes["String_comparison_exp"] | undefined;
     to?: ModelTypes["String_comparison_exp"] | undefined;
@@ -3078,6 +3138,7 @@ export type ModelTypes = {
     final_txn_signature?: string | undefined;
     from?: string | undefined;
     id?: number | undefined;
+    message_client_generated_uuid?: string | undefined;
     message_id?: number | undefined;
     signature?: string | undefined;
     to?: string | undefined;
@@ -3090,6 +3151,7 @@ export type ModelTypes = {
     final_txn_signature?: ModelTypes["order_by"] | undefined;
     from?: ModelTypes["order_by"] | undefined;
     id?: ModelTypes["order_by"] | undefined;
+    message_client_generated_uuid?: ModelTypes["order_by"] | undefined;
     message_id?: ModelTypes["order_by"] | undefined;
     signature?: ModelTypes["order_by"] | undefined;
     to?: ModelTypes["order_by"] | undefined;
@@ -3102,6 +3164,7 @@ export type ModelTypes = {
     final_txn_signature?: ModelTypes["order_by"] | undefined;
     from?: ModelTypes["order_by"] | undefined;
     id?: ModelTypes["order_by"] | undefined;
+    message_client_generated_uuid?: ModelTypes["order_by"] | undefined;
     message_id?: ModelTypes["order_by"] | undefined;
     signature?: ModelTypes["order_by"] | undefined;
     to?: ModelTypes["order_by"] | undefined;
@@ -3130,6 +3193,7 @@ export type ModelTypes = {
     final_txn_signature?: ModelTypes["order_by"] | undefined;
     from?: ModelTypes["order_by"] | undefined;
     id?: ModelTypes["order_by"] | undefined;
+    message_client_generated_uuid?: ModelTypes["order_by"] | undefined;
     message_id?: ModelTypes["order_by"] | undefined;
     signature?: ModelTypes["order_by"] | undefined;
     to?: ModelTypes["order_by"] | undefined;
@@ -3147,6 +3211,7 @@ export type ModelTypes = {
     final_txn_signature?: string | undefined;
     from?: string | undefined;
     id?: number | undefined;
+    message_client_generated_uuid?: string | undefined;
     message_id?: number | undefined;
     signature?: string | undefined;
     to?: string | undefined;
@@ -3181,6 +3246,7 @@ export type ModelTypes = {
     final_txn_signature?: string | undefined;
     from?: string | undefined;
     id?: number | undefined;
+    message_client_generated_uuid?: string | undefined;
     message_id?: number | undefined;
     signature?: string | undefined;
     to?: string | undefined;
@@ -3464,13 +3530,14 @@ export type GraphQLTypes = {
   ["secure_transfer_transactions"]: {
     __typename: "secure_transfer_transactions";
     /** An object relationship */
-    chat: GraphQLTypes["chats"];
+    chat?: GraphQLTypes["chats"] | undefined;
     counter: string;
     current_state?: string | undefined;
     escrow: string;
     final_txn_signature?: string | undefined;
     from: string;
     id: number;
+    message_client_generated_uuid?: string | undefined;
     message_id: number;
     signature?: string | undefined;
     to: string;
@@ -3530,6 +3597,9 @@ export type GraphQLTypes = {
     final_txn_signature?: GraphQLTypes["String_comparison_exp"] | undefined;
     from?: GraphQLTypes["String_comparison_exp"] | undefined;
     id?: GraphQLTypes["Int_comparison_exp"] | undefined;
+    message_client_generated_uuid?:
+      | GraphQLTypes["String_comparison_exp"]
+      | undefined;
     message_id?: GraphQLTypes["Int_comparison_exp"] | undefined;
     signature?: GraphQLTypes["String_comparison_exp"] | undefined;
     to?: GraphQLTypes["String_comparison_exp"] | undefined;
@@ -3550,6 +3620,7 @@ export type GraphQLTypes = {
     final_txn_signature?: string | undefined;
     from?: string | undefined;
     id?: number | undefined;
+    message_client_generated_uuid?: string | undefined;
     message_id?: number | undefined;
     signature?: string | undefined;
     to?: string | undefined;
@@ -3562,6 +3633,7 @@ export type GraphQLTypes = {
     final_txn_signature?: GraphQLTypes["order_by"] | undefined;
     from?: GraphQLTypes["order_by"] | undefined;
     id?: GraphQLTypes["order_by"] | undefined;
+    message_client_generated_uuid?: GraphQLTypes["order_by"] | undefined;
     message_id?: GraphQLTypes["order_by"] | undefined;
     signature?: GraphQLTypes["order_by"] | undefined;
     to?: GraphQLTypes["order_by"] | undefined;
@@ -3574,6 +3646,7 @@ export type GraphQLTypes = {
     final_txn_signature?: GraphQLTypes["order_by"] | undefined;
     from?: GraphQLTypes["order_by"] | undefined;
     id?: GraphQLTypes["order_by"] | undefined;
+    message_client_generated_uuid?: GraphQLTypes["order_by"] | undefined;
     message_id?: GraphQLTypes["order_by"] | undefined;
     signature?: GraphQLTypes["order_by"] | undefined;
     to?: GraphQLTypes["order_by"] | undefined;
@@ -3603,6 +3676,7 @@ export type GraphQLTypes = {
     final_txn_signature?: GraphQLTypes["order_by"] | undefined;
     from?: GraphQLTypes["order_by"] | undefined;
     id?: GraphQLTypes["order_by"] | undefined;
+    message_client_generated_uuid?: GraphQLTypes["order_by"] | undefined;
     message_id?: GraphQLTypes["order_by"] | undefined;
     signature?: GraphQLTypes["order_by"] | undefined;
     to?: GraphQLTypes["order_by"] | undefined;
@@ -3621,6 +3695,7 @@ export type GraphQLTypes = {
     final_txn_signature?: string | undefined;
     from?: string | undefined;
     id?: number | undefined;
+    message_client_generated_uuid?: string | undefined;
     message_id?: number | undefined;
     signature?: string | undefined;
     to?: string | undefined;
@@ -3655,6 +3730,7 @@ export type GraphQLTypes = {
     final_txn_signature?: string | undefined;
     from?: string | undefined;
     id?: number | undefined;
+    message_client_generated_uuid?: string | undefined;
     message_id?: number | undefined;
     signature?: string | undefined;
     to?: string | undefined;
@@ -3725,6 +3801,7 @@ export type GraphQLTypes = {
 };
 /** unique or primary key constraints on table "chats" */
 export const enum chats_constraint {
+  chats_client_generated_uuid_key = "chats_client_generated_uuid_key",
   chats_pkey = "chats_pkey",
 }
 /** select columns of table "chats" */
@@ -3770,6 +3847,7 @@ export const enum secure_transfer_transactions_select_column {
   final_txn_signature = "final_txn_signature",
   from = "from",
   id = "id",
+  message_client_generated_uuid = "message_client_generated_uuid",
   message_id = "message_id",
   signature = "signature",
   to = "to",
@@ -3782,6 +3860,7 @@ export const enum secure_transfer_transactions_update_column {
   final_txn_signature = "final_txn_signature",
   from = "from",
   id = "id",
+  message_client_generated_uuid = "message_client_generated_uuid",
   message_id = "message_id",
   signature = "signature",
   to = "to",
