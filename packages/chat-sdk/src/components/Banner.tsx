@@ -1,4 +1,4 @@
-import { BACKEND_API_URL,sendFriendRequest  } from "@coral-xyz/common";
+import { BACKEND_API_URL, sendFriendRequest } from "@coral-xyz/common";
 import { toast } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import InfoIcon from "@mui/icons-material/Info";
@@ -82,12 +82,10 @@ export const Banner = () => {
                 });
                 setRequested(true);
                 toast.success(
+                  remoteRequested ? `` : "",
                   remoteRequested
-                    ? "You both said hot 🔥"
-                    : "Contact requested",
-                  remoteRequested
-                    ? "Just kidding! You are now mutual contacts."
-                    : `We'll let ${remoteUsername} know you want to connect.`
+                    ? `You and ${remoteUsername} are now connected`
+                    : `We'll let ${remoteUsername} know you want to connect`
                 );
               }}
             >

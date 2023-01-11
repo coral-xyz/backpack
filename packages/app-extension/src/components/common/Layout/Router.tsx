@@ -46,6 +46,7 @@ import { PluginApp } from "../../Unlocked/Apps/Plugin";
 import { Balances } from "../../Unlocked/Balances";
 import { Token } from "../../Unlocked/Balances/TokensWidget/Token";
 import { ChatDrawer } from "../../Unlocked/Messages/ChatDrawer";
+import { Contacts } from "../../Unlocked/Messages/Contacts";
 import { MessageOptions } from "../../Unlocked/Messages/MessageOptions";
 import { Nfts } from "../../Unlocked/Nfts";
 import { NftsCollection } from "../../Unlocked/Nfts/Collection";
@@ -71,6 +72,7 @@ export function Router() {
         <Route path="/nfts/experience" element={<NftsExperiencePage />} />
         <Route path="/nfts/chat" element={<NftsChatPage />} />
         <Route path="/nfts/detail" element={<NftsDetailPage />} />
+        <Route path="/contacts" element={<ContactsPage />} />
         <Route path="*" element={<Redirect />} />
       </Routes>
     </AnimatePresence>
@@ -114,6 +116,10 @@ function NftsCollectionPage() {
       component={<NftsCollection {...props} />}
     />
   );
+}
+
+function ContactsPage() {
+  return <NavScreen component={<Contacts />} />;
 }
 
 function NftsDetailPage() {
