@@ -26,10 +26,12 @@ export const FullScreenChat = () => {
         JSON.stringify(existingMessagesRef.current || []) !==
         JSON.stringify(chats)
       ) {
-        messageRef.scrollToBottom();
+        //@ts-ignore
+        messageRef?.scrollToBottom?.();
         setTimeout(() => {
           if (messageRef) {
-            messageRef.scrollToBottom();
+            //@ts-ignore
+            messageRef?.scrollToBottom?.();
           }
         }, 500);
       }
@@ -56,6 +58,7 @@ export const FullScreenChat = () => {
       >
         <ScrollBarImpl
           onScrollStop={() => {
+            // @ts-ignore
             const scrollContainer = messageRef?.container?.children?.[0];
             if (scrollContainer) {
               if (
