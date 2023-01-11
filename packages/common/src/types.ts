@@ -1,4 +1,3 @@
-import type { SolanaTokenAccountWithKey, TokenMetadata } from "./solana/types";
 import type { DerivationPath } from "./crypto";
 
 export type Context<Backend> = {
