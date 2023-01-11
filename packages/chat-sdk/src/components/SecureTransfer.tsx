@@ -137,9 +137,13 @@ export const SecureTransfer = ({
             rightLabel={`${token?.displayBalance} ${token?.ticker}`}
             rightLabelComponent={
               <MaxLabel
-                amount={token?.nativeBalance}
-                onSetAmount={(x) => setAmount(x.toString() / LAMPORTS_PER_SOL)}
-                decimals={token?.decimals}
+                amount={token?.nativeBalance || null}
+                onSetAmount={(x) =>
+                  setAmount(
+                    (parseInt(x.toString()) / LAMPORTS_PER_SOL).toString()
+                  )
+                }
+                decimals={token?.decimals || 0}
               />
             }
           />
@@ -176,9 +180,7 @@ export const SecureTransfer = ({
                   }}
                 >
                   <div>{walletAddressDisplay(pKey)}</div>
-                  <div>
-                    {selectedPublicKey === pKey && <CheckIcon size={"sm"} />}
-                  </div>
+                  <div>{selectedPublicKey === pKey && <CheckIcon />}</div>
                 </div>
               </ListItem>
             ))}
@@ -203,6 +205,7 @@ export const SecureTransfer = ({
                   provider,
                   background,
                   connection,
+                  // @ts-ignore
                   amount,
                   new PublicKey(publicKey),
                   new PublicKey(selectedPublicKey)
