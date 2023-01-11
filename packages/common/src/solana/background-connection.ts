@@ -202,6 +202,8 @@ export class BackgroundSolanaConnection extends Connection {
         fungibleTokens: _resp.fts.fungibleTokens.map((t) => {
           return {
             ...t,
+            mint: t.mint.toString(),
+            key: t.key.toString(),
             amount: t.amount.toString(),
           };
         }),
@@ -211,6 +213,8 @@ export class BackgroundSolanaConnection extends Connection {
         nftTokens: _resp.nfts.nftTokens.map((t) => {
           return {
             ...t,
+            mint: t.mint.toString(),
+            key: t.key.toString(),
             amount: t.amount.toString(),
           };
         }),
