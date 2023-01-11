@@ -58,6 +58,9 @@ const useStyles = makeStyles((theme: any) =>
     messageTimeStampRight: {
       fontSize: ".85em",
       fontWeight: "300",
+      minWidth: 63,
+      display: "flex",
+      flexDirection: "row-reverse",
     },
     avatar: {
       width: theme.spacing(4),
@@ -128,7 +131,7 @@ const useStyles = makeStyles((theme: any) =>
     secureSendOuter: {
       background: theme.custom.colors.invertedPrimary,
       borderRadius: 16,
-      padding: "12px 16px",
+      padding: "8px 10px",
       color: theme.custom.colors.background,
     },
     secureSendInner: {
@@ -396,6 +399,7 @@ function SecureTransferElement({
                     background: "rgba(241, 50, 54, 0.2)",
                     color: "#FF6269",
                     cursor: actionButtonLoading ? "auto" : "pointer",
+                    fontSize: 12,
                   }}
                   onClick={async () => {
                     setActionButtonLoading(true);
@@ -479,33 +483,41 @@ function SecureTransferElement({
         </div>
       )}
       {!loading && !escrowState && (
-        <div style={{ display: "flex" }}>
-          {currentStateLocal === "redeemed"
-            ? `Escrow redeemed by ${
-                remoteUsername !== username ? "you" : remoteUsername
-              } `
-            : `Escrow cancelled by ${
-                remoteUsername === username ? "you" : remoteUsername
-              }`}
-          <div
-            className={classes.smallBtn}
-            style={{
-              padding: "0px 5px",
-              background:
-                currentStateLocal === "redeemed"
-                  ? "rgba(17, 168, 0, 0.2)"
-                  : "rgba(241, 50, 54, 0.2)",
-              color: currentStateLocal === "redeemed" ? "#52D24C" : "#FF6269",
-              marginLeft: 10,
-            }}
-            onClick={() =>
-              window.open(
-                `https://explorer.solana.com/tx/${finalTxId}`,
-                "mywindow"
-              )
-            }
-          >
-            Txn <CallMadeIcon style={{ fontSize: 14 }} />
+        <div style={{ fontSize: 14 }}>
+          <div>
+            {currentStateLocal === "redeemed"
+              ? `Escrow redeemed by ${
+                  remoteUsername !== username ? "you" : remoteUsername
+                } `
+              : `Escrow cancelled by ${
+                  remoteUsername === username ? "you" : remoteUsername
+                }`}
+          </div>
+          <div style={{ display: "flex", flexDirection: "row-reverse" }}>
+            <div
+              className={classes.smallBtn}
+              style={{
+                display: "flex",
+                marginTop: 4,
+                padding: "3px 7px",
+                fontSize: 12,
+                background:
+                  currentStateLocal === "redeemed"
+                    ? "rgba(17, 168, 0, 0.2)"
+                    : "rgba(241, 50, 54, 0.2)",
+                color: currentStateLocal === "redeemed" ? "#52D24C" : "#FF6269",
+                marginLeft: 10,
+              }}
+              onClick={() =>
+                window.open(
+                  `https://explorer.solana.com/tx/${finalTxId}`,
+                  "mywindow"
+                )
+              }
+            >
+              <div>Txn </div>
+              <CallMadeIcon style={{ fontSize: 15 }} />
+            </div>
           </div>
         </div>
       )}
