@@ -44,7 +44,16 @@ export function isMobile(): boolean {
   return true;
 }
 
-export const IS_MOBILE = isMobile();
+/**
+ * True if we're in the mobile environment.
+ */
+export const IS_MOBILE = globalThis.chrome
+  ? // `global.chrome` exists, we're in chromium.
+    false
+  : globalThis.browser
+  ? // `global.browser` exists, we're in FF/safari.
+    false
+  : true;
 
 export function isServiceWorker(): boolean {
   return globalThis.clients !== undefined;
