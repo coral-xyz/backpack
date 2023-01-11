@@ -298,12 +298,6 @@ export class Solana {
 
     if (!destinationAtaAccount) {
       transaction.add(
-        assertOwner.assertOwnerInstruction({
-          account: destination,
-          owner: SystemProgram.programId,
-        })
-      );
-      transaction.add(
         createAssociatedTokenAccountInstruction(
           walletPublicKey,
           destinationAta,
