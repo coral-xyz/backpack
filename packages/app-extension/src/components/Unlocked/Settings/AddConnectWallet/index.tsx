@@ -63,7 +63,9 @@ export function AddConnectWalletMenu({
       >
         <Box sx={{ margin: "24px" }}>
           <Header text="Add or connect a wallet" />
-          <SubtextParagraph>Add new wallets to Backpack.</SubtextParagraph>
+          <SubtextParagraph>
+            Add a new wallet associated with your user.
+          </SubtextParagraph>
         </Box>
         <Box sx={{ margin: "0 16px" }}>
           <Grid container spacing={2}>

@@ -1,4 +1,4 @@
-import { NAV_COMPONENT_NFT_DETAIL } from "@coral-xyz/common";
+import { UNKNOWN_NFT_ICON_SRC } from "@coral-xyz/common";
 import { NAV_COMPONENT_NFT_CHAT } from "@coral-xyz/common/dist/esm/constants";
 import { MessageBubbleUnreadIcon, ProxyImage } from "@coral-xyz/react-common";
 import { useNavigation } from "@coral-xyz/recoil";
@@ -6,7 +6,6 @@ import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import CircleIcon from "@mui/icons-material/Circle";
 import { Button, Typography } from "@mui/material";
 
-import { MessageIcon } from "../../common/Icon";
 const useStyles = styles(() => ({
   button: {
     "&:hover": {
@@ -29,6 +28,7 @@ export function GridCard({
   if (!nft) {
     return null;
   }
+
   return (
     <>
       {showNotificationBubble && (
@@ -55,6 +55,7 @@ export function GridCard({
           minWidth: "153.5px",
           minHeight: "153.5px",
           aspectRatio: "1",
+          background: theme.custom.colors.background,
         }}
       >
         <ProxyImage
@@ -66,6 +67,9 @@ export function GridCard({
           }}
           removeOnError={true}
           src={nft.imageUrl}
+          onError={(e) => {
+            e.currentTarget.src = UNKNOWN_NFT_ICON_SRC;
+          }}
         />
         {metadataCollectionId && (
           <div

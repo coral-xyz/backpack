@@ -1,19 +1,10 @@
 // https://github.com/feross/buffer#usage
 // note: the trailing slash is important!
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import type { StyleProp, ViewStyle } from "react-native";
-import {
-  Alert,
-  Button,
-  FlatList,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { Alert, FlatList, StyleSheet, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   ActionCard,
   BaseCheckBoxLabel,
@@ -26,13 +17,15 @@ import {
   MnemonicInputFields,
   PasswordInput,
   PrimaryButton,
-  RoundedContainerGroup,
   Screen,
   StyledText,
-  StyledTextInput,
   SubtextParagraph,
   WelcomeLogoHeader,
 } from "@components";
+import {
+  BottomSheetHelpModal,
+  HelpModalMenuButton,
+} from "@components/BottomSheetHelpModal";
 import { ErrorMessage } from "@components/ErrorMessage";
 import {
   AvalancheIcon,
@@ -46,18 +39,13 @@ import {
   TwitterIcon,
   WidgetIcon,
 } from "@components/Icon";
-import type {
-  Blockchain,
-  BlockchainKeyringInit,
-  KeyringInit,
-} from "@coral-xyz/common";
+import type { Blockchain, BlockchainKeyringInit } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
   BACKPACK_FEATURE_USERNAMES,
   BACKPACK_FEATURE_XNFT,
   DerivationPath,
   DISCORD_INVITE_LINK,
-  KeyringType,
   toTitleCase,
   TWITTER_LINK,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
@@ -69,32 +57,24 @@ import {
   XNFT_GG_LINK,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
-import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTheme } from "@hooks/useTheme";
+import { OnboardingProvider, useOnboardingData } from "@lib/OnboardingProvider";
 import type { StackScreenProps } from "@react-navigation/stack";
 import { createStackNavigator } from "@react-navigation/stack";
-import {
-  IconLaunchDetail,
-  SettingsRow,
-} from "@screens/Unlocked/Settings/components/SettingsRow";
 import { encode } from "bs58";
 import * as Linking from "expo-linking";
 import { v4 as uuidv4 } from "uuid";
-
-import {
-  OnboardingProvider,
-  useOnboardingData,
-} from "../lib/OnboardingProvider";
 
 // eslint-disable-next-line
 const Buffer = require("buffer/").Buffer;
 
 // TODO(peter) fn: any
-function maybeRender(condition: boolean, fn: () => any) {
+function maybeRender(condition: boolean, fn: () => any): JSX.Element | null {
   if (condition) {
     return fn();
   }
+
+  return null;
 }
 
 function getWaitlistId() {
@@ -122,8 +102,15 @@ function OnboardingScreen({
   subtitle?: string;
   children?: JSX.Element[] | JSX.Element;
 }) {
+  const insets = useSafeAreaInsets();
   return (
-    <Screen style={{ padding: 24, justifyContent: "space-between" }}>
+    <Screen
+      style={[
+        styles.container,
+        {
+          paddingBottom: insets.bottom,
+        },
+      ]}>
       <Margin bottom={24}>
         <Header text={title} />
         {subtitle ? <SubtextParagraph>{subtitle}</SubtextParagraph> : null}
@@ -137,67 +124,27 @@ function OnboardingScreen({
 function OnboardingCreateOrImportWalletScreen({
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "CreateOrImportWallet">) {
-  const theme = useTheme();
+  const insets = useSafeAreaInsets();
   const { setOnboardingData } = useOnboardingData();
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-
-  // variables
-  const snapPoints = useMemo(() => [200], []);
-
-  // callbacks
-  const handlePresentModalPress = useCallback(() => {
-    bottomSheetModalRef.current?.present();
-  }, []);
-
-  const menuOptions = [
-    {
-      icon: (
-        <MaterialIcons
-          color={theme.custom.colors.secondary}
-          size={24}
-          name="lock"
-        />
-      ),
-      label: "Backpack.app",
-      onPress: () => Linking.openURL(BACKPACK_LINK),
-      detailIcon: <IconLaunchDetail />,
-    },
-    {
-      icon: <TwitterIcon color={theme.custom.colors.secondary} />,
-      label: "Twitter",
-      onPress: () => Linking.openURL(TWITTER_LINK),
-      detailIcon: <IconLaunchDetail />,
-    },
-    {
-      icon: <DiscordIcon color={theme.custom.colors.secondary} />,
-      label: "Need help? Hop into Discord",
-      onPress: () => Linking.openURL(DISCORD_INVITE_LINK),
-      detailIcon: <IconLaunchDetail />,
-    },
-  ];
+  const handlePresentModalPress = () => {
+    setIsModalVisible((last) => !last);
+  };
 
   return (
     <>
-      <Screen style={styles.container}>
-        <Pressable
-          onPress={() => {
-            handlePresentModalPress();
-          }}
-          style={{
-            position: "absolute",
-            top: 20,
-            right: 20,
-            zIndex: 999,
-          }}
-        >
-          <MaterialIcons
-            name="menu"
-            size={32}
-            color={theme.custom.colors.fontColor}
-          />
-        </Pressable>
-
+      <Screen
+        style={[
+          styles.container,
+          {
+            marginTop: insets.top,
+            marginBottom: insets.bottom,
+            paddingLeft: insets.left,
+            paddingRight: insets.right,
+          },
+        ]}>
+        <HelpModalMenuButton onPress={handlePresentModalPress} />
         <Margin top={48} bottom={24}>
           <WelcomeLogoHeader />
         </Margin>
@@ -205,8 +152,7 @@ function OnboardingCreateOrImportWalletScreen({
           style={{
             padding: 16,
             alignItems: "center",
-          }}
-        >
+          }}>
           <PrimaryButton
             label="Create a new wallet"
             onPress={() => {
@@ -214,44 +160,23 @@ function OnboardingCreateOrImportWalletScreen({
               navigation.push("MnemonicInput");
             }}
           />
-          <View style={{ paddingVertical: 8 }}>
+          <Margin top={8}>
             <SubtextParagraph
               onPress={() => {
                 setOnboardingData({ action: "import" });
                 navigation.push("MnemonicInput");
-              }}
-            >
+              }}>
               I already have a wallet
             </SubtextParagraph>
-          </View>
+          </Margin>
         </View>
       </Screen>
-      <BottomSheetModal
-        ref={bottomSheetModalRef}
-        index={0}
-        snapPoints={snapPoints}
-        backgroundStyle={{
-          marginTop: 12,
-          backgroundColor: theme.custom.colors.background,
+      <BottomSheetHelpModal
+        isVisible={isModalVisible}
+        resetVisibility={() => {
+          setIsModalVisible(() => false);
         }}
-      >
-        <RoundedContainerGroup>
-          <FlatList
-            data={menuOptions}
-            scrollEnabled={false}
-            renderItem={({ item }) => {
-              return (
-                <SettingsRow
-                  onPress={item.onPress}
-                  icon={item.icon}
-                  detailIcon={item.detailIcon}
-                  label={item.label}
-                />
-              );
-            }}
-          />
-        </RoundedContainerGroup>
-      </BottomSheetModal>
+      />
     </>
   );
 }
@@ -293,8 +218,7 @@ function OnboardingKeyringTypeSelectorScreen({
         style={{
           padding: 16,
           alignItems: "center",
-        }}
-      >
+        }}>
         <PrimaryButton
           label={`${toTitleCase(action as string)} with recovery phrase`}
           onPress={() => {
@@ -307,8 +231,7 @@ function OnboardingKeyringTypeSelectorScreen({
             onPress={() => {
               setOnboardingData({ keyringType: "ledger" });
               navigation.push("SelectBlockchain");
-            }}
-          >
+            }}>
             {action === "recover"
               ? "Recover using a hardware wallet"
               : "I have a hardware wallet"}
@@ -598,8 +521,7 @@ function OnboardingBlockchainSelectScreen({
   return (
     <OnboardingScreen
       title="Which network would you like Backpack to use?"
-      subtitle="You can always add additional networks later through the settings menu."
-    >
+      subtitle="You can always add additional networks later through the settings menu.">
       <FlatList
         numColumns={2}
         data={blockchainOptions}
@@ -647,8 +569,7 @@ function OnboardingCreatePasswordScreen({
   return (
     <OnboardingScreen
       title="Create a password"
-      subtitle="It should be at least 8 characters. You'll need this to unlock Backpack."
-    >
+      subtitle="It should be at least 8 characters. You'll need this to unlock Backpack.">
       <View style={{ flex: 1, justifyContent: "flex-start" }}>
         <Debug data={{ isValid, formState }} />
         <Margin bottom={12}>
@@ -847,8 +768,7 @@ function OnboardingFinishedScreen() {
   ) : (
     <OnboardingScreen
       title="You've set up Backpack!"
-      subtitle="Now get started exploring what your Backpack can do."
-    >
+      subtitle="Now get started exploring what your Backpack can do.">
       <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
         {BACKPACK_FEATURE_XNFT && (
           <Cell style={{ paddingRight: 6 }}>
@@ -905,8 +825,7 @@ export default function OnboardingNavigator(): JSX.Element {
             headerTitle: "",
             headerShown: true,
             headerBackTitleVisible: false,
-          }}
-        >
+          }}>
           <Stack.Screen
             name="KeyringTypeSelector"
             component={OnboardingKeyringTypeSelectorScreen}
@@ -937,6 +856,5 @@ export default function OnboardingNavigator(): JSX.Element {
 const styles = StyleSheet.create({
   container: {
     justifyContent: "space-between",
-    paddingTop: 24,
   },
 });

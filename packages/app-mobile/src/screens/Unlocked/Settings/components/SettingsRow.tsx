@@ -1,7 +1,6 @@
-import type { StyleProp, ViewStyle } from "react-native";
-import { Image, Pressable, StyleSheet, Switch, Text, View } from "react-native";
-import { Margin, WalletAddressLabel } from "@components";
-import { MaterialIcons } from "@expo/vector-icons";
+import { Pressable, StyleSheet, Switch, Text, View } from "react-native";
+import { Margin } from "@components";
+import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@hooks";
 
 export function IconPushDetail() {
@@ -27,7 +26,11 @@ export function IconExpand({ collapsed = true }: { collapsed: boolean }) {
 export function IconLaunchDetail() {
   const theme = useTheme();
   return (
-    <MaterialIcons name="launch" size={24} color={theme.custom.colors.icon} />
+    <MaterialCommunityIcons
+      name="arrow-top-right"
+      size={24}
+      color={theme.custom.colors.icon}
+    />
   );
 }
 
@@ -58,8 +61,7 @@ function RowContainer({ children }) {
         {
           backgroundColor: theme.custom.colors.nav,
         },
-      ]}
-    >
+      ]}>
       {children}
     </View>
   );
@@ -147,8 +149,7 @@ export function SettingsRow({
                 opacity: disabled ? 0.5 : 1,
                 color: theme.custom.colors.fontColor,
               },
-            ]}
-          >
+            ]}>
             {label}
           </Text>
         </View>
@@ -168,6 +169,7 @@ const styles = StyleSheet.create({
   },
   leftSide: {
     flexDirection: "row",
+    alignItems: "center",
   },
   label: {
     fontWeight: "500",

@@ -15,15 +15,22 @@ export const GifPicker = ({
   gifPicker,
   setEmojiPicker,
   sendMessage,
+  buttonStyle,
 }: any) => {
   const theme = useCustomTheme();
   const [anchorEl, setAnchorEl] = useState<any | null>(null);
 
   return (
-    <>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        flexDirection: "column",
+      }}
+    >
       <IconButton
         size={"small"}
-        style={{ color: theme.custom.colors.icon }}
+        style={{ color: theme.custom.colors.icon, ...buttonStyle }}
         onClick={(e) => {
           setGifPicker((x) => !x);
           if (!gifPicker) {
@@ -64,6 +71,6 @@ export const GifPicker = ({
           />
         </div>
       </Popover>
-    </>
+    </div>
   );
 };

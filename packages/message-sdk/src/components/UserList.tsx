@@ -1,5 +1,9 @@
 import type { RemoteUserData } from "@coral-xyz/common";
-import { NAV_COMPONENT_MESSAGE_PROFILE , sendFriendRequest, unFriend } from "@coral-xyz/common";
+import {
+  NAV_COMPONENT_MESSAGE_PROFILE,
+  sendFriendRequest,
+  unFriend,
+} from "@coral-xyz/common";
 import { updateFriendshipIfExists } from "@coral-xyz/db";
 import { isFirstLastListItemStyle, ProxyImage } from "@coral-xyz/react-common";
 import { useNavigation, useUser } from "@coral-xyz/recoil";
@@ -104,6 +108,12 @@ function UserListItem({
           </div>
           <div>
             <div
+              style={{
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
               onClick={async (e) => {
                 e.stopPropagation();
                 if (user.areFriends) {

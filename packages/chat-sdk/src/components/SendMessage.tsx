@@ -4,9 +4,7 @@ import { CHAT_MESSAGES } from "@coral-xyz/common";
 import { createEmptyFriendship, SignalingManager } from "@coral-xyz/db";
 import { useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import CancelIcon from "@mui/icons-material/Cancel";
-import InfoIcon from "@mui/icons-material/Info";
-import SendIcon from "@mui/icons-material/Send";
+import ArrowForwardIos from "@mui/icons-material/ArrowForwardIos";
 import { IconButton, TextField } from "@mui/material";
 import { createStyles, makeStyles } from "@mui/styles";
 import { v4 as uuidv4 } from "uuid";
@@ -21,7 +19,7 @@ const useStyles = makeStyles((theme: any) =>
   createStyles({
     outerDiv: {
       padding: 2,
-      background: theme.custom.colors.textBackground,
+      background: theme.custom.colors.textInputBackground,
       backdropFilter: "blur(6px)",
       borderTopLeftRadius: 10,
       borderTopRightRadius: 10,
@@ -32,9 +30,6 @@ const useStyles = makeStyles((theme: any) =>
     wrapText: {
       width: "100%",
     },
-    button: {
-      //margin: theme.spacing(1),
-    },
     textFieldRoot: {
       color: theme.custom.colors.secondary,
       "& .MuiOutlinedInput-root": {
@@ -43,11 +38,11 @@ const useStyles = makeStyles((theme: any) =>
         "border-top-left-radius": 10,
         "& fieldset": {
           border: "none",
-          color: theme.custom.colors.secondary,
         },
       },
       "& .MuiInputBase-input": {
-        padding: "10px 14px 10px 14px",
+        padding: "10px 12px 10px 12px",
+        fontSize: "15px",
       },
     },
     textFieldInputColorEmpty: {
@@ -68,19 +63,8 @@ const useStyles = makeStyles((theme: any) =>
       fontSize: "16px",
       lineHeight: "24px",
       "& .MuiOutlinedInput-root": {
-        background: theme.custom.colors.textBackground,
         "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
-          border: () => theme.custom.colors.textInputBorderFocussed,
           outline: "none",
-        },
-        "& fieldset": {
-          border: () => theme.custom.colors.textInputBorderFull,
-        },
-        "&:hover fieldset": {
-          border: () => theme.custom.colors.textInputBorderHovered,
-        },
-        "&.Mui-focused fieldset": {
-          border: () => theme.custom.colors.textInputBorderFocussed,
         },
         "&:active": {
           outline: "none",
@@ -190,97 +174,108 @@ export const SendMessage = () => {
           text={activeReply.text}
         />
       )}
-      <TextField
-        classes={{
-          root: classes.textFieldRoot,
-        }}
-        inputProps={{
-          className: `${
+      <div style={{ display: "flex" }}>
+        <>
+          {emojiMenuOpen ? (
+            <div style={{ display: "flex" }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                }}
+              ></div>
+              <EmojiPickerComponent
+                setEmojiPicker={setEmojiPicker}
+                emojiPicker={emojiPicker}
+                setGifPicker={setGifPicker}
+                setMessageContent={setMessageContent}
+                buttonStyle={{
+                  height: "28px",
+                }}
+              />
+              <GifPicker
+                sendMessage={sendMessage}
+                setGifPicker={setGifPicker}
+                gifPicker={gifPicker}
+                setEmojiPicker={setEmojiPicker}
+                buttonStyle={{
+                  height: "28px",
+                }}
+              />
+              <SecureTransfer
+                  remoteUserId={remoteUserId}
+                  onTxFinalized={({ signature, counter, escrow }) => {
+                    sendMessage("Secure transfer", "secure-transfer", {
+                      signature,
+                      counter,
+                      escrow,
+                      current_state: "pending",
+                    });
+                  }}
+              />
+              {/*<IconButton>*/}
+              {/*  {" "}*/}
+              {/*  <SendIcon*/}
+              {/*    className={classes.icon}*/}
+              {/*    onClick={() => sendMessage(messageContent)}*/}
+              {/*  />{" "}*/}
+              {/*</IconButton>*/}
+            </div>
+          ) : (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            >
+              <IconButton
+                size={"small"}
+                style={{ color: theme.custom.colors.icon }}
+                onClick={(e) => {
+                  setEmojiMenuOpen(true);
+                }}
+              >
+                <ArrowForwardIos
+                  style={{
+                    height: "18px",
+                    color: theme.custom.colors.icon,
+                    fontSize: 20,
+                  }}
+                />
+              </IconButton>
+            </div>
+          )}
+        </>
+        <TextField
+          classes={{
+            root: classes.textFieldRoot,
+          }}
+          inputProps={{
+            className: `${
+              messageContent
+                ? classes.textFieldInputColor
+                : classes.textFieldInputColorEmpty
+            }`,
+          }}
+          fullWidth={true}
+          className={`${classes.textInputRoot} ${
             messageContent
               ? classes.textFieldInputColor
               : classes.textFieldInputColorEmpty
-          }`,
-        }}
-        fullWidth={true}
-        className={`${classes.textInputRoot} ${
-          messageContent
-            ? classes.textFieldInputColor
-            : classes.textFieldInputColorEmpty
-        }`}
-        placeholder={
-          type === "individual"
-            ? `Message @${remoteUsername}`
-            : "Your message ..."
-        }
-        value={messageContent}
-        id="standard-text"
-        InputProps={{
-          startAdornment: (
-            <>
-              {emojiMenuOpen ? (
-                <>
-                  <IconButton
-                    size={"small"}
-                    style={{ color: theme.custom.colors.icon }}
-                    onClick={(e) => {
-                      setEmojiMenuOpen(false);
-                    }}
-                  >
-                    <CancelIcon
-                      style={{ color: theme.custom.colors.icon, fontSize: 20 }}
-                    />
-                  </IconButton>
-                  <EmojiPickerComponent
-                    setEmojiPicker={setEmojiPicker}
-                    emojiPicker={emojiPicker}
-                    setGifPicker={setGifPicker}
-                    setMessageContent={setMessageContent}
-                  />
-                  <GifPicker
-                    sendMessage={sendMessage}
-                    setGifPicker={setGifPicker}
-                    gifPicker={gifPicker}
-                    setEmojiPicker={setEmojiPicker}
-                  />
-                  <SecureTransfer
-                    remoteUserId={remoteUserId}
-                    onTxFinalized={({ signature, counter, escrow }) => {
-                      sendMessage("Secure transfer", "secure-transfer", {
-                        signature,
-                        counter,
-                        escrow,
-                        current_state: "pending",
-                      });
-                    }}
-                  />
-                  {/*<IconButton>*/}
-                  {/*  {" "}*/}
-                  {/*  <SendIcon*/}
-                  {/*    className={classes.icon}*/}
-                  {/*    onClick={() => sendMessage(messageContent)}*/}
-                  {/*  />{" "}*/}
-                  {/*</IconButton>*/}
-                </>
-              ) : (
-                <>
-                  <IconButton
-                    size={"small"}
-                    style={{ color: theme.custom.colors.icon }}
-                    onClick={(e) => {
-                      setEmojiMenuOpen(true);
-                    }}
-                  >
-                    <InfoIcon
-                      style={{ color: theme.custom.colors.icon, fontSize: 20 }}
-                    />
-                  </IconButton>
-                </>
-              )}
-            </>
-          ),
-        }}
-        onChange={(e) => setMessageContent(e.target.value)}
-      />
+          }`}
+          placeholder={
+            type === "individual"
+              ? `Message @${remoteUsername}`
+              : "Your message ..."
+          }
+          value={messageContent}
+          id="standard-text"
+          onChange={(e) => setMessageContent(e.target.value)}
+          onClick={() => setEmojiMenuOpen(false)}
+        />
+      </div>
     </div>
   );
 };

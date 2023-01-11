@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Margin, Screen, TokenAmountHeader } from "@components";
 import { TransferWidget } from "@components/Unlocked/Balances/TransferWidget";
 import {
@@ -14,6 +14,7 @@ import {
   useBlockchainActiveWallet,
   useLoader,
 } from "@coral-xyz/recoil";
+import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import { RecentActivityList } from "@screens/Unlocked/RecentActivityScreen";
 import { WalletListScreen } from "@screens/Unlocked/WalletListScreen";
@@ -27,8 +28,30 @@ export function BalancesNavigator() {
   return (
     <Stack.Navigator
       initialRouteName="BalanceList"
-      screenOptions={{ presentation: "modal" }}>
-      <Stack.Screen name="wallet-picker" component={WalletListScreen} />
+      screenOptions={{ presentation: "modal" }}
+    >
+      <Stack.Screen
+        name="wallet-picker"
+        component={WalletListScreen}
+        options={({ navigation }) => {
+          return {
+            title: "Wallets",
+            headerLeft: undefined,
+            headerRight: ({ tintColor }) => {
+              return (
+                <Pressable onPress={() => navigation.navigate("edit-wallets")}>
+                  <MaterialIcons
+                    name="settings"
+                    size={24}
+                    style={{ padding: 8 }}
+                    color={tintColor}
+                  />
+                </Pressable>
+              );
+            },
+          };
+        }}
+      />
       <Stack.Group screenOptions={{ headerShown: false }}>
         <Stack.Screen name="BalanceList" component={BalanceListScreen} />
       </Stack.Group>

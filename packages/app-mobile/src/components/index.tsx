@@ -22,7 +22,6 @@ export { MnemonicInputFields } from "./MnemonicInputFields";
 export { NavHeader } from "./NavHeader";
 export { NFTCard } from "./NFTCard";
 export { PasswordInput } from "./PasswordInput";
-export { default as ResetAppButton } from "./ResetAppButton";
 export { StyledTextInput } from "./StyledTextInput";
 export { TokenAmountHeader } from "./TokenAmountHeader";
 export { StyledTokenTextInput } from "./TokenInputField";
@@ -584,6 +583,10 @@ const listRowStyles = StyleSheet.create({
   },
 });
 
+export function Loading(props: any): JSX.Element {
+  return <ActivityIndicator {...props} />;
+}
+
 export function CopyWalletFieldInput({
   publicKey,
 }: {
@@ -622,8 +625,22 @@ export function CopyWalletFieldInput({
   );
 }
 
-export function Loading(props: any): JSX.Element {
-  return <ActivityIndicator {...props} />;
+export function CopyWalletAddressSubtitle({
+  publicKey,
+}: {
+  publicKey: string;
+}): JSX.Element {
+  const theme = useTheme();
+  return (
+    <Pressable
+      onPress={async () => {
+        await Clipboard.setStringAsync(publicKey);
+      }}>
+      <Text style={{ color: theme.custom.colors.secondary }}>
+        {walletAddressDisplay(publicKey)}
+      </Text>
+    </Pressable>
+  );
 }
 
 export function CopyButton({ text }: { text: string }): JSX.Element {

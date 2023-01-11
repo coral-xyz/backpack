@@ -73,6 +73,7 @@ type CustomColors = {
   secondaryButton: string;
   secondaryButtonTextColor: string;
   buttonFontColor: string;
+  textInputBackground: string;
   textInputBorderFull: string;
   textInputBorderFocussed: string;
   textInputBorderHovered: string;
@@ -208,6 +209,7 @@ export const darkTheme: Partial<Theme> & { custom: { colors: CustomColors } } =
         border1: BACKGROUND_COLOR_2,
         border: BACKGROUND_COLOR_1, // Don't use this.
         borderColor: BORDER_COLOR,
+        textInputBackground: BACKGROUND_COLOR_1,
         textInputBorderFull: `solid 2pt ${BACKGROUND_COLOR_1}`,
         textInputBorderFocussed: `solid 2pt ${BACKGROUND_COLOR_1}`,
         textInputBorderHovered: `solid 2pt ${BACKGROUND_COLOR_1}`,
@@ -320,6 +322,7 @@ export const lightTheme: Partial<Theme> & { custom: { colors: CustomColors } } =
         fontColor4: LIGHT_FONT_COLOR_2,
         subtext: LIGHT_FONT_COLOR_3,
         secondary: LIGHT_FONT_COLOR_1,
+        textInputBackground: LIGHT_BACKGROUND_COLOR_0,
         primaryButton: LIGHT_BRAND_COLOR,
         primaryButtonTextColor: LIGHT_BACKGROUND_COLOR_1,
         secondaryButton: LIGHT_BACKGROUND_COLOR_1,

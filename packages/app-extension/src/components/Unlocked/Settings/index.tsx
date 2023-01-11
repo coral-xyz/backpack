@@ -646,7 +646,7 @@ function SettingsList() {
 
   const walletsMenu = [
     {
-      label: "Manage Wallets",
+      label: "Wallets",
       onClick: () => nav.push("edit-wallets"),
       icon: (props: any) => <AccountBalanceWalletIcon {...props} />,
       detailIcon: <PushDetail />,
@@ -710,7 +710,7 @@ function SettingsList() {
     });
   }
   settingsMenu.push({
-    label: "Lock Wallet",
+    label: "Lock",
     onClick: () => lockWallet(),
     icon: (props: any) => <Lock {...props} />,
     detailIcon: <></>,
