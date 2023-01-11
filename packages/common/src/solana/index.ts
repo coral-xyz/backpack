@@ -8,6 +8,8 @@ import { emptyWallet, withSend } from "@cardinal/token-manager";
 import type { MintState } from "@magiceden-oss/open_creator_protocol";
 import {
   CMT_PROGRAM,
+  computeBudgetIx,
+  createInitAccountInstruction as ocpCreateInitAccountInstruction,
   createTransferInstruction as ocpCreateTransferInstruction,
   findFreezeAuthorityPk,
   findMintStatePk,
@@ -41,7 +43,11 @@ import BN from "bn.js";
 import type { BackgroundClient } from "../";
 
 import * as assertOwner from "./programs/assert-owner";
-import { associatedTokenAddress, metadataAddress } from "./programs/token";
+import {
+  ASSOCIATED_TOKEN_PROGRAM_ID,
+  associatedTokenAddress,
+  metadataAddress,
+} from "./programs/token";
 import { xnftClient } from "./programs/xnft";
 import { SolanaProvider } from "./provider";
 
@@ -295,15 +301,23 @@ export class Solana {
       await tokenClient.provider.connection.getAccountInfo(destinationAta);
 
     const transaction: Transaction = new Transaction();
+    transaction.add(computeBudgetIx);
 
     if (!destinationAtaAccount) {
       transaction.add(
-        createAssociatedTokenAccountInstruction(
-          walletPublicKey,
-          destinationAta,
-          destination,
-          mint
-        )
+        ocpCreateInitAccountInstruction({
+          policy: mintState.policy,
+          freezeAuthority: findFreezeAuthorityPk(mintState.policy),
+          mint,
+          metadata: await metadataAddress(mint),
+          mintState: findMintStatePk(mint),
+          from: destination,
+          fromAccount: destinationAta,
+          cmtProgram: CMT_PROGRAM,
+          instructions: SYSVAR_INSTRUCTIONS_PUBKEY,
+          payer: walletPublicKey,
+          associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        })
       );
     }
 
@@ -335,7 +349,7 @@ export class Solana {
     const rawTx = signedTx.serialize();
 
     return await tokenClient.provider.connection.sendRawTransaction(rawTx, {
-      skipPreflight: false,
+      skipPreflight: true,
       preflightCommitment: commitment,
     });
   }
