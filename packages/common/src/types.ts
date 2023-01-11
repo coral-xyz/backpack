@@ -19,6 +19,22 @@ export type EventHandler = (notif: any) => void;
 export type EventEmitter = any;
 export type ResponseHandler = [any, any];
 
+export type RpcRequestMsg = {
+  channel: string;
+  data: {
+    id: string;
+    method: string;
+    params: any[];
+  };
+};
+
+// NOTE(peter) don't want to fk with RpcResponse<T> for now
+export type RpcResponseData = {
+  id?: string;
+  error?: any;
+  result?: any;
+};
+
 export enum Blockchain {
   SOLANA = "solana",
   ETHEREUM = "ethereum",

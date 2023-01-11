@@ -5,7 +5,8 @@ import "@ethersproject/shims";
 import "react-native-gesture-handler";
 import { registerRootComponent } from "expo";
 
-// Don't mess with the order of this!
+if (typeof Buffer === "undefined") global.Buffer = require("buffer/").Buffer;
+
 Promise.allSettled =
   Promise.allSettled ||
   ((promises) =>
