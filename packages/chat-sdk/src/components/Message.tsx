@@ -1,11 +1,35 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { NAV_COMPONENT_MESSAGE_PROFILE } from "@coral-xyz/common";
-import { useNavigation, useUser } from "@coral-xyz/recoil";
+import {
+  BACKEND_API_URL,
+  Blockchain,
+  NAV_COMPONENT_MESSAGE_PROFILE,
+} from "@coral-xyz/common";
+import { refreshIndividualChatsFor } from "@coral-xyz/db";
+import {
+  blockchainTokenData,
+  SOL_LOGO_URI,
+  useActiveSolanaWallet,
+  useAnchorContext,
+  useBackgroundClient,
+  useLoader,
+  useNavigation,
+  useUser,
+} from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { GiphyFetch } from "@giphy/js-fetch-api";
 import { Gif as GifComponent } from "@giphy/react-components";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import CallMadeIcon from "@mui/icons-material/CallMade";
 import { Skeleton } from "@mui/material";
+import Button from "@mui/material/Button";
 import { createStyles, makeStyles } from "@mui/styles";
+import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
+
+import {
+  cancel,
+  getSecureTransferState,
+  redeem,
+} from "../utils/secure-transfer/secureTransfer";
 
 import { useChatContext } from "./ChatContext";
 import { ReplyIcon } from "./Icons";
@@ -34,6 +58,9 @@ const useStyles = makeStyles((theme: any) =>
     messageTimeStampRight: {
       fontSize: ".85em",
       fontWeight: "300",
+      minWidth: 63,
+      display: "flex",
+      flexDirection: "row-reverse",
     },
     avatar: {
       width: theme.spacing(4),
@@ -57,6 +84,17 @@ const useStyles = makeStyles((theme: any) =>
       marginLeft: "10px",
       fontSize: "12px",
       fontColor: "#4E5768",
+    },
+    smallBtn: {
+      padding: "2px 12px",
+      borderRadius: 12,
+      cursor: "pointer",
+    },
+    roundBtn: {
+      padding: "2px",
+      height: 26,
+      width: 26,
+      borderRadius: "13px",
     },
     messageLeftContainer: {
       display: "flex",
@@ -89,6 +127,18 @@ const useStyles = makeStyles((theme: any) =>
     },
     hoverChild: {
       visibility: "hidden",
+    },
+    secureSendOuter: {
+      background: theme.custom.colors.invertedPrimary,
+      borderRadius: 16,
+      padding: "8px 10px",
+      color: theme.custom.colors.background,
+    },
+    secureSendInner: {
+      background: theme.custom.colors.invertedSecondary,
+      borderRadius: 8,
+      padding: "8px 16px",
+      color: theme.custom.colors.background,
     },
   })
 );
@@ -195,6 +245,18 @@ export const MessageLine = (props) => {
                 <p className={classes.messageContent}>
                   {props.messageKind === "gif" ? (
                     <GifDemo id={message} width={220} />
+                  ) : props.messageKind === "secure-transfer" ? (
+                    <>
+                      <SecureTransferElement
+                        messageId={props.messageId}
+                        senderUuid={props.uuid}
+                        escrow={props.metadata.escrow}
+                        counter={props.metadata.counter}
+                        currentState={props.metadata.current_state}
+                        remoteUsername={props.username}
+                        finalTxId={props.metadata.final_txn_signature}
+                      />
+                    </>
                   ) : (
                     message
                   )}
@@ -213,9 +275,260 @@ export const MessageLine = (props) => {
   );
 };
 
+function SecureTransferElement({
+  escrow,
+  senderUuid,
+  counter,
+  messageId,
+  currentState,
+  remoteUsername,
+  finalTxId,
+}: {
+  escrow: string;
+  senderUuid: string;
+  counter: number;
+  messageId: string;
+  currentState: "pending" | "cancelled" | "redeemed";
+  remoteUsername: string;
+  finalTxId: string;
+}) {
+  const [currentStateLocal, setCurrentStateLocal] = useState(currentState);
+  const [finalTxIdLocal, setFinalTxIdLocal] = useState(finalTxId);
+  const { username, uuid } = useUser();
+  const [loading, setLoading] = useState(true);
+  const { roomId } = useChatContext();
+  const { provider, connection } = useAnchorContext();
+  const { publicKey } = useActiveSolanaWallet();
+  const classes = useStyles();
+  const background = useBackgroundClient();
+  const [actionButtonLoading, setActionButtonLoading] = useState(false);
+  const [escrowState, setEscrowState] = useState<null | {
+    amount: string;
+    sender: string;
+    receiver: string;
+  }>(null);
+
+  useEffect(() => {
+    if (!loading && !escrowState && currentStateLocal === "pending") {
+      refreshIndividualChatsFor(uuid, roomId, "individual", messageId);
+    }
+  }, [currentState, messageId, escrowState, loading]);
+
+  useEffect(() => {
+    setCurrentStateLocal(currentState);
+  }, [currentState]);
+
+  useEffect(() => {
+    setFinalTxIdLocal(finalTxId);
+  }, [finalTxId]);
+
+  const [token] = useLoader(
+    blockchainTokenData({
+      publicKey,
+      blockchain: Blockchain.SOLANA,
+      //@ts-ignore
+      tokenAddress: publicKey,
+    }),
+    null
+  );
+  const init = async () => {
+    const state = await getSecureTransferState(provider, escrow);
+    setEscrowState(state);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    init();
+  }, [escrow]);
+
+  return (
+    <div className={classes.secureSendOuter}>
+      {loading && <div>Loading</div>}
+      {!loading && escrowState && (
+        <div>
+          {uuid === senderUuid ? (
+            <div style={{ marginBottom: 5 }}> Sending to @{remoteUsername}</div>
+          ) : (
+            <div style={{ marginBottom: 5 }}>
+              Receiving from @{remoteUsername}
+            </div>
+          )}
+          <div className={classes.secureSendInner}>
+            <div style={{ fontSize: 30, display: "flex" }}>
+              $
+              <div>
+                {(
+                  ((token?.priceData?.usd || 0) *
+                    parseInt(escrowState.amount)) /
+                  LAMPORTS_PER_SOL
+                ).toFixed(2)}
+              </div>
+            </div>
+            <div style={{ display: "flex", marginTop: 3 }}>
+              <img
+                src={SOL_LOGO_URI}
+                style={{
+                  width: 20,
+                  height: 20,
+                  borderRadius: 8,
+                  marginRight: 5,
+                }}
+              />{" "}
+              <div> {parseInt(escrowState.amount) / LAMPORTS_PER_SOL}</div>
+            </div>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              paddingTop: 8,
+            }}
+          >
+            <div
+              className={classes.roundBtn}
+              style={{ color: "#F8C840", background: "rgba(206, 121, 7, 0.2)" }}
+            >
+              <AccessTimeIcon style={{ fontSize: 21 }} />
+            </div>
+            {uuid === senderUuid ? (
+              <>
+                {" "}
+                <div
+                  className={classes.smallBtn}
+                  style={{
+                    background: "rgba(241, 50, 54, 0.2)",
+                    color: "#FF6269",
+                    cursor: actionButtonLoading ? "auto" : "pointer",
+                    fontSize: 12,
+                  }}
+                  onClick={async () => {
+                    setActionButtonLoading(true);
+                    const txn = await cancel(
+                      provider,
+                      background,
+                      connection,
+                      new PublicKey(escrowState?.receiver || ""),
+                      new PublicKey(escrowState?.sender || ""),
+                      new PublicKey(escrow),
+                      counter
+                    );
+                    fetch(
+                      `${BACKEND_API_URL}/chat/message?type=individual&room=${roomId}`,
+                      {
+                        method: "PUT",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          messageId,
+                          state: "cancelled",
+                          txn,
+                        }),
+                      }
+                    );
+                    setFinalTxIdLocal(txn);
+                    setCurrentStateLocal("cancelled");
+                    setEscrowState(null);
+                    setActionButtonLoading(false);
+                  }}
+                >
+                  {!actionButtonLoading ? "Cancel" : "Cancelling..."}
+                </div>
+              </>
+            ) : (
+              <>
+                <div
+                  className={classes.smallBtn}
+                  style={{
+                    background: "rgba(17, 168, 0, 0.2)",
+                    color: "#52D24C",
+                    cursor: actionButtonLoading ? "auto" : "pointer",
+                  }}
+                  onClick={async () => {
+                    setActionButtonLoading(true);
+                    const txn = await redeem(
+                      provider,
+                      background,
+                      connection,
+                      new PublicKey(escrowState.receiver),
+                      new PublicKey(escrowState.sender),
+                      new PublicKey(escrow),
+                      counter
+                    );
+                    fetch(
+                      `${BACKEND_API_URL}/chat/message?type=individual&room=${roomId}`,
+                      {
+                        method: "PUT",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          messageId,
+                          state: "redeemed",
+                          txn,
+                        }),
+                      }
+                    );
+                    setFinalTxIdLocal(txn);
+                    setCurrentStateLocal("redeemed");
+                    setEscrowState(null);
+                    setActionButtonLoading(false);
+                  }}
+                >
+                  {!actionButtonLoading ? "REDEEM" : "Redeeming..."}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+      {!loading && !escrowState && (
+        <div style={{ fontSize: 14 }}>
+          <div>
+            {currentStateLocal === "redeemed"
+              ? `Escrow redeemed by ${
+                  remoteUsername !== username ? "you" : remoteUsername
+                } `
+              : `Escrow cancelled by ${
+                  remoteUsername === username ? "you" : remoteUsername
+                }`}
+          </div>
+          <div style={{ display: "flex", flexDirection: "row-reverse" }}>
+            <div
+              className={classes.smallBtn}
+              style={{
+                display: "flex",
+                marginTop: 4,
+                padding: "3px 7px",
+                fontSize: 12,
+                background:
+                  currentStateLocal === "redeemed"
+                    ? "rgba(17, 168, 0, 0.2)"
+                    : "rgba(241, 50, 54, 0.2)",
+                color: currentStateLocal === "redeemed" ? "#52D24C" : "#FF6269",
+                marginLeft: 10,
+              }}
+              onClick={() =>
+                window.open(
+                  `https://explorer.solana.com/tx/${finalTxId}`,
+                  "mywindow"
+                )
+              }
+            >
+              <div>Txn </div>
+              <CallMadeIcon style={{ fontSize: 15 }} />
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function ChatMessages() {
   const { chats, userId } = useChatContext();
   const theme = useCustomTheme();
+
   return (
     <div style={{ padding: 5 }}>
       {chats.map((chat) => {
@@ -230,6 +543,8 @@ export function ChatMessages() {
             image={chat.image}
             username={chat.username}
             uuid={chat.uuid}
+            metadata={chat.message_metadata}
+            messageId={chat.client_generated_uuid}
           />
         );
       })}

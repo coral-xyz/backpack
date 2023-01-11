@@ -115,6 +115,8 @@ type CustomColors = {
   coralGradient: string;
   miniDrawerBackdrop: string;
   unreadBackground: string;
+  invertedPrimary: string;
+  invertedSecondary: string;
 };
 
 const baseTheme = createStyles({
@@ -247,6 +249,8 @@ export const darkTheme: Partial<Theme> & { custom: { colors: CustomColors } } =
           "linear-gradient(113.94deg, #3EECB8 15.93%, #A372FE 58.23%, #FE7D4A 98.98%)",
         miniDrawerBackdrop: "#000000",
         unreadBackground: LIGHT_UNREAD_BACKGROUND,
+        invertedPrimary: "#FFFFFF",
+        invertedSecondary: LIGHT_BACKGROUND_COLOR_0,
       },
     },
   };
@@ -367,6 +371,8 @@ export const lightTheme: Partial<Theme> & { custom: { colors: CustomColors } } =
           "linear-gradient(113.94deg, #3EECB8 15.93%, #A372FE 58.23%, #FE7D4A 98.98%)",
         miniDrawerBackdrop: "#18181b",
         unreadBackground: DARK_UNREAD_BACKGROUND,
+        invertedPrimary: "#212121",
+        invertedSecondary: "rgba(255, 255, 255, 0.1)",
       },
     },
   };

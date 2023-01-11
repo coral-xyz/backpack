@@ -1,6 +1,7 @@
 export * from "./DangerButton";
 export * from "./EmptyState";
 export * from "./Inputs";
+export * from "./Labels";
 export * from "./List";
 export * from "./Loading";
 export * from "./NegativeButton";

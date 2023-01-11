@@ -1,1 +1,2 @@
 - "!include public_chats.yaml"
+- "!include public_secure_transfer_transactions.yaml"

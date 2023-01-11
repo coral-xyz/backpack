@@ -31,7 +31,6 @@ import {
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
 import { useDrawerContext } from "../common/Layout/Drawer";
 import { useNavStack } from "../common/Layout/NavStack";
-import { MaxLabel } from "../common/MaxLabel";
 import { TokenAmountHeader } from "../common/TokenAmountHeader";
 import { TokenInputField } from "../common/TokenInput";
 import type { Token } from "../common/TokenTable";
@@ -141,16 +140,14 @@ export function SwapInfoRow({
         style={[
           swapInfoStyles.swapInfoTitleLeft,
           { color: theme.custom.colors.secondary },
-        ]}
-      >
+        ]}>
         {titleLeft}
       </Text>
       <Text
         style={[
           swapInfoStyles.swapInfoTitleRight,
           { color: theme.custom.colors.fontColor },
-        ]}
-      >
+        ]}>
         {titleRight}
       </Text>
     </View>

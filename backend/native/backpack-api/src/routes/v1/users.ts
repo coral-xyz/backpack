@@ -1,9 +1,5 @@
-import type { Blockchain ,
-  RemoteUserData} from "@coral-xyz/common";
-import {
-  getAddMessage,
-  getCreateMessage
-} from "@coral-xyz/common";
+import type { Blockchain, RemoteUserData } from "@coral-xyz/common";
+import { getAddMessage, getCreateMessage } from "@coral-xyz/common";
 import type { Request, Response } from "express";
 import express from "express";
 import jwt from "jsonwebtoken";
@@ -172,6 +168,16 @@ router.post("/", async (req, res) => {
   clearCookie(res, REFERRER_COOKIE_NAME);
 
   return res.json({ id: user.id, msg: "ok", jwt });
+});
+
+/**
+ * Fetches User detail by id
+ */
+router.get("/userById", extractUserId, async (req: Request, res: Response) => {
+  //@ts-ignore
+  const remoteUserId: string = req.query.remoteUserId;
+  const user = await getUser(remoteUserId);
+  return res.json({ user });
 });
 
 /**
