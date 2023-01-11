@@ -5,6 +5,13 @@ import {
   MintManager,
 } from "@cardinal/creator-standard";
 import { emptyWallet, withSend } from "@cardinal/token-manager";
+import type { MintState } from "@magiceden-oss/open_creator_protocol";
+import {
+  CMT_PROGRAM,
+  createTransferInstruction as ocpCreateTransferInstruction,
+  findFreezeAuthorityPk,
+  findMintStatePk,
+} from "@magiceden-oss/open_creator_protocol";
 import type { Program, SplToken } from "@project-serum/anchor";
 import * as anchor from "@project-serum/anchor";
 import {
@@ -34,7 +41,7 @@ import BN from "bn.js";
 import type { BackgroundClient } from "../";
 
 import * as assertOwner from "./programs/assert-owner";
-import { associatedTokenAddress } from "./programs/token";
+import { associatedTokenAddress, metadataAddress } from "./programs/token";
 import { xnftClient } from "./programs/xnft";
 import { SolanaProvider } from "./provider";
 
@@ -265,6 +272,72 @@ export class Solana {
     ).blockhash;
 
     const signedTx = await SolanaProvider.signTransaction(ctx, transaction);
+    const rawTx = signedTx.serialize();
+
+    return await tokenClient.provider.connection.sendRawTransaction(rawTx, {
+      skipPreflight: false,
+      preflightCommitment: commitment,
+    });
+  }
+
+  public static async transferOpenCreatorProtocol(
+    solanaCtx: SolanaContext,
+    req: TransferTokenRequest,
+    mintState: MintState
+  ): Promise<string> {
+    const { walletPublicKey, tokenClient, commitment } = solanaCtx;
+    const { mint, destination } = req;
+
+    const sourceAta = associatedTokenAddress(mint, walletPublicKey);
+    const destinationAta = associatedTokenAddress(mint, destination);
+
+    const destinationAtaAccount =
+      await tokenClient.provider.connection.getAccountInfo(destinationAta);
+
+    const transaction: Transaction = new Transaction();
+
+    if (!destinationAtaAccount) {
+      transaction.add(
+        assertOwner.assertOwnerInstruction({
+          account: destination,
+          owner: SystemProgram.programId,
+        })
+      );
+      transaction.add(
+        createAssociatedTokenAccountInstruction(
+          walletPublicKey,
+          destinationAta,
+          destination,
+          mint
+        )
+      );
+    }
+
+    transaction.add(
+      ocpCreateTransferInstruction({
+        policy: mintState.policy,
+        freezeAuthority: findFreezeAuthorityPk(mintState.policy),
+        mint,
+        metadata: await metadataAddress(mint),
+        mintState: findMintStatePk(mint),
+        from: walletPublicKey,
+        fromAccount: sourceAta,
+        cmtProgram: CMT_PROGRAM,
+        instructions: SYSVAR_INSTRUCTIONS_PUBKEY,
+        to: destination,
+        toAccount: destinationAta,
+      })
+    );
+
+    transaction.feePayer = walletPublicKey;
+    transaction.recentBlockhash = (
+      await tokenClient.provider.connection.getLatestBlockhash(commitment)
+    ).blockhash;
+
+    const signedTx = await SolanaProvider.signTransaction(
+      solanaCtx,
+      transaction
+    );
     const rawTx = signedTx.serialize();
 
     return await tokenClient.provider.connection.sendRawTransaction(rawTx, {
