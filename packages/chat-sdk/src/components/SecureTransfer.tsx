@@ -11,6 +11,7 @@ import {
   PrimaryButton,
   TextFieldLabel,
   TextInput,
+  toast,
 } from "@coral-xyz/react-common";
 import {
   useActiveSolanaWallet,
@@ -45,9 +46,11 @@ const style = {
 export const SecureTransfer = ({
   remoteUserId,
   onTxFinalized,
+  buttonStyle,
 }: {
   remoteUserId: string;
   onTxFinalized: any;
+  buttonStyle: any;
 }) => {
   const [modal, setModal] = useState(false);
   const { provider, connection } = useAnchorContext();
@@ -57,12 +60,13 @@ export const SecureTransfer = ({
   const [publicKeys, setPublicKeys] = useState<string[]>([]);
   const [selectedPublicKey, setSelectedPublickey] = useState("");
   const [amount, setAmount] = useState("0");
+  const [submitting, setSubmitting] = useState(false);
   const token = useBlockchainTokenAccount({
     publicKey,
     blockchain: Blockchain.SOLANA,
     tokenAddress: publicKey,
   });
-  console.error(token);
+
   const theme = useCustomTheme();
   const refreshUserPubkeys = async () => {
     setPublicKeysLoading(true);
@@ -81,6 +85,7 @@ export const SecureTransfer = ({
     }
     setPublicKeysLoading(false);
   };
+
   useEffect(() => {
     if (modal) {
       refreshUserPubkeys();
@@ -88,8 +93,17 @@ export const SecureTransfer = ({
   }, [modal]);
 
   return (
-    <div>
-      <IconButton size={"small"} style={{ color: theme.custom.colors.icon }}>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        flexDirection: "column",
+      }}
+    >
+      <IconButton
+        size={"small"}
+        style={{ color: theme.custom.colors.icon, ...buttonStyle }}
+      >
         <MonetizationOnIcon
           style={{ color: theme.custom.colors.icon, fontSize: 20 }}
           onClick={() => setModal(true)}
@@ -106,7 +120,13 @@ export const SecureTransfer = ({
           timeout: 500,
         }}
       >
-        <Box sx={style}>
+        <Box
+          sx={style}
+          style={{
+            background: theme.custom.colors.background,
+            color: theme.custom.colors.fontColor,
+          }}
+        >
           <Typography id="transition-modal-title" variant="h6" component="h2">
             Secure transfer
           </Typography>
@@ -131,11 +151,14 @@ export const SecureTransfer = ({
             />
           </div>
 
-          <br />
-          <Typography id="transition-modal-title" variant="subtitle2">
+          <Typography
+            id="transition-modal-title"
+            variant="subtitle2"
+            style={{ marginBottom: 4, marginTop: 5 }}
+          >
             Select public key
           </Typography>
-          <List>
+          <List style={{ marginLeft: 0, marginRight: 0 }}>
             {publicKeys?.map((pKey, index) => (
               <ListItem
                 onClick={() => setSelectedPublickey(pKey)}
@@ -162,8 +185,10 @@ export const SecureTransfer = ({
           </List>
           <br />
           <PrimaryButton
-            label={"Secure transfer SOL"}
-            disabled={publicKeysLoading || !publicKey}
+            label={
+              submitting ? "Sending Secure transfer..." : "Secure transfer SOL"
+            }
+            disabled={publicKeysLoading || !selectedPublicKey || submitting}
             onClick={async () => {
               if (
                 !selectedPublicKey ||
@@ -172,21 +197,29 @@ export const SecureTransfer = ({
               ) {
                 return;
               }
-              const { signature, counter, escrow } = await createEscrow(
-                provider,
-                background,
-                connection,
-                amount,
-                new PublicKey(publicKey),
-                new PublicKey(selectedPublicKey)
-              );
-              onTxFinalized({
-                signature,
-                counter,
-                escrow,
-              });
+              setSubmitting(true);
+              try {
+                const { signature, counter, escrow } = await createEscrow(
+                  provider,
+                  background,
+                  connection,
+                  amount,
+                  new PublicKey(publicKey),
+                  new PublicKey(selectedPublicKey)
+                );
+                onTxFinalized({
+                  signature,
+                  counter,
+                  escrow,
+                });
+                toast.success("", `Created secure transfer for ${amount} SOL`);
+              } catch (e) {
+                console.error(e);
+              }
+              setSubmitting(false);
+              setModal(false);
             }}
-          ></PrimaryButton>
+          />
         </Box>
       </Modal>
     </div>

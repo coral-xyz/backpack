@@ -22,33 +22,38 @@ export class Signaling extends EventEmitter {
   }
 
   async initWs() {
-    const res = await fetch(`${REALTIME_API_URL}/cookie`);
-    this.jwt = (await res.json()).jwt;
-    const ws = new WebSocket(`${SERVER_URL}?jwt=${this.jwt}`);
-    ws.addEventListener("open", () => {
-      this.state = "connected";
-      this.bufferedMessages.forEach((x) => this.send(x));
-      this.bufferedMessages = [];
-    });
+    try {
+      const res = await fetch(`${REALTIME_API_URL}/cookie`);
+      this.jwt = (await res.json()).jwt;
+      const ws = new WebSocket(`${SERVER_URL}?jwt=${this.jwt}`);
+      ws.addEventListener("open", () => {
+        this.state = "connected";
+        this.bufferedMessages.forEach((x) => this.send(x));
+        this.bufferedMessages = [];
+      });
 
-    ws.addEventListener("message", (event) => {
-      this.handleMessage(event.data);
-    });
+      ws.addEventListener("message", (event) => {
+        this.handleMessage(event.data);
+      });
 
-    ws.addEventListener("close", () => {
-      this.state = "disconnected";
-      if (!this.destroyed) {
-        this.emit(RECONNECTING);
-        setTimeout(() => {
-          // TODO: exponentially backoff here
-          if (!this.destroyed) {
-            this.initWs();
-          }
-        }, 3000);
-      }
-    });
+      ws.addEventListener("close", () => {
+        this.state = "disconnected";
+        if (!this.destroyed) {
+          this.emit(RECONNECTING);
+          setTimeout(() => {
+            // TODO: exponentially backoff here
+            if (!this.destroyed) {
+              this.initWs();
+            }
+          }, 3000);
+        }
+      });
 
-    this.ws = ws;
+      this.ws = ws;
+    } catch (e) {
+      console.error("Error while creating ws connection");
+      console.error(e);
+    }
   }
 
   handleMessage(data: string) {

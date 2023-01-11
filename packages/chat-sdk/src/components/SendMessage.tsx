@@ -204,15 +204,18 @@ export const SendMessage = () => {
                 }}
               />
               <SecureTransfer
-                  remoteUserId={remoteUserId}
-                  onTxFinalized={({ signature, counter, escrow }) => {
-                    sendMessage("Secure transfer", "secure-transfer", {
-                      signature,
-                      counter,
-                      escrow,
-                      current_state: "pending",
-                    });
-                  }}
+                buttonStyle={{
+                  height: "28px",
+                }}
+                remoteUserId={remoteUserId}
+                onTxFinalized={({ signature, counter, escrow }) => {
+                  sendMessage("Secure transfer", "secure-transfer", {
+                    signature,
+                    counter,
+                    escrow,
+                    current_state: "pending",
+                  });
+                }}
               />
               {/*<IconButton>*/}
               {/*  {" "}*/}

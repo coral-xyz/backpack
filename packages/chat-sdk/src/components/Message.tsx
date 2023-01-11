@@ -290,6 +290,7 @@ function SecureTransferElement({
   finalTxId: string;
 }) {
   const [currentStateLocal, setCurrentStateLocal] = useState(currentState);
+  const [finalTxIdLocal, setFinalTxIdLocal] = useState(finalTxId);
   const { username, uuid } = useUser();
   const [loading, setLoading] = useState(true);
   const { roomId } = useChatContext();
@@ -297,6 +298,7 @@ function SecureTransferElement({
   const { publicKey } = useActiveSolanaWallet();
   const classes = useStyles();
   const background = useBackgroundClient();
+  const [actionButtonLoading, setActionButtonLoading] = useState(false);
   const [escrowState, setEscrowState] = useState<null | {
     amount: string;
     sender: string;
@@ -312,6 +314,10 @@ function SecureTransferElement({
   useEffect(() => {
     setCurrentStateLocal(currentState);
   }, [currentState]);
+
+  useEffect(() => {
+    setFinalTxIdLocal(finalTxId);
+  }, [finalTxId]);
 
   const [token] = useLoader(
     blockchainTokenData({
@@ -389,8 +395,10 @@ function SecureTransferElement({
                   style={{
                     background: "rgba(241, 50, 54, 0.2)",
                     color: "#FF6269",
+                    cursor: actionButtonLoading ? "auto" : "pointer",
                   }}
                   onClick={async () => {
+                    setActionButtonLoading(true);
                     const txn = await cancel(
                       provider,
                       background,
@@ -414,10 +422,13 @@ function SecureTransferElement({
                         }),
                       }
                     );
+                    setFinalTxIdLocal(txn);
                     setCurrentStateLocal("cancelled");
+                    setEscrowState(null);
+                    setActionButtonLoading(false);
                   }}
                 >
-                  Cancel
+                  {!actionButtonLoading ? "Cancel" : "Cancelling..."}
                 </div>
               </>
             ) : (
@@ -427,8 +438,10 @@ function SecureTransferElement({
                   style={{
                     background: "rgba(17, 168, 0, 0.2)",
                     color: "#52D24C",
+                    cursor: actionButtonLoading ? "auto" : "pointer",
                   }}
                   onClick={async () => {
+                    setActionButtonLoading(true);
                     const txn = await redeem(
                       provider,
                       background,
@@ -452,10 +465,13 @@ function SecureTransferElement({
                         }),
                       }
                     );
+                    setFinalTxIdLocal(txn);
                     setCurrentStateLocal("redeemed");
+                    setEscrowState(null);
+                    setActionButtonLoading(false);
                   }}
                 >
-                  REDEEM
+                  {!actionButtonLoading ? "REDEEM" : "Redeeming..."}
                 </div>
               </>
             )}
@@ -466,7 +482,7 @@ function SecureTransferElement({
         <div style={{ display: "flex" }}>
           {currentStateLocal === "redeemed"
             ? `Escrow redeemed by ${
-                remoteUsername === username ? "you" : remoteUsername
+                remoteUsername !== username ? "you" : remoteUsername
               } `
             : `Escrow cancelled by ${
                 remoteUsername === username ? "you" : remoteUsername
