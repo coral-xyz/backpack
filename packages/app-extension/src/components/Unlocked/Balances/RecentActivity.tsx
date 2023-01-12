@@ -26,7 +26,6 @@ import {
 } from "../../common/Layout/NavStack";
 
 import { _RecentSolanaActivityList } from "./RecentSolanaActivity/RecentSolanaActivityList";
-import { RecentSolanaActivityListItem } from "./RecentSolanaActivity/RecentSolanaActivityListItem";
 
 const useStyles = styles((theme) => ({
   recentActivityLabel: {
