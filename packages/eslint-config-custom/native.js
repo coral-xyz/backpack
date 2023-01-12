@@ -14,8 +14,8 @@ module.exports = {
   extends: [
     // "./index.js",
     "./shared/core.js",
-    "./shared/react.js",
     "./shared/typescript.js",
+    "./shared/react.js",
   ],
   globals: {
     __DEV__: false,
