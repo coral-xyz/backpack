@@ -16,6 +16,7 @@ module.exports = {
     module: false,
     require: false,
   },
+  extends: ["prettier"],
   plugins: ["import", "node"],
   rules: {
     "array-bracket-spacing": ["warn", "never"],
