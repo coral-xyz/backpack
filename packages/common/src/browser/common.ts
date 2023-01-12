@@ -11,7 +11,7 @@ export class BrowserRuntimeCommon {
   }
 
   public static sendMessageToAnywhere(msg: any, cb?: any) {
-    return chrome.runtime.sendMessage(msg, cb);
+    chrome.runtime.sendMessage(msg, cb);
   }
 
   public static addEventListenerFromBackground(listener: any): void {
