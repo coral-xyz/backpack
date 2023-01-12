@@ -112,7 +112,7 @@ export const recentEthereumTransactions = atomFamily<
  * Retrieve recent Solana transactions.
  */
 export const recentSolanaTransactions = atomFamily<
-  Array<RecentTransaction>,
+  Array<any>,
   {
     address: string;
   }
@@ -123,22 +123,27 @@ export const recentSolanaTransactions = atomFamily<
     get:
       ({ address }: { address: string }) =>
       async ({ get }: any) => {
-        const { connection } = get(anchorContext);
-        const recent = await fetchRecentSolanaTransactions(
-          connection,
-          new PublicKey(address)
-        );
+        // const { connection } = get(anchorContext);
+        // const recent = await fetchRecentSolanaTransactions(
+        //   connection,
+        //   new PublicKey(address)
+        // );
 
         const heliusTransactionDetails =
           await fetchRecentSolanaTransactionDetails(address);
 
-        return recent.map((t) => ({
+        return heliusTransactionDetails?.map((t) => ({
           blockchain: Blockchain.SOLANA,
-          date: new Date(t.blockTime! * 1000),
-          signature: t.transaction.signatures[0],
-          didError: t.meta && t.meta.err ? true : false,
-          details: heliusTransactionDetails,
+          ...t,
         }));
+
+        // return recent.map((t) => ({
+        //   blockchain: Blockchain.SOLANA,
+        //   date: new Date(t.blockTime! * 1000),
+        //   signature: t.transaction.signatures[0],
+        //   didError: t.meta && t.meta.err ? true : false,
+        //   details: heliusTransactionDetails,
+        // }));
       },
   }),
 });

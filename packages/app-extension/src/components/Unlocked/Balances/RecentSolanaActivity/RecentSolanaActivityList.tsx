@@ -1,32 +1,16 @@
-import { Suspense, useState } from "react";
-import { Blockchain, explorerUrl } from "@coral-xyz/common";
+import type { Blockchain } from "@coral-xyz/common";
+import { explorerUrl } from "@coral-xyz/common";
+import { EmptyState, isFirstLastListItemStyle } from "@coral-xyz/react-common";
 import {
-  EmptyState,
-  isFirstLastListItemStyle,
-  Loading,
-} from "@coral-xyz/react-common";
-import {
-  useActiveWallet,
   useBlockchainConnectionUrl,
   useBlockchainExplorer,
   useBlockchainLogo,
-  useRecentEthereumTransactions,
-  useRecentSolanaTransactions,
   useRecentTransactions,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { CallMade, Check, Clear } from "@mui/icons-material";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
-import { IconButton, List, ListItem, Typography } from "@mui/material";
-
-import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
-import {
-  NavStackEphemeral,
-  NavStackScreen,
-} from "../../common/Layout/NavStack";
-
-import { _RecentSolanaActivityList } from "./RecentSolanaActivity/RecentSolanaActivityList";
-import { RecentSolanaActivityListItem } from "./RecentSolanaActivity/RecentSolanaActivityListItem";
+import { List, ListItem, Typography } from "@mui/material";
 
 const useStyles = styles((theme) => ({
   recentActivityLabel: {
@@ -97,115 +81,7 @@ const useStyles = styles((theme) => ({
   },
 }));
 
-export function RecentActivityButton() {
-  const classes = useStyles();
-  const [openDrawer, setOpenDrawer] = useState(false);
-  return (
-    <div className={classes.networkSettingsButtonContainer}>
-      <IconButton
-        disableRipple
-        className={classes.networkSettingsButton}
-        onClick={() => setOpenDrawer(true)}
-        size="large"
-      >
-        <FormatListBulletedIcon className={classes.networkSettingsIcon} />
-      </IconButton>
-      <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-        <div style={{ height: "100%" }}>
-          <NavStackEphemeral
-            initialRoute={{ name: "root" }}
-            options={() => ({ title: "Transactions" })}
-            navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
-          >
-            <NavStackScreen
-              name={"root"}
-              component={(props: any) => <RecentActivity {...props} />}
-            />
-          </NavStackEphemeral>
-        </div>
-      </WithDrawer>
-    </div>
-  );
-}
-
-export function RecentActivity() {
-  const activeWallet = useActiveWallet();
-  const recentTransactions =
-    activeWallet.blockchain === Blockchain.SOLANA
-      ? useRecentSolanaTransactions({
-          address: activeWallet.publicKey,
-        })
-      : useRecentEthereumTransactions({
-          address: activeWallet.publicKey,
-        });
-  const mergedTransactions = [...recentTransactions].sort(
-    (a, b) => b.date.getTime() - a.date.getTime()
-  );
-
-  return (
-    <Suspense fallback={<RecentActivityLoading />}>
-      {activeWallet.blockchain === Blockchain.SOLANA ? (
-        <_RecentSolanaActivityList transactions={recentTransactions} />
-      ) : (
-        <_RecentActivityList transactions={mergedTransactions} />
-      )}
-    </Suspense>
-  );
-}
-
-export function RecentActivityList({
-  blockchain,
-  address,
-  contractAddresses,
-  transactions,
-  style,
-  minimize = false,
-}: {
-  blockchain?: Blockchain;
-  address?: string;
-  contractAddresses?: Array<string>;
-  transactions?: Array<any>;
-  style?: any;
-  minimize?: boolean;
-}) {
-  return (
-    <Suspense fallback={<RecentActivityLoading />}>
-      <_RecentActivityList
-        blockchain={blockchain}
-        address={address}
-        contractAddresses={contractAddresses}
-        transactions={transactions}
-        style={style}
-        minimize={minimize}
-      />
-    </Suspense>
-  );
-}
-
-function RecentActivityLoading() {
-  return (
-    <div
-      style={{
-        height: "68px",
-        display: "flex",
-        justifyContent: "center",
-        flexDirection: "column",
-      }}
-    >
-      <div
-        style={{
-          display: "block",
-          marginLeft: "auto",
-          marginRight: "auto",
-        }}
-      >
-        <Loading iconStyle={{ width: "35px", height: "35px" }} />
-      </div>
-    </div>
-  );
-}
-
-export function _RecentActivityList({
+export function _RecentSolanaActivityList({
   blockchain,
   address,
   contractAddresses,
@@ -221,12 +97,10 @@ export function _RecentActivityList({
   minimize?: boolean;
 }) {
   const theme = useCustomTheme();
-  const transactions = useRecentTransactions({
-    blockchain: blockchain!,
-    address: address!,
-    contractAddresses: contractAddresses!,
-    transactions: _transactions,
-  });
+  // Load transactions if not passed in as a prop
+  const transactions = _transactions
+    ? _transactions
+    : useRecentTransactions(blockchain!, address!, contractAddresses!);
 
   if (!style) {
     style = {};
@@ -250,23 +124,25 @@ export function _RecentActivityList({
           ...style,
         }}
       >
-        {transactions.map((tx: any, idx: number) => (
-          <RecentActivityListItem
+        {transactions.map((tx: any, idx: number) => {
+          <SolanaTransactionListItem
             key={idx}
             transaction={tx}
             isFirst={idx === 0}
             isLast={idx === transactions.length - 1}
-          />
-        ))}
-        )
+          />;
+        })}
       </List>
     </div>
   ) : (
     <NoRecentActivityLabel minimize={!!minimize} />
   );
 }
-
-function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
+export function SolanaTransactionListItem({
+  transaction,
+  isFirst,
+  isLast,
+}: any) {
   const classes = useStyles();
   const theme = useCustomTheme();
   const explorer = useBlockchainExplorer(transaction.blockchain);
@@ -310,7 +186,7 @@ function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
               justifyContent: "center",
             }}
           >
-            <RecentActivityListItemIcon transaction={transaction} />
+            <Check className={classes.recentActivityListItemIcon} />
           </div>
           <div>
             <Typography className={classes.txSig}>
@@ -326,7 +202,7 @@ function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
               {transaction.signature.slice(transaction.signature.length - 5)}
             </Typography>
             <Typography className={classes.txDate}>
-              {transaction.date.toLocaleDateString()}
+              {transaction.timestamp}
             </Typography>
           </div>
         </div>
