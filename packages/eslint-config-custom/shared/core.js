@@ -6,6 +6,8 @@ module.exports = {
     ecmaVersion: 2022,
     ecmaFeatures: { impliedStrict: true, jsx: true },
   },
+  // https://eslint.org/docs/latest/user-guide/configuring/ignoring-code#the-eslintignore-file
+  ignorePatterns: ["dist/*", "build/*", "dev/*", "node_modules/**"],
   env: { es2022: true, jest: true },
   globals: {
     console: false,
