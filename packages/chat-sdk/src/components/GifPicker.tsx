@@ -12,7 +12,7 @@ import Popover from "@mui/material/Popover";
 // use @giphy/js-fetch-api to fetch gifs, instantiate with your api key
 const gf = new GiphyFetch("SjZwwCn1e394TKKjrMJWb2qQRNcqW8ro");
 
-let debouncedTimer = 0;
+let debouncedTimer;
 
 export const useStyles = styles((theme) => ({
   searchField: {
