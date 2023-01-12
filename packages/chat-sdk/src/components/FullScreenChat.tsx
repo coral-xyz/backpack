@@ -51,7 +51,6 @@ export const FullScreenChat = () => {
       <div
         id={"messageContainer"}
         style={{
-          overflowY: "scroll",
           height: "calc(100% - 40px)",
           background: theme.custom.colors.bg3,
         }}

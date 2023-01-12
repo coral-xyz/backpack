@@ -43,7 +43,13 @@ export const MessageOptions = () => {
   };
 
   return (
-    <div>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        flexDirection: "column",
+      }}
+    >
       <MoreHorizIcon
         onClick={handleClick}
         style={{ cursor: "pointer", color: theme.custom.colors.icon }}

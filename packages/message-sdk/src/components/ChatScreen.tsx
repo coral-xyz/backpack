@@ -1,6 +1,7 @@
 import { ChatRoom } from "@coral-xyz/chat-sdk";
 import type { Friendship } from "@coral-xyz/common";
 import { friendship } from "@coral-xyz/recoil";
+import { useCustomTheme } from "@coral-xyz/themes";
 import { useRecoilState } from "recoil";
 
 export const ChatScreen = ({
@@ -23,7 +24,11 @@ export const ChatScreen = ({
   }
 
   return (
-    <div>
+    <div
+      style={{
+        height: "100%",
+      }}
+    >
       <ChatRoom
         type={"individual"}
         remoteUsername={username}
