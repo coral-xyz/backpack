@@ -3,10 +3,11 @@ import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
 import {
   Backpack,
   PrimaryButton,
+  ProxyImage,
   RedBackpack,
   TextInput,
 } from "@coral-xyz/react-common";
-import { useAvatarUrl,useBackgroundClient, useUser } from "@coral-xyz/recoil";
+import { useAvatarUrl, useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
@@ -130,7 +131,7 @@ export function BackpackHeader({
 }) {
   const theme = useCustomTheme();
   const user = useUser();
-  const avatarUrl = useAvatarUrl(undefined, user.username);
+  const avatarUrl = useAvatarUrl(120, user.username);
   return (
     <Box
       sx={{
@@ -168,48 +169,22 @@ export function BackpackHeader({
           position: "relative",
         }}
       >
-        <img
-          src={avatarUrl}
-          style={{
-            height: "120px",
-            width: "120px",
-            borderRadius: "60px",
-            position: "absolute",
-            bottom: -152,
-            left: "50%",
-            transform: "translate(-50%, 0%)",
-          }}
-        />
+        <div style={{}}>
+          <ProxyImage
+            src={avatarUrl}
+            style={{
+              height: "120px",
+              width: "120px",
+              borderRadius: "60px",
+              position: "absolute",
+              bottom: -152,
+              transform: "translate(-50%, 0%)",
+              transformOrigin: undefined,
+              display: "inline",
+            }}
+          />
+        </div>
       </div>
-    </Box>
-  );
-}
-
-function AlphaLabel() {
-  const theme = useCustomTheme();
-  return (
-    <Box
-      sx={{
-        borderRadius: "10px",
-        border: `solid 1pt ${theme.custom.colors.alpha}`,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        height: "20px",
-        width: "53px",
-      }}
-    >
-      <Typography
-        sx={{
-          color: theme.custom.colors.alpha,
-          fontSize: "12px",
-          lineHeight: "16px",
-          textAlign: "center",
-          fontWeight: 500,
-        }}
-      >
-        Alpha
-      </Typography>
     </Box>
   );
 }
