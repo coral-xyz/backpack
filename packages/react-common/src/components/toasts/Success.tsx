@@ -4,7 +4,14 @@ import CheckIcon from "@mui/icons-material/Check";
 export const Success = ({ title, body }: { title: string; body: string }) => {
   const theme = useCustomTheme();
   return (
-    <div style={{ display: "flex", padding: 2, borderRadius: 12, margin: 10 }}>
+    <div
+      style={{
+        display: "flex",
+        borderRadius: 12,
+        paddingRight: 20,
+        paddingTop: 5,
+      }}
+    >
       <div style={{ paddingRight: 15 }}>
         <div
           style={{

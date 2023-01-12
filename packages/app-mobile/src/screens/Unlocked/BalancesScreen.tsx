@@ -1,5 +1,6 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Margin, Screen, TokenAmountHeader } from "@components";
+import { ErrorBoundary } from "@components/ErrorBoundary";
 import { TransferWidget } from "@components/Unlocked/Balances/TransferWidget";
 import {
   Blockchain,
@@ -14,6 +15,7 @@ import {
   useBlockchainActiveWallet,
   useLoader,
 } from "@coral-xyz/recoil";
+import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import { RecentActivityList } from "@screens/Unlocked/RecentActivityScreen";
 import { WalletListScreen } from "@screens/Unlocked/WalletListScreen";
@@ -28,7 +30,28 @@ export function BalancesNavigator() {
     <Stack.Navigator
       initialRouteName="BalanceList"
       screenOptions={{ presentation: "modal" }}>
-      <Stack.Screen name="wallet-picker" component={WalletListScreen} />
+      <Stack.Screen
+        name="wallet-picker"
+        component={WalletListScreen}
+        options={({ navigation }) => {
+          return {
+            title: "Wallets",
+            headerLeft: undefined,
+            headerRight: ({ tintColor }) => {
+              return (
+                <Pressable onPress={() => navigation.navigate("edit-wallets")}>
+                  <MaterialIcons
+                    name="settings"
+                    size={24}
+                    style={{ padding: 8 }}
+                    color={tintColor}
+                  />
+                </Pressable>
+              );
+            },
+          };
+        }}
+      />
       <Stack.Group screenOptions={{ headerShown: false }}>
         <Stack.Screen name="BalanceList" component={BalanceListScreen} />
       </Stack.Group>
@@ -176,18 +199,5 @@ const styles = StyleSheet.create({
   tokenHeaderButtonContainer: {
     justifyContent: "space-between",
     marginTop: 24,
-  },
-  usdBalanceLabel: {
-    fontWeight: "500",
-    fontSize: 14,
-    textAlign: "center",
-    marginTop: 4,
-    lineHeight: 24,
-  },
-  headerButtonLabel: {
-    // color: theme.custom.colors.fontColor,
-    fontSize: 14,
-    lineHeight: 24,
-    fontWeight: "500",
   },
 });

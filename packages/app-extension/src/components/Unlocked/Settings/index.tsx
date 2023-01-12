@@ -5,12 +5,14 @@ import {
   Blockchain,
   DISCORD_INVITE_LINK,
   MESSAGES_ENABLED,
+  NAV_COMPONENT_CONTACTS,
   NOTIFICATIONS_ENABLED,
   openPopupWindow,
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
 } from "@coral-xyz/common";
+import { NAV_COMPONENT_NFT_CHAT } from "@coral-xyz/common/dist/esm/constants";
 import {
   ContactsIcon,
   DiscordIcon,
@@ -30,6 +32,7 @@ import {
   useBackgroundClient,
   useBlockchainLogo,
   useFeatureGates,
+  useNavigation,
   useWalletPublicKeys,
 } from "@coral-xyz/recoil";
 import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
@@ -207,10 +210,6 @@ function AvatarButton() {
             <NavStackScreen
               name={"your-account"}
               component={(props: any) => <YourAccount {...props} />}
-            />
-            <NavStackScreen
-              name={"contacts-list"}
-              component={(props: any) => <Contacts {...props} />}
             />
             <NavStackScreen
               name={"preferences"}
@@ -632,6 +631,7 @@ export const AddConnectWalletButton = ({
 function SettingsList() {
   const theme = useCustomTheme();
   const nav = useNavStack();
+  const { push } = useNavigation();
   const background = useBackgroundClient();
   const featureGates = useFeatureGates();
 
@@ -646,7 +646,7 @@ function SettingsList() {
 
   const walletsMenu = [
     {
-      label: "Manage Wallets",
+      label: "Wallets",
       onClick: () => nav.push("edit-wallets"),
       icon: (props: any) => <AccountBalanceWalletIcon {...props} />,
       detailIcon: <PushDetail />,
@@ -671,7 +671,12 @@ function SettingsList() {
   if (featureGates[MESSAGES_ENABLED]) {
     settingsMenu.push({
       label: "Contacts",
-      onClick: () => nav.push("contacts-list"),
+      onClick: () =>
+        push({
+          title: "Contacts",
+          componentId: NAV_COMPONENT_CONTACTS,
+          componentProps: {},
+        }),
       icon: (props: any) => <ContactsIcon {...props} />,
       detailIcon: <PushDetail />,
     });
@@ -710,7 +715,7 @@ function SettingsList() {
     });
   }
   settingsMenu.push({
-    label: "Lock Wallet",
+    label: "Lock",
     onClick: () => lockWallet(),
     icon: (props: any) => <Lock {...props} />,
     detailIcon: <></>,

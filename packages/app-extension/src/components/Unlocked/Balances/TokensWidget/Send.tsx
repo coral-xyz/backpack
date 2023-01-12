@@ -17,8 +17,10 @@ import {
   CrossIcon,
   DangerButton,
   Loading,
+  MaxLabel,
   PrimaryButton,
   SecondaryButton,
+  TextFieldLabel,
   TextInput,
 } from "@coral-xyz/react-common";
 import type { TokenData } from "@coral-xyz/recoil";
@@ -41,11 +43,9 @@ import type { Connection } from "@solana/web3.js";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { BigNumber, ethers } from "ethers";
 
-import { TextFieldLabel } from "../../../common";
 import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { useNavStack } from "../../../common/Layout/NavStack";
-import { MaxLabel } from "../../../common/MaxLabel";
 import { TokenAmountHeader } from "../../../common/TokenAmountHeader";
 import { TokenInputField } from "../../../common/TokenInput";
 

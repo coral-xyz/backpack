@@ -1,29 +1,79 @@
-import { useState } from "react";
-import { useCustomTheme } from "@coral-xyz/themes";
+import { useEffect, useState } from "react";
+import { TextInput } from "@coral-xyz/react-common";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { GiphyFetch } from "@giphy/js-fetch-api";
-import { Carousel } from "@giphy/react-components";
+import { Carousel, SearchContextManager } from "@giphy/react-components";
 import GifIcon from "@mui/icons-material/Gif";
+import SearchIcon from "@mui/icons-material/Search";
 import { IconButton } from "@mui/material";
+import InputAdornment from "@mui/material/InputAdornment";
 import Popover from "@mui/material/Popover";
 
 // use @giphy/js-fetch-api to fetch gifs, instantiate with your api key
 const gf = new GiphyFetch("SjZwwCn1e394TKKjrMJWb2qQRNcqW8ro");
-const fetchGifs = (offset: number) => gf.trending({ offset, limit: 10 });
+
+let debouncedTimer;
+
+export const useStyles = styles((theme) => ({
+  searchField: {
+    width: "inherit",
+    display: "flex",
+    marginTop: 0,
+    "& .MuiOutlinedInput-root": {
+      "& input": {
+        paddingTop: 10,
+        paddingBottom: 10,
+      },
+    },
+  },
+}));
 
 export const GifPicker = ({
   setGifPicker,
   gifPicker,
   setEmojiPicker,
   sendMessage,
+  buttonStyle,
 }: any) => {
   const theme = useCustomTheme();
   const [anchorEl, setAnchorEl] = useState<any | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [searchFilter, setSearchFilter] = useState("");
+  const fetchGifs = (offset: number) =>
+    searchFilter
+      ? gf.search(searchFilter, { limit: 10, offset })
+      : gf.trending({ limit: 10, offset });
+  const classes = useStyles();
+
+  const refreshSearch = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 250);
+  };
+
+  const debouncedInit = () => {
+    clearTimeout(debouncedTimer);
+    debouncedTimer = setTimeout(() => {
+      refreshSearch();
+    }, 400);
+  };
+
+  useEffect(() => {
+    debouncedInit();
+  }, [searchFilter]);
 
   return (
-    <>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        flexDirection: "column",
+      }}
+    >
       <IconButton
         size={"small"}
-        style={{ color: theme.custom.colors.icon }}
+        style={{ color: theme.custom.colors.icon, ...buttonStyle }}
         onClick={(e) => {
           setGifPicker((x) => !x);
           if (!gifPicker) {
@@ -51,19 +101,41 @@ export const GifPicker = ({
           horizontal: "center",
         }}
       >
-        <div style={{ width: 400 }}>
-          <Carousel
-            onGifClick={(x, e) => {
-              sendMessage(x.id, "gif");
-              setGifPicker(false);
-              e.preventDefault();
-            }}
-            gifHeight={100}
-            gutter={6}
-            fetchGifs={fetchGifs}
+        <div
+          style={{
+            maxWidth: 400,
+            background: theme.custom.colors.background,
+            padding: 5,
+          }}
+        >
+          <TextInput
+            startAdornment={
+              <InputAdornment position="start">
+                <SearchIcon style={{ color: theme.custom.colors.icon }} />
+              </InputAdornment>
+            }
+            placeholder={"Search for GIFs"}
+            className={classes.searchField}
+            value={searchFilter}
+            setValue={(e) => setSearchFilter(e.target.value)}
           />
+          {loading && <div style={{ height: 100 }}></div>}
+          {!loading && (
+            <>
+              <Carousel
+                onGifClick={(x, e) => {
+                  sendMessage(x.id, "gif");
+                  setGifPicker(false);
+                  e.preventDefault();
+                }}
+                gifHeight={100}
+                gutter={6}
+                fetchGifs={fetchGifs}
+              />
+            </>
+          )}
         </div>
       </Popover>
-    </>
+    </div>
   );
 };

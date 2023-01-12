@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
+import type { Blockchain } from "@coral-xyz/common";
 import {
-  Blockchain,
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
   walletAddressDisplay,
 } from "@coral-xyz/common";
 import { List, ListItem } from "@coral-xyz/react-common";
 import {
+  useActiveWallet,
   useAllWallets,
   useBackgroundClient,
   useBlockchainActiveWallet,
@@ -235,7 +236,7 @@ function WalletNavStack({
 
 function AllWalletsList({ filter }: { filter?: (w: any) => boolean }) {
   const { setTitle, setNavButtonRight } = useNavStack();
-  const activeWallet = useBlockchainActiveWallet(Blockchain.SOLANA);
+  const activeWallet = useActiveWallet();
   let wallets = useAllWallets();
 
   useEffect(() => {

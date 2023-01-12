@@ -11,7 +11,7 @@ import {
   PrimaryButton,
   ProxyImage,
 } from "@coral-xyz/react-common";
-import { useUser } from "@coral-xyz/recoil";
+import { useNavigation, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import LockIcon from "@mui/icons-material/Lock";
@@ -35,6 +35,7 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
   const classes = useStyles();
   const theme = useCustomTheme();
   const userMetadata = useDbUser(uuid, userId);
+  const { push, toRoot } = useNavigation();
 
   async function getChatRoom() {
     const res = await ParentCommunicationManager.getInstance().fetch(
@@ -91,8 +92,9 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
             <IconButton
               size={"large"}
               className={classes.icon}
-              onClick={() => {
-                ParentCommunicationManager.getInstance().push({
+              onClick={async () => {
+                await toRoot();
+                push({
                   title: `@${user.username}`,
                   componentId: NAV_COMPONENT_MESSAGE_CHAT,
                   componentProps: {
@@ -119,7 +121,11 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
             </div>
           </div>
           <div>
-            <IconButton size={"large"} className={classes.icon}>
+            <IconButton
+              style={{ cursor: "auto" }}
+              size={"large"}
+              className={classes.icon}
+            >
               <ArrowUpwardIcon
                 style={{ color: theme.custom.colors.fontColor }}
               />

@@ -25,6 +25,7 @@ import {
   useBackgroundClient,
   useBackgroundResponder,
   useBootstrapFast,
+  useDarkMode,
   useEnabledBlockchains,
   useKeyringStoreState,
   useUser,
@@ -54,11 +55,13 @@ const logger = getLogger("router");
 
 export function Router() {
   const theme = useCustomTheme();
+  const isDarkMode = useDarkMode();
   return (
     <WithSuspense>
       <>
         <ToastContainer
-          toastStyle={{ backgroundColor: theme.custom.colors.background }}
+          toastStyle={{ backgroundColor: theme.custom.colors.swapTokensButton }}
+          theme={isDarkMode ? "dark" : "light"}
         />
         <DbRecoilSync />
         <_Router />

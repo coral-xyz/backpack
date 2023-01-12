@@ -6,7 +6,11 @@ import type {
 import express from "express";
 
 import { ensureHasRoomAccess, extractUserId } from "../../auth/middleware";
-import { getChats, getChatsFromParentGuids } from "../../db/chats";
+import {
+  getChats,
+  getChatsFromParentGuids,
+  updateSecureTransfer,
+} from "../../db/chats";
 import {
   updateLastReadGroup,
   updateLastReadIndividual,
@@ -44,6 +48,19 @@ router.post(
   }
 );
 
+router.put("/message", extractUserId, ensureHasRoomAccess, async (req, res) => {
+  //TODO: make this secure, there is a path to cancel but the UI shows the txn as redeemed.
+  const room = req.query.room;
+  const messageId = req.body.messageId;
+  const state = req.body.state;
+  const txn = req.body.txn;
+  if (state !== "cancelled" && state !== "redeemed") {
+    return res.status(411).json({ msg: "Incorrect state" });
+  }
+  await updateSecureTransfer(messageId, room, state, txn);
+  res.json({});
+});
+
 router.get("/", extractUserId, ensureHasRoomAccess, async (req, res) => {
   // @ts-ignore
   const room: string = req.query.room;
@@ -58,6 +75,8 @@ router.get("/", extractUserId, ensureHasRoomAccess, async (req, res) => {
       new Date(parseInt(req.query.timestampAfter))
     : new Date(0);
   const limit = req.query.limit ? parseInt(req.query.limit) : 10;
+  // @ts-ignore
+  const clientGeneratedUuid: string | undefined = req.query.clientGeneratedUuid;
 
   // @ts-ignore
   const chats = await getChats({
@@ -66,6 +85,7 @@ router.get("/", extractUserId, ensureHasRoomAccess, async (req, res) => {
     timestampBefore,
     timestampAfter,
     limit,
+    clientGeneratedUuid,
   });
   const enrichedChats = await enrichMessages(chats, room, type);
   res.json({ chats: enrichedChats });

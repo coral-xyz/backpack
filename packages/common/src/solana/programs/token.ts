@@ -274,17 +274,17 @@ export async function fetchSplMetadataUri(
             const resp = await fetch(
               `https://swr.xnfts.dev/web/${externalResourceUri(uri)}`
             );
-            resolve(resp);
+            resolve(await resp.json());
           } catch (err) {
             try {
               const resp = await fetch(externalResourceUri(uri));
-              resolve(resp);
+              resolve(await resp.json());
             } catch (e) {
               reject(err);
             }
           }
         });
-        return await resp.json();
+        return resp;
       } catch (err) {
         logger.debug(
           `error fetching token metadata: ${t.account.data.uri}`,

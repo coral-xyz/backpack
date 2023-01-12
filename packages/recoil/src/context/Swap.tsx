@@ -26,11 +26,12 @@ const DEFAULT_SLIPPAGE_PERCENT = 1;
 const ROUTE_POLL_INTERVAL = 30000;
 
 type JupiterRoute = {
-  amount: number;
-  inAmount: number;
-  otherAmountThreshold: number;
-  outAmount: number;
-  outAmountWithSlippage: number;
+  amount: string;
+  inAmount: string;
+  otherAmountThreshold: string;
+  outAmount: string;
+  // deprecated field
+  outAmountWithSlippage: string;
   priceImpactPct: number;
   swapMode: string;
 };
@@ -265,8 +266,9 @@ export function SwapProvider({
       inputMint: fromMint === SOL_NATIVE_MINT ? WSOL_MINT : fromMint,
       outputMint: toMint === SOL_NATIVE_MINT ? WSOL_MINT : toMint,
       amount: fromAmount.toString(),
-      slippage: slippage.toString(),
-      onlyDirectRoutes: "true",
+      slippageBps: (slippage * 100).toString(),
+      // As ledger wallet does not support v0 yet and we don't want to handle the fallback we request a v0 tx
+      asLegacyTransaction: "true",
     };
     const queryString = new URLSearchParams(params).toString();
     try {
@@ -322,18 +324,11 @@ export function SwapProvider({
           route,
           wrapUnwrapSOL: true,
           userPublicKey: walletPublicKey,
+          asLegacyTransaction: true,
         }),
       });
-      const transactions = await response.json();
-      if (Object.values(transactions).length > 1) {
-        // Possibly also includes setupTransaction and/or cleanupTransaction.
-        // Display swap unavailable because the UI doesn't support executing
-        // multiple sequential transactions (hardware wallets are a problem)
-        setIsJupiterError(true);
-        return undefined;
-      } else {
-        return transactions["swapTransaction"];
-      }
+      const swapResult = await response.json();
+      return swapResult["swapTransaction"];
     }
   };
 
@@ -360,15 +355,6 @@ export function SwapProvider({
 
   //
   // Execute the transactions to perform the swap.
-  //
-  // The Jupiter API returns between 1 and 3 transations to perform a swap
-  // (setupTransaction, swapTransaction, cleanupTransaction). Additionally
-  // the wrapping of SOL (if required) is handled here by the wrapTransaction
-  // step at the beginning.
-  //
-  // Jupiter does offer an API parameter to handle wrapping and unwrapping of
-  // SOL but it is not used because it is difficult to ensure that the users
-  // wSOL account and balance are retained.
   //
   const executeSwap = async () => {
     if (!toAmount) return;

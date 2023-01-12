@@ -370,3 +370,59 @@ export function IconCloseModal({
     />
   );
 }
+
+export function HardwareIcon({
+  fill = "#8F929E",
+  size = 24,
+}: {
+  fill?: string;
+  size?: number;
+}): JSX.Element {
+  return (
+    <Svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={size}
+      height={size}
+      fill="none"
+      viewBox="0 0 24 24">
+      <Path
+        d="M8.555 10.887c-.309 0-.575.107-.79.32a1.064 1.064 0 0 0-.324.783c0 .307.108.57.324.784.215.213.481.32.79.32.31 0 .575-.107.79-.32.216-.213.325-.477.325-.784 0-.306-.109-.57-.324-.783a1.086 1.086 0 0 0-.79-.32ZM18.807 8.5H5.923a.785.785 0 0 0-.573.222.794.794 0 0 0-.225.588v5.263c0 .247.07.464.215.645a.718.718 0 0 0 .583.282h12.884a.738.738 0 0 0 .603-.282c.145-.18.215-.398.215-.645V9.31a.794.794 0 0 0-.225-.588.811.811 0 0 0-.593-.222Zm-.62 5.576H6.563V9.924h11.625v4.152Z"
+        fill={fill}
+        stroke="#8F929E"
+        opacity={0.5}
+      />
+    </Svg>
+  );
+}
+
+export function ImportedIcon({
+  fill = "#8F929E",
+  size = 24,
+}: {
+  fill?: string;
+  size?: number;
+}): JSX.Element {
+  return (
+    <Svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={size}
+      height={size}
+      fill="none"
+      viewBox="0 0 24 24">
+      <Path
+        d="M11.56 6.058 8.378 9.24a.625.625 0 1 0 .884.884l2.115-2.115V14.5a.625.625 0 0 0 1.25 0V8.009l2.115 2.115a.625.625 0 1 0 .884-.884l-3.182-3.182a.625.625 0 0 0-.884 0Z"
+        fill={fill}
+        stroke="#8F929E"
+      />
+      <Path stroke="#8F929E" d="M8.25 16.377h7.5" />
+    </Svg>
+  );
+}
+
+export function MnemonicIcon({
+  fill = "#8F929E",
+}: {
+  fill?: string;
+}): JSX.Element {
+  return <ImportedIcon fill={fill} />;
+}

@@ -8,13 +8,13 @@ import { AccountSettingsNavigator } from "@navigation/AccountSettingsNavigator";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { getHeaderTitle } from "@react-navigation/elements";
 import { createStackNavigator } from "@react-navigation/stack";
-import AppListScreen from "@screens/Unlocked/AppListScreen";
+// import AppListScreen from "@screens/Unlocked/AppListScreen";
 import { BalancesNavigator } from "@screens/Unlocked/BalancesScreen";
 import {
   DepositListScreen,
   DepositSingleScreen,
 } from "@screens/Unlocked/DepositScreen";
-import { NFTCollectiblesNavigator } from "@screens/Unlocked/NftCollectiblesScreen";
+// import { NFTCollectiblesNavigator } from "@screens/Unlocked/NftCollectiblesScreen";
 import { RecentActivityScreen } from "@screens/Unlocked/RecentActivityScreen";
 import {
   SendTokenDetailScreen,
@@ -91,13 +91,26 @@ function RecentActivityModal() {
   );
 }
 
-function TabBarIcon(props) {
+function TabBarIcon({
+  size = 30,
+  name,
+  color,
+}: {
+  size?: number;
+  name: string;
+  color: string;
+}): JSX.Element {
   return (
-    <MaterialCommunityIcons size={30} style={{ marginBottom: -3 }} {...props} />
+    <MaterialCommunityIcons
+      size={size}
+      name={name}
+      color={color}
+      style={{ marginBottom: -3 }}
+    />
   );
 }
 
-function UnlockedBottomTabNavigator() {
+function UnlockedBottomTabNavigator(): JSX.Element {
   const getIcon = (focused: boolean, routeName: string): string => {
     switch (routeName) {
       case "Balances":
@@ -127,8 +140,9 @@ function UnlockedBottomTabNavigator() {
         tabBarInactiveTintColor: "gray",
       })}>
       <Tab.Screen name="Balances" component={BalancesNavigator} />
-      <Tab.Screen name="Applications" component={AppListScreen} />
-      <Tab.Screen name="Collectibles" component={NFTCollectiblesNavigator} />
     </Tab.Navigator>
   );
 }
+
+// <Tab.Screen name="Applications" component={AppListScreen} />
+// <Tab.Screen name="Collectibles" component={NFTCollectiblesNavigator} />

@@ -15,6 +15,7 @@ export const getChats = async ({
   timestampBefore,
   timestampAfter,
   limit = 10,
+  clientGeneratedUuid,
 }: {
   room: string;
   type: SubscriptionType;
@@ -22,7 +23,13 @@ export const getChats = async ({
   limit: number;
   timestampBefore: Date;
   timestampAfter: Date;
+  clientGeneratedUuid?: string;
 }): Promise<Message[]> => {
+  const clientUuidConstraint = clientGeneratedUuid
+    ? {
+        client_generated_uuid: { _eq: clientGeneratedUuid },
+      }
+    : {};
   const response = await chain("query")({
     chats: [
       {
@@ -30,6 +37,7 @@ export const getChats = async ({
         //@ts-ignore
         order_by: [{ created_at: "desc" }],
         where: {
+          ...clientUuidConstraint,
           room: { _eq: room },
           //@ts-ignore
           type: { _eq: type },
@@ -49,6 +57,18 @@ export const getChats = async ({
         message_kind: true,
         created_at: true,
         parent_client_generated_uuid: true,
+        secure_transfer_transactions: [
+          {
+            limit: 1,
+          },
+          {
+            escrow: true,
+            counter: true,
+            signature: true,
+            final_txn_signature: true,
+            current_state: true,
+          },
+        ],
       },
     ],
   });
@@ -72,6 +92,18 @@ export const getChats = async ({
       parent_client_generated_uuid: chat.parent_client_generated_uuid,
       room: chat.room,
       type: chat.type,
+      message_metadata:
+        chat.message_kind === "secure-transfer"
+          ? {
+              escrow: chat.secure_transfer_transactions[0]?.escrow,
+              counter: chat.secure_transfer_transactions[0]?.counter,
+              signature: chat.secure_transfer_transactions[0]?.signature,
+              final_txn_signature:
+                chat.secure_transfer_transactions[0]?.final_txn_signature,
+              current_state:
+                chat.secure_transfer_transactions[0]?.current_state,
+            }
+          : undefined,
     });
   });
   return chats;
@@ -104,4 +136,33 @@ export const getChatsFromParentGuids = async (
     ],
   });
   return response.chats || [];
+};
+
+export const updateSecureTransfer = async (
+  messageId: number,
+  room: string,
+  state: "redeemed" | "cancelled",
+  txn: string
+) => {
+  await chain("mutation")({
+    update_secure_transfer_transactions: [
+      {
+        where: {
+          message_client_generated_uuid: { _eq: messageId },
+          chat: {
+            room: {
+              _eq: room,
+            },
+          },
+        },
+        _set: {
+          current_state: state,
+          final_txn_signature: txn,
+        },
+      },
+      {
+        affected_rows: true,
+      },
+    ],
+  });
 };

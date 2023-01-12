@@ -1,5 +1,9 @@
 import type { ToPubsub } from "./ToPubsub";
-import type { SubscriptionType } from "./toServer";
+import type {
+  MessageKind,
+  MessageMetadata,
+  SubscriptionType,
+} from "./toServer";
 export const CHAT_MESSAGES = "CHAT_MESSAGES";
 export const SUBSCRIBE = "SUBSCRIBE";
 export const UNSUBSCRIBE = "UNSUBSCRIBE";
@@ -9,11 +13,12 @@ export interface Message {
   uuid: string;
   message: string;
   client_generated_uuid: string;
-  message_kind: "gif" | "text";
+  message_kind: MessageKind;
   created_at: string;
   parent_client_generated_uuid?: string;
   room: string;
   type: SubscriptionType;
+  message_metadata?: MessageMetadata;
 }
 
 export interface MessageWithMetadata extends Message {

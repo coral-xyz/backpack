@@ -106,37 +106,6 @@ export function WalletAddress({ publicKey, name, style, nameStyle }: any) {
   );
 }
 
-export function TextFieldLabel({
-  leftLabel,
-  rightLabel,
-  rightLabelComponent,
-  style,
-}: {
-  leftLabel: string;
-  rightLabel?: string;
-  rightLabelComponent?: React.ReactNode;
-  style?: any;
-}) {
-  const classes = useStyles();
-  return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        marginBottom: "8px",
-        ...style,
-      }}
-    >
-      <Typography className={classes.leftLabel}>{leftLabel}</Typography>
-      {rightLabelComponent ? (
-        rightLabelComponent
-      ) : (
-        <Typography className={classes.rightLabel}>{rightLabel}</Typography>
-      )}
-    </div>
-  );
-}
-
 export function TokenInputField({
   decimals,
   ...props

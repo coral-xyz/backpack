@@ -36,6 +36,14 @@ export function generateUniqueId() {
   return v1();
 }
 
+export function isMobile(): boolean {
+  if (typeof window !== "undefined" && typeof window.document !== "undefined") {
+    return false;
+  }
+
+  return true;
+}
+
 /**
  * True if we're in the mobile environment.
  */

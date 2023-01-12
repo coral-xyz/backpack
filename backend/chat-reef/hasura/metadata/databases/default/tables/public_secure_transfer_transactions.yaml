@@ -1,0 +1,53 @@
+table:
+  name: secure_transfer_transactions
+  schema: public
+object_relationships:
+  - name: chat
+    using:
+      foreign_key_constraint_on: message_client_generated_uuid
+insert_permissions:
+  - role: chat
+    permission:
+      check: {}
+      columns:
+        - id
+        - message_id
+        - counter
+        - current_state
+        - escrow
+        - final_txn_signature
+        - from
+        - message_client_generated_uuid
+        - signature
+        - to
+select_permissions:
+  - role: chat
+    permission:
+      columns:
+        - id
+        - message_id
+        - counter
+        - current_state
+        - escrow
+        - final_txn_signature
+        - from
+        - message_client_generated_uuid
+        - signature
+        - to
+      filter: {}
+update_permissions:
+  - role: chat
+    permission:
+      columns:
+        - counter
+        - current_state
+        - escrow
+        - final_txn_signature
+        - from
+        - id
+        - message_client_generated_uuid
+        - message_id
+        - signature
+        - to
+      filter: {}
+      check: null

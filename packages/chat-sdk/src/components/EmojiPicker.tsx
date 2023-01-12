@@ -12,16 +12,23 @@ export const EmojiPickerComponent = ({
   emojiPicker,
   setGifPicker,
   setMessageContent,
+  buttonStyle,
 }) => {
   const theme = useCustomTheme();
   const [anchorEl, setAnchorEl] = useState<any | null>(null);
   const { isDarkMode } = useChatContext();
 
   return (
-    <>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+      }}
+    >
       <IconButton
         size={"small"}
-        style={{ color: theme.custom.colors.icon }}
+        style={{ color: theme.custom.colors.icon, ...buttonStyle }}
         onClick={(e) => {
           setEmojiPicker((x) => !x);
           if (!emojiPicker) {
@@ -54,6 +61,6 @@ export const EmojiPickerComponent = ({
           onEmojiClick={(e) => setMessageContent((x) => x + e.emoji)}
         />
       </Popover>
-    </>
+    </div>
   );
 };

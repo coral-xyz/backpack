@@ -1,5 +1,4 @@
-import { Component } from "react";
-import { Text, View } from "react-native";
+import { ErrorBoundary } from "@components/ErrorBoundary";
 import { useKeyringStoreState } from "@coral-xyz/recoil";
 import {
   DarkTheme,
@@ -9,47 +8,15 @@ import {
 
 import { NotFoundScreen } from "../screens/NotFoundScreen";
 
-import LockedNavigator from "./LockedNavigator";
+import { LockedScreen } from "./LockedNavigator";
 import OnboardingNavigator from "./OnboardingNavigator";
 import UnlockedNavigator from "./UnlockedNavigator";
-
-class ErrorBoundary extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { error: null, errorInfo: null };
-  }
-
-  componentDidCatch(error, errorInfo) {
-    // Catch errors in any components below and re-render with error message
-    this.setState({
-      error: error,
-      errorInfo: errorInfo,
-    });
-    // You can also log error messages to an error reporting service here
-  }
-
-  render() {
-    if (this.state.errorInfo) {
-      // Error path
-      return (
-        <View style={{ flex: 1, backgroundColor: "orange" }}>
-          <Text>Something went wrong.</Text>
-          <View>
-            <Text>{JSON.stringify(this.state, null, 2)}</Text>
-          </View>
-        </View>
-      );
-    }
-
-    return this.props.children;
-  }
-}
 
 export function RootNavigation({
   colorScheme,
 }: {
   colorScheme: "dark" | "light";
-}) {
+}): JSX.Element {
   return (
     <NavigationContainer
       theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
@@ -58,8 +25,11 @@ export function RootNavigation({
   );
 }
 
-function renderScreen(state: string): JSX.Element {
-  switch (state) {
+function RootNavigator(): JSX.Element {
+  const keyringStoreState = useKeyringStoreState();
+  console.log("keyringStoreState", keyringStoreState);
+
+  switch (keyringStoreState) {
     case "needs-onboarding":
       return (
         <ErrorBoundary>
@@ -68,11 +38,9 @@ function renderScreen(state: string): JSX.Element {
       );
     case "locked":
       return (
-        <View style={{ flex: 1, backgroundColor: "pink" }}>
-          <ErrorBoundary>
-            <LockedNavigator />
-          </ErrorBoundary>
-        </View>
+        <ErrorBoundary>
+          <LockedScreen />
+        </ErrorBoundary>
       );
     case "unlocked":
       return (
@@ -83,15 +51,4 @@ function renderScreen(state: string): JSX.Element {
     default:
       return <NotFoundScreen />;
   }
-}
-
-function RootNavigator() {
-  const keyringStoreState = useKeyringStoreState();
-  console.log("keyringStoreState", keyringStoreState);
-
-  return (
-    <View style={{ flex: 1, backgroundColor: "pink" }}>
-      {renderScreen(keyringStoreState)}
-    </View>
-  );
 }

@@ -12,8 +12,12 @@ import {
 import { PrimaryButton } from "@coral-xyz/react-common";
 import { useSolanaCtx, useSolanaTokenMint } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
+import {
+  findMintStatePk,
+  MintState,
+} from "@magiceden-oss/open_creator_protocol";
 import { Typography } from "@mui/material";
-import type { Connection } from "@solana/web3.js";
+import type { AccountInfo, Connection } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
 import type { BigNumber } from "ethers";
 
@@ -78,29 +82,48 @@ export function SendSolanaConfirmationCard({
           destination: new PublicKey(destinationAddress),
           amount: amount.toNumber(),
         });
-      } else if (isCreatorStandardToken(mintId, mintInfo)) {
-        txSig = await Solana.transferCreatorStandardToken(solanaCtx, {
-          destination: new PublicKey(destinationAddress),
-          mint: new PublicKey(token.mint!),
-          amount: amount.toNumber(),
-          decimals: token.decimals,
-        });
-      } else if (
-        await isCardinalWrappedToken(solanaCtx.connection, mintId, mintInfo)
-      ) {
-        txSig = await Solana.transferCardinalManagedToken(solanaCtx, {
-          destination: new PublicKey(destinationAddress),
-          mint: new PublicKey(token.mint!),
-          amount: amount.toNumber(),
-          decimals: token.decimals,
-        });
-      } else {
-        txSig = await Solana.transferToken(solanaCtx, {
-          destination: new PublicKey(destinationAddress),
-          mint: new PublicKey(token.mint!),
-          amount: amount.toNumber(),
-          decimals: token.decimals,
-        });
+      }
+      // Use an else here to avoid an extra request if we are transferring sol native mints.
+      else {
+        const ocpMintState = await isOpenCreatorProtocol(
+          solanaCtx.connection,
+          mintId,
+          mintInfo
+        );
+        if (ocpMintState !== null) {
+          txSig = await Solana.transferOpenCreatorProtocol(
+            solanaCtx,
+            {
+              destination: new PublicKey(destinationAddress),
+              amount: amount.toNumber(),
+              mint: new PublicKey(token.mint!),
+            },
+            ocpMintState
+          );
+        } else if (isCreatorStandardToken(mintId, mintInfo)) {
+          txSig = await Solana.transferCreatorStandardToken(solanaCtx, {
+            destination: new PublicKey(destinationAddress),
+            mint: new PublicKey(token.mint!),
+            amount: amount.toNumber(),
+            decimals: token.decimals,
+          });
+        } else if (
+          await isCardinalWrappedToken(solanaCtx.connection, mintId, mintInfo)
+        ) {
+          txSig = await Solana.transferCardinalManagedToken(solanaCtx, {
+            destination: new PublicKey(destinationAddress),
+            mint: new PublicKey(token.mint!),
+            amount: amount.toNumber(),
+            decimals: token.decimals,
+          });
+        } else {
+          txSig = await Solana.transferToken(solanaCtx, {
+            destination: new PublicKey(destinationAddress),
+            mint: new PublicKey(token.mint!),
+            amount: amount.toNumber(),
+            decimals: token.decimals,
+          });
+        }
       }
     } catch (err: any) {
       logger.error("solana transaction failed", err);
@@ -332,3 +355,17 @@ export const isCreatorStandardToken = (
     mintInfo.mintAuthority === mintManagerId.toString()
   );
 };
+
+async function isOpenCreatorProtocol(
+  connection: Connection,
+  mintId: PublicKey,
+  mintInfo: RawMintString
+): Promise<MintState | null> {
+  const mintStatePk = findMintStatePk(mintId);
+  const accountInfo = (await connection.getAccountInfo(
+    mintStatePk
+  )) as AccountInfo<Buffer>;
+  return accountInfo !== null
+    ? MintState.fromAccountInfo(accountInfo)[0]
+    : null;
+}

@@ -1,4 +1,9 @@
-import type { SubscriptionType, ToPubsub } from "@coral-xyz/common";
+import type {
+  MessageKind,
+  MessageMetadata,
+  SubscriptionType,
+  ToPubsub,
+} from "@coral-xyz/common";
 import { CHAT_MESSAGES, FromServer, ToServer } from "@coral-xyz/common";
 import type { RedisClientType } from "redis";
 import { createClient } from "redis";
@@ -120,8 +125,9 @@ export class RedisSubscriptionManager {
     msg: {
       client_generated_uuid: string;
       message: string;
-      message_kind: "text" | "gif";
+      message_kind: MessageKind;
       parent_client_generated_uuid?: string;
+      message_metadata?: MessageMetadata;
     }
   ) {
     const roomValidation =
@@ -138,13 +144,18 @@ export class RedisSubscriptionManager {
       msg.message_kind,
       msg.client_generated_uuid,
       type,
+      msg.message_metadata,
       msg.parent_client_generated_uuid
     );
 
     if (type === "individual") {
       updateLatestMessage(
         parseInt(room),
-        msg.message_kind === "gif" ? "GIF" : msg.message,
+        msg.message_kind === "gif"
+          ? "GIF"
+          : msg.message_kind === "secure-transfer"
+          ? "Secure Transfer"
+          : msg.message,
         userId,
         roomValidation,
         msg.client_generated_uuid
@@ -169,6 +180,10 @@ export class RedisSubscriptionManager {
             created_at: new Date().toString(),
             room,
             type,
+            message_metadata: {
+              ...msg.message_metadata,
+              current_state: "pending",
+            },
           },
         ],
         room,

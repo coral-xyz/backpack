@@ -152,6 +152,7 @@ function WalletTokenTable({
         visible={expanded}
         subtitle={
           <WalletPickerButton
+            name={wallet.name}
             onPress={() => {
               navigation.navigate("wallet-picker");
             }}
@@ -181,33 +182,21 @@ function WalletTokenTable({
   );
 }
 
-function WalletPickerButton({ onPress }): JSX.Element {
+function WalletPickerButton({
+  name,
+  onPress,
+}: {
+  name: string;
+  onPress: () => void;
+}): JSX.Element {
   return (
     <Pressable onPress={onPress}>
       <Margin left={4}>
         <Row>
-          <Text>dev 1</Text>
-          <ExpandCollapseIcon size={16} isExpanded={false} />
+          <Text>{name}</Text>
+          <ExpandCollapseIcon size={15} isExpanded={false} />
         </Row>
       </Margin>
-    </Pressable>
-  );
-}
-
-function CopyWalletAddressSubtitle({
-  publicKey,
-}: {
-  publicKey: string;
-}): JSX.Element {
-  const theme = useTheme();
-  return (
-    <Pressable
-      onPress={async () => {
-        await Clipboard.setStringAsync(publicKey);
-      }}>
-      <Text style={{ color: theme.custom.colors.secondary }}>
-        {walletAddressDisplay(publicKey)}
-      </Text>
     </Pressable>
   );
 }
@@ -293,7 +282,7 @@ export function UsdBalanceAndPercentChange({
 }
 
 // Renders the individual token row
-export function TokenRow({
+function TokenRow({
   onPressRow,
   token,
   blockchain,

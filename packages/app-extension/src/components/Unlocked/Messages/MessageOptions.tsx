@@ -43,7 +43,13 @@ export const MessageOptions = () => {
   };
 
   return (
-    <div>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        flexDirection: "column",
+      }}
+    >
       <MoreHorizIcon
         onClick={handleClick}
         style={{ cursor: "pointer", color: theme.custom.colors.icon }}
@@ -80,11 +86,9 @@ export const MessageOptions = () => {
                 } else {
                   send(true);
                   toast.success(
+                    friendshipValue?.remoteRequested ? "" : "",
                     friendshipValue?.remoteRequested
-                      ? "You both said hot 🔥"
-                      : "Contact requested",
-                    friendshipValue?.remoteRequested
-                      ? "Just kidding! You are now mutual contacts."
+                      ? `You and ${remoteUsername} are now connected`
                       : `We'll let ${remoteUsername} know you want to connect.`
                   );
                 }

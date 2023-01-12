@@ -11,8 +11,10 @@ import {
   CrossIcon,
   DangerButton,
   Loading,
+  MaxLabel,
   PrimaryButton,
   SecondaryButton,
+  TextFieldLabel,
 } from "@coral-xyz/react-common";
 import {
   useActiveSolanaWallet,
@@ -29,12 +31,11 @@ import { IconButton, InputAdornment, Typography } from "@mui/material";
 import { ethers, FixedNumber } from "ethers";
 
 import { Button as XnftButton } from "../../plugin/Component";
-import { TextField, TextFieldLabel } from "../common";
+import { TextField } from "../common";
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
 import { BottomCard } from "../common/Layout/BottomCard";
 import { useDrawerContext } from "../common/Layout/Drawer";
 import { useNavStack } from "../common/Layout/NavStack";
-import { MaxLabel } from "../common/MaxLabel";
 import { TokenAmountHeader } from "../common/TokenAmountHeader";
 import { TokenInputField } from "../common/TokenInput";
 import type { Token } from "../common/TokenTable";

@@ -82,12 +82,10 @@ export const Banner = () => {
                 });
                 setRequested(true);
                 toast.success(
+                  remoteRequested ? `` : "",
                   remoteRequested
-                    ? "You both said hot 🔥"
-                    : "Contact requested",
-                  remoteRequested
-                    ? "Just kidding! You are now mutual contacts."
-                    : `We'll let ${remoteUsername} know you want to connect.`
+                    ? `You and ${remoteUsername} are now connected`
+                    : `We'll let ${remoteUsername} know you want to connect`
                 );
               }}
             >

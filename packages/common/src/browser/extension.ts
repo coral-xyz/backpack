@@ -20,32 +20,21 @@ import { BrowserRuntimeCommon } from "./common";
 
 export class BrowserRuntimeExtension {
   public static getUrl(scriptName: string): string {
-    return chrome
-      ? chrome.runtime.getURL(scriptName)
-      : browser.runtime.getURL(scriptName);
+    return chrome.runtime.getURL(scriptName);
   }
 
   public static sendMessageActiveTab(msg: any) {
-    return chrome
-      ? chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
-          if (tab?.id) chrome.tabs.sendMessage(tab.id, msg);
-        })
-      : browser.tabs
-          .query({ active: true, currentWindow: true })
-          .then(([tab]) => {
-            if (tab?.id) browser.tabs.sendMessage(tab.id, msg);
-          });
+    return chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
+      if (tab?.id) chrome.tabs.sendMessage(tab.id, msg);
+    });
   }
 
   public static sendMessageTab(tabId: number, msg: any) {
-    chrome
-      ? chrome.tabs.sendMessage(tabId, msg)
-      : browser.tabs.sendMessage(tabId, msg);
+    chrome.tabs.sendMessage(tabId, msg);
   }
 
   public static async openTab(options: chrome.tabs.CreateProperties) {
     return new Promise((resolve, reject) => {
-      // TODO: `browser` support
       chrome?.tabs.create(options, (newWindow) => {
         const error = BrowserRuntimeCommon.checkForError();
         if (error) {
@@ -58,7 +47,6 @@ export class BrowserRuntimeExtension {
 
   public static async openWindow(options: chrome.windows.CreateData) {
     return new Promise(async (resolve, reject) => {
-      // TODO: `browser` support
       // try to reuse existing popup window
       try {
         const popupWindowId: number | undefined =
@@ -113,39 +101,25 @@ export class BrowserRuntimeExtension {
   }
 
   public static async getLastFocusedWindow(): Promise<chrome.windows.Window>;
-  public static async getLastFocusedWindow(): Promise<browser.windows.Window>;
   public static async getLastFocusedWindow() {
     return new Promise((resolve) => {
-      chrome
-        ? chrome.windows.getLastFocused(resolve)
-        : browser.windows.getLastFocused().then(resolve);
+      chrome.windows.getLastFocused(resolve);
     });
   }
 
   public static activeTab(): Promise<chrome.tabs.Tab>;
-  public static activeTab(): Promise<browser.tabs.Tab>;
   public static activeTab() {
     return new Promise((resolve) => {
-      chrome
-        ? chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
-            resolve(tab);
-          })
-        : browser.tabs
-            .query({ active: true, currentWindow: true })
-            .then(([tab]) => {
-              resolve(tab);
-            });
+      chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
+        resolve(tab);
+      });
     });
   }
 
   public static closeActiveTab(): void {
-    chrome
-      ? chrome.tabs.getCurrent((tab) => {
-          if (tab?.id) chrome.tabs.remove(tab.id, function () {});
-        })
-      : browser.tabs.getCurrent().then((tab) => {
-          if (tab?.id) browser.tabs.remove(tab.id);
-        });
+    chrome.tabs.getCurrent((tab) => {
+      if (tab?.id) chrome.tabs.remove(tab.id, function () {});
+    });
   }
 
   public static closeWindow(id: number) {

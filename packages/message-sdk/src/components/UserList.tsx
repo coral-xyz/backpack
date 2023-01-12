@@ -108,6 +108,12 @@ function UserListItem({
           </div>
           <div>
             <div
+              style={{
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
               onClick={async (e) => {
                 e.stopPropagation();
                 if (user.areFriends) {
