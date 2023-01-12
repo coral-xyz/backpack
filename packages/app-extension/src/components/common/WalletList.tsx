@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import type {
-  Blockchain} from "@coral-xyz/common";
+import type { Blockchain } from "@coral-xyz/common";
 import {
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
   walletAddressDisplay,
