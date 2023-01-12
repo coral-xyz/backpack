@@ -1,5 +1,5 @@
 import { Component } from "react";
-import { Text,View } from "react-native";
+import { Text, View } from "react-native";
 
 type Props = {
   children: JSX.Element | JSX.Element[];

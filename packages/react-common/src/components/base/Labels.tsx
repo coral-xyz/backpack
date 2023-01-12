@@ -1,6 +1,6 @@
 import { toDisplayBalance } from "@coral-xyz/common";
 import type { CustomTheme } from "@coral-xyz/themes";
-import { styles , useCustomTheme } from "@coral-xyz/themes";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
 import type { BigNumber } from "ethers";
 const useStyles = styles((theme: CustomTheme) => ({

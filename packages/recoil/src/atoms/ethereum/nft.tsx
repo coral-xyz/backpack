@@ -1,4 +1,4 @@
-import type { EthereumNft, Nft,NftCollection } from "@coral-xyz/common";
+import type { EthereumNft, Nft, NftCollection } from "@coral-xyz/common";
 import {
   Blockchain,
   EthereumConnectionUrl,

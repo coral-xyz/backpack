@@ -280,8 +280,7 @@ function NFTCollectionDetailScreen({ navigation, route }): JSX.Element {
 
 export function NFTCollectiblesNavigator(): JSX.Element {
   return (
-    <Stack.Navigator
-      initialRouteName="NFTCollectionList">
+    <Stack.Navigator initialRouteName="NFTCollectionList">
       <Stack.Screen
         name="NFTCollectionList"
         component={NFTCollectionListScreen}
