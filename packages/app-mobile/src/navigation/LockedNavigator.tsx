@@ -16,7 +16,11 @@ import {
 } from "@components/BottomSheetHelpModal";
 import { ErrorMessage } from "@components/ErrorMessage";
 import { PasswordInput } from "@components/PasswordInput";
-import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
+import {
+  UI_RPC_METHOD_KEYRING_STORE_LOCK,
+  UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
+  useStore,
+} from "@coral-xyz/common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@hooks";
@@ -69,6 +73,12 @@ interface FormData {
   password: string;
 }
 
+function later(delay: number) {
+  return new Promise(function (resolve) {
+    setTimeout(resolve, delay);
+  });
+}
+
 export function LockedScreen(): JSX.Element {
   const background = useBackgroundClient();
   const user = useUser(); // TODO look into why this breaks
@@ -77,12 +87,28 @@ export function LockedScreen(): JSX.Element {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { control, handleSubmit, formState, setError } = useForm<FormData>();
 
+  const setLockStatus = useStore((state) => state.setUnlocked);
+
   const onSubmit = async ({ password }: FormData) => {
     try {
+      setLockStatus(false);
       await background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
         params: [password, user.uuid, user.username],
       });
+
+      // await later(5000);
+      //
+      // await background.request({
+      //   method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
+      //   params: [],
+      // });
+      //
+      // await background.request({
+      //   method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
+      //   params: [password, user.uuid, user.username],
+      // });
+      // setLockStatus(true);
     } catch (error: any) {
       setError("password", { message: error });
     }

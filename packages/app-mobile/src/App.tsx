@@ -1,5 +1,5 @@
 import { Suspense, useCallback, useEffect, useRef } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Button, StyleSheet, Text, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 import {
@@ -14,7 +14,7 @@ import { useTheme } from "@hooks";
 import Constants from "expo-constants";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
-import { RecoilRoot, useRecoilSnapshot } from "recoil";
+import { RecoilRoot, useRecoilCallback, useRecoilSnapshot } from "recoil";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -33,12 +33,33 @@ function DebugObserver(): null {
 
   return null;
 }
+function DebugButton(): JSX.Element {
+  const onPress = useRecoilCallback(
+    ({ snapshot }) =>
+      async () => {
+        console.group("recoil");
+        console.debug("Atom values:");
+        for (const node of snapshot.getNodes_UNSTABLE()) {
+          const value = await snapshot.getPromise(node);
+          console.debug(node.key, value);
+        }
+        console.groupEnd();
+      },
+    []
+  );
+
+  return (
+    <View style={{ position: "absolute", top: 60, zIndex: 9999 }}>
+      <Button onPress={onPress} title="Dump recoil state" />
+    </View>
+  );
+}
 
 export function App(): JSX.Element {
   return (
     <Suspense fallback={null}>
       <RecoilRoot>
-        <DebugObserver />
+        <DebugButton />
         <BackgroundHiddenWebView />
         <Main />
       </RecoilRoot>
@@ -67,8 +88,7 @@ function ServiceWorkerErrorScreen({ onLayoutRootView }: any): JSX.Element {
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
-      }}
-    >
+      }}>
       <Text>The service worker failed to load.</Text>
       <Text>
         {JSON.stringify(

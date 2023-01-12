@@ -6,7 +6,10 @@ import vanilla from "zustand/vanilla";
 // the @coral-xyz/common and @coral-xyz/app packages
 export const vanillaStore = vanilla<{
   injectJavaScript?: (js: string) => void;
+  unlocked?: boolean;
 }>((set) => ({
+  unlocked: false,
+  setUnlocked: (unlocked: boolean) => set(() => ({ unlocked })),
   injectJavaScript: undefined,
   setInjectJavaScript: (injectJavaScript) => set(() => ({ injectJavaScript })),
 }));

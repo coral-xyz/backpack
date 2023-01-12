@@ -298,6 +298,7 @@ class CommonRequestManager {
     } = msg;
     const resolver = CommonRequestManager._resolvers[id];
     if (resolver === undefined) {
+      logger.debug("isServiceWorker", isServiceWorker().toString());
       logger.error("unable to find resolver for data", { id, result, error });
       return;
     }
