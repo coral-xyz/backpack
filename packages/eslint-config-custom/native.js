@@ -12,10 +12,10 @@ const allExtensions = computeExpoExtensions(
 
 module.exports = {
   extends: [
-    "./index.js",
-    // './shared/core.js',
-    "./shared/typescript.js",
+    // "./index.js",
+    "./shared/core.js",
     "./shared/react.js",
+    "./shared/typescript.js",
   ],
   globals: {
     __DEV__: false,

@@ -1,8 +1,12 @@
 module.exports = {
   root: true,
-  extends: ["custom/native"],
-  parserOptions: {
-    tsconfigRootDir: __dirname,
-    project: ["./tsconfig.json"],
-  },
+  extends: ["custom/native", "custom/shared/typescript-analysis"],
+  overrides: [
+    {
+      files: ["*.ts", "*.tsx", "*.d.ts"],
+      parserOptions: {
+        project: "./tsconfig.json",
+      },
+    },
+  ],
 };
