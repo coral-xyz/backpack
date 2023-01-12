@@ -11,9 +11,7 @@ export class BrowserRuntimeCommon {
   }
 
   public static sendMessageToAnywhere(msg: any, cb?: any) {
-    chrome
-      ? chrome.runtime.sendMessage(msg, cb)
-      : browser.runtime.sendMessage(msg).then(cb);
+    return chrome.runtime.sendMessage(msg, cb);
   }
 
   public static addEventListenerFromBackground(listener: any): void {
@@ -25,14 +23,11 @@ export class BrowserRuntimeCommon {
   }
 
   public static addEventListenerFromAnywhere(listener: any): void {
-    return chrome
-      ? chrome.runtime.onMessage.addListener(listener)
-      : browser.runtime.onMessage.addListener(listener);
+    return chrome.runtime.onMessage.addListener(listener);
   }
 
   public static async getLocalStorage(key: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      // TODO: add `browser` support
       return chrome?.storage.local.get(key, (result) => {
         const err = BrowserRuntimeCommon.checkForError();
         if (err) {
@@ -48,7 +43,6 @@ export class BrowserRuntimeCommon {
     return new Promise((resolve, reject) => {
       const obj: any = {};
       obj[key] = value;
-      // TODO: add `browser` support
       chrome?.storage.local.set(obj, () => {
         const err = BrowserRuntimeCommon.checkForError();
         if (err) {
@@ -74,7 +68,7 @@ export class BrowserRuntimeCommon {
   }
 
   public static checkForError() {
-    const { lastError } = chrome ? chrome.runtime : browser.runtime;
+    const { lastError } = chrome.runtime;
     return lastError ? new Error(lastError.message) : undefined;
   }
 }
