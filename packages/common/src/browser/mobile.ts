@@ -73,6 +73,8 @@ export function startMobileIfNeeded() {
   //////////////////////////////////////////////////////////////////////////////
 
   // the actual app -> service worker
+  // on the client this is powered by chrome.runtime.sendMessage, so we try to recreate that here
+  // See FrontendRequestManager.request
   BrowserRuntimeCommon.sendMessageToBackground = (
     msg: RpcRequestMsg,
     cb: (res: RpcResponseData) => void
@@ -85,6 +87,8 @@ export function startMobileIfNeeded() {
   };
 
   // from the service worker -> app
+  // on the client this is powered by chrome.runtime.sendMessage, so we try to recreate that here
+  // See BackendRequestManager.request
   BrowserRuntimeCommon.sendMessageToAppUi = (
     msg: RpcRequestMsg,
     cb: (res: RpcResponseData) => void
