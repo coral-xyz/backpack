@@ -70,8 +70,6 @@ interface FormData {
 }
 
 export function LockedScreen(): JSX.Element {
-  // TODO figure out why this isn't working
-  // return <View style={{ flex: 1, backgroundColor: "red" }} />;
   const background = useBackgroundClient();
   const user = useUser(); // TODO look into why this breaks
   const theme = useTheme();
@@ -79,19 +77,34 @@ export function LockedScreen(): JSX.Element {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { control, handleSubmit, formState, setError } = useForm<FormData>();
 
-  // TODO errors are broken. They bubble up somewhere. We don't know where
   const onSubmit = async ({ password }: FormData) => {
     try {
-      const res = await background.request({
+      await background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
         params: [password, user.uuid, user.username],
       });
-      console.log("UNLOCK_res", res);
-    } catch (error) {
-      console.log("UNLOCK_error", error);
-      setError("password", { message: "Invalid password" });
+    } catch (error: any) {
+      setError("password", { message: error });
     }
   };
+
+  // Autologin for dev mode
+  // useEffect(() => {
+  //   async function h() {
+  //     if (user.uuid && user.uuid !== "" && user.uuid.length > 5) {
+  //       try {
+  //         await background.request({
+  //           method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
+  //           params: ["backpack", user.uuid, user.username],
+  //         });
+  //       } catch (error: any) {
+  //         setError("password", { message: error });
+  //       }
+  //     }
+  //   }
+  //
+  //   h();
+  // }, [user.uuid]);
 
   const extraOptions = [
     {

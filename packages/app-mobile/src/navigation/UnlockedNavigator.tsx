@@ -110,7 +110,7 @@ function TabBarIcon({
   );
 }
 
-function UnlockedBottomTabNavigator() {
+function UnlockedBottomTabNavigator(): JSX.Element {
   const getIcon = (focused: boolean, routeName: string): string => {
     switch (routeName) {
       case "Balances":
