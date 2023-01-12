@@ -1,5 +1,4 @@
-import { ErrorBoundary } from "@components/ErrorBoundary";
-import { useKeyringStoreState } from "@coral-xyz/recoil";
+import { KeyringStoreStateEnum, useKeyringStoreState } from "@coral-xyz/recoil";
 import {
   DarkTheme,
   DefaultTheme,
@@ -7,7 +6,6 @@ import {
 } from "@react-navigation/native";
 
 import { NotFoundScreen } from "../screens/NotFoundScreen";
-
 import { LockedScreen } from "./LockedNavigator";
 import OnboardingNavigator from "./OnboardingNavigator";
 import UnlockedNavigator from "./UnlockedNavigator";
@@ -19,7 +17,8 @@ export function RootNavigation({
 }): JSX.Element {
   return (
     <NavigationContainer
-      theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+      theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+    >
       <RootNavigator />
     </NavigationContainer>
   );
@@ -27,27 +26,15 @@ export function RootNavigation({
 
 function RootNavigator(): JSX.Element {
   const keyringStoreState = useKeyringStoreState();
-  console.log("keyringStoreState", keyringStoreState);
+  console.debug("keyringStoreState", keyringStoreState);
 
   switch (keyringStoreState) {
-    case "needs-onboarding":
-      return (
-        <ErrorBoundary>
-          <OnboardingNavigator />
-        </ErrorBoundary>
-      );
-    case "locked":
-      return (
-        <ErrorBoundary>
-          <LockedScreen />
-        </ErrorBoundary>
-      );
-    case "unlocked":
-      return (
-        <ErrorBoundary>
-          <UnlockedNavigator />
-        </ErrorBoundary>
-      );
+    case KeyringStoreStateEnum.NeedsOnboarding:
+      return <OnboardingNavigator />;
+    case KeyringStoreStateEnum.Locked:
+      return <LockedScreen />;
+    case KeyringStoreStateEnum.Unlocked:
+      return <UnlockedNavigator />;
     default:
       return <NotFoundScreen />;
   }
