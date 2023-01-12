@@ -129,18 +129,24 @@ export function RecentActivityButton() {
 
 export function RecentActivity() {
   const activeWallet = useActiveWallet();
-  const recentTransactions =
-    activeWallet.blockchain === Blockchain.SOLANA
-      ? useRecentSolanaTransactions({
-          address: activeWallet.publicKey,
-        })
-      : useRecentEthereumTransactions({
-          address: activeWallet.publicKey,
-        });
-  const mergedTransactions = [...recentTransactions].sort(
-    (a, b) => b.date.getTime() - a.date.getTime()
-  );
 
+  let recentTransactions;
+  let mergedTransactions;
+  if (activeWallet.blockchain === Blockchain.SOLANA) {
+    recentTransactions = useRecentSolanaTransactions({
+      address: activeWallet.publicKey,
+    });
+    mergedTransactions = [...recentTransactions].sort(
+      (a, b) => b.timestamp - a.timestamp
+    );
+  } else {
+    recentTransactions = useRecentEthereumTransactions({
+      address: activeWallet.publicKey,
+    });
+    mergedTransactions = [...recentTransactions].sort(
+      (a, b) => b.date.getTime() - a.date.getTime()
+    );
+  }
   return (
     <Suspense fallback={<RecentActivityLoading />}>
       {activeWallet.blockchain === Blockchain.SOLANA ? (

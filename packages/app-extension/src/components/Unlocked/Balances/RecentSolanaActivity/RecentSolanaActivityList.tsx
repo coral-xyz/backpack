@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import { explorerUrl } from "@coral-xyz/common";
 import { EmptyState, isFirstLastListItemStyle } from "@coral-xyz/react-common";
@@ -8,9 +9,11 @@ import {
   useRecentTransactions,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { CallMade, Check, Clear } from "@mui/icons-material";
+import { Bolt, CallMade, Check, Clear } from "@mui/icons-material";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import { List, ListItem, Typography } from "@mui/material";
+
+import { TransactionDetail } from "./TransactionDetail";
 
 const useStyles = styles((theme) => ({
   recentActivityLabel: {
@@ -97,6 +100,7 @@ export function _RecentSolanaActivityList({
   minimize?: boolean;
 }) {
   const theme = useCustomTheme();
+  const [transactionDetail, setTransactionDetail] = useState(null);
   // Load transactions if not passed in as a prop
   const transactions = _transactions
     ? _transactions
@@ -104,6 +108,15 @@ export function _RecentSolanaActivityList({
 
   if (!style) {
     style = {};
+  }
+
+  if (transactionDetail) {
+    return (
+      <TransactionDetail
+        transaction={transactionDetail}
+        setTransactionDetail={setTransactionDetail}
+      />
+    );
   }
 
   return transactions.length > 0 ? (
@@ -124,14 +137,15 @@ export function _RecentSolanaActivityList({
           ...style,
         }}
       >
-        {transactions.map((tx: any, idx: number) => {
+        {transactions.map((tx: any, idx: number) => (
           <SolanaTransactionListItem
             key={idx}
             transaction={tx}
             isFirst={idx === 0}
             isLast={idx === transactions.length - 1}
-          />;
-        })}
+            setTransactionDetail={setTransactionDetail}
+          />
+        ))}
       </List>
     </div>
   ) : (
@@ -139,9 +153,11 @@ export function _RecentSolanaActivityList({
   );
 }
 export function SolanaTransactionListItem({
+  key,
   transaction,
   isFirst,
   isLast,
+  setTransactionDetail,
 }: any) {
   const classes = useStyles();
   const theme = useCustomTheme();
@@ -149,7 +165,8 @@ export function SolanaTransactionListItem({
   const connectionUrl = useBlockchainConnectionUrl(transaction.blockchain);
   const blockchainLogo = useBlockchainLogo(transaction.blockchain);
   const onClick = () => {
-    window.open(explorerUrl(explorer!, transaction.signature, connectionUrl!));
+    setTransactionDetail(transaction);
+    // window.open(explorerUrl(explorer!, transaction.signature, connectionUrl!));
   };
 
   return (
@@ -244,12 +261,11 @@ function NoRecentActivityLabel({ minimize }: { minimize: boolean }) {
       }}
     >
       <EmptyState
-        icon={(props: any) => <FormatListBulletedIcon {...props} />}
+        icon={(props: any) => <Bolt {...props} />}
         title={"No Recent Activity"}
-        subtitle={
-          "Your transactions and app activity will show up here when you start using Backpack!"
-        }
+        subtitle={"Get started by adding your first xNFT"}
         onClick={() => window.open("https://xnft.gg")}
+        buttonText={"Browse the xNFT Library"}
         contentStyle={{
           color: minimize ? theme.custom.colors.secondary : "inherit",
         }}
