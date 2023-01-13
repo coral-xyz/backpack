@@ -1,0 +1,46 @@
+table:
+  name: mad_feed_votes
+  schema: auth
+object_relationships:
+  - name: post
+    using:
+      foreign_key_constraint_on: post_id
+  - name: user
+    using:
+      foreign_key_constraint_on: user_id
+insert_permissions:
+  - role: one_xnft
+    permission:
+      check: {}
+      columns:
+        - value
+        - timestamp
+        - post_id
+        - user_id
+        - vote_id
+select_permissions:
+  - role: one_xnft
+    permission:
+      columns:
+        - post_id
+        - timestamp
+        - user_id
+        - value
+        - vote_id
+      filter: {}
+      allow_aggregations: true
+update_permissions:
+  - role: one_xnft
+    permission:
+      columns:
+        - post_id
+        - timestamp
+        - user_id
+        - value
+        - vote_id
+      filter: {}
+      check: {}
+delete_permissions:
+  - role: one_xnft
+    permission:
+      filter: {}
