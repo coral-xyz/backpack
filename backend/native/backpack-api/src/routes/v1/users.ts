@@ -1,5 +1,9 @@
 import type { Blockchain, RemoteUserData } from "@coral-xyz/common";
-import { getAddMessage, getCreateMessage } from "@coral-xyz/common";
+import {
+  AVATAR_BASE_URL,
+  getAddMessage,
+  getCreateMessage,
+} from "@coral-xyz/common";
 import type { Request, Response } from "express";
 import express from "express";
 import jwt from "jsonwebtoken";
@@ -17,7 +21,6 @@ import {
   getUsers,
   getUsersByPrefix,
   getUsersByPublicKeys,
-  getUsersMetadata,
   updateUserAvatar,
 } from "../../db/users";
 import { getOrcreateXnftSecret } from "../../db/xnftSecrets";
@@ -55,7 +58,7 @@ router.get("/", extractUserId, async (req, res) => {
       return {
         id,
         username,
-        image: `https://swr.xnfts.dev/avatars/${username}`,
+        image: `${AVATAR_BASE_URL}/${username}`,
         requested: friendship?.requested || false,
         remoteRequested: friendship?.remoteRequested || false,
         areFriends: friendship?.areFriends || false,
@@ -157,7 +160,7 @@ router.post("/", async (req, res) => {
         },
         body: JSON.stringify({
           text: [username, publicKeyStr].join("\n"),
-          icon_url: `https://avatars.xnfts.dev/v1/${username}`,
+          icon_url: `${AVATAR_BASE_URL}/${username}`,
         }),
       });
     } catch (err) {
@@ -327,7 +330,7 @@ router.post("/metadata", async (req: Request, res: Response) => {
     users: (users || []).map((user) => ({
       uuid: user.id,
       username: user.username,
-      image: "https://swr.xnfts.dev/avatars/" + user.username,
+      image: `${AVATAR_BASE_URL}/${user.username}`,
     })),
   });
 });

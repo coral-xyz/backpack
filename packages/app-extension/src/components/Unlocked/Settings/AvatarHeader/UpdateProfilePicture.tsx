@@ -1,6 +1,10 @@
 import React, { useMemo, useState } from "react";
 import type { NftCollection } from "@coral-xyz/common";
-import { BACKEND_API_URL, Blockchain } from "@coral-xyz/common";
+import {
+  AVATAR_BASE_URL,
+  BACKEND_API_URL,
+  Blockchain,
+} from "@coral-xyz/common";
 import {
   EmptyState,
   ImageIcon,
@@ -151,9 +155,7 @@ export function UpdateProfilePicture({
                 method: "POST",
                 body: JSON.stringify({ avatar: tempAvatar.id }),
               });
-              await fetch(
-                "https://swr.xnfts.dev/avatars/" + username + "?bust_cache=1"
-              ); // bust edge cache
+              await fetch(AVATAR_BASE_URL + "/" + username + "?bust_cache=1"); // bust edge cache
               setNewAvatar(tempAvatar);
               setTempAvatar(null);
               setOpenDrawer(false);
