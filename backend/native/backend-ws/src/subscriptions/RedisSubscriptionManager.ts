@@ -201,19 +201,18 @@ export class RedisSubscriptionManager {
     )[0];
 
     if (type === "individual") {
-      this.publish(
-        `INDIVIDUAL_${
-          userId === roomValidation?.user1
-            ? roomValidation?.user2
-            : roomValidation?.user1
-        }`,
-        {
-          type: CHAT_MESSAGES,
-          payload: {
-            messages: [emittedMessage],
-          },
-        }
-      );
+      this.publish(`INDIVIDUAL_${roomValidation?.user2}`, {
+        type: CHAT_MESSAGES,
+        payload: {
+          messages: [emittedMessage],
+        },
+      });
+      this.publish(`INDIVIDUAL_${roomValidation?.user1}`, {
+        type: CHAT_MESSAGES,
+        payload: {
+          messages: [emittedMessage],
+        },
+      });
     } else {
       this.publish(`COLLECTION_${room}`, {
         type: CHAT_MESSAGES,

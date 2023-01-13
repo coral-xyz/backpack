@@ -21,8 +21,10 @@ export const REFERRER_COOKIE_NAME = "referrer" as const;
 export const CHROME_STORE_URL =
   "https://chrome.google.com/webstore/detail/backpack/aflkmfhebedbjioipglgcbcmnbpgliof" as const;
 
-export const S3_AWS_REGION = process.env.S3_AWS_REGION || "us-west-2";
+export const S3_AWS_REGION = process.env.S3_AWS_REGION || "us-west-1";
 export const AWS_S3_KEY_ID = process.env.AWS_S3_KEY_ID || "";
 export const AWS_S3_KEY_SECRET = process.env.AWS_S3_KEY_SECRET || "";
 export const CHAT_ASSETS_AWS_BUCKET =
   process.env.CHAT_ASSETS_AWS_BUCKET || "chat-feed";
+export const CHAT_ASSETS_CLOUDFRONT_URL =
+  "https://d3lfr9vwfn0ejn.cloudfront.net";

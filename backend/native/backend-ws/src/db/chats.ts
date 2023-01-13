@@ -103,11 +103,26 @@ export const postChat = (
           },
         }
       : {};
+
+  const mediaMessageMutation =
+    message_kind === "media"
+      ? {
+          chat_media_messages: {
+            data: [
+              {
+                media_kind: messageMetadata?.media_kind || "",
+                media_link: messageMetadata?.media_link || "",
+              },
+            ],
+          },
+        }
+      : {};
   chain("mutation")({
     insert_chats_one: [
       {
         object: {
           ...secureTransferMutation,
+          ...mediaMessageMutation,
           username: "",
           room,
           message: message,

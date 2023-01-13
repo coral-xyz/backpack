@@ -259,12 +259,27 @@ export const MessageLine = (props) => {
                     </>
                   ) : props.messageKind === "media" ? (
                     <div>
-                      {props.metadata?.messageKind === "image" ? (
-                        <img src={props.metadata?.messageLink} />
+                      {props.metadata?.media_kind === "video" ? (
+                        <video
+                          style={{
+                            height: 180,
+                            maxWidth: 250,
+                            borderRadius: 5,
+                          }}
+                          controls={true}
+                          src={props.metadata?.media_link}
+                        />
                       ) : (
-                        <img src={props.metadata?.messageLink} />
+                        <img
+                          style={{
+                            height: 180,
+                            maxWidth: 250,
+                            borderRadius: 5,
+                          }}
+                          src={props.metadata?.media_link}
+                        />
                       )}
-                      message
+                      <div>{message}</div>
                     </div>
                   ) : (
                     message

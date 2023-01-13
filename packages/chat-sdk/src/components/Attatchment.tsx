@@ -7,30 +7,19 @@ import { IconButton } from "@mui/material";
 
 export const Attatchment = ({
   buttonStyle,
-  setSelectedFile,
-  setSelectedFileName,
+  onImageSelect,
 }: {
   buttonStyle: any;
-  setSelectedFileName: any;
-  setSelectedFile: any;
+  onImageSelect: any;
 }) => {
   const theme = useCustomTheme();
   const hiddenInputRef = useRef<any>();
-
-  const createImage = (file: File) => {
-    let reader = new FileReader();
-    reader.onload = (e) => {
-      setSelectedFileName(file.name);
-      setSelectedFile(e.target?.result);
-    };
-    reader.readAsDataURL(file);
-  };
 
   useEffect(() => {
     if (hiddenInputRef && hiddenInputRef.current) {
       hiddenInputRef.current.onchange = () => {
         const selectedFile = hiddenInputRef.current.files[0];
-        createImage(selectedFile);
+        onImageSelect(selectedFile);
       };
     }
   }, []);
@@ -55,10 +44,12 @@ export const Attatchment = ({
           style={{ color: theme.custom.colors.icon, fontSize: 20 }}
         />{" "}
         <input
+          onClick={(e) => (e.target.value = null)}
           ref={hiddenInputRef}
           type="file"
           id="hiddenAttachment"
           style={{ display: "none" }}
+          accept=".mp4,.png,.jpg,.jpeg"
         />
       </IconButton>
     </div>
