@@ -27,8 +27,6 @@ import {
 import { Loading } from "@coral-xyz/react-common";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import {
-  PluginManager,
-  useClosePlugin,
   useDarkMode,
   useDecodedSearchParams,
   useFeatureGates,
@@ -56,6 +54,7 @@ import { SettingsButton } from "../../Unlocked/Settings";
 
 import { NavBackButton, WithNav } from "./Nav";
 import { WithMotion } from "./NavStack";
+import { XnftAppStack } from "./XnftAppStack";
 
 export function Router() {
   const location = useLocation();
@@ -73,6 +72,11 @@ export function Router() {
         <Route path="/nfts/chat" element={<NftsChatPage />} />
         <Route path="/nfts/detail" element={<NftsDetailPage />} />
         <Route path="/contacts" element={<ContactsPage />} />
+        {/*
+          Auto-lock functionality is dependent on checking if the URL contains
+          "xnft", if this changes then please verify that it still works 
+          */}
+        <Route path="/xnft/:xnftAddress" element={<XnftAppStack />} />
         <Route path="*" element={<Redirect />} />
       </Routes>
     </AnimatePresence>
@@ -81,12 +85,6 @@ export function Router() {
 
 export function Redirect() {
   let url = useRedirectUrl();
-  const [searchParams] = useSearchParams();
-  const pluginProps = searchParams.get("pluginProps");
-  if (pluginProps) {
-    // TODO: probably want to use some API to append the search param instead.
-    url = `${url}&pluginProps=${encodeURIComponent(pluginProps)}`;
-  }
   return <Navigate to={url} replace />;
 }
 
@@ -331,49 +329,10 @@ function NavScreen({
           navbarStyle={style}
           noScrollbars={noScrollbars}
         >
-          <NavBootstrap>
-            <PluginManager>
-              {component}
-              <PluginDrawer />
-            </PluginManager>
-          </NavBootstrap>
+          <NavBootstrap>{component}</NavBootstrap>
         </WithNav>
       </div>
     </WithMotionWrapper>
-  );
-}
-
-function PluginDrawer() {
-  const [openDrawer, setOpenDrawer] = useState(false);
-  const [searchParams] = useSearchParams();
-  const closePlugin = useClosePlugin();
-
-  const pluginProps = searchParams.get("pluginProps");
-
-  // Auto-lock functionality is dependent on checking if the URL contains
-  // "xnftAddress", if this changes then please verify that it still works
-  const { xnftAddress } = JSON.parse(decodeURIComponent(pluginProps ?? "{}"));
-
-  useEffect(() => {
-    if (xnftAddress) {
-      setOpenDrawer(true);
-    }
-  }, [xnftAddress]);
-
-  return (
-    <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-      <Suspense fallback={<Loading />}>
-        {xnftAddress && (
-          <PluginApp
-            xnftAddress={xnftAddress}
-            closePlugin={() => {
-              setOpenDrawer(false);
-              setTimeout(closePlugin, 100);
-            }}
-          />
-        )}
-      </Suspense>
-    </WithDrawer>
   );
 }
 

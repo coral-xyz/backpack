@@ -1,6 +1,12 @@
-import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { fetchXnft } from "@coral-xyz/common";
+import { useCallback, useEffect, useState } from "react";
+import { useLocation, useSearchParams } from "react-router-dom";
+import {
+  fetchXnft,
+  TAB_SET,
+  TAB_XNFT,
+  UI_RPC_METHOD_NAVIGATION_POP,
+  UI_RPC_METHOD_NAVIGATION_PUSH,
+} from "@coral-xyz/common";
 // XXX: this full path is currently necessary as it avoids loading the jsx in
 //      react-xnft-renderer/src/Component.tsx in the background service worker
 import { Plugin } from "@coral-xyz/common/dist/esm/plugin";
@@ -52,22 +58,28 @@ export function usePlugins(publicKey: string): Array<Plugin> | null {
 }
 
 export function useClosePlugin(): () => void {
-  const [searchParams] = useSearchParams();
-  const updateSearchParams = useUpdateSearchParams();
-
+  const background = useRecoilValue(atoms.backgroundClient);
   return () => {
-    searchParams.delete("pluginProps");
-    updateSearchParams(searchParams);
+    background
+      .request({
+        method: UI_RPC_METHOD_NAVIGATION_POP,
+        params: [TAB_XNFT],
+      })
+      .catch(console.error);
   };
 }
 
 export function useOpenPlugin(): (xnftAddress: string) => void {
-  const [searchParams] = useSearchParams();
-  const updateSearchParams = useUpdateSearchParams();
+  const background = useRecoilValue(atoms.backgroundClient);
 
   return (xnftAddress) => {
-    searchParams.set("pluginProps", JSON.stringify({ xnftAddress }));
-    updateSearchParams(searchParams);
+    const url = `xnft/${xnftAddress}`;
+    background
+      .request({
+        method: UI_RPC_METHOD_NAVIGATION_PUSH,
+        params: [url, TAB_XNFT],
+      })
+      .catch(console.error);
   };
 }
 
@@ -115,6 +127,7 @@ export function useFreshPlugin(address?: string): {
   const setTransactionRequest = useSetRecoilState(atoms.transactionRequest);
   const backgroundClient = useBackgroundClient();
   const connectionBackgroundClient = useConnectionBackgroundClient();
+  const openPlugin = useOpenPlugin();
 
   useEffect(() => {
     if (!address || result) {
@@ -138,6 +151,7 @@ export function useFreshPlugin(address?: string): {
           request: setTransactionRequest,
           backgroundClient,
           connectionBackgroundClient,
+          openPlugin,
         });
         PLUGIN_CACHE.set(address, plugin);
         setResult(plugin);

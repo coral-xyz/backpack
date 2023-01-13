@@ -39,7 +39,7 @@ import {
   openApproveTransactionPopupWindow,
   openLockedPopupWindow,
   openOnboarding,
-  openXnft,
+  openPopupWindow,
   SOLANA_RPC_METHOD_CONNECT,
   SOLANA_RPC_METHOD_DISCONNECT,
   SOLANA_RPC_METHOD_OPEN_XNFT,
@@ -48,6 +48,7 @@ import {
   SOLANA_RPC_METHOD_SIGN_MESSAGE,
   SOLANA_RPC_METHOD_SIGN_TX,
   SOLANA_RPC_METHOD_SIMULATE,
+  TAB_XNFT,
   withContext,
   withContextPort,
 } from "@coral-xyz/common";
@@ -534,7 +535,9 @@ async function handleSolanaOpenXnft(
   ctx: Context<Backend>,
   xnftAddress: string
 ): Promise<RpcResponse<string>> {
-  await openXnft(xnftAddress);
+  const url = `xnft/${xnftAddress}`;
+  await ctx.backend.navigationPush(url, TAB_XNFT);
+  await openPopupWindow(`popup.html#/${url}`);
   return ["success"];
 }
 

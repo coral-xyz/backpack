@@ -50,12 +50,14 @@ import {
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
   SolanaCluster,
   SolanaExplorer,
+  TAB_XNFT,
 } from "@coral-xyz/common";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
 import {
   KeyringStoreStateEnum,
   makeDefaultNav,
   makeUrl,
+  NavEphemeralProvider,
 } from "@coral-xyz/recoil";
 import type {
   Commitment,
@@ -1507,13 +1509,25 @@ export class Backend {
   // Navigation.
   ///////////////////////////////////////////////////////////////////////////////
 
-  async navigationPush(url: string): Promise<string> {
+  async navigationPush(url: string, tab?: string): Promise<string> {
     let nav = await store.getNav();
     if (!nav) {
       throw new Error("nav not found");
     }
-    nav.data[nav.activeTab].urls.push(url);
+    const targetTab = tab ?? nav.activeTab;
+
+    nav.data[targetTab] = nav.data[targetTab] ?? { id: targetTab, urls: [] };
+
+    const urls = nav.data[targetTab].urls;
+
+    if (urls.length > 0 && urls[urls.length - 1] === url) {
+      return SUCCESS_RESPONSE;
+    }
+
+    nav.data[targetTab].urls.push(url);
+
     await store.setNav(nav);
+
     url = setSearchParam(url, "nav", "push");
 
     this.events.emit(BACKEND_EVENT, {
@@ -1526,15 +1540,20 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  async navigationPop(): Promise<string> {
+  async navigationPop(tab?: string): Promise<string> {
     let nav = await store.getNav();
     if (!nav) {
       throw new Error("nav not found");
     }
-    nav.data[nav.activeTab].urls.pop();
+    const targetTab = tab ?? nav.activeTab;
+    nav.data[targetTab] = nav.data[targetTab] ?? { id: targetTab, urls: [] };
+    nav.data[targetTab].urls.pop();
     await store.setNav(nav);
 
-    const urls = nav.data[nav.activeTab].urls;
+    const urls =
+      nav.data[targetTab].urls.length > 0
+        ? nav.data[targetTab].urls
+        : nav.data[nav.activeTab].urls;
     let url = urls[urls.length - 1];
     url = setSearchParam(url, "nav", "pop");
 
@@ -1558,6 +1577,9 @@ export class Backend {
     if (!nav) {
       throw new Error("nav not found");
     }
+
+    delete nav.data[TAB_XNFT];
+
     const urls = nav.data[nav.activeTab].urls;
     if (urls.length <= 1) {
       return SUCCESS_RESPONSE;
@@ -1586,6 +1608,15 @@ export class Backend {
     }
     // @ts-ignore
     return nav;
+  }
+
+  async navReadUrl(): Promise<string> {
+    const nav = await this.navRead();
+    let urls = nav.data[nav.activeTab].urls;
+    if (nav.data[TAB_XNFT]?.urls.length > 0) {
+      urls = nav.data[TAB_XNFT].urls;
+    }
+    return urls[urls.length - 1];
   }
 
   async navigationActiveTabUpdate(activeTab: string): Promise<string> {

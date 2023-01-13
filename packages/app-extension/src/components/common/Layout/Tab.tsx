@@ -79,7 +79,8 @@ export function WithTabs(props: any) {
       <div style={{ position: "relative", width: "100%", height: "100%" }}>
         {props.children}
       </div>
-      {location.pathname !== "/nfts/experience" &&
+      {!location.pathname.startsWith("/xnft/") &&
+        location.pathname !== "/nfts/experience" &&
         location.pathname !== "/nfts/chat" &&
         location.pathname !== "/messages/chat" &&
         location.pathname !== "/messages/profile" && <TabBar />}

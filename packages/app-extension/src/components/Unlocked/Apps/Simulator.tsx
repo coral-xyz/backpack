@@ -6,19 +6,13 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import { PluginDisplay } from "./Plugin";
 
 // The refresh code is a big hack. :)
-export function Simulator({
-  plugin,
-  closePlugin,
-}: {
-  plugin: Plugin;
-  closePlugin: () => void;
-}) {
+export function Simulator({ plugin }: { plugin: Plugin }) {
   const theme = useCustomTheme();
   const refresh = useJavaScriptRefresh(SIMULATOR_URL);
   return refresh % 2 === 1 ? (
     <div style={{ backgroundColor: theme.custom.colors.background }}></div>
   ) : (
-    <PluginDisplay plugin={plugin} closePlugin={closePlugin} />
+    <PluginDisplay plugin={plugin} />
   );
 }
 
