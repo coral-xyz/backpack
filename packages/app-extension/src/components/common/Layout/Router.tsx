@@ -74,7 +74,7 @@ export function Router() {
         <Route path="/contacts" element={<ContactsPage />} />
         {/*
           Auto-lock functionality is dependent on checking if the URL contains
-          "xnft", if this changes then please verify that it still works 
+          "xnft", if this changes then please verify that it still works
           */}
         <Route path="/xnft/:xnftAddress" element={<XnftAppStack />} />
         <Route path="*" element={<Redirect />} />
@@ -303,7 +303,7 @@ function NavScreen({
   const _navButtonLeft = navButtonLeft ? (
     navButtonLeft
   ) : isRoot ? null : (
-    <NavBackButton onClick={pop} />
+    <NavBackButton onClick={() => pop()} />
   );
 
   return (
