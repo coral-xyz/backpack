@@ -17,8 +17,8 @@ export type MessageMetadata =
       current_state: "pending" | "cancelled" | "redeemed";
     }
   | {
-      mediaKind: "image" | "video";
-      mediaLink: string;
+      media_kind: "image" | "video";
+      media_link: string;
     };
 
 export type SendMessagePayload = {
