@@ -20,6 +20,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
   const theme = useCustomTheme();
   const background = useBackgroundClient();
   const user = useUser();
+  const avatarUrl = useAvatarUrl(120, user.username);
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [password, setPassword] = useState("");
@@ -64,6 +65,27 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
           <LockedMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
           <div style={{ marginTop: "24px" }}>
             <BackpackHeader />
+            <div
+              style={{
+                position: "relative",
+              }}
+            >
+              <div style={{}}>
+                <ProxyImage
+                  src={avatarUrl}
+                  style={{
+                    height: "120px",
+                    width: "120px",
+                    borderRadius: "60px",
+                    position: "absolute",
+                    bottom: -152,
+                    transform: "translate(-50%, 0%)",
+                    transformOrigin: undefined,
+                    display: "inline",
+                  }}
+                />
+              </div>
+            </div>
           </div>
         </Box>
 
@@ -126,12 +148,13 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
 
 export function BackpackHeader({
   alphaStyle,
+  disableUsername,
 }: {
   alphaStyle?: React.CSSProperties;
+  disableUsername?: boolean;
 }) {
   const theme = useCustomTheme();
   const user = useUser();
-  const avatarUrl = useAvatarUrl(120, user.username);
   return (
     <Box
       sx={{
@@ -162,29 +185,8 @@ export function BackpackHeader({
           marginTop: "8px",
         }}
       >
-        gm @{user.username}
+        gm {disableUsername ? "" : `@${user.username}`}
       </Typography>
-      <div
-        style={{
-          position: "relative",
-        }}
-      >
-        <div style={{}}>
-          <ProxyImage
-            src={avatarUrl}
-            style={{
-              height: "120px",
-              width: "120px",
-              borderRadius: "60px",
-              position: "absolute",
-              bottom: -152,
-              transform: "translate(-50%, 0%)",
-              transformOrigin: undefined,
-              display: "inline",
-            }}
-          />
-        </div>
-      </div>
     </Box>
   );
 }
