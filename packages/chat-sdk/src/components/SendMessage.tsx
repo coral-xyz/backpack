@@ -9,6 +9,7 @@ import { IconButton, TextField } from "@mui/material";
 import { createStyles, makeStyles } from "@mui/styles";
 import { v4 as uuidv4 } from "uuid";
 
+import { Attatchment } from "./Attatchment";
 import { useChatContext } from "./ChatContext";
 import { EmojiPickerComponent } from "./EmojiPicker";
 import { GifPicker } from "./GifPicker";
@@ -199,6 +200,11 @@ export const SendMessage = () => {
                 setGifPicker={setGifPicker}
                 gifPicker={gifPicker}
                 setEmojiPicker={setEmojiPicker}
+                buttonStyle={{
+                  height: "28px",
+                }}
+              />
+              <Attatchment
                 buttonStyle={{
                   height: "28px",
                 }}
