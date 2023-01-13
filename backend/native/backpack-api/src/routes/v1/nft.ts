@@ -1,5 +1,5 @@
 import type { CollectionChatData, RemoteUserData } from "@coral-xyz/common";
-import { Blockchain } from "@coral-xyz/common";
+import { AVATAR_BASE_URL, Blockchain } from "@coral-xyz/common";
 import express from "express";
 
 import { ensureHasRoomAccess, extractUserId } from "../../auth/middleware";
@@ -114,7 +114,7 @@ router.get("/members", extractUserId, ensureHasRoomAccess, async (req, res) => {
       return {
         id,
         username,
-        image: `https://swr.xnfts.dev/avatars/${username}`,
+        image: `${AVATAR_BASE_URL}/${username}`,
         requested: friendship?.requested || false,
         remoteRequested: friendship?.remoteRequested || false,
         areFriends: friendship?.areFriends || false,
