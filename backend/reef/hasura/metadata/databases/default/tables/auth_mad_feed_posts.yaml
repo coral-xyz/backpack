@@ -8,6 +8,15 @@ object_relationships:
   - name: user
     using:
       foreign_key_constraint_on: author
+  - name: vote_sum
+    using:
+      manual_configuration:
+        column_mapping:
+          post_id: post_id
+        insertion_order: null
+        remote_table:
+          name: mad_feed_post_vote_sums
+          schema: public
 array_relationships:
   - name: comments
     using:

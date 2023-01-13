@@ -19,3 +19,4 @@
 - "!include auth_xnft_secrets.yaml"
 - "!include public_images.yaml"
 - "!include public_invitations.yaml"
+- "!include public_mad_feed_post_vote_sums.yaml"
