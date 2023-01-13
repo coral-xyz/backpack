@@ -1,5 +1,6 @@
-import { PutObjectCommand,S3Client } from "@aws-sdk/client-s3";
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import crypto from "crypto";
 import express from "express";
 import path from "path";
 
@@ -8,6 +9,7 @@ import {
   AWS_S3_KEY_ID,
   AWS_S3_KEY_SECRET,
   CHAT_ASSETS_AWS_BUCKET,
+  CHAT_ASSETS_CLOUDFRONT_URL,
   S3_AWS_REGION,
 } from "../../config";
 
@@ -24,7 +26,7 @@ const s3Client = new S3Client({
 router.post("/signedUrl", extractUserId, async (req, res) => {
   // @ts-ignore
   const uuid: string = req.id;
-  const filename = req.body;
+  const filename = req.body.filename;
   const extension = path.parse(filename).ext;
 
   const cid = Buffer.from(
@@ -46,7 +48,7 @@ router.post("/signedUrl", extractUserId, async (req, res) => {
   });
 
   res.json({
-    url: `https://${CHAT_ASSETS_AWS_BUCKET}.s3.${S3_AWS_REGION}.amazonaws.com/${key}`,
+    url: `${CHAT_ASSETS_CLOUDFRONT_URL}/${key}`,
     uploadUrl: signedUrl,
   });
 });

@@ -257,6 +257,15 @@ export const MessageLine = (props) => {
                         finalTxId={props.metadata.final_txn_signature}
                       />
                     </>
+                  ) : props.messageKind === "media" ? (
+                    <div>
+                      {props.metadata?.messageKind === "image" ? (
+                        <img src={props.metadata?.messageLink} />
+                      ) : (
+                        <img src={props.metadata?.messageLink} />
+                      )}
+                      message
+                    </div>
                   ) : (
                     message
                   )}

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { MessageKind, MessageMetadata } from "@coral-xyz/common";
-import { CHAT_MESSAGES } from "@coral-xyz/common";
+import { BACKEND_API_URL, CHAT_MESSAGES } from "@coral-xyz/common";
 import { createEmptyFriendship, SignalingManager } from "@coral-xyz/db";
 import { useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
@@ -8,6 +8,8 @@ import ArrowForwardIos from "@mui/icons-material/ArrowForwardIos";
 import { IconButton, TextField } from "@mui/material";
 import { createStyles, makeStyles } from "@mui/styles";
 import { v4 as uuidv4 } from "uuid";
+
+import { base64ToArrayBuffer } from "../utils/imageUploadUtils";
 
 import { Attatchment } from "./Attatchment";
 import { useChatContext } from "./ChatContext";
@@ -79,6 +81,8 @@ const useStyles = makeStyles((theme: any) =>
 export const SendMessage = () => {
   const classes = useStyles();
   const { uuid } = useUser();
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFileName, setSelectedFileName] = useState("");
   const [messageContent, setMessageContent] = useState("");
   const [emojiPicker, setEmojiPicker] = useState(false);
   const [gifPicker, setGifPicker] = useState(false);
@@ -95,12 +99,33 @@ export const SendMessage = () => {
     chats,
   } = useChatContext();
 
-  const sendMessage = (
+  const sendMessage = async (
     messageTxt,
     messageKind: MessageKind = "text",
     messageMetadata?: MessageMetadata
   ) => {
-    if (messageTxt) {
+    if (messageTxt || selectedFile) {
+      if (selectedFile) {
+        messageKind = "media";
+        const response = await fetch(`${BACKEND_API_URL}/s3/signedUrl`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            filename: selectedFileName,
+          }),
+        });
+        const json = await response.json();
+        await fetch(json.uploadUrl, {
+          method: "PUT",
+          body: base64ToArrayBuffer(selectedFile),
+        });
+        messageMetadata = {
+          mediaKind: "image",
+          mediaLink: json.url,
+        };
+      }
       const client_generated_uuid = uuidv4();
       if (chats.length === 0 && type === "individual") {
         // If it's the first time the user is interacting,
@@ -113,6 +138,8 @@ export const SendMessage = () => {
               ? "GIF"
               : messageKind === "secure-transfer"
               ? "Secure Transfer"
+              : messageKind === "media"
+              ? "Media"
               : messageTxt,
           last_message_client_uuid: client_generated_uuid,
         });
@@ -167,6 +194,17 @@ export const SendMessage = () => {
   });
   return (
     <div className={classes.outerDiv}>
+      {selectedFile && (
+        <div
+          style={{
+            background: theme.custom.colors.bg3,
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <img style={{ height: 100 }} src={selectedFile} />
+        </div>
+      )}
       {activeReply.parent_client_generated_uuid && (
         <ReplyContainer
           marginBottom={6}
@@ -205,6 +243,8 @@ export const SendMessage = () => {
                 }}
               />
               <Attatchment
+                setSelectedFile={setSelectedFile}
+                setSelectedFileName={setSelectedFileName}
                 buttonStyle={{
                   height: "28px",
                 }}

@@ -4,7 +4,7 @@ import type {
   SubscriptionType,
   ToPubsub,
 } from "@coral-xyz/common";
-import { CHAT_MESSAGES, FromServer, ToServer } from "@coral-xyz/common";
+import { CHAT_MESSAGES } from "@coral-xyz/common";
 import type { RedisClientType } from "redis";
 import { createClient } from "redis";
 
@@ -155,6 +155,8 @@ export class RedisSubscriptionManager {
           ? "GIF"
           : msg.message_kind === "secure-transfer"
           ? "Secure Transfer"
+          : msg.message_kind === "media"
+          ? "Media"
           : msg.message,
         userId,
         roomValidation,
@@ -163,7 +165,13 @@ export class RedisSubscriptionManager {
     } else {
       updateLatestMessageGroup(
         room,
-        msg.message_kind === "gif" ? "GIF" : msg.message,
+        msg.message_kind === "gif"
+          ? "GIF"
+          : msg.message_kind === "secure-transfer"
+          ? "Secure Transfer"
+          : msg.message_kind === "media"
+          ? "Media"
+          : msg.message,
         msg.client_generated_uuid
       );
     }
@@ -182,7 +190,8 @@ export class RedisSubscriptionManager {
             type,
             message_metadata: {
               ...msg.message_metadata,
-              current_state: "pending",
+              current_state:
+                msg.message_kind === "secure-transfer" ? "pending" : undefined,
             },
           },
         ],
