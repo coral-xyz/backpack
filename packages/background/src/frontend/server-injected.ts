@@ -448,7 +448,7 @@ async function handleSolanaSignAllTxs(
   }
 
   let resp: RpcResponse<string>;
-  const { didApprove } = uiResp.result;
+  const didApprove = uiResp.result;
 
   try {
     // Sign all if user clicked approve.
