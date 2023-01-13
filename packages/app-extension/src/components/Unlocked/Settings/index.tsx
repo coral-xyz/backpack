@@ -102,7 +102,11 @@ import {
   ShowRecoveryPhrase,
   ShowRecoveryPhraseWarning,
 } from "./YourAccount/ShowRecoveryPhrase";
-import { AddConnectWalletMenu, ConfirmCreateWallet } from "./AddConnectWallet";
+import {
+  AddConnectPreview,
+  AddConnectWalletMenu,
+  ConfirmCreateWallet,
+} from "./AddConnectWallet";
 import { Preferences } from "./Preferences";
 import { UserAccountsMenuButton } from "./UsernamesMenu";
 import { XnftSettings } from "./Xnfts";
@@ -278,6 +282,10 @@ function AvatarButton() {
             <NavStackScreen
               name={"edit-wallets"}
               component={(props: any) => <EditWallets {...props} />}
+            />
+            <NavStackScreen
+              name={"edit-wallets-add-connect-preview"}
+              component={(props: any) => <AddConnectPreview {...props} />}
             />
             <NavStackScreen
               name={"edit-wallets-wallet-detail"}
@@ -589,7 +597,9 @@ export const AddConnectWalletButton = ({
       <ListItem
         isFirst={false}
         isLast={true}
-        onClick={() => nav.push("add-connect-wallet", { blockchain })}
+        onClick={() =>
+          nav.push("edit-wallets-add-connect-preview", { blockchain })
+        }
         classes={{ root: classes.addConnectRoot }}
       >
         <div

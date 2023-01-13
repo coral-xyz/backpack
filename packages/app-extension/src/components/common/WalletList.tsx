@@ -24,7 +24,10 @@ import {
   useNavStack,
 } from "../common/Layout/NavStack";
 import { ImportSecretKey } from "../Unlocked/Settings";
-import { AddConnectWalletMenu } from "../Unlocked/Settings/AddConnectWallet";
+import {
+  AddConnectPreview,
+  AddConnectWalletMenu,
+} from "../Unlocked/Settings/AddConnectWallet";
 import { EditWallets } from "../Unlocked/Settings/YourAccount/EditWallets";
 import { RemoveWallet } from "../Unlocked/Settings/YourAccount/EditWallets/RemoveWallet";
 import { RenameWallet } from "../Unlocked/Settings/YourAccount/EditWallets/RenameWallet";
@@ -221,6 +224,10 @@ function WalletNavStack({
       <NavStackScreen
         name={"edit-wallets-rename"}
         component={(props: any) => <RenameWallet {...props} />}
+      />
+      <NavStackScreen
+        name={"edit-wallets-add-connect-preview"}
+        component={(props: any) => <AddConnectPreview {...props} />}
       />
       <NavStackScreen
         name={"add-connect-wallet"}
