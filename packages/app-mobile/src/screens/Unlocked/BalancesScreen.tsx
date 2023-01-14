@@ -1,5 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Margin, Screen, TokenAmountHeader } from "@components";
+import { ErrorBoundary } from "@components/ErrorBoundary";
 import { TransferWidget } from "@components/Unlocked/Balances/TransferWidget";
 import {
   Blockchain,
@@ -28,8 +29,7 @@ export function BalancesNavigator() {
   return (
     <Stack.Navigator
       initialRouteName="BalanceList"
-      screenOptions={{ presentation: "modal" }}
-    >
+      screenOptions={{ presentation: "modal" }}>
       <Stack.Screen
         name="wallet-picker"
         component={WalletListScreen}
@@ -199,18 +199,5 @@ const styles = StyleSheet.create({
   tokenHeaderButtonContainer: {
     justifyContent: "space-between",
     marginTop: 24,
-  },
-  usdBalanceLabel: {
-    fontWeight: "500",
-    fontSize: 14,
-    textAlign: "center",
-    marginTop: 4,
-    lineHeight: 24,
-  },
-  headerButtonLabel: {
-    // color: theme.custom.colors.fontColor,
-    fontSize: 14,
-    lineHeight: 24,
-    fontWeight: "500",
   },
 });

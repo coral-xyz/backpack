@@ -72,28 +72,31 @@ export function useUpdateSearchParams(): (params: URLSearchParams) => void {
 export function useNavigationSegue() {
   const background = useRecoilValue(atoms.backgroundClient);
 
-  const push = async ({
-    title,
-    componentId,
-    componentProps,
-  }: {
-    title: string;
-    componentId: string;
-    componentProps: any;
-  }) => {
+  const push = async (
+    {
+      title,
+      componentId,
+      componentProps,
+    }: {
+      title: string;
+      componentId: string;
+      componentProps: any;
+    },
+    tab?: string
+  ) => {
     const url = makeUrl(componentId, {
       props: componentProps,
       title,
     });
     return await background.request({
       method: UI_RPC_METHOD_NAVIGATION_PUSH,
-      params: [url],
+      params: [url, tab],
     });
   };
-  const pop = async () => {
+  const pop = async (tab?: string) => {
     return await background.request({
       method: UI_RPC_METHOD_NAVIGATION_POP,
-      params: [],
+      params: [tab],
     });
   };
   const toRoot = async () => {

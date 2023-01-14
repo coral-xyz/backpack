@@ -108,16 +108,14 @@ function WalletListItem({
           {
             backgroundColor: theme.custom.colors.nav,
           },
-        ]}
-      >
+        ]}>
         <View style={styles.listItemLeft}>
           <Margin right={12}>
             <NetworkIcon blockchain={blockchain} />
           </Margin>
           <View>
             <Text
-              style={{ fontSize: 16, fontWeight: isSelected ? "600" : "500" }}
-            >
+              style={{ fontSize: 16, fontWeight: isSelected ? "600" : "500" }}>
               {name}
             </Text>
             <Row>

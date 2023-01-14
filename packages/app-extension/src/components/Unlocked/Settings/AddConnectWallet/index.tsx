@@ -1,17 +1,26 @@
 import { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import {
+  openAddUserAccount,
   openConnectHardware,
   TAB_APPS,
   TAB_BALANCES,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
 } from "@coral-xyz/common";
-import { CheckIcon, HardwareWalletIcon } from "@coral-xyz/react-common";
 import {
+  CheckIcon,
+  HardwareWalletIcon,
+  PrimaryButton,
+  ProxyImage,
+  SecondaryButton,
+} from "@coral-xyz/react-common";
+import {
+  useAvatarUrl,
   useBackgroundClient,
   useKeyringType,
   useTab,
+  useUser,
   useWalletName,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
@@ -26,6 +35,97 @@ import {
 } from "../../../common/Layout/Drawer";
 import { useNavStack } from "../../../common/Layout/NavStack";
 import { WalletListItem } from "../YourAccount/EditWallets";
+
+export function AddConnectPreview({ blockchain }: { blockchain: Blockchain }) {
+  const nav = useNavStack();
+  const user = useUser();
+  const avatarUrl = useAvatarUrl(72, user.username);
+  const theme = useCustomTheme();
+  const { close } = useDrawerContext();
+
+  useEffect(() => {
+    nav.setTitle("");
+  }, [nav]);
+
+  return (
+    <div
+      style={{
+        height: "100%",
+        justifyContent: "space-between",
+        flexDirection: "column",
+        display: "flex",
+      }}
+    >
+      <div>
+        <ProxyImage
+          src={avatarUrl}
+          style={{
+            marginBottom: "16px",
+            marginTop: "8px",
+            width: "72px",
+            borderRadius: "36px",
+            marginLeft: "auto",
+            marginRight: "auto",
+            display: "block",
+          }}
+        />
+        <Typography
+          style={{
+            color: theme.custom.colors.fontColor,
+            fontSize: "24px",
+            fontWeight: 500,
+            textAlign: "center",
+            marginLeft: "32px",
+            marginRight: "32px",
+          }}
+        >
+          Your new wallet will be associated with @{user.username}
+        </Typography>
+        <Typography
+          style={{
+            marginLeft: "32px",
+            marginRight: "32px",
+            marginTop: "8px",
+            fontSize: "16px",
+            fontWeight: 500,
+            color: theme.custom.colors.secondary,
+            textAlign: "center",
+          }}
+        >
+          This connection will be public, so if you'd prefer to create a
+          separate wallet, create a new user.
+        </Typography>
+      </div>
+      <div
+        style={{
+          marginLeft: "16px",
+          marginRight: "16px",
+        }}
+      >
+        <PrimaryButton
+          label={`Continue as @${user.username}`}
+          onClick={() =>
+            nav.push("add-connect-wallet", {
+              blockchain,
+            })
+          }
+        />
+        <SecondaryButton
+          label={`Create a new user`}
+          style={{
+            marginTop: "16px",
+            marginBottom: "16px",
+            backgroundColor: "transparent",
+          }}
+          onClick={() => {
+            close();
+            openAddUserAccount();
+          }}
+        />
+      </div>
+    </div>
+  );
+}
 
 export function AddConnectWalletMenu({
   blockchain,

@@ -3,10 +3,11 @@ import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
 import {
   Backpack,
   PrimaryButton,
+  ProxyImage,
   RedBackpack,
   TextInput,
 } from "@coral-xyz/react-common";
-import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
+import { useAvatarUrl, useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
@@ -19,6 +20,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
   const theme = useCustomTheme();
   const background = useBackgroundClient();
   const user = useUser();
+  const avatarUrl = useAvatarUrl(120, user.username);
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [password, setPassword] = useState("");
@@ -61,27 +63,33 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
       >
         <Box>
           <LockedMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
-          <div style={{ marginTop: "40px" }}>
+          <div style={{ marginTop: "24px" }}>
             <BackpackHeader />
+            <div
+              style={{
+                position: "relative",
+              }}
+            >
+              <div style={{}}>
+                <ProxyImage
+                  src={avatarUrl}
+                  style={{
+                    height: "120px",
+                    width: "120px",
+                    borderRadius: "60px",
+                    position: "absolute",
+                    bottom: -152,
+                    transform: "translate(-50%, 0%)",
+                    transformOrigin: undefined,
+                    display: "inline",
+                  }}
+                />
+              </div>
+            </div>
           </div>
         </Box>
 
-        <Box style={{ marginBottom: 84 }}>
-          {user.username && (
-            <Box
-              style={{
-                flex: 1,
-                alignItems: "center",
-                justifyContent: "center",
-                display: "flex",
-              }}
-            >
-              <Typography style={{ color: theme.custom.colors.fontColor }}>
-                gm @{user.username}
-              </Typography>
-            </Box>
-          )}
-
+        <Box style={{ marginBottom: 74 }}>
           <form onSubmit={_onUnlock} noValidate>
             <Box sx={{ margin: "0 12px 12px 12px" }}>
               <TextInput
@@ -140,10 +148,13 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
 
 export function BackpackHeader({
   alphaStyle,
+  disableUsername,
 }: {
   alphaStyle?: React.CSSProperties;
+  disableUsername?: boolean;
 }) {
   const theme = useCustomTheme();
+  const user = useUser();
   return (
     <Box
       sx={{
@@ -155,21 +166,14 @@ export function BackpackHeader({
       }}
     >
       <div style={{ display: "flex" }}>
-        <RedBackpack style={{ marginLeft: "auto", marginRight: "auto" }} />
+        <RedBackpack
+          style={{
+            marginBottom: "32px",
+            marginLeft: "auto",
+            marginRight: "auto",
+          }}
+        />
       </div>
-      <Box
-        sx={{
-          marginTop: "16px",
-          display: "flex",
-          flexDirection: "row-reverse",
-          justifyContent: "center",
-          marginLeft: "200px",
-          marginBottom: "4px",
-          ...alphaStyle,
-        }}
-      >
-        <AlphaLabel />
-      </Box>
       <Backpack fill={theme.custom.colors.fontColor} />
       <Typography
         sx={{
@@ -181,36 +185,7 @@ export function BackpackHeader({
           marginTop: "8px",
         }}
       >
-        A home for your xNFTs
-      </Typography>
-    </Box>
-  );
-}
-
-function AlphaLabel() {
-  const theme = useCustomTheme();
-  return (
-    <Box
-      sx={{
-        borderRadius: "10px",
-        border: `solid 1pt ${theme.custom.colors.alpha}`,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        height: "20px",
-        width: "53px",
-      }}
-    >
-      <Typography
-        sx={{
-          color: theme.custom.colors.alpha,
-          fontSize: "12px",
-          lineHeight: "16px",
-          textAlign: "center",
-          fontWeight: 500,
-        }}
-      >
-        Alpha
+        gm {disableUsername ? "" : `@${user.username}`}
       </Typography>
     </Box>
   );

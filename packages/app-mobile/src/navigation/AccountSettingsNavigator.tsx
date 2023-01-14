@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Alert, Text, View } from "react-native";
-import { Row,Screen } from "@components";
+import { Row, Screen } from "@components";
 import { IconCheckmark } from "@components/Icon";
 import type { Blockchain, ChannelAppUiClient } from "@coral-xyz/common";
 import {

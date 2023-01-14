@@ -17,7 +17,7 @@ import {
   MintState,
 } from "@magiceden-oss/open_creator_protocol";
 import { Typography } from "@mui/material";
-import type { AccountInfo , Connection  } from "@solana/web3.js";
+import type { AccountInfo, Connection } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
 import type { BigNumber } from "ethers";
 

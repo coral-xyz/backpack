@@ -11,9 +11,11 @@ import {
   CrossIcon,
   DangerButton,
   Loading,
- MaxLabel,  PrimaryButton,
+  MaxLabel,
+  PrimaryButton,
   SecondaryButton,
-  TextFieldLabel } from "@coral-xyz/react-common";
+  TextFieldLabel,
+} from "@coral-xyz/react-common";
 import {
   useActiveSolanaWallet,
   useActiveWallet,

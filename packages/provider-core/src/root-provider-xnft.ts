@@ -13,6 +13,7 @@ import {
   PLUGIN_NOTIFICATION_UPDATE_METADATA,
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET,
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT,
+  PLUGIN_RPC_METHOD_PLUGIN_OPEN,
   PLUGIN_RPC_METHOD_POP_OUT,
   PLUGIN_RPC_METHOD_WINDOW_OPEN,
 } from "@coral-xyz/common";
@@ -87,6 +88,13 @@ export class ProviderRootXnftInjection extends PrivateEventEmitter {
     await this.#requestManager.request({
       method: PLUGIN_RPC_METHOD_WINDOW_OPEN,
       params: [url],
+    });
+  }
+
+  public async openPlugin(xnftAddress: string) {
+    await this.#requestManager.request({
+      method: PLUGIN_RPC_METHOD_PLUGIN_OPEN,
+      params: [xnftAddress],
     });
   }
 

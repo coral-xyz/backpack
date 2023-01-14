@@ -17,10 +17,12 @@ import {
   CrossIcon,
   DangerButton,
   Loading,
- MaxLabel,  PrimaryButton,
+  MaxLabel,
+  PrimaryButton,
   SecondaryButton,
   TextFieldLabel,
-  TextInput } from "@coral-xyz/react-common";
+  TextInput,
+} from "@coral-xyz/react-common";
 import type { TokenData } from "@coral-xyz/recoil";
 import {
   blockchainTokenData,

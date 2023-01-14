@@ -1,3 +1,4 @@
+import { AVATAR_BASE_URL } from "@coral-xyz/common";
 import { useRecoilValue } from "recoil";
 
 import { newAvatarAtom } from "../atoms";
@@ -12,5 +13,5 @@ export function useAvatarUrl(size?: number, givenUsername?: string): string {
   const _username = username === "" || username === null ? "dev" : username;
   return newAvatar?.url
     ? newAvatar.url
-    : "https://swr.xnfts.dev/avatars/" + _username + "/" + sessionCacheBuster;
+    : AVATAR_BASE_URL + "/" + _username + "/" + sessionCacheBuster;
 }

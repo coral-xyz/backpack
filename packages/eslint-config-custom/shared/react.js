@@ -3,10 +3,10 @@ module.exports = {
   plugins: ["react", "react-hooks"],
   rules: {
     "react/jsx-boolean-value": ["warn", "never"],
-    "react/jsx-closing-bracket-location": [
-      "warn",
-      { nonEmpty: "after-props", selfClosing: "tag-aligned" },
-    ],
+    // "react/jsx-closing-bracket-location": [
+    //   "warn",
+    //   { nonEmpty: "after-props", selfClosing: "tag-aligned" },
+    // ],
     "react/jsx-curly-brace-presence": ["warn", "never"],
     "react/jsx-curly-spacing": ["warn", { when: "never" }],
     "react/jsx-equals-spacing": ["warn", "never"],
@@ -40,7 +40,12 @@ module.exports = {
     "react/self-closing-comp": "warn",
 
     "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "off",
+    "react-hooks/exhaustive-deps": [
+      "warn",
+      {
+        additionalHooks: "(useRecoilCallback|useRecoilTransaction_UNSTABLE)",
+      },
+    ],
   },
   settings: {
     react: { version: "detect" },

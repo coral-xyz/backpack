@@ -12,8 +12,8 @@ const allExtensions = computeExpoExtensions(
 
 module.exports = {
   extends: [
-    "./index.js",
-    // './shared/core.js',
+    // "./index.js",
+    "./shared/core.js",
     "./shared/typescript.js",
     "./shared/react.js",
   ],

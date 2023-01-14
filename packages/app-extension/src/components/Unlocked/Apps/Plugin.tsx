@@ -1,15 +1,21 @@
+import { Suspense } from "react";
 import type { Plugin } from "@coral-xyz/common";
-import { MoreIcon, PowerIcon } from "@coral-xyz/react-common";
+import { Loading, MoreIcon, PowerIcon } from "@coral-xyz/react-common";
 import {
+  transactionRequest,
   useActiveSolanaWallet,
+  useBackgroundClient,
+  useConnectionBackgroundClient,
   useFreshPlugin,
+  useNavigationSegue,
+  useOpenPlugin,
   usePlugins,
   xnftPreference as xnftPreferenceAtom,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Button, Divider } from "@mui/material";
 import { PublicKey } from "@solana/web3.js";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 
 import { PluginRenderer } from "../../../plugin/Renderer";
 
@@ -19,54 +25,10 @@ export function PluginApp({
   xnftAddress,
   closePlugin,
 }: {
-  xnftAddress: string;
-  closePlugin: () => void;
-}) {
-  const { publicKey } = useActiveSolanaWallet(); // TODO: aggregate wallet considerations.
-  const plugins = usePlugins(publicKey);
-
-  if (!plugins) {
-    return null;
-  }
-  const plugin = plugins?.find((p) => p.xnftAddress.toString() === xnftAddress);
-  if (!plugin) {
-    return (
-      <DisplayFreshPlugin xnftAddress={xnftAddress} closePlugin={closePlugin} />
-    );
-  }
-  if (xnftAddress === PublicKey.default.toString()) {
-    return <Simulator plugin={plugin} closePlugin={closePlugin} />;
-  }
-  return <PluginDisplay plugin={plugin} closePlugin={closePlugin} />;
-}
-
-function DisplayFreshPlugin({
-  xnftAddress,
-  closePlugin,
-}: {
-  xnftAddress: string;
-  closePlugin: () => void;
-}) {
-  const p = useFreshPlugin(xnftAddress);
-  if (!p.result) {
-    return null;
-  }
-  return <PluginDisplay plugin={p.result} closePlugin={closePlugin} />;
-}
-
-export function PluginDisplay({
-  plugin,
-  closePlugin,
-}: {
-  plugin?: Plugin;
+  xnftAddress?: string;
   closePlugin: () => void;
 }) {
   const theme = useCustomTheme();
-  const xnftPreference = useRecoilValue(
-    xnftPreferenceAtom(plugin?.xnftInstallAddress?.toString())
-  );
-
-  // TODO: splash loading page.
   return (
     <div
       style={{
@@ -75,14 +37,70 @@ export function PluginDisplay({
       }}
     >
       <PluginControl closePlugin={closePlugin} />
-      {plugin && (
-        <PluginRenderer
-          key={plugin.iframeRootUrl}
-          plugin={plugin}
-          xnftPreference={xnftPreference}
-        />
-      )}
+      <Suspense fallback={<Loading />}>
+        <LoadPlugin xnftAddress={xnftAddress} />
+      </Suspense>
     </div>
+  );
+}
+
+export function LoadPlugin({ xnftAddress }: { xnftAddress?: string }) {
+  const { publicKey } = useActiveSolanaWallet(); // TODO: aggregate wallet considerations.
+  const plugins = usePlugins(publicKey);
+  const segue = useNavigationSegue();
+  const setTransactionRequest = useSetRecoilState(transactionRequest);
+  const backgroundClient = useBackgroundClient();
+  const connectionBackgroundClient = useConnectionBackgroundClient();
+  const openPlugin = useOpenPlugin();
+
+  if (!plugins || !xnftAddress) {
+    return <Loading />;
+  }
+
+  const plugin = plugins?.find((p) => p.xnftAddress.toString() === xnftAddress);
+
+  if (!plugin) {
+    return <DisplayFreshPlugin xnftAddress={xnftAddress} />;
+  }
+  plugin.setHostApi({
+    push: segue.push,
+    pop: segue.pop,
+    request: setTransactionRequest,
+    backgroundClient,
+    connectionBackgroundClient,
+    openPlugin,
+  });
+
+  if (xnftAddress === PublicKey.default.toString()) {
+    return <Simulator plugin={plugin} />;
+  }
+  return <PluginDisplay plugin={plugin} />;
+}
+
+function DisplayFreshPlugin({ xnftAddress }: { xnftAddress: string }) {
+  const p = useFreshPlugin(xnftAddress);
+  if (!p.result) {
+    return null;
+  }
+  return <PluginDisplay plugin={p.result} />;
+}
+
+export function PluginDisplay({ plugin }: { plugin?: Plugin }) {
+  const xnftPreference = useRecoilValue(
+    xnftPreferenceAtom(plugin?.xnftInstallAddress?.toString())
+  );
+
+  if (!plugin) {
+    return null;
+  }
+
+  // TODO: splash loading page.
+  return (
+    <PluginRenderer
+      key={plugin.iframeRootUrl}
+      plugin={plugin}
+      xnftPreference={xnftPreference}
+    />
   );
 }
 

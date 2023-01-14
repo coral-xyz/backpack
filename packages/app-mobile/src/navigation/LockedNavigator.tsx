@@ -16,7 +16,11 @@ import {
 } from "@components/BottomSheetHelpModal";
 import { ErrorMessage } from "@components/ErrorMessage";
 import { PasswordInput } from "@components/PasswordInput";
-import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
+import {
+  UI_RPC_METHOD_KEYRING_STORE_LOCK,
+  UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
+  useStore,
+} from "@coral-xyz/common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@hooks";
@@ -69,9 +73,13 @@ interface FormData {
   password: string;
 }
 
+function later(delay: number) {
+  return new Promise(function (resolve) {
+    setTimeout(resolve, delay);
+  });
+}
+
 export function LockedScreen(): JSX.Element {
-  // TODO figure out why this isn't working
-  // return <View style={{ flex: 1, backgroundColor: "red" }} />;
   const background = useBackgroundClient();
   const user = useUser(); // TODO look into why this breaks
   const theme = useTheme();
@@ -79,19 +87,50 @@ export function LockedScreen(): JSX.Element {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { control, handleSubmit, formState, setError } = useForm<FormData>();
 
-  // TODO errors are broken. They bubble up somewhere. We don't know where
+  const setLockStatus = useStore((state) => state.setUnlocked);
+
   const onSubmit = async ({ password }: FormData) => {
     try {
-      const res = await background.request({
+      setLockStatus(false);
+      await background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
         params: [password, user.uuid, user.username],
       });
-      console.log("UNLOCK_res", res);
-    } catch (error) {
-      console.log("UNLOCK_error", error);
-      setError("password", { message: "Invalid password" });
+
+      // await later(5000);
+      //
+      // await background.request({
+      //   method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
+      //   params: [],
+      // });
+      //
+      // await background.request({
+      //   method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
+      //   params: [password, user.uuid, user.username],
+      // });
+      // setLockStatus(true);
+    } catch (error: any) {
+      setError("password", { message: error });
     }
   };
+
+  // Autologin for dev mode
+  // useEffect(() => {
+  //   async function h() {
+  //     if (user.uuid && user.uuid !== "" && user.uuid.length > 5) {
+  //       try {
+  //         await background.request({
+  //           method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
+  //           params: ["backpack", user.uuid, user.username],
+  //         });
+  //       } catch (error: any) {
+  //         setError("password", { message: error });
+  //       }
+  //     }
+  //   }
+  //
+  //   h();
+  // }, [user.uuid]);
 
   const extraOptions = [
     {

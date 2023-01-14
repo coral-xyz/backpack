@@ -116,16 +116,14 @@ function WalletTokenTable({
   };
 
   const connectionUrl = useBlockchainConnectionUrl(blockchain);
-  const [rawTokenAccounts, _, isLoading] = tokenAccounts
-    ? [tokenAccounts, "hasValue"]
-    : useLoader(
-        blockchainBalancesSorted({
-          publicKey: wallet.publicKey.toString(),
-          blockchain,
-        }),
-        [],
-        [wallet.publicKey, connectionUrl]
-      );
+  const [rawTokenAccounts, _, isLoading] = useLoader(
+    blockchainBalancesSorted({
+      publicKey: wallet.publicKey.toString(),
+      blockchain,
+    }),
+    tokenAccounts ? tokenAccounts : [],
+    [wallet.publicKey, connectionUrl]
+  );
 
   const searchLower = search.toLowerCase();
   const tokenAccountsFiltered = rawTokenAccounts
@@ -147,8 +145,7 @@ function WalletTokenTable({
         borderColor: theme.custom.colors.borderFull,
         backgroundColor: theme.custom.colors.nav,
         borderRadius: 12,
-      }}
-    >
+      }}>
       <TableHeader
         blockchain={blockchain}
         onPress={onPressExpand}
@@ -218,8 +215,7 @@ function TextPercentChanged({ percentChange }: { percentChange: number }) {
           style={[
             styles.tokenBalanceChangePositive,
             { color: theme.custom.colors.positive },
-          ]}
-        >
+          ]}>
           +{formatUSD(percentChange.toLocaleString())}
         </Text>
       )}
@@ -228,8 +224,7 @@ function TextPercentChanged({ percentChange }: { percentChange: number }) {
           style={[
             styles.tokenBalanceChangeNegative,
             { color: theme.custom.colors.negative },
-          ]}
-        >
+          ]}>
           {formatUSD(percentChange.toLocaleString())}
         </Text>
       )}
@@ -238,8 +233,7 @@ function TextPercentChanged({ percentChange }: { percentChange: number }) {
           style={[
             styles.tokenBalanceChangeNeutral,
             { color: theme.custom.colors.secondary },
-          ]}
-        >
+          ]}>
           {formatUSD(percentChange.toLocaleString())}
         </Text>
       )}
@@ -279,8 +273,7 @@ export function UsdBalanceAndPercentChange({
         style={[
           usdBalanceAndPercentChangeStyles.usdBalanceLabel,
           { color: theme.custom.colors.secondary },
-        ]}
-      >
+        ]}>
         ${parseFloat(usdBalance.toFixed(2)).toLocaleString()}{" "}
         <RecentPercentChange recentPercentChange={recentPercentChange} />
       </Text>
@@ -315,8 +308,7 @@ function TokenRow({
   return (
     <Pressable
       onPress={() => onPressRow(blockchain, token, walletPublicKey)}
-      style={styles.rowContainer}
-    >
+      style={styles.rowContainer}>
       <View style={{ flexDirection: "row" }}>
         {iconUrl ? (
           <Margin right={12}>
@@ -325,16 +317,14 @@ function TokenRow({
         ) : null}
         <View>
           <Text
-            style={[styles.tokenName, { color: theme.custom.colors.fontColor }]}
-          >
+            style={[styles.tokenName, { color: theme.custom.colors.fontColor }]}>
             {name}
           </Text>
           <Text
             style={[
               styles.tokenAmount,
               { color: theme.custom.colors.secondary },
-            ]}
-          >
+            ]}>
             {subtitle}
           </Text>
         </View>
@@ -344,8 +334,7 @@ function TokenRow({
           style={[
             styles.tokenBalance,
             { color: theme.custom.colors.fontColor },
-          ]}
-        >
+          ]}>
           {formatUSD(token.usdBalance)}
         </Text>
         <TextPercentChanged percentChange={recentUsdBalanceChange} />

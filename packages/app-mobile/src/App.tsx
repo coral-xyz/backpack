@@ -1,35 +1,65 @@
-import { Suspense, useCallback, useRef } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Suspense, useCallback, useEffect, useRef } from "react";
+import { Button, StyleSheet, Text, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 import {
   BACKGROUND_SERVICE_WORKER_READY,
-  UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
   useStore,
   WEB_VIEW_EVENTS,
 } from "@coral-xyz/common";
-import {
-  NotificationsProvider,
-  useBackgroundClient,
-  useUser,
-} from "@coral-xyz/recoil";
+import { NotificationsProvider } from "@coral-xyz/recoil";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useTheme } from "@hooks";
 import Constants from "expo-constants";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
-import { RecoilRoot } from "recoil";
+import { RecoilRoot, useRecoilCallback, useRecoilSnapshot } from "recoil";
 
 SplashScreen.preventAutoHideAsync();
 
 import { useLoadedAssets } from "./hooks/useLoadedAssets";
 import { RootNavigation } from "./navigation/RootNavigator";
 
+function DebugObserver(): null {
+  const snapshot = useRecoilSnapshot();
+  useEffect(() => {
+    console.debug("recoil::start");
+    for (const node of snapshot.getNodes_UNSTABLE({ isModified: true })) {
+      console.debug("recoil::", node.key, snapshot.getLoadable(node));
+    }
+    console.debug("recoil::end");
+  }, [snapshot]);
+
+  return null;
+}
+function DebugButton(): JSX.Element {
+  const onPress = useRecoilCallback(
+    ({ snapshot }) =>
+      async () => {
+        console.group("recoil");
+        console.debug("Atom values:");
+        for (const node of snapshot.getNodes_UNSTABLE()) {
+          const value = await snapshot.getPromise(node);
+          console.debug(node.key, value);
+        }
+        console.groupEnd();
+      },
+    []
+  );
+
+  return (
+    <View style={{ position: "absolute", top: 60, zIndex: 9999 }}>
+      <Button onPress={onPress} title="Dump recoil state" />
+    </View>
+  );
+}
+
 export function App(): JSX.Element {
   return (
     <Suspense fallback={null}>
       <RecoilRoot>
+        <DebugButton />
         <BackgroundHiddenWebView />
         <Main />
       </RecoilRoot>
@@ -95,22 +125,6 @@ function Main(): JSX.Element | null {
     return null;
   }
 
-  // const background = useBackgroundClient();
-  // const user = useUser();
-
-  // uncomment this later for proper loading
-  // useEffect(() => {
-  //   async function unlock() {
-  //     const password = "backpack";
-  //     await background.request({
-  //       method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-  //       params: [password, user.uuid, user.username],
-  //     });
-  //   }
-  //
-  //   unlock();
-  // }, []);
-
   return (
     <Providers>
       <View
@@ -132,26 +146,39 @@ function maybeParseLog({
   channel,
   data,
 }: {
-  channel: string;
+  channel:
+    | "mobile-logs"
+    | "mobile-fe-response"
+    | "mobile-bg-response"
+    | "mobile-bg-request";
   data: any;
 }): void {
   try {
-    if (channel === "mobile-logs") {
-      console.group(channel);
-      const [name, value] = data;
-      const color = name.includes("ERROR") ? "red" : "yellow";
-      console.log("%c" + name, `color: ${color}`);
-      console.log(value);
-      console.groupEnd();
-    } else if (channel === "mobile-fe-response") {
-      console.group(channel);
-      console.log(data.wrappedEvent.channel);
-      console.log(data.wrappedEvent.data);
-      console.groupEnd();
-    } else {
-      console.group(channel);
-      console.log(data);
-      console.groupEnd();
+    switch (channel) {
+      case "mobile-logs": {
+        const [name, ...rest] = data;
+        const color = name.includes("ERROR") ? "red" : "yellow";
+        console.log("%c" + `${channel}:` + name, `color: ${color}`);
+        console.log(rest);
+        console.log("%c" + "---", `color: ${color}`);
+        break;
+      }
+      case "mobile-bg-response":
+      case "mobile-bg-request":
+      case "mobile-fe-response": {
+        const name = data.wrappedEvent.channel;
+        const color = "orange";
+        console.log("%c" + `${channel}:${name}`, `color: ${color}`);
+        console.log(data.wrappedEvent.data);
+        console.log("%c" + "---", `color: ${color}`);
+        break;
+      }
+      default: {
+        console.group(channel);
+        console.log("%c" + channel, `color: green`);
+        console.log(data);
+        console.groupEnd();
+      }
     }
   } catch (error) {
     console.error(channel, error);
@@ -168,8 +195,8 @@ function BackgroundHiddenWebView(): JSX.Element {
     <View style={{ display: "none" }}>
       <WebView
         ref={ref}
-        cacheMode="LOAD_CACHE_ELSE_NETWORK"
-        cacheEnabled
+        // cacheMode="LOAD_CACHE_ELSE_NETWORK"
+        // cacheEnabled
         limitsNavigationsToAppBoundDomains
         source={{ uri: Constants?.expoConfig?.extra?.webviewUrl }}
         onMessage={(event) => {

@@ -1,4 +1,5 @@
 import type { EnrichedInboxDb, InboxDb } from "@coral-xyz/common";
+import { AVATAR_BASE_URL } from "@coral-xyz/common";
 import express from "express";
 
 import { extractUserId } from "../../auth/middleware";
@@ -134,7 +135,7 @@ export async function enrichFriendships(
       areFriends: friendship.are_friends ? 1 : 0,
       remoteUserId,
       remoteUsername,
-      remoteUserImage: `https://avatars.xnfts.dev/v1/${remoteUsername}`,
+      remoteUserImage: `${AVATAR_BASE_URL}/${remoteUsername}`,
       spam: spam ? 1 : 0,
       blocked: blocked ? 1 : 0,
       interacted: interacted ? 1 : 0,
