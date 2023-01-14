@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import type { Blockchain } from "@coral-xyz/common";
 import {
+  Blockchain,
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
   walletAddressDisplay,
 } from "@coral-xyz/common";
@@ -11,12 +11,19 @@ import {
   useBackgroundClient,
   useBlockchainActiveWallet,
   useBlockchainLogo,
+  useNavigation,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { ExpandMore, Settings } from "@mui/icons-material";
+import { Add,ExpandMore, MoreHoriz } from "@mui/icons-material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import { Button, Typography } from "@mui/material";
+import { Box, Button, Grid,Typography } from "@mui/material";
 
+import {
+  BscIcon,
+  EthereumIconOnboarding as EthereumIcon,
+ HardwareIcon, ImportedIcon, MnemonicIcon,  PolygonIcon,
+  SolanaIconOnboarding as SolanaIcon } from "../common/Icon";
+import { ActionCard } from "../common/Layout/ActionCard";
 import { useDrawerContext, WithMiniDrawer } from "../common/Layout/Drawer";
 import {
   NavStackEphemeral,
@@ -28,13 +35,11 @@ import {
   AddConnectPreview,
   AddConnectWalletMenu,
 } from "../Unlocked/Settings/AddConnectWallet";
-import { EditWallets } from "../Unlocked/Settings/YourAccount/EditWallets";
 import { RemoveWallet } from "../Unlocked/Settings/YourAccount/EditWallets/RemoveWallet";
 import { RenameWallet } from "../Unlocked/Settings/YourAccount/EditWallets/RenameWallet";
 import { WalletDetail } from "../Unlocked/Settings/YourAccount/EditWallets/WalletDetail";
 
 import { Scrollbar } from "./Layout/Scrollbar";
-import { HardwareIcon, ImportedIcon, MnemonicIcon } from "./Icon";
 import { WithCopyTooltip } from "./WithCopyTooltip";
 
 const useStyles = styles((theme) => ({
@@ -210,10 +215,6 @@ function WalletNavStack({
         )}
       />
       <NavStackScreen
-        name={"edit-wallets"}
-        component={(props: any) => <EditWallets filter={filter} {...props} />}
-      />
-      <NavStackScreen
         name={"edit-wallets-wallet-detail"}
         component={(props: any) => <WalletDetail {...props} />}
       />
@@ -230,6 +231,10 @@ function WalletNavStack({
         component={(props: any) => <AddConnectPreview {...props} />}
       />
       <NavStackScreen
+        name={"edit-wallets-blockchain-selector"}
+        component={(props: any) => <WalletListBlockchainSelector {...props} />}
+      />
+      <NavStackScreen
         name={"add-connect-wallet"}
         component={(props: any) => <AddConnectWalletMenu {...props} />}
       />
@@ -241,7 +246,7 @@ function WalletNavStack({
   );
 }
 
-function AllWalletsList({ filter }: { filter?: (w: any) => boolean }) {
+export function AllWalletsList({ filter }: { filter?: (w: any) => boolean }) {
   const { setTitle, setNavButtonRight } = useNavStack();
   const activeWallet = useActiveWallet();
   let wallets = useAllWallets();
@@ -266,7 +271,7 @@ function WalletSettingsButton() {
   return (
     <Button
       onClick={() => {
-        push("edit-wallets");
+        push("edit-wallets-add-connect-preview");
       }}
       disableElevation
       disableRipple
@@ -276,12 +281,46 @@ function WalletSettingsButton() {
         height: "24px",
       }}
     >
-      <Settings
+      <Add
         style={{
           color: theme.custom.colors.icon,
         }}
       />
     </Button>
+  );
+}
+
+export function WalletListBlockchainSelector() {
+  const nav = useNavStack();
+  useEffect(() => {
+    nav.setTitle("Blockchains");
+  }, [nav]);
+
+  const onClick = (blockchain: Blockchain) => {
+    nav.push("add-connect-wallet", {
+      blockchain,
+    });
+  };
+
+  return (
+    <Box style={{ padding: "0 16px 16px", marginTop: 12 }}>
+      <Grid container spacing={1.5}>
+        <Grid item xs={6}>
+          <ActionCard
+            icon={<EthereumIcon />}
+            text={`Ethereum`}
+            onClick={() => onClick(Blockchain.ETHEREUM)}
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <ActionCard
+            icon={<SolanaIcon />}
+            text={`Solana`}
+            onClick={() => onClick(Blockchain.SOLANA)}
+          />
+        </Grid>
+      </Grid>
+    </Box>
   );
 }
 
@@ -312,7 +351,6 @@ function _WalletList({
       style={{
         padding: "16px",
         paddingTop: 0,
-        //background: theme.custom.colors.backgroundBackdrop,
       }}
     >
       <WalletList
@@ -355,6 +393,7 @@ export function WalletList({
   selectedWalletPublicKey?: string;
 }) {
   const theme = useCustomTheme();
+  const nav = useNavStack();
   return (
     <List style={style}>
       {wallets.map(
@@ -442,15 +481,39 @@ export function WalletList({
                 <div
                   style={{
                     display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
                   }}
                 >
-                  <CopyButton
-                    onClick={() => {
-                      navigator.clipboard.writeText(publicKey);
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
                     }}
-                  />
+                  >
+                    <CopyButton
+                      isEditWallets={false}
+                      onClick={() => {
+                        navigator.clipboard.writeText(publicKey);
+                      }}
+                    />
+                  </div>
+                  <div
+                    style={{
+                      marginLeft: "4px",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <CopyButton
+                      isEditWallets={true}
+                      onClick={() => {
+                        nav.push("edit-wallets-wallet-detail", {
+                          ...wallet,
+                        });
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
             </ListItem>
@@ -461,7 +524,13 @@ export function WalletList({
   );
 }
 
-function CopyButton({ onClick }: { onClick: () => void }) {
+function CopyButton({
+  onClick,
+  isEditWallets,
+}: {
+  onClick: () => void;
+  isEditWallets: boolean;
+}) {
   const [isCopying, setIsCopying] = useState(false);
   const theme = useCustomTheme();
   return (
@@ -484,7 +553,15 @@ function CopyButton({ onClick }: { onClick: () => void }) {
         onClick();
       }}
     >
-      {isCopying ? "Copied!" : "Copy"}
+      {isEditWallets ? (
+        <MoreHoriz
+          style={{
+            color: theme.custom.colors.icon,
+          }}
+        />
+      ) : (
+        <>{isCopying ? "Copied!" : "Copy"}</>
+      )}
     </Button>
   );
 }
