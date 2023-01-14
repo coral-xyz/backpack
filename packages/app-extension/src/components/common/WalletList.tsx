@@ -14,15 +14,19 @@ import {
   useNavigation,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { Add,ExpandMore, MoreHoriz } from "@mui/icons-material";
+import { Add, ExpandMore, MoreHoriz } from "@mui/icons-material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import { Box, Button, Grid,Typography } from "@mui/material";
+import { Box, Button, Grid, Typography } from "@mui/material";
 
 import {
   BscIcon,
   EthereumIconOnboarding as EthereumIcon,
- HardwareIcon, ImportedIcon, MnemonicIcon,  PolygonIcon,
-  SolanaIconOnboarding as SolanaIcon } from "../common/Icon";
+  HardwareIcon,
+  ImportedIcon,
+  MnemonicIcon,
+  PolygonIcon,
+  SolanaIconOnboarding as SolanaIcon,
+} from "../common/Icon";
 import { ActionCard } from "../common/Layout/ActionCard";
 import { useDrawerContext, WithMiniDrawer } from "../common/Layout/Drawer";
 import {
@@ -38,6 +42,10 @@ import {
 import { RemoveWallet } from "../Unlocked/Settings/YourAccount/EditWallets/RemoveWallet";
 import { RenameWallet } from "../Unlocked/Settings/YourAccount/EditWallets/RenameWallet";
 import { WalletDetail } from "../Unlocked/Settings/YourAccount/EditWallets/WalletDetail";
+import {
+  ShowPrivateKey,
+  ShowPrivateKeyWarning,
+} from "../Unlocked/Settings/YourAccount/ShowPrivateKey";
 
 import { Scrollbar } from "./Layout/Scrollbar";
 import { WithCopyTooltip } from "./WithCopyTooltip";
@@ -241,6 +249,14 @@ function WalletNavStack({
       <NavStackScreen
         name={"import-secret-key"}
         component={(props: any) => <ImportSecretKey {...props} />}
+      />
+      <NavStackScreen
+        name={"show-private-key-warning"}
+        component={(props: any) => <ShowPrivateKeyWarning {...props} />}
+      />
+      <NavStackScreen
+        name={"show-private-key"}
+        component={(props: any) => <ShowPrivateKey {...props} />}
       />
     </NavStackEphemeral>
   );
