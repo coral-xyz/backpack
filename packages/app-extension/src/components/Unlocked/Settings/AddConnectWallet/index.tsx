@@ -104,7 +104,11 @@ export function AddConnectPreview({ blockchain }: { blockchain: Blockchain }) {
       >
         <PrimaryButton
           label={`Continue as @${user.username}`}
-          onClick={() => nav.push("add-connect-wallet")}
+          onClick={() =>
+            nav.push("add-connect-wallet", {
+              blockchain,
+            })
+          }
         />
         <SecondaryButton
           label={`Create a new user`}
