@@ -41,11 +41,11 @@ const useStyles = makeStyles((theme: any) =>
   createStyles({
     messageRow: {
       display: "flex",
+      marginBottom: 25,
     },
     messageContainer: {
       position: "relative",
       marginLeft: "10px",
-      marginBottom: "10px",
       width: "100%",
       textAlign: "left",
       fontSize: "14px",
@@ -56,15 +56,17 @@ const useStyles = makeStyles((theme: any) =>
       margin: 0,
     },
     messageTimeStampRight: {
-      fontSize: ".85em",
-      fontWeight: "300",
+      color: theme.custom.colors.secondary,
+      fontSize: 12,
+      lineHeight: "15px",
+      fontWeight: 500,
       minWidth: 63,
       display: "flex",
       flexDirection: "row-reverse",
     },
     avatar: {
-      width: theme.spacing(4),
-      height: theme.spacing(4),
+      width: 40,
+      height: 40,
       cursor: "pointer",
       borderRadius: "50%",
     },
@@ -81,8 +83,10 @@ const useStyles = makeStyles((theme: any) =>
       height: theme.spacing(4),
     },
     displayName: {
+      fontWeight: 600,
       marginLeft: "10px",
-      fontSize: "12px",
+      lineHeight: "16px",
+      fontSize: "14px",
       fontColor: "#4E5768",
     },
     smallBtn: {
@@ -530,7 +534,7 @@ export function ChatMessages() {
   const theme = useCustomTheme();
 
   return (
-    <div style={{ padding: 5 }}>
+    <div style={{ paddingLeft: 18, paddingRight: 18 }}>
       {chats.map((chat) => {
         return (
           <MessageLine
