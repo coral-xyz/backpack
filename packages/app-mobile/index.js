@@ -1,3 +1,4 @@
+import "expo-dev-client";
 import "react-native-get-random-values";
 import "react-native-url-polyfill/auto";
 // Import the the ethers shims (**BEFORE** ethers)
