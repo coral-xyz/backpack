@@ -14,7 +14,6 @@ import { Close } from "@mui/icons-material";
 import { Button, Drawer, IconButton } from "@mui/material";
 
 import { NAV_BAR_HEIGHT, NAV_BUTTON_WIDTH } from "./Nav";
-import { WithEphemeralNav } from "./NavEphemeral";
 
 const useStyles = styles((theme) => ({
   withDrawer: {
@@ -108,34 +107,6 @@ export function WithDrawer(
   );
 }
 
-export function WithEphemeralNavDrawer(props: any) {
-  const {
-    children,
-    openDrawer,
-    title,
-    navbarStyle,
-    navContentStyle,
-    setOpenDrawer,
-  } = props;
-  return (
-    <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-      <WithEphemeralNav
-        title={title}
-        navbarStyle={{
-          ...navbarStyle,
-        }}
-        navContentStyle={{
-          ...navContentStyle,
-        }}
-      >
-        <WithDrawerContent setOpenDrawer={setOpenDrawer}>
-          {children}
-        </WithDrawerContent>
-      </WithEphemeralNav>
-    </WithDrawer>
-  );
-}
-
 export function WithMiniDrawer(props: any) {
   const classes = useStyles();
   const {
@@ -175,23 +146,6 @@ export function WithMiniDrawer(props: any) {
         {children}
       </Drawer>
     </DrawerProvider>
-  );
-}
-
-function WithDrawerContent({ children, setOpenDrawer }: any) {
-  const classes = useStyles();
-  const nav = useEphemeralNav();
-  useEffect(() => {
-    let previous = nav.navButtonLeft;
-    nav.setNavButtonLeft(<CloseButton onClick={() => setOpenDrawer(false)} />);
-    return () => {
-      nav.setNavButtonLeft(previous);
-    };
-  }, []);
-  return (
-    <div className={classes.withDrawer}>
-      <div className={classes.withDrawerContent}>{children}</div>
-    </div>
   );
 }
 
