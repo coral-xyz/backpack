@@ -6,6 +6,8 @@ import {
   TAB_BALANCES,
   TAB_MESSAGES,
   TAB_NFTS,
+  TAB_NOTIFICATIONS,
+  TAB_RECENT_ACTIVITY,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
 } from "@coral-xyz/common";
@@ -28,7 +30,6 @@ import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { Tab, Tabs } from "@mui/material";
 
-import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
 import { AvatarButton } from "../../Unlocked/Settings";
 
 import { useBreakpoints } from "./hooks";
@@ -282,8 +283,8 @@ function TabBar() {
           {!isXs && (
             <>
               <Tab
-                onClick={() => onTabClick(TAB_MESSAGES)}
-                value={TAB_MESSAGES}
+                onClick={() => onTabClick(TAB_NOTIFICATIONS)}
+                value={TAB_NOTIFICATIONS}
                 disableRipple
                 className={`${isXs ? classes.tabXs : classes.tab} ${
                   tab === TAB_MESSAGES ? classes.activeTab : ""
@@ -294,7 +295,7 @@ function TabBar() {
                       width: "28px",
                       height: "28px",
                       color:
-                        tab === TAB_MESSAGES
+                        tab === TAB_NOTIFICATIONS
                           ? theme.custom.colors.brandColor
                           : theme.custom.colors.icon,
                     }}
@@ -302,8 +303,8 @@ function TabBar() {
                 }
               />
               <Tab
-                onClick={() => onTabClick(TAB_MESSAGES)}
-                value={TAB_MESSAGES}
+                onClick={() => onTabClick(TAB_RECENT_ACTIVITY)}
+                value={TAB_RECENT_ACTIVITY}
                 disableRipple
                 className={`${isXs ? classes.tabXs : classes.tab} ${
                   tab === TAB_MESSAGES ? classes.activeTab : ""
@@ -314,7 +315,7 @@ function TabBar() {
                       width: "28px",
                       height: "28px",
                       color:
-                        tab === TAB_MESSAGES
+                        tab === TAB_RECENT_ACTIVITY
                           ? theme.custom.colors.brandColor
                           : theme.custom.colors.icon,
                     }}

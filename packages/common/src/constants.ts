@@ -486,6 +486,8 @@ export const TAB_NFTS = "nfts";
 export const TAB_MESSAGES = "messages";
 export const TAB_APPS = "apps";
 export const TAB_XNFT = "xnft";
+export const TAB_RECENT_ACTIVITY = "recent-activity";
+export const TAB_NOTIFICATIONS = "notifications";
 export const TAB_SET = new Set([
   TAB_BALANCES,
   TAB_SWAP,
@@ -493,6 +495,8 @@ export const TAB_SET = new Set([
   TAB_APPS,
   TAB_MESSAGES,
   TAB_XNFT,
+  TAB_RECENT_ACTIVITY,
+  TAB_NOTIFICATIONS,
 ]);
 
 export const NAV_COMPONENT_TOKEN = "balances/token";

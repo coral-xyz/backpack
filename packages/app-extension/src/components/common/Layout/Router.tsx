@@ -39,6 +39,8 @@ import { AnimatePresence } from "framer-motion";
 
 import { Apps } from "../../Unlocked/Apps";
 import { Balances } from "../../Unlocked/Balances";
+import { Notifications } from "../../Unlocked/Balances/Notifications";
+import { RecentActivity } from "../../Unlocked/Balances/RecentActivity";
 import { Token } from "../../Unlocked/Balances/TokensWidget/Token";
 import { ChatDrawer } from "../../Unlocked/Messages/ChatDrawer";
 import { MessageOptions } from "../../Unlocked/Messages/MessageOptions";
@@ -56,6 +58,7 @@ import { XnftAppStack } from "./XnftAppStack";
 
 export function Router() {
   const location = useLocation();
+  const { isXs } = useBreakpoints();
   return (
     <AnimatePresence initial={false}>
       <Routes location={location} key={location.pathname}>
@@ -68,6 +71,12 @@ export function Router() {
         <Route path="/nfts/experience" element={<NftsExperiencePage />} />
         <Route path="/nfts/chat" element={<NftsChatPage />} />
         <Route path="/nfts/detail" element={<NftsDetailPage />} />
+        {!isXs && (
+          <>
+            <Route path="/notifications" element={<NotificationsPage />} />
+            <Route path="/recent-activity" element={<RecentActivityPage />} />
+          </>
+        )}
         {/*
           Auto-lock functionality is dependent on checking if the URL contains
           "xnft", if this changes then please verify that it still works
@@ -77,6 +86,14 @@ export function Router() {
       </Routes>
     </AnimatePresence>
   );
+}
+
+export function NotificationsPage() {
+  return <NavScreen component={<Notifications />} />;
+}
+
+export function RecentActivityPage() {
+  return <NavScreen component={<RecentActivity />} />;
 }
 
 export function Redirect() {
