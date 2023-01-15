@@ -142,6 +142,14 @@ const options = {
     ],
   },
   resolve: {
+    alias: {
+      "@api": path.resolve(__dirname, "src/api"),
+      "@assets": path.resolve(__dirname, "src/assets"),
+      "@components": path.resolve(__dirname, "src/components"),
+      "@hooks": path.resolve(__dirname, "src/hooks"),
+      "@utils": path.resolve(__dirname, "src/utils"),
+      "@src": path.resolve(__dirname, "src"),
+    },
     extensions: fileExtensions
       .map((extension) => "." + extension)
       .concat([".js", ".jsx", ".ts", ".tsx", ".css"]),
