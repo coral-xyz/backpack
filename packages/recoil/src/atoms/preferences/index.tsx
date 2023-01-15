@@ -4,6 +4,7 @@ import {
   UI_RPC_METHOD_ALL_USERS_READ,
   UI_RPC_METHOD_PREFERENCES_READ,
   UI_RPC_METHOD_USER_READ,
+  getLogger,
 } from "@coral-xyz/common";
 import {
   atom,
@@ -15,6 +16,8 @@ import {
 
 import { backgroundClient } from "../client";
 
+const logger = getLogger("KKKK");
+
 export const preferences = atom<any>({
   key: "preferences",
   default: selector({
@@ -23,10 +26,17 @@ export const preferences = atom<any>({
       const background = get(backgroundClient);
       // Preferences are dependent on the current active user
       const _user = get(user);
-      return await background.request({
-        method: UI_RPC_METHOD_PREFERENCES_READ,
-        params: [_user.uuid],
-      });
+      try {
+        const res = await background.request({
+          method: UI_RPC_METHOD_PREFERENCES_READ,
+          params: [_user.uuid],
+        });
+        logger.debug("atom.preferences result", res);
+        return res;
+      } catch (err) {
+        logger.debug("atom.preferences error", err);
+        return {};
+      }
     },
   }),
 });
@@ -74,8 +84,19 @@ export const autoLockSettings = selector<{
 export const isAggregateWallets = selector<boolean>({
   key: "isAggregateWallets",
   get: async ({ get }) => {
-    const p = get(preferences);
-    return !!p.aggregateWallets;
+    logger.debug("atom.isAggregateWallets p:pre");
+    try {
+      const p = get(preferences);
+      logger.debug("atom.isAggregateWallets p", p);
+      logger.debug(
+        "atom.isAggregateWallets p.aggregateWallets",
+        p.aggregateWallets.toString()
+      );
+      return Boolean(p.aggregateWallets);
+    } catch (error) {
+      logger.debug("atom.isAggregateWallets error", error);
+      return false;
+    }
   },
 });
 
@@ -94,10 +115,18 @@ export const user = atom<{ username: string; uuid: string; jwt: string }>({
     key: "userDefault",
     get: async ({ get }) => {
       const background = get(backgroundClient);
-      return await background.request({
-        method: UI_RPC_METHOD_USER_READ,
-        params: [],
-      });
+      try {
+        logger.debug("atom.user pre");
+        const res = await background.request({
+          method: UI_RPC_METHOD_USER_READ,
+          params: [],
+        });
+        logger.debug("atom.user res", res);
+        return res;
+      } catch (error) {
+        logger.debug("atom.user error", error);
+        return { username: "", uuid: "", jwt: "" };
+      }
     },
   }),
 });

@@ -14,6 +14,7 @@ import {
   BACKEND_EVENT,
   EthereumConnectionUrl,
   EthereumExplorer,
+  getLogger,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   SolanaCluster,
   SolanaExplorer,
@@ -34,6 +35,7 @@ import {
   DefaultKeyname,
 } from "../store";
 
+const logger = getLogger("ZG");
 /**
  * KeyringStore API for managing all wallet keys .
  */
@@ -297,14 +299,19 @@ export class KeyringStore {
   }
 
   public async tryUnlock(password: string, uuid: string) {
+    // logger.debug("tryUnlock init");
     return this.withLock(async () => {
+      // logger.debug("withLock callback");
       const json = await store.getKeyringStore(password);
+      // logger.debug("tryUnlock store.getKeyringStore json", json);
       await this.fromJson(json);
       this.activeUserUuid = uuid;
+      // logger.debug("activeUserUuid", uuid);
       this.password = password;
       // Automatically lock the store when idle.
       // this.autoLockStart();
       this.autoLockCountdown.start();
+      // logger.debug("activeLockCountdown.start");
     });
   }
 
@@ -571,10 +578,12 @@ export class KeyringStore {
 
   // Utility for asserting the wallet is currently locked.
   private withLock<T>(fn: () => T): T {
+    // logger.debug("withLock init");
     if (this.isUnlocked()) {
       throw new Error("keyring store is not locked");
     }
     const resp = fn();
+    // logger.debug("withLock resp", resp);
     this.updateLastUsed();
     return resp;
   }
@@ -606,6 +615,7 @@ export class KeyringStore {
   }
 
   private updateLastUsed() {
+    // logger.debug("updateLastUsed");
     this.lastUsedTs = Date.now() / 1000;
   }
 

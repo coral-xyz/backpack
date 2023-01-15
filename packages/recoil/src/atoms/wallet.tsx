@@ -1,5 +1,6 @@
 import {
   Blockchain,
+  getLogger,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEY_DATA,
 } from "@coral-xyz/common";
 import { atom, selector, selectorFamily } from "recoil";
@@ -9,10 +10,17 @@ import type { WalletPublicKeys } from "../types";
 import { backgroundClient } from "./client";
 import { enabledBlockchains, isAggregateWallets } from "./preferences";
 
+// write a function that returns the current date seconds and milliseconds
+function gcd() {
+  const date = new Date();
+  return date.getSeconds() + "." + date.getMilliseconds();
+}
+
 /**
  * All public key data associated with the currently active username.
  * All the other pieces of wallet data are derived via selectors from this atom.
  */
+const logger = getLogger("KKKKKK");
 export const walletPublicKeyData = atom<{
   activeBlockchain: Blockchain;
   activePublicKeys: Array<string>;
@@ -21,12 +29,20 @@ export const walletPublicKeyData = atom<{
   key: "walletPublicKeyData",
   default: selector({
     key: "walletPublicKeyDataDefault",
-    get: ({ get }) => {
+    get: async ({ get }) => {
       const background = get(backgroundClient);
-      return background.request({
-        method: UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEY_DATA,
-        params: [],
-      });
+      try {
+        const result = await background.request({
+          method: UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEY_DATA,
+          params: [],
+        });
+        debugger;
+        logger.debug("atom.walletPublicKeyData result", result);
+        return result;
+      } catch (error) {
+        logger.debug("atom.walletPublicKeyDatae error", error);
+        return {};
+      }
     },
   }),
 });
@@ -77,11 +93,36 @@ export const allWalletsDisplayed = selector<
 >({
   key: "allWalletsDisplayed",
   get: ({ get }) => {
-    const _isAggregateWallets = get(isAggregateWallets);
-    if (_isAggregateWallets) {
-      return get(allWallets);
-    } else {
-      return [get(activeWallet)];
+    logger.debug("atom.allWalletsDisplayed", gcd());
+    // const _isAggregateWallets = false;
+    try {
+      const _isAggregateWallets = get(isAggregateWallets);
+
+      logger.debug(
+        "atom.allWalletsDisplayed _isAggregateWallets",
+        _isAggregateWallets,
+        gcd()
+      );
+      if (_isAggregateWallets) {
+        return get(allWallets);
+      } else {
+        try {
+          logger.debug(
+            "atom.allWalletsDisplayed getActiveWallet",
+            _isAggregateWallets,
+            gcd()
+          );
+          const res = get(activeWallet);
+          logger.debug("atom.allWalletsDisplay activeWallet", res, gcd());
+          return [res];
+        } catch (error) {
+          logger.debug("atom.allWalletsDisplay error", error, gcd());
+          return [];
+        }
+      }
+    } catch (error) {
+      logger.debug("atom.allWalletsDisplayed TOTAL error", error, gcd());
+      return [];
     }
   },
 });
@@ -128,34 +169,46 @@ export const activeWallet = selector<{
 }>({
   key: "activeWallet",
   get: ({ get }) => {
-    const data = get(walletPublicKeyData);
+    try {
+      logger.debug("atom.activeWallet");
+      const data = get(walletPublicKeyData);
+      logger.debug("atom.activeWallet data ", data);
 
-    //
-    // Get all the pubkeys for the active blockchain.
-    //
-    const { ledgerPublicKeys, importedPublicKeys, hdPublicKeys } =
-      data.publicKeys[data.activeBlockchain];
+      //
+      // Get all the pubkeys for the active blockchain.
+      //
+      const { ledgerPublicKeys, importedPublicKeys, hdPublicKeys } =
+        data.publicKeys[data.activeBlockchain];
 
-    //
-    // Pluck out the currently active wallet for that blockchain.
-    //
-    const wallet = hdPublicKeys
-      .map((k) => ({ ...k, type: "derived" }))
-      .concat(ledgerPublicKeys.map((k) => ({ ...k, type: "hardware" })))
-      .concat(importedPublicKeys.map((k) => ({ ...k, type: "imported" })))
-      .find((pk) => data.activePublicKeys.indexOf(pk.publicKey) >= 0);
+      //
+      // Pluck out the currently active wallet for that blockchain.
+      //
+      const wallet = hdPublicKeys
+        .map((k) => ({ ...k, type: "derived" }))
+        .concat(ledgerPublicKeys.map((k) => ({ ...k, type: "hardware" })))
+        .concat(importedPublicKeys.map((k) => ({ ...k, type: "imported" })))
+        .find((pk) => data.activePublicKeys.indexOf(pk.publicKey) >= 0);
 
-    if (!wallet) {
-      throw new Error("active wallet not found");
+      if (!wallet) {
+        throw new Error("active wallet not found");
+      }
+
+      //
+      //
+      //
+      return {
+        blockchain: data.activeBlockchain,
+        ...wallet,
+      };
+    } catch (error) {
+      logger.debug("atom.activeWallet data error", error);
+      return {
+        publicKey: "",
+        name: "",
+        blockchain: Blockchain.SOLANA,
+        type: "",
+      };
     }
-
-    //
-    //
-    //
-    return {
-      blockchain: data.activeBlockchain,
-      ...wallet,
-    };
   },
 });
 

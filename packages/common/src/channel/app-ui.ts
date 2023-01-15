@@ -4,10 +4,16 @@
 //
 
 import type { RpcRequest } from "@coral-xyz/common-public";
-import { generateUniqueId, isMobile } from "@coral-xyz/common-public";
+import {
+  generateUniqueId,
+  getLogger,
+  IS_MOBILE,
+  isMobile} from "@coral-xyz/common-public";
 
 import { BrowserRuntimeCommon } from "../browser";
 import type { Notification, RpcResponse, RpcResponseData } from "../types";
+
+const logger = getLogger('ZG')
 
 export interface BackgroundClient {
   request<T = any>({ method, params }: RpcRequest): Promise<RpcResponse<T>>;

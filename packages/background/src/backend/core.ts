@@ -18,6 +18,7 @@ import {
   EthereumConnectionUrl,
   EthereumExplorer,
   getAddMessage,
+  getLogger,
   NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED,
   NOTIFICATION_AGGREGATE_WALLETS_UPDATED,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
@@ -93,6 +94,8 @@ export function start(
 ) {
   return new Backend(events, solanaB, ethereumB);
 }
+
+const logger = getLogger("KLKL");
 
 export class Backend {
   private keyringStore: KeyringStore;
@@ -715,15 +718,23 @@ export class Backend {
       throw new Error("invariant violation: username not found");
     }
 
+    logger.debug("keyringStoreUnlock:username", username);
+
     await this.keyringStore.tryUnlock(password, uuid);
+    logger.debug("keyringStoreUnlock:this.keyringStore.tryUnlock: success");
 
     const blockchainActiveWallets = await this.blockchainActiveWallets();
+    logger.debug(
+      "keyringStoreUnlock:blockchainActiveWallets",
+      blockchainActiveWallets
+    );
 
     const ethereumConnectionUrl = await this.ethereumConnectionUrlRead(uuid);
     const ethereumChainId = await this.ethereumChainIdRead();
     const solanaConnectionUrl = await this.solanaConnectionUrlRead(uuid);
     const solanaCommitment = await this.solanaCommitmentRead(uuid);
 
+    logger.debug("keyringSToreUnlock:this.events.emit");
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_STORE_UNLOCKED,
       data: {
@@ -734,6 +745,7 @@ export class Backend {
         solanaCommitment,
       },
     });
+    logger.debug("keyringSToreUnlock:this.events.emit success");
 
     return SUCCESS_RESPONSE;
   }
@@ -772,10 +784,15 @@ export class Backend {
     activePublicKeys: Array<string>;
     publicKeys: any; // todo: type
   }> {
+    logger.debug("keyringStoreReadAllPubkeyData");
     const activePublicKeys = await this.activeWallets();
+    logger.debug("keyringStoreReadAllPubkeyData activePublicKeys", activePublicKeys);
     const publicKeys = await this.keyringStoreReadAllPubkeys();
+    logger.debug("keyringStoreReadAllPubkeyData publicKeys", publicKeys);
     const activeBlockchain =
       this.keyringStore.activeUserKeyring.activeBlockchain;
+    logger.debug("keyringStoreReadAllPubkeyData activeBlockchain", activeBlockchain)
+
     return {
       activeBlockchain,
       activePublicKeys,
