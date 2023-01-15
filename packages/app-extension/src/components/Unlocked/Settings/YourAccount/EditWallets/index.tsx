@@ -1,16 +1,11 @@
-import { useEffect } from "react";
 import type { Blockchain } from "@coral-xyz/common";
-import { toTitleCase } from "@coral-xyz/common";
-import { List, ListItem } from "@coral-xyz/react-common";
-import { useWalletPublicKeys } from "@coral-xyz/recoil";
+import { ListItem } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { MoreHoriz } from "@mui/icons-material";
-import { Typography } from "@mui/material";
 
 import { WalletAddress } from "../../../../common";
 import { useNavStack } from "../../../../common/Layout/NavStack";
-import { ImportTypeBadge, WalletList } from "../../../../common/WalletList";
-import { AddConnectWalletButton } from "../..";
+import { ImportTypeBadge } from "../../../../common/WalletList";
 
 export const WalletListItem: React.FC<{
   blockchain: Blockchain;

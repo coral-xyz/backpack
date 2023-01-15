@@ -2,17 +2,13 @@ import { Suspense, useEffect, useState } from "react";
 import {
   BACKPACK_FEATURE_POP_MODE,
   BACKPACK_FEATURE_XNFT,
-  Blockchain,
   DISCORD_INVITE_LINK,
   MESSAGES_ENABLED,
   NAV_COMPONENT_CONTACTS,
   NOTIFICATIONS_ENABLED,
   openPopupWindow,
-  UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-  UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
 } from "@coral-xyz/common";
-import { NAV_COMPONENT_NFT_CHAT } from "@coral-xyz/common/dist/esm/constants";
 import {
   ContactsIcon,
   DiscordIcon,
@@ -20,54 +16,32 @@ import {
   LaunchDetail,
   List,
   ListItem,
-  PrimaryButton,
   ProxyImage,
   PushDetail,
-  TextInput,
 } from "@coral-xyz/react-common";
-import type { WalletPublicKeys } from "@coral-xyz/recoil";
 import {
-  useActiveWallets,
   useAvatarUrl,
   useBackgroundClient,
-  useBlockchainLogo,
   useFeatureGates,
   useNavigation,
-  useWalletPublicKeys,
 } from "@coral-xyz/recoil";
 import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import {
   AccountCircleOutlined,
   Add,
-  ExpandLess,
-  ExpandMore,
   Lock,
   Settings,
   Tab as WindowIcon,
 } from "@mui/icons-material";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
-import { Box, IconButton, Typography } from "@mui/material";
-import { Keypair } from "@solana/web3.js";
-import * as bs58 from "bs58";
-import { ethers } from "ethers";
+import { IconButton, Typography } from "@mui/material";
 
 import {
-  Header,
-  SubtextParagraph,
-  WalletAddress,
-} from "../../../components/common";
-import {
   AllWalletsList,
-  ImportTypeBadge,
   WalletList as _WalletList,
   WalletListBlockchainSelector,
 } from "../../../components/common/WalletList";
-import {
-  CloseButton,
-  useDrawerContext,
-  WithDrawer,
-  WithMiniDrawer,
-} from "../../common/Layout/Drawer";
+import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
 import {
   NavStackEphemeral,
   NavStackScreen,
@@ -77,8 +51,8 @@ import { Logout, ResetWarning } from "../../Locked/Reset/ResetWarning";
 import { ResetWelcome } from "../../Locked/Reset/ResetWelcome";
 import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
 import { NotificationButton } from "../Balances/Notifications";
-import { Contacts } from "../Messages/Contacts";
 
+import { ImportSecretKey } from "./AddConnectWallet/ImportSecretKey";
 import { AvatarHeader } from "./AvatarHeader/AvatarHeader";
 import { PreferencesAutoLock } from "./Preferences/AutoLock";
 import { PreferencesEthereum } from "./Preferences/Ethereum";
@@ -103,11 +77,7 @@ import {
   ShowRecoveryPhrase,
   ShowRecoveryPhraseWarning,
 } from "./YourAccount/ShowRecoveryPhrase";
-import {
-  AddConnectPreview,
-  AddConnectWalletMenu,
-  ConfirmCreateWallet,
-} from "./AddConnectWallet";
+import { AddConnectPreview, AddConnectWalletMenu } from "./AddConnectWallet";
 import { Preferences } from "./Preferences";
 import { UserAccountsMenuButton } from "./UsernamesMenu";
 import { XnftSettings } from "./Xnfts";
@@ -191,158 +161,10 @@ function AvatarButton() {
           }}
         />
       </IconButton>
-      <WithDrawer openDrawer={settingsOpen} setOpenDrawer={setSettingsOpen}>
-        <div style={{ height: "100%" }}>
-          <NavStackEphemeral
-            initialRoute={{ name: "root", title: "Profile" }}
-            options={() => ({ title: "" })}
-            navButtonLeft={
-              <CloseButton onClick={() => setSettingsOpen(false)} />
-            }
-          >
-            <NavStackScreen
-              name={"root"}
-              component={(props: any) => <SettingsMenu {...props} />}
-            />
-            <NavStackScreen
-              name={"add-connect-wallet"}
-              component={(props: any) => <AddConnectWalletMenu {...props} />}
-            />
-            <NavStackScreen
-              name={"import-secret-key"}
-              component={(props: any) => <ImportSecretKey {...props} />}
-            />
-            <NavStackScreen
-              name={"your-account"}
-              component={(props: any) => <YourAccount {...props} />}
-            />
-            <NavStackScreen
-              name={"preferences"}
-              component={(props: any) => <Preferences {...props} />}
-            />
-            <NavStackScreen
-              name={"preferences-auto-lock"}
-              component={(props: any) => <PreferencesAutoLock {...props} />}
-            />
-            <NavStackScreen
-              name={"preferences-trusted-sites"}
-              component={(props: any) => <PreferencesTrustedSites {...props} />}
-            />
-            <NavStackScreen
-              name={"preferences-solana"}
-              component={(props: any) => <PreferencesSolana {...props} />}
-            />
-            <NavStackScreen
-              name={"preferences-ethereum"}
-              component={(props: any) => <PreferencesEthereum {...props} />}
-            />
-            <NavStackScreen
-              name={"preferences-solana-rpc-connection"}
-              component={(props: any) => (
-                <PreferencesSolanaConnection {...props} />
-              )}
-            />
-            <NavStackScreen
-              name={"preferences-solana-edit-rpc-connection"}
-              component={(props: any) => (
-                <PreferenceSolanaCustomRpcUrl {...props} />
-              )}
-            />
-            <NavStackScreen
-              name={"preferences-solana-commitment"}
-              component={(props: any) => (
-                <PreferencesSolanaCommitment {...props} />
-              )}
-            />
-            <NavStackScreen
-              name={"preferences-solana-explorer"}
-              component={(props: any) => (
-                <PreferencesSolanaExplorer {...props} />
-              )}
-            />
-            <NavStackScreen
-              name={"preferences-ethereum-rpc-connection"}
-              component={(props: any) => (
-                <PreferencesEthereumConnection {...props} />
-              )}
-            />
-            <NavStackScreen
-              name={"preferences-ethereum-edit-rpc-connection"}
-              component={(props: any) => (
-                <PreferenceEthereumCustomRpcUrl {...props} />
-              )}
-            />
-            <NavStackScreen
-              name={"change-password"}
-              component={(props: any) => <ChangePassword {...props} />}
-            />
-            <NavStackScreen
-              name={"reset"}
-              component={(props: any) => <ResetWelcome {...props} />}
-            />
-            <NavStackScreen
-              name={"edit-wallets"}
-              component={(props: any) => <AllWalletsList {...props} />}
-            />
-            <NavStackScreen
-              name={"edit-wallets-add-connect-preview"}
-              component={(props: any) => <AddConnectPreview {...props} />}
-            />
-            <NavStackScreen
-              name={"edit-wallets-wallet-detail"}
-              component={(props: any) => <WalletDetail {...props} />}
-            />
-            <NavStackScreen
-              name={"edit-wallets-remove"}
-              component={(props: any) => <RemoveWallet {...props} />}
-            />
-            <NavStackScreen
-              name={"edit-wallets-rename"}
-              component={(props: any) => <RenameWallet {...props} />}
-            />
-            <NavStackScreen
-              name={"edit-wallets-blockchain-selector"}
-              component={(props: any) => (
-                <WalletListBlockchainSelector {...props} />
-              )}
-            />
-            <NavStackScreen
-              name={"show-private-key-warning"}
-              component={(props: any) => <ShowPrivateKeyWarning {...props} />}
-            />
-            <NavStackScreen
-              name={"show-private-key"}
-              component={(props: any) => <ShowPrivateKey {...props} />}
-            />
-            <NavStackScreen
-              name={"show-secret-phrase-warning"}
-              component={(props: any) => (
-                <ShowRecoveryPhraseWarning {...props} />
-              )}
-            />
-            <NavStackScreen
-              name={"show-secret-phrase"}
-              component={(props: any) => <ShowRecoveryPhrase {...props} />}
-            />
-            <NavStackScreen
-              name={"reset-warning"}
-              component={(props: any) => <ResetWarning {...props} />}
-            />
-            <NavStackScreen
-              name={"logout"}
-              component={(props: any) => <Logout {...props} />}
-            />
-            <NavStackScreen
-              name={"xnfts"}
-              component={(props: any) => <XnftSettings {...props} />}
-            />
-            <NavStackScreen
-              name={"xnfts-detail"}
-              component={(props: any) => <XnftDetail {...props} />}
-            />
-          </NavStackEphemeral>
-        </div>
-      </WithDrawer>
+      <SettingsNavStackDrawer
+        settingsOpen={settingsOpen}
+        setSettingsOpen={setSettingsOpen}
+      />
     </div>
   );
 }
@@ -369,68 +191,6 @@ function _SettingsContent() {
     </div>
   );
 }
-
-export const AddConnectWalletButton = ({
-  blockchain,
-}: {
-  blockchain: Blockchain;
-}) => {
-  const nav = useNavStack();
-  const classes = useStyles();
-  const theme = useCustomTheme();
-  return (
-    <List
-      style={{
-        background: "transparent",
-        color: theme.custom.colors.secondary,
-        marginLeft: 0,
-        marginRight: 0,
-        height: "48px",
-      }}
-    >
-      <ListItem
-        isFirst={false}
-        isLast={true}
-        onClick={() =>
-          nav.push("edit-wallets-add-connect-preview", { blockchain })
-        }
-        classes={{ root: classes.addConnectRoot }}
-      >
-        <div
-          style={{
-            border: `solid ${theme.custom.colors.nav}`,
-            borderRadius: "40px",
-            width: "30px",
-            height: "30px",
-            display: "flex",
-            justifyContent: "center",
-            flexDirection: "column",
-            marginRight: "12px",
-          }}
-        >
-          <Add
-            style={{
-              color: "inherit",
-              display: "block",
-              marginLeft: "auto",
-              marginRight: "auto",
-              fontSize: "14px",
-            }}
-          />
-        </div>
-        <Typography
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            flexDirection: "column",
-          }}
-        >
-          Add / Connect Wallet
-        </Typography>
-      </ListItem>
-    </List>
-  );
-};
 
 function SettingsList() {
   const theme = useCustomTheme();
@@ -693,174 +453,159 @@ function SettingsList() {
   );
 }
 
-export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
-  const background = useBackgroundClient();
-  const existingPublicKeys = useWalletPublicKeys();
-  const nav = useNavStack();
-  const theme = useCustomTheme();
-  const [name, setName] = useState("");
-  const [secretKey, setSecretKey] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [openDrawer, setOpenDrawer] = useState(false);
-  const [newPublicKey, setNewPublicKey] = useState("");
-
-  useEffect(() => {
-    const prevTitle = nav.title;
-    nav.setTitle("");
-    return () => {
-      nav.setTitle(prevTitle);
-    };
-  }, [theme]);
-
-  useEffect(() => {
-    // Clear error on form input changes
-    setError(null);
-  }, [name, secretKey]);
-
-  const save = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    let secretKeyHex;
-    try {
-      secretKeyHex = validateSecretKey(
-        blockchain,
-        secretKey,
-        existingPublicKeys
-      );
-    } catch (e) {
-      setError((e as Error).message);
-      return;
-    }
-
-    try {
-      setNewPublicKey(
-        await background.request({
-          method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
-          params: [blockchain, secretKeyHex, name],
-        })
-      );
-      setOpenDrawer(true);
-    } catch (error) {
-      setError("Wallet address is used by another Backpack account.");
-    }
-  };
-
+function SettingsNavStackDrawer({
+  settingsOpen,
+  setSettingsOpen,
+}: {
+  settingsOpen: boolean;
+  setSettingsOpen: any;
+}) {
   return (
-    <>
-      <form
-        noValidate
-        onSubmit={save}
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          height: "100%",
-          justifyContent: "space-between",
-        }}
-      >
-        <Box sx={{ margin: "24px 0" }}>
-          <Box sx={{ margin: "0 24px" }}>
-            <Header text="Import private key" />
-            <SubtextParagraph style={{ marginBottom: "32px" }}>
-              Enter your private key. It will be encrypted and stored on your
-              device.
-            </SubtextParagraph>
-          </Box>
-          <Box sx={{ margin: "0 16px" }}>
-            <Box sx={{ marginBottom: "4px" }}>
-              <TextInput
-                autoFocus={true}
-                placeholder="Name"
-                value={name}
-                setValue={(e) => setName(e.target.value)}
-              />
-            </Box>
-            <TextInput
-              placeholder="Enter private key"
-              value={secretKey}
-              setValue={(e) => {
-                setSecretKey(e.target.value);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  save(e);
-                }
-              }}
-              rows={4}
-              error={error ? true : false}
-              errorMessage={error || ""}
-            />
-          </Box>
-        </Box>
-        <Box
-          sx={{
-            marginLeft: "16px",
-            marginRight: "16px",
-            marginBottom: "16px",
-            display: "flex",
-            justifyContent: "space-between",
-          }}
+    <WithDrawer openDrawer={settingsOpen} setOpenDrawer={setSettingsOpen}>
+      <div style={{ height: "100%" }}>
+        <NavStackEphemeral
+          initialRoute={{ name: "root", title: "Profile" }}
+          options={() => ({ title: "" })}
+          navButtonLeft={<CloseButton onClick={() => setSettingsOpen(false)} />}
         >
-          <PrimaryButton
-            type="submit"
-            label="Import"
-            disabled={secretKey.length === 0}
+          <NavStackScreen
+            name={"root"}
+            component={(props: any) => <SettingsMenu {...props} />}
           />
-        </Box>
-      </form>
-      <WithMiniDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-        <ConfirmCreateWallet
-          blockchain={blockchain}
-          publicKey={newPublicKey}
-          setOpenDrawer={setOpenDrawer}
-        />
-      </WithMiniDrawer>
-    </>
+          <NavStackScreen
+            name={"add-connect-wallet"}
+            component={(props: any) => <AddConnectWalletMenu {...props} />}
+          />
+          <NavStackScreen
+            name={"import-secret-key"}
+            component={(props: any) => <ImportSecretKey {...props} />}
+          />
+          <NavStackScreen
+            name={"your-account"}
+            component={(props: any) => <YourAccount {...props} />}
+          />
+          <NavStackScreen
+            name={"preferences"}
+            component={(props: any) => <Preferences {...props} />}
+          />
+          <NavStackScreen
+            name={"preferences-auto-lock"}
+            component={(props: any) => <PreferencesAutoLock {...props} />}
+          />
+          <NavStackScreen
+            name={"preferences-trusted-sites"}
+            component={(props: any) => <PreferencesTrustedSites {...props} />}
+          />
+          <NavStackScreen
+            name={"preferences-solana"}
+            component={(props: any) => <PreferencesSolana {...props} />}
+          />
+          <NavStackScreen
+            name={"preferences-ethereum"}
+            component={(props: any) => <PreferencesEthereum {...props} />}
+          />
+          <NavStackScreen
+            name={"preferences-solana-rpc-connection"}
+            component={(props: any) => (
+              <PreferencesSolanaConnection {...props} />
+            )}
+          />
+          <NavStackScreen
+            name={"preferences-solana-edit-rpc-connection"}
+            component={(props: any) => (
+              <PreferenceSolanaCustomRpcUrl {...props} />
+            )}
+          />
+          <NavStackScreen
+            name={"preferences-solana-commitment"}
+            component={(props: any) => (
+              <PreferencesSolanaCommitment {...props} />
+            )}
+          />
+          <NavStackScreen
+            name={"preferences-solana-explorer"}
+            component={(props: any) => <PreferencesSolanaExplorer {...props} />}
+          />
+          <NavStackScreen
+            name={"preferences-ethereum-rpc-connection"}
+            component={(props: any) => (
+              <PreferencesEthereumConnection {...props} />
+            )}
+          />
+          <NavStackScreen
+            name={"preferences-ethereum-edit-rpc-connection"}
+            component={(props: any) => (
+              <PreferenceEthereumCustomRpcUrl {...props} />
+            )}
+          />
+          <NavStackScreen
+            name={"change-password"}
+            component={(props: any) => <ChangePassword {...props} />}
+          />
+          <NavStackScreen
+            name={"reset"}
+            component={(props: any) => <ResetWelcome {...props} />}
+          />
+          <NavStackScreen
+            name={"edit-wallets"}
+            component={(props: any) => <AllWalletsList {...props} />}
+          />
+          <NavStackScreen
+            name={"edit-wallets-add-connect-preview"}
+            component={(props: any) => <AddConnectPreview {...props} />}
+          />
+          <NavStackScreen
+            name={"edit-wallets-wallet-detail"}
+            component={(props: any) => <WalletDetail {...props} />}
+          />
+          <NavStackScreen
+            name={"edit-wallets-remove"}
+            component={(props: any) => <RemoveWallet {...props} />}
+          />
+          <NavStackScreen
+            name={"edit-wallets-rename"}
+            component={(props: any) => <RenameWallet {...props} />}
+          />
+          <NavStackScreen
+            name={"edit-wallets-blockchain-selector"}
+            component={(props: any) => (
+              <WalletListBlockchainSelector {...props} />
+            )}
+          />
+          <NavStackScreen
+            name={"show-private-key-warning"}
+            component={(props: any) => <ShowPrivateKeyWarning {...props} />}
+          />
+          <NavStackScreen
+            name={"show-private-key"}
+            component={(props: any) => <ShowPrivateKey {...props} />}
+          />
+          <NavStackScreen
+            name={"show-secret-phrase-warning"}
+            component={(props: any) => <ShowRecoveryPhraseWarning {...props} />}
+          />
+          <NavStackScreen
+            name={"show-secret-phrase"}
+            component={(props: any) => <ShowRecoveryPhrase {...props} />}
+          />
+          <NavStackScreen
+            name={"reset-warning"}
+            component={(props: any) => <ResetWarning {...props} />}
+          />
+          <NavStackScreen
+            name={"logout"}
+            component={(props: any) => <Logout {...props} />}
+          />
+          <NavStackScreen
+            name={"xnfts"}
+            component={(props: any) => <XnftSettings {...props} />}
+          />
+          <NavStackScreen
+            name={"xnfts-detail"}
+            component={(props: any) => <XnftDetail {...props} />}
+          />
+        </NavStackEphemeral>
+      </div>
+    </WithDrawer>
   );
-}
-
-// Validate a secret key and return a normalised hex representation
-function validateSecretKey(
-  blockchain: Blockchain,
-  secretKey: string,
-  keyring: WalletPublicKeys
-): string {
-  // Extract public keys from keychain object into array of strings
-  const existingPublicKeys = Object.values(keyring[blockchain])
-    .map((k) => k.map((i) => i.publicKey))
-    .flat();
-
-  if (blockchain === Blockchain.SOLANA) {
-    let keypair: Keypair | null = null;
-    try {
-      // Attempt to create a keypair from JSON secret key
-      keypair = Keypair.fromSecretKey(new Uint8Array(JSON.parse(secretKey)));
-    } catch (_) {
-      try {
-        // Attempt to create a keypair from bs58 decode of secret key
-        keypair = Keypair.fromSecretKey(new Uint8Array(bs58.decode(secretKey)));
-      } catch (_) {
-        // Failure
-        throw new Error("Invalid private key");
-      }
-    }
-
-    if (existingPublicKeys.includes(keypair.publicKey.toString())) {
-      throw new Error("Key already exists");
-    }
-
-    return Buffer.from(keypair.secretKey).toString("hex");
-  } else if (blockchain === Blockchain.ETHEREUM) {
-    try {
-      const wallet = new ethers.Wallet(secretKey);
-
-      if (existingPublicKeys.includes(wallet.publicKey)) {
-        throw new Error("Key already exists");
-      }
-
-      return wallet.privateKey;
-    } catch (_) {
-      throw new Error("Invalid private key");
-    }
-  }
-  throw new Error("secret key validation not implemented for blockchain");
 }

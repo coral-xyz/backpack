@@ -24,7 +24,6 @@ import {
   ProfileScreen,
   RequestsScreen,
 } from "@coral-xyz/message-sdk";
-import { Loading } from "@coral-xyz/react-common";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import {
   useDarkMode,
@@ -38,9 +37,7 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
 import { AnimatePresence } from "framer-motion";
 
-import { WithDrawer } from "../../common/Layout/Drawer";
 import { Apps } from "../../Unlocked/Apps";
-import { PluginApp } from "../../Unlocked/Apps/Plugin";
 import { Balances } from "../../Unlocked/Balances";
 import { Token } from "../../Unlocked/Balances/TokensWidget/Token";
 import { ChatDrawer } from "../../Unlocked/Messages/ChatDrawer";

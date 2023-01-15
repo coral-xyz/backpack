@@ -1,0 +1,191 @@
+import { useEffect, useState } from "react";
+import {
+  Blockchain,
+  UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
+} from "@coral-xyz/common";
+import { PrimaryButton, TextInput } from "@coral-xyz/react-common";
+import type { WalletPublicKeys } from "@coral-xyz/recoil";
+import { useBackgroundClient, useWalletPublicKeys } from "@coral-xyz/recoil";
+import { useCustomTheme } from "@coral-xyz/themes";
+import { Box } from "@mui/material";
+import { Keypair } from "@solana/web3.js";
+import * as bs58 from "bs58";
+import { ethers } from "ethers";
+
+import { Header, SubtextParagraph } from "../../../common";
+import { WithMiniDrawer } from "../../../common/Layout/Drawer";
+import { useNavStack } from "../../../common/Layout/NavStack";
+
+import { ConfirmCreateWallet } from ".";
+
+export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
+  const background = useBackgroundClient();
+  const existingPublicKeys = useWalletPublicKeys();
+  const nav = useNavStack();
+  const theme = useCustomTheme();
+  const [name, setName] = useState("");
+  const [secretKey, setSecretKey] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [openDrawer, setOpenDrawer] = useState(false);
+  const [newPublicKey, setNewPublicKey] = useState("");
+
+  useEffect(() => {
+    const prevTitle = nav.title;
+    nav.setTitle("");
+    return () => {
+      nav.setTitle(prevTitle);
+    };
+  }, [theme]);
+
+  useEffect(() => {
+    // Clear error on form input changes
+    setError(null);
+  }, [name, secretKey]);
+
+  const save = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    let secretKeyHex;
+    try {
+      secretKeyHex = validateSecretKey(
+        blockchain,
+        secretKey,
+        existingPublicKeys
+      );
+    } catch (e) {
+      setError((e as Error).message);
+      return;
+    }
+
+    try {
+      setNewPublicKey(
+        await background.request({
+          method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
+          params: [blockchain, secretKeyHex, name],
+        })
+      );
+      setOpenDrawer(true);
+    } catch (error) {
+      setError("Wallet address is used by another Backpack account.");
+    }
+  };
+
+  return (
+    <>
+      <form
+        noValidate
+        onSubmit={save}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+          justifyContent: "space-between",
+        }}
+      >
+        <Box sx={{ margin: "24px 0" }}>
+          <Box sx={{ margin: "0 24px" }}>
+            <Header text="Import private key" />
+            <SubtextParagraph style={{ marginBottom: "32px" }}>
+              Enter your private key. It will be encrypted and stored on your
+              device.
+            </SubtextParagraph>
+          </Box>
+          <Box sx={{ margin: "0 16px" }}>
+            <Box sx={{ marginBottom: "4px" }}>
+              <TextInput
+                autoFocus={true}
+                placeholder="Name"
+                value={name}
+                setValue={(e) => setName(e.target.value)}
+              />
+            </Box>
+            <TextInput
+              placeholder="Enter private key"
+              value={secretKey}
+              setValue={(e) => {
+                setSecretKey(e.target.value);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  save(e);
+                }
+              }}
+              rows={4}
+              error={error ? true : false}
+              errorMessage={error || ""}
+            />
+          </Box>
+        </Box>
+        <Box
+          sx={{
+            marginLeft: "16px",
+            marginRight: "16px",
+            marginBottom: "16px",
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
+          <PrimaryButton
+            type="submit"
+            label="Import"
+            disabled={secretKey.length === 0}
+          />
+        </Box>
+      </form>
+      <WithMiniDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
+        <ConfirmCreateWallet
+          blockchain={blockchain}
+          publicKey={newPublicKey}
+          setOpenDrawer={setOpenDrawer}
+        />
+      </WithMiniDrawer>
+    </>
+  );
+}
+
+// Validate a secret key and return a normalised hex representation
+function validateSecretKey(
+  blockchain: Blockchain,
+  secretKey: string,
+  keyring: WalletPublicKeys
+): string {
+  // Extract public keys from keychain object into array of strings
+  const existingPublicKeys = Object.values(keyring[blockchain])
+    .map((k) => k.map((i) => i.publicKey))
+    .flat();
+
+  if (blockchain === Blockchain.SOLANA) {
+    let keypair: Keypair | null = null;
+    try {
+      // Attempt to create a keypair from JSON secret key
+      keypair = Keypair.fromSecretKey(new Uint8Array(JSON.parse(secretKey)));
+    } catch (_) {
+      try {
+        // Attempt to create a keypair from bs58 decode of secret key
+        keypair = Keypair.fromSecretKey(new Uint8Array(bs58.decode(secretKey)));
+      } catch (_) {
+        // Failure
+        throw new Error("Invalid private key");
+      }
+    }
+
+    if (existingPublicKeys.includes(keypair.publicKey.toString())) {
+      throw new Error("Key already exists");
+    }
+
+    return Buffer.from(keypair.secretKey).toString("hex");
+  } else if (blockchain === Blockchain.ETHEREUM) {
+    try {
+      const wallet = new ethers.Wallet(secretKey);
+
+      if (existingPublicKeys.includes(wallet.publicKey)) {
+        throw new Error("Key already exists");
+      }
+
+      return wallet.privateKey;
+    } catch (_) {
+      throw new Error("Invalid private key");
+    }
+  }
+  throw new Error("secret key validation not implemented for blockchain");
+}

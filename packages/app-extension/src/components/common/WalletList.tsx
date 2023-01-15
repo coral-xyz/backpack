@@ -9,9 +9,7 @@ import {
   useActiveWallet,
   useAllWallets,
   useBackgroundClient,
-  useBlockchainActiveWallet,
   useBlockchainLogo,
-  useNavigation,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Add, ExpandMore, MoreHoriz } from "@mui/icons-material";
@@ -19,12 +17,10 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { Box, Button, Grid, Typography } from "@mui/material";
 
 import {
-  BscIcon,
   EthereumIconOnboarding as EthereumIcon,
   HardwareIcon,
   ImportedIcon,
   MnemonicIcon,
-  PolygonIcon,
   SolanaIconOnboarding as SolanaIcon,
 } from "../common/Icon";
 import { ActionCard } from "../common/Layout/ActionCard";
@@ -34,11 +30,11 @@ import {
   NavStackScreen,
   useNavStack,
 } from "../common/Layout/NavStack";
-import { ImportSecretKey } from "../Unlocked/Settings";
 import {
   AddConnectPreview,
   AddConnectWalletMenu,
 } from "../Unlocked/Settings/AddConnectWallet";
+import { ImportSecretKey } from "../Unlocked/Settings/AddConnectWallet/ImportSecretKey";
 import { RemoveWallet } from "../Unlocked/Settings/YourAccount/EditWallets/RemoveWallet";
 import { RenameWallet } from "../Unlocked/Settings/YourAccount/EditWallets/RenameWallet";
 import { WalletDetail } from "../Unlocked/Settings/YourAccount/EditWallets/WalletDetail";
