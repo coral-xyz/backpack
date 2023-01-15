@@ -24,22 +24,14 @@ import {
   useUser,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
-import MarkChatUnreadIcon from "@mui/icons-material/MarkChatUnread";
 import { Tab, Tabs } from "@mui/material";
+
+import { useBreakpoints } from "./hooks";
+
 const TAB_HEIGHT = 64;
 
 const useStyles = styles((theme) => ({
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    position: "absolute",
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-  },
-  tab: {
+  tabXs: {
     // color: theme.custom.colors.tabIconBackground,
     height: `${TAB_HEIGHT}px`,
     "&:hover": {
@@ -50,7 +42,28 @@ const useStyles = styles((theme) => ({
       },
     },
   },
+  tab: {
+    minWidth: "74px",
+    width: "74px",
+    marginTop: "16px",
+    height: `${TAB_HEIGHT}px`,
+    "&:hover": {
+      "& svg": {
+        "& path": {
+          fill: `${theme.custom.colors.brandColor} !important`,
+        },
+      },
+    },
+  },
   tabRoot: {
+    height: "100%",
+    minHeight: `${TAB_HEIGHT}px`,
+    minWidth: "74px",
+    width: "74px",
+    backgroundColor: theme.custom.colors.nav,
+    borderRight: `${theme.custom.colors.borderFull}`,
+  },
+  tabRootXs: {
     height: `${TAB_HEIGHT}px`,
     minHeight: `${TAB_HEIGHT}px`,
     backgroundColor: theme.custom.colors.nav,
@@ -71,11 +84,21 @@ const useStyles = styles((theme) => ({
 }));
 
 export function WithTabs(props: any) {
-  const classes = useStyles();
   const location = useLocation();
+  const { isXs } = useBreakpoints();
 
   return (
-    <div className={classes.container}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: isXs ? "column" : "row-reverse",
+        position: "absolute",
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+      }}
+    >
       <div style={{ position: "relative", width: "100%", height: "100%" }}>
         {props.children}
       </div>
@@ -96,6 +119,7 @@ function TabBar() {
   const background = useBackgroundClient();
   const featureGates = useFeatureGates();
   const messagesUnread = useUnreadGlobal(uuid);
+  const { isXs } = useBreakpoints();
 
   const onTabClick = (tabValue: string) => {
     if (tabValue === tab) {
@@ -113,10 +137,11 @@ function TabBar() {
 
   return tab === "" ? null : (
     <Tabs
+      orientation={isXs ? "horizontal" : "vertical"}
       value={tab}
       variant="fullWidth"
       classes={{
-        root: classes.tabRoot,
+        root: isXs ? classes.tabRootXs : classes.tabRoot,
         indicator: classes.tabIndicator,
       }}
       TabIndicatorProps={{
@@ -129,7 +154,7 @@ function TabBar() {
         onClick={() => onTabClick(TAB_BALANCES)}
         value={TAB_BALANCES}
         disableRipple
-        className={`${classes.tab} ${
+        className={`${isXs ? classes.tabXs : classes.tab} ${
           tab === TAB_BALANCES ? classes.activeTab : ""
         }`}
         icon={
@@ -151,7 +176,7 @@ function TabBar() {
           onClick={() => onTabClick(TAB_APPS)}
           value={TAB_APPS}
           disableRipple
-          className={classes.tab}
+          className={isXs ? classes.tabXs : classes.tab}
           icon={
             <GridIcon
               fill={
@@ -171,7 +196,7 @@ function TabBar() {
         onClick={() => onTabClick(TAB_NFTS)}
         value={TAB_NFTS}
         disableRipple
-        className={`${classes.tab} ${
+        className={`${isXs ? classes.tabXs : classes.tab} ${
           tab === TAB_NFTS ? classes.activeTab : ""
         }`}
         icon={
@@ -193,7 +218,7 @@ function TabBar() {
           onClick={() => onTabClick(TAB_MESSAGES)}
           value={TAB_MESSAGES}
           disableRipple
-          className={`${classes.tab} ${
+          className={`${isXs ? classes.tabXs : classes.tab} ${
             tab === TAB_MESSAGES ? classes.activeTab : ""
           }`}
           icon={

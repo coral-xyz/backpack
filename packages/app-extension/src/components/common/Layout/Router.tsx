@@ -48,8 +48,10 @@ import { NftOptionsButton, NftsDetail } from "../../Unlocked/Nfts/Detail";
 import { NftChat, NftsExperience } from "../../Unlocked/Nfts/Experience";
 import { SettingsButton } from "../../Unlocked/Settings";
 
+import { useBreakpoints } from "./hooks";
 import { NavBackButton, WithNav } from "./Nav";
 import { WithMotion } from "./NavStack";
+import { Scrollbar } from "./Scrollbar";
 import { XnftAppStack } from "./XnftAppStack";
 
 export function Router() {
@@ -131,16 +133,21 @@ function Messages() {
 }
 
 function MessagesNative() {
-  const hash = location.hash.slice(1);
   const isDarkMode = useDarkMode();
-  const { uuid, username } = useUser();
+  const hash = location.hash.slice(1);
   const { props } = useDecodedSearchParams<any>();
   const { push, pop } = useNavigation();
+  const { uuid, username } = useUser();
+  const { isXs } = useBreakpoints();
 
   useEffect(() => {
     ParentCommunicationManager.getInstance().setNativePush(push);
     ParentCommunicationManager.getInstance().setNativePop(pop);
   }, []);
+
+  if (!isXs) {
+    return <NavScreen component={<FullChatPage />} />;
+  }
 
   if (hash.startsWith("/messages/chat")) {
     return (
@@ -166,6 +173,29 @@ function MessagesNative() {
   }
 
   return <NavScreen component={<Inbox />} />;
+}
+
+function FullChatPage() {
+  const isDarkMode = useDarkMode();
+  const { props } = useDecodedSearchParams<any>();
+  const { uuid, username } = useUser();
+
+  console.log("ARMANI PROPS HERE", props.userId);
+  return (
+    <div style={{ height: "100%", display: "flex" }}>
+      <div style={{ width: "365px" }}>
+        <Scrollbar>
+          <Inbox />
+        </Scrollbar>
+      </div>
+      <ChatScreen
+        isDarkMode={isDarkMode}
+        userId={props.userId}
+        uuid={uuid}
+        username={username}
+      />
+    </div>
+  );
 }
 
 function MessagesIframe() {

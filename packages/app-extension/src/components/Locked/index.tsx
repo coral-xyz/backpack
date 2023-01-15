@@ -21,6 +21,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
   const background = useBackgroundClient();
   const user = useUser();
   const avatarUrl = useAvatarUrl(120, user.username);
+  console.log("ARMANI AVATAR URL", avatarUrl);
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [password, setPassword] = useState("");
