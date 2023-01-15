@@ -63,7 +63,6 @@ export function Router() {
         <Route path={"/messages/*"} element={<Messages />} />
         <Route path="/apps" element={<AppsPage />} />
         <Route path="/nfts" element={<NftsPage />} />
-        {/*<Route path="/swap" element={<SwapPage />} />*/}
         <Route path="/nfts/collection" element={<NftsCollectionPage />} />
         <Route path="/nfts/experience" element={<NftsExperiencePage />} />
         <Route path="/nfts/chat" element={<NftsChatPage />} />
@@ -268,12 +267,6 @@ function TokenPage() {
   return <NavScreen component={<Token {...props} />} />;
 }
 
-/*
-function SwapPage() {
-  return <NavScreen component={<Swap />} />;
-}
-*/
-
 function NavScreen({
   component,
   noScrollbars,
@@ -326,7 +319,7 @@ function NavScreen({
           navbarStyle={style}
           noScrollbars={noScrollbars}
         >
-          <NavBootstrap>{component}</NavBootstrap>
+          {component}
         </WithNav>
       </div>
     </WithMotionWrapper>
@@ -364,15 +357,6 @@ function useNavBar() {
   }
 
   if (isRoot) {
-    /**
-    const emoji = pathname.startsWith("/balances")
-      ? "💰"
-      : pathname.startsWith("/apps")
-      ? "👾"
-      : pathname.startsWith("/messages")
-      ? "💬"
-      : "🎨";
-    **/
     navButtonRight = <SettingsButton />;
     navButtonLeft = (
       <div style={{ display: "flex" }}>
@@ -428,8 +412,4 @@ function useNavBar() {
     image: pathname === "/messages/chat" ? image : undefined,
     onClick,
   };
-}
-
-function NavBootstrap({ children }: any) {
-  return <>{children}</>;
 }
