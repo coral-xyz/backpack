@@ -27,7 +27,13 @@
       "@coral-xyz/react-common": ["../react-common"],
       "@coral-xyz/react-xnft-dom-renderer": ["../react-xnft-dom-renderer"],
       "@coral-xyz/recoil": ["../recoil"],
-      "@coral-xyz/themes": ["../themes"]
+      "@coral-xyz/themes": ["../themes"],
+      "@api/*": ["./src/api/*"],
+      "@assets/*": ["./src/assets/*"],
+      "@components/*": ["./src/components/*"],
+      "@hooks/*": ["./src/hooks/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@src/*": ["./src/*"]
     }
   },
   "references": [

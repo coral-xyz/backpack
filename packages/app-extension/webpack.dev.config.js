@@ -12,6 +12,12 @@ options.resolve.alias = {
   "@coral-xyz/react-common": path.resolve(__dirname, "../react-common/src"),
   "@coral-xyz/db": path.resolve(__dirname, "../db/src"),
   "@coral-xyz/message-sdk": path.resolve(__dirname, "../message-sdk/src"),
+  "@api": path.resolve(__dirname, "src/api"),
+  "@assets": path.resolve(__dirname, "src/assets"),
+  "@components": path.resolve(__dirname, "src/components"),
+  "@hooks": path.resolve(__dirname, "src/hooks"),
+  "@utils": path.resolve(__dirname, "src/utils"),
+  "@src": path.resolve(__dirname, "src"),
 };
 
 module.exports = options;
