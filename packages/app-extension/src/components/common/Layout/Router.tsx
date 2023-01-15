@@ -180,7 +180,6 @@ function FullChatPage() {
   const { props } = useDecodedSearchParams<any>();
   const { uuid, username } = useUser();
 
-  console.log("ARMANI PROPS HERE", props.userId);
   return (
     <div style={{ height: "100%", display: "flex" }}>
       <div style={{ width: "365px" }}>
@@ -368,6 +367,7 @@ function useNavBar() {
   const theme = useCustomTheme();
   const { props }: any = useDecodedSearchParams(); // TODO: fix type
   const { uuid } = useUser();
+  const { isXs } = useBreakpoints();
   const image: string | undefined = useDbUser(uuid, props?.userId)?.image;
 
   let navButtonLeft = null as any;
@@ -381,7 +381,7 @@ function useNavBar() {
   }
 
   if (isRoot) {
-    navButtonRight = <SettingsButton />;
+    navButtonRight = isXs ? <SettingsButton /> : undefined;
     navButtonLeft = (
       <div style={{ display: "flex" }}>
         <Typography

@@ -137,7 +137,7 @@ export function SettingsButton() {
   );
 }
 
-function AvatarButton() {
+export function AvatarButton() {
   const classes = useStyles();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const avatarUrl = useAvatarUrl(32);
