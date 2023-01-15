@@ -84,12 +84,14 @@ export const SendMessage = () => {
   const { uuid } = useUser();
   const [selectedFile, setSelectedFile] = useState<any>(null);
   const [uploadingFile, setUploadingFile] = useState(false);
-  const [uploadedImageUri, setUploadedImageUri] = useState(false);
+  const [uploadedImageUri, setUploadedImageUri] = useState("");
   const [messageContent, setMessageContent] = useState("");
   const [emojiPicker, setEmojiPicker] = useState(false);
   const [gifPicker, setGifPicker] = useState(false);
   const [emojiMenuOpen, setEmojiMenuOpen] = useState(false);
-  const [selectedMediaKind, setSelectedMediaKind] = useState("image");
+  const [selectedMediaKind, setSelectedMediaKind] = useState<"image" | "video">(
+    "image"
+  );
   const theme = useCustomTheme();
 
   const {
@@ -326,7 +328,7 @@ export const SendMessage = () => {
                       file.name.endsWith("mp4") ? "video" : "image"
                     );
                     setSelectedFile(e.target?.result);
-                    uploadToS3(e.target?.result, file.name);
+                    uploadToS3(e.target?.result as string, file.name);
                   };
                   reader.readAsDataURL(file);
                 }}

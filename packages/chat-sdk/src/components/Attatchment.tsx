@@ -44,7 +44,10 @@ export const Attatchment = ({
           style={{ color: theme.custom.colors.icon, fontSize: 20 }}
         />{" "}
         <input
-          onClick={(e) => (e.target.value = null)}
+          onClick={(e) => {
+            // @ts-ignore
+            e.target.value = null;
+          }}
           ref={hiddenInputRef}
           type="file"
           id="hiddenAttachment"
