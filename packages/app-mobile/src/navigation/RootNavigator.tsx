@@ -8,7 +8,11 @@ import {
 import { NotFoundScreen } from "../screens/NotFoundScreen";
 import { LockedScreen } from "./LockedNavigator";
 import OnboardingNavigator from "./OnboardingNavigator";
-import UnlockedNavigator from "./UnlockedNavigator";
+import { UnlockedNavigator } from "./UnlockedNavigator";
+import {
+  BalanceListScreen,
+  BalancesNavigator,
+} from "@screens/Unlocked/BalancesScreen";
 
 export function RootNavigation({
   colorScheme,
