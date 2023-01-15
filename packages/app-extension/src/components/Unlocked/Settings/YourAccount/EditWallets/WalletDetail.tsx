@@ -4,6 +4,7 @@ import { UI_RPC_METHOD_KEYNAME_READ } from "@coral-xyz/common";
 import { useBackgroundClient, useWalletPublicKeys } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ContentCopy } from "@mui/icons-material";
+import { Typography } from "@mui/material";
 
 import { useNavStack } from "../../../../common/Layout/NavStack";
 import { SettingsList } from "../../../../common/Settings/List";
@@ -32,10 +33,7 @@ export const WalletDetail: React.FC<{
         params: [publicKey],
       });
       setWalletName(keyname);
-
-      const addr =
-        publicKey.slice(0, 4) + "..." + publicKey.slice(publicKey.length - 4);
-      nav.setTitle(`${keyname} (${addr})`);
+      nav.setTitle(keyname);
     })();
   }, []);
 
@@ -46,16 +44,29 @@ export const WalletDetail: React.FC<{
   };
 
   const menuItems = {
+    "Wallet Address": {
+      onClick: () => copyAddress(),
+      detail: (
+        <div style={{ display: "flex" }}>
+          <Typography
+            style={{ color: theme.custom.colors.secondary, marginRight: "8px" }}
+          >
+            {publicKey.slice(0, 4) +
+              "..." +
+              publicKey.slice(publicKey.length - 4)}
+          </Typography>
+          <ContentCopy
+            style={{ width: "20px", color: theme.custom.colors.icon }}
+          />
+        </div>
+      ),
+    },
     "Rename Wallet": {
       onClick: () =>
         nav.push("edit-wallets-rename", {
           publicKey,
           name: walletName,
         }),
-    },
-    "Copy Address": {
-      onClick: () => copyAddress(),
-      detail: <ContentCopy style={{ color: theme.custom.colors.secondary }} />,
     },
   };
 
