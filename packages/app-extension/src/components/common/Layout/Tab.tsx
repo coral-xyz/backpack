@@ -69,6 +69,7 @@ const useStyles = styles((theme) => ({
     width: "74px",
     backgroundColor: theme.custom.colors.nav,
     borderRight: `${theme.custom.colors.borderFull}`,
+    opacity: "1 !important",
     "& .MuiTabs-flexContainer": {
       height: "100%",
       width: "100%",
@@ -80,6 +81,7 @@ const useStyles = styles((theme) => ({
     backgroundColor: theme.custom.colors.nav,
     borderTop: `${theme.custom.colors.borderFull}`,
     boxShadow: theme.custom.colors.tabBarBoxShadow,
+    opacity: "1 !important",
   },
   tabIndicator: {
     color: "none",
@@ -329,14 +331,16 @@ function TabBar() {
               marginBottom: "16px",
             }}
           >
-            <Tab
-              onClick={() => {}}
-              value={"todo"}
-              disableRipple
-              className={`${isXs ? classes.tabXs : classes.tab} ${
-                tab === TAB_MESSAGES ? classes.activeTab : ""
-              }`}
-              icon={<AvatarButton />}
+            <AvatarButton
+              imgStyle={{
+                width: "40px",
+                height: "40px",
+                borderRadius: "20px",
+              }}
+              buttonStyle={{
+                marginLeft: "auto",
+                marginRight: "auto",
+              }}
             />
           </div>
         )}
