@@ -37,7 +37,7 @@ const TAB_HEIGHT = 64;
 
 const useStyles = styles((theme) => ({
   tabXs: {
-    // color: theme.custom.colors.tabIconBackground,
+    opacity: "1 !important",
     height: `${TAB_HEIGHT}px`,
     "&:hover": {
       "& svg": {
@@ -48,6 +48,7 @@ const useStyles = styles((theme) => ({
     },
   },
   tab: {
+    opacity: "1 !important",
     minWidth: "74px",
     width: "74px",
     marginTop: "16px",
@@ -69,7 +70,6 @@ const useStyles = styles((theme) => ({
     width: "74px",
     backgroundColor: theme.custom.colors.nav,
     borderRight: `${theme.custom.colors.borderFull}`,
-    opacity: "1 !important",
     "& .MuiTabs-flexContainer": {
       height: "100%",
       width: "100%",
@@ -81,7 +81,6 @@ const useStyles = styles((theme) => ({
     backgroundColor: theme.custom.colors.nav,
     borderTop: `${theme.custom.colors.borderFull}`,
     boxShadow: theme.custom.colors.tabBarBoxShadow,
-    opacity: "1 !important",
   },
   tabIndicator: {
     color: "none",
