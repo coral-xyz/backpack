@@ -6,6 +6,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.245.0",
     "@aws-sdk/s3-request-presigner": "^3.245.0",
+    "@coral-xyz/chat-zeus": "*",
     "@coral-xyz/common": "*",
     "@coral-xyz/zeus": "*",
     "@metaplex-foundation/js": "^0.17.12",
@@ -14,6 +15,7 @@
     "@types/request": "^2.48.8",
     "@types/web-push": "^3.3.2",
     "asn1.js": "^5.4.1",
+    "body-parser": "^1.20.1",
     "cookie-parser": "^1.4.6",
     "esbuild": "^0.15.16",
     "ethers": "^5.7.2",
@@ -27,6 +29,7 @@
     "request": "^2.88.2",
     "tweetnacl": "^1.0.3",
     "urlsafe-base64": "^1.0.0",
+    "uuid": "^9.0.0",
     "web-push": "^3.5.0",
     "zod": "^3.19.1"
   },

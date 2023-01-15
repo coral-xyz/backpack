@@ -36,7 +36,7 @@ import {
 import { useNavStack } from "../../../common/Layout/NavStack";
 import { WalletListItem } from "../YourAccount/EditWallets";
 
-export function AddConnectPreview({ blockchain }: { blockchain: Blockchain }) {
+export function AddConnectPreview() {
   const nav = useNavStack();
   const user = useUser();
   const avatarUrl = useAvatarUrl(72, user.username);
@@ -104,11 +104,7 @@ export function AddConnectPreview({ blockchain }: { blockchain: Blockchain }) {
       >
         <PrimaryButton
           label={`Continue as @${user.username}`}
-          onClick={() =>
-            nav.push("add-connect-wallet", {
-              blockchain,
-            })
-          }
+          onClick={() => nav.push("edit-wallets-blockchain-selector")}
         />
         <SecondaryButton
           label={`Create a new user`}

@@ -57,8 +57,10 @@ import {
   WalletAddress,
 } from "../../../components/common";
 import {
+  AllWalletsList,
   ImportTypeBadge,
   WalletList as _WalletList,
+  WalletListBlockchainSelector,
 } from "../../../components/common/WalletList";
 import {
   CloseButton,
@@ -90,7 +92,6 @@ import { PreferencesSolanaExplorer } from "./Preferences/Solana/Explorer";
 import { PreferencesTrustedSites } from "./Preferences/TrustedSites";
 import { XnftDetail } from "./Xnfts/Detail";
 import { ChangePassword } from "./YourAccount/ChangePassword";
-import { EditWallets } from "./YourAccount/EditWallets";
 import { RemoveWallet } from "./YourAccount/EditWallets/RemoveWallet";
 import { RenameWallet } from "./YourAccount/EditWallets/RenameWallet";
 import { WalletDetail } from "./YourAccount/EditWallets/WalletDetail";
@@ -281,7 +282,7 @@ function AvatarButton() {
             />
             <NavStackScreen
               name={"edit-wallets"}
-              component={(props: any) => <EditWallets {...props} />}
+              component={(props: any) => <AllWalletsList {...props} />}
             />
             <NavStackScreen
               name={"edit-wallets-add-connect-preview"}
@@ -298,6 +299,12 @@ function AvatarButton() {
             <NavStackScreen
               name={"edit-wallets-rename"}
               component={(props: any) => <RenameWallet {...props} />}
+            />
+            <NavStackScreen
+              name={"edit-wallets-blockchain-selector"}
+              component={(props: any) => (
+                <WalletListBlockchainSelector {...props} />
+              )}
             />
             <NavStackScreen
               name={"show-private-key-warning"}
@@ -359,219 +366,6 @@ function _SettingsContent() {
     <div>
       <AvatarHeader />
       <SettingsList />
-    </div>
-  );
-}
-
-function WalletLists({ close }: { close: () => void }) {
-  const blockchainKeyrings = useWalletPublicKeys();
-  return (
-    <>
-      {Object.entries(blockchainKeyrings).map(([blockchain, keyring]) => (
-        <WalletList
-          key={blockchain}
-          blockchain={blockchain as Blockchain}
-          keyring={keyring}
-          close={close}
-        />
-      ))}
-    </>
-  );
-}
-
-function WalletList({
-  blockchain,
-  keyring,
-  close,
-}: {
-  blockchain: Blockchain;
-  keyring: any;
-  close: () => void;
-}) {
-  const background = useBackgroundClient();
-  const activeWallets = useActiveWallets();
-  const theme = useCustomTheme();
-  const blockchainLogo = useBlockchainLogo(blockchain);
-  const [showAll, setShowAll] = useState(false);
-
-  const clickWallet = (wallet: any) => {
-    background
-      .request({
-        method: UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
-        params: [wallet.publicKey, blockchain],
-      })
-      .then(() => close())
-      .catch(console.error);
-  };
-
-  let activeWalletType: "derived" | "hardware";
-
-  const keys = keyring.hdPublicKeys
-    .map((k: any) => ({ ...k, type: "derived" }))
-    .concat(
-      keyring.importedPublicKeys.map((k: any) => ({
-        ...k,
-        type: "imported",
-      }))
-    )
-    .concat(
-      keyring.ledgerPublicKeys.map((k: any) => ({ ...k, type: "hardware" }))
-    )
-    // The drop down should show all wallet keys *except* the active one.
-    .filter(({ publicKey, type }: any) => {
-      const isActive = activeWallets
-        .map((p) => p.publicKey)
-        .includes(publicKey);
-      if (isActive) {
-        activeWalletType = type;
-      }
-      return !isActive;
-    });
-
-  const { name, publicKey } = activeWallets.filter(
-    (a) => a.blockchain === blockchain
-  )[0];
-
-  return (
-    <div
-      style={{
-        marginBottom: "16px",
-        marginLeft: "16px",
-        marginRight: "16px",
-      }}
-    >
-      <div
-        style={{
-          border: `${theme.custom.colors.borderFull}`,
-          borderRadius: "10px",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-          }}
-        >
-          <ListItem
-            disableRipple
-            style={{
-              background: theme.custom.colors.nav,
-              borderTopLeftRadius: "8px",
-              borderTopRightRadius: "8px",
-              borderBottomLeftRadius:
-                showAll && keys.length > 0 ? "0px" : "8px",
-              borderBottomRightRadius:
-                showAll && keys.length > 0 ? "0px" : "8px",
-              height: "48px",
-              display: "flex",
-              paddingLeft: "12px",
-              paddingRight: "12px",
-              flex: 1,
-            }}
-            onClick={() => setShowAll((s) => !s)}
-          >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-between",
-                width: "100%",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    flexDirection: "column",
-                  }}
-                >
-                  <img
-                    src={blockchainLogo}
-                    style={{
-                      width: "12px",
-                      borderRadius: "2px",
-                    }}
-                  />
-                </div>
-                <div
-                  style={{
-                    marginLeft: "8px",
-                    display: "flex",
-                    justifyContent: "center",
-                    flexDirection: "column",
-                  }}
-                >
-                  <WalletAddress
-                    name={name}
-                    publicKey={publicKey}
-                    style={{
-                      fontWeight: 500,
-                      lineHeight: "24px",
-                      fontSize: "16px",
-                    }}
-                    nameStyle={{
-                      color: theme.custom.colors.fontColor,
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      maxWidth: "75px",
-                    }}
-                  />
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    flexDirection: "column",
-                    marginLeft: "4px",
-                  }}
-                >
-                  <ImportTypeBadge type={activeWalletType!} />
-                </div>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                }}
-              >
-                {showAll ? (
-                  <ExpandLess
-                    style={{
-                      width: "22px",
-                      color: theme.custom.colors.icon,
-                    }}
-                  />
-                ) : (
-                  <ExpandMore
-                    style={{
-                      width: "22px",
-                      color: theme.custom.colors.icon,
-                    }}
-                  />
-                )}
-              </div>
-            </div>
-          </ListItem>
-        </div>
-        {showAll && (
-          <_WalletList
-            wallets={keys}
-            clickWallet={clickWallet}
-            style={{
-              borderRadius: 0,
-              marginLeft: 0,
-              marginRight: 0,
-            }}
-          />
-        )}
-      </div>
-      {showAll && <AddConnectWalletButton blockchain={blockchain} />}
     </div>
   );
 }
