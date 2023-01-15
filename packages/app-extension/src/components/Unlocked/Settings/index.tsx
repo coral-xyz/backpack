@@ -4,7 +4,6 @@ import {
   BACKPACK_FEATURE_XNFT,
   DISCORD_INVITE_LINK,
   MESSAGES_ENABLED,
-  NAV_COMPONENT_CONTACTS,
   NOTIFICATIONS_ENABLED,
   openPopupWindow,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
@@ -28,7 +27,6 @@ import {
 import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import {
   AccountCircleOutlined,
-  Add,
   Lock,
   Settings,
   Tab as WindowIcon,
@@ -51,6 +49,7 @@ import { Logout, ResetWarning } from "../../Locked/Reset/ResetWarning";
 import { ResetWelcome } from "../../Locked/Reset/ResetWelcome";
 import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
 import { NotificationButton } from "../Balances/Notifications";
+import { Contacts } from "../Messages/Contacts";
 
 import { ImportSecretKey } from "./AddConnectWallet/ImportSecretKey";
 import { AvatarHeader } from "./AvatarHeader/AvatarHeader";
@@ -235,12 +234,7 @@ function SettingsList() {
   if (featureGates[MESSAGES_ENABLED]) {
     settingsMenu.push({
       label: "Contacts",
-      onClick: () =>
-        push({
-          title: "Contacts",
-          componentId: NAV_COMPONENT_CONTACTS,
-          componentProps: {},
-        }),
+      onClick: () => nav.push("contacts"),
       icon: (props: any) => <ContactsIcon {...props} />,
       detailIcon: <PushDetail />,
     });
@@ -603,6 +597,10 @@ function SettingsNavStackDrawer({
           <NavStackScreen
             name={"xnfts-detail"}
             component={(props: any) => <XnftDetail {...props} />}
+          />
+          <NavStackScreen
+            name={"contacts"}
+            component={(props: any) => <Contacts {...props} />}
           />
         </NavStackEphemeral>
       </div>
