@@ -1,11 +1,13 @@
 import { keyringForBlockchain } from "@coral-xyz/blockchain-common";
 import type { BlockchainKeyring } from "@coral-xyz/blockchain-keyring";
 import type {
+  AutolockSettingsOption,
   DerivationPath,
   EventEmitter,
   FEATURE_GATES_MAP,
   KeyringInit,
   KeyringType,
+  Preferences,
   XnftPreference,
 } from "@coral-xyz/common";
 import {
@@ -57,7 +59,6 @@ import {
   KeyringStoreStateEnum,
   makeDefaultNav,
   makeUrl,
-  NavEphemeralProvider,
 } from "@coral-xyz/recoil";
 import type {
   Commitment,
@@ -71,6 +72,8 @@ import {
 } from "@solana/web3.js";
 import { validateMnemonic as _validateMnemonic } from "bip39";
 import { ethers } from "ethers";
+
+import type { PublicKeyData, PublicKeyType } from "../types";
 
 import type { EthereumConnectionBackend } from "./ethereum-connection";
 import { defaultPreferences, KeyringStore } from "./keyring";
@@ -769,11 +772,7 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  async keyringStoreReadAllPubkeyData(): Promise<{
-    activeBlockchain: Blockchain;
-    activePublicKeys: Array<string>;
-    publicKeys: any; // todo: type
-  }> {
+  async keyringStoreReadAllPubkeyData(): Promise<PublicKeyData> {
     const activePublicKeys = await this.activeWallets();
     const publicKeys = await this.keyringStoreReadAllPubkeys();
     const activeBlockchain =
@@ -786,12 +785,7 @@ export class Backend {
   }
 
   // Returns all pubkeys available for signing.
-  async keyringStoreReadAllPubkeys(): Promise<{
-    [blockchain: string]: {
-      publicKey: string;
-      name: string;
-    };
-  }> {
+  async keyringStoreReadAllPubkeys(): Promise<PublicKeyType> {
     const publicKeys = await this.keyringStore.publicKeys();
     const namedPublicKeys = {};
     for (const [blockchain, blockchainKeyring] of Object.entries(publicKeys)) {
@@ -821,7 +815,7 @@ export class Backend {
     return await this.keyringStore.activeWallets();
   }
 
-  async preferencesRead(uuid: string): Promise<any> {
+  async preferencesRead(uuid: string): Promise<Preferences> {
     //
     // First time onboarding this will throw an error, in which case
     // we return a default set of preferences.
@@ -1105,7 +1099,7 @@ export class Backend {
 
   async keyringAutoLockSettingsUpdate(
     seconds?: number,
-    option?: string
+    option?: AutolockSettingsOption
   ): Promise<string> {
     await this.keyringStore.autoLockSettingsUpdate(seconds, option);
     this.events.emit(BACKEND_EVENT, {
