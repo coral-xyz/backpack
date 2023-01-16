@@ -178,6 +178,7 @@ function TabBar() {
             flexDirection: isXs ? "row" : "column",
             width: isXs ? "100%" : undefined,
             justifyContent: isXs ? "space-between" : undefined,
+            marginTop: !isXs ? "12px" : undefined,
           }}
         >
           <Tab
