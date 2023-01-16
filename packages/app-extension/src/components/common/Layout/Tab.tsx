@@ -119,6 +119,7 @@ export function WithTabs(props: any) {
         location.pathname !== "/nfts/experience" &&
         location.pathname !== "/nfts/chat" &&
         (!isXs || location.pathname !== "/messages/chat") &&
+        (!isXs || location.pathname !== "/messages/groupchat") &&
         (!isXs || location.pathname !== "/messages/profile") && <TabBar />}
     </div>
   );
