@@ -137,7 +137,13 @@ export function SettingsButton() {
   );
 }
 
-function AvatarButton() {
+export function AvatarButton({
+  buttonStyle,
+  imgStyle,
+}: {
+  buttonStyle?: React.CSSProperties;
+  imgStyle?: React.CSSProperties;
+}) {
   const classes = useStyles();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const avatarUrl = useAvatarUrl(32);
@@ -150,6 +156,9 @@ function AvatarButton() {
         onClick={() => setSettingsOpen(!settingsOpen)}
         size="large"
         id="menu-button"
+        style={{
+          ...buttonStyle,
+        }}
       >
         <ProxyImage
           src={avatarUrl}
@@ -157,6 +166,7 @@ function AvatarButton() {
             width: "32px",
             height: "32px",
             borderRadius: "16px",
+            ...imgStyle,
           }}
         />
       </IconButton>

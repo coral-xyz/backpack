@@ -89,7 +89,7 @@ export const useRoomChats = (
 ) => {
   const reqs = useLiveQuery(async () => {
     return getDb(uuid).messages.where({ room, type }).sortBy("created_at");
-  });
+  }, [room]);
   return reqs;
 };
 

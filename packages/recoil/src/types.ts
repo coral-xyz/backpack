@@ -3,6 +3,8 @@ import {
   TAB_BALANCES,
   TAB_MESSAGES,
   TAB_NFTS,
+  TAB_NOTIFICATIONS,
+  TAB_RECENT_ACTIVITY,
   TAB_SWAP,
 } from "@coral-xyz/common";
 import type { BigNumber } from "ethers";
@@ -58,6 +60,8 @@ export const TABS = [
   [TAB_SWAP, "Swap"],
   [TAB_APPS, "Apps"],
   [TAB_MESSAGES, "Messages"],
+  [TAB_RECENT_ACTIVITY, "Recent Activity"],
+  [TAB_NOTIFICATIONS, "Notifications"],
 ];
 
 export function makeDefaultNav() {
