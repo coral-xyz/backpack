@@ -1,4 +1,4 @@
-import { useActiveWallet } from "@coral-xyz/recoil";
+import { activeWallet, useActiveWallet } from "@coral-xyz/recoil";
 
 export const isNFTTransaction = (transaction: any): boolean => {
   return (
@@ -49,6 +49,7 @@ export const getSourceNameFormatted = (source: string): string => {
 };
 
 export const getTransactionCaption = (transaction: any): string => {
+  const activeWallet = useActiveWallet();
   switch (transaction.type) {
     // case "TRANSFER":
     case "SWAP":
@@ -60,9 +61,7 @@ export const getTransactionCaption = (transaction: any): string => {
     case "NFT_SALE":
       return `${
         // activeWallet.publicKey
-        transaction.feePayer === "AUa9Kwa7Cd3Gguppi4wv91Rz7fedtXXmJqwe1PnAie4R"
-          ? "Bought"
-          : "Sold"
+        transaction.feePayer === activeWallet.publicKey ? "Bought" : "Sold"
       } on ${getSourceNameFormatted(transaction.source)}`;
 
     case "NFT_CANCEL_LISTING":
