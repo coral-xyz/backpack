@@ -3,6 +3,7 @@ import { Loading } from "@coral-xyz/react-common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ArrowBack } from "@mui/icons-material";
 import KeyboardArrowDownSharpIcon from "@mui/icons-material/KeyboardArrowDownSharp";
+import VerifiedIcon from "@mui/icons-material/Verified";
 import { IconButton, Typography } from "@mui/material";
 
 import { Scrollbar } from "./Scrollbar";
@@ -51,6 +52,7 @@ export function WithNav({
   noScrollbars,
   image,
   onClick,
+  isVerified,
 }: {
   title?: string;
   navButtonLeft?: React.ReactNode;
@@ -62,6 +64,7 @@ export function WithNav({
   noScrollbars?: boolean;
   image?: string;
   onClick?: any;
+  isVerified?: boolean;
 }) {
   return (
     <>
@@ -69,6 +72,7 @@ export function WithNav({
         notchViewComponent={notchViewComponent}
         title={title || ""}
         image={image}
+        isVerified={isVerified}
         onClick={onClick}
         navButtonLeft={navButtonLeft}
         navButtonRight={navButtonRight}
@@ -91,6 +95,7 @@ export function NavBar({
   notchViewComponent,
   image,
   onClick,
+  isVerified,
 }: {
   title: string;
   image?: string;
@@ -99,6 +104,7 @@ export function NavBar({
   navButtonRight: React.ReactNode;
   style?: any;
   notchViewComponent?: React.ReactElement | null;
+  isVerified?: boolean;
 }) {
   return (
     <Suspense fallback={null}>
@@ -117,6 +123,7 @@ export function NavBar({
           <CenterDisplay
             image={image}
             onClick={onClick}
+            isVerified={isVerified}
             title={title}
             notchViewComponent={notchViewComponent}
           />
@@ -209,11 +216,13 @@ function CenterDisplay({
   notchViewComponent,
   image,
   onClick,
+  isVerified,
 }: {
   title: string;
   notchViewComponent?: React.ReactElement | null;
   image?: string;
   onClick?: any;
+  isVerified?: boolean;
 }) {
   const [notchEnabled, setNotchEnabled] = useState(false);
   const notchViewComponentWithProps = notchViewComponent
@@ -255,6 +264,11 @@ function CenterDisplay({
         )}
         {notchEnabled && notchViewComponentWithProps && (
           <>{notchViewComponentWithProps}</>
+        )}
+        {isVerified && (
+          <VerifiedIcon
+            style={{ fontSize: 19, marginLeft: 3, color: "blue" }}
+          />
         )}
       </div>
     </Suspense>

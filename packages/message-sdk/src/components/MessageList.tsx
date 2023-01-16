@@ -1,14 +1,18 @@
-import type {   CollectionChatData,EnrichedInboxDb, SubscriptionType } from "@coral-xyz/common";
+import type {
+  CollectionChatData,
+  EnrichedInboxDb,
+  SubscriptionType,
+} from "@coral-xyz/common";
 import {
   NAV_COMPONENT_MESSAGE_CHAT,
   NAV_COMPONENT_MESSAGE_PROFILE,
   NAV_COMPONENT_MESSAGE_REQUESTS,
-  NAV_COMPONENT_NFT_CHAT,
 } from "@coral-xyz/common";
 import { NAV_COMPONENT_MESSAGE_GROUP_CHAT } from "@coral-xyz/common/src/constants";
 import { isFirstLastListItemStyle, ProxyImage } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import MarkChatUnreadIcon from "@mui/icons-material/MarkChatUnread";
+import VerifiedIcon from "@mui/icons-material/Verified";
 import { List, ListItem } from "@mui/material";
 
 import { ParentCommunicationManager } from "../ParentCommunicationManager";
@@ -134,8 +138,8 @@ export function ChatListItem({
               ? NAV_COMPONENT_MESSAGE_CHAT
               : NAV_COMPONENT_MESSAGE_GROUP_CHAT,
           componentProps: {
-            userId: id,
-            username: name,
+            userId: type === "individual" ? id : undefined,
+            username: type === "individual" ? name : undefined,
             id: id,
             fromInbox: true,
           },
@@ -194,13 +198,21 @@ export function ChatListItem({
               <div
                 className={classes.userTextSmall}
                 style={{
+                  display: "flex",
                   fontWeight: isUnread ? 700 : 600,
                   color: isUnread
                     ? theme.custom.colors.fontColor
                     : theme.custom.colors.smallTextColor,
                 }}
               >
-                {type === "individual" ? `@${name}` : name}
+                <div>{type === "individual" ? `@${name}` : name}</div>
+                <div>
+                  {id === "backpack-chat" && (
+                    <VerifiedIcon
+                      style={{ fontSize: 19, marginLeft: 3, color: "blue" }}
+                    />
+                  )}
+                </div>
               </div>
               <div
                 className={classes.userTextSmall}

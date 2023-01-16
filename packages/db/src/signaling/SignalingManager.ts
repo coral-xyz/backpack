@@ -182,6 +182,14 @@ export class SignalingManager {
               unread: 0,
             });
           }
+        } else {
+          createOrUpdateCollection(this.uuid, {
+            collectionId: message.payload.room,
+            lastReadMessage: m.client_generated_uuid,
+            lastMessageUuid: m.client_generated_uuid,
+            lastMessage: m.message,
+            lastMessageTimestamp: new Date().toISOString(),
+          });
         }
       });
     }

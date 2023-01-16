@@ -29,6 +29,7 @@ import {
   useDarkMode,
   useDecodedSearchParams,
   useFeatureGates,
+  useFriendships,
   useNavigation,
   useRedirectUrl,
   useUser,
@@ -170,6 +171,7 @@ function MessageNativeInner() {
   const hash = location.hash.slice(1);
   const { uuid, username } = useUser();
   const { props } = useDecodedSearchParams<any>();
+  const { isXs } = useBreakpoints();
 
   if (hash.startsWith("/messages/chat")) {
     return (
@@ -187,11 +189,17 @@ function MessageNativeInner() {
   }
 
   if (hash.startsWith("/messages/groupchat")) {
-    return <NavScreen component={<NftChat {...props} />} />;
+    return (
+      <NavScreen component={<NftChat collectionId={props.id} {...props} />} />
+    );
   }
 
   if (hash.startsWith("/messages/profile")) {
     return <NavScreen component={<ProfileScreen userId={props.userId} />} />;
+  }
+
+  if (!isXs) {
+    return <></>;
   }
 
   if (hash.startsWith("/messages/requests")) {
@@ -205,6 +213,9 @@ function FullChatPage() {
   const { props } = useDecodedSearchParams<any>();
   const [userId, setRefresh] = useState(props.userId);
   const [collectionId, setCollectionIdRefresh] = useState(props.id);
+  const { uuid } = useUser();
+  const hash = location.hash.slice(1);
+  const activeChats = useFriendships({ uuid });
 
   useEffect(() => {
     if (props.userId !== userId) {
@@ -218,13 +229,15 @@ function FullChatPage() {
       setCollectionIdRefresh(props.id);
     }
   }, [props.id]);
+  const requestsTab =
+    hash.startsWith("/messages/requests") ||
+    (hash.startsWith("/messages/chat") &&
+      !activeChats.map((x: any) => x.remoteUserId).includes(props.userId));
 
   return (
     <div style={{ height: "100%", display: "flex" }}>
       <div style={{ width: "365px" }}>
-        <Scrollbar>
-          <Inbox />
-        </Scrollbar>
+        <Scrollbar>{requestsTab ? <RequestsScreen /> : <Inbox />}</Scrollbar>
       </div>
       <div
         style={{
@@ -353,6 +366,7 @@ function NavScreen({
     notchViewComponent,
     image,
     onClick,
+    isVerified,
   } = useNavBar();
 
   const _navButtonLeft = navButtonLeft ? (
@@ -383,6 +397,7 @@ function NavScreen({
           navButtonRight={navButtonRight}
           navbarStyle={style}
           noScrollbars={noScrollbars}
+          isVerified={isVerified}
         >
           {component}
         </WithNav>
@@ -481,7 +496,14 @@ function useNavBar() {
     navButtonLeft,
     style: navStyle,
     notchViewComponent,
-    image: pathname === "/messages/chat" ? image : undefined,
+    image:
+      pathname === "/messages/chat"
+        ? image
+        : pathname === "/messages/groupchat" && props.id === "backpack-chat"
+        ? "https://user-images.githubusercontent.com/321395/206757416-a80e662a-0ccc-41cc-a20f-ff397755d47f.png"
+        : undefined,
+    isVerified:
+      pathname === "/messages/groupchat" && props.id === "backpack-chat",
     onClick,
   };
 }

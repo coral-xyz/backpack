@@ -33,7 +33,14 @@ export const RequestsScreen = () => {
         These are not from your contacts. Click into a message to reply or view
         their profile.
       </div>
-      {activeChats.length !== 0 && <MessageList activeChats={activeChats} />}
+      {activeChats.length !== 0 && (
+        <MessageList
+          activeChats={activeChats.map((x) => ({
+            chatType: "individual",
+            chatProps: x,
+          }))}
+        />
+      )}
       {activeChats.length === 0 && <EmptyRequests />}
     </div>
   );

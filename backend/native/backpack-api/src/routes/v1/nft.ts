@@ -76,9 +76,9 @@ router.get("/bulk", extractUserId, async (req, res) => {
       lastMessageUuid: collectionChatMetadata.find(
         (x) => x.collection_id === collectionId
       )?.last_message_uuid,
-      // last_message_timestamp: collectionChatMetadata.find(
-      //     (x) => x.collection_id === collectionId
-      // )?.,
+      lastMessageTimestamp: collectionChatMetadata.find(
+        (x) => x.collection_id === collectionId
+      )?.last_message_timestamp,
       image: DEFAULT_GROUP_CHATS.find((x) => x.id === collectionId)?.image,
       name: DEFAULT_GROUP_CHATS.find((x) => x.id === collectionId)?.name,
     })
