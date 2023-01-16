@@ -118,8 +118,8 @@ export function WithTabs(props: any) {
       {!location.pathname.startsWith("/xnft/") &&
         location.pathname !== "/nfts/experience" &&
         location.pathname !== "/nfts/chat" &&
-        location.pathname !== "/messages/chat" &&
-        location.pathname !== "/messages/profile" && <TabBar />}
+        (!isXs || location.pathname !== "/messages/chat") &&
+        (!isXs || location.pathname !== "/messages/profile") && <TabBar />}
     </div>
   );
 }
