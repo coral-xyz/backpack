@@ -166,6 +166,8 @@ export function ChatListItem({
           <div
             className={classes.timestamp}
             style={{
+              textAlign: "right",
+              minWidth: "63px",
               fontWeight: isUnread ? 700 : 500,
               color: isUnread
                 ? theme.custom.colors.fontColor
