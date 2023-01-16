@@ -604,7 +604,6 @@ export const ResolveFromPath = (
   returns: ReturnTypesType,
   ops: Operations
 ) => {
-  // @ts-ignore
   const ResolvePropsType = (mappedParts: Part[]) => {
     const oKey = ops[mappedParts[0].v];
     const propsP1 = oKey ? props[oKey] : props[mappedParts[0].v];
@@ -647,7 +646,6 @@ export const ResolveFromPath = (
       }
     }
   };
-  // @ts-ignore
   const ResolveReturnType = (mappedParts: Part[]) => {
     if (mappedParts.length === 0) {
       return "not";
@@ -1197,6 +1195,7 @@ export type ValueTypes = {
     collection_id?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
     last_message?: boolean | `@${string}`;
+    last_message_timestamp?: boolean | `@${string}`;
     last_message_uuid?: boolean | `@${string}`;
     type?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
@@ -1233,6 +1232,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    last_message_timestamp?:
+      | ValueTypes["timestamptz_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     last_message_uuid?:
       | ValueTypes["String_comparison_exp"]
       | undefined
@@ -1255,6 +1259,11 @@ export type ValueTypes = {
     collection_id?: string | undefined | null | Variable<any, string>;
     id?: number | undefined | null | Variable<any, string>;
     last_message?: string | undefined | null | Variable<any, string>;
+    last_message_timestamp?:
+      | ValueTypes["timestamptz"]
+      | undefined
+      | null
+      | Variable<any, string>;
     last_message_uuid?: string | undefined | null | Variable<any, string>;
     type?: string | undefined | null | Variable<any, string>;
   };
@@ -1293,6 +1302,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    last_message_timestamp?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     last_message_uuid?:
       | ValueTypes["order_by"]
       | undefined
@@ -1311,6 +1325,11 @@ export type ValueTypes = {
     collection_id?: string | undefined | null | Variable<any, string>;
     id?: number | undefined | null | Variable<any, string>;
     last_message?: string | undefined | null | Variable<any, string>;
+    last_message_timestamp?:
+      | ValueTypes["timestamptz"]
+      | undefined
+      | null
+      | Variable<any, string>;
     last_message_uuid?: string | undefined | null | Variable<any, string>;
     type?: string | undefined | null | Variable<any, string>;
   };
@@ -1332,6 +1351,11 @@ export type ValueTypes = {
     collection_id?: string | undefined | null | Variable<any, string>;
     id?: number | undefined | null | Variable<any, string>;
     last_message?: string | undefined | null | Variable<any, string>;
+    last_message_timestamp?:
+      | ValueTypes["timestamptz"]
+      | undefined
+      | null
+      | Variable<any, string>;
     last_message_uuid?: string | undefined | null | Variable<any, string>;
     type?: string | undefined | null | Variable<any, string>;
   };
@@ -6856,6 +6880,7 @@ export type ResolverInputTypes = {
     collection_id?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
     last_message?: boolean | `@${string}`;
+    last_message_timestamp?: boolean | `@${string}`;
     last_message_uuid?: boolean | `@${string}`;
     type?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
@@ -6880,6 +6905,10 @@ export type ResolverInputTypes = {
       | ResolverInputTypes["String_comparison_exp"]
       | undefined
       | null;
+    last_message_timestamp?:
+      | ResolverInputTypes["timestamptz_comparison_exp"]
+      | undefined
+      | null;
     last_message_uuid?:
       | ResolverInputTypes["String_comparison_exp"]
       | undefined
@@ -6897,6 +6926,10 @@ export type ResolverInputTypes = {
     collection_id?: string | undefined | null;
     id?: number | undefined | null;
     last_message?: string | undefined | null;
+    last_message_timestamp?:
+      | ResolverInputTypes["timestamptz"]
+      | undefined
+      | null;
     last_message_uuid?: string | undefined | null;
     type?: string | undefined | null;
   };
@@ -6919,6 +6952,7 @@ export type ResolverInputTypes = {
     collection_id?: ResolverInputTypes["order_by"] | undefined | null;
     id?: ResolverInputTypes["order_by"] | undefined | null;
     last_message?: ResolverInputTypes["order_by"] | undefined | null;
+    last_message_timestamp?: ResolverInputTypes["order_by"] | undefined | null;
     last_message_uuid?: ResolverInputTypes["order_by"] | undefined | null;
     type?: ResolverInputTypes["order_by"] | undefined | null;
   };
@@ -6933,6 +6967,10 @@ export type ResolverInputTypes = {
     collection_id?: string | undefined | null;
     id?: number | undefined | null;
     last_message?: string | undefined | null;
+    last_message_timestamp?:
+      | ResolverInputTypes["timestamptz"]
+      | undefined
+      | null;
     last_message_uuid?: string | undefined | null;
     type?: string | undefined | null;
   };
@@ -6948,6 +6986,10 @@ export type ResolverInputTypes = {
     collection_id?: string | undefined | null;
     id?: number | undefined | null;
     last_message?: string | undefined | null;
+    last_message_timestamp?:
+      | ResolverInputTypes["timestamptz"]
+      | undefined
+      | null;
     last_message_uuid?: string | undefined | null;
     type?: string | undefined | null;
   };
@@ -10976,6 +11018,7 @@ export type ModelTypes = {
     collection_id?: string | undefined;
     id: number;
     last_message?: string | undefined;
+    last_message_timestamp?: ModelTypes["timestamptz"] | undefined;
     last_message_uuid?: string | undefined;
     type: string;
   };
@@ -10987,6 +11030,9 @@ export type ModelTypes = {
     collection_id?: ModelTypes["String_comparison_exp"] | undefined;
     id?: ModelTypes["Int_comparison_exp"] | undefined;
     last_message?: ModelTypes["String_comparison_exp"] | undefined;
+    last_message_timestamp?:
+      | ModelTypes["timestamptz_comparison_exp"]
+      | undefined;
     last_message_uuid?: ModelTypes["String_comparison_exp"] | undefined;
     type?: ModelTypes["String_comparison_exp"] | undefined;
   };
@@ -11000,6 +11046,7 @@ export type ModelTypes = {
     collection_id?: string | undefined;
     id?: number | undefined;
     last_message?: string | undefined;
+    last_message_timestamp?: ModelTypes["timestamptz"] | undefined;
     last_message_uuid?: string | undefined;
     type?: string | undefined;
   };
@@ -11021,6 +11068,7 @@ export type ModelTypes = {
     collection_id?: ModelTypes["order_by"] | undefined;
     id?: ModelTypes["order_by"] | undefined;
     last_message?: ModelTypes["order_by"] | undefined;
+    last_message_timestamp?: ModelTypes["order_by"] | undefined;
     last_message_uuid?: ModelTypes["order_by"] | undefined;
     type?: ModelTypes["order_by"] | undefined;
   };
@@ -11034,6 +11082,7 @@ export type ModelTypes = {
     collection_id?: string | undefined;
     id?: number | undefined;
     last_message?: string | undefined;
+    last_message_timestamp?: ModelTypes["timestamptz"] | undefined;
     last_message_uuid?: string | undefined;
     type?: string | undefined;
   };
@@ -11049,6 +11098,7 @@ export type ModelTypes = {
     collection_id?: string | undefined;
     id?: number | undefined;
     last_message?: string | undefined;
+    last_message_timestamp?: ModelTypes["timestamptz"] | undefined;
     last_message_uuid?: string | undefined;
     type?: string | undefined;
   };
@@ -13032,6 +13082,7 @@ export type GraphQLTypes = {
     collection_id?: string | undefined;
     id: number;
     last_message?: string | undefined;
+    last_message_timestamp?: GraphQLTypes["timestamptz"] | undefined;
     last_message_uuid?: string | undefined;
     type: string;
   };
@@ -13043,6 +13094,9 @@ export type GraphQLTypes = {
     collection_id?: GraphQLTypes["String_comparison_exp"] | undefined;
     id?: GraphQLTypes["Int_comparison_exp"] | undefined;
     last_message?: GraphQLTypes["String_comparison_exp"] | undefined;
+    last_message_timestamp?:
+      | GraphQLTypes["timestamptz_comparison_exp"]
+      | undefined;
     last_message_uuid?: GraphQLTypes["String_comparison_exp"] | undefined;
     type?: GraphQLTypes["String_comparison_exp"] | undefined;
   };
@@ -13057,6 +13111,7 @@ export type GraphQLTypes = {
     collection_id?: string | undefined;
     id?: number | undefined;
     last_message?: string | undefined;
+    last_message_timestamp?: GraphQLTypes["timestamptz"] | undefined;
     last_message_uuid?: string | undefined;
     type?: string | undefined;
   };
@@ -13079,6 +13134,7 @@ export type GraphQLTypes = {
     collection_id?: GraphQLTypes["order_by"] | undefined;
     id?: GraphQLTypes["order_by"] | undefined;
     last_message?: GraphQLTypes["order_by"] | undefined;
+    last_message_timestamp?: GraphQLTypes["order_by"] | undefined;
     last_message_uuid?: GraphQLTypes["order_by"] | undefined;
     type?: GraphQLTypes["order_by"] | undefined;
   };
@@ -13093,6 +13149,7 @@ export type GraphQLTypes = {
     collection_id?: string | undefined;
     id?: number | undefined;
     last_message?: string | undefined;
+    last_message_timestamp?: GraphQLTypes["timestamptz"] | undefined;
     last_message_uuid?: string | undefined;
     type?: string | undefined;
   };
@@ -13108,6 +13165,7 @@ export type GraphQLTypes = {
     collection_id?: string | undefined;
     id?: number | undefined;
     last_message?: string | undefined;
+    last_message_timestamp?: GraphQLTypes["timestamptz"] | undefined;
     last_message_uuid?: string | undefined;
     type?: string | undefined;
   };
@@ -15113,6 +15171,7 @@ export const enum auth_collections_select_column {
   collection_id = "collection_id",
   id = "id",
   last_message = "last_message",
+  last_message_timestamp = "last_message_timestamp",
   last_message_uuid = "last_message_uuid",
   type = "type",
 }
@@ -15121,6 +15180,7 @@ export const enum auth_collections_update_column {
   collection_id = "collection_id",
   id = "id",
   last_message = "last_message",
+  last_message_timestamp = "last_message_timestamp",
   last_message_uuid = "last_message_uuid",
   type = "type",
 }

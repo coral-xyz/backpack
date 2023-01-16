@@ -6,15 +6,20 @@ export type SubscriptionMessage = {
   room: string;
 };
 
-export type MessageKind = "gif" | "text" | "secure-transfer";
+export type MessageKind = "gif" | "text" | "secure-transfer" | "media";
 
-export type MessageMetadata = {
-  signature: string;
-  counter: string;
-  escrow: string;
-  final_txn_signature?: string;
-  current_state: "pending" | "cancelled" | "redeemed";
-};
+export type MessageMetadata =
+  | {
+      signature: string;
+      counter: string;
+      escrow: string;
+      final_txn_signature?: string;
+      current_state: "pending" | "cancelled" | "redeemed";
+    }
+  | {
+      media_kind: "image" | "video";
+      media_link: string;
+    };
 
 export type SendMessagePayload = {
   messages: {
@@ -66,4 +71,7 @@ export interface CollectionChatData {
   lastReadMessage?: string;
   lastMessage?: string;
   lastMessageUuid?: string;
+  lastMessageTimestamp?: string;
+  image?: string;
+  name?: string;
 }

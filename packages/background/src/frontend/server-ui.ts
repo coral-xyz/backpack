@@ -17,6 +17,7 @@ import {
   CHANNEL_POPUP_RPC,
   ChannelAppUi,
   getLogger,
+  TAB_XNFT,
   UI_RPC_METHOD_ACTIVE_USER_UPDATE,
   UI_RPC_METHOD_ALL_USERS_READ,
   UI_RPC_METHOD_APPROVED_ORIGINS_DELETE,
@@ -66,6 +67,7 @@ import {
   UI_RPC_METHOD_NAVIGATION_POP,
   UI_RPC_METHOD_NAVIGATION_PUSH,
   UI_RPC_METHOD_NAVIGATION_READ,
+  UI_RPC_METHOD_NAVIGATION_READ_URL,
   UI_RPC_METHOD_NAVIGATION_TO_DEFAULT,
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
   UI_RPC_METHOD_PASSWORD_UPDATE,
@@ -144,7 +146,7 @@ async function handle<T = any>(
    **/
   const toggleAutoLockEnabled = (url: string) =>
     ctx.backend.keyringStoreAutoLockCountdownToggle(
-      !url.includes("xnftAddress")
+      !url.includes("xnftAddress") && !url.includes(TAB_XNFT)
     );
 
   const { method, params } = msg;
@@ -230,9 +232,9 @@ async function handle<T = any>(
     // Navigation.
     //
     case UI_RPC_METHOD_NAVIGATION_PUSH:
-      return await handleNavigationPush(ctx, params[0]);
+      return await handleNavigationPush(ctx, params[0], params[1]);
     case UI_RPC_METHOD_NAVIGATION_POP:
-      return await handleNavigationPop(ctx);
+      return await handleNavigationPop(ctx, params[0]);
     case UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE:
       if (params[0]) {
         // The URL has changed, enable/disable auto-lock depending
@@ -248,6 +250,15 @@ async function handle<T = any>(
         toggleAutoLockEnabled(JSON.stringify(navigationData));
       }
       return navigationData;
+    case UI_RPC_METHOD_NAVIGATION_READ_URL:
+      const url = await handleNavReadUrl(ctx);
+      if (url) {
+        // Usually called when the user unlocks Backpack and they are
+        // immediately using an xNFT that was opened in the previous session
+        toggleAutoLockEnabled(url);
+      }
+      return url;
+
     case UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE:
       return await handleNavigationActiveTabUpdate(ctx, params[0]);
     case UI_RPC_METHOD_NAVIGATION_TO_ROOT:
@@ -663,16 +674,18 @@ async function handleKeyringTypeRead(ctx: Context<Backend>) {
 
 async function handleNavigationPush(
   ctx: Context<Backend>,
-  url: string
+  url: string,
+  tab?: string
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.navigationPush(url);
+  const resp = await ctx.backend.navigationPush(url, tab);
   return [resp];
 }
 
 async function handleNavigationPop(
-  ctx: Context<Backend>
+  ctx: Context<Backend>,
+  tab?: string
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.navigationPop();
+  const resp = await ctx.backend.navigationPop(tab);
   return [resp];
 }
 
@@ -689,6 +702,13 @@ async function handleNavRead(
   ctx: Context<Backend>
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.navRead();
+  return [resp];
+}
+
+async function handleNavReadUrl(
+  ctx: Context<Backend>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.navReadUrl();
   return [resp];
 }
 

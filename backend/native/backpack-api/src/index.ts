@@ -12,6 +12,7 @@ import preferenceRoutes from "./routes/v1/preferences";
 import proxyRouter from "./routes/v1/proxy";
 import publicKeysRouter from "./routes/v1/public-keys";
 import referralsRouter from "./routes/v1/referrals";
+import s3Router from "./routes/v1/s3";
 import usersRouter from "./routes/v1/users";
 import { zodErrorToString } from "./util";
 
@@ -35,6 +36,7 @@ app.use("/proxy", proxyRouter);
 app.use("/publicKeys", publicKeysRouter);
 app.use("/users", usersRouter);
 app.use("/referrals", referralsRouter);
+app.use("/s3", s3Router);
 
 // @ts-ignore
 app.use((err: any, _req: Request, res: Response, next: NextFunction) => {

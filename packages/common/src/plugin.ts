@@ -29,6 +29,7 @@ import {
   PLUGIN_REQUEST_SOLANA_SIGN_TRANSACTION,
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_GET,
   PLUGIN_RPC_METHOD_LOCAL_STORAGE_PUT,
+  PLUGIN_RPC_METHOD_PLUGIN_OPEN,
   PLUGIN_RPC_METHOD_POP_OUT,
   PLUGIN_RPC_METHOD_WINDOW_OPEN,
   SOLANA_RPC_METHOD_SIGN_ALL_TXS as PLUGIN_SOLANA_RPC_METHOD_SIGN_ALL_TXS,
@@ -70,6 +71,7 @@ export class Plugin {
   private _requestTxApprovalFn?: (request: any) => void;
   private _backgroundClient?: BackgroundClient;
   private _connectionBackgroundClient?: BackgroundClient;
+  private _openPlugin?: (xnftAddress: string) => void;
 
   //
   // The last time a click event was handled for the plugin. This is used as an
@@ -212,8 +214,10 @@ export class Plugin {
     request,
     backgroundClient,
     connectionBackgroundClient,
+    openPlugin,
   }: any) {
     this._navPushFn = push;
+    this._openPlugin = openPlugin;
     this._requestTxApprovalFn = request;
     this._backgroundClient = backgroundClient;
     this._connectionBackgroundClient = connectionBackgroundClient;
@@ -381,6 +385,8 @@ export class Plugin {
         return await this._handlePut(params[0], params[1]);
       case PLUGIN_RPC_METHOD_WINDOW_OPEN:
         return await this._handleWindowOpen(params[0]);
+      case PLUGIN_RPC_METHOD_PLUGIN_OPEN:
+        return await this._handlePluginOpen(params[0]);
       case PLUGIN_RPC_METHOD_POP_OUT:
         return await this._handlePopout(params[0]);
       case PLUGIN_ETHEREUM_RPC_METHOD_SIGN_TX:
@@ -568,6 +574,12 @@ export class Plugin {
 
   private async _handleWindowOpen(url: string): Promise<RpcResponse> {
     window.open(url, "_blank");
+    return ["success"];
+  }
+
+  private async _handlePluginOpen(nftAddress: string): Promise<RpcResponse> {
+    console.log("open", nftAddress, this._openPlugin);
+    this._openPlugin?.(nftAddress);
     return ["success"];
   }
 

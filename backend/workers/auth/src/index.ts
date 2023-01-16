@@ -281,7 +281,7 @@ app.post("/users", async (c) => {
         },
         body: JSON.stringify({
           text: [username, publicKeyStr].join("\n"),
-          icon_url: `https://avatars.xnfts.dev/v1/${username}`,
+          icon_url: `https://swr.xnfts.dev/avatars/${username}`,
         }),
       });
     } catch (err) {

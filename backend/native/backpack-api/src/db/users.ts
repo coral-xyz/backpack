@@ -1,4 +1,5 @@
-import type { Blockchain, RemoteUserData } from "@coral-xyz/common";
+import type { Blockchain } from "@coral-xyz/common";
+import { AVATAR_BASE_URL } from "@coral-xyz/common";
 import { Chain } from "@coral-xyz/zeus";
 
 import { HASURA_URL, JWT } from "../config";
@@ -125,7 +126,7 @@ const transformUser = (user: {
       blockchain: k.blockchain as Blockchain,
       publicKey: k.public_key,
     })),
-    image: `https://avatars.xnfts.dev/v1/${user.username}`,
+    image: `${AVATAR_BASE_URL}/${user.username}`,
   };
 };
 

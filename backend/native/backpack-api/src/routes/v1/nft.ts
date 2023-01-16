@@ -1,5 +1,9 @@
 import type { CollectionChatData, RemoteUserData } from "@coral-xyz/common";
-import { Blockchain } from "@coral-xyz/common";
+import {
+  AVATAR_BASE_URL,
+  Blockchain,
+  DEFAULT_GROUP_CHATS,
+} from "@coral-xyz/common";
 import express from "express";
 
 import { ensureHasRoomAccess, extractUserId } from "../../auth/middleware";
@@ -52,6 +56,9 @@ router.get("/bulk", extractUserId, async (req, res) => {
 
   // TODO: optimise this
   const allCollections = await getAllCollectionsFor(userId);
+  DEFAULT_GROUP_CHATS.forEach(({ id }: { id: string }) =>
+    allCollections.push(id)
+  );
   const lastReadMappings = await getLastReadFor(userId, allCollections);
   const collectionChatMetadata = await getCollectionChatMetadata(
     allCollections
@@ -69,6 +76,11 @@ router.get("/bulk", extractUserId, async (req, res) => {
       lastMessageUuid: collectionChatMetadata.find(
         (x) => x.collection_id === collectionId
       )?.last_message_uuid,
+      lastMessageTimestamp: collectionChatMetadata.find(
+        (x) => x.collection_id === collectionId
+      )?.last_message_timestamp,
+      image: DEFAULT_GROUP_CHATS.find((x) => x.id === collectionId)?.image,
+      name: DEFAULT_GROUP_CHATS.find((x) => x.id === collectionId)?.name,
     })
   );
 
@@ -114,7 +126,7 @@ router.get("/members", extractUserId, ensureHasRoomAccess, async (req, res) => {
       return {
         id,
         username,
-        image: `https://swr.xnfts.dev/avatars/${username}`,
+        image: `${AVATAR_BASE_URL}/${username}`,
         requested: friendship?.requested || false,
         remoteRequested: friendship?.remoteRequested || false,
         areFriends: friendship?.areFriends || false,

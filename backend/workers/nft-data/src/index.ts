@@ -23,6 +23,9 @@ app.get("/metaplex-nft/:mintAddress/image", async (c) => {
     const metadataAccountResponse = await c.env.solanaRpc.fetch(
       new Request("https://rpc-proxy.backpack.workers.dev/", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: `{
           "jsonrpc": "2.0",
           "id": 1,

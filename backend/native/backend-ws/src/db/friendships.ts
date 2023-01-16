@@ -56,10 +56,15 @@ export const updateLatestMessageGroup = async (
           collection_id: roomId,
           last_message_uuid: client_generated_uuid,
           last_message: message,
+          last_message_timestamp: new Date(),
         },
         on_conflict: {
           //@ts-ignore
-          update_columns: ["last_message_uuid"],
+          update_columns: [
+            "last_message_uuid",
+            "last_message_timestamp",
+            "last_message",
+          ],
           //@ts-ignore
           constraint: "collections_collection_id_type_key",
         },

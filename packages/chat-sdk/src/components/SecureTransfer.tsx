@@ -14,10 +14,12 @@ import {
   toast,
 } from "@coral-xyz/react-common";
 import {
+  blockchainTokenData,
   useActiveSolanaWallet,
   useAnchorContext,
   useBackgroundClient,
   useBlockchainTokenAccount,
+  useLoader,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import CheckIcon from "@mui/icons-material/Check";
@@ -61,11 +63,14 @@ export const SecureTransfer = ({
   const [selectedPublicKey, setSelectedPublickey] = useState("");
   const [amount, setAmount] = useState("0");
   const [submitting, setSubmitting] = useState(false);
-  const token = useBlockchainTokenAccount({
-    publicKey,
-    blockchain: Blockchain.SOLANA,
-    tokenAddress: publicKey,
-  });
+  const [token] = useLoader(
+    blockchainTokenData({
+      publicKey,
+      blockchain: Blockchain.SOLANA,
+      tokenAddress: publicKey,
+    }),
+    null
+  );
 
   const theme = useCustomTheme();
   const refreshUserPubkeys = async () => {
