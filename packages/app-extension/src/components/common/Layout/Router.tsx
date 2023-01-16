@@ -232,7 +232,7 @@ function FullChatPage() {
   const requestsTab =
     hash.startsWith("/messages/requests") ||
     (hash.startsWith("/messages/chat") &&
-      !activeChats.map((x: any) => x.remoteUserId).includes(props.userId));
+      !activeChats?.map((x: any) => x.remoteUserId).includes(props.userId));
 
   return (
     <div style={{ height: "100%", display: "flex" }}>
