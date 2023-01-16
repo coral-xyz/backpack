@@ -76,6 +76,7 @@ import {
   ShowRecoveryPhrase,
   ShowRecoveryPhraseWarning,
 } from "./YourAccount/ShowRecoveryPhrase";
+import { AboutBackpack } from "./AboutBackpack";
 import { AddConnectPreview, AddConnectWalletMenu } from "./AddConnectWallet";
 import { Preferences } from "./Preferences";
 import { UserAccountsMenuButton } from "./UsernamesMenu";
@@ -289,12 +290,12 @@ function SettingsList() {
     detailIcon: <></>,
   });
 
-  const discordList = [
+  const aboutList = [
     {
-      label: "Need help? Hop into Discord",
-      onClick: () => window.open(DISCORD_INVITE_LINK, "_blank"),
-      icon: (props: any) => <DiscordIcon {...props} />,
-      detailIcon: <LaunchDetail />,
+      label: "About backpack",
+      onClick: () => nav.push("about-backpack"),
+      icon: null,
+      detailIcon: <PushDetail />,
     },
   ];
 
@@ -410,12 +411,12 @@ function SettingsList() {
           borderRadius: "10px",
         }}
       >
-        {discordList.map((s, idx) => {
+        {aboutList.map((s, idx) => {
           return (
             <ListItem
               key={s.label}
               isFirst={idx === 0}
-              isLast={idx === discordList.length - 1}
+              isLast={idx === aboutList.length - 1}
               onClick={s.onClick}
               id={s.label}
               style={{
@@ -430,14 +431,6 @@ function SettingsList() {
                   flex: 1,
                 }}
               >
-                {s.icon({
-                  style: {
-                    color: theme.custom.colors.icon,
-                    height: "24px",
-                    width: "24px",
-                  },
-                  fill: theme.custom.colors.icon,
-                })}
                 <Typography
                   style={{
                     marginLeft: "8px",
@@ -611,6 +604,10 @@ function SettingsNavStackDrawer({
           <NavStackScreen
             name={"contacts"}
             component={(props: any) => <Contacts {...props} />}
+          />
+          <NavStackScreen
+            name={"about-backpack"}
+            component={(props: any) => <AboutBackpack {...props} />}
           />
         </NavStackEphemeral>
       </div>
