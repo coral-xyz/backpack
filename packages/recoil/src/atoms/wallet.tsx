@@ -46,48 +46,39 @@ export const walletPublicKeyData = atom<{
   publicKeys: WalletPublicKeys;
 }>({
   key: "walletPublicKeyData",
-  default: {
-    activeBlockchain: Blockchain.SOLANA,
-    activePublicKeys: ["FqPKAh6YFPydPznQxfmSgWmzVKZYGdaj5aCSNcnh6ces"],
-    publicKeys: {
-      [Blockchain.SOLANA]: {
-        hdPublicKeys: [
-          {
-            publicKey: "FqPKAh6YFPydPznQxfmSgWmzVKZYGdaj5aCSNcnh6ces",
-            name: "Wallet 1",
-          },
-        ],
-        importedPublicKeys: [],
-        ledgerPublicKeys: [],
-      },
+  // default: {
+  //   activeBlockchain: Blockchain.SOLANA,
+  //   activePublicKeys: ["FqPKAh6YFPydPznQxfmSgWmzVKZYGdaj5aCSNcnh6ces"],
+  //   publicKeys: {
+  //     [Blockchain.SOLANA]: {
+  //       hdPublicKeys: [
+  //         {
+  //           publicKey: "FqPKAh6YFPydPznQxfmSgWmzVKZYGdaj5aCSNcnh6ces",
+  //           name: "Wallet 1",
+  //         },
+  //       ],
+  //       importedPublicKeys: [],
+  //       ledgerPublicKeys: [],
+  //     },
+  //   },
+  // },
+  default: selector({
+    key: "walletPublicKeyDataDefault",
+    get: async ({ get }) => {
+      const background = get(backgroundClient);
+      try {
+        const result = await background.request({
+          method: UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEY_DATA,
+          params: [],
+        });
+        logger.debug("atom.walletPublicKeyData result", result);
+        return result;
+      } catch (error) {
+        logger.debug("atom.walletPublicKeyDatae error", error);
+        return {};
+      }
     },
-  },
-  // effects: [
-  //   ({ setSelf }) => {
-  //     return setSelf({
-  //       activeBlockchain: Blockchain.SOLANA,
-  //       activePublicKeys: [],
-  //       publicKeys: {},
-  //     });
-  //   },
-  // ],
-  // default: selector({
-  //   key: "walletPublicKeyDataDefault",
-  //   get: async ({ get }) => {
-  //     const background = get(backgroundClient);
-  //     try {
-  //       const result = await background.request({
-  //         method: UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEY_DATA,
-  //         params: [],
-  //       });
-  //       logger.debug("atom.walletPublicKeyData result", result);
-  //       return result;
-  //     } catch (error) {
-  //       logger.debug("atom.walletPublicKeyDatae error", error);
-  //       return {};
-  //     }
-  //   },
-  // }),
+  }),
 });
 
 export const activeBlockchain = selector<Blockchain>({
