@@ -1,3 +1,5 @@
+import { useActiveWallet } from "@coral-xyz/recoil";
+
 export const isNFTTransaction = (transaction: any): boolean => {
   return (
     (transaction?.type?.includes("NFT") ||
@@ -7,18 +9,16 @@ export const isNFTTransaction = (transaction: any): boolean => {
 };
 
 export const getTransactionTitle = (transaction: any) => {
+  const activeWallet = useActiveWallet();
   switch (transaction.type) {
     case "TRANSFER":
       if (
         transaction?.tokenTransfers[0]?.fromUserAccount ===
-        "AUa9Kwa7Cd3Gguppi4wv91Rz7fedtXXmJqwe1PnAie4R"
-        // activeWallet.publicKey
+        activeWallet.publicKey
       ) {
         return "Sent";
       } else if (
-        transaction?.tokenTransfers[0]?.toUserAccount ===
-        "AUa9Kwa7Cd3Gguppi4wv91Rz7fedtXXmJqwe1PnAie4R"
-        // activeWallet.publicKey
+        transaction?.tokenTransfers[0]?.toUserAccount === activeWallet.publicKey
       ) {
         return "Recieved";
       } else {

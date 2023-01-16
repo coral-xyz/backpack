@@ -25,8 +25,6 @@ export function TransactionDetail({
   const theme = useCustomTheme();
   const [openDrawer, setOpenDrawer] = useState(true);
 
-  console.log(transaction, "transaction from detail");
-
   return (
     <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
       <div style={{ height: "100%" }}>
