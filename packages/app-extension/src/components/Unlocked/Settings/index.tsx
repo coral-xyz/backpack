@@ -5,7 +5,9 @@ import {
   DISCORD_INVITE_LINK,
   MESSAGES_ENABLED,
   NOTIFICATIONS_ENABLED,
+  openAddUserAccount,
   openPopupWindow,
+  UI_RPC_METHOD_ACTIVE_USER_UPDATE,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
 } from "@coral-xyz/common";
 import {
@@ -24,22 +26,18 @@ import {
   useBackgroundClient,
   useFeatureGates,
   useNavigation,
+  useUser,
 } from "@coral-xyz/recoil";
 import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import {
   AccountCircleOutlined,
+  Check,
   Lock,
   Settings,
   Tab as WindowIcon,
 } from "@mui/icons-material";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
-import {
-  Button,
-  Divider,
-  IconButton,
-  Popover,
-  Typography,
-} from "@mui/material";
+import { Button, IconButton, Popover, Typography } from "@mui/material";
 
 import {
   AllWalletsList,
@@ -152,8 +150,8 @@ export function AvatarButton({
   imgStyle?: React.CSSProperties;
 }) {
   const classes = useStyles();
+  const theme = useCustomTheme();
   const [anchorEl, setAnchorEl] = useState<any | null>(null);
-
   const [avatarOpen, setAvatarOpen] = useState(false);
   const avatarUrl = useAvatarUrl(32);
   // PCA test ProxyImage
@@ -197,6 +195,7 @@ export function AvatarButton({
         PaperProps={{
           style: {
             borderRadius: "6px",
+            background: theme.custom.colors.background,
           },
         }}
       >
@@ -213,18 +212,19 @@ function AvatarMenu() {
       style={{
         width: "218px",
         border: theme.custom.colors.borderFull,
+        borderRadius: "6px",
       }}
     >
       <UsersMenuList />
-      <Divider
+      <div
         style={{
-          backgroundColor: theme.custom.colors.background,
+          borderTop: theme.custom.colors.borderFull,
         }}
       />
       <AuxMenuList closePopover={() => {}} />
-      <Divider
+      <div
         style={{
-          backgroundColor: theme.custom.colors.background,
+          borderTop: theme.custom.colors.borderFull,
         }}
       />
       <LockList />
@@ -245,32 +245,70 @@ function MenuList({ children }: { children: any }) {
   );
 }
 
-function UsersMenuList() {
-  const users = useAllUsers();
+function MenuListItem({
+  onClick,
+  children,
+}: {
+  onClick: () => void;
+  children: any;
+}) {
   return (
-    <MenuList>
-      {users.map((user: any) => {
-        return <UserMenuItem user={user} onClick={() => {}} />;
-      })}
-    </MenuList>
+    <Button
+      onClick={onClick}
+      disableRipple
+      style={{
+        textTransform: "none",
+        padding: 0,
+        paddingTop: "8px",
+        paddingBottom: "8px",
+        paddingLeft: "16px",
+        paddingRight: "16px",
+        width: "100%",
+        display: "inline",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+        }}
+      >
+        {children}
+      </div>
+    </Button>
   );
 }
 
-function LockList() {
+function UsersMenuList() {
+  const users = useAllUsers();
   const theme = useCustomTheme();
+  const background = useBackgroundClient();
   return (
     <MenuList>
-      <MenuListItem onClick={() => {}}>
+      {users.map((user: any) => {
+        return (
+          <UserMenuItem
+            user={user}
+            onClick={async () => {
+              await background.request({
+                method: UI_RPC_METHOD_ACTIVE_USER_UPDATE,
+                params: [user.uuid],
+              });
+            }}
+          />
+        );
+      })}
+      <MenuListItem
+        onClick={() => {
+          openAddUserAccount();
+        }}
+      >
         <Typography
           style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            color: theme.custom.colors.fontColor,
-            fontSize: "14px",
+            fontSize: 14,
+            color: theme.custom.colors.secondary,
           }}
         >
-          Lock Wallet
+          + Add Account
         </Typography>
       </MenuListItem>
     </MenuList>
@@ -295,7 +333,12 @@ function AuxMenuList({ closePopover }: { closePopover: any }) {
           Settings
         </Typography>
       </MenuListItem>
-      <MenuListItem onClick={() => setSettingsOpen(true)}>
+      <MenuListItem
+        onClick={async () => {
+          await openPopupWindow("popup.html");
+          window.close();
+        }}
+      >
         <div
           style={{
             width: "100%",
@@ -337,71 +380,104 @@ function AuxMenuList({ closePopover }: { closePopover: any }) {
 
 function UserMenuItem({ user, onClick }: { user: any; onClick: () => void }) {
   const theme = useCustomTheme();
+  const currentUser = useUser();
   const avatarUrl = useAvatarUrl(undefined, user.username);
+  const isCurrentUser = user.uuid === currentUser.uuid;
+
   return (
     <MenuListItem onClick={onClick}>
       <div
         style={{
           display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
+          justifyContent: "space-between",
+          width: "100%",
         }}
       >
-        <ProxyImage
-          src={avatarUrl}
+        <div
           style={{
-            width: "20px",
-            height: "20px",
-            borderRadius: "50%",
+            display: "flex",
           }}
-        />
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}
+          >
+            <ProxyImage
+              src={avatarUrl}
+              style={{
+                width: "20px",
+                height: "20px",
+                borderRadius: "50%",
+              }}
+            />
+          </div>
+          <Typography
+            style={{
+              marginLeft: "8px",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              color: theme.custom.colors.fontColor,
+              fontSize: "14px",
+            }}
+          >
+            @{user.username}
+          </Typography>
+        </div>
+        {isCurrentUser && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              flexDirection: "column",
+            }}
+          >
+            <Check
+              style={{
+                width: "20px",
+                height: "20px",
+                opacity: 0.8,
+                color: theme.custom.colors.fontColor,
+              }}
+            />
+          </div>
+        )}
       </div>
-      <Typography
-        style={{
-          marginLeft: "8px",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          color: theme.custom.colors.fontColor,
-          fontSize: "14px",
-        }}
-      >
-        @{user.username}
-      </Typography>
     </MenuListItem>
   );
 }
 
-function MenuListItem({
-  onClick,
-  children,
-}: {
-  onClick: () => void;
-  children: any;
-}) {
+function LockList() {
+  const theme = useCustomTheme();
+  const background = useBackgroundClient();
   return (
-    <Button
-      onClick={onClick}
-      disableRipple
-      style={{
-        textTransform: "none",
-        padding: 0,
-        paddingTop: "8px",
-        paddingBottom: "8px",
-        paddingLeft: "16px",
-        paddingRight: "16px",
-        width: "100%",
-        display: "inline",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
+    <MenuList>
+      <MenuListItem
+        onClick={() => {
+          background
+            .request({
+              method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
+              params: [],
+            })
+            .catch(console.error);
         }}
       >
-        {children}
-      </div>
-    </Button>
+        <Typography
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            color: theme.custom.colors.fontColor,
+            fontSize: "14px",
+          }}
+        >
+          Lock Wallet
+        </Typography>
+      </MenuListItem>
+    </MenuList>
   );
 }
 

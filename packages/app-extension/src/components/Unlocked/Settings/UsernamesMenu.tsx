@@ -195,7 +195,10 @@ function UserAccountListItem({
             }}
           >
             <Check
-              style={{ opacity: 0.8, color: theme.custom.colors.fontColor }}
+              style={{
+                opacity: 0.8,
+                color: theme.custom.colors.fontColor,
+              }}
             />
           </div>
         )}
