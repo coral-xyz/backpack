@@ -2,6 +2,7 @@
 // extension UI to the background script.
 
 import type {
+  AutolockSettingsOption,
   Blockchain,
   Context,
   DerivationPath,
@@ -9,8 +10,7 @@ import type {
   FEATURE_GATES_MAP,
   RpcRequest,
   RpcResponse,
-  XnftPreference,
-} from "@coral-xyz/common";
+  XnftPreference} from "@coral-xyz/common";
 import {
   BACKEND_EVENT,
   CHANNEL_POPUP_NOTIFICATIONS,
@@ -641,7 +641,7 @@ async function handleKeyringAutoLockSettingsRead(
 async function handleKeyringAutoLockSettingsUpdate(
   ctx: Context<Backend>,
   seconds?: number,
-  option?: string
+  option?: AutolockSettingsOption
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.keyringAutoLockSettingsUpdate(seconds, option);
   return [resp];

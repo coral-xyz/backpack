@@ -42,7 +42,7 @@ const logger = getLogger("KKKKKK");
 // a combination of atom + selector? or just selector? either way, we're getting an issue where a selector downchian can't read ledgerPublicKeys because publicKeys is null, which is a problem
 export const walletPublicKeyData = atom<{
   activeBlockchain: Blockchain;
-  activePublicKeys: Array<string>;
+  activePublicKeys: string[];
   publicKeys: WalletPublicKeys;
 }>({
   key: "walletPublicKeyData",

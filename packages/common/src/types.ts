@@ -160,9 +160,10 @@ export type Preferences = {
   ethereum: EthereumData;
 } & DeprecatedWalletDataDoNotUse;
 
+export type AutolockSettingsOption = "never" | "onClose" | undefined;
 export type AutolockSettings = {
   seconds?: number;
-  option?: "never" | "onClose" | undefined;
+  option?: AutolockSettingsOption;
 };
 
 // Legacy types. Don't use these.

@@ -1,11 +1,13 @@
 import { keyringForBlockchain } from "@coral-xyz/blockchain-common";
 import type { BlockchainKeyring } from "@coral-xyz/blockchain-keyring";
 import type {
+  AutolockSettingsOption,
   DerivationPath,
   EventEmitter,
   FEATURE_GATES_MAP,
   KeyringInit,
   KeyringType,
+  Preferences,
   XnftPreference,
 } from "@coral-xyz/common";
 import {
@@ -1119,7 +1121,7 @@ export class Backend {
 
   async keyringAutoLockSettingsUpdate(
     seconds?: number,
-    option?: string
+    option?: AutolockSettingsOption
   ): Promise<string> {
     await this.keyringStore.autoLockSettingsUpdate(seconds, option);
     this.events.emit(BACKEND_EVENT, {

@@ -4,6 +4,7 @@ import {
 } from "@coral-xyz/blockchain-common";
 import type { BlockchainKeyring } from "@coral-xyz/blockchain-keyring";
 import type {
+  AutolockSettingsOption,
   Blockchain,
   DerivationPath,
   EventEmitter,
@@ -366,7 +367,10 @@ export class KeyringStore {
     });
   }
 
-  public async autoLockSettingsUpdate(seconds?: number, option?: string) {
+  public async autoLockSettingsUpdate(
+    seconds?: number,
+    option?: AutolockSettingsOption
+  ) {
     return await this.withUnlock(async () => {
       const data = await store.getWalletDataForUser(this.activeUserUuid!);
       await store.setWalletDataForUser(this.activeUserUuid!, {
@@ -954,6 +958,7 @@ export function defaultPreferences(
     ethereum: {
       explorer: EthereumExplorer.DEFAULT,
       connectionUrl: EthereumConnectionUrl.DEFAULT,
+      chainId: "" // TODO(peter) default chainId?
     },
   };
 }
