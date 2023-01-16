@@ -8,13 +8,13 @@ import type {
   DerivationPath,
   EventEmitter,
   KeyringInit,
+  Preferences,
 } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
   BACKEND_EVENT,
   EthereumConnectionUrl,
   EthereumExplorer,
-  getLogger,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   SolanaCluster,
   SolanaExplorer,
@@ -35,7 +35,6 @@ import {
   DefaultKeyname,
 } from "../store";
 
-const logger = getLogger("ZG");
 /**
  * KeyringStore API for managing all wallet keys .
  */
@@ -934,7 +933,9 @@ class UserKeyring {
   }
 }
 
-export function defaultPreferences(enabledBlockchains: any): any {
+export function defaultPreferences(
+  enabledBlockchains: Blockchain[]
+): Preferences {
   return {
     autoLockSettings: {
       seconds: DEFAULT_AUTO_LOCK_INTERVAL_SECS,

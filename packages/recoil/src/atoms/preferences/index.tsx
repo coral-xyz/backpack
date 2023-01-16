@@ -1,10 +1,11 @@
-import type { Blockchain } from "@coral-xyz/common";
+import { defaultPreferences } from "@coral-xyz/background";
+import type { Blockchain, Preferences } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
+  getLogger,
   UI_RPC_METHOD_ALL_USERS_READ,
   UI_RPC_METHOD_PREFERENCES_READ,
   UI_RPC_METHOD_USER_READ,
-  getLogger,
 } from "@coral-xyz/common";
 import {
   atom,
@@ -18,7 +19,7 @@ import { backgroundClient } from "../client";
 
 const logger = getLogger("KKKK");
 
-export const preferences = atom<any>({
+export const preferences = atom<Preferences>({
   key: "preferences",
   default: selector({
     key: "preferencesDefault",
@@ -41,7 +42,7 @@ export const preferences = atom<any>({
   }),
 });
 
-export const enabledBlockchains = selector<Array<Blockchain>>({
+export const enabledBlockchains = selector<Blockchain[]>({
   key: "enabledBlockchains",
   get: async ({ get }) => {
     const p = get(preferences);
@@ -84,23 +85,12 @@ export const autoLockSettings = selector<{
 export const isAggregateWallets = selector<boolean>({
   key: "isAggregateWallets",
   get: async ({ get }) => {
-    logger.debug("atom.isAggregateWallets p:pre");
-    try {
-      const p = get(preferences);
-      logger.debug("atom.isAggregateWallets p", p);
-      logger.debug(
-        "atom.isAggregateWallets p.aggregateWallets",
-        p.aggregateWallets.toString()
-      );
-      return Boolean(p.aggregateWallets);
-    } catch (error) {
-      logger.debug("atom.isAggregateWallets error", error);
-      return false;
-    }
+    const p = get(preferences);
+    return Boolean(p.aggregateWallets);
   },
 });
 
-export const approvedOrigins = selector<Array<string>>({
+export const approvedOrigins = selector<string[]>({
   key: "approvedOrigins",
   get: async ({ get }) => {
     const p = get(preferences);

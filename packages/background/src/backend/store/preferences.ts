@@ -1,49 +1,10 @@
-import type { Blockchain } from "@coral-xyz/common";
-import type { Commitment } from "@solana/web3.js";
+import type { Preferences } from "@coral-xyz/common";
 
 import { LocalStorageDb } from "./db";
 
 const STORE_KEY_WALLET_DATA = "wallet-data";
 
-/**
- * Persistent model for user preferences.
- *
- * Note: this data is not encrypted on the client.
- */
-
-// Legacy types. Don't use these.
-type DeprecatedWalletDataDoNotUse = {
-  username?: string;
-  autoLockSecs?: number; // Used in releases <=0.4.0
-};
-
-export type WalletData = {
-  autoLockSettings: {
-    seconds?: number;
-    option?: string;
-  };
-  approvedOrigins: Array<string>;
-  enabledBlockchains: Array<Blockchain>;
-  darkMode: boolean;
-  developerMode: boolean;
-  aggregateWallets: boolean;
-  solana: SolanaData;
-  ethereum?: EthereumData;
-} & DeprecatedWalletDataDoNotUse;
-
-type SolanaData = {
-  explorer: string;
-  commitment: Commitment;
-  cluster: string;
-};
-
-type EthereumData = {
-  explorer?: string;
-  connectionUrl?: string;
-  chainId?: string;
-};
-
-export async function getWalletDataForUser(uuid: string): Promise<WalletData> {
+export async function getWalletDataForUser(uuid: string): Promise<Preferences> {
   const data = await LocalStorageDb.get(key(uuid));
   if (data === undefined) {
     throw new Error("wallet data is undefined");
@@ -51,7 +12,7 @@ export async function getWalletDataForUser(uuid: string): Promise<WalletData> {
   return data;
 }
 
-export async function setWalletDataForUser(uuid: string, data?: WalletData) {
+export async function setWalletDataForUser(uuid: string, data?: Preferences) {
   await LocalStorageDb.set(key(uuid), data);
 }
 

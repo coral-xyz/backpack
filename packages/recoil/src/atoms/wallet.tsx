@@ -21,30 +21,73 @@ function gcd() {
  * All the other pieces of wallet data are derived via selectors from this atom.
  */
 const logger = getLogger("KKKKKK");
+
+// const d = {
+//   activeBlockchain: "solana",
+//   publicKeys: {
+//     solana: {
+//       hdPublicKeys: [
+//         {
+//           publicKey: "FqPKAh6YFPydPznQxfmSgWmzVKZYGdaj5aCSNcnh6ces",
+//           name: "Wallet 1",
+//         },
+//       ],
+//       importedPublicKeys: [],
+//       ledgerPublicKeys: [],
+//     },
+//   },
+// };
+
+// TODO(peter): these need to return back some sort of sane defaults like you see before, but async
+// a combination of atom + selector? or just selector? either way, we're getting an issue where a selector downchian can't read ledgerPublicKeys because publicKeys is null, which is a problem
 export const walletPublicKeyData = atom<{
   activeBlockchain: Blockchain;
   activePublicKeys: Array<string>;
   publicKeys: WalletPublicKeys;
 }>({
   key: "walletPublicKeyData",
-  default: selector({
-    key: "walletPublicKeyDataDefault",
-    get: async ({ get }) => {
-      const background = get(backgroundClient);
-      try {
-        const result = await background.request({
-          method: UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEY_DATA,
-          params: [],
-        });
-        debugger;
-        logger.debug("atom.walletPublicKeyData result", result);
-        return result;
-      } catch (error) {
-        logger.debug("atom.walletPublicKeyDatae error", error);
-        return {};
-      }
+  default: {
+    activeBlockchain: Blockchain.SOLANA,
+    activePublicKeys: ["FqPKAh6YFPydPznQxfmSgWmzVKZYGdaj5aCSNcnh6ces"],
+    publicKeys: {
+      [Blockchain.SOLANA]: {
+        hdPublicKeys: [
+          {
+            publicKey: "FqPKAh6YFPydPznQxfmSgWmzVKZYGdaj5aCSNcnh6ces",
+            name: "Wallet 1",
+          },
+        ],
+        importedPublicKeys: [],
+        ledgerPublicKeys: [],
+      },
     },
-  }),
+  },
+  // effects: [
+  //   ({ setSelf }) => {
+  //     return setSelf({
+  //       activeBlockchain: Blockchain.SOLANA,
+  //       activePublicKeys: [],
+  //       publicKeys: {},
+  //     });
+  //   },
+  // ],
+  // default: selector({
+  //   key: "walletPublicKeyDataDefault",
+  //   get: async ({ get }) => {
+  //     const background = get(backgroundClient);
+  //     try {
+  //       const result = await background.request({
+  //         method: UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEY_DATA,
+  //         params: [],
+  //       });
+  //       logger.debug("atom.walletPublicKeyData result", result);
+  //       return result;
+  //     } catch (error) {
+  //       logger.debug("atom.walletPublicKeyDatae error", error);
+  //       return {};
+  //     }
+  //   },
+  // }),
 });
 
 export const activeBlockchain = selector<Blockchain>({
@@ -93,35 +136,22 @@ export const allWalletsDisplayed = selector<
 >({
   key: "allWalletsDisplayed",
   get: ({ get }) => {
-    logger.debug("atom.allWalletsDisplayed", gcd());
-    // const _isAggregateWallets = false;
     try {
       const _isAggregateWallets = get(isAggregateWallets);
-
       logger.debug(
-        "atom.allWalletsDisplayed _isAggregateWallets",
-        _isAggregateWallets,
-        gcd()
+        "atom.allWalletsDisplayed:_isAggregateWallets",
+        _isAggregateWallets
       );
       if (_isAggregateWallets) {
+        logger.debug("atom.allWalletsDisplayed:_isAggregateWallets");
         return get(allWallets);
       } else {
-        try {
-          logger.debug(
-            "atom.allWalletsDisplayed getActiveWallet",
-            _isAggregateWallets,
-            gcd()
-          );
-          const res = get(activeWallet);
-          logger.debug("atom.allWalletsDisplay activeWallet", res, gcd());
-          return [res];
-        } catch (error) {
-          logger.debug("atom.allWalletsDisplay error", error, gcd());
-          return [];
-        }
+        const res = get(activeWallet);
+        logger.debug("atom.allWalletsDisplayed:activeWallet", res);
+        return [res];
       }
     } catch (error) {
-      logger.debug("atom.allWalletsDisplayed TOTAL error", error, gcd());
+      logger.debug("atom.allWalletsDisplayed:error", error, gcd());
       return [];
     }
   },
@@ -168,17 +198,37 @@ export const activeWallet = selector<{
   type: string;
 }>({
   key: "activeWallet",
-  get: ({ get }) => {
+  get: async ({ get }) => {
     try {
-      logger.debug("atom.activeWallet");
+      logger.debug("atom.activeWallet data:pre");
       const data = get(walletPublicKeyData);
-      logger.debug("atom.activeWallet data ", data);
+      logger.debug("atom.activeWallet data:post", data);
+
+      logger.debug(
+        "atom.activeWallet data.activeBlockchain",
+        data.activeBlockchain
+      );
+      logger.debug("atom.activeWallet data.publicKeys", data.publicKeys);
+
+      const keyring = data.publicKeys[data.activeBlockchain]!;
+      logger.debug("atom.activeWallet data.keyring", keyring);
+
+      if (!keyring) {
+        logger.debug("atom.activeWallet NO KEYRING");
+        throw new Error(
+          'No keyring for active blockchain "' + data.activeBlockchain + '"'
+        );
+      }
+
+      logger.debug("atom.activeWallet BEFORE ledgerPublicKeys etc");
 
       //
       // Get all the pubkeys for the active blockchain.
       //
       const { ledgerPublicKeys, importedPublicKeys, hdPublicKeys } =
         data.publicKeys[data.activeBlockchain];
+
+      logger.debug("atom.activeWallet data ledgerPublicKeys etc", data);
 
       //
       // Pluck out the currently active wallet for that blockchain.
@@ -189,17 +239,23 @@ export const activeWallet = selector<{
         .concat(importedPublicKeys.map((k) => ({ ...k, type: "imported" })))
         .find((pk) => data.activePublicKeys.indexOf(pk.publicKey) >= 0);
 
+      logger.debug("atom.activeWallet BEFORE wallet");
+
       if (!wallet) {
+        logger.debug("atom.activeWallet no wallet found");
         throw new Error("active wallet not found");
       }
 
-      //
-      //
-      //
-      return {
+      logger.debug("atom.activeWallet data:wallet", wallet);
+
+      const res = {
         blockchain: data.activeBlockchain,
         ...wallet,
       };
+
+      logger.debug("atom.activeWallet res", res);
+
+      return res;
     } catch (error) {
       logger.debug("atom.activeWallet data error", error);
       return {

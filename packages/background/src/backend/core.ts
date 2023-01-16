@@ -71,6 +71,8 @@ import {
 import { validateMnemonic as _validateMnemonic } from "bip39";
 import { ethers } from "ethers";
 
+import type { PublicKeyData, PublicKeyType } from "../types";
+
 import type { EthereumConnectionBackend } from "./ethereum-connection";
 import { defaultPreferences, KeyringStore } from "./keyring";
 import type { SolanaConnectionBackend } from "./solana-connection";
@@ -779,19 +781,21 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  async keyringStoreReadAllPubkeyData(): Promise<{
-    activeBlockchain: Blockchain;
-    activePublicKeys: Array<string>;
-    publicKeys: any; // todo: type
-  }> {
+  async keyringStoreReadAllPubkeyData(): Promise<PublicKeyData> {
     logger.debug("keyringStoreReadAllPubkeyData");
     const activePublicKeys = await this.activeWallets();
-    logger.debug("keyringStoreReadAllPubkeyData activePublicKeys", activePublicKeys);
+    logger.debug(
+      "keyringStoreReadAllPubkeyData activePublicKeys",
+      activePublicKeys
+    );
     const publicKeys = await this.keyringStoreReadAllPubkeys();
     logger.debug("keyringStoreReadAllPubkeyData publicKeys", publicKeys);
     const activeBlockchain =
       this.keyringStore.activeUserKeyring.activeBlockchain;
-    logger.debug("keyringStoreReadAllPubkeyData activeBlockchain", activeBlockchain)
+    logger.debug(
+      "keyringStoreReadAllPubkeyData activeBlockchain",
+      activeBlockchain
+    );
 
     return {
       activeBlockchain,
@@ -801,12 +805,7 @@ export class Backend {
   }
 
   // Returns all pubkeys available for signing.
-  async keyringStoreReadAllPubkeys(): Promise<{
-    [blockchain: string]: {
-      publicKey: string;
-      name: string;
-    };
-  }> {
+  async keyringStoreReadAllPubkeys(): Promise<PublicKeyType> {
     const publicKeys = await this.keyringStore.publicKeys();
     const namedPublicKeys = {};
     for (const [blockchain, blockchainKeyring] of Object.entries(publicKeys)) {
@@ -836,7 +835,7 @@ export class Backend {
     return await this.keyringStore.activeWallets();
   }
 
-  async preferencesRead(uuid: string): Promise<any> {
+  async preferencesRead(uuid: string): Promise<Preferences> {
     //
     // First time onboarding this will throw an error, in which case
     // we return a default set of preferences.

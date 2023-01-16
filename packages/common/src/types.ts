@@ -1,3 +1,5 @@
+import type { Commitment } from "@solana/web3.js";
+
 import type { DerivationPath } from "./crypto";
 
 export type Context<Backend> = {
@@ -146,3 +148,37 @@ export type ImportedDerivationPath = {
 
 export type SolanaFeeConfig = { computeUnits: number; priorityFee: bigint };
 export type FeeConfig = SolanaFeeConfig;
+
+export type Preferences = {
+  autoLockSettings: AutolockSettings;
+  approvedOrigins: string[];
+  enabledBlockchains: Blockchain[];
+  darkMode: boolean;
+  developerMode: boolean;
+  aggregateWallets: boolean;
+  solana: SolanaData;
+  ethereum: EthereumData;
+} & DeprecatedWalletDataDoNotUse;
+
+export type AutolockSettings = {
+  seconds?: number;
+  option?: "never" | "onClose" | undefined;
+};
+
+// Legacy types. Don't use these.
+type DeprecatedWalletDataDoNotUse = {
+  username?: string;
+  autoLockSecs?: number; // Used in releases <=0.4.0
+};
+
+type SolanaData = {
+  explorer: string;
+  commitment: Commitment;
+  cluster: string;
+};
+
+type EthereumData = {
+  explorer: string;
+  connectionUrl: string;
+  chainId: string;
+};

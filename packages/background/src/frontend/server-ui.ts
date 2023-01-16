@@ -103,7 +103,7 @@ import type { Commitment } from "@solana/web3.js";
 
 import type { Backend } from "../backend/core";
 import type { User } from "../backend/store";
-import type { Config, Handle } from "../types";
+import type { Config, Handle, PublicKeyData } from "../types";
 
 const logger = getLogger("background-server-ui");
 
@@ -484,9 +484,15 @@ async function handleKeyringActiveWalletUpdate(
 
 async function handleKeyringStoreReadAllPubkeyData(
   ctx: Context<Backend>
-): Promise<RpcResponse<Array<string>>> {
-  const resp = await ctx.backend.keyringStoreReadAllPubkeyData();
-  return [resp];
+): Promise<RpcResponse<PublicKeyData[]>> {
+  try {
+    logger.debug("handleKeyringStoreReadAllPubkeyData");
+    const resp = await ctx.backend.keyringStoreReadAllPubkeyData();
+    return [resp];
+  } catch (err) {
+    logger.debug("handleKeyringStoreReadAllPubkeyData error", err);
+    return [];
+  }
 }
 
 async function handleKeyringStoreReadAllPubkeys(
