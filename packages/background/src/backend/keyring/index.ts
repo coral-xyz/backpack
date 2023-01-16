@@ -4,6 +4,7 @@ import {
 } from "@coral-xyz/blockchain-common";
 import type { BlockchainKeyring } from "@coral-xyz/blockchain-keyring";
 import type {
+  AutolockSettingsOption,
   Blockchain,
   DerivationPath,
   EventEmitter,
@@ -12,27 +13,17 @@ import type {
 import {
   BACKEND_API_URL,
   BACKEND_EVENT,
-  EthereumConnectionUrl,
-  EthereumExplorer,
+  DEFAULT_AUTO_LOCK_INTERVAL_SECS,
+  defaultPreferences,
   NOTIFICATION_KEYRING_STORE_LOCKED,
-  SolanaCluster,
-  SolanaExplorer,
 } from "@coral-xyz/common";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
-import {
-  DEFAULT_AUTO_LOCK_INTERVAL_SECS,
-  KeyringStoreStateEnum,
-} from "@coral-xyz/recoil";
+import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
 import { generateMnemonic } from "bip39";
 
 import type { KeyringStoreJson, User, UserKeyringJson } from "../store";
 import * as store from "../store";
-import {
-  DEFAULT_AGGREGATE_WALLETS,
-  DEFAULT_DARK_MODE,
-  DEFAULT_DEVELOPER_MODE,
-  DefaultKeyname,
-} from "../store";
+import { DefaultKeyname } from "../store";
 
 /**
  * KeyringStore API for managing all wallet keys .
@@ -360,7 +351,10 @@ export class KeyringStore {
     });
   }
 
-  public async autoLockSettingsUpdate(seconds?: number, option?: string) {
+  public async autoLockSettingsUpdate(
+    seconds?: number,
+    option?: AutolockSettingsOption
+  ) {
     return await this.withUnlock(async () => {
       const data = await store.getWalletDataForUser(this.activeUserUuid!);
       await store.setWalletDataForUser(this.activeUserUuid!, {
@@ -922,27 +916,4 @@ class UserKeyring {
 
     return u;
   }
-}
-
-export function defaultPreferences(enabledBlockchains: any): any {
-  return {
-    autoLockSettings: {
-      seconds: DEFAULT_AUTO_LOCK_INTERVAL_SECS,
-      option: undefined,
-    },
-    approvedOrigins: [],
-    enabledBlockchains,
-    darkMode: DEFAULT_DARK_MODE,
-    developerMode: DEFAULT_DEVELOPER_MODE,
-    aggregateWallets: DEFAULT_AGGREGATE_WALLETS,
-    solana: {
-      explorer: SolanaExplorer.DEFAULT,
-      cluster: SolanaCluster.DEFAULT,
-      commitment: "confirmed",
-    },
-    ethereum: {
-      explorer: EthereumExplorer.DEFAULT,
-      connectionUrl: EthereumConnectionUrl.DEFAULT,
-    },
-  };
 }

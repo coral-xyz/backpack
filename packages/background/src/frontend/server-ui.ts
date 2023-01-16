@@ -2,11 +2,13 @@
 // extension UI to the background script.
 
 import type {
+  AutolockSettingsOption,
   Blockchain,
   Context,
   DerivationPath,
   EventEmitter,
   FEATURE_GATES_MAP,
+  Preferences,
   RpcRequest,
   RpcResponse,
   XnftPreference,
@@ -105,7 +107,7 @@ import type { Commitment } from "@solana/web3.js";
 
 import type { Backend } from "../backend/core";
 import type { User } from "../backend/store";
-import type { Config, Handle } from "../types";
+import type { Config, Handle, PublicKeyData } from "../types";
 
 const logger = getLogger("background-server-ui");
 
@@ -479,7 +481,10 @@ function handleKeyringStoreKeepAlive(
   return [resp];
 }
 
-async function handlePreferencesRead(ctx: Context<Backend>, uuid: string) {
+async function handlePreferencesRead(
+  ctx: Context<Backend>,
+  uuid: string
+): Promise<RpcResponse<Preferences>> {
   const resp = await ctx.backend.preferencesRead(uuid);
   return [resp];
 }
@@ -495,7 +500,7 @@ async function handleKeyringActiveWalletUpdate(
 
 async function handleKeyringStoreReadAllPubkeyData(
   ctx: Context<Backend>
-): Promise<RpcResponse<Array<string>>> {
+): Promise<RpcResponse<PublicKeyData[]>> {
   const resp = await ctx.backend.keyringStoreReadAllPubkeyData();
   return [resp];
 }
@@ -646,7 +651,7 @@ async function handleKeyringAutoLockSettingsRead(
 async function handleKeyringAutoLockSettingsUpdate(
   ctx: Context<Backend>,
   seconds?: number,
-  option?: string
+  option?: AutolockSettingsOption
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.keyringAutoLockSettingsUpdate(seconds, option);
   return [resp];
