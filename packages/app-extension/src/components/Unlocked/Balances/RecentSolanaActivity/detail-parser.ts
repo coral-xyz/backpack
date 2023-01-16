@@ -1,4 +1,4 @@
-import { activeWallet, useActiveWallet } from "@coral-xyz/recoil";
+import { useActiveWallet } from "@coral-xyz/recoil";
 
 export const isNFTTransaction = (transaction: any): boolean => {
   return (
@@ -6,6 +6,13 @@ export const isNFTTransaction = (transaction: any): boolean => {
       transaction?.tokenTransfers[0]?.tokenStandard === "NonFungible") &&
     transaction?.metaData?.offChainData?.image
   );
+};
+
+export const getSourceNameFormatted = (source: string): string => {
+  return source
+    .replace("_", " ")
+    .toLowerCase()
+    .replace(/(^\w|\s\w)/g, (c: string) => c.toUpperCase());
 };
 
 export const getTransactionTitle = (transaction: any) => {
@@ -27,25 +34,18 @@ export const getTransactionTitle = (transaction: any) => {
     case "SWAP":
       return "Token Swap";
     default:
+      let title = "App Interaction";
       if (
         isNFTTransaction(transaction) &&
         (transaction?.metaData?.onChainData?.data?.name ||
           transaction?.metaData?.offChainData?.name)
       ) {
-        return (
+        title =
           transaction?.metaData?.onChainData?.data?.name ||
-          transaction?.metaData?.offChainData?.name
-        );
+          transaction?.metaData?.offChainData?.name;
       }
-      return "App Interaction";
+      return title;
   }
-};
-
-export const getSourceNameFormatted = (source: string): string => {
-  return source
-    .replace("_", " ")
-    .toLowerCase()
-    .replace(/(^\w|\s\w)/g, (c: string) => c.toUpperCase());
 };
 
 export const getTransactionCaption = (transaction: any): string => {
