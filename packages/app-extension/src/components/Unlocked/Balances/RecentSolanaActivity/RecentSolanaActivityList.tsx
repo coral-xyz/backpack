@@ -3,6 +3,8 @@ import type { Blockchain } from "@coral-xyz/common";
 import { explorerUrl } from "@coral-xyz/common";
 import { EmptyState, isFirstLastListItemStyle } from "@coral-xyz/react-common";
 import {
+  SOL_LOGO_URI,
+  useActiveWallet,
   useBlockchainConnectionUrl,
   useBlockchainExplorer,
   useBlockchainLogo,
@@ -53,13 +55,13 @@ const useStyles = styles((theme) => ({
     marginLeft: "auto",
     marginRight: "auto",
   },
-  txSig: {
+  title: {
     color: theme.custom.colors.fontColor,
     fontSize: "16px",
     fontWeight: 500,
     lineHeight: "24px",
   },
-  txDate: {
+  caption: {
     color: theme.custom.colors.secondary,
     fontSize: "12px",
     fontWeight: 500,
@@ -161,6 +163,7 @@ export function SolanaTransactionListItem({
 }: any) {
   const classes = useStyles();
   const theme = useCustomTheme();
+  const activeWallet = useActiveWallet();
   const explorer = useBlockchainExplorer(transaction.blockchain);
   const connectionUrl = useBlockchainConnectionUrl(transaction.blockchain);
   const blockchainLogo = useBlockchainLogo(transaction.blockchain);
@@ -169,6 +172,53 @@ export function SolanaTransactionListItem({
     // window.open(explorerUrl(explorer!, transaction.signature, connectionUrl!));
   };
 
+  const isNFT = transaction?.type?.includes("NFT");
+
+  const getTransactionTitle = (transaction: any) => {
+    switch (transaction.type) {
+      case "TRANSFER":
+        return "Sent";
+      case "SWAP":
+        return "Token Swap";
+      default:
+        if (isNFT) {
+          return (
+            transaction?.metaData?.onChainData?.data?.name ||
+            transaction?.metaData?.offChainData?.name
+          );
+        }
+        return "App Interaction";
+    }
+  };
+
+  const getSourceNameFormatted = (source: string) =>
+    source
+      .replace("_", " ")
+      .toLowerCase()
+      .replace(/(^\w|\s\w)/g, (c: string) => c.toUpperCase());
+
+  const getTransactionCaption = (transaction: any) => {
+    switch (transaction.type) {
+      // case "TRANSFER":
+      case "SWAP":
+        const desc = transaction.description.split(" ");
+        return `${desc[3]} -> ${desc[6]}`;
+
+      case "NFT_LISTING":
+        return `Listed on ${getSourceNameFormatted(transaction.source)}`;
+
+      case "NFT_SALE":
+        return `${
+          transaction.feePayer === activeWallet.publicKey ? "Bought" : "Sold"
+        } on ${getSourceNameFormatted(transaction.source)}`;
+
+      default:
+        if (isNFT) {
+          return getSourceNameFormatted(transaction.source);
+        }
+        return "App Interaction";
+    }
+  };
   return (
     <ListItem
       button
@@ -203,23 +253,36 @@ export function SolanaTransactionListItem({
               justifyContent: "center",
             }}
           >
-            <Check className={classes.recentActivityListItemIcon} />
-          </div>
-          <div>
-            <Typography className={classes.txSig}>
+            {isNFT ? (
               <img
                 style={{
-                  width: "12px",
-                  borderRadius: "2px",
-                  marginRight: "10px",
+                  borderRadius: "4px",
+                  width: "44px",
+                  height: "44px",
+                  marginRight: "5px",
                 }}
-                src={blockchainLogo}
+                src={transaction?.metaData?.offChainData?.image}
               />
-              {transaction.signature.slice(0, 4)}...
-              {transaction.signature.slice(transaction.signature.length - 5)}
+            ) : (
+              <img
+                style={{
+                  borderRadius: "22px",
+                  width: "44px",
+                  height: "44px",
+                  marginRight: "5px",
+                }}
+                src={SOL_LOGO_URI}
+              />
+            )}
+          </div>
+          <div>
+            <Typography className={classes.title}>
+              {getTransactionTitle(transaction)}
+              {/* {transaction.signature.slice(0, 4)}...
+              {transaction.signature.slice(transaction.signature.length - 5)} */}
             </Typography>
-            <Typography className={classes.txDate}>
-              {transaction.timestamp}
+            <Typography className={classes.caption}>
+              {getTransactionCaption(transaction) || transaction.timestamp}
             </Typography>
           </div>
         </div>

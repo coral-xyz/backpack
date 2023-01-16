@@ -4,7 +4,10 @@ import { PublicKey } from "@solana/web3.js";
 import { atomFamily, selectorFamily } from "recoil";
 
 import { ethersContext } from "./ethereum/provider";
-import { fetchRecentSolanaTransactionDetails } from "./solana/recent-transaction-details";
+import {
+  fetchNFTMetaData,
+  fetchRecentSolanaTransactionDetails,
+} from "./solana/recent-transaction-details";
 import { fetchRecentSolanaTransactions } from "./solana/recent-transactions";
 import { anchorContext } from "./solana/wallet";
 
@@ -109,7 +112,7 @@ export const recentEthereumTransactions = atomFamily<
 });
 
 /**
- * Retrieve recent Solana transactions.
+ * Retrieve recent Solana transactions using Helius API.
  */
 export const recentSolanaTransactions = atomFamily<
   Array<any>,
@@ -122,28 +125,31 @@ export const recentSolanaTransactions = atomFamily<
     key: "recentSolanaTransactionsDefault",
     get:
       ({ address }: { address: string }) =>
-      async ({ get }: any) => {
-        // const { connection } = get(anchorContext);
-        // const recent = await fetchRecentSolanaTransactions(
-        //   connection,
-        //   new PublicKey(address)
-        // );
-
+      async () => {
+        // get parsed transactions from Helius
         const heliusTransactionDetails =
           await fetchRecentSolanaTransactionDetails(address);
 
-        return heliusTransactionDetails?.map((t) => ({
-          blockchain: Blockchain.SOLANA,
-          ...t,
-        }));
+        return await Promise.all(
+          heliusTransactionDetails?.map(async (t) => {
+            // if transaction is of a type related to NFT, query for additional metadata to be displayed
+            if (t.type.includes("NFT") && t?.events?.nft?.nfts[0]?.mint) {
+              const nftMetadata = await fetchNFTMetaData(
+                t?.events?.nft?.nfts[0]?.mint
+              );
+              return {
+                blockchain: Blockchain.SOLANA,
+                ...t,
+                metaData: nftMetadata,
+              };
+            }
 
-        // return recent.map((t) => ({
-        //   blockchain: Blockchain.SOLANA,
-        //   date: new Date(t.blockTime! * 1000),
-        //   signature: t.transaction.signatures[0],
-        //   didError: t.meta && t.meta.err ? true : false,
-        //   details: heliusTransactionDetails,
-        // }));
+            return {
+              blockchain: Blockchain.SOLANA,
+              ...t,
+            };
+          })
+        );
       },
   }),
 });
