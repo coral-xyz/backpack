@@ -19,7 +19,3 @@ export async function setWalletDataForUser(uuid: string, data?: Preferences) {
 function key(uuid: string): string {
   return `${STORE_KEY_WALLET_DATA}_${uuid}`;
 }
-
-export const DEFAULT_DARK_MODE = false;
-export const DEFAULT_DEVELOPER_MODE = false;
-export const DEFAULT_AGGREGATE_WALLETS = false;

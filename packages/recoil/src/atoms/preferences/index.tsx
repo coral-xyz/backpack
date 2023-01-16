@@ -1,7 +1,11 @@
-import { defaultPreferences } from "@coral-xyz/background";
-import type { Blockchain, Preferences } from "@coral-xyz/common";
+import type {
+  AutolockSettings,
+  Blockchain,
+  Preferences,
+} from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
+  DEFAULT_AUTO_LOCK_INTERVAL_SECS,
   getLogger,
   UI_RPC_METHOD_ALL_USERS_READ,
   UI_RPC_METHOD_PREFERENCES_READ,
@@ -17,8 +21,6 @@ import {
 
 import { backgroundClient } from "../client";
 
-const logger = getLogger("KKKK");
-
 export const preferences = atom<Preferences>({
   key: "preferences",
   default: selector({
@@ -32,10 +34,8 @@ export const preferences = atom<Preferences>({
           method: UI_RPC_METHOD_PREFERENCES_READ,
           params: [_user.uuid],
         });
-        logger.debug("atom.preferences result", res);
         return res;
       } catch (err) {
-        logger.debug("atom.preferences error", err);
         return {};
       }
     },
@@ -66,19 +66,11 @@ export const isDeveloperMode = selector<boolean>({
   },
 });
 
-export const autoLockSettings = selector<{
-  seconds?: number;
-  option?: "never" | "onClose";
-}>({
+export const autoLockSettings = selector<AutolockSettings>({
   key: "autoLockSettings",
   get: async ({ get }) => {
     const p = get(preferences);
-    return (
-      p.autoLockSettings || {
-        seconds: p.autoLockSecs || DEFAULT_AUTO_LOCK_INTERVAL_SECS,
-        option: undefined,
-      }
-    );
+    return p.autoLockSettings;
   },
 });
 
@@ -106,15 +98,12 @@ export const user = atom<{ username: string; uuid: string; jwt: string }>({
     get: async ({ get }) => {
       const background = get(backgroundClient);
       try {
-        logger.debug("atom.user pre");
         const res = await background.request({
           method: UI_RPC_METHOD_USER_READ,
           params: [],
         });
-        logger.debug("atom.user res", res);
         return res;
       } catch (error) {
-        logger.debug("atom.user error", error);
         return { username: "", uuid: "", jwt: "" };
       }
     },
@@ -156,8 +145,6 @@ export const allUsers = selector({
     }
   },
 });
-
-export const DEFAULT_AUTO_LOCK_INTERVAL_SECS = 15 * 60;
 
 // This atom is used for nothing other than re-triggering the allUsers fetch.
 export const allUsersTrigger = atom<number>({

@@ -8,9 +8,11 @@ import type {
   DerivationPath,
   EventEmitter,
   FEATURE_GATES_MAP,
+  Preferences,
   RpcRequest,
   RpcResponse,
-  XnftPreference} from "@coral-xyz/common";
+  XnftPreference,
+} from "@coral-xyz/common";
 import {
   BACKEND_EVENT,
   CHANNEL_POPUP_NOTIFICATIONS,
@@ -468,7 +470,10 @@ function handleKeyringStoreKeepAlive(
   return [resp];
 }
 
-async function handlePreferencesRead(ctx: Context<Backend>, uuid: string) {
+async function handlePreferencesRead(
+  ctx: Context<Backend>,
+  uuid: string
+): Promise<RpcResponse<Preferences>> {
   const resp = await ctx.backend.preferencesRead(uuid);
   return [resp];
 }

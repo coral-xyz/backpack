@@ -14,6 +14,7 @@ export * from "./feature-gates";
 export * from "./messages";
 export * from "./notifications";
 export * from "./plugin";
+export * from "./preferences";
 export * from "./solana";
 export * from "./types";
 export * from "@coral-xyz/common-public";

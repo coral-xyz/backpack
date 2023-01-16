@@ -9,32 +9,21 @@ import type {
   DerivationPath,
   EventEmitter,
   KeyringInit,
-  Preferences,
 } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
   BACKEND_EVENT,
-  EthereumConnectionUrl,
-  EthereumExplorer,
+  DEFAULT_AUTO_LOCK_INTERVAL_SECS,
+  defaultPreferences,
   NOTIFICATION_KEYRING_STORE_LOCKED,
-  SolanaCluster,
-  SolanaExplorer,
 } from "@coral-xyz/common";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
-import {
-  DEFAULT_AUTO_LOCK_INTERVAL_SECS,
-  KeyringStoreStateEnum,
-} from "@coral-xyz/recoil";
+import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
 import { generateMnemonic } from "bip39";
 
 import type { KeyringStoreJson, User, UserKeyringJson } from "../store";
 import * as store from "../store";
-import {
-  DEFAULT_AGGREGATE_WALLETS,
-  DEFAULT_DARK_MODE,
-  DEFAULT_DEVELOPER_MODE,
-  DefaultKeyname,
-} from "../store";
+import { DefaultKeyname } from "../store";
 
 /**
  * KeyringStore API for managing all wallet keys .
@@ -935,30 +924,4 @@ class UserKeyring {
 
     return u;
   }
-}
-
-export function defaultPreferences(
-  enabledBlockchains: Blockchain[]
-): Preferences {
-  return {
-    autoLockSettings: {
-      seconds: DEFAULT_AUTO_LOCK_INTERVAL_SECS,
-      option: undefined,
-    },
-    approvedOrigins: [],
-    enabledBlockchains,
-    darkMode: DEFAULT_DARK_MODE,
-    developerMode: DEFAULT_DEVELOPER_MODE,
-    aggregateWallets: DEFAULT_AGGREGATE_WALLETS,
-    solana: {
-      explorer: SolanaExplorer.DEFAULT,
-      cluster: SolanaCluster.DEFAULT,
-      commitment: "confirmed",
-    },
-    ethereum: {
-      explorer: EthereumExplorer.DEFAULT,
-      connectionUrl: EthereumConnectionUrl.DEFAULT,
-      chainId: "" // TODO(peter) default chainId?
-    },
-  };
 }

@@ -16,6 +16,8 @@ import {
   BACKPACK_FEATURE_JWT,
   BACKPACK_FEATURE_USERNAMES,
   Blockchain,
+  DEFAULT_DARK_MODE,
+  defaultPreferences,
   deserializeTransaction,
   EthereumConnectionUrl,
   EthereumExplorer,
@@ -76,16 +78,11 @@ import { ethers } from "ethers";
 import type { PublicKeyData, PublicKeyType } from "../types";
 
 import type { EthereumConnectionBackend } from "./ethereum-connection";
-import { defaultPreferences, KeyringStore } from "./keyring";
+import { KeyringStore } from "./keyring";
 import type { SolanaConnectionBackend } from "./solana-connection";
 import type { Nav, User } from "./store";
 import * as store from "./store";
-import {
-  DEFAULT_DARK_MODE,
-  getWalletDataForUser,
-  setUser,
-  setWalletDataForUser,
-} from "./store";
+import { getWalletDataForUser, setUser, setWalletDataForUser } from "./store";
 
 const { base58: bs58 } = ethers.utils;
 
