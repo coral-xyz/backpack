@@ -1049,8 +1049,357 @@ export type ValueTypes = {
     /** does the column match the given SQL regular expression */
     _similar?: string | undefined | null | Variable<any, string>;
   };
+  /** columns and relationships of "chat_media_messages" */
+  ["chat_media_messages"]: AliasType<{
+    /** An object relationship */
+    chat?: ValueTypes["chats"];
+    id?: boolean | `@${string}`;
+    media_kind?: boolean | `@${string}`;
+    media_link?: boolean | `@${string}`;
+    message_client_generated_uuid?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** order by aggregate values of table "chat_media_messages" */
+  ["chat_media_messages_aggregate_order_by"]: {
+    avg?:
+      | ValueTypes["chat_media_messages_avg_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    count?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    max?:
+      | ValueTypes["chat_media_messages_max_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    min?:
+      | ValueTypes["chat_media_messages_min_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev?:
+      | ValueTypes["chat_media_messages_stddev_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev_pop?:
+      | ValueTypes["chat_media_messages_stddev_pop_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev_samp?:
+      | ValueTypes["chat_media_messages_stddev_samp_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    sum?:
+      | ValueTypes["chat_media_messages_sum_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    var_pop?:
+      | ValueTypes["chat_media_messages_var_pop_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    var_samp?:
+      | ValueTypes["chat_media_messages_var_samp_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    variance?:
+      | ValueTypes["chat_media_messages_variance_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** input type for inserting array relation for remote table "chat_media_messages" */
+  ["chat_media_messages_arr_rel_insert_input"]: {
+    data:
+      | Array<ValueTypes["chat_media_messages_insert_input"]>
+      | Variable<any, string>;
+    /** upsert condition */
+    on_conflict?:
+      | ValueTypes["chat_media_messages_on_conflict"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by avg() on columns of table "chat_media_messages" */
+  ["chat_media_messages_avg_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** Boolean expression to filter rows from the table "chat_media_messages". All fields are combined with a logical 'AND'. */
+  ["chat_media_messages_bool_exp"]: {
+    _and?:
+      | Array<ValueTypes["chat_media_messages_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    _not?:
+      | ValueTypes["chat_media_messages_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    _or?:
+      | Array<ValueTypes["chat_media_messages_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    chat?:
+      | ValueTypes["chats_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?:
+      | ValueTypes["Int_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    media_kind?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    media_link?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    message_client_generated_uuid?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** unique or primary key constraints on table "chat_media_messages" */
+  ["chat_media_messages_constraint"]: chat_media_messages_constraint;
+  /** input type for incrementing numeric columns in table "chat_media_messages" */
+  ["chat_media_messages_inc_input"]: {
+    id?: number | undefined | null | Variable<any, string>;
+  };
+  /** input type for inserting data into table "chat_media_messages" */
+  ["chat_media_messages_insert_input"]: {
+    chat?:
+      | ValueTypes["chats_obj_rel_insert_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?: number | undefined | null | Variable<any, string>;
+    media_kind?: string | undefined | null | Variable<any, string>;
+    media_link?: string | undefined | null | Variable<any, string>;
+    message_client_generated_uuid?:
+      | string
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by max() on columns of table "chat_media_messages" */
+  ["chat_media_messages_max_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    media_kind?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    media_link?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    message_client_generated_uuid?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by min() on columns of table "chat_media_messages" */
+  ["chat_media_messages_min_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    media_kind?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    media_link?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    message_client_generated_uuid?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** response of any mutation on the table "chat_media_messages" */
+  ["chat_media_messages_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ValueTypes["chat_media_messages"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "chat_media_messages" */
+  ["chat_media_messages_on_conflict"]: {
+    constraint:
+      | ValueTypes["chat_media_messages_constraint"]
+      | Variable<any, string>;
+    update_columns:
+      | Array<ValueTypes["chat_media_messages_update_column"]>
+      | Variable<any, string>;
+    where?:
+      | ValueTypes["chat_media_messages_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Ordering options when selecting data from "chat_media_messages". */
+  ["chat_media_messages_order_by"]: {
+    chat?:
+      | ValueTypes["chats_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    media_kind?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    media_link?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    message_client_generated_uuid?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** primary key columns input for table: chat_media_messages */
+  ["chat_media_messages_pk_columns_input"]: {
+    id: number | Variable<any, string>;
+  };
+  /** select columns of table "chat_media_messages" */
+  ["chat_media_messages_select_column"]: chat_media_messages_select_column;
+  /** input type for updating data in table "chat_media_messages" */
+  ["chat_media_messages_set_input"]: {
+    id?: number | undefined | null | Variable<any, string>;
+    media_kind?: string | undefined | null | Variable<any, string>;
+    media_link?: string | undefined | null | Variable<any, string>;
+    message_client_generated_uuid?:
+      | string
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by stddev() on columns of table "chat_media_messages" */
+  ["chat_media_messages_stddev_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** order by stddev_pop() on columns of table "chat_media_messages" */
+  ["chat_media_messages_stddev_pop_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** order by stddev_samp() on columns of table "chat_media_messages" */
+  ["chat_media_messages_stddev_samp_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** Streaming cursor of the table "chat_media_messages" */
+  ["chat_media_messages_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value:
+      | ValueTypes["chat_media_messages_stream_cursor_value_input"]
+      | Variable<any, string>;
+    /** cursor ordering */
+    ordering?:
+      | ValueTypes["cursor_ordering"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["chat_media_messages_stream_cursor_value_input"]: {
+    id?: number | undefined | null | Variable<any, string>;
+    media_kind?: string | undefined | null | Variable<any, string>;
+    media_link?: string | undefined | null | Variable<any, string>;
+    message_client_generated_uuid?:
+      | string
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by sum() on columns of table "chat_media_messages" */
+  ["chat_media_messages_sum_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** update columns of table "chat_media_messages" */
+  ["chat_media_messages_update_column"]: chat_media_messages_update_column;
+  ["chat_media_messages_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?:
+      | ValueTypes["chat_media_messages_inc_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    /** sets the columns of the filtered rows to the given values */
+    _set?:
+      | ValueTypes["chat_media_messages_set_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    where: ValueTypes["chat_media_messages_bool_exp"] | Variable<any, string>;
+  };
+  /** order by var_pop() on columns of table "chat_media_messages" */
+  ["chat_media_messages_var_pop_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** order by var_samp() on columns of table "chat_media_messages" */
+  ["chat_media_messages_var_samp_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** order by variance() on columns of table "chat_media_messages" */
+  ["chat_media_messages_variance_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
   /** columns and relationships of "chats" */
   ["chats"]: AliasType<{
+    chat_media_messages?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["chat_media_messages_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["chat_media_messages_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["chat_media_messages_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["chat_media_messages"]
+    ];
     client_generated_uuid?: boolean | `@${string}`;
     created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
@@ -1114,6 +1463,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    chat_media_messages?:
+      | ValueTypes["chat_media_messages_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     client_generated_uuid?:
       | ValueTypes["String_comparison_exp"]
       | undefined
@@ -1174,6 +1528,11 @@ export type ValueTypes = {
   ["chats_constraint"]: chats_constraint;
   /** input type for inserting data into table "chats" */
   ["chats_insert_input"]: {
+    chat_media_messages?:
+      | ValueTypes["chat_media_messages_arr_rel_insert_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
     client_generated_uuid?: string | undefined | null | Variable<any, string>;
     created_at?:
       | ValueTypes["timestamptz"]
@@ -1230,6 +1589,11 @@ export type ValueTypes = {
   };
   /** Ordering options when selecting data from "chats". */
   ["chats_order_by"]: {
+    chat_media_messages_aggregate?:
+      | ValueTypes["chat_media_messages_aggregate_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     client_generated_uuid?:
       | ValueTypes["order_by"]
       | undefined
@@ -1308,6 +1672,34 @@ export type ValueTypes = {
   ["cursor_ordering"]: cursor_ordering;
   /** mutation root */
   ["mutation_root"]: AliasType<{
+    insert_chat_media_messages?: [
+      {
+        /** the rows to be inserted */
+        objects:
+          | Array<ValueTypes["chat_media_messages_insert_input"]>
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["chat_media_messages_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["chat_media_messages_mutation_response"]
+    ];
+    insert_chat_media_messages_one?: [
+      {
+        /** the row to be inserted */
+        object:
+          | ValueTypes["chat_media_messages_insert_input"]
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["chat_media_messages_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["chat_media_messages"]
+    ];
     insert_chats?: [
       {
         /** the rows to be inserted */
@@ -1363,6 +1755,62 @@ export type ValueTypes = {
           | Variable<any, string>;
       },
       ValueTypes["secure_transfer_transactions"]
+    ];
+    update_chat_media_messages?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ValueTypes["chat_media_messages_inc_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ValueTypes["chat_media_messages_set_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** filter the rows which have to be updated */;
+        where:
+          | ValueTypes["chat_media_messages_bool_exp"]
+          | Variable<any, string>;
+      },
+      ValueTypes["chat_media_messages_mutation_response"]
+    ];
+    update_chat_media_messages_by_pk?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ValueTypes["chat_media_messages_inc_input"]
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ValueTypes["chat_media_messages_set_input"]
+          | undefined
+          | null
+          | Variable<any, string>;
+        pk_columns:
+          | ValueTypes["chat_media_messages_pk_columns_input"]
+          | Variable<any, string>;
+      },
+      ValueTypes["chat_media_messages"]
+    ];
+    update_chat_media_messages_many?: [
+      {
+        /** updates to execute, in order */
+        updates:
+          | Array<ValueTypes["chat_media_messages_updates"]>
+          | Variable<any, string>;
+      },
+      ValueTypes["chat_media_messages_mutation_response"]
     ];
     update_secure_transfer_transactions?: [
       {
@@ -1425,6 +1873,44 @@ export type ValueTypes = {
   /** column ordering options */
   ["order_by"]: order_by;
   ["query_root"]: AliasType<{
+    chat_media_messages?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["chat_media_messages_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["chat_media_messages_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["chat_media_messages_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["chat_media_messages"]
+    ];
+    chat_media_messages_by_pk?: [
+      { id: number | Variable<any, string> },
+      ValueTypes["chat_media_messages"]
+    ];
     chats?: [
       {
         /** distinct select on columns */
@@ -1955,6 +2441,68 @@ export type ValueTypes = {
       | Variable<any, string>;
   };
   ["subscription_root"]: AliasType<{
+    chat_media_messages?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["chat_media_messages_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["chat_media_messages_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["chat_media_messages_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["chat_media_messages"]
+    ];
+    chat_media_messages_by_pk?: [
+      { id: number | Variable<any, string> },
+      ValueTypes["chat_media_messages"]
+    ];
+    chat_media_messages_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size:
+          | number
+          | Variable<
+              any,
+              string
+            > /** cursor to stream the results returned by the query */;
+        cursor:
+          | Array<
+              | ValueTypes["chat_media_messages_stream_cursor_input"]
+              | undefined
+              | null
+            >
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["chat_media_messages_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["chat_media_messages"]
+    ];
     chats?: [
       {
         /** distinct select on columns */
@@ -2142,8 +2690,258 @@ export type ResolverInputTypes = {
     /** does the column match the given SQL regular expression */
     _similar?: string | undefined | null;
   };
+  /** columns and relationships of "chat_media_messages" */
+  ["chat_media_messages"]: AliasType<{
+    /** An object relationship */
+    chat?: ResolverInputTypes["chats"];
+    id?: boolean | `@${string}`;
+    media_kind?: boolean | `@${string}`;
+    media_link?: boolean | `@${string}`;
+    message_client_generated_uuid?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** order by aggregate values of table "chat_media_messages" */
+  ["chat_media_messages_aggregate_order_by"]: {
+    avg?:
+      | ResolverInputTypes["chat_media_messages_avg_order_by"]
+      | undefined
+      | null;
+    count?: ResolverInputTypes["order_by"] | undefined | null;
+    max?:
+      | ResolverInputTypes["chat_media_messages_max_order_by"]
+      | undefined
+      | null;
+    min?:
+      | ResolverInputTypes["chat_media_messages_min_order_by"]
+      | undefined
+      | null;
+    stddev?:
+      | ResolverInputTypes["chat_media_messages_stddev_order_by"]
+      | undefined
+      | null;
+    stddev_pop?:
+      | ResolverInputTypes["chat_media_messages_stddev_pop_order_by"]
+      | undefined
+      | null;
+    stddev_samp?:
+      | ResolverInputTypes["chat_media_messages_stddev_samp_order_by"]
+      | undefined
+      | null;
+    sum?:
+      | ResolverInputTypes["chat_media_messages_sum_order_by"]
+      | undefined
+      | null;
+    var_pop?:
+      | ResolverInputTypes["chat_media_messages_var_pop_order_by"]
+      | undefined
+      | null;
+    var_samp?:
+      | ResolverInputTypes["chat_media_messages_var_samp_order_by"]
+      | undefined
+      | null;
+    variance?:
+      | ResolverInputTypes["chat_media_messages_variance_order_by"]
+      | undefined
+      | null;
+  };
+  /** input type for inserting array relation for remote table "chat_media_messages" */
+  ["chat_media_messages_arr_rel_insert_input"]: {
+    data: Array<ResolverInputTypes["chat_media_messages_insert_input"]>;
+    /** upsert condition */
+    on_conflict?:
+      | ResolverInputTypes["chat_media_messages_on_conflict"]
+      | undefined
+      | null;
+  };
+  /** order by avg() on columns of table "chat_media_messages" */
+  ["chat_media_messages_avg_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** Boolean expression to filter rows from the table "chat_media_messages". All fields are combined with a logical 'AND'. */
+  ["chat_media_messages_bool_exp"]: {
+    _and?:
+      | Array<ResolverInputTypes["chat_media_messages_bool_exp"]>
+      | undefined
+      | null;
+    _not?:
+      | ResolverInputTypes["chat_media_messages_bool_exp"]
+      | undefined
+      | null;
+    _or?:
+      | Array<ResolverInputTypes["chat_media_messages_bool_exp"]>
+      | undefined
+      | null;
+    chat?: ResolverInputTypes["chats_bool_exp"] | undefined | null;
+    id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
+    media_kind?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    media_link?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    message_client_generated_uuid?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
+  };
+  /** unique or primary key constraints on table "chat_media_messages" */
+  ["chat_media_messages_constraint"]: chat_media_messages_constraint;
+  /** input type for incrementing numeric columns in table "chat_media_messages" */
+  ["chat_media_messages_inc_input"]: {
+    id?: number | undefined | null;
+  };
+  /** input type for inserting data into table "chat_media_messages" */
+  ["chat_media_messages_insert_input"]: {
+    chat?: ResolverInputTypes["chats_obj_rel_insert_input"] | undefined | null;
+    id?: number | undefined | null;
+    media_kind?: string | undefined | null;
+    media_link?: string | undefined | null;
+    message_client_generated_uuid?: string | undefined | null;
+  };
+  /** order by max() on columns of table "chat_media_messages" */
+  ["chat_media_messages_max_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    media_kind?: ResolverInputTypes["order_by"] | undefined | null;
+    media_link?: ResolverInputTypes["order_by"] | undefined | null;
+    message_client_generated_uuid?:
+      | ResolverInputTypes["order_by"]
+      | undefined
+      | null;
+  };
+  /** order by min() on columns of table "chat_media_messages" */
+  ["chat_media_messages_min_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    media_kind?: ResolverInputTypes["order_by"] | undefined | null;
+    media_link?: ResolverInputTypes["order_by"] | undefined | null;
+    message_client_generated_uuid?:
+      | ResolverInputTypes["order_by"]
+      | undefined
+      | null;
+  };
+  /** response of any mutation on the table "chat_media_messages" */
+  ["chat_media_messages_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ResolverInputTypes["chat_media_messages"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "chat_media_messages" */
+  ["chat_media_messages_on_conflict"]: {
+    constraint: ResolverInputTypes["chat_media_messages_constraint"];
+    update_columns: Array<
+      ResolverInputTypes["chat_media_messages_update_column"]
+    >;
+    where?:
+      | ResolverInputTypes["chat_media_messages_bool_exp"]
+      | undefined
+      | null;
+  };
+  /** Ordering options when selecting data from "chat_media_messages". */
+  ["chat_media_messages_order_by"]: {
+    chat?: ResolverInputTypes["chats_order_by"] | undefined | null;
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    media_kind?: ResolverInputTypes["order_by"] | undefined | null;
+    media_link?: ResolverInputTypes["order_by"] | undefined | null;
+    message_client_generated_uuid?:
+      | ResolverInputTypes["order_by"]
+      | undefined
+      | null;
+  };
+  /** primary key columns input for table: chat_media_messages */
+  ["chat_media_messages_pk_columns_input"]: {
+    id: number;
+  };
+  /** select columns of table "chat_media_messages" */
+  ["chat_media_messages_select_column"]: chat_media_messages_select_column;
+  /** input type for updating data in table "chat_media_messages" */
+  ["chat_media_messages_set_input"]: {
+    id?: number | undefined | null;
+    media_kind?: string | undefined | null;
+    media_link?: string | undefined | null;
+    message_client_generated_uuid?: string | undefined | null;
+  };
+  /** order by stddev() on columns of table "chat_media_messages" */
+  ["chat_media_messages_stddev_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by stddev_pop() on columns of table "chat_media_messages" */
+  ["chat_media_messages_stddev_pop_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by stddev_samp() on columns of table "chat_media_messages" */
+  ["chat_media_messages_stddev_samp_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** Streaming cursor of the table "chat_media_messages" */
+  ["chat_media_messages_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ResolverInputTypes["chat_media_messages_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ResolverInputTypes["cursor_ordering"] | undefined | null;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["chat_media_messages_stream_cursor_value_input"]: {
+    id?: number | undefined | null;
+    media_kind?: string | undefined | null;
+    media_link?: string | undefined | null;
+    message_client_generated_uuid?: string | undefined | null;
+  };
+  /** order by sum() on columns of table "chat_media_messages" */
+  ["chat_media_messages_sum_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** update columns of table "chat_media_messages" */
+  ["chat_media_messages_update_column"]: chat_media_messages_update_column;
+  ["chat_media_messages_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?:
+      | ResolverInputTypes["chat_media_messages_inc_input"]
+      | undefined
+      | null;
+    /** sets the columns of the filtered rows to the given values */
+    _set?:
+      | ResolverInputTypes["chat_media_messages_set_input"]
+      | undefined
+      | null;
+    where: ResolverInputTypes["chat_media_messages_bool_exp"];
+  };
+  /** order by var_pop() on columns of table "chat_media_messages" */
+  ["chat_media_messages_var_pop_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by var_samp() on columns of table "chat_media_messages" */
+  ["chat_media_messages_var_samp_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by variance() on columns of table "chat_media_messages" */
+  ["chat_media_messages_variance_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
   /** columns and relationships of "chats" */
   ["chats"]: AliasType<{
+    chat_media_messages?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["chat_media_messages_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["chat_media_messages_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["chat_media_messages_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["chat_media_messages"]
+    ];
     client_generated_uuid?: boolean | `@${string}`;
     created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
@@ -2189,6 +2987,10 @@ export type ResolverInputTypes = {
     _and?: Array<ResolverInputTypes["chats_bool_exp"]> | undefined | null;
     _not?: ResolverInputTypes["chats_bool_exp"] | undefined | null;
     _or?: Array<ResolverInputTypes["chats_bool_exp"]> | undefined | null;
+    chat_media_messages?:
+      | ResolverInputTypes["chat_media_messages_bool_exp"]
+      | undefined
+      | null;
     client_generated_uuid?:
       | ResolverInputTypes["String_comparison_exp"]
       | undefined
@@ -2220,6 +3022,10 @@ export type ResolverInputTypes = {
   ["chats_constraint"]: chats_constraint;
   /** input type for inserting data into table "chats" */
   ["chats_insert_input"]: {
+    chat_media_messages?:
+      | ResolverInputTypes["chat_media_messages_arr_rel_insert_input"]
+      | undefined
+      | null;
     client_generated_uuid?: string | undefined | null;
     created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
     id?: number | undefined | null;
@@ -2257,6 +3063,10 @@ export type ResolverInputTypes = {
   };
   /** Ordering options when selecting data from "chats". */
   ["chats_order_by"]: {
+    chat_media_messages_aggregate?:
+      | ResolverInputTypes["chat_media_messages_aggregate_order_by"]
+      | undefined
+      | null;
     client_generated_uuid?: ResolverInputTypes["order_by"] | undefined | null;
     created_at?: ResolverInputTypes["order_by"] | undefined | null;
     id?: ResolverInputTypes["order_by"] | undefined | null;
@@ -2303,6 +3113,30 @@ export type ResolverInputTypes = {
   ["cursor_ordering"]: cursor_ordering;
   /** mutation root */
   ["mutation_root"]: AliasType<{
+    insert_chat_media_messages?: [
+      {
+        /** the rows to be inserted */
+        objects: Array<
+          ResolverInputTypes["chat_media_messages_insert_input"]
+        > /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["chat_media_messages_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["chat_media_messages_mutation_response"]
+    ];
+    insert_chat_media_messages_one?: [
+      {
+        /** the row to be inserted */
+        object: ResolverInputTypes["chat_media_messages_insert_input"] /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["chat_media_messages_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["chat_media_messages"]
+    ];
     insert_chats?: [
       {
         /** the rows to be inserted */
@@ -2351,6 +3185,43 @@ export type ResolverInputTypes = {
       },
       ResolverInputTypes["secure_transfer_transactions"]
     ];
+    update_chat_media_messages?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ResolverInputTypes["chat_media_messages_inc_input"]
+          | undefined
+          | null /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ResolverInputTypes["chat_media_messages_set_input"]
+          | undefined
+          | null /** filter the rows which have to be updated */;
+        where: ResolverInputTypes["chat_media_messages_bool_exp"];
+      },
+      ResolverInputTypes["chat_media_messages_mutation_response"]
+    ];
+    update_chat_media_messages_by_pk?: [
+      {
+        /** increments the numeric columns with given value of the filtered values */
+        _inc?:
+          | ResolverInputTypes["chat_media_messages_inc_input"]
+          | undefined
+          | null /** sets the columns of the filtered rows to the given values */;
+        _set?:
+          | ResolverInputTypes["chat_media_messages_set_input"]
+          | undefined
+          | null;
+        pk_columns: ResolverInputTypes["chat_media_messages_pk_columns_input"];
+      },
+      ResolverInputTypes["chat_media_messages"]
+    ];
+    update_chat_media_messages_many?: [
+      {
+        /** updates to execute, in order */
+        updates: Array<ResolverInputTypes["chat_media_messages_updates"]>;
+      },
+      ResolverInputTypes["chat_media_messages_mutation_response"]
+    ];
     update_secure_transfer_transactions?: [
       {
         /** increments the numeric columns with given value of the filtered values */
@@ -2395,6 +3266,36 @@ export type ResolverInputTypes = {
   /** column ordering options */
   ["order_by"]: order_by;
   ["query_root"]: AliasType<{
+    chat_media_messages?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["chat_media_messages_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["chat_media_messages_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["chat_media_messages_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["chat_media_messages"]
+    ];
+    chat_media_messages_by_pk?: [
+      { id: number },
+      ResolverInputTypes["chat_media_messages"]
+    ];
     chats?: [
       {
         /** distinct select on columns */
@@ -2743,6 +3644,52 @@ export type ResolverInputTypes = {
     message_id?: ResolverInputTypes["order_by"] | undefined | null;
   };
   ["subscription_root"]: AliasType<{
+    chat_media_messages?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["chat_media_messages_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["chat_media_messages_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["chat_media_messages_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["chat_media_messages"]
+    ];
+    chat_media_messages_by_pk?: [
+      { id: number },
+      ResolverInputTypes["chat_media_messages"]
+    ];
+    chat_media_messages_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size: number /** cursor to stream the results returned by the query */;
+        cursor: Array<
+          | ResolverInputTypes["chat_media_messages_stream_cursor_input"]
+          | undefined
+          | null
+        > /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["chat_media_messages_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["chat_media_messages"]
+    ];
     chats?: [
       {
         /** distinct select on columns */
@@ -2888,8 +3835,170 @@ export type ModelTypes = {
     /** does the column match the given SQL regular expression */
     _similar?: string | undefined;
   };
+  /** columns and relationships of "chat_media_messages" */
+  ["chat_media_messages"]: {
+    /** An object relationship */
+    chat: ModelTypes["chats"];
+    id: number;
+    media_kind: string;
+    media_link: string;
+    message_client_generated_uuid: string;
+  };
+  /** order by aggregate values of table "chat_media_messages" */
+  ["chat_media_messages_aggregate_order_by"]: {
+    avg?: ModelTypes["chat_media_messages_avg_order_by"] | undefined;
+    count?: ModelTypes["order_by"] | undefined;
+    max?: ModelTypes["chat_media_messages_max_order_by"] | undefined;
+    min?: ModelTypes["chat_media_messages_min_order_by"] | undefined;
+    stddev?: ModelTypes["chat_media_messages_stddev_order_by"] | undefined;
+    stddev_pop?:
+      | ModelTypes["chat_media_messages_stddev_pop_order_by"]
+      | undefined;
+    stddev_samp?:
+      | ModelTypes["chat_media_messages_stddev_samp_order_by"]
+      | undefined;
+    sum?: ModelTypes["chat_media_messages_sum_order_by"] | undefined;
+    var_pop?: ModelTypes["chat_media_messages_var_pop_order_by"] | undefined;
+    var_samp?: ModelTypes["chat_media_messages_var_samp_order_by"] | undefined;
+    variance?: ModelTypes["chat_media_messages_variance_order_by"] | undefined;
+  };
+  /** input type for inserting array relation for remote table "chat_media_messages" */
+  ["chat_media_messages_arr_rel_insert_input"]: {
+    data: Array<ModelTypes["chat_media_messages_insert_input"]>;
+    /** upsert condition */
+    on_conflict?: ModelTypes["chat_media_messages_on_conflict"] | undefined;
+  };
+  /** order by avg() on columns of table "chat_media_messages" */
+  ["chat_media_messages_avg_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  /** Boolean expression to filter rows from the table "chat_media_messages". All fields are combined with a logical 'AND'. */
+  ["chat_media_messages_bool_exp"]: {
+    _and?: Array<ModelTypes["chat_media_messages_bool_exp"]> | undefined;
+    _not?: ModelTypes["chat_media_messages_bool_exp"] | undefined;
+    _or?: Array<ModelTypes["chat_media_messages_bool_exp"]> | undefined;
+    chat?: ModelTypes["chats_bool_exp"] | undefined;
+    id?: ModelTypes["Int_comparison_exp"] | undefined;
+    media_kind?: ModelTypes["String_comparison_exp"] | undefined;
+    media_link?: ModelTypes["String_comparison_exp"] | undefined;
+    message_client_generated_uuid?:
+      | ModelTypes["String_comparison_exp"]
+      | undefined;
+  };
+  ["chat_media_messages_constraint"]: chat_media_messages_constraint;
+  /** input type for incrementing numeric columns in table "chat_media_messages" */
+  ["chat_media_messages_inc_input"]: {
+    id?: number | undefined;
+  };
+  /** input type for inserting data into table "chat_media_messages" */
+  ["chat_media_messages_insert_input"]: {
+    chat?: ModelTypes["chats_obj_rel_insert_input"] | undefined;
+    id?: number | undefined;
+    media_kind?: string | undefined;
+    media_link?: string | undefined;
+    message_client_generated_uuid?: string | undefined;
+  };
+  /** order by max() on columns of table "chat_media_messages" */
+  ["chat_media_messages_max_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+    media_kind?: ModelTypes["order_by"] | undefined;
+    media_link?: ModelTypes["order_by"] | undefined;
+    message_client_generated_uuid?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by min() on columns of table "chat_media_messages" */
+  ["chat_media_messages_min_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+    media_kind?: ModelTypes["order_by"] | undefined;
+    media_link?: ModelTypes["order_by"] | undefined;
+    message_client_generated_uuid?: ModelTypes["order_by"] | undefined;
+  };
+  /** response of any mutation on the table "chat_media_messages" */
+  ["chat_media_messages_mutation_response"]: {
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<ModelTypes["chat_media_messages"]>;
+  };
+  /** on_conflict condition type for table "chat_media_messages" */
+  ["chat_media_messages_on_conflict"]: {
+    constraint: ModelTypes["chat_media_messages_constraint"];
+    update_columns: Array<ModelTypes["chat_media_messages_update_column"]>;
+    where?: ModelTypes["chat_media_messages_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "chat_media_messages". */
+  ["chat_media_messages_order_by"]: {
+    chat?: ModelTypes["chats_order_by"] | undefined;
+    id?: ModelTypes["order_by"] | undefined;
+    media_kind?: ModelTypes["order_by"] | undefined;
+    media_link?: ModelTypes["order_by"] | undefined;
+    message_client_generated_uuid?: ModelTypes["order_by"] | undefined;
+  };
+  /** primary key columns input for table: chat_media_messages */
+  ["chat_media_messages_pk_columns_input"]: {
+    id: number;
+  };
+  ["chat_media_messages_select_column"]: chat_media_messages_select_column;
+  /** input type for updating data in table "chat_media_messages" */
+  ["chat_media_messages_set_input"]: {
+    id?: number | undefined;
+    media_kind?: string | undefined;
+    media_link?: string | undefined;
+    message_client_generated_uuid?: string | undefined;
+  };
+  /** order by stddev() on columns of table "chat_media_messages" */
+  ["chat_media_messages_stddev_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by stddev_pop() on columns of table "chat_media_messages" */
+  ["chat_media_messages_stddev_pop_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by stddev_samp() on columns of table "chat_media_messages" */
+  ["chat_media_messages_stddev_samp_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  /** Streaming cursor of the table "chat_media_messages" */
+  ["chat_media_messages_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ModelTypes["chat_media_messages_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ModelTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["chat_media_messages_stream_cursor_value_input"]: {
+    id?: number | undefined;
+    media_kind?: string | undefined;
+    media_link?: string | undefined;
+    message_client_generated_uuid?: string | undefined;
+  };
+  /** order by sum() on columns of table "chat_media_messages" */
+  ["chat_media_messages_sum_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  ["chat_media_messages_update_column"]: chat_media_messages_update_column;
+  ["chat_media_messages_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: ModelTypes["chat_media_messages_inc_input"] | undefined;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: ModelTypes["chat_media_messages_set_input"] | undefined;
+    where: ModelTypes["chat_media_messages_bool_exp"];
+  };
+  /** order by var_pop() on columns of table "chat_media_messages" */
+  ["chat_media_messages_var_pop_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by var_samp() on columns of table "chat_media_messages" */
+  ["chat_media_messages_var_samp_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by variance() on columns of table "chat_media_messages" */
+  ["chat_media_messages_variance_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
   /** columns and relationships of "chats" */
   ["chats"]: {
+    /** An array relationship */
+    chat_media_messages: Array<ModelTypes["chat_media_messages"]>;
     client_generated_uuid: string;
     created_at?: ModelTypes["timestamptz"] | undefined;
     id: number;
@@ -2910,6 +4019,9 @@ export type ModelTypes = {
     _and?: Array<ModelTypes["chats_bool_exp"]> | undefined;
     _not?: ModelTypes["chats_bool_exp"] | undefined;
     _or?: Array<ModelTypes["chats_bool_exp"]> | undefined;
+    chat_media_messages?:
+      | ModelTypes["chat_media_messages_bool_exp"]
+      | undefined;
     client_generated_uuid?: ModelTypes["String_comparison_exp"] | undefined;
     created_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
     id?: ModelTypes["Int_comparison_exp"] | undefined;
@@ -2929,6 +4041,9 @@ export type ModelTypes = {
   ["chats_constraint"]: chats_constraint;
   /** input type for inserting data into table "chats" */
   ["chats_insert_input"]: {
+    chat_media_messages?:
+      | ModelTypes["chat_media_messages_arr_rel_insert_input"]
+      | undefined;
     client_generated_uuid?: string | undefined;
     created_at?: ModelTypes["timestamptz"] | undefined;
     id?: number | undefined;
@@ -2964,6 +4079,9 @@ export type ModelTypes = {
   };
   /** Ordering options when selecting data from "chats". */
   ["chats_order_by"]: {
+    chat_media_messages_aggregate?:
+      | ModelTypes["chat_media_messages_aggregate_order_by"]
+      | undefined;
     client_generated_uuid?: ModelTypes["order_by"] | undefined;
     created_at?: ModelTypes["order_by"] | undefined;
     id?: ModelTypes["order_by"] | undefined;
@@ -3003,6 +4121,14 @@ export type ModelTypes = {
   ["cursor_ordering"]: cursor_ordering;
   /** mutation root */
   ["mutation_root"]: {
+    /** insert data into the table: "chat_media_messages" */
+    insert_chat_media_messages?:
+      | ModelTypes["chat_media_messages_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "chat_media_messages" */
+    insert_chat_media_messages_one?:
+      | ModelTypes["chat_media_messages"]
+      | undefined;
     /** insert data into the table: "chats" */
     insert_chats?: ModelTypes["chats_mutation_response"] | undefined;
     /** insert a single row into the table: "chats" */
@@ -3014,6 +4140,18 @@ export type ModelTypes = {
     /** insert a single row into the table: "secure_transfer_transactions" */
     insert_secure_transfer_transactions_one?:
       | ModelTypes["secure_transfer_transactions"]
+      | undefined;
+    /** update data of the table: "chat_media_messages" */
+    update_chat_media_messages?:
+      | ModelTypes["chat_media_messages_mutation_response"]
+      | undefined;
+    /** update single row of the table: "chat_media_messages" */
+    update_chat_media_messages_by_pk?:
+      | ModelTypes["chat_media_messages"]
+      | undefined;
+    /** update multiples rows of table: "chat_media_messages" */
+    update_chat_media_messages_many?:
+      | Array<ModelTypes["chat_media_messages_mutation_response"] | undefined>
       | undefined;
     /** update data of the table: "secure_transfer_transactions" */
     update_secure_transfer_transactions?:
@@ -3033,6 +4171,10 @@ export type ModelTypes = {
   };
   ["order_by"]: order_by;
   ["query_root"]: {
+    /** An array relationship */
+    chat_media_messages: Array<ModelTypes["chat_media_messages"]>;
+    /** fetch data from the table: "chat_media_messages" using primary key columns */
+    chat_media_messages_by_pk?: ModelTypes["chat_media_messages"] | undefined;
     /** fetch data from the table: "chats" */
     chats: Array<ModelTypes["chats"]>;
     /** fetch data from the table: "chats" using primary key columns */
@@ -3280,6 +4422,12 @@ export type ModelTypes = {
     message_id?: ModelTypes["order_by"] | undefined;
   };
   ["subscription_root"]: {
+    /** An array relationship */
+    chat_media_messages: Array<ModelTypes["chat_media_messages"]>;
+    /** fetch data from the table: "chat_media_messages" using primary key columns */
+    chat_media_messages_by_pk?: ModelTypes["chat_media_messages"] | undefined;
+    /** fetch data from the table in a streaming manner: "chat_media_messages" */
+    chat_media_messages_stream: Array<ModelTypes["chat_media_messages"]>;
     /** fetch data from the table: "chats" */
     chats: Array<ModelTypes["chats"]>;
     /** fetch data from the table: "chats" using primary key columns */
@@ -3359,9 +4507,180 @@ export type GraphQLTypes = {
     /** does the column match the given SQL regular expression */
     _similar?: string | undefined;
   };
+  /** columns and relationships of "chat_media_messages" */
+  ["chat_media_messages"]: {
+    __typename: "chat_media_messages";
+    /** An object relationship */
+    chat: GraphQLTypes["chats"];
+    id: number;
+    media_kind: string;
+    media_link: string;
+    message_client_generated_uuid: string;
+  };
+  /** order by aggregate values of table "chat_media_messages" */
+  ["chat_media_messages_aggregate_order_by"]: {
+    avg?: GraphQLTypes["chat_media_messages_avg_order_by"] | undefined;
+    count?: GraphQLTypes["order_by"] | undefined;
+    max?: GraphQLTypes["chat_media_messages_max_order_by"] | undefined;
+    min?: GraphQLTypes["chat_media_messages_min_order_by"] | undefined;
+    stddev?: GraphQLTypes["chat_media_messages_stddev_order_by"] | undefined;
+    stddev_pop?:
+      | GraphQLTypes["chat_media_messages_stddev_pop_order_by"]
+      | undefined;
+    stddev_samp?:
+      | GraphQLTypes["chat_media_messages_stddev_samp_order_by"]
+      | undefined;
+    sum?: GraphQLTypes["chat_media_messages_sum_order_by"] | undefined;
+    var_pop?: GraphQLTypes["chat_media_messages_var_pop_order_by"] | undefined;
+    var_samp?:
+      | GraphQLTypes["chat_media_messages_var_samp_order_by"]
+      | undefined;
+    variance?:
+      | GraphQLTypes["chat_media_messages_variance_order_by"]
+      | undefined;
+  };
+  /** input type for inserting array relation for remote table "chat_media_messages" */
+  ["chat_media_messages_arr_rel_insert_input"]: {
+    data: Array<GraphQLTypes["chat_media_messages_insert_input"]>;
+    /** upsert condition */
+    on_conflict?: GraphQLTypes["chat_media_messages_on_conflict"] | undefined;
+  };
+  /** order by avg() on columns of table "chat_media_messages" */
+  ["chat_media_messages_avg_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** Boolean expression to filter rows from the table "chat_media_messages". All fields are combined with a logical 'AND'. */
+  ["chat_media_messages_bool_exp"]: {
+    _and?: Array<GraphQLTypes["chat_media_messages_bool_exp"]> | undefined;
+    _not?: GraphQLTypes["chat_media_messages_bool_exp"] | undefined;
+    _or?: Array<GraphQLTypes["chat_media_messages_bool_exp"]> | undefined;
+    chat?: GraphQLTypes["chats_bool_exp"] | undefined;
+    id?: GraphQLTypes["Int_comparison_exp"] | undefined;
+    media_kind?: GraphQLTypes["String_comparison_exp"] | undefined;
+    media_link?: GraphQLTypes["String_comparison_exp"] | undefined;
+    message_client_generated_uuid?:
+      | GraphQLTypes["String_comparison_exp"]
+      | undefined;
+  };
+  /** unique or primary key constraints on table "chat_media_messages" */
+  ["chat_media_messages_constraint"]: chat_media_messages_constraint;
+  /** input type for incrementing numeric columns in table "chat_media_messages" */
+  ["chat_media_messages_inc_input"]: {
+    id?: number | undefined;
+  };
+  /** input type for inserting data into table "chat_media_messages" */
+  ["chat_media_messages_insert_input"]: {
+    chat?: GraphQLTypes["chats_obj_rel_insert_input"] | undefined;
+    id?: number | undefined;
+    media_kind?: string | undefined;
+    media_link?: string | undefined;
+    message_client_generated_uuid?: string | undefined;
+  };
+  /** order by max() on columns of table "chat_media_messages" */
+  ["chat_media_messages_max_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+    media_kind?: GraphQLTypes["order_by"] | undefined;
+    media_link?: GraphQLTypes["order_by"] | undefined;
+    message_client_generated_uuid?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by min() on columns of table "chat_media_messages" */
+  ["chat_media_messages_min_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+    media_kind?: GraphQLTypes["order_by"] | undefined;
+    media_link?: GraphQLTypes["order_by"] | undefined;
+    message_client_generated_uuid?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** response of any mutation on the table "chat_media_messages" */
+  ["chat_media_messages_mutation_response"]: {
+    __typename: "chat_media_messages_mutation_response";
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<GraphQLTypes["chat_media_messages"]>;
+  };
+  /** on_conflict condition type for table "chat_media_messages" */
+  ["chat_media_messages_on_conflict"]: {
+    constraint: GraphQLTypes["chat_media_messages_constraint"];
+    update_columns: Array<GraphQLTypes["chat_media_messages_update_column"]>;
+    where?: GraphQLTypes["chat_media_messages_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "chat_media_messages". */
+  ["chat_media_messages_order_by"]: {
+    chat?: GraphQLTypes["chats_order_by"] | undefined;
+    id?: GraphQLTypes["order_by"] | undefined;
+    media_kind?: GraphQLTypes["order_by"] | undefined;
+    media_link?: GraphQLTypes["order_by"] | undefined;
+    message_client_generated_uuid?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** primary key columns input for table: chat_media_messages */
+  ["chat_media_messages_pk_columns_input"]: {
+    id: number;
+  };
+  /** select columns of table "chat_media_messages" */
+  ["chat_media_messages_select_column"]: chat_media_messages_select_column;
+  /** input type for updating data in table "chat_media_messages" */
+  ["chat_media_messages_set_input"]: {
+    id?: number | undefined;
+    media_kind?: string | undefined;
+    media_link?: string | undefined;
+    message_client_generated_uuid?: string | undefined;
+  };
+  /** order by stddev() on columns of table "chat_media_messages" */
+  ["chat_media_messages_stddev_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by stddev_pop() on columns of table "chat_media_messages" */
+  ["chat_media_messages_stddev_pop_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by stddev_samp() on columns of table "chat_media_messages" */
+  ["chat_media_messages_stddev_samp_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** Streaming cursor of the table "chat_media_messages" */
+  ["chat_media_messages_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: GraphQLTypes["chat_media_messages_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: GraphQLTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["chat_media_messages_stream_cursor_value_input"]: {
+    id?: number | undefined;
+    media_kind?: string | undefined;
+    media_link?: string | undefined;
+    message_client_generated_uuid?: string | undefined;
+  };
+  /** order by sum() on columns of table "chat_media_messages" */
+  ["chat_media_messages_sum_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** update columns of table "chat_media_messages" */
+  ["chat_media_messages_update_column"]: chat_media_messages_update_column;
+  ["chat_media_messages_updates"]: {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: GraphQLTypes["chat_media_messages_inc_input"] | undefined;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: GraphQLTypes["chat_media_messages_set_input"] | undefined;
+    where: GraphQLTypes["chat_media_messages_bool_exp"];
+  };
+  /** order by var_pop() on columns of table "chat_media_messages" */
+  ["chat_media_messages_var_pop_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by var_samp() on columns of table "chat_media_messages" */
+  ["chat_media_messages_var_samp_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by variance() on columns of table "chat_media_messages" */
+  ["chat_media_messages_variance_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
   /** columns and relationships of "chats" */
   ["chats"]: {
     __typename: "chats";
+    /** An array relationship */
+    chat_media_messages: Array<GraphQLTypes["chat_media_messages"]>;
     client_generated_uuid: string;
     created_at?: GraphQLTypes["timestamptz"] | undefined;
     id: number;
@@ -3382,6 +4701,9 @@ export type GraphQLTypes = {
     _and?: Array<GraphQLTypes["chats_bool_exp"]> | undefined;
     _not?: GraphQLTypes["chats_bool_exp"] | undefined;
     _or?: Array<GraphQLTypes["chats_bool_exp"]> | undefined;
+    chat_media_messages?:
+      | GraphQLTypes["chat_media_messages_bool_exp"]
+      | undefined;
     client_generated_uuid?: GraphQLTypes["String_comparison_exp"] | undefined;
     created_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
     id?: GraphQLTypes["Int_comparison_exp"] | undefined;
@@ -3402,6 +4724,9 @@ export type GraphQLTypes = {
   ["chats_constraint"]: chats_constraint;
   /** input type for inserting data into table "chats" */
   ["chats_insert_input"]: {
+    chat_media_messages?:
+      | GraphQLTypes["chat_media_messages_arr_rel_insert_input"]
+      | undefined;
     client_generated_uuid?: string | undefined;
     created_at?: GraphQLTypes["timestamptz"] | undefined;
     id?: number | undefined;
@@ -3438,6 +4763,9 @@ export type GraphQLTypes = {
   };
   /** Ordering options when selecting data from "chats". */
   ["chats_order_by"]: {
+    chat_media_messages_aggregate?:
+      | GraphQLTypes["chat_media_messages_aggregate_order_by"]
+      | undefined;
     client_generated_uuid?: GraphQLTypes["order_by"] | undefined;
     created_at?: GraphQLTypes["order_by"] | undefined;
     id?: GraphQLTypes["order_by"] | undefined;
@@ -3481,6 +4809,14 @@ export type GraphQLTypes = {
   /** mutation root */
   ["mutation_root"]: {
     __typename: "mutation_root";
+    /** insert data into the table: "chat_media_messages" */
+    insert_chat_media_messages?:
+      | GraphQLTypes["chat_media_messages_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "chat_media_messages" */
+    insert_chat_media_messages_one?:
+      | GraphQLTypes["chat_media_messages"]
+      | undefined;
     /** insert data into the table: "chats" */
     insert_chats?: GraphQLTypes["chats_mutation_response"] | undefined;
     /** insert a single row into the table: "chats" */
@@ -3492,6 +4828,18 @@ export type GraphQLTypes = {
     /** insert a single row into the table: "secure_transfer_transactions" */
     insert_secure_transfer_transactions_one?:
       | GraphQLTypes["secure_transfer_transactions"]
+      | undefined;
+    /** update data of the table: "chat_media_messages" */
+    update_chat_media_messages?:
+      | GraphQLTypes["chat_media_messages_mutation_response"]
+      | undefined;
+    /** update single row of the table: "chat_media_messages" */
+    update_chat_media_messages_by_pk?:
+      | GraphQLTypes["chat_media_messages"]
+      | undefined;
+    /** update multiples rows of table: "chat_media_messages" */
+    update_chat_media_messages_many?:
+      | Array<GraphQLTypes["chat_media_messages_mutation_response"] | undefined>
       | undefined;
     /** update data of the table: "secure_transfer_transactions" */
     update_secure_transfer_transactions?:
@@ -3513,6 +4861,10 @@ export type GraphQLTypes = {
   ["order_by"]: order_by;
   ["query_root"]: {
     __typename: "query_root";
+    /** An array relationship */
+    chat_media_messages: Array<GraphQLTypes["chat_media_messages"]>;
+    /** fetch data from the table: "chat_media_messages" using primary key columns */
+    chat_media_messages_by_pk?: GraphQLTypes["chat_media_messages"] | undefined;
     /** fetch data from the table: "chats" */
     chats: Array<GraphQLTypes["chats"]>;
     /** fetch data from the table: "chats" using primary key columns */
@@ -3766,6 +5118,12 @@ export type GraphQLTypes = {
   };
   ["subscription_root"]: {
     __typename: "subscription_root";
+    /** An array relationship */
+    chat_media_messages: Array<GraphQLTypes["chat_media_messages"]>;
+    /** fetch data from the table: "chat_media_messages" using primary key columns */
+    chat_media_messages_by_pk?: GraphQLTypes["chat_media_messages"] | undefined;
+    /** fetch data from the table in a streaming manner: "chat_media_messages" */
+    chat_media_messages_stream: Array<GraphQLTypes["chat_media_messages"]>;
     /** fetch data from the table: "chats" */
     chats: Array<GraphQLTypes["chats"]>;
     /** fetch data from the table: "chats" using primary key columns */
@@ -3799,6 +5157,24 @@ export type GraphQLTypes = {
     _nin?: Array<GraphQLTypes["timestamptz"]> | undefined;
   };
 };
+/** unique or primary key constraints on table "chat_media_messages" */
+export const enum chat_media_messages_constraint {
+  chat_media_messages_pkey = "chat_media_messages_pkey",
+}
+/** select columns of table "chat_media_messages" */
+export const enum chat_media_messages_select_column {
+  id = "id",
+  media_kind = "media_kind",
+  media_link = "media_link",
+  message_client_generated_uuid = "message_client_generated_uuid",
+}
+/** update columns of table "chat_media_messages" */
+export const enum chat_media_messages_update_column {
+  id = "id",
+  media_kind = "media_kind",
+  media_link = "media_link",
+  message_client_generated_uuid = "message_client_generated_uuid",
+}
 /** unique or primary key constraints on table "chats" */
 export const enum chats_constraint {
   chats_client_generated_uuid_key = "chats_client_generated_uuid_key",
@@ -3869,6 +5245,31 @@ export const enum secure_transfer_transactions_update_column {
 type ZEUS_VARIABLES = {
   ["Int_comparison_exp"]: ValueTypes["Int_comparison_exp"];
   ["String_comparison_exp"]: ValueTypes["String_comparison_exp"];
+  ["chat_media_messages_aggregate_order_by"]: ValueTypes["chat_media_messages_aggregate_order_by"];
+  ["chat_media_messages_arr_rel_insert_input"]: ValueTypes["chat_media_messages_arr_rel_insert_input"];
+  ["chat_media_messages_avg_order_by"]: ValueTypes["chat_media_messages_avg_order_by"];
+  ["chat_media_messages_bool_exp"]: ValueTypes["chat_media_messages_bool_exp"];
+  ["chat_media_messages_constraint"]: ValueTypes["chat_media_messages_constraint"];
+  ["chat_media_messages_inc_input"]: ValueTypes["chat_media_messages_inc_input"];
+  ["chat_media_messages_insert_input"]: ValueTypes["chat_media_messages_insert_input"];
+  ["chat_media_messages_max_order_by"]: ValueTypes["chat_media_messages_max_order_by"];
+  ["chat_media_messages_min_order_by"]: ValueTypes["chat_media_messages_min_order_by"];
+  ["chat_media_messages_on_conflict"]: ValueTypes["chat_media_messages_on_conflict"];
+  ["chat_media_messages_order_by"]: ValueTypes["chat_media_messages_order_by"];
+  ["chat_media_messages_pk_columns_input"]: ValueTypes["chat_media_messages_pk_columns_input"];
+  ["chat_media_messages_select_column"]: ValueTypes["chat_media_messages_select_column"];
+  ["chat_media_messages_set_input"]: ValueTypes["chat_media_messages_set_input"];
+  ["chat_media_messages_stddev_order_by"]: ValueTypes["chat_media_messages_stddev_order_by"];
+  ["chat_media_messages_stddev_pop_order_by"]: ValueTypes["chat_media_messages_stddev_pop_order_by"];
+  ["chat_media_messages_stddev_samp_order_by"]: ValueTypes["chat_media_messages_stddev_samp_order_by"];
+  ["chat_media_messages_stream_cursor_input"]: ValueTypes["chat_media_messages_stream_cursor_input"];
+  ["chat_media_messages_stream_cursor_value_input"]: ValueTypes["chat_media_messages_stream_cursor_value_input"];
+  ["chat_media_messages_sum_order_by"]: ValueTypes["chat_media_messages_sum_order_by"];
+  ["chat_media_messages_update_column"]: ValueTypes["chat_media_messages_update_column"];
+  ["chat_media_messages_updates"]: ValueTypes["chat_media_messages_updates"];
+  ["chat_media_messages_var_pop_order_by"]: ValueTypes["chat_media_messages_var_pop_order_by"];
+  ["chat_media_messages_var_samp_order_by"]: ValueTypes["chat_media_messages_var_samp_order_by"];
+  ["chat_media_messages_variance_order_by"]: ValueTypes["chat_media_messages_variance_order_by"];
   ["chats_bool_exp"]: ValueTypes["chats_bool_exp"];
   ["chats_constraint"]: ValueTypes["chats_constraint"];
   ["chats_insert_input"]: ValueTypes["chats_insert_input"];

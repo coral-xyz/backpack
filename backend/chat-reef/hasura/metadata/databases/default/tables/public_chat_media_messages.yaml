@@ -1,0 +1,35 @@
+table:
+  name: chat_media_messages
+  schema: public
+object_relationships:
+  - name: chat
+    using:
+      foreign_key_constraint_on: message_client_generated_uuid
+insert_permissions:
+  - role: chat
+    permission:
+      check: {}
+      columns:
+        - id
+        - media_kind
+        - media_link
+        - message_client_generated_uuid
+select_permissions:
+  - role: chat
+    permission:
+      columns:
+        - id
+        - media_kind
+        - media_link
+        - message_client_generated_uuid
+      filter: {}
+update_permissions:
+  - role: chat
+    permission:
+      columns:
+        - id
+        - media_kind
+        - media_link
+        - message_client_generated_uuid
+      filter: {}
+      check: {}

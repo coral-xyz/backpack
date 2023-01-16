@@ -69,6 +69,15 @@ export const getChats = async ({
             current_state: true,
           },
         ],
+        chat_media_messages: [
+          {
+            limit: 1,
+          },
+          {
+            media_kind: true,
+            media_link: true,
+          },
+        ],
       },
     ],
   });
@@ -102,6 +111,11 @@ export const getChats = async ({
                 chat.secure_transfer_transactions[0]?.final_txn_signature,
               current_state:
                 chat.secure_transfer_transactions[0]?.current_state,
+            }
+          : chat.message_kind === "media"
+          ? {
+              media_kind: chat.chat_media_messages[0]?.media_kind,
+              media_link: chat.chat_media_messages[0]?.media_link,
             }
           : undefined,
     });
