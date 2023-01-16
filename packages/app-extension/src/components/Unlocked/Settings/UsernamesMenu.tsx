@@ -3,7 +3,7 @@ import {
   openAddUserAccount,
   UI_RPC_METHOD_ACTIVE_USER_UPDATE,
 } from "@coral-xyz/common";
-import { ListItem,ProxyImage } from "@coral-xyz/react-common";
+import { ListItem, ProxyImage } from "@coral-xyz/react-common";
 import {
   useAllUsers,
   useAvatarUrl,

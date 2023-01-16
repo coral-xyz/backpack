@@ -19,6 +19,7 @@ import {
   PushDetail,
 } from "@coral-xyz/react-common";
 import {
+  useAllUsers,
   useAvatarUrl,
   useBackgroundClient,
   useFeatureGates,
@@ -32,7 +33,7 @@ import {
   Tab as WindowIcon,
 } from "@mui/icons-material";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
-import { IconButton, Typography } from "@mui/material";
+import { Button, IconButton, Popover, Typography } from "@mui/material";
 
 import {
   AllWalletsList,
@@ -145,7 +146,9 @@ export function AvatarButton({
   imgStyle?: React.CSSProperties;
 }) {
   const classes = useStyles();
-  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<any | null>(null);
+
+  const [avatarOpen, setAvatarOpen] = useState(false);
   const avatarUrl = useAvatarUrl(32);
   // PCA test ProxyImage
   return (
@@ -153,7 +156,10 @@ export function AvatarButton({
       <IconButton
         disableRipple
         className={classes.menuButton}
-        onClick={() => setSettingsOpen(!settingsOpen)}
+        onClick={(e) => {
+          setAnchorEl(e.currentTarget);
+          setAvatarOpen(!avatarOpen);
+        }}
         size="large"
         id="menu-button"
         style={{
@@ -170,11 +176,115 @@ export function AvatarButton({
           }}
         />
       </IconButton>
+      <Popover
+        open={avatarOpen}
+        anchorEl={anchorEl}
+        onClose={() => setAvatarOpen(false)}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+        PaperProps={{
+          style: {
+            borderRadius: "6px",
+          },
+        }}
+      >
+        <AvatarMenu />
+      </Popover>
+    </div>
+  );
+}
+
+function AvatarMenu() {
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  return (
+    <div
+      style={{
+        width: "218px",
+      }}
+    >
+      <UsersMenuList />
+      <AuxMenuList />
       <SettingsNavStackDrawer
         settingsOpen={settingsOpen}
         setSettingsOpen={setSettingsOpen}
       />
     </div>
+  );
+}
+
+function UsersMenuList() {
+  const users = useAllUsers();
+  return (
+    <div>
+      {users.map((user: any) => {
+        return <UserMenuItem user={user} />;
+      })}
+    </div>
+  );
+}
+
+function AuxMenuList() {
+  return <div></div>;
+}
+
+function UserMenuItem({ user }: { user: any }) {
+  const theme = useCustomTheme();
+  const avatarUrl = useAvatarUrl(undefined, user.username);
+  return (
+    <Button
+      disableRipple
+      style={{
+        textTransform: "none",
+        padding: 0,
+        paddingTop: "8px",
+        paddingBottom: "8px",
+        paddingLeft: "16px",
+        paddingRight: "16px",
+        width: "100%",
+        display: "inline",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+          }}
+        >
+          <ProxyImage
+            src={avatarUrl}
+            style={{
+              width: "20px",
+              height: "20px",
+              borderRadius: "50%",
+            }}
+          />
+        </div>
+        <Typography
+          style={{
+            marginLeft: "8px",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            color: theme.custom.colors.fontColor,
+            fontSize: "14px",
+          }}
+        >
+          @{user.username}
+        </Typography>
+      </div>
+    </Button>
   );
 }
 
