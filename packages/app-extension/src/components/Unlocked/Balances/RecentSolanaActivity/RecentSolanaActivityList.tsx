@@ -15,6 +15,11 @@ import { Bolt, CallMade, Check, Clear } from "@mui/icons-material";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import { List, ListItem, Typography } from "@mui/material";
 
+import {
+  getTransactionCaption,
+  getTransactionTitle,
+  isNFTTransaction,
+} from "./detail-parser";
 import { TransactionDetail } from "./TransactionDetail";
 
 const useStyles = styles((theme) => ({
@@ -172,53 +177,8 @@ export function SolanaTransactionListItem({
     // window.open(explorerUrl(explorer!, transaction.signature, connectionUrl!));
   };
 
-  const isNFT = transaction?.type?.includes("NFT");
+  const isNFT = isNFTTransaction(transaction);
 
-  const getTransactionTitle = (transaction: any) => {
-    switch (transaction.type) {
-      case "TRANSFER":
-        return "Sent";
-      case "SWAP":
-        return "Token Swap";
-      default:
-        if (isNFT) {
-          return (
-            transaction?.metaData?.onChainData?.data?.name ||
-            transaction?.metaData?.offChainData?.name
-          );
-        }
-        return "App Interaction";
-    }
-  };
-
-  const getSourceNameFormatted = (source: string) =>
-    source
-      .replace("_", " ")
-      .toLowerCase()
-      .replace(/(^\w|\s\w)/g, (c: string) => c.toUpperCase());
-
-  const getTransactionCaption = (transaction: any) => {
-    switch (transaction.type) {
-      // case "TRANSFER":
-      case "SWAP":
-        const desc = transaction.description.split(" ");
-        return `${desc[3]} -> ${desc[6]}`;
-
-      case "NFT_LISTING":
-        return `Listed on ${getSourceNameFormatted(transaction.source)}`;
-
-      case "NFT_SALE":
-        return `${
-          transaction.feePayer === activeWallet.publicKey ? "Bought" : "Sold"
-        } on ${getSourceNameFormatted(transaction.source)}`;
-
-      default:
-        if (isNFT) {
-          return getSourceNameFormatted(transaction.source);
-        }
-        return "App Interaction";
-    }
-  };
   return (
     <ListItem
       button
