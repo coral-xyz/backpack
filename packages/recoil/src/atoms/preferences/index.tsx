@@ -1,6 +1,11 @@
-import type { Blockchain } from "@coral-xyz/common";
+import type {
+  AutolockSettings,
+  Blockchain,
+  Preferences,
+} from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
+  DEFAULT_AUTO_LOCK_INTERVAL_SECS,
   UI_RPC_METHOD_ALL_USERS_READ,
   UI_RPC_METHOD_PREFERENCES_READ,
   UI_RPC_METHOD_USER_READ,
@@ -15,7 +20,7 @@ import {
 
 import { backgroundClient } from "../client";
 
-export const preferences = atom<any>({
+export const preferences = atom<Preferences>({
   key: "preferences",
   default: selector({
     key: "preferencesDefault",
@@ -31,7 +36,7 @@ export const preferences = atom<any>({
   }),
 });
 
-export const enabledBlockchains = selector<Array<Blockchain>>({
+export const enabledBlockchains = selector<Blockchain[]>({
   key: "enabledBlockchains",
   get: async ({ get }) => {
     const p = get(preferences);
@@ -55,10 +60,7 @@ export const isDeveloperMode = selector<boolean>({
   },
 });
 
-export const autoLockSettings = selector<{
-  seconds?: number;
-  option?: "never" | "onClose";
-}>({
+export const autoLockSettings = selector<AutolockSettings>({
   key: "autoLockSettings",
   get: async ({ get }) => {
     const p = get(preferences);
@@ -75,7 +77,7 @@ export const isAggregateWallets = selector<boolean>({
   key: "isAggregateWallets",
   get: async ({ get }) => {
     const p = get(preferences);
-    return !!p.aggregateWallets;
+    return Boolean(p.aggregateWallets);
   },
 });
 
@@ -137,8 +139,6 @@ export const allUsers = selector({
     }
   },
 });
-
-export const DEFAULT_AUTO_LOCK_INTERVAL_SECS = 15 * 60;
 
 // This atom is used for nothing other than re-triggering the allUsers fetch.
 export const allUsersTrigger = atom<number>({
