@@ -162,9 +162,6 @@ export const activeWallet = selector<{
       throw new Error("active wallet not found");
     }
 
-    //
-    //
-    //
     return {
       blockchain: data.activeBlockchain,
       ...wallet,

@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
-import {
-  UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_DELETE,
-  UI_RPC_METHOD_KEYRING_KEY_DELETE,
-} from "@coral-xyz/common";
+import { UI_RPC_METHOD_KEYRING_KEY_DELETE } from "@coral-xyz/common";
 import {
   CheckIcon,
   PrimaryButton,
@@ -26,32 +23,20 @@ export const RemoveWallet: React.FC<{
   const nav = useNavStack();
   const background = useBackgroundClient();
   const [showSuccess, setShowSuccess] = useState(false);
-  const blockchainKeyrings = useWalletPublicKeys();
-  const keyring = blockchainKeyrings[blockchain];
 
   useEffect(() => {
     nav.setTitle("Remove Wallet");
   }, [nav]);
 
+  // TODO: this should use a common display function
   const pubkeyStr =
     publicKey.slice(0, 4) + "..." + publicKey.slice(publicKey.length - 4);
 
-  // Number of public keys for the blockchain keyring
-  const publicKeyCount = keyring ? Object.values(keyring).flat().length : 0;
-
   const onRemove = async () => {
-    if (publicKeyCount === 1) {
-      // This is the last public key for the keyring, remove the entire keyring
-      await background.request({
-        method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_DELETE,
-        params: [blockchain],
-      });
-    } else {
-      await background.request({
-        method: UI_RPC_METHOD_KEYRING_KEY_DELETE,
-        params: [blockchain, publicKey],
-      });
-    }
+    await background.request({
+      method: UI_RPC_METHOD_KEYRING_KEY_DELETE,
+      params: [blockchain, publicKey],
+    });
     setShowSuccess(true);
   };
 
