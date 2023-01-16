@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import type { MessageKind, MessageMetadata } from "@coral-xyz/common";
 import { BACKEND_API_URL, CHAT_MESSAGES } from "@coral-xyz/common";
 import { createEmptyFriendship, SignalingManager } from "@coral-xyz/db";
-import { useUser } from "@coral-xyz/recoil";
+import { useActiveSolanaWallet, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import ArrowForwardIos from "@mui/icons-material/ArrowForwardIos";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
@@ -93,6 +93,7 @@ export const SendMessage = () => {
     "image"
   );
   const theme = useCustomTheme();
+  const activeSolanaWallet = useActiveSolanaWallet();
 
   const {
     remoteUserId,
@@ -336,20 +337,22 @@ export const SendMessage = () => {
                   height: "28px",
                 }}
               />
-              <SecureTransfer
-                buttonStyle={{
-                  height: "28px",
-                }}
-                remoteUserId={remoteUserId}
-                onTxFinalized={({ signature, counter, escrow }) => {
-                  sendMessage("Secure transfer", "secure-transfer", {
-                    signature,
-                    counter,
-                    escrow,
-                    current_state: "pending",
-                  });
-                }}
-              />
+              {activeSolanaWallet?.publicKey && (
+                <SecureTransfer
+                  buttonStyle={{
+                    height: "28px",
+                  }}
+                  remoteUserId={remoteUserId}
+                  onTxFinalized={({ signature, counter, escrow }) => {
+                    sendMessage("Secure transfer", "secure-transfer", {
+                      signature,
+                      counter,
+                      escrow,
+                      current_state: "pending",
+                    });
+                  }}
+                />
+              )}
               {/*<IconButton>*/}
               {/*  {" "}*/}
               {/*  <SendIcon*/}

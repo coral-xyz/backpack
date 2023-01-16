@@ -48,7 +48,7 @@ export const NftsExperience = ({ id }: any) => {
 export function NftChat({ collectionId, nftMint }: any) {
   const { username, uuid } = useUser();
   const isDarkMode = useDarkMode();
-  const { publicKey } = useActiveSolanaWallet();
+  const activeSolanaWallet = useActiveSolanaWallet();
 
   return (
     <ChatRoom
@@ -57,7 +57,7 @@ export function NftChat({ collectionId, nftMint }: any) {
       roomId={collectionId || "-"}
       userId={uuid}
       isDarkMode={isDarkMode}
-      publicKey={publicKey}
+      publicKey={activeSolanaWallet?.publicKey}
       nftMint={nftMint}
     />
   );
