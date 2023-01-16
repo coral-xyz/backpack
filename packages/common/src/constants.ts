@@ -104,6 +104,8 @@ export const UI_RPC_METHOD_BLOCKCHAINS_ENABLED_DELETE =
   "ui-rpc-method-blockchains-enabled-delete";
 export const UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD =
   "ui-rpc-method-blockchain-keyrings-add";
+export const UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_DELETE =
+  "ui-rpc-method-blockchain-keyrings-delete";
 export const UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ =
   "ui-rpc-method-blockchain-keyrings-read";
 export const UI_RPC_METHOD_KEYNAME_READ = "ui-rpc-method-keyname-read";
@@ -252,6 +254,8 @@ export const NOTIFICATION_AUTO_LOCK_SETTINGS_UPDATED =
   "notification-auto-lock-settings-updated";
 export const NOTIFICATION_BLOCKCHAIN_KEYRING_CREATED =
   "notification-blockchain-keyring-created";
+export const NOTIFICATION_BLOCKCHAIN_KEYRING_DELETED =
+  "notification-blockchain-keyring-deleted";
 export const NOTIFICATION_AGGREGATE_WALLETS_UPDATED =
   "notification-aggregate-wallets-updated";
 export const NOTIFICATION_DARK_MODE_UPDATED = "notification-dark-mode-updated";

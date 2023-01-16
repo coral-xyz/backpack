@@ -24,6 +24,7 @@ import {
   UI_RPC_METHOD_APPROVED_ORIGINS_READ,
   UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
+  UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_DELETE,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
   UI_RPC_METHOD_ETHEREUM_CHAIN_ID_READ,
   UI_RPC_METHOD_ETHEREUM_CHAIN_ID_UPDATE,
@@ -302,9 +303,10 @@ async function handle<T = any>(
         params[3],
         params[4]
       );
+    case UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_DELETE:
+      return await handleBlockchainKeyringsDelete(ctx, params[0]);
     case UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ:
       return await handleBlockchainKeyringsRead(ctx);
-    //
     //
     // Nicknames for keys.
     //
@@ -1031,6 +1033,14 @@ async function handleBlockchainKeyringsAdd(
     publicKey,
     signature
   );
+  return [resp];
+}
+
+async function handleBlockchainKeyringsDelete(
+  ctx: Context<Backend>,
+  blockchain: Blockchain
+) {
+  const resp = await ctx.backend.blockchainKeyringsDelete(blockchain);
   return [resp];
 }
 

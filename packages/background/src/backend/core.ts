@@ -23,6 +23,7 @@ import {
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_AUTO_LOCK_SETTINGS_UPDATED,
   NOTIFICATION_BLOCKCHAIN_KEYRING_CREATED,
+  NOTIFICATION_BLOCKCHAIN_KEYRING_DELETED,
   NOTIFICATION_DARK_MODE_UPDATED,
   NOTIFICATION_DEVELOPER_MODE_UPDATED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
@@ -81,6 +82,9 @@ import {
   setUser,
   setWalletDataForUser,
 } from "./store";
+
+// TODO move type to common
+type NamedPublicKeys = Array<{ name: string; publicKey: string }>;
 
 const { base58: bs58 } = ethers.utils;
 
@@ -772,8 +776,9 @@ export class Backend {
     activePublicKeys: Array<string>;
     publicKeys: {
       [blockchain: string]: {
-        publicKey: string;
-        name: string;
+        hdPublicKeys: NamedPublicKeys;
+        importedPublicKeys: NamedPublicKeys;
+        ledgerPublicKeys: NamedPublicKeys;
       };
     };
   }> {
@@ -791,8 +796,9 @@ export class Backend {
   // Returns all pubkeys available for signing.
   async keyringStoreReadAllPubkeys(): Promise<{
     [blockchain: string]: {
-      publicKey: string;
-      name: string;
+      hdPublicKeys: NamedPublicKeys;
+      importedPublicKeys: NamedPublicKeys;
+      ledgerPublicKeys: NamedPublicKeys;
     };
   }> {
     const publicKeys = await this.keyringStore.publicKeys();
@@ -1404,6 +1410,37 @@ export class Backend {
     });
 
     return newPublicKey;
+  }
+
+  async blockchainKeyringsDelete(blockchain: Blockchain): Promise<void> {
+    // If the keyring being removed is active, set a new active keyring
+    const activeBlockchain =
+      this.keyringStore.activeUserKeyring.activeBlockchain;
+    if (activeBlockchain === blockchain) {
+      const remainingBlockchains = (await this.blockchainKeyringsRead()).filter(
+        (b) => b !== blockchain
+      );
+      if (remainingBlockchains.length === 0) {
+        throw new Error("cannot delete the only blockchain keyring");
+      }
+      const newBlockchain = remainingBlockchains[0] as Blockchain;
+      const newPublicKey = Object.values(
+        (await this.keyringStoreReadAllPubkeys())[newBlockchain]
+      ).flat()[0].publicKey;
+      await this.activeWalletUpdate(newPublicKey, newBlockchain);
+    }
+
+    await this.keyringStore.blockchainKeyringRemove(blockchain);
+
+    const publicKeyData = await this.keyringStoreReadAllPubkeyData();
+
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_BLOCKCHAIN_KEYRING_DELETED,
+      data: {
+        blockchain,
+        publicKeyData,
+      },
+    });
   }
 
   /**

@@ -10,6 +10,7 @@ import {
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_AUTO_LOCK_SETTINGS_UPDATED,
   NOTIFICATION_BLOCKCHAIN_KEYRING_CREATED,
+  NOTIFICATION_BLOCKCHAIN_KEYRING_DELETED,
   NOTIFICATION_DARK_MODE_UPDATED,
   NOTIFICATION_DEVELOPER_MODE_UPDATED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
@@ -293,6 +294,9 @@ export function NotificationsProvider(props: any) {
         case NOTIFICATION_BLOCKCHAIN_KEYRING_CREATED:
           handleBlockchainKeyringCreated(notif);
           break;
+        case NOTIFICATION_BLOCKCHAIN_KEYRING_DELETED:
+          handleBlockchainKeyringDeleted(notif);
+          break;
         case NOTIFICATION_FEATURE_GATES_UPDATED:
           handleSetFeatureGates(notif.data.gates);
           break;
@@ -563,6 +567,10 @@ export function NotificationsProvider(props: any) {
     };
 
     const handleBlockchainKeyringCreated = (notif: Notification) => {
+      setWalletData(notif.data.publicKeyData);
+    };
+
+    const handleBlockchainKeyringDeleted = (notif: Notification) => {
       setWalletData(notif.data.publicKeyData);
     };
 

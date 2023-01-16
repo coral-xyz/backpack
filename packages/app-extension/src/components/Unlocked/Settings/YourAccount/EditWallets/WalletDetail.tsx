@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import { UI_RPC_METHOD_KEYNAME_READ } from "@coral-xyz/common";
-import { useBackgroundClient, useWalletPublicKeys } from "@coral-xyz/recoil";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ContentCopy } from "@mui/icons-material";
 import { Typography } from "@mui/material";
@@ -21,10 +21,6 @@ export const WalletDetail: React.FC<{
   const background = useBackgroundClient();
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [walletName, setWalletName] = useState(name);
-  const blockchainKeyrings = useWalletPublicKeys();
-  const keyring = blockchainKeyrings[blockchain];
-
-  const publicKeyCount = Object.values(keyring).flat().length;
 
   useEffect(() => {
     (async () => {
@@ -99,7 +95,7 @@ export const WalletDetail: React.FC<{
         </div>
       </WithCopyTooltip>
       {type !== "ledger" && <SettingsList menuItems={secrets} />}
-      {publicKeyCount > 1 && <SettingsList menuItems={removeWallet} />}
+      <SettingsList menuItems={removeWallet} />
     </div>
   );
 };

@@ -5,6 +5,7 @@ import {
   fetchEthereumBalances,
   getLogger,
   NOTIFICATION_BLOCKCHAIN_KEYRING_CREATED,
+  NOTIFICATION_BLOCKCHAIN_KEYRING_DELETED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
@@ -78,6 +79,9 @@ export class EthereumConnectionBackend {
         case NOTIFICATION_BLOCKCHAIN_KEYRING_CREATED:
           handleBlockchainKeyringCreated(notif);
           break;
+        case NOTIFICATION_BLOCKCHAIN_KEYRING_DELETED:
+          handleBlockchainKeyringDeleted(notif);
+          break;
         default:
           break;
       }
@@ -134,6 +138,13 @@ export class EthereumConnectionBackend {
       if (blockchain === Blockchain.ETHEREUM) {
         // Start polling if Ethereum was enabled in wallet settings
         this.startPolling(activeWallet);
+      }
+    };
+
+    const handleBlockchainKeyringDeleted = (notif: Notification) => {
+      const { blockchain } = notif.data;
+      if (blockchain === Blockchain.ETHEREUM) {
+        this.stopPolling();
       }
     };
   }
