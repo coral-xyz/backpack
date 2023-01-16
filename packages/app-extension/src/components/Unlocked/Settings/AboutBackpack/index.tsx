@@ -90,7 +90,7 @@ export function AboutBackpack() {
         <Typography
           style={{ color: theme.custom.colors.secondary, textAlign: "center" }}
         >
-          {BACKPACK_CONFIG_VERSION}
+          Version {BACKPACK_CONFIG_VERSION}
         </Typography>
       </div>
       <List>
