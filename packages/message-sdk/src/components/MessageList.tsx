@@ -72,8 +72,8 @@ export const MessageList = ({
             }
             timestamp={
               activeChat.chatType === "individual"
-                ? activeChat.chatProps.last_message_timestamp
-                : (activeChat.chatProps.lastMessageTimestamp as string)
+                ? activeChat.chatProps.last_message_timestamp || ""
+                : activeChat.chatProps.lastMessageTimestamp || ""
             }
             isFirst={requestCount === 0 && index === 0}
             isLast={index === activeChats.length - 1}
