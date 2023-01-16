@@ -417,7 +417,11 @@ function useNavBar() {
             ? "Applications"
             : pathname.startsWith("/messages")
             ? "Messages"
-            : "Collectibles"}
+            : pathname.startsWith("/nfts")
+            ? "Collectibles"
+            : pathname.startsWith("/notifications")
+            ? "Notifications"
+            : "Recent Activity"}
         </Typography>
       </div>
     );
