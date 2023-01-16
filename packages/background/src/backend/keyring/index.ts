@@ -13,6 +13,7 @@ import type {
 import {
   BACKEND_API_URL,
   BACKEND_EVENT,
+  DEFAULT_AUTO_LOCK_INTERVAL_SECS,
   defaultPreferences,
   NOTIFICATION_KEYRING_STORE_LOCKED,
 } from "@coral-xyz/common";
