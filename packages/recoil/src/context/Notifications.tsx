@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import type {
+  AutolockSettings,
   Blockchain,
   FEATURE_GATES_MAP,
   Notification,
@@ -43,11 +44,7 @@ import {
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
 } from "@coral-xyz/common";
 import type { Commitment } from "@solana/web3.js";
-import {
-  useRecoilCallback,
-  useResetRecoilState,
-  useSetRecoilState,
-} from "recoil";
+import { useResetRecoilState, useSetRecoilState } from "recoil";
 
 import * as atoms from "../atoms";
 import { allPlugins } from "../hooks";
@@ -77,7 +74,7 @@ export function NotificationsProvider(props: any) {
       };
     });
   };
-  const setActiveBlockchain = (activeBlockchain) => {
+  const setActiveBlockchain = (activeBlockchain: Blockchain) => {
     setWalletData((current) => {
       return {
         ...current,
@@ -85,7 +82,7 @@ export function NotificationsProvider(props: any) {
       };
     });
   };
-  const setActivePublicKeys = (activePublicKeys) => {
+  const setActivePublicKeys = (activePublicKeys: string[]) => {
     setWalletData((current) => {
       return {
         ...current,
@@ -101,7 +98,7 @@ export function NotificationsProvider(props: any) {
   const setPreferences = useSetRecoilState(atoms.preferences);
   const setFeatureGates = useSetRecoilState(atoms.featureGates);
 
-  const setAutoLockSettings = (autoLockSettings) => {
+  const setAutoLockSettings = (autoLockSettings: AutolockSettings) => {
     setPreferences((current) => {
       return {
         ...current,
@@ -139,7 +136,7 @@ export function NotificationsProvider(props: any) {
       ...featureGates,
     }));
   };
-  const setEnabledBlockchains = (enabledBlockchains: Blockchain) => {
+  const setEnabledBlockchains = (enabledBlockchains: Blockchain[]) => {
     setPreferences((current) => {
       return {
         ...current,
@@ -147,7 +144,7 @@ export function NotificationsProvider(props: any) {
       };
     });
   };
-  const setApprovedOrigins = (approvedOrigins: Array<string>) => {
+  const setApprovedOrigins = (approvedOrigins: string[]) => {
     setPreferences((current) => {
       return {
         ...current,
@@ -157,7 +154,7 @@ export function NotificationsProvider(props: any) {
   };
   const setXnftPreferences = useSetRecoilState(atoms.xnftPreferences);
   // Solana
-  const setSolanaConnectionUrl = (cluster) => {
+  const setSolanaConnectionUrl = (cluster: string) => {
     setPreferences((current) => {
       return {
         ...current,
