@@ -66,6 +66,7 @@ select_permissions:
     permission:
       columns:
         - id
+        - is_internal
         - username
       filter: {}
   - role: public_avatar

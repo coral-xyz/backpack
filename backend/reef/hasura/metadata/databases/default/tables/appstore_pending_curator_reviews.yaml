@@ -57,5 +57,4 @@ update_permissions:
 delete_permissions:
   - role: appstore
     permission:
-      backend_only: false
       filter: {}

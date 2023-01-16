@@ -1,0 +1,2 @@
+CREATE TABLE "auth"."mad_feed_votes" ("vote_id" uuid NOT NULL DEFAULT gen_random_uuid(), "post_id" uuid NOT NULL, "user_id" uuid NOT NULL, "timestamp" timestamptz NOT NULL DEFAULT now(), PRIMARY KEY ("vote_id") , FOREIGN KEY ("post_id") REFERENCES "auth"."mad_feed_posts"("post_id") ON UPDATE cascade ON DELETE cascade, FOREIGN KEY ("user_id") REFERENCES "auth"."users"("id") ON UPDATE cascade ON DELETE cascade, UNIQUE ("vote_id"));COMMENT ON TABLE "auth"."mad_feed_votes" IS E'User votes for posts in mad feed';
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
