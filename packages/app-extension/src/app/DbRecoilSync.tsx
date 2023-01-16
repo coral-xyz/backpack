@@ -1,17 +1,30 @@
 import { useEffect } from "react";
-import { useActiveChats, useRequestsCount } from "@coral-xyz/db";
-import { friendships, requestCount, useUser } from "@coral-xyz/recoil";
+import {
+  getNftCollectionGroups,
+  useActiveChats,
+  useRequestsCount,
+} from "@coral-xyz/db";
+import {
+  friendships,
+  groupCollections,
+  requestCount,
+  useUser,
+} from "@coral-xyz/recoil";
 import { useRecoilState } from "recoil";
 
 export const DbRecoilSync = () => {
   const { uuid } = useUser();
   const activeChats = useActiveChats(uuid);
+  const collectionsChatMetadata = getNftCollectionGroups(uuid);
   const count = useRequestsCount(uuid);
   const [friendshipValue, setFriendshipsValue] = useRecoilState(
     friendships({ uuid })
   );
   const [requestCountValue, setRequestCountValue] = useRecoilState(
     requestCount({ uuid })
+  );
+  const [groupCollectionsValue, setGroupCollectionsValue] = useRecoilState(
+    groupCollections({ uuid })
   );
 
   useEffect(() => {
@@ -26,6 +39,16 @@ export const DbRecoilSync = () => {
       setRequestCountValue(count || 0);
     }
   }, [count, requestCountValue, setRequestCountValue]);
+
+  useEffect(() => {
+    if (
+      JSON.stringify(groupCollectionsValue) ===
+      JSON.stringify(collectionsChatMetadata)
+    ) {
+      return;
+    }
+    setGroupCollectionsValue(collectionsChatMetadata || []);
+  }, [collectionsChatMetadata, setGroupCollectionsValue]);
 
   return <></>;
 };

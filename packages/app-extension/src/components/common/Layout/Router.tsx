@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Navigate,
   Route,
@@ -150,11 +150,7 @@ function Messages() {
 }
 
 function MessagesNative() {
-  const isDarkMode = useDarkMode();
-  const hash = location.hash.slice(1);
-  const { props } = useDecodedSearchParams<any>();
   const { push, pop } = useNavigation();
-  const { uuid, username } = useUser();
   const { isXs } = useBreakpoints();
 
   useEffect(() => {
@@ -165,6 +161,15 @@ function MessagesNative() {
   if (!isXs) {
     return <FullChatPage />;
   }
+
+  return <MessageNativeInner />;
+}
+
+function MessageNativeInner() {
+  const isDarkMode = useDarkMode();
+  const hash = location.hash.slice(1);
+  const { uuid, username } = useUser();
+  const { props } = useDecodedSearchParams<any>();
 
   if (hash.startsWith("/messages/chat")) {
     return (
@@ -181,6 +186,10 @@ function MessagesNative() {
     );
   }
 
+  if (hash.startsWith("/messages/groupchat")) {
+    return <NavScreen component={<NftChat {...props} />} />;
+  }
+
   if (hash.startsWith("/messages/profile")) {
     return <NavScreen component={<ProfileScreen userId={props.userId} />} />;
   }
@@ -193,16 +202,22 @@ function MessagesNative() {
 }
 
 function FullChatPage() {
-  const isDarkMode = useDarkMode();
   const { props } = useDecodedSearchParams<any>();
-  const { uuid, username } = useUser();
   const [userId, setRefresh] = useState(props.userId);
+  const [collectionId, setCollectionIdRefresh] = useState(props.id);
 
   useEffect(() => {
     if (props.userId !== userId) {
+      console.error("Setting refresh");
       setRefresh(props.userId);
     }
   }, [props.userId]);
+
+  useEffect(() => {
+    if (props.id !== collectionId) {
+      setCollectionIdRefresh(props.id);
+    }
+  }, [props.id]);
 
   return (
     <div style={{ height: "100%", display: "flex" }}>
@@ -219,16 +234,7 @@ function FullChatPage() {
           flex: 1,
         }}
       >
-        <NavScreen
-          component={
-            <ChatScreen
-              isDarkMode={isDarkMode}
-              userId={props.userId}
-              uuid={uuid}
-              username={username}
-            />
-          }
-        />
+        <MessageNativeInner />
       </div>
     </div>
   );
@@ -330,7 +336,6 @@ function TokenPage() {
 function NavScreen({
   component,
   noScrollbars,
-  messageProps,
 }: {
   noScrollbars?: boolean;
   component: React.ReactNode;

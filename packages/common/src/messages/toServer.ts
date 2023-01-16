@@ -71,4 +71,7 @@ export interface CollectionChatData {
   lastReadMessage?: string;
   lastMessage?: string;
   lastMessageUuid?: string;
+  lastMessageTimestamp?: string;
+  image?: string;
+  name?: string;
 }

@@ -1,9 +1,11 @@
-import type { EnrichedInboxDb } from "@coral-xyz/common";
+import type {   CollectionChatData,EnrichedInboxDb, SubscriptionType } from "@coral-xyz/common";
 import {
   NAV_COMPONENT_MESSAGE_CHAT,
   NAV_COMPONENT_MESSAGE_PROFILE,
   NAV_COMPONENT_MESSAGE_REQUESTS,
+  NAV_COMPONENT_NFT_CHAT,
 } from "@coral-xyz/common";
+import { NAV_COMPONENT_MESSAGE_GROUP_CHAT } from "@coral-xyz/common/src/constants";
 import { isFirstLastListItemStyle, ProxyImage } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import MarkChatUnreadIcon from "@mui/icons-material/MarkChatUnread";
@@ -16,7 +18,10 @@ export const MessageList = ({
   activeChats,
   requestCount = 0,
 }: {
-  activeChats: EnrichedInboxDb[];
+  activeChats: (
+    | { chatType: "individual"; chatProps: EnrichedInboxDb }
+    | { chatType: "collection"; chatProps: CollectionChatData }
+  )[];
   requestCount?: number;
 }) => {
   const theme = useCustomTheme();
@@ -40,14 +45,42 @@ export const MessageList = ({
         )}
         {activeChats.map((activeChat, index) => (
           <ChatListItem
-            image={activeChat.remoteUserImage}
-            username={activeChat.remoteUsername}
-            userId={activeChat.remoteUserId}
-            message={activeChat.last_message}
-            timestamp={activeChat.last_message_timestamp}
+            type={activeChat.chatType}
+            image={
+              activeChat.chatType === "individual"
+                ? activeChat.chatProps.remoteUserImage!
+                : activeChat.chatProps.image!
+            }
+            name={
+              activeChat.chatType === "individual"
+                ? activeChat.chatProps.remoteUsername!
+                : activeChat.chatProps.name!
+            }
+            id={
+              activeChat.chatType === "individual"
+                ? activeChat.chatProps.remoteUserId
+                : activeChat.chatProps.collectionId
+            }
+            message={
+              activeChat.chatType === "individual"
+                ? activeChat.chatProps.last_message!
+                : activeChat.chatProps.lastMessage!
+            }
+            timestamp={
+              activeChat.chatType === "individual"
+                ? activeChat.chatProps.last_message_timestamp
+                : activeChat.chatProps.lastMessageTimestamp!
+            }
             isFirst={requestCount === 0 && index === 0}
             isLast={index === activeChats.length - 1}
-            isUnread={activeChat.unread}
+            isUnread={
+              activeChat.chatType === "individual"
+                ? activeChat.chatProps.unread
+                  ? true
+                  : false
+                : activeChat.chatProps.lastMessageUuid !==
+                  activeChat.chatProps.lastReadMessage
+            }
           />
         ))}
       </List>
@@ -56,15 +89,26 @@ export const MessageList = ({
 };
 
 export function ChatListItem({
+  type,
   image,
-  username,
+  name,
   message,
   timestamp,
   isFirst,
   isLast,
-  userId,
+  id,
   isUnread,
-}: any) {
+}: {
+  type: SubscriptionType;
+  image: string;
+  name: string;
+  message: string;
+  timestamp: string;
+  isFirst: boolean;
+  isLast: boolean;
+  id: string;
+  isUnread: boolean;
+}) {
   const classes = useStyles();
   const theme = useCustomTheme();
 
@@ -84,11 +128,16 @@ export function ChatListItem({
       disableRipple
       onClick={() => {
         ParentCommunicationManager.getInstance().push({
-          title: `@${username}`,
-          componentId: NAV_COMPONENT_MESSAGE_CHAT,
+          title: type === "individual" ? `@${name}` : name,
+          componentId:
+            type === "individual"
+              ? NAV_COMPONENT_MESSAGE_CHAT
+              : NAV_COMPONENT_MESSAGE_GROUP_CHAT,
           componentProps: {
-            userId,
-            username,
+            userId: id,
+            username: name,
+            id: id,
+            fromInbox: true,
           },
         });
       }}
@@ -127,11 +176,14 @@ export function ChatListItem({
             >
               <UserIcon
                 onClick={() => {
+                  if (type === "collection") {
+                    return;
+                  }
                   ParentCommunicationManager.getInstance().push({
-                    title: `@${username}`,
+                    title: `@${name}`,
                     componentId: NAV_COMPONENT_MESSAGE_PROFILE,
                     componentProps: {
-                      userId,
+                      userId: id,
                     },
                   });
                 }}
@@ -148,7 +200,7 @@ export function ChatListItem({
                     : theme.custom.colors.smallTextColor,
                 }}
               >
-                @{username}
+                {type === "individual" ? `@${name}` : name}
               </div>
               <div
                 className={classes.userTextSmall}
