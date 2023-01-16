@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import {
+  DerivationPath,
   openAddUserAccount,
   openConnectHardware,
   TAB_APPS,
   TAB_BALANCES,
+  UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
+  UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
 } from "@coral-xyz/common";
@@ -132,13 +135,25 @@ export function AddConnectWalletMenu({
   const background = useBackgroundClient();
   const keyringType = useKeyringType();
   const theme = useCustomTheme();
-  const [openDrawer, setOpenDrawer] = useState(false);
   const [newPublicKey, setNewPublicKey] = useState("");
+  const [keyringExists, setKeyringExists] = useState(false);
+  const [openDrawer, setOpenDrawer] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Lock to ensure that the create new wallet button cannot be accidentally
   // spammed or double clicked, which is undesireable as it creates more wallets
   // than the user expects.
   const [lockCreateButton, setLockCreateButton] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const blockchainKeyrings = await background.request({
+        method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
+        params: [],
+      });
+      setKeyringExists(blockchainKeyrings.includes(blockchain));
+    })();
+  }, [blockchain]);
 
   useEffect(() => {
     const prevTitle = nav.title;
@@ -181,48 +196,72 @@ export function AddConnectWalletMenu({
                       return;
                     }
                     setLockCreateButton(true);
-                    const publicKey = await background.request({
-                      method: UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
-                      params: [blockchain],
-                    });
-                    setNewPublicKey(publicKey);
+                    let newPublicKey;
+                    if (!keyringExists) {
+                      // Mnemonic based keyring. This is the simple case because we don't
+                      // need to prompt for the user to open their Ledger app to get the
+                      // required public key. We also don't need a signature to prove
+                      // ownership of the public key because that can't be done
+                      // transparently by the backend.
+                      try {
+                        newPublicKey = await background.request({
+                          method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
+                          params: [blockchain, DerivationPath.Default, 0],
+                        });
+                      } catch (error) {
+                        setError(
+                          "Wallet address is used by another Backpack account."
+                        );
+                      }
+                    } else {
+                      newPublicKey = await background.request({
+                        method: UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
+                        params: [blockchain],
+                      });
+                    }
+                    setNewPublicKey(newPublicKey);
                     setOpenDrawer(true);
                     setLockCreateButton(false);
                   }}
                 />
               </Grid>
             )}
-            <Grid item xs={6}>
-              <ActionCard
-                icon={
-                  <ArrowCircleDown
-                    style={{
-                      color: theme.custom.colors.icon,
+            {keyringExists && (
+              <Grid item xs={6}>
+                <ActionCard
+                  icon={
+                    <ArrowCircleDown
+                      style={{
+                        color: theme.custom.colors.icon,
+                      }}
+                    />
+                  }
+                  text="Import a private key"
+                  onClick={() => nav.push("import-secret-key", { blockchain })}
+                />
+              </Grid>
+            )}
+            {keyringType === "ledger" ||
+              (keyringExists && (
+                <Grid item xs={6}>
+                  <ActionCard
+                    icon={
+                      <HardwareWalletIcon
+                        fill={theme.custom.colors.icon}
+                        style={{
+                          width: "24px",
+                          height: "24px",
+                        }}
+                      />
+                    }
+                    text="Import from hardware wallet"
+                    onClick={() => {
+                      openConnectHardware(blockchain);
+                      window.close();
                     }}
                   />
-                }
-                text="Import a private key"
-                onClick={() => nav.push("import-secret-key", { blockchain })}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <ActionCard
-                icon={
-                  <HardwareWalletIcon
-                    fill={theme.custom.colors.icon}
-                    style={{
-                      width: "24px",
-                      height: "24px",
-                    }}
-                  />
-                }
-                text="Import from hardware wallet"
-                onClick={() => {
-                  openConnectHardware(blockchain);
-                  window.close();
-                }}
-              />
-            </Grid>
+                </Grid>
+              ))}
           </Grid>
         </Box>
       </div>

@@ -213,12 +213,7 @@ export class KeyringStore {
     this.activeUserUuid = uuid;
 
     // Per user preferences.
-    await store.setWalletDataForUser(
-      uuid,
-      defaultPreferences(
-        keyringInit.blockchainKeyrings.map((k) => k.blockchain)
-      )
-    );
+    await store.setWalletDataForUser(uuid, defaultPreferences());
 
     // Persist active user to disk.
     await store.setActiveUser({
@@ -537,13 +532,13 @@ export class KeyringStore {
 
   public exportSecretKey(password: string, publicKey: string): string {
     return this.withPassword(password, () => {
-      return this.activeUserKeyring.exportSecretKey(password, publicKey);
+      return this.activeUserKeyring.exportSecretKey(publicKey);
     });
   }
 
   public exportMnemonic(password: string): string {
     return this.withPassword(password, () => {
-      return this.activeUserKeyring.exportMnemonic(password);
+      return this.activeUserKeyring.exportMnemonic();
     });
   }
 
@@ -672,7 +667,7 @@ class UserKeyring {
     //
     // Set the active wallet to be the first keyring.
     //
-    const { blockchain, publicKey } = keyringInit.blockchainKeyrings[0];
+    const { blockchain } = keyringInit.blockchainKeyrings[0];
     kr.activeBlockchain = blockchain;
 
     return kr;
@@ -694,26 +689,6 @@ class UserKeyring {
     return [...this.blockchains.keys()].map((b) => b as Blockchain);
   }
 
-  /**
-   * Return all the enabled blockchains.
-   */
-  public async enabledBlockchains(): Promise<Array<Blockchain>> {
-    const data = await store.getWalletDataForUser(this.uuid);
-    if (!data.enabledBlockchains) {
-      // Keyring created prior to this feature being added, so data does not
-      // exist, write it using all blockchains in keyring
-      const enabledBlockchains = [...this.blockchains.keys()].map(
-        (b) => b as Blockchain
-      );
-      await store.setWalletDataForUser(this.uuid, {
-        ...data,
-        enabledBlockchains,
-      });
-      return enabledBlockchains;
-    }
-    return data.enabledBlockchains;
-  }
-
   public async publicKeys(): Promise<{
     [key: string]: {
       hdPublicKeys: Array<string>;
@@ -721,7 +696,7 @@ class UserKeyring {
       ledgerPublicKeys: Array<string>;
     };
   }> {
-    const entries = (await this.enabledBlockchains()).map((blockchain) => {
+    const entries = this.blockchainKeyrings().map((blockchain) => {
       const keyring = this.keyringForBlockchain(blockchain);
       return [blockchain, keyring.publicKeys()];
     });
@@ -764,7 +739,7 @@ class UserKeyring {
   }
 
   public async activeWallets(): Promise<string[]> {
-    return (await this.enabledBlockchains())
+    return this.blockchainKeyrings()
       .map((blockchain) =>
         this.keyringForBlockchain(blockchain).getActiveWallet()
       )
@@ -856,12 +831,12 @@ class UserKeyring {
     }
   }
 
-  public exportSecretKey(password: string, publicKey: string): string {
+  public exportSecretKey(publicKey: string): string {
     const keyring = this.keyringForPublicKey(publicKey);
     return keyring.exportSecretKey(publicKey);
   }
 
-  public exportMnemonic(password: string): string {
+  public exportMnemonic(): string {
     if (!this.mnemonic) throw new Error("keyring uses a hardware wallet");
     return this.mnemonic;
   }
@@ -924,14 +899,13 @@ class UserKeyring {
   }
 }
 
-export function defaultPreferences(enabledBlockchains: any): any {
+export function defaultPreferences(): any {
   return {
     autoLockSettings: {
       seconds: DEFAULT_AUTO_LOCK_INTERVAL_SECS,
       option: undefined,
     },
     approvedOrigins: [],
-    enabledBlockchains,
     darkMode: DEFAULT_DARK_MODE,
     developerMode: DEFAULT_DEVELOPER_MODE,
     aggregateWallets: DEFAULT_AGGREGATE_WALLETS,

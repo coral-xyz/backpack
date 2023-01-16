@@ -14,8 +14,7 @@ import {
   customSplTokenAccounts,
   fetchSplMetadataUri,
   getLogger,
-  NOTIFICATION_BLOCKCHAIN_DISABLED,
-  NOTIFICATION_BLOCKCHAIN_ENABLED,
+  NOTIFICATION_BLOCKCHAIN_KEYRING_CREATED,
   NOTIFICATION_KEYRING_STORE_CREATED,
   NOTIFICATION_KEYRING_STORE_LOCKED,
   NOTIFICATION_KEYRING_STORE_UNLOCKED,
@@ -151,11 +150,8 @@ export class SolanaConnectionBackend {
         case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
           handleConnectionUrlUpdated(notif);
           break;
-        case NOTIFICATION_BLOCKCHAIN_ENABLED:
-          handleBlockchainEnabled(notif);
-          break;
-        case NOTIFICATION_BLOCKCHAIN_DISABLED:
-          handleBlockchainDisabled(notif);
+        case NOTIFICATION_BLOCKCHAIN_KEYRING_CREATED:
+          handleBlockchainKeyringCreated(notif);
           break;
         default:
           break;
@@ -204,19 +200,11 @@ export class SolanaConnectionBackend {
       }
     };
 
-    const handleBlockchainEnabled = (notif: Notification) => {
+    const handleBlockchainKeyringCreated = (notif: Notification) => {
       const { blockchain, activeWallet } = notif.data;
       if (blockchain === Blockchain.SOLANA) {
         // Start polling if Solana was enabled in wallet settings
         this.startPolling(new PublicKey(activeWallet));
-      }
-    };
-
-    const handleBlockchainDisabled = (notif: Notification) => {
-      const { blockchain } = notif.data;
-      if (blockchain === Blockchain.SOLANA) {
-        // Stop polling if Solana was disabled in wallet settings
-        this.stopPolling();
       }
     };
   }

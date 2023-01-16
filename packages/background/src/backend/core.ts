@@ -22,8 +22,7 @@ import {
   NOTIFICATION_AGGREGATE_WALLETS_UPDATED,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_AUTO_LOCK_SETTINGS_UPDATED,
-  NOTIFICATION_BLOCKCHAIN_DISABLED,
-  NOTIFICATION_BLOCKCHAIN_ENABLED,
+  NOTIFICATION_BLOCKCHAIN_KEYRING_CREATED,
   NOTIFICATION_DARK_MODE_UPDATED,
   NOTIFICATION_DEVELOPER_MODE_UPDATED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
@@ -57,7 +56,6 @@ import {
   KeyringStoreStateEnum,
   makeDefaultNav,
   makeUrl,
-  NavEphemeralProvider,
 } from "@coral-xyz/recoil";
 import type {
   Commitment,
@@ -627,7 +625,7 @@ export class Backend {
     // Get preferences to push back to the UI.
     const preferences = await this.preferencesRead(uuid);
     const xnftPreferences = await this.getXnftPreferences();
-    const enabledBlockchains = await this.enabledBlockchainsRead();
+    const blockchainKeyrings = await this.blockchainKeyringsRead();
 
     // Push it.
     this.events.emit(BACKEND_EVENT, {
@@ -641,7 +639,7 @@ export class Backend {
         walletData,
         preferences,
         xnftPreferences,
-        enabledBlockchains,
+        blockchainKeyrings,
       },
     });
 
@@ -677,7 +675,7 @@ export class Backend {
       const walletData = await this.keyringStoreReadAllPubkeyData();
       const preferences = await this.preferencesRead(uuid);
       const xnftPreferences = await this.getXnftPreferences();
-      const enabledBlockchains = await this.enabledBlockchainsRead();
+      const blockchainKeyrings = await this.blockchainKeyringsRead();
 
       this.events.emit(BACKEND_EVENT, {
         name: NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED,
@@ -686,7 +684,7 @@ export class Backend {
           walletData,
           preferences,
           xnftPreferences,
-          enabledBlockchains,
+          blockchainKeyrings,
         },
       });
     }
@@ -772,7 +770,12 @@ export class Backend {
   async keyringStoreReadAllPubkeyData(): Promise<{
     activeBlockchain: Blockchain;
     activePublicKeys: Array<string>;
-    publicKeys: any; // todo: type
+    publicKeys: {
+      [blockchain: string]: {
+        publicKey: string;
+        name: string;
+      };
+    };
   }> {
     const activePublicKeys = await this.activeWallets();
     const publicKeys = await this.keyringStoreReadAllPubkeys();
@@ -829,7 +832,7 @@ export class Backend {
     try {
       return await store.getWalletDataForUser(uuid);
     } catch (err) {
-      return defaultPreferences([]);
+      return defaultPreferences();
     }
   }
 
@@ -1020,7 +1023,7 @@ export class Backend {
     const walletData = await this.keyringStoreReadAllPubkeyData();
     const preferences = await this.preferencesRead(uuid);
     const xnftPreferences = await this.getXnftPreferences();
-    const enabledBlockchains = await this.enabledBlockchainsRead();
+    const blockchainKeyrings = await this.blockchainKeyringsRead();
 
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED,
@@ -1033,7 +1036,7 @@ export class Backend {
         walletData,
         preferences,
         xnftPreferences,
-        enabledBlockchains,
+        blockchainKeyrings,
       },
     });
 
@@ -1367,13 +1370,15 @@ export class Backend {
     accountIndex: number,
     publicKey?: string,
     signature?: string
-  ): Promise<void> {
+  ): Promise<string> {
     const newPublicKey = await this.keyringStore.blockchainKeyringAdd(
       blockchain,
       derivationPath,
       accountIndex,
       publicKey
     );
+
+    // Add the new public key to the API
     if (jwtEnabled) {
       try {
         await this._addPublicKeyToAccount(blockchain, newPublicKey, signature);
@@ -1383,8 +1388,22 @@ export class Backend {
         throw error;
       }
     }
-    // Automatically enable the newly added blockchain
-    await this.enabledBlockchainsAdd(blockchain);
+
+    const publicKeyData = await this.keyringStoreReadAllPubkeyData();
+
+    // Set the active wallet to the newly added public key
+    await this.activeWalletUpdate(newPublicKey, blockchain);
+
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_BLOCKCHAIN_KEYRING_CREATED,
+      data: {
+        blockchain,
+        activeWallet: newPublicKey,
+        publicKeyData,
+      },
+    });
+
+    return newPublicKey;
   }
 
   /**
@@ -1393,79 +1412,6 @@ export class Backend {
    */
   async blockchainKeyringsRead(): Promise<Array<Blockchain>> {
     return this.keyringStore.activeUserKeyring.blockchainKeyrings();
-  }
-
-  /**
-   * Enable a blockchain. The blockchain keyring must be initialized prior to this.
-   */
-  async enabledBlockchainsAdd(blockchain: Blockchain) {
-    const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await store.getWalletDataForUser(uuid);
-    if (data.enabledBlockchains.includes(blockchain)) {
-      throw new Error("blockchain already enabled");
-    }
-
-    // Validate that the keyring is initialised before we enable it. This could
-    // be done using `this.blockchainKeyringsRead()` but we need the keyring to
-    // create a notification with the active wallet later anyway.
-    let keyring: BlockchainKeyring;
-    try {
-      keyring =
-        this.keyringStore.activeUserKeyring.keyringForBlockchain(blockchain);
-    } catch (error) {
-      throw new Error(`${blockchain} keyring not initialised`);
-    }
-
-    const enabledBlockchains = [...data.enabledBlockchains, blockchain];
-    await store.setWalletDataForUser(uuid, {
-      ...data,
-      enabledBlockchains,
-    });
-
-    const activeWallet = keyring.getActiveWallet();
-    const publicKeyData = await this.keyringStoreReadAllPubkeyData();
-
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_BLOCKCHAIN_ENABLED,
-      data: {
-        blockchain,
-        enabledBlockchains,
-        activeWallet,
-        publicKeyData,
-      },
-    });
-  }
-
-  async enabledBlockchainsRemove(blockchain: Blockchain) {
-    const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await store.getWalletDataForUser(uuid);
-    if (!data.enabledBlockchains.includes(blockchain)) {
-      throw new Error("blockchain not enabled");
-    }
-    if (data.enabledBlockchains.length === 1) {
-      throw new Error("cannot disable last enabled blockchain");
-    }
-    const enabledBlockchains = data.enabledBlockchains.filter(
-      (b) => b !== blockchain
-    );
-    await store.setWalletDataForUser(uuid, {
-      ...data,
-      enabledBlockchains,
-    });
-    const publicKeyData = await this.keyringStoreReadAllPubkeyData();
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_BLOCKCHAIN_DISABLED,
-      data: { blockchain, enabledBlockchains, publicKeyData },
-    });
-  }
-
-  /**
-   * Return all the enabled blockchains.
-   */
-  async enabledBlockchainsRead(): Promise<Array<Blockchain>> {
-    const uuid = this.keyringStore.activeUserKeyring.uuid;
-    const data = await store.getWalletDataForUser(uuid);
-    return data.enabledBlockchains;
   }
 
   async setFeatureGates(gates: FEATURE_GATES_MAP) {

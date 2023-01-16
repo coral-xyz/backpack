@@ -4,8 +4,7 @@ import {
   Blockchain,
   fetchEthereumBalances,
   getLogger,
-  NOTIFICATION_BLOCKCHAIN_DISABLED,
-  NOTIFICATION_BLOCKCHAIN_ENABLED,
+  NOTIFICATION_BLOCKCHAIN_KEYRING_CREATED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
@@ -76,11 +75,8 @@ export class EthereumConnectionBackend {
         case NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED:
           handleChainIdUpdated(notif);
           break;
-        case NOTIFICATION_BLOCKCHAIN_ENABLED:
-          handleBlockchainEnabled(notif);
-          break;
-        case NOTIFICATION_BLOCKCHAIN_DISABLED:
-          handleBlockchainDisabled(notif);
+        case NOTIFICATION_BLOCKCHAIN_KEYRING_CREATED:
+          handleBlockchainKeyringCreated(notif);
           break;
         default:
           break;
@@ -133,19 +129,11 @@ export class EthereumConnectionBackend {
       this.chainId = chainId;
     };
 
-    const handleBlockchainEnabled = (notif: Notification) => {
+    const handleBlockchainKeyringCreated = (notif: Notification) => {
       const { blockchain, activeWallet } = notif.data;
       if (blockchain === Blockchain.ETHEREUM) {
         // Start polling if Ethereum was enabled in wallet settings
         this.startPolling(activeWallet);
-      }
-    };
-
-    const handleBlockchainDisabled = (notif: Notification) => {
-      const { blockchain } = notif.data;
-      if (blockchain === Blockchain.ETHEREUM) {
-        // Stop polling if Ethereum was disabled in wallet settings
-        this.stopPolling();
       }
     };
   }

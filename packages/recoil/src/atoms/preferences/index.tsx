@@ -31,14 +31,6 @@ export const preferences = atom<any>({
   }),
 });
 
-export const enabledBlockchains = selector<Array<Blockchain>>({
-  key: "enabledBlockchains",
-  get: async ({ get }) => {
-    const p = get(preferences);
-    return p.enabledBlockchains;
-  },
-});
-
 export const isDarkMode = selector<boolean>({
   key: "isDarkMode",
   get: async ({ get }) => {

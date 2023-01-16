@@ -25,9 +25,6 @@ import {
   UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
-  UI_RPC_METHOD_BLOCKCHAINS_ENABLED_ADD,
-  UI_RPC_METHOD_BLOCKCHAINS_ENABLED_DELETE,
-  UI_RPC_METHOD_BLOCKCHAINS_ENABLED_READ,
   UI_RPC_METHOD_ETHEREUM_CHAIN_ID_READ,
   UI_RPC_METHOD_ETHEREUM_CHAIN_ID_UPDATE,
   UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_READ,
@@ -288,12 +285,6 @@ async function handle<T = any>(
       return await handleApprovedOriginsUpdate(ctx, params[0]);
     case UI_RPC_METHOD_APPROVED_ORIGINS_DELETE:
       return await handleApprovedOriginsDelete(ctx, params[0]);
-    case UI_RPC_METHOD_BLOCKCHAINS_ENABLED_ADD:
-      return handleBlockchainsEnabledAdd(ctx, params[0]);
-    case UI_RPC_METHOD_BLOCKCHAINS_ENABLED_DELETE:
-      return handleBlockchainsEnabledRemove(ctx, params[0]);
-    case UI_RPC_METHOD_BLOCKCHAINS_ENABLED_READ:
-      return await handleBlockchainsEnabledRead(ctx);
     case UI_RPC_METHOD_SET_FEATURE_GATES:
       return await handleSetFeatureGates(ctx, params[0]);
     case UI_RPC_METHOD_GET_FEATURE_GATES:
@@ -995,29 +986,6 @@ async function handleApprovedOriginsDelete(
   origin: string
 ): Promise<RpcResponse> {
   const resp = await ctx.backend.approvedOriginsDelete(origin);
-  return [resp];
-}
-
-function handleBlockchainsEnabledAdd(
-  ctx: Context<Backend>,
-  blockchain: Blockchain
-) {
-  const resp = ctx.backend.enabledBlockchainsAdd(blockchain);
-  return [resp];
-}
-
-function handleBlockchainsEnabledRemove(
-  ctx: Context<Backend>,
-  blockchain: Blockchain
-) {
-  const resp = ctx.backend.enabledBlockchainsRemove(blockchain);
-  return [resp];
-}
-
-async function handleBlockchainsEnabledRead(
-  ctx: Context<Backend>
-): Promise<RpcResponse<Array<string>>> {
-  const resp = await ctx.backend.enabledBlockchainsRead();
   return [resp];
 }
 

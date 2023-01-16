@@ -250,19 +250,15 @@ export const NOTIFICATION_APPROVED_ORIGINS_UPDATE =
   "notification-approved-origins-update";
 export const NOTIFICATION_AUTO_LOCK_SETTINGS_UPDATED =
   "notification-auto-lock-settings-updated";
-export const NOTIFICATION_BLOCKCHAIN_DISABLED =
-  "notification-blockchain-disabled";
-export const NOTIFICATION_XNFT_PREFERENCE_UPDATED =
-  "notification-xnft-preference-updated";
-export const NOTIFICATION_BLOCKCHAIN_ENABLED =
-  "notification-blockchain-enabled";
-export const NOTIFICATION_FEATURE_GATES_UPDATED =
-  "notification-feature-gates-updated";
+export const NOTIFICATION_BLOCKCHAIN_KEYRING_CREATED =
+  "notification-blockchain-keyring-created";
 export const NOTIFICATION_AGGREGATE_WALLETS_UPDATED =
   "notification-aggregate-wallets-updated";
 export const NOTIFICATION_DARK_MODE_UPDATED = "notification-dark-mode-updated";
 export const NOTIFICATION_DEVELOPER_MODE_UPDATED =
   "notification-developer-mode-updated";
+export const NOTIFICATION_FEATURE_GATES_UPDATED =
+  "notification-feature-gates-updated";
 export const NOTIFICATION_KEYNAME_UPDATE = "notification-keyname-update";
 export const NOTIFICATION_KEYRING_ACTIVE_BLOCKCHAIN_UPDATED =
   "notification-keyring-active-blockchain-updated";
@@ -295,6 +291,8 @@ export const NOTIFICATION_KEYRING_STORE_REMOVED_USER =
   "notification-keyring-store-removed-user";
 export const NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED =
   "notification-keyring-active-blockchain-updated";
+export const NOTIFICATION_XNFT_PREFERENCE_UPDATED =
+  "notification-xnft-preference-updated";
 // Ethereum specific notifications
 export const NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED =
   "notification-keyring-ethereum-active-wallet-updated";
