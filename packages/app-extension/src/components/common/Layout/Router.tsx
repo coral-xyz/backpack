@@ -163,7 +163,7 @@ function MessagesNative() {
   }, []);
 
   if (!isXs) {
-    return <NavScreen component={<FullChatPage />} />;
+    return <FullChatPage />;
   }
 
   if (hash.startsWith("/messages/chat")) {
@@ -196,6 +196,13 @@ function FullChatPage() {
   const isDarkMode = useDarkMode();
   const { props } = useDecodedSearchParams<any>();
   const { uuid, username } = useUser();
+  const [userId, setRefresh] = useState(props.userId);
+
+  useEffect(() => {
+    if (props.userId !== userId) {
+      setRefresh(props.userId);
+    }
+  }, [props.userId]);
 
   return (
     <div style={{ height: "100%", display: "flex" }}>
@@ -204,12 +211,25 @@ function FullChatPage() {
           <Inbox />
         </Scrollbar>
       </div>
-      <ChatScreen
-        isDarkMode={isDarkMode}
-        userId={props.userId}
-        uuid={uuid}
-        username={username}
-      />
+      <div
+        style={{
+          position: "relative",
+          width: "100%",
+          height: "100%",
+          flex: 1,
+        }}
+      >
+        <NavScreen
+          component={
+            <ChatScreen
+              isDarkMode={isDarkMode}
+              userId={props.userId}
+              uuid={uuid}
+              username={username}
+            />
+          }
+        />
+      </div>
     </div>
   );
 }
@@ -415,6 +435,8 @@ function useNavBar() {
             ? "Balances"
             : pathname.startsWith("/apps")
             ? "Applications"
+            : pathname.startsWith("/messages") && !isXs
+            ? ""
             : pathname.startsWith("/messages")
             ? "Messages"
             : pathname.startsWith("/nfts")
