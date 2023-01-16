@@ -1,6 +1,7 @@
 import type { FromServer, ToServer } from "@coral-xyz/common";
 import {
   CHAT_MESSAGES,
+  DEFAULT_GROUP_CHATS,
   SUBSCRIBE,
   UNSUBSCRIBE,
   WS_READY,
@@ -52,6 +53,9 @@ export class User {
     uniqueCollections.forEach((c) =>
       RedisSubscriptionManager.getInstance().subscribe(this, `COLLECTION_${c}`)
     );
+    DEFAULT_GROUP_CHATS.forEach(({ id }) =>
+      RedisSubscriptionManager.getInstance().subscribe(this, `COLLECTION_${id}`)
+    );
   }
 
   private async handleMessage(message: ToServer) {
@@ -93,21 +97,28 @@ export class User {
             return;
           }
         } else {
-          roomValidation = await validateCollectionOwnership(
-            this.userId,
-            message.payload.publicKey || "",
-            message.payload.mint || "",
-            message.payload.room
+          if (
+            DEFAULT_GROUP_CHATS.map((x) => x.id).includes(message.payload.room)
+          ) {
+            roomValidation = true;
+          } else {
+            roomValidation = await validateCollectionOwnership(
+              this.userId,
+              message.payload.publicKey || "",
+              message.payload.mint || "",
+              message.payload.room
+            );
+          }
+        }
+        if (roomValidation) {
+          this.subscriptions.push(message.payload);
+          RedisSubscriptionManager.getInstance().postSubscribe(
+            this.id,
+            message.payload.type,
+            message.payload.room,
+            roomValidation
           );
         }
-
-        this.subscriptions.push(message.payload);
-        RedisSubscriptionManager.getInstance().postSubscribe(
-          this.id,
-          message.payload.type,
-          message.payload.room,
-          roomValidation
-        );
         break;
       case UNSUBSCRIBE:
         this.subscriptions = this.subscriptions.filter(

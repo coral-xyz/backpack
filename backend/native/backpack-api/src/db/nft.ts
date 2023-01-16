@@ -180,6 +180,7 @@ export const getCollectionChatMetadata = async (
     collection_id: string;
     last_message: string;
     last_message_uuid: string;
+    last_message_timestamp: string;
   }[]
 > => {
   const response = await chain("query")({
@@ -193,6 +194,7 @@ export const getCollectionChatMetadata = async (
         collection_id: true,
         last_message: true,
         last_message_uuid: true,
+        last_message_timestamp: true,
       },
     ],
   });
@@ -200,5 +202,6 @@ export const getCollectionChatMetadata = async (
     collection_id: x.collection_id || "",
     last_message: x.last_message || "",
     last_message_uuid: x.last_message_uuid || "",
+    last_message_timestamp: x.last_message_timestamp || "",
   }));
 };

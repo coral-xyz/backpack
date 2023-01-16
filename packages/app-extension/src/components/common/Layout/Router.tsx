@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Navigate,
   Route,
@@ -29,6 +29,7 @@ import {
   useDarkMode,
   useDecodedSearchParams,
   useFeatureGates,
+  useFriendships,
   useNavigation,
   useRedirectUrl,
   useUser,
@@ -150,11 +151,7 @@ function Messages() {
 }
 
 function MessagesNative() {
-  const isDarkMode = useDarkMode();
-  const hash = location.hash.slice(1);
-  const { props } = useDecodedSearchParams<any>();
   const { push, pop } = useNavigation();
-  const { uuid, username } = useUser();
   const { isXs } = useBreakpoints();
 
   useEffect(() => {
@@ -165,6 +162,16 @@ function MessagesNative() {
   if (!isXs) {
     return <FullChatPage />;
   }
+
+  return <MessageNativeInner />;
+}
+
+function MessageNativeInner() {
+  const isDarkMode = useDarkMode();
+  const hash = location.hash.slice(1);
+  const { uuid, username } = useUser();
+  const { props } = useDecodedSearchParams<any>();
+  const { isXs } = useBreakpoints();
 
   if (hash.startsWith("/messages/chat")) {
     return (
@@ -181,8 +188,18 @@ function MessagesNative() {
     );
   }
 
+  if (hash.startsWith("/messages/groupchat")) {
+    return (
+      <NavScreen component={<NftChat collectionId={props.id} {...props} />} />
+    );
+  }
+
   if (hash.startsWith("/messages/profile")) {
     return <NavScreen component={<ProfileScreen userId={props.userId} />} />;
+  }
+
+  if (!isXs) {
+    return <></>;
   }
 
   if (hash.startsWith("/messages/requests")) {
@@ -193,23 +210,34 @@ function MessagesNative() {
 }
 
 function FullChatPage() {
-  const isDarkMode = useDarkMode();
   const { props } = useDecodedSearchParams<any>();
-  const { uuid, username } = useUser();
   const [userId, setRefresh] = useState(props.userId);
+  const [collectionId, setCollectionIdRefresh] = useState(props.id);
+  const { uuid } = useUser();
+  const hash = location.hash.slice(1);
+  const activeChats = useFriendships({ uuid });
 
   useEffect(() => {
     if (props.userId !== userId) {
+      console.error("Setting refresh");
       setRefresh(props.userId);
     }
   }, [props.userId]);
 
+  useEffect(() => {
+    if (props.id !== collectionId) {
+      setCollectionIdRefresh(props.id);
+    }
+  }, [props.id]);
+  const requestsTab =
+    hash.startsWith("/messages/requests") ||
+    (hash.startsWith("/messages/chat") &&
+      !activeChats?.map((x: any) => x.remoteUserId).includes(props.userId));
+
   return (
     <div style={{ height: "100%", display: "flex" }}>
       <div style={{ width: "365px" }}>
-        <Scrollbar>
-          <Inbox />
-        </Scrollbar>
+        <Scrollbar>{requestsTab ? <RequestsScreen /> : <Inbox />}</Scrollbar>
       </div>
       <div
         style={{
@@ -219,16 +247,7 @@ function FullChatPage() {
           flex: 1,
         }}
       >
-        <NavScreen
-          component={
-            <ChatScreen
-              isDarkMode={isDarkMode}
-              userId={props.userId}
-              uuid={uuid}
-              username={username}
-            />
-          }
-        />
+        <MessageNativeInner />
       </div>
     </div>
   );
@@ -330,7 +349,6 @@ function TokenPage() {
 function NavScreen({
   component,
   noScrollbars,
-  messageProps,
 }: {
   noScrollbars?: boolean;
   component: React.ReactNode;
@@ -348,6 +366,7 @@ function NavScreen({
     notchViewComponent,
     image,
     onClick,
+    isVerified,
   } = useNavBar();
 
   const _navButtonLeft = navButtonLeft ? (
@@ -378,6 +397,7 @@ function NavScreen({
           navButtonRight={navButtonRight}
           navbarStyle={style}
           noScrollbars={noScrollbars}
+          isVerified={isVerified}
         >
           {component}
         </WithNav>
@@ -476,7 +496,14 @@ function useNavBar() {
     navButtonLeft,
     style: navStyle,
     notchViewComponent,
-    image: pathname === "/messages/chat" ? image : undefined,
+    image:
+      pathname === "/messages/chat"
+        ? image
+        : pathname === "/messages/groupchat" && props.id === "backpack-chat"
+        ? "https://user-images.githubusercontent.com/321395/206757416-a80e662a-0ccc-41cc-a20f-ff397755d47f.png"
+        : undefined,
+    isVerified:
+      pathname === "/messages/groupchat" && props.id === "backpack-chat",
     onClick,
   };
 }

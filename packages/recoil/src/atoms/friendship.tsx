@@ -1,4 +1,4 @@
-import type { Friendship } from "@coral-xyz/common";
+import type { CollectionChatData,Friendship  } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import type { EnrichedInboxDb } from "@coral-xyz/common/dist/esm/messages/db";
 import { atomFamily, selectorFamily } from "recoil";
@@ -58,6 +58,21 @@ export const requestCount = atomFamily<number, { uuid: string }>({
       ({ uuid }: { uuid: string }) =>
       async ({ get }: any) => {
         return 0;
+      },
+  }),
+});
+
+export const groupCollections = atomFamily<
+  CollectionChatData[],
+  { uuid: string }
+>({
+  key: "groupCollections",
+  default: selectorFamily({
+    key: "groupCollectionsDefault",
+    get:
+      ({ uuid }: { uuid: string }) =>
+      async ({ get }: any) => {
+        return [];
       },
   }),
 });
