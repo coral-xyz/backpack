@@ -33,7 +33,13 @@ import {
   Tab as WindowIcon,
 } from "@mui/icons-material";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
-import { Button, IconButton, Popover, Typography } from "@mui/material";
+import {
+  Button,
+  Divider,
+  IconButton,
+  Popover,
+  Typography,
+} from "@mui/material";
 
 import {
   AllWalletsList,
@@ -201,19 +207,40 @@ export function AvatarButton({
 }
 
 function AvatarMenu() {
-  const [settingsOpen, setSettingsOpen] = useState(false);
+  const theme = useCustomTheme();
   return (
     <div
       style={{
         width: "218px",
+        border: theme.custom.colors.borderFull,
       }}
     >
       <UsersMenuList />
-      <AuxMenuList />
-      <SettingsNavStackDrawer
-        settingsOpen={settingsOpen}
-        setSettingsOpen={setSettingsOpen}
+      <Divider
+        style={{
+          backgroundColor: theme.custom.colors.background,
+        }}
       />
+      <AuxMenuList closePopover={() => {}} />
+      <Divider
+        style={{
+          backgroundColor: theme.custom.colors.background,
+        }}
+      />
+      <LockList />
+    </div>
+  );
+}
+
+function MenuList({ children }: { children: any }) {
+  return (
+    <div
+      style={{
+        paddingTop: "4px",
+        paddingBottom: "4px",
+      }}
+    >
+      {children}
     </div>
   );
 }
@@ -221,23 +248,140 @@ function AvatarMenu() {
 function UsersMenuList() {
   const users = useAllUsers();
   return (
-    <div>
+    <MenuList>
       {users.map((user: any) => {
-        return <UserMenuItem user={user} />;
+        return <UserMenuItem user={user} onClick={() => {}} />;
       })}
-    </div>
+    </MenuList>
   );
 }
 
-function AuxMenuList() {
-  return <div></div>;
+function LockList() {
+  const theme = useCustomTheme();
+  return (
+    <MenuList>
+      <MenuListItem onClick={() => {}}>
+        <Typography
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            color: theme.custom.colors.fontColor,
+            fontSize: "14px",
+          }}
+        >
+          Lock Wallet
+        </Typography>
+      </MenuListItem>
+    </MenuList>
+  );
 }
 
-function UserMenuItem({ user }: { user: any }) {
+function AuxMenuList({ closePopover }: { closePopover: any }) {
+  const theme = useCustomTheme();
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  return (
+    <MenuList>
+      <MenuListItem onClick={() => setSettingsOpen(true)}>
+        <Typography
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            color: theme.custom.colors.fontColor,
+            fontSize: "14px",
+          }}
+        >
+          Settings
+        </Typography>
+      </MenuListItem>
+      <MenuListItem onClick={() => setSettingsOpen(true)}>
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
+          <Typography
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              color: theme.custom.colors.fontColor,
+              fontSize: "14px",
+            }}
+          >
+            Pop Window
+          </Typography>
+          <Typography
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              color: theme.custom.colors.secondary,
+              fontSize: "14px",
+            }}
+          >
+            Ctrl + G
+          </Typography>
+        </div>
+      </MenuListItem>
+      <SettingsNavStackDrawer
+        settingsOpen={settingsOpen}
+        setSettingsOpen={setSettingsOpen}
+      />
+    </MenuList>
+  );
+}
+
+function UserMenuItem({ user, onClick }: { user: any; onClick: () => void }) {
   const theme = useCustomTheme();
   const avatarUrl = useAvatarUrl(undefined, user.username);
   return (
+    <MenuListItem onClick={onClick}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+        }}
+      >
+        <ProxyImage
+          src={avatarUrl}
+          style={{
+            width: "20px",
+            height: "20px",
+            borderRadius: "50%",
+          }}
+        />
+      </div>
+      <Typography
+        style={{
+          marginLeft: "8px",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          color: theme.custom.colors.fontColor,
+          fontSize: "14px",
+        }}
+      >
+        @{user.username}
+      </Typography>
+    </MenuListItem>
+  );
+}
+
+function MenuListItem({
+  onClick,
+  children,
+}: {
+  onClick: () => void;
+  children: any;
+}) {
+  return (
     <Button
+      onClick={onClick}
       disableRipple
       style={{
         textTransform: "none",
@@ -255,34 +399,7 @@ function UserMenuItem({ user }: { user: any }) {
           display: "flex",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-          }}
-        >
-          <ProxyImage
-            src={avatarUrl}
-            style={{
-              width: "20px",
-              height: "20px",
-              borderRadius: "50%",
-            }}
-          />
-        </div>
-        <Typography
-          style={{
-            marginLeft: "8px",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            color: theme.custom.colors.fontColor,
-            fontSize: "14px",
-          }}
-        >
-          @{user.username}
-        </Typography>
+        {children}
       </div>
     </Button>
   );
