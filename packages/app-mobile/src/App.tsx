@@ -1,7 +1,3 @@
-import { Suspense, useCallback, useEffect, useRef } from "react";
-import { Button, StyleSheet, Text, View } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import { WebView } from "react-native-webview";
 import {
   BACKGROUND_SERVICE_WORKER_READY,
   useStore,
@@ -14,12 +10,16 @@ import { useTheme } from "@hooks";
 import Constants from "expo-constants";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
+import { Suspense, useCallback, useEffect, useRef } from "react";
+import { Button, StyleSheet, Text, View } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { WebView } from "react-native-webview";
 import { RecoilRoot, useRecoilCallback, useRecoilSnapshot } from "recoil";
-
-SplashScreen.preventAutoHideAsync();
 
 import { useLoadedAssets } from "./hooks/useLoadedAssets";
 import { RootNavigation } from "./navigation/RootNavigator";
+
+SplashScreen.preventAutoHideAsync();
 
 function DebugObserver(): null {
   const snapshot = useRecoilSnapshot();
@@ -88,7 +88,8 @@ function ServiceWorkerErrorScreen({ onLayoutRootView }: any): JSX.Element {
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
-      }}>
+      }}
+    >
       <Text>The service worker failed to load.</Text>
       <Text>
         {JSON.stringify(
@@ -134,7 +135,8 @@ function Main(): JSX.Element | null {
           {
             backgroundColor: theme.custom.colors.background,
           },
-        ]}>
+        ]}
+      >
         <StatusBar style={theme.colorScheme === "dark" ? "light" : "dark"} />
         <RootNavigation colorScheme={theme.colorScheme} />
       </View>

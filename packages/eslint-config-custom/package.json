@@ -33,7 +33,7 @@
   },
   "peerDependencies": {
     "eslint": ">=8.18",
-    "prettier": ">=2.7"
+    "prettier": "~2.8.1"
   },
   "peerDependenciesMeta": {
     "prettier": {
@@ -43,6 +43,6 @@
   "devDependencies": {
     "eslint": "^8.31.0",
     "jest": "^27.5.1",
-    "prettier": "^2.8.1"
+    "prettier": "~2.8.1"
   }
 }

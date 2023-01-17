@@ -23,7 +23,7 @@ module.exports = {
     "arrow-spacing": ["warn", { before: true, after: true }],
     curly: ["warn", "all"],
     "block-spacing": ["warn", "always"],
-    "comma-dangle": ["warn", "always-multiline"],
+    "comma-dangle": ["off"], // prettier breaks
     "comma-spacing": ["warn", { before: false, after: true }],
     "comma-style": ["warn", "last"],
     "computed-property-spacing": ["warn", "never"],
