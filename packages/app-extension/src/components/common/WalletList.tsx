@@ -46,6 +46,18 @@ import {
 import { Scrollbar } from "./Layout/Scrollbar";
 import { WithCopyTooltip } from "./WithCopyTooltip";
 
+const defaultWalletNameStyles = {
+  width: "inherit",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  "@media (max-width: 590px)": {
+    width: "45vw",
+    lineHeight: "initial",
+    marginLeft: "23px",
+    textAlign: "left",
+  },
+};
+
 const useStyles = styles((theme) => ({
   addressButton: {
     padding: 0,
@@ -59,6 +71,15 @@ const useStyles = styles((theme) => ({
       "& svg": {
         visibility: "visible",
       },
+    },
+  },
+  walletName: {
+    ...defaultWalletNameStyles,
+  },
+  walletNameDrawer: {
+    ...defaultWalletNameStyles,
+    "@media (max-width: 500px)": {
+      width: "26vw",
     },
   },
 }));
@@ -120,12 +141,7 @@ function WalletButton({
       }}
     >
       <Button disableRipple className={classes.addressButton} onClick={onClick}>
-        {wallet.name.length > 30
-          ? `${wallet.name.substring(0, 10)}...${wallet.name.substring(
-              wallet.name.length - 10,
-              wallet.name.length
-            )}`
-          : wallet.name}
+        <div className={classes.walletName}>{wallet.name}</div>
         <ExpandMore
           style={{
             width: "18px",
@@ -488,14 +504,7 @@ export function WalletList({
                     }}
                   >
                     <StackedWalletAddress
-                      name={
-                        name.length > 30
-                          ? `${name.substring(0, 10)}...${name.substring(
-                              name.length - 10,
-                              name.length
-                            )}`
-                          : name
-                      }
+                      name={name}
                       publicKey={publicKey}
                       type={type}
                       isSelected={isSelected}
@@ -602,9 +611,11 @@ export function StackedWalletAddress({
   isSelected?: boolean;
 }) {
   const theme = useCustomTheme();
+  const classes = useStyles();
   return (
     <div>
       <Typography
+        className={classes.walletNameDrawer}
         style={{
           fontSize: "16px",
           fontWeight: isSelected ? 600 : 500,
