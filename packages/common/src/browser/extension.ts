@@ -249,8 +249,11 @@ export function openAddUserAccount() {
   });
 }
 
-export function openConnectHardware(blockchain: Blockchain) {
-  const url = `${EXPANDED_HTML}?${QUERY_CONNECT_HARDWARE}&blockchain=${blockchain}`;
+export function openConnectHardware(
+  blockchain: Blockchain,
+  createKeyring = false
+) {
+  const url = `${EXPANDED_HTML}?${QUERY_CONNECT_HARDWARE}&blockchain=${blockchain}&create=${createKeyring}`;
   BrowserRuntimeExtension.openTab({
     url: chrome.runtime.getURL(url),
   });

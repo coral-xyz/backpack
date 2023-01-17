@@ -241,27 +241,26 @@ export function AddConnectWalletMenu({
                 />
               </Grid>
             )}
-            {keyringType === "ledger" ||
-              (keyringExists && (
-                <Grid item xs={6}>
-                  <ActionCard
-                    icon={
-                      <HardwareWalletIcon
-                        fill={theme.custom.colors.icon}
-                        style={{
-                          width: "24px",
-                          height: "24px",
-                        }}
-                      />
-                    }
-                    text="Import from hardware wallet"
-                    onClick={() => {
-                      openConnectHardware(blockchain);
-                      window.close();
-                    }}
-                  />
-                </Grid>
-              ))}
+            {(keyringType === "ledger" || keyringExists) && (
+              <Grid item xs={6}>
+                <ActionCard
+                  icon={
+                    <HardwareWalletIcon
+                      fill={theme.custom.colors.icon}
+                      style={{
+                        width: "24px",
+                        height: "24px",
+                      }}
+                    />
+                  }
+                  text="Import from hardware wallet"
+                  onClick={() => {
+                    openConnectHardware(blockchain, !keyringExists);
+                    window.close();
+                  }}
+                />
+              </Grid>
+            )}
           </Grid>
         </Box>
       </div>
