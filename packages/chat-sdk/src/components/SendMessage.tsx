@@ -1,13 +1,35 @@
 import { useEffect, useState } from "react";
 import type { MessageKind, MessageMetadata } from "@coral-xyz/common";
-import { BACKEND_API_URL, CHAT_MESSAGES } from "@coral-xyz/common";
+import {
+  BACKEND_API_URL,
+  Blockchain,
+  CHAT_MESSAGES,
+  walletAddressDisplay,
+} from "@coral-xyz/common";
 import { createEmptyFriendship, SignalingManager } from "@coral-xyz/db";
-import { useActiveSolanaWallet, useUser } from "@coral-xyz/recoil";
+import { MaxLabel, TextFieldLabel, TextInput } from "@coral-xyz/react-common";
+import {
+  blockchainTokenData,
+  useActiveSolanaWallet,
+  useLoader,
+  useUser,
+} from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import ArrowForwardIos from "@mui/icons-material/ArrowForwardIos";
+import AddIcon from "@mui/icons-material/Add";
+import CloseIcon from "@mui/icons-material/Close";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
-import { CircularProgress, IconButton, TextField } from "@mui/material";
+import SendIcon from "@mui/icons-material/Send";
+import {
+  CircularProgress,
+  IconButton,
+  InputAdornment,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { createStyles, makeStyles } from "@mui/styles";
+import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { v4 as uuidv4 } from "uuid";
 
 import { base64ToArrayBuffer } from "../utils/imageUploadUtils";
@@ -18,9 +40,25 @@ import { EmojiPickerComponent } from "./EmojiPicker";
 import { GifPicker } from "./GifPicker";
 import { ReplyContainer } from "./ReplyContainer";
 import { SecureTransfer } from "./SecureTransfer";
-
 const useStyles = makeStyles((theme: any) =>
   createStyles({
+    menu: {
+      background: theme.custom.colors.background,
+      "& ul": {
+        padding: 0,
+      },
+      "& .MuiInputBase-input": {
+        border: "1px solid #ced4da",
+      },
+      "& .MuiOutlinedInput-root": {
+        padding: 0,
+        "border-top-right-radius": 10,
+        "border-top-left-radius": 10,
+        "& fieldset": {
+          border: "none",
+        },
+      },
+    },
     outerDiv: {
       padding: 2,
       background: theme.custom.colors.textInputBackground,
@@ -84,6 +122,7 @@ export const SendMessage = () => {
   const { uuid } = useUser();
   const [selectedFile, setSelectedFile] = useState<any>(null);
   const [uploadingFile, setUploadingFile] = useState(false);
+  const [messaginExtensionsOpen, setMessagingExtensionsOpen] = useState(false);
   const [uploadedImageUri, setUploadedImageUri] = useState("");
   const [messageContent, setMessageContent] = useState("");
   const [emojiPicker, setEmojiPicker] = useState(false);
@@ -92,6 +131,7 @@ export const SendMessage = () => {
   const [selectedMediaKind, setSelectedMediaKind] = useState<"image" | "video">(
     "image"
   );
+  const [secureTransferModal, setSecureTransferModal] = useState(false);
   const theme = useCustomTheme();
   const activeSolanaWallet = useActiveSolanaWallet();
 
@@ -213,6 +253,7 @@ export const SendMessage = () => {
       document.removeEventListener("keydown", keyDownTextField);
     };
   });
+
   return (
     <div className={classes.outerDiv}>
       {selectedFile && (
@@ -284,6 +325,9 @@ export const SendMessage = () => {
           </div>
         </div>
       )}
+      {secureTransferModal && (
+        <SecureTransferWindow remoteUserId={remoteUserId} />
+      )}
       {activeReply.parent_client_generated_uuid && (
         <ReplyContainer
           marginBottom={6}
@@ -294,72 +338,30 @@ export const SendMessage = () => {
       )}
       <div style={{ display: "flex" }}>
         <>
-          {emojiMenuOpen ? (
-            <div style={{ display: "flex" }}>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
+          {messaginExtensionsOpen ? (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            >
+              <IconButton
+                size={"small"}
+                style={{ color: theme.custom.colors.icon }}
+                onClick={(e) => {
+                  setMessagingExtensionsOpen(false);
+                  setSecureTransferModal(false);
                 }}
-              ></div>
-              <EmojiPickerComponent
-                setEmojiPicker={setEmojiPicker}
-                emojiPicker={emojiPicker}
-                setGifPicker={setGifPicker}
-                setMessageContent={setMessageContent}
-                buttonStyle={{
-                  height: "28px",
-                }}
-              />
-              <GifPicker
-                sendMessage={sendMessage}
-                setGifPicker={setGifPicker}
-                gifPicker={gifPicker}
-                setEmojiPicker={setEmojiPicker}
-                buttonStyle={{
-                  height: "28px",
-                }}
-              />
-              <Attatchment
-                onImageSelect={(file: File) => {
-                  let reader = new FileReader();
-                  reader.onload = (e) => {
-                    setSelectedMediaKind(
-                      file.name.endsWith("mp4") ? "video" : "image"
-                    );
-                    setSelectedFile(e.target?.result);
-                    uploadToS3(e.target?.result as string, file.name);
-                  };
-                  reader.readAsDataURL(file);
-                }}
-                buttonStyle={{
-                  height: "28px",
-                }}
-              />
-              {activeSolanaWallet?.publicKey && (
-                <SecureTransfer
-                  buttonStyle={{
-                    height: "28px",
-                  }}
-                  remoteUserId={remoteUserId}
-                  onTxFinalized={({ signature, counter, escrow }) => {
-                    sendMessage("Secure transfer", "secure-transfer", {
-                      signature,
-                      counter,
-                      escrow,
-                      current_state: "pending",
-                    });
+              >
+                <CloseIcon
+                  style={{
+                    height: "18px",
+                    color: theme.custom.colors.icon,
+                    fontSize: 20,
                   }}
                 />
-              )}
-              {/*<IconButton>*/}
-              {/*  {" "}*/}
-              {/*  <SendIcon*/}
-              {/*    className={classes.icon}*/}
-              {/*    onClick={() => sendMessage(messageContent)}*/}
-              {/*  />{" "}*/}
-              {/*</IconButton>*/}
+              </IconButton>
             </div>
           ) : (
             <div
@@ -373,10 +375,10 @@ export const SendMessage = () => {
                 size={"small"}
                 style={{ color: theme.custom.colors.icon }}
                 onClick={(e) => {
-                  setEmojiMenuOpen(true);
+                  setMessagingExtensionsOpen(true);
                 }}
               >
-                <ArrowForwardIos
+                <AddIcon
                   style={{
                     height: "18px",
                     color: theme.custom.colors.icon,
@@ -414,7 +416,298 @@ export const SendMessage = () => {
           onChange={(e) => setMessageContent(e.target.value)}
           onClick={() => setEmojiMenuOpen(false)}
         />
+        <IconButton>
+          {" "}
+          <SendIcon
+            className={classes.icon}
+            onClick={() => sendMessage(messageContent)}
+          />{" "}
+        </IconButton>
       </div>
+      {messaginExtensionsOpen && (
+        <div style={{ display: "flex", marginBottom: 5 }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}
+          ></div>
+          <EmojiPickerComponent
+            setEmojiPicker={setEmojiPicker}
+            emojiPicker={emojiPicker}
+            setGifPicker={setGifPicker}
+            setMessageContent={setMessageContent}
+            buttonStyle={{
+              height: "28px",
+            }}
+          />
+          <GifPicker
+            sendMessage={sendMessage}
+            setGifPicker={setGifPicker}
+            gifPicker={gifPicker}
+            setEmojiPicker={setEmojiPicker}
+            buttonStyle={{
+              height: "28px",
+            }}
+          />
+          <Attatchment
+            onImageSelect={(file: File) => {
+              let reader = new FileReader();
+              reader.onload = (e) => {
+                setSelectedMediaKind(
+                  file.name.endsWith("mp4") ? "video" : "image"
+                );
+                setSelectedFile(e.target?.result);
+                uploadToS3(e.target?.result as string, file.name);
+              };
+              reader.readAsDataURL(file);
+            }}
+            buttonStyle={{
+              height: "28px",
+            }}
+          />
+          {activeSolanaWallet?.publicKey && (
+            <SecureTransfer
+              setSecureTransferModal={setSecureTransferModal}
+              buttonStyle={{
+                height: "28px",
+              }}
+              remoteUserId={remoteUserId}
+              onTxFinalized={({ signature, counter, escrow }) => {
+                sendMessage("Secure transfer", "secure-transfer", {
+                  signature,
+                  counter,
+                  escrow,
+                  current_state: "pending",
+                });
+              }}
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 };
+
+function SecureTransferWindow({ remoteUserId }: { remoteUserId: string }) {
+  const theme = useCustomTheme();
+  const [amount, setAmount] = useState(0);
+  const { publicKey } = useActiveSolanaWallet();
+  const [currency, setCurrency] = useState("sol");
+  const [selectedPublicKey, setSelectedPublicKey] = useState("");
+
+  const [token] = useLoader(
+    blockchainTokenData({
+      publicKey,
+      blockchain: Blockchain.SOLANA,
+      tokenAddress: publicKey,
+    }),
+    null
+  );
+
+  const currentDollarValue =
+    parseFloat(token?.nativeBalance?.toString() || "0") * token?.priceData?.usd;
+  const segments: number[] = [];
+  if (currentDollarValue && currentDollarValue < 10) {
+    if (currentDollarValue / 4 !== 0) {
+      segments.push(Math.floor(currentDollarValue / 4));
+    }
+    if (currentDollarValue / 2 !== 0) {
+      segments.push(Math.floor(currentDollarValue / 2));
+    }
+  } else if (currentDollarValue && currentDollarValue < 50) {
+    if (currentDollarValue / 4 !== 0) {
+      segments.push(Math.floor(currentDollarValue / 4));
+    }
+    if (currentDollarValue / 2 !== 0) {
+      segments.push(Math.floor(currentDollarValue / 2));
+    }
+  } else if (currentDollarValue) {
+    segments.push(10);
+    segments.push(25);
+    segments.push(50);
+  }
+
+  return (
+    <div
+      style={{
+        background: theme.custom.colors.invertedPrimary,
+        padding: "20px 16px",
+      }}
+    >
+      {segments.length !== 0 && (
+        <div style={{ display: "flex" }}>
+          {segments.map((x) => (
+            <AmountSelector
+              amount={x}
+              onSelect={(amt) => {
+                setAmount(amt / token?.priceData?.usd);
+              }}
+            />
+          ))}
+        </div>
+      )}
+      <TextFieldLabel
+        labelColor={theme.custom.colors.background}
+        style={{ color: theme.custom.colors.background }}
+        leftLabel={"Amount"}
+        rightLabel={`${token?.displayBalance} ${token?.ticker}`}
+        rightLabelComponent={
+          <MaxLabel
+            labelColor={theme.custom.colors.background}
+            amount={token?.nativeBalance || null}
+            onSetAmount={(x) =>
+              setAmount(parseInt(x.toString()) / LAMPORTS_PER_SOL)
+            }
+            decimals={token?.decimals || 0}
+          />
+        }
+      />
+      <div>
+        <TextInput
+          endAdornment={
+            <CurrencySelectorButton updateCurrency={(c) => setCurrency(c)} />
+          }
+          margin={"none"}
+          value={(currency === "sol"
+            ? amount
+            : amount * token?.priceData?.usd
+          ).toString()}
+          setValue={(e) => {
+            if (currency === "sol") {
+              setAmount(e.target.value);
+            } else {
+              setAmount(e.target.value / token?.priceData?.usd);
+            }
+          }}
+        />
+      </div>
+      <div style={{ marginTop: 10 }}>
+        <PublicKeySelector
+          remoteUserId={remoteUserId}
+          onSelect={(publicKey) => setSelectedPublicKey(publicKey)}
+        />
+      </div>
+    </div>
+  );
+}
+
+function PublicKeySelector({
+  onSelect,
+  remoteUserId,
+}: {
+  onSelect: (publicKey: string) => void;
+  remoteUserId: string;
+}) {
+  const [publicKeysLoading, setPublicKeysLoading] = useState(true);
+  const [publicKeys, setPublicKeys] = useState<string[]>([]);
+  const [selectedPublicKey, setSelectedPublicKey] = useState("");
+  const theme = useCustomTheme();
+  const classes = useStyles();
+  const refreshUserPubkeys = async () => {
+    setPublicKeysLoading(true);
+    try {
+      const res = await fetch(
+        `${BACKEND_API_URL}/users/userById?remoteUserId=${remoteUserId}`
+      );
+      const data = await res.json();
+      setPublicKeys(
+        data.user.publicKeys
+          .filter((x) => x.blockchain === Blockchain.SOLANA)
+          .map((x) => x.publicKey)
+      );
+    } catch (e) {
+      console.error(e);
+    }
+    setPublicKeysLoading(false);
+  };
+
+  useEffect(() => {
+    refreshUserPubkeys();
+  }, []);
+
+  return (
+    <div>
+      <Select
+        style={{
+          background: theme.custom.colors.background,
+          color: theme.custom.colors.fontColor,
+        }}
+        MenuProps={{ classes: { paper: classes.menu } }}
+        fullWidth
+        value={selectedPublicKey}
+        label="Public Key"
+        onChange={(e) => {
+          setSelectedPublicKey(e.target.value);
+          onSelect(e.target.value);
+        }}
+      >
+        {publicKeys.map((publicKey) => (
+          <MenuItem value={publicKey}>
+            {walletAddressDisplay(publicKey)}
+          </MenuItem>
+        ))}
+      </Select>
+    </div>
+  );
+}
+
+function AmountSelector({
+  amount,
+  onSelect,
+}: {
+  amount: number;
+  onSelect: (amount: number) => void;
+}) {
+  const theme = useCustomTheme();
+
+  return (
+    <div
+      style={{
+        fontSize: 14,
+        marginRight: 20,
+        color: theme.custom.colors.background,
+        fontWeight: 700,
+        background: theme.custom.colors.invertedPrimary,
+        padding: "8px 16px",
+        border: "1px solid rgba(255, 255, 255, 0.7)",
+        borderRadius: "12px",
+        cursor: "pointer",
+      }}
+      onClick={() => onSelect(amount)}
+    >
+      ${amount}
+    </div>
+  );
+}
+
+function CurrencySelectorButton({
+  updateCurrency,
+}: {
+  updateCurrency: (currency: "sol" | "usdc") => void;
+}) {
+  const [currency, setCurrency] = useState("sol");
+  return (
+    <InputAdornment position="end">
+      <TextField
+        variant="outlined"
+        select
+        sx={{
+          boxShadow: "none",
+          "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
+            border: 0,
+          },
+        }}
+        value={currency}
+        onChange={(e) => {
+          setCurrency(e.target.value);
+          updateCurrency(e.target.value as "sol" | "usdc");
+        }}
+      >
+        <MenuItem value={"usd"}>USD</MenuItem>
+        <MenuItem value={"sol"}>SOL</MenuItem>
+      </TextField>
+    </InputAdornment>
+  );
+}

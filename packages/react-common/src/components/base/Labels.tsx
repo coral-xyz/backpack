@@ -5,7 +5,8 @@ import { Typography } from "@mui/material";
 import type { BigNumber } from "ethers";
 const useStyles = styles((theme: CustomTheme) => ({
   leftLabel: {
-    color: theme.custom.colors.fontColor,
+    color: (props: { labelColor?: string }) =>
+      props.labelColor || theme.custom.colors.fontColor,
     fontSize: "16px",
     lineHeight: "16px",
     fontWeight: 500,
@@ -14,13 +15,15 @@ const useStyles = styles((theme: CustomTheme) => ({
     fontWeight: 500,
     fontSize: "12px",
     lineHeight: "16px",
-    color: theme.custom.colors.fontColor,
+    color: (props: { labelColor?: string }) =>
+      props.labelColor || theme.custom.colors.fontColor,
   },
   wrapper: {
     fontWeight: 500,
     fontSize: "12px",
     lineHeight: "16px",
-    color: theme.custom.colors.fontColor,
+    color: (props: { labelColor?: string }) =>
+      props.labelColor || theme.custom.colors.fontColor,
   },
   clickable: {
     cursor: "pointer",
@@ -35,13 +38,15 @@ export function TextFieldLabel({
   rightLabel,
   rightLabelComponent,
   style,
+  labelColor,
 }: {
   leftLabel: string;
   rightLabel?: string;
   rightLabelComponent?: React.ReactNode;
   style?: any;
+  labelColor?: string;
 }) {
-  const classes = useStyles();
+  const classes = useStyles({ labelColor });
   return (
     <div
       style={{
@@ -65,13 +70,15 @@ export const MaxLabel = ({
   amount,
   onSetAmount,
   decimals,
+  labelColor,
 }: {
   amount: BigNumber | null;
   onSetAmount: (amount: BigNumber) => void;
   decimals: number;
+  labelColor?: string;
 }) => {
   const theme = useCustomTheme();
-  const classes = useStyles();
+  const classes = useStyles({ labelColor });
   return (
     <div
       className={[
@@ -80,7 +87,9 @@ export const MaxLabel = ({
       ].join(" ")}
       onClick={() => amount && onSetAmount(amount)}
     >
-      <span style={{ color: theme.custom.colors.secondary }}>Max: </span>
+      <span style={{ color: labelColor || theme.custom.colors.secondary }}>
+        Max:{" "}
+      </span>
       {amount !== null ? toDisplayBalance(amount, decimals) : "-"}
     </div>
   );

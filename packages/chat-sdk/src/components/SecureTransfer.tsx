@@ -49,12 +49,13 @@ export const SecureTransfer = ({
   remoteUserId,
   onTxFinalized,
   buttonStyle,
+  setSecureTransferModal,
 }: {
   remoteUserId: string;
   onTxFinalized: any;
   buttonStyle: any;
+  setSecureTransferModal: any;
 }) => {
-  const [modal, setModal] = useState(false);
   const { provider, connection } = useAnchorContext();
   const background = useBackgroundClient();
   const { publicKey } = useActiveSolanaWallet();
@@ -73,30 +74,6 @@ export const SecureTransfer = ({
   );
 
   const theme = useCustomTheme();
-  const refreshUserPubkeys = async () => {
-    setPublicKeysLoading(true);
-    try {
-      const res = await fetch(
-        `${BACKEND_API_URL}/users/userById?remoteUserId=${remoteUserId}`
-      );
-      const data = await res.json();
-      setPublicKeys(
-        data.user.publicKeys
-          .filter((x) => x.blockchain === Blockchain.SOLANA)
-          .map((x) => x.publicKey)
-      );
-    } catch (e) {
-      console.error(e);
-    }
-    setPublicKeysLoading(false);
-  };
-
-  useEffect(() => {
-    if (modal) {
-      refreshUserPubkeys();
-    }
-  }, [modal]);
-
   return (
     <div
       style={{
@@ -111,125 +88,125 @@ export const SecureTransfer = ({
       >
         <MonetizationOnIcon
           style={{ color: theme.custom.colors.icon, fontSize: 20 }}
-          onClick={() => setModal(true)}
+          onClick={() => setSecureTransferModal((x) => !x)}
         />
       </IconButton>
-      <Modal
-        aria-labelledby="transition-modal-title"
-        aria-describedby="transition-modal-description"
-        open={modal}
-        onClose={() => setModal(false)}
-        closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{
-          timeout: 500,
-        }}
-      >
-        <Box
-          sx={style}
-          style={{
-            background: theme.custom.colors.background,
-            color: theme.custom.colors.fontColor,
-          }}
-        >
-          <Typography id="transition-modal-title" variant="h6" component="h2">
-            Secure transfer
-          </Typography>
+      {/*<Modal*/}
+      {/*  aria-labelledby="transition-modal-title"*/}
+      {/*  aria-describedby="transition-modal-description"*/}
+      {/*  open={modal}*/}
+      {/*  onClose={() => setModal(false)}*/}
+      {/*  closeAfterTransition*/}
+      {/*  BackdropComponent={Backdrop}*/}
+      {/*  BackdropProps={{*/}
+      {/*    timeout: 500,*/}
+      {/*  }}*/}
+      {/*>*/}
+      {/*  <Box*/}
+      {/*    sx={style}*/}
+      {/*    style={{*/}
+      {/*      background: theme.custom.colors.background,*/}
+      {/*      color: theme.custom.colors.fontColor,*/}
+      {/*    }}*/}
+      {/*  >*/}
+      {/*    <Typography id="transition-modal-title" variant="h6" component="h2">*/}
+      {/*      Secure transfer*/}
+      {/*    </Typography>*/}
 
-          <br />
-          <TextFieldLabel
-            leftLabel={"Amount"}
-            rightLabel={`${token?.displayBalance} ${token?.ticker}`}
-            rightLabelComponent={
-              <MaxLabel
-                amount={token?.nativeBalance || null}
-                onSetAmount={(x) =>
-                  setAmount(
-                    (parseInt(x.toString()) / LAMPORTS_PER_SOL).toString()
-                  )
-                }
-                decimals={token?.decimals || 0}
-              />
-            }
-          />
-          <div>
-            <TextInput
-              margin={"none"}
-              value={amount}
-              setValue={(e) => setAmount(e.target.value)}
-            />
-          </div>
+      {/*    <br />*/}
+      {/*    <TextFieldLabel*/}
+      {/*      leftLabel={"Amount"}*/}
+      {/*      rightLabel={`${token?.displayBalance} ${token?.ticker}`}*/}
+      {/*      rightLabelComponent={*/}
+      {/*        <MaxLabel*/}
+      {/*          amount={token?.nativeBalance || null}*/}
+      {/*          onSetAmount={(x) =>*/}
+      {/*            setAmount(*/}
+      {/*              (parseInt(x.toString()) / LAMPORTS_PER_SOL).toString()*/}
+      {/*            )*/}
+      {/*          }*/}
+      {/*          decimals={token?.decimals || 0}*/}
+      {/*        />*/}
+      {/*      }*/}
+      {/*    />*/}
+      {/*    <div>*/}
+      {/*      <TextInput*/}
+      {/*        margin={"none"}*/}
+      {/*        value={amount}*/}
+      {/*        setValue={(e) => setAmount(e.target.value)}*/}
+      {/*      />*/}
+      {/*    </div>*/}
 
-          <Typography
-            id="transition-modal-title"
-            variant="subtitle2"
-            style={{ marginBottom: 4, marginTop: 5 }}
-          >
-            Select public key
-          </Typography>
-          <List style={{ marginLeft: 0, marginRight: 0 }}>
-            {publicKeys?.map((pKey, index) => (
-              <ListItem
-                onClick={() => setSelectedPublickey(pKey)}
-                style={{ height: "48px", display: "flex", width: "100%" }}
-                isFirst={index === 0}
-                isLast={index === publicKeys.length - 1}
-                button
-                key={publicKey.toString()}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    width: "100%",
-                  }}
-                >
-                  <div>{walletAddressDisplay(pKey)}</div>
-                  <div>{selectedPublicKey === pKey && <CheckIcon />}</div>
-                </div>
-              </ListItem>
-            ))}
-          </List>
-          <br />
-          <PrimaryButton
-            label={
-              submitting ? "Sending Secure transfer..." : "Secure transfer SOL"
-            }
-            disabled={publicKeysLoading || !selectedPublicKey || submitting}
-            onClick={async () => {
-              if (
-                !selectedPublicKey ||
-                !publicKeys.includes(selectedPublicKey) ||
-                !amount
-              ) {
-                return;
-              }
-              setSubmitting(true);
-              try {
-                const { signature, counter, escrow } = await createEscrow(
-                  provider,
-                  background,
-                  connection,
-                  // @ts-ignore
-                  amount,
-                  new PublicKey(publicKey),
-                  new PublicKey(selectedPublicKey)
-                );
-                onTxFinalized({
-                  signature,
-                  counter,
-                  escrow,
-                });
-                toast.success("", `Created secure transfer for ${amount} SOL`);
-              } catch (e) {
-                console.error(e);
-              }
-              setSubmitting(false);
-              setModal(false);
-            }}
-          />
-        </Box>
-      </Modal>
+      {/*    <Typography*/}
+      {/*      id="transition-modal-title"*/}
+      {/*      variant="subtitle2"*/}
+      {/*      style={{ marginBottom: 4, marginTop: 5 }}*/}
+      {/*    >*/}
+      {/*      Select public key*/}
+      {/*    </Typography>*/}
+      {/*    <List style={{ marginLeft: 0, marginRight: 0 }}>*/}
+      {/*      {publicKeys?.map((pKey, index) => (*/}
+      {/*        <ListItem*/}
+      {/*          onClick={() => setSelectedPublickey(pKey)}*/}
+      {/*          style={{ height: "48px", display: "flex", width: "100%" }}*/}
+      {/*          isFirst={index === 0}*/}
+      {/*          isLast={index === publicKeys.length - 1}*/}
+      {/*          button*/}
+      {/*          key={publicKey.toString()}*/}
+      {/*        >*/}
+      {/*          <div*/}
+      {/*            style={{*/}
+      {/*              display: "flex",*/}
+      {/*              justifyContent: "space-between",*/}
+      {/*              width: "100%",*/}
+      {/*            }}*/}
+      {/*          >*/}
+      {/*            <div>{walletAddressDisplay(pKey)}</div>*/}
+      {/*            <div>{selectedPublicKey === pKey && <CheckIcon />}</div>*/}
+      {/*          </div>*/}
+      {/*        </ListItem>*/}
+      {/*      ))}*/}
+      {/*    </List>*/}
+      {/*    <br />*/}
+      {/*    <PrimaryButton*/}
+      {/*      label={*/}
+      {/*        submitting ? "Sending Secure transfer..." : "Secure transfer SOL"*/}
+      {/*      }*/}
+      {/*      disabled={publicKeysLoading || !selectedPublicKey || submitting}*/}
+      {/*      onClick={async () => {*/}
+      {/*        if (*/}
+      {/*          !selectedPublicKey ||*/}
+      {/*          !publicKeys.includes(selectedPublicKey) ||*/}
+      {/*          !amount*/}
+      {/*        ) {*/}
+      {/*          return;*/}
+      {/*        }*/}
+      {/*        setSubmitting(true);*/}
+      {/*        try {*/}
+      {/*          const { signature, counter, escrow } = await createEscrow(*/}
+      {/*            provider,*/}
+      {/*            background,*/}
+      {/*            connection,*/}
+      {/*            // @ts-ignore*/}
+      {/*            amount,*/}
+      {/*            new PublicKey(publicKey),*/}
+      {/*            new PublicKey(selectedPublicKey)*/}
+      {/*          );*/}
+      {/*          onTxFinalized({*/}
+      {/*            signature,*/}
+      {/*            counter,*/}
+      {/*            escrow,*/}
+      {/*          });*/}
+      {/*          toast.success("", `Created secure transfer for ${amount} SOL`);*/}
+      {/*        } catch (e) {*/}
+      {/*          console.error(e);*/}
+      {/*        }*/}
+      {/*        setSubmitting(false);*/}
+      {/*        setModal(false);*/}
+      {/*      }}*/}
+      {/*    />*/}
+      {/*  </Box>*/}
+      {/*</Modal>*/}
     </div>
   );
 };
