@@ -5,8 +5,6 @@ import "@ethersproject/shims";
 import "react-native-gesture-handler";
 import { registerRootComponent } from "expo";
 
-import { App } from "./src/App";
-
 if (typeof Buffer === "undefined") {
   global.Buffer = require("buffer/").Buffer;
 }
@@ -27,4 +25,6 @@ Promise.allSettled =
           }))
       )
     ));
+
+import { App } from "./src/App"; // eslint-disable-line
 registerRootComponent(App);
