@@ -126,36 +126,41 @@ export const recentSolanaTransactions = atomFamily<
     get:
       ({ address }: { address: string }) =>
       async () => {
-        // get parsed transactions from Helius
-        const heliusTransactionDetails =
-          await fetchRecentSolanaTransactionDetails(address);
+        try {
+          // get parsed transactions from Helius
+          const heliusTransactionDetails =
+            await fetchRecentSolanaTransactionDetails(address);
 
-        return await Promise.all(
-          heliusTransactionDetails?.map(async (t) => {
-            // if transaction is of a type related to NFT, query for additional metadata to be displayed
-            // so far have identified two patterns matching NFT object, there are potentially/likely more to add
-            if (
-              (t.type.includes("NFT") && t?.events?.nft?.nfts[0]?.mint) ||
-              (t.type === "TRANSFER" &&
-                t?.tokenTransfers[0]?.tokenStandard === "NonFungible" &&
-                t?.tokenTransfers[0]?.mint)
-            ) {
-              const nftMetadata = await fetchNFTMetaData(
-                t?.events?.nft?.nfts[0]?.mint || t?.tokenTransfers[0]?.mint
-              );
+          return await Promise.all(
+            heliusTransactionDetails?.map(async (t) => {
+              // if transaction is of a type related to NFT, query for additional metadata to be displayed
+              // so far have identified two patterns matching NFT object, there are potentially/likely more to add
+              if (
+                (t.type.includes("NFT") && t?.events?.nft?.nfts[0]?.mint) ||
+                (t.type === "TRANSFER" &&
+                  t?.tokenTransfers[0]?.tokenStandard === "NonFungible" &&
+                  t?.tokenTransfers[0]?.mint)
+              ) {
+                const nftMetadata = await fetchNFTMetaData(
+                  t?.events?.nft?.nfts[0]?.mint || t?.tokenTransfers[0]?.mint
+                );
+                return {
+                  blockchain: Blockchain.SOLANA,
+                  ...t,
+                  metaData: nftMetadata,
+                };
+              }
+
               return {
                 blockchain: Blockchain.SOLANA,
                 ...t,
-                metaData: nftMetadata,
               };
-            }
-
-            return {
-              blockchain: Blockchain.SOLANA,
-              ...t,
-            };
-          })
-        );
+            })
+          );
+        } catch (err) {
+          console.error(err);
+          return [];
+        }
       },
   }),
 });

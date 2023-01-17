@@ -1,18 +1,13 @@
 import { useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
-import { explorerUrl } from "@coral-xyz/common";
 import { EmptyState, isFirstLastListItemStyle } from "@coral-xyz/react-common";
 import {
   SOL_LOGO_URI,
   useActiveWallet,
-  useBlockchainConnectionUrl,
-  useBlockchainExplorer,
-  useBlockchainLogo,
   useRecentTransactions,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Bolt, CallMade, Check, Clear } from "@mui/icons-material";
-import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import { List, ListItem, Typography } from "@mui/material";
 
 import {
@@ -23,24 +18,6 @@ import {
 import { TransactionDetail } from "./TransactionDetail";
 
 const useStyles = styles((theme) => ({
-  recentActivityLabel: {
-    color: theme.custom.colors.fontColor,
-    fontWeight: 500,
-    fontSize: "14px",
-    lineHeight: "24px",
-  },
-  allWalletsLabel: {
-    fontWeight: 500,
-    fontSize: "12px",
-    color: theme.custom.colors.secondary,
-  },
-  noRecentActivityLabel: {
-    fontWeight: 500,
-    fontSize: "16px",
-    padding: "16px",
-    textAlign: "center",
-    color: theme.custom.colors.secondary,
-  },
   recentActivityListItemIconContainer: {
     width: "44px",
     height: "44px",
@@ -71,23 +48,6 @@ const useStyles = styles((theme) => ({
     fontSize: "12px",
     fontWeight: 500,
     lineHeight: "24px",
-  },
-  networkSettingsButtonContainer: {
-    display: "flex",
-    flexDirection: "row-reverse",
-    width: "38px",
-  },
-  networkSettingsButton: {
-    padding: 0,
-    width: "24px",
-    "&:hover": {
-      background: "transparent",
-    },
-  },
-  networkSettingsIcon: {
-    color: theme.custom.colors.icon,
-    backgroundColor: "transparent",
-    borderRadius: "12px",
   },
 }));
 
@@ -160,7 +120,6 @@ export function _RecentSolanaActivityList({
   );
 }
 export function SolanaTransactionListItem({
-  key,
   transaction,
   isFirst,
   isLast,
@@ -169,11 +128,12 @@ export function SolanaTransactionListItem({
   const classes = useStyles();
   const theme = useCustomTheme();
   const activeWallet = useActiveWallet();
-  const explorer = useBlockchainExplorer(transaction.blockchain);
-  const connectionUrl = useBlockchainConnectionUrl(transaction.blockchain);
-  const blockchainLogo = useBlockchainLogo(transaction.blockchain);
+  // const explorer = useBlockchainExplorer(transaction.blockchain);
+  // const connectionUrl = useBlockchainConnectionUrl(transaction.blockchain);
+  // const blockchainLogo = useBlockchainLogo(transaction.blockchain);
   const onClick = () => {
     setTransactionDetail(transaction);
+    // use this later when adding link in transaction detail button
     // window.open(explorerUrl(explorer!, transaction.signature, connectionUrl!));
   };
 
@@ -238,8 +198,6 @@ export function SolanaTransactionListItem({
           <div>
             <Typography className={classes.title}>
               {getTransactionTitle(transaction)}
-              {/* {transaction.signature.slice(0, 4)}...
-              {transaction.signature.slice(transaction.signature.length - 5)} */}
             </Typography>
             <Typography className={classes.caption}>
               {getTransactionCaption(transaction) || transaction.timestamp}

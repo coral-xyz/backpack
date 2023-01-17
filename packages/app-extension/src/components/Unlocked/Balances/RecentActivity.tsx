@@ -10,8 +10,6 @@ import {
   useBlockchainConnectionUrl,
   useBlockchainExplorer,
   useBlockchainLogo,
-  useRecentEthereumTransactions,
-  useRecentSolanaTransactions,
   useRecentTransactions,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
@@ -130,27 +128,21 @@ export function RecentActivityButton() {
 export function RecentActivity() {
   const activeWallet = useActiveWallet();
 
-  let recentTransactions;
-  let mergedTransactions;
-  if (activeWallet.blockchain === Blockchain.SOLANA) {
-    recentTransactions = useRecentSolanaTransactions({
-      address: activeWallet.publicKey,
-    });
-    mergedTransactions = [...recentTransactions].sort(
-      (a, b) => b.timestamp - a.timestamp
-    );
-  } else {
-    recentTransactions = useRecentEthereumTransactions({
-      address: activeWallet.publicKey,
-    });
-    mergedTransactions = [...recentTransactions].sort(
-      (a, b) => b.date.getTime() - a.date.getTime()
-    );
-  }
+  const recentTransactions = useRecentTransactions(
+    activeWallet.blockchain,
+    activeWallet.publicKey
+  );
+  const mergedTransactions =
+    activeWallet.blockchain === Blockchain.SOLANA
+      ? [...recentTransactions].sort((a, b) => b.timestamp - a.timestamp)
+      : [...recentTransactions].sort(
+          (a, b) => b.date.getTime() - a.date.getTime()
+        );
+
   return (
     <Suspense fallback={<RecentActivityLoading />}>
       {activeWallet.blockchain === Blockchain.SOLANA ? (
-        <_RecentSolanaActivityList transactions={recentTransactions} />
+        <_RecentSolanaActivityList transactions={mergedTransactions} />
       ) : (
         <_RecentActivityList transactions={mergedTransactions} />
       )}
