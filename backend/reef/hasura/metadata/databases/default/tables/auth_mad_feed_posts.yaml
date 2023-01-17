@@ -8,7 +8,7 @@ object_relationships:
   - name: user
     using:
       foreign_key_constraint_on: author
-  - name: vote_sum
+  - name: vote_sums
     using:
       manual_configuration:
         column_mapping:
