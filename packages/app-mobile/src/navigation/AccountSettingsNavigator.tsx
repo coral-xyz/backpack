@@ -1,17 +1,11 @@
-import { useEffect, useState } from "react";
-import { Alert, Text, View } from "react-native";
-import { Row, Screen } from "@components";
+import { Screen } from "@components";
 import { IconCheckmark } from "@components/Icon";
-import type { Blockchain, ChannelAppUiClient } from "@coral-xyz/common";
+import { AccountDropdownHeader } from "@components/UserAccountsMenu";
+import type { ChannelAppUiClient } from "@coral-xyz/common";
 import {
-  DerivationPath,
   EthereumConnectionUrl,
   SolanaCluster,
   SolanaExplorer,
-  UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
-  UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
-  UI_RPC_METHOD_BLOCKCHAINS_ENABLED_ADD,
-  UI_RPC_METHOD_BLOCKCHAINS_ENABLED_DELETE,
   UI_RPC_METHOD_ETHEREUM_CHAIN_ID_UPDATE,
   UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE,
   UI_RPC_METHOD_SOLANA_COMMITMENT_UPDATE,
@@ -21,13 +15,12 @@ import {
 } from "@coral-xyz/common";
 import {
   useBackgroundClient,
-  useEnabledBlockchains,
   useEthereumConnectionUrl,
-  useKeyringType,
   useSolanaCommitment,
   useSolanaConnectionUrl,
   useSolanaExplorer,
 } from "@coral-xyz/recoil";
+import { useTheme } from "@hooks";
 import { createStackNavigator } from "@react-navigation/stack";
 import { ImportPrivateKeyScreen } from "@screens/ImportPrivateKeyScreen";
 import {
@@ -40,15 +33,14 @@ import { ForgotPasswordScreen } from "@screens/Unlocked/ForgotPasswordScreen";
 import { RenameWalletScreen } from "@screens/Unlocked/RenameWalletScreen";
 import { AddConnectWalletScreen } from "@screens/Unlocked/Settings/AddConnectWalletScreen";
 import { ChangePasswordScreen } from "@screens/Unlocked/Settings/ChangePasswordScreen";
+import { PreferencesScreen } from "@screens/Unlocked/Settings/PreferencesScreen";
+import { PreferencesTrustedSitesScreen } from "@screens/Unlocked/Settings/PreferencesTrustedSitesScreen";
+import { ProfileScreen } from "@screens/Unlocked/Settings/ProfileScreen";
 import { SettingsList } from "@screens/Unlocked/Settings/components/SettingsMenuList";
 import {
   IconPushDetail,
   SettingsRow,
-  SettingsRowSwitch,
 } from "@screens/Unlocked/Settings/components/SettingsRow";
-import { PreferencesScreen } from "@screens/Unlocked/Settings/PreferencesScreen";
-import { PreferencesTrustedSitesScreen } from "@screens/Unlocked/Settings/PreferencesTrustedSitesScreen";
-import { ProfileScreen } from "@screens/Unlocked/Settings/ProfileScreen";
 import {
   ShowPrivateKeyScreen,
   ShowPrivateKeyWarningScreen,
@@ -60,9 +52,9 @@ import {
 import { YourAccountScreen } from "@screens/Unlocked/YourAccountScreen";
 import type { Commitment } from "@solana/web3.js";
 import { ethers } from "ethers";
+import { useEffect, useState } from "react";
+import { Text, View } from "react-native";
 const { hexlify } = ethers.utils;
-import { AccountDropdownHeader } from "@components/UserAccountsMenu";
-import { useTheme } from "@hooks";
 
 const Stack = createStackNavigator();
 
@@ -209,7 +201,8 @@ export function AccountSettingsNavigator(): JSX.Element {
         component={AddConnectWalletScreen}
       />
       <Stack.Group
-        screenOptions={{ presentation: "modal", headerShown: false }}>
+        screenOptions={{ presentation: "modal", headerShown: false }}
+      >
         <Stack.Screen name="forgot-password" component={ForgotPasswordScreen} />
         <Stack.Screen name="logout-warning" component={LogoutWarningScreen} />
       </Stack.Group>
@@ -413,8 +406,6 @@ export function PreferencesSolanaExplorer({ navigation }) {
 }
 
 function PreferencesSolana({ route, navigation }) {
-  const { blockchain } = route.params;
-
   const menuItems = {
     "RPC Connection": {
       onPress: () => navigation.push("PreferencesSolanaConnection"),
@@ -429,7 +420,6 @@ function PreferencesSolana({ route, navigation }) {
 
   return (
     <Screen>
-      <PreferencesBlockchain blockchain={blockchain} />
       <SettingsList menuItems={menuItems} />
     </Screen>
   );
@@ -438,7 +428,7 @@ function PreferencesSolana({ route, navigation }) {
 export const changeNetwork = async (
   background: ChannelAppUiClient,
   url: string,
-  chainId?: string
+  chainId?: string,
 ) => {
   await background.request({
     method: UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE,
@@ -586,89 +576,13 @@ function PreferencesEthereumConnection({ navigation }) {
 }
 
 function PreferencesEthereum({ route, navigation }) {
-  const { blockchain } = route.params;
   return (
     <Screen>
-      <PreferencesBlockchain blockchain={blockchain} />
       <SettingsRow
         label="RPC Connection"
         onPress={() => navigation.push("PreferencesEthereumConnection")}
         detailIcon={<IconPushDetail />}
       />
     </Screen>
-  );
-}
-
-function PreferencesBlockchain({ blockchain }: { blockchain: Blockchain }) {
-  const [error, setError] = useState<string | null>(null);
-  const background = useBackgroundClient();
-  const enabledBlockchains = useEnabledBlockchains();
-  const keyringType = useKeyringType();
-  const isEnabled = enabledBlockchains.includes(blockchain);
-  // Can only disable a blockchain if it's *not* the last one remaining.
-  const isToggleDisabled = isEnabled && enabledBlockchains.length === 1;
-
-  const openAlert = () => {
-    Alert.alert(`Can't toggle the last enabled network`);
-  };
-
-  const _onPress = async (isDisabled: boolean) => {
-    if (isToggleDisabled) {
-      openAlert();
-    } else {
-      onToggle(isDisabled);
-    }
-  };
-
-  const onToggle = async (isDisabled: boolean) => {
-    if (isDisabled) {
-      await background.request({
-        method: UI_RPC_METHOD_BLOCKCHAINS_ENABLED_DELETE,
-        params: [blockchain],
-      });
-    } else {
-      const blockchainKeyrings = await background.request({
-        method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
-        params: [],
-      });
-
-      if (!blockchainKeyrings.includes(blockchain)) {
-        // Blockchain has no keyring initialised, initialise it
-        if (keyringType === "ledger") {
-          // setOpenDrawer(true);
-        } else {
-          // Mnemonic based keyring. This is the simple case because we don't
-          // need to prompt for the user to open their Ledger app to get the
-          // required public key. We also don't need a signature to prove
-          // ownership of the public key because that can't be done
-          // transparently by the backend.
-          try {
-            await background.request({
-              method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
-              params: [blockchain, DerivationPath.Default, 0],
-            });
-          } catch (error) {
-            setError("Wallet address is used by another Backpack account.");
-          }
-        }
-      } else {
-        // Keyring exists for blockchain, just enable it
-        await background.request({
-          method: UI_RPC_METHOD_BLOCKCHAINS_ENABLED_ADD,
-          params: [blockchain],
-        });
-      }
-    }
-  };
-
-  return (
-    <>
-      <SettingsRowSwitch
-        onPress={(value: boolean) => _onPress(value)}
-        label="Enable Blockchain"
-        value={isEnabled}
-      />
-      {error}
-    </>
   );
 }
