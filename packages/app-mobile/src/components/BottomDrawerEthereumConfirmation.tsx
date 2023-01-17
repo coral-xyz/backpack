@@ -104,7 +104,9 @@ export function SendEthereumConfirmationCard({
       // We already waited, but calling .wait will throw if the transaction failed
       await transaction.wait();
       setCardType("complete");
-      if (onComplete) { onComplete(); }
+      if (onComplete) {
+        onComplete();
+      }
     } catch (err) {
       logger.error("ethereum transaction failed", err);
       setCardType("error");

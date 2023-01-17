@@ -50,7 +50,9 @@ export function SendTokenDetailScreen({ route }) {
   );
 
   useEffect(() => {
-    if (!token) { return; }
+    if (!token) {
+      return;
+    }
     if (token.mint === SOL_NATIVE_MINT) {
       // When sending SOL, account for the tx fee and rent exempt minimum.
       setFeeOffset(

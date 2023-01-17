@@ -315,7 +315,7 @@ export function EthereumSettingsDrawer({
           }}
           value={maxFeePerGas}
           onChange={(e) => setMaxFeePerGas(e.target.value)}
-         />
+        />
       ) : (
         <ValueWithUnit
           value={ethers.utils.formatUnits(transactionOverrides.maxFeePerGas, 9)}
@@ -323,7 +323,9 @@ export function EthereumSettingsDrawer({
           containerProps={{
             style: { cursor: gasEditOnClick ? "pointer" : "inherit" },
             onPress: () => {
-              if (gasEditOnClick) { setEditingGas(true); }
+              if (gasEditOnClick) {
+                setEditingGas(true);
+              }
             },
           }}
         />
@@ -345,7 +347,7 @@ export function EthereumSettingsDrawer({
           }}
           value={maxPriorityFeePerGas}
           onChange={(e) => setMaxPriorityFeePerGas(e.target.value)}
-         />
+        />
       ) : (
         <ValueWithUnit
           value={ethers.utils.formatUnits(
@@ -356,7 +358,9 @@ export function EthereumSettingsDrawer({
           containerProps={{
             style: { cursor: gasEditOnClick ? "pointer" : "inherit" },
             onPress: () => {
-              if (gasEditOnClick) { setEditingGas(true); }
+              if (gasEditOnClick) {
+                setEditingGas(true);
+              }
             },
           }}
         />
@@ -378,12 +382,14 @@ export function EthereumSettingsDrawer({
           }}
           value={gasLimit}
           onChange={(e) => setGasLimit(e.target.value)}
-         />
+        />
       ) : (
         <Text
           // style={{ cursor: gasEditOnClick ? "pointer" : "inherit" }}
           onPress={() => {
-            if (gasEditOnClick) { setEditingGas(true); }
+            if (gasEditOnClick) {
+              setEditingGas(true);
+            }
           }}
         >
           {transactionOverrides.gasLimit.toString()}
@@ -407,12 +413,14 @@ export function EthereumSettingsDrawer({
           value={nonce}
           type="number"
           onChange={(e) => setNonce(e.target.value)}
-         />
+        />
       ) : (
         <Text
           style={{ cursor: nonceEditOnClick ? "pointer" : "inherit" }}
           onPress={() => {
-            if (nonceEditOnClick) { setEditingNonce(true); }
+            if (nonceEditOnClick) {
+              setEditingNonce(true);
+            }
           }}
         >
           {transactionOverrides.nonce}

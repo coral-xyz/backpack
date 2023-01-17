@@ -101,7 +101,9 @@ export function SendSolanaConfirmationCard({
           : solanaCtx.commitment
       );
       setCardType("complete");
-      if (onComplete) { onComplete(); }
+      if (onComplete) {
+        onComplete();
+      }
     } catch (err: any) {
       logger.error("unable to confirm", err);
       setError(err.toString());

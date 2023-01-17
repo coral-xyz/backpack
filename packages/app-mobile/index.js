@@ -7,7 +7,9 @@ import { registerRootComponent } from "expo";
 
 import { App } from "./src/App";
 
-if (typeof Buffer === "undefined") { global.Buffer = require("buffer/").Buffer; }
+if (typeof Buffer === "undefined") {
+  global.Buffer = require("buffer/").Buffer;
+}
 
 Promise.allSettled =
   Promise.allSettled ||

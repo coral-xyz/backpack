@@ -87,7 +87,9 @@ function TokenHeader({
     null
   );
 
-  if (!token) { return null; }
+  if (!token) {
+    return null;
+  }
 
   return (
     <View>

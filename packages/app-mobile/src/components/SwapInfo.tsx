@@ -58,7 +58,9 @@ export function SwapInfo({ compact = true }: { compact?: boolean }) {
     return <ActivityIndicator style={{ alignSelf: "center" }} />;
   }
 
-  if (!fromAmount || !toAmount) { return <></>; }
+  if (!fromAmount || !toAmount) {
+    return <></>;
+  }
 
   const decimalDifference = fromMintInfo.decimals - toMintInfo.decimals;
   const toAmountWithFees = toAmount.sub(swapFee);

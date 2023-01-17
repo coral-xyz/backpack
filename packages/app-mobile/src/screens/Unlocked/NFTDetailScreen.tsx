@@ -437,7 +437,9 @@ function BurnConfirmationCard({
             : solanaCtx.commitment
         );
         setState("confirmed");
-        if (onComplete) { onComplete(); }
+        if (onComplete) {
+          onComplete();
+        }
       } catch (err: any) {
         // logger.error("unable to confirm NFT burn", err);
         setError(err.toString());
