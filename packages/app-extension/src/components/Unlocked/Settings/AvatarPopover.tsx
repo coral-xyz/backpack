@@ -92,7 +92,7 @@ export function AvatarPopoverButton({
         onClose={() => setAnchorEl(false)}
         anchorOrigin={{
           vertical: "bottom",
-          horizontal: "right",
+          horizontal: "left",
         }}
         PaperProps={{
           style: {
@@ -102,7 +102,10 @@ export function AvatarPopoverButton({
             background: theme.custom.colors.background,
           },
         }}
-        classes={{ root: classes.popoverRoot, paper: classes.popoverPaper }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
       >
         <PopoverProvider
           close={() => setAnchorEl(null)}
