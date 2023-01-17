@@ -1,7 +1,7 @@
-import { Controller } from "react-hook-form";
-import { StyleSheet, Text, View } from "react-native";
 import { useTheme } from "@hooks";
 import ExpoCheckBox from "expo-checkbox";
+import { Controller } from "react-hook-form";
+import { StyleSheet, Text, View } from "react-native";
 
 export const BaseCheckBoxLabel: React.FC<{
   label: string;

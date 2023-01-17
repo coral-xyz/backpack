@@ -1,4 +1,3 @@
-import { StyleSheet, Text, View } from "react-native";
 import { Margin } from "@components";
 import { formatUSD } from "@coral-xyz/common";
 import {
@@ -7,6 +6,7 @@ import {
 } from "@coral-xyz/recoil";
 import { HOVER_OPACITY } from "@coral-xyz/themes";
 import { useTheme } from "@hooks";
+import { StyleSheet, Text, View } from "react-native";
 
 function TextTotalChange({ totalChange }) {
   const theme = useTheme();

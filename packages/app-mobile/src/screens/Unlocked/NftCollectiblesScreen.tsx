@@ -1,14 +1,3 @@
-import React from "react";
-import {
-  Alert,
-  FlatList,
-  Image,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
 import { EmptyState, Margin, NFTCard, Screen } from "@components";
 import type { NftCollection } from "@coral-xyz/common";
 import { Blockchain, toTitleCase } from "@coral-xyz/common";
@@ -20,6 +9,17 @@ import {
 import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import * as Linking from "expo-linking";
+import React from "react";
+import {
+  Alert,
+  FlatList,
+  Image,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 import { NFTDetailScreen, NFTDetailSendScreen } from "./NFTDetailScreen";
 

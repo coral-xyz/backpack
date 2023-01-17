@@ -1,4 +1,3 @@
-import { Text, View } from "react-native";
 import {
   Loading,
   PrimaryButton,
@@ -16,6 +15,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@hooks";
 import type { BigNumber } from "ethers";
 import * as Linking from "expo-linking";
+import { Text, View } from "react-native";
 
 export function Sending({
   blockchain,
@@ -158,14 +158,14 @@ export function Error({
         </Text>
         {explorer && connectionUrl && signature && (
           <SecondaryButton
-            label={"View Explorer"}
+            label="View Explorer"
             onClick={() =>
               Linking.openURL(explorerUrl(explorer, signature, connectionUrl))
             }
           />
         )}
       </View>
-      <PrimaryButton label={"Retry"} onClick={() => onRetry()} />
+      <PrimaryButton label="Retry" onClick={() => onRetry()} />
     </View>
   );
 }

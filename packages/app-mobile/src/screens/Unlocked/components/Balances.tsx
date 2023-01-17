@@ -1,7 +1,5 @@
 // TODO(peter) one thing we might need to make sure is that when we wrap these FlatLists in a ScrollView, we can't nest virtualized lists.
 // This means we might just use the scrollview directly from within a flatlist by using ListHeaderComponent and ListFooterComponent
-import React, { useEffect, useState } from "react";
-import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import {
   ListRowSeparator,
   Margin,
@@ -24,6 +22,8 @@ import {
 import { useTheme } from "@hooks";
 import { useNavigation } from "@react-navigation/native";
 import * as Clipboard from "expo-clipboard";
+import React, { useEffect, useState } from "react";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
 import type { Token } from "./index";
 import { TableHeader } from "./index";
@@ -205,9 +205,9 @@ function WalletPickerButton({
 // Used for each individual row  of Balances
 function TextPercentChanged({ percentChange }: { percentChange: number }) {
   const theme = useTheme();
-  const positive = percentChange && percentChange > 0 ? true : false;
-  const negative = percentChange && percentChange < 0 ? true : false;
-  const neutral = percentChange && percentChange === 0 ? true : false;
+  const positive = !!(percentChange && percentChange > 0);
+  const negative = !!(percentChange && percentChange < 0);
+  const neutral = !!(percentChange && percentChange === 0);
 
   return (
     <>

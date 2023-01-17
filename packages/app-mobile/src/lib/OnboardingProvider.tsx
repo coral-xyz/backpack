@@ -1,7 +1,7 @@
 // TODO(peter) move all the RPC/onboarding function shit here & out of every individual screen (eventually)
-import { createContext, useContext, useState } from "react";
 import type { BlockchainKeyringInit, KeyringType } from "@coral-xyz/common";
 import { Blockchain } from "@coral-xyz/common";
+import { createContext, useContext, useState } from "react";
 
 type BlockchainSelectOption = {
   id: string;

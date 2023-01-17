@@ -5,7 +5,9 @@ import "@ethersproject/shims";
 import "react-native-gesture-handler";
 import { registerRootComponent } from "expo";
 
-if (typeof Buffer === "undefined") global.Buffer = require("buffer/").Buffer;
+import { App } from "./src/App";
+
+if (typeof Buffer === "undefined") { global.Buffer = require("buffer/").Buffer; }
 
 Promise.allSettled =
   Promise.allSettled ||
@@ -23,6 +25,4 @@ Promise.allSettled =
           }))
       )
     ));
-
-import { App } from "./src/App";
 registerRootComponent(App);

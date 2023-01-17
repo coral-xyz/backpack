@@ -1,5 +1,3 @@
-import { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
 import {
   CopyButton,
   DangerButton,
@@ -15,6 +13,8 @@ import { UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@hooks";
+import { useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
 
 export function ShowPrivateKeyWarningScreen({
   route,
@@ -96,12 +96,12 @@ export function ShowPrivateKeyWarningScreen({
       <View>
         <Margin bottom={8}>
           <StyledTextInput
-            autoFocus={true}
+            autoFocus
             value={password}
             onChangeText={(text: string) => setPassword(text)}
             // error={error}
-            placeholder={"Password"}
-            secureTextEntry={true}
+            placeholder="Password"
+            secureTextEntry
           />
         </Margin>
         <DangerButton
@@ -137,7 +137,7 @@ export function ShowPrivateKeyScreen({ route, navigation }): JSX.Element {
           <Margin bottom={12}>
             <StyledTextInput
               style={{ height: 100 }}
-              multiline={true}
+              multiline
               value={privateKey}
               editable={false}
             />

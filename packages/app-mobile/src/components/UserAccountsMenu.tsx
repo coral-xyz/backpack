@@ -1,6 +1,3 @@
-import { useCallback, useMemo, useRef } from "react";
-import { Pressable, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Avatar, Margin, RoundedContainerGroup } from "@components";
 import { ExpandCollapseIcon, IconCheckmark } from "@components/Icon";
 import { UI_RPC_METHOD_ACTIVE_USER_UPDATE } from "@coral-xyz/common";
@@ -10,6 +7,9 @@ import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTheme } from "@hooks";
 import { HeaderBackButton } from "@react-navigation/elements";
 import { SettingsRow } from "@screens/Unlocked/Settings/components/SettingsRow";
+import { useCallback, useMemo, useRef } from "react";
+import { Pressable, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export function AccountDropdownHeader({
   navigation,

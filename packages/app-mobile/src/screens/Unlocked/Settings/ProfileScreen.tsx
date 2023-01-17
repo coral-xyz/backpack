@@ -1,5 +1,3 @@
-import { useState } from "react";
-import { SectionList, View } from "react-native";
 import {
   AddConnectWalletButton,
   Avatar,
@@ -13,6 +11,8 @@ import { toTitleCase } from "@coral-xyz/common";
 import { useActiveWallets, useWalletPublicKeys } from "@coral-xyz/recoil";
 import { WalletListItem } from "@screens/Unlocked/EditWalletsScreen";
 import { SettingsList } from "@screens/Unlocked/Settings/components/SettingsList";
+import { useState } from "react";
+import { SectionList, View } from "react-native";
 
 type Wallet = {
   name: string;

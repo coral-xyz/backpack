@@ -1,10 +1,6 @@
 // https://github.com/feross/buffer#usage
 // note: the trailing slash is important!
 
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { Alert, FlatList, StyleSheet, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   ActionCard,
   BaseCheckBoxLabel,
@@ -63,6 +59,10 @@ import type { StackScreenProps } from "@react-navigation/stack";
 import { createStackNavigator } from "@react-navigation/stack";
 import { encode } from "bs58";
 import * as Linking from "expo-linking";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { Alert, FlatList, StyleSheet, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { v4 as uuidv4 } from "uuid";
 
 // eslint-disable-next-line

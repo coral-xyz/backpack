@@ -1,4 +1,3 @@
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { Row } from "@components";
 import type { Blockchain } from "@coral-xyz/common";
 import {
@@ -11,6 +10,7 @@ import {
 import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useBlockchainLogo, useTheme } from "@hooks";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 // TODO move this
 export type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
