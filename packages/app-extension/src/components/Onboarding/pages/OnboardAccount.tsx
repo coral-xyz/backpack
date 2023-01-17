@@ -22,6 +22,7 @@ import { MnemonicInput } from "../../common/Account/MnemonicInput";
 import { WithContaineredDrawer } from "../../common/Layout/Drawer";
 import { NavBackButton, WithNav } from "../../common/Layout/Nav";
 
+import { AlreadyOnboarded } from "./AlreadyOnboarded";
 import { BlockchainSelector } from "./BlockchainSelector";
 import { CreateOrImportWallet } from "./CreateOrImportWallet";
 import { Finish } from "./Finish";
@@ -36,12 +37,14 @@ export const OnboardAccount = ({
   containerRef,
   navProps,
   isAddingAccount,
+  isOnboarded,
 }: {
   onWaiting: () => void;
   onRecover: () => void;
   containerRef: any;
   navProps: any;
   isAddingAccount?: boolean;
+  isOnboarded?: boolean;
 }) => {
   const { step, nextStep, prevStep } = useSteps();
   const background = useBackgroundClient();
@@ -205,6 +208,10 @@ export const OnboardAccount = ({
       isAddingAccount={isAddingAccount}
     />,
   ];
+
+  if (isOnboarded && step !== steps.length - 1) {
+    return <AlreadyOnboarded />;
+  }
 
   return (
     <WithNav
