@@ -1,3 +1,19 @@
+import { Margin, PrimaryButton, Screen, WelcomeLogoHeader } from "@components";
+import {
+  BottomSheetHelpModal,
+  HelpModalMenuButton,
+} from "@components/BottomSheetHelpModal";
+import { ErrorMessage } from "@components/ErrorMessage";
+import { PasswordInput } from "@components/PasswordInput";
+import {
+  // UI_RPC_METHOD_KEYRING_STORE_LOCK,
+  UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
+} from "@coral-xyz/common";
+import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
+import { MaterialIcons } from "@expo/vector-icons";
+import { useTheme } from "@hooks";
+import { IconPushDetail } from "@screens/Unlocked/Settings/components/SettingsRow";
+import { deleteItemAsync } from "expo-secure-store";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
@@ -9,23 +25,6 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Margin, PrimaryButton, Screen, WelcomeLogoHeader } from "@components";
-import {
-  BottomSheetHelpModal,
-  HelpModalMenuButton,
-} from "@components/BottomSheetHelpModal";
-import { ErrorMessage } from "@components/ErrorMessage";
-import { PasswordInput } from "@components/PasswordInput";
-import {
-  UI_RPC_METHOD_KEYRING_STORE_LOCK,
-  UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-  useStore,
-} from "@coral-xyz/common";
-import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
-import { MaterialIcons } from "@expo/vector-icons";
-import { useTheme } from "@hooks";
-import { IconPushDetail } from "@screens/Unlocked/Settings/components/SettingsRow";
-import { deleteItemAsync } from "expo-secure-store";
 
 const maybeResetApp = () => {
   Alert.alert(
@@ -42,7 +41,7 @@ const maybeResetApp = () => {
         text: "No",
         onPress: () => {},
       },
-    ]
+    ],
   );
 };
 
@@ -73,11 +72,11 @@ interface FormData {
   password: string;
 }
 
-function later(delay: number) {
-  return new Promise(function (resolve) {
-    setTimeout(resolve, delay);
-  });
-}
+// function later(delay: number) {
+//   return new Promise(function (resolve) {
+//     setTimeout(resolve, delay);
+//   });
+// }
 
 export function LockedScreen(): JSX.Element {
   const background = useBackgroundClient();
@@ -87,17 +86,14 @@ export function LockedScreen(): JSX.Element {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { control, handleSubmit, formState, setError } = useForm<FormData>();
 
-  const setLockStatus = useStore((state) => state.setUnlocked);
-
   const onSubmit = async ({ password }: FormData) => {
     try {
-      setLockStatus(false);
       await background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
         params: [password, user.uuid, user.username],
       });
 
-      // await later(5000);
+      // await later(300);
       //
       // await background.request({
       //   method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
@@ -108,29 +104,10 @@ export function LockedScreen(): JSX.Element {
       //   method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
       //   params: [password, user.uuid, user.username],
       // });
-      // setLockStatus(true);
     } catch (error: any) {
       setError("password", { message: error });
     }
   };
-
-  // Autologin for dev mode
-  // useEffect(() => {
-  //   async function h() {
-  //     if (user.uuid && user.uuid !== "" && user.uuid.length > 5) {
-  //       try {
-  //         await background.request({
-  //           method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-  //           params: ["backpack", user.uuid, user.username],
-  //         });
-  //       } catch (error: any) {
-  //         setError("password", { message: error });
-  //       }
-  //     }
-  //   }
-  //
-  //   h();
-  // }, [user.uuid]);
 
   const extraOptions = [
     {
@@ -153,7 +130,8 @@ export function LockedScreen(): JSX.Element {
     <>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}>
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
         <Screen
           style={[
             styles.container,
@@ -161,7 +139,8 @@ export function LockedScreen(): JSX.Element {
               marginTop: insets.top,
               marginBottom: insets.bottom,
             },
-          ]}>
+          ]}
+        >
           <HelpModalMenuButton
             onPress={() => {
               setIsModalVisible((last) => !last);
