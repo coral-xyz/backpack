@@ -140,14 +140,16 @@ export function SwapInfoRow({
         style={[
           swapInfoStyles.swapInfoTitleLeft,
           { color: theme.custom.colors.secondary },
-        ]}>
+        ]}
+      >
         {titleLeft}
       </Text>
       <Text
         style={[
           swapInfoStyles.swapInfoTitleRight,
           { color: theme.custom.colors.fontColor },
-        ]}>
+        ]}
+      >
         {titleRight}
       </Text>
     </View>

@@ -38,7 +38,8 @@ export function TableHeader({
     <Pressable
       disabled={disableToggle}
       onPress={onPress}
-      style={styles.tableHeader}>
+      style={styles.tableHeader}
+    >
       <Row>
         <Image style={styles.logoContainer} source={logo} />
         <Text style={[styles.title, { color: theme.custom.colors.fontColor }]}>

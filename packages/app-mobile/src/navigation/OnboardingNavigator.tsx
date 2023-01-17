@@ -110,7 +110,8 @@ function OnboardingScreen({
         {
           paddingBottom: insets.bottom,
         },
-      ]}>
+      ]}
+    >
       <Margin bottom={24}>
         <Header text={title} />
         {subtitle ? <SubtextParagraph>{subtitle}</SubtextParagraph> : null}
@@ -143,7 +144,8 @@ function OnboardingCreateOrImportWalletScreen({
             paddingLeft: insets.left,
             paddingRight: insets.right,
           },
-        ]}>
+        ]}
+      >
         <HelpModalMenuButton onPress={handlePresentModalPress} />
         <Margin top={48} bottom={24}>
           <WelcomeLogoHeader />
@@ -152,7 +154,8 @@ function OnboardingCreateOrImportWalletScreen({
           style={{
             padding: 16,
             alignItems: "center",
-          }}>
+          }}
+        >
           <PrimaryButton
             label="Create a new wallet"
             onPress={() => {
@@ -165,7 +168,8 @@ function OnboardingCreateOrImportWalletScreen({
               onPress={() => {
                 setOnboardingData({ action: "import" });
                 navigation.push("MnemonicInput");
-              }}>
+              }}
+            >
               I already have a wallet
             </SubtextParagraph>
           </Margin>
@@ -218,7 +222,8 @@ function OnboardingKeyringTypeSelectorScreen({
         style={{
           padding: 16,
           alignItems: "center",
-        }}>
+        }}
+      >
         <PrimaryButton
           label={`${toTitleCase(action as string)} with recovery phrase`}
           onPress={() => {
@@ -231,7 +236,8 @@ function OnboardingKeyringTypeSelectorScreen({
             onPress={() => {
               setOnboardingData({ keyringType: "ledger" });
               navigation.push("SelectBlockchain");
-            }}>
+            }}
+          >
             {action === "recover"
               ? "Recover using a hardware wallet"
               : "I have a hardware wallet"}
@@ -521,7 +527,8 @@ function OnboardingBlockchainSelectScreen({
   return (
     <OnboardingScreen
       title="Which network would you like Backpack to use?"
-      subtitle="You can always add additional networks later through the settings menu.">
+      subtitle="You can always add additional networks later through the settings menu."
+    >
       <FlatList
         numColumns={2}
         data={blockchainOptions}
@@ -569,7 +576,8 @@ function OnboardingCreatePasswordScreen({
   return (
     <OnboardingScreen
       title="Create a password"
-      subtitle="It should be at least 8 characters. You'll need this to unlock Backpack.">
+      subtitle="It should be at least 8 characters. You'll need this to unlock Backpack."
+    >
       <View style={{ flex: 1, justifyContent: "flex-start" }}>
         <Debug data={{ isValid, formState }} />
         <Margin bottom={12}>
@@ -768,7 +776,8 @@ function OnboardingFinishedScreen() {
   ) : (
     <OnboardingScreen
       title="You've set up Backpack!"
-      subtitle="Now get started exploring what your Backpack can do.">
+      subtitle="Now get started exploring what your Backpack can do."
+    >
       <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
         {BACKPACK_FEATURE_XNFT && (
           <Cell style={{ paddingRight: 6 }}>
@@ -825,7 +834,8 @@ export default function OnboardingNavigator(): JSX.Element {
             headerTitle: "",
             headerShown: true,
             headerBackTitleVisible: false,
-          }}>
+          }}
+        >
           <Stack.Screen
             name="KeyringTypeSelector"
             component={OnboardingKeyringTypeSelectorScreen}

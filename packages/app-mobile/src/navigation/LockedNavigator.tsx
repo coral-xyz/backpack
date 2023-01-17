@@ -41,7 +41,7 @@ const maybeResetApp = () => {
         text: "No",
         onPress: () => {},
       },
-    ],
+    ]
   );
 };
 

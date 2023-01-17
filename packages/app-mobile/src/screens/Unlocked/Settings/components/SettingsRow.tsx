@@ -61,7 +61,8 @@ function RowContainer({ children }) {
         {
           backgroundColor: theme.custom.colors.nav,
         },
-      ]}>
+      ]}
+    >
       {children}
     </View>
   );
@@ -149,7 +150,8 @@ export function SettingsRow({
                 opacity: disabled ? 0.5 : 1,
                 color: theme.custom.colors.fontColor,
               },
-            ]}>
+            ]}
+          >
             {label}
           </Text>
         </View>

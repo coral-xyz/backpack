@@ -123,7 +123,8 @@ export function BottomSheetHelpModal({
       }}
       backgroundStyle={{
         backgroundColor: theme.custom.colors.background,
-      }}>
+      }}
+    >
       <Margin horizontal={16}>
         <RoundedContainerGroup>
           <FlatList

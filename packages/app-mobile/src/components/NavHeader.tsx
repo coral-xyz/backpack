@@ -29,7 +29,8 @@ export function NavHeader({
           paddingRight: insets.right + 12,
         },
         styles.container,
-      ]}>
+      ]}
+    >
       <View style={styles.centeredRow}>
         <Text style={styles.emoji}>{emoji}</Text>
         <Text style={[{ color: theme.custom.colors.fontColor }, styles.title]}>

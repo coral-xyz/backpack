@@ -61,7 +61,8 @@ function NFTItem({
   return (
     <Pressable
       style={{ flex: 0.5, margin: 8, borderRadius: 8, overflow: "hidden" }}
-      onPress={() => onPress(collectionId)}>
+      onPress={() => onPress(collectionId)}
+    >
       <Image source={{ uri: imageUrl }} style={{ aspectRatio: 1 }} />
       <View
         style={{
@@ -72,7 +73,8 @@ function NFTItem({
           backgroundColor: "#FFF",
           borderRadius: 8,
           padding: 4,
-        }}>
+        }}
+      >
         <Text numberOfLines={1}>{name}</Text>
       </View>
     </Pressable>
@@ -131,7 +133,8 @@ function NoEmptyState() {
       style={{
         flex: 1,
         justifyContent: "center",
-      }}>
+      }}
+    >
       <EmptyState
         icon={(props: any) => <MaterialIcons name="image" {...props} />}
         title="No NFTs"

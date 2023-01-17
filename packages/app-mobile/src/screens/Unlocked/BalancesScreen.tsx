@@ -29,7 +29,8 @@ export function BalancesNavigator() {
   return (
     <Stack.Navigator
       initialRouteName="BalanceList"
-      screenOptions={{ presentation: "modal" }}>
+      screenOptions={{ presentation: "modal" }}
+    >
       <Stack.Screen
         name="wallet-picker"
         component={WalletListScreen}

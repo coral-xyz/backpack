@@ -138,7 +138,8 @@ function UnlockedBottomTabNavigator(): JSX.Element {
         },
         tabBarActiveTintColor: "#333",
         tabBarInactiveTintColor: "gray",
-      })}>
+      })}
+    >
       <Tab.Screen name="Balances" component={BalancesNavigator} />
     </Tab.Navigator>
   );

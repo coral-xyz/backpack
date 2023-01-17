@@ -1,6 +1,6 @@
 import type { StyleProp, ViewStyle } from "react-native";
-import { StyleSheet,Text, View } from "react-native";
-import { Margin,ProxyImage } from "@components";
+import { StyleSheet, Text, View } from "react-native";
+import { Margin, ProxyImage } from "@components";
 import { useTheme } from "@hooks";
 import type { BigNumber } from "ethers";
 import { ethers } from "ethers";

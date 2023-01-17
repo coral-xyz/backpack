@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { PrimaryButton,TokenAmountHeader } from "@components";
+import { PrimaryButton, TokenAmountHeader } from "@components";
 import { Error, Sending } from "@components/BottomDrawerCards";
 import {
   Blockchain,

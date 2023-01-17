@@ -112,7 +112,8 @@ function WalletLists({
         return (
           <RoundedContainerGroup
             disableTopRadius={!isFirst}
-            disableBottomRadius={disableBottomRadius}>
+            disableBottomRadius={disableBottomRadius}
+          >
             <WalletListItem
               name={wallet.name}
               publicKey={wallet.publicKey}
