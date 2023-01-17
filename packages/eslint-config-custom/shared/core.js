@@ -23,7 +23,7 @@ module.exports = {
     "arrow-spacing": ["warn", { before: true, after: true }],
     curly: ["warn", "all"],
     "block-spacing": ["warn", "always"],
-    "comma-dangle": ["off"], // prettier breaks
+    // "comma-dangle": ["off"], // prettier breaks
     "comma-spacing": ["warn", { before: false, after: true }],
     "comma-style": ["warn", "last"],
     "computed-property-spacing": ["warn", "never"],
@@ -31,7 +31,7 @@ module.exports = {
     "dot-location": ["warn", "property"],
     "eol-last": "warn",
     eqeqeq: ["warn", "smart"],
-    "func-call-spacing": ["warn", "never"],
+    // "func-call-spacing": ["warn", "always"],
     "generator-star-spacing": ["warn", "after"],
     "getter-return": "warn",
     "jsx-quotes": ["warn", "prefer-double"],
