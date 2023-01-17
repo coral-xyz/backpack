@@ -1,11 +1,16 @@
+import type { Blockchain } from "@coral-xyz/common";
+import type { BigNumber } from "ethers";
+
+import { Text, View } from "react-native";
+
+import * as Linking from "expo-linking";
+
 import {
   Loading,
   PrimaryButton,
   SecondaryButton,
   TokenAmountHeader,
 } from "@components";
-import { CheckIcon, CrossIcon } from "@components/Icons";
-import type { Blockchain } from "@coral-xyz/common";
 import { explorerUrl } from "@coral-xyz/common";
 import {
   useBlockchainConnectionUrl,
@@ -13,9 +18,8 @@ import {
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@hooks";
-import type { BigNumber } from "ethers";
-import * as Linking from "expo-linking";
-import { Text, View } from "react-native";
+
+import { CheckIcon, CrossIcon } from "@components/Icons";
 
 export function Sending({
   blockchain,

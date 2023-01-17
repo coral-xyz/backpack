@@ -1,11 +1,14 @@
+import { useEffect, useRef, useState } from "react";
+import { Text, View } from "react-native";
+
 import { PrimaryButton, SecondaryButton } from "@components";
 import { useEthereumFeeData } from "@coral-xyz/recoil";
 import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
 import { SettingsList } from "@screens/Unlocked/Settings/components/SettingsMenuList";
 import { ethers } from "ethers";
-import { useEffect, useRef, useState } from "react";
-import { Text, View } from "react-native";
+
+
 
 import { CloseButton } from "./ApproveTransactionDrawer";
 

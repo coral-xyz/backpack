@@ -1,6 +1,11 @@
+import type { Connection } from "@solana/web3.js";
+import type { BigNumber } from "ethers";
+
+import { useState } from "react";
+import { Text } from "react-native";
+
 import { programs, tryGetAccount } from "@cardinal/token-manager";
 import { PrimaryButton, TokenAmountHeader } from "@components";
-import { Error, Sending } from "@components/BottomDrawerCards";
 import {
   Blockchain,
   confirmTransaction,
@@ -12,11 +17,9 @@ import {
 import { useSolanaCtx } from "@coral-xyz/recoil";
 import { useTheme } from "@hooks";
 import { SettingsList } from "@screens/Unlocked/Settings/components/SettingsMenuList";
-import type { Connection } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
-import type { BigNumber } from "ethers";
-import { useState } from "react";
-import { Text } from "react-native";
+
+import { Error, Sending } from "@components/BottomDrawerCards";
 
 const logger = getLogger("send-solana-confirmation-card");
 

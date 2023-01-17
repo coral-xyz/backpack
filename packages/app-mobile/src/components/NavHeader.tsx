@@ -1,7 +1,8 @@
+import { Pressable, StyleSheet, Text, View } from "react-native";
+
 import { Avatar, Margin } from "@components";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@hooks";
-import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export function NavHeader({

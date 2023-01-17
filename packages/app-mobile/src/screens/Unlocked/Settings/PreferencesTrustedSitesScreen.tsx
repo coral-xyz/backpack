@@ -1,6 +1,8 @@
+import { StyleSheet } from "react-native";
+
 import { EmptyState, Screen } from "@components";
 import { MaterialIcons } from "@expo/vector-icons";
-import { StyleSheet } from "react-native";
+
 
 export function PreferencesTrustedSitesScreen() {
   return (

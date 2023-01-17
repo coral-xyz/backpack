@@ -1,3 +1,8 @@
+import type { Blockchain } from "@coral-xyz/common";
+
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Button, Pressable, Text, View } from "react-native";
+
 import {
   ActionCard,
   Header,
@@ -5,7 +10,6 @@ import {
   Screen,
   SubtextParagraph,
 } from "@components";
-import type { Blockchain } from "@coral-xyz/common";
 import {
   openConnectHardware,
   TAB_APPS,
@@ -25,8 +29,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTheme } from "@hooks";
 import { useNavigation } from "@react-navigation/native";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Button, Pressable, Text, View } from "react-native";
+
 
 export function AddConnectWalletScreen({ route }) {
   const { blockchain } = route.params;

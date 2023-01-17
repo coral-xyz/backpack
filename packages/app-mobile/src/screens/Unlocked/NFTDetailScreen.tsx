@@ -1,3 +1,6 @@
+import { useEffect, useState } from "react";
+import { StyleSheet, Text, TextInput, View } from "react-native";
+
 import {
   Margin,
   NegativeButton,
@@ -33,8 +36,7 @@ import { useActionSheet } from "@expo/react-native-action-sheet";
 import { useTheme } from "@hooks";
 import { PublicKey } from "@solana/web3.js";
 import { BigNumber } from "ethers";
-import { useEffect, useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+
 
 export function NFTDetailScreen({ navigation, route }): JSX.Element {
   const { nftId } = route.params;

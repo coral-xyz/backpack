@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
+
 import {
   CopyButton,
   DangerButton,
@@ -10,13 +13,13 @@ import {
   StyledTextInput,
   SubtextParagraph,
 } from "@components";
-import { EyeIcon, WarningIcon } from "@components/Icon";
 import { UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@hooks";
-import { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+
+import { EyeIcon, WarningIcon } from "@components/Icon";
+
 
 export function ShowRecoveryPhraseWarningScreen({ navigation }): JSX.Element {
   const theme = useTheme();

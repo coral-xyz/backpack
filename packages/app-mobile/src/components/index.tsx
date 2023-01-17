@@ -1,10 +1,7 @@
-import { ContentCopyIcon, RedBackpack } from "@components/Icon";
 import type { Blockchain } from "@coral-xyz/common";
-import { proxyImageUrl, walletAddressDisplay } from "@coral-xyz/common";
-import { useAvatarUrl } from "@coral-xyz/recoil";
-import { MaterialIcons } from "@expo/vector-icons";
-import { useTheme } from "@hooks";
-import * as Clipboard from "expo-clipboard";
+
+
+import type { ImageStyle, StyleProp, TextStyle, ViewStyle } from "react-native";
 import {
   ActivityIndicator,
   Alert,
@@ -14,8 +11,16 @@ import {
   Text,
   View,
 } from "react-native";
-import type { ImageStyle, StyleProp, TextStyle, ViewStyle } from "react-native";
+
+import * as Clipboard from "expo-clipboard";
+
+import { proxyImageUrl, walletAddressDisplay } from "@coral-xyz/common";
+import { useAvatarUrl } from "@coral-xyz/recoil";
+import { MaterialIcons } from "@expo/vector-icons";
+import { useTheme } from "@hooks";
 import { SvgUri } from "react-native-svg";
+
+import { ContentCopyIcon, RedBackpack } from "@components/Icon";
 
 export { ActionCard } from "./ActionCard";
 export { BaseCheckBoxLabel, CheckBox } from "./CheckBox";

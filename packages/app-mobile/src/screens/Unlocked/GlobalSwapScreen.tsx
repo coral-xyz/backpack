@@ -1,5 +1,7 @@
-import { Screen, Margin, PrimaryButton, Debug } from "@components";
-import { View, Text, StyleSheet } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+
+import { Debug, Margin, PrimaryButton, Screen } from "@components";
+
 
 export function GlobalSwapScreen({ navigation, route }) {
   const handleSwap = () => {};

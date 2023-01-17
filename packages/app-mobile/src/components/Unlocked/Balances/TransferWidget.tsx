@@ -1,3 +1,7 @@
+import type { Token } from "./components/index";
+
+import { Pressable, Text, View } from "react-native";
+
 import { Margin } from "@components";
 import { Blockchain, STRIPE_ENABLED, toTitleCase } from "@coral-xyz/common";
 import {
@@ -7,9 +11,8 @@ import {
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@hooks";
-import { Pressable, Text, View } from "react-native";
 
-import type { Token } from "./components/index";
+
 
 const HorizontalSpacer = () => <View style={{ width: 16 }} />;
 

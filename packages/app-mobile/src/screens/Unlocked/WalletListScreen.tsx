@@ -1,3 +1,14 @@
+import { useEffect, useState } from "react";
+import {
+  Button,
+  FlatList,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+
 import {
   CopyButtonIcon,
   ImportTypeBadge,
@@ -8,7 +19,6 @@ import {
   Screen,
   WalletAddressLabel,
 } from "@components";
-import { HardwareIcon, ImportedIcon, MnemonicIcon } from "@components/Icon";
 import {
   Blockchain,
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
@@ -20,16 +30,10 @@ import {
   useBlockchainActiveWallet,
 } from "@coral-xyz/recoil";
 import { useBlockchainLogo, useTheme } from "@hooks";
-import { useEffect, useState } from "react";
-import {
-  Button,
-  FlatList,
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+
+import { HardwareIcon, ImportedIcon, MnemonicIcon } from "@components/Icon";
+
+
 
 type Wallet = {
   publicKey: string;

@@ -1,3 +1,5 @@
+import { Alert, View } from "react-native";
+
 import {
   Header,
   Margin,
@@ -6,12 +8,13 @@ import {
   StyledTextInput,
   SubtextParagraph,
 } from "@components";
-import { InputField } from "@components/Form";
 import { UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY } from "@coral-xyz/common";
 import { useBackgroundClient, useWalletPublicKeys } from "@coral-xyz/recoil";
-import { validateSecretKey } from "@lib/validateSecretKey";
 import { Controller, useForm } from "react-hook-form";
-import { Alert, View } from "react-native";
+
+import { InputField } from "@components/Form";
+import { validateSecretKey } from "@lib/validateSecretKey";
+
 
 type PrivateKeyInput = {
   name: string;

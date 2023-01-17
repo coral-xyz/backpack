@@ -1,6 +1,14 @@
 // https://github.com/feross/buffer#usage
 // note: the trailing slash is important!
 
+import type { Blockchain, BlockchainKeyringInit } from "@coral-xyz/common";
+import type { StackScreenProps } from "@react-navigation/stack";
+
+import { useEffect, useState } from "react";
+import { Alert, FlatList, StyleSheet, View } from "react-native";
+
+import * as Linking from "expo-linking";
+
 import {
   ActionCard,
   BaseCheckBoxLabel,
@@ -19,24 +27,6 @@ import {
   WelcomeLogoHeader,
 } from "@components";
 import {
-  BottomSheetHelpModal,
-  HelpModalMenuButton,
-} from "@components/BottomSheetHelpModal";
-import { ErrorMessage } from "@components/ErrorMessage";
-import {
-  AvalancheIcon,
-  BscIcon,
-  CheckBadge,
-  CosmosIcon,
-  DiscordIcon,
-  EthereumIcon,
-  PolygonIcon,
-  SolanaIcon,
-  TwitterIcon,
-  WidgetIcon,
-} from "@components/Icon";
-import type { Blockchain, BlockchainKeyringInit } from "@coral-xyz/common";
-import {
   BACKEND_API_URL,
   BACKPACK_FEATURE_USERNAMES,
   BACKPACK_FEATURE_XNFT,
@@ -53,17 +43,34 @@ import {
   XNFT_GG_LINK,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
-import { useTheme } from "@hooks/useTheme";
-import { OnboardingProvider, useOnboardingData } from "@lib/OnboardingProvider";
-import type { StackScreenProps } from "@react-navigation/stack";
 import { createStackNavigator } from "@react-navigation/stack";
 import { encode } from "bs58";
-import * as Linking from "expo-linking";
-import { useEffect, useState } from "react";
+
+
 import { useForm } from "react-hook-form";
-import { Alert, FlatList, StyleSheet, View } from "react-native";
+
+
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { v4 as uuidv4 } from "uuid";
+import {
+  BottomSheetHelpModal,
+  HelpModalMenuButton,
+} from "@components/BottomSheetHelpModal";
+import { ErrorMessage } from "@components/ErrorMessage";
+import {
+  AvalancheIcon,
+  BscIcon,
+  CheckBadge,
+  CosmosIcon,
+  DiscordIcon,
+  EthereumIcon,
+  PolygonIcon,
+  SolanaIcon,
+  TwitterIcon,
+  WidgetIcon,
+} from "@components/Icon";
+import { useTheme } from "@hooks/useTheme";
+import { OnboardingProvider, useOnboardingData } from "@lib/OnboardingProvider";
 
 // eslint-disable-next-line
 const Buffer = require("buffer/").Buffer;

@@ -1,5 +1,18 @@
-import { EmptyState, Screen } from "@components";
 import type { Blockchain } from "@coral-xyz/common";
+
+import { Suspense, useState } from "react";
+import {
+  FlatList,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+
+import { Linking } from "expo-linking";
+
+import { EmptyState, Screen } from "@components";
 import { explorerUrl } from "@coral-xyz/common";
 import {
   useActiveEthereumWallet,
@@ -12,16 +25,8 @@ import {
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useBlockchainLogo, useTheme } from "@hooks";
-import { Linking } from "expo-linking";
-import { Suspense, useState } from "react";
-import {
-  FlatList,
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+
+
 
 export function RecentActivityScreen() {
   return (

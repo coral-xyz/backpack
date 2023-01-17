@@ -1,6 +1,8 @@
 // TODO(shared)
-import { useActiveSolanaWallet } from "@coral-xyz/recoil";
 import { useEffect, useState } from "react";
+
+import { useActiveSolanaWallet } from "@coral-xyz/recoil";
+
 
 const isLiveCheck = fetch("https://xnft.wao.gg/api/isLive")
   .then((r) => r.json())

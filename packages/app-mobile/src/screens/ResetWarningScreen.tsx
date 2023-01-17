@@ -1,3 +1,5 @@
+import { View } from "react-native";
+
 import {
   DangerButton,
   Header,
@@ -7,14 +9,15 @@ import {
   SubtextParagraph,
   TwoButtonFooter,
 } from "@components";
-import { WarningIcon } from "@components/Icon";
 import {
   UI_RPC_METHOD_KEYRING_RESET,
   UI_RPC_METHOD_USER_LOGOUT,
 } from "@coral-xyz/common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { useNavigation } from "@react-navigation/native";
-import { View } from "react-native";
+
+import { WarningIcon } from "@components/Icon";
+
 
 export function LogoutWarningScreen({ navigation }): JSX.Element {
   const background = useBackgroundClient();

@@ -1,7 +1,10 @@
-import React from "react";
+
 import type { Control } from "react-hook-form";
-import { useController } from "react-hook-form";
+
+import React from "react";
 import { TextInput as RNTextInput } from "react-native";
+
+import { useController } from "react-hook-form";
 import tw from "twrnc";
 
 import { addTestIdentifier } from "../lib/addTestIdentifier";

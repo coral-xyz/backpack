@@ -1,13 +1,15 @@
+import type { Token } from "./components/index";
+import type { SearchParamsFor } from "@coral-xyz/recoil";
+
+import { Pressable, StyleSheet, Text, View } from "react-native";
+
 import { Margin, Screen, TokenAmountHeader } from "@components";
-import { ErrorBoundary } from "@components/ErrorBoundary";
-import { TransferWidget } from "@components/Unlocked/Balances/TransferWidget";
 import {
   Blockchain,
   ETH_NATIVE_MINT,
   SOL_NATIVE_MINT,
   toTitleCase,
 } from "@coral-xyz/common";
-import type { SearchParamsFor } from "@coral-xyz/recoil";
 import {
   blockchainTokenData,
   useActiveEthereumWallet,
@@ -18,11 +20,14 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import { RecentActivityList } from "@screens/Unlocked/RecentActivityScreen";
 import { WalletListScreen } from "@screens/Unlocked/WalletListScreen";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+
+import { ErrorBoundary } from "@components/ErrorBoundary";
+import { TransferWidget } from "@components/Unlocked/Balances/TransferWidget";
+
 
 import { BalanceSummaryWidget } from "./components/BalanceSummaryWidget";
 import { TokenTables, UsdBalanceAndPercentChange } from "./components/Balances";
-import type { Token } from "./components/index";
+
 
 const Stack = createStackNavigator();
 export function BalancesNavigator() {

@@ -1,14 +1,5 @@
-import { EmptyState, Margin, NFTCard, Screen } from "@components";
 import type { NftCollection } from "@coral-xyz/common";
-import { Blockchain, toTitleCase } from "@coral-xyz/common";
-import {
-  useActiveWallets,
-  useEnabledBlockchains,
-  useLoader,
-} from "@coral-xyz/recoil";
-import { MaterialIcons } from "@expo/vector-icons";
-import { createStackNavigator } from "@react-navigation/stack";
-import * as Linking from "expo-linking";
+
 import React from "react";
 import {
   Alert,
@@ -20,6 +11,20 @@ import {
   Text,
   View,
 } from "react-native";
+
+import * as Linking from "expo-linking";
+
+import { EmptyState, Margin, NFTCard, Screen } from "@components";
+import { Blockchain, toTitleCase } from "@coral-xyz/common";
+import {
+  useActiveWallets,
+  useEnabledBlockchains,
+  useLoader,
+} from "@coral-xyz/recoil";
+import { MaterialIcons } from "@expo/vector-icons";
+import { createStackNavigator } from "@react-navigation/stack";
+
+
 
 import { NFTDetailScreen, NFTDetailSendScreen } from "./NFTDetailScreen";
 

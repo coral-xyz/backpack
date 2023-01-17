@@ -1,6 +1,7 @@
+import type { SvgProps } from "react-native-svg";
+
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@hooks";
-import type { SvgProps } from "react-native-svg";
 import Svg, { Defs, LinearGradient, Path, Rect, Stop } from "react-native-svg";
 
 export const CheckBadge = (props: SvgProps) => (

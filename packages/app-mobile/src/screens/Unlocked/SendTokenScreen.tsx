@@ -1,3 +1,9 @@
+import type { Token } from "./components/index";
+import type { Blockchain } from "@coral-xyz/common";
+
+import { useEffect, useState } from "react";
+import { StyleSheet, View } from "react-native";
+
 import {
   DangerButton,
   PrimaryButton,
@@ -5,8 +11,6 @@ import {
   StyledTextInput,
   StyledTokenTextInput,
 } from "@components";
-import { InputField, InputFieldMaxLabel } from "@components/Form";
-import type { Blockchain } from "@coral-xyz/common";
 import {
   ETH_NATIVE_MINT,
   NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
@@ -16,11 +20,12 @@ import {
 import { useAnchorContext, useEthereumCtx } from "@coral-xyz/recoil";
 import { useIsValidAddress } from "@hooks";
 import { BigNumber } from "ethers";
-import { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+
+import { InputField, InputFieldMaxLabel } from "@components/Form";
+
 
 import { SearchableTokenTables } from "./components/Balances";
-import type { Token } from "./components/index";
+
 
 export function SendTokenDetailScreen({ route }) {
   const { blockchain, token } = route.params;

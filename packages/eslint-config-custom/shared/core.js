@@ -164,6 +164,12 @@ module.exports = {
     "import/order": [
       "warn",
       {
+        pathGroups: [
+          {
+            pattern: "@components/**",
+            group: "internal",
+          },
+        ],
         groups: [
           ["builtin", "external"],
           "internal",

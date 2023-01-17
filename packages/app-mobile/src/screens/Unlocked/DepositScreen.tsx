@@ -1,14 +1,3 @@
-import {
-  CopyWalletFieldInput,
-  ListRowSeparator,
-  Margin,
-  Screen,
-} from "@components";
-import { Blockchain, walletAddressDisplay } from "@coral-xyz/common";
-import { useActiveWallets } from "@coral-xyz/recoil";
-import { MaterialIcons } from "@expo/vector-icons";
-import { useBlockchainLogo, useTheme } from "@hooks";
-import * as Clipboard from "expo-clipboard";
 import { useState } from "react";
 import {
   Alert,
@@ -20,7 +9,21 @@ import {
   Text,
   View,
 } from "react-native";
+
+import * as Clipboard from "expo-clipboard";
+
+import {
+  CopyWalletFieldInput,
+  ListRowSeparator,
+  Margin,
+  Screen,
+} from "@components";
+import { Blockchain, walletAddressDisplay } from "@coral-xyz/common";
+import { useActiveWallets } from "@coral-xyz/recoil";
+import { MaterialIcons } from "@expo/vector-icons";
+import { useBlockchainLogo, useTheme } from "@hooks";
 import QRCode from "react-qr-code";
+
 
 function BlockchainDisclaimerText({
   blockchain,

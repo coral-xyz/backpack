@@ -1,5 +1,6 @@
+import { Alert, Text, View } from "react-native";
+
 import { Margin, PrimaryButton, Screen, SubtextParagraph } from "@components";
-import { InputGroup, InputListItem } from "@components/Form";
 import {
   UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
   UI_RPC_METHOD_PASSWORD_UPDATE,
@@ -7,7 +8,9 @@ import {
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useTheme } from "@hooks";
 import { useForm } from "react-hook-form";
-import { Alert, Text, View } from "react-native";
+
+import { InputGroup, InputListItem } from "@components/Form";
+
 
 function InstructionText() {
   const theme = useTheme();
