@@ -120,7 +120,12 @@ function WalletButton({
       }}
     >
       <Button disableRipple className={classes.addressButton} onClick={onClick}>
-        {wallet.name}
+        {wallet.name.length > 30
+          ? `${wallet.name.substring(0, 13)}...${wallet.name.substring(
+              wallet.name.length - 13,
+              wallet.name.length
+            )}`
+          : wallet.name}
         <ExpandMore
           style={{
             width: "18px",
@@ -483,7 +488,14 @@ export function WalletList({
                     }}
                   >
                     <StackedWalletAddress
-                      name={name}
+                      name={
+                        name.length > 30
+                          ? `${name.substring(0, 13)}...${name.substring(
+                              name.length - 13,
+                              name.length
+                            )}`
+                          : name
+                      }
                       publicKey={publicKey}
                       type={type}
                       isSelected={isSelected}
