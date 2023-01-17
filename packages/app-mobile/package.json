@@ -61,7 +61,7 @@
     "react-qr-code": "^2.0.8",
     "react-router-native": "^6.3.0",
     "react-test-renderer": "^18.2.0",
-    "recoil": "^0.7.5",
+    "recoil": "^0.7.6",
     "twrnc": "^3.3.3",
     "uuid": "^9.0.0"
   },
