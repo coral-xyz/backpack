@@ -22,7 +22,6 @@ import { ExpandMore, SwapVert } from "@mui/icons-material";
 import { IconButton, InputAdornment, Typography } from "@mui/material";
 import { ethers, FixedNumber } from "ethers";
 
-
 import { Button as XnftButton } from "../../plugin/Component";
 import {
   DangerButton,

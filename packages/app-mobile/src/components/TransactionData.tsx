@@ -8,8 +8,6 @@ import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
 import { SettingsList } from "@screens/Unlocked/Settings/components/SettingsMenuList";
 import { ethers } from "ethers";
 
-
-
 import { CloseButton } from "./ApproveTransactionDrawer";
 
 const Skeleton = () => <View />;

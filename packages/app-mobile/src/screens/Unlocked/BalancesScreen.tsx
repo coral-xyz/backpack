@@ -24,10 +24,8 @@ import { WalletListScreen } from "@screens/Unlocked/WalletListScreen";
 import { ErrorBoundary } from "@components/ErrorBoundary";
 import { TransferWidget } from "@components/Unlocked/Balances/TransferWidget";
 
-
 import { BalanceSummaryWidget } from "./components/BalanceSummaryWidget";
 import { TokenTables, UsdBalanceAndPercentChange } from "./components/Balances";
-
 
 const Stack = createStackNavigator();
 export function BalancesNavigator() {

@@ -18,7 +18,6 @@ import { useNavigation } from "@react-navigation/native";
 
 import { WarningIcon } from "@components/Icon";
 
-
 export function LogoutWarningScreen({ navigation }): JSX.Element {
   const background = useBackgroundClient();
   const user = useUser();

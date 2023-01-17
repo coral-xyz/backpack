@@ -21,8 +21,6 @@ import {
 import { DiscordIcon, TwitterIcon } from "@components/Icon";
 import { useTheme } from "@hooks/useTheme";
 
-
-
 export function HelpModalMenuButton({
   onPress,
 }: {

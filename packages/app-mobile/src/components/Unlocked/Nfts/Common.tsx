@@ -3,7 +3,6 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { ProxyImage } from "@components";
 import { useTheme } from "@hooks";
 
-
 export function GridCard({ onPress, nft, subtitle }: any) {
   const theme = useTheme();
   return (

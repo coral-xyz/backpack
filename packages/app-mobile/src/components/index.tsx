@@ -1,6 +1,5 @@
 import type { Blockchain } from "@coral-xyz/common";
 
-
 import type { ImageStyle, StyleProp, TextStyle, ViewStyle } from "react-native";
 import {
   ActivityIndicator,

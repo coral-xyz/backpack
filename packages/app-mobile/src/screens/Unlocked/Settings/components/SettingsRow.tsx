@@ -4,7 +4,6 @@ import { Margin } from "@components";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@hooks";
 
-
 export function IconPushDetail() {
   const theme = useTheme();
   return (

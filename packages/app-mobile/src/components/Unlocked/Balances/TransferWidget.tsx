@@ -12,8 +12,6 @@ import {
 import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@hooks";
 
-
-
 const HorizontalSpacer = () => <View style={{ width: 16 }} />;
 
 type Route = "Receive" | "Send" | "Swap";

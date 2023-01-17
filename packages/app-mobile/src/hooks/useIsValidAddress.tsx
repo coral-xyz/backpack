@@ -11,7 +11,6 @@ import { Blockchain } from "@coral-xyz/common";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { ethers } from "ethers";
 
-
 // TODO(peter) share between extension/mobile
 export function useIsValidAddress(
   blockchain: Blockchain,

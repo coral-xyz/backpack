@@ -3,7 +3,6 @@ import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { useTheme } from "@hooks";
 
-
 function Item({ item, index }) {
   const theme = useTheme();
   return (

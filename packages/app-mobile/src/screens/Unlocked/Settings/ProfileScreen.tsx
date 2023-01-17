@@ -15,9 +15,6 @@ import { useActiveWallets, useWalletPublicKeys } from "@coral-xyz/recoil";
 import { WalletListItem } from "@screens/Unlocked/EditWalletsScreen";
 import { SettingsList } from "@screens/Unlocked/Settings/components/SettingsList";
 
-
-
-
 import { ExpandCollapseIcon } from "@components/Icon";
 
 type Wallet = {

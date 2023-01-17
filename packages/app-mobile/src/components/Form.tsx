@@ -7,7 +7,6 @@ import { useTheme } from "@hooks";
 import { ethers } from "ethers";
 import { Controller } from "react-hook-form";
 
-
 // Wraps multiple components in one singular input group with a shared border
 export function InputGroup({
   hasError,

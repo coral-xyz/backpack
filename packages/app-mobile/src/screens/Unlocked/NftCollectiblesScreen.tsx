@@ -24,8 +24,6 @@ import {
 import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 
-
-
 import { NFTDetailScreen, NFTDetailSendScreen } from "./NFTDetailScreen";
 
 const Stack = createStackNavigator();

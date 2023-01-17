@@ -33,8 +33,6 @@ import { useBlockchainLogo, useTheme } from "@hooks";
 
 import { HardwareIcon, ImportedIcon, MnemonicIcon } from "@components/Icon";
 
-
-
 type Wallet = {
   publicKey: string;
   blockchain: string;

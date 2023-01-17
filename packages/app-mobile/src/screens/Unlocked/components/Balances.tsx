@@ -30,8 +30,6 @@ import { useNavigation } from "@react-navigation/native";
 
 import { ExpandCollapseIcon } from "@components/Icon";
 
-
-
 import { TableHeader } from "./index";
 
 export function SearchableTokenTables({

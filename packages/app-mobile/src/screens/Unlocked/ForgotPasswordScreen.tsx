@@ -12,7 +12,6 @@ import { KeyringStoreStateEnum, useKeyringStoreState } from "@coral-xyz/recoil";
 
 import { QuestionIcon } from "@components/Icon";
 
-
 export function ForgotPasswordScreen({ navigation }) {
   const keyringStoreState = useKeyringStoreState();
   const isLocked = keyringStoreState === KeyringStoreStateEnum.Locked;

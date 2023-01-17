@@ -55,8 +55,6 @@ import {
 import { YourAccountScreen } from "@screens/Unlocked/YourAccountScreen";
 import { ethers } from "ethers";
 
-
-
 import { IconCheckmark } from "@components/Icon";
 import { AccountDropdownHeader } from "@components/UserAccountsMenu";
 const { hexlify } = ethers.utils;

@@ -1,6 +1,5 @@
 import type { BigNumber } from "ethers";
 
-
 import { useEffect, useState } from "react";
 import type { TextInputProps } from "react-native";
 

@@ -15,7 +15,6 @@ import { Controller, useForm } from "react-hook-form";
 import { InputField } from "@components/Form";
 import { validateSecretKey } from "@lib/validateSecretKey";
 
-
 type PrivateKeyInput = {
   name: string;
   privateKey: string;

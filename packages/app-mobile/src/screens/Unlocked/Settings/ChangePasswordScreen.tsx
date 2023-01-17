@@ -11,7 +11,6 @@ import { useForm } from "react-hook-form";
 
 import { InputGroup, InputListItem } from "@components/Form";
 
-
 function InstructionText() {
   const theme = useTheme();
   return (

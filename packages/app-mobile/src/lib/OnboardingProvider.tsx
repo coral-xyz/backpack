@@ -5,7 +5,6 @@ import { createContext, useContext, useState } from "react";
 
 import { Blockchain } from "@coral-xyz/common";
 
-
 type BlockchainSelectOption = {
   id: string;
   label: string;

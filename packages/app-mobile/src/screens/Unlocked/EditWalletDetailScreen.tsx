@@ -9,8 +9,6 @@ import { useBackgroundClient, useWalletPublicKeys } from "@coral-xyz/recoil";
 import { SettingsList } from "@screens/Unlocked/Settings/components/SettingsMenuList";
 import { IconCopyContent } from "@screens/Unlocked/Settings/components/SettingsRow";
 
-
-
 export function EditWalletDetailScreen({ navigation, route }): JSX.Element {
   const { blockchain, name, publicKey, type } = route.params;
   const background = useBackgroundClient();

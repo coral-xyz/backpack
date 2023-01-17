@@ -26,8 +26,6 @@ import {
 import { MaterialIcons } from "@expo/vector-icons";
 import { useBlockchainLogo, useTheme } from "@hooks";
 
-
-
 export function RecentActivityScreen() {
   return (
     <Screen>

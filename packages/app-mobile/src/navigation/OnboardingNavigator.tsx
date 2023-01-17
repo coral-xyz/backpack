@@ -45,13 +45,10 @@ import {
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { createStackNavigator } from "@react-navigation/stack";
 import { encode } from "bs58";
-
-
 import { useForm } from "react-hook-form";
-
-
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { v4 as uuidv4 } from "uuid";
+
 import {
   BottomSheetHelpModal,
   HelpModalMenuButton,

@@ -23,9 +23,7 @@ import { BigNumber } from "ethers";
 
 import { InputField, InputFieldMaxLabel } from "@components/Form";
 
-
 import { SearchableTokenTables } from "./components/Balances";
-
 
 export function SendTokenDetailScreen({ route }) {
   const { blockchain, token } = route.params;

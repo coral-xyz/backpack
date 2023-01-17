@@ -37,7 +37,6 @@ import { useTheme } from "@hooks";
 import { PublicKey } from "@solana/web3.js";
 import { BigNumber } from "ethers";
 
-
 export function NFTDetailScreen({ navigation, route }): JSX.Element {
   const { nftId } = route.params;
 

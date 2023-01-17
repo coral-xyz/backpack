@@ -7,7 +7,6 @@ import { Margin, ProxyImage } from "@components";
 import { useTheme } from "@hooks";
 import { ethers } from "ethers";
 
-
 //
 // Displays token amount header with logo.
 //

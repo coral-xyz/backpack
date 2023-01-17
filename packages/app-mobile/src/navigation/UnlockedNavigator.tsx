@@ -23,7 +23,6 @@ import {
 
 import { IconCloseModal } from "@components/Icon";
 
-
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 

@@ -13,7 +13,6 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-native";
 import tw from "twrnc";
 
-
 import { CheckBox } from "../../../components/CheckBox";
 import { CustomButton } from "../../../components/CustomButton";
 import { ErrorMessage } from "../../../components/ErrorMessage";

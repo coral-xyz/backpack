@@ -18,7 +18,6 @@ import { useTheme } from "@hooks";
 
 import { EyeIcon, WarningIcon } from "@components/Icon";
 
-
 export function ShowPrivateKeyWarningScreen({
   route,
   navigation,

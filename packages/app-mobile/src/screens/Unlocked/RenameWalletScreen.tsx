@@ -15,8 +15,6 @@ import {
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useTheme } from "@hooks";
 
-
-
 export function RenameWalletScreen({ navigation, route }): JSX.Element {
   const background = useBackgroundClient();
   const theme = useTheme();

@@ -15,7 +15,6 @@ import { useWalletPublicKeys } from "@coral-xyz/recoil";
 import { useTheme } from "@hooks";
 import { IconPushDetail } from "@screens/Unlocked/Settings/components/SettingsRow"; // TODO(peter) move this icon to icons
 
-
 function buildSectionList(blockchainKeyrings: any) {
   return Object.entries(blockchainKeyrings).map(([blockchain, keyring]) => ({
     blockchain,

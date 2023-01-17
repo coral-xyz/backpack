@@ -4,7 +4,6 @@ import { ProxyImage } from "@components";
 
 import { useTheme } from "@hooks/useTheme";
 
-
 export function NFTCard({ onPress, imageUrl, subtitle }: any) {
   const theme = useTheme();
   return (

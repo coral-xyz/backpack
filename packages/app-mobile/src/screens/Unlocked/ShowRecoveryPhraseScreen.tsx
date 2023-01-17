@@ -20,7 +20,6 @@ import { useTheme } from "@hooks";
 
 import { EyeIcon, WarningIcon } from "@components/Icon";
 
-
 export function ShowRecoveryPhraseWarningScreen({ navigation }): JSX.Element {
   const theme = useTheme();
   const background = useBackgroundClient();

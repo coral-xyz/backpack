@@ -9,7 +9,6 @@ import {
 import { HOVER_OPACITY } from "@coral-xyz/themes";
 import { useTheme } from "@hooks";
 
-
 function TextTotalChange({ totalChange }) {
   const theme = useTheme();
   const color =

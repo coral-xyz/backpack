@@ -24,7 +24,6 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useBlockchainLogo, useTheme } from "@hooks";
 import QRCode from "react-qr-code";
 
-
 function BlockchainDisclaimerText({
   blockchain,
 }: {

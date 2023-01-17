@@ -1,7 +1,6 @@
 import type { Blockchain } from "@coral-xyz/common";
 import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
 
-
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { Row } from "@components";
