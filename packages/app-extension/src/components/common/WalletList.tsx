@@ -121,8 +121,8 @@ function WalletButton({
     >
       <Button disableRipple className={classes.addressButton} onClick={onClick}>
         {wallet.name.length > 30
-          ? `${wallet.name.substring(0, 13)}...${wallet.name.substring(
-              wallet.name.length - 13,
+          ? `${wallet.name.substring(0, 10)}...${wallet.name.substring(
+              wallet.name.length - 10,
               wallet.name.length
             )}`
           : wallet.name}
@@ -490,8 +490,8 @@ export function WalletList({
                     <StackedWalletAddress
                       name={
                         name.length > 30
-                          ? `${name.substring(0, 13)}...${name.substring(
-                              name.length - 13,
+                          ? `${name.substring(0, 10)}...${name.substring(
+                              name.length - 10,
                               name.length
                             )}`
                           : name
