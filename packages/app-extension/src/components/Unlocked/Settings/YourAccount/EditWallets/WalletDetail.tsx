@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import { UI_RPC_METHOD_KEYNAME_READ } from "@coral-xyz/common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
+import { useBackgroundClient, useWalletPublicKeys } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ContentCopy } from "@mui/icons-material";
 import { Typography } from "@mui/material";
@@ -21,6 +21,7 @@ export const WalletDetail: React.FC<{
   const background = useBackgroundClient();
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [walletName, setWalletName] = useState(name);
+  const publicKeyData = useWalletPublicKeys();
 
   useEffect(() => {
     (async () => {
@@ -38,6 +39,15 @@ export const WalletDetail: React.FC<{
     setTimeout(() => setTooltipOpen(false), 1000);
     navigator.clipboard.writeText(publicKey);
   };
+
+  // Account recovery is not possible for private key imports, so prevent
+  // removal of wallets if they are the last one in the wallet that can be used
+  // for recovery
+  const isLastRecoverable =
+    Object.values(publicKeyData)
+      .map((keyring) => [...keyring.hdPublicKeys, ...keyring.ledgerPublicKeys])
+      .flat()
+      .filter((n) => n.publicKey !== publicKey).length === 0;
 
   const menuItems = {
     "Wallet Address": {
@@ -95,7 +105,7 @@ export const WalletDetail: React.FC<{
         </div>
       </WithCopyTooltip>
       {type !== "ledger" && <SettingsList menuItems={secrets} />}
-      <SettingsList menuItems={removeWallet} />
+      {!isLastRecoverable && <SettingsList menuItems={removeWallet} />}
     </div>
   );
 };

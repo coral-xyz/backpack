@@ -7,7 +7,7 @@ import {
   SecondaryButton,
   WarningIcon,
 } from "@coral-xyz/react-common";
-import { useBackgroundClient, useWalletPublicKeys } from "@coral-xyz/recoil";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
 
