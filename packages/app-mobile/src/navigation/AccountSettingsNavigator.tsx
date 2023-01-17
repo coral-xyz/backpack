@@ -428,7 +428,7 @@ function PreferencesSolana({ route, navigation }) {
 export const changeNetwork = async (
   background: ChannelAppUiClient,
   url: string,
-  chainId?: string,
+  chainId?: string
 ) => {
   await background.request({
     method: UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE,

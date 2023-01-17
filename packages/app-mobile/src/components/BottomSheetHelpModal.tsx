@@ -1,5 +1,3 @@
-import { useCallback, useEffect, useMemo, useRef } from "react";
-import { FlatList, Pressable, StyleSheet } from "react-native";
 import { Margin, RoundedContainerGroup } from "@components";
 import { DiscordIcon, TwitterIcon } from "@components/Icon";
 import {
@@ -16,6 +14,8 @@ import {
   SettingsRow,
 } from "@screens/Unlocked/Settings/components/SettingsRow";
 import * as Linking from "expo-linking";
+import { useCallback, useEffect, useMemo, useRef } from "react";
+import { FlatList, Pressable, StyleSheet } from "react-native";
 
 export function HelpModalMenuButton({
   onPress,
@@ -123,7 +123,8 @@ export function BottomSheetHelpModal({
       }}
       backgroundStyle={{
         backgroundColor: theme.custom.colors.background,
-      }}>
+      }}
+    >
       <Margin horizontal={16}>
         <RoundedContainerGroup>
           <FlatList

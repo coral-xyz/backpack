@@ -1,4 +1,3 @@
-import { Text, View } from "react-native";
 import { NavHeader } from "@components";
 import { IconCloseModal } from "@components/Icon";
 import { toTitleCase } from "@coral-xyz/common";
@@ -20,6 +19,7 @@ import {
   SendTokenDetailScreen,
   SendTokenListScreen,
 } from "@screens/Unlocked/SendTokenScreen";
+import { Text, View } from "react-native";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -138,7 +138,8 @@ function UnlockedBottomTabNavigator(): JSX.Element {
         },
         tabBarActiveTintColor: "#333",
         tabBarInactiveTintColor: "gray",
-      })}>
+      })}
+    >
       <Tab.Screen name="Balances" component={BalancesNavigator} />
     </Tab.Navigator>
   );

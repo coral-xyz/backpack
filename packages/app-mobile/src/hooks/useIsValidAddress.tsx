@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
   getHashedName,
   getNameAccountKey,
@@ -8,6 +7,7 @@ import { Blockchain } from "@coral-xyz/common";
 import type { Connection } from "@solana/web3.js";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { ethers } from "ethers";
+import { useEffect, useState } from "react";
 
 // TODO(peter) share between extension/mobile
 export function useIsValidAddress(
@@ -129,6 +129,6 @@ export function useIsValidAddress(
     isValidAddress: accountValidated,
     isFreshAddress: isFreshAccount,
     isErrorAddress: addressError,
-    normalizedAddress: normalizedAddress,
+    normalizedAddress,
   };
 }

@@ -1,9 +1,9 @@
-import { Controller } from "react-hook-form";
-import type { StyleProp, ViewStyle } from "react-native";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { useTheme } from "@hooks";
 import type { BigNumber } from "ethers";
 import { ethers } from "ethers";
+import { Controller } from "react-hook-form";
+import type { StyleProp, ViewStyle } from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 // Wraps multiple components in one singular input group with a shared border
 export function InputGroup({

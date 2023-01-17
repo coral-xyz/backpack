@@ -1,3 +1,14 @@
+import {
+  CopyWalletFieldInput,
+  ListRowSeparator,
+  Margin,
+  Screen,
+} from "@components";
+import { Blockchain, walletAddressDisplay } from "@coral-xyz/common";
+import { useActiveWallets } from "@coral-xyz/recoil";
+import { MaterialIcons } from "@expo/vector-icons";
+import { useBlockchainLogo, useTheme } from "@hooks";
+import * as Clipboard from "expo-clipboard";
 import { useState } from "react";
 import {
   Alert,
@@ -10,17 +21,6 @@ import {
   View,
 } from "react-native";
 import QRCode from "react-qr-code";
-import {
-  CopyWalletFieldInput,
-  ListRowSeparator,
-  Margin,
-  Screen,
-} from "@components";
-import { Blockchain, walletAddressDisplay } from "@coral-xyz/common";
-import { useActiveWallets } from "@coral-xyz/recoil";
-import { MaterialIcons } from "@expo/vector-icons";
-import { useBlockchainLogo, useTheme } from "@hooks";
-import * as Clipboard from "expo-clipboard";
 
 function BlockchainDisclaimerText({
   blockchain,
@@ -287,7 +287,7 @@ function BlockchainDepositCard({
       </View>
       <Modal
         animationType="fade"
-        transparent={true}
+        transparent
         visible={showQrCode}
         onRequestClose={() => {
           setShowQrCode(false);

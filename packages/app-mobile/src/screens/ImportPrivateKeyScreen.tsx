@@ -1,5 +1,3 @@
-import { Controller, useForm } from "react-hook-form";
-import { Alert, View } from "react-native";
 import {
   Header,
   Margin,
@@ -12,6 +10,8 @@ import { InputField } from "@components/Form";
 import { UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY } from "@coral-xyz/common";
 import { useBackgroundClient, useWalletPublicKeys } from "@coral-xyz/recoil";
 import { validateSecretKey } from "@lib/validateSecretKey";
+import { Controller, useForm } from "react-hook-form";
+import { Alert, View } from "react-native";
 
 type PrivateKeyInput = {
   name: string;
@@ -73,7 +73,7 @@ export function ImportPrivateKeyScreen({ route }) {
             }}
             render={({ field: { onChange, onBlur, value } }) => (
               <StyledTextInput
-                autoFocus={true}
+                autoFocus
                 placeholder="Enter wallet name"
                 value={value}
                 onChangeText={onChange}
@@ -91,7 +91,7 @@ export function ImportPrivateKeyScreen({ route }) {
             }}
             render={({ field: { onChange, onBlur, value } }) => (
               <StyledTextInput
-                multiline={true}
+                multiline
                 numberOfLines={6}
                 placeholder="Enter private key"
                 value={value}

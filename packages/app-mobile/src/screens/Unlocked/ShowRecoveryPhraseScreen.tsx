@@ -1,5 +1,3 @@
-import { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
 import {
   CopyButton,
   DangerButton,
@@ -17,6 +15,8 @@ import { UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@hooks";
+import { useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
 
 export function ShowRecoveryPhraseWarningScreen({ navigation }): JSX.Element {
   const theme = useTheme();
@@ -92,12 +92,12 @@ export function ShowRecoveryPhraseWarningScreen({ navigation }): JSX.Element {
       <View>
         <Margin bottom={8}>
           <StyledTextInput
-            autoFocus={true}
+            autoFocus
             value={password}
             onChangeText={(text: string) => setPassword(text)}
             // error={error}
-            placeholder={"Password"}
-            secureTextEntry={true}
+            placeholder="Password"
+            secureTextEntry
           />
         </Margin>
         <DangerButton

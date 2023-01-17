@@ -1,5 +1,3 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Button, Pressable, Text, View } from "react-native";
 import {
   ActionCard,
   Header,
@@ -27,6 +25,8 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTheme } from "@hooks";
 import { useNavigation } from "@react-navigation/native";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Button, Pressable, Text, View } from "react-native";
 
 export function AddConnectWalletScreen({ route }) {
   const { blockchain } = route.params;
@@ -101,7 +101,7 @@ export function AddConnectWalletScreen({ route }) {
       </View>
       <View style={{ flex: 0.5, width: "48%", marginTop: 12 }}>
         <ActionCard
-          disabled={true}
+          disabled
           icon={
             <MaterialIcons
               size={24}

@@ -1,4 +1,3 @@
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { Row } from "@components";
 import type { Blockchain } from "@coral-xyz/common";
 import {
@@ -11,6 +10,7 @@ import {
 import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useBlockchainLogo, useTheme } from "@hooks";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 // TODO move this
 export type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
@@ -38,7 +38,8 @@ export function TableHeader({
     <Pressable
       disabled={disableToggle}
       onPress={onPress}
-      style={styles.tableHeader}>
+      style={styles.tableHeader}
+    >
       <Row>
         <Image style={styles.logoContainer} source={logo} />
         <Text style={[styles.title, { color: theme.custom.colors.fontColor }]}>

@@ -1,7 +1,7 @@
-import { Pressable, StyleSheet, Switch, Text, View } from "react-native";
 import { Margin } from "@components";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@hooks";
+import { Pressable, StyleSheet, Switch, Text, View } from "react-native";
 
 export function IconPushDetail() {
   const theme = useTheme();
@@ -61,7 +61,8 @@ function RowContainer({ children }) {
         {
           backgroundColor: theme.custom.colors.nav,
         },
-      ]}>
+      ]}
+    >
       {children}
     </View>
   );
@@ -149,7 +150,8 @@ export function SettingsRow({
                 opacity: disabled ? 0.5 : 1,
                 color: theme.custom.colors.fontColor,
               },
-            ]}>
+            ]}
+          >
             {label}
           </Text>
         </View>

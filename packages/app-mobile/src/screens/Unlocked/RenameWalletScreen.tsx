@@ -1,5 +1,3 @@
-import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
 import {
   PrimaryButton,
   Screen,
@@ -13,6 +11,8 @@ import {
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useTheme } from "@hooks";
+import React, { useEffect, useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
 
 export function RenameWalletScreen({ navigation, route }): JSX.Element {
   const background = useBackgroundClient();
@@ -27,7 +27,7 @@ export function RenameWalletScreen({ navigation, route }): JSX.Element {
     <Screen style={{ justifyContent: "space-between" }}>
       <View>
         <StyledTextInput
-          autoFocus={true}
+          autoFocus
           value={walletName}
           onChangeText={setWalletName}
         />

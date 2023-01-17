@@ -1,6 +1,6 @@
-import { StyleSheet } from "react-native";
 import { EmptyState, Screen } from "@components";
 import { MaterialIcons } from "@expo/vector-icons";
+import { StyleSheet } from "react-native";
 
 export function PreferencesTrustedSitesScreen() {
   return (
@@ -9,8 +9,8 @@ export function PreferencesTrustedSitesScreen() {
         icon={(props: any) => (
           <MaterialIcons name="warning" size={32} {...props} />
         )}
-        title={"No trusted sites"}
-        subtitle={"Trusted sites will be listed here"}
+        title="No trusted sites"
+        subtitle="Trusted sites will be listed here"
       />
     </Screen>
   );

@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
 import {
   DangerButton,
   PrimaryButton,
@@ -18,6 +16,8 @@ import {
 import { useAnchorContext, useEthereumCtx } from "@coral-xyz/recoil";
 import { useIsValidAddress } from "@hooks";
 import { BigNumber } from "ethers";
+import { useEffect, useState } from "react";
+import { StyleSheet, View } from "react-native";
 
 import { SearchableTokenTables } from "./components/Balances";
 import type { Token } from "./components/index";
@@ -50,7 +50,7 @@ export function SendTokenDetailScreen({ route }) {
   );
 
   useEffect(() => {
-    if (!token) return;
+    if (!token) { return; }
     if (token.mint === SOL_NATIVE_MINT) {
       // When sending SOL, account for the tx fee and rent exempt minimum.
       setFeeOffset(
@@ -80,9 +80,9 @@ export function SendTokenDetailScreen({ route }) {
 
   let sendButton;
   if (isErrorAddress) {
-    sendButton = <DangerButton disabled={true} label="Invalid Address" />;
+    sendButton = <DangerButton disabled label="Invalid Address" />;
   } else if (isAmountError) {
-    sendButton = <DangerButton disabled={true} label="Insufficient Balance" />;
+    sendButton = <DangerButton disabled label="Insufficient Balance" />;
   } else {
     sendButton = (
       <PrimaryButton

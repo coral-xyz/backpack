@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { PrimaryButton,TokenAmountHeader } from "@components";
+import { PrimaryButton, TokenAmountHeader } from "@components";
 import { Error, Sending } from "@components/BottomDrawerCards";
 import {
   Blockchain,
@@ -13,6 +12,7 @@ import type { UnsignedTransaction } from "@ethersproject/transactions";
 import { Typography } from "@mui/material";
 import type { BigNumber } from "ethers";
 import { ethers } from "ethers";
+import { useEffect, useState } from "react";
 
 import { TransactionData } from "../../../../common/TransactionData";
 
@@ -104,7 +104,7 @@ export function SendEthereumConfirmationCard({
       // We already waited, but calling .wait will throw if the transaction failed
       await transaction.wait();
       setCardType("complete");
-      if (onComplete) onComplete();
+      if (onComplete) { onComplete(); }
     } catch (err) {
       logger.error("ethereum transaction failed", err);
       setCardType("error");
@@ -139,7 +139,7 @@ export function SendEthereumConfirmationCard({
       ) : cardType === "complete" ? (
         <Sending
           blockchain={Blockchain.ETHEREUM}
-          isComplete={true}
+          isComplete
           amount={amount}
           token={token}
           signature={txSignature!}

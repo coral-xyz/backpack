@@ -1,5 +1,3 @@
-import { useForm } from "react-hook-form";
-import { Alert, Text, View } from "react-native";
 import { Margin, PrimaryButton, Screen, SubtextParagraph } from "@components";
 import { InputGroup, InputListItem } from "@components/Form";
 import {
@@ -8,6 +6,8 @@ import {
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useTheme } from "@hooks";
+import { useForm } from "react-hook-form";
+import { Alert, Text, View } from "react-native";
 
 function InstructionText() {
   const theme = useTheme();
@@ -86,7 +86,7 @@ export function ChangePasswordScreen({ navigation }) {
             placeholder="Enter password"
             name="currentPassword"
             control={control}
-            secureTextEntry={true}
+            secureTextEntry
             rules={{
               minLength: 8,
               required: true,
@@ -105,7 +105,7 @@ export function ChangePasswordScreen({ navigation }) {
             title="New"
             placeholder="Enter password"
             name="newPassword"
-            secureTextEntry={true}
+            secureTextEntry
             control={control}
             rules={{
               minLength: 8,
@@ -121,7 +121,7 @@ export function ChangePasswordScreen({ navigation }) {
             title="Verify"
             placeholder="Re-enter password"
             name="verifyPassword"
-            secureTextEntry={true}
+            secureTextEntry
             control={control}
             rules={{
               required: true,

@@ -23,7 +23,7 @@ export const TextInput: React.FC<
       autoCapitalize="none"
       autoComplete="off"
       autoCorrect={false}
-      placeholderTextColor={"#ccc"}
+      placeholderTextColor="#ccc"
       style={tw`rounded-xl bg-transparent p-5 my-2 text-white text-lg border-gray-700 border-2 border-solid`}
       onBlur={field.onBlur}
       onChangeText={field.onChange}

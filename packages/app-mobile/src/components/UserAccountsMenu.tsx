@@ -1,6 +1,3 @@
-import { useCallback, useMemo, useRef } from "react";
-import { Pressable, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Avatar, Margin, RoundedContainerGroup } from "@components";
 import { ExpandCollapseIcon, IconCheckmark } from "@components/Icon";
 import { UI_RPC_METHOD_ACTIVE_USER_UPDATE } from "@coral-xyz/common";
@@ -10,6 +7,9 @@ import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTheme } from "@hooks";
 import { HeaderBackButton } from "@react-navigation/elements";
 import { SettingsRow } from "@screens/Unlocked/Settings/components/SettingsRow";
+import { useCallback, useMemo, useRef } from "react";
+import { Pressable, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export function AccountDropdownHeader({
   navigation,
@@ -40,13 +40,15 @@ export function AccountDropdownHeader({
           flexDirection: "row",
           justifyContent: "center",
           alignItems: "center",
-        }}>
+        }}
+      >
         <Text
           style={{
             fontSize: 17,
             fontWeight: "600",
             color: theme.custom.colors.fontColor,
-          }}>
+          }}
+        >
           @{user.username}
         </Text>
         <ExpandCollapseIcon
@@ -60,7 +62,8 @@ export function AccountDropdownHeader({
         snapPoints={snapPoints}
         backgroundStyle={{
           backgroundColor: theme.custom.colors.backgroundBackdrop,
-        }}>
+        }}
+      >
         <UserAccountMenu onDismiss={handleDismissModal} />
       </BottomSheetModal>
     </>
@@ -74,7 +77,8 @@ function UserAccountMenu({ onDismiss }: () => void): JSX.Element {
       style={{
         backgroundColor: theme.custom.colors.backgroundBackdrop,
         paddingHorizontal: 16,
-      }}>
+      }}
+    >
       <Text
         style={{
           marginTop: 8,
@@ -82,7 +86,8 @@ function UserAccountMenu({ onDismiss }: () => void): JSX.Element {
           fontSize: 18,
           fontWeight: "600",
           color: theme.custom.colors.fontColor,
-        }}>
+        }}
+      >
         Accounts
       </Text>
       <UsersList onDismiss={onDismiss} />
@@ -100,7 +105,8 @@ function AddAnotherAccountButton() {
       style={{ flexDirection: "row", alignItems: "center" }}
       onPress={() => {
         // openAddUserAccount();
-      }}>
+      }}
+    >
       <MaterialIcons name="add" size={28} style={{ marginRight: 4 }} />
       <Text
         style={{
@@ -109,7 +115,8 @@ function AddAnotherAccountButton() {
           display: "flex",
           justifyContent: "center",
           flexDirection: "column",
-        }}>
+        }}
+      >
         Add Another Account
       </Text>
     </Pressable>
