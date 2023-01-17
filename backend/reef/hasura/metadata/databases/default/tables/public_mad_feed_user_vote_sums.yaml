@@ -1,15 +1,11 @@
 table:
-  name: mad_feed_post_vote_sums
+  name: mad_feed_user_vote_sums
   schema: public
 select_permissions:
   - role: one_xnft
     permission:
       columns:
-        - backpack
-        - backpack_count
         - total
         - total_count
-        - votes
-        - votes_count
-        - post_id
+        - user_id
       filter: {}
