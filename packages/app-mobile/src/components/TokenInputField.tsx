@@ -1,7 +1,9 @@
+import type { BigNumber } from "ethers";
+
 import { useEffect, useState } from "react";
 import type { TextInputProps } from "react-native";
+
 import { StyledTextInput } from "@components";
-import type { BigNumber } from "ethers";
 import { ethers } from "ethers";
 
 export function StyledTokenTextInput({

@@ -1,21 +1,4 @@
-import { Margin, PrimaryButton, Screen, WelcomeLogoHeader } from "@components";
-import {
-  BottomSheetHelpModal,
-  HelpModalMenuButton,
-} from "@components/BottomSheetHelpModal";
-import { ErrorMessage } from "@components/ErrorMessage";
-import { PasswordInput } from "@components/PasswordInput";
-import {
-  // UI_RPC_METHOD_KEYRING_STORE_LOCK,
-  UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-} from "@coral-xyz/common";
-import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
-import { MaterialIcons } from "@expo/vector-icons";
-import { useTheme } from "@hooks";
-import { IconPushDetail } from "@screens/Unlocked/Settings/components/SettingsRow";
-import { deleteItemAsync } from "expo-secure-store";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
 import {
   Alert,
   DevSettings,
@@ -24,7 +7,27 @@ import {
   StyleSheet,
   View,
 } from "react-native";
+
+import { deleteItemAsync } from "expo-secure-store";
+
+import { Margin, PrimaryButton, Screen, WelcomeLogoHeader } from "@components";
+import {
+  // UI_RPC_METHOD_KEYRING_STORE_LOCK,
+  UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
+} from "@coral-xyz/common";
+import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
+import { MaterialIcons } from "@expo/vector-icons";
+import { useTheme } from "@hooks";
+import { IconPushDetail } from "@screens/Unlocked/Settings/components/SettingsRow";
+import { useForm } from "react-hook-form";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import {
+  BottomSheetHelpModal,
+  HelpModalMenuButton,
+} from "@components/BottomSheetHelpModal";
+import { ErrorMessage } from "@components/ErrorMessage";
+import { PasswordInput } from "@components/PasswordInput";
 
 const maybeResetApp = () => {
   Alert.alert(
@@ -41,7 +44,7 @@ const maybeResetApp = () => {
         text: "No",
         onPress: () => {},
       },
-    ],
+    ]
   );
 };
 

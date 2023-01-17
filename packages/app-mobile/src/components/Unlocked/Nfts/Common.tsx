@@ -1,4 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
+
 import { ProxyImage } from "@components";
 import { useTheme } from "@hooks";
 

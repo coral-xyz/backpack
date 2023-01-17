@@ -8,6 +8,7 @@ import {
   Text,
   View,
 } from "react-native";
+
 import {
   CopyButtonIcon,
   ImportTypeBadge,
@@ -18,7 +19,6 @@ import {
   Screen,
   WalletAddressLabel,
 } from "@components";
-import { HardwareIcon, ImportedIcon, MnemonicIcon } from "@components/Icon";
 import {
   Blockchain,
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
@@ -31,6 +31,8 @@ import {
 } from "@coral-xyz/recoil";
 import { useBlockchainLogo, useTheme } from "@hooks";
 
+import { HardwareIcon, ImportedIcon, MnemonicIcon } from "@components/Icon";
+
 type Wallet = {
   publicKey: string;
   blockchain: string;
@@ -42,7 +44,7 @@ export function WalletListScreen({ navigation, route }): JSX.Element {
   // const { filter } = route.params;
   const activeWallet = useBlockchainActiveWallet(Blockchain.SOLANA);
   const background = useBackgroundClient();
-  let wallets = useAllWallets();
+  const wallets = useAllWallets();
 
   // if (filter) {
   //   wallets = wallets.filter(filter);
@@ -108,14 +110,16 @@ function WalletListItem({
           {
             backgroundColor: theme.custom.colors.nav,
           },
-        ]}>
+        ]}
+      >
         <View style={styles.listItemLeft}>
           <Margin right={12}>
             <NetworkIcon blockchain={blockchain} />
           </Margin>
           <View>
             <Text
-              style={{ fontSize: 16, fontWeight: isSelected ? "600" : "500" }}>
+              style={{ fontSize: 16, fontWeight: isSelected ? "600" : "500" }}
+            >
               {name}
             </Text>
             <Row>

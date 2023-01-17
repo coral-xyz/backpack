@@ -1,3 +1,5 @@
+import type { Blockchain } from "@coral-xyz/common";
+
 import { Suspense, useState } from "react";
 import {
   FlatList,
@@ -7,8 +9,10 @@ import {
   Text,
   View,
 } from "react-native";
+
+import { Linking } from "expo-linking";
+
 import { EmptyState, Screen } from "@components";
-import type { Blockchain } from "@coral-xyz/common";
 import { explorerUrl } from "@coral-xyz/common";
 import {
   useActiveEthereumWallet,
@@ -21,7 +25,6 @@ import {
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useBlockchainLogo, useTheme } from "@hooks";
-import { Linking } from "expo-linking";
 
 export function RecentActivityScreen() {
   return (
@@ -68,8 +71,8 @@ export function RecentActivityList({
 }: {
   blockchain?: Blockchain;
   address?: string;
-  contractAddresses?: Array<string>;
-  transactions?: Array<any>;
+  contractAddresses?: string[];
+  transactions?: any[];
   style?: any;
   minimize?: boolean;
 }) {
@@ -111,8 +114,8 @@ export function _RecentActivityList({
 }: {
   blockchain?: Blockchain;
   address?: string;
-  contractAddresses?: Array<string>;
-  transactions?: Array<any>;
+  contractAddresses?: string[];
+  transactions?: any[];
   style?: any;
   minimize?: boolean;
 }) {
@@ -248,9 +251,9 @@ function NoRecentActivityLabel({ minimize }: { minimize: boolean }) {
       <EmptyState
         minimize={minimize}
         icon={(props: any) => <MaterialIcons name="bolt" {...props} />}
-        title={"No Recent Activity"}
-        subtitle={"Get started by adding your first xNFT"}
-        buttonText={"Browse the xNFT Library"}
+        title="No Recent Activity"
+        subtitle="Get started by adding your first xNFT"
+        buttonText="Browse the xNFT Library"
         onPress={() => Linking.openURL("https://xnft.gg")}
       />
     </View>

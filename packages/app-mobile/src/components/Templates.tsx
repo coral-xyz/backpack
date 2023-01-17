@@ -1,4 +1,5 @@
 import { View } from "react-native";
+
 import tw from "twrnc";
 
 export const MainContent: React.FC<{ centered?: boolean }> = ({

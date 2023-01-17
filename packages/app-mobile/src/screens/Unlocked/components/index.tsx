@@ -1,6 +1,9 @@
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { Row } from "@components";
 import type { Blockchain } from "@coral-xyz/common";
+import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
+
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+
+import { Row } from "@components";
 import {
   // ETH_NATIVE_MINT,
   // NAV_COMPONENT_TOKEN,
@@ -8,7 +11,6 @@ import {
   toTitleCase,
   // walletAddressDisplay,
 } from "@coral-xyz/common";
-import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useBlockchainLogo, useTheme } from "@hooks";
 
@@ -38,7 +40,8 @@ export function TableHeader({
     <Pressable
       disabled={disableToggle}
       onPress={onPress}
-      style={styles.tableHeader}>
+      style={styles.tableHeader}
+    >
       <Row>
         <Image style={styles.logoContainer} source={logo} />
         <Text style={[styles.title, { color: theme.custom.colors.fontColor }]}>

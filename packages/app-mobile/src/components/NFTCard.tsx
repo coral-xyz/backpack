@@ -1,5 +1,7 @@
 import { Pressable, Text, View } from "react-native";
+
 import { ProxyImage } from "@components";
+
 import { useTheme } from "@hooks/useTheme";
 
 export function NFTCard({ onPress, imageUrl, subtitle }: any) {

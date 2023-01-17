@@ -1,5 +1,8 @@
+import type { Blockchain } from "@coral-xyz/common";
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button, Pressable, Text, View } from "react-native";
+
 import {
   ActionCard,
   Header,
@@ -7,7 +10,6 @@ import {
   Screen,
   SubtextParagraph,
 } from "@components";
-import type { Blockchain } from "@coral-xyz/common";
 import {
   openConnectHardware,
   TAB_APPS,
@@ -101,7 +103,7 @@ export function AddConnectWalletScreen({ route }) {
       </View>
       <View style={{ flex: 0.5, width: "48%", marginTop: 12 }}>
         <ActionCard
-          disabled={true}
+          disabled
           icon={
             <MaterialIcons
               size={24}

@@ -1,14 +1,15 @@
+import type { Token } from "./components/index";
+import type { SearchParamsFor } from "@coral-xyz/recoil";
+
 import { Pressable, StyleSheet, Text, View } from "react-native";
+
 import { Margin, Screen, TokenAmountHeader } from "@components";
-import { ErrorBoundary } from "@components/ErrorBoundary";
-import { TransferWidget } from "@components/Unlocked/Balances/TransferWidget";
 import {
   Blockchain,
   ETH_NATIVE_MINT,
   SOL_NATIVE_MINT,
   toTitleCase,
 } from "@coral-xyz/common";
-import type { SearchParamsFor } from "@coral-xyz/recoil";
 import {
   blockchainTokenData,
   useActiveEthereumWallet,
@@ -20,16 +21,19 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { RecentActivityList } from "@screens/Unlocked/RecentActivityScreen";
 import { WalletListScreen } from "@screens/Unlocked/WalletListScreen";
 
-import { TokenTables, UsdBalanceAndPercentChange } from "./components/Balances";
+import { ErrorBoundary } from "@components/ErrorBoundary";
+import { TransferWidget } from "@components/Unlocked/Balances/TransferWidget";
+
 import { BalanceSummaryWidget } from "./components/BalanceSummaryWidget";
-import type { Token } from "./components/index";
+import { TokenTables, UsdBalanceAndPercentChange } from "./components/Balances";
 
 const Stack = createStackNavigator();
 export function BalancesNavigator() {
   return (
     <Stack.Navigator
       initialRouteName="BalanceList"
-      screenOptions={{ presentation: "modal" }}>
+      screenOptions={{ presentation: "modal" }}
+    >
       <Stack.Screen
         name="wallet-picker"
         component={WalletListScreen}
@@ -86,7 +90,9 @@ function TokenHeader({
     null
   );
 
-  if (!token) return null;
+  if (!token) {
+    return null;
+  }
 
   return (
     <View>
