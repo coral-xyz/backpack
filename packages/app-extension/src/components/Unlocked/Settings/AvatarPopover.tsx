@@ -18,7 +18,7 @@ import { Button, IconButton, Popover, Typography } from "@mui/material";
 
 import { WalletList as _WalletList } from "../../../components/common/WalletList";
 
-import { SettingsNavStackDrawer } from ".";
+import { SettingsNavStackDrawer } from "./SettingsNavStackDrawer";
 
 const useStyles = styles((theme) => ({
   menuButton: {
