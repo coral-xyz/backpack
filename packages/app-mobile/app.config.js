@@ -72,4 +72,5 @@ export default {
       projectId: projectID,
     },
   },
+  plugins: ["expo-community-flipper"],
 };
