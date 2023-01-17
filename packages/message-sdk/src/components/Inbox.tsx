@@ -1,13 +1,20 @@
 import { useEffect, useState } from "react";
 import { SearchBox } from "@coral-xyz/app-extension/src/components/Unlocked/Messages/SearchBox";
-import type { RemoteUserData } from "@coral-xyz/common";
+import type {
+  CollectionChatData,
+  EnrichedInboxDb,
+  RemoteUserData,
+} from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import { refreshFriendships } from "@coral-xyz/db";
-import { EmptyState, TextInput } from "@coral-xyz/react-common";
-import { useFriendships, useRequestsCount, useUser } from "@coral-xyz/recoil";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { EmptyState } from "@coral-xyz/react-common";
+import {
+  useFriendships,
+  useGroupCollections,
+  useRequestsCount,
+  useUser,
+} from "@coral-xyz/recoil";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
-import { useRecoilState } from "recoil";
 
 import { ParentCommunicationManager } from "../ParentCommunicationManager";
 
@@ -23,13 +30,35 @@ export function Inbox() {
   const { uuid } = useUser();
   const activeChats = useFriendships({ uuid });
   const requestCount = useRequestsCount({ uuid });
+  const groupCollections = useGroupCollections({ uuid });
   const [searchResults, setSearchResults] = useState<RemoteUserData[]>([]);
   const [searchFilter, setSearchFilter] = useState("");
   const [refreshing, setRefreshing] = useState(true);
 
+  const getDefaultChats = () => {
+    return groupCollections.filter((x) => x.name && x.image) || [];
+  };
+
+  const allChats: (
+    | { chatType: "individual"; chatProps: EnrichedInboxDb }
+    | { chatType: "collection"; chatProps: CollectionChatData }
+  )[] = [
+    ...getDefaultChats().map((x) => ({ chatProps: x, chatType: "collection" })),
+    ...(activeChats || []).map((x) => ({
+      chatProps: x,
+      chatType: "individual",
+    })),
+  ];
+
   const searchedUsersDistinct = searchResults.filter(
     (result) =>
-      !activeChats?.map((x) => x.remoteUsername).includes(result.username)
+      !allChats
+        ?.map((x) =>
+          x.chatType === "collection"
+            ? x.chatProps.name
+            : x.chatProps.remoteUsername
+        )
+        .includes(result.username)
   );
 
   useEffect(() => {
@@ -72,13 +101,15 @@ export function Inbox() {
           debouncedInit();
         }}
       />
-      {(!activeChats || (refreshing && !activeChats.length)) && (
-        <MessagesSkeleton />
-      )}
-      {activeChats &&
-        (activeChats.length || !refreshing) &&
-        (activeChats.filter((x) => x.remoteUsername.includes(searchFilter))
-          .length > 0 ||
+      {(!allChats || (refreshing && !allChats.length)) && <MessagesSkeleton />}
+      {allChats &&
+        (allChats.length || !refreshing) &&
+        (allChats.filter((x) =>
+          (x.chatType === "individual"
+            ? x.chatProps.remoteUsername || ""
+            : x.chatProps.name
+          )?.includes(searchFilter)
+        ).length > 0 ||
           requestCount > 0) && (
           <>
             {searchFilter.length >= 3 && (
@@ -86,8 +117,11 @@ export function Inbox() {
             )}
             <MessageList
               requestCount={searchFilter.length < 3 ? requestCount : 0}
-              activeChats={activeChats.filter((x) =>
-                x.remoteUsername.includes(searchFilter)
+              activeChats={allChats.filter((x) =>
+                (x.chatType === "individual"
+                  ? x.chatProps.remoteUsername
+                  : x.chatProps.name
+                )?.includes(searchFilter)
               )}
             />
           </>
@@ -101,11 +135,11 @@ export function Inbox() {
           />
         </div>
       )}
-      {activeChats &&
-        (activeChats.length || !refreshing) &&
+      {allChats &&
+        (allChats.length || !refreshing) &&
         searchFilter.length < 3 &&
         requestCount === 0 &&
-        activeChats.length === 0 && (
+        allChats.length === 0 && (
           <div
             style={{
               flexGrow: 1,

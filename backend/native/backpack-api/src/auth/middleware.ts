@@ -1,3 +1,4 @@
+import { DEFAULT_GROUP_CHATS } from "@coral-xyz/common";
 import type { NextFunction, Request, Response } from "express";
 
 import { validateRoom } from "../db/friendships";
@@ -25,12 +26,17 @@ export const ensureHasRoomAccess = async (
       return res.status(403).json({ msg: "you dont have access" });
     }
   } else {
-    const hasAccess = await validateCollectionOwnership(
-      req.id!,
-      publicKey!,
-      mint!,
-      room!
-    );
+    let hasAccess = false;
+    if (DEFAULT_GROUP_CHATS.map((x) => x.id).includes(room)) {
+      hasAccess = true;
+    } else {
+      hasAccess = await validateCollectionOwnership(
+        req.id!,
+        publicKey!,
+        mint!,
+        room!
+      );
+    }
     if (hasAccess) {
       // @ts-ignore
       req.roomMetadata = {};

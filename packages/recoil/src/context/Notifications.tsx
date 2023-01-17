@@ -1,5 +1,10 @@
 import React, { useEffect } from "react";
-import type { FEATURE_GATES_MAP, Notification } from "@coral-xyz/common";
+import type {
+  AutolockSettings,
+  Blockchain,
+  FEATURE_GATES_MAP,
+  Notification,
+} from "@coral-xyz/common";
 import {
   BackgroundSolanaConnection,
   CHANNEL_POPUP_NOTIFICATIONS,
@@ -69,7 +74,7 @@ export function NotificationsProvider(props: any) {
       };
     });
   };
-  const setActiveBlockchain = (activeBlockchain) => {
+  const setActiveBlockchain = (activeBlockchain: Blockchain) => {
     setWalletData((current) => {
       return {
         ...current,
@@ -77,7 +82,7 @@ export function NotificationsProvider(props: any) {
       };
     });
   };
-  const setActivePublicKeys = (activePublicKeys) => {
+  const setActivePublicKeys = (activePublicKeys: string[]) => {
     setWalletData((current) => {
       return {
         ...current,
@@ -93,7 +98,7 @@ export function NotificationsProvider(props: any) {
   const setPreferences = useSetRecoilState(atoms.preferences);
   const setFeatureGates = useSetRecoilState(atoms.featureGates);
 
-  const setAutoLockSettings = (autoLockSettings) => {
+  const setAutoLockSettings = (autoLockSettings: AutolockSettings) => {
     setPreferences((current) => {
       return {
         ...current,
@@ -131,7 +136,7 @@ export function NotificationsProvider(props: any) {
       ...featureGates,
     }));
   };
-  const setApprovedOrigins = (approvedOrigins: Array<string>) => {
+  const setApprovedOrigins = (approvedOrigins: string[]) => {
     setPreferences((current) => {
       return {
         ...current,
@@ -141,7 +146,7 @@ export function NotificationsProvider(props: any) {
   };
   const setXnftPreferences = useSetRecoilState(atoms.xnftPreferences);
   // Solana
-  const setSolanaConnectionUrl = (cluster) => {
+  const setSolanaConnectionUrl = (cluster: string) => {
     setPreferences((current) => {
       return {
         ...current,

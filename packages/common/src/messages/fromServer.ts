@@ -36,6 +36,7 @@ export interface EnrichedMessageWithMetadata extends EnrichedMessage {
   username: string;
   image: string;
   color?: string;
+  parent_message_author_username?: string;
 }
 
 export interface UserMetadata {

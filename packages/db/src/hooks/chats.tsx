@@ -89,7 +89,7 @@ export const useRoomChats = (
 ) => {
   const reqs = useLiveQuery(async () => {
     return getDb(uuid).messages.where({ room, type }).sortBy("created_at");
-  });
+  }, [room]);
   return reqs;
 };
 
@@ -114,6 +114,9 @@ export const useRoomChatsWithMetadata = (
     image: users?.find((x) => x?.uuid === chat.uuid)?.image || "",
     username: users?.find((x) => x?.uuid === chat.uuid)?.username || "",
     color: users?.find((x) => x?.uuid === chat.uuid)?.color,
+    parent_message_author_username: users?.find(
+      (x) => x?.uuid === chat.parent_message_author_uuid
+    )?.username,
   }));
 };
 

@@ -61,8 +61,10 @@ export const FullScreenChat = () => {
             const scrollContainer = messageRef?.container?.children?.[0];
             if (scrollContainer) {
               if (
-                scrollContainer.scrollHeight - scrollContainer.scrollTop ===
-                scrollContainer.clientHeight
+                scrollContainer.scrollHeight -
+                  scrollContainer.scrollTop -
+                  scrollContainer.clientHeight <=
+                1
               ) {
                 setAutoScroll(true);
               } else {

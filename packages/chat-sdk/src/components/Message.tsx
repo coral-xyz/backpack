@@ -190,6 +190,8 @@ export const MessageLine = (props) => {
     ? new Date(parseInt(props.timestamp))
     : new Date();
   const { uuid } = useUser();
+  const { setActiveReply } = useChatContext();
+  const theme = useCustomTheme();
 
   const photoURL = props.image;
   const displayName = props.username;
@@ -231,8 +233,8 @@ export const MessageLine = (props) => {
         ) : (
           <Skeleton variant="circular" width={40} height={40} />
         )}
-        <div className={classes.messageLine}>
-          <div>
+        <div className={`${classes.messageLine} ${classes.hoverParent}`}>
+          <div style={{ width: "calc(100% - 80px)" }}>
             <div
               onClick={() => openProfilePage({ uuid: props.uuid })}
               className={classes.displayName}
@@ -244,31 +246,88 @@ export const MessageLine = (props) => {
                 <Skeleton width={30} height={20} style={{ marginTop: "0px" }} />
               )}
             </div>
-            <div className={classes.messageContainer}>
+            <div
+              className={classes.messageContainer}
+              style={{ display: "flex" }}
+            >
               <div>
-                <p className={classes.messageContent}>
-                  {props.messageKind === "gif" ? (
-                    <GifDemo id={message} width={220} />
-                  ) : props.messageKind === "secure-transfer" ? (
-                    <>
-                      <SecureTransferElement
-                        messageId={props.messageId}
-                        senderUuid={props.uuid}
-                        escrow={props.metadata.escrow}
-                        counter={props.metadata.counter}
-                        currentState={props.metadata.current_state}
-                        remoteUsername={props.username}
-                        finalTxId={props.metadata.final_txn_signature}
-                      />
-                    </>
-                  ) : (
-                    message
-                  )}
-                </p>
+                {props.parent_message_author_uuid && (
+                  <div style={{}}>
+                    <ReplyContainer
+                      marginBottom={0}
+                      parent_username={
+                        props.parent_message_author_username || ""
+                      }
+                      showCloseBtn={false}
+                      text={props.parent_message_text}
+                    />
+                  </div>
+                )}
+                <div>
+                  <p className={classes.messageContent}>
+                    {props.messageKind === "gif" ? (
+                      <GifDemo id={message} width={220} />
+                    ) : props.messageKind === "secure-transfer" ? (
+                      <>
+                        <SecureTransferElement
+                          messageId={props.messageId}
+                          senderUuid={props.uuid}
+                          escrow={props.metadata.escrow}
+                          counter={props.metadata.counter}
+                          currentState={props.metadata.current_state}
+                          remoteUsername={props.username}
+                          finalTxId={props.metadata.final_txn_signature}
+                        />
+                      </>
+                    ) : props.messageKind === "media" ? (
+                      <div>
+                        {props.metadata?.media_kind === "video" ? (
+                          <video
+                            style={{
+                              height: 180,
+                              maxWidth: 250,
+                              borderRadius: 5,
+                            }}
+                            controls={true}
+                            src={props.metadata?.media_link}
+                          />
+                        ) : (
+                          <img
+                            style={{
+                              height: 180,
+                              maxWidth: 250,
+                              borderRadius: 5,
+                            }}
+                            src={props.metadata?.media_link}
+                          />
+                        )}
+                        <div>{message}</div>
+                      </div>
+                    ) : (
+                      message
+                    )}
+                  </p>
+                </div>
               </div>
+              {props.messageKind === "text" && (
+                <div
+                  style={{ marginLeft: 10, marginTop: 3, cursor: "pointer" }}
+                  className={classes.hoverChild}
+                  onClick={() => {
+                    setActiveReply({
+                      parent_client_generated_uuid: props.client_generated_uuid,
+                      text: message,
+                      parent_username: `@${props.username}`,
+                      parent_message_author_uuid: props.userId,
+                    });
+                  }}
+                >
+                  <ReplyIcon fill={theme.custom.colors.icon} />
+                </div>
+              )}
             </div>
           </div>
-          <div>
+          <div style={{ minWidth: 63 }}>
             <div className={classes.messageTimeStampRight}>
               {formatAMPM(timestamp)}
             </div>
@@ -538,6 +597,10 @@ export function ChatMessages() {
       {chats.map((chat) => {
         return (
           <MessageLine
+            parent_message_author_username={chat.parent_message_author_username}
+            parent_message_text={chat.parent_message_text}
+            parent_message_author_uuid={chat.parent_message_author_uuid}
+            client_generated_uuid={chat.client_generated_uuid}
             color={chat.color || theme.custom.colors.fontColor2}
             timestamp={chat.created_at}
             key={chat.client_generated_uuid}
@@ -637,7 +700,7 @@ function MessageLeft(props) {
             message
           )}
         </div>
-        {props.messageKind !== "gif" && (
+        {props.messageKind === "text" && (
           <div
             style={{ marginLeft: 10, marginTop: 10, cursor: "pointer" }}
             className={classes.hoverChild}

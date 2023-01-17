@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Navigate,
   Route,
@@ -29,6 +29,7 @@ import {
   useDarkMode,
   useDecodedSearchParams,
   useFeatureGates,
+  useFriendships,
   useNavigation,
   useRedirectUrl,
   useUser,
@@ -39,6 +40,8 @@ import { AnimatePresence } from "framer-motion";
 
 import { Apps } from "../../Unlocked/Apps";
 import { Balances } from "../../Unlocked/Balances";
+import { Notifications } from "../../Unlocked/Balances/Notifications";
+import { RecentActivity } from "../../Unlocked/Balances/RecentActivity";
 import { Token } from "../../Unlocked/Balances/TokensWidget/Token";
 import { ChatDrawer } from "../../Unlocked/Messages/ChatDrawer";
 import { MessageOptions } from "../../Unlocked/Messages/MessageOptions";
@@ -48,12 +51,15 @@ import { NftOptionsButton, NftsDetail } from "../../Unlocked/Nfts/Detail";
 import { NftChat, NftsExperience } from "../../Unlocked/Nfts/Experience";
 import { SettingsButton } from "../../Unlocked/Settings";
 
+import { useBreakpoints } from "./hooks";
 import { NavBackButton, WithNav } from "./Nav";
 import { WithMotion } from "./NavStack";
+import { Scrollbar } from "./Scrollbar";
 import { XnftAppStack } from "./XnftAppStack";
 
 export function Router() {
   const location = useLocation();
+  const { isXs } = useBreakpoints();
   return (
     <AnimatePresence initial={false}>
       <Routes location={location} key={location.pathname}>
@@ -66,6 +72,12 @@ export function Router() {
         <Route path="/nfts/experience" element={<NftsExperiencePage />} />
         <Route path="/nfts/chat" element={<NftsChatPage />} />
         <Route path="/nfts/detail" element={<NftsDetailPage />} />
+        {!isXs && (
+          <>
+            <Route path="/notifications" element={<NotificationsPage />} />
+            <Route path="/recent-activity" element={<RecentActivityPage />} />
+          </>
+        )}
         {/*
           Auto-lock functionality is dependent on checking if the URL contains
           "xnft", if this changes then please verify that it still works
@@ -75,6 +87,14 @@ export function Router() {
       </Routes>
     </AnimatePresence>
   );
+}
+
+export function NotificationsPage() {
+  return <NavScreen component={<Notifications />} />;
+}
+
+export function RecentActivityPage() {
+  return <NavScreen component={<RecentActivity />} />;
 }
 
 export function Redirect() {
@@ -131,16 +151,27 @@ function Messages() {
 }
 
 function MessagesNative() {
-  const hash = location.hash.slice(1);
-  const isDarkMode = useDarkMode();
-  const { uuid, username } = useUser();
-  const { props } = useDecodedSearchParams<any>();
   const { push, pop } = useNavigation();
+  const { isXs } = useBreakpoints();
 
   useEffect(() => {
     ParentCommunicationManager.getInstance().setNativePush(push);
     ParentCommunicationManager.getInstance().setNativePop(pop);
   }, []);
+
+  if (!isXs) {
+    return <FullChatPage />;
+  }
+
+  return <MessageNativeInner />;
+}
+
+function MessageNativeInner() {
+  const isDarkMode = useDarkMode();
+  const hash = location.hash.slice(1);
+  const { uuid, username } = useUser();
+  const { props } = useDecodedSearchParams<any>();
+  const { isXs } = useBreakpoints();
 
   if (hash.startsWith("/messages/chat")) {
     return (
@@ -157,8 +188,18 @@ function MessagesNative() {
     );
   }
 
+  if (hash.startsWith("/messages/groupchat")) {
+    return (
+      <NavScreen component={<NftChat collectionId={props.id} {...props} />} />
+    );
+  }
+
   if (hash.startsWith("/messages/profile")) {
     return <NavScreen component={<ProfileScreen userId={props.userId} />} />;
+  }
+
+  if (!isXs) {
+    return <></>;
   }
 
   if (hash.startsWith("/messages/requests")) {
@@ -166,6 +207,50 @@ function MessagesNative() {
   }
 
   return <NavScreen component={<Inbox />} />;
+}
+
+function FullChatPage() {
+  const { props } = useDecodedSearchParams<any>();
+  const [userId, setRefresh] = useState(props.userId);
+  const [collectionId, setCollectionIdRefresh] = useState(props.id);
+  const { uuid } = useUser();
+  const hash = location.hash.slice(1);
+  const activeChats = useFriendships({ uuid });
+
+  useEffect(() => {
+    if (props.userId !== userId) {
+      console.error("Setting refresh");
+      setRefresh(props.userId);
+    }
+  }, [props.userId]);
+
+  useEffect(() => {
+    if (props.id !== collectionId) {
+      setCollectionIdRefresh(props.id);
+    }
+  }, [props.id]);
+  const requestsTab =
+    hash.startsWith("/messages/requests") ||
+    (hash.startsWith("/messages/chat") &&
+      !activeChats?.map((x: any) => x.remoteUserId).includes(props.userId));
+
+  return (
+    <div style={{ height: "100%", display: "flex" }}>
+      <div style={{ width: "365px" }}>
+        <Scrollbar>{requestsTab ? <RequestsScreen /> : <Inbox />}</Scrollbar>
+      </div>
+      <div
+        style={{
+          position: "relative",
+          width: "100%",
+          height: "100%",
+          flex: 1,
+        }}
+      >
+        <MessageNativeInner />
+      </div>
+    </div>
+  );
 }
 
 function MessagesIframe() {
@@ -264,7 +349,6 @@ function TokenPage() {
 function NavScreen({
   component,
   noScrollbars,
-  messageProps,
 }: {
   noScrollbars?: boolean;
   component: React.ReactNode;
@@ -282,6 +366,7 @@ function NavScreen({
     notchViewComponent,
     image,
     onClick,
+    isVerified,
   } = useNavBar();
 
   const _navButtonLeft = navButtonLeft ? (
@@ -312,6 +397,7 @@ function NavScreen({
           navButtonRight={navButtonRight}
           navbarStyle={style}
           noScrollbars={noScrollbars}
+          isVerified={isVerified}
         >
           {component}
         </WithNav>
@@ -338,6 +424,7 @@ function useNavBar() {
   const theme = useCustomTheme();
   const { props }: any = useDecodedSearchParams(); // TODO: fix type
   const { uuid } = useUser();
+  const { isXs } = useBreakpoints();
   const image: string | undefined = useDbUser(uuid, props?.userId)?.image;
 
   let navButtonLeft = null as any;
@@ -351,7 +438,7 @@ function useNavBar() {
   }
 
   if (isRoot) {
-    navButtonRight = <SettingsButton />;
+    navButtonRight = isXs ? <SettingsButton /> : undefined;
     navButtonLeft = (
       <div style={{ display: "flex" }}>
         <Typography
@@ -368,9 +455,15 @@ function useNavBar() {
             ? "Balances"
             : pathname.startsWith("/apps")
             ? "Applications"
+            : pathname.startsWith("/messages") && !isXs
+            ? ""
             : pathname.startsWith("/messages")
             ? "Messages"
-            : "Collectibles"}
+            : pathname.startsWith("/nfts")
+            ? "Collectibles"
+            : pathname.startsWith("/notifications")
+            ? "Notifications"
+            : "Recent Activity"}
         </Typography>
       </div>
     );
@@ -403,7 +496,14 @@ function useNavBar() {
     navButtonLeft,
     style: navStyle,
     notchViewComponent,
-    image: pathname === "/messages/chat" ? image : undefined,
+    image:
+      pathname === "/messages/chat"
+        ? image
+        : pathname === "/messages/groupchat" && props.id === "backpack-chat"
+        ? "https://user-images.githubusercontent.com/321395/206757416-a80e662a-0ccc-41cc-a20f-ff397755d47f.png"
+        : undefined,
+    isVerified:
+      pathname === "/messages/groupchat" && props.id === "backpack-chat",
     onClick,
   };
 }

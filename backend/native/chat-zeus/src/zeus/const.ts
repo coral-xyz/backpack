@@ -3,7 +3,106 @@
 export const AllTypesProps: Record<string, any> = {
   Int_comparison_exp: {},
   String_comparison_exp: {},
+  chat_media_messages_aggregate_order_by: {
+    avg: "chat_media_messages_avg_order_by",
+    count: "order_by",
+    max: "chat_media_messages_max_order_by",
+    min: "chat_media_messages_min_order_by",
+    stddev: "chat_media_messages_stddev_order_by",
+    stddev_pop: "chat_media_messages_stddev_pop_order_by",
+    stddev_samp: "chat_media_messages_stddev_samp_order_by",
+    sum: "chat_media_messages_sum_order_by",
+    var_pop: "chat_media_messages_var_pop_order_by",
+    var_samp: "chat_media_messages_var_samp_order_by",
+    variance: "chat_media_messages_variance_order_by",
+  },
+  chat_media_messages_arr_rel_insert_input: {
+    data: "chat_media_messages_insert_input",
+    on_conflict: "chat_media_messages_on_conflict",
+  },
+  chat_media_messages_avg_order_by: {
+    id: "order_by",
+  },
+  chat_media_messages_bool_exp: {
+    _and: "chat_media_messages_bool_exp",
+    _not: "chat_media_messages_bool_exp",
+    _or: "chat_media_messages_bool_exp",
+    chat: "chats_bool_exp",
+    id: "Int_comparison_exp",
+    media_kind: "String_comparison_exp",
+    media_link: "String_comparison_exp",
+    message_client_generated_uuid: "String_comparison_exp",
+  },
+  chat_media_messages_constraint: "enum" as const,
+  chat_media_messages_inc_input: {},
+  chat_media_messages_insert_input: {
+    chat: "chats_obj_rel_insert_input",
+  },
+  chat_media_messages_max_order_by: {
+    id: "order_by",
+    media_kind: "order_by",
+    media_link: "order_by",
+    message_client_generated_uuid: "order_by",
+  },
+  chat_media_messages_min_order_by: {
+    id: "order_by",
+    media_kind: "order_by",
+    media_link: "order_by",
+    message_client_generated_uuid: "order_by",
+  },
+  chat_media_messages_on_conflict: {
+    constraint: "chat_media_messages_constraint",
+    update_columns: "chat_media_messages_update_column",
+    where: "chat_media_messages_bool_exp",
+  },
+  chat_media_messages_order_by: {
+    chat: "chats_order_by",
+    id: "order_by",
+    media_kind: "order_by",
+    media_link: "order_by",
+    message_client_generated_uuid: "order_by",
+  },
+  chat_media_messages_pk_columns_input: {},
+  chat_media_messages_select_column: "enum" as const,
+  chat_media_messages_set_input: {},
+  chat_media_messages_stddev_order_by: {
+    id: "order_by",
+  },
+  chat_media_messages_stddev_pop_order_by: {
+    id: "order_by",
+  },
+  chat_media_messages_stddev_samp_order_by: {
+    id: "order_by",
+  },
+  chat_media_messages_stream_cursor_input: {
+    initial_value: "chat_media_messages_stream_cursor_value_input",
+    ordering: "cursor_ordering",
+  },
+  chat_media_messages_stream_cursor_value_input: {},
+  chat_media_messages_sum_order_by: {
+    id: "order_by",
+  },
+  chat_media_messages_update_column: "enum" as const,
+  chat_media_messages_updates: {
+    _inc: "chat_media_messages_inc_input",
+    _set: "chat_media_messages_set_input",
+    where: "chat_media_messages_bool_exp",
+  },
+  chat_media_messages_var_pop_order_by: {
+    id: "order_by",
+  },
+  chat_media_messages_var_samp_order_by: {
+    id: "order_by",
+  },
+  chat_media_messages_variance_order_by: {
+    id: "order_by",
+  },
   chats: {
+    chat_media_messages: {
+      distinct_on: "chat_media_messages_select_column",
+      order_by: "chat_media_messages_order_by",
+      where: "chat_media_messages_bool_exp",
+    },
     secure_transfer_transactions: {
       distinct_on: "secure_transfer_transactions_select_column",
       order_by: "secure_transfer_transactions_order_by",
@@ -14,6 +113,7 @@ export const AllTypesProps: Record<string, any> = {
     _and: "chats_bool_exp",
     _not: "chats_bool_exp",
     _or: "chats_bool_exp",
+    chat_media_messages: "chat_media_messages_bool_exp",
     client_generated_uuid: "String_comparison_exp",
     created_at: "timestamptz_comparison_exp",
     id: "Int_comparison_exp",
@@ -28,6 +128,7 @@ export const AllTypesProps: Record<string, any> = {
   },
   chats_constraint: "enum" as const,
   chats_insert_input: {
+    chat_media_messages: "chat_media_messages_arr_rel_insert_input",
     created_at: "timestamptz",
     secure_transfer_transactions:
       "secure_transfer_transactions_arr_rel_insert_input",
@@ -42,6 +143,7 @@ export const AllTypesProps: Record<string, any> = {
     where: "chats_bool_exp",
   },
   chats_order_by: {
+    chat_media_messages_aggregate: "chat_media_messages_aggregate_order_by",
     client_generated_uuid: "order_by",
     created_at: "order_by",
     id: "order_by",
@@ -66,6 +168,14 @@ export const AllTypesProps: Record<string, any> = {
   chats_update_column: "enum" as const,
   cursor_ordering: "enum" as const,
   mutation_root: {
+    insert_chat_media_messages: {
+      objects: "chat_media_messages_insert_input",
+      on_conflict: "chat_media_messages_on_conflict",
+    },
+    insert_chat_media_messages_one: {
+      object: "chat_media_messages_insert_input",
+      on_conflict: "chat_media_messages_on_conflict",
+    },
     insert_chats: {
       objects: "chats_insert_input",
       on_conflict: "chats_on_conflict",
@@ -81,6 +191,19 @@ export const AllTypesProps: Record<string, any> = {
     insert_secure_transfer_transactions_one: {
       object: "secure_transfer_transactions_insert_input",
       on_conflict: "secure_transfer_transactions_on_conflict",
+    },
+    update_chat_media_messages: {
+      _inc: "chat_media_messages_inc_input",
+      _set: "chat_media_messages_set_input",
+      where: "chat_media_messages_bool_exp",
+    },
+    update_chat_media_messages_by_pk: {
+      _inc: "chat_media_messages_inc_input",
+      _set: "chat_media_messages_set_input",
+      pk_columns: "chat_media_messages_pk_columns_input",
+    },
+    update_chat_media_messages_many: {
+      updates: "chat_media_messages_updates",
     },
     update_secure_transfer_transactions: {
       _inc: "secure_transfer_transactions_inc_input",
@@ -98,6 +221,12 @@ export const AllTypesProps: Record<string, any> = {
   },
   order_by: "enum" as const,
   query_root: {
+    chat_media_messages: {
+      distinct_on: "chat_media_messages_select_column",
+      order_by: "chat_media_messages_order_by",
+      where: "chat_media_messages_bool_exp",
+    },
+    chat_media_messages_by_pk: {},
     chats: {
       distinct_on: "chats_select_column",
       order_by: "chats_order_by",
@@ -238,6 +367,16 @@ export const AllTypesProps: Record<string, any> = {
     message_id: "order_by",
   },
   subscription_root: {
+    chat_media_messages: {
+      distinct_on: "chat_media_messages_select_column",
+      order_by: "chat_media_messages_order_by",
+      where: "chat_media_messages_bool_exp",
+    },
+    chat_media_messages_by_pk: {},
+    chat_media_messages_stream: {
+      cursor: "chat_media_messages_stream_cursor_input",
+      where: "chat_media_messages_bool_exp",
+    },
     chats: {
       distinct_on: "chats_select_column",
       order_by: "chats_order_by",
@@ -277,7 +416,19 @@ export const ReturnTypes: Record<string, any> = {
     ttl: "Int",
     refresh: "Boolean",
   },
+  chat_media_messages: {
+    chat: "chats",
+    id: "Int",
+    media_kind: "String",
+    media_link: "String",
+    message_client_generated_uuid: "String",
+  },
+  chat_media_messages_mutation_response: {
+    affected_rows: "Int",
+    returning: "chat_media_messages",
+  },
   chats: {
+    chat_media_messages: "chat_media_messages",
     client_generated_uuid: "String",
     created_at: "timestamptz",
     id: "Int",
@@ -295,11 +446,16 @@ export const ReturnTypes: Record<string, any> = {
     returning: "chats",
   },
   mutation_root: {
+    insert_chat_media_messages: "chat_media_messages_mutation_response",
+    insert_chat_media_messages_one: "chat_media_messages",
     insert_chats: "chats_mutation_response",
     insert_chats_one: "chats",
     insert_secure_transfer_transactions:
       "secure_transfer_transactions_mutation_response",
     insert_secure_transfer_transactions_one: "secure_transfer_transactions",
+    update_chat_media_messages: "chat_media_messages_mutation_response",
+    update_chat_media_messages_by_pk: "chat_media_messages",
+    update_chat_media_messages_many: "chat_media_messages_mutation_response",
     update_secure_transfer_transactions:
       "secure_transfer_transactions_mutation_response",
     update_secure_transfer_transactions_by_pk: "secure_transfer_transactions",
@@ -307,6 +463,8 @@ export const ReturnTypes: Record<string, any> = {
       "secure_transfer_transactions_mutation_response",
   },
   query_root: {
+    chat_media_messages: "chat_media_messages",
+    chat_media_messages_by_pk: "chat_media_messages",
     chats: "chats",
     chats_by_pk: "chats",
     secure_transfer_transactions: "secure_transfer_transactions",
@@ -330,6 +488,9 @@ export const ReturnTypes: Record<string, any> = {
     returning: "secure_transfer_transactions",
   },
   subscription_root: {
+    chat_media_messages: "chat_media_messages",
+    chat_media_messages_by_pk: "chat_media_messages",
+    chat_media_messages_stream: "chat_media_messages",
     chats: "chats",
     chats_by_pk: "chats",
     chats_stream: "chats",

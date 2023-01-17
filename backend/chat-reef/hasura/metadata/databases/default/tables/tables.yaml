@@ -1,2 +1,3 @@
+- "!include public_chat_media_messages.yaml"
 - "!include public_chats.yaml"
 - "!include public_secure_transfer_transactions.yaml"

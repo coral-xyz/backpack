@@ -1,3 +1,4 @@
+import type { Blockchain } from "@coral-xyz/common";
 export type Background = {
   _serverUi: Handle;
   _solanaConnection: Handle;
@@ -15,4 +16,20 @@ export type Handle = any;
 export type CachedValue<T> = {
   ts: number;
   value: T;
+};
+
+export type NamedPublicKeys = Array<{ name: string; publicKey: string }>;
+
+export type PublicKeyType = {
+  [blockchain: string]: {
+    hdPublicKeys: NamedPublicKeys;
+    importedPublicKeys: NamedPublicKeys;
+    ledgerPublicKeys: NamedPublicKeys;
+  };
+};
+
+export type PublicKeyData = {
+  activeBlockchain: Blockchain;
+  activePublicKeys: string[];
+  publicKeys: PublicKeyType;
 };

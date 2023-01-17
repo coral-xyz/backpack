@@ -8,6 +8,11 @@ export const useUsers = (uuid: string, chats: any[]) => {
   const reqs = useLiveQuery(async () => {
     const userUuids =
       chats?.map((chat) => chat.remoteUserId || chat.uuid) || [];
+    chats?.forEach((chat) => {
+      if (chat.parent_message_author_uuid) {
+        userUuids.push(chat.parent_message_author_uuid);
+      }
+    });
     const uniqueUserUuids = userUuids.filter(
       (x, index) => userUuids.indexOf(x) === index
     );

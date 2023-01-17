@@ -1,15 +1,11 @@
 import type {
   EnrichedMessageWithMetadata,
-  Message,
   MessageWithMetadata,
   SubscriptionType,
   ToServer,
 } from "@coral-xyz/common";
 import {
-  BACKEND_API_URL,
   CHAT_MESSAGES,
-  EnrichedMessage,
-  SendMessagePayload,
   SUBSCRIBE,
   UNSUBSCRIBE,
   WS_READY,
@@ -103,6 +99,7 @@ export class SignalingManager {
               collectionId: message.room,
               lastMessage: message.message,
               lastMessageUuid: message.client_generated_uuid,
+              lastMessageTimestamp: new Date().toISOString(),
             });
           }
         });
@@ -185,6 +182,14 @@ export class SignalingManager {
               unread: 0,
             });
           }
+        } else {
+          createOrUpdateCollection(this.uuid, {
+            collectionId: message.payload.room,
+            lastReadMessage: m.client_generated_uuid,
+            lastMessageUuid: m.client_generated_uuid,
+            lastMessage: m.message,
+            lastMessageTimestamp: new Date().toISOString(),
+          });
         }
       });
     }
