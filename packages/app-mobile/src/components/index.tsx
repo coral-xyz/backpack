@@ -508,6 +508,7 @@ export function Debug({ data }: any): JSX.Element {
       <Text
         style={{
           color: theme.custom.colors.fontColor,
+          fontFamily: "monospace",
         }}
       >
         {JSON.stringify(data, null, 2)}
