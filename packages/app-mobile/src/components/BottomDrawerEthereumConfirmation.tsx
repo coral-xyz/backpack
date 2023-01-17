@@ -15,11 +15,8 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
 import { ethers } from "ethers";
 
-
-
 import { Error, Sending } from "@components/BottomDrawerCards";
-
-import { TransactionData } from "../../../../common/TransactionData";
+import { TransactionData } from "@components/TransactionData";
 
 const logger = getLogger("send-ethereum-confirmation-card");
 const { base58: bs58 } = ethers.utils;
