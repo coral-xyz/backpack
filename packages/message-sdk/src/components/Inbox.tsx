@@ -1,10 +1,19 @@
 import { useEffect, useState } from "react";
 import { SearchBox } from "@coral-xyz/app-extension/src/components/Unlocked/Messages/SearchBox";
-import type { CollectionChatData, EnrichedInboxDb,RemoteUserData  } from "@coral-xyz/common";
-import { BACKEND_API_URL  } from "@coral-xyz/common";
+import type {
+  CollectionChatData,
+  EnrichedInboxDb,
+  RemoteUserData,
+} from "@coral-xyz/common";
+import { BACKEND_API_URL } from "@coral-xyz/common";
 import { refreshFriendships } from "@coral-xyz/db";
 import { EmptyState } from "@coral-xyz/react-common";
-import { useFriendships, useGroupCollections,useRequestsCount, useUser  } from "@coral-xyz/recoil";
+import {
+  useFriendships,
+  useGroupCollections,
+  useRequestsCount,
+  useUser,
+} from "@coral-xyz/recoil";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 
 import { ParentCommunicationManager } from "../ParentCommunicationManager";

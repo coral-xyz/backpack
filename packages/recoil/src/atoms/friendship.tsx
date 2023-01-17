@@ -1,4 +1,4 @@
-import type { CollectionChatData,Friendship  } from "@coral-xyz/common";
+import type { CollectionChatData, Friendship } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import type { EnrichedInboxDb } from "@coral-xyz/common/dist/esm/messages/db";
 import { atomFamily, selectorFamily } from "recoil";

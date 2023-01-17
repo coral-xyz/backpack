@@ -152,7 +152,6 @@ export type FeeConfig = SolanaFeeConfig;
 export type Preferences = {
   autoLockSettings: AutolockSettings;
   approvedOrigins: string[];
-  enabledBlockchains: Blockchain[];
   darkMode: boolean;
   developerMode: boolean;
   aggregateWallets: boolean;

@@ -7,7 +7,7 @@ import { atom, selector, selectorFamily } from "recoil";
 import type { WalletPublicKeys } from "../types";
 
 import { backgroundClient } from "./client";
-import { enabledBlockchains, isAggregateWallets } from "./preferences";
+import { isAggregateWallets } from "./preferences";
 
 /**
  * All public key data associated with the currently active username.
@@ -29,6 +29,19 @@ export const walletPublicKeyData = atom<{
       });
     },
   }),
+});
+
+export const availableBlockchains = atom({
+  key: "blockchains",
+  default: [Blockchain.SOLANA, Blockchain.ETHEREUM],
+});
+
+export const enabledBlockchains = selector({
+  key: "enabledBlockchains",
+  get: ({ get }) => {
+    const data = get(walletPublicKeyData);
+    return Object.keys(data.publicKeys);
+  },
 });
 
 export const activeBlockchain = selector<Blockchain>({
@@ -149,9 +162,6 @@ export const activeWallet = selector<{
       throw new Error("active wallet not found");
     }
 
-    //
-    //
-    //
     return {
       blockchain: data.activeBlockchain,
       ...wallet,

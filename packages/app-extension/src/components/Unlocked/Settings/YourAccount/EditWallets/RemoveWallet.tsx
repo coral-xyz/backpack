@@ -28,8 +28,17 @@ export const RemoveWallet: React.FC<{
     nav.setTitle("Remove Wallet");
   }, [nav]);
 
+  // TODO: this should use a common display function
   const pubkeyStr =
     publicKey.slice(0, 4) + "..." + publicKey.slice(publicKey.length - 4);
+
+  const onRemove = async () => {
+    await background.request({
+      method: UI_RPC_METHOD_KEYRING_KEY_DELETE,
+      params: [blockchain, publicKey],
+    });
+    setShowSuccess(true);
+  };
 
   return (
     <>
@@ -108,15 +117,7 @@ export const RemoveWallet: React.FC<{
           <PrimaryButton
             label={"Remove"}
             style={{ backgroundColor: theme.custom.colors.negative }}
-            onClick={() => {
-              (async () => {
-                await background.request({
-                  method: UI_RPC_METHOD_KEYRING_KEY_DELETE,
-                  params: [blockchain, publicKey],
-                });
-                setShowSuccess(true);
-              })();
-            }}
+            onClick={onRemove}
           />
         </div>
       </div>

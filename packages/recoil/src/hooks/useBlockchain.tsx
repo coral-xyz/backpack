@@ -4,10 +4,6 @@ import { useRecoilValue } from "recoil";
 import * as atoms from "../atoms";
 import type { TokenData } from "../types";
 
-export function useBlockchainKeyrings() {
-  return useRecoilValue(atoms.blockchainKeyrings);
-}
-
 export function useEnabledBlockchains() {
   return useRecoilValue(atoms.enabledBlockchains);
 }
