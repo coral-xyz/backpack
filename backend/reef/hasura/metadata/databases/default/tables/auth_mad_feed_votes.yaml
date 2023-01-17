@@ -13,10 +13,11 @@ insert_permissions:
     permission:
       check: {}
       columns:
-        - value
-        - timestamp
         - post_id
+        - timestamp
+        - type
         - user_id
+        - value
         - vote_id
 select_permissions:
   - role: one_xnft
@@ -24,6 +25,7 @@ select_permissions:
       columns:
         - post_id
         - timestamp
+        - type
         - user_id
         - value
         - vote_id
@@ -35,6 +37,7 @@ update_permissions:
       columns:
         - post_id
         - timestamp
+        - type
         - user_id
         - value
         - vote_id

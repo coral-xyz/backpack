@@ -20,3 +20,4 @@
 - "!include public_images.yaml"
 - "!include public_invitations.yaml"
 - "!include public_mad_feed_post_vote_sums.yaml"
+- "!include public_mad_feed_user_vote_sums.yaml"
