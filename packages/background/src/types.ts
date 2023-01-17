@@ -18,10 +18,13 @@ export type CachedValue<T> = {
   value: T;
 };
 
+export type NamedPublicKeys = Array<{ name: string; publicKey: string }>;
+
 export type PublicKeyType = {
   [blockchain: string]: {
-    publicKey: string;
-    name: string;
+    hdPublicKeys: NamedPublicKeys;
+    importedPublicKeys: NamedPublicKeys;
+    ledgerPublicKeys: NamedPublicKeys;
   };
 };
 
