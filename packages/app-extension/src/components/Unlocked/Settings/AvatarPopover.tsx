@@ -13,7 +13,7 @@ import {
   useUser,
 } from "@coral-xyz/recoil";
 import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
-import { Add , Check } from "@mui/icons-material";
+import { Add, Check } from "@mui/icons-material";
 import { Button, IconButton, Popover, Typography } from "@mui/material";
 
 import { WalletList as _WalletList } from "../../../components/common/WalletList";
@@ -67,8 +67,6 @@ export function AvatarPopoverButton({
       <IconButton
         disableRipple
         className={classes.menuButton}
-        size="large"
-        id="menu-button"
         style={{
           ...buttonStyle,
         }}
