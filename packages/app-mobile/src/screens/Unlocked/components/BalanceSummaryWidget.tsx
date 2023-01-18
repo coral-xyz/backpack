@@ -2,14 +2,15 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { Margin } from "@components";
 import { formatUSD } from "@coral-xyz/common";
-import {
-  totalBalance as totalBalanceSelector,
-  useLoader,
-} from "@coral-xyz/recoil";
-import { HOVER_OPACITY } from "@coral-xyz/themes";
 import { useTheme } from "@hooks";
 
-function TextTotalChange({ totalChange }) {
+import { useTotalBalance } from "@hooks/recoil";
+
+function TextTotalChange({
+  totalChange,
+}: {
+  totalChange: number;
+}): JSX.Element {
   const theme = useTheme();
   const color =
     totalChange === 0
@@ -25,7 +26,15 @@ function TextTotalChange({ totalChange }) {
   );
 }
 
-function TextPercentChange({ isLoading, totalChange, percentChange }) {
+function TextPercentChange({
+  isLoading,
+  totalChange,
+  percentChange,
+}: {
+  isLoading: boolean;
+  totalChange: number;
+  percentChange: number;
+}): JSX.Element {
   const theme = useTheme();
   const color =
     totalChange === 0
@@ -54,12 +63,8 @@ function TextPercentChange({ isLoading, totalChange, percentChange }) {
 
 export function BalanceSummaryWidget() {
   const theme = useTheme();
-  const [{ totalBalance, totalChange, percentChange }, _, isLoading] =
-    useLoader(totalBalanceSelector, {
-      totalBalance: 0,
-      totalChange: 0,
-      percentChange: 0,
-    });
+  const { totalBalance, totalChange, percentChange, isLoading } =
+    useTotalBalance();
 
   return (
     <View style={styles.container}>

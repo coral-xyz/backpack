@@ -10,19 +10,18 @@ import {
   SOL_NATIVE_MINT,
   toTitleCase,
 } from "@coral-xyz/common";
-import {
-  blockchainTokenData,
-  useActiveEthereumWallet,
-  useBlockchainActiveWallet,
-  useLoader,
-} from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import { RecentActivityList } from "@screens/Unlocked/RecentActivityScreen";
 import { WalletListScreen } from "@screens/Unlocked/WalletListScreen";
+import { useRecoilValueLoadable } from "recoil";
 
-import { ErrorBoundary } from "@components/ErrorBoundary";
 import { TransferWidget } from "@components/Unlocked/Balances/TransferWidget";
+import {
+  useBlockchainTokenData,
+  useBlockchainActiveWallet,
+  useActiveEthereumWallet,
+} from "@hooks/recoil";
 
 import { BalanceSummaryWidget } from "./components/BalanceSummaryWidget";
 import { TokenTables, UsdBalanceAndPercentChange } from "./components/Balances";
@@ -80,17 +79,14 @@ function TokenHeader({
   address,
   onPressOption,
 }: SearchParamsFor.Token["props"]) {
-  const wallet = useBlockchainActiveWallet(blockchain);
-  const [token] = useLoader(
-    blockchainTokenData({
-      publicKey: wallet.publicKey.toString(),
-      blockchain,
-      tokenAddress: address,
-    }),
-    null
-  );
+  const { data: wallet } = useBlockchainActiveWallet(blockchain);
+  const { data: token, loading } = useBlockchainTokenData({
+    publicKey: wallet.publicKey.toString(),
+    blockchain,
+    tokenAddress: address,
+  });
 
-  if (!token) {
+  if (!token || loading) {
     return null;
   }
 
@@ -128,8 +124,8 @@ function BalanceDetailScreen({ route, navigation }) {
   const { address } = token;
 
   // We only use ethereumWallet here, even though its shared on the Solana side too.
-  const ethereumWallet = useActiveEthereumWallet();
-  if (!blockchain || !address) {
+  const { data: ethereumWallet, loading } = useActiveEthereumWallet();
+  if (!blockchain || !address || loading) {
     return null;
   }
 

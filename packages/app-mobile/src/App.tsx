@@ -20,6 +20,8 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 import { RecoilRoot, useRecoilCallback, useRecoilSnapshot } from "recoil";
 
+import { ErrorBoundary } from "@components/ErrorBoundary";
+
 import { useLoadedAssets } from "./hooks/useLoadedAssets";
 import { RootNavigation } from "./navigation/RootNavigator";
 
@@ -61,13 +63,15 @@ function DebugButton(): JSX.Element {
 
 export function App(): JSX.Element {
   return (
-    <Suspense fallback={null}>
-      <RecoilRoot>
-        <DebugButton />
-        <BackgroundHiddenWebView />
-        <Main />
-      </RecoilRoot>
-    </Suspense>
+    <ErrorBoundary>
+      <Suspense fallback={null}>
+        <RecoilRoot>
+          <DebugButton />
+          <BackgroundHiddenWebView />
+          <Main />
+        </RecoilRoot>
+      </Suspense>
+    </ErrorBoundary>
   );
 }
 
