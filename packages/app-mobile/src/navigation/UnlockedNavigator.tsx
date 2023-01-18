@@ -6,13 +6,13 @@ import { AccountSettingsNavigator } from "@navigation/AccountSettingsNavigator";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { getHeaderTitle } from "@react-navigation/elements";
 import { createStackNavigator } from "@react-navigation/stack";
-// import AppListScreen from "@screens/Unlocked/AppListScreen";
+import AppListScreen from "@screens/Unlocked/AppListScreen";
 import { BalancesNavigator } from "@screens/Unlocked/BalancesScreen";
 import {
   DepositListScreen,
   DepositSingleScreen,
 } from "@screens/Unlocked/DepositScreen";
-// import { NFTCollectiblesNavigator } from "@screens/Unlocked/NftCollectiblesScreen";
+import { NFTCollectiblesNavigator } from "@screens/Unlocked/NftCollectiblesScreen";
 import { RecentActivityScreen } from "@screens/Unlocked/RecentActivityScreen";
 import {
   SendTokenDetailScreen,
@@ -168,9 +168,8 @@ function UnlockedBottomTabNavigator(): JSX.Element {
       })}
     >
       <Tab.Screen name="Balances" component={BalancesNavigator} />
+      <Tab.Screen name="Applications" component={AppListScreen} />
+      <Tab.Screen name="Collectibles" component={NFTCollectiblesNavigator} />
     </Tab.Navigator>
   );
 }
-
-// <Tab.Screen name="Applications" component={AppListScreen} />
-// <Tab.Screen name="Collectibles" component={NFTCollectiblesNavigator} />
