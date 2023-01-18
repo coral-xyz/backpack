@@ -18,6 +18,7 @@ insert_permissions:
       check: {}
       columns:
         - blockchain
+        - centralized_group
         - collection_id
         - nft_id
         - public_key
@@ -26,6 +27,7 @@ select_permissions:
     permission:
       columns:
         - blockchain
+        - centralized_group
         - collection_id
         - nft_id
         - public_key
