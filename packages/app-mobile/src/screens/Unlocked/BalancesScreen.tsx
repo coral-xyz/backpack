@@ -1,21 +1,19 @@
 import type { Token } from "./components/index";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
-import { Margin, Screen, TokenAmountHeader } from "@components";
 import {
   Blockchain,
   ETH_NATIVE_MINT,
   SOL_NATIVE_MINT,
   toTitleCase,
 } from "@coral-xyz/common";
-import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import { RecentActivityList } from "@screens/Unlocked/RecentActivityScreen";
-import { WalletListScreen } from "@screens/Unlocked/WalletListScreen";
 
 import { TransferWidget } from "@components/Unlocked/Balances/TransferWidget";
+import { Margin, Screen, TokenAmountHeader } from "@components/index";
 import {
   useBlockchainTokenData,
   useBlockchainActiveWallet,
@@ -32,28 +30,6 @@ export function BalancesNavigator() {
       initialRouteName="BalanceList"
       screenOptions={{ presentation: "modal" }}
     >
-      <Stack.Screen
-        name="wallet-picker"
-        component={WalletListScreen}
-        options={({ navigation }) => {
-          return {
-            title: "Wallets",
-            headerLeft: undefined,
-            headerRight: ({ tintColor }) => {
-              return (
-                <Pressable onPress={() => navigation.navigate("edit-wallets")}>
-                  <MaterialIcons
-                    name="settings"
-                    size={24}
-                    style={{ padding: 8 }}
-                    color={tintColor}
-                  />
-                </Pressable>
-              );
-            },
-          };
-        }}
-      />
       <Stack.Group screenOptions={{ headerShown: false }}>
         <Stack.Screen name="BalanceList" component={BalanceListScreen} />
       </Stack.Group>
