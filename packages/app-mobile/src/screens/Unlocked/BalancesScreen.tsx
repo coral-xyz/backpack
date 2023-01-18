@@ -14,7 +14,6 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import { RecentActivityList } from "@screens/Unlocked/RecentActivityScreen";
 import { WalletListScreen } from "@screens/Unlocked/WalletListScreen";
-import { useRecoilValueLoadable } from "recoil";
 
 import { TransferWidget } from "@components/Unlocked/Balances/TransferWidget";
 import {
@@ -179,7 +178,7 @@ function BalanceListScreen({ navigation }) {
         <BalanceSummaryWidget />
       </Margin>
       <Margin bottom={18}>
-        <TransferWidget rampEnabled={false} onPressOption={handlePressOption} />
+        <TransferWidget onPressOption={handlePressOption} />
       </Margin>
       <TokenTables
         onPressRow={onPressTokenRow}
