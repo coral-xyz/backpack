@@ -29,7 +29,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-react": "^7.30.1",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-native": "^4.0.0",
+    "@peterpme/eslint-plugin-react-native": "^4.2.0",
     "eslint-plugin-workspaces": "^0.7.0"
   },
   "peerDependencies": {
