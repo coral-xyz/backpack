@@ -13,6 +13,7 @@ export const addNfts = async (
   nfts: {
     nftId: string;
     collectionId: string;
+    centralizedGroup: string;
   }[]
 ) => {
   await chain("mutation")({
@@ -22,11 +23,43 @@ export const addNfts = async (
           collection_id: nft.collectionId,
           nft_id: nft.nftId,
           public_key: publicKey,
+          centralized_group: nft.centralizedGroup,
         })),
       },
       { affected_rows: true },
     ],
   }).catch((e) => {});
+};
+
+export const validateCentralizedGroupOwnership = async (
+  uuid: string,
+  publicKey: string,
+  centralizedGroup: string
+) => {
+  const response = await chain("query")({
+    auth_public_keys: [
+      {
+        where: {
+          public_key: { _eq: publicKey },
+        },
+        limit: 100,
+      },
+      {
+        user_id: true,
+      },
+    ],
+  });
+
+  if (response.auth_public_keys[0]?.user_id !== uuid) {
+    return false;
+  }
+
+  const returnedCollection = await getNftCollectionByGroupName({
+    centralizedGroup,
+    publicKey,
+  });
+
+  return returnedCollection;
 };
 
 export const validateCollectionOwnership = async (
@@ -58,18 +91,44 @@ export const validateCollectionOwnership = async (
   return returnedCollection === collection;
 };
 
+export const getNftCollectionByGroupName = async ({
+  publicKey,
+  centralizedGroup,
+}: {
+  publicKey: string;
+  centralizedGroup?: string;
+}) => {
+  const response = await chain("query")({
+    auth_user_nfts: [
+      {
+        where: {
+          public_key: { _eq: publicKey },
+          centralized_group: { _eq: centralizedGroup },
+        },
+      },
+      {
+        collection_id: true,
+      },
+    ],
+  });
+  return response.auth_user_nfts[0]?.collection_id || "";
+};
+
 export const getNftCollection = async ({
   mint,
   publicKey,
+  centralizedGroup,
 }: {
   mint: string;
   publicKey: string;
+  centralizedGroup?: string;
 }) => {
   const response = await chain("query")({
     auth_user_nfts_by_pk: [
       {
         nft_id: mint,
         public_key: publicKey,
+        centralized_group: centralizedGroup,
       },
       {
         collection_id: true,
@@ -127,7 +186,9 @@ export const getNftMembers = async (
   };
 };
 
-export const getAllCollectionsFor = async (uuid: string): Promise<string[]> => {
+export const getAllCollectionsFor = async (
+  uuid: string
+): Promise<{ collection_id: string; centralized_group?: string }[]> => {
   const response = await chain("query")({
     auth_user_nfts: [
       {
@@ -143,10 +204,14 @@ export const getAllCollectionsFor = async (uuid: string): Promise<string[]> => {
       },
       {
         collection_id: true,
+        centralized_group: true,
       },
     ],
   });
-  return response.auth_user_nfts.map((x) => x.collection_id || "");
+  return response.auth_user_nfts.map((x) => ({
+    collection_id: x.collection_id || "",
+    centralized_group: x.centralized_group,
+  }));
 };
 
 export const getLastReadFor = async (

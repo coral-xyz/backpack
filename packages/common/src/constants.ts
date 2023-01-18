@@ -562,3 +562,21 @@ export const DEFAULT_GROUP_CHATS: {
       "https://user-images.githubusercontent.com/321395/206757416-a80e662a-0ccc-41cc-a20f-ff397755d47f.png",
   },
 ];
+
+export const WHITELISTED_CHAT_COLLECTIONS: {
+  id: string;
+  name: string;
+  image: string;
+  collectionId: string;
+  attributeMapping?: { [key: string]: string };
+}[] = [
+  {
+    id: "nouns",
+    name: "Y00ts + Nouns",
+    image: "https://metadata.y00ts.com/y/12189.png",
+    collectionId: "4mKSoDDqApmF1DqXvVTSL6tu2zixrSSNjqMxUnwvVzy2",
+    attributeMapping: {
+      Eyewear: "Nouns",
+    },
+  },
+];

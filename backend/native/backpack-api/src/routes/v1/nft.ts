@@ -4,6 +4,7 @@ import {
   Blockchain,
   DEFAULT_GROUP_CHATS,
 } from "@coral-xyz/common";
+import { WHITELISTED_CHAT_COLLECTIONS } from "@coral-xyz/common/src/constants";
 import express from "express";
 
 import { ensureHasRoomAccess, extractUserId } from "../../auth/middleware";
@@ -38,8 +39,18 @@ router.post("/bulk", extractUserId, async (req, res) => {
   }
 
   const responses = await Promise.all(
-    nfts.map((nft: { nftId: string; collectionId: string }) =>
-      validateOwnership(nft.nftId, nft.collectionId, publicKey)
+    nfts.map(
+      (nft: {
+        nftId: string;
+        collectionId: string;
+        centralizedGroup: string;
+      }) =>
+        validateOwnership(
+          nft.nftId,
+          nft.collectionId,
+          nft.centralizedGroup,
+          publicKey
+        )
     )
   );
 
@@ -57,30 +68,44 @@ router.get("/bulk", extractUserId, async (req, res) => {
   // TODO: optimise this
   const allCollections = await getAllCollectionsFor(userId);
   DEFAULT_GROUP_CHATS.forEach(({ id }: { id: string }) =>
-    allCollections.push(id)
+    allCollections.push({ collection_id: id })
   );
-  const lastReadMappings = await getLastReadFor(userId, allCollections);
+  const lastReadMappings = await getLastReadFor(
+    userId,
+    allCollections.map((x) => x.centralized_group || x.collection_id)
+  );
   const collectionChatMetadata = await getCollectionChatMetadata(
-    allCollections
+    allCollections.map((x) => x.centralized_group || x.collection_id)
   );
 
   const collections: CollectionChatData = allCollections.map(
-    (collectionId) => ({
-      collectionId,
+    ({ collection_id: collectionId, centralized_group: centralizedGroup }) => ({
+      collectionId: centralizedGroup || collectionId,
       lastReadMessage:
-        lastReadMappings.find((x) => x.collection_id === collectionId)
-          ?.last_read_message_id || null,
+        lastReadMappings.find(
+          (x) => x.collection_id === (centralizedGroup || collectionId)
+        )?.last_read_message_id || null,
       lastMessage: collectionChatMetadata.find(
-        (x) => x.collection_id === collectionId
+        (x) => x.collection_id === (centralizedGroup || collectionId)
       )?.last_message,
       lastMessageUuid: collectionChatMetadata.find(
-        (x) => x.collection_id === collectionId
+        (x) => x.collection_id === (centralizedGroup || collectionId)
       )?.last_message_uuid,
       lastMessageTimestamp: collectionChatMetadata.find(
-        (x) => x.collection_id === collectionId
+        (x) => x.collection_id === (centralizedGroup || collectionId)
       )?.last_message_timestamp,
-      image: DEFAULT_GROUP_CHATS.find((x) => x.id === collectionId)?.image,
-      name: DEFAULT_GROUP_CHATS.find((x) => x.id === collectionId)?.name,
+      image:
+        DEFAULT_GROUP_CHATS.find(
+          (x) => x.id === (centralizedGroup || collectionId)
+        )?.image ||
+        WHITELISTED_CHAT_COLLECTIONS.find((x) => x.id === centralizedGroup)
+          ?.image,
+      name:
+        DEFAULT_GROUP_CHATS.find(
+          (x) => x.id === (centralizedGroup || collectionId)
+        )?.name ||
+        WHITELISTED_CHAT_COLLECTIONS.find((x) => x.id === centralizedGroup)
+          ?.name,
     })
   );
 
