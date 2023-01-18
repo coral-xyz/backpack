@@ -1,26 +1,19 @@
+import type { BottomSheetBackdropProps } from "@gorhom/bottom-sheet";
+
 import { useCallback, useMemo, useRef } from "react";
 import { Pressable, Text, View } from "react-native";
 
-import { Avatar, Margin, RoundedContainerGroup } from "@components";
 import { UI_RPC_METHOD_ACTIVE_USER_UPDATE } from "@coral-xyz/common";
 import { useAllUsers, useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { useTheme } from "@hooks";
-import { HeaderBackButton } from "@react-navigation/elements";
+import { BottomSheetBackdrop, BottomSheetModal } from "@gorhom/bottom-sheet";
 import { SettingsRow } from "@screens/Unlocked/Settings/components/SettingsRow";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ExpandCollapseIcon, IconCheckmark } from "@components/Icon";
+import { Avatar, Margin, RoundedContainerGroup } from "@components/index";
+import { useTheme } from "@hooks/index";
 
-export function AccountDropdownHeader({
-  navigation,
-  options,
-}: {
-  navigation: any;
-  options: any;
-}): JSX.Element {
-  const insets = useSafeAreaInsets();
+export function AccountDropdownHeader(): JSX.Element {
   const theme = useTheme();
   const user = useUser();
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
@@ -33,6 +26,20 @@ export function AccountDropdownHeader({
   const handleDismissModal = useCallback(() => {
     bottomSheetModalRef.current?.dismiss();
   }, []);
+
+  const modalHeight = 240;
+
+  const renderBackdrop = useCallback(
+    (props: BottomSheetBackdropProps) => (
+      <BottomSheetBackdrop
+        {...props}
+        pressBehavior="close"
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
+      />
+    ),
+    []
+  );
 
   return (
     <>
@@ -62,6 +69,11 @@ export function AccountDropdownHeader({
         ref={bottomSheetModalRef}
         index={0}
         snapPoints={snapPoints}
+        backdropComponent={renderBackdrop}
+        contentHeight={modalHeight}
+        handleStyle={{
+          marginBottom: 12,
+        }}
         backgroundStyle={{
           backgroundColor: theme.custom.colors.backgroundBackdrop,
         }}
