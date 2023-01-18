@@ -7,9 +7,12 @@ const metaplex = new Metaplex(connection);
 export const validateOwnership = async (
   mint: string,
   collection: string,
+  centralizedGroup: string,
   owner: string
 ) => {
   try {
+    //TODO: make use of centralizedGroup group here
+    // to do attribute wide auth
     const nft = await metaplex
       .nfts()
       .findByMint({ mintAddress: new PublicKey(mint) });

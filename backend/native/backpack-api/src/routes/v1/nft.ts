@@ -4,6 +4,7 @@ import {
   Blockchain,
   DEFAULT_GROUP_CHATS,
 } from "@coral-xyz/common";
+import { WHITELISTED_CHAT_COLLECTIONS } from "@coral-xyz/common/src/constants";
 import express from "express";
 
 import { ensureHasRoomAccess, extractUserId } from "../../auth/middleware";
@@ -38,8 +39,18 @@ router.post("/bulk", extractUserId, async (req, res) => {
   }
 
   const responses = await Promise.all(
-    nfts.map((nft: { nftId: string; collectionId: string }) =>
-      validateOwnership(nft.nftId, nft.collectionId, publicKey)
+    nfts.map(
+      (nft: {
+        nftId: string;
+        collectionId: string;
+        centralizedGroup: string;
+      }) =>
+        validateOwnership(
+          nft.nftId,
+          nft.collectionId,
+          centralizedGroup,
+          publicKey
+        )
     )
   );
 
@@ -57,15 +68,18 @@ router.get("/bulk", extractUserId, async (req, res) => {
   // TODO: optimise this
   const allCollections = await getAllCollectionsFor(userId);
   DEFAULT_GROUP_CHATS.forEach(({ id }: { id: string }) =>
-    allCollections.push(id)
+    allCollections.push({ collection_id: id })
   );
-  const lastReadMappings = await getLastReadFor(userId, allCollections);
+  const lastReadMappings = await getLastReadFor(
+    userId,
+    allCollections.map((x) => x.collection_id)
+  );
   const collectionChatMetadata = await getCollectionChatMetadata(
-    allCollections
+    allCollections.map((x) => x.collection_id)
   );
 
   const collections: CollectionChatData = allCollections.map(
-    (collectionId) => ({
+    ({ collection_id: collectionId, centralized_group: centraliedGroup }) => ({
       collectionId,
       lastReadMessage:
         lastReadMappings.find((x) => x.collection_id === collectionId)
@@ -79,8 +93,14 @@ router.get("/bulk", extractUserId, async (req, res) => {
       lastMessageTimestamp: collectionChatMetadata.find(
         (x) => x.collection_id === collectionId
       )?.last_message_timestamp,
-      image: DEFAULT_GROUP_CHATS.find((x) => x.id === collectionId)?.image,
-      name: DEFAULT_GROUP_CHATS.find((x) => x.id === collectionId)?.name,
+      image:
+        DEFAULT_GROUP_CHATS.find((x) => x.id === collectionId)?.image ||
+        WHITELISTED_CHAT_COLLECTIONS.find((x) => x.id === centraliedGroup)
+          ?.image,
+      name:
+        DEFAULT_GROUP_CHATS.find((x) => x.id === collectionId)?.name ||
+        WHITELISTED_CHAT_COLLECTIONS.find((x) => x.id === centraliedGroup)
+          ?.name,
     })
   );
 
