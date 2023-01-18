@@ -818,7 +818,7 @@ export function RoundedContainerGroup({
   disableBottomRadius = false,
 }: {
   children: JSX.Element;
-  style: StyleProp<ViewStyle>;
+  style?: StyleProp<ViewStyle>;
   disableTopRadius?: boolean;
   disableBottomRadius?: boolean;
 }): JSX.Element {
