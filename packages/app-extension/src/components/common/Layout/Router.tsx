@@ -489,7 +489,9 @@ function useNavBar() {
   }
 
   const notchViewComponent =
-    pathname === "/nfts/chat" ? <ChatDrawer setOpenDrawer={() => {}} /> : null;
+    pathname === "/nfts/chat" || pathname === "/messages/groupchat" ? (
+      <ChatDrawer setOpenDrawer={() => {}} />
+    ) : null;
 
   return {
     navButtonRight,
