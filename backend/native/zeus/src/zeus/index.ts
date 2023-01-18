@@ -4227,7 +4227,6 @@ export type ValueTypes = {
     ];
     delete_auth_user_nfts_by_pk?: [
       {
-        centralized_group: string | Variable<any, string>;
         nft_id: string | Variable<any, string>;
         public_key: string | Variable<any, string>;
       },
@@ -5502,7 +5501,6 @@ export type ValueTypes = {
     ];
     auth_user_nfts_by_pk?: [
       {
-        centralized_group: string | Variable<any, string>;
         nft_id: string | Variable<any, string>;
         public_key: string | Variable<any, string>;
       },
@@ -6370,7 +6368,6 @@ export type ValueTypes = {
     ];
     auth_user_nfts_by_pk?: [
       {
-        centralized_group: string | Variable<any, string>;
         nft_id: string | Variable<any, string>;
         public_key: string | Variable<any, string>;
       },
@@ -9050,7 +9047,7 @@ export type ResolverInputTypes = {
       ResolverInputTypes["auth_user_nfts_mutation_response"]
     ];
     delete_auth_user_nfts_by_pk?: [
-      { centralized_group: string; nft_id: string; public_key: string },
+      { nft_id: string; public_key: string },
       ResolverInputTypes["auth_user_nfts"]
     ];
     delete_auth_xnft_preferences?: [
@@ -10022,7 +10019,7 @@ export type ResolverInputTypes = {
       ResolverInputTypes["auth_user_nfts_aggregate"]
     ];
     auth_user_nfts_by_pk?: [
-      { centralized_group: string; nft_id: string; public_key: string },
+      { nft_id: string; public_key: string },
       ResolverInputTypes["auth_user_nfts"]
     ];
     auth_users?: [
@@ -10661,7 +10658,7 @@ export type ResolverInputTypes = {
       ResolverInputTypes["auth_user_nfts_aggregate"]
     ];
     auth_user_nfts_by_pk?: [
-      { centralized_group: string; nft_id: string; public_key: string },
+      { nft_id: string; public_key: string },
       ResolverInputTypes["auth_user_nfts"]
     ];
     auth_user_nfts_stream?: [
@@ -11986,7 +11983,7 @@ export type ModelTypes = {
   /** columns and relationships of "auth.user_nfts" */
   ["auth_user_nfts"]: {
     blockchain: string;
-    centralized_group: string;
+    centralized_group?: string | undefined;
     collection_id?: string | undefined;
     nft_id: string;
     /** An object relationship */
@@ -14136,7 +14133,7 @@ export type GraphQLTypes = {
   ["auth_user_nfts"]: {
     __typename: "auth_user_nfts";
     blockchain: string;
-    centralized_group: string;
+    centralized_group?: string | undefined;
     collection_id?: string | undefined;
     nft_id: string;
     /** An object relationship */
