@@ -12,6 +12,7 @@ import { getFriendshipStatus } from "../../db/friendships";
 import {
   addNfts,
   getAllCollectionsFor,
+  getAllUsers,
   getCollectionChatMetadata,
   getLastReadFor,
   getNftMembers,
@@ -126,12 +127,11 @@ router.get("/members", extractUserId, ensureHasRoomAccess, async (req, res) => {
   // @ts-ignore
   const prefix: string = req.query.prefix || "";
 
-  const { count, users } = await getNftMembers(
-    collectionId,
-    prefix,
-    limit,
-    offset
-  );
+  const { count, users } = DEFAULT_GROUP_CHATS.map((x) => x.id).includes(
+    collectionId
+  )
+    ? await getAllUsers(prefix, limit, offset)
+    : await getNftMembers(collectionId, prefix, limit, offset);
 
   const memberFriendships: {
     id: string;

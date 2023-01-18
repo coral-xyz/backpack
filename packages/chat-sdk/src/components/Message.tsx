@@ -610,6 +610,7 @@ export function ChatMessages() {
             image={chat.image}
             username={chat.username}
             uuid={chat.uuid}
+            userId={chat.uuid}
             metadata={chat.message_metadata}
             messageId={chat.client_generated_uuid}
           />

@@ -140,11 +140,6 @@ export const SendMessage = () => {
           last_message_client_uuid: client_generated_uuid,
         });
       }
-      setActiveReply({
-        parent_username: "",
-        parent_client_generated_uuid: null,
-        text: "",
-      });
       SignalingManager.getInstance()?.send({
         type: CHAT_MESSAGES,
         payload: {
@@ -158,11 +153,28 @@ export const SendMessage = () => {
                 activeReply.parent_client_generated_uuid
                   ? activeReply.parent_client_generated_uuid
                   : undefined,
+              //@ts-ignore
+              parent_message_author_username:
+                activeReply.parent_client_generated_uuid
+                  ? activeReply.parent_username?.slice(1)
+                  : undefined,
+              //@ts-ignore
+              parent_message_text: activeReply.parent_client_generated_uuid
+                ? activeReply.text
+                : undefined,
+              parent_message_author_uuid:
+                activeReply.parent_message_author_uuid,
             },
           ],
           type: type,
           room: roomId,
         },
+      });
+
+      setActiveReply({
+        parent_username: "",
+        parent_client_generated_uuid: null,
+        text: "",
       });
       setMessageContent("");
     }
