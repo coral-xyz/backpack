@@ -1,27 +1,28 @@
-import { Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
-import { NavHeader } from "@components";
 import { toTitleCase } from "@coral-xyz/common";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { useTheme } from "@hooks";
+import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { AccountSettingsNavigator } from "@navigation/AccountSettingsNavigator";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { getHeaderTitle } from "@react-navigation/elements";
 import { createStackNavigator } from "@react-navigation/stack";
-// import AppListScreen from "@screens/Unlocked/AppListScreen";
+import AppListScreen from "@screens/Unlocked/AppListScreen";
 import { BalancesNavigator } from "@screens/Unlocked/BalancesScreen";
 import {
   DepositListScreen,
   DepositSingleScreen,
 } from "@screens/Unlocked/DepositScreen";
-// import { NFTCollectiblesNavigator } from "@screens/Unlocked/NftCollectiblesScreen";
+import { NFTCollectiblesNavigator } from "@screens/Unlocked/NftCollectiblesScreen";
 import { RecentActivityScreen } from "@screens/Unlocked/RecentActivityScreen";
 import {
   SendTokenDetailScreen,
   SendTokenListScreen,
 } from "@screens/Unlocked/SendTokenScreen";
+import { WalletListScreen } from "@screens/Unlocked/WalletListScreen";
 
 import { IconCloseModal } from "@components/Icon";
+import { NavHeader } from "@components/index";
+import { useTheme } from "@hooks/index";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -63,6 +64,30 @@ export default function UnlockedNavigator(): JSX.Element {
           options={{ title: "Select Token" }}
           name="SendSelectTokenModal"
           component={SendTokenListScreen}
+        />
+        <Stack.Screen
+          name="wallet-picker"
+          component={WalletListScreen}
+          options={({ navigation }) => {
+            return {
+              title: "Wallets",
+              headerLeft: undefined,
+              headerRight: ({ tintColor }) => {
+                return (
+                  <Pressable
+                    onPress={() => navigation.navigate("edit-wallets")}
+                  >
+                    <MaterialIcons
+                      name="settings"
+                      size={24}
+                      style={{ padding: 8 }}
+                      color={tintColor}
+                    />
+                  </Pressable>
+                );
+              },
+            };
+          }}
         />
         <Stack.Screen
           name="SendTokenModal"
@@ -143,9 +168,8 @@ function UnlockedBottomTabNavigator(): JSX.Element {
       })}
     >
       <Tab.Screen name="Balances" component={BalancesNavigator} />
+      <Tab.Screen name="Applications" component={AppListScreen} />
+      <Tab.Screen name="Collectibles" component={NFTCollectiblesNavigator} />
     </Tab.Navigator>
   );
 }
-
-// <Tab.Screen name="Applications" component={AppListScreen} />
-// <Tab.Screen name="Collectibles" component={NFTCollectiblesNavigator} />
