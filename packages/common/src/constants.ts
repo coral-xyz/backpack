@@ -572,7 +572,7 @@ export const WHITELISTED_CHAT_COLLECTIONS: {
 }[] = [
   {
     id: "nouns",
-    name: "S Nouns",
+    name: "Y00ts + Nouns",
     image: "https://metadata.y00ts.com/y/12189.png",
     collectionId: "4mKSoDDqApmF1DqXvVTSL6tu2zixrSSNjqMxUnwvVzy2",
     attributeMapping: {
