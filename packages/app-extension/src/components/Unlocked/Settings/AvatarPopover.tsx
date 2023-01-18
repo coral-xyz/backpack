@@ -13,7 +13,7 @@ import {
   useUser,
 } from "@coral-xyz/recoil";
 import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
-import { Check } from "@mui/icons-material";
+import { Add , Check } from "@mui/icons-material";
 import { Button, IconButton, Popover, Typography } from "@mui/material";
 
 import { WalletList as _WalletList } from "../../../components/common/WalletList";
@@ -97,15 +97,15 @@ export function AvatarPopoverButton({
         PaperProps={{
           style: {
             minWidth: "218px",
-            minHeight: "218px",
             borderRadius: "6px",
-            background: theme.custom.colors.background,
+            background: theme.custom.colors.avatarPopoverMenuBackground,
           },
         }}
         transformOrigin={{
           vertical: "top",
           horizontal: "right",
         }}
+        classes={{ root: classes.popoverRoot }}
       >
         <PopoverProvider
           close={() => setAnchorEl(null)}
@@ -139,12 +139,6 @@ function AvatarMenu() {
         }}
       />
       <AuxMenuList closePopover={() => {}} />
-      <div
-        style={{
-          borderTop: theme.custom.colors.borderFull,
-        }}
-      />
-      <LockList />
     </div>
   );
 }
@@ -207,7 +201,7 @@ function UsersMenuList() {
           <UserMenuItem
             user={user}
             onClick={async () => {
-              //							close();
+              close();
               await background.request({
                 method: UI_RPC_METHOD_ACTIVE_USER_UPDATE,
                 params: [user.uuid],
@@ -218,16 +212,32 @@ function UsersMenuList() {
       })}
       <MenuListItem
         onClick={() => {
+          close();
           openAddUserAccount();
         }}
       >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            flexDirection: "column",
+            marginRight: "4px",
+          }}
+        >
+          <Add
+            style={{
+              fontSize: "14px",
+              color: theme.custom.colors.secondary,
+            }}
+          />
+        </div>
         <Typography
           style={{
             fontSize: 14,
             color: theme.custom.colors.secondary,
           }}
         >
-          + Add Account
+          Add Account
         </Typography>
       </MenuListItem>
     </MenuList>
