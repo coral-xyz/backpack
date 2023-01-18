@@ -1,11 +1,8 @@
 import type { Blockchain } from "@coral-xyz/common";
-import { getLogger } from "@coral-xyz/common";
-import { useRecoilValue, useRecoilValueLoadable } from "recoil";
+import { useRecoilValue } from "recoil";
 
 import * as atoms from "../atoms";
 import type { WalletPublicKeys } from "../types";
-
-const logger = getLogger("RG");
 
 export function useActiveEthereumWallet(): {
   publicKey: string;
