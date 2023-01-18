@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { Suspense, useContext, useState } from "react";
 import {
   openAddUserAccount,
   openPopupWindow,
@@ -48,13 +48,6 @@ export function AvatarPopoverButton({
   const [anchorEl, setAnchorEl] = useState<any | null>(null);
   const avatarUrl = useAvatarUrl(32);
   const [settingsOpen, setSettingsOpen] = useState(false);
-
-  React.useEffect(() => {
-    console.log("ARMANI MOUNTING");
-    return () => {
-      console.log("ARMANI UNMOUNTING");
-    };
-  }, []);
 
   return (
     <div
@@ -109,7 +102,13 @@ export function AvatarPopoverButton({
           close={() => setAnchorEl(null)}
           openSettings={() => setSettingsOpen(true)}
         >
-          <AvatarMenu />
+          {/* This suspense is needed to prevent glitching since the AvatarMenu
+					    does an async request to the background service worker. */}
+          <Suspense
+            fallback={<div style={{ height: "100px", width: "218px" }} />}
+          >
+            <AvatarMenu />
+          </Suspense>
         </PopoverProvider>
       </Popover>
       <SettingsNavStackDrawer
