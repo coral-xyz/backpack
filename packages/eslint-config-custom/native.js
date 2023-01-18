@@ -17,7 +17,7 @@ module.exports = {
     "./shared/react.js",
     // "./shared/prettier.js", // i added extends prettier to core
   ],
-  plugins: ["react-native"],
+  plugins: ["@peterpme/react-native"],
   globals: {
     __DEV__: false,
     Atomics: false,
@@ -54,11 +54,11 @@ module.exports = {
     },
   ],
   rules: {
-    "react-native/no-unused-styles": "warn",
-    "react-native/split-platform-components": "warn",
+    "@peterpme/react-native/no-unused-styles": "warn",
+    "@peterpme/react-native/split-platform-components": "warn",
     // "react-native/no-inline-styles": "warn",
     // "react-native/no-color-literals": "warn",
-    // "react-native/no-raw-text": "warn",
+    "@peterpme/react-native/no-raw-text": "warn",
     // "react-native/no-single-element-style-arrays": "warn",
   },
 };
