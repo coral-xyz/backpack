@@ -576,7 +576,7 @@ export const WHITELISTED_CHAT_COLLECTIONS: {
     image: "https://metadata.y00ts.com/y/12189.png",
     collectionId: "4mKSoDDqApmF1DqXvVTSL6tu2zixrSSNjqMxUnwvVzy2",
     attributeMapping: {
-      Eyewear: "Green Bricks",
+      Eyewear: "Nouns",
     },
   },
 ];

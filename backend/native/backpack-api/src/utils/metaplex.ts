@@ -16,14 +16,15 @@ export const validateOwnership = async (
     const nft = await metaplex
       .nfts()
       .findByMint({ mintAddress: new PublicKey(mint) });
+    await nft.run();
     const largestAccounts = await connection.getTokenLargestAccounts(
       new PublicKey(mint)
     );
     const largestAccountInfo = await connection.getParsedAccountInfo(
-      largestAccounts.value[0].address
+      largestAccounts.value[0]?.address
     );
     return (
-      nft.collection.address.toString() === collection &&
+      nft.getResult().collection.address.toString() === collection &&
       largestAccountInfo?.value?.data?.parsed?.info?.owner
     );
   } catch (e) {

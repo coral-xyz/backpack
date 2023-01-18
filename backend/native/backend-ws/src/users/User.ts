@@ -4,13 +4,18 @@ import {
   DEFAULT_GROUP_CHATS,
   SUBSCRIBE,
   UNSUBSCRIBE,
+  WHITELISTED_CHAT_COLLECTIONS,
   WS_READY,
 } from "@coral-xyz/common";
 import type { SubscriptionType } from "@coral-xyz/common/dist/esm/messages/toServer";
 import type WebSocket from "ws";
 
 import { validateRoom } from "../db/friendships";
-import { getNftCollections, validateCollectionOwnership } from "../db/nfts";
+import {
+  getNftCollections,
+  validateCentralizedGroupOwnership,
+  validateCollectionOwnership,
+} from "../db/nfts";
 import { RedisSubscriptionManager } from "../subscriptions/RedisSubscriptionManager";
 
 export class User {
@@ -101,6 +106,16 @@ export class User {
             DEFAULT_GROUP_CHATS.map((x) => x.id).includes(message.payload.room)
           ) {
             roomValidation = true;
+          } else if (
+            WHITELISTED_CHAT_COLLECTIONS.map((x) => x.id).includes(
+              message.payload.room
+            )
+          ) {
+            roomValidation = await validateCentralizedGroupOwnership(
+              this.userId,
+              message.payload.publicKey,
+              message.payload.room
+            );
           } else {
             roomValidation = await validateCollectionOwnership(
               this.userId,

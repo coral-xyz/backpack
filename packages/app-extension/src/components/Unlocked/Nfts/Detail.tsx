@@ -6,10 +6,13 @@ import {
   explorerNftUrl,
   getLogger,
   Solana,
+  TAB_MESSAGES,
   toTitleCase,
+  UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
   WHITELISTED_CHAT_COLLECTIONS,
 } from "@coral-xyz/common";
+import { NAV_COMPONENT_NFT_CHAT } from "@coral-xyz/common/dist/esm/constants";
 import {
   List,
   ListItem,
@@ -74,7 +77,10 @@ export function NftsDetail({
   const whitelistedChatCollection = WHITELISTED_CHAT_COLLECTIONS.find(
     (x) => x.collectionId === nft?.metadataCollectionId
   );
+  const [chatJoined, setChatJoined] = useState(false);
+  const [joiningChat, setJoiningChat] = useState(false);
   let whitelistedChatCollectionId = whitelistedChatCollection?.collectionId;
+  const background = useBackgroundClient();
 
   if (whitelistedChatCollection) {
     Object.keys(whitelistedChatCollection.attributeMapping || {}).forEach(
@@ -117,11 +123,13 @@ export function NftsDetail({
       <Image nft={nft} />
       <Description nft={nft} />
       <SendButton nft={nft} />
-
       {whitelistedChatCollectionId && (
         <PrimaryButton
-          label="Join chat"
+          style={{ marginBottom: 10 }}
+          disabled={chatJoined || joiningChat}
+          label={joiningChat ? "Joining" : chatJoined ? "Joined" : "Join chat"}
           onClick={async () => {
+            setJoiningChat(true);
             await fetch(`${BACKEND_API_URL}/nft/bulk`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -130,12 +138,18 @@ export function NftsDetail({
                 nfts: [
                   {
                     collectionId: whitelistedChatCollection?.collectionId,
-                    nftId: nft?.id,
+                    nftId: nft?.mint,
                     centralizedGroup: whitelistedChatCollection?.id,
                   },
                 ],
               }),
             });
+            setJoiningChat(false);
+            background.request({
+              method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+              params: [TAB_MESSAGES],
+            });
+            setChatJoined(true);
           }}
         />
       )}
