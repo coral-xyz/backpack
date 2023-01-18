@@ -1,6 +1,7 @@
 // TODO used in app-extensions Settings/index.tsx but we'll need to unify
-import { Blockchain } from "@coral-xyz/common";
 import type { WalletPublicKeys } from "@coral-xyz/recoil";
+
+import { Blockchain } from "@coral-xyz/common";
 import { Keypair } from "@solana/web3.js";
 import * as bs58 from "bs58";
 import { ethers } from "ethers";

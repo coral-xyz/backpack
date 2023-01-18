@@ -1,4 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
+
 import { Margin } from "@components";
 import { formatUSD } from "@coral-xyz/common";
 import {

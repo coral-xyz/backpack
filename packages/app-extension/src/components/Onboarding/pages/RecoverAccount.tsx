@@ -20,6 +20,7 @@ import { MnemonicInput } from "../../common/Account/MnemonicInput";
 import { NavBackButton, WithNav } from "../../common/Layout/Nav";
 import { useHardwareOnboardSteps } from "../../Onboarding/pages/HardwareOnboard";
 
+import { AlreadyOnboarded } from "./AlreadyOnboarded";
 import { Finish } from "./Finish";
 import { KeyringTypeSelector } from "./KeyringTypeSelector";
 import { MnemonicSearch } from "./MnemonicSearch";
@@ -29,10 +30,12 @@ export const RecoverAccount = ({
   onClose,
   navProps,
   isAddingAccount,
+  isOnboarded,
 }: {
   onClose: () => void;
   navProps: any;
   isAddingAccount?: boolean;
+  isOnboarded?: boolean;
 }) => {
   const { step, nextStep, prevStep } = useSteps();
   const background = useBackgroundClient();
@@ -196,6 +199,10 @@ export const RecoverAccount = ({
         ]
       : []),
   ];
+
+  if (isOnboarded && step !== steps.length - 1) {
+    return <AlreadyOnboarded />;
+  }
 
   return (
     <WithNav

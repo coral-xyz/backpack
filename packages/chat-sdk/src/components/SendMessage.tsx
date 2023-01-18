@@ -388,6 +388,7 @@ export const SendMessage = () => {
           )}
         </>
         <TextField
+          autoFocus
           classes={{
             root: classes.textFieldRoot,
           }}

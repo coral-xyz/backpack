@@ -1,4 +1,7 @@
+import type { Blockchain } from "@coral-xyz/common";
+
 import { Pressable, SectionList, StyleSheet, Text, View } from "react-native";
+
 import {
   AddConnectWalletButton,
   ImportTypeBadge,
@@ -7,7 +10,6 @@ import {
   Screen,
   WalletAddressLabel,
 } from "@components";
-import type { Blockchain } from "@coral-xyz/common";
 import { toTitleCase } from "@coral-xyz/common";
 import { useWalletPublicKeys } from "@coral-xyz/recoil";
 import { useTheme } from "@hooks";

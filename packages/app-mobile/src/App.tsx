@@ -1,3 +1,12 @@
+import type { Blockchain } from "@coral-xyz/common";
+
+import { Suspense, useCallback, useEffect, useRef } from "react";
+import { Button, StyleSheet, Text, View } from "react-native";
+
+import Constants from "expo-constants";
+import * as SplashScreen from "expo-splash-screen";
+import { StatusBar } from "expo-status-bar";
+
 import {
   BACKGROUND_SERVICE_WORKER_READY,
   useStore,
@@ -7,11 +16,6 @@ import { NotificationsProvider } from "@coral-xyz/recoil";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useTheme } from "@hooks";
-import Constants from "expo-constants";
-import * as SplashScreen from "expo-splash-screen";
-import { StatusBar } from "expo-status-bar";
-import { Suspense, useCallback, useEffect, useRef } from "react";
-import { Button, StyleSheet, Text, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 import { RecoilRoot, useRecoilCallback, useRecoilSnapshot } from "recoil";

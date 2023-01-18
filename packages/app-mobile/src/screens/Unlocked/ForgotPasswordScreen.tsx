@@ -1,4 +1,5 @@
 import { View } from "react-native";
+
 import {
   DangerButton,
   Header,
@@ -7,8 +8,9 @@ import {
   SecondaryButton,
   SubtextParagraph,
 } from "@components";
-import { QuestionIcon } from "@components/Icon";
 import { KeyringStoreStateEnum, useKeyringStoreState } from "@coral-xyz/recoil";
+
+import { QuestionIcon } from "@components/Icon";
 
 export function ForgotPasswordScreen({ navigation }) {
   const keyringStoreState = useKeyringStoreState();

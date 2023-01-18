@@ -1,21 +1,25 @@
+import type { BottomSheetBackdropProps } from "@gorhom/bottom-sheet";
+
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { FlatList, Pressable, StyleSheet } from "react-native";
+
+import * as Linking from "expo-linking";
+
 import { Margin, RoundedContainerGroup } from "@components";
-import { DiscordIcon, TwitterIcon } from "@components/Icon";
 import {
   BACKPACK_LINK,
   DISCORD_INVITE_LINK,
   TWITTER_LINK,
 } from "@coral-xyz/common";
 import { MaterialIcons } from "@expo/vector-icons";
-import type { BottomSheetBackdropProps } from "@gorhom/bottom-sheet";
 import { BottomSheetBackdrop, BottomSheetModal } from "@gorhom/bottom-sheet";
-import { useTheme } from "@hooks/useTheme";
 import {
   IconLaunchDetail,
   SettingsRow,
 } from "@screens/Unlocked/Settings/components/SettingsRow";
-import * as Linking from "expo-linking";
+
+import { DiscordIcon, TwitterIcon } from "@components/Icon";
+import { useTheme } from "@hooks/useTheme";
 
 export function HelpModalMenuButton({
   onPress,
@@ -123,7 +127,8 @@ export function BottomSheetHelpModal({
       }}
       backgroundStyle={{
         backgroundColor: theme.custom.colors.background,
-      }}>
+      }}
+    >
       <Margin horizontal={16}>
         <RoundedContainerGroup>
           <FlatList

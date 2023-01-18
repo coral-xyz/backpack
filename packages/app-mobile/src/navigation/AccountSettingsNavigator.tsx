@@ -1,7 +1,10 @@
-import { Screen } from "@components";
-import { IconCheckmark } from "@components/Icon";
-import { AccountDropdownHeader } from "@components/UserAccountsMenu";
 import type { ChannelAppUiClient } from "@coral-xyz/common";
+import type { Commitment } from "@solana/web3.js";
+
+import { useEffect, useState } from "react";
+import { Text, View } from "react-native";
+
+import { Screen } from "@components";
 import {
   EthereumConnectionUrl,
   SolanaCluster,
@@ -50,10 +53,10 @@ import {
   ShowRecoveryPhraseWarningScreen,
 } from "@screens/Unlocked/ShowRecoveryPhraseScreen";
 import { YourAccountScreen } from "@screens/Unlocked/YourAccountScreen";
-import type { Commitment } from "@solana/web3.js";
 import { ethers } from "ethers";
-import { useEffect, useState } from "react";
-import { Text, View } from "react-native";
+
+import { IconCheckmark } from "@components/Icon";
+import { AccountDropdownHeader } from "@components/UserAccountsMenu";
 const { hexlify } = ethers.utils;
 
 const Stack = createStackNavigator();
@@ -428,7 +431,7 @@ function PreferencesSolana({ route, navigation }) {
 export const changeNetwork = async (
   background: ChannelAppUiClient,
   url: string,
-  chainId?: string,
+  chainId?: string
 ) => {
   await background.request({
     method: UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_UPDATE,

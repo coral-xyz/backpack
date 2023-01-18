@@ -1,3 +1,5 @@
+import type { NftCollection } from "@coral-xyz/common";
+
 import React from "react";
 import {
   Alert,
@@ -9,8 +11,10 @@ import {
   Text,
   View,
 } from "react-native";
+
+import * as Linking from "expo-linking";
+
 import { EmptyState, Margin, NFTCard, Screen } from "@components";
-import type { NftCollection } from "@coral-xyz/common";
 import { Blockchain, toTitleCase } from "@coral-xyz/common";
 import {
   useActiveWallets,
@@ -19,7 +23,6 @@ import {
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
-import * as Linking from "expo-linking";
 
 import { NFTDetailScreen, NFTDetailSendScreen } from "./NFTDetailScreen";
 
@@ -61,7 +64,8 @@ function NFTItem({
   return (
     <Pressable
       style={{ flex: 0.5, margin: 8, borderRadius: 8, overflow: "hidden" }}
-      onPress={() => onPress(collectionId)}>
+      onPress={() => onPress(collectionId)}
+    >
       <Image source={{ uri: imageUrl }} style={{ aspectRatio: 1 }} />
       <View
         style={{
@@ -72,7 +76,8 @@ function NFTItem({
           backgroundColor: "#FFF",
           borderRadius: 8,
           padding: 4,
-        }}>
+        }}
+      >
         <Text numberOfLines={1}>{name}</Text>
       </View>
     </Pressable>
@@ -131,7 +136,8 @@ function NoEmptyState() {
       style={{
         flex: 1,
         justifyContent: "center",
-      }}>
+      }}
+    >
       <EmptyState
         icon={(props: any) => <MaterialIcons name="image" {...props} />}
         title="No NFTs"
