@@ -80,3 +80,5 @@ export function useTotalBalance() {
   const isLoading = tb.state === "loading";
   return { totalBalance, totalChange, percentChange, isLoading };
 }
+
+// only 1 set of recent transactions for now fm

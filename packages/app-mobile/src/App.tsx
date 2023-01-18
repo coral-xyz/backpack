@@ -27,6 +27,7 @@ import { RootNavigation } from "./navigation/RootNavigator";
 
 SplashScreen.preventAutoHideAsync();
 
+// eslint-disable-next-line
 function DebugObserver(): null {
   const snapshot = useRecoilSnapshot();
   useEffect(() => {
@@ -39,6 +40,8 @@ function DebugObserver(): null {
 
   return null;
 }
+
+// eslint-disable-next-line
 function DebugButton(): JSX.Element {
   const onPress = useRecoilCallback(
     ({ snapshot }) =>
@@ -66,7 +69,6 @@ export function App(): JSX.Element {
     <ErrorBoundary>
       <Suspense fallback={null}>
         <RecoilRoot>
-          <DebugButton />
           <BackgroundHiddenWebView />
           <Main />
         </RecoilRoot>
