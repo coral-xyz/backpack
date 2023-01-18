@@ -32,6 +32,13 @@ object_relationships:
           name: waolist_tokens
           schema: auth
 array_relationships:
+  - name: mad_feed_votes
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          name: mad_feed_votes
+          schema: auth
   - name: public_keys
     using:
       foreign_key_constraint_on:
@@ -74,6 +81,7 @@ select_permissions:
   - role: one_xnft
     permission:
       columns:
+        - created_at
         - id
         - is_internal
         - username
