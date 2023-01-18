@@ -112,6 +112,7 @@ export const solanaNftById = equalSelectorFamily<
         blockchain: Blockchain.SOLANA,
         publicKey: nftToken.key,
         mint: nftTokenMetadata?.account.mint,
+        metadataCollectionId: uriData.metadata.collection?.key.toString(),
         name:
           nftTokenMetadata?.account.data.name ??
           (uriData ? uriData.tokenMetaUriData.name : "Unknown"),

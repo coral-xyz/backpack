@@ -68,6 +68,7 @@ export type Nft = {
   imageData?: string;
   attributes?: NftAttribute[];
   collectionName: string;
+  metadataCollectionId?: string;
   tokenId?: string; // Ethereum only.
   contractAddress?: string; // Ethereum only.
 };

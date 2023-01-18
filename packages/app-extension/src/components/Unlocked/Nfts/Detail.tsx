@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import {
+  BACKEND_API_URL,
   Blockchain,
   confirmTransaction,
   explorerNftUrl,
@@ -7,6 +8,7 @@ import {
   Solana,
   toTitleCase,
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
+  WHITELISTED_CHAT_COLLECTIONS,
 } from "@coral-xyz/common";
 import {
   List,
@@ -68,6 +70,28 @@ export function NftsDetail({
     nftById({ publicKey, connectionUrl, nftId })
   );
   const nft = (state === "hasValue" && contents) || null;
+  //@ts-ignore
+  const whitelistedChatCollection = WHITELISTED_CHAT_COLLECTIONS.find(
+    (x) => x.collectionId === nft?.metadataCollectionId
+  );
+  let whitelistedChatCollectionId = whitelistedChatCollection?.collectionId;
+
+  if (whitelistedChatCollection) {
+    Object.keys(whitelistedChatCollection.attributeMapping || {}).forEach(
+      (attrName) => {
+        if (
+          !nft?.attributes?.find(
+            (x) =>
+              x.traitType === attrName &&
+              x.value ===
+                whitelistedChatCollection?.attributeMapping?.[attrName]
+          )
+        ) {
+          whitelistedChatCollectionId = "";
+        }
+      }
+    );
+  }
 
   // Hack: needed because this is undefined due to framer-motion animation.
   if (!nftId) {
@@ -93,6 +117,28 @@ export function NftsDetail({
       <Image nft={nft} />
       <Description nft={nft} />
       <SendButton nft={nft} />
+
+      {whitelistedChatCollectionId && (
+        <PrimaryButton
+          label="Join chat"
+          onClick={async () => {
+            await fetch(`${BACKEND_API_URL}/nft/bulk`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                publicKey: publicKey,
+                nfts: [
+                  {
+                    collectionId: whitelistedChatCollection?.collectionId,
+                    nftId: nft?.id,
+                    centralizedGroup: whitelistedChatCollection?.id,
+                  },
+                ],
+              }),
+            });
+          }}
+        />
+      )}
       {nft.attributes && <Attributes nft={nft} />}
     </div>
   );

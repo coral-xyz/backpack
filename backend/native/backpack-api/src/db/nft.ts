@@ -13,6 +13,7 @@ export const addNfts = async (
   nfts: {
     nftId: string;
     collectionId: string;
+    centralizedGroup: string;
   }[]
 ) => {
   await chain("mutation")({
@@ -22,6 +23,7 @@ export const addNfts = async (
           collection_id: nft.collectionId,
           nft_id: nft.nftId,
           public_key: publicKey,
+          centralized_group: centralizedGroup,
         })),
       },
       { affected_rows: true },
@@ -127,7 +129,9 @@ export const getNftMembers = async (
   };
 };
 
-export const getAllCollectionsFor = async (uuid: string): Promise<string[]> => {
+export const getAllCollectionsFor = async (
+  uuid: string
+): Promise<{ collection_id: string; centralized_group?: string }[]> => {
   const response = await chain("query")({
     auth_user_nfts: [
       {
@@ -143,10 +147,14 @@ export const getAllCollectionsFor = async (uuid: string): Promise<string[]> => {
       },
       {
         collection_id: true,
+        centralized_group: true,
       },
     ],
   });
-  return response.auth_user_nfts.map((x) => x.collection_id || "");
+  return response.auth_user_nfts.map((x) => ({
+    collection_id: x.collection_id || "",
+    centralized_group: x.collection_group,
+  }));
 };
 
 export const getLastReadFor = async (
