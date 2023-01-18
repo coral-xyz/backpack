@@ -95,7 +95,6 @@ export const getNftCollection = async ({
       {
         nft_id: mint,
         public_key: publicKey,
-        centralized_group: undefined,
       },
       {
         collection_id: true,
