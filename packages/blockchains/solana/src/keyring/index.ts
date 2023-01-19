@@ -167,9 +167,6 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
     if (idx < 0) {
       return;
     }
-    if (this.keypairs.length <= 1) {
-      throw new Error("cannot delete the last key in the hd keyring");
-    }
     this.accountIndices = this.accountIndices
       .slice(0, idx)
       .concat(this.accountIndices.slice(idx + 1));

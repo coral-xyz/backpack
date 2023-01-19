@@ -1,37 +1,40 @@
+import type { Token } from "./components/index";
+
 import { Pressable, Text, View } from "react-native";
+
 import { Margin } from "@components";
-import { Blockchain, STRIPE_ENABLED, toTitleCase } from "@coral-xyz/common";
+import { Blockchain, STRIPE_ENABLED } from "@coral-xyz/common";
 import {
-  SwapProvider,
-  useEnabledBlockchains,
-  useFeatureGates,
+  // SwapProvider, // TODO(peter): broken
+  enabledBlockchains as enabledBlockchainsAtom,
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@hooks";
-
-import type { Token } from "./components/index";
+import { useRecoilValueLoadable } from "recoil";
 
 const HorizontalSpacer = () => <View style={{ width: 16 }} />;
+const ENABLE_ONRAMP = false;
 
 type Route = "Receive" | "Send" | "Swap";
+
+function SwapProvider({ children, blockchain, tokenAddress }) {
+  return children;
+}
 
 export function TransferWidget({
   blockchain,
   address,
-  rampEnabled,
   onPressOption,
   token,
 }: {
   blockchain?: Blockchain;
   address?: string;
-  rampEnabled: boolean;
   onPressOption: (option: string, options: any) => void;
   token?: Token;
 }) {
-  const enabledBlockchains = useEnabledBlockchains();
-  const featureGates = useFeatureGates();
-  const enableOnramp =
-    featureGates && featureGates[STRIPE_ENABLED] && rampEnabled;
+  const eb = useRecoilValueLoadable(enabledBlockchainsAtom);
+  const enabledBlockchains = eb.state === "hasValue" ? eb.contents : [];
+  const enableOnramp = ENABLE_ONRAMP;
   const renderSwap =
     blockchain !== Blockchain.ETHEREUM &&
     enabledBlockchains.includes(Blockchain.SOLANA);

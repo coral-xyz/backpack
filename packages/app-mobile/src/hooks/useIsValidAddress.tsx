@@ -1,11 +1,13 @@
+import type { Connection } from "@solana/web3.js";
+
 import { useEffect, useState } from "react";
+
 import {
   getHashedName,
   getNameAccountKey,
   NameRegistryState,
 } from "@bonfida/spl-name-service";
 import { Blockchain } from "@coral-xyz/common";
-import type { Connection } from "@solana/web3.js";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { ethers } from "ethers";
 
@@ -129,6 +131,6 @@ export function useIsValidAddress(
     isValidAddress: accountValidated,
     isFreshAddress: isFreshAccount,
     isErrorAddress: addressError,
-    normalizedAddress: normalizedAddress,
+    normalizedAddress,
   };
 }

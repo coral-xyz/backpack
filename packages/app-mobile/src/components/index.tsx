@@ -1,3 +1,5 @@
+import type { Blockchain } from "@coral-xyz/common";
+
 import type { ImageStyle, StyleProp, TextStyle, ViewStyle } from "react-native";
 import {
   ActivityIndicator,
@@ -8,13 +10,16 @@ import {
   Text,
   View,
 } from "react-native";
-import { SvgUri } from "react-native-svg";
-import type { Blockchain } from "@coral-xyz/common";
+
+import * as Clipboard from "expo-clipboard";
+
 import { proxyImageUrl, walletAddressDisplay } from "@coral-xyz/common";
 import { useAvatarUrl } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@hooks";
-import * as Clipboard from "expo-clipboard";
+import { SvgUri } from "react-native-svg";
+
+import { ContentCopyIcon, RedBackpack } from "@components/Icon";
 
 export { ActionCard } from "./ActionCard";
 export { BaseCheckBoxLabel, CheckBox } from "./CheckBox";
@@ -25,7 +30,6 @@ export { PasswordInput } from "./PasswordInput";
 export { StyledTextInput } from "./StyledTextInput";
 export { TokenAmountHeader } from "./TokenAmountHeader";
 export { StyledTokenTextInput } from "./TokenInputField";
-import { ContentCopyIcon, RedBackpack } from "@components/Icon";
 //
 // function getRandomColor() { var letters = "0123456789ABCDEF";
 //   var color = "#";
@@ -70,7 +74,8 @@ export function Screen({
           paddingVertical: 16,
         },
         style,
-      ]}>
+      ]}
+    >
       {children}
     </View>
   );
@@ -113,18 +118,19 @@ export function BaseButton({
       ]}
       disabled={disabled}
       onPress={onPress}
-      {...props}>
+      {...props}
+    >
       <Text
         style={[
           {
             fontWeight: "500",
             fontSize: 16,
-            lineHeight: 24,
             color: theme.custom.colors.primaryButtonTextColor,
             opacity: disabled ? 50 : 100, // TODO(peter)
           },
           labelStyle,
-        ]}>
+        ]}
+      >
         {loading ? "loading..." : label} {disabled ? "(disabled)" : ""}
       </Text>
       {icon}
@@ -256,7 +262,8 @@ export function Header({ text }: { text: string }) {
         fontSize: 24,
         fontWeight: "500",
         lineHeight: 32,
-      }}>
+      }}
+    >
       {text}
     </Text>
   );
@@ -282,7 +289,8 @@ export function SubtextParagraph({
           color: theme.custom.colors.subtext,
         },
         style,
-      ]}>
+      ]}
+    >
       {children}
     </Text>
   );
@@ -320,25 +328,25 @@ export function EmptyState({
   buttonText,
   onPress,
   minimize,
-  verticallyCentered,
-}: {
+}: // verticallyCentered,
+{
   icon: (props: any) => React.ReactNode;
   title: string;
   subtitle: string;
   buttonText?: string;
   onPress?: () => void | undefined;
-  // style?: React.CSSProperties;
   minimize?: boolean;
-  verticallyCentered?: boolean;
+  // verticallyCentered?: boolean;
 }) {
   const theme = useTheme();
   return (
-    <View style={{ alignItems: "center" }}>
+    <View>
       {icon({
         size: 56,
         style: {
           color: theme.custom.colors.secondary,
           marginBottom: 16,
+          alignSelf: "center",
         },
       })}
       <Typography
@@ -348,7 +356,8 @@ export function EmptyState({
           textAlign: "center",
           fontWeight: "500",
           color: theme.custom.colors.fontColor,
-        }}>
+        }}
+      >
         {title}
       </Typography>
       {minimize !== true && (
@@ -360,13 +369,18 @@ export function EmptyState({
             fontSize: 16,
             lineHeight: 24,
             fontWeight: "500",
-          }}>
+          }}
+        >
           {subtitle}
         </Typography>
       )}
-      {minimize !== true && buttonText && (
+      {minimize !== true && onPress && buttonText && (
         <Margin top={12}>
-          <PrimaryButton label={buttonText} onPress={() => onPress()} />
+          <PrimaryButton
+            disabled={false}
+            label={buttonText}
+            onPress={() => onPress()}
+          />
         </Margin>
       )}
     </View>
@@ -487,7 +501,8 @@ export function Avatar({ size = 64 }: { size?: number }): JSX.Element {
         padding: 3,
         width: outerSize,
         height: outerSize,
-      }}>
+      }}
+    >
       <SvgUri width={size} height={size} uri={avatarUrl} />
     </View>
   );
@@ -501,7 +516,8 @@ export function Debug({ data }: any): JSX.Element {
         style={{
           color: theme.custom.colors.fontColor,
           fontFamily: "monospace",
-        }}>
+        }}
+      >
         {JSON.stringify(data, null, 2)}
       </Text>
     </View>
@@ -520,7 +536,8 @@ export function DummyScreen({ route }) {
         backgroundColor: generateRandomHexColor(),
         alignItems: "center",
         justifyContent: "center",
-      }}>
+      }}
+    >
       <Text>Dummy Screen</Text>
       <Debug data={{ route: route.params }} />
     </View>
@@ -536,7 +553,8 @@ export function FullScreenLoading() {
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
-      }}>
+      }}
+    >
       <ActivityIndicator size="large" color={theme.custom.colors.fontColor} />
     </View>
   );
@@ -555,7 +573,8 @@ export function WelcomeLogoHeader() {
           fontSize: 42,
           textAlign: "center",
           color: theme.custom.colors.fontColor,
-        }}>
+        }}
+      >
         Backpack
       </Text>
       <Margin top={8}>
@@ -565,7 +584,8 @@ export function WelcomeLogoHeader() {
             fontSize: 16,
             fontWeight: "500",
             color: theme.custom.colors.secondary,
-          }}>
+          }}
+        >
           A home for your xNFTs
         </Text>
       </Margin>
@@ -607,10 +627,12 @@ export function CopyWalletFieldInput({
           padding: 8,
           borderWidth: 2,
         },
-      ]}>
+      ]}
+    >
       <Margin right={12}>
         <Text
-          style={{ fontWeight: "500", color: theme.custom.colors.fontColor }}>
+          style={{ fontWeight: "500", color: theme.custom.colors.fontColor }}
+        >
           {walletDisplay}
         </Text>
       </Margin>
@@ -618,7 +640,8 @@ export function CopyWalletFieldInput({
         onPress={async () => {
           await Clipboard.setStringAsync(publicKey);
           Alert.alert("Copied to clipboard", publicKey);
-        }}>
+        }}
+      >
         <ContentCopyIcon />
       </Pressable>
     </View>
@@ -635,7 +658,8 @@ export function CopyWalletAddressSubtitle({
     <Pressable
       onPress={async () => {
         await Clipboard.setStringAsync(publicKey);
-      }}>
+      }}
+    >
       <Text style={{ color: theme.custom.colors.secondary }}>
         {walletAddressDisplay(publicKey)}
       </Text>
@@ -662,7 +686,8 @@ export function CopyButtonIcon({ text }: { text: string }): JSX.Element {
       onPress={async () => {
         await Clipboard.setStringAsync(text);
         Alert.alert("Copied to clipboard");
-      }}>
+      }}
+    >
       <ContentCopyIcon size={18} />
     </Pressable>
   );
@@ -687,13 +712,15 @@ export function ImportTypeBadge({
           paddingHorizontal: 12,
           paddingVertical: 2,
         },
-      ]}>
+      ]}
+    >
       <Text
         style={{
           color: theme.custom.colors.fontColor,
           fontSize: 12,
           fontWeight: "600",
-        }}>
+        }}
+      >
         {type === "imported" ? "IMPORTED" : "HARDWARE"}
       </Text>
     </View>
@@ -717,7 +744,8 @@ export function AddConnectWalletButton({
       style={{
         flexDirection: "row",
         alignItems: "center",
-      }}>
+      }}
+    >
       <Margin right={8}>
         <MaterialIcons
           name="add-circle"
@@ -728,7 +756,8 @@ export function AddConnectWalletButton({
       <Text
         style={{
           color: theme.custom.colors.secondary,
-        }}>
+        }}
+      >
         Add / Connect Wallet
       </Text>
     </Pressable>
@@ -789,7 +818,7 @@ export function RoundedContainerGroup({
   disableBottomRadius = false,
 }: {
   children: JSX.Element;
-  style: StyleProp<ViewStyle>;
+  style?: StyleProp<ViewStyle>;
   disableTopRadius?: boolean;
   disableBottomRadius?: boolean;
 }): JSX.Element {
@@ -804,7 +833,8 @@ export function RoundedContainerGroup({
         disableTopRadius ? roundedContainerStyles.disableTopRadius : null,
         disableBottomRadius ? roundedContainerStyles.disableBottomRadius : null,
         style,
-      ]}>
+      ]}
+    >
       {children}
     </View>
   );

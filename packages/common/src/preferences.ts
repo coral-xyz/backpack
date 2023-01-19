@@ -7,16 +7,13 @@ export const DEFAULT_DEVELOPER_MODE = false;
 export const DEFAULT_AGGREGATE_WALLETS = false;
 export const DEFAULT_AUTO_LOCK_INTERVAL_SECS = 15 * 60;
 
-export function defaultPreferences(
-  enabledBlockchains: Blockchain[]
-): Preferences {
+export function defaultPreferences(): Preferences {
   return {
     autoLockSettings: {
       seconds: DEFAULT_AUTO_LOCK_INTERVAL_SECS,
       option: undefined,
     },
     approvedOrigins: [],
-    enabledBlockchains,
     darkMode: DEFAULT_DARK_MODE,
     developerMode: DEFAULT_DEVELOPER_MODE,
     aggregateWallets: DEFAULT_AGGREGATE_WALLETS,

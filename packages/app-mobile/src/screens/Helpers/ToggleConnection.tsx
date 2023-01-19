@@ -1,6 +1,7 @@
+import { useEffect } from "react";
+
 import { UI_RPC_METHOD_SOLANA_CONNECTION_URL_UPDATE } from "@coral-xyz/common";
 import { useBackgroundClient, useSolanaConnectionUrl } from "@coral-xyz/recoil";
-import { useEffect } from "react";
 import { useNavigate } from "react-router-native";
 
 export const ToggleConnection = () => {

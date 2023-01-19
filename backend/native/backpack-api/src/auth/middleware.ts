@@ -1,8 +1,12 @@
 import { DEFAULT_GROUP_CHATS } from "@coral-xyz/common";
+import { WHITELISTED_CHAT_COLLECTIONS } from "@coral-xyz/common/src/constants";
 import type { NextFunction, Request, Response } from "express";
 
 import { validateRoom } from "../db/friendships";
-import { validateCollectionOwnership } from "../db/nft";
+import {
+  validateCentralizedGroupOwnership,
+  validateCollectionOwnership,
+} from "../db/nft";
 
 import { clearCookie, setJWTCookie, validateJwt } from "./util";
 
@@ -29,6 +33,12 @@ export const ensureHasRoomAccess = async (
     let hasAccess = false;
     if (DEFAULT_GROUP_CHATS.map((x) => x.id).includes(room)) {
       hasAccess = true;
+    } else if (WHITELISTED_CHAT_COLLECTIONS.map((x) => x.id).includes(room)) {
+      hasAccess = await validateCentralizedGroupOwnership(
+        req.id!,
+        publicKey!,
+        room!
+      );
     } else {
       hasAccess = await validateCollectionOwnership(
         req.id!,

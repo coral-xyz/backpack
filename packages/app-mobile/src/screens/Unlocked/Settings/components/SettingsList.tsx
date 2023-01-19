@@ -1,5 +1,6 @@
+import * as Linking from "expo-linking";
+
 import { Margin, RoundedContainerGroup } from "@components";
-import { DiscordIcon } from "@components/Icon";
 import {
   BACKPACK_FEATURE_XNFT,
   DISCORD_INVITE_LINK,
@@ -9,7 +10,8 @@ import {
 import { useBackgroundClient, useFeatureGates } from "@coral-xyz/recoil";
 import { useTheme } from "@hooks";
 import { useNavigation } from "@react-navigation/native";
-import * as Linking from "expo-linking";
+
+import { DiscordIcon } from "@components/Icon";
 
 import {
   IconLaunchDetail,

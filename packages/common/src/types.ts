@@ -67,7 +67,9 @@ export type Nft = {
   imageUrl: string;
   imageData?: string;
   attributes?: NftAttribute[];
+  mint?: string;
   collectionName: string;
+  metadataCollectionId?: string;
   tokenId?: string; // Ethereum only.
   contractAddress?: string; // Ethereum only.
 };
@@ -152,7 +154,6 @@ export type FeeConfig = SolanaFeeConfig;
 export type Preferences = {
   autoLockSettings: AutolockSettings;
   approvedOrigins: string[];
-  enabledBlockchains: Blockchain[];
   darkMode: boolean;
   developerMode: boolean;
   aggregateWallets: boolean;

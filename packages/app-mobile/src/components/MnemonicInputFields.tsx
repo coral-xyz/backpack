@@ -1,5 +1,6 @@
 // function MnemonicInputFields from app-extension/.../common/Account/MnemonicInput.tsx
 import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
+
 import { useTheme } from "@hooks";
 
 function Item({ item, index }) {
@@ -38,8 +39,8 @@ export function MnemonicInputFields({
   mnemonicWords,
   onChange,
 }: {
-  mnemonicWords: Array<string>;
-  onChange?: (mnemonicWords: Array<string>) => void;
+  mnemonicWords: string[];
+  onChange?: (mnemonicWords: string[]) => void;
 }) {
   return (
     <FlatList

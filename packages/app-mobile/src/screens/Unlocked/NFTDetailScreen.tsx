@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
+
 import {
   Margin,
   NegativeButton,
@@ -168,7 +169,7 @@ export function NFTDetailSendScreen({ navigation, route }): JSX.Element {
           <View>
             <NFTImage imageUrl={nft.imageUrl} />
             <StyledTextInput
-              autoFocus={true}
+              autoFocus
               placeholder={`Recipient's ${toTitleCase(nft.blockchain)} Address`}
               value={destinationAddress}
               //   setValue={(e) => setDestinationAddress(e.target.value)}
@@ -191,12 +192,12 @@ export function NFTDetailSendScreen({ navigation, route }): JSX.Element {
                 marginRight: 8,
               }}
               onPress={close}
-              label={"Cancel"}
+              label="Cancel"
             />
             <PrimaryButton
               disabled={!isValidAddress}
               onPress={() => setOpenConfirm(true)}
-              label={"Next"}
+              label="Next"
             />
           </View>
         </View>
@@ -437,7 +438,9 @@ function BurnConfirmationCard({
             : solanaCtx.commitment
         );
         setState("confirmed");
-        if (onComplete) onComplete();
+        if (onComplete) {
+          onComplete();
+        }
       } catch (err: any) {
         // logger.error("unable to confirm NFT burn", err);
         setError(err.toString());
@@ -459,16 +462,16 @@ function BurnConfirmationCard({
       amount={BigNumber.from(1)}
       token={token}
       signature={signature!}
-      titleOverride={"Burning"}
+      titleOverride="Burning"
     />
   ) : state === "confirmed" ? (
     <Sending
       blockchain={Blockchain.SOLANA}
-      isComplete={true}
+      isComplete
       amount={BigNumber.from(1)}
       token={token}
       signature={signature!}
-      titleOverride={"Burnt"}
+      titleOverride="Burnt"
     />
   ) : (
     <ErrorConfirmation

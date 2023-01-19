@@ -53,7 +53,7 @@ export function useWalletName(address: string): string {
       }
     }
   }
-  throw new Error("key not found");
+  return "";
 }
 
 export function useWalletBlockchain(address: string): string {

@@ -1,7 +1,12 @@
 // TODO(peter) one thing we might need to make sure is that when we wrap these FlatLists in a ScrollView, we can't nest virtualized lists.
 // This means we might just use the scrollview directly from within a flatlist by using ListHeaderComponent and ListFooterComponent
+import type { Token } from "./index";
+import type { Blockchain } from "@coral-xyz/common";
+import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
+
 import React, { useEffect, useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+
 import {
   ListRowSeparator,
   Margin,
@@ -9,23 +14,17 @@ import {
   Row,
   StyledTextInput,
 } from "@components";
-import { ExpandCollapseIcon } from "@components/Icon";
-import type { Blockchain } from "@coral-xyz/common";
-import { formatUSD, walletAddressDisplay } from "@coral-xyz/common";
-import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
+import { formatUSD } from "@coral-xyz/common";
 import {
   blockchainBalancesSorted,
-  useActiveWallets,
-  useAllWalletsDisplayed,
-  useBlockchainConnectionUrl,
-  useEnabledBlockchains,
-  useLoader,
-} from "@coral-xyz/recoil";
+  allWalletsDisplayed,
+} from "@coral-xyz/recoil"; // recoil(done)
 import { useTheme } from "@hooks";
 import { useNavigation } from "@react-navigation/native";
-import * as Clipboard from "expo-clipboard";
+import { useRecoilValueLoadable } from "recoil";
 
-import type { Token } from "./index";
+import { ExpandCollapseIcon } from "@components/Icon";
+
 import { TableHeader } from "./index";
 
 export function SearchableTokenTables({
@@ -66,7 +65,9 @@ export function TokenTables({
   customFilter?: (token: Token) => boolean;
   tokenAccounts?: ReturnType<typeof useBlockchainTokensSorted>;
 }) {
-  const wallets = useAllWalletsDisplayed();
+  const wl = useRecoilValueLoadable(allWalletsDisplayed);
+  const wallets = wl.state === "hasValue" ? wl.contents : [];
+  console.log("rrr:wallets", wallets);
   return (
     <>
       {wallets.map(
@@ -115,15 +116,15 @@ function WalletTokenTable({
     setExpanded(!expanded);
   };
 
-  const connectionUrl = useBlockchainConnectionUrl(blockchain);
-  const [rawTokenAccounts, _, isLoading] = useLoader(
+  const rta = useRecoilValueLoadable(
     blockchainBalancesSorted({
       publicKey: wallet.publicKey.toString(),
       blockchain,
-    }),
-    tokenAccounts ? tokenAccounts : [],
-    [wallet.publicKey, connectionUrl]
+    })
   );
+
+  const rawTokenAccounts = rta.state === "hasValue" ? rta.contents : [];
+  console.log("rrr:rawTokenAccounts", rawTokenAccounts);
 
   const searchLower = search.toLowerCase();
   const tokenAccountsFiltered = rawTokenAccounts
@@ -135,6 +136,8 @@ function WalletTokenTable({
     )
     .filter(customFilter);
 
+  console.log("rrr:tokenAccountsFiltered", tokenAccountsFiltered);
+
   useEffect(() => {
     setSearch(searchFilter);
   }, [searchFilter]);
@@ -145,7 +148,8 @@ function WalletTokenTable({
         borderColor: theme.custom.colors.borderFull,
         backgroundColor: theme.custom.colors.nav,
         borderRadius: 12,
-      }}>
+      }}
+    >
       <TableHeader
         blockchain={blockchain}
         onPress={onPressExpand}
@@ -204,9 +208,9 @@ function WalletPickerButton({
 // Used for each individual row  of Balances
 function TextPercentChanged({ percentChange }: { percentChange: number }) {
   const theme = useTheme();
-  const positive = percentChange && percentChange > 0 ? true : false;
-  const negative = percentChange && percentChange < 0 ? true : false;
-  const neutral = percentChange && percentChange === 0 ? true : false;
+  const positive = !!(percentChange && percentChange > 0);
+  const negative = !!(percentChange && percentChange < 0);
+  const neutral = !!(percentChange && percentChange === 0);
 
   return (
     <>
@@ -215,7 +219,8 @@ function TextPercentChanged({ percentChange }: { percentChange: number }) {
           style={[
             styles.tokenBalanceChangePositive,
             { color: theme.custom.colors.positive },
-          ]}>
+          ]}
+        >
           +{formatUSD(percentChange.toLocaleString())}
         </Text>
       )}
@@ -224,7 +229,8 @@ function TextPercentChanged({ percentChange }: { percentChange: number }) {
           style={[
             styles.tokenBalanceChangeNegative,
             { color: theme.custom.colors.negative },
-          ]}>
+          ]}
+        >
           {formatUSD(percentChange.toLocaleString())}
         </Text>
       )}
@@ -233,7 +239,8 @@ function TextPercentChanged({ percentChange }: { percentChange: number }) {
           style={[
             styles.tokenBalanceChangeNeutral,
             { color: theme.custom.colors.secondary },
-          ]}>
+          ]}
+        >
           {formatUSD(percentChange.toLocaleString())}
         </Text>
       )}
@@ -273,7 +280,8 @@ export function UsdBalanceAndPercentChange({
         style={[
           usdBalanceAndPercentChangeStyles.usdBalanceLabel,
           { color: theme.custom.colors.secondary },
-        ]}>
+        ]}
+      >
         ${parseFloat(usdBalance.toFixed(2)).toLocaleString()}{" "}
         <RecentPercentChange recentPercentChange={recentPercentChange} />
       </Text>
@@ -308,7 +316,8 @@ function TokenRow({
   return (
     <Pressable
       onPress={() => onPressRow(blockchain, token, walletPublicKey)}
-      style={styles.rowContainer}>
+      style={styles.rowContainer}
+    >
       <View style={{ flexDirection: "row" }}>
         {iconUrl ? (
           <Margin right={12}>
@@ -317,14 +326,16 @@ function TokenRow({
         ) : null}
         <View>
           <Text
-            style={[styles.tokenName, { color: theme.custom.colors.fontColor }]}>
+            style={[styles.tokenName, { color: theme.custom.colors.fontColor }]}
+          >
             {name}
           </Text>
           <Text
             style={[
               styles.tokenAmount,
               { color: theme.custom.colors.secondary },
-            ]}>
+            ]}
+          >
             {subtitle}
           </Text>
         </View>
@@ -334,7 +345,8 @@ function TokenRow({
           style={[
             styles.tokenBalance,
             { color: theme.custom.colors.fontColor },
-          ]}>
+          ]}
+        >
           {formatUSD(token.usdBalance)}
         </Text>
         <TextPercentChanged percentChange={recentUsdBalanceChange} />

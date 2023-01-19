@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect } from "react";
 import {
   BACKPACK_FEATURE_POP_MODE,
   BACKPACK_FEATURE_XNFT,
@@ -15,16 +15,14 @@ import {
   LaunchDetail,
   List,
   ListItem,
-  ProxyImage,
   PushDetail,
 } from "@coral-xyz/react-common";
 import {
-  useAvatarUrl,
   useBackgroundClient,
   useFeatureGates,
   useNavigation,
 } from "@coral-xyz/recoil";
-import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
+import { useCustomTheme } from "@coral-xyz/themes";
 import {
   AccountCircleOutlined,
   Lock,
@@ -32,98 +30,16 @@ import {
   Tab as WindowIcon,
 } from "@mui/icons-material";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
-import { IconButton, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 
-import {
-  AllWalletsList,
-  WalletList as _WalletList,
-  WalletListBlockchainSelector,
-} from "../../../components/common/WalletList";
-import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
-import {
-  NavStackEphemeral,
-  NavStackScreen,
-  useNavStack,
-} from "../../common/Layout/NavStack";
-import { Logout, ResetWarning } from "../../Locked/Reset/ResetWarning";
-import { ResetWelcome } from "../../Locked/Reset/ResetWelcome";
+import { WalletList as _WalletList } from "../../../components/common/WalletList";
+import { useNavStack } from "../../common/Layout/NavStack";
 import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
 import { NotificationButton } from "../Balances/Notifications";
-import { Contacts } from "../Messages/Contacts";
 
-import { ImportSecretKey } from "./AddConnectWallet/ImportSecretKey";
 import { AvatarHeader } from "./AvatarHeader/AvatarHeader";
-import { PreferencesAutoLock } from "./Preferences/AutoLock";
-import { PreferencesEthereum } from "./Preferences/Ethereum";
-import { PreferencesEthereumConnection } from "./Preferences/Ethereum/Connection";
-import { PreferenceEthereumCustomRpcUrl } from "./Preferences/Ethereum/CustomRpcUrl";
-import { PreferencesSolana } from "./Preferences/Solana";
-import { PreferencesSolanaCommitment } from "./Preferences/Solana/Commitment";
-import { PreferencesSolanaConnection } from "./Preferences/Solana/ConnectionSwitch";
-import { PreferenceSolanaCustomRpcUrl } from "./Preferences/Solana/CustomRpcUrl";
-import { PreferencesSolanaExplorer } from "./Preferences/Solana/Explorer";
-import { PreferencesTrustedSites } from "./Preferences/TrustedSites";
-import { XnftDetail } from "./Xnfts/Detail";
-import { ChangePassword } from "./YourAccount/ChangePassword";
-import { RemoveWallet } from "./YourAccount/EditWallets/RemoveWallet";
-import { RenameWallet } from "./YourAccount/EditWallets/RenameWallet";
-import { WalletDetail } from "./YourAccount/EditWallets/WalletDetail";
-import {
-  ShowPrivateKey,
-  ShowPrivateKeyWarning,
-} from "./YourAccount/ShowPrivateKey";
-import {
-  ShowRecoveryPhrase,
-  ShowRecoveryPhraseWarning,
-} from "./YourAccount/ShowRecoveryPhrase";
-import { AddConnectPreview, AddConnectWalletMenu } from "./AddConnectWallet";
-import { Preferences } from "./Preferences";
+import { AvatarPopoverButton } from "./AvatarPopover";
 import { UserAccountsMenuButton } from "./UsernamesMenu";
-import { XnftSettings } from "./Xnfts";
-import { YourAccount } from "./YourAccount";
-
-const useStyles = styles((theme) => ({
-  addConnectWalletLabel: {
-    color: theme.custom.colors.fontColor,
-  },
-  menuButtonContainer: {
-    display: "flex",
-    justifyContent: "center",
-    flexDirection: "column",
-  },
-  menuButton: {
-    padding: "2px",
-    background: `${theme.custom.colors.avatarIconBackground} !important`,
-    "&:hover": {
-      background: `${theme.custom.colors.avatarIconBackground} !important`,
-      backgroundColor: `${theme.custom.colors.avatarIconBackground} !important`,
-      opacity: HOVER_OPACITY,
-    },
-  },
-  addConnectRoot: {
-    background: "transparent !important",
-    height: "48px",
-    "&:hover": {
-      color: `${theme.custom.colors.fontColor} !important`,
-      background: "transparent !important",
-    },
-  },
-  privateKeyTextFieldRoot: {
-    "& .MuiOutlinedInput-root": {
-      border: theme.custom.colors.borderFull,
-      "& textarea": {
-        border: "none",
-        borderRadius: 0,
-      },
-      "&:hover fieldset": {
-        border: `solid 2pt ${theme.custom.colors.primaryButton}`,
-      },
-      "&.Mui-focused fieldset": {
-        border: `solid 2pt ${theme.custom.colors.primaryButton} !important`,
-      },
-    },
-  },
-}));
 
 export function SettingsButton() {
   const featureGates = useFeatureGates();
@@ -132,53 +48,12 @@ export function SettingsButton() {
       <RecentActivityButton />
       {featureGates[NOTIFICATIONS_ENABLED] && <NotificationButton />}
       <div style={{ width: "16px" }} />
-      <AvatarButton />
+      <AvatarPopoverButton />
     </div>
   );
 }
 
-export function AvatarButton({
-  buttonStyle,
-  imgStyle,
-}: {
-  buttonStyle?: React.CSSProperties;
-  imgStyle?: React.CSSProperties;
-}) {
-  const classes = useStyles();
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const avatarUrl = useAvatarUrl(32);
-  // PCA test ProxyImage
-  return (
-    <div className={classes.menuButtonContainer}>
-      <IconButton
-        disableRipple
-        className={classes.menuButton}
-        onClick={() => setSettingsOpen(!settingsOpen)}
-        size="large"
-        id="menu-button"
-        style={{
-          ...buttonStyle,
-        }}
-      >
-        <ProxyImage
-          src={avatarUrl}
-          style={{
-            width: "32px",
-            height: "32px",
-            borderRadius: "16px",
-            ...imgStyle,
-          }}
-        />
-      </IconButton>
-      <SettingsNavStackDrawer
-        settingsOpen={settingsOpen}
-        setSettingsOpen={setSettingsOpen}
-      />
-    </div>
-  );
-}
-
-function SettingsMenu() {
+export function SettingsMenu() {
   const { setTitle } = useNavStack();
 
   useEffect(() => {
@@ -204,7 +79,6 @@ function _SettingsContent() {
 function SettingsList() {
   const theme = useCustomTheme();
   const nav = useNavStack();
-  const { push } = useNavigation();
   const background = useBackgroundClient();
   const featureGates = useFeatureGates();
 
@@ -454,166 +328,5 @@ function SettingsList() {
         })}
       </List>
     </>
-  );
-}
-
-function SettingsNavStackDrawer({
-  settingsOpen,
-  setSettingsOpen,
-}: {
-  settingsOpen: boolean;
-  setSettingsOpen: any;
-}) {
-  return (
-    <WithDrawer openDrawer={settingsOpen} setOpenDrawer={setSettingsOpen}>
-      <div style={{ height: "100%" }}>
-        <NavStackEphemeral
-          initialRoute={{ name: "root", title: "Profile" }}
-          options={() => ({ title: "" })}
-          navButtonLeft={<CloseButton onClick={() => setSettingsOpen(false)} />}
-        >
-          <NavStackScreen
-            name={"root"}
-            component={(props: any) => <SettingsMenu {...props} />}
-          />
-          <NavStackScreen
-            name={"add-connect-wallet"}
-            component={(props: any) => <AddConnectWalletMenu {...props} />}
-          />
-          <NavStackScreen
-            name={"import-secret-key"}
-            component={(props: any) => <ImportSecretKey {...props} />}
-          />
-          <NavStackScreen
-            name={"your-account"}
-            component={(props: any) => <YourAccount {...props} />}
-          />
-          <NavStackScreen
-            name={"preferences"}
-            component={(props: any) => <Preferences {...props} />}
-          />
-          <NavStackScreen
-            name={"preferences-auto-lock"}
-            component={(props: any) => <PreferencesAutoLock {...props} />}
-          />
-          <NavStackScreen
-            name={"preferences-trusted-sites"}
-            component={(props: any) => <PreferencesTrustedSites {...props} />}
-          />
-          <NavStackScreen
-            name={"preferences-solana"}
-            component={(props: any) => <PreferencesSolana {...props} />}
-          />
-          <NavStackScreen
-            name={"preferences-ethereum"}
-            component={(props: any) => <PreferencesEthereum {...props} />}
-          />
-          <NavStackScreen
-            name={"preferences-solana-rpc-connection"}
-            component={(props: any) => (
-              <PreferencesSolanaConnection {...props} />
-            )}
-          />
-          <NavStackScreen
-            name={"preferences-solana-edit-rpc-connection"}
-            component={(props: any) => (
-              <PreferenceSolanaCustomRpcUrl {...props} />
-            )}
-          />
-          <NavStackScreen
-            name={"preferences-solana-commitment"}
-            component={(props: any) => (
-              <PreferencesSolanaCommitment {...props} />
-            )}
-          />
-          <NavStackScreen
-            name={"preferences-solana-explorer"}
-            component={(props: any) => <PreferencesSolanaExplorer {...props} />}
-          />
-          <NavStackScreen
-            name={"preferences-ethereum-rpc-connection"}
-            component={(props: any) => (
-              <PreferencesEthereumConnection {...props} />
-            )}
-          />
-          <NavStackScreen
-            name={"preferences-ethereum-edit-rpc-connection"}
-            component={(props: any) => (
-              <PreferenceEthereumCustomRpcUrl {...props} />
-            )}
-          />
-          <NavStackScreen
-            name={"change-password"}
-            component={(props: any) => <ChangePassword {...props} />}
-          />
-          <NavStackScreen
-            name={"reset"}
-            component={(props: any) => <ResetWelcome {...props} />}
-          />
-          <NavStackScreen
-            name={"edit-wallets"}
-            component={(props: any) => <AllWalletsList {...props} />}
-          />
-          <NavStackScreen
-            name={"edit-wallets-add-connect-preview"}
-            component={(props: any) => <AddConnectPreview {...props} />}
-          />
-          <NavStackScreen
-            name={"edit-wallets-wallet-detail"}
-            component={(props: any) => <WalletDetail {...props} />}
-          />
-          <NavStackScreen
-            name={"edit-wallets-remove"}
-            component={(props: any) => <RemoveWallet {...props} />}
-          />
-          <NavStackScreen
-            name={"edit-wallets-rename"}
-            component={(props: any) => <RenameWallet {...props} />}
-          />
-          <NavStackScreen
-            name={"edit-wallets-blockchain-selector"}
-            component={(props: any) => (
-              <WalletListBlockchainSelector {...props} />
-            )}
-          />
-          <NavStackScreen
-            name={"show-private-key-warning"}
-            component={(props: any) => <ShowPrivateKeyWarning {...props} />}
-          />
-          <NavStackScreen
-            name={"show-private-key"}
-            component={(props: any) => <ShowPrivateKey {...props} />}
-          />
-          <NavStackScreen
-            name={"show-secret-phrase-warning"}
-            component={(props: any) => <ShowRecoveryPhraseWarning {...props} />}
-          />
-          <NavStackScreen
-            name={"show-secret-phrase"}
-            component={(props: any) => <ShowRecoveryPhrase {...props} />}
-          />
-          <NavStackScreen
-            name={"reset-warning"}
-            component={(props: any) => <ResetWarning {...props} />}
-          />
-          <NavStackScreen
-            name={"logout"}
-            component={(props: any) => <Logout {...props} />}
-          />
-          <NavStackScreen
-            name={"xnfts"}
-            component={(props: any) => <XnftSettings {...props} />}
-          />
-          <NavStackScreen
-            name={"xnfts-detail"}
-            component={(props: any) => <XnftDetail {...props} />}
-          />
-          <NavStackScreen
-            name={"contacts"}
-            component={(props: any) => <Contacts {...props} />}
-          />
-        </NavStackEphemeral>
-      </div>
-    </WithDrawer>
   );
 }

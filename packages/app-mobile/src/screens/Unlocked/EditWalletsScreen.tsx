@@ -1,4 +1,7 @@
+import type { Blockchain } from "@coral-xyz/common";
+
 import { Pressable, SectionList, StyleSheet, Text, View } from "react-native";
+
 import {
   AddConnectWalletButton,
   ImportTypeBadge,
@@ -7,7 +10,6 @@ import {
   Screen,
   WalletAddressLabel,
 } from "@components";
-import type { Blockchain } from "@coral-xyz/common";
 import { toTitleCase } from "@coral-xyz/common";
 import { useWalletPublicKeys } from "@coral-xyz/recoil";
 import { useTheme } from "@hooks";
@@ -64,14 +66,18 @@ export function WalletListItem({
   blockchain: Blockchain;
   name: string;
   publicKey: string;
-  type: string;
+  type?: string;
   icon?: JSX.Element | null;
-  onPress: (blockchain: Blockchain, wallet: Wallet) => void;
+  onPress?: (blockchain: Blockchain, wallet: Wallet) => void;
 }): JSX.Element {
   const theme = useTheme();
   return (
     <Pressable
-      onPress={() => onPress(blockchain, { name, publicKey, type })}
+      onPress={() => {
+        if (onPress && type) {
+          onPress(blockchain, { name, publicKey, type });
+        }
+      }}
       style={[
         styles.listItem,
         {

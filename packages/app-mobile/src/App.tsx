@@ -1,7 +1,12 @@
+import type { Blockchain } from "@coral-xyz/common";
+
 import { Suspense, useCallback, useEffect, useRef } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import { WebView } from "react-native-webview";
+
+import Constants from "expo-constants";
+import * as SplashScreen from "expo-splash-screen";
+import { StatusBar } from "expo-status-bar";
+
 import {
   BACKGROUND_SERVICE_WORKER_READY,
   useStore,
@@ -11,16 +16,18 @@ import { NotificationsProvider } from "@coral-xyz/recoil";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useTheme } from "@hooks";
-import Constants from "expo-constants";
-import * as SplashScreen from "expo-splash-screen";
-import { StatusBar } from "expo-status-bar";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { WebView } from "react-native-webview";
 import { RecoilRoot, useRecoilCallback, useRecoilSnapshot } from "recoil";
 
-SplashScreen.preventAutoHideAsync();
+import { ErrorBoundary } from "@components/ErrorBoundary";
 
 import { useLoadedAssets } from "./hooks/useLoadedAssets";
 import { RootNavigation } from "./navigation/RootNavigator";
 
+SplashScreen.preventAutoHideAsync();
+
+// eslint-disable-next-line
 function DebugObserver(): null {
   const snapshot = useRecoilSnapshot();
   useEffect(() => {
@@ -33,6 +40,8 @@ function DebugObserver(): null {
 
   return null;
 }
+
+// eslint-disable-next-line
 function DebugButton(): JSX.Element {
   const onPress = useRecoilCallback(
     ({ snapshot }) =>
@@ -57,13 +66,14 @@ function DebugButton(): JSX.Element {
 
 export function App(): JSX.Element {
   return (
-    <Suspense fallback={null}>
-      <RecoilRoot>
-        <DebugButton />
-        <BackgroundHiddenWebView />
-        <Main />
-      </RecoilRoot>
-    </Suspense>
+    <ErrorBoundary>
+      <Suspense fallback={null}>
+        <RecoilRoot>
+          <BackgroundHiddenWebView />
+          <Main />
+        </RecoilRoot>
+      </Suspense>
+    </ErrorBoundary>
   );
 }
 
@@ -88,7 +98,8 @@ function ServiceWorkerErrorScreen({ onLayoutRootView }: any): JSX.Element {
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
-      }}>
+      }}
+    >
       <Text>The service worker failed to load.</Text>
       <Text>
         {JSON.stringify(
@@ -134,7 +145,8 @@ function Main(): JSX.Element | null {
           {
             backgroundColor: theme.custom.colors.background,
           },
-        ]}>
+        ]}
+      >
         <StatusBar style={theme.colorScheme === "dark" ? "light" : "dark"} />
         <RootNavigation colorScheme={theme.colorScheme} />
       </View>

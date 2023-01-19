@@ -30,7 +30,7 @@ import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { Tab, Tabs } from "@mui/material";
 
-import { AvatarButton } from "../../Unlocked/Settings";
+import { AvatarPopoverButton } from "../../Unlocked/Settings/AvatarPopover";
 
 import { useBreakpoints } from "./hooks";
 
@@ -333,7 +333,7 @@ function TabBar() {
               marginBottom: "16px",
             }}
           >
-            <AvatarButton
+            <AvatarPopoverButton
               imgStyle={{
                 width: "40px",
                 height: "40px",

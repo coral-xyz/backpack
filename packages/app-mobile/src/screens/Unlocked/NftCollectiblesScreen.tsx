@@ -1,25 +1,29 @@
+import type { Nft, NftCollection } from "@coral-xyz/common";
+
 import React from "react";
 import {
-  Alert,
   FlatList,
   Image,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   View,
 } from "react-native";
-import { EmptyState, Margin, NFTCard, Screen } from "@components";
-import type { NftCollection } from "@coral-xyz/common";
-import { Blockchain, toTitleCase } from "@coral-xyz/common";
+
+import * as Linking from "expo-linking";
+
+import { Blockchain } from "@coral-xyz/common";
 import {
-  useActiveWallets,
-  useEnabledBlockchains,
-  useLoader,
+  // isAggregateWallets,
+  nftCollectionsWithIds,
+  useActiveWallet,
+  allWalletsDisplayed,
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
-import * as Linking from "expo-linking";
+import { useRecoilValueLoadable } from "recoil";
+
+import { EmptyState, Margin, NFTCard } from "@components/index";
 
 import { NFTDetailScreen, NFTDetailSendScreen } from "./NFTDetailScreen";
 
@@ -61,7 +65,8 @@ function NFTItem({
   return (
     <Pressable
       style={{ flex: 0.5, margin: 8, borderRadius: 8, overflow: "hidden" }}
-      onPress={() => onPress(collectionId)}>
+      onPress={() => onPress(collectionId)}
+    >
       <Image source={{ uri: imageUrl }} style={{ aspectRatio: 1 }} />
       <View
         style={{
@@ -72,7 +77,8 @@ function NFTItem({
           backgroundColor: "#FFF",
           borderRadius: 8,
           padding: 4,
-        }}>
+        }}
+      >
         <Text numberOfLines={1}>{name}</Text>
       </View>
     </Pressable>
@@ -125,101 +131,85 @@ function NFTTable({
   );
 }
 
-function NoEmptyState() {
+function NoNFTsEmptyState() {
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-      }}>
-      <EmptyState
-        icon={(props: any) => <MaterialIcons name="image" {...props} />}
-        title="No NFTs"
-        subtitle="Get started with your first NFT"
-        buttonText="Browse Magic Eden"
-        onPress={() => Linking.openURL("https://magiceden.io")}
-      />
-    </View>
+    <EmptyState
+      icon={(props: any) => <MaterialIcons name="image" {...props} />}
+      title="No NFTs"
+      subtitle="Get started with your first NFT"
+      buttonText="Browse Magic Eden"
+      onPress={() => Linking.openURL("https://magiceden.io")}
+    />
   );
 }
 
 export function NFTCollectionListScreen({ navigation }): JSX.Element {
-  // const isONELive = useIsONELive();
-  const activeWallets = useActiveWallets();
-  const enabledBlockchains = useEnabledBlockchains();
+  const activeWallet = useActiveWallet();
+  const wl = useRecoilValueLoadable(allWalletsDisplayed);
+  const wallets = wl.state === "hasValue" ? wl.contents : [];
+  // const _isAggregateWallets = useRecoilValue(isAggregateWallets);
+  const { contents, state } = useRecoilValueLoadable(nftCollectionsWithIds);
+  const isLoading = state === "loading";
+  const allWalletCollections = (state === "hasValue" && contents) || null;
 
-  // const collections = DEV_COLLECTIONS;
-  const [collections, _, isLoading] = useLoader(
-    nftCollections,
-    Object.fromEntries(
-      enabledBlockchains.map((b: Blockchain) => [b, new Array<NftCollection>()])
-    ),
-    // Note this reloads on any change to the active wallets, which reloads
-    // NFTs for both blockchains.
-    // TODO Make this reload for only the relevant blockchain
-    [activeWallets]
-  );
+  const collections = [];
 
-  const hasCollections =
-    Object.entries(collections)
-      .map(([_name, data]) => {
-        return data.length > 0;
-      })
-      .filter(Boolean).length > 0;
+  console.log({
+    isLoading,
+    activeWallet,
+    wallets,
+    allWalletCollections,
+    collections,
+  });
 
-  const onSelectItem = (id: string, blockchain: Blockchain) => {
-    console.log("id", id, blockchain, collections[blockchain]);
-    const collection = collections[blockchain].find((c) => c.id === id);
-    console.log("collection", collection);
+  // const onSelectItem = (id: string, blockchain: Blockchain) => {
+  //   const collection = collections[blockchain].find((c) => c.id === id);
+  //
+  //   if (!collection) {
+  //     Alert.alert(`${blockchain}:${id} not working`);
+  //   }
+  //
+  //   const hasMultipleItems = collection.items.length > 1;
+  //
+  //   if (hasMultipleItems) {
+  //     navigation.push("NFTCollectionDetail", {
+  //       title: collection.name,
+  //       collectionId: collection.id,
+  //     });
+  //   } else {
+  //     const collectionDisplayNft = collection.items[0];
+  //     navigation.push("NFTDetail", {
+  //       title: collectionDisplayNft.name || "",
+  //       nftId: collectionDisplayNft.id,
+  //     });
+  //   }
+  // };
 
-    if (!collection) {
-      Alert.alert(`${blockchain}:${id} not working`);
-    }
-
-    const hasMultipleItems = collection.items.length > 1;
-
-    if (hasMultipleItems) {
-      navigation.push("NFTCollectionDetail", {
-        title: collection.name,
-        collectionId: collection.id,
-      });
-    } else {
-      const collectionDisplayNft = collection.items[0];
-      navigation.push("NFTDetail", {
-        title: collectionDisplayNft.name || "",
-        nftId: collectionDisplayNft.id,
-      });
-    }
+  const styles = {
+    flex: 1,
   };
 
-  // TODO(peter) FlatList inside of a ScrollView error. TBD
+  if (collections.length === 0) {
+    // @ts-ignore
+    styles.justifyContent = "center";
+    // @ts-ignore
+    styles.alignItems = "center";
+  }
+
   return (
-    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flex: 1 }}>
-      <View style={{ padding: 8, flex: 1 }}>
-        {!hasCollections ? <NoEmptyState /> : null}
-        {hasCollections &&
-          Object.entries(collections).map(([blockchain, collection]) => {
-            return (
-              <Margin key={blockchain} bottom={8}>
-                <NFTTable
-                  blockchain={blockchain}
-                  collection={collection}
-                  initialState
-                  onSelectItem={onSelectItem}
-                />
-              </Margin>
-            );
-          })}
-      </View>
-    </ScrollView>
+    <FlatList
+      contentContainerStyle={styles}
+      data={collections}
+      ListEmptyComponent={NoNFTsEmptyState}
+      scrollEnabled={collections.length > 0}
+      renderItem={({ item }) => {
+        return null;
+      }}
+    />
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#eee",
-    flex: 1,
-  },
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -227,21 +217,17 @@ const styles = StyleSheet.create({
     height: 30,
     padding: 8,
   },
-  logoContainer: {
-    width: 12,
-    height: 12,
-    backgroundColor: "#000",
-    marginRight: 8,
-  },
 });
 
 function NFTCollectionDetailScreen({ navigation, route }): JSX.Element {
   const { collectionId } = route.params;
 
-  const [collections, _] = useLoader(nftCollections, {
-    [Blockchain.SOLANA]: [] as NftCollection[],
-    [Blockchain.ETHEREUM]: [] as NftCollection[],
-  });
+  const collections = [];
+
+  // const [collections, _] = useLoader(nftCollections, {
+  //   [Blockchain.SOLANA]: [] as NftCollection[],
+  //   [Blockchain.ETHEREUM]: [] as NftCollection[],
+  // });
 
   const collection = Object.values(collections)
     .flat()
@@ -280,11 +266,16 @@ function NFTCollectionDetailScreen({ navigation, route }): JSX.Element {
 
 export function NFTCollectiblesNavigator(): JSX.Element {
   return (
-    <Stack.Navigator initialRouteName="NFTCollectionList">
-      <Stack.Screen
-        name="NFTCollectionList"
-        component={NFTCollectionListScreen}
-      />
+    <Stack.Navigator
+      initialRouteName="NFTCollectionList"
+      screenOptions={{ presentation: "modal" }}
+    >
+      <Stack.Group screenOptions={{ headerShown: false }}>
+        <Stack.Screen
+          name="NFTCollectionList"
+          component={NFTCollectionListScreen}
+        />
+      </Stack.Group>
       <Stack.Screen
         name="NFTCollectionDetail"
         component={NFTCollectionDetailScreen}

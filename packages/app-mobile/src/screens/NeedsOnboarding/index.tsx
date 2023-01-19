@@ -1,4 +1,5 @@
 import { Text, View } from "react-native";
+
 import { Link } from "react-router-native";
 import tw from "twrnc";
 

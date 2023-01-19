@@ -7,7 +7,8 @@ import {
   EXTENSION_WIDTH,
   TWITTER_LINK,
 } from "@coral-xyz/common";
-import { DiscordIcon , List, ListItem } from "@coral-xyz/react-common";
+import { DiscordIcon, List, ListItem } from "@coral-xyz/react-common";
+import { KeyringStoreStateEnum, useKeyringStoreState } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { CallMade, Lock, Menu, Twitter } from "@mui/icons-material";
 import { Box, IconButton, ListItemText, Toolbar } from "@mui/material";
@@ -29,6 +30,10 @@ export const Onboarding = ({
   const [action, setAction] = useState<"onboard" | "recover" | "waiting">(
     "onboard"
   );
+  const keyringStoreState = useKeyringStoreState();
+  const isOnboarded =
+    !isAddingAccount &&
+    useKeyringStoreState() !== KeyringStoreStateEnum.NeedsOnboarding;
 
   const defaultProps = {
     containerRef,
@@ -50,6 +55,8 @@ export const Onboarding = ({
         display: "flex",
       },
     },
+    isAddingAccount,
+    isOnboarded,
   };
 
   return (
@@ -58,7 +65,6 @@ export const Onboarding = ({
         <OnboardAccount
           onRecover={() => setAction("recover")}
           onWaiting={() => setAction("waiting")}
-          isAddingAccount={isAddingAccount}
           {...defaultProps}
         />
       )}
@@ -66,7 +72,6 @@ export const Onboarding = ({
       {action === "recover" && (
         <RecoverAccount
           onClose={() => setAction("onboard")}
-          isAddingAccount={isAddingAccount}
           {...defaultProps}
         />
       )}
