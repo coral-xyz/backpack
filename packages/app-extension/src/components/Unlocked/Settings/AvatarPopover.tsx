@@ -16,6 +16,7 @@ import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import { Add, Check } from "@mui/icons-material";
 import { Button, IconButton, Popover, Typography } from "@mui/material";
 
+import { useBreakpoints } from "../../../components/common/Layout/hooks";
 import { WalletList as _WalletList } from "../../../components/common/WalletList";
 
 import { SettingsNavStackDrawer } from "./SettingsNavStackDrawer";
@@ -48,6 +49,7 @@ export function AvatarPopoverButton({
   const [anchorEl, setAnchorEl] = useState<any | null>(null);
   const avatarUrl = useAvatarUrl(32);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const { isXs } = useBreakpoints();
 
   return (
     <div
@@ -82,7 +84,7 @@ export function AvatarPopoverButton({
         anchorEl={anchorEl}
         onClose={() => setAnchorEl(false)}
         anchorOrigin={{
-          vertical: "bottom",
+          vertical: isXs ? "bottom" : "top",
           horizontal: "left",
         }}
         PaperProps={{
@@ -93,8 +95,8 @@ export function AvatarPopoverButton({
           },
         }}
         transformOrigin={{
-          vertical: "top",
-          horizontal: "right",
+          vertical: isXs ? "top" : "bottom",
+          horizontal: "left",
         }}
         classes={{ root: classes.popoverRoot }}
       >
@@ -102,13 +104,7 @@ export function AvatarPopoverButton({
           close={() => setAnchorEl(null)}
           openSettings={() => setSettingsOpen(true)}
         >
-          {/* This suspense is needed to prevent glitching since the AvatarMenu
-					    does an async request to the background service worker. */}
-          <Suspense
-            fallback={<div style={{ height: "100px", width: "218px" }} />}
-          >
-            <AvatarMenu />
-          </Suspense>
+          <AvatarMenu />
         </PopoverProvider>
       </Popover>
       <SettingsNavStackDrawer
