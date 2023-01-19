@@ -401,7 +401,10 @@ export const SendMessage = () => {
         {/*>*/}
         {/*  hi tehre hello*/}
         {/*</p>*/}
-        <MessageInput />
+        <MessageInput
+          messageContent={messageContent}
+          setMessageContent={setMessageContent}
+        />
       </div>
     </div>
   );

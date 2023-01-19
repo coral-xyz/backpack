@@ -1,14 +1,20 @@
-import { useEffect,useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { BACKEND_API_URL } from "@coral-xyz/common";
+
+import { useChatContext } from "../ChatContext";
 
 import { getActiveToken } from "./getActiveToken";
 import { getCaretIndex } from "./getCaretIndex";
 
 export function MessageInput() {
-  const [_, setMessageContent] = useState("");
+  const [messageContent, setMessageContent] = useState<string | null>("");
+  const [tagMembers, setTagMembers] = useState([]);
   const inputRef = useRef<any>(null);
+  const { remoteUserId, roomId, activeReply, setActiveReply, type, chats } =
+    useChatContext();
   // const [autoCompleteOpen, setAutocompleteOpen] = useState(false);
 
-  function onInputNavigate(e) {
+  async function onInputNavigate(e) {
     if (!inputRef.current) {
       return;
     }
@@ -18,9 +24,23 @@ export function MessageInput() {
         inputRef.current.textContent,
         caretPos
       )?.word;
-      // if (activeToken?.startsWith("@")) {
-      //
-      // }
+      if (activeToken?.startsWith("@")) {
+        try {
+          const res = await fetch(
+            `${BACKEND_API_URL}/nft/members?type=${type}limit=4&room=${roomId}&prefix=${activeToken.slice(
+              1
+            )}`
+          );
+          const json = await res.json();
+          setTagMembers(json.members);
+        } catch (e) {
+          console.error(e);
+        }
+      } else {
+        setTagMembers([]);
+      }
+    } else {
+      setTagMembers([]);
     }
   }
 
@@ -35,9 +55,27 @@ export function MessageInput() {
     };
   }, [inputRef]);
 
+  useEffect(() => {
+    if (!inputRef.current) {
+      return;
+    }
+    const caretPos = getCaretIndex(inputRef.current);
+    inputRef.current.innerHTML = messageContent;
+    inputRef.current.focus();
+    const setpos = document.createRange();
+    const set = window.getSelection();
+    setpos.setStart(inputRef.current, caretPos || 0);
+    setpos.collapse(true);
+    set?.removeAllRanges();
+    set?.addRange(setpos);
+    inputRef.current.focus();
+  }, [messageContent, inputRef]);
+
   return (
     <>
-      <div
+      {JSON.stringify(tagMembers)}
+      <p
+        id={"text-input"}
         ref={inputRef}
         onInput={(e) => {
           setMessageContent(e.currentTarget.textContent);
@@ -50,7 +88,7 @@ export function MessageInput() {
           outline: "none",
         }}
         contentEditable="true"
-      ></div>
+      ></p>
     </>
   );
 }

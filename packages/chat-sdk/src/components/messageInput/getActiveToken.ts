@@ -1,4 +1,7 @@
-export function getActiveToken(input: string, cursorPosition: number) {
+export function getActiveToken(
+  input: string,
+  cursorPosition: number | undefined
+) {
   const tokenizedQuery = input.split(/[\s\n]/).reduce((acc, word, index) => {
     const previous = acc[index - 1];
     const start = index === 0 ? index : previous.range[1] + 1;
