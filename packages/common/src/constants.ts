@@ -579,4 +579,18 @@ export const WHITELISTED_CHAT_COLLECTIONS: {
       Eyewear: "Nouns",
     },
   },
+  {
+    id: "nokiamon",
+    name: "Nokiamon",
+    image:
+      "https://files.slack.com/files-pri/T0353BWC561-F04KG1AKQ4D/logo-baku.png",
+    collectionId: "3YysdoK6ZcJFEL5QJxccY3q8AcTUFpahgbp4HFgBtjNF",
+  },
+  {
+    id: "bonkz",
+    name: "BONKz",
+    image:
+      "https://bafybeiecuemcqxzuv4ti4sgffjlwvrqedr7golppwrbbu2u5yttglath3m.ipfs.nftstorage.link/0.png",
+    collectionId: "ajM4QBHtZBBRcMqqq9gawdHK28GXcb2yeRs6WBnqhay",
+  },
 ];
