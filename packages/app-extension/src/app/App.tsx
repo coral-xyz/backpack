@@ -20,15 +20,15 @@ import "@fontsource/inter/500.css";
 import "@fontsource/inter/600.css";
 import "react-toastify/dist/ReactToastify.css";
 
+const BACKDROP_STYLE = {
+  height: "100vh",
+  minHeight: "600px",
+  minWidth: "375px",
+};
+
 export default function App() {
   return (
-    <div
-      style={{
-        height: "100vh",
-        minHeight: "600px",
-        minWidth: "375px",
-      }}
-    >
+    <div style={BACKDROP_STYLE}>
       <HashRouter>
         <RecoilRoot>
           <_App />
@@ -58,9 +58,7 @@ function _Router() {
       fallback={
         <div
           style={{
-            height: "100vh",
-            minHeight: "600px",
-            minWidth: "375px",
+            ...BACKDROP_STYLE,
             background: theme.custom.colors.backgroundBackdrop,
           }}
         ></div>
