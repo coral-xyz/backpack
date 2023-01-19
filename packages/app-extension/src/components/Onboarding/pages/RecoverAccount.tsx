@@ -47,9 +47,12 @@ export const RecoverAccount = ({
   const [blockchain, setBlockchain] = useState<Blockchain | null>(null);
   const [mnemonic, setMnemonic] = useState<string | undefined>(undefined);
   const [userId, setUserId] = useState<string | undefined>(undefined);
-  // TODO onboarded blockchains is currently unused but it will be used to recover
-  // multiple accounts on different blockchains
-  const [, setOnboardedBlockchains] = useState<Array<Blockchain>>([]);
+  const [blockchainPublicKeys, setServerPublicKeys] = useState<
+    Array<{
+      blockchain: Blockchain;
+      publicKey: string;
+    }>
+  >([]);
   const [blockchainKeyrings, setBlockchainKeyrings] = useState<
     Array<BlockchainKeyringInit>
   >([]);
@@ -77,19 +80,7 @@ export const RecoverAccount = ({
         const json = await response.json();
         if (response.ok) {
           setUserId(json.id);
-          if (json.publicKeys.length > 0) {
-            setOnboardedBlockchains(
-              json.publicKeys.map(
-                (b: { blockchain: Blockchain }) => b.blockchain
-              )
-            );
-            // Default to first available blockchain. For mnemonic keyrings we
-            // can do this and search all available public keys for the mnemonic
-            // to find a match. For ledger keyrings we need to prompt them to open
-            // a specific app on the ledger so we'll allow them to select which
-            // blockchain they want to use as part of the flow.
-            setBlockchain(json.publicKeys[0].blockchain);
-          }
+          setServerPublicKeys(json.publicKeys);
         }
       }
     })();
@@ -117,10 +108,14 @@ export const RecoverAccount = ({
 
     addBlockchainKeyring({
       blockchain: blockchain!,
-      derivationPath,
-      accountIndex,
-      publicKey: publicKey!,
-      signature,
+      wallets: [
+        {
+          derivationPath,
+          accountIndex,
+          publicKey: publicKey!,
+          signature,
+        },
+      ],
     });
   };
 
@@ -160,9 +155,8 @@ export const RecoverAccount = ({
             }}
           />,
           <MnemonicSearch
-            blockchain={blockchain!}
+            blockchainPublicKeys={blockchainPublicKeys}
             mnemonic={mnemonic!}
-            publicKey={publicKey!}
             onNext={(derivationPath: DerivationPath, accountIndex: number) => {
               signForWallet(
                 blockchain!,

@@ -122,10 +122,14 @@ export const OnboardAccount = ({
     });
     addBlockchainKeyring({
       blockchain: blockchain!,
-      derivationPath,
-      accountIndex,
-      publicKey: publicKey!,
-      signature,
+      wallets: [
+        {
+          derivationPath,
+          accountIndex,
+          publicKey: publicKey!,
+          signature,
+        },
+      ],
     });
   };
 

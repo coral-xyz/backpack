@@ -403,22 +403,22 @@ export class KeyringStore {
   public async blockchainKeyringAdd(
     blockchain: Blockchain,
     derivationPath: DerivationPath,
-    accountIndex: number,
+    accountIndices: Array<number>,
     publicKey?: string,
     persist = true
-  ): Promise<string> {
+  ): Promise<Array<string>> {
     // If this is a mnemonic based keyring the public key being returned is
     // unknown, if it is a ledger it will just be the same as `publicKey`
-    const newPublicKey = await this.activeUserKeyring.blockchainKeyringAdd(
+    const newPublicKeys = await this.activeUserKeyring.blockchainKeyringAdd(
       blockchain,
       derivationPath,
-      accountIndex,
+      accountIndices,
       publicKey
     );
     if (persist) {
       await this.persist();
     }
-    return newPublicKey;
+    return newPublicKeys;
   }
 
   /**
@@ -653,7 +653,7 @@ class UserKeyring {
       await kr.blockchainKeyringAdd(
         blockchainKeyring.blockchain,
         blockchainKeyring.derivationPath,
-        blockchainKeyring.accountIndex,
+        blockchainKeyring.accountIndices,
         blockchainKeyring.publicKey
       );
     }
@@ -747,39 +747,46 @@ class UserKeyring {
   public async blockchainKeyringAdd(
     blockchain: Blockchain,
     derivationPath: DerivationPath,
-    accountIndex: number,
+    accountIndices: Array<number>,
     publicKey?: string
-  ): Promise<string> {
+  ): Promise<Array<string>> {
     const keyring = keyringForBlockchain(blockchain);
-    let newPublicKey: string;
+
+    let newPublicKeys: Array<string>;
     if (this.mnemonic) {
       // Initialising using a mnemonic
       const wallets = await keyring.initFromMnemonic(
         this.mnemonic,
         derivationPath,
-        [accountIndex]
+        accountIndices
       );
       // Set the newly created public key for return
-      newPublicKey = wallets[0][0];
+      newPublicKeys = wallets.map((kp) => kp[0]);
     } else {
+      // Initialising with a hardware wallet
       if (!publicKey)
         throw new Error(
-          "initialising keyring with hardware wallet requires publickey"
+          "initialising keyring with hardware wallet requires public key"
         );
-      // Initialising using a hardware wallet
+      if (accountIndices.length > 1)
+        throw new Error(
+          "initialising keyring with hardware wallet requires a single account index"
+        );
       await keyring.initFromLedger([
         {
-          path: derivationPath,
-          account: accountIndex,
+          path: derivationPath[0],
+          account: accountIndices[0],
           publicKey,
         },
       ]);
       // This is the same as the public key that was passed in, it is returned
       // unchanged
-      newPublicKey = publicKey;
+      newPublicKeys = [publicKey];
     }
+
     this.blockchains.set(blockchain, keyring);
-    return newPublicKey;
+
+    return newPublicKeys;
   }
 
   public async blockchainKeyringRemove(blockchain: Blockchain): Promise<void> {

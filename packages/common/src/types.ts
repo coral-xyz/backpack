@@ -97,10 +97,12 @@ export type KeyringInit = {
 
 export type BlockchainKeyringInit = {
   blockchain: Blockchain;
-  derivationPath: DerivationPath;
-  accountIndex: number;
-  publicKey: string;
-  signature: string;
+  wallets: Array<{
+    derivationPath: DerivationPath;
+    accountIndex: number;
+    publicKey: string;
+    signature: string;
+  }>;
 };
 
 export interface XnftPreference {
