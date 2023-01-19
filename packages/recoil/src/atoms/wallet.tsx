@@ -71,7 +71,7 @@ export const allWallets = selector<
   },
 });
 
-// All wallets diapleyd in the balance view.
+// All wallets displayed in the balance view.
 export const allWalletsDisplayed = selector<
   Array<{
     name: string;
