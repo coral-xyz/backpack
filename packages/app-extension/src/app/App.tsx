@@ -1,4 +1,4 @@
-import React, { lazy,Suspense } from "react";
+import React, { lazy, Suspense } from "react";
 import { HashRouter } from "react-router-dom";
 import {
   NotificationsProvider,
@@ -12,7 +12,7 @@ import "@fontsource/inter";
 import { WithTheme } from "../components/common/WithTheme";
 
 import { ErrorBoundary } from "./ErrorBoundary";
-//import { Router } from "./Router";
+
 const Router = lazy(() => import("./Router"));
 
 import "./App.css";
