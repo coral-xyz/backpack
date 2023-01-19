@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
-import { UI_RPC_METHOD_KEYRING_KEY_DELETE } from "@coral-xyz/common";
+import {
+  UI_RPC_METHOD_KEYRING_KEY_DELETE,
+  walletAddressDisplay,
+} from "@coral-xyz/common";
 import {
   CheckIcon,
   PrimaryButton,
@@ -27,10 +30,6 @@ export const RemoveWallet: React.FC<{
   useEffect(() => {
     nav.setTitle("Remove Wallet");
   }, [nav]);
-
-  // TODO: this should use a common display function
-  const pubkeyStr =
-    publicKey.slice(0, 4) + "..." + publicKey.slice(publicKey.length - 4);
 
   const onRemove = async () => {
     await background.request({
@@ -70,7 +69,9 @@ export const RemoveWallet: React.FC<{
               color: theme.custom.colors.fontColor,
             }}
           >
-            {`Are you sure you want to remove ${pubkeyStr}?`}
+            {`Are you sure you want to remove ${walletAddressDisplay(
+              publicKey
+            )}?`}
           </Typography>
           <Typography
             style={{
