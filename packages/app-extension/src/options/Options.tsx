@@ -60,6 +60,7 @@ function Router() {
   const params = new URLSearchParams(window.location.search);
   const blockchain = params.get("blockchain") || Blockchain.SOLANA;
   const createKeyring = (params.get("create") || false) as boolean;
+  const publicKey = params.get("publicKey") || undefined;
 
   switch (query) {
     case QUERY_CONNECT_HARDWARE:
@@ -68,6 +69,7 @@ function Router() {
           <ConnectHardware
             blockchain={blockchain as Blockchain}
             createKeyring={createKeyring}
+            publicKey={publicKey}
             onComplete={window.close}
           />
         </OptionsContainer>

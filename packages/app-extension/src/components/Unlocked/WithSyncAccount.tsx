@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
@@ -111,5 +111,25 @@ export function WithSyncAccount({
     }
   };
 
-  return loading ? <Loading /> : children;
+  return loading ? (
+    <Loading />
+  ) : (
+    <_AuthContext.Provider value={{ serverPublicKeys }}>
+      {children}
+    </_AuthContext.Provider>
+  );
+}
+
+const _AuthContext = React.createContext<AuthContext | null>(null);
+
+type AuthContext = {
+  serverPublicKeys: any;
+};
+
+export function useAuthContext(): AuthContext {
+  const ctx = useContext(_AuthContext);
+  if (ctx === null) {
+    throw new Error("Context not available");
+  }
+  return ctx;
 }

@@ -146,15 +146,6 @@ const darkComponentOverrides = {
       },
     },
   },
-  MuiListItem: {
-    styleOverrides: {
-      root: {
-        "&:hover": {
-          opacity: HOVER_OPACITY,
-        },
-      },
-    },
-  },
   MuiIconButton: {
     styleOverrides: {
       root: {
@@ -267,7 +258,7 @@ const lightComponentOverrides = {
   },
   MuiListItem: {
     styleOverrides: {
-      root: {
+      button: {
         "&:hover": {
           background: "#F8F8F9 !important",
         },

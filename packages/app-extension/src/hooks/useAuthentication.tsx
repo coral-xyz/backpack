@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
@@ -11,6 +12,8 @@ const { base58 } = ethers.utils;
 
 export const useAuthentication = () => {
   const background = useBackgroundClient();
+
+  const [serverPublicKeys, setServerPublicKeys] = useState([]);
 
   /**
    * Login the user.
@@ -165,5 +168,11 @@ export const useAuthentication = () => {
     return transparentSigner ? transparentSigner : signers[0];
   };
 
-  return { authenticate, checkAuthentication, getSigners, getAuthSigner };
+  return {
+    authenticate,
+    checkAuthentication,
+    getSigners,
+    getAuthSigner,
+    serverPublicKeys,
+  };
 };

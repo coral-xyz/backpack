@@ -25,10 +25,16 @@ export const WalletDetail: React.FC<{
 
   useEffect(() => {
     (async () => {
-      const keyname = await background.request({
-        method: UI_RPC_METHOD_KEYNAME_READ,
-        params: [publicKey],
-      });
+      let keyname = "";
+      try {
+        keyname = await background.request({
+          method: UI_RPC_METHOD_KEYNAME_READ,
+          params: [publicKey],
+        });
+      } catch {
+        // No wallet name, might be dehydrated
+        return;
+      }
       setWalletName(keyname);
       nav.setTitle(keyname);
     })();
@@ -77,8 +83,19 @@ export const WalletDetail: React.FC<{
   };
 
   const secrets = {
-    "Show private key": {
+    "Show Private Key": {
       onClick: () => nav.push("show-private-key-warning", { publicKey }),
+    },
+  };
+
+  const recover = {
+    Recover: {
+      onClick: () =>
+        nav.push("add-connect-wallet", {
+          blockchain,
+          publicKey,
+          isRecovery: true,
+        }),
     },
   };
 
@@ -104,7 +121,10 @@ export const WalletDetail: React.FC<{
           <SettingsList menuItems={menuItems} />
         </div>
       </WithCopyTooltip>
-      {type !== "ledger" && <SettingsList menuItems={secrets} />}
+      {type !== "ledger" && type !== "dehydrated" && (
+        <SettingsList menuItems={secrets} />
+      )}
+      {type === "dehydrated" && <SettingsList menuItems={recover} />}
       {!isLastRecoverable && <SettingsList menuItems={removeWallet} />}
     </div>
   );

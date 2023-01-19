@@ -3,18 +3,24 @@
 
 import { useEffect, useState } from "react";
 import type { DerivationPath } from "@coral-xyz/common";
-import { accountDerivationPath, Blockchain } from "@coral-xyz/common";
+import {
+  accountDerivationPath,
+  Blockchain,
+  walletAddressDisplay,
+} from "@coral-xyz/common";
 import { Loading, PrimaryButton } from "@coral-xyz/react-common";
 import Ethereum from "@ledgerhq/hw-app-eth";
 import Solana from "@ledgerhq/hw-app-solana";
 import type Transport from "@ledgerhq/hw-transport";
 import { Box } from "@mui/material";
-import * as anchor from "@project-serum/anchor";
+import { ethers } from "ethers";
 
 import { Header, SubtextParagraph } from "../../common";
 import type { SelectedAccount } from "../../common/Account/ImportAccounts";
 
 import { DERIVATION_PATHS, LOAD_PUBKEY_AMOUNT } from "./MnemonicSearch";
+
+const { base58: bs58 } = ethers.utils;
 
 export const HardwareSearch = ({
   blockchain,
@@ -49,11 +55,8 @@ export const HardwareSearch = ({
             derivationPath,
             accountIndex
           );
-          const ledgerAddress = (await ledger.getAddress(path))
-            .address as Buffer;
-          const ledgerAddressStr =
-            anchor.utils.bytes.bs58.encode(ledgerAddress);
-          if (ledgerAddressStr === publicKey) {
+          const ledgerAddress = (await ledger.getAddress(path)).address;
+          if (bs58.encode(ledgerAddress) === publicKey) {
             onNext([{ index: accountIndex, publicKey }], derivationPath);
             return;
           }
@@ -77,9 +80,10 @@ export const HardwareSearch = ({
       }}
     >
       <Box sx={{ margin: "24px" }}>
-        <Header text="Unable to recover account" />
+        <Header text="Unable to recover wallet" />
         <SubtextParagraph>
-          We couldn't find a matching public key using your hardware wallet.
+          We couldn't find the public key {walletAddressDisplay(publicKey)}{" "}
+          using your hardware wallet.
         </SubtextParagraph>
       </Box>
       <Box

@@ -52,7 +52,9 @@ export const activeBlockchain = selector<Blockchain>({
   },
 });
 
-// All wallets enabled in the wallet. Not necessarily shown by the UI.
+// All wallets enabled in the wallet. The assets for each wallet may or may
+// not be displayed in the balance view depending on the aggregate wallets
+// setting.
 export const allWallets = selector<
   Array<{
     name: string;
@@ -63,23 +65,13 @@ export const allWallets = selector<
 >({
   key: "allWallets",
   get: ({ get }) => {
-    const _enabledBlockchains = get(enabledBlockchains);
-    let wallets: Array<any> = [];
-
-    if (_enabledBlockchains.includes(Blockchain.SOLANA)) {
-      const solanaWallets = get(allWalletsPerBlockchain(Blockchain.SOLANA));
-      wallets = wallets.concat(solanaWallets);
-    }
-    if (_enabledBlockchains.includes(Blockchain.ETHEREUM)) {
-      const ethereumWallets = get(allWalletsPerBlockchain(Blockchain.ETHEREUM));
-      wallets = wallets.concat(ethereumWallets);
-    }
-
-    return wallets;
+    return get(enabledBlockchains)
+      .map((b) => get(allWalletsPerBlockchain(b as Blockchain)))
+      .flat();
   },
 });
 
-// All wallets to display in the UI at any given time.
+// All wallets diapleyd in the balance view.
 export const allWalletsDisplayed = selector<
   Array<{
     name: string;
