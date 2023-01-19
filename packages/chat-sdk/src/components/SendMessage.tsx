@@ -6,12 +6,13 @@ import { useActiveSolanaWallet, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import ArrowForwardIos from "@mui/icons-material/ArrowForwardIos";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
-import { CircularProgress, IconButton, TextField } from "@mui/material";
+import { CircularProgress, IconButton } from "@mui/material";
 import { createStyles, makeStyles } from "@mui/styles";
 import { v4 as uuidv4 } from "uuid";
 
 import { base64ToArrayBuffer } from "../utils/imageUploadUtils";
 
+import { MessageInput } from "./messageInput/MessageInput";
 import { Attatchment } from "./Attatchment";
 import { useChatContext } from "./ChatContext";
 import { EmojiPickerComponent } from "./EmojiPicker";
@@ -95,15 +96,8 @@ export const SendMessage = () => {
   const theme = useCustomTheme();
   const activeSolanaWallet = useActiveSolanaWallet();
 
-  const {
-    remoteUserId,
-    roomId,
-    activeReply,
-    setActiveReply,
-    type,
-    remoteUsername,
-    chats,
-  } = useChatContext();
+  const { remoteUserId, roomId, activeReply, setActiveReply, type, chats } =
+    useChatContext();
 
   const sendMessage = async (
     messageTxt,
@@ -384,7 +378,7 @@ export const SendMessage = () => {
               <IconButton
                 size={"small"}
                 style={{ color: theme.custom.colors.icon }}
-                onClick={(e) => {
+                onClick={() => {
                   setEmojiMenuOpen(true);
                 }}
               >
@@ -399,34 +393,15 @@ export const SendMessage = () => {
             </div>
           )}
         </>
-        <TextField
-          autoFocus
-          classes={{
-            root: classes.textFieldRoot,
-          }}
-          inputProps={{
-            className: `${
-              messageContent
-                ? classes.textFieldInputColor
-                : classes.textFieldInputColorEmpty
-            }`,
-          }}
-          fullWidth={true}
-          className={`${classes.textInputRoot} ${
-            messageContent
-              ? classes.textFieldInputColor
-              : classes.textFieldInputColorEmpty
-          }`}
-          placeholder={
-            type === "individual"
-              ? `Message @${remoteUsername}`
-              : "Your message ..."
-          }
-          value={messageContent}
-          id="standard-text"
-          onChange={(e) => setMessageContent(e.target.value)}
-          onClick={() => setEmojiMenuOpen(false)}
-        />
+        {/*<p*/}
+        {/*  contentEditable="true"*/}
+        {/*  className={classes.textFieldRoot}*/}
+        {/*  onChange={(e) => setMessageContent(e.target.value)}*/}
+        {/*  onClick={() => setEmojiMenuOpen(false)}*/}
+        {/*>*/}
+        {/*  hi tehre hello*/}
+        {/*</p>*/}
+        <MessageInput />
       </div>
     </div>
   );
