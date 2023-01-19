@@ -5,14 +5,14 @@ object_relationships:
   - name: invitation
     using:
       foreign_key_constraint_on: invitation_id
-  - name: mad_feed_vote_sums
+  - name: mad_feed_user_score
     using:
       manual_configuration:
         column_mapping:
           id: user_id
         insertion_order: null
         remote_table:
-          name: mad_feed_user_vote_sums
+          name: mad_feed_user_score_totals
           schema: public
   - name: referrer
     using:
