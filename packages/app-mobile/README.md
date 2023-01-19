@@ -1,4 +1,4 @@
-# Backpack mobile
+# Backpack 🎒📱
 
 Android and iOS apps powered via react-native.
 
@@ -20,8 +20,16 @@ npm install -g expo-cli
 npm install -g eas-cli
 ```
 
-- Build and start mobile
+- From the root backpack folder run:
 
 ```sh
 yarn build:mobile && yarn start:mobile
 ```
+
+- From another terminal window run:
+
+```sh
+yarn ios
+```
+
+An iPhone simulator should open up and you should be well on your way!
