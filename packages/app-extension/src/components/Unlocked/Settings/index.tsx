@@ -36,7 +36,6 @@ import { IconButton, Typography } from "@mui/material";
 
 import {
   AllWalletsList,
-  WalletList as _WalletList,
   WalletListBlockchainSelector,
 } from "../../../components/common/WalletList";
 import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
@@ -204,7 +203,6 @@ function _SettingsContent() {
 function SettingsList() {
   const theme = useCustomTheme();
   const nav = useNavStack();
-  const { push } = useNavigation();
   const background = useBackgroundClient();
   const featureGates = useFeatureGates();
 

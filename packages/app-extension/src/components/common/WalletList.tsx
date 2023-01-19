@@ -221,6 +221,10 @@ function WalletNavStack({
         )}
       />
       <NavStackScreen
+        name={"add-connect-wallet"}
+        component={(props: any) => <AddConnectWalletMenu {...props} />}
+      />
+      <NavStackScreen
         name={"edit-wallets-wallet-detail"}
         component={(props: any) => <WalletDetail {...props} />}
       />
@@ -239,10 +243,6 @@ function WalletNavStack({
       <NavStackScreen
         name={"edit-wallets-blockchain-selector"}
         component={(props: any) => <WalletListBlockchainSelector {...props} />}
-      />
-      <NavStackScreen
-        name={"add-connect-wallet"}
-        component={(props: any) => <AddConnectWalletMenu {...props} />}
       />
       <NavStackScreen
         name={"import-secret-key"}

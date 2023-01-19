@@ -321,17 +321,9 @@ export function RecoverWalletMenu({
   keyringExists: boolean;
   publicKey: string;
 }) {
-  console.log(blockchain);
-  console.log(keyringExists);
-  console.log(publicKey);
-
   const nav = useNavStack();
-  const background = useBackgroundClient();
   const theme = useCustomTheme();
   const [openDrawer, setOpenDrawer] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const createNewDerived = async () => {};
 
   return (
     <>
@@ -350,37 +342,27 @@ export function RecoverWalletMenu({
         </Box>
         <Box sx={{ margin: "0 16px" }}>
           <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <ActionCard
-                icon={
-                  <AddCircle
-                    style={{
-                      color: theme.custom.colors.icon,
-                    }}
-                  />
-                }
-                text="Recover using phrase"
-                onClick={createNewDerived}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <ActionCard
-                icon={
-                  <ArrowCircleDown
-                    style={{
-                      color: theme.custom.colors.icon,
-                    }}
-                  />
-                }
-                text="Recover using private key"
-                onClick={() =>
-                  nav.push("import-secret-key", {
-                    blockchain,
-                    publicKey,
-                  })
-                }
-              />
-            </Grid>
+            {keyringExists && (
+              <Grid item xs={6}>
+                <ActionCard
+                  icon={
+                    <ArrowCircleDown
+                      style={{
+                        color: theme.custom.colors.icon,
+                      }}
+                    />
+                  }
+                  text="Recover using private key"
+                  onClick={() =>
+                    nav.push("import-secret-key", {
+                      blockchain,
+                      publicKey,
+                      keyringExists,
+                    })
+                  }
+                />
+              </Grid>
+            )}
             <Grid item xs={6}>
               <ActionCard
                 icon={
