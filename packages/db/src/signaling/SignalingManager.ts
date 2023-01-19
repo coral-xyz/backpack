@@ -42,9 +42,11 @@ export class SignalingManager {
 
   private constructor() {}
 
-  updateUuid(uuid: string) {
+  updateUuid(uuid: string, jwt: string) {
+    console.error("updating the uuid to ");
+    console.error(uuid);
     this.signaling?.destroy();
-    this.signaling = new Signaling(uuid);
+    this.signaling = new Signaling(uuid, jwt);
     this.uuid = uuid;
     this.initHandlers();
     this.updateLastReadTimeout = {};

@@ -73,13 +73,13 @@ export function Router() {
 function _Router() {
   const needsOnboarding =
     useKeyringStoreState() === KeyringStoreStateEnum.NeedsOnboarding;
-  const { uuid } = useUser();
+  const { uuid, jwt } = useUser();
 
   useEffect(() => {
     refreshFriendships(uuid);
     refreshGroups(uuid).catch((e) => console.error(e));
-    SignalingManager.getInstance().updateUuid(uuid);
-  }, [uuid]);
+    SignalingManager.getInstance().updateUuid(uuid, jwt);
+  }, [uuid, jwt]);
 
   useEffect(() => {
     // if the user needs onboarding then open the expanded view
