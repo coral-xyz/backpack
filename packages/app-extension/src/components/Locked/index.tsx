@@ -17,6 +17,10 @@ import { LockedMenu } from "./LockedMenu";
 export const NAV_BAR_HEIGHT = 56;
 
 export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
+  return <div></div>;
+}
+
+function _Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
   const theme = useCustomTheme();
   const background = useBackgroundClient();
   const user = useUser();

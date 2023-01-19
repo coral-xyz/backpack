@@ -53,7 +53,7 @@ import "./App.css";
 
 const logger = getLogger("router");
 
-export function Router() {
+export default function Router() {
   const theme = useCustomTheme();
   const isDarkMode = useDarkMode();
   return (
