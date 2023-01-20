@@ -7,8 +7,6 @@ import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
 import React, { useEffect, useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
-import * as Clipboard from "expo-clipboard";
-
 import {
   ListRowSeparator,
   Margin,
@@ -16,17 +14,14 @@ import {
   Row,
   StyledTextInput,
 } from "@components";
-import { formatUSD, walletAddressDisplay } from "@coral-xyz/common";
+import { formatUSD } from "@coral-xyz/common";
 import {
   blockchainBalancesSorted,
-  useActiveWallets,
-  useAllWalletsDisplayed,
-  useBlockchainConnectionUrl,
-  useEnabledBlockchains,
-  useLoader,
-} from "@coral-xyz/recoil";
+  allWalletsDisplayed,
+} from "@coral-xyz/recoil"; // recoil(done)
 import { useTheme } from "@hooks";
 import { useNavigation } from "@react-navigation/native";
+import { useRecoilValueLoadable } from "recoil";
 
 import { ExpandCollapseIcon } from "@components/Icon";
 
@@ -70,7 +65,9 @@ export function TokenTables({
   customFilter?: (token: Token) => boolean;
   tokenAccounts?: ReturnType<typeof useBlockchainTokensSorted>;
 }) {
-  const wallets = useAllWalletsDisplayed();
+  const wl = useRecoilValueLoadable(allWalletsDisplayed);
+  const wallets = wl.state === "hasValue" ? wl.contents : [];
+  console.log("rrr:wallets", wallets);
   return (
     <>
       {wallets.map(
@@ -119,15 +116,15 @@ function WalletTokenTable({
     setExpanded(!expanded);
   };
 
-  const connectionUrl = useBlockchainConnectionUrl(blockchain);
-  const [rawTokenAccounts, _, isLoading] = useLoader(
+  const rta = useRecoilValueLoadable(
     blockchainBalancesSorted({
       publicKey: wallet.publicKey.toString(),
       blockchain,
-    }),
-    tokenAccounts ? tokenAccounts : [],
-    [wallet.publicKey, connectionUrl]
+    })
   );
+
+  const rawTokenAccounts = rta.state === "hasValue" ? rta.contents : [];
+  console.log("rrr:rawTokenAccounts", rawTokenAccounts);
 
   const searchLower = search.toLowerCase();
   const tokenAccountsFiltered = rawTokenAccounts
@@ -138,6 +135,8 @@ function WalletTokenTable({
           t.ticker.toLowerCase().startsWith(searchLower))
     )
     .filter(customFilter);
+
+  console.log("rrr:tokenAccountsFiltered", tokenAccountsFiltered);
 
   useEffect(() => {
     setSearch(searchFilter);

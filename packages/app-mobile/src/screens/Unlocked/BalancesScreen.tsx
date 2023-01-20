@@ -1,28 +1,24 @@
 import type { Token } from "./components/index";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
-import { Margin, Screen, TokenAmountHeader } from "@components";
 import {
   Blockchain,
   ETH_NATIVE_MINT,
   SOL_NATIVE_MINT,
   toTitleCase,
 } from "@coral-xyz/common";
-import {
-  blockchainTokenData,
-  useActiveEthereumWallet,
-  useBlockchainActiveWallet,
-  useLoader,
-} from "@coral-xyz/recoil";
-import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import { RecentActivityList } from "@screens/Unlocked/RecentActivityScreen";
-import { WalletListScreen } from "@screens/Unlocked/WalletListScreen";
 
-import { ErrorBoundary } from "@components/ErrorBoundary";
 import { TransferWidget } from "@components/Unlocked/Balances/TransferWidget";
+import { Margin, Screen, TokenAmountHeader } from "@components/index";
+import {
+  useBlockchainTokenData,
+  useBlockchainActiveWallet,
+  useActiveEthereumWallet,
+} from "@hooks/recoil";
 
 import { BalanceSummaryWidget } from "./components/BalanceSummaryWidget";
 import { TokenTables, UsdBalanceAndPercentChange } from "./components/Balances";
@@ -34,28 +30,6 @@ export function BalancesNavigator() {
       initialRouteName="BalanceList"
       screenOptions={{ presentation: "modal" }}
     >
-      <Stack.Screen
-        name="wallet-picker"
-        component={WalletListScreen}
-        options={({ navigation }) => {
-          return {
-            title: "Wallets",
-            headerLeft: undefined,
-            headerRight: ({ tintColor }) => {
-              return (
-                <Pressable onPress={() => navigation.navigate("edit-wallets")}>
-                  <MaterialIcons
-                    name="settings"
-                    size={24}
-                    style={{ padding: 8 }}
-                    color={tintColor}
-                  />
-                </Pressable>
-              );
-            },
-          };
-        }}
-      />
       <Stack.Group screenOptions={{ headerShown: false }}>
         <Stack.Screen name="BalanceList" component={BalanceListScreen} />
       </Stack.Group>
@@ -80,17 +54,14 @@ function TokenHeader({
   address,
   onPressOption,
 }: SearchParamsFor.Token["props"]) {
-  const wallet = useBlockchainActiveWallet(blockchain);
-  const [token] = useLoader(
-    blockchainTokenData({
-      publicKey: wallet.publicKey.toString(),
-      blockchain,
-      tokenAddress: address,
-    }),
-    null
-  );
+  const { data: wallet } = useBlockchainActiveWallet(blockchain);
+  const { data: token, loading } = useBlockchainTokenData({
+    publicKey: wallet.publicKey.toString(),
+    blockchain,
+    tokenAddress: address,
+  });
 
-  if (!token) {
+  if (!token || loading) {
     return null;
   }
 
@@ -128,8 +99,8 @@ function BalanceDetailScreen({ route, navigation }) {
   const { address } = token;
 
   // We only use ethereumWallet here, even though its shared on the Solana side too.
-  const ethereumWallet = useActiveEthereumWallet();
-  if (!blockchain || !address) {
+  const { data: ethereumWallet, loading } = useActiveEthereumWallet();
+  if (!blockchain || !address || loading) {
     return null;
   }
 
@@ -183,7 +154,7 @@ function BalanceListScreen({ navigation }) {
         <BalanceSummaryWidget />
       </Margin>
       <Margin bottom={18}>
-        <TransferWidget rampEnabled={false} onPressOption={handlePressOption} />
+        <TransferWidget onPressOption={handlePressOption} />
       </Margin>
       <TokenTables
         onPressRow={onPressTokenRow}

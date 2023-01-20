@@ -20,11 +20,14 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 import { RecoilRoot, useRecoilCallback, useRecoilSnapshot } from "recoil";
 
+import { ErrorBoundary } from "@components/ErrorBoundary";
+
 import { useLoadedAssets } from "./hooks/useLoadedAssets";
 import { RootNavigation } from "./navigation/RootNavigator";
 
 SplashScreen.preventAutoHideAsync();
 
+// eslint-disable-next-line
 function DebugObserver(): null {
   const snapshot = useRecoilSnapshot();
   useEffect(() => {
@@ -37,6 +40,8 @@ function DebugObserver(): null {
 
   return null;
 }
+
+// eslint-disable-next-line
 function DebugButton(): JSX.Element {
   const onPress = useRecoilCallback(
     ({ snapshot }) =>
@@ -61,13 +66,14 @@ function DebugButton(): JSX.Element {
 
 export function App(): JSX.Element {
   return (
-    <Suspense fallback={null}>
-      <RecoilRoot>
-        <DebugButton />
-        <BackgroundHiddenWebView />
-        <Main />
-      </RecoilRoot>
-    </Suspense>
+    <ErrorBoundary>
+      <Suspense fallback={null}>
+        <RecoilRoot>
+          <BackgroundHiddenWebView />
+          <Main />
+        </RecoilRoot>
+      </Suspense>
+    </ErrorBoundary>
   );
 }
 

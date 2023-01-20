@@ -125,7 +125,6 @@ export function BaseButton({
           {
             fontWeight: "500",
             fontSize: 16,
-            lineHeight: 24,
             color: theme.custom.colors.primaryButtonTextColor,
             opacity: disabled ? 50 : 100, // TODO(peter)
           },
@@ -329,25 +328,25 @@ export function EmptyState({
   buttonText,
   onPress,
   minimize,
-  verticallyCentered,
-}: {
+}: // verticallyCentered,
+{
   icon: (props: any) => React.ReactNode;
   title: string;
   subtitle: string;
   buttonText?: string;
   onPress?: () => void | undefined;
-  // style?: React.CSSProperties;
   minimize?: boolean;
-  verticallyCentered?: boolean;
+  // verticallyCentered?: boolean;
 }) {
   const theme = useTheme();
   return (
-    <View style={{ alignItems: "center" }}>
+    <View>
       {icon({
         size: 56,
         style: {
           color: theme.custom.colors.secondary,
           marginBottom: 16,
+          alignSelf: "center",
         },
       })}
       <Typography
@@ -375,9 +374,13 @@ export function EmptyState({
           {subtitle}
         </Typography>
       )}
-      {minimize !== true && buttonText && (
+      {minimize !== true && onPress && buttonText && (
         <Margin top={12}>
-          <PrimaryButton label={buttonText} onPress={() => onPress()} />
+          <PrimaryButton
+            disabled={false}
+            label={buttonText}
+            onPress={() => onPress()}
+          />
         </Margin>
       )}
     </View>
@@ -815,7 +818,7 @@ export function RoundedContainerGroup({
   disableBottomRadius = false,
 }: {
   children: JSX.Element;
-  style: StyleProp<ViewStyle>;
+  style?: StyleProp<ViewStyle>;
   disableTopRadius?: boolean;
   disableBottomRadius?: boolean;
 }): JSX.Element {

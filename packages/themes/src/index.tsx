@@ -117,6 +117,7 @@ type CustomColors = {
   unreadBackground: string;
   invertedPrimary: string;
   invertedSecondary: string;
+  avatarPopoverMenuBackground: string;
 };
 
 const baseTheme = createStyles({
@@ -242,6 +243,7 @@ export const darkTheme: Partial<Theme> & { custom: { colors: CustomColors } } =
         unreadBackground: LIGHT_UNREAD_BACKGROUND,
         invertedPrimary: "#FFFFFF",
         invertedSecondary: LIGHT_BACKGROUND_COLOR_0,
+        avatarPopoverMenuBackground: BACKGROUND_COLOR_0,
       },
     },
   };
@@ -364,6 +366,7 @@ export const lightTheme: Partial<Theme> & { custom: { colors: CustomColors } } =
         unreadBackground: DARK_UNREAD_BACKGROUND,
         invertedPrimary: "#212121",
         invertedSecondary: "rgba(255, 255, 255, 0.1)",
+        avatarPopoverMenuBackground: LIGHT_BACKGROUND_COLOR_1,
       },
     },
   };

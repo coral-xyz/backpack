@@ -1,13 +1,18 @@
 import { useEffect, useState } from "react";
 import {
+  BACKEND_API_URL,
   Blockchain,
   confirmTransaction,
   explorerNftUrl,
   getLogger,
   Solana,
+  TAB_MESSAGES,
   toTitleCase,
+  UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
+  WHITELISTED_CHAT_COLLECTIONS,
 } from "@coral-xyz/common";
+import { NAV_COMPONENT_NFT_CHAT } from "@coral-xyz/common/dist/esm/constants";
 import {
   List,
   ListItem,
@@ -68,6 +73,31 @@ export function NftsDetail({
     nftById({ publicKey, connectionUrl, nftId })
   );
   const nft = (state === "hasValue" && contents) || null;
+  //@ts-ignore
+  const whitelistedChatCollection = WHITELISTED_CHAT_COLLECTIONS.find(
+    (x) => x.collectionId === nft?.metadataCollectionId
+  );
+  const [chatJoined, setChatJoined] = useState(false);
+  const [joiningChat, setJoiningChat] = useState(false);
+  let whitelistedChatCollectionId = whitelistedChatCollection?.collectionId;
+  const background = useBackgroundClient();
+
+  if (whitelistedChatCollection) {
+    Object.keys(whitelistedChatCollection.attributeMapping || {}).forEach(
+      (attrName) => {
+        if (
+          !nft?.attributes?.find(
+            (x) =>
+              x.traitType === attrName &&
+              x.value ===
+                whitelistedChatCollection?.attributeMapping?.[attrName]
+          )
+        ) {
+          whitelistedChatCollectionId = "";
+        }
+      }
+    );
+  }
 
   // Hack: needed because this is undefined due to framer-motion animation.
   if (!nftId) {
@@ -93,6 +123,36 @@ export function NftsDetail({
       <Image nft={nft} />
       <Description nft={nft} />
       <SendButton nft={nft} />
+      {whitelistedChatCollectionId && (
+        <SecondaryButton
+          style={{ marginTop: 12 }}
+          disabled={chatJoined || joiningChat}
+          label={joiningChat ? "Joining" : chatJoined ? "Joined" : "Join chat"}
+          onClick={async () => {
+            setJoiningChat(true);
+            await fetch(`${BACKEND_API_URL}/nft/bulk`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                publicKey: publicKey,
+                nfts: [
+                  {
+                    collectionId: whitelistedChatCollection?.collectionId,
+                    nftId: nft?.mint,
+                    centralizedGroup: whitelistedChatCollection?.id,
+                  },
+                ],
+              }),
+            });
+            setJoiningChat(false);
+            background.request({
+              method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+              params: [TAB_MESSAGES],
+            });
+            setChatJoined(true);
+          }}
+        />
+      )}
       {nft.attributes && <Attributes nft={nft} />}
     </div>
   );
@@ -166,7 +226,6 @@ function SendButton({ nft }: { nft: any }) {
     <>
       <PrimaryButton
         style={{
-          marginBottom: "24px",
           marginTop: "24px",
         }}
         onClick={() => send()}
@@ -313,7 +372,11 @@ function Attributes({ nft }: { nft: any }) {
   const theme = useCustomTheme();
 
   return (
-    <div>
+    <div
+      style={{
+        marginTop: 24,
+      }}
+    >
       <Typography style={{ color: theme.custom.colors.secondary }}>
         Attributes
       </Typography>
