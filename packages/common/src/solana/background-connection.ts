@@ -119,6 +119,18 @@ import { serializeTokenAccountsFilter } from "./types";
 
 const logger = getLogger("bgg");
 
+type CustomSplTokeAccountsResponseJson = {
+  mintsMap: Array<[string, RawMint]>;
+  nfts: {
+    nftTokens: Array<SolanaTokenAccountWithKey>;
+    nftTokenMetadata: Array<TokenMetadata | null>;
+  };
+  fts: {
+    fungibleTokens: Array<SolanaTokenAccountWithKey>;
+    fungibleTokenMetadata: Array<TokenMetadata | null>;
+  };
+};
+
 export class BackgroundSolanaConnection extends Connection {
   private _backgroundClient: BackgroundClient;
 
@@ -145,113 +157,51 @@ export class BackgroundSolanaConnection extends Connection {
     });
   }
 
-  async customSplTokenAccounts(
-    publicKey: PublicKey
-  ): Promise<CustomSplTokenAccountsResponseString> {
+  async customSplTokenAccounts(publicKey: PublicKey) {
     const resp = await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_CUSTOM_SPL_TOKEN_ACCOUNTS,
       params: [publicKey.toString()],
     });
+
     return BackgroundSolanaConnection.customSplTokenAccountsFromJson(resp);
   }
 
-  static customSplTokenAccountsFromJson(json: {
-    fts: {
-      fungibleTokenMetadata: Array<{
-        account: {
-          collection: any | null;
-          collectionDetails: any | null;
-          data: {
-            creators: any;
-            name: string;
-            sellerFeeBasisPoints: number;
-            symbol: string;
-            uri: string;
-          };
-          editionNonce: number | null;
-          isMutable: boolean;
-          key: string; // PublicKey?
-          mint: string; // PublicKey
-          primarySaleHappened: boolean;
-          tokenStandard: number;
-          updateAuthority: string; // PublicKey
-          uses: any;
-        };
-        publicKey: string; // PublicKey
-      } | null>;
-      fungibleTokens: Array<{
-        amount: string;
-        authority: string; // PublicKey
-        closeAuthority: string; // BigNumber
-        delegate: any | null; // PublicKey
-        delegatedAmount: string; // PublicKey
-        isNative: any | null;
-        key: string; // PublicKey?
-        mint: string; // PublicKey
-        state: any;
-      }>;
-    };
-    mintsMap: Array<
-      | string
-      | {
-          decimals: number;
-          freezeAuthority: string; // BigNumber ?
-          freezeAuthorityOption: number;
-          isInitialized: boolean;
-          mintAuthority: string; // PublicKey ?
-          mintAuthorityOption: number;
-          supply: string;
-        }
-    >;
-    nfts: {
-      nftTokens: Array<{
-        amount: string;
-        authority: string; // PublicKey
-        closeAuthority: string; // BigNumber
-        delegate: any; // PublicKey
-        delegatedAmount: string; // PublicKey
-        isNative: any;
-        key: string; // PublicKey
-        mint: string; // BigNumber
-      }>;
-      nftTokenMetadata: Array<{
-        publicKey: string; // PublicKey
-        account: {
-          collection: any;
-          collectionDetails: any;
-          data: {
-            name: string;
-            creators: any[];
-            sellerFeeBasisPoints: number;
-            symbol: string;
-            uri: string;
-          };
-          editionNonce: number;
-          isMutable: boolean;
-          key: number;
-          mint: string; // BigNumber
-          primarySaleHappened: boolean;
-          tokenStandard: any;
-          updateAuthority: string; // PublicKey
-          uses: any;
-        };
-      }>;
-    };
-  }): CustomSplTokenAccountsResponseString {
+  static customSplTokenAccountsFromJson(
+    json: CustomSplTokenAccountsResponseString
+  ) {
+    // TODO this might be wrong
     logger.debug("fromJson:json", json);
     return {
-      mintsMap: json.mintsMap.map((m: any) => {
+      mintsMap: json.mintsMap.map(([publicKey, mintStr]) => {
         return [
-          m[0],
+          publicKey,
           {
-            ...m[1],
-            supply: BigInt(m[1].supply),
+            ...mintStr,
+            mintAuthority: new PublicKey(mintStr.mintAuthority),
+            supply: BigInt(mintStr.supply),
+            freezeAuthority: new PublicKey(mintStr.freezeAuthority),
           },
         ];
       }),
       fts: {
         ...json.fts,
-        fungibleTokens: json.fts.fungibleTokens.map((t: any) => {
+        fungibleTokenMetadata: json.fts.fungibleTokenMetadata
+          .filter(Boolean)
+          .map((m) => {
+            if (!m) {
+              return null;
+            }
+
+            return {
+              ...m,
+              publicKey: new PublicKey(m.publicKey),
+            };
+          }),
+        fungibleTokens: json.fts.fungibleTokens.filter(Boolean).map((t) => {
+          if (!t) {
+            return null;
+          }
+
           return {
             ...t,
             amount: new BN(t.amount),
@@ -260,15 +210,120 @@ export class BackgroundSolanaConnection extends Connection {
       },
       nfts: {
         ...json.nfts,
-        nftTokens: json.nfts.nftTokens.map((t: any) => {
+        nftTokenMetadata: json.nfts.nftTokenMetadata
+          .filter(Boolean)
+          .map((t) => {
+            return {
+              ...t,
+              publicKey: new PublicKey(t.publicKey),
+              account: {
+                ...t.account,
+                mint: new PublicKey(t.account.mint),
+                updateAuthority: new PublicKey(t.account.updateAuthority),
+              },
+            };
+          }),
+        nftTokens: json.nfts.nftTokens.map((t) => {
+          if (!t) {
+            return null;
+          }
+
           return {
-            ...t,
             amount: new BN(t.amount),
+            authority: new PublicKey(t.authority),
+            closeAuthority: new PublicKey(t.closeAuthority),
+            delegate: new PublicKey(t.delegate),
+            delegatedAmount: new BN(t.delegatedAmount),
+            isNative: t.isNative,
+            key: new PublicKey(t.key),
+            mint: new PublicKey(t.mint),
+            state: t.state, // u8?
           };
         }),
       },
     };
   }
+  // fts: {
+  //   fungibleTokenMetadata: Array<{
+  //     account: {
+  //       collection: any | null;
+  //       collectionDetails: any | null;
+  //       data: {
+  //         creators: any;
+  //         name: string;
+  //         sellerFeeBasisPoints: number;
+  //         symbol: string;
+  //         uri: string;
+  //       };
+  //       editionNonce: number | null;
+  //       isMutable: boolean;
+  //       key: string; // PublicKey?
+  //       mint: string; // PublicKey
+  //       primarySaleHappened: boolean;
+  //       tokenStandard: number;
+  //       updateAuthority: string; // PublicKey
+  //       uses: any;
+  //     };
+  //     publicKey: string; // PublicKey
+  //   } | null>;
+  //   fungibleTokens: Array<{
+  //     amount: string;
+  //     authority: string; // PublicKey
+  //     closeAuthority: string; // BigNumber
+  //     delegate: any | null; // PublicKey
+  //     delegatedAmount: string; // PublicKey
+  //     isNative: any | null;
+  //     key: string; // PublicKey?
+  //     mint: string; // PublicKey
+  //     state: any;
+  //   }>;
+  // };
+  // mintsMap: [
+  //   string,
+  //   {
+  //     decimals: number;
+  //     freezeAuthority: string; // BigNumber ?
+  //     freezeAuthorityOption: number;
+  //     isInitialized: boolean;
+  //     mintAuthority: string; // PublicKey ?
+  //     mintAuthorityOption: number;
+  //     supply: string;
+  //   } | null
+  // ];
+  // nfts: {
+  //   nftTokens: Array<{
+  //     amount: string;
+  //     authority: string; // PublicKey
+  //     closeAuthority: string; // BigNumber
+  //     delegate: any; // PublicKey
+  //     delegatedAmount: string; // PublicKey
+  //     isNative: any;
+  //     key: string; // PublicKey
+  //     mint: string; // BigNumber
+  //   }>;
+  //   nftTokenMetadata: Array<{
+  //     publicKey: string; // PublicKey
+  //     account: {
+  //       collection: any;
+  //       collectionDetails: any;
+  //       data: {
+  //         name: string;
+  //         creators: any[];
+  //         sellerFeeBasisPoints: number;
+  //         symbol: string;
+  //         uri: string;
+  //       };
+  //       editionNonce: number;
+  //       isMutable: boolean;
+  //       key: number;
+  //       mint: string; // BigNumber
+  //       primarySaleHappened: boolean;
+  //       tokenStandard: any;
+  //       updateAuthority: string; // PublicKey
+  //       uses: any;
+  //     };
+  //   }>;
+  // };
 
   static customSplTokenAccountsToJson(_resp: CustomSplTokenAccountsResponse) {
     logger.debug("toJson:_resp", _resp);
@@ -281,6 +336,8 @@ export class BackgroundSolanaConnection extends Connection {
             : {
                 ...m[1],
                 supply: m[1].supply.toString(),
+                mintAuthority: m[1].mintAuthority?.toString(),
+                freezeAuthority: m[1].freezeAuthority?.toString(),
               },
         ];
       }),
@@ -301,7 +358,10 @@ export class BackgroundSolanaConnection extends Connection {
             ...t,
             mint: t.mint.toString(),
             key: t.key.toString(),
-            amount: t.amount.toString(),
+            amount: t.amount.toString(), // BigInt or BugNumber
+            delegatedAmount: t.delegatedAmount.toString(), //BigNumber or BigInt
+            authority: t.authority.toString(),
+            closeAuthority: t.closeAuthority?.toString() ?? null,
           };
         }),
         nftTokenMetadata: _resp.nfts.nftTokenMetadata,
