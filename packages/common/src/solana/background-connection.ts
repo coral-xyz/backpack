@@ -1,3 +1,4 @@
+import { getLogger } from "@coral-xyz/common-public";
 import type { RawMint } from "@solana/spl-token";
 import type {
   AccountBalancePair,
@@ -70,6 +71,7 @@ import { Connection, PublicKey } from "@solana/web3.js";
 import BN from "bn.js";
 import { encode } from "bs58";
 import { Buffer } from "buffer";
+import type { BigNumber } from "ethers";
 
 import type { BackgroundClient } from "../channel";
 import {
@@ -115,6 +117,8 @@ import type {
 } from "./types";
 import { serializeTokenAccountsFilter } from "./types";
 
+const logger = getLogger("bgg");
+
 export class BackgroundSolanaConnection extends Connection {
   private _backgroundClient: BackgroundClient;
 
@@ -151,9 +155,90 @@ export class BackgroundSolanaConnection extends Connection {
     return BackgroundSolanaConnection.customSplTokenAccountsFromJson(resp);
   }
 
-  static customSplTokenAccountsFromJson(
-    json: any
-  ): CustomSplTokenAccountsResponseString {
+  static customSplTokenAccountsFromJson(json: {
+    fts: {
+      fungibleTokenMetadata: Array<{
+        account: {
+          collection: any | null;
+          collectionDetails: any | null;
+          data: {
+            creators: any;
+            name: string;
+            sellerFeeBasisPoints: number;
+            symbol: string;
+            uri: string;
+          };
+          editionNonce: number | null;
+          isMutable: boolean;
+          key: string; // PublicKey?
+          mint: string; // PublicKey
+          primarySaleHappened: boolean;
+          tokenStandard: number;
+          updateAuthority: string; // PublicKey
+          uses: any;
+        };
+        publicKey: string; // PublicKey
+      } | null>;
+      fungibleTokens: Array<{
+        amount: string;
+        authority: string; // PublicKey
+        closeAuthority: string; // BigNumber
+        delegate: any | null; // PublicKey
+        delegatedAmount: string; // PublicKey
+        isNative: any | null;
+        key: string; // PublicKey?
+        mint: string; // PublicKey
+        state: any;
+      }>;
+    };
+    mintsMap: Array<
+      | string
+      | {
+          decimals: number;
+          freezeAuthority: string; // BigNumber ?
+          freezeAuthorityOption: number;
+          isInitialized: boolean;
+          mintAuthority: string; // PublicKey ?
+          mintAuthorityOption: number;
+          supply: string;
+        }
+    >;
+    nfts: {
+      nftTokens: Array<{
+        amount: string;
+        authority: string; // PublicKey
+        closeAuthority: string; // BigNumber
+        delegate: any; // PublicKey
+        delegatedAmount: string; // PublicKey
+        isNative: any;
+        key: string; // PublicKey
+        mint: string; // BigNumber
+      }>;
+      nftTokenMetadata: Array<{
+        publicKey: string; // PublicKey
+        account: {
+          collection: any;
+          collectionDetails: any;
+          data: {
+            name: string;
+            creators: any[];
+            sellerFeeBasisPoints: number;
+            symbol: string;
+            uri: string;
+          };
+          editionNonce: number;
+          isMutable: boolean;
+          key: number;
+          mint: string; // BigNumber
+          primarySaleHappened: boolean;
+          tokenStandard: any;
+          updateAuthority: string; // PublicKey
+          uses: any;
+        };
+      }>;
+    };
+  }): CustomSplTokenAccountsResponseString {
+    logger.debug("fromJson:json", json);
     return {
       mintsMap: json.mintsMap.map((m: any) => {
         return [
@@ -186,6 +271,7 @@ export class BackgroundSolanaConnection extends Connection {
   }
 
   static customSplTokenAccountsToJson(_resp: CustomSplTokenAccountsResponse) {
+    logger.debug("toJson:_resp", _resp);
     return {
       mintsMap: _resp.mintsMap.map((m) => {
         return [
