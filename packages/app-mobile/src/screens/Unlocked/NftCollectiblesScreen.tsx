@@ -2,72 +2,188 @@ import type { Nft, NftCollection } from "@coral-xyz/common";
 
 import React from "react";
 import {
+  SectionList,
   FlatList,
   Image,
   Pressable,
   StyleSheet,
   Text,
   View,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 
-import * as Linking from "expo-linking";
-
-import { Blockchain } from "@coral-xyz/common";
 import {
   // isAggregateWallets,
   nftCollectionsWithIds,
-  useActiveWallet,
-  allWalletsDisplayed,
+  // useActiveWallet,
+  // allWalletsDisplayed,
+  nftById,
+  useAllWallets,
+  useBlockchainConnectionUrl,
+  // useNavigation,
+  // useUser,
 } from "@coral-xyz/recoil";
-import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useRecoilValueLoadable } from "recoil";
 
 import { EmptyState, Margin, NFTCard } from "@components/index";
+import { useTheme } from "@hooks/useTheme";
 
 import { NFTDetailScreen, NFTDetailSendScreen } from "./NFTDetailScreen";
 
 const Stack = createStackNavigator();
-function TableHeader({
-  onPress,
-  visible,
-  name,
-}: {
-  onPress: () => void;
-  visible: boolean;
-  name: string;
-}): JSX.Element {
-  return (
-    <Pressable onPress={onPress} style={styles.header}>
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <Text>{name}</Text>
-      </View>
-      <MaterialIcons
-        name={visible ? "keyboard-arrow-up" : "keyboard-arrow-down"}
-        size={24}
-        color="black"
-      />
-    </Pressable>
-  );
-}
+type NftCollectionsWithId = {
+  publicKey: string;
+  collections: NftCollection[];
+};
 
-function NFTItem({
-  collectionId,
-  name,
-  imageUrl,
+// export type NftCollection = {
+//   id: string;
+//   metadataCollectionId: string;
+//   symbol: string;
+//   tokenType: string;
+//   totalSupply: string;
+//   itemIds: Array<string>;
+//   items?: { [id: string]: Nft }; // Not expected to be defined. Eth only.
+// };
+//
+// export type Nft = {
+//   id: string;
+//   blockchain: Blockchain;
+//   name: string;
+//   description: string;
+//   externalUrl: string;
+//   imageUrl: string;
+//   imageData?: string;
+//   attributes?: NftAttribute[];
+//   mint?: string;
+//   collectionName: string;
+//   metadataCollectionId?: string;
+//   tokenId?: string; // Ethereum only.
+//   contractAddress?: string; // Ethereum only.
+// };
+
+// function TableHeader({
+//   onPress,
+//   visible,
+//   name,
+// }: {
+//   onPress: () => void;
+//   visible: boolean;
+//   name: string;
+// }): JSX.Element {
+//   return (
+//     <Pressable onPress={onPress} style={styles.header}>
+//       <View style={{ flexDirection: "row", alignItems: "center" }}>
+//         <Text>{name}</Text>
+//       </View>
+//       <MaterialIcons
+//         name={visible ? "keyboard-arrow-up" : "keyboard-arrow-down"}
+//         size={24}
+//         color="black"
+//       />
+//     </Pressable>
+//   );
+// }
+
+function NftCollectionCard({
+  publicKey,
+  collection,
   onPress,
 }: {
-  collectionId: string;
-  name: string;
-  imageUrl: string;
+  publicKey: string;
+  collection: NftCollection;
   onPress: (collectionId: string) => void;
 }): JSX.Element {
+  console.log("nft:collection", collection);
+  const wallets = useAllWallets();
+  console.log("nft:publicKey", publicKey);
+  console.log("nft:wallets", wallets);
+  const wallet = wallets.find((wallet) => wallet.publicKey === publicKey);
+  console.log("nft:wallet", wallet);
+  // const blockchain = Blockchain.SOLANA;
+  const blockchain = wallet?.blockchain!;
+  console.log("nft:blockchain", blockchain);
+  const connectionUrl = useBlockchainConnectionUrl(blockchain);
+  console.log("nft:connectionUrl", connectionUrl);
+
+  // Display the first NFT in the collection as the thumbnail in the grid
+  const collectionDisplayNftId = collection.itemIds?.find((nftId) => !!nftId)!;
+  console.log("nft:collectionDisplayNftId", collectionDisplayNftId);
+  const { contents, state } = useRecoilValueLoadable(
+    nftById({
+      publicKey,
+      connectionUrl,
+      nftId: collectionDisplayNftId,
+    })
+  );
+
+  const collectionDisplayNft = state === "hasValue" ? contents : {};
+  console.log("nft:collectionDisplayNft", collectionDisplayNft);
+  if (state === "loading") {
+    return null;
+  }
+
+  const onPressItem = () => {
+    console.log("pressed:collection", collection);
+    // if (collection.metadataCollectionId === ONE_COLLECTION_ID) {
+    // push({
+    //   title: "ONE Holders Chat",
+    //   componentId: NAV_COMPONENT_NFT_CHAT,
+    //   componentProps: {
+    //     collectionId: collection.metadataCollectionId,
+    //     //@ts-ignore
+    //     nftMint: collectionDisplayNft?.mint,
+    //     title: "ONE Holders Chat",
+    //   },
+    // });
+    // return;
+    // }
+
+    if (collection.itemIds.length === 1) {
+      if (!collectionDisplayNft.name || !collectionDisplayNft.id) {
+        throw new Error("invalid NFT data");
+      }
+      // If there is only one item in the collection, link straight to its detail page
+      // push({
+      //   title: collectionDisplayNft.name || "",
+      //   componentId: NAV_COMPONENT_NFT_DETAIL,
+      //   componentProps: {
+      //     nftId: collectionDisplayNft.id,
+      //     publicKey,
+      //     connectionUrl,
+      //   },
+      // });
+    } else {
+      // Multiple items in connection, display a grid
+      // push({
+      //   title: collectionDisplayNft.collectionName,
+      //   componentId: NAV_COMPONENT_NFT_COLLECTION,
+      //   componentProps: {
+      //     id: collection.id,
+      //     publicKey,
+      //     connectionUrl,
+      //   },
+      // });
+    }
+  };
+
   return (
     <Pressable
-      style={{ flex: 0.5, margin: 8, borderRadius: 8, overflow: "hidden" }}
-      onPress={() => onPress(collectionId)}
+      style={{
+        width: "50%",
+        padding: 8,
+        borderRadius: 8,
+        overflow: "hidden",
+        position: "relative",
+      }}
+      onPress={onPressItem}
     >
-      <Image source={{ uri: imageUrl }} style={{ aspectRatio: 1 }} />
+      <Image
+        source={{ uri: collectionDisplayNft.imageUrl }}
+        style={{ borderRadius: 8, aspectRatio: 1 }}
+      />
       <View
         style={{
           position: "absolute",
@@ -77,89 +193,153 @@ function NFTItem({
           backgroundColor: "#FFF",
           borderRadius: 8,
           padding: 4,
+          margin: 8,
         }}
       >
-        <Text numberOfLines={1}>{name}</Text>
+        <Text numberOfLines={1}>{collectionDisplayNft.name}</Text>
+        <Text numberOfLines={1}>({collection.itemIds.length})</Text>
       </View>
     </Pressable>
   );
 }
 
-function NFTTable({
-  blockchain,
-  collection,
-  initialState,
-  onSelectItem,
-}: {
-  blockchain: Blockchain;
-  collection: NftCollection[];
-  initialState?: boolean;
-  onSelectItem: (collectionId: string, blockchain: Blockchain) => void;
-}): JSX.Element {
-  const [visible, setVisible] = React.useState(initialState);
-  const onPress = () => {
-    setVisible(!visible);
-  };
+// function NFTTable({
+//   blockchain,
+//   collection,
+//   initialState,
+//   onSelectItem,
+// }: {
+//   blockchain: Blockchain;
+//   collection: NftCollection[];
+//   initialState?: boolean;
+//   onSelectItem: (collectionId: string, blockchain: Blockchain) => void;
+// }): JSX.Element {
+//   const [visible, setVisible] = React.useState(initialState);
+//   const onPress = () => {
+//     setVisible(!visible);
+//   };
+//
+//   return (
+//     <View style={{ backgroundColor: "#fff", borderRadius: 8 }}>
+//       <TableHeader name={blockchain} onPress={onPress} visible={visible} />
+//
+//       {visible ? (
+//         <FlatList
+//           style={{ padding: 8 }}
+//           initialNumToRender={4}
+//           scrollEnabled={false}
+//           data={collection}
+//           numColumns={2}
+//           renderItem={({ item: collection }) => {
+//             const preview = collection.items[0];
+//             return (
+//               <NftCollectionCard
+//                 collection={collection.id}
+//                 onPress={(collectionId) =>
+//                   onSelectItem(collectionId, blockchain)
+//                 }
+//                 name={preview.name}
+//                 imageUrl={preview.imageUrl}
+//               />
+//             );
+//           }}
+//         />
+//       ) : null}
+//     </View>
+//   );
+// }
+//
+// function NoNFTsEmptyState() {
+//   return (
+//     <EmptyState
+//       icon={(props: any) => <MaterialIcons name="image" {...props} />}
+//       title="No NFTs"
+//       subtitle="Get started with your first NFT"
+//       buttonText="Browse Magic Eden"
+//       onPress={() => Linking.openURL("https://magiceden.io")}
+//     />
+//   );
+// }
 
-  return (
-    <View style={{ backgroundColor: "#fff", borderRadius: 8 }}>
-      <TableHeader name={blockchain} onPress={onPress} visible={visible} />
-
-      {visible ? (
-        <FlatList
-          style={{ padding: 8 }}
-          initialNumToRender={4}
-          scrollEnabled={false}
-          data={collection}
-          numColumns={2}
-          renderItem={({ item: collection }) => {
-            const preview = collection.items[0];
-            return (
-              <NFTItem
-                collectionId={collection.id}
-                onPress={(collectionId) =>
-                  onSelectItem(collectionId, blockchain)
-                }
-                name={preview.name}
-                imageUrl={preview.imageUrl}
-              />
-            );
-          }}
-        />
-      ) : null}
-    </View>
-  );
+function buildSectionList(collections: NftCollectionsWithId[] = []): {
+  title: string;
+  publicKey: string;
+  data: NftCollection[];
+}[] {
+  return collections.map(({ publicKey, collections }) => ({
+    publicKey,
+    title: publicKey,
+    data: collections,
+  }));
 }
 
-function NoNFTsEmptyState() {
+function SectionHeader({ title }: { title: string }): JSX.Element {
+  const theme = useTheme();
   return (
-    <EmptyState
-      icon={(props: any) => <MaterialIcons name="image" {...props} />}
-      title="No NFTs"
-      subtitle="Get started with your first NFT"
-      buttonText="Browse Magic Eden"
-      onPress={() => Linking.openURL("https://magiceden.io")}
-    />
+    <Text
+      style={[
+        // styles.sectionHeaderTitle,
+        {
+          fontSize: 14,
+          color: theme.custom.colors.fontColor,
+          backgroundColor: "#FFF",
+        },
+      ]}
+    >
+      {title}
+    </Text>
   );
 }
 
 export function NFTCollectionListScreen({ navigation }): JSX.Element {
-  const activeWallet = useActiveWallet();
-  const wl = useRecoilValueLoadable(allWalletsDisplayed);
-  const wallets = wl.state === "hasValue" ? wl.contents : [];
+  // const activeWallet = useActiveWallet();
+  // const wl = useRecoilValueLoadable(allWalletsDisplayed);
+  // const wallets = wl.state === "hasValue" ? wl.contents : [];
   // const _isAggregateWallets = useRecoilValue(isAggregateWallets);
   const { contents, state } = useRecoilValueLoadable(nftCollectionsWithIds);
+  const allWalletCollections: NftCollectionsWithId[] =
+    (state === "hasValue" && contents) || [];
   const isLoading = state === "loading";
-  const allWalletCollections = (state === "hasValue" && contents) || null;
+  const sections = buildSectionList(allWalletCollections);
 
-  const collections = [];
+  const nftCount = allWalletCollections
+    ? allWalletCollections
+        .map((c: any) => c.collections)
+        .flat()
+        .reduce((acc, c) => (c === null ? acc : c.itemIds.length + acc), 0)
+    : 0;
+
+  const isEmpty = nftCount === 0 && !isLoading;
+
+  if (isLoading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: "#eee",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  console.log("nft:isEmpty", isEmpty);
+  console.log("nft:contents", isLoading, contents);
+
+  if (isEmpty) {
+    return <Text>NO NFTS</Text>;
+  }
 
   console.log({
-    isLoading,
-    activeWallet,
-    wallets,
+    // contents,
+    // isLoading,
+    // activeWallet,
+    // wallets,
     allWalletCollections,
-    collections,
+    // collections,
   });
 
   // const onSelectItem = (id: string, blockchain: Blockchain) => {
@@ -184,26 +364,33 @@ export function NFTCollectionListScreen({ navigation }): JSX.Element {
   //     });
   //   }
   // };
-
-  const styles = {
-    flex: 1,
-  };
-
-  if (collections.length === 0) {
-    // @ts-ignore
-    styles.justifyContent = "center";
-    // @ts-ignore
-    styles.alignItems = "center";
-  }
+  // const styles = {
+  //   flex: 1,
+  // };
+  //
+  // if (allWalletCollections.length === 0) {
+  //   // @ts-ignore
+  //   styles.justifyContent = "center";
+  //   // @ts-ignore
+  //   styles.alignItems = "center";
+  // }
 
   return (
-    <FlatList
-      contentContainerStyle={styles}
-      data={collections}
-      ListEmptyComponent={NoNFTsEmptyState}
-      scrollEnabled={collections.length > 0}
-      renderItem={({ item }) => {
-        return null;
+    <SectionList
+      sections={sections}
+      // scrollEnabled={allWalletCollections.length > 0}
+      // keyExtractor={(item, index) => item + index}
+      renderSectionHeader={({ section: { title } }) => (
+        <SectionHeader title={title} />
+      )}
+      renderItem={({ section, item: collection, index }) => {
+        return (
+          <NftCollectionCard
+            publicKey={section.title}
+            collection={collection}
+            onPress={console.log}
+          />
+        );
       }}
     />
   );
