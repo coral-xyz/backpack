@@ -1,0 +1,3 @@
+table:
+  name: mad_feed_user_promoted_post_sums
+  schema: public
