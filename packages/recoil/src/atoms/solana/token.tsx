@@ -39,6 +39,7 @@ export const customSplTokenAccounts = atomFamily({
       }) =>
       async ({
         get,
+        // TODO(peter) figure out if this response is correct
       }): Promise<{
         publicKey: string;
         splTokenMints: Map<string, RawMintString | null>;

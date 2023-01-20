@@ -7,6 +7,7 @@ import type {
 import {
   Blockchain,
   externalResourceUri,
+  getLogger,
   metadataAddress,
   UNKNOWN_NFT_ICON_SRC,
 } from "@coral-xyz/common";
@@ -20,6 +21,8 @@ import { customSplTokenAccounts } from "./token";
 import { anchorContext } from "./wallet";
 import { solanaConnectionUrl } from ".";
 
+const logger = getLogger("xlg");
+
 export const solanaWalletCollections = selectorFamily<
   {
     publicKey: string;
@@ -32,12 +35,21 @@ export const solanaWalletCollections = selectorFamily<
     ({ publicKey }) =>
     ({ get }) => {
       const metadataMap = get(solanaMetadataMap({ publicKey }));
-      const { publicKey: pk, collections } =
-        intoSolanaCollectionsMap(metadataMap);
-      return {
-        publicKey: pk,
-        collections: Object.values(collections),
-      };
+      try {
+        const { publicKey: pk, collections } =
+          intoSolanaCollectionsMap(metadataMap);
+        logger.debug("solanaWalletConnections:collections", collections);
+        return {
+          publicKey: pk,
+          collections: Object.values(collections),
+        };
+      } catch (error) {
+        logger.debug("solanaWalletConnections:error", error);
+        return {
+          publicKey: "",
+          collections: [],
+        };
+      }
     },
 });
 
@@ -58,8 +70,10 @@ const solanaMetadataMap = selectorFamily<MetadataMap, { publicKey: string }>({
         const nftToken = nfts.nftTokens[k];
         const nftTokenMetadata = nfts.nftTokenMetadata[k]!;
         if (nftTokenMetadata) {
-          nftMap[nftTokenMetadata.publicKey] = {
-            metadataPublicKey: nftTokenMetadata.publicKey,
+          const pk = nftTokenMetadata.publicKey;
+          logger.debug("pk", typeof pk, pk);
+          nftMap[pk.toString()] = {
+            metadataPublicKey: pk,
             nftToken,
             nftTokenMetadata,
           };
@@ -179,14 +193,29 @@ function intoSolanaCollectionsMap(metadataMap: MetadataMap): {
   };
 } {
   const collections = {};
+  logger.debug("intoSolanaCollectionsMap:metadataMap", metadataMap);
+
   Object.values(metadataMap.metadata).forEach((value) => {
+    logger.debug("intoSolanaCollectionsMap:value", value);
+
     const [collectionId, metadataCollectionId] = (() => {
       const collectionId = extractCollectionId(value.nftTokenMetadata!);
       const metadataCollectionId =
         value.nftTokenMetadata?.account.collection?.key || "";
       return [collectionId, metadataCollectionId];
     })();
+
+    logger.debug("intoSolanaCollectionsMap:collectionId", collectionId);
+    logger.debug(
+      "intoSolanaCollectionsMap:metadataCollectionId",
+      metadataCollectionId
+    );
+
     if (collectionId && !collections[collectionId]) {
+      logger.debug(
+        "intoSolanaCollectionsMap:collectionId && !collections[collectionId]",
+        collectionId
+      );
       collections[collectionId] = {
         id: collectionId,
         metadataCollectionId,
@@ -197,12 +226,18 @@ function intoSolanaCollectionsMap(metadataMap: MetadataMap): {
         itemIds: [],
       };
     }
+
+    logger.debug("intoSolanaCollectionsMap:collections", collections);
+
     if (collectionId) {
       collections[collectionId]!.itemIds.push(
         value.nftTokenMetadata?.publicKey
       );
     }
   });
+
+  logger.debug("intoSolanaCollectionsMap:metadataMap", metadataMap);
+
   return {
     publicKey: metadataMap.publicKey,
     collections,
