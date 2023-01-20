@@ -59,7 +59,7 @@ function Router() {
 
   const params = new URLSearchParams(window.location.search);
   const blockchain = params.get("blockchain") || Blockchain.SOLANA;
-  const createKeyring = (params.get("create") || false) as boolean;
+  const createKeyring = params.get("create") === "true";
   const publicKey = params.get("publicKey") || undefined;
 
   switch (query) {
