@@ -104,9 +104,9 @@ export const RemoveWallet: React.FC<{
               </>
             ) : type === "dehydrated" ? (
               <>
-                Removing from your Backpack will remove the connection between
-                your username and this public key. You can always add it back
-                later by adding the wallet to Backpack.
+                Removing from Backpack will remove the connection between your
+                username and this public key. You can always add it back later
+                by adding the wallet to Backpack.
               </>
             ) : (
               <>
