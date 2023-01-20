@@ -14,9 +14,11 @@ import {
   SecondaryButton,
 } from "@coral-xyz/react-common";
 import {
+  isAggregateWallets,
   newAvatarAtom,
   nftById,
   nftCollectionsWithIds,
+  useActiveWallet,
   useActiveWallets,
   useAvatarUrl,
   useEthereumConnectionUrl,
@@ -27,7 +29,7 @@ import { styled, useCustomTheme } from "@coral-xyz/themes";
 import { CircularProgress, Grid } from "@mui/material";
 import Collapse from "@mui/material/Collapse";
 import Typography from "@mui/material/Typography";
-import { useRecoilValueLoadable, useSetRecoilState } from "recoil";
+import { useRecoilValue , useRecoilValueLoadable, useSetRecoilState } from "recoil";
 
 import { Scrollbar } from "../../../common/Layout/Scrollbar";
 import { _BalancesTableHead } from "../../Balances/Balances";
@@ -44,8 +46,10 @@ export function UpdateProfilePicture({
 }) {
   const [tempAvatar, setTempAvatar] = useState<tempAvatar | null>(null);
   const [loading, setLoading] = useState(false);
+  const _isAggregateWallets = useRecoilValue(isAggregateWallets);
   const avatarUrl = useAvatarUrl();
   const { username } = useUser();
+  const activeWallet = useActiveWallet();
   const setNewAvatar = useSetRecoilState(newAvatarAtom(username));
   const theme = useCustomTheme();
   const { contents, state } = useRecoilValueLoadable(nftCollectionsWithIds);
@@ -76,48 +80,69 @@ export function UpdateProfilePicture({
             background: theme.custom.colors.nav,
           }}
         >
-          {state === "loading" ? (
-            <Loading size={50} />
-          ) : numberOfNFTs === 0 ? (
-            <EmptyState
-              icon={(props: any) => <ImageIcon {...props} />}
-              title={"No NFTs to use"}
-              subtitle={"Get started with your first NFT"}
-              onClick={() => window.open("https://magiceden.io/")}
-              contentStyle={{
-                marginBottom: 0,
-                color: "inherit",
-                border: "none",
-              }}
-              innerStyle={{
-                border: "none",
-              }}
-              buttonText={"Browse Magic Eden"}
-            />
-          ) : (
-            <div
-              style={{
-                paddingBottom: tempAvatar ? "80px" : "0px",
-                transition: "padding ease-out 200ms",
-              }}
-            >
-              {allWalletCollections.map(
-                (c: {
-                  publicKey: string;
-                  collections: Array<NftCollection>;
-                }) => (
-                  <BlockchainNFTs
-                    key={c.publicKey}
-                    publicKey={c.publicKey}
-                    collections={c.collections}
-                    isLoading={false}
-                    tempAvatar={tempAvatar}
-                    setTempAvatar={setTempAvatar}
-                  />
-                )
-              )}
-            </div>
-          )}
+          <div
+            style={{
+              position: "relative",
+              height: "100%",
+            }}
+          >
+            {state === "loading" ? (
+              <Loading size={50} />
+            ) : numberOfNFTs === 0 ? (
+              <>
+                {!_isAggregateWallets && (
+                  <div
+                    style={{ position: "absolute", top: 0, left: 0, right: 0 }}
+                  >
+                    <_BalancesTableHead
+                      blockchain={activeWallet.blockchain}
+                      wallet={activeWallet}
+                      showContent={true}
+                      setShowContent={() => {}}
+                    />
+                  </div>
+                )}
+                <EmptyState
+                  icon={(props: any) => <ImageIcon {...props} />}
+                  title={"No NFTs to use"}
+                  subtitle={"Get started with your first NFT"}
+                  onClick={() => window.open("https://magiceden.io/")}
+                  contentStyle={{
+                    marginBottom: 0,
+                    color: "inherit",
+                    border: "none",
+                  }}
+                  innerStyle={{
+                    border: "none",
+                  }}
+                  buttonText={"Browse Magic Eden"}
+                />
+              </>
+            ) : (
+              <div
+                style={{
+                  paddingBottom: tempAvatar ? "80px" : "0px",
+                  transition: "padding ease-out 200ms",
+                }}
+              >
+                {allWalletCollections.map(
+                  (c: {
+                    publicKey: string;
+                    collections: Array<NftCollection>;
+                  }) => (
+                    <BlockchainNFTs
+                      key={c.publicKey}
+                      publicKey={c.publicKey}
+                      collections={c.collections}
+                      isLoading={false}
+                      tempAvatar={tempAvatar}
+                      setTempAvatar={setTempAvatar}
+                    />
+                  )
+                )}
+              </div>
+            )}
+          </div>
         </Scrollbar>
       </FakeDrawer>
       <ButtonsOverlay
