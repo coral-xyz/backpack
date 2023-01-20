@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import {
   UI_RPC_METHOD_KEYRING_KEY_DELETE,
-  UI_RPC_METHOD_USER_ACCOUNT_ADD_PUBLIC_KEY,
+  UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_CREATE,
 } from "@coral-xyz/common";
 import { Loading } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
@@ -64,7 +64,7 @@ export function WithSyncAccount({
             // Sync all transparently signable public keys by adding them
             // to the server
             background.request({
-              method: UI_RPC_METHOD_USER_ACCOUNT_ADD_PUBLIC_KEY,
+              method: UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_CREATE,
               params: [
                 danglingPublicKey.blockchain,
                 danglingPublicKey.publicKey,

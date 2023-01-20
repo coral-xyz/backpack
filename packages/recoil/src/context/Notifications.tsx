@@ -41,6 +41,7 @@ import {
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
   NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE,
+  NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_DELETED,
   NOTIFICATION_USER_ACCOUNT_PUBLIC_KEYS_UPDATED,
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
 } from "@coral-xyz/common";
@@ -319,6 +320,9 @@ export function NotificationsProvider(props: any) {
         case NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED:
           handleActiveBlockchainUpdated(notif);
           break;
+        case NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_DELETED:
+          handleUserAccountPublicKeyDeleted(notif);
+          break;
         case NOTIFICATION_USER_ACCOUNT_PUBLIC_KEYS_UPDATED:
           handleUserAccountPublicKeysUpdated(notif);
           break;
@@ -543,6 +547,18 @@ export function NotificationsProvider(props: any) {
 
     const handleActiveBlockchainUpdated = (notif: Notification) => {
       setActiveBlockchain(notif.data.newBlockchain);
+    };
+
+    const handleUserAccountPublicKeyDeleted = (notif: Notification) => {
+      setServerPublicKeys((current) =>
+        current.filter(
+          (c) =>
+            !(
+              c.blockchain === notif.data.blockchain &&
+              c.publicKey === notif.data.publicKey
+            )
+        )
+      );
     };
 
     const handleUserAccountPublicKeysUpdated = (notif: Notification) => {

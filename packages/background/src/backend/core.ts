@@ -51,6 +51,8 @@ import {
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
+  NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_CREATED,
+  NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_DELETED,
   NOTIFICATION_USER_ACCOUNT_PUBLIC_KEYS_UPDATED,
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
   SolanaCluster,
@@ -838,7 +840,7 @@ export class Backend {
 
     if (jwtEnabled) {
       try {
-        await this.userAccountAddPublicKey(blockchain, publicKey);
+        await this.userAccountPublicKeyCreate(blockchain, publicKey);
       } catch (error) {
         // Something went wrong persisting to server, roll back changes to the
         // keyring. This is not a complete rollback of state changes, because
@@ -915,7 +917,7 @@ export class Backend {
     }
 
     if (jwtEnabled) {
-      await this.userAccountRemovePublicKey(blockchain, publicKey);
+      await this.userAccountPublicKeyDelete(blockchain, publicKey);
     }
 
     let removeKeyring = false;
@@ -1041,7 +1043,7 @@ export class Backend {
 
     if (jwtEnabled) {
       try {
-        await this.userAccountAddPublicKey(blockchain, publicKey);
+        await this.userAccountPublicKeyCreate(blockchain, publicKey);
       } catch (error) {
         // Something went wrong persisting to server, roll back changes to the
         // keyring.
@@ -1118,7 +1120,7 @@ export class Backend {
     );
     if (jwtEnabled) {
       try {
-        await this.userAccountAddPublicKey(blockchain, publicKey, signature);
+        await this.userAccountPublicKeyCreate(blockchain, publicKey, signature);
       } catch (error) {
         // Something went wrong persisting to server, roll back changes to the
         // keyring.
@@ -1162,7 +1164,7 @@ export class Backend {
   /**
    * Add a public key to a Backpack account via the Backpack API.
    */
-  async userAccountAddPublicKey(
+  async userAccountPublicKeyCreate(
     blockchain: Blockchain,
     publicKey: string,
     signature?: string
@@ -1188,6 +1190,14 @@ export class Backend {
       },
     });
 
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_CREATED,
+      data: {
+        blockchain,
+        publicKey,
+      },
+    });
+
     if (!response.ok) {
       throw new Error((await response.json()).msg);
     }
@@ -1196,7 +1206,7 @@ export class Backend {
   /**
    * Remove a public key from a Backpack account via the Backpack API.
    */
-  async userAccountRemovePublicKey(blockchain: Blockchain, publicKey: string) {
+  async userAccountPublicKeyDelete(blockchain: Blockchain, publicKey: string) {
     // Remove the key from the server
     const response = await fetch(`${BACKEND_API_URL}/users/publicKeys`, {
       method: "DELETE",
@@ -1212,6 +1222,16 @@ export class Backend {
     if (!response.ok) {
       throw new Error("could not remove public key");
     }
+
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_DELETED,
+      data: {
+        blockchain,
+        publicKey,
+      },
+    });
+
+    return SUCCESS_RESPONSE;
   }
 
   /**
@@ -1465,7 +1485,11 @@ export class Backend {
     // Add the new public key to the API
     if (jwtEnabled) {
       try {
-        await this.userAccountAddPublicKey(blockchain, newPublicKey, signature);
+        await this.userAccountPublicKeyCreate(
+          blockchain,
+          newPublicKey,
+          signature
+        );
       } catch (error) {
         // Roll back the added blockchain keyring
         await this.keyringStore.blockchainKeyringRemove(blockchain);
