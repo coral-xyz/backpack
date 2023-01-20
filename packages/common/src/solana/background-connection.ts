@@ -108,6 +108,7 @@ import type {
 } from "./programs/token";
 import { addressLookupTableAccountParser } from "./rpc-helpers";
 import type {
+  ReplaceTypes,
   SolanaTokenAccountWithKey,
   SolanaTokenAccountWithKeyString,
   SplNftMetadata,
@@ -166,127 +167,153 @@ export class BackgroundSolanaConnection extends Connection {
         params: [publicKey.toString()],
       });
 
+    // @ts-expect-error
     return BackgroundSolanaConnection.customSplTokenAccountsFromJson(resp);
   }
 
   static customSplTokenAccountsFromJson(
     json: CustomSplTokenAccountsResponseString
-  ) {
-    // TODO this might be wrong
-    logger.debug("fromJson:json", json);
+  ) /* : CustomSplTokenAccountsResponse */ {
     return {
       mintsMap: json.mintsMap.map(([publicKey, mintStr]) => {
         return [
           publicKey,
-          {
-            ...mintStr,
-            mintAuthority: new PublicKey(mintStr.mintAuthority),
-            supply: BigInt(mintStr.supply),
-            freezeAuthority: new PublicKey(mintStr.freezeAuthority),
-          },
+          mintStr != null
+            ? {
+                ...mintStr,
+                supply: BigInt(mintStr.supply),
+                mintAuthority: new PublicKey(mintStr.mintAuthority),
+                freezeAuthority: new PublicKey(mintStr.freezeAuthority),
+              }
+            : null,
         ];
       }),
       fts: {
         ...json.fts,
-        fungibleTokenMetadata: json.fts.fungibleTokenMetadata
-          .filter(Boolean)
-          .map((m) => {
-            if (!m) {
-              return null;
-            }
-
-            return {
-              ...m,
-              publicKey: new PublicKey(m.publicKey),
-            };
-          }),
-        fungibleTokens: json.fts.fungibleTokens.filter(Boolean).map((t) => {
-          if (!t) {
-            return null;
-          }
-
-          return {
-            ...t,
-            amount: new BN(t.amount),
-          };
+        fungibleTokens: json.fts.fungibleTokens.map((t) => {
+          return BackgroundSolanaConnection.solanaTokenAccountWithKeyFromString(
+            t
+          );
+        }),
+        fungibleTokenMetadata: json.fts.fungibleTokenMetadata.map((t) => {
+          return t
+            ? BackgroundSolanaConnection.tokenMetadataFromString(t)
+            : null;
         }),
       },
       nfts: {
         ...json.nfts,
-        nftTokenMetadata: json.nfts.nftTokenMetadata
-          .filter(Boolean)
-          .map((t) => {
-            return {
-              ...t,
-              publicKey: new PublicKey(t.publicKey),
-              account: {
-                ...t.account,
-                mint: new PublicKey(t.account.mint),
-                updateAuthority: new PublicKey(t.account.updateAuthority),
-              },
-            };
-          }),
         nftTokens: json.nfts.nftTokens.map((t) => {
-          if (!t) {
-            return null;
-          }
-
-          return {
-            amount: new BN(t.amount),
-            authority: new PublicKey(t.authority),
-            closeAuthority: new PublicKey(t.closeAuthority),
-            delegate: new PublicKey(t.delegate),
-            delegatedAmount: new BN(t.delegatedAmount),
-            isNative: t.isNative,
-            key: new PublicKey(t.key),
-            mint: new PublicKey(t.mint),
-            state: t.state, // u8?
-          };
+          return BackgroundSolanaConnection.solanaTokenAccountWithKeyFromString(
+            t
+          );
+        }),
+        nftTokenMetadata: json.nfts.nftTokenMetadata.map((t) => {
+          return t
+            ? BackgroundSolanaConnection.tokenMetadataFromString(t)
+            : null;
         }),
       },
     };
   }
 
-  static customSplTokenAccountsToJson(_resp: CustomSplTokenAccountsResponse) {
-    logger.debug("toJson:_resp", _resp);
+  static customSplTokenAccountsToJson(
+    _resp: CustomSplTokenAccountsResponse
+  ) /*: CustomSplTokenAccountsResponseString */ {
     return {
-      mintsMap: _resp.mintsMap.map((m) => {
+      mintsMap: _resp.mintsMap.map(([publicKey, mintStr]) => {
         return [
-          m[0],
-          m[1] === null
-            ? null
-            : {
-                ...m[1],
-                supply: m[1].supply.toString(),
-                mintAuthority: m[1].mintAuthority?.toString(),
-                freezeAuthority: m[1].freezeAuthority?.toString(),
-              },
+          publicKey,
+          mintStr != null
+            ? {
+                ...mintStr,
+                supply: mintStr.supply.toString(),
+                mintAuthority: mintStr.mintAuthority?.toString(),
+                freezeAuthority: mintStr.freezeAuthority?.toString(),
+              }
+            : null,
         ];
       }),
       fts: {
         fungibleTokens: _resp.fts.fungibleTokens.map((t) => {
-          return {
-            ...t,
-            mint: t.mint.toString(),
-            key: t.key.toString(),
-            amount: t.amount.toString(),
-          };
+          return BackgroundSolanaConnection.solanaTokenAccountWithKeyToString(
+            t
+          );
         }),
-        fungibleTokenMetadata: _resp.fts.fungibleTokenMetadata,
+        fungibleTokenMetadata: _resp.fts.fungibleTokenMetadata.map((t) => {
+          return t ? BackgroundSolanaConnection.tokenMetadataToString(t) : null;
+        }),
       },
       nfts: {
         nftTokens: _resp.nfts.nftTokens.map((t) => {
-          return {
-            ...t,
-            mint: t.mint.toString(),
-            key: t.key.toString(),
-            amount: t.amount.toString(), // BigInt or BugNumber
-            delegatedAmount: t.delegatedAmount.toString(), //BigNumber or BigInt
-            authority: t.authority.toString(),
-            closeAuthority: t.closeAuthority?.toString() ?? null,
-          };
+          return BackgroundSolanaConnection.solanaTokenAccountWithKeyToString(
+            t
+          );
         }),
-        nftTokenMetadata: _resp.nfts.nftTokenMetadata,
+        nftTokenMetadata: _resp.nfts.nftTokenMetadata.map((t) => {
+          return t ? BackgroundSolanaConnection.tokenMetadataToString(t) : null;
+        }),
+      },
+    };
+  }
+
+  static solanaTokenAccountWithKeyFromString(t): SolanaTokenAccountWithKey {
+    return {
+      ...t,
+      mint: new PublicKey(t.mint),
+      key: new PublicKey(t.key),
+      amount: new BN(t.amount),
+    };
+  }
+
+  static solanaTokenAccountWithKeyToString(t: SolanaTokenAccountWithKey) {
+    return {
+      ...t,
+      mint: t.mint.toString(),
+      key: t.key.toString(),
+      amount: t.amount.toString(), // BigInt or BugNumber
+      delegate: t.delegate?.toString() ?? null,
+      delegatedAmount: t.delegatedAmount.toString(), //BigNumber or BigInt
+      authority: t.authority.toString(),
+      closeAuthority: t.closeAuthority?.toString() ?? null,
+    };
+  }
+
+  // nftTokenMetadata: json.nfts.nftTokenMetadata
+  //   .filter(Boolean)
+  //   .map((t) => {
+  //     return {
+  //       ...t,
+  //       publicKey: new PublicKey(t.publicKey),
+  //       account: {
+  //         ...t.account,
+  //         mint: new PublicKey(t.account.mint),
+  //         updateAuthority: new PublicKey(t.account.updateAuthority),
+  //       },
+  //     };
+  //   }),
+  //
+
+  static tokenMetadataFromString(tm): TokenMetadata {
+    return {
+      ...tm,
+      publicKey: new PublicKey(tm.publicKey),
+      account: {
+        ...tm.account,
+        updateAuthority: new PublicKey(tm.account.updateAuthority),
+        mint: new PublicKey(tm.account.mint),
+      },
+    };
+  }
+
+  static tokenMetadataToString(tm: TokenMetadata) {
+    return {
+      ...tm,
+      publicKey: tm.publicKey.toString(),
+      account: {
+        ...tm.account,
+        updateAuthority: tm.account.updateAuthority.toString(),
+        mint: tm.account.mint.toString(),
       },
     };
   }
