@@ -1,4 +1,4 @@
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import { CallMade, ChevronRight } from "@mui/icons-material";
 import {
   Divider,
@@ -12,9 +12,6 @@ const useStyles = styles((theme) => ({
     height: "56px",
     display: "flex",
     backgroundColor: `${theme.custom.colors.nav} !important`,
-    "&:hover": {
-      backgroundColor: "red",
-    },
   },
   dividerRoot: {
     borderColor: "transparent !important",

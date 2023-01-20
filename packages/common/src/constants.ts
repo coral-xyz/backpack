@@ -198,8 +198,17 @@ export const UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE =
 export const UI_RPC_METHOD_ACTIVE_USER_UPDATE =
   "ui-rpc-method-active-user-update";
 export const UI_RPC_METHOD_USER_JWT_UPDATE = "ui-rpc-method-user-jwt-update";
-export const UI_RPC_METHOD_USER_LOGOUT = "ui-rpc-method-user-logout";
 export const UI_RPC_METHOD_PREFERENCES_READ = "ui-rpc-method-references-read";
+// User account methods that interact with the API
+export const UI_RPC_METHOD_USER_ACCOUNT_AUTH =
+  "ui-rpc-method-user-account-auth";
+export const UI_RPC_METHOD_USER_ACCOUNT_LOGOUT = "ui-rpc-method-user-logout";
+export const UI_RPC_METHOD_USER_ACCOUNT_READ =
+  "ui-rpc-method-user-account-read";
+export const UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_CREATE =
+  "ui-rpc-method-user-account-add-public-create";
+export const UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_DELETE =
+  "ui-rpc-method-user-account-remove-public-delete";
 // Solana
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_READ =
   "ui-rpc-method-solana-commitment-read";
@@ -326,6 +335,12 @@ export const NOTIFICATION_SOLANA_EXPLORER_UPDATED =
   "notification-solana-explorer-updated";
 export const NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE =
   "notification-solana-spl-tokens-did-update";
+export const NOTIFICATION_USER_ACCOUNT_PUBLIC_KEYS_UPDATED =
+  "notification-user-account-public-keys-updated";
+export const NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_CREATED =
+  "notification-user-account-public-key-created";
+export const NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_DELETED =
+  "notification-user-account-public-key-deleted";
 
 //
 // Ethereum web injected provider API.

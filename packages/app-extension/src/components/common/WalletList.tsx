@@ -10,10 +10,12 @@ import {
   useAllWallets,
   useBackgroundClient,
   useBlockchainLogo,
+  useDehydratedWallets,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Add, ExpandMore, MoreHoriz } from "@mui/icons-material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import ErrorIcon from "@mui/icons-material/Error";
 import { Box, Button, Grid, Typography } from "@mui/material";
 
 import {
@@ -219,6 +221,10 @@ function WalletNavStack({
         )}
       />
       <NavStackScreen
+        name={"add-connect-wallet"}
+        component={(props: any) => <AddConnectWalletMenu {...props} />}
+      />
+      <NavStackScreen
         name={"edit-wallets-wallet-detail"}
         component={(props: any) => <WalletDetail {...props} />}
       />
@@ -239,10 +245,6 @@ function WalletNavStack({
         component={(props: any) => <WalletListBlockchainSelector {...props} />}
       />
       <NavStackScreen
-        name={"add-connect-wallet"}
-        component={(props: any) => <AddConnectWalletMenu {...props} />}
-      />
-      <NavStackScreen
         name={"import-secret-key"}
         component={(props: any) => <ImportSecretKey {...props} />}
       />
@@ -261,7 +263,15 @@ function WalletNavStack({
 export function AllWalletsList({ filter }: { filter?: (w: any) => boolean }) {
   const { setTitle, setNavButtonRight } = useNavStack();
   const activeWallet = useActiveWallet();
-  let wallets = useAllWallets();
+  const wallets = useAllWallets().filter(filter ? filter : () => true);
+  // Dehydrated public keys are keys that exist on the server but cannot be
+  // used on the client as we don't have signing data, e.g. mnemonic, private
+  // key or ledger derivation path
+  const dehydratedWallets = useDehydratedWallets().map((w: any) => ({
+    ...w,
+    name: "", // TODO server side does not sync wallet names
+    type: "dehydrated",
+  }));
 
   useEffect(() => {
     setNavButtonRight(<WalletSettingsButton />);
@@ -271,10 +281,12 @@ export function AllWalletsList({ filter }: { filter?: (w: any) => boolean }) {
     };
   }, []);
 
-  if (filter) {
-    wallets = wallets.filter(filter);
-  }
-  return <_WalletList activeWallet={activeWallet} wallets={wallets} />;
+  return (
+    <_WalletList
+      activeWallet={activeWallet}
+      wallets={wallets.concat(dehydratedWallets)}
+    />
+  );
 }
 
 function WalletSettingsButton() {
@@ -367,9 +379,11 @@ function _WalletList({
     >
       <WalletList
         wallets={wallets}
-        clickWallet={(v) => {
-          onChange(v);
-          close();
+        clickWallet={(wallet) => {
+          if (wallet.type !== "dehydrated") {
+            onChange(wallet);
+            close();
+          }
         }}
         style={{
           borderRadius: "10px",
@@ -404,8 +418,6 @@ export function WalletList({
   style: React.CSSProperties;
   selectedWalletPublicKey?: string;
 }) {
-  const theme = useCustomTheme();
-  const nav = useNavStack();
   return (
     <List style={style}>
       {wallets.map(
@@ -418,121 +430,160 @@ export function WalletList({
           },
           idx: number
         ) => {
-          const { name, publicKey, type, blockchain } = wallet;
           const isFirst = idx === 0;
           const isLast = idx === wallets.length - 1;
           // TODO: isSelected styling.
           const isSelected =
             false &&
             selectedWalletPublicKey !== undefined &&
-            selectedWalletPublicKey === publicKey.toString();
+            selectedWalletPublicKey === wallet.publicKey.toString();
           return (
-            <ListItem
-              key={publicKey.toString()}
-              onClick={() => clickWallet(wallet)}
+            <WalletListItem
+              key={idx}
+              wallet={wallet}
+              isSelected={isSelected}
               isFirst={isFirst}
               isLast={isLast}
-              disableBottomBorder={true}
-              style={{
-                padding: "12px",
-                height: "72px",
-                marginBottom: isLast ? 0 : "8px",
-                borderRadius: "10px",
-                border: isSelected
-                  ? `solid 2px ${theme.custom.colors.secondary}`
-                  : "none",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  width: "100%",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "center",
-                      width: "32px",
-                      height: "100%",
-                      marginRight: "8px",
-                    }}
-                  >
-                    <NetworkIcon
-                      blockchain={blockchain}
-                      style={{
-                        maxWidth: "19px",
-                        marginLeft: "auto",
-                        marginRight: "auto",
-                      }}
-                    />
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      flexDirection: "column",
-                      marginRight: "4px",
-                    }}
-                  >
-                    <StackedWalletAddress
-                      name={name}
-                      publicKey={publicKey}
-                      type={type}
-                      isSelected={isSelected}
-                    />
-                  </div>
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <CopyButton
-                      isEditWallets={false}
-                      onClick={() => {
-                        navigator.clipboard.writeText(publicKey);
-                      }}
-                    />
-                  </div>
-                  <div
-                    style={{
-                      marginLeft: "4px",
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <CopyButton
-                      isEditWallets={true}
-                      onClick={() => {
-                        nav.push("edit-wallets-wallet-detail", {
-                          ...wallet,
-                        });
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-            </ListItem>
+              onClick={clickWallet}
+            />
           );
         }
       )}
     </List>
+  );
+}
+
+export function WalletListItem({
+  wallet,
+  isSelected,
+  isFirst,
+  isLast,
+  onClick,
+}: {
+  wallet: {
+    name: string;
+    publicKey: string;
+    type: string;
+    blockchain: Blockchain;
+  };
+  isSelected: boolean;
+  isFirst: boolean;
+  isLast: boolean;
+  onClick: (wallet: {
+    name: string;
+    publicKey: string;
+    type: string;
+    blockchain: Blockchain;
+  }) => void;
+}) {
+  const theme = useCustomTheme();
+  const nav = useNavStack();
+  const { publicKey, name, blockchain, type } = wallet;
+
+  return (
+    <ListItem
+      key={publicKey.toString()}
+      onClick={() => onClick(wallet)}
+      isFirst={isFirst}
+      isLast={isLast}
+      disableBottomBorder={true}
+      style={{
+        padding: "12px",
+        height: "72px",
+        marginBottom: isLast ? 0 : "8px",
+        borderRadius: "10px",
+        border: isSelected
+          ? `solid 2px ${theme.custom.colors.secondary}`
+          : "none",
+      }}
+      button={type !== "dehydrated"}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          width: "100%",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              width: "32px",
+              height: "100%",
+              marginRight: "8px",
+            }}
+          >
+            <NetworkIcon
+              blockchain={blockchain}
+              style={{
+                maxWidth: "19px",
+                marginLeft: "auto",
+                marginRight: "auto",
+              }}
+            />
+          </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              flexDirection: "column",
+              marginRight: "4px",
+            }}
+          >
+            <StackedWalletAddress
+              name={name}
+              publicKey={publicKey}
+              type={type}
+              isSelected={isSelected}
+            />
+          </div>
+        </div>
+        <div
+          style={{
+            display: "flex",
+          }}
+        >
+          <div
+            style={{
+              marginRight: "4px",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}
+          >
+            <CopyButton
+              isEditWallets={false}
+              onClick={() => {
+                navigator.clipboard.writeText(publicKey);
+              }}
+            />
+          </div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}
+          >
+            <CopyButton
+              isEditWallets={true}
+              onClick={() => {
+                nav.push("edit-wallets-wallet-detail", {
+                  ...wallet,
+                });
+              }}
+            />
+          </div>
+        </div>
+      </div>
+    </ListItem>
   );
 }
 
@@ -632,11 +683,23 @@ export function StackedWalletAddress({
 }
 
 function WalletTypeIcon({ type, fill }: { type: string; fill?: string }) {
+  const theme = useCustomTheme();
   switch (type) {
     case "imported":
       return <ImportedIcon fill={fill} />;
     case "hardware":
       return <HardwareIcon fill={fill} />;
+    case "dehydrated":
+      return (
+        <ErrorIcon
+          style={{
+            color: theme.custom.colors.dangerButton,
+            height: "24px",
+            width: "24px",
+            padding: "4px",
+          }}
+        />
+      );
     default:
       return <MnemonicIcon fill={fill} />;
   }

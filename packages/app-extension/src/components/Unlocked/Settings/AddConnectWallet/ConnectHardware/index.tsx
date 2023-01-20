@@ -13,10 +13,12 @@ import { ConnectHardwareSuccess } from "./ConnectHardwareSuccess";
 export function ConnectHardware({
   blockchain,
   createKeyring,
+  publicKey,
   onComplete,
 }: {
   blockchain: Blockchain;
   createKeyring: boolean;
+  publicKey?: string;
   onComplete: () => void;
 }) {
   const background = useBackgroundClient();
@@ -52,10 +54,11 @@ export function ConnectHardware({
   return (
     <HardwareOnboard
       blockchain={blockchain}
-      action={"import"}
+      action={publicKey ? "search" : "import"}
       signMessage={getAddMessage}
       signText="Sign the message to add the wallet to your Backpack account."
       successComponent={<ConnectHardwareSuccess onNext={onComplete} />}
+      searchPublicKey={publicKey}
       onComplete={handleHardwareOnboardComplete}
     />
   );

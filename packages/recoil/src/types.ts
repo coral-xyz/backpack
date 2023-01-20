@@ -1,3 +1,4 @@
+import type { Blockchain } from "@coral-xyz/common";
 import {
   TAB_APPS,
   TAB_BALANCES,
@@ -23,6 +24,11 @@ export type WalletPublicKeys = {
     importedPublicKeys: Array<NamedPublicKey>;
     ledgerPublicKeys: Array<NamedPublicKey>;
   };
+};
+
+export type ServerPublicKey = {
+  blockchain: Blockchain;
+  publicKey: string;
 };
 
 export interface TokenNativeData {

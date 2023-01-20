@@ -17,11 +17,7 @@ import {
   ListItem,
   PushDetail,
 } from "@coral-xyz/react-common";
-import {
-  useBackgroundClient,
-  useFeatureGates,
-  useNavigation,
-} from "@coral-xyz/recoil";
+import { useBackgroundClient, useFeatureGates } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import {
   AccountCircleOutlined,
@@ -32,7 +28,6 @@ import {
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import { Typography } from "@mui/material";
 
-import { WalletList as _WalletList } from "../../../components/common/WalletList";
 import { useNavStack } from "../../common/Layout/NavStack";
 import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
 import { NotificationButton } from "../Balances/Notifications";
