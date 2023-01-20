@@ -186,7 +186,7 @@ function WalletTokenTable({
   );
 }
 
-function WalletPickerButton({
+export function WalletPickerButton({
   name,
   onPress,
 }: {

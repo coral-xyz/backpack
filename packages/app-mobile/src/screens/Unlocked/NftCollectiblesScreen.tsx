@@ -1,6 +1,6 @@
 import type { Nft, NftCollection } from "@coral-xyz/common";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   SectionList,
   FlatList,
@@ -13,6 +13,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 
+import { Blockchain } from "@coral-xyz/common";
 import {
   // isAggregateWallets,
   nftCollectionsWithIds,
@@ -24,7 +25,10 @@ import {
   // useNavigation,
   // useUser,
 } from "@coral-xyz/recoil";
+import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
+import { WalletPickerButton } from "@screens/Unlocked/components/Balances";
+import { TableHeader } from "@screens/Unlocked/components/index";
 import { useRecoilValueLoadable } from "recoil";
 
 import { EmptyState, Margin, NFTCard } from "@components/index";
@@ -96,21 +100,13 @@ function NftCollectionCard({
   collection: NftCollection;
   onPress: (collectionId: string) => void;
 }): JSX.Element {
-  console.log("nft:collection", collection);
   const wallets = useAllWallets();
-  console.log("nft:publicKey", publicKey);
-  console.log("nft:wallets", wallets);
   const wallet = wallets.find((wallet) => wallet.publicKey === publicKey);
-  console.log("nft:wallet", wallet);
-  // const blockchain = Blockchain.SOLANA;
   const blockchain = wallet?.blockchain!;
-  console.log("nft:blockchain", blockchain);
   const connectionUrl = useBlockchainConnectionUrl(blockchain);
-  console.log("nft:connectionUrl", connectionUrl);
 
   // Display the first NFT in the collection as the thumbnail in the grid
   const collectionDisplayNftId = collection.itemIds?.find((nftId) => !!nftId)!;
-  console.log("nft:collectionDisplayNftId", collectionDisplayNftId);
   const { contents, state } = useRecoilValueLoadable(
     nftById({
       publicKey,
@@ -292,10 +288,12 @@ function SectionHeader({ title }: { title: string }): JSX.Element {
 }
 
 export function NFTCollectionListScreen({ navigation }): JSX.Element {
+  const theme = useTheme();
   // const activeWallet = useActiveWallet();
   // const wl = useRecoilValueLoadable(allWalletsDisplayed);
   // const wallets = wl.state === "hasValue" ? wl.contents : [];
   // const _isAggregateWallets = useRecoilValue(isAggregateWallets);
+  const [expandedSections, setExpandedSections] = useState(new Set());
   const { contents, state } = useRecoilValueLoadable(nftCollectionsWithIds);
   const allWalletCollections: NftCollectionsWithId[] =
     (state === "hasValue" && contents) || [];
@@ -325,6 +323,17 @@ export function NFTCollectionListScreen({ navigation }): JSX.Element {
       </View>
     );
   }
+
+  const handleToggle = (blockchain: Blockchain) => {
+    const newExpandedSections = new Set(expandedSections);
+    if (newExpandedSections.has(blockchain)) {
+      newExpandedSections.delete(blockchain);
+    } else {
+      newExpandedSections.add(blockchain);
+    }
+
+    setExpandedSections(newExpandedSections);
+  };
 
   console.log("nft:isEmpty", isEmpty);
   console.log("nft:contents", isLoading, contents);
@@ -377,18 +386,59 @@ export function NFTCollectionListScreen({ navigation }): JSX.Element {
 
   return (
     <SectionList
+      style={{
+        backgroundColor: "white",
+        borderRadius: 12,
+        marginHorizontal: 12,
+      }}
       sections={sections}
-      // scrollEnabled={allWalletCollections.length > 0}
+      extraData={expandedSections}
+      scrollEnabled={allWalletCollections.length > 0}
       // keyExtractor={(item, index) => item + index}
-      renderSectionHeader={({ section: { title } }) => (
-        <SectionHeader title={title} />
-      )}
-      renderItem={({ section, item: collection, index }) => {
+      renderSectionHeader={({ section: { title } }) => {
+        const visible = !expandedSections.has(title);
         return (
-          <NftCollectionCard
-            publicKey={section.title}
-            collection={collection}
-            onPress={console.log}
+          <TableHeader
+            blockchain={Blockchain.SOLANA}
+            subtitle={
+              <WalletPickerButton
+                name="Wallet 1"
+                onPress={() => {
+                  navigation.navigate("wallet-picker");
+                }}
+              />
+            }
+            rightSide={
+              <Pressable onPress={() => handleToggle(title)}>
+                <MaterialIcons
+                  name={visible ? "keyboard-arrow-up" : "keyboard-arrow-down"}
+                  size={18}
+                  color={theme.custom.colors.fontColor}
+                />
+              </Pressable>
+            }
+          />
+        );
+      }}
+      renderItem={({ section, item: collection, index }) => {
+        const isExpanded = expandedSections.has(section.title);
+        if (!isExpanded) {
+          return null;
+        }
+
+        return (
+          <FlatList
+            data={section.data}
+            numColumns={2}
+            renderItem={({ item: collection }) => {
+              return (
+                <NftCollectionCard
+                  publicKey={section.title}
+                  collection={collection}
+                  onPress={console.log}
+                />
+              );
+            }}
           />
         );
       }}
