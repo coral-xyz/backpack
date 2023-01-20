@@ -293,7 +293,6 @@ export function NFTCollectionListScreen({ navigation }): JSX.Element {
   // const wl = useRecoilValueLoadable(allWalletsDisplayed);
   // const wallets = wl.state === "hasValue" ? wl.contents : [];
   // const _isAggregateWallets = useRecoilValue(isAggregateWallets);
-  const [expandedSections, setExpandedSections] = useState(new Set());
   const { contents, state } = useRecoilValueLoadable(nftCollectionsWithIds);
   const allWalletCollections: NftCollectionsWithId[] =
     (state === "hasValue" && contents) || [];
@@ -323,17 +322,6 @@ export function NFTCollectionListScreen({ navigation }): JSX.Element {
       </View>
     );
   }
-
-  const handleToggle = (blockchain: Blockchain) => {
-    const newExpandedSections = new Set(expandedSections);
-    if (newExpandedSections.has(blockchain)) {
-      newExpandedSections.delete(blockchain);
-    } else {
-      newExpandedSections.add(blockchain);
-    }
-
-    setExpandedSections(newExpandedSections);
-  };
 
   console.log("nft:isEmpty", isEmpty);
   console.log("nft:contents", isLoading, contents);
@@ -392,14 +380,13 @@ export function NFTCollectionListScreen({ navigation }): JSX.Element {
         marginHorizontal: 12,
       }}
       sections={sections}
-      extraData={expandedSections}
       scrollEnabled={allWalletCollections.length > 0}
       // keyExtractor={(item, index) => item + index}
       renderSectionHeader={({ section: { title } }) => {
-        const visible = !expandedSections.has(title);
         return (
           <TableHeader
             blockchain={Blockchain.SOLANA}
+            rightSide={<></>}
             subtitle={
               <WalletPickerButton
                 name="Wallet 1"
@@ -408,24 +395,11 @@ export function NFTCollectionListScreen({ navigation }): JSX.Element {
                 }}
               />
             }
-            rightSide={
-              <Pressable onPress={() => handleToggle(title)}>
-                <MaterialIcons
-                  name={visible ? "keyboard-arrow-up" : "keyboard-arrow-down"}
-                  size={18}
-                  color={theme.custom.colors.fontColor}
-                />
-              </Pressable>
-            }
           />
         );
       }}
       renderItem={({ section, item: collection, index }) => {
-        const isExpanded = expandedSections.has(section.title);
-        if (!isExpanded) {
-          return null;
-        }
-
+        console.log("renderItem2", section, collection, index);
         return (
           <FlatList
             data={section.data}
