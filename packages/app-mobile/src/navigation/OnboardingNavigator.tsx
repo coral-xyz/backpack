@@ -1,31 +1,18 @@
-// https://github.com/feross/buffer#usage
-// note: the trailing slash is important!
-
 import type { Blockchain, BlockchainKeyringInit } from "@coral-xyz/common";
 import type { StackScreenProps } from "@react-navigation/stack";
 
 import { useEffect, useState } from "react";
-import { Alert, FlatList, StyleSheet, View } from "react-native";
+import {
+  Alert,
+  FlatList,
+  StyleSheet,
+  View,
+  Platform,
+  KeyboardAvoidingView,
+} from "react-native";
 
 import * as Linking from "expo-linking";
 
-import {
-  ActionCard,
-  BaseCheckBoxLabel,
-  Box,
-  CheckBox,
-  Debug,
-  FullScreenLoading,
-  Header,
-  Margin,
-  MnemonicInputFields,
-  PasswordInput,
-  PrimaryButton,
-  Screen,
-  StyledText,
-  SubtextParagraph,
-  WelcomeLogoHeader,
-} from "@components";
 import {
   BACKEND_API_URL,
   BACKPACK_FEATURE_USERNAMES,
@@ -66,16 +53,32 @@ import {
   TwitterIcon,
   WidgetIcon,
 } from "@components/Icon";
+import { StyledTextInput } from "@components/StyledTextInput";
+import {
+  ActionCard,
+  BaseCheckBoxLabel,
+  Box,
+  CheckBox,
+  FullScreenLoading,
+  Header,
+  Margin,
+  MnemonicInputFields,
+  PasswordInput,
+  PrimaryButton,
+  Screen,
+  StyledText,
+  SubtextParagraph,
+  WelcomeLogoHeader,
+} from "@components/index";
 import { useTheme } from "@hooks/useTheme";
 import { OnboardingProvider, useOnboardingData } from "@lib/OnboardingProvider";
 
-// eslint-disable-next-line
-const Buffer = require("buffer/").Buffer;
-
-// TODO(peter) fn: any
-function maybeRender(condition: boolean, fn: () => any): JSX.Element | null {
+function maybeRender(
+  condition: boolean,
+  fn: () => JSX.Element
+): JSX.Element | null {
   if (condition) {
-    return fn();
+    return fn() as JSX.Element;
   }
 
   return null;
@@ -87,6 +90,7 @@ function getWaitlistId() {
 
 type OnboardingStackParamList = {
   CreateOrImportWallet: undefined;
+  OnboardingUsername: undefined;
   KeyringTypeSelector: undefined;
   MnemonicInput: undefined;
   SelectBlockchain: undefined;
@@ -164,7 +168,7 @@ function OnboardingCreateOrImportWalletScreen({
             label="Create a new wallet"
             onPress={() => {
               setOnboardingData({ action: "create" });
-              navigation.push("MnemonicInput");
+              navigation.push("OnboardingUsername");
             }}
           />
           <Margin top={8}>
@@ -197,31 +201,31 @@ function OnboardingKeyringTypeSelectorScreen({
 
   return (
     <OnboardingScreen title="Keyring Selector">
-      {maybeRender(action === "create", () => {
+      {maybeRender(action === "create", () => (
         <>
           <Header text="Create a new wallet" />
           <SubtextParagraph>
             Choose a wallet type. If you're not sure, using a recovery phrase is
             the most common option.
           </SubtextParagraph>
-        </>;
-      })}
-      {maybeRender(action === "import", () => {
+        </>
+      ))}
+      {maybeRender(action === "import", () => (
         <>
           <Header text="Import an existing wallet" />
           <SubtextParagraph>
             Choose a method to import your wallet.
           </SubtextParagraph>
-        </>;
-      })}
-      {maybeRender(action === "recover", () => {
+        </>
+      ))}
+      {maybeRender(action === "recover", () => (
         <>
           <Header text="Recover a username" />
           <SubtextParagraph>
             Choose a method to recover your username.
           </SubtextParagraph>
-        </>;
-      })}
+        </>
+      ))}
       <Box
         style={{
           padding: 16,
@@ -252,8 +256,57 @@ function OnboardingKeyringTypeSelectorScreen({
   );
 }
 
-// params.mnemonic (string)
-// Create Wallet: readonly = false; Import Wallet: readOnly = true;
+function OnboardingUsernameScreen({
+  navigation,
+}: StackScreenProps<
+  OnboardingStackParamList,
+  "OnboardingUsername"
+>): JSX.Element {
+  const { onboardingData, setOnboardingData } = useOnboardingData();
+  return (
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={18}
+    >
+      <OnboardingScreen title="Claim your username">
+        <View style={{ flex: 1 }}>
+          <Margin bottom={12}>
+            <SubtextParagraph>
+              Others can see and find you by this username, and it will be
+              associated with your primary wallet address.
+            </SubtextParagraph>
+          </Margin>
+          <Margin bottom={12}>
+            <SubtextParagraph>
+              Choose wisely if you'd like to remain anonymous.
+            </SubtextParagraph>
+          </Margin>
+          <SubtextParagraph>Have fun!</SubtextParagraph>
+        </View>
+        <View>
+          <Margin bottom={18}>
+            <StyledTextInput
+              autoFocus
+              placeholder="@Username"
+              returnKeyType="next"
+              value={onboardingData.username ?? ""}
+              onChangeText={(username) => setOnboardingData({ username })}
+            />
+          </Margin>
+          <PrimaryButton
+            disabled={!onboardingData.username?.length}
+            label="Continue"
+            onPress={() => {
+              navigation.push("MnemonicInput");
+            }}
+          />
+        </View>
+      </OnboardingScreen>
+    </KeyboardAvoidingView>
+  );
+}
+
 function OnboardingMnemonicInputScreen({
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "MnemonicInput">) {
@@ -583,7 +636,6 @@ function OnboardingCreatePasswordScreen({
       subtitle="It should be at least 8 characters. You'll need this to unlock Backpack."
     >
       <View style={{ flex: 1, justifyContent: "flex-start" }}>
-        <Debug data={{ isValid, formState }} />
         <Margin bottom={12}>
           <PasswordInput
             name="password"
@@ -623,7 +675,7 @@ function OnboardingCreatePasswordScreen({
       </View>
       <PrimaryButton
         // disabled={!isValid}
-        label="Next"
+        label="Next (TODO fix isValid)"
         onPress={handleSubmit(onSubmit)}
       />
     </OnboardingScreen>
@@ -769,8 +821,7 @@ function OnboardingFinishedScreen() {
   function Cell({ children, style }: any): JSX.Element {
     return (
       <View style={[{ alignSelf: "flex-start", marginBottom: 12 }, style]}>
-        {" "}
-        {children}{" "}
+        {children}
       </View>
     );
   }
@@ -788,7 +839,7 @@ function OnboardingFinishedScreen() {
             <ActionCard
               icon={<WidgetIcon />}
               text="Browse the xNFT library"
-              onClick={() => Linking.openURL(XNFT_GG_LINK)}
+              onPress={() => Linking.openURL(XNFT_GG_LINK)}
             />
           </Cell>
         )}
@@ -796,25 +847,18 @@ function OnboardingFinishedScreen() {
           <ActionCard
             icon={<TwitterIcon />}
             text="Follow us on Twitter"
-            onClick={() => Linking.openURL(TWITTER_LINK)}
+            onPress={() => Linking.openURL(TWITTER_LINK)}
           />
         </Cell>
         <Cell>
           <ActionCard
             icon={<DiscordIcon />}
             text="Join the Discord community"
-            onClick={() => Linking.openURL(DISCORD_INVITE_LINK)}
+            onPress={() => Linking.openURL(DISCORD_INVITE_LINK)}
           />
         </Cell>
       </View>
-      <PrimaryButton
-        label="Finish"
-        onPress={async () => {
-          // await createUser();
-          // await createStore();
-          // Navigation should happen automagically based on keyring state
-        }}
-      />
+      <PrimaryButton disabled={false} label="Finish" onPress={console.log} />
     </OnboardingScreen>
   );
 }
@@ -843,6 +887,10 @@ export default function OnboardingNavigator(): JSX.Element {
           <Stack.Screen
             name="KeyringTypeSelector"
             component={OnboardingKeyringTypeSelectorScreen}
+          />
+          <Stack.Screen
+            name="OnboardingUsername"
+            component={OnboardingUsernameScreen}
           />
           <Stack.Screen
             name="MnemonicInput"

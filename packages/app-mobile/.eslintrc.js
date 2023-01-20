@@ -1,6 +1,6 @@
 module.exports = {
   root: true,
-  extends: ["custom/native", "custom/shared/typescript-analysis"],
+  extends: ["custom/native"],
   // overrides: [
   //   {
   //     files: ["*.ts", "*.tsx", "*.d.ts"],
