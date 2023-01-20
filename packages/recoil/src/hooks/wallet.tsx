@@ -96,3 +96,10 @@ export function useAllWalletsDisplayed(): Array<{
 }> {
   return useRecoilValue(atoms.allWalletsDisplayed);
 }
+
+export function useDehydratedWallets(): Array<{
+  blockchain: Blockchain;
+  publicKey: string;
+}> {
+  return useRecoilValue(atoms.dehydratedWallets);
+}

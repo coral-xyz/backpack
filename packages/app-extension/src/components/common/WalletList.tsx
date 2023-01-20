@@ -10,6 +10,7 @@ import {
   useAllWallets,
   useBackgroundClient,
   useBlockchainLogo,
+  useDehydratedWallets,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Add, ExpandMore, MoreHoriz } from "@mui/icons-material";
@@ -43,7 +44,6 @@ import {
   ShowPrivateKey,
   ShowPrivateKeyWarning,
 } from "../Unlocked/Settings/YourAccount/ShowPrivateKey";
-import { useAuthContext } from "../Unlocked/WithSyncAccount";
 
 import { Scrollbar } from "./Layout/Scrollbar";
 import { WithCopyTooltip } from "./WithCopyTooltip";
@@ -264,21 +264,14 @@ export function AllWalletsList({ filter }: { filter?: (w: any) => boolean }) {
   const { setTitle, setNavButtonRight } = useNavStack();
   const activeWallet = useActiveWallet();
   const wallets = useAllWallets().filter(filter ? filter : () => true);
-  const { serverPublicKeys } = useAuthContext();
-
   // Dehydrated public keys are keys that exist on the server but cannot be
   // used on the client as we don't have signing data, e.g. mnemonic, private
   // key or ledger derivation path
-  const dehydratedWallets = serverPublicKeys
-    .filter(
-      (serverPublicKey: { blockchain: Blockchain; publicKey: string }) =>
-        !wallets.find((key: any) => key.publicKey === serverPublicKey.publicKey)
-    )
-    .map((serverPublicKey: { blockchain: Blockchain; publicKey: string }) => ({
-      name: "",
-      type: "dehydrated",
-      ...serverPublicKey,
-    }));
+  const dehydratedWallets = useDehydratedWallets().map((w: any) => ({
+    ...w,
+    name: "", // TODO server side does not sync wallet names
+    type: "dehydrated",
+  }));
 
   useEffect(() => {
     setNavButtonRight(<WalletSettingsButton />);

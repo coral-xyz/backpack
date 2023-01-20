@@ -41,6 +41,7 @@ import {
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
   NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE,
+  NOTIFICATION_USER_ACCOUNT_PUBLIC_KEYS_UPDATED,
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
 } from "@coral-xyz/common";
 import type { Commitment } from "@solana/web3.js";
@@ -74,6 +75,7 @@ export function NotificationsProvider(props: any) {
       };
     });
   };
+  const setServerPublicKeys = useSetRecoilState(atoms.serverPublicKeys);
   const setActiveBlockchain = (activeBlockchain: Blockchain) => {
     setWalletData((current) => {
       return {
@@ -317,6 +319,9 @@ export function NotificationsProvider(props: any) {
         case NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED:
           handleActiveBlockchainUpdated(notif);
           break;
+        case NOTIFICATION_USER_ACCOUNT_PUBLIC_KEYS_UPDATED:
+          handleUserAccountPublicKeysUpdated(notif);
+          break;
         default:
           break;
       }
@@ -538,6 +543,10 @@ export function NotificationsProvider(props: any) {
 
     const handleActiveBlockchainUpdated = (notif: Notification) => {
       setActiveBlockchain(notif.data.newBlockchain);
+    };
+
+    const handleUserAccountPublicKeysUpdated = (notif: Notification) => {
+      setServerPublicKeys(notif.data.publicKeys);
     };
 
     const handleEthereumActiveWalletUpdated = (notif: Notification) => {
