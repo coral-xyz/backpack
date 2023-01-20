@@ -21,4 +21,5 @@
 - "!include public_invitations.yaml"
 - "!include public_mad_feed_post_vote_sums.yaml"
 - "!include public_mad_feed_user_promo_post_sums.yaml"
+- "!include public_mad_feed_user_promo_results.yaml"
 - "!include public_mad_feed_user_score_totals.yaml"
