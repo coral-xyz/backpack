@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { MessageKind, MessageMetadata } from "@coral-xyz/common";
 import { BACKEND_API_URL, CHAT_MESSAGES } from "@coral-xyz/common";
 import { createEmptyFriendship, SignalingManager } from "@coral-xyz/db";
@@ -86,7 +86,6 @@ export const SendMessage = () => {
   const [selectedFile, setSelectedFile] = useState<any>(null);
   const [uploadingFile, setUploadingFile] = useState(false);
   const [uploadedImageUri, setUploadedImageUri] = useState("");
-  const [messageContent, setMessageContent] = useState("");
   const [emojiPicker, setEmojiPicker] = useState(false);
   const [gifPicker, setGifPicker] = useState(false);
   const [emojiMenuOpen, setEmojiMenuOpen] = useState(false);
@@ -95,6 +94,7 @@ export const SendMessage = () => {
   );
   const theme = useCustomTheme();
   const activeSolanaWallet = useActiveSolanaWallet();
+  const inputRef = useRef<any>(null);
 
   const { remoteUserId, roomId, activeReply, setActiveReply, type, chats } =
     useChatContext();
@@ -170,7 +170,7 @@ export const SendMessage = () => {
         parent_client_generated_uuid: null,
         text: "",
       });
-      setMessageContent("");
+      inputRef.current.setValue("");
     }
   };
 
@@ -203,7 +203,7 @@ export const SendMessage = () => {
     function keyDownTextField(event) {
       if (event.key === "Enter") {
         event.preventDefault();
-        sendMessage(messageContent);
+        sendMessage(inputRef.current.getTransformedValue());
         setEmojiPicker(false);
       }
       if (event.key === "Escape") {
@@ -218,7 +218,8 @@ export const SendMessage = () => {
     return () => {
       document.removeEventListener("keydown", keyDownTextField);
     };
-  });
+  }, [inputRef]);
+
   return (
     <div className={classes.outerDiv}>
       {selectedFile && (
@@ -313,7 +314,7 @@ export const SendMessage = () => {
                 setEmojiPicker={setEmojiPicker}
                 emojiPicker={emojiPicker}
                 setGifPicker={setGifPicker}
-                setMessageContent={setMessageContent}
+                inputRef={inputRef}
                 buttonStyle={{
                   height: "28px",
                 }}
@@ -401,7 +402,7 @@ export const SendMessage = () => {
         {/*>*/}
         {/*  hi tehre hello*/}
         {/*</p>*/}
-        <MessageInput />
+        <MessageInput inputRef={inputRef} />
       </div>
     </div>
   );

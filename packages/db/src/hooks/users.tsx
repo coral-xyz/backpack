@@ -22,6 +22,19 @@ export const useUsers = (uuid: string, chats: any[]) => {
   return reqs || [];
 };
 
+export const useUsersFromUuids = (uuid: string, uuids: string[]) => {
+  const reqs = useLiveQuery(async () => {
+    const userUuids = uuids || [];
+    const uniqueUserUuids = userUuids.filter(
+      (x, index) => userUuids.indexOf(x) === index
+    );
+    refreshUsers(uuid, uniqueUserUuids);
+    return getDb(uuid).users.bulkGet(uniqueUserUuids);
+  }, []);
+
+  return reqs || [];
+};
+
 export const useDbUser = (
   uuid: string,
   remoteUserId: string

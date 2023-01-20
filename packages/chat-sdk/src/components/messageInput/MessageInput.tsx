@@ -1,94 +1,128 @@
-import { useEffect, useRef, useState } from "react";
+import { Fragment,useContext, useEffect, useRef, useState } from "react";
+import {
+  RichMentionsContext,
+  RichMentionsInput,
+  RichMentionsProvider,
+} from "react-rich-mentions";
+import { useLocation } from "react-router-dom";
+import type { RemoteUserData } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
+import {
+  useActiveSolanaWallet,
+  useDecodedSearchParams,
+} from "@coral-xyz/recoil";
 
 import { useChatContext } from "../ChatContext";
 
-import { getActiveToken } from "./getActiveToken";
-import { getCaretIndex } from "./getCaretIndex";
+const list = ["adrien", "anna", "guillaume", "vincent", "victor"].map(
+  (v, i) => ({
+    name: v,
+    ref: `<@${v}|u${i + 1}>`,
+  })
+);
 
-export function MessageInput() {
-  const [messageContent, setMessageContent] = useState<string | null>("");
-  const [tagMembers, setTagMembers] = useState([]);
-  const inputRef = useRef<any>(null);
-  const { remoteUserId, roomId, activeReply, setActiveReply, type, chats } =
-    useChatContext();
-  // const [autoCompleteOpen, setAutocompleteOpen] = useState(false);
+export function MessageInput({ inputRef }: { inputRef: any }) {
+  const defaultValue = "";
+  const pathname = useLocation().pathname;
+  const { type, remoteUsername, remoteUserId } = useChatContext();
+  const { props }: any = useDecodedSearchParams();
+  const { publicKey } = useActiveSolanaWallet();
 
-  async function onInputNavigate(e) {
-    if (!inputRef.current) {
-      return;
-    }
-    const caretPos = getCaretIndex(inputRef.current);
-    if (inputRef.current.contains(e.target)) {
-      const activeToken = getActiveToken(
-        inputRef.current.textContent,
-        caretPos
-      )?.word;
-      if (activeToken?.startsWith("@")) {
+  const configs = [
+    {
+      query: /@([a-zA-Z0-9_-]+)?/,
+      match: /<(@\w+)\|([^>]+)>/g,
+      matchDisplay: "$1",
+      customizeFragment: (fragment, final) => {
+        fragment.className = final ? "final" : "pending";
+      },
+      onMention: async (text) => {
+        const search = text.substr(1); // remove '@'
+        if (type === "individual") {
+          return [
+            {
+              name: remoteUsername,
+              ref: `<@${remoteUsername}|u${remoteUserId}>`,
+            },
+          ].filter((x) => x.name?.includes(search));
+        }
+        const response = await fetch(
+          `${BACKEND_API_URL}/nft/members?room=${
+            pathname === "/messages/groupchat" ? props.id : props.collectionId
+          }&mint=${
+            props.nftMint
+          }&publicKey=${publicKey}&type=collection&limit=${3}prefix=${search}`,
+          {
+            method: "GET",
+          }
+        );
         try {
-          const res = await fetch(
-            `${BACKEND_API_URL}/nft/members?type=${type}limit=4&room=${roomId}&prefix=${activeToken.slice(
-              1
-            )}`
-          );
-          const json = await res.json();
-          setTagMembers(json.members);
+          const json = await response.json();
+          const members: RemoteUserData[] = json?.members || [];
+          return members.map((x) => ({
+            name: x.username,
+            ref: `<@${x.username}|u${x.id}>`,
+          }));
         } catch (e) {
           console.error(e);
+          return [];
         }
-      } else {
-        setTagMembers([]);
-      }
-    } else {
-      setTagMembers([]);
-    }
-  }
-
-  useEffect(() => {
-    if (inputRef && inputRef.current) {
-      document.addEventListener("click", (e) => onInputNavigate(e));
-      document.addEventListener("keyup", (e) => onInputNavigate(e));
-    }
-    return () => {
-      document.addEventListener("click", (e) => onInputNavigate(e));
-      document.addEventListener("keyup", (e) => onInputNavigate(e));
-    };
-  }, [inputRef]);
-
-  useEffect(() => {
-    if (!inputRef.current) {
-      return;
-    }
-    const caretPos = getCaretIndex(inputRef.current);
-    inputRef.current.innerHTML = messageContent;
-    inputRef.current.focus();
-    const setpos = document.createRange();
-    const set = window.getSelection();
-    setpos.setStart(inputRef.current, caretPos || 0);
-    setpos.collapse(true);
-    set?.removeAllRanges();
-    set?.addRange(setpos);
-    inputRef.current.focus();
-  }, [messageContent, inputRef]);
+      },
+      // onChange: {
+      //   console.log("Chaning")z
+      // }
+    },
+  ];
 
   return (
-    <>
-      {JSON.stringify(tagMembers)}
-      <p
-        id={"text-input"}
-        ref={inputRef}
-        onInput={(e) => {
-          setMessageContent(e.currentTarget.textContent);
-        }}
-        style={{
-          width: "100%",
-          height: 20,
-          margin: 0,
-          marginBottom: 10,
-          outline: "none",
-        }}
-        contentEditable="true"
-      ></p>
-    </>
+    <div style={{ width: "100%" }}>
+      <RichMentionsProvider
+        configs={configs}
+        getContext={inputRef}
+        onChange={(e) => e.stopPropagation()}
+      >
+        <RichMentionsInput defaultValue={defaultValue} />
+        {/* <RichMentionsAutocomplete /> */}
+        <CustomAutoComplete />
+      </RichMentionsProvider>
+    </div>
   );
 }
+
+const CustomAutoComplete = () => {
+  const {
+    opened,
+    index,
+    //loading,
+    results,
+    setActiveItemIndex,
+    selectItem,
+    setPositionFixed,
+  } = useContext(RichMentionsContext);
+
+  useEffect(() => {
+    console.log({
+      opened,
+      results,
+    });
+  }, [opened, results]);
+
+  return (
+    <Fragment
+      onClick={() => selectItem({ name: "adrien", ref: "<@adrien|u1>" })}
+    >
+      {results.map((item, i) => (
+        <button
+          className={`autocomplete-item ${
+            i === index ? "autocomplete-item-selected" : ""
+          }`}
+          type="button"
+          key={item.ref}
+          onClick={() => selectItem(item)}
+        >
+          {item.name}
+        </button>
+      ))}
+    </Fragment>
+  );
+};
