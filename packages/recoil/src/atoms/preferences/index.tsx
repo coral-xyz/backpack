@@ -6,6 +6,7 @@ import type {
 import {
   BACKEND_API_URL,
   DEFAULT_AUTO_LOCK_INTERVAL_SECS,
+  isMobile,
   UI_RPC_METHOD_ALL_USERS_READ,
   UI_RPC_METHOD_PREFERENCES_READ,
   UI_RPC_METHOD_USER_READ,
@@ -34,6 +35,24 @@ export const preferences = atom<Preferences>({
       });
     },
   }),
+  effects: [
+    ({ onSet }) => {
+      onSet((preferences: Preferences) => {
+        console.log("ARMANI SETTING PREFERENCES HERE", preferences, isMobile);
+        //
+        // On extension, we write preferences to the local storage of the UI so that
+        // we can use it without hitting the service worker on app load. See
+        // src/app/App.tsx for the user of this.
+        //
+        if (!isMobile()) {
+          window.localStorage.setItem(
+            "preferences",
+            JSON.stringify(preferences)
+          );
+        }
+      });
+    },
+  ],
 });
 
 export const isDarkMode = selector<boolean>({
