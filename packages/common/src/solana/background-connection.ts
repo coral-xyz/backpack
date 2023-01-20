@@ -207,7 +207,28 @@ export class BackgroundSolanaConnection extends Connection {
             amount: t.amount.toString(),
           };
         }),
-        fungibleTokenMetadata: _resp.fts.fungibleTokenMetadata,
+        fungibleTokenMetadata: _resp.fts.fungibleTokenMetadata.map((t) => {
+          if (!t) {
+            return null;
+          }
+
+          return {
+            ...t,
+            publicKey: t.publicKey.toString(),
+            account: {
+              ...t.account,
+              data: {
+                ...t.account.data,
+                creators: (t.account.data.creators ?? []).map((c) => {
+                  return {
+                    ...c,
+                    address: c.address.toString(),
+                  };
+                }),
+              },
+            },
+          };
+        }),
       },
       nfts: {
         nftTokens: _resp.nfts.nftTokens.map((t) => {
@@ -218,7 +239,28 @@ export class BackgroundSolanaConnection extends Connection {
             amount: t.amount.toString(),
           };
         }),
-        nftTokenMetadata: _resp.nfts.nftTokenMetadata,
+        nftTokenMetadata: _resp.nfts.nftTokenMetadata.map((t) => {
+          if (!t) {
+            return null;
+          }
+
+          return {
+            ...t,
+            publicKey: t.publicKey.toString(),
+            account: {
+              ...t.account,
+              data: {
+                ...t.account.data,
+                creators: (t.account.data.creators ?? []).map((c) => {
+                  return {
+                    ...c,
+                    address: c.address.toString(),
+                  };
+                }),
+              },
+            },
+          };
+        }),
       },
     };
   }
