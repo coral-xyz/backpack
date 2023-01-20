@@ -38,7 +38,6 @@ export const preferences = atom<Preferences>({
   effects: [
     ({ onSet }) => {
       onSet((preferences: Preferences) => {
-        console.log("ARMANI SETTING PREFERENCES HERE", preferences, isMobile);
         //
         // On extension, we write preferences to the local storage of the UI so that
         // we can use it without hitting the service worker on app load. See
