@@ -274,7 +274,7 @@ export function SubtextParagraph({
   style,
   onPress,
 }: {
-  children: JSX.Element;
+  children: string;
   style?: StyleProp<TextStyle>;
   onPress?: () => void;
 }) {
@@ -515,7 +515,6 @@ export function Debug({ data }: any): JSX.Element {
       <Text
         style={{
           color: theme.custom.colors.fontColor,
-          fontFamily: "monospace",
         }}
       >
         {JSON.stringify(data, null, 2)}

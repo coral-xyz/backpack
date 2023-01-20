@@ -170,9 +170,11 @@ function maybeParseLog({
       case "mobile-logs": {
         const [name, ...rest] = data;
         const color = name.includes("ERROR") ? "red" : "yellow";
+        console.group(`${channel}:${name}`);
         console.log("%c" + `${channel}:` + name, `color: ${color}`);
         console.log(rest);
         console.log("%c" + "---", `color: ${color}`);
+        console.groupEnd();
         break;
       }
       case "mobile-bg-response":
