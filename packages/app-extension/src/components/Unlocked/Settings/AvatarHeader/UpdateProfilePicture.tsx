@@ -29,7 +29,11 @@ import { styled, useCustomTheme } from "@coral-xyz/themes";
 import { CircularProgress, Grid } from "@mui/material";
 import Collapse from "@mui/material/Collapse";
 import Typography from "@mui/material/Typography";
-import { useRecoilValue , useRecoilValueLoadable, useSetRecoilState } from "recoil";
+import {
+  useRecoilValue,
+  useRecoilValueLoadable,
+  useSetRecoilState,
+} from "recoil";
 
 import { Scrollbar } from "../../../common/Layout/Scrollbar";
 import { _BalancesTableHead } from "../../Balances/Balances";

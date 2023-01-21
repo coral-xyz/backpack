@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
 import { HashRouter } from "react-router-dom";
-import { EXTENSION_HEIGHT,EXTENSION_WIDTH } from "@coral-xyz/common";
+import { EXTENSION_HEIGHT, EXTENSION_WIDTH } from "@coral-xyz/common";
 import {
   NotificationsProvider,
   useBackgroundKeepAlive,
@@ -8,7 +8,8 @@ import {
 import {
   BACKGROUND_BACKDROP_COLOR,
   LIGHT_BACKGROUND_BACKDROP_COLOR,
- useCustomTheme } from "@coral-xyz/themes";
+  useCustomTheme,
+} from "@coral-xyz/themes";
 import { RecoilRoot } from "recoil";
 
 import "@fontsource/inter";

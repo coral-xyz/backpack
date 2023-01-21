@@ -131,20 +131,6 @@ export function Preferences() {
     },
   };
 
-  //
-  // Build version.
-  //
-  const buildMenuItems = {
-    Version: {
-      onClick: () => {},
-      detail: (
-        <Typography style={{ color: theme.custom.colors.secondary }}>
-          {BACKPACK_CONFIG_VERSION}
-        </Typography>
-      ),
-    },
-  };
-
   useEffect(() => {
     nav.setTitle("Preferences");
   }, []);
@@ -153,7 +139,6 @@ export function Preferences() {
     <div>
       <SettingsList menuItems={menuItems} />
       <SettingsList menuItems={blockchainMenuItems as any} />
-      <SettingsList menuItems={buildMenuItems} />
     </div>
   );
 }

@@ -41,6 +41,7 @@ import { Preferences } from "./Preferences";
 import { XnftSettings } from "./Xnfts";
 import { YourAccount } from "./YourAccount";
 import { SettingsMenu } from ".";
+import { AboutBackpack } from "./AboutBackpack";
 
 export function SettingsNavStackDrawer({
   settingsOpen,
@@ -196,6 +197,10 @@ export function SettingsNavStackDrawer({
           <NavStackScreen
             name={"contacts"}
             component={(props: any) => <Contacts {...props} />}
+          />
+          <NavStackScreen
+            name={"about-backpack"}
+            component={(props: any) => <AboutBackpack {...props} />}
           />
         </NavStackEphemeral>
       </div>
