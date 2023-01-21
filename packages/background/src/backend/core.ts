@@ -924,9 +924,9 @@ export class Backend {
         await this.activeWalletUpdate(nextActivePublicKey, blockchain);
       } else {
         // No public key on the currently active blockchain could be found,
-        // which means that we've removed the last public key. Set the next
-        // active public key to one on another blockchain and then remove
-        // the keyring
+        // which means that we've removed the last public key from the active
+        // blockchain keyring. We need to set a new active blockchain and
+        // public key.
         const newBlockchain = (await this.blockchainKeyringsRead()).find(
           (b: Blockchain) => b !== blockchain
         );
