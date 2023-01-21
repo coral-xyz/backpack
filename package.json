@@ -53,7 +53,7 @@
     "*.{js,jsx,css,md,json}": "prettier --write --cache",
     "*.{ts,tsx}": [
       "prettier --write --cache",
-      "eslint --fix"
+      "eslint --fix --cache"
     ]
   },
   "overrides": {

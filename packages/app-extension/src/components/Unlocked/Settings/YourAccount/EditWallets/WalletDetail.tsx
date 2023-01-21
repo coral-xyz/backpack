@@ -21,17 +21,20 @@ export const WalletDetail: React.FC<{
   const background = useBackgroundClient();
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [walletName, setWalletName] = useState(name);
-  const blockchainKeyrings = useWalletPublicKeys();
-  const keyring = blockchainKeyrings[blockchain];
-
-  const publicKeyCount = Object.values(keyring).flat().length;
+  const publicKeyData = useWalletPublicKeys();
 
   useEffect(() => {
     (async () => {
-      const keyname = await background.request({
-        method: UI_RPC_METHOD_KEYNAME_READ,
-        params: [publicKey],
-      });
+      let keyname = "";
+      try {
+        keyname = await background.request({
+          method: UI_RPC_METHOD_KEYNAME_READ,
+          params: [publicKey],
+        });
+      } catch {
+        // No wallet name, might be dehydrated
+        return;
+      }
       setWalletName(keyname);
       nav.setTitle(keyname);
     })();
@@ -42,6 +45,15 @@ export const WalletDetail: React.FC<{
     setTimeout(() => setTooltipOpen(false), 1000);
     navigator.clipboard.writeText(publicKey);
   };
+
+  // Account recovery is not possible for private key imports, so prevent
+  // removal of wallets if they are the last one in the wallet that can be used
+  // for recovery
+  const isLastRecoverable =
+    Object.values(publicKeyData)
+      .map((keyring) => [...keyring.hdPublicKeys, ...keyring.ledgerPublicKeys])
+      .flat()
+      .filter((n) => n.publicKey !== publicKey).length === 0;
 
   const menuItems = {
     "Wallet Address": {
@@ -71,8 +83,19 @@ export const WalletDetail: React.FC<{
   };
 
   const secrets = {
-    "Show private key": {
+    "Show Private Key": {
       onClick: () => nav.push("show-private-key-warning", { publicKey }),
+    },
+  };
+
+  const recover = {
+    Recover: {
+      onClick: () =>
+        nav.push("add-connect-wallet", {
+          blockchain,
+          publicKey,
+          isRecovery: true,
+        }),
     },
   };
 
@@ -98,8 +121,11 @@ export const WalletDetail: React.FC<{
           <SettingsList menuItems={menuItems} />
         </div>
       </WithCopyTooltip>
-      {type !== "ledger" && <SettingsList menuItems={secrets} />}
-      {publicKeyCount > 1 && <SettingsList menuItems={removeWallet} />}
+      {type !== "hardware" && type !== "dehydrated" && (
+        <SettingsList menuItems={secrets} />
+      )}
+      {type === "dehydrated" && <SettingsList menuItems={recover} />}
+      {!isLastRecoverable && <SettingsList menuItems={removeWallet} />}
     </div>
   );
 };

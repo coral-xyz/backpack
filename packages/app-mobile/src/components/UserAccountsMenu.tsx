@@ -1,24 +1,19 @@
+import type { BottomSheetBackdropProps } from "@gorhom/bottom-sheet";
+
 import { useCallback, useMemo, useRef } from "react";
 import { Pressable, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Avatar, Margin, RoundedContainerGroup } from "@components";
-import { ExpandCollapseIcon, IconCheckmark } from "@components/Icon";
+
 import { UI_RPC_METHOD_ACTIVE_USER_UPDATE } from "@coral-xyz/common";
 import { useAllUsers, useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { useTheme } from "@hooks";
-import { HeaderBackButton } from "@react-navigation/elements";
+import { BottomSheetBackdrop, BottomSheetModal } from "@gorhom/bottom-sheet";
 import { SettingsRow } from "@screens/Unlocked/Settings/components/SettingsRow";
 
-export function AccountDropdownHeader({
-  navigation,
-  options,
-}: {
-  navigation: any;
-  options: any;
-}): JSX.Element {
-  const insets = useSafeAreaInsets();
+import { ExpandCollapseIcon, IconCheckmark } from "@components/Icon";
+import { Avatar, Margin, RoundedContainerGroup } from "@components/index";
+import { useTheme } from "@hooks/index";
+
+export function AccountDropdownHeader(): JSX.Element {
   const theme = useTheme();
   const user = useUser();
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
@@ -32,6 +27,20 @@ export function AccountDropdownHeader({
     bottomSheetModalRef.current?.dismiss();
   }, []);
 
+  const modalHeight = 240;
+
+  const renderBackdrop = useCallback(
+    (props: BottomSheetBackdropProps) => (
+      <BottomSheetBackdrop
+        {...props}
+        pressBehavior="close"
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
+      />
+    ),
+    []
+  );
+
   return (
     <>
       <Pressable
@@ -40,13 +49,15 @@ export function AccountDropdownHeader({
           flexDirection: "row",
           justifyContent: "center",
           alignItems: "center",
-        }}>
+        }}
+      >
         <Text
           style={{
             fontSize: 17,
             fontWeight: "600",
             color: theme.custom.colors.fontColor,
-          }}>
+          }}
+        >
           @{user.username}
         </Text>
         <ExpandCollapseIcon
@@ -58,9 +69,15 @@ export function AccountDropdownHeader({
         ref={bottomSheetModalRef}
         index={0}
         snapPoints={snapPoints}
+        backdropComponent={renderBackdrop}
+        contentHeight={modalHeight}
+        handleStyle={{
+          marginBottom: 12,
+        }}
         backgroundStyle={{
           backgroundColor: theme.custom.colors.backgroundBackdrop,
-        }}>
+        }}
+      >
         <UserAccountMenu onDismiss={handleDismissModal} />
       </BottomSheetModal>
     </>
@@ -74,7 +91,8 @@ function UserAccountMenu({ onDismiss }: () => void): JSX.Element {
       style={{
         backgroundColor: theme.custom.colors.backgroundBackdrop,
         paddingHorizontal: 16,
-      }}>
+      }}
+    >
       <Text
         style={{
           marginTop: 8,
@@ -82,7 +100,8 @@ function UserAccountMenu({ onDismiss }: () => void): JSX.Element {
           fontSize: 18,
           fontWeight: "600",
           color: theme.custom.colors.fontColor,
-        }}>
+        }}
+      >
         Accounts
       </Text>
       <UsersList onDismiss={onDismiss} />
@@ -100,7 +119,8 @@ function AddAnotherAccountButton() {
       style={{ flexDirection: "row", alignItems: "center" }}
       onPress={() => {
         // openAddUserAccount();
-      }}>
+      }}
+    >
       <MaterialIcons name="add" size={28} style={{ marginRight: 4 }} />
       <Text
         style={{
@@ -109,7 +129,8 @@ function AddAnotherAccountButton() {
           display: "flex",
           justifyContent: "center",
           flexDirection: "column",
-        }}>
+        }}
+      >
         Add Another Account
       </Text>
     </Pressable>

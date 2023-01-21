@@ -7,12 +7,13 @@ import {
   Text,
   View,
 } from "react-native";
+
+import * as Linking from "expo-linking";
+
 import { EmptyState, Screen } from "@components";
-import type { Blockchain } from "@coral-xyz/common";
-import { explorerUrl } from "@coral-xyz/common";
+import { Blockchain, explorerUrl } from "@coral-xyz/common";
 import {
-  useActiveEthereumWallet,
-  useActiveSolanaWallet,
+  useActiveWallet,
   useBlockchainConnectionUrl,
   useBlockchainExplorer,
   useRecentEthereumTransactions,
@@ -21,7 +22,6 @@ import {
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useBlockchainLogo, useTheme } from "@hooks";
-import { Linking } from "expo-linking";
 
 export function RecentActivityScreen() {
   return (
@@ -31,29 +31,40 @@ export function RecentActivityScreen() {
   );
 }
 
+function RecentSolanaActivity({ address }: { address: string }): JSX.Element {
+  const recentTransactions = useRecentSolanaTransactions({
+    address,
+  });
+
+  const mergedTransactions = [...recentTransactions].sort(
+    (a, b) => b.date.getTime() - a.date.getTime()
+  );
+
+  return <_RecentActivityList transactions={mergedTransactions} />;
+}
+
+function RecentEthereumActivity({ address }: { address: string }): JSX.Element {
+  const recentTransactions = useRecentEthereumTransactions({
+    address,
+  });
+
+  const mergedTransactions = [...recentTransactions].sort(
+    (a, b) => b.date.getTime() - a.date.getTime()
+  );
+
+  return <_RecentActivityList transactions={mergedTransactions} />;
+}
+
 export function RecentActivity() {
-  const activeEthereumWallet = useActiveEthereumWallet();
-  const activeSolanaWallet = useActiveSolanaWallet();
-
-  const recentEthereumTransactions = activeEthereumWallet
-    ? useRecentEthereumTransactions({
-        address: activeEthereumWallet.publicKey,
-      })
-    : [];
-  const recentSolanaTransactions = activeSolanaWallet
-    ? useRecentSolanaTransactions({
-        address: activeSolanaWallet.publicKey,
-      })
-    : [];
-
-  const mergedTransactions = [
-    ...recentEthereumTransactions,
-    ...recentSolanaTransactions,
-  ].sort((a, b) => b.date.getTime() - a.date.getTime());
+  const activeWallet = useActiveWallet();
 
   return (
     <Suspense fallback={<RecentActivityLoading />}>
-      <_RecentActivityList transactions={mergedTransactions} />
+      {activeWallet.blockchain === Blockchain.SOLANA ? (
+        <RecentSolanaActivity address={activeWallet.publicKey} />
+      ) : (
+        <RecentEthereumActivity address={activeWallet.publicKey} />
+      )}
     </Suspense>
   );
 }
@@ -63,14 +74,12 @@ export function RecentActivityList({
   address,
   contractAddresses,
   transactions,
-  style,
   minimize = false,
 }: {
   blockchain?: Blockchain;
   address?: string;
-  contractAddresses?: Array<string>;
-  transactions?: Array<any>;
-  style?: any;
+  contractAddresses?: string[];
+  transactions: any[];
   minimize?: boolean;
 }) {
   return (
@@ -80,7 +89,6 @@ export function RecentActivityList({
         address={address}
         contractAddresses={contractAddresses}
         transactions={transactions}
-        style={style}
         minimize={minimize}
       />
     </Suspense>
@@ -102,39 +110,32 @@ function RecentActivityLoading() {
 }
 
 export function _RecentActivityList({
-  blockchain,
-  address,
-  contractAddresses,
-  transactions: _transactions,
-  style,
+  transactions,
   minimize,
 }: {
   blockchain?: Blockchain;
   address?: string;
-  contractAddresses?: Array<string>;
-  transactions?: Array<any>;
-  style?: any;
+  contractAddresses?: string[];
+  transactions: any[];
   minimize?: boolean;
 }) {
-  // const theme = useTheme();
-  // Load transactions if not passed in as a prop
-  const transactions = _transactions
-    ? _transactions
-    : useRecentTransactions(blockchain!, address!, contractAddresses!);
+  const styles = {
+    flex: 1,
+  };
 
-  if (!style) {
-    style = {};
+  if (transactions.length === 0) {
+    // @ts-ignore
+    styles.justifyContent = "center";
+    // @ts-ignore
+    styles.alignItems = "center";
   }
 
   return (
     <FlatList
-      contentContainerStyle={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
+      contentContainerStyle={styles}
       data={transactions}
       ListEmptyComponent={<NoRecentActivityLabel minimize={!!minimize} />}
+      scrollEnabled={transactions.length > 0}
       renderItem={({ item }) => {
         return <RecentActivityListItem transaction={item} />;
       }}
@@ -238,7 +239,6 @@ function RecentActivityListItemIcon({ transaction }: any) {
 }
 
 function NoRecentActivityLabel({ minimize }: { minimize: boolean }) {
-  const theme = useTheme();
   return (
     <View
       style={{
@@ -248,9 +248,9 @@ function NoRecentActivityLabel({ minimize }: { minimize: boolean }) {
       <EmptyState
         minimize={minimize}
         icon={(props: any) => <MaterialIcons name="bolt" {...props} />}
-        title={"No Recent Activity"}
-        subtitle={"Get started by adding your first xNFT"}
-        buttonText={"Browse the xNFT Library"}
+        title="No Recent Activity"
+        subtitle="Get started by adding your first xNFT"
+        buttonText="Browse the xNFT Library"
         onPress={() => Linking.openURL("https://xnft.gg")}
       />
     </View>

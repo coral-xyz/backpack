@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import type {
+  AutolockSettings,
   Blockchain,
   FEATURE_GATES_MAP,
   Notification,
@@ -13,8 +14,8 @@ import {
   NOTIFICATION_AGGREGATE_WALLETS_UPDATED,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
   NOTIFICATION_AUTO_LOCK_SETTINGS_UPDATED,
-  NOTIFICATION_BLOCKCHAIN_DISABLED,
-  NOTIFICATION_BLOCKCHAIN_ENABLED,
+  NOTIFICATION_BLOCKCHAIN_KEYRING_CREATED,
+  NOTIFICATION_BLOCKCHAIN_KEYRING_DELETED,
   NOTIFICATION_DARK_MODE_UPDATED,
   NOTIFICATION_DEVELOPER_MODE_UPDATED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
@@ -40,14 +41,12 @@ import {
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
   NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE,
+  NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_DELETED,
+  NOTIFICATION_USER_ACCOUNT_PUBLIC_KEYS_UPDATED,
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
 } from "@coral-xyz/common";
 import type { Commitment } from "@solana/web3.js";
-import {
-  useRecoilCallback,
-  useResetRecoilState,
-  useSetRecoilState,
-} from "recoil";
+import { useResetRecoilState, useSetRecoilState } from "recoil";
 
 import * as atoms from "../atoms";
 import { allPlugins } from "../hooks";
@@ -77,7 +76,8 @@ export function NotificationsProvider(props: any) {
       };
     });
   };
-  const setActiveBlockchain = (activeBlockchain) => {
+  const setServerPublicKeys = useSetRecoilState(atoms.serverPublicKeys);
+  const setActiveBlockchain = (activeBlockchain: Blockchain) => {
     setWalletData((current) => {
       return {
         ...current,
@@ -85,7 +85,7 @@ export function NotificationsProvider(props: any) {
       };
     });
   };
-  const setActivePublicKeys = (activePublicKeys) => {
+  const setActivePublicKeys = (activePublicKeys: string[]) => {
     setWalletData((current) => {
       return {
         ...current,
@@ -101,7 +101,7 @@ export function NotificationsProvider(props: any) {
   const setPreferences = useSetRecoilState(atoms.preferences);
   const setFeatureGates = useSetRecoilState(atoms.featureGates);
 
-  const setAutoLockSettings = (autoLockSettings) => {
+  const setAutoLockSettings = (autoLockSettings: AutolockSettings) => {
     setPreferences((current) => {
       return {
         ...current,
@@ -139,15 +139,7 @@ export function NotificationsProvider(props: any) {
       ...featureGates,
     }));
   };
-  const setEnabledBlockchains = (enabledBlockchains: Blockchain) => {
-    setPreferences((current) => {
-      return {
-        ...current,
-        enabledBlockchains,
-      };
-    });
-  };
-  const setApprovedOrigins = (approvedOrigins: Array<string>) => {
+  const setApprovedOrigins = (approvedOrigins: string[]) => {
     setPreferences((current) => {
       return {
         ...current,
@@ -157,7 +149,7 @@ export function NotificationsProvider(props: any) {
   };
   const setXnftPreferences = useSetRecoilState(atoms.xnftPreferences);
   // Solana
-  const setSolanaConnectionUrl = (cluster) => {
+  const setSolanaConnectionUrl = (cluster: string) => {
     setPreferences((current) => {
       return {
         ...current,
@@ -307,14 +299,14 @@ export function NotificationsProvider(props: any) {
         case NOTIFICATION_ETHEREUM_FEE_DATA_DID_UPDATE:
           handleEthereumFeeDataDidUpdate(notif);
           break;
-        case NOTIFICATION_BLOCKCHAIN_ENABLED:
-          handleBlockchainEnabled(notif);
+        case NOTIFICATION_BLOCKCHAIN_KEYRING_CREATED:
+          handleBlockchainKeyringCreated(notif);
+          break;
+        case NOTIFICATION_BLOCKCHAIN_KEYRING_DELETED:
+          handleBlockchainKeyringDeleted(notif);
           break;
         case NOTIFICATION_FEATURE_GATES_UPDATED:
           handleSetFeatureGates(notif.data.gates);
-          break;
-        case NOTIFICATION_BLOCKCHAIN_DISABLED:
-          handleBlockchainDisabled(notif);
           break;
         case NOTIFICATION_KEYRING_STORE_USERNAME_ACCOUNT_CREATED:
           handleUsernameAccountCreated(notif);
@@ -327,6 +319,12 @@ export function NotificationsProvider(props: any) {
           break;
         case NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED:
           handleActiveBlockchainUpdated(notif);
+          break;
+        case NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_DELETED:
+          handleUserAccountPublicKeyDeleted(notif);
+          break;
+        case NOTIFICATION_USER_ACCOUNT_PUBLIC_KEYS_UPDATED:
+          handleUserAccountPublicKeysUpdated(notif);
           break;
         default:
           break;
@@ -551,6 +549,22 @@ export function NotificationsProvider(props: any) {
       setActiveBlockchain(notif.data.newBlockchain);
     };
 
+    const handleUserAccountPublicKeyDeleted = (notif: Notification) => {
+      setServerPublicKeys((current) =>
+        current.filter(
+          (c) =>
+            !(
+              c.blockchain === notif.data.blockchain &&
+              c.publicKey === notif.data.publicKey
+            )
+        )
+      );
+    };
+
+    const handleUserAccountPublicKeysUpdated = (notif: Notification) => {
+      setServerPublicKeys(notif.data.publicKeys);
+    };
+
     const handleEthereumActiveWalletUpdated = (notif: Notification) => {
       allPlugins().forEach((p) => {
         p.pushEthereumPublicKeyChangedNotification(notif.data.activeWallet);
@@ -582,13 +596,11 @@ export function NotificationsProvider(props: any) {
       setEthereumChainId(notif.data.chainId);
     };
 
-    const handleBlockchainEnabled = (notif: Notification) => {
-      setEnabledBlockchains(notif.data.enabledBlockchains);
+    const handleBlockchainKeyringCreated = (notif: Notification) => {
       setWalletData(notif.data.publicKeyData);
     };
 
-    const handleBlockchainDisabled = (notif: Notification) => {
-      setEnabledBlockchains(notif.data.enabledBlockchains);
+    const handleBlockchainKeyringDeleted = (notif: Notification) => {
       setWalletData(notif.data.publicKeyData);
     };
 
@@ -596,7 +608,6 @@ export function NotificationsProvider(props: any) {
       // Order of each setter matters here.
       setPreferences(notif.data.preferences);
       setXnftPreferences(notif.data.xnftPreferences);
-      setEnabledBlockchains(notif.data.enabledBlockchains);
       setWalletData(notif.data.walletData);
       setActiveUser(notif.data.user);
       resetAllUsers();
@@ -606,7 +617,6 @@ export function NotificationsProvider(props: any) {
       // Order of each setter matters here.
       setPreferences(notif.data.preferences);
       setXnftPreferences(notif.data.xnftPreferences);
-      setEnabledBlockchains(notif.data.enabledBlockchains);
       setWalletData(notif.data.walletData);
       setActiveUser(notif.data.user);
       resetAllUsers();

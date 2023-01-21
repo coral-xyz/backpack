@@ -19,11 +19,12 @@ module.exports = {
   extends: ["prettier"],
   plugins: ["import", "node"],
   rules: {
+    "no-multiple-empty-lines": ["error", { max: 1, maxEOF: 0 }],
     "array-bracket-spacing": ["warn", "never"],
     "arrow-spacing": ["warn", { before: true, after: true }],
     curly: ["warn", "all"],
     "block-spacing": ["warn", "always"],
-    "comma-dangle": ["warn", "always-multiline"],
+    // "comma-dangle": ["off"], // prettier breaks
     "comma-spacing": ["warn", { before: false, after: true }],
     "comma-style": ["warn", "last"],
     "computed-property-spacing": ["warn", "never"],
@@ -31,7 +32,7 @@ module.exports = {
     "dot-location": ["warn", "property"],
     "eol-last": "warn",
     eqeqeq: ["warn", "smart"],
-    "func-call-spacing": ["warn", "never"],
+    // "func-call-spacing": ["warn", "always"],
     "generator-star-spacing": ["warn", "after"],
     "getter-return": "warn",
     "jsx-quotes": ["warn", "prefer-double"],
@@ -164,9 +165,32 @@ module.exports = {
     "import/order": [
       "warn",
       {
+        pathGroups: [
+          {
+            pattern: "{react,react-native}",
+            group: "builtin",
+            position: "before",
+          },
+          {
+            pattern: "@{hooks,components,lib}/**",
+            group: "builtin",
+            position: "after",
+          },
+          {
+            pattern: "expo-**",
+            group: "builtin",
+            position: "before",
+          },
+        ],
+        pathGroupsExcludedImportTypes: [
+          "react",
+          "react-native",
+          "expo",
+          "@coral-xyz",
+        ],
         groups: [
-          ["builtin", "external"],
-          "internal",
+          "type",
+          ["builtin", "external", "internal"],
           ["parent", "index", "sibling"],
         ],
         "newlines-between": "always",
@@ -175,6 +199,32 @@ module.exports = {
         },
       },
     ],
+
+    // "simple-import-sort/imports": [
+    //   "warn",
+    //   {
+    //     groups: [
+    //       // Packages `expo` related packages come first.
+    //       // ["^expo|@expo", "^@?\\w"],
+    //       // Packages `react` related packages come first.
+    //       // ["^react", "^@?\\w"],
+    //       // Packages `react` related packages come first.
+    //       // ["^react-native", "^@?\\w"],
+    //       // Packages `@coral-xyz` related packages come first.
+    //       ["^(@|coral-xyz)(/.*|$)"],
+    //       // Internal packages.
+    //       ["^(@|components|hooks|lib)(/.*|$)"],
+    //       // Side effect imports.
+    //       ["^\\u0000"],
+    //       // Parent imports. Put `..` last.
+    //       ["^\\.\\.(?!/?$)", "^\\.\\./?$"],
+    //       // Other relative imports. Put same-folder imports and `.` last.
+    //       ["^\\./(?=.*/)(?!/?$)", "^\\.(?!/?$)", "^\\./?$"],
+    //       // Style imports.
+    //       ["^.+\\.?(css)$"],
+    //     ],
+    //   },
+    // ],
 
     "node/handle-callback-err": ["warn", "^(e|err|error|.+Error)$"],
     "node/no-new-require": "warn",

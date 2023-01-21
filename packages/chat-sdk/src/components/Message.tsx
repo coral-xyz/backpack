@@ -361,7 +361,7 @@ function SecureTransferElement({
   const [loading, setLoading] = useState(true);
   const { roomId } = useChatContext();
   const { provider, connection } = useAnchorContext();
-  const { publicKey } = useActiveSolanaWallet();
+  const activeSolanaWallet = useActiveSolanaWallet();
   const classes = useStyles();
   const background = useBackgroundClient();
   const [actionButtonLoading, setActionButtonLoading] = useState(false);
@@ -387,10 +387,10 @@ function SecureTransferElement({
 
   const [token] = useLoader(
     blockchainTokenData({
-      publicKey,
+      publicKey: activeSolanaWallet?.publicKey,
       blockchain: Blockchain.SOLANA,
       //@ts-ignore
-      tokenAddress: publicKey,
+      tokenAddress: activeSolanaWallet?.publicKey,
     }),
     null
   );
@@ -610,6 +610,7 @@ export function ChatMessages() {
             image={chat.image}
             username={chat.username}
             uuid={chat.uuid}
+            userId={chat.uuid}
             metadata={chat.message_metadata}
             messageId={chat.client_generated_uuid}
           />

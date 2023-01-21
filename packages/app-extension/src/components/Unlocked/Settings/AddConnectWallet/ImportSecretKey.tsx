@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import {
   Blockchain,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
+  walletAddressDisplay,
 } from "@coral-xyz/common";
 import { PrimaryButton, TextInput } from "@coral-xyz/react-common";
 import type { WalletPublicKeys } from "@coral-xyz/recoil";
@@ -18,7 +19,13 @@ import { useNavStack } from "../../../common/Layout/NavStack";
 
 import { ConfirmCreateWallet } from ".";
 
-export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
+export function ImportSecretKey({
+  blockchain,
+  publicKey,
+}: {
+  blockchain: Blockchain;
+  publicKey?: string;
+}) {
   const background = useBackgroundClient();
   const existingPublicKeys = useWalletPublicKeys();
   const nav = useNavStack();
@@ -45,29 +52,34 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    let secretKeyHex;
+    let privateKey, _publicKey;
     try {
-      secretKeyHex = validateSecretKey(
+      ({ privateKey, publicKey: _publicKey } = validateSecretKey(
         blockchain,
         secretKey,
         existingPublicKeys
-      );
+      ));
     } catch (e) {
       setError((e as Error).message);
       return;
     }
 
-    try {
-      setNewPublicKey(
-        await background.request({
-          method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
-          params: [blockchain, secretKeyHex, name],
-        })
-      );
-      setOpenDrawer(true);
-    } catch (error) {
-      setError("Wallet address is used by another Backpack account.");
+    if (publicKey && publicKey !== _publicKey) {
+      setError(`Incorrect private key for ${walletAddressDisplay(publicKey)}`);
     }
+
+    if (privateKey)
+      try {
+        setNewPublicKey(
+          await background.request({
+            method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
+            params: [blockchain, publicKey, name],
+          })
+        );
+        setOpenDrawer(true);
+      } catch (error) {
+        setError("Wallet address is used by another Backpack account.");
+      }
   };
 
   return (
@@ -86,8 +98,17 @@ export function ImportSecretKey({ blockchain }: { blockchain: Blockchain }) {
           <Box sx={{ margin: "0 24px" }}>
             <Header text="Import private key" />
             <SubtextParagraph style={{ marginBottom: "32px" }}>
-              Enter your private key. It will be encrypted and stored on your
-              device.
+              {publicKey ? (
+                <>
+                  Enter the private key for {walletAddressDisplay(publicKey)} to
+                  recover the wallet.
+                </>
+              ) : (
+                <>
+                  Enter your private key. It will be encrypted and stored on
+                  your device.
+                </>
+              )}
             </SubtextParagraph>
           </Box>
           <Box sx={{ margin: "0 16px" }}>
@@ -148,7 +169,7 @@ function validateSecretKey(
   blockchain: Blockchain,
   secretKey: string,
   keyring: WalletPublicKeys
-): string {
+): { privateKey: string; publicKey: string } {
   // Extract public keys from keychain object into array of strings
   const existingPublicKeys = Object.values(keyring[blockchain])
     .map((k) => k.map((i) => i.publicKey))
@@ -173,7 +194,10 @@ function validateSecretKey(
       throw new Error("Key already exists");
     }
 
-    return Buffer.from(keypair.secretKey).toString("hex");
+    return {
+      privateKey: Buffer.from(keypair.secretKey).toString("hex"),
+      publicKey: keypair.publicKey.toString(),
+    };
   } else if (blockchain === Blockchain.ETHEREUM) {
     try {
       const wallet = new ethers.Wallet(secretKey);
@@ -182,7 +206,7 @@ function validateSecretKey(
         throw new Error("Key already exists");
       }
 
-      return wallet.privateKey;
+      return { privateKey: wallet.privateKey, publicKey: wallet.publicKey };
     } catch (_) {
       throw new Error("Invalid private key");
     }

@@ -62,18 +62,6 @@ const useStyles = styles((theme) => ({
 }));
 
 export function Apps() {
-  const enabledBlockchains = useEnabledBlockchains();
-
-  if (!enabledBlockchains.includes(Blockchain.SOLANA)) {
-    return (
-      <EmptyState
-        icon={(props: any) => <BlockIcon {...props} />}
-        title={"Solana is disabled"}
-        subtitle={"Enable Solana in blockchain settings to use apps"}
-      />
-    );
-  }
-
   return <PluginGrid />;
 }
 

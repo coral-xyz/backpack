@@ -5,6 +5,15 @@ object_relationships:
   - name: invitation
     using:
       foreign_key_constraint_on: invitation_id
+  - name: mad_feed_user_score
+    using:
+      manual_configuration:
+        column_mapping:
+          id: user_id
+        insertion_order: null
+        remote_table:
+          name: mad_feed_user_score_totals
+          schema: public
   - name: referrer
     using:
       foreign_key_constraint_on: referrer_id
@@ -23,6 +32,13 @@ object_relationships:
           name: waolist_tokens
           schema: auth
 array_relationships:
+  - name: mad_feed_votes
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          name: mad_feed_votes
+          schema: auth
   - name: public_keys
     using:
       foreign_key_constraint_on:
@@ -65,6 +81,7 @@ select_permissions:
   - role: one_xnft
     permission:
       columns:
+        - created_at
         - id
         - is_internal
         - username

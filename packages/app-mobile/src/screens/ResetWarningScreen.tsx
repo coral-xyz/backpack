@@ -1,4 +1,5 @@
 import { View } from "react-native";
+
 import {
   DangerButton,
   Header,
@@ -8,13 +9,14 @@ import {
   SubtextParagraph,
   TwoButtonFooter,
 } from "@components";
-import { WarningIcon } from "@components/Icon";
 import {
   UI_RPC_METHOD_KEYRING_RESET,
-  UI_RPC_METHOD_USER_LOGOUT,
+  UI_RPC_METHOD_USER_ACCOUNT_LOGOUT,
 } from "@coral-xyz/common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { useNavigation } from "@react-navigation/native";
+
+import { WarningIcon } from "@components/Icon";
 
 export function LogoutWarningScreen({ navigation }): JSX.Element {
   const background = useBackgroundClient();
@@ -22,14 +24,12 @@ export function LogoutWarningScreen({ navigation }): JSX.Element {
 
   return (
     <Warning
-      buttonTitle={"Logout"}
-      title={"Logout"}
-      subtext={
-        "This will remove all the wallets you have created or imported. Make sure you have your existing secret recovery phrase and private keys saved."
-      }
+      buttonTitle="Logout"
+      title="Logout"
+      subtext="This will remove all the wallets you have created or imported. Make sure you have your existing secret recovery phrase and private keys saved."
       onNext={async () => {
         await background.request({
-          method: UI_RPC_METHOD_USER_LOGOUT,
+          method: UI_RPC_METHOD_USER_ACCOUNT_LOGOUT,
           params: [user.uuid],
         });
       }}
@@ -42,11 +42,9 @@ export function ResetWarningScreen({ navigation }): JSX.Element {
 
   return (
     <Warning
-      buttonTitle={"Reset"}
-      title={"Reset Backpack"}
-      subtext={
-        "This will remove all the user accounts you have created or imported. Make sure you have your existing secret recovery phrase and private keys saved."
-      }
+      buttonTitle="Reset"
+      title="Reset Backpack"
+      subtext="This will remove all the user accounts you have created or imported. Make sure you have your existing secret recovery phrase and private keys saved."
       onNext={async () => {
         await background.request({
           method: UI_RPC_METHOD_KEYRING_RESET,

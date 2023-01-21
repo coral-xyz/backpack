@@ -1,13 +1,11 @@
 import type { Blockchain } from "@coral-xyz/common";
 import {
-  BACKEND_API_URL,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
+  UI_RPC_METHOD_USER_ACCOUNT_AUTH,
+  UI_RPC_METHOD_USER_ACCOUNT_READ,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
-import { ethers } from "ethers";
-
-const { base58 } = ethers.utils;
 
 export const useAuthentication = () => {
   const background = useBackgroundClient();
@@ -27,22 +25,12 @@ export const useAuthentication = () => {
     message: string;
   }) => {
     try {
-      const response = await fetch(`${BACKEND_API_URL}/authenticate`, {
-        method: "POST",
-        body: JSON.stringify({
-          blockchain,
-          signature,
-          publicKey,
-          message: base58.encode(Buffer.from(message, "utf-8")),
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
+      return await background.request({
+        method: UI_RPC_METHOD_USER_ACCOUNT_AUTH,
+        params: [blockchain, publicKey, message, signature],
       });
-      if (response.status !== 200) throw new Error(`could not authenticate`);
-      return await response.json();
-    } catch (err) {
-      console.error("error authenticating", err);
+    } catch (error) {
+      console.error("error auth", error);
       // Relock if authentication failed
       await background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
@@ -66,24 +54,13 @@ export const useAuthentication = () => {
     | undefined
   > => {
     try {
-      const headers = {
-        "Content-Type": "application/json",
-        ...(jwt ? { Authorization: `Bearer ${jwt}` } : {}),
-      };
-      const response = await fetch(`${BACKEND_API_URL}/users/${username}`, {
-        method: "GET",
-        headers,
+      return await background.request({
+        method: UI_RPC_METHOD_USER_ACCOUNT_READ,
+        params: [username, jwt],
       });
-      if (response.status === 404) {
-        // User does not exist on server, how to handle?
-        throw new Error("user does not exist");
-      } else if (response.status !== 200) {
-        throw new Error(`could not fetch user`);
-      }
-      return await response.json();
-    } catch (err) {
-      console.error("error checking authentication", err);
+    } catch (error) {
       // Relock if authentication failed
+      console.error("error checking auth", error);
       await background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
         params: [],
@@ -165,5 +142,10 @@ export const useAuthentication = () => {
     return transparentSigner ? transparentSigner : signers[0];
   };
 
-  return { authenticate, checkAuthentication, getSigners, getAuthSigner };
+  return {
+    authenticate,
+    checkAuthentication,
+    getSigners,
+    getAuthSigner,
+  };
 };

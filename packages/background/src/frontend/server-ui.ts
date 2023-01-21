@@ -2,11 +2,13 @@
 // extension UI to the background script.
 
 import type {
+  AutolockSettingsOption,
   Blockchain,
   Context,
   DerivationPath,
   EventEmitter,
   FEATURE_GATES_MAP,
+  Preferences,
   RpcRequest,
   RpcResponse,
   XnftPreference,
@@ -25,9 +27,6 @@ import {
   UI_RPC_METHOD_APPROVED_ORIGINS_UPDATE,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
-  UI_RPC_METHOD_BLOCKCHAINS_ENABLED_ADD,
-  UI_RPC_METHOD_BLOCKCHAINS_ENABLED_DELETE,
-  UI_RPC_METHOD_BLOCKCHAINS_ENABLED_READ,
   UI_RPC_METHOD_ETHEREUM_CHAIN_ID_READ,
   UI_RPC_METHOD_ETHEREUM_CHAIN_ID_UPDATE,
   UI_RPC_METHOD_ETHEREUM_CONNECTION_URL_READ,
@@ -94,8 +93,12 @@ import {
   UI_RPC_METHOD_SOLANA_SIGN_MESSAGE,
   UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION,
   UI_RPC_METHOD_SOLANA_SIMULATE,
+  UI_RPC_METHOD_USER_ACCOUNT_AUTH,
+  UI_RPC_METHOD_USER_ACCOUNT_LOGOUT,
+  UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_CREATE,
+  UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_DELETE,
+  UI_RPC_METHOD_USER_ACCOUNT_READ,
   UI_RPC_METHOD_USER_JWT_UPDATE,
-  UI_RPC_METHOD_USER_LOGOUT,
   UI_RPC_METHOD_USER_READ,
   UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
   withContextPort,
@@ -105,7 +108,7 @@ import type { Commitment } from "@solana/web3.js";
 
 import type { Backend } from "../backend/core";
 import type { User } from "../backend/store";
-import type { Config, Handle } from "../types";
+import type { Config, Handle, PublicKeyData } from "../types";
 
 const logger = getLogger("background-server-ui");
 
@@ -288,12 +291,6 @@ async function handle<T = any>(
       return await handleApprovedOriginsUpdate(ctx, params[0]);
     case UI_RPC_METHOD_APPROVED_ORIGINS_DELETE:
       return await handleApprovedOriginsDelete(ctx, params[0]);
-    case UI_RPC_METHOD_BLOCKCHAINS_ENABLED_ADD:
-      return handleBlockchainsEnabledAdd(ctx, params[0]);
-    case UI_RPC_METHOD_BLOCKCHAINS_ENABLED_DELETE:
-      return handleBlockchainsEnabledRemove(ctx, params[0]);
-    case UI_RPC_METHOD_BLOCKCHAINS_ENABLED_READ:
-      return await handleBlockchainsEnabledRead(ctx);
     case UI_RPC_METHOD_SET_FEATURE_GATES:
       return await handleSetFeatureGates(ctx, params[0]);
     case UI_RPC_METHOD_GET_FEATURE_GATES:
@@ -313,7 +310,6 @@ async function handle<T = any>(
       );
     case UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ:
       return await handleBlockchainKeyringsRead(ctx);
-    //
     //
     // Nicknames for keys.
     //
@@ -339,9 +335,24 @@ async function handle<T = any>(
       const response = await handleActiveUserUpdate(ctx, ...params);
       ctx.backend.keyringStoreAutoLockReset();
       return response;
-    case UI_RPC_METHOD_USER_LOGOUT:
+    //
+    // User Backpack account remote calls.
+    //
+    case UI_RPC_METHOD_USER_ACCOUNT_AUTH:
       // @ts-ignore
-      return await handleUserLogout(ctx, ...params);
+      return await handleUserAccountAuth(ctx, ...params);
+    case UI_RPC_METHOD_USER_ACCOUNT_LOGOUT:
+      // @ts-ignore
+      return await handleUserAccountLogout(ctx, ...params);
+    case UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_CREATE:
+      // @ts-ignore
+      return await handleUserAccountPublicKeyCreate(ctx, ...params);
+    case UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_DELETE:
+      // @ts-ignore
+      return await handleUserAccountPublicKeyDelete(ctx, ...params);
+    case UI_RPC_METHOD_USER_ACCOUNT_READ:
+      // @ts-ignore
+      return await handleUserAccountRead(ctx, ...params);
     //
     // Password.
     //
@@ -479,7 +490,10 @@ function handleKeyringStoreKeepAlive(
   return [resp];
 }
 
-async function handlePreferencesRead(ctx: Context<Backend>, uuid: string) {
+async function handlePreferencesRead(
+  ctx: Context<Backend>,
+  uuid: string
+): Promise<RpcResponse<Preferences>> {
   const resp = await ctx.backend.preferencesRead(uuid);
   return [resp];
 }
@@ -495,7 +509,7 @@ async function handleKeyringActiveWalletUpdate(
 
 async function handleKeyringStoreReadAllPubkeyData(
   ctx: Context<Backend>
-): Promise<RpcResponse<Array<string>>> {
+): Promise<RpcResponse<PublicKeyData[]>> {
   const resp = await ctx.backend.keyringStoreReadAllPubkeyData();
   return [resp];
 }
@@ -579,11 +593,43 @@ async function handleActiveUserUpdate(
   return [resp];
 }
 
-async function handleUserLogout(
+async function handleUserAccountAuth(
   ctx: Context<Backend>,
-  ...args: Parameters<Backend["userLogout"]>
+  ...args: Parameters<Backend["userAccountAuth"]>
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.userLogout(...args);
+  const resp = await ctx.backend.userAccountAuth(...args);
+  return [resp];
+}
+
+async function handleUserAccountLogout(
+  ctx: Context<Backend>,
+  ...args: Parameters<Backend["userAccountLogout"]>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.userAccountLogout(...args);
+  return [resp];
+}
+
+async function handleUserAccountPublicKeyCreate(
+  ctx: Context<Backend>,
+  ...args: Parameters<Backend["userAccountPublicKeyCreate"]>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.userAccountPublicKeyCreate(...args);
+  return [resp];
+}
+
+async function handleUserAccountPublicKeyDelete(
+  ctx: Context<Backend>,
+  ...args: Parameters<Backend["userAccountPublicKeyDelete"]>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.userAccountPublicKeyDelete(...args);
+  return [resp];
+}
+
+async function handleUserAccountRead(
+  ctx: Context<Backend>,
+  ...args: Parameters<Backend["userAccountRead"]>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.userAccountRead(...args);
   return [resp];
 }
 
@@ -646,7 +692,7 @@ async function handleKeyringAutoLockSettingsRead(
 async function handleKeyringAutoLockSettingsUpdate(
   ctx: Context<Backend>,
   seconds?: number,
-  option?: string
+  option?: AutolockSettingsOption
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.keyringAutoLockSettingsUpdate(seconds, option);
   return [resp];
@@ -995,29 +1041,6 @@ async function handleApprovedOriginsDelete(
   origin: string
 ): Promise<RpcResponse> {
   const resp = await ctx.backend.approvedOriginsDelete(origin);
-  return [resp];
-}
-
-function handleBlockchainsEnabledAdd(
-  ctx: Context<Backend>,
-  blockchain: Blockchain
-) {
-  const resp = ctx.backend.enabledBlockchainsAdd(blockchain);
-  return [resp];
-}
-
-function handleBlockchainsEnabledRemove(
-  ctx: Context<Backend>,
-  blockchain: Blockchain
-) {
-  const resp = ctx.backend.enabledBlockchainsRemove(blockchain);
-  return [resp];
-}
-
-async function handleBlockchainsEnabledRead(
-  ctx: Context<Backend>
-): Promise<RpcResponse<Array<string>>> {
-  const resp = await ctx.backend.enabledBlockchainsRead();
   return [resp];
 }
 

@@ -1,0 +1,11 @@
+table:
+  name: mad_feed_user_vote_sums
+  schema: public
+select_permissions:
+  - role: one_xnft
+    permission:
+      columns:
+        - total
+        - total_count
+        - user_id
+      filter: {}

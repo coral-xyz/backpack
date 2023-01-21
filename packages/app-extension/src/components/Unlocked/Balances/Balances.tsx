@@ -10,7 +10,7 @@ import {
   CardContent,
   CardHeader,
   List,
-  ListItem,
+  ListItemButton,
   ListItemIcon,
   Typography,
 } from "@mui/material";
@@ -395,15 +395,14 @@ export function BalancesTableRow({
 function __BalancesTableRow({ style, children, onClick }: any) {
   const classes = useStyles();
   return (
-    <ListItem
-      button
+    <ListItemButton
       disableRipple
       className={classes.tokenListItem}
       onClick={onClick}
       style={style}
     >
       {children}
-    </ListItem>
+    </ListItemButton>
   );
 }
 function ProxyImage(props: any) {

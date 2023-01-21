@@ -1,7 +1,9 @@
 import type { StyleProp, TextStyle, ViewStyle } from "react-native";
 import { StyleSheet, Text, View } from "react-native";
-import { RoundedContainerGroup } from "@components/index";
+
 import { useTheme } from "@hooks";
+
+import { RoundedContainerGroup } from "@components/index";
 
 import { IconPushDetail, SettingsRow } from "./SettingsRow";
 

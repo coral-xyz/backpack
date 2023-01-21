@@ -6,6 +6,7 @@ import type { Blockchain } from "@coral-xyz/common";
 import {
   DerivationPath,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
+  walletAddressDisplay,
 } from "@coral-xyz/common";
 import { Loading, PrimaryButton } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
@@ -66,9 +67,10 @@ export const MnemonicSearch = ({
       }}
     >
       <Box sx={{ margin: "24px" }}>
-        <Header text="Unable to recover account" />
+        <Header text="Unable to recover wallet" />
         <SubtextParagraph>
-          We couldn't find a matching public key for that recovery phrase.
+          We couldn't find the public key {walletAddressDisplay(publicKey)}{" "}
+          using your hardware wallet.
         </SubtextParagraph>
       </Box>
       <Box

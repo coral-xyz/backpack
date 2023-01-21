@@ -53,7 +53,7 @@ export function useWalletName(address: string): string {
       }
     }
   }
-  throw new Error("key not found");
+  return "";
 }
 
 export function useWalletBlockchain(address: string): string {
@@ -95,4 +95,11 @@ export function useAllWalletsDisplayed(): Array<{
   blockchain: Blockchain;
 }> {
   return useRecoilValue(atoms.allWalletsDisplayed);
+}
+
+export function useDehydratedWallets(): Array<{
+  blockchain: Blockchain;
+  publicKey: string;
+}> {
+  return useRecoilValue(atoms.dehydratedWallets);
 }

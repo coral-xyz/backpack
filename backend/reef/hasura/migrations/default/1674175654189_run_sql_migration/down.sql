@@ -1,0 +1,8 @@
+-- Could not auto-generate a down migration.
+-- Please write an appropriate down migration for the SQL below:
+-- CREATE OR REPLACE VIEW "public"."mad_feed_user_promo_results" AS
+-- SELECT user_id,
+--     sum(mad_feed_votes.value) AS promotion_results_total
+-- FROM auth.mad_feed_votes
+-- WHERE (mad_feed_votes.type = 'PROMOTION_RESULT'::text)
+-- GROUP BY mad_feed_votes.user_id;

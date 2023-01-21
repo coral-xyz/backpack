@@ -1,6 +1,5 @@
 export * from "./avatar";
 export * from "./balance";
-export * from "./blockchain";
 export * from "./bootstrap";
 export * from "./client";
 export * from "./ethereum";

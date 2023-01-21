@@ -1,68 +1,185 @@
-import React from "react";
+import type { Nft, NftCollection } from "@coral-xyz/common";
+
+import React, { useState } from "react";
 import {
-  Alert,
+  SectionList,
   FlatList,
   Image,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   View,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
-import { EmptyState, Margin, NFTCard, Screen } from "@components";
-import type { NftCollection } from "@coral-xyz/common";
-import { Blockchain, toTitleCase } from "@coral-xyz/common";
+
+import { Blockchain } from "@coral-xyz/common";
 import {
-  useActiveWallets,
-  useEnabledBlockchains,
-  useLoader,
+  // isAggregateWallets,
+  nftCollectionsWithIds,
+  // useActiveWallet,
+  // allWalletsDisplayed,
+  nftById,
+  useAllWallets,
+  useBlockchainConnectionUrl,
+  // useNavigation,
+  // useUser,
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
-import * as Linking from "expo-linking";
+import { WalletPickerButton } from "@screens/Unlocked/components/Balances";
+import { TableHeader } from "@screens/Unlocked/components/index";
+import { useRecoilValueLoadable } from "recoil";
+
+import { EmptyState, Margin, NFTCard } from "@components/index";
+import { useTheme } from "@hooks/useTheme";
 
 import { NFTDetailScreen, NFTDetailSendScreen } from "./NFTDetailScreen";
 
 const Stack = createStackNavigator();
-function TableHeader({
-  onPress,
-  visible,
-  name,
-}: {
-  onPress: () => void;
-  visible: boolean;
-  name: string;
-}): JSX.Element {
-  return (
-    <Pressable onPress={onPress} style={styles.header}>
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <Text>{name}</Text>
-      </View>
-      <MaterialIcons
-        name={visible ? "keyboard-arrow-up" : "keyboard-arrow-down"}
-        size={24}
-        color="black"
-      />
-    </Pressable>
-  );
-}
+type NftCollectionsWithId = {
+  publicKey: string;
+  collections: NftCollection[];
+};
 
-function NFTItem({
-  collectionId,
-  name,
-  imageUrl,
+// export type NftCollection = {
+//   id: string;
+//   metadataCollectionId: string;
+//   symbol: string;
+//   tokenType: string;
+//   totalSupply: string;
+//   itemIds: Array<string>;
+//   items?: { [id: string]: Nft }; // Not expected to be defined. Eth only.
+// };
+//
+// export type Nft = {
+//   id: string;
+//   blockchain: Blockchain;
+//   name: string;
+//   description: string;
+//   externalUrl: string;
+//   imageUrl: string;
+//   imageData?: string;
+//   attributes?: NftAttribute[];
+//   mint?: string;
+//   collectionName: string;
+//   metadataCollectionId?: string;
+//   tokenId?: string; // Ethereum only.
+//   contractAddress?: string; // Ethereum only.
+// };
+
+// function TableHeader({
+//   onPress,
+//   visible,
+//   name,
+// }: {
+//   onPress: () => void;
+//   visible: boolean;
+//   name: string;
+// }): JSX.Element {
+//   return (
+//     <Pressable onPress={onPress} style={styles.header}>
+//       <View style={{ flexDirection: "row", alignItems: "center" }}>
+//         <Text>{name}</Text>
+//       </View>
+//       <MaterialIcons
+//         name={visible ? "keyboard-arrow-up" : "keyboard-arrow-down"}
+//         size={24}
+//         color="black"
+//       />
+//     </Pressable>
+//   );
+// }
+
+function NftCollectionCard({
+  publicKey,
+  collection,
   onPress,
 }: {
-  collectionId: string;
-  name: string;
-  imageUrl: string;
+  publicKey: string;
+  collection: NftCollection;
   onPress: (collectionId: string) => void;
 }): JSX.Element {
+  const wallets = useAllWallets();
+  const wallet = wallets.find((wallet) => wallet.publicKey === publicKey);
+  const blockchain = wallet?.blockchain!;
+  const connectionUrl = useBlockchainConnectionUrl(blockchain);
+
+  // Display the first NFT in the collection as the thumbnail in the grid
+  const collectionDisplayNftId = collection.itemIds?.find((nftId) => !!nftId)!;
+  const { contents, state } = useRecoilValueLoadable(
+    nftById({
+      publicKey,
+      connectionUrl,
+      nftId: collectionDisplayNftId,
+    })
+  );
+
+  const collectionDisplayNft = state === "hasValue" ? contents : {};
+  console.log("nft:collectionDisplayNft", collectionDisplayNft);
+  if (state === "loading") {
+    return null;
+  }
+
+  const onPressItem = () => {
+    console.log("pressed:collection", collection);
+    // if (collection.metadataCollectionId === ONE_COLLECTION_ID) {
+    // push({
+    //   title: "ONE Holders Chat",
+    //   componentId: NAV_COMPONENT_NFT_CHAT,
+    //   componentProps: {
+    //     collectionId: collection.metadataCollectionId,
+    //     //@ts-ignore
+    //     nftMint: collectionDisplayNft?.mint,
+    //     title: "ONE Holders Chat",
+    //   },
+    // });
+    // return;
+    // }
+
+    if (collection.itemIds.length === 1) {
+      if (!collectionDisplayNft.name || !collectionDisplayNft.id) {
+        throw new Error("invalid NFT data");
+      }
+      // If there is only one item in the collection, link straight to its detail page
+      // push({
+      //   title: collectionDisplayNft.name || "",
+      //   componentId: NAV_COMPONENT_NFT_DETAIL,
+      //   componentProps: {
+      //     nftId: collectionDisplayNft.id,
+      //     publicKey,
+      //     connectionUrl,
+      //   },
+      // });
+    } else {
+      // Multiple items in connection, display a grid
+      // push({
+      //   title: collectionDisplayNft.collectionName,
+      //   componentId: NAV_COMPONENT_NFT_COLLECTION,
+      //   componentProps: {
+      //     id: collection.id,
+      //     publicKey,
+      //     connectionUrl,
+      //   },
+      // });
+    }
+  };
+
   return (
     <Pressable
-      style={{ flex: 0.5, margin: 8, borderRadius: 8, overflow: "hidden" }}
-      onPress={() => onPress(collectionId)}>
-      <Image source={{ uri: imageUrl }} style={{ aspectRatio: 1 }} />
+      style={{
+        width: "50%",
+        padding: 8,
+        borderRadius: 8,
+        overflow: "hidden",
+        position: "relative",
+      }}
+      onPress={onPressItem}
+    >
+      <Image
+        source={{ uri: collectionDisplayNft.imageUrl }}
+        style={{ borderRadius: 8, aspectRatio: 1 }}
+      />
       <View
         style={{
           position: "absolute",
@@ -72,154 +189,238 @@ function NFTItem({
           backgroundColor: "#FFF",
           borderRadius: 8,
           padding: 4,
-        }}>
-        <Text numberOfLines={1}>{name}</Text>
+          margin: 8,
+        }}
+      >
+        <Text numberOfLines={1}>{collectionDisplayNft.name}</Text>
+        <Text numberOfLines={1}>({collection.itemIds.length})</Text>
       </View>
     </Pressable>
   );
 }
 
-function NFTTable({
-  blockchain,
-  collection,
-  initialState,
-  onSelectItem,
-}: {
-  blockchain: Blockchain;
-  collection: NftCollection[];
-  initialState?: boolean;
-  onSelectItem: (collectionId: string, blockchain: Blockchain) => void;
-}): JSX.Element {
-  const [visible, setVisible] = React.useState(initialState);
-  const onPress = () => {
-    setVisible(!visible);
-  };
+// function NFTTable({
+//   blockchain,
+//   collection,
+//   initialState,
+//   onSelectItem,
+// }: {
+//   blockchain: Blockchain;
+//   collection: NftCollection[];
+//   initialState?: boolean;
+//   onSelectItem: (collectionId: string, blockchain: Blockchain) => void;
+// }): JSX.Element {
+//   const [visible, setVisible] = React.useState(initialState);
+//   const onPress = () => {
+//     setVisible(!visible);
+//   };
+//
+//   return (
+//     <View style={{ backgroundColor: "#fff", borderRadius: 8 }}>
+//       <TableHeader name={blockchain} onPress={onPress} visible={visible} />
+//
+//       {visible ? (
+//         <FlatList
+//           style={{ padding: 8 }}
+//           initialNumToRender={4}
+//           scrollEnabled={false}
+//           data={collection}
+//           numColumns={2}
+//           renderItem={({ item: collection }) => {
+//             const preview = collection.items[0];
+//             return (
+//               <NftCollectionCard
+//                 collection={collection.id}
+//                 onPress={(collectionId) =>
+//                   onSelectItem(collectionId, blockchain)
+//                 }
+//                 name={preview.name}
+//                 imageUrl={preview.imageUrl}
+//               />
+//             );
+//           }}
+//         />
+//       ) : null}
+//     </View>
+//   );
+// }
+//
+// function NoNFTsEmptyState() {
+//   return (
+//     <EmptyState
+//       icon={(props: any) => <MaterialIcons name="image" {...props} />}
+//       title="No NFTs"
+//       subtitle="Get started with your first NFT"
+//       buttonText="Browse Magic Eden"
+//       onPress={() => Linking.openURL("https://magiceden.io")}
+//     />
+//   );
+// }
 
-  return (
-    <View style={{ backgroundColor: "#fff", borderRadius: 8 }}>
-      <TableHeader name={blockchain} onPress={onPress} visible={visible} />
-
-      {visible ? (
-        <FlatList
-          style={{ padding: 8 }}
-          initialNumToRender={4}
-          scrollEnabled={false}
-          data={collection}
-          numColumns={2}
-          renderItem={({ item: collection }) => {
-            const preview = collection.items[0];
-            return (
-              <NFTItem
-                collectionId={collection.id}
-                onPress={(collectionId) =>
-                  onSelectItem(collectionId, blockchain)
-                }
-                name={preview.name}
-                imageUrl={preview.imageUrl}
-              />
-            );
-          }}
-        />
-      ) : null}
-    </View>
-  );
+function buildSectionList(collections: NftCollectionsWithId[] = []): {
+  title: string;
+  publicKey: string;
+  data: NftCollection[];
+}[] {
+  return collections.map(({ publicKey, collections }) => ({
+    publicKey,
+    title: publicKey,
+    data: collections,
+  }));
 }
 
-function NoEmptyState() {
+function SectionHeader({ title }: { title: string }): JSX.Element {
+  const theme = useTheme();
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-      }}>
-      <EmptyState
-        icon={(props: any) => <MaterialIcons name="image" {...props} />}
-        title="No NFTs"
-        subtitle="Get started with your first NFT"
-        buttonText="Browse Magic Eden"
-        onPress={() => Linking.openURL("https://magiceden.io")}
-      />
-    </View>
+    <Text
+      style={[
+        // styles.sectionHeaderTitle,
+        {
+          fontSize: 14,
+          color: theme.custom.colors.fontColor,
+          backgroundColor: "#FFF",
+        },
+      ]}
+    >
+      {title}
+    </Text>
   );
 }
 
 export function NFTCollectionListScreen({ navigation }): JSX.Element {
-  // const isONELive = useIsONELive();
-  const activeWallets = useActiveWallets();
-  const enabledBlockchains = useEnabledBlockchains();
+  const theme = useTheme();
+  // const activeWallet = useActiveWallet();
+  // const wl = useRecoilValueLoadable(allWalletsDisplayed);
+  // const wallets = wl.state === "hasValue" ? wl.contents : [];
+  // const _isAggregateWallets = useRecoilValue(isAggregateWallets);
+  const { contents, state } = useRecoilValueLoadable(nftCollectionsWithIds);
+  const allWalletCollections: NftCollectionsWithId[] =
+    (state === "hasValue" && contents) || [];
+  const isLoading = state === "loading";
+  const sections = buildSectionList(allWalletCollections);
 
-  // const collections = DEV_COLLECTIONS;
-  const [collections, _, isLoading] = useLoader(
-    nftCollections,
-    Object.fromEntries(
-      enabledBlockchains.map((b: Blockchain) => [b, new Array<NftCollection>()])
-    ),
-    // Note this reloads on any change to the active wallets, which reloads
-    // NFTs for both blockchains.
-    // TODO Make this reload for only the relevant blockchain
-    [activeWallets]
-  );
+  const nftCount = allWalletCollections
+    ? allWalletCollections
+        .map((c: any) => c.collections)
+        .flat()
+        .reduce((acc, c) => (c === null ? acc : c.itemIds.length + acc), 0)
+    : 0;
 
-  const hasCollections =
-    Object.entries(collections)
-      .map(([_name, data]) => {
-        return data.length > 0;
-      })
-      .filter(Boolean).length > 0;
+  const isEmpty = nftCount === 0 && !isLoading;
 
-  const onSelectItem = (id: string, blockchain: Blockchain) => {
-    console.log("id", id, blockchain, collections[blockchain]);
-    const collection = collections[blockchain].find((c) => c.id === id);
-    console.log("collection", collection);
-
-    if (!collection) {
-      Alert.alert(`${blockchain}:${id} not working`);
-    }
-
-    const hasMultipleItems = collection.items.length > 1;
-
-    if (hasMultipleItems) {
-      navigation.push("NFTCollectionDetail", {
-        title: collection.name,
-        collectionId: collection.id,
-      });
-    } else {
-      const collectionDisplayNft = collection.items[0];
-      navigation.push("NFTDetail", {
-        title: collectionDisplayNft.name || "",
-        nftId: collectionDisplayNft.id,
-      });
-    }
-  };
-
-  // TODO(peter) FlatList inside of a ScrollView error. TBD
-  return (
-    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flex: 1 }}>
-      <View style={{ padding: 8, flex: 1 }}>
-        {!hasCollections ? <NoEmptyState /> : null}
-        {hasCollections &&
-          Object.entries(collections).map(([blockchain, collection]) => {
-            return (
-              <Margin key={blockchain} bottom={8}>
-                <NFTTable
-                  blockchain={blockchain}
-                  collection={collection}
-                  initialState
-                  onSelectItem={onSelectItem}
-                />
-              </Margin>
-            );
-          })}
+  if (isLoading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: "#eee",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <ActivityIndicator size="large" />
       </View>
-    </ScrollView>
+    );
+  }
+
+  console.log("nft:isEmpty", isEmpty);
+  console.log("nft:contents", isLoading, contents);
+
+  if (isEmpty) {
+    return <Text>NO NFTS</Text>;
+  }
+
+  console.log({
+    // contents,
+    // isLoading,
+    // activeWallet,
+    // wallets,
+    allWalletCollections,
+    // collections,
+  });
+
+  // const onSelectItem = (id: string, blockchain: Blockchain) => {
+  //   const collection = collections[blockchain].find((c) => c.id === id);
+  //
+  //   if (!collection) {
+  //     Alert.alert(`${blockchain}:${id} not working`);
+  //   }
+  //
+  //   const hasMultipleItems = collection.items.length > 1;
+  //
+  //   if (hasMultipleItems) {
+  //     navigation.push("NFTCollectionDetail", {
+  //       title: collection.name,
+  //       collectionId: collection.id,
+  //     });
+  //   } else {
+  //     const collectionDisplayNft = collection.items[0];
+  //     navigation.push("NFTDetail", {
+  //       title: collectionDisplayNft.name || "",
+  //       nftId: collectionDisplayNft.id,
+  //     });
+  //   }
+  // };
+  // const styles = {
+  //   flex: 1,
+  // };
+  //
+  // if (allWalletCollections.length === 0) {
+  //   // @ts-ignore
+  //   styles.justifyContent = "center";
+  //   // @ts-ignore
+  //   styles.alignItems = "center";
+  // }
+
+  return (
+    <SectionList
+      style={{
+        backgroundColor: "white",
+        borderRadius: 12,
+        marginHorizontal: 12,
+      }}
+      sections={sections}
+      scrollEnabled={allWalletCollections.length > 0}
+      // keyExtractor={(item, index) => item + index}
+      renderSectionHeader={({ section: { title } }) => {
+        return (
+          <TableHeader
+            blockchain={Blockchain.SOLANA}
+            rightSide={<></>}
+            subtitle={
+              <WalletPickerButton
+                name="Wallet 1"
+                onPress={() => {
+                  navigation.navigate("wallet-picker");
+                }}
+              />
+            }
+          />
+        );
+      }}
+      renderItem={({ section, item: collection, index }) => {
+        console.log("renderItem2", section, collection, index);
+        return (
+          <FlatList
+            data={section.data}
+            numColumns={2}
+            renderItem={({ item: collection }) => {
+              return (
+                <NftCollectionCard
+                  publicKey={section.title}
+                  collection={collection}
+                  onPress={console.log}
+                />
+              );
+            }}
+          />
+        );
+      }}
+    />
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#eee",
-    flex: 1,
-  },
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -227,21 +428,17 @@ const styles = StyleSheet.create({
     height: 30,
     padding: 8,
   },
-  logoContainer: {
-    width: 12,
-    height: 12,
-    backgroundColor: "#000",
-    marginRight: 8,
-  },
 });
 
 function NFTCollectionDetailScreen({ navigation, route }): JSX.Element {
   const { collectionId } = route.params;
 
-  const [collections, _] = useLoader(nftCollections, {
-    [Blockchain.SOLANA]: [] as NftCollection[],
-    [Blockchain.ETHEREUM]: [] as NftCollection[],
-  });
+  const collections = [];
+
+  // const [collections, _] = useLoader(nftCollections, {
+  //   [Blockchain.SOLANA]: [] as NftCollection[],
+  //   [Blockchain.ETHEREUM]: [] as NftCollection[],
+  // });
 
   const collection = Object.values(collections)
     .flat()
@@ -280,11 +477,16 @@ function NFTCollectionDetailScreen({ navigation, route }): JSX.Element {
 
 export function NFTCollectiblesNavigator(): JSX.Element {
   return (
-    <Stack.Navigator initialRouteName="NFTCollectionList">
-      <Stack.Screen
-        name="NFTCollectionList"
-        component={NFTCollectionListScreen}
-      />
+    <Stack.Navigator
+      initialRouteName="NFTCollectionList"
+      screenOptions={{ presentation: "modal" }}
+    >
+      <Stack.Group screenOptions={{ headerShown: false }}>
+        <Stack.Screen
+          name="NFTCollectionList"
+          component={NFTCollectionListScreen}
+        />
+      </Stack.Group>
       <Stack.Screen
         name="NFTCollectionDetail"
         component={NFTCollectionDetailScreen}

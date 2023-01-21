@@ -1,7 +1,9 @@
 import React from "react";
+
+import * as Font from "expo-font";
+
 import { useStore } from "@coral-xyz/common";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import * as Font from "expo-font";
 
 type status = "loading" | "ready" | "error";
 
