@@ -906,51 +906,47 @@ export class Backend {
     const keyring =
       this.keyringStore.activeUserKeyring.keyringForBlockchain(blockchain);
 
+    let nextActivePublicKey: string | undefined;
+    const activeWallet = keyring.getActiveWallet();
     // If we're removing the currently active key then we need to update it
     // first.
-    let nextActivePublicKey: string | undefined;
-    if (keyring.getActiveWallet() === publicKey) {
+    if (activeWallet === publicKey) {
       // Find remaining public keys
       nextActivePublicKey = Object.values(keyring.publicKeys())
         .flat()
         .find((k) => k !== keyring.getActiveWallet());
+      // Set the next active public key if we deleted the active one. Note this
+      // is a local state change so it needs to come after the API request to
+      // remove the public key
+      if (nextActivePublicKey) {
+        // Set the active public key to another public key on the same
+        // blockchain if possible
+        await this.activeWalletUpdate(nextActivePublicKey, blockchain);
+      } else {
+        // No public key on the currently active blockchain could be found,
+        // which means that we've removed the last public key. Set the next
+        // active public key to one on another blockchain and then remove
+        // the keyring
+        const newBlockchain = (await this.blockchainKeyringsRead()).find(
+          (b: Blockchain) => b !== blockchain
+        );
+        if (!newBlockchain) {
+          throw new Error("cannot delete the last public key");
+        }
+        const newPublicKey = Object.values(
+          (await this.keyringStoreReadAllPubkeys())[newBlockchain]
+        ).flat()[0].publicKey;
+        // Update the active wallet
+        await this.activeWalletUpdate(newPublicKey, newBlockchain);
+      }
     }
 
     if (jwtEnabled) {
+      // Remove the public key from the Backpack API
       await this.userAccountPublicKeyDelete(blockchain, publicKey);
     }
 
-    let removeKeyring = false;
-
-    // Set the next active public key if we deleted the active one. Note this
-    // is a local state change so it needs to come after the API request to
-    // remove the public key
-    if (nextActivePublicKey) {
-      // Set the active public key to another public key on the same
-      // blockchain if possible
-      await this.activeWalletUpdate(nextActivePublicKey, blockchain);
-      await this.keyringStore.keyDelete(blockchain, publicKey);
-    } else {
-      // No public key on the currently active blockchain could be found,
-      // which means that we've removed the last public key. Set the next
-      // active public key to one on another blockchain and then remove
-      // the keyring
-      const newBlockchain = (await this.blockchainKeyringsRead()).find(
-        (b: Blockchain) => b !== blockchain
-      );
-      if (!newBlockchain) {
-        throw new Error("cannot delete the last public key");
-      }
-      const newPublicKey = Object.values(
-        (await this.keyringStoreReadAllPubkeys())[newBlockchain]
-      ).flat()[0].publicKey;
-      // Update the active wallet
-      await this.activeWalletUpdate(newPublicKey, newBlockchain);
-
-      await this.keyringStore.keyDelete(blockchain, publicKey);
-
-      removeKeyring = true;
-    }
+    await this.keyringStore.keyDelete(blockchain, publicKey);
 
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_KEY_DELETE,
@@ -960,7 +956,10 @@ export class Backend {
       },
     });
 
-    if (removeKeyring) {
+    const emptyKeyring =
+      Object.values(keyring.publicKeys()).flat().length === 0;
+
+    if (emptyKeyring) {
       // This was the last public key on the keyring, delete the whole
       // keyring
       await this.keyringStore.blockchainKeyringRemove(blockchain);
