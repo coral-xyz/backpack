@@ -7,11 +7,16 @@ import { CircularProgress } from "@mui/material";
 
 export function MessageInput({ inputRef }: { inputRef: any }) {
   const defaultValue = "";
+  const theme = useCustomTheme();
 
   return (
     <div style={{ width: "100%" }}>
       <RichMentionsInput
-        style={{ outline: "0px solid transparent", marginTop: 2 }}
+        style={{
+          outline: "0px solid transparent",
+          marginTop: 2,
+          color: theme.custom.colors.fontColor,
+        }}
         defaultValue={defaultValue}
       />
     </div>
