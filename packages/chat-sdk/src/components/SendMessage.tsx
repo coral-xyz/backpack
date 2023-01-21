@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import type { MessageKind, MessageMetadata } from "@coral-xyz/common";
 import { BACKEND_API_URL, CHAT_MESSAGES } from "@coral-xyz/common";
-import { createEmptyFriendship, SignalingManager } from "@coral-xyz/db";
+import {
+  createEmptyFriendship,
+  SignalingManager,
+  useDbUser,
+} from "@coral-xyz/db";
 import { useActiveSolanaWallet, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import ArrowForwardIos from "@mui/icons-material/ArrowForwardIos";
@@ -12,7 +16,8 @@ import { v4 as uuidv4 } from "uuid";
 
 import { base64ToArrayBuffer } from "../utils/imageUploadUtils";
 
-import { MessageInput } from "./messageInput/MessageInput";
+import { CustomAutoComplete, MessageInput } from "./messageInput/MessageInput";
+import { MessageInputProvider } from "./messageInput/MessageInputProvider";
 import { Attatchment } from "./Attatchment";
 import { useChatContext } from "./ChatContext";
 import { EmojiPickerComponent } from "./EmojiPicker";
@@ -96,8 +101,19 @@ export const SendMessage = () => {
   const activeSolanaWallet = useActiveSolanaWallet();
   const inputRef = useRef<any>(null);
 
-  const { remoteUserId, roomId, activeReply, setActiveReply, type, chats } =
-    useChatContext();
+  const {
+    remoteUserId,
+    remoteUsername,
+    roomId,
+    activeReply,
+    setActiveReply,
+    type,
+    chats,
+  } = useChatContext();
+  const remoteUserImage: string | undefined = useDbUser(
+    uuid,
+    remoteUserId
+  )?.image;
 
   const sendMessage = async (
     messageTxt,
@@ -220,190 +236,203 @@ export const SendMessage = () => {
     };
   }, [inputRef]);
 
+  const getOfflineMembers = () => {
+    if (type === "individual") {
+      return [
+        {
+          uuid: remoteUserId,
+          username: remoteUsername,
+          image: remoteUserImage,
+        },
+      ];
+    }
+    const userMap = {};
+    chats.map((x) => {
+      if (x.uuid !== uuid) {
+        userMap[x.uuid] = x;
+      }
+    });
+    return Object.keys(userMap).map((uuid) => userMap[uuid]);
+  };
   return (
-    <div className={classes.outerDiv}>
-      {selectedFile && (
-        <div>
-          <div style={{ background: theme.custom.colors.bg3 }}>
-            <div
-              style={{
-                width: "100%",
-                display: "flex",
-                flexDirection: "row-reverse",
-              }}
-            >
-              <HighlightOffIcon
+    <MessageInputProvider inputRef={inputRef}>
+      <div className={classes.outerDiv}>
+        {selectedFile && (
+          <div>
+            <div style={{ background: theme.custom.colors.bg3 }}>
+              <div
                 style={{
-                  color: theme.custom.colors.icon,
-                  cursor: "pointer",
-                  marginRight: 5,
-                  marginTop: 5,
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row-reverse",
                 }}
-                onClick={() => {
-                  setSelectedFile(null);
-                  setUploadingFile(false);
+              >
+                <HighlightOffIcon
+                  style={{
+                    color: theme.custom.colors.icon,
+                    cursor: "pointer",
+                    marginRight: 5,
+                    marginTop: 5,
+                  }}
+                  onClick={() => {
+                    setSelectedFile(null);
+                    setUploadingFile(false);
+                  }}
+                />
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
                 }}
-              />
-            </div>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
-              {selectedMediaKind === "image" ? (
-                <img
-                  style={{ maxHeight: 300, maxWidth: 300 }}
-                  src={selectedFile}
-                />
-              ) : (
-                <video
-                  style={{ maxHeight: 300, maxWidth: 300 }}
-                  controls={true}
-                  src={selectedFile}
-                />
-              )}
-            </div>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                marginTop: 3,
-              }}
-            >
-              {uploadingFile && (
-                <>
-                  {" "}
-                  <div
-                    style={{
-                      marginRight: 5,
-                      color: theme.custom.colors.fontColor,
-                    }}
-                  >
-                    Uploading{" "}
-                  </div>
-                  <div>
-                    <CircularProgress size={20} color="secondary" />{" "}
-                  </div>{" "}
-                </>
-              )}
+              >
+                {selectedMediaKind === "image" ? (
+                  <img
+                    style={{ maxHeight: 300, maxWidth: 300 }}
+                    src={selectedFile}
+                  />
+                ) : (
+                  <video
+                    style={{ maxHeight: 300, maxWidth: 300 }}
+                    controls={true}
+                    src={selectedFile}
+                  />
+                )}
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginTop: 3,
+                }}
+              >
+                {uploadingFile && (
+                  <>
+                    {" "}
+                    <div
+                      style={{
+                        marginRight: 5,
+                        color: theme.custom.colors.fontColor,
+                      }}
+                    >
+                      Uploading{" "}
+                    </div>
+                    <div>
+                      <CircularProgress size={20} color="secondary" />{" "}
+                    </div>{" "}
+                  </>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      )}
-      {activeReply.parent_client_generated_uuid && (
-        <ReplyContainer
-          marginBottom={6}
-          parent_username={activeReply.parent_username || ""}
-          showCloseBtn={true}
-          text={activeReply.text}
-        />
-      )}
-      <div style={{ display: "flex" }}>
-        <>
-          {emojiMenuOpen ? (
-            <div style={{ display: "flex" }}>
+        )}
+        {activeReply.parent_client_generated_uuid && (
+          <ReplyContainer
+            marginBottom={6}
+            parent_username={activeReply.parent_username || ""}
+            showCloseBtn={true}
+            text={activeReply.text}
+          />
+        )}
+        <CustomAutoComplete offlineMembers={getOfflineMembers().slice(0, 5)} />
+        <div style={{ display: "flex" }}>
+          <>
+            {emojiMenuOpen ? (
+              <div style={{ display: "flex" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                  }}
+                ></div>
+                <EmojiPickerComponent
+                  setEmojiPicker={setEmojiPicker}
+                  emojiPicker={emojiPicker}
+                  setGifPicker={setGifPicker}
+                  inputRef={inputRef}
+                  buttonStyle={{
+                    height: "28px",
+                  }}
+                />
+                <GifPicker
+                  sendMessage={sendMessage}
+                  setGifPicker={setGifPicker}
+                  gifPicker={gifPicker}
+                  setEmojiPicker={setEmojiPicker}
+                  buttonStyle={{
+                    height: "28px",
+                  }}
+                />
+                <Attatchment
+                  onImageSelect={(file: File) => {
+                    let reader = new FileReader();
+                    reader.onload = (e) => {
+                      setSelectedMediaKind(
+                        file.name.endsWith("mp4") ? "video" : "image"
+                      );
+                      setSelectedFile(e.target?.result);
+                      uploadToS3(e.target?.result as string, file.name);
+                    };
+                    reader.readAsDataURL(file);
+                  }}
+                  buttonStyle={{
+                    height: "28px",
+                  }}
+                />
+                {/*{activeSolanaWallet?.publicKey && (*/}
+                {/*  <SecureTransfer*/}
+                {/*    buttonStyle={{*/}
+                {/*      height: "28px",*/}
+                {/*    }}*/}
+                {/*    remoteUserId={remoteUserId}*/}
+                {/*    onTxFinalized={({ signature, counter, escrow }) => {*/}
+                {/*      sendMessage("Secure transfer", "secure-transfer", {*/}
+                {/*        signature,*/}
+                {/*        counter,*/}
+                {/*        escrow,*/}
+                {/*        current_state: "pending",*/}
+                {/*      });*/}
+                {/*    }}*/}
+                {/*  />*/}
+                {/*)}*/}
+                {/*<IconButton>*/}
+                {/*  {" "}*/}
+                {/*  <SendIcon*/}
+                {/*    className={classes.icon}*/}
+                {/*    onClick={() => sendMessage(messageContent)}*/}
+                {/*  />{" "}*/}
+                {/*</IconButton>*/}
+              </div>
+            ) : (
               <div
                 style={{
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "center",
                 }}
-              ></div>
-              <EmojiPickerComponent
-                setEmojiPicker={setEmojiPicker}
-                emojiPicker={emojiPicker}
-                setGifPicker={setGifPicker}
-                inputRef={inputRef}
-                buttonStyle={{
-                  height: "28px",
-                }}
-              />
-              <GifPicker
-                sendMessage={sendMessage}
-                setGifPicker={setGifPicker}
-                gifPicker={gifPicker}
-                setEmojiPicker={setEmojiPicker}
-                buttonStyle={{
-                  height: "28px",
-                }}
-              />
-              <Attatchment
-                onImageSelect={(file: File) => {
-                  let reader = new FileReader();
-                  reader.onload = (e) => {
-                    setSelectedMediaKind(
-                      file.name.endsWith("mp4") ? "video" : "image"
-                    );
-                    setSelectedFile(e.target?.result);
-                    uploadToS3(e.target?.result as string, file.name);
-                  };
-                  reader.readAsDataURL(file);
-                }}
-                buttonStyle={{
-                  height: "28px",
-                }}
-              />
-              {activeSolanaWallet?.publicKey && (
-                <SecureTransfer
-                  buttonStyle={{
-                    height: "28px",
-                  }}
-                  remoteUserId={remoteUserId}
-                  onTxFinalized={({ signature, counter, escrow }) => {
-                    sendMessage("Secure transfer", "secure-transfer", {
-                      signature,
-                      counter,
-                      escrow,
-                      current_state: "pending",
-                    });
-                  }}
-                />
-              )}
-              {/*<IconButton>*/}
-              {/*  {" "}*/}
-              {/*  <SendIcon*/}
-              {/*    className={classes.icon}*/}
-              {/*    onClick={() => sendMessage(messageContent)}*/}
-              {/*  />{" "}*/}
-              {/*</IconButton>*/}
-            </div>
-          ) : (
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-              }}
-            >
-              <IconButton
-                size={"small"}
-                style={{ color: theme.custom.colors.icon }}
-                onClick={() => {
-                  setEmojiMenuOpen(true);
-                }}
               >
-                <ArrowForwardIos
-                  style={{
-                    height: "18px",
-                    color: theme.custom.colors.icon,
-                    fontSize: 20,
+                <IconButton
+                  size={"small"}
+                  style={{ color: theme.custom.colors.icon }}
+                  onClick={() => {
+                    setEmojiMenuOpen(true);
                   }}
-                />
-              </IconButton>
-            </div>
-          )}
-        </>
-        {/*<p*/}
-        {/*  contentEditable="true"*/}
-        {/*  className={classes.textFieldRoot}*/}
-        {/*  onChange={(e) => setMessageContent(e.target.value)}*/}
-        {/*  onClick={() => setEmojiMenuOpen(false)}*/}
-        {/*>*/}
-        {/*  hi tehre hello*/}
-        {/*</p>*/}
-        <MessageInput inputRef={inputRef} />
+                >
+                  <ArrowForwardIos
+                    style={{
+                      height: "18px",
+                      color: theme.custom.colors.icon,
+                      fontSize: 20,
+                    }}
+                  />
+                </IconButton>
+              </div>
+            )}
+          </>
+          <MessageInput inputRef={inputRef} />
+        </div>
       </div>
-    </div>
+    </MessageInputProvider>
   );
 };

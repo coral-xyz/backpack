@@ -370,7 +370,7 @@ function ParsedMessage({ message }) {
                     title: `@${user.username}`,
                     componentId: NAV_COMPONENT_MESSAGE_PROFILE,
                     componentProps: {
-                      userId: user.id,
+                      userId: user.uuid,
                     },
                   });
                 }}
@@ -381,7 +381,15 @@ function ParsedMessage({ message }) {
                   color: "blue",
                 }}
               >
-                <img style={{ height: 15, marginTop: 2 }} src={user.image} />
+                <img
+                  style={{
+                    height: 16,
+                    borderRadius: 8,
+                    marginTop: 3,
+                    marginRight: 1,
+                  }}
+                  src={user.image}
+                />
                 <div>{user.username}</div>
               </div>
             );

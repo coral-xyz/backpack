@@ -1,128 +1,125 @@
-import { Fragment,useContext, useEffect, useRef, useState } from "react";
-import {
-  RichMentionsContext,
-  RichMentionsInput,
-  RichMentionsProvider,
-} from "react-rich-mentions";
-import { useLocation } from "react-router-dom";
-import type { RemoteUserData } from "@coral-xyz/common";
-import { BACKEND_API_URL } from "@coral-xyz/common";
-import {
-  useActiveSolanaWallet,
-  useDecodedSearchParams,
-} from "@coral-xyz/recoil";
-
-import { useChatContext } from "../ChatContext";
-
-const list = ["adrien", "anna", "guillaume", "vincent", "victor"].map(
-  (v, i) => ({
-    name: v,
-    ref: `<@${v}|u${i + 1}>`,
-  })
-);
+import { Fragment, useContext, useEffect, useRef, useState } from "react";
+import { RichMentionsContext, RichMentionsInput } from "react-rich-mentions";
+import { useUsersFromUuids } from "@coral-xyz/db";
+import { useUser } from "@coral-xyz/recoil";
+import { useCustomTheme } from "@coral-xyz/themes";
+import { CircularProgress } from "@mui/material";
 
 export function MessageInput({ inputRef }: { inputRef: any }) {
   const defaultValue = "";
-  const pathname = useLocation().pathname;
-  const { type, remoteUsername, remoteUserId } = useChatContext();
-  const { props }: any = useDecodedSearchParams();
-  const { publicKey } = useActiveSolanaWallet();
-
-  const configs = [
-    {
-      query: /@([a-zA-Z0-9_-]+)?/,
-      match: /<(@\w+)\|([^>]+)>/g,
-      matchDisplay: "$1",
-      customizeFragment: (fragment, final) => {
-        fragment.className = final ? "final" : "pending";
-      },
-      onMention: async (text) => {
-        const search = text.substr(1); // remove '@'
-        if (type === "individual") {
-          return [
-            {
-              name: remoteUsername,
-              ref: `<@${remoteUsername}|u${remoteUserId}>`,
-            },
-          ].filter((x) => x.name?.includes(search));
-        }
-        const response = await fetch(
-          `${BACKEND_API_URL}/nft/members?room=${
-            pathname === "/messages/groupchat" ? props.id : props.collectionId
-          }&mint=${
-            props.nftMint
-          }&publicKey=${publicKey}&type=collection&limit=${3}prefix=${search}`,
-          {
-            method: "GET",
-          }
-        );
-        try {
-          const json = await response.json();
-          const members: RemoteUserData[] = json?.members || [];
-          return members.map((x) => ({
-            name: x.username,
-            ref: `<@${x.username}|u${x.id}>`,
-          }));
-        } catch (e) {
-          console.error(e);
-          return [];
-        }
-      },
-      // onChange: {
-      //   console.log("Chaning")z
-      // }
-    },
-  ];
 
   return (
     <div style={{ width: "100%" }}>
-      <RichMentionsProvider
-        configs={configs}
-        getContext={inputRef}
-        onChange={(e) => e.stopPropagation()}
-      >
-        <RichMentionsInput defaultValue={defaultValue} />
-        {/* <RichMentionsAutocomplete /> */}
-        <CustomAutoComplete />
-      </RichMentionsProvider>
+      <RichMentionsInput
+        style={{ outline: "0px solid transparent", marginTop: 2 }}
+        defaultValue={defaultValue}
+      />
     </div>
   );
 }
 
-const CustomAutoComplete = () => {
+export const CustomAutoComplete = ({
+  offlineMembers,
+}: {
+  offlineMembers: { username: string; uuid: string; image: string }[];
+}) => {
+  const theme = useCustomTheme();
   const {
     opened,
     index,
-    //loading,
+    loading,
     results,
+    activeSearch,
     setActiveItemIndex,
     selectItem,
     setPositionFixed,
   } = useContext(RichMentionsContext);
 
-  useEffect(() => {
-    console.log({
-      opened,
-      results,
-    });
-  }, [opened, results]);
+  const { uuid } = useUser();
+  const users = useUsersFromUuids(
+    uuid,
+    results.map((r) => r.id)
+  );
 
   return (
-    <Fragment
-      onClick={() => selectItem({ name: "adrien", ref: "<@adrien|u1>" })}
-    >
-      {results.map((item, i) => (
-        <button
-          className={`autocomplete-item ${
-            i === index ? "autocomplete-item-selected" : ""
-          }`}
-          type="button"
-          key={item.ref}
-          onClick={() => selectItem(item)}
+    <div>
+      {activeSearch !== "" && activeSearch && activeSearch.length !== 0 && (
+        <div>
+          {" "}
+          {offlineMembers
+            .filter((x) => x.username.includes(activeSearch.slice(1)))
+            .map((item) => (
+              <button
+                style={{
+                  display: "flex",
+                  padding: 5,
+                  cursor: "pointer",
+                  width: "100%",
+                  background: theme.custom.colors.background,
+                  color: theme.custom.colors.fontColor,
+                  textAlign: "left",
+                  border: "none",
+                  boxShadow: `${theme.custom.colors.boxShadow}`,
+                }}
+                key={item.uuid}
+                onClick={() => {
+                  selectItem({
+                    name: item.username,
+                    id: item.uuid,
+                    ref: `<@${item.username}|u${item.uuid}>`,
+                  });
+                }}
+              >
+                <img
+                  style={{ height: 16, borderRadius: 8, marginRight: 5 }}
+                  src={item.image}
+                />
+                <div style={{ marginBottom: 3 }}>{item.username}</div>
+              </button>
+            ))}
+        </div>
+      )}
+
+      {results
+        .filter((x) => !offlineMembers.map((x) => x.uuid).includes(x.id))
+        .map((item, i) => (
+          <button
+            style={{
+              padding: 5,
+              display: "flex",
+              cursor: "pointer",
+              width: "100%",
+              background: theme.custom.colors.background,
+              color: theme.custom.colors.fontColor,
+              border: "none",
+              boxShadow: `${theme.custom.colors.boxShadow}`,
+              textAlign: "left",
+            }}
+            key={item.ref}
+            onClick={() => {
+              selectItem(item);
+            }}
+          >
+            <img
+              style={{ height: 16, borderRadius: 8, marginRight: 5 }}
+              src={users.find((x) => x?.uuid === item.id)?.image}
+            />
+            <div style={{ marginBottom: 3 }}>{item.name}</div>
+          </button>
+        ))}
+      {activeSearch !== "" &&
+      activeSearch &&
+      activeSearch.length !== 0 &&
+      loading ? (
+        <div
+          style={{ display: "flex", justifyContent: "center", marginBottom: 3 }}
         >
-          {item.name}
-        </button>
-      ))}
-    </Fragment>
+          {" "}
+          <CircularProgress size={20} />{" "}
+        </div>
+      ) : (
+        <></>
+      )}
+    </div>
   );
 };

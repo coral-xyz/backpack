@@ -127,7 +127,7 @@ export function ChatListItem({
   const printText = parts
     .map((x) =>
       x.type === "tag"
-        ? users.find((user) => user.uuid === x.value)?.username
+        ? users.find((user) => user?.uuid === x.value)?.username
         : x.value
     )
     .join("");
