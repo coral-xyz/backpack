@@ -34,26 +34,22 @@ export function AboutBackpack() {
       label: "Discord",
       onClick: () => window.open(DISCORD_INVITE_LINK, "_blank"),
       icon: (props: any) => <DiscordIcon {...props} />,
-      // detailIcon: <LaunchDetail />,
     },
 
     {
       label: "Twitter",
       onClick: () => window.open(TWITTER_LINK, "_blank"),
       icon: (props: any) => <TwitterIcon {...props} />,
-      // detailIcon: <LaunchDetail />,
     },
     {
       label: "GitHub",
       onClick: () => window.open(BACKPACK_GITHUB_LINK, "_blank"),
       icon: (props: any) => <GitHub {...props} />,
-      // detailIcon: <LaunchDetail />,
     },
     {
       label: "Website",
       onClick: () => window.open(BACKPACK_LINK, "_blank"),
       icon: (props: any) => <OpenInBrowser {...props} />,
-      // detailIcon: <LaunchDetail />,
     },
   ];
 
@@ -74,6 +70,7 @@ export function AboutBackpack() {
             display: "flex",
             justifyContent: "center",
             margin: "32px auto",
+            marginBottom: 4,
           }}
         />
         <Typography
