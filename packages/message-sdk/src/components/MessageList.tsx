@@ -225,7 +225,11 @@ export function ChatListItem({
                 <div>
                   {id === "backpack-chat" && (
                     <VerifiedIcon
-                      style={{ fontSize: 19, marginLeft: 3, color: "blue" }}
+                      style={{
+                        fontSize: 19,
+                        marginLeft: 3,
+                        color: theme.custom.colors.blue,
+                      }}
                     />
                   )}
                 </div>

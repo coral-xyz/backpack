@@ -351,6 +351,7 @@ function ParsedMessage({ message }) {
   const { uuid } = useUser();
   const { push } = useNavigation();
   const parts = parseMessage(message);
+  const theme = useCustomTheme();
   const users = useUsersFromUuids(
     uuid,
     parts.filter((x) => x.type === "tag").map((x) => x.value)
@@ -378,7 +379,7 @@ function ParsedMessage({ message }) {
                   marginLeft: 3,
                   cursor: "pointer",
                   display: "flex",
-                  color: "blue",
+                  color: theme.custom.colors.blue,
                 }}
               >
                 <img

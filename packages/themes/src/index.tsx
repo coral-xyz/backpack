@@ -67,6 +67,7 @@ type CustomColors = {
   fontColor3: string;
   fontColor4: string;
   subtext: string;
+  blue: string;
   secondary: string;
   primaryButton: string;
   primaryButtonTextColor: string;
@@ -186,6 +187,7 @@ export const darkTheme: Partial<Theme> & { custom: { colors: CustomColors } } =
     components: darkComponentOverrides,
     custom: {
       colors: {
+        blue: "#3498db",
         smallTextColor: DARK_TEXT_SMALL_COLOR,
         brandColor: BRAND_COLOR,
         background: BACKGROUND_COLOR_0,
@@ -307,6 +309,7 @@ export const lightTheme: Partial<Theme> & { custom: { colors: CustomColors } } =
     components: lightComponentOverrides,
     custom: {
       colors: {
+        blue: "blue",
         smallTextColor: LIGHT_TEXT_SMALL_COLOR,
         brandColor: LIGHT_BRAND_COLOR,
         backgroundBackdrop: LIGHT_BACKGROUND_BACKDROP_COLOR,
