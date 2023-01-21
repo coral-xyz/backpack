@@ -138,7 +138,7 @@ export const getNftCollectionGroups = (uuid: string) => {
 };
 
 function getAllUserIdsInMessage(message) {
-  const userIds = [];
+  const userIds: string[] = [];
   for (let i = 0; i < message.length; i++) {
     if (message[i] === "<" && message[i + 1] === "@") {
       while (i < message.length && message[i] !== "|") {
