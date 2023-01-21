@@ -158,7 +158,7 @@ function SettingsList() {
 
   const aboutList = [
     {
-      label: "About backpack",
+      label: "About Backpack",
       onClick: () => nav.push("about-backpack"),
       icon: null,
       detailIcon: <PushDetail />,
