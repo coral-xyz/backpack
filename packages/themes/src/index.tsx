@@ -147,6 +147,15 @@ const darkComponentOverrides = {
       },
     },
   },
+  MuiButtonBase: {
+    styleOverrides: {
+      root: {
+        "&:hover": {
+          opacity: HOVER_OPACITY,
+        },
+      },
+    },
+  },
   MuiIconButton: {
     styleOverrides: {
       root: {
