@@ -430,7 +430,7 @@ export const SendMessage = () => {
               </div>
             )}
           </>
-          <MessageInput inputRef={inputRef} />
+          <MessageInput setEmojiMenuOpen={setEmojiMenuOpen} />
         </div>
       </div>
     </MessageInputProvider>

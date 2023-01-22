@@ -5,13 +5,22 @@ import { useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { CircularProgress } from "@mui/material";
 
-export function MessageInput({ inputRef }: { inputRef: any }) {
+import { useChatContext } from "../ChatContext";
+
+export function MessageInput({ setEmojiMenuOpen }: { setEmojiMenuOpen: any }) {
   const defaultValue = "";
   const theme = useCustomTheme();
+  const { type, remoteUsername } = useChatContext();
 
   return (
-    <div style={{ width: "100%" }}>
+    <div style={{ width: "100%", padding: 7 }}>
       <RichMentionsInput
+        onClick={() => setEmojiMenuOpen(false)}
+        placeholder={
+          type === "individual"
+            ? `Message @${remoteUsername}`
+            : "Your message ..."
+        }
         style={{
           outline: "0px solid transparent",
           marginTop: 2,
@@ -29,16 +38,8 @@ export const CustomAutoComplete = ({
   offlineMembers: { username: string; uuid: string; image: string }[];
 }) => {
   const theme = useCustomTheme();
-  const {
-    opened,
-    index,
-    loading,
-    results,
-    activeSearch,
-    setActiveItemIndex,
-    selectItem,
-    setPositionFixed,
-  } = useContext(RichMentionsContext);
+  const { loading, results, activeSearch, selectItem } =
+    useContext(RichMentionsContext);
 
   const { uuid } = useUser();
   const users = useUsersFromUuids(
@@ -57,7 +58,7 @@ export const CustomAutoComplete = ({
               <button
                 style={{
                   display: "flex",
-                  padding: 5,
+                  padding: 8,
                   cursor: "pointer",
                   width: "100%",
                   background: theme.custom.colors.background,
@@ -76,10 +77,10 @@ export const CustomAutoComplete = ({
                 }}
               >
                 <img
-                  style={{ height: 16, borderRadius: 8, marginRight: 5 }}
+                  style={{ height: 20, borderRadius: 10, marginRight: 5 }}
                   src={item.image}
                 />
-                <div style={{ marginBottom: 3 }}>{item.username}</div>
+                <div style={{ fontSize: 15 }}>{item.username}</div>
               </button>
             ))}
         </div>
@@ -90,7 +91,7 @@ export const CustomAutoComplete = ({
         .map((item, i) => (
           <button
             style={{
-              padding: 5,
+              padding: 8,
               display: "flex",
               cursor: "pointer",
               width: "100%",
@@ -106,10 +107,10 @@ export const CustomAutoComplete = ({
             }}
           >
             <img
-              style={{ height: 16, borderRadius: 8, marginRight: 5 }}
+              style={{ height: 20, borderRadius: 10, marginRight: 5 }}
               src={users.find((x) => x?.uuid === item.id)?.image}
             />
-            <div style={{ marginBottom: 3 }}>{item.name}</div>
+            <div style={{ fontSize: 15 }}>{item.name}</div>
           </button>
         ))}
       {activeSearch !== "" &&
@@ -117,7 +118,12 @@ export const CustomAutoComplete = ({
       activeSearch.length !== 0 &&
       loading ? (
         <div
-          style={{ display: "flex", justifyContent: "center", marginBottom: 3 }}
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginBottom: 3,
+            marginTop: 3,
+          }}
         >
           {" "}
           <CircularProgress size={20} />{" "}

@@ -182,7 +182,7 @@ function MessageNativeInner() {
             isDarkMode={isDarkMode}
             userId={props.userId}
             uuid={uuid}
-            username={username}
+            username={props.username}
           />
         }
       />
