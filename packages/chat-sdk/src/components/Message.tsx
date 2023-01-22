@@ -22,9 +22,9 @@ import { Gif as GifComponent } from "@giphy/react-components";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CallMadeIcon from "@mui/icons-material/CallMade";
 import { Skeleton } from "@mui/material";
-import Button from "@mui/material/Button";
 import { createStyles, makeStyles } from "@mui/styles";
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
+import Linkify from "linkify-react";
 
 import {
   cancel,
@@ -360,7 +360,11 @@ function ParsedMessage({ message }) {
     <div style={{ display: "flex" }}>
       {parts.map((part) => {
         if (part.type === "text") {
-          return <>{part.value}</>;
+          return (
+            <span style={{ wordBreak: "break-word" }}>
+              <Linkify options={{ target: "_blank" }}>{part.value}</Linkify>
+            </span>
+          );
         } else {
           const user = users.find((x) => x?.uuid === part.value);
           if (user) {

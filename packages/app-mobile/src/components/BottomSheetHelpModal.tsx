@@ -69,12 +69,12 @@ export function BottomSheetHelpModal({
     }
 
     handle();
-  }, [isVisible]);
+  }, [isVisible, resetVisibility]);
 
   const modalHeight = extraOptions.length
     ? 240 + extraOptions.length * 48
     : 240;
-  const snapPoints = useMemo(() => [modalHeight], []);
+  const snapPoints = useMemo(() => [modalHeight], [modalHeight]);
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
       <BottomSheetBackdrop

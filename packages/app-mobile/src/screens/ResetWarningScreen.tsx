@@ -11,7 +11,7 @@ import {
 } from "@components";
 import {
   UI_RPC_METHOD_KEYRING_RESET,
-  UI_RPC_METHOD_USER_LOGOUT,
+  UI_RPC_METHOD_USER_ACCOUNT_LOGOUT,
 } from "@coral-xyz/common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { useNavigation } from "@react-navigation/native";
@@ -29,7 +29,7 @@ export function LogoutWarningScreen({ navigation }): JSX.Element {
       subtext="This will remove all the wallets you have created or imported. Make sure you have your existing secret recovery phrase and private keys saved."
       onNext={async () => {
         await background.request({
-          method: UI_RPC_METHOD_USER_LOGOUT,
+          method: UI_RPC_METHOD_USER_ACCOUNT_LOGOUT,
           params: [user.uuid],
         });
       }}

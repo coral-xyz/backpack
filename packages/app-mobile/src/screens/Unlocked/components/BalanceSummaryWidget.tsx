@@ -111,12 +111,4 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVeritcal: 2,
   },
-  positive: {
-    fontSize: 12,
-    lineHeight: 24,
-  },
-  negative: {
-    fontSize: 12,
-    lineHeight: 24,
-  },
 });

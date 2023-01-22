@@ -32,6 +32,7 @@ export const Onboarding = ({
   );
   const keyringStoreState = useKeyringStoreState();
   const isOnboarded =
+    !isAddingAccount &&
     useKeyringStoreState() !== KeyringStoreStateEnum.NeedsOnboarding;
 
   const defaultProps = {

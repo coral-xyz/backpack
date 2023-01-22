@@ -1,18 +1,13 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import {
-  BACKEND_API_URL,
-  getAddMessage,
   UI_RPC_METHOD_KEYRING_KEY_DELETE,
-  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
+  UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_CREATE,
 } from "@coral-xyz/common";
 import { Loading } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
-import { ethers } from "ethers";
 
 import { useAuthentication } from "../../hooks/useAuthentication";
-
-const { base58 } = ethers.utils;
 
 export function WithSyncAccount({
   serverPublicKeys,
@@ -68,48 +63,18 @@ export function WithSyncAccount({
           } else {
             // Sync all transparently signable public keys by adding them
             // to the server
-            addPublicKeyToAccount(
-              danglingPublicKey.blockchain,
-              danglingPublicKey.publicKey
-            );
+            background.request({
+              method: UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_CREATE,
+              params: [
+                danglingPublicKey.blockchain,
+                danglingPublicKey.publicKey,
+              ],
+            });
           }
         }
       }
     })();
   }, [clientPublicKeys]);
-
-  // Add a public key to a Backpack account
-  const addPublicKeyToAccount = async (
-    blockchain: Blockchain,
-    publicKey: string,
-    signature?: string
-  ) => {
-    if (!signature) {
-      const signature = await background.request({
-        method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-        params: [
-          blockchain,
-          base58.encode(Buffer.from(getAddMessage(publicKey), "utf-8")),
-          publicKey,
-        ],
-      });
-
-      const response = await fetch(`${BACKEND_API_URL}/users/publicKeys`, {
-        method: "POST",
-        body: JSON.stringify({
-          blockchain,
-          signature,
-          publicKey,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) {
-        throw new Error((await response.json()).msg);
-      }
-    }
-  };
 
   return loading ? <Loading /> : children;
 }

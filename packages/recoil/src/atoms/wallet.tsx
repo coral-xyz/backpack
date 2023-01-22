@@ -4,7 +4,7 @@ import {
 } from "@coral-xyz/common";
 import { atom, selector, selectorFamily } from "recoil";
 
-import type { WalletPublicKeys } from "../types";
+import type { ServerPublicKey, WalletPublicKeys } from "../types";
 
 import { backgroundClient } from "./client";
 import { isAggregateWallets } from "./preferences";
@@ -52,7 +52,9 @@ export const activeBlockchain = selector<Blockchain>({
   },
 });
 
-// All wallets enabled in the wallet. Not necessarily shown by the UI.
+// All wallets enabled in the wallet. The assets for each wallet may or may
+// not be displayed in the balance view depending on the aggregate wallets
+// setting.
 export const allWallets = selector<
   Array<{
     name: string;
@@ -63,23 +65,13 @@ export const allWallets = selector<
 >({
   key: "allWallets",
   get: ({ get }) => {
-    const _enabledBlockchains = get(enabledBlockchains);
-    let wallets: Array<any> = [];
-
-    if (_enabledBlockchains.includes(Blockchain.SOLANA)) {
-      const solanaWallets = get(allWalletsPerBlockchain(Blockchain.SOLANA));
-      wallets = wallets.concat(solanaWallets);
-    }
-    if (_enabledBlockchains.includes(Blockchain.ETHEREUM)) {
-      const ethereumWallets = get(allWalletsPerBlockchain(Blockchain.ETHEREUM));
-      wallets = wallets.concat(ethereumWallets);
-    }
-
-    return wallets;
+    return get(enabledBlockchains)
+      .map((b) => get(allWalletsPerBlockchain(b as Blockchain)))
+      .flat();
   },
 });
 
-// All wallets to display in the UI at any given time.
+// All wallets displayed in the balance view.
 export const allWalletsDisplayed = selector<
   Array<{
     name: string;
@@ -188,6 +180,30 @@ export const walletPublicKeys = selector<WalletPublicKeys>({
   get: ({ get }) => {
     const data = get(walletPublicKeyData);
     return data.publicKeys;
+  },
+});
+
+/**
+ * List of public keys that exist on the Backpack API for the current account
+ */
+export const serverPublicKeys = atom<Array<ServerPublicKey>>({
+  key: "serverPublicKeys",
+  default: [],
+});
+
+/**
+ * List of public keys that exist on the Backpack API that there is not a corresponding
+ * local wallet/signing mechanism for, e.g. no private key.
+ */
+export const dehydratedWallets = selector<Array<ServerPublicKey>>({
+  key: "dehydratedWallets",
+  get: ({ get }) => {
+    return get(serverPublicKeys).filter(
+      (s) =>
+        !get(allWallets).find(
+          (a) => a.blockchain === s.blockchain && a.publicKey === s.publicKey
+        )
+    );
   },
 });
 

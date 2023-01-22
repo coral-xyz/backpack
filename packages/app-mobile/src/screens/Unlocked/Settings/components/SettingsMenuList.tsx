@@ -1,4 +1,3 @@
-
 import type { StyleProp, TextStyle, ViewStyle } from "react-native";
 import { StyleSheet, Text, View } from "react-native";
 

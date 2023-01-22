@@ -8,7 +8,7 @@ export const HOVER_OPACITY = 0.8;
 
 export const TEXT_COLOR = "#fff";
 const BACKGROUND_COLOR_0 = "#18181b";
-const BACKGROUND_BACKDROP_COLOR = BACKGROUND_COLOR_0;
+export const BACKGROUND_BACKDROP_COLOR = BACKGROUND_COLOR_0;
 export const BACKGROUND_COLOR_1 = "#27272a";
 const BACKGROUND_COLOR_2 = "#3F3F46";
 const FONT_COLOR = "#FFFFFF";
@@ -29,7 +29,7 @@ const NEGATIVE_LIGHT = "#FFF4F3";
 const NEGATIVE_DARK = "#FFF4F3";
 
 export const LIGHT_TEXT_COLOR = FONT_COLOR_1;
-const LIGHT_BACKGROUND_BACKDROP_COLOR =
+export const LIGHT_BACKGROUND_BACKDROP_COLOR =
   "linear-gradient(180deg, #F8F8F9 0%, #F0F0F2 100%), #FFFFFF";
 const LIGHT_BACKGROUND_COLOR_0 = "#F0F0F2";
 export const LIGHT_BACKGROUND_COLOR_1 = "#ffffff";
@@ -118,6 +118,7 @@ type CustomColors = {
   unreadBackground: string;
   invertedPrimary: string;
   invertedSecondary: string;
+  avatarPopoverMenuBackground: string;
 };
 
 const baseTheme = createStyles({
@@ -147,7 +148,7 @@ const darkComponentOverrides = {
       },
     },
   },
-  MuiListItem: {
+  MuiButtonBase: {
     styleOverrides: {
       root: {
         "&:hover": {
@@ -253,6 +254,7 @@ export const darkTheme: Partial<Theme> & { custom: { colors: CustomColors } } =
         unreadBackground: LIGHT_UNREAD_BACKGROUND,
         invertedPrimary: "#FFFFFF",
         invertedSecondary: LIGHT_BACKGROUND_COLOR_0,
+        avatarPopoverMenuBackground: BACKGROUND_COLOR_0,
       },
     },
   };
@@ -269,7 +271,7 @@ const lightComponentOverrides = {
   },
   MuiListItem: {
     styleOverrides: {
-      root: {
+      button: {
         "&:hover": {
           background: "#F8F8F9 !important",
         },
@@ -376,6 +378,7 @@ export const lightTheme: Partial<Theme> & { custom: { colors: CustomColors } } =
         unreadBackground: DARK_UNREAD_BACKGROUND,
         invertedPrimary: "#212121",
         invertedSecondary: "rgba(255, 255, 255, 0.1)",
+        avatarPopoverMenuBackground: LIGHT_BACKGROUND_COLOR_1,
       },
     },
   };

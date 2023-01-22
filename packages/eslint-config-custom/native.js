@@ -58,7 +58,12 @@ module.exports = {
     "@peterpme/react-native/split-platform-components": "warn",
     // "react-native/no-inline-styles": "warn",
     // "react-native/no-color-literals": "warn",
-    "@peterpme/react-native/no-raw-text": "warn",
+    "@peterpme/react-native/no-raw-text": [
+      "warn",
+      {
+        skip: ["SubtextParagraph"],
+      },
+    ],
     // "react-native/no-single-element-style-arrays": "warn",
   },
 };

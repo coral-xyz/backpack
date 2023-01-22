@@ -274,7 +274,7 @@ export function SubtextParagraph({
   style,
   onPress,
 }: {
-  children: JSX.Element;
+  children: string;
   style?: StyleProp<TextStyle>;
   onPress?: () => void;
 }) {
@@ -515,7 +515,6 @@ export function Debug({ data }: any): JSX.Element {
       <Text
         style={{
           color: theme.custom.colors.fontColor,
-          fontFamily: "monospace",
         }}
       >
         {JSON.stringify(data, null, 2)}
@@ -818,7 +817,7 @@ export function RoundedContainerGroup({
   disableBottomRadius = false,
 }: {
   children: JSX.Element;
-  style: StyleProp<ViewStyle>;
+  style?: StyleProp<ViewStyle>;
   disableTopRadius?: boolean;
   disableBottomRadius?: boolean;
 }): JSX.Element {

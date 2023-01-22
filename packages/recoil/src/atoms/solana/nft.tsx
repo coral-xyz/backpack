@@ -34,9 +34,12 @@ export const solanaWalletCollections = selectorFamily<
       const metadataMap = get(solanaMetadataMap({ publicKey }));
       const { publicKey: pk, collections } =
         intoSolanaCollectionsMap(metadataMap);
+      let sortedCollections = Object.values(collections).sort((a, b) =>
+        a.id.localeCompare(b.id)
+      );
       return {
         publicKey: pk,
-        collections: Object.values(collections),
+        collections: sortedCollections,
       };
     },
 });

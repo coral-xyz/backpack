@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import {
   UI_RPC_METHOD_KEYRING_RESET,
-  UI_RPC_METHOD_USER_LOGOUT,
+  UI_RPC_METHOD_USER_ACCOUNT_LOGOUT,
 } from "@coral-xyz/common";
 import {
   DangerButton,
@@ -35,7 +35,7 @@ export function Logout() {
       }
       onNext={async () => {
         await background.request({
-          method: UI_RPC_METHOD_USER_LOGOUT,
+          method: UI_RPC_METHOD_USER_ACCOUNT_LOGOUT,
           params: [user.uuid],
         });
         close();

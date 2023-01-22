@@ -124,8 +124,8 @@ export function NftsDetail({
       <Description nft={nft} />
       <SendButton nft={nft} />
       {whitelistedChatCollectionId && (
-        <PrimaryButton
-          style={{ marginBottom: 10 }}
+        <SecondaryButton
+          style={{ marginTop: 12 }}
           disabled={chatJoined || joiningChat}
           label={joiningChat ? "Joining" : chatJoined ? "Joined" : "Join chat"}
           onClick={async () => {
@@ -226,7 +226,6 @@ function SendButton({ nft }: { nft: any }) {
     <>
       <PrimaryButton
         style={{
-          marginBottom: "24px",
           marginTop: "24px",
         }}
         onClick={() => send()}
@@ -373,7 +372,11 @@ function Attributes({ nft }: { nft: any }) {
   const theme = useCustomTheme();
 
   return (
-    <div>
+    <div
+      style={{
+        marginTop: 24,
+      }}
+    >
       <Typography style={{ color: theme.custom.colors.secondary }}>
         Attributes
       </Typography>

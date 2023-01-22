@@ -66,6 +66,13 @@ router.get("/bulk", extractUserId, async (req, res) => {
   // @ts-ignore
   const userId: string = req.id;
 
+  //@ts-ignore
+  const userSpecifiedId: string = req.query.uuid;
+
+  if (userId !== userSpecifiedId) {
+    return res.json({ collections: [] });
+  }
+
   // TODO: optimise this
   const allCollections = await getAllCollectionsFor(userId);
   DEFAULT_GROUP_CHATS.forEach(({ id }: { id: string }) =>

@@ -66,14 +66,18 @@ export function WalletListItem({
   blockchain: Blockchain;
   name: string;
   publicKey: string;
-  type: string;
+  type?: string;
   icon?: JSX.Element | null;
-  onPress: (blockchain: Blockchain, wallet: Wallet) => void;
+  onPress?: (blockchain: Blockchain, wallet: Wallet) => void;
 }): JSX.Element {
   const theme = useTheme();
   return (
     <Pressable
-      onPress={() => onPress(blockchain, { name, publicKey, type })}
+      onPress={() => {
+        if (onPress && type) {
+          onPress(blockchain, { name, publicKey, type });
+        }
+      }}
       style={[
         styles.listItem,
         {

@@ -15,16 +15,15 @@ export class Signaling extends EventEmitter {
   private bufferedMessages: ToServer[] = [];
   private state: "connected" | "disconnected" = "disconnected";
 
-  constructor(uuid: string) {
+  constructor(uuid: string, jwt: string) {
     super();
     this.uuid = uuid;
+    this.jwt = jwt;
     this.initWs();
   }
 
   async initWs() {
     try {
-      const res = await fetch(`${REALTIME_API_URL}/cookie`);
-      this.jwt = (await res.json()).jwt;
       const ws = new WebSocket(`${SERVER_URL}?jwt=${this.jwt}`);
       ws.addEventListener("open", () => {
         this.state = "connected";

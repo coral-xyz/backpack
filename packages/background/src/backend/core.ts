@@ -51,6 +51,9 @@ import {
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
+  NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_CREATED,
+  NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_DELETED,
+  NOTIFICATION_USER_ACCOUNT_PUBLIC_KEYS_UPDATED,
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
   SolanaCluster,
   SolanaExplorer,
@@ -83,9 +86,6 @@ import type { SolanaConnectionBackend } from "./solana-connection";
 import type { Nav, User } from "./store";
 import * as store from "./store";
 import { getWalletDataForUser, setUser, setWalletDataForUser } from "./store";
-
-// TODO move type to common
-type NamedPublicKeys = Array<{ name: string; publicKey: string }>;
 
 const { base58: bs58 } = ethers.utils;
 
@@ -652,61 +652,6 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  async userLogout(uuid: string): Promise<string> {
-    // Clear the jwt cookie if it exists. Don't block.
-    fetch(`${BACKEND_API_URL}/authenticate`, {
-      method: "DELETE",
-    });
-
-    //
-    // If we're logging out the last user, reset the entire app.
-    //
-    const data = await store.getUserData();
-    if (data.users.length === 1) {
-      this.keyringReset();
-      return SUCCESS_RESPONSE;
-    }
-
-    //
-    // If we have more users available, just remove the user.
-    //
-    const isNewActiveUser = await this.keyringStore.removeUser(uuid);
-
-    //
-    // If the user changed, notify the UI.
-    //
-    if (isNewActiveUser) {
-      const user = await this.userRead();
-      const walletData = await this.keyringStoreReadAllPubkeyData();
-      const preferences = await this.preferencesRead(uuid);
-      const xnftPreferences = await this.getXnftPreferences();
-      const blockchainKeyrings = await this.blockchainKeyringsRead();
-
-      this.events.emit(BACKEND_EVENT, {
-        name: NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED,
-        data: {
-          user,
-          walletData,
-          preferences,
-          xnftPreferences,
-          blockchainKeyrings,
-        },
-      });
-    }
-
-    //
-    // Notify the UI about the removal.
-    //
-    this.events.emit(BACKEND_EVENT, {
-      name: NOTIFICATION_KEYRING_STORE_REMOVED_USER,
-    });
-
-    //
-    // Done.
-    //
-    return SUCCESS_RESPONSE;
-  }
-
   async keyringStoreCheckPassword(password: string): Promise<boolean> {
     return await this.keyringStore.checkPassword(password);
   }
@@ -895,7 +840,7 @@ export class Backend {
 
     if (jwtEnabled) {
       try {
-        await this._addPublicKeyToAccount(blockchain, publicKey);
+        await this.userAccountPublicKeyCreate(blockchain, publicKey);
       } catch (error) {
         // Something went wrong persisting to server, roll back changes to the
         // keyring. This is not a complete rollback of state changes, because
@@ -972,7 +917,7 @@ export class Backend {
     }
 
     if (jwtEnabled) {
-      await this._removePublicKeyFromAccount(blockchain, publicKey);
+      await this.userAccountPublicKeyDelete(blockchain, publicKey);
     }
 
     let removeKeyring = false;
@@ -1098,7 +1043,7 @@ export class Backend {
 
     if (jwtEnabled) {
       try {
-        await this._addPublicKeyToAccount(blockchain, publicKey);
+        await this.userAccountPublicKeyCreate(blockchain, publicKey);
       } catch (error) {
         // Something went wrong persisting to server, roll back changes to the
         // keyring.
@@ -1175,7 +1120,7 @@ export class Backend {
     );
     if (jwtEnabled) {
       try {
-        await this._addPublicKeyToAccount(blockchain, publicKey, signature);
+        await this.userAccountPublicKeyCreate(blockchain, publicKey, signature);
       } catch (error) {
         // Something went wrong persisting to server, roll back changes to the
         // keyring.
@@ -1217,9 +1162,9 @@ export class Backend {
   }
 
   /**
-   * Helper method to add a public key to a Backpack account via the Backpack API.
+   * Add a public key to a Backpack account via the Backpack API.
    */
-  async _addPublicKeyToAccount(
+  async userAccountPublicKeyCreate(
     blockchain: Blockchain,
     publicKey: string,
     signature?: string
@@ -1245,15 +1190,23 @@ export class Backend {
       },
     });
 
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_CREATED,
+      data: {
+        blockchain,
+        publicKey,
+      },
+    });
+
     if (!response.ok) {
       throw new Error((await response.json()).msg);
     }
   }
 
   /**
-   * Helper method to add remove a public key from a Backpack account via the Backpack API.
+   * Remove a public key from a Backpack account via the Backpack API.
    */
-  async _removePublicKeyFromAccount(blockchain: Blockchain, publicKey: string) {
+  async userAccountPublicKeyDelete(blockchain: Blockchain, publicKey: string) {
     // Remove the key from the server
     const response = await fetch(`${BACKEND_API_URL}/users/publicKeys`, {
       method: "DELETE",
@@ -1269,6 +1222,128 @@ export class Backend {
     if (!response.ok) {
       throw new Error("could not remove public key");
     }
+
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_DELETED,
+      data: {
+        blockchain,
+        publicKey,
+      },
+    });
+
+    return SUCCESS_RESPONSE;
+  }
+
+  /**
+   * Attempt to authenticate a Backpack account using the Backpack API.
+   */
+  async userAccountAuth(
+    blockchain: Blockchain,
+    publicKey: string,
+    message: string,
+    signature: string
+  ) {
+    const response = await fetch(`${BACKEND_API_URL}/authenticate`, {
+      method: "POST",
+      body: JSON.stringify({
+        blockchain,
+        publicKey,
+        message: bs58.encode(Buffer.from(message, "utf-8")),
+        signature,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (response.status !== 200) throw new Error(`could not authenticate`);
+    return await response.json();
+  }
+
+  /**
+   * Logout a Backpack account using the Backpack API.
+   */
+  async userAccountLogout(uuid: string): Promise<string> {
+    // Clear the jwt cookie if it exists. Don't block.
+    fetch(`${BACKEND_API_URL}/authenticate`, {
+      method: "DELETE",
+    });
+
+    //
+    // If we're logging out the last user, reset the entire app.
+    //
+    const data = await store.getUserData();
+    if (data.users.length === 1) {
+      this.keyringReset();
+      return SUCCESS_RESPONSE;
+    }
+
+    //
+    // If we have more users available, just remove the user.
+    //
+    const isNewActiveUser = await this.keyringStore.removeUser(uuid);
+
+    //
+    // If the user changed, notify the UI.
+    //
+    if (isNewActiveUser) {
+      const user = await this.userRead();
+      const walletData = await this.keyringStoreReadAllPubkeyData();
+      const preferences = await this.preferencesRead(uuid);
+      const xnftPreferences = await this.getXnftPreferences();
+      const blockchainKeyrings = await this.blockchainKeyringsRead();
+
+      this.events.emit(BACKEND_EVENT, {
+        name: NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED,
+        data: {
+          user,
+          walletData,
+          preferences,
+          xnftPreferences,
+          blockchainKeyrings,
+        },
+      });
+    }
+
+    //
+    // Notify the UI about the removal.
+    //
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_KEYRING_STORE_REMOVED_USER,
+    });
+
+    //
+    // Done.
+    //
+    return SUCCESS_RESPONSE;
+  }
+
+  /**
+   * Read a Backpack account from the Backpack API.
+   */
+  async userAccountRead(username: string, jwt: string) {
+    const headers = {
+      "Content-Type": "application/json",
+      ...(jwt ? { Authorization: `Bearer ${jwt}` } : {}),
+    };
+    const response = await fetch(`${BACKEND_API_URL}/users/${username}`, {
+      method: "GET",
+      headers,
+    });
+    if (response.status === 404) {
+      // User does not exist on server, how to handle?
+      throw new Error("user does not exist");
+    } else if (response.status !== 200) {
+      throw new Error(`could not fetch user`);
+    }
+
+    const json = await response.json();
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_USER_ACCOUNT_PUBLIC_KEYS_UPDATED,
+      data: {
+        publicKeys: json.publicKeys,
+      },
+    });
+    return json;
   }
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -1410,7 +1485,11 @@ export class Backend {
     // Add the new public key to the API
     if (jwtEnabled) {
       try {
-        await this._addPublicKeyToAccount(blockchain, newPublicKey, signature);
+        await this.userAccountPublicKeyCreate(
+          blockchain,
+          newPublicKey,
+          signature
+        );
       } catch (error) {
         // Roll back the added blockchain keyring
         await this.keyringStore.blockchainKeyringRemove(blockchain);
