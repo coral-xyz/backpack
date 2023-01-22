@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import type { Blockchain, DerivationPath } from "@coral-xyz/common";
-import { UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY } from "@coral-xyz/common";
+import {
+  toTitleCase,
+  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
+} from "@coral-xyz/common";
 import { HardwareWalletIcon, PrimaryButton } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { Box } from "@mui/material";
@@ -27,24 +30,34 @@ export function HardwareSign({
 }) {
   const background = useBackgroundClient();
   const [signature, setSignature] = useState<string | null>(null);
+  const [requiresBlindSign, setRequiresBlindSign] = useState(false);
 
   useEffect(() => {
     (async () => {
-      const signature = await background.request({
-        method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-        params: [
-          blockchain,
-          encode(Buffer.from(message, "utf-8")),
-          publicKey,
-          {
-            derivationPath,
-            accountIndex,
-          },
-        ],
-      });
-      setSignature(signature);
+      if (!requiresBlindSign) {
+        try {
+          const signature = await background.request({
+            method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
+            params: [
+              blockchain,
+              encode(Buffer.from(message, "utf-8")),
+              publicKey,
+              {
+                derivationPath,
+                accountIndex,
+              },
+            ],
+          });
+          setSignature(signature);
+        } catch (error: unknown) {
+          if (String(error).includes("enabling blind signature")) {
+            setRequiresBlindSign(true);
+          }
+          return;
+        }
+      }
     })();
-  }, []);
+  }, [requiresBlindSign]);
 
   return (
     <Box
@@ -56,9 +69,22 @@ export function HardwareSign({
       }}
     >
       <Box sx={{ margin: "0 24px" }}>
-        <HeaderIcon icon={<HardwareWalletIcon />} />
-        <Header text="Sign the message" />
-        <SubtextParagraph>{text}</SubtextParagraph>
+        {requiresBlindSign ? (
+          <>
+            <HeaderIcon icon={<HardwareWalletIcon />} />
+            <Header text="Enable blind signing" />
+            <SubtextParagraph>
+              Please enable blind signing in the settings of the{" "}
+              {toTitleCase(blockchain)} app on your hardware wallet.
+            </SubtextParagraph>
+          </>
+        ) : (
+          <>
+            <HeaderIcon icon={<HardwareWalletIcon />} />
+            <Header text="Sign the message" />
+            <SubtextParagraph>{text}</SubtextParagraph>
+          </>
+        )}
       </Box>
       <Box
         sx={{
@@ -69,13 +95,22 @@ export function HardwareSign({
           justifyContent: "space-between",
         }}
       >
-        <PrimaryButton
-          label="Next"
-          onClick={() => {
-            onNext(signature!);
-          }}
-          disabled={!signature}
-        />
+        {requiresBlindSign ? (
+          <PrimaryButton
+            label="Retry"
+            onClick={() => {
+              setRequiresBlindSign(false);
+            }}
+          />
+        ) : (
+          <PrimaryButton
+            label="Next"
+            onClick={() => {
+              onNext(signature!);
+            }}
+            disabled={!signature}
+          />
+        )}
       </Box>
     </Box>
   );

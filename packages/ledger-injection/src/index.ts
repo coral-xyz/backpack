@@ -96,7 +96,6 @@ class LedgerInjection {
         };
         window.parent.postMessage(resp, "*");
       } catch (err) {
-        logger.error("error here", err);
         const resp = {
           type: LEDGER_INJECTED_CHANNEL_RESPONSE,
           detail: {
