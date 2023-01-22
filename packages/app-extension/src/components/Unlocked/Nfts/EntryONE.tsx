@@ -68,10 +68,11 @@ const useStyles = styles((theme) => ({
 export default function EntryONE() {
   const [imageLoaded, setImageLoaded] = useState(false);
   const ref = useRef<HTMLImageElement>(null);
-  const isONELive = useIsONELive();
+  //  const isONELive = useIsONELive();
   const classes = useStyles();
   const openPlugin = useOpenPlugin();
 
+  /*
   useLayoutEffect(() => {
     if (!ref.current) {
       return;
@@ -89,8 +90,9 @@ export default function EntryONE() {
       }
     };
   }, []);
+	*/
 
-  const isLoading = false || !imageLoaded || isONELive === "loading";
+  const isLoading = false; //false || !imageLoaded || isONELive === "loading";a
 
   const openXNFT = () => {
     openPlugin("4ekUZj2TKNoyCwnRDstvViCZYkhnhNoWNQpa5bBLwhq4");
@@ -98,9 +100,6 @@ export default function EntryONE() {
 
   return (
     <Card onClick={openXNFT} className={classes.blockchainCard} elevation={0}>
-      <Skeleton
-        className={`${classes.skeleton}  ${!isLoading ? classes.none : ""}`}
-      ></Skeleton>
       <div
         className={`${classes.imageBackground} ${
           isLoading ? classes.hidden : ""
