@@ -19,6 +19,11 @@ export type NavData = {
 
 export async function getNav(): Promise<Nav | undefined> {
   const nav = await LocalStorageDb.get(STORE_KEY_NAV);
+
+  if (!nav) {
+    return nav;
+  }
+
   let needsMigration = false;
 
   if (nav[TAB_NOTIFICATIONS] === undefined) {
