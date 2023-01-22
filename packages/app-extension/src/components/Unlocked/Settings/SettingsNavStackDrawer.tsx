@@ -36,12 +36,12 @@ import {
   ShowRecoveryPhrase,
   ShowRecoveryPhraseWarning,
 } from "./YourAccount/ShowRecoveryPhrase";
+import { AboutBackpack } from "./AboutBackpack";
 import { AddConnectPreview, AddConnectWalletMenu } from "./AddConnectWallet";
 import { Preferences } from "./Preferences";
 import { XnftSettings } from "./Xnfts";
 import { YourAccount } from "./YourAccount";
 import { SettingsMenu } from ".";
-import { AboutBackpack } from "./AboutBackpack";
 
 export function SettingsNavStackDrawer({
   settingsOpen,

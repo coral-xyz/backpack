@@ -11,8 +11,8 @@ export const EmojiPickerComponent = ({
   setEmojiPicker,
   emojiPicker,
   setGifPicker,
-  setMessageContent,
   buttonStyle,
+  inputRef,
 }) => {
   const theme = useCustomTheme();
   const [anchorEl, setAnchorEl] = useState<any | null>(null);
@@ -58,7 +58,11 @@ export const EmojiPickerComponent = ({
           theme={isDarkMode ? Theme.DARK : Theme.LIGHT}
           height={400}
           width={"100%"}
-          onEmojiClick={(e) => setMessageContent((x) => x + e.emoji)}
+          onEmojiClick={(e) => {
+            inputRef.current.setValue(
+              `${inputRef.current.getTransformedValue()} ${e.emoji}`
+            );
+          }}
         />
       </Popover>
     </div>

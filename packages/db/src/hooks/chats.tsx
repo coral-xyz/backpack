@@ -3,6 +3,7 @@ import type {
   EnrichedMessageWithMetadata,
   SubscriptionType,
 } from "@coral-xyz/common";
+import { user } from "@coral-xyz/recoil";
 import { useLiveQuery } from "dexie-react-hooks";
 
 import { refreshUsers } from "../api/users";
@@ -107,6 +108,10 @@ export const useRoomChatsWithMetadata = (
 
   useEffect(() => {
     const userIds = chats?.map((chat) => chat.uuid) || [];
+    chats?.forEach((chat) => {
+      const taggedUserIds = getAllUserIdsInMessage(chat.message);
+      taggedUserIds.forEach((x) => userIds.push(x));
+    });
     const uniqueUserIds = userIds
       .filter((x, index) => userIds.indexOf(x) === index)
       .filter((x) => x);
@@ -131,3 +136,25 @@ export const getNftCollectionGroups = (uuid: string) => {
 
   return groups;
 };
+
+function getAllUserIdsInMessage(message) {
+  const userIds: string[] = [];
+  for (let i = 0; i < message.length; i++) {
+    if (message[i] === "<" && message[i + 1] === "@") {
+      while (i < message.length && message[i] !== "|") {
+        i++;
+      }
+      i++;
+      i++;
+      let userId = "";
+      while (i < message.length && message[i] !== ">") {
+        userId += message[i];
+        i++;
+      }
+      if (i !== message.length) {
+        userIds.push(userId);
+      }
+    }
+  }
+  return userIds;
+}

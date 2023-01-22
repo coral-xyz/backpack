@@ -11,10 +11,10 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@coral-xyz/common": "*",
     "@coral-xyz/db": "*",
     "@coral-xyz/react-common": "*",
     "@coral-xyz/themes": "*",
-    "@coral-xyz/common": "*",
     "@giphy/js-fetch-api": "^4.4.0",
     "@giphy/react-components": "^6.2.0",
     "@mui/icons-material": "^5.10.14",
@@ -24,6 +24,7 @@
     "graphql-ws": "^5.11.2",
     "react": "^17.0.2",
     "react-custom-scrollbars": "^4.2.1",
+    "react-rich-mentions": "^0.1.10",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

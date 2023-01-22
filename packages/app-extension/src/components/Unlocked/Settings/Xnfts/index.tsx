@@ -1,18 +1,18 @@
 import { useEffect } from "react";
-import { useRecoilValueLoadable } from "recoil";
 import { XNFT_GG_LINK } from "@coral-xyz/common";
 import {
   EmptyState,
+  Loading,
   ProxyImage,
   PushDetail,
-  Loading,
 } from "@coral-xyz/react-common";
 import {
   filteredPlugins,
-  useSolanaConnectionUrl,
   useActiveSolanaWallet,
+  useSolanaConnectionUrl,
 } from "@coral-xyz/recoil";
 import { Apps } from "@mui/icons-material";
+import { useRecoilValueLoadable } from "recoil";
 
 import { useNavStack } from "../../../common/Layout/NavStack";
 import { SettingsList } from "../../../common/Settings/List";
