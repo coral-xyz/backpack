@@ -946,7 +946,15 @@ export class Backend {
       await this.userAccountPublicKeyDelete(blockchain, publicKey);
     }
 
-    await this.keyringStore.keyDelete(blockchain, publicKey);
+    try {
+      await this.keyringStore.keyDelete(blockchain, publicKey);
+    } catch (error) {
+      // Add the public key back, i.e. revert the delete from above
+      if (jwtEnabled) {
+        await this.userAccountPublicKeyCreate(blockchain, publicKey);
+      }
+      throw error;
+    }
 
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_KEY_DELETE,
@@ -958,14 +966,10 @@ export class Backend {
 
     const emptyKeyring =
       Object.values(keyring.publicKeys()).flat().length === 0;
-
     if (emptyKeyring) {
-      // This was the last public key on the keyring, delete the whole
-      // keyring
+      // Keyring has no public keys, remove
       await this.keyringStore.blockchainKeyringRemove(blockchain);
-
       const publicKeyData = await this.keyringStoreReadAllPubkeyData();
-
       this.events.emit(BACKEND_EVENT, {
         name: NOTIFICATION_BLOCKCHAIN_KEYRING_DELETED,
         data: {

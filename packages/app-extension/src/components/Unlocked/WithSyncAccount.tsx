@@ -53,13 +53,18 @@ export function WithSyncAccount({
             // Remove hardware public keys if they are not on the server
             // They can be added again through settings to capture the
             // signature
-            await background.request({
-              method: UI_RPC_METHOD_KEYRING_KEY_DELETE,
-              params: [
-                danglingPublicKey.blockchain,
-                danglingPublicKey.publicKey,
-              ],
-            });
+            try {
+              await background.request({
+                method: UI_RPC_METHOD_KEYRING_KEY_DELETE,
+                params: [
+                  danglingPublicKey.blockchain,
+                  danglingPublicKey.publicKey,
+                ],
+              });
+            } catch {
+              // If the delete fails for some reason, don't error out because
+              // the wallet will not be accessible
+            }
           } else {
             // Sync all transparently signable public keys by adding them
             // to the server
