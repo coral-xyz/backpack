@@ -1,22 +1,53 @@
 import { useEffect } from "react";
+import { useRecoilValueLoadable } from "recoil";
 import { XNFT_GG_LINK } from "@coral-xyz/common";
-import { EmptyState, ProxyImage, PushDetail } from "@coral-xyz/react-common";
-import { useActiveSolanaWallet, useAppIcons } from "@coral-xyz/recoil";
-import { useCustomTheme } from "@coral-xyz/themes";
+import {
+  EmptyState,
+  ProxyImage,
+  PushDetail,
+  Loading,
+} from "@coral-xyz/react-common";
+import {
+  filteredPlugins,
+  useSolanaConnectionUrl,
+  useActiveSolanaWallet,
+} from "@coral-xyz/recoil";
 import { Apps } from "@mui/icons-material";
-import { Typography } from "@mui/material";
 
 import { useNavStack } from "../../../common/Layout/NavStack";
 import { SettingsList } from "../../../common/Settings/List";
 
 export function XnftSettings() {
   const nav = useNavStack();
-  const theme = useCustomTheme();
   // TODO: Aggregate view.
   const { publicKey } = useActiveSolanaWallet();
-  const xnfts = useAppIcons(publicKey);
+  const connectionUrl = useSolanaConnectionUrl();
+  const { contents, state } = useRecoilValueLoadable(
+    filteredPlugins({ publicKey, connectionUrl })
+  );
+
+  useEffect(() => {
+    nav.setTitle("xNFTs");
+  }, [nav.setTitle]);
+
+  if (state !== "hasValue" && state === "loading") {
+    return (
+      <div
+        style={{
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+        }}
+      >
+        <Loading />
+      </div>
+    );
+  }
+
+  const xnfts = contents;
   const settingsMenu = {} as any;
-  xnfts.forEach((xnft) => {
+  xnfts.forEach((xnft: any) => {
     const pubkeyStr = xnft.install.publicKey.toString();
     settingsMenu[pubkeyStr] = {
       label: xnft.title,
@@ -39,10 +70,6 @@ export function XnftSettings() {
     };
   });
 
-  useEffect(() => {
-    nav.setTitle("xNFTs");
-  }, [nav.setTitle]);
-
   return xnfts.length === 0 ? (
     <EmptyState
       icon={(props: any) => <Apps {...props} />}
@@ -61,24 +88,12 @@ export function XnftSettings() {
         marginBottom: "16px",
       }}
     >
-      <>
-        <Typography
-          style={{
-            fontSize: "16px",
-            lineHeight: "24px",
-            marginLeft: "16px",
-            color: theme.custom.colors.fontColor,
-          }}
-        >
-          Installed xNFTs
-        </Typography>
-        <SettingsList
-          menuItems={settingsMenu}
-          style={{
-            marginTop: "12px",
-          }}
-        />
-      </>
+      <SettingsList
+        menuItems={settingsMenu}
+        style={{
+          marginTop: "12px",
+        }}
+      />
     </div>
   );
 }
