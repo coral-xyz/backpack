@@ -2,29 +2,39 @@ import { Fragment, useContext, useEffect, useRef, useState } from "react";
 import { RichMentionsContext, RichMentionsInput } from "react-rich-mentions";
 import { useUsersFromUuids } from "@coral-xyz/db";
 import { useUser } from "@coral-xyz/recoil";
-import { useCustomTheme } from "@coral-xyz/themes";
+import { useCustomTheme, styles } from "@coral-xyz/themes";
 import { CircularProgress } from "@mui/material";
 
 import { useChatContext } from "../ChatContext";
 
+const useStyles = styles((themes) => ({
+  input: {
+    "&:hover": {
+      cursor: "text",
+    },
+  },
+}));
+
 export function MessageInput({ setEmojiMenuOpen }: { setEmojiMenuOpen: any }) {
   const defaultValue = "";
+  const classes = useStyles();
   const theme = useCustomTheme();
   const { type, remoteUsername } = useChatContext();
 
   return (
-    <div style={{ width: "100%", padding: 7 }}>
+    <div style={{ width: "100%", padding: 10 }}>
       <RichMentionsInput
+        className={classes.input}
         onClick={() => setEmojiMenuOpen(false)}
         placeholder={
           type === "individual"
             ? `Message @${remoteUsername}`
-            : "Your message ..."
+            : "Write a message..."
         }
         style={{
           outline: "0px solid transparent",
-          marginTop: 2,
           color: theme.custom.colors.fontColor,
+          fontSize: "15px",
         }}
         defaultValue={defaultValue}
       />

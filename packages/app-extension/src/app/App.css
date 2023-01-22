@@ -64,5 +64,5 @@ body {
 
 [contentEditable="true"]:empty:before {
   content: attr(placeholder);
-  opacity: 0.6;
+  opacity: 0.2;
 }
