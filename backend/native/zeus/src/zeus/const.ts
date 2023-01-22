@@ -470,6 +470,7 @@ export const AllTypesProps: Record<string, any> = {
     _not: "auth_user_nfts_bool_exp",
     _or: "auth_user_nfts_bool_exp",
     blockchain: "String_comparison_exp",
+    centralized_group: "String_comparison_exp",
     collection_id: "String_comparison_exp",
     nft_id: "String_comparison_exp",
     publicKeyByBlockchainPublicKey: "auth_public_keys_bool_exp",
@@ -481,12 +482,14 @@ export const AllTypesProps: Record<string, any> = {
   },
   auth_user_nfts_max_order_by: {
     blockchain: "order_by",
+    centralized_group: "order_by",
     collection_id: "order_by",
     nft_id: "order_by",
     public_key: "order_by",
   },
   auth_user_nfts_min_order_by: {
     blockchain: "order_by",
+    centralized_group: "order_by",
     collection_id: "order_by",
     nft_id: "order_by",
     public_key: "order_by",
@@ -498,6 +501,7 @@ export const AllTypesProps: Record<string, any> = {
   },
   auth_user_nfts_order_by: {
     blockchain: "order_by",
+    centralized_group: "order_by",
     collection_id: "order_by",
     nft_id: "order_by",
     publicKeyByBlockchainPublicKey: "auth_public_keys_order_by",
@@ -1507,6 +1511,7 @@ export const ReturnTypes: Record<string, any> = {
   },
   auth_user_nfts: {
     blockchain: "String",
+    centralized_group: "String",
     collection_id: "String",
     nft_id: "String",
     publicKeyByBlockchainPublicKey: "auth_public_keys",
@@ -1523,12 +1528,14 @@ export const ReturnTypes: Record<string, any> = {
   },
   auth_user_nfts_max_fields: {
     blockchain: "String",
+    centralized_group: "String",
     collection_id: "String",
     nft_id: "String",
     public_key: "String",
   },
   auth_user_nfts_min_fields: {
     blockchain: "String",
+    centralized_group: "String",
     collection_id: "String",
     nft_id: "String",
     public_key: "String",

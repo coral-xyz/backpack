@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import type { RemoteUserData } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import { UserList } from "@coral-xyz/message-sdk";
@@ -50,7 +51,7 @@ export const useStyles = styles((theme) => ({
 
 export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
   const classes = useStyles();
-  const { props }: any = useDecodedSearchParams();
+  const { props, title }: any = useDecodedSearchParams();
   const { publicKey } = useActiveSolanaWallet();
   const [members, setMembers] = useState<RemoteUserData[]>([]);
   const [searchFilter, setSearchFilter] = useState("");
@@ -59,6 +60,7 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
   const [loading, setLoading] = useState(true);
   const [staticMembers, setStaticMembers] = useState<RemoteUserData[]>([]);
   const theme = useCustomTheme();
+  const pathname = useLocation().pathname;
 
   const debouncedInit = (prefix: string, offset: number) => {
     clearTimeout(debouncedTimer);
@@ -71,7 +73,11 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
     setLoading(true);
     setOffset(offset);
     const response = await fetch(
-      `${BACKEND_API_URL}/nft/members?room=${props.collectionId}&mint=${props.nftMint}&publicKey=${publicKey}&type=collection&limit=${LIMIT}&offset=${offset}&prefix=${prefix}`,
+      `${BACKEND_API_URL}/nft/members?room=${
+        pathname === "/messages/groupchat" ? props.id : props.collectionId
+      }&mint=${
+        props.nftMint
+      }&publicKey=${publicKey}&type=collection&limit=${LIMIT}&offset=${offset}&prefix=${prefix}`,
       {
         method: "GET",
       }
@@ -103,10 +109,10 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
       <div className={classes.drawerContainer}>
         <div className={classes.horizontalCenter}>
           <Typography variant={"h5"} className={classes.title}>
-            {props.title}
+            {props.title || title}
           </Typography>
         </div>
-        {count && <MembersList count={count} members={staticMembers} />}
+        {count !== 0 && <MembersList count={count} members={staticMembers} />}
         <SearchBox
           onChange={(prefix: string) => {
             setSearchFilter(prefix);

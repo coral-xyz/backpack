@@ -9,15 +9,17 @@ insert_permissions:
         - collection_id
         - id
         - last_message
+        - last_message_timestamp
         - last_message_uuid
         - type
 select_permissions:
   - role: auth_worker
     permission:
       columns:
-        - id
         - collection_id
+        - id
         - last_message
+        - last_message_timestamp
         - last_message_uuid
         - type
       filter: {}
@@ -25,9 +27,10 @@ update_permissions:
   - role: auth_worker
     permission:
       columns:
-        - id
         - collection_id
+        - id
         - last_message
+        - last_message_timestamp
         - last_message_uuid
         - type
       filter: {}

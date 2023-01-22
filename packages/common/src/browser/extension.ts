@@ -254,9 +254,9 @@ export function openConnectHardware(
   createKeyring = false,
   publicKey?: string
 ) {
-  const url = `${EXPANDED_HTML}?${QUERY_CONNECT_HARDWARE}&blockchain=${blockchain}&create=${createKeyring}${
-    publicKey ? "&publicKey=" + publicKey : ""
-  }`;
+  const url = `${EXPANDED_HTML}?${QUERY_CONNECT_HARDWARE}&blockchain=${blockchain}${
+    createKeyring ? `&create=true` : ``
+  }${publicKey ? "&publicKey=" + publicKey : ""}`;
   BrowserRuntimeExtension.openTab({
     url: chrome.runtime.getURL(url),
   });

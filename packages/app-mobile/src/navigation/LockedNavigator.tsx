@@ -75,12 +75,6 @@ interface FormData {
   password: string;
 }
 
-// function later(delay: number) {
-//   return new Promise(function (resolve) {
-//     setTimeout(resolve, delay);
-//   });
-// }
-
 export function LockedScreen(): JSX.Element {
   const background = useBackgroundClient();
   const user = useUser(); // TODO look into why this breaks
@@ -89,24 +83,14 @@ export function LockedScreen(): JSX.Element {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { control, handleSubmit, formState, setError } = useForm<FormData>();
 
+  console.log("user", user);
+
   const onSubmit = async ({ password }: FormData) => {
     try {
       await background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
         params: [password, user.uuid, user.username],
       });
-
-      // await later(300);
-      //
-      // await background.request({
-      //   method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
-      //   params: [],
-      // });
-      //
-      // await background.request({
-      //   method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-      //   params: [password, user.uuid, user.username],
-      // });
     } catch (error: any) {
       setError("password", { message: error });
     }

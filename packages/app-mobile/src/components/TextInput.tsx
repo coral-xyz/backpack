@@ -1,4 +1,3 @@
-
 import type { Control } from "react-hook-form";
 
 import React from "react";

@@ -3,7 +3,7 @@ import {
   openAddUserAccount,
   UI_RPC_METHOD_ACTIVE_USER_UPDATE,
 } from "@coral-xyz/common";
-import { ListItem,ProxyImage } from "@coral-xyz/react-common";
+import { ListItem, ProxyImage } from "@coral-xyz/react-common";
 import {
   useAllUsers,
   useAvatarUrl,
@@ -195,7 +195,10 @@ function UserAccountListItem({
             }}
           >
             <Check
-              style={{ opacity: 0.8, color: theme.custom.colors.fontColor }}
+              style={{
+                opacity: 0.8,
+                color: theme.custom.colors.fontColor,
+              }}
             />
           </div>
         )}

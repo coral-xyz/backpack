@@ -198,8 +198,17 @@ export const UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE =
 export const UI_RPC_METHOD_ACTIVE_USER_UPDATE =
   "ui-rpc-method-active-user-update";
 export const UI_RPC_METHOD_USER_JWT_UPDATE = "ui-rpc-method-user-jwt-update";
-export const UI_RPC_METHOD_USER_LOGOUT = "ui-rpc-method-user-logout";
 export const UI_RPC_METHOD_PREFERENCES_READ = "ui-rpc-method-references-read";
+// User account methods that interact with the API
+export const UI_RPC_METHOD_USER_ACCOUNT_AUTH =
+  "ui-rpc-method-user-account-auth";
+export const UI_RPC_METHOD_USER_ACCOUNT_LOGOUT = "ui-rpc-method-user-logout";
+export const UI_RPC_METHOD_USER_ACCOUNT_READ =
+  "ui-rpc-method-user-account-read";
+export const UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_CREATE =
+  "ui-rpc-method-user-account-add-public-create";
+export const UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_DELETE =
+  "ui-rpc-method-user-account-remove-public-delete";
 // Solana
 export const UI_RPC_METHOD_SOLANA_COMMITMENT_READ =
   "ui-rpc-method-solana-commitment-read";
@@ -326,6 +335,12 @@ export const NOTIFICATION_SOLANA_EXPLORER_UPDATED =
   "notification-solana-explorer-updated";
 export const NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE =
   "notification-solana-spl-tokens-did-update";
+export const NOTIFICATION_USER_ACCOUNT_PUBLIC_KEYS_UPDATED =
+  "notification-user-account-public-keys-updated";
+export const NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_CREATED =
+  "notification-user-account-public-key-created";
+export const NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_DELETED =
+  "notification-user-account-public-key-deleted";
 
 //
 // Ethereum web injected provider API.
@@ -534,6 +549,8 @@ export const DISCORD_INVITE_LINK = "https://discord.gg/RhKxgS8SaD";
 export const TWITTER_LINK = "https://twitter.com/xNFT_Backpack";
 export const XNFT_GG_LINK = "https://xnft.gg";
 export const BACKPACK_LINK = "https://backpack.app";
+export const BACKPACK_TERMS_OF_SERVICE = "https://backpack.app/terms";
+export const BACKPACK_GITHUB_LINK = "https://github.com/coral-xyz/backpack";
 
 export const ALCHEMY_ETHEREUM_MAINNET_API_KEY =
   "DlJr6QuBC2EaE-L60-iqQQGq9hi9-XSZ";
@@ -560,5 +577,37 @@ export const DEFAULT_GROUP_CHATS: {
     name: "Backpack",
     image:
       "https://user-images.githubusercontent.com/321395/206757416-a80e662a-0ccc-41cc-a20f-ff397755d47f.png",
+  },
+];
+
+export const WHITELISTED_CHAT_COLLECTIONS: {
+  id: string;
+  name: string;
+  image: string;
+  collectionId: string;
+  attributeMapping?: { [key: string]: string };
+}[] = [
+  {
+    id: "nouns",
+    name: "Y00ts + Nouns",
+    image: "https://metadata.y00ts.com/y/12189.png",
+    collectionId: "4mKSoDDqApmF1DqXvVTSL6tu2zixrSSNjqMxUnwvVzy2",
+    attributeMapping: {
+      Eyewear: "Nouns",
+    },
+  },
+  {
+    id: "nokiamon",
+    name: "Nokiamon",
+    image:
+      "https://files.slack.com/files-pri/T0353BWC561-F04KG1AKQ4D/logo-baku.png",
+    collectionId: "3YysdoK6ZcJFEL5QJxccY3q8AcTUFpahgbp4HFgBtjNF",
+  },
+  {
+    id: "bonkz",
+    name: "BONKz",
+    image:
+      "https://bafybeiecuemcqxzuv4ti4sgffjlwvrqedr7golppwrbbu2u5yttglath3m.ipfs.nftstorage.link/0.png",
+    collectionId: "ajM4QBHtZBBRcMqqq9gawdHK28GXcb2yeRs6WBnqhay",
   },
 ];

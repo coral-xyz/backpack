@@ -93,8 +93,12 @@ import {
   UI_RPC_METHOD_SOLANA_SIGN_MESSAGE,
   UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION,
   UI_RPC_METHOD_SOLANA_SIMULATE,
+  UI_RPC_METHOD_USER_ACCOUNT_AUTH,
+  UI_RPC_METHOD_USER_ACCOUNT_LOGOUT,
+  UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_CREATE,
+  UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_DELETE,
+  UI_RPC_METHOD_USER_ACCOUNT_READ,
   UI_RPC_METHOD_USER_JWT_UPDATE,
-  UI_RPC_METHOD_USER_LOGOUT,
   UI_RPC_METHOD_USER_READ,
   UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
   withContextPort,
@@ -331,9 +335,24 @@ async function handle<T = any>(
       const response = await handleActiveUserUpdate(ctx, ...params);
       ctx.backend.keyringStoreAutoLockReset();
       return response;
-    case UI_RPC_METHOD_USER_LOGOUT:
+    //
+    // User Backpack account remote calls.
+    //
+    case UI_RPC_METHOD_USER_ACCOUNT_AUTH:
       // @ts-ignore
-      return await handleUserLogout(ctx, ...params);
+      return await handleUserAccountAuth(ctx, ...params);
+    case UI_RPC_METHOD_USER_ACCOUNT_LOGOUT:
+      // @ts-ignore
+      return await handleUserAccountLogout(ctx, ...params);
+    case UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_CREATE:
+      // @ts-ignore
+      return await handleUserAccountPublicKeyCreate(ctx, ...params);
+    case UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_DELETE:
+      // @ts-ignore
+      return await handleUserAccountPublicKeyDelete(ctx, ...params);
+    case UI_RPC_METHOD_USER_ACCOUNT_READ:
+      // @ts-ignore
+      return await handleUserAccountRead(ctx, ...params);
     //
     // Password.
     //
@@ -574,11 +593,43 @@ async function handleActiveUserUpdate(
   return [resp];
 }
 
-async function handleUserLogout(
+async function handleUserAccountAuth(
   ctx: Context<Backend>,
-  ...args: Parameters<Backend["userLogout"]>
+  ...args: Parameters<Backend["userAccountAuth"]>
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.userLogout(...args);
+  const resp = await ctx.backend.userAccountAuth(...args);
+  return [resp];
+}
+
+async function handleUserAccountLogout(
+  ctx: Context<Backend>,
+  ...args: Parameters<Backend["userAccountLogout"]>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.userAccountLogout(...args);
+  return [resp];
+}
+
+async function handleUserAccountPublicKeyCreate(
+  ctx: Context<Backend>,
+  ...args: Parameters<Backend["userAccountPublicKeyCreate"]>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.userAccountPublicKeyCreate(...args);
+  return [resp];
+}
+
+async function handleUserAccountPublicKeyDelete(
+  ctx: Context<Backend>,
+  ...args: Parameters<Backend["userAccountPublicKeyDelete"]>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.userAccountPublicKeyDelete(...args);
+  return [resp];
+}
+
+async function handleUserAccountRead(
+  ctx: Context<Backend>,
+  ...args: Parameters<Backend["userAccountRead"]>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.userAccountRead(...args);
   return [resp];
 }
 

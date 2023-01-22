@@ -34,9 +34,12 @@ export const solanaWalletCollections = selectorFamily<
       const metadataMap = get(solanaMetadataMap({ publicKey }));
       const { publicKey: pk, collections } =
         intoSolanaCollectionsMap(metadataMap);
+      let sortedCollections = Object.values(collections).sort((a, b) =>
+        a.id.localeCompare(b.id)
+      );
       return {
         publicKey: pk,
-        collections: Object.values(collections),
+        collections: sortedCollections,
       };
     },
 });
@@ -112,6 +115,7 @@ export const solanaNftById = equalSelectorFamily<
         blockchain: Blockchain.SOLANA,
         publicKey: nftToken.key,
         mint: nftTokenMetadata?.account.mint,
+        metadataCollectionId: uriData?.metadata?.collection?.key.toString(),
         name:
           nftTokenMetadata?.account.data.name ??
           (uriData ? uriData.tokenMetaUriData.name : "Unknown"),

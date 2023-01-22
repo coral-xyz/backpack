@@ -1,5 +1,6 @@
 import { type FormEvent, useCallback, useEffect, useState } from "react";
-import { PrimaryButton,TextInput } from "@coral-xyz/react-common";
+import { BACKPACK_TERMS_OF_SERVICE } from "@coral-xyz/common";
+import { PrimaryButton, TextInput } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
@@ -143,7 +144,7 @@ export function CreatePassword({
               <>
                 I agree to the{" "}
                 <span
-                  onClick={() => window.open("https://backpack.app/terms")}
+                  onClick={() => window.open(BACKPACK_TERMS_OF_SERVICE)}
                   style={{ color: theme.custom.colors.brandColor }}
                 >
                   terms of service

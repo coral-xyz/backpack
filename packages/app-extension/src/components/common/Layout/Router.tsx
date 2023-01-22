@@ -51,6 +51,7 @@ import { NftOptionsButton, NftsDetail } from "../../Unlocked/Nfts/Detail";
 import { NftChat, NftsExperience } from "../../Unlocked/Nfts/Experience";
 import { SettingsButton } from "../../Unlocked/Settings";
 
+import { AvatarPopoverButton } from "./../../Unlocked/Settings/AvatarPopover";
 import { useBreakpoints } from "./hooks";
 import { NavBackButton, WithNav } from "./Nav";
 import { WithMotion } from "./NavStack";
@@ -181,7 +182,7 @@ function MessageNativeInner() {
             isDarkMode={isDarkMode}
             userId={props.userId}
             uuid={uuid}
-            username={username}
+            username={props.username}
           />
         }
       />
@@ -433,7 +434,7 @@ function useNavBar() {
   let navStyle = {
     fontSize: "18px",
   } as React.CSSProperties;
-  if (pathname === "/messages/chat") {
+  if (pathname === "/messages/chat" || pathname === "/messages/groupchat") {
     navStyle.background = theme.custom.colors.bg3;
   }
 
@@ -489,7 +490,9 @@ function useNavBar() {
   }
 
   const notchViewComponent =
-    pathname === "/nfts/chat" ? <ChatDrawer setOpenDrawer={() => {}} /> : null;
+    pathname === "/nfts/chat" || pathname === "/messages/groupchat" ? (
+      <ChatDrawer setOpenDrawer={() => {}} />
+    ) : null;
 
   return {
     navButtonRight,

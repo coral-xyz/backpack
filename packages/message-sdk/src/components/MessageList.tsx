@@ -7,9 +7,12 @@ import {
   NAV_COMPONENT_MESSAGE_CHAT,
   NAV_COMPONENT_MESSAGE_PROFILE,
   NAV_COMPONENT_MESSAGE_REQUESTS,
+  parseMessage,
 } from "@coral-xyz/common";
 import { NAV_COMPONENT_MESSAGE_GROUP_CHAT } from "@coral-xyz/common/src/constants";
+import { useUsersFromUuids } from "@coral-xyz/db";
 import { isFirstLastListItemStyle, ProxyImage } from "@coral-xyz/react-common";
+import { useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import MarkChatUnreadIcon from "@mui/icons-material/MarkChatUnread";
 import VerifiedIcon from "@mui/icons-material/Verified";
@@ -114,7 +117,20 @@ export function ChatListItem({
   isUnread: boolean;
 }) {
   const classes = useStyles();
+  const { uuid } = useUser();
   const theme = useCustomTheme();
+  const parts = parseMessage(message);
+  const users = useUsersFromUuids(
+    uuid,
+    parts.filter((x) => x.type === "tag").map((x) => x.value)
+  );
+  const printText = parts
+    .map((x) =>
+      x.type === "tag"
+        ? users.find((user) => user?.uuid === x.value)?.username
+        : x.value
+    )
+    .join("");
 
   function formatAMPM(date: Date) {
     let hours = date.getHours();
@@ -209,7 +225,11 @@ export function ChatListItem({
                 <div>
                   {id === "backpack-chat" && (
                     <VerifiedIcon
-                      style={{ fontSize: 19, marginLeft: 3, color: "blue" }}
+                      style={{
+                        fontSize: 19,
+                        marginLeft: 3,
+                        color: theme.custom.colors.blue,
+                      }}
                     />
                   )}
                 </div>
@@ -223,7 +243,7 @@ export function ChatListItem({
                     : theme.custom.colors.smallTextColor,
                 }}
               >
-                {message?.substr(0, 50) || ""}
+                {printText?.substr(0, 25) || ""}
               </div>
             </div>
           </div>

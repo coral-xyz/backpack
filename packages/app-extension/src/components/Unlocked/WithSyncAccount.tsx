@@ -1,18 +1,13 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import {
-  BACKEND_API_URL,
-  getAddMessage,
   UI_RPC_METHOD_KEYRING_KEY_DELETE,
-  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
+  UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_CREATE,
 } from "@coral-xyz/common";
 import { Loading } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
-import { ethers } from "ethers";
 
 import { useAuthentication } from "../../hooks/useAuthentication";
-
-const { base58 } = ethers.utils;
 
 export function WithSyncAccount({
   serverPublicKeys,
@@ -58,78 +53,33 @@ export function WithSyncAccount({
             // Remove hardware public keys if they are not on the server
             // They can be added again through settings to capture the
             // signature
-            await background.request({
-              method: UI_RPC_METHOD_KEYRING_KEY_DELETE,
+            try {
+              await background.request({
+                method: UI_RPC_METHOD_KEYRING_KEY_DELETE,
+                params: [
+                  danglingPublicKey.blockchain,
+                  danglingPublicKey.publicKey,
+                ],
+              });
+            } catch {
+              // If the delete fails for some reason, don't error out because
+              // the wallet will not be accessible
+            }
+          } else {
+            // Sync all transparently signable public keys by adding them
+            // to the server
+            background.request({
+              method: UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_CREATE,
               params: [
                 danglingPublicKey.blockchain,
                 danglingPublicKey.publicKey,
               ],
             });
-          } else {
-            // Sync all transparently signable public keys by adding them
-            // to the server
-            addPublicKeyToAccount(
-              danglingPublicKey.blockchain,
-              danglingPublicKey.publicKey
-            );
           }
         }
       }
     })();
   }, [clientPublicKeys]);
 
-  // Add a public key to a Backpack account
-  const addPublicKeyToAccount = async (
-    blockchain: Blockchain,
-    publicKey: string,
-    signature?: string
-  ) => {
-    if (!signature) {
-      const signature = await background.request({
-        method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-        params: [
-          blockchain,
-          base58.encode(Buffer.from(getAddMessage(publicKey), "utf-8")),
-          publicKey,
-        ],
-      });
-
-      const response = await fetch(`${BACKEND_API_URL}/users/publicKeys`, {
-        method: "POST",
-        body: JSON.stringify({
-          blockchain,
-          signature,
-          publicKey,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) {
-        throw new Error((await response.json()).msg);
-      }
-    }
-  };
-
-  return loading ? (
-    <Loading />
-  ) : (
-    <_AuthContext.Provider value={{ serverPublicKeys }}>
-      {children}
-    </_AuthContext.Provider>
-  );
-}
-
-const _AuthContext = React.createContext<AuthContext | null>(null);
-
-type AuthContext = {
-  serverPublicKeys: any;
-};
-
-export function useAuthContext(): AuthContext {
-  const ctx = useContext(_AuthContext);
-  if (ctx === null) {
-    throw new Error("Context not available");
-  }
-  return ctx;
+  return loading ? <Loading /> : children;
 }

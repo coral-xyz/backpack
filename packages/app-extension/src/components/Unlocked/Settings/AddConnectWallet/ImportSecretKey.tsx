@@ -73,7 +73,7 @@ export function ImportSecretKey({
         setNewPublicKey(
           await background.request({
             method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
-            params: [blockchain, publicKey, name],
+            params: [blockchain, privateKey, name],
           })
         );
         setOpenDrawer(true);

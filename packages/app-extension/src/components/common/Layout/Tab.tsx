@@ -30,7 +30,7 @@ import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { Tab, Tabs } from "@mui/material";
 
-import { AvatarButton } from "../../Unlocked/Settings";
+import { AvatarPopoverButton } from "../../Unlocked/Settings/AvatarPopover";
 
 import { useBreakpoints } from "./hooks";
 
@@ -41,6 +41,7 @@ const useStyles = styles((theme) => ({
     opacity: "1 !important",
     height: `${TAB_HEIGHT}px`,
     "&:hover": {
+      background: "transparent !important",
       "& svg": {
         "& path": {
           fill: `${theme.custom.colors.brandColor} !important`,
@@ -54,6 +55,7 @@ const useStyles = styles((theme) => ({
     width: "74px",
     marginTop: "16px",
     "&:hover": {
+      background: "transparent !important",
       "& svg": {
         "& path": {
           fill: `${theme.custom.colors.brandColor} !important`,
@@ -333,7 +335,7 @@ function TabBar() {
               marginBottom: "16px",
             }}
           >
-            <AvatarButton
+            <AvatarPopoverButton
               imgStyle={{
                 width: "40px",
                 height: "40px",

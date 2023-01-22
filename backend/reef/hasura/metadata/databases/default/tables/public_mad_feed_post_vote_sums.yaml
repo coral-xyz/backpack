@@ -5,11 +5,9 @@ select_permissions:
   - role: one_xnft
     permission:
       columns:
-        - backpack
-        - backpack_count
-        - total
-        - total_count
+        - ranking
         - votes
         - votes_count
         - post_id
+        - user_id
       filter: {}

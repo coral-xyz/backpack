@@ -1,4 +1,3 @@
-
 import type { TextInputProps } from "react-native";
 import { StyleSheet, TextInput as RNTextInput } from "react-native";
 

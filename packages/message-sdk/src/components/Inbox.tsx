@@ -6,7 +6,7 @@ import type {
   RemoteUserData,
 } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
-import { refreshFriendships } from "@coral-xyz/db";
+import { refreshFriendships, refreshGroups } from "@coral-xyz/db";
 import { EmptyState } from "@coral-xyz/react-common";
 import {
   useFriendships,
@@ -65,6 +65,7 @@ export function Inbox() {
     refreshFriendships(uuid)
       .then(() => setRefreshing(false))
       .catch(() => setRefreshing(false));
+    refreshGroups(uuid).catch((e) => console.error(e));
   }, [uuid]);
 
   const debouncedInit = () => {

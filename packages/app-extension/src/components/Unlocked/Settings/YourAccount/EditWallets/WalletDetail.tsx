@@ -121,7 +121,7 @@ export const WalletDetail: React.FC<{
           <SettingsList menuItems={menuItems} />
         </div>
       </WithCopyTooltip>
-      {type !== "ledger" && type !== "dehydrated" && (
+      {type !== "hardware" && type !== "dehydrated" && (
         <SettingsList menuItems={secrets} />
       )}
       {type === "dehydrated" && <SettingsList menuItems={recover} />}
