@@ -162,7 +162,6 @@ export class BackgroundSolanaConnection extends Connection {
           },
         ];
       }),
-
       fts: {
         ...json.fts,
         fungibleTokens: json.fts.fungibleTokens.map((t: any) => {
