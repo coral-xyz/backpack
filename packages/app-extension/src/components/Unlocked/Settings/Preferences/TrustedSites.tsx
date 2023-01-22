@@ -1,33 +1,15 @@
 import { useEffect } from "react";
 import { UI_RPC_METHOD_APPROVED_ORIGINS_DELETE } from "@coral-xyz/common";
-import {
-  EmptyState,
-  List,
-  ListItem,
-  PrimaryButton,
-} from "@coral-xyz/react-common";
+import { EmptyState,List, ListItem, PrimaryButton  } from "@coral-xyz/react-common";
 import { useApprovedOrigins, useBackgroundClient } from "@coral-xyz/recoil";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { useCustomTheme } from "@coral-xyz/themes";
 import { GppBad } from "@mui/icons-material";
 import { ListItemText } from "@mui/material";
 
 import { useNavStack } from "../../../common/Layout/NavStack";
 
-const useStyles = styles(() => ({
-  listItemText: {
-    "& span": {
-      overflow: "hidden",
-      textOverflow: "ellipsis",
-      "@media (max-width: 400px)": {
-        width: "250px",
-      },
-    },
-  },
-}));
-
 export function PreferencesTrustedSites() {
   const theme = useCustomTheme();
-  const classes = useStyles();
   const nav = useNavStack();
   const approvedOrigins = useApprovedOrigins();
 
@@ -65,12 +47,7 @@ export function PreferencesTrustedSites() {
             }}
             detail={<RevokeButton origin={origin} />}
           >
-            <ListItemText
-              className={classes.listItemText}
-              style={{ fontWeight: 500 }}
-            >
-              {origin}
-            </ListItemText>
+            <ListItemText style={{ fontWeight: 500 }}>{origin}</ListItemText>
           </ListItem>
         )
       )}
