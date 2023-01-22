@@ -269,6 +269,15 @@ const lightComponentOverrides = {
       },
     },
   },
+  MuiButtonBase: {
+    styleOverrides: {
+      root: {
+        "&:hover": {
+          background: "#F8F8F9 !important",
+        },
+      },
+    },
+  },
   MuiListItem: {
     styleOverrides: {
       button: {
