@@ -138,17 +138,6 @@ function SettingsList() {
       detailIcon: <PushDetail />,
     });
   }
-  if (BACKPACK_FEATURE_POP_MODE) {
-    settingsMenu.push({
-      label: "Pop Window",
-      onClick: async () => {
-        await openPopupWindow("popup.html");
-        window.close();
-      },
-      icon: (props: any) => <WindowIcon {...props} />,
-      detailIcon: <LaunchDetail />,
-    });
-  }
   settingsMenu.push({
     label: "Lock",
     onClick: () => lockWallet(),
