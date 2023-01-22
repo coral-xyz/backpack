@@ -41,6 +41,7 @@ const useStyles = styles((theme) => ({
     opacity: "1 !important",
     height: `${TAB_HEIGHT}px`,
     "&:hover": {
+      background: "transparent !important",
       "& svg": {
         "& path": {
           fill: `${theme.custom.colors.brandColor} !important`,
@@ -54,6 +55,7 @@ const useStyles = styles((theme) => ({
     width: "74px",
     marginTop: "16px",
     "&:hover": {
+      background: "transparent !important",
       "& svg": {
         "& path": {
           fill: `${theme.custom.colors.brandColor} !important`,
