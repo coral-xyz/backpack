@@ -21,9 +21,9 @@ import { Gif as GifComponent } from "@giphy/react-components";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CallMadeIcon from "@mui/icons-material/CallMade";
 import { Skeleton } from "@mui/material";
-import Button from "@mui/material/Button";
 import { createStyles, makeStyles } from "@mui/styles";
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
+import Linkify from "linkify-react";
 
 import {
   cancel,
@@ -304,7 +304,11 @@ export const MessageLine = (props) => {
                         <div>{message}</div>
                       </div>
                     ) : (
-                      message
+                      <span style={{ wordBreak: "break-word" }}>
+                        <Linkify options={{ target: "_blank" }}>
+                          {message}
+                        </Linkify>
+                      </span>
                     )}
                   </p>
                 </div>
