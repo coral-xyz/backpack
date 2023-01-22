@@ -52,7 +52,6 @@ export type SelectedAccount = {
 
 const LOAD_PUBKEY_AMOUNT = 20;
 const DISPLAY_PUBKEY_AMOUNT = 5;
-const jwtEnabled = !!(BACKPACK_FEATURE_USERNAMES && BACKPACK_FEATURE_JWT);
 
 export function ImportAccounts({
   blockchain,
@@ -115,7 +114,7 @@ export function ImportAccounts({
   //
   useEffect(() => {
     (async () => {
-      if (accounts.length === 0 || !jwtEnabled) return;
+      if (accounts.length === 0) return;
       try {
         const response = await checkPublicKeyConflicts(
           accounts.map((a) => ({
