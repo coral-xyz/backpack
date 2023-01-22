@@ -1,4 +1,3 @@
-import type { RawMint } from "@solana/spl-token";
 import type {
   AccountBalancePair,
   AccountChangeCallback,
@@ -108,7 +107,6 @@ import { addressLookupTableAccountParser } from "./rpc-helpers";
 import type {
   SolanaTokenAccountWithKey,
   SolanaTokenAccountWithKeyString,
-  SplNftMetadata,
   SplNftMetadataString,
   TokenMetadata,
   TokenMetadataString,
@@ -152,7 +150,7 @@ export class BackgroundSolanaConnection extends Connection {
   }
 
   static customSplTokenAccountsFromJson(
-    json: any
+    json: CustomSplTokenAccountsResponseString
   ): CustomSplTokenAccountsResponseString {
     return {
       mintsMap: json.mintsMap.map((m: any) => {
@@ -185,82 +183,87 @@ export class BackgroundSolanaConnection extends Connection {
     };
   }
 
-  static customSplTokenAccountsToJson(_resp: CustomSplTokenAccountsResponse) {
+  static customSplTokenAccountsToJson(
+    _resp: CustomSplTokenAccountsResponse
+  ) /* : CustomSplTokenAccountsResponseString */ {
     return {
-      mintsMap: _resp.mintsMap.map((m) => {
+      mintsMap: _resp.mintsMap.map(([publicKey, mintStr]) => {
         return [
-          m[0],
-          m[1] === null
-            ? null
-            : {
-                ...m[1],
-                supply: m[1].supply.toString(),
-              },
+          publicKey,
+          mintStr != null
+            ? {
+                ...mintStr,
+                supply: mintStr.supply.toString(),
+                mintAuthority: mintStr.mintAuthority?.toString(),
+                freezeAuthority: mintStr.freezeAuthority?.toString(),
+              }
+            : null,
         ];
       }),
       fts: {
         fungibleTokens: _resp.fts.fungibleTokens.map((t) => {
-          return {
-            ...t,
-            mint: t.mint.toString(),
-            key: t.key.toString(),
-            amount: t.amount.toString(),
-          };
+          return BackgroundSolanaConnection.solanaTokenAccountWithKeyToJson(t);
         }),
         fungibleTokenMetadata: _resp.fts.fungibleTokenMetadata.map((t) => {
-          if (!t) {
-            return null;
-          }
-
-          return {
-            ...t,
-            publicKey: t.publicKey.toString(),
-            account: {
-              ...t.account,
-              data: {
-                ...t.account.data,
-                creators: (t.account.data.creators ?? []).map((c) => {
-                  return {
-                    ...c,
-                    address: c.address.toString(),
-                  };
-                }),
-              },
-            },
-          };
+          return t ? BackgroundSolanaConnection.tokenMetadataToJson(t) : null;
         }),
       },
       nfts: {
         nftTokens: _resp.nfts.nftTokens.map((t) => {
-          return {
-            ...t,
-            mint: t.mint.toString(),
-            key: t.key.toString(),
-            amount: t.amount.toString(),
-          };
+          return BackgroundSolanaConnection.solanaTokenAccountWithKeyToJson(t);
         }),
         nftTokenMetadata: _resp.nfts.nftTokenMetadata.map((t) => {
-          if (!t) {
-            return null;
-          }
-
-          return {
-            ...t,
-            publicKey: t.publicKey.toString(),
-            account: {
-              ...t.account,
-              data: {
-                ...t.account.data,
-                creators: (t.account.data.creators ?? []).map((c) => {
-                  return {
-                    ...c,
-                    address: c.address.toString(),
-                  };
-                }),
-              },
-            },
-          };
+          return t ? BackgroundSolanaConnection.tokenMetadataToJson(t) : null;
         }),
+      },
+    };
+  }
+
+  static solanaTokenAccountWithKeyToJson(
+    t: SolanaTokenAccountWithKey
+  ) /* : SolanaTokenAccountWithKeyString */ {
+    return {
+      ...t,
+      mint: t.mint.toString(),
+      key: t.key.toString(),
+      amount: t.amount.toString(),
+      delegate: t.delegate?.toString(),
+      delegatedAmount: t.delegatedAmount.toString(),
+      authority: t.authority.toString(),
+      closeAuthority: t.closeAuthority?.toString(),
+    };
+  }
+
+  static tokenMetadataToJson(t: TokenMetadata) /* : TokenMetadataString */ {
+    return {
+      ...t,
+      publicKey: t.publicKey.toString(),
+      account: {
+        ...t.account,
+        updateAuthority: t.account.updateAuthority.toString(),
+        mint: t.account.mint.toString(),
+        collection: t.account.collection
+          ? {
+              ...t.account.collection,
+              key: t.account.collection.key.toString(),
+            }
+          : null,
+        uses: t.account.uses
+          ? {
+              ...t.account.uses,
+              remaining: t.account.uses.remaining.toString(),
+              total: t.account.uses.total.toString(),
+            }
+          : null,
+        data: {
+          ...t.account.data,
+          creators: (t.account.data.creators ?? []).map((c) => {
+            return {
+              ...c,
+              address: c.address.toString(),
+            };
+          }),
+        },
       },
     };
   }
