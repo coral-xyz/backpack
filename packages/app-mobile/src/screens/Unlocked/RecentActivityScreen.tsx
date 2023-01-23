@@ -1,4 +1,4 @@
-import { Suspense, useState } from "react";
+import { Suspense } from "react";
 import {
   FlatList,
   Image,
@@ -6,12 +6,14 @@ import {
   StyleSheet,
   Text,
   View,
+  ActivityIndicator,
+  StyleProp,
+  ViewStyle,
 } from "react-native";
 
 import * as Linking from "expo-linking";
 
-import { EmptyState, Screen } from "@components";
-import { Blockchain, explorerUrl } from "@coral-xyz/common";
+import { Blockchain, explorerUrl, RecentTransaction } from "@coral-xyz/common";
 import {
   useActiveWallet,
   useBlockchainConnectionUrl,
@@ -21,11 +23,15 @@ import {
   useRecentTransactions,
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useBlockchainLogo, useTheme } from "@hooks";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import { EmptyState, Screen } from "@components/index";
+import { useBlockchainLogo, useTheme } from "@hooks/index";
 
 export function RecentActivityScreen() {
+  const insets = useSafeAreaInsets();
   return (
-    <Screen>
+    <Screen style={{ marginBottom: insets.bottom }}>
       <RecentActivity />
     </Screen>
   );
@@ -55,7 +61,7 @@ function RecentEthereumActivity({ address }: { address: string }): JSX.Element {
   return <_RecentActivityList transactions={mergedTransactions} />;
 }
 
-export function RecentActivity() {
+function RecentActivity() {
   const activeWallet = useActiveWallet();
 
   return (
@@ -75,12 +81,14 @@ export function RecentActivityList({
   contractAddresses,
   transactions,
   minimize = false,
+  style,
 }: {
-  blockchain?: Blockchain;
-  address?: string;
-  contractAddresses?: string[];
-  transactions: any[];
+  blockchain: Blockchain;
+  address: string;
+  contractAddresses: string[] | undefined;
+  transactions?: RecentTransaction[];
   minimize?: boolean;
+  style?: StyleProp<ViewStyle>;
 }) {
   return (
     <Suspense fallback={<RecentActivityLoading />}>
@@ -90,6 +98,7 @@ export function RecentActivityList({
         contractAddresses={contractAddresses}
         transactions={transactions}
         minimize={minimize}
+        style={style}
       />
     </Suspense>
   );
@@ -99,42 +108,64 @@ function RecentActivityLoading() {
   return (
     <View
       style={{
-        height: 68,
+        flex: 1,
         justifyContent: "center",
         alignItems: "center",
       }}
     >
-      <Text>Loading...</Text>
+      <ActivityIndicator size="large" />
     </View>
   );
 }
 
 export function _RecentActivityList({
-  transactions,
+  blockchain,
+  address,
+  contractAddresses,
+  transactions: _transactions,
   minimize,
+  style,
 }: {
   blockchain?: Blockchain;
   address?: string;
-  contractAddresses?: string[];
-  transactions: any[];
+  contractAddresses?: string[] | undefined;
+  transactions?: RecentTransaction[];
   minimize?: boolean;
-}) {
+  style?: StyleProp<ViewStyle>;
+}): JSX.Element {
+  const transactions = useRecentTransactions({
+    blockchain: blockchain!,
+    address: address!,
+    contractAddresses: contractAddresses!,
+    transactions: _transactions,
+  });
+
+  const theme = useTheme();
   const styles = {
-    flex: 1,
+    flexGrow: 1,
   };
 
   if (transactions.length === 0) {
-    // @ts-ignore
+    // @ts-expect-error
     styles.justifyContent = "center";
-    // @ts-ignore
+    // @ts-expect-error
     styles.alignItems = "center";
   }
 
   return (
     <FlatList
+      style={[
+        {
+          flex: 1,
+          borderRadius: 12,
+          borderWidth: 2,
+          borderColor: theme.custom.colors.borderFull,
+        },
+        style,
+      ]}
       contentContainerStyle={styles}
       data={transactions}
-      ListEmptyComponent={<NoRecentActivityLabel minimize={!!minimize} />}
+      ListEmptyComponent={<NoRecentActivityEmptyState minimize={!!minimize} />}
       scrollEnabled={transactions.length > 0}
       renderItem={({ item }) => {
         return <RecentActivityListItem transaction={item} />;
@@ -143,21 +174,23 @@ export function _RecentActivityList({
   );
 }
 
-function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
+function RecentActivityListItem({
+  transaction,
+}: {
+  transaction: RecentTransaction;
+}): JSX.Element {
   const theme = useTheme();
-  const explorer = useBlockchainExplorer(transaction.blockchain);
-  const connectionUrl = useBlockchainConnectionUrl(transaction.blockchain);
   const blockchainLogo = useBlockchainLogo(transaction.blockchain);
-
-  const onPress = () => {
-    Linking.openURL(
-      explorerUrl(explorer!, transaction.signature, connectionUrl!)
-    );
-  };
+  const connectionUrl = useBlockchainConnectionUrl(transaction.blockchain);
+  const explorer = useBlockchainExplorer(transaction.blockchain);
 
   return (
     <Pressable
-      onPress={() => onPress()}
+      onPress={() => {
+        Linking.openURL(
+          explorerUrl(explorer!, transaction.signature, connectionUrl!)
+        );
+      }}
       style={{
         height: 68,
         paddingHorizontal: 12,
@@ -166,10 +199,6 @@ function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        // borderBottom: isLast
-        //   ? undefined
-        //   : `solid 1pt ${theme.custom.colors.border}`,
-        // ...isFirstLastListItemStyle(isFirst, isLast, 12),
       }}
     >
       <View style={{ flexDirection: "row" }}>
@@ -177,12 +206,12 @@ function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
         <View>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <Image
-              style={{
-                width: 12,
-                borderRadius: 2,
-                marginRight: 10,
-              }}
               source={blockchainLogo}
+              style={{
+                aspectRatio: 1,
+                width: 12,
+                marginRight: 8,
+              }}
             />
             <Text
               style={{
@@ -204,7 +233,7 @@ function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
               lineHeight: 24,
             }}
           >
-            {transaction.date.toString()}
+            {transaction.date.toLocaleDateString()}
           </Text>
         </View>
       </View>
@@ -217,7 +246,11 @@ function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
   );
 }
 
-function RecentActivityListItemIcon({ transaction }: any) {
+function RecentActivityListItemIcon({
+  transaction,
+}: {
+  transaction: RecentTransaction;
+}): JSX.Element {
   const theme = useTheme();
   return (
     <View style={styles.recentActivityListItemIconContainer}>
@@ -238,7 +271,11 @@ function RecentActivityListItemIcon({ transaction }: any) {
   );
 }
 
-function NoRecentActivityLabel({ minimize }: { minimize: boolean }) {
+function NoRecentActivityEmptyState({
+  minimize,
+}: {
+  minimize: boolean;
+}): JSX.Element {
   return (
     <View
       style={{
@@ -251,7 +288,9 @@ function NoRecentActivityLabel({ minimize }: { minimize: boolean }) {
         title="No Recent Activity"
         subtitle="Get started by adding your first xNFT"
         buttonText="Browse the xNFT Library"
-        onPress={() => Linking.openURL("https://xnft.gg")}
+        onPress={() => {
+          Linking.openURL("https://xnft.gg");
+        }}
       />
     </View>
   );

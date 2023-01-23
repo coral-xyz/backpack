@@ -129,7 +129,7 @@ function BalanceDetailScreen({ route, navigation }) {
         address={activityAddress}
         contractAddresses={contractAddresses}
         minimize
-        style={{ marginTop: 0 }}
+        style={{ marginTop: 18 }}
       />
     </Screen>
   );

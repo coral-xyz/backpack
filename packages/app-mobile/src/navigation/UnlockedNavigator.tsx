@@ -51,7 +51,6 @@ export default function UnlockedNavigator(): JSX.Element {
           options={{
             title: "Recent Activity",
             headerBackTitleVisible: false,
-            headerTransparent: true,
             headerTintColor: theme.custom.colors.fontColor,
             headerBackImage: IconCloseModal,
           }}
