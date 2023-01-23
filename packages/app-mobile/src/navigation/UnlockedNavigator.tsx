@@ -1,7 +1,7 @@
 import { Pressable, Text, View } from "react-native";
 
 import { toTitleCase } from "@coral-xyz/common";
-import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 import { AccountSettingsNavigator } from "@navigation/AccountSettingsNavigator";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { getHeaderTitle } from "@react-navigation/elements";
@@ -25,6 +25,7 @@ import {
   TabIconBalances,
   TabIconApps,
   TabIconNfts,
+  TabIconMessages,
 } from "@components/Icon";
 import { NavHeader } from "@components/index";
 import { useTheme } from "@hooks/index";
@@ -123,25 +124,6 @@ function RecentActivityModal() {
   );
 }
 
-function TabBarIcon({
-  size = 30,
-  name,
-  color,
-}: {
-  size?: number;
-  name: string;
-  color: string;
-}): JSX.Element {
-  return (
-    <MaterialCommunityIcons
-      size={size}
-      name={name}
-      color={color}
-      style={{ marginBottom: -3 }}
-    />
-  );
-}
-
 function UnlockedBottomTabNavigator(): JSX.Element {
   const theme = useTheme();
   const getIcon = (routeName: string) => {
@@ -153,7 +135,7 @@ function UnlockedBottomTabNavigator(): JSX.Element {
       case "Collectibles":
         return TabIconNfts;
       case "Messages":
-        return TabIconNfts;
+        return TabIconMessages;
       default:
         return TabIconBalances;
     }
