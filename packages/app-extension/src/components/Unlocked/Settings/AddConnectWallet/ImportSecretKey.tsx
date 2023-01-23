@@ -35,6 +35,7 @@ export function ImportSecretKey({
   const [error, setError] = useState<string | null>(null);
   const [openDrawer, setOpenDrawer] = useState(false);
   const [newPublicKey, setNewPublicKey] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const prevTitle = nav.title;
@@ -52,6 +53,8 @@ export function ImportSecretKey({
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    setLoading(true);
+
     let privateKey, _publicKey;
     try {
       ({ privateKey, publicKey: _publicKey } = validateSecretKey(
@@ -60,15 +63,18 @@ export function ImportSecretKey({
         existingPublicKeys
       ));
     } catch (e) {
+      setLoading(false);
       setError((e as Error).message);
       return;
     }
 
     if (publicKey && publicKey !== _publicKey) {
+      setLoading(false);
       setError(`Incorrect private key for ${walletAddressDisplay(publicKey)}`);
+      return;
     }
 
-    if (privateKey)
+    if (privateKey) {
       try {
         setNewPublicKey(
           await background.request({
@@ -80,6 +86,8 @@ export function ImportSecretKey({
       } catch (error) {
         setError("Wallet address is used by another Backpack account.");
       }
+      setLoading(false);
+    }
   };
 
   return (
@@ -149,7 +157,7 @@ export function ImportSecretKey({
           <PrimaryButton
             type="submit"
             label="Import"
-            disabled={secretKey.length === 0}
+            disabled={secretKey.length === 0 || loading}
           />
         </Box>
       </form>
