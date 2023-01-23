@@ -1,51 +1,50 @@
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { Text, View, ScrollView } from "react-native";
 
 import {
-  Margin,
-  NegativeButton,
-  NFTCard,
-  PrimaryButton,
-  ProxyImage,
-  Screen,
-  SecondaryButton,
-  StyledTextInput,
-} from "@components";
-import {
+  UNKNOWN_NFT_ICON_SRC,
   Blockchain,
   confirmTransaction,
-  explorerNftUrl,
   Solana,
   toTitleCase,
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
 } from "@coral-xyz/common";
 import {
-  nftMetadata,
   useAnchorContext,
   useBackgroundClient,
-  useDecodedSearchParams,
-  useEthereumConnectionUrl,
   useEthereumCtx,
-  useEthereumExplorer,
   useLoader,
-  useSolanaConnectionUrl,
   useSolanaCtx,
-  useSolanaExplorer,
+  nftById,
 } from "@coral-xyz/recoil";
 import { useActionSheet } from "@expo/react-native-action-sheet";
-import { useTheme } from "@hooks";
 import { PublicKey } from "@solana/web3.js";
 import { BigNumber } from "ethers";
+import { useRecoilValueLoadable } from "recoil";
 
-export function NFTDetailScreen({ navigation, route }): JSX.Element {
-  const { nftId } = route.params;
+import {
+  NegativeButton,
+  PrimaryButton,
+  ProxyImage,
+  Screen,
+  SecondaryButton,
+  StyledTextInput,
+  Margin,
+} from "@components/index";
+import { useTheme } from "@hooks/index";
 
-  const [nfts] = useLoader(nftMetadata, new Map());
-  const nft = nfts.get(nftId);
+export function NFTDetailScreen({ navigation, route }): JSX.Element | null {
+  const { nftId, publicKey, connectionUrl } = route.params;
+
+  const { contents, state } = useRecoilValueLoadable(
+    nftById({ publicKey, connectionUrl, nftId })
+  );
+
+  const nft = (state === "hasValue" && contents) || null;
 
   // Hack: needed because this is undefined due to framer-motion animation.
   if (!nftId) {
-    return <></>;
+    return null;
   }
 
   // TODO: this is hit when the NFT has been transferred out and
@@ -54,34 +53,39 @@ export function NFTDetailScreen({ navigation, route }): JSX.Element {
   //
   //       Should probably just pop the stack here or redirect.
   if (!nft) {
-    return <></>;
+    return null;
   }
 
+  console.log("nftdetailscreen", nft.imageUrl, contents);
+
   return (
-    <Screen>
-      <Text>{JSON.stringify({ route: route.params })}</Text>
-      <NFTImage imageUrl={nft.imageUrl} />
-      <Description description={nft.description} />
-      <PrimaryButton
-        label="Send"
-        onPress={() => {
-          navigation.push("SendNFT", { nft });
-        }}
-      />
-      {nft.attributes && <Attributes attributes={nft.attributes} />}
-    </Screen>
+    <ScrollView>
+      <Screen>
+        <NftImage imageUrl={nft.imageUrl} />
+        <Description description={nft.description} />
+        <Margin vertical={12}>
+          <PrimaryButton
+            label="Send"
+            onPress={() => {
+              navigation.push("SendNFT", { nft });
+            }}
+          />
+        </Margin>
+        {nft.attributes ? <Attributes attributes={nft.attributes} /> : null}
+      </Screen>
+    </ScrollView>
   );
 }
 
-function NFTImage({ imageUrl }: { imageUrl: string }): JSX.Element {
+function NftImage({ imageUrl }: { imageUrl: string }): JSX.Element {
   return (
     <ProxyImage
       style={{
         width: "100%",
         borderRadius: 8,
+        aspectRatio: 1,
       }}
-      src={imageUrl}
-      onError={(event: any) => (event.currentTarget.style.display = "none")}
+      src={imageUrl ?? UNKNOWN_NFT_ICON_SRC}
     />
   );
 }
@@ -167,7 +171,7 @@ export function NFTDetailSendScreen({ navigation, route }): JSX.Element {
           }}
         >
           <View>
-            <NFTImage imageUrl={nft.imageUrl} />
+            <NftImage imageUrl={nft.imageUrl} />
             <StyledTextInput
               autoFocus
               placeholder={`Recipient's ${toTitleCase(nft.blockchain)} Address`}

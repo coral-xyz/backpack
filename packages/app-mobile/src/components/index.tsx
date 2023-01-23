@@ -147,7 +147,7 @@ export function PrimaryButton({
 }: {
   label: string;
   onPress: () => void;
-  disabled: boolean;
+  disabled?: boolean;
   loading?: boolean;
 }) {
   const theme = useTheme();

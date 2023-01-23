@@ -41,7 +41,6 @@ import { useTheme } from "@hooks/useTheme";
 import { NFTDetailScreen, NFTDetailSendScreen } from "./NFTDetailScreen";
 const ONE_COLLECTION_ID = "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj";
 
-const Stack = createStackNavigator();
 type NftCollectionsWithId = {
   publicKey: string;
   collections: NftCollection[];
@@ -319,6 +318,24 @@ function NFTCollectionDetailScreen({ navigation, route }): JSX.Element | null {
   );
 }
 
+export type NftStackParamList = {
+  NFTCollectionList: undefined;
+  NFTCollectionDetail: {
+    title: string;
+    collectionId: string;
+    publicKey: string;
+    connectionUrl: string;
+  };
+  NFTDetail: {
+    title: string;
+    nftId: string;
+    publicKey: string;
+    connectionUrl: string;
+  };
+  SendNFT: undefined;
+};
+
+const Stack = createStackNavigator<NftStackParamList>();
 export function NFTCollectiblesNavigator(): JSX.Element {
   return (
     <Stack.Navigator
