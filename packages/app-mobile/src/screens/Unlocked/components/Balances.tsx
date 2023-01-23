@@ -124,7 +124,6 @@ function WalletTokenTable({
   );
 
   const rawTokenAccounts = rta.state === "hasValue" ? rta.contents : [];
-  console.log("rrr:rawTokenAccounts", rawTokenAccounts);
 
   const searchLower = search.toLowerCase();
   const tokenAccountsFiltered = rawTokenAccounts
@@ -135,8 +134,6 @@ function WalletTokenTable({
           t.ticker.toLowerCase().startsWith(searchLower))
     )
     .filter(customFilter);
-
-  console.log("rrr:tokenAccountsFiltered", tokenAccountsFiltered);
 
   useEffect(() => {
     setSearch(searchFilter);
