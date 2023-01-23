@@ -105,6 +105,7 @@ app.get("/:username/:cache_bust?", async (c) => {
     200,
     {
       "Content-Type": "image/svg+xml",
+      "Cache-Control": `max-age=${60}, s-maxage=${60}, stale-while-revalidate=${60}`,
     }
   );
 });
