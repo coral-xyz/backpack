@@ -38,7 +38,7 @@ import { NFTCard, BaseCard } from "@components/NFTCard";
 import { Screen, EmptyState, Margin, CopyButtonIcon } from "@components/index";
 import { useTheme } from "@hooks/useTheme";
 
-import { NFTDetailScreen, NFTDetailSendScreen } from "./NFTDetailScreen";
+import { NftDetailScreen, NftDetailSendScreen } from "./NftDetailScreen";
 const ONE_COLLECTION_ID = "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj";
 
 type NftCollectionsWithId = {
@@ -55,11 +55,12 @@ function NftCollectionCard({
   collection: NftCollection;
   onPress: (data: any) => void;
 }): JSX.Element | null {
-  const theme = useTheme();
   const wallets = useAllWallets();
   const wallet = wallets.find((wallet) => wallet.publicKey === publicKey);
   const blockchain = wallet?.blockchain!;
   const connectionUrl = useBlockchainConnectionUrl(blockchain);
+
+  console.log("1collection", collection);
 
   // Display the first NFT in the collection as the thumbnail in the grid
   const collectionDisplayNftId = collection.itemIds?.find((nftId) => !!nftId)!;
@@ -93,6 +94,7 @@ function NftCollectionCard({
       onPress({
         type: "NFT_SINGLE",
         data: {
+          title: collectionDisplayNft.name || "",
           nftName: collectionDisplayNft.name || "",
           nftId: collectionDisplayNft.id,
           publicKey,
@@ -103,6 +105,7 @@ function NftCollectionCard({
       onPress({
         type: "NFT_COLLECTION",
         data: {
+          title: collection.symbol || "",
           collectionId: collection.id,
           publicKey,
           connectionUrl,
@@ -157,7 +160,7 @@ function SectionHeader({ title }: { title: string }): JSX.Element {
   );
 }
 
-export function NFTCollectionListScreen({ navigation }): JSX.Element {
+export function NftCollectionListScreen({ navigation }): JSX.Element {
   const theme = useTheme();
   const activeWallet = useActiveWallet();
   const { contents, state } = useRecoilValueLoadable(nftCollectionsWithIds);
@@ -202,9 +205,10 @@ export function NFTCollectionListScreen({ navigation }): JSX.Element {
       }
 
       case "NFT_SINGLE": {
-        const { nftName, nftId, publicKey, connectionUrl } = data;
-        navigation.push("NFTDetail", {
-          title: nftName,
+        const { title, nftName, nftId, publicKey, connectionUrl } = data;
+        navigation.push("NftDetail", {
+          title,
+          nftName,
           nftId,
           publicKey,
           connectionUrl,
@@ -213,9 +217,9 @@ export function NFTCollectionListScreen({ navigation }): JSX.Element {
       }
 
       case "NFT_COLLECTION": {
-        const { collectionId, publicKey, connectionUrl } = data;
-        navigation.push("NFTCollectionDetail", {
-          title: "Collection",
+        const { title, collectionId, publicKey, connectionUrl } = data;
+        navigation.push("NftCollectionDetail", {
+          title,
           collectionId,
           publicKey,
           connectionUrl,
@@ -270,8 +274,8 @@ export function NFTCollectionListScreen({ navigation }): JSX.Element {
   );
 }
 
-function NFTCollectionDetailScreen({ navigation, route }): JSX.Element | null {
-  const { collectionId, publicKey, connectionUrl } = route.params;
+function NftCollectionDetailScreen({ navigation, route }): JSX.Element | null {
+  const { title, collectionId, publicKey, connectionUrl } = route.params;
   const { contents, state } = useRecoilValueLoadable<
     UnwrapRecoilValue<typeof nftCollectionsWithIds>
   >(nftCollectionsWithIds);
@@ -282,8 +286,6 @@ function NFTCollectionDetailScreen({ navigation, route }): JSX.Element | null {
         .map((c: any) => c.collections!)
         .flat()
         .find((c: any) => c.id === collectionId);
-
-  console.log({ contents, c, collection });
 
   // Hack: id can be undefined due to framer-motion animation, and
   // collection can be undefined when looking at a collection not in current
@@ -305,8 +307,9 @@ function NFTCollectionDetailScreen({ navigation, route }): JSX.Element | null {
             connectionUrl={connectionUrl}
             publicKey={publicKey}
             onPress={() => {
-              navigation.push("NFTDetail", {
-                nftId: item.id,
+              navigation.push("NftDetail", {
+                title,
+                nftId: item,
                 publicKey,
                 connectionUrl,
               });
@@ -319,14 +322,14 @@ function NFTCollectionDetailScreen({ navigation, route }): JSX.Element | null {
 }
 
 export type NftStackParamList = {
-  NFTCollectionList: undefined;
-  NFTCollectionDetail: {
+  NftCollectionList: undefined;
+  NftCollectionDetail: {
     title: string;
     collectionId: string;
     publicKey: string;
     connectionUrl: string;
   };
-  NFTDetail: {
+  NftDetail: {
     title: string;
     nftId: string;
     publicKey: string;
@@ -336,29 +339,31 @@ export type NftStackParamList = {
 };
 
 const Stack = createStackNavigator<NftStackParamList>();
-export function NFTCollectiblesNavigator(): JSX.Element {
+export function NftCollectiblesNavigator(): JSX.Element {
   return (
-    <Stack.Navigator
-      initialRouteName="NFTCollectionList"
-      screenOptions={{ presentation: "modal" }}
-    >
-      <Stack.Group screenOptions={{ headerShown: false }}>
+    <Stack.Navigator initialRouteName="NftCollectionList">
+      <Stack.Group
+        screenOptions={{ headerShown: true, headerBackTitleVisible: false }}
+      >
         <Stack.Screen
-          name="NFTCollectionList"
-          component={NFTCollectionListScreen}
+          name="NftCollectionList"
+          component={NftCollectionListScreen}
+          options={{ title: "Collectibles" }}
         />
+        <Stack.Screen
+          name="NftCollectionDetail"
+          component={NftCollectionDetailScreen}
+          options={({ route }) => ({
+            title: route.params.title,
+          })}
+        />
+        <Stack.Screen
+          name="NftDetail"
+          component={NftDetailScreen}
+          options={({ route }) => ({ title: route.params.title })}
+        />
+        <Stack.Screen name="SendNFT" component={NftDetailSendScreen} />
       </Stack.Group>
-      <Stack.Screen
-        name="NFTCollectionDetail"
-        component={NFTCollectionDetailScreen}
-        options={({ route }) => ({ title: route.params.title })}
-      />
-      <Stack.Screen
-        name="NFTDetail"
-        component={NFTDetailScreen}
-        options={({ route }) => ({ title: route.params.title })}
-      />
-      <Stack.Screen name="SendNFT" component={NFTDetailSendScreen} />
     </Stack.Navigator>
   );
 }

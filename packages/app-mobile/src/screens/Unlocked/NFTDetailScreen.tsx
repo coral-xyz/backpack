@@ -33,16 +33,15 @@ import {
 } from "@components/index";
 import { useTheme } from "@hooks/index";
 
-export function NFTDetailScreen({ navigation, route }): JSX.Element | null {
+export function NftDetailScreen({ navigation, route }): JSX.Element | null {
   const { nftId, publicKey, connectionUrl } = route.params;
-
   const { contents, state } = useRecoilValueLoadable(
     nftById({ publicKey, connectionUrl, nftId })
   );
 
   const nft = (state === "hasValue" && contents) || null;
+  console.log("nftdetailscreen", contents);
 
-  // Hack: needed because this is undefined due to framer-motion animation.
   if (!nftId) {
     return null;
   }
@@ -55,8 +54,6 @@ export function NFTDetailScreen({ navigation, route }): JSX.Element | null {
   if (!nft) {
     return null;
   }
-
-  console.log("nftdetailscreen", nft.imageUrl, contents);
 
   return (
     <ScrollView>
@@ -123,7 +120,7 @@ function Description({ description }: { description: string }): JSX.Element {
   );
 }
 
-export function NFTDetailSendScreen({ navigation, route }): JSX.Element {
+export function NftDetailSendScreen({ navigation, route }): JSX.Element {
   const { nft } = route.params;
   const background = useBackgroundClient();
   const { provider: solanaProvider } = useAnchorContext();
