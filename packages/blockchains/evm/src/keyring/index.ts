@@ -136,9 +136,9 @@ export class EthereumHdKeyringFactory implements HdKeyringFactory {
 
 export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
   readonly mnemonic: string;
+  readonly derivationPath: DerivationPath;
   private seed: Buffer;
   private accountIndices: Array<number>;
-  private derivationPath: DerivationPath;
 
   constructor({
     mnemonic,
@@ -160,16 +160,22 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
     this.derivationPath = derivationPath;
   }
 
-  public deriveNext(): [string, number] {
-    const nextAccountIndex = Math.max(...this.accountIndices) + 1;
+  /**
+   * Import a new wallet using an account index. if the account index is not
+   * given the next available account index is used.
+   */
+  public importAccountIndex(accountIndex?: number): [string, number] {
+    if (accountIndex === undefined) {
+      accountIndex = Math.max(...this.accountIndices) + 1;
+    }
     const wallet = deriveEthereumWallet(
       this.seed,
-      nextAccountIndex,
+      accountIndex,
       this.derivationPath
     );
     this.wallets.push(wallet);
-    this.accountIndices.push(nextAccountIndex);
-    return [wallet.address, nextAccountIndex];
+    this.accountIndices.push(accountIndex);
+    return [wallet.address, accountIndex];
   }
 
   // @ts-ignore

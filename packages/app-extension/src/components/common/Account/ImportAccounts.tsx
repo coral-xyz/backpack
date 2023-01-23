@@ -8,6 +8,7 @@ import {
   DerivationPath,
   derivationPathPrefix,
   EthereumConnectionUrl,
+  LOAD_PUBLIC_KEY_AMOUNT,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
 } from "@coral-xyz/common";
@@ -50,7 +51,6 @@ export type SelectedAccount = {
   publicKey: string;
 };
 
-const LOAD_PUBKEY_AMOUNT = 20;
 const DISPLAY_PUBKEY_AMOUNT = 5;
 const jwtEnabled = !!(BACKPACK_FEATURE_USERNAMES && BACKPACK_FEATURE_JWT);
 
@@ -234,7 +234,7 @@ export function ImportAccounts({
   ) => {
     return await background.request({
       method: UI_RPC_METHOD_PREVIEW_PUBKEYS,
-      params: [blockchain, mnemonic, derivationPath, LOAD_PUBKEY_AMOUNT],
+      params: [blockchain, mnemonic, derivationPath, LOAD_PUBLIC_KEY_AMOUNT],
     });
   };
 
@@ -254,7 +254,7 @@ export function ImportAccounts({
     }[blockchain];
 
     // Add remaining accounts
-    for (let account = 0; account < LOAD_PUBKEY_AMOUNT; account += 1) {
+    for (let account = 0; account < LOAD_PUBLIC_KEY_AMOUNT; account += 1) {
       const path = accountDerivationPath(blockchain, derivationPath, account);
       publicKeys.push((await ledger.getAddress(path)).address);
     }
