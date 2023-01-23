@@ -2,7 +2,6 @@ import { keyringForBlockchain } from "@coral-xyz/blockchain-common";
 import type { BlockchainKeyring } from "@coral-xyz/blockchain-keyring";
 import type {
   AutolockSettingsOption,
-  DerivationPath,
   EventEmitter,
   FEATURE_GATES_MAP,
   KeyringInit,
@@ -18,6 +17,7 @@ import {
   Blockchain,
   DEFAULT_DARK_MODE,
   defaultPreferences,
+  DerivationPath,
   deserializeTransaction,
   EthereumConnectionUrl,
   EthereumExplorer,
@@ -90,6 +90,12 @@ import { getWalletDataForUser, setUser, setWalletDataForUser } from "./store";
 const { base58: bs58 } = ethers.utils;
 
 const jwtEnabled = !!(BACKPACK_FEATURE_USERNAMES && BACKPACK_FEATURE_JWT);
+
+export const DERIVATION_PATHS = [
+  DerivationPath.Bip44,
+  DerivationPath.Bip44Change,
+];
+export const LOAD_PUBKEY_AMOUNT = 20;
 
 export function start(
   events: EventEmitter,
@@ -1142,6 +1148,63 @@ export class Backend {
 
   async mnemonicCreate(strength: number): Promise<string> {
     return this.keyringStore.createMnemonic(strength);
+  }
+
+  async mnemonicSync(
+    serverPublicKeys: Array<{ blockchain: Blockchain; publicKey: string }>
+  ) {
+    const blockchains = [...new Set(serverPublicKeys.map((x) => x.blockchain))];
+    for (const blockchain of blockchains) {
+      for (const derivationPath of DERIVATION_PATHS) {
+        const publicKeys = await this.previewPubkeys(
+          blockchain,
+          this.keyringStore.activeUserKeyring.exportMnemonic(),
+          derivationPath,
+          LOAD_PUBKEY_AMOUNT
+        );
+        const searchPublicKeys = serverPublicKeys
+          .filter((b) => b.blockchain === blockchain)
+          .map((p) => p.publicKey);
+
+        for (const searchPublicKey of searchPublicKeys) {
+          const accountIndex = publicKeys.findIndex(
+            (p: string) => p === searchPublicKey
+          );
+          if (accountIndex !== -1) {
+            let blockchainKeyring;
+            try {
+              blockchainKeyring =
+                this.keyringStore.activeUserKeyring.keyringForBlockchain(
+                  blockchain
+                );
+            } catch {
+              // Pass
+            }
+            if (blockchainKeyring) {
+              const [publicKey, name] =
+                await this.keyringStore.activeUserKeyring
+                  .keyringForBlockchain(blockchain)
+                  .importAccountIndex(accountIndex);
+              this.events.emit(BACKEND_EVENT, {
+                name: NOTIFICATION_KEYRING_DERIVED_WALLET,
+                data: {
+                  blockchain,
+                  publicKey: publicKey.toString(),
+                  name,
+                },
+              });
+            } else {
+              // Create blockchain keyring
+              await this.blockchainKeyringsAdd(
+                blockchain,
+                derivationPath,
+                accountIndex
+              );
+            }
+          }
+        }
+      }
+    }
   }
 
   keyringTypeRead(): KeyringType {

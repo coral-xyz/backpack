@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import {
   UI_RPC_METHOD_KEYRING_KEY_DELETE,
+  UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_SYNC,
   UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_CREATE,
 } from "@coral-xyz/common";
 import { Loading } from "@coral-xyz/react-common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
+import { useBackgroundClient, useDehydratedWallets } from "@coral-xyz/recoil";
 
 import { useAuthentication } from "../../hooks/useAuthentication";
 
@@ -18,10 +19,12 @@ export function WithSyncAccount({
 }) {
   const background = useBackgroundClient();
   const { getSigners } = useAuthentication();
+  const dehydratedWallets = useDehydratedWallets();
   const [loading, setLoading] = useState(true);
   const [clientPublicKeys, setClientPublicKeys] = useState<
     Array<{ blockchain: Blockchain; publicKey: string; hardware: boolean }>
   >([]);
+  const [syncAttempted, setSyncAttempted] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -80,6 +83,28 @@ export function WithSyncAccount({
       }
     })();
   }, [clientPublicKeys]);
+
+  //
+  // Attempt to find any dehydrated wallets on the mnemonic if a mnemonic is in use.
+  //
+  useEffect(() => {
+    (async () => {
+      try {
+        if (dehydratedWallets.length > 0 && !syncAttempted) {
+          // We need to only do this once, the dehydrated wallets array will change
+          // if we find wallets and successfully load them and we don't want to
+          // trigger this function for smaller and smaller dehydratedWallets arrays
+          setSyncAttempted(true);
+          await background.request({
+            method: UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_SYNC,
+            params: [dehydratedWallets],
+          });
+        }
+      } catch (error) {
+        console.log("sync error", error);
+      }
+    })();
+  }, [dehydratedWallets, syncAttempted]);
 
   return loading ? <Loading /> : children;
 }

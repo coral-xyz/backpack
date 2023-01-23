@@ -820,7 +820,7 @@ class UserKeyring {
       throw new Error("blockchain keyring not initialised");
     } else {
       // Derive the next key.
-      const [publicKey, name] = blockchainKeyring.deriveNextKey();
+      const [publicKey, name] = await blockchainKeyring.importAccountIndex();
       return [publicKey, name];
     }
   }

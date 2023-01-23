@@ -121,12 +121,15 @@ export class BlockchainKeyring {
     return this.hdKeyring!.mnemonic;
   }
 
-  public deriveNextKey(): [string, string, number] {
-    const [publicKey, accountIndex] = this.hdKeyring!.deriveNext();
+  public async importAccountIndex(
+    _accountIndex?: number
+  ): Promise<[string, string, number]> {
+    const [publicKey, accountIndex] =
+      this.hdKeyring!.importAccountIndex(_accountIndex);
 
     // Save a default name.
     const name = DefaultKeyname.defaultDerived(accountIndex);
-    store.setKeyname(publicKey, name);
+    await store.setKeyname(publicKey, name);
 
     return [publicKey, name, accountIndex];
   }

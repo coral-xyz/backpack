@@ -45,7 +45,7 @@ export interface HdKeyringFactory {
 
 export interface HdKeyring extends Keyring {
   readonly mnemonic: string;
-  deriveNext(): [string, number];
+  importAccountIndex(accountIndex?: number): [string, number];
   getPublicKey(accountIndex: number): string;
 }
 
