@@ -134,8 +134,8 @@ export class SolanaHdKeyringFactory implements HdKeyringFactory {
 
 class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
   readonly mnemonic: string;
+  readonly derivationPath: DerivationPath;
   private seed: Buffer;
-  private derivationPath: DerivationPath;
   // Invariant: the order of these indices *must* match the order of these
   //            super classes' keypairs.
   private accountIndices: Array<number>;
@@ -173,17 +173,22 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
     super.deletePublicKey(publicKey);
   }
 
-  public deriveNext(): [string, number] {
-    // TODO: this may not be the desired behaviour, what about non-contiguous indices?
-    const nextAccountIndex = Math.max(...this.accountIndices) + 1;
+  /**
+   * Import a new wallet using an account index. if the account index is not
+   * given the next available account index is used.
+   */
+  public importAccountIndex(accountIndex?: number): [string, number] {
+    if (accountIndex === undefined) {
+      accountIndex = Math.max(...this.accountIndices) + 1;
+    }
     const kp = deriveSolanaKeypair(
       this.seed.toString("hex"),
-      nextAccountIndex,
+      accountIndex,
       this.derivationPath
     );
     this.keypairs.push(kp);
-    this.accountIndices.push(nextAccountIndex);
-    return [kp.publicKey.toString(), nextAccountIndex];
+    this.accountIndices.push(accountIndex);
+    return [kp.publicKey.toString(), accountIndex];
   }
 
   public getPublicKey(accountIndex: number): string {

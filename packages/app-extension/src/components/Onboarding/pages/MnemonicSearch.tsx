@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import {
   DerivationPath,
+  LOAD_PUBLIC_KEY_AMOUNT,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
   walletAddressDisplay,
 } from "@coral-xyz/common";
@@ -18,8 +19,6 @@ export const DERIVATION_PATHS = [
   DerivationPath.Bip44,
   DerivationPath.Bip44Change,
 ];
-export const LOAD_PUBKEY_AMOUNT = 20;
-
 export const MnemonicSearch = ({
   blockchain,
   mnemonic,
@@ -41,7 +40,12 @@ export const MnemonicSearch = ({
       for (const derivationPath of DERIVATION_PATHS) {
         const publicKeys = await background.request({
           method: UI_RPC_METHOD_PREVIEW_PUBKEYS,
-          params: [blockchain, mnemonic, derivationPath, LOAD_PUBKEY_AMOUNT],
+          params: [
+            blockchain,
+            mnemonic,
+            derivationPath,
+            LOAD_PUBLIC_KEY_AMOUNT,
+          ],
         });
         const index = publicKeys.findIndex((p: string) => p === publicKey);
         if (index !== -1) {

@@ -134,6 +134,8 @@ export const UI_RPC_METHOD_KEYRING_STORE_LOCK =
   "ui-rpc-method-keyring-store-lock";
 export const UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE =
   "ui-rpc-method-keyring-mnemonic-create";
+export const UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_SYNC =
+  "ui-rpc-method-keyring-mnemonic-sync";
 export const UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS =
   "ui-rpc-method-keyring-read-all-pubkeys";
 export const UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEY_DATA =
@@ -611,3 +613,7 @@ export const WHITELISTED_CHAT_COLLECTIONS: {
     collectionId: "ajM4QBHtZBBRcMqqq9gawdHK28GXcb2yeRs6WBnqhay",
   },
 ];
+
+// Load a fixed amount of public keys for various actions, e.g. import list,
+// searching mnemonics
+export const LOAD_PUBLIC_KEY_AMOUNT = 20;
