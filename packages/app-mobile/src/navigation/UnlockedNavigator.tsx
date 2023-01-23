@@ -20,7 +20,12 @@ import {
 } from "@screens/Unlocked/SendTokenScreen";
 import { WalletListScreen } from "@screens/Unlocked/WalletListScreen";
 
-import { IconCloseModal } from "@components/Icon";
+import {
+  IconCloseModal,
+  TabIconBalances,
+  TabIconApps,
+  TabIconNfts,
+} from "@components/Icon";
 import { NavHeader } from "@components/index";
 import { useTheme } from "@hooks/index";
 
@@ -138,16 +143,19 @@ function TabBarIcon({
 }
 
 function UnlockedBottomTabNavigator(): JSX.Element {
-  const getIcon = (focused: boolean, routeName: string): string => {
+  const theme = useTheme();
+  const getIcon = (routeName: string) => {
     switch (routeName) {
       case "Balances":
-        return focused ? "baguette" : "baguette";
+        return TabIconBalances;
       case "Applications":
-        return focused ? "apps" : "apps";
+        return TabIconApps;
       case "Collectibles":
-        return focused ? "image" : "image";
+        return TabIconNfts;
+      case "Messages":
+        return TabIconNfts;
       default:
-        return "baguette";
+        return TabIconBalances;
     }
   };
 
@@ -159,12 +167,12 @@ function UnlockedBottomTabNavigator(): JSX.Element {
           const title = getHeaderTitle(options, route.name);
           return <NavHeader title={title} navigation={navigation} />;
         },
-        tabBarIcon: ({ focused, color, size }) => {
-          const name = getIcon(focused, route.name);
-          return <TabBarIcon size={size} name={name} color={color} />;
+        tabBarIcon: ({ color, size }) => {
+          const Component = getIcon(route.name);
+          return <Component fill={color} width={size} height={size} />;
         },
-        tabBarActiveTintColor: "#333",
-        tabBarInactiveTintColor: "gray",
+        tabBarActiveTintColor: theme.custom.colors.brandColor,
+        tabBarInactiveTintColor: theme.custom.colors.icon,
       })}
     >
       <Tab.Screen name="Balances" component={BalancesNavigator} />
