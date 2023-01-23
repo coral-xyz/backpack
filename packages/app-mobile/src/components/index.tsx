@@ -147,7 +147,7 @@ export function PrimaryButton({
 }: {
   label: string;
   onPress: () => void;
-  disabled: boolean;
+  disabled?: boolean;
   loading?: boolean;
 }) {
   const theme = useTheme();
@@ -638,7 +638,7 @@ export function CopyWalletFieldInput({
       <Pressable
         onPress={async () => {
           await Clipboard.setStringAsync(publicKey);
-          Alert.alert("Copied to clipboard", publicKey);
+          Alert.alert("Copied to clipboard", walletDisplay);
         }}
       >
         <ContentCopyIcon />
@@ -673,7 +673,7 @@ export function CopyButton({ text }: { text: string }): JSX.Element {
       icon={<ContentCopyIcon size={18} />}
       onPress={async () => {
         await Clipboard.setStringAsync(text);
-        Alert.alert("Copied to clipboard");
+        Alert.alert("Copied to clipboard", text);
       }}
     />
   );
@@ -684,7 +684,7 @@ export function CopyButtonIcon({ text }: { text: string }): JSX.Element {
     <Pressable
       onPress={async () => {
         await Clipboard.setStringAsync(text);
-        Alert.alert("Copied to clipboard");
+        Alert.alert("Copied to clipboard", text);
       }}
     >
       <ContentCopyIcon size={18} />

@@ -43,16 +43,20 @@ export function ImportPrivateKeyScreen({ route }) {
         privateKey,
         existingPublicKeys
       );
-    } catch (e) {
+    } catch (e: any) {
+      Alert.alert("Error Validating", e.toString());
       return;
     }
 
-    await background.request({
-      method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
-      params: [blockchain, secretKeyHex, name],
-    });
-
-    Alert.alert("Added public key");
+    try {
+      await background.request({
+        method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
+        params: [blockchain, secretKeyHex, name],
+      });
+      Alert.alert("Added public key");
+    } catch (e: any) {
+      Alert.alert("Error saving key", e.toString());
+    }
   };
 
   return (

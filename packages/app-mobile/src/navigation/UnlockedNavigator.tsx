@@ -12,7 +12,7 @@ import {
   DepositListScreen,
   DepositSingleScreen,
 } from "@screens/Unlocked/DepositScreen";
-import { NFTCollectiblesNavigator } from "@screens/Unlocked/NftCollectiblesScreen";
+import { NftCollectiblesNavigator } from "@screens/Unlocked/NftCollectiblesScreen";
 import { RecentActivityScreen } from "@screens/Unlocked/RecentActivityScreen";
 import {
   SendTokenDetailScreen,
@@ -169,7 +169,7 @@ function UnlockedBottomTabNavigator(): JSX.Element {
     >
       <Tab.Screen name="Balances" component={BalancesNavigator} />
       <Tab.Screen name="Applications" component={AppListScreen} />
-      <Tab.Screen name="Collectibles" component={NFTCollectiblesNavigator} />
+      <Tab.Screen name="Collectibles" component={NftCollectiblesNavigator} />
     </Tab.Navigator>
   );
 }
