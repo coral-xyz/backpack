@@ -20,13 +20,15 @@ import {
   useRecentSolanaTransactions,
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { EmptyState, Screen } from "@components/index";
 import { useBlockchainLogo, useTheme } from "@hooks/index";
 
 export function RecentActivityScreen() {
+  const insets = useSafeAreaInsets();
   return (
-    <Screen>
+    <Screen style={{ marginBottom: insets.bottom }}>
       <RecentActivity />
     </Screen>
   );
@@ -122,19 +124,20 @@ export function _RecentActivityList({
 }): JSX.Element {
   const theme = useTheme();
   const styles = {
-    flex: 1,
+    flexGrow: 1,
   };
 
   if (transactions.length === 0) {
-    // @ts-ignore
+    // @ts-expect-error
     styles.justifyContent = "center";
-    // @ts-ignore
+    // @ts-expect-error
     styles.alignItems = "center";
   }
 
   return (
     <FlatList
       style={{
+        flex: 1,
         borderRadius: 12,
         borderWidth: 2,
         borderColor: theme.custom.colors.borderFull,
@@ -184,9 +187,9 @@ function RecentActivityListItem({
             <Image
               source={blockchainLogo}
               style={{
+                aspectRatio: 1,
                 width: 12,
-                borderRadius: 2,
-                marginRight: 10,
+                marginRight: 8,
               }}
             />
             <Text
