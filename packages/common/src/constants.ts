@@ -613,3 +613,7 @@ export const WHITELISTED_CHAT_COLLECTIONS: {
     collectionId: "ajM4QBHtZBBRcMqqq9gawdHK28GXcb2yeRs6WBnqhay",
   },
 ];
+
+// Load a fixed amount of public keys for various actions, e.g. import list,
+// searching mnemonics
+export const LOAD_PUBLIC_KEY_AMOUNT = 20;

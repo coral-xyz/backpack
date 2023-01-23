@@ -22,6 +22,7 @@ import {
   EthereumConnectionUrl,
   EthereumExplorer,
   getAddMessage,
+  LOAD_PUBLIC_KEY_AMOUNT,
   NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED,
   NOTIFICATION_AGGREGATE_WALLETS_UPDATED,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
@@ -95,7 +96,6 @@ export const DERIVATION_PATHS = [
   DerivationPath.Bip44,
   DerivationPath.Bip44Change,
 ];
-export const LOAD_PUBKEY_AMOUNT = 20;
 
 export function start(
   events: EventEmitter,
@@ -1160,7 +1160,7 @@ export class Backend {
           blockchain,
           this.keyringStore.activeUserKeyring.exportMnemonic(),
           derivationPath,
-          LOAD_PUBKEY_AMOUNT
+          LOAD_PUBLIC_KEY_AMOUNT
         );
         const searchPublicKeys = serverPublicKeys
           .filter((b) => b.blockchain === blockchain)
