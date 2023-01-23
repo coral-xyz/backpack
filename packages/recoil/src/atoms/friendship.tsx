@@ -1,7 +1,10 @@
 import type { CollectionChatData, Friendship } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import type { EnrichedInboxDb } from "@coral-xyz/common/dist/esm/messages/db";
+import { getFriendshipByUserId } from "@coral-xyz/db";
 import { atomFamily, selectorFamily } from "recoil";
+
+import * as atoms from "./index";
 
 export const friendship = atomFamily<Friendship | null, { userId: string }>({
   key: "friendship",
@@ -10,8 +13,20 @@ export const friendship = atomFamily<Friendship | null, { userId: string }>({
     get:
       ({ userId }: { userId: string }) =>
       async ({ get }: any) => {
-        if (!userId) {
+        const localUser = get(atoms.user);
+        if (!userId || !localUser.uuid) {
           return null;
+        }
+        const friendship = await getFriendshipByUserId(localUser.uuid, userId);
+        if (friendship) {
+          return {
+            id: friendship.friendshipId,
+            areFriends: friendship.are_friends ? true : false,
+            blocked: friendship.blocked === 1 ? true : false,
+            requested: friendship.requested === 1 ? true : false,
+            spam: friendship.spam === 1 ? true : false,
+            remoteRequested: friendship.remoteRequested === 1 ? true : false,
+          };
         }
         try {
           const res = await fetch(`${BACKEND_API_URL}/inbox`, {

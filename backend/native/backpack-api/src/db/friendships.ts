@@ -170,8 +170,23 @@ export const getAllFriendships = async ({
         user2_interacted: true,
       },
     ],
+    auth_friend_requests: [
+      {
+        where: {
+          _or: [{ from: { _eq: uuid } }, { to: { _eq: uuid } }],
+        },
+      },
+      {
+        id: true,
+        from: true,
+        to: true,
+      },
+    ],
   });
-  return response.auth_friendships;
+  return {
+    friendships: response.auth_friendships,
+    friendRequests: response.auth_friend_requests,
+  };
 };
 
 export const getFriendships = async ({

@@ -74,7 +74,7 @@ export class SignalingManager {
                 last_message_sender: message.uuid,
                 last_message: message.message,
                 last_message_timestamp: new Date().toISOString(),
-                unread: 1,
+                unread: message.uuid === this.uuid ? 0 : 1,
               });
             } else {
               if (message.uuid !== this.uuid) {

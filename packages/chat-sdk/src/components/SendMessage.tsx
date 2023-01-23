@@ -234,7 +234,14 @@ export const SendMessage = () => {
     return () => {
       document.removeEventListener("keydown", keyDownTextField);
     };
-  }, [inputRef, selectedFile, uploadedImageUri, selectedMediaKind]);
+  }, [
+    inputRef,
+    selectedFile,
+    uploadedImageUri,
+    selectedMediaKind,
+    activeReply,
+    chats,
+  ]);
 
   const getOfflineMembers = () => {
     if (type === "individual") {

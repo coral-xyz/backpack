@@ -3,7 +3,6 @@ import type {
   EnrichedMessageWithMetadata,
   SubscriptionType,
 } from "@coral-xyz/common";
-import { user } from "@coral-xyz/recoil";
 import { useLiveQuery } from "dexie-react-hooks";
 
 import { refreshUsers } from "../api/users";

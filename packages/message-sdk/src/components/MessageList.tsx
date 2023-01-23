@@ -1,3 +1,4 @@
+import { useLocation } from "react-router-dom";
 import type {
   CollectionChatData,
   EnrichedInboxDb,
@@ -12,7 +13,7 @@ import {
 import { NAV_COMPONENT_MESSAGE_GROUP_CHAT } from "@coral-xyz/common/src/constants";
 import { useUsersFromUuids } from "@coral-xyz/db";
 import { isFirstLastListItemStyle, ProxyImage } from "@coral-xyz/react-common";
-import { useUser } from "@coral-xyz/recoil";
+import { useDecodedSearchParams, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import MarkChatUnreadIcon from "@mui/icons-material/MarkChatUnread";
 import VerifiedIcon from "@mui/icons-material/Verified";
@@ -119,7 +120,9 @@ export function ChatListItem({
   const classes = useStyles();
   const { uuid } = useUser();
   const theme = useCustomTheme();
+  const { props }: any = useDecodedSearchParams();
   const parts = parseMessage(message);
+  const pathname = useLocation().pathname;
   const users = useUsersFromUuids(
     uuid,
     parts.filter((x) => x.type === "tag").map((x) => x.value)
@@ -127,7 +130,7 @@ export function ChatListItem({
   const printText = parts
     .map((x) =>
       x.type === "tag"
-        ? users.find((user) => user?.uuid === x.value)?.username
+        ? users?.find((user) => user?.uuid === x.value)?.username
         : x.value
     )
     .join("");
@@ -167,9 +170,13 @@ export function ChatListItem({
         paddingRight: "16px",
         display: "flex",
         height: "72px",
-        backgroundColor: isUnread
-          ? theme.custom.colors.unreadBackground
-          : theme.custom.colors.nav,
+        backgroundColor:
+          (pathname === "/messages/chat" && props.userId === id) ||
+          (pathname === "/messages/groupchat" && props.id === id)
+            ? theme.custom.colors.background2
+            : isUnread
+            ? theme.custom.colors.unreadBackground
+            : theme.custom.colors.nav,
         borderBottom: isLast
           ? undefined
           : `solid 1pt ${theme.custom.colors.border}`,
@@ -366,5 +373,5 @@ export function RequestsChatItem({
 
 function UserIcon({ image }: any) {
   const classes = useStyles();
-  return <img src={image} className={classes.iconCircularBig} />;
+  return <img src={`${image}?size=25`} className={classes.iconCircularBig} />;
 }

@@ -10,7 +10,6 @@
   "license": "MIT",
   "dependencies": {
     "@coral-xyz/common": "*",
-    "@coral-xyz/recoil": "*",
     "dexie": "^3.2.2",
     "dexie-react-hooks": "^1.1.1",
     "react": "^17.0.2",
