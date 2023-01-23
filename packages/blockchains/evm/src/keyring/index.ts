@@ -136,9 +136,9 @@ export class EthereumHdKeyringFactory implements HdKeyringFactory {
 
 export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
   readonly mnemonic: string;
+  readonly derivationPath: DerivationPath;
   private seed: Buffer;
   private accountIndices: Array<number>;
-  private derivationPath: DerivationPath;
 
   constructor({
     mnemonic,

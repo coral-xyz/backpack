@@ -134,8 +134,8 @@ export class SolanaHdKeyringFactory implements HdKeyringFactory {
 
 class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
   readonly mnemonic: string;
+  readonly derivationPath: DerivationPath;
   private seed: Buffer;
-  private derivationPath: DerivationPath;
   // Invariant: the order of these indices *must* match the order of these
   //            super classes' keypairs.
   private accountIndices: Array<number>;

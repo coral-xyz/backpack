@@ -121,6 +121,10 @@ export class BlockchainKeyring {
     return this.hdKeyring!.mnemonic;
   }
 
+  public derivationPath(): string {
+    return this.hdKeyring!.derivationPath;
+  }
+
   public async importAccountIndex(
     _accountIndex?: number
   ): Promise<[string, string, number]> {

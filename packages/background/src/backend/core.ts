@@ -1171,7 +1171,7 @@ export class Backend {
             (p: string) => p === searchPublicKey
           );
           if (accountIndex !== -1) {
-            let blockchainKeyring;
+            let blockchainKeyring: BlockchainKeyring | undefined = undefined;
             try {
               blockchainKeyring =
                 this.keyringStore.activeUserKeyring.keyringForBlockchain(
@@ -1181,6 +1181,12 @@ export class Backend {
               // Pass
             }
             if (blockchainKeyring) {
+              if (blockchainKeyring.derivationPath() !== derivationPath) {
+                // We can't sync anything that is on a different path than the
+                // one that is in use for the blockchain keyring, keyring does
+                // not support multiple derivation paths
+                continue;
+              }
               const [publicKey, name] =
                 await this.keyringStore.activeUserKeyring
                   .keyringForBlockchain(blockchain)
