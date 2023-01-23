@@ -1,7 +1,9 @@
-import type { CollectionChatData, Friendship } from "@coral-xyz/common";
+import type {
+  CollectionChatData,
+ EnrichedMessage,  Friendship,
+  SubscriptionType } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import type { EnrichedInboxDb } from "@coral-xyz/common/dist/esm/messages/db";
-import { getFriendshipByUserId } from "@coral-xyz/db";
 import { atomFamily, selectorFamily } from "recoil";
 
 import * as atoms from "./index";
@@ -17,7 +19,8 @@ export const friendship = atomFamily<Friendship | null, { userId: string }>({
         if (!userId || !localUser.uuid) {
           return null;
         }
-        const friendship = await getFriendshipByUserId(localUser.uuid, userId);
+        const friendships = get(atoms.friendships({ uuid: localUser?.uuid }));
+        const friendship = friendships?.find((x) => x.remoteUserId === userId);
         if (friendship) {
           return {
             id: friendship.friendshipId,
@@ -65,6 +68,29 @@ export const friendships = atomFamily<
   }),
 });
 
+export const roomChats = atomFamily<
+  EnrichedMessage[] | null | undefined,
+  { uuid: string; room: string; type: SubscriptionType }
+>({
+  key: "chats",
+  default: selectorFamily({
+    key: "chatsDefault",
+    get:
+      ({
+        uuid,
+        room,
+        type,
+      }: {
+        uuid: string;
+        room: string;
+        type: SubscriptionType;
+      }) =>
+      async ({ get }: any) => {
+        return [];
+      },
+  }),
+});
+
 export const requestCount = atomFamily<number, { uuid: string }>({
   key: "requestCount",
   default: selectorFamily({
@@ -88,6 +114,26 @@ export const groupCollections = atomFamily<
       ({ uuid }: { uuid: string }) =>
       async ({ get }: any) => {
         return [];
+      },
+  }),
+});
+
+export const remoteUsersMetadata = atomFamily<
+  { username: string; image: string; color: string; loading: boolean },
+  { uuid: string; remoteUserId: string }
+>({
+  key: "remoteUsersMetadata",
+  default: selectorFamily({
+    key: "remoteUsersMetadataDefault",
+    get:
+      ({ uuid, remoteUserId }: { uuid: string; remoteUserId: string }) =>
+      async ({ get }: any) => {
+        return {
+          username: "",
+          image: "",
+          loading: true,
+          color: "",
+        };
       },
   }),
 });

@@ -6,6 +6,7 @@ import {
   SignalingManager,
   useRoomChatsWithMetadata,
 } from "@coral-xyz/db";
+import { useChats } from "@coral-xyz/recoil";
 
 import { ChatProvider } from "./ChatContext";
 import { FullScreenChat } from "./FullScreenChat";
@@ -59,7 +60,7 @@ export const ChatRoom = ({
     parent_message_author_uuid: "",
     text: "",
   });
-  const chats = useRoomChatsWithMetadata(userId, roomId, type);
+  const chats = useChats({ uuid: userId, room: roomId, type });
   const [refreshing, setRefreshing] = useState(true);
 
   useEffect(() => {

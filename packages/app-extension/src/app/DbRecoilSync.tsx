@@ -1,54 +1,111 @@
 import { useEffect } from "react";
-import {
-  getNftCollectionGroups,
-  useActiveChats,
-  useRequestsCount,
-} from "@coral-xyz/db";
+import type { EnrichedMessage, SubscriptionType } from "@coral-xyz/common";
+import { RecoilSync } from "@coral-xyz/db";
 import {
   friendships,
   groupCollections,
+  remoteUsersMetadata,
   requestCount,
+  roomChats,
   useUser,
 } from "@coral-xyz/recoil";
-import { useRecoilState } from "recoil";
+import { useRecoilCallback, useRecoilState } from "recoil";
 
 export const DbRecoilSync = () => {
   const { uuid } = useUser();
-  const activeChats = useActiveChats(uuid);
-  const collectionsChatMetadata = getNftCollectionGroups(uuid);
-  const count = useRequestsCount(uuid);
-  const [friendshipValue, setFriendshipsValue] = useRecoilState(
+  const [_friendshipValue, setFriendshipsValue] = useRecoilState(
     friendships({ uuid })
   );
-  const [requestCountValue, setRequestCountValue] = useRecoilState(
+  const [_requestCountValue, setRequestCountValue] = useRecoilState(
     requestCount({ uuid })
   );
-  const [groupCollectionsValue, setGroupCollectionsValue] = useRecoilState(
+  const [_groupCollectionsValue, setGroupCollectionsValue] = useRecoilState(
     groupCollections({ uuid })
   );
+  const updateChats = useUpdateChats();
 
-  useEffect(() => {
-    if (JSON.stringify(friendshipValue) === JSON.stringify(activeChats)) {
-      return;
-    }
+  const getGroupedRooms = (
+    chats: EnrichedMessage[]
+  ): {
+    room: string;
+    type: SubscriptionType;
+    messages: EnrichedMessage[];
+  }[] => {
+    const roomMap: { [key: string]: any } = {};
+    chats.forEach((chat) => {
+      const room: string = chat.room;
+      if (!roomMap[room]) {
+        roomMap[room] = {
+          room: chat.room,
+          type: chat.type,
+          messages: [chat],
+        };
+      } else {
+        roomMap[room]?.messages?.push(chat);
+      }
+    });
+    return Object.keys(roomMap).map((roomId: string) => ({
+      room: roomMap[roomId].room,
+      type: roomMap[roomId].type,
+      messages: roomMap[roomId].messages,
+    }));
+  };
+
+  const sync = async (uuid: string) => {
+    const activeChats = await RecoilSync.getInstance().getActiveChats(uuid);
     setFriendshipsValue(activeChats);
-  }, [uuid, activeChats, friendshipValue, setFriendshipsValue]);
+    const activeGroups = await RecoilSync.getInstance().getActiveGroups(uuid);
+    setGroupCollectionsValue(activeGroups);
+    const requestCount = await RecoilSync.getInstance().getRequestCount(uuid);
+    setRequestCountValue(requestCount);
+    const allMessages = await RecoilSync.getInstance().getAllChats(uuid);
+    const groups = getGroupedRooms(allMessages);
+    groups.forEach((group) => {
+      updateChats({
+        uuid,
+        room: group.room,
+        type: group.type,
+        chats: group.messages,
+      });
+    });
+  };
 
   useEffect(() => {
-    if (count !== requestCountValue) {
-      setRequestCountValue(count || 0);
-    }
-  }, [count, requestCountValue, setRequestCountValue]);
-
-  useEffect(() => {
-    if (
-      JSON.stringify(groupCollectionsValue) ===
-      JSON.stringify(collectionsChatMetadata)
-    ) {
-      return;
-    }
-    setGroupCollectionsValue(collectionsChatMetadata || []);
-  }, [collectionsChatMetadata, setGroupCollectionsValue]);
+    sync(uuid);
+  }, [uuid]);
 
   return <></>;
 };
+
+export const useUpdateChats = () =>
+  useRecoilCallback(
+    ({ set }: any) =>
+      async ({
+        uuid,
+        room,
+        type,
+        chats,
+      }: {
+        uuid: string;
+        room: string;
+        type: SubscriptionType;
+        chats: EnrichedMessage[];
+      }) => {
+        set(roomChats({ uuid, room, type }), chats);
+      }
+  );
+
+export const useUpdateRemoteUserMetadata = () =>
+  useRecoilCallback(
+    ({ set }: any) =>
+      async ({
+        uuid,
+        remoteUserId,
+      }: {
+        uuid: string;
+        remoteUserId: string;
+        usermetadata: {};
+      }) => {
+        set(remoteUsersMetadata({ uuid, remoteUserId }));
+      }
+  );

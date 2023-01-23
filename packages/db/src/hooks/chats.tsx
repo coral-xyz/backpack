@@ -92,6 +92,7 @@ export const useRoomChats = (
   type: SubscriptionType
 ) => {
   const reqs = useLiveQuery(async () => {
+    console.error("inside uselivequery");
     return getDb(uuid).messages.where({ room, type }).sortBy("created_at");
   }, [room]);
   return reqs;
@@ -103,28 +104,28 @@ export const useRoomChatsWithMetadata = (
   type: SubscriptionType
 ): EnrichedMessageWithMetadata[] | undefined => {
   const chats = useRoomChats(uuid, room, type);
-  const users = useUsers(uuid, chats || []);
-
-  useEffect(() => {
-    const userIds = chats?.map((chat) => chat.uuid) || [];
-    chats?.forEach((chat) => {
-      const taggedUserIds = getAllUserIdsInMessage(chat.message);
-      taggedUserIds.forEach((x) => userIds.push(x));
-    });
-    const uniqueUserIds = userIds
-      .filter((x, index) => userIds.indexOf(x) === index)
-      .filter((x) => x);
-    refreshUsers(uuid, uniqueUserIds);
-  }, [chats]);
-
+  // const users = useUsers(uuid, chats || []);
+  //
+  // useEffect(() => {
+  //   const userIds = chats?.map((chat) => chat.uuid) || [];
+  //   chats?.forEach((chat) => {
+  //     const taggedUserIds = getAllUserIdsInMessage(chat.message);
+  //     taggedUserIds.forEach((x) => userIds.push(x));
+  //   });
+  //   const uniqueUserIds = userIds
+  //     .filter((x, index) => userIds.indexOf(x) === index)
+  //     .filter((x) => x);
+  //   refreshUsers(uuid, uniqueUserIds);
+  // }, [chats]);
+  // @ts-ignore
   return chats?.map((chat) => ({
     ...chat,
-    image: users?.find((x) => x?.uuid === chat.uuid)?.image || "",
-    username: users?.find((x) => x?.uuid === chat.uuid)?.username || "",
-    color: users?.find((x) => x?.uuid === chat.uuid)?.color,
-    parent_message_author_username: users?.find(
-      (x) => x?.uuid === chat.parent_message_author_uuid
-    )?.username,
+    // image: users?.find((x) => x?.uuid === chat.uuid)?.image || "",
+    // username: users?.find((x) => x?.uuid === chat.uuid)?.username || "",
+    // color: users?.find((x) => x?.uuid === chat.uuid)?.color,
+    // parent_message_author_username: users?.find(
+    //   (x) => x?.uuid === chat.parent_message_author_uuid
+    // )?.username,
   }));
 };
 
