@@ -27,12 +27,14 @@ export const RemoveWallet: React.FC<{
   const nav = useNavStack();
   const background = useBackgroundClient();
   const [showSuccess, setShowSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     nav.setTitle("Remove Wallet");
   }, [nav]);
 
   const onRemove = async () => {
+    setLoading(true);
     if (type === "dehydrated") {
       await background.request({
         method: UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_DELETE,
@@ -44,6 +46,7 @@ export const RemoveWallet: React.FC<{
         params: [blockchain, publicKey],
       });
     }
+    setLoading(false);
     setShowSuccess(true);
   };
 
@@ -133,6 +136,7 @@ export const RemoveWallet: React.FC<{
             label={"Remove"}
             style={{ backgroundColor: theme.custom.colors.negative }}
             onClick={onRemove}
+            disabled={loading}
           />
         </div>
       </div>
