@@ -32,6 +32,7 @@ import {
   useFriendships,
   useNavigation,
   useRedirectUrl,
+  useRequestsOpen,
   useUser,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
@@ -203,10 +204,6 @@ function MessageNativeInner() {
     return <></>;
   }
 
-  if (hash.startsWith("/messages/requests")) {
-    return <NavScreen component={<RequestsScreen />} />;
-  }
-
   return <NavScreen component={<Inbox />} />;
 }
 
@@ -214,9 +211,6 @@ function FullChatPage() {
   const { props } = useDecodedSearchParams<any>();
   const [userId, setRefresh] = useState(props.userId);
   const [collectionId, setCollectionIdRefresh] = useState(props.id);
-  const { uuid } = useUser();
-  const hash = location.hash.slice(1);
-  const activeChats = useFriendships({ uuid });
 
   useEffect(() => {
     if (props.userId !== userId) {
@@ -230,15 +224,13 @@ function FullChatPage() {
       setCollectionIdRefresh(props.id);
     }
   }, [props.id]);
-  const requestsTab =
-    hash.startsWith("/messages/requests") ||
-    (hash.startsWith("/messages/chat") &&
-      !activeChats?.map((x: any) => x.remoteUserId).includes(props.userId));
 
   return (
     <div style={{ height: "100%", display: "flex" }}>
       <div style={{ width: "365px" }}>
-        <Scrollbar>{requestsTab ? <RequestsScreen /> : <Inbox />}</Scrollbar>
+        <Scrollbar>
+          <Inbox />
+        </Scrollbar>
       </div>
       <div
         style={{

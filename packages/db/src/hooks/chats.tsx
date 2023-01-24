@@ -53,41 +53,39 @@ export const useRequestsCount = (uuid: string) => {
 };
 
 export const useUnreadGlobal = (uuid: string) => {
-  // const count = useLiveQuery(async () => {
-  //   return getDb(uuid)
-  //     .inbox.where({ unread: 1, blocked: 0, interacted: 1 })
-  //     .count();
-  // });
-  //
-  // return (count || 0) > 0 ? true : false;
-  return false;
+  const count = useLiveQuery(async () => {
+    return getDb(uuid)
+      .inbox.where({ unread: 1, blocked: 0, interacted: 1 })
+      .count();
+  });
+
+  return (count || 0) > 0 ? true : false;
 };
 
 export const useRequests = (uuid: string) => {
-  return [];
-  // const activeChats = useLiveQuery(async () => {
-  //   return getDb(uuid)
-  //     .inbox.where({ areFriends: 0, interacted: 0, remoteInteracted: 1 })
-  //     .toArray();
-  // });
-  //
-  // const users = useUsers(uuid, activeChats || []);
-  //
-  // useEffect(() => {
-  //   const userIds = activeChats?.map((chat) => chat.remoteUserId) || [];
-  //   const uniqueUserIds = userIds
-  //     .filter((x, index) => userIds.indexOf(x) === index)
-  //     .filter((x) => x);
-  //   refreshUsers(uuid, uniqueUserIds);
-  // }, [activeChats]);
-  //
-  // return activeChats?.map((chat) => ({
-  //   ...chat,
-  //   remoteUserImage:
-  //     users?.find((x) => x?.uuid === chat.remoteUserId)?.image || "",
-  //   remoteUsername:
-  //     users?.find((x) => x?.uuid === chat.remoteUserId)?.username || "",
-  // }));
+  const activeChats = useLiveQuery(async () => {
+    return getDb(uuid)
+      .inbox.where({ areFriends: 0, interacted: 0, remoteInteracted: 1 })
+      .toArray();
+  });
+
+  const users = useUsers(uuid, activeChats || []);
+
+  useEffect(() => {
+    const userIds = activeChats?.map((chat) => chat.remoteUserId) || [];
+    const uniqueUserIds = userIds
+      .filter((x, index) => userIds.indexOf(x) === index)
+      .filter((x) => x);
+    refreshUsers(uuid, uniqueUserIds);
+  }, [activeChats]);
+
+  return activeChats?.map((chat) => ({
+    ...chat,
+    remoteUserImage:
+      users?.find((x) => x?.uuid === chat.remoteUserId)?.image || "",
+    remoteUsername:
+      users?.find((x) => x?.uuid === chat.remoteUserId)?.username || "",
+  }));
 };
 
 export const useRoomChats = (

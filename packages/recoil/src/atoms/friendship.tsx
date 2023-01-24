@@ -6,6 +6,7 @@ import type {
 } from "@coral-xyz/common";
 import { BACKEND_API_URL, getRandomColor } from "@coral-xyz/common";
 import type { EnrichedInboxDb } from "@coral-xyz/common/dist/esm/messages/db";
+import { getFriendshipByUserId } from "@coral-xyz/db";
 import { atomFamily, selectorFamily } from "recoil";
 
 import * as atoms from "./index";
@@ -21,8 +22,7 @@ export const friendship = atomFamily<Friendship | null, { userId: string }>({
         if (!userId || !localUser.uuid) {
           return null;
         }
-        const friendships = get(atoms.friendships({ uuid: localUser?.uuid }));
-        const friendship = friendships?.find((x) => x.remoteUserId === userId);
+        const friendship = await getFriendshipByUserId(localUser.uuid, userId);
         if (friendship) {
           return {
             id: friendship.friendshipId,

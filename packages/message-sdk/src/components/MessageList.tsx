@@ -13,11 +13,16 @@ import {
 import { NAV_COMPONENT_MESSAGE_GROUP_CHAT } from "@coral-xyz/common/src/constants";
 import { useUsersFromUuids } from "@coral-xyz/db";
 import { isFirstLastListItemStyle, ProxyImage } from "@coral-xyz/react-common";
-import { useDecodedSearchParams, useUser } from "@coral-xyz/recoil";
+import {
+  requestsOpen,
+  useDecodedSearchParams,
+  useUser,
+} from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import MarkChatUnreadIcon from "@mui/icons-material/MarkChatUnread";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import { List, ListItem } from "@mui/material";
+import { useRecoilState } from "recoil";
 
 import { ParentCommunicationManager } from "../ParentCommunicationManager";
 
@@ -284,17 +289,15 @@ export function RequestsChatItem({
 }) {
   const classes = useStyles();
   const theme = useCustomTheme();
+  const location = useLocation();
+  const [_, setRequestsOpen] = useRecoilState(requestsOpen);
 
   return (
     <ListItem
       button
       disableRipple
       onClick={() => {
-        ParentCommunicationManager.getInstance().push({
-          title: `Requests`,
-          componentId: NAV_COMPONENT_MESSAGE_REQUESTS,
-          componentProps: {},
-        });
+        setRequestsOpen(true);
       }}
       style={{
         padding: "10px",
