@@ -86,7 +86,9 @@ export const xnfts = atomFamily<
         return xnfts.map((xnft) => {
           return {
             ...xnft,
-            url: xnftUrl(xnft.metadataBlob.properties.bundle),
+            url: xnftUrl(
+              xnft.metadataBlob.xnft.manifest.entrypoints.default.web
+            ),
             iconUrl: externalResourceUri(xnft.metadataBlob.image),
             activeWallet: _activeWallets[Blockchain.SOLANA],
             activeWallets: _activeWallets,
@@ -156,12 +158,12 @@ export const filteredPlugins = selectorFamily<
           // @ts-ignore
           // hide autoinstalled ONE xNft -> entrypoint in collectibles.
           xnft.install.account.xnft.toString() !==
-            "4ekUZj2TKNoyCwnRDstvViCZYkhnhNoWNQpa5bBLwhq4" &&
+            "CkqWjTWzRMAtYN3CSs8Gp4K9H891htmaN1ysNXqcULc8" &&
           // hide autoinstalled Explorer xNft if not in devmode
           (developerMode ||
             // @ts-ignore
             xnft.install.account.xnft.toString() !==
-              "3Db1fHHc2TGrCpBWnu6ZzdQd5pSoyGCmnh6nopNjv4P2")
+              "oRN37pXigdDzpSPTe9ma5UWz9pZ4srKgS8To3juBNRi")
       );
     },
 });
