@@ -11,3 +11,12 @@ select_permissions:
         - post_id
         - user_id
       filter: {}
+  - role: public_avatar
+    permission:
+      columns:
+        - ranking
+        - votes
+        - votes_count
+        - post_id
+        - user_id
+      filter: {}

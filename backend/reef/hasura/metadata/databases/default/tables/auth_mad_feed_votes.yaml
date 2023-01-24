@@ -33,6 +33,17 @@ select_permissions:
         - vote_id
       filter: {}
       allow_aggregations: true
+  - role: public_avatar
+    permission:
+      columns:
+        - post_id
+        - ranking
+        - timestamp
+        - type
+        - user_id
+        - value
+        - vote_id
+      filter: {}
 update_permissions:
   - role: one_xnft
     permission:
