@@ -40,7 +40,6 @@ export function NftDetailScreen({ navigation, route }): JSX.Element | null {
   );
 
   const nft = (state === "hasValue" && contents) || null;
-  console.log("nftdetailscreen", contents);
 
   if (!nftId) {
     return null;

@@ -1,16 +1,9 @@
-import type { Token } from "./components/index";
 import type { Blockchain } from "@coral-xyz/common";
 
 import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 
-import {
-  DangerButton,
-  PrimaryButton,
-  Screen,
-  StyledTextInput,
-  StyledTokenTextInput,
-} from "@components";
+import { Token } from "@@types/types";
 import {
   ETH_NATIVE_MINT,
   NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
@@ -18,15 +11,23 @@ import {
   toTitleCase,
 } from "@coral-xyz/common";
 import { useAnchorContext, useEthereumCtx } from "@coral-xyz/recoil";
-import { useIsValidAddress } from "@hooks";
 import { BigNumber } from "ethers";
 
 import { InputField, InputFieldMaxLabel } from "@components/Form";
+import {
+  DangerButton,
+  PrimaryButton,
+  Screen,
+  StyledTextInput,
+  StyledTokenTextInput,
+} from "@components/index";
+import { useIsValidAddress } from "@hooks/index";
 
 import { SearchableTokenTables } from "./components/Balances";
 
-export function SendTokenDetailScreen({ route }) {
+export function SendTokenDetailScreen({ route }): JSX.Element {
   const { blockchain, token } = route.params;
+  console.log("token:Detail", token);
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
 
@@ -52,32 +53,32 @@ export function SendTokenDetailScreen({ route }) {
     ethereumCtx.provider
   );
 
-  useEffect(() => {
-    if (!token) {
-      return;
-    }
-    if (token.mint === SOL_NATIVE_MINT) {
-      // When sending SOL, account for the tx fee and rent exempt minimum.
-      setFeeOffset(
-        BigNumber.from(5000).add(
-          BigNumber.from(NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS)
-        )
-      );
-    } else if (token.address === ETH_NATIVE_MINT) {
-      // 21,000 GWEI for a standard ETH transfer
-      setFeeOffset(
-        BigNumber.from("21000")
-          .mul(ethereumCtx?.feeData.maxFeePerGas!)
-          .add(
-            BigNumber.from("21000").mul(
-              ethereumCtx?.feeData.maxPriorityFeePerGas!
-            )
-          )
-      );
-    }
-  }, [blockchain, token]);
+  // useEffect(() => {
+  //   if (!token) {
+  //     return;
+  //   }
+  //   if (token.mint === SOL_NATIVE_MINT) {
+  //     // When sending SOL, account for the tx fee and rent exempt minimum.
+  //     setFeeOffset(
+  //       BigNumber.from(5000).add(
+  //         BigNumber.from(NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS)
+  //       )
+  //     );
+  //   } else if (token.address === ETH_NATIVE_MINT) {
+  //     // 21,000 GWEI for a standard ETH transfer
+  //     setFeeOffset(
+  //       BigNumber.from("21000")
+  //         .mul(ethereumCtx?.feeData.maxFeePerGas!)
+  //         .add(
+  //           BigNumber.from("21000").mul(
+  //             ethereumCtx?.feeData.maxPriorityFeePerGas!
+  //           )
+  //         )
+  //     );
+  //   }
+  // }, [blockchain, token, ethereumCtx?.feeData]);
 
-  const amountSubFee = BigNumber.from(token!.nativeBalance).sub(feeOffset);
+  const amountSubFee = BigNumber.from(token.nativeBalance).sub(feeOffset);
   const maxAmount = amountSubFee.gt(0) ? amountSubFee : BigNumber.from(0);
   const exceedsBalance = amount && amount.gt(maxAmount);
   const isSendDisabled = !isValidAddress || amount === null || !!exceedsBalance;
@@ -131,18 +132,21 @@ export function SendTokenDetailScreen({ route }) {
   );
 }
 
-export function SendTokenListScreen({ navigation }) {
-  const onPressTokenRow = (blockchain: Blockchain, token: Token) => {
-    navigation.push("SendTokenModal", {
-      blockchain,
-      token,
-    });
-  };
-
+export function SendTokenListScreen({ navigation }): JSX.Element {
   return (
     <Screen>
       <SearchableTokenTables
-        onPressRow={onPressTokenRow}
+        onPressRow={(blockchain: Blockchain, token: Token) => {
+          const title = `Send ${toTitleCase(blockchain)} / ${token.ticker}`;
+          navigation.push("SendTokenModal", {
+            title,
+            blockchain,
+            token: {
+              ...token,
+              nativeBalance: token.nativeBalance.toString(),
+            },
+          });
+        }}
         customFilter={(token: Token) => {
           if (token.mint && token.mint === SOL_NATIVE_MINT) {
             return true;

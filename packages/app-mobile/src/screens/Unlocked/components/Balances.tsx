@@ -1,29 +1,29 @@
 // TODO(peter) one thing we might need to make sure is that when we wrap these FlatLists in a ScrollView, we can't nest virtualized lists.
 // This means we might just use the scrollview directly from within a flatlist by using ListHeaderComponent and ListFooterComponent
-import type { Token } from "./index";
+import type { Token } from "@@types/types";
 import type { Blockchain } from "@coral-xyz/common";
 import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
 
 import React, { useEffect, useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
+import { formatUSD } from "@coral-xyz/common";
+import {
+  blockchainBalancesSorted,
+  allWalletsDisplayed,
+} from "@coral-xyz/recoil";
+import { useNavigation } from "@react-navigation/native";
+import { useRecoilValueLoadable } from "recoil";
+
+import { ExpandCollapseIcon } from "@components/Icon";
 import {
   ListRowSeparator,
   Margin,
   ProxyImage,
   Row,
   StyledTextInput,
-} from "@components";
-import { formatUSD } from "@coral-xyz/common";
-import {
-  blockchainBalancesSorted,
-  allWalletsDisplayed,
-} from "@coral-xyz/recoil"; // recoil(done)
-import { useTheme } from "@hooks";
-import { useNavigation } from "@react-navigation/native";
-import { useRecoilValueLoadable } from "recoil";
-
-import { ExpandCollapseIcon } from "@components/Icon";
+} from "@components/index";
+import { useTheme } from "@hooks/index";
 
 import { TableHeader } from "./index";
 
