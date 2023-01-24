@@ -207,17 +207,16 @@ function validateSecretKey(
       publicKey: keypair.publicKey.toString(),
     };
   } else if (blockchain === Blockchain.ETHEREUM) {
+    let wallet;
     try {
-      const wallet = new ethers.Wallet(secretKey);
-
-      if (existingPublicKeys.includes(wallet.publicKey)) {
-        throw new Error("Key already exists");
-      }
-
-      return { privateKey: wallet.privateKey, publicKey: wallet.publicKey };
+      wallet = new ethers.Wallet(secretKey);
     } catch (_) {
       throw new Error("Invalid private key");
     }
+    if (existingPublicKeys.includes(wallet.address)) {
+      throw new Error("Key already exists");
+    }
+    return { privateKey: wallet.privateKey, publicKey: wallet.address };
   }
   throw new Error("secret key validation not implemented for blockchain");
 }
