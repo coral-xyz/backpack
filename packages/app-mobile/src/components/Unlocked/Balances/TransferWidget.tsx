@@ -1,21 +1,19 @@
-import type { Token } from "./components/index";
-
 import { Pressable, Text, View } from "react-native";
 
-import { Margin } from "@components";
-import { Blockchain, STRIPE_ENABLED } from "@coral-xyz/common";
+import { Token, NavTokenAction, NavTokenOptions } from "@@types/types";
+import { Blockchain /* STRIPE_ENABLED */ } from "@coral-xyz/common";
 import {
   // SwapProvider, // TODO(peter): broken
   enabledBlockchains as enabledBlockchainsAtom,
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useTheme } from "@hooks";
 import { useRecoilValueLoadable } from "recoil";
+
+import { Margin } from "@components/index";
+import { useTheme } from "@hooks/index";
 
 const HorizontalSpacer = () => <View style={{ width: 16 }} />;
 const ENABLE_ONRAMP = false;
-
-type Route = "Receive" | "Send" | "Swap";
 
 function SwapProvider({ children, blockchain, tokenAddress }) {
   return children;
@@ -29,7 +27,8 @@ export function TransferWidget({
 }: {
   blockchain?: Blockchain;
   address?: string;
-  onPressOption: (option: string, options: any) => void;
+  rampEnabled: boolean;
+  onPressOption: (action: NavTokenAction, options: NavTokenOptions) => void;
   token?: Token;
 }) {
   const eb = useRecoilValueLoadable(enabledBlockchainsAtom);
@@ -39,7 +38,8 @@ export function TransferWidget({
     blockchain !== Blockchain.ETHEREUM &&
     enabledBlockchains.includes(Blockchain.SOLANA);
 
-  const onPress = (route: Route, options: any) => onPressOption(route, options);
+  const onPress = (route: NavTokenAction, options: NavTokenOptions) =>
+    onPressOption(route, options);
 
   return (
     <View
@@ -126,7 +126,7 @@ function SwapButton({
 }: {
   blockchain?: Blockchain;
   address?: string;
-  onPress: (route: Route, options: any) => void;
+  onPress: (route: NavTokenAction, options: NavTokenOptions) => void;
 }) {
   return (
     <SwapProvider blockchain={Blockchain.SOLANA} tokenAddress={address}>
@@ -145,7 +145,7 @@ function SendButton({
   token,
 }: {
   blockchain?: Blockchain;
-  onPress: (route: Route, options: any) => void;
+  onPress: (route: NavTokenAction, options: NavTokenOptions) => void;
   token?: Token;
 }) {
   return (
@@ -162,7 +162,7 @@ function ReceiveButton({
   onPress,
 }: {
   blockchain?: Blockchain;
-  onPress: (route: Route, options: any) => void;
+  onPress: (route: NavTokenAction, options: NavTokenOptions) => void;
 }) {
   return (
     <TransferButton

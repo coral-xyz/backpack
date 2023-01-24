@@ -1,5 +1,4 @@
 import type { Blockchain } from "@coral-xyz/common";
-import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
 
 import { Image, Pressable, StyleSheet, Text } from "react-native";
 
@@ -8,9 +7,6 @@ import { MaterialIcons } from "@expo/vector-icons";
 
 import { Row } from "@components/index";
 import { useBlockchainLogo, useTheme } from "@hooks/index";
-
-// TODO move this
-export type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
 
 export function TableHeader({
   onPress,
