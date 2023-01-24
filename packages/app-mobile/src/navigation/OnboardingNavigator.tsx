@@ -15,7 +15,6 @@ import * as Linking from "expo-linking";
 
 import {
   BACKEND_API_URL,
-  BACKPACK_FEATURE_USERNAMES,
   BACKPACK_FEATURE_XNFT,
   DerivationPath,
   DISCORD_INVITE_LINK,
@@ -712,7 +711,7 @@ function OnboardingImportAccountsScreen({
 function OnboardingFinishedScreen() {
   const background = useBackgroundClient();
   const { onboardingData } = useOnboardingData();
-  let {
+  const {
     password,
     mnemonic,
     blockchainKeyrings,
@@ -791,10 +790,6 @@ function OnboardingFinishedScreen() {
       //
       // If usernames are disabled, use a default one for developing.
       //
-      if (!BACKPACK_FEATURE_USERNAMES) {
-        username = uuidv4().split("-")[0];
-      }
-
       if (isAddingAccount) {
         await background.request({
           method: UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,

@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import type { Blockchain, BlockchainKeyringInit } from "@coral-xyz/common";
 import {
-  BACKPACK_FEATURE_JWT,
-  BACKPACK_FEATURE_USERNAMES,
   getAuthMessage,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
   UI_RPC_METHOD_USER_JWT_UPDATE,
@@ -40,26 +38,19 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
     publicKeys: Array<{ blockchain: Blockchain; publicKey: string }>;
   } | null>(null);
 
-  const jwtEnabled = !!(BACKPACK_FEATURE_USERNAMES && BACKPACK_FEATURE_JWT);
-
   /**
    * Check authentication status and take required actions to authenticate if
    * not authenticated.
    */
   useEffect(() => {
     (async () => {
-      if (!jwtEnabled) {
-        // Already authenticated or not using JWTs
-        setLoading(false);
-      } else {
-        setLoading(true);
-        setAuthSignature(null);
-        const result = await checkAuthentication(user.username, user.jwt);
-        // These set state calls should be batched
-        if (result) {
-          const { isAuthenticated, publicKeys } = result;
-          setServerAccountState({ isAuthenticated, publicKeys });
-        }
+      setLoading(true);
+      setAuthSignature(null);
+      const result = await checkAuthentication(user.username, user.jwt);
+      // These set state calls should be batched
+      if (result) {
+        const { isAuthenticated, publicKeys } = result;
+        setServerAccountState({ isAuthenticated, publicKeys });
       }
     })();
     // Rerun authentication on user changes
@@ -138,7 +129,7 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
     <>
       {loading ? (
         <Loading />
-      ) : jwtEnabled && serverAccountState ? (
+      ) : serverAccountState ? (
         <WithSyncAccount serverPublicKeys={serverAccountState.publicKeys}>
           {children}
         </WithSyncAccount>

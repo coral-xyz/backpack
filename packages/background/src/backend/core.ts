@@ -12,8 +12,6 @@ import type {
 import {
   BACKEND_API_URL,
   BACKEND_EVENT,
-  BACKPACK_FEATURE_JWT,
-  BACKPACK_FEATURE_USERNAMES,
   Blockchain,
   DEFAULT_DARK_MODE,
   defaultPreferences,
@@ -89,8 +87,6 @@ import * as store from "./store";
 import { getWalletDataForUser, setUser, setWalletDataForUser } from "./store";
 
 const { base58: bs58 } = ethers.utils;
-
-const jwtEnabled = !!(BACKPACK_FEATURE_USERNAMES && BACKPACK_FEATURE_JWT);
 
 export const DERIVATION_PATHS = [
   DerivationPath.Bip44,
@@ -844,17 +840,15 @@ export class Backend {
   async keyringDeriveWallet(blockchain: Blockchain): Promise<string> {
     const [publicKey, name] = await this.keyringStore.deriveNextKey(blockchain);
 
-    if (jwtEnabled) {
-      try {
-        await this.userAccountPublicKeyCreate(blockchain, publicKey);
-      } catch (error) {
-        // Something went wrong persisting to server, roll back changes to the
-        // keyring. This is not a complete rollback of state changes, because
-        // the next account index gets incremented. This is the correct behaviour
-        // because it should allow for sensible retries on conflicts.
-        await this.keyringKeyDelete(blockchain, publicKey);
-        throw error;
-      }
+    try {
+      await this.userAccountPublicKeyCreate(blockchain, publicKey);
+    } catch (error) {
+      // Something went wrong persisting to server, roll back changes to the
+      // keyring. This is not a complete rollback of state changes, because
+      // the next account index gets incremented. This is the correct behaviour
+      // because it should allow for sensible retries on conflicts.
+      await this.keyringKeyDelete(blockchain, publicKey);
+      throw error;
     }
 
     this.events.emit(BACKEND_EVENT, {
@@ -947,18 +941,14 @@ export class Backend {
       }
     }
 
-    if (jwtEnabled) {
-      // Remove the public key from the Backpack API
-      await this.userAccountPublicKeyDelete(blockchain, publicKey);
-    }
+    // Remove the public key from the Backpack API
+    await this.userAccountPublicKeyDelete(blockchain, publicKey);
 
     try {
       await this.keyringStore.keyDelete(blockchain, publicKey);
     } catch (error) {
       // Add the public key back, i.e. revert the delete from above
-      if (jwtEnabled) {
-        await this.userAccountPublicKeyCreate(blockchain, publicKey);
-      }
+      await this.userAccountPublicKeyCreate(blockchain, publicKey);
       throw error;
     }
 
@@ -1050,15 +1040,13 @@ export class Backend {
       name
     );
 
-    if (jwtEnabled) {
-      try {
-        await this.userAccountPublicKeyCreate(blockchain, publicKey);
-      } catch (error) {
-        // Something went wrong persisting to server, roll back changes to the
-        // keyring.
-        await this.keyringKeyDelete(blockchain, publicKey);
-        throw error;
-      }
+    try {
+      await this.userAccountPublicKeyCreate(blockchain, publicKey);
+    } catch (error) {
+      // Something went wrong persisting to server, roll back changes to the
+      // keyring.
+      await this.keyringKeyDelete(blockchain, publicKey);
+      throw error;
     }
 
     this.events.emit(BACKEND_EVENT, {
@@ -1127,15 +1115,13 @@ export class Backend {
       account,
       publicKey
     );
-    if (jwtEnabled) {
-      try {
-        await this.userAccountPublicKeyCreate(blockchain, publicKey, signature);
-      } catch (error) {
-        // Something went wrong persisting to server, roll back changes to the
-        // keyring.
-        await this.keyringKeyDelete(blockchain, publicKey);
-        throw error;
-      }
+    try {
+      await this.userAccountPublicKeyCreate(blockchain, publicKey, signature);
+    } catch (error) {
+      // Something went wrong persisting to server, roll back changes to the
+      // keyring.
+      await this.keyringKeyDelete(blockchain, publicKey);
+      throw error;
     }
     // Set the active wallet to the newly added public key
     await this.activeWalletUpdate(publicKey, blockchain);
@@ -1555,18 +1541,16 @@ export class Backend {
     );
 
     // Add the new public key to the API
-    if (jwtEnabled) {
-      try {
-        await this.userAccountPublicKeyCreate(
-          blockchain,
-          newPublicKey,
-          signature
-        );
-      } catch (error) {
-        // Roll back the added blockchain keyring
-        await this.keyringStore.blockchainKeyringRemove(blockchain);
-        throw error;
-      }
+    try {
+      await this.userAccountPublicKeyCreate(
+        blockchain,
+        newPublicKey,
+        signature
+      );
+    } catch (error) {
+      // Roll back the added blockchain keyring
+      await this.keyringStore.blockchainKeyringRemove(blockchain);
+      throw error;
     }
 
     const publicKeyData = await this.keyringStoreReadAllPubkeyData();
