@@ -1,11 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import type { MessageKind, MessageMetadata } from "@coral-xyz/common";
 import { BACKEND_API_URL, CHAT_MESSAGES } from "@coral-xyz/common";
-import {
-  createEmptyFriendship,
-  SignalingManager,
-  useDbUser,
-} from "@coral-xyz/db";
+import { createEmptyFriendship, useDbUser } from "@coral-xyz/db";
+import { SignalingManager } from "@coral-xyz/react-common";
 import { useActiveSolanaWallet, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import ArrowForwardIos from "@mui/icons-material/ArrowForwardIos";

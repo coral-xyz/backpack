@@ -1,20 +1,17 @@
 import React from "react";
 import { NAV_COMPONENT_MESSAGE_PROFILE, parseMessage } from "@coral-xyz/common";
-import { useUsersFromUuids } from "@coral-xyz/db";
-import { useNavigation, useUser } from "@coral-xyz/recoil";
+import { useNavigation } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Skeleton } from "@mui/material";
 import Linkify from "linkify-react";
 
+import { useChatContext } from "./ChatContext";
+
 export function ParsedMessage({ message }) {
-  const { uuid } = useUser();
   const { push } = useNavigation();
   const parts = parseMessage(message);
   const theme = useCustomTheme();
-  const users = useUsersFromUuids(
-    uuid,
-    parts.filter((x) => x.type === "tag").map((x) => x.value)
-  );
+  const { usersMetadata } = useChatContext();
   return (
     <div style={{ display: "flex" }}>
       {parts.map((part) => {
@@ -25,7 +22,7 @@ export function ParsedMessage({ message }) {
             </span>
           );
         } else {
-          const user = users?.find((x) => x?.uuid === part.value);
+          const user = usersMetadata[part.value];
           if (user) {
             return (
               <div

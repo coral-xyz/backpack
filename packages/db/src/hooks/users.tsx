@@ -24,37 +24,39 @@ export const useUsers = (uuid: string, chats: any[]) => {
 };
 
 export const useUsersFromUuids = (uuid: string, uuids: string[]) => {
-  const [existingUuids, setExistingUuids] = useState<string[]>([]);
-  const reqs = useLiveQuery(async () => {
-    const userUuids = existingUuids || [];
-    const uniqueUserUuids = userUuids.filter(
-      (x, index) => userUuids.indexOf(x) === index
-    );
-    refreshUsers(uuid, uniqueUserUuids);
-    return getDb(uuid).users.bulkGet(uniqueUserUuids);
-  }, [existingUuids]);
-
-  useEffect(() => {
-    if (JSON.stringify(existingUuids) === JSON.stringify(uuids)) {
-      return;
-    }
-    setExistingUuids(uuids);
-  }, [uuids]);
-
-  return reqs || [];
+  // const [existingUuids, setExistingUuids] = useState<string[]>([]);
+  // const reqs = useLiveQuery(async () => {
+  //   const userUuids = existingUuids || [];
+  //   const uniqueUserUuids = userUuids.filter(
+  //     (x, index) => userUuids.indexOf(x) === index
+  //   );
+  //   refreshUsers(uuid, uniqueUserUuids);
+  //   return getDb(uuid).users.bulkGet(uniqueUserUuids);
+  // }, [existingUuids]);
+  //
+  // useEffect(() => {
+  //   if (JSON.stringify(existingUuids) === JSON.stringify(uuids)) {
+  //     return;
+  //   }
+  //   setExistingUuids(uuids);
+  // }, [uuids]);
+  //
+  // return reqs || [];
+  return [];
 };
 
 export const useDbUser = (
   uuid: string,
   remoteUserId: string
 ): UserMetadata | undefined => {
-  const reqs = useLiveQuery(async () => {
-    if (!remoteUserId) {
-      return {};
-    }
-    refreshUsers(uuid, [remoteUserId]);
-    return getDb(uuid).users.get(remoteUserId);
-  }, [uuid, remoteUserId]);
-
-  return reqs as UserMetadata | undefined;
+  // const reqs = useLiveQuery(async () => {
+  //   if (!remoteUserId) {
+  //     return {};
+  //   }
+  //   refreshUsers(uuid, [remoteUserId]);
+  //   return getDb(uuid).users.get(remoteUserId);
+  // }, [uuid, remoteUserId]);
+  //
+  // return reqs as UserMetadata | undefined;
+  return undefined;
 };

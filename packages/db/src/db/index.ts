@@ -24,7 +24,7 @@ export class BackpackDb extends Dexie {
 
   constructor(uuid) {
     super(`DB_${uuid}`);
-    this.version(11).stores({
+    this.version(12).stores({
       inbox: "remoteUserId, id, blocked, interacted, areFriends",
       messages: "client_generated_uuid, room, type, from_http_server",
       users: "uuid",

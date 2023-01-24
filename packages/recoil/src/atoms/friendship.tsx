@@ -1,8 +1,10 @@
 import type {
   CollectionChatData,
- EnrichedMessage,  Friendship,
-  SubscriptionType } from "@coral-xyz/common";
-import { BACKEND_API_URL } from "@coral-xyz/common";
+  EnrichedMessage,
+  Friendship,
+  SubscriptionType,
+} from "@coral-xyz/common";
+import { BACKEND_API_URL, getRandomColor } from "@coral-xyz/common";
 import type { EnrichedInboxDb } from "@coral-xyz/common/dist/esm/messages/db";
 import { atomFamily, selectorFamily } from "recoil";
 
@@ -131,7 +133,7 @@ export const remoteUsersMetadata = atomFamily<
         return {
           username: "",
           image: "",
-          loading: true,
+          loading: false,
           color: "",
         };
       },

@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import type { EnrichedMessage, SubscriptionType } from "@coral-xyz/common";
 import { RecoilSync } from "@coral-xyz/db";
+import { SignalingManager } from "@coral-xyz/react-common";
 import {
   friendships,
   groupCollections,
-  remoteUsersMetadata,
   requestCount,
   roomChats,
   useUser,
@@ -74,38 +74,91 @@ export const DbRecoilSync = () => {
     sync(uuid);
   }, [uuid]);
 
+  useEffect(() => {
+    SignalingManager.getInstance().onUpdateRecoil = async (
+      props:
+        | {
+            type: "friendship";
+          }
+        | { type: "collection" }
+        | {
+            type: "chat";
+            payload: {
+              uuid: string;
+              room: string;
+              type: SubscriptionType;
+              clear?: boolean;
+              chats: EnrichedMessage[];
+            };
+          }
+    ) => {
+      switch (props.type) {
+        case "friendship":
+          const activeChats = await RecoilSync.getInstance().getActiveChats(
+            uuid
+          );
+          setFriendshipsValue(activeChats);
+          break;
+        case "collection":
+          const activeGroups = await RecoilSync.getInstance().getActiveGroups(
+            uuid
+          );
+          setGroupCollectionsValue(activeGroups);
+          break;
+        case "chat":
+          updateChats({
+            uuid: props.payload.uuid,
+            room: props.payload.room,
+            type: props.payload.type,
+            chats: props.payload.chats,
+            clear: props.payload.clear,
+          });
+      }
+    };
+  }, []);
+
   return <></>;
 };
 
 export const useUpdateChats = () =>
   useRecoilCallback(
-    ({ set }: any) =>
+    ({ set, snapshot }: any) =>
       async ({
         uuid,
         room,
         type,
         chats,
+        clear,
       }: {
         uuid: string;
         room: string;
         type: SubscriptionType;
         chats: EnrichedMessage[];
+        clear?: boolean;
       }) => {
-        set(roomChats({ uuid, room, type }), chats);
+        const currentChats = snapshot.getLoadable(
+          roomChats({ uuid, room, type })
+        );
+        const allChats = merge(clear ? [] : currentChats.valueMaybe(), chats);
+        set(roomChats({ uuid, room, type }), allChats);
       }
   );
 
-export const useUpdateRemoteUserMetadata = () =>
-  useRecoilCallback(
-    ({ set }: any) =>
-      async ({
-        uuid,
-        remoteUserId,
-      }: {
-        uuid: string;
-        remoteUserId: string;
-        usermetadata: {};
-      }) => {
-        set(remoteUsersMetadata({ uuid, remoteUserId }));
-      }
+const merge = (
+  originalChats: EnrichedMessage[] | undefined,
+  updatedChats: EnrichedMessage[]
+) => {
+  if (!originalChats) {
+    return updatedChats.sort((a, b) => (a.created_at < b.created_at ? -1 : 1));
+  }
+  const chatMapping: { [key: string]: EnrichedMessage } = {};
+  originalChats.forEach(
+    (chat) => (chatMapping[chat.client_generated_uuid] = chat)
   );
+  updatedChats.forEach(
+    (chat) => (chatMapping[chat.client_generated_uuid] = chat)
+  );
+  return Object.keys(chatMapping)
+    .map((client_generated_uuid) => chatMapping[client_generated_uuid])
+    .sort((a, b) => (a.created_at < b.created_at ? -1 : 1));
+};

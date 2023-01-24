@@ -1,8 +1,6 @@
-import { useLiveQuery } from "dexie-react-hooks";
+import type { SubscriptionType } from "@coral-xyz/common";
 
 import { getDb } from "../db";
-
-import { refreshFriendships } from "./friendships";
 
 export class RecoilSync {
   private static instance: RecoilSync;
@@ -14,17 +12,6 @@ export class RecoilSync {
     }
     return this.instance;
   }
-
-  async init(uuid: string) {
-    await this.initFriendships(uuid);
-  }
-
-  async initFriendships(uuid: string) {
-    await refreshFriendships(uuid);
-    await this.initGroups(uuid);
-  }
-
-  async initGroups(uuid: string) {}
 
   getActiveChats(uuid: string) {
     return getDb(uuid)
@@ -49,5 +36,13 @@ export class RecoilSync {
 
   getAllChats(uuid: string) {
     return getDb(uuid).messages.toArray();
+  }
+
+  getChatsForRoom(uuid: string, room: string, type: SubscriptionType) {
+    return getDb(uuid).messages.where({ room, type }).sortBy("created_at");
+  }
+
+  getAllUserMetadata(uuid: string) {
+    return getDb(uuid).users.toArray();
   }
 }

@@ -1,4 +1,4 @@
-import type { SubscriptionType } from "@coral-xyz/common";
+import type { CollectionChatData,SubscriptionType  } from "@coral-xyz/common";
 import { useRecoilValue } from "recoil";
 
 import {
@@ -21,7 +21,11 @@ export function useRequestsCount({ uuid }: { uuid: string }): any {
   return useRecoilValue(requestCount({ uuid }));
 }
 
-export function useGroupCollections({ uuid }: { uuid: string }): any {
+export function useGroupCollections({
+  uuid,
+}: {
+  uuid: string;
+}): CollectionChatData[] {
   return useRecoilValue(groupCollections({ uuid }));
 }
 

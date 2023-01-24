@@ -173,7 +173,7 @@ export function ChatListItem({
         backgroundColor:
           (pathname === "/messages/chat" && props.userId === id) ||
           (pathname === "/messages/groupchat" && props.id === id)
-            ? ""
+            ? theme.custom.colors.bg4
             : isUnread
             ? theme.custom.colors.unreadBackground
             : theme.custom.colors.nav,

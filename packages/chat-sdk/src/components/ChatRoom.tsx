@@ -1,12 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
-import type { SubscriptionType } from "@coral-xyz/common";
-import { SUBSCRIBE, UNSUBSCRIBE } from "@coral-xyz/common";
-import {
-  refreshChatsFor,
-  SignalingManager,
-  useRoomChatsWithMetadata,
-} from "@coral-xyz/db";
-import { useChats } from "@coral-xyz/recoil";
+import type {
+  EnrichedMessageWithMetadata,
+  SubscriptionType,
+} from "@coral-xyz/common";
+import { EnrichedMessage, SUBSCRIBE, UNSUBSCRIBE } from "@coral-xyz/common";
+import { refreshChatsFor, SignalingManager , useChatsWithMetadata } from "@coral-xyz/react-common";
 
 import { ChatProvider } from "./ChatContext";
 import { FullScreenChat } from "./FullScreenChat";
@@ -60,11 +58,12 @@ export const ChatRoom = ({
     parent_message_author_uuid: "",
     text: "",
   });
-  const chats = useChats({ uuid: userId, room: roomId, type });
+  const { chats, usersMetadata } = useChatsWithMetadata({ room: roomId, type });
   const [refreshing, setRefreshing] = useState(true);
 
   useEffect(() => {
     if (roomId) {
+      setRefreshing(true);
       refreshChatsFor(userId, roomId, type, nftMint, publicKey)
         .then(() => {
           setRefreshing(false);
@@ -139,6 +138,7 @@ export const ChatRoom = ({
       reconnecting={reconnecting}
       nftMint={nftMint}
       publicKey={publicKey}
+      usersMetadata={usersMetadata}
     >
       <FullScreenChat />
     </ChatProvider>

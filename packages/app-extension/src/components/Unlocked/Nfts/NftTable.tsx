@@ -1,7 +1,7 @@
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import Autosizer from "react-virtualized-auto-sizer";
 import { VariableSizeList } from "react-window";
-import type { Blockchain, NftCollection } from "@coral-xyz/common";
+import type { Blockchain,   CollectionChatData,NftCollection } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
   NAV_COMPONENT_NFT_COLLECTION,
@@ -10,12 +10,12 @@ import {
   TokenMetadata,
 } from "@coral-xyz/common";
 import { NAV_COMPONENT_NFT_CHAT } from "@coral-xyz/common/dist/esm/constants";
-import { getNftCollectionGroups } from "@coral-xyz/db";
 import { Loading } from "@coral-xyz/react-common";
 import {
   nftById,
   useAllWallets,
   useBlockchainConnectionUrl,
+  useGroupCollections,
   useNavigation,
   useUser,
 } from "@coral-xyz/recoil";
@@ -344,7 +344,7 @@ function NftCollectionCard({
       nftId: collectionDisplayNftId,
     })
   );
-  const collectionsChatMetadata = getNftCollectionGroups(uuid);
+  const collectionsChatMetadata = useGroupCollections({ uuid });
 
   const init = async () => {
     await fetch(`${BACKEND_API_URL}/nft/bulk`, {
@@ -418,7 +418,7 @@ function NftCollectionCard({
   return (
     <GridCard
       showNotificationBubble={collectionsChatMetadata?.find(
-        (x) =>
+        (x: CollectionChatData) =>
           x.collectionId === collection.metadataCollectionId &&
           x.lastMessageUuid !== x.lastReadMessage
       )}
