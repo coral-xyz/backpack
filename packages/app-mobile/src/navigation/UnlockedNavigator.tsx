@@ -61,20 +61,19 @@ export default function UnlockedNavigator(): JSX.Element {
           component={AccountSettingsNavigator}
         />
       </Stack.Group>
-      <Stack.Group screenOptions={{ presentation: "modal", headerShown: true }}>
-        <Stack.Screen
-          name="RecentActivity"
-          component={RecentActivityScreen}
-          options={{
-            title: "Recent Activity",
-            headerBackTitleVisible: false,
-            headerTintColor: theme.custom.colors.fontColor,
-            headerBackImage: IconCloseModal,
-            // headerStyle: {
-            //   backgroundColor: theme.custom.colors.background,
-            // },
-          }}
-        />
+      <Stack.Group
+        screenOptions={{
+          presentation: "modal",
+          headerShown: true,
+          headerBackTitleVisible: false,
+          headerTintColor: theme.custom.colors.fontColor,
+          headerBackImage: IconCloseModal,
+          // headerStyle: {
+          //   backgroundColor: theme.custom.colors.background,
+          // },
+        }}
+      >
+        <Stack.Screen name="RecentActivity" component={RecentActivityScreen} />
         <Stack.Screen
           options={{ title: "Deposit" }}
           name="DepositList"
@@ -91,30 +90,6 @@ export default function UnlockedNavigator(): JSX.Element {
           component={SendTokenListScreen}
         />
         <Stack.Screen
-          name="wallet-picker"
-          component={WalletListScreen}
-          options={({ navigation }) => {
-            return {
-              title: "Wallets",
-              headerLeft: undefined,
-              headerRight: ({ tintColor }) => {
-                return (
-                  <Pressable
-                    onPress={() => navigation.navigate("edit-wallets")}
-                  >
-                    <MaterialIcons
-                      name="settings"
-                      size={24}
-                      style={{ padding: 8 }}
-                      color={tintColor}
-                    />
-                  </Pressable>
-                );
-              },
-            };
-          }}
-        />
-        <Stack.Screen
           name="SendTokenModal"
           component={SendTokenDetailScreen}
           options={({ route }) => {
@@ -128,6 +103,15 @@ export default function UnlockedNavigator(): JSX.Element {
           options={{ title: "Swap" }}
           name="SwapModal"
           component={RecentActivityModal}
+        />
+        <Stack.Screen
+          name="wallet-picker"
+          component={WalletListScreen}
+          options={({ navigation }) => {
+            return {
+              title: "Wallets",
+            };
+          }}
         />
       </Stack.Group>
     </Stack.Navigator>
