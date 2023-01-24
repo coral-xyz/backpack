@@ -128,7 +128,7 @@ export function ChatListItem({
   const { props }: any = useDecodedSearchParams();
   const parts = parseMessage(message);
   const pathname = useLocation().pathname;
-  const users = useUsersFromUuids(
+  const users: any = useUsersFromUuids(
     uuid,
     parts.filter((x) => x.type === "tag").map((x) => x.value)
   );
