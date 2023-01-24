@@ -4,6 +4,7 @@ import {
   DefaultTheme,
   NavigationContainer,
 } from "@react-navigation/native";
+import { NFTCollectionListScreen } from "@screens/Unlocked/NftCollectiblesScreen";
 
 import { NotFoundScreen } from "../screens/NotFoundScreen";
 import { LockedScreen } from "./LockedNavigator";

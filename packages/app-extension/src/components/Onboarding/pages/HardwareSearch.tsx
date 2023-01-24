@@ -6,6 +6,7 @@ import type { DerivationPath } from "@coral-xyz/common";
 import {
   accountDerivationPath,
   Blockchain,
+  LOAD_PUBLIC_KEY_AMOUNT,
   walletAddressDisplay,
 } from "@coral-xyz/common";
 import { Loading, PrimaryButton } from "@coral-xyz/react-common";
@@ -18,7 +19,7 @@ import { ethers } from "ethers";
 import { Header, SubtextParagraph } from "../../common";
 import type { SelectedAccount } from "../../common/Account/ImportAccounts";
 
-import { DERIVATION_PATHS, LOAD_PUBKEY_AMOUNT } from "./MnemonicSearch";
+import { DERIVATION_PATHS } from "./MnemonicSearch";
 
 const { base58: bs58 } = ethers.utils;
 
@@ -47,7 +48,7 @@ export const HardwareSearch = ({
       for (const derivationPath of DERIVATION_PATHS) {
         for (
           let accountIndex = 0;
-          accountIndex < LOAD_PUBKEY_AMOUNT;
+          accountIndex < LOAD_PUBLIC_KEY_AMOUNT;
           accountIndex += 1
         ) {
           const path = accountDerivationPath(

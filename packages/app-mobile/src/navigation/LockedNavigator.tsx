@@ -10,14 +10,9 @@ import {
 
 import { deleteItemAsync } from "expo-secure-store";
 
-import { Margin, PrimaryButton, Screen, WelcomeLogoHeader } from "@components";
-import {
-  // UI_RPC_METHOD_KEYRING_STORE_LOCK,
-  UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-} from "@coral-xyz/common";
+import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useTheme } from "@hooks";
 import { IconPushDetail } from "@screens/Unlocked/Settings/components/SettingsRow";
 import { useForm } from "react-hook-form";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -28,6 +23,13 @@ import {
 } from "@components/BottomSheetHelpModal";
 import { ErrorMessage } from "@components/ErrorMessage";
 import { PasswordInput } from "@components/PasswordInput";
+import {
+  Margin,
+  PrimaryButton,
+  Screen,
+  WelcomeLogoHeader,
+} from "@components/index";
+import { useTheme } from "@hooks/index";
 
 const maybeResetApp = () => {
   Alert.alert(
@@ -82,8 +84,6 @@ export function LockedScreen(): JSX.Element {
   const insets = useSafeAreaInsets();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { control, handleSubmit, formState, setError } = useForm<FormData>();
-
-  console.log("user", user);
 
   const onSubmit = async ({ password }: FormData) => {
     try {

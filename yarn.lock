@@ -13291,14 +13291,6 @@ expo-clipboard@~4.0.1:
   resolved "https://registry.yarnpkg.com/expo-clipboard/-/expo-clipboard-4.0.1.tgz#74385c2deacbfc75583ebb22e95067bd8f79a037"
   integrity sha512-ikVitSk8ltbbdmufQE/7+BpkDFU1hsLw5lhjEqknG6PHjtn4TP+ypMxKobBftU2VpFiz9O09bpRt86E8CzsJgQ==
 
-expo-community-flipper@^47.0.0:
-  version "47.0.0"
-  resolved "https://registry.yarnpkg.com/expo-community-flipper/-/expo-community-flipper-47.0.0.tgz#ca2a07e34f9e30680580c84cdf9c9997be786b88"
-  integrity sha512-7fpVYHz1Em3PQAB5oIEcB+cSdMQ0t04bO06Y5XLlALL+HXskWoPhgr4Aydq3rx9C1FE2trMQETcM/OLJkF9kmA==
-  dependencies:
-    semver "^7.3.8"
-    ts-dedent "^2.2.0"
-
 expo-constants@~14.0.0, expo-constants@~14.0.2:
   version "14.0.2"
   resolved "https://registry.yarnpkg.com/expo-constants/-/expo-constants-14.0.2.tgz#2cb1dec8f41a64c2fc5b4eecaf77d7661cad01cc"
@@ -20990,11 +20982,6 @@ react-native-codegen@^0.70.6:
     jscodeshift "^0.13.1"
     nullthrows "^1.1.1"
 
-react-native-flipper@^0.177.0:
-  version "0.177.0"
-  resolved "https://registry.yarnpkg.com/react-native-flipper/-/react-native-flipper-0.177.0.tgz#f2c7b265e87f2803e82b17121c4881a61f21e796"
-  integrity sha512-8fFJs1ekyJ/W5HqTCpkX7n8qcFNevPFD6OLJ/jMBPpyVU5q6j/yIGlrxoDCUgyZIn2GXm5e3heGQtruSTxD/xA==
-
 react-native-gesture-handler@~2.8.0:
   version "2.8.0"
   resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-2.8.0.tgz#ef9857871c10663c95a51546225b6e00cd4740cf"
@@ -21139,6 +21126,11 @@ react-refresh@0.11.0, react-refresh@^0.14.0, react-refresh@^0.4.0, react-refresh
   version "0.11.0"
   resolved "https://registry.yarnpkg.com/react-refresh/-/react-refresh-0.11.0.tgz#77198b944733f0f1f1a90e791de4541f9f074046"
   integrity sha512-F27qZr8uUqwhWZboondsPx8tnC3Ct3SxZA3V5WyEvujRyyNv0VYPhoBg1gZ8/MV5tubQp76Trw8lTv9hzRBa+A==
+
+react-rich-mentions@^0.1.10:
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/react-rich-mentions/-/react-rich-mentions-0.1.10.tgz#88377294b5279cc917ae00a0145b52ed0b81ff9e"
+  integrity sha512-KwbsrYm18cq8OmITLALki74HbslpU+KhPeQMZFHwJtkDYtgXm/8HN0bKNJFw7s/D8Up4gLG3cgXh/4bA9WZtEw==
 
 react-router-dom@^6.3.0:
   version "6.3.0"
@@ -22036,13 +22028,6 @@ semver@^7.0.0, semver@^7.3.2, semver@^7.3.5, semver@^7.3.7:
   version "7.3.7"
   resolved "https://registry.yarnpkg.com/semver/-/semver-7.3.7.tgz#12c5b649afdbf9049707796e22a4028814ce523f"
   integrity sha512-QlYTucUYOews+WeEujDoEGziz4K6c47V/Bd+LjSSYcA94p+DmINdf7ncaUinThfvZyu13lN9OY1XDxt8C0Tw0g==
-  dependencies:
-    lru-cache "^6.0.0"
-
-semver@^7.3.8:
-  version "7.3.8"
-  resolved "https://registry.yarnpkg.com/semver/-/semver-7.3.8.tgz#07a78feafb3f7b32347d725e33de7e2a2df67798"
-  integrity sha512-NB1ctGL5rlHrPJtFDVIVzTyQylMLu9N9VICA6HSFJo8MCGVTMW6gfpicwKmmK/dAjTOrqu5l63JJOpDSrAis3A==
   dependencies:
     lru-cache "^6.0.0"
 
@@ -23605,11 +23590,6 @@ trim-repeated@^1.0.0:
   integrity sha512-pkonvlKk8/ZuR0D5tLW8ljt5I8kmxp2XKymhepUeOdCEfKpZaktSArkLHZt76OB1ZvO9bssUsDty4SWhLvZpLg==
   dependencies:
     escape-string-regexp "^1.0.2"
-
-ts-dedent@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/ts-dedent/-/ts-dedent-2.2.0.tgz#39e4bd297cd036292ae2394eb3412be63f563bb5"
-  integrity sha512-q5W7tVM71e2xjHZTlgfTDoPF/SmqKG5hddq9SzR49CH2hayqRKJtQ4mtRlSxKaJlR/+9rEM+mnBHf7I2/BQcpQ==
 
 ts-easing@^0.2.0:
   version "0.2.0"

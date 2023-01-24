@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
 import {
-  Button,
   FlatList,
   Image,
   Pressable,
@@ -9,16 +7,6 @@ import {
   View,
 } from "react-native";
 
-import {
-  CopyButtonIcon,
-  ImportTypeBadge,
-  ListRowSeparator,
-  Margin,
-  RoundedContainerGroup,
-  Row,
-  Screen,
-  WalletAddressLabel,
-} from "@components";
 import {
   Blockchain,
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
@@ -29,9 +17,17 @@ import {
   useBackgroundClient,
   useBlockchainActiveWallet,
 } from "@coral-xyz/recoil";
-import { useBlockchainLogo, useTheme } from "@hooks";
 
 import { HardwareIcon, ImportedIcon, MnemonicIcon } from "@components/Icon";
+import {
+  CopyButtonIcon,
+  ListRowSeparator,
+  Margin,
+  RoundedContainerGroup,
+  Row,
+  Screen,
+} from "@components/index";
+import { useBlockchainLogo, useTheme } from "@hooks/index";
 
 type Wallet = {
   publicKey: string;
@@ -41,14 +37,9 @@ type Wallet = {
 };
 
 export function WalletListScreen({ navigation, route }): JSX.Element {
-  // const { filter } = route.params;
   const activeWallet = useBlockchainActiveWallet(Blockchain.SOLANA);
   const background = useBackgroundClient();
   const wallets = useAllWallets();
-
-  // if (filter) {
-  //   wallets = wallets.filter(filter);
-  // }
 
   const onSelectWallet = async (w: Wallet) => {
     await background.request({

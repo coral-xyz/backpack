@@ -1,7 +1,10 @@
+import type { Token } from "@@types/types";
+import type { Blockchain } from "@coral-xyz/common";
+
+import { useCallback } from "react";
 import { Pressable, Text, View } from "react-native";
 
-import { toTitleCase } from "@coral-xyz/common";
-import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 import { AccountSettingsNavigator } from "@navigation/AccountSettingsNavigator";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { getHeaderTitle } from "@react-navigation/elements";
@@ -12,7 +15,7 @@ import {
   DepositListScreen,
   DepositSingleScreen,
 } from "@screens/Unlocked/DepositScreen";
-import { NFTCollectiblesNavigator } from "@screens/Unlocked/NftCollectiblesScreen";
+import { NftCollectiblesNavigator } from "@screens/Unlocked/NftCollectiblesScreen";
 import { RecentActivityScreen } from "@screens/Unlocked/RecentActivityScreen";
 import {
   SendTokenDetailScreen,
@@ -20,13 +23,33 @@ import {
 } from "@screens/Unlocked/SendTokenScreen";
 import { WalletListScreen } from "@screens/Unlocked/WalletListScreen";
 
-import { IconCloseModal } from "@components/Icon";
+import {
+  IconCloseModal,
+  TabIconBalances,
+  TabIconApps,
+  TabIconNfts,
+  TabIconMessages,
+} from "@components/Icon";
 import { NavHeader } from "@components/index";
 import { useTheme } from "@hooks/index";
 
-const Tab = createBottomTabNavigator();
-const Stack = createStackNavigator();
+type UnlockedNavigatorStackParamList = {
+  Tabs: undefined;
+  AccountSettings: undefined;
+  RecentActivity: undefined;
+  DepositList: undefined;
+  DepositSingle: undefined;
+  SendSelectTokenModal: undefined;
+  "wallet-picker": undefined;
+  SendTokenModal: {
+    title: string;
+    blockchain: Blockchain;
+    token: Token;
+  };
+  SwapModal: undefined;
+};
 
+const Stack = createStackNavigator<UnlockedNavigatorStackParamList>();
 export default function UnlockedNavigator(): JSX.Element {
   const theme = useTheme();
   return (
@@ -45,9 +68,11 @@ export default function UnlockedNavigator(): JSX.Element {
           options={{
             title: "Recent Activity",
             headerBackTitleVisible: false,
-            headerTransparent: true,
             headerTintColor: theme.custom.colors.fontColor,
             headerBackImage: IconCloseModal,
+            // headerStyle: {
+            //   backgroundColor: theme.custom.colors.background,
+            // },
           }}
         />
         <Stack.Screen
@@ -93,8 +118,7 @@ export default function UnlockedNavigator(): JSX.Element {
           name="SendTokenModal"
           component={SendTokenDetailScreen}
           options={({ route }) => {
-            const { blockchain, token } = route.params;
-            const title = `Send ${toTitleCase(blockchain)} / ${token.ticker}`;
+            const { title } = route.params;
             return {
               title,
             };
@@ -118,38 +142,29 @@ function RecentActivityModal() {
   );
 }
 
-function TabBarIcon({
-  size = 30,
-  name,
-  color,
-}: {
-  size?: number;
-  name: string;
-  color: string;
-}): JSX.Element {
-  return (
-    <MaterialCommunityIcons
-      size={size}
-      name={name}
-      color={color}
-      style={{ marginBottom: -3 }}
-    />
-  );
-}
+type UnlockedTabNavigatorParamList = {
+  Balances: undefined;
+  Applications: undefined;
+  Collectibles: undefined;
+};
 
+const Tab = createBottomTabNavigator<UnlockedTabNavigatorParamList>();
 function UnlockedBottomTabNavigator(): JSX.Element {
-  const getIcon = (focused: boolean, routeName: string): string => {
+  const theme = useTheme();
+  const getIcon = useCallback((routeName: string) => {
     switch (routeName) {
       case "Balances":
-        return focused ? "baguette" : "baguette";
+        return TabIconBalances;
       case "Applications":
-        return focused ? "apps" : "apps";
+        return TabIconApps;
       case "Collectibles":
-        return focused ? "image" : "image";
+        return TabIconNfts;
+      case "Messages":
+        return TabIconMessages;
       default:
-        return "baguette";
+        return TabIconBalances;
     }
-  };
+  }, []);
 
   return (
     <Tab.Navigator
@@ -159,17 +174,17 @@ function UnlockedBottomTabNavigator(): JSX.Element {
           const title = getHeaderTitle(options, route.name);
           return <NavHeader title={title} navigation={navigation} />;
         },
-        tabBarIcon: ({ focused, color, size }) => {
-          const name = getIcon(focused, route.name);
-          return <TabBarIcon size={size} name={name} color={color} />;
+        tabBarIcon: ({ color, size }) => {
+          const Component = getIcon(route.name);
+          return <Component fill={color} width={size} height={size} />;
         },
-        tabBarActiveTintColor: "#333",
-        tabBarInactiveTintColor: "gray",
+        tabBarActiveTintColor: theme.custom.colors.brandColor,
+        tabBarInactiveTintColor: theme.custom.colors.icon,
       })}
     >
       <Tab.Screen name="Balances" component={BalancesNavigator} />
       <Tab.Screen name="Applications" component={AppListScreen} />
-      <Tab.Screen name="Collectibles" component={NFTCollectiblesNavigator} />
+      <Tab.Screen name="Collectibles" component={NftCollectiblesNavigator} />
     </Tab.Navigator>
   );
 }

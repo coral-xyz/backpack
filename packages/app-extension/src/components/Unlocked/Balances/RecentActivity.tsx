@@ -1,5 +1,5 @@
 import { Suspense, useState } from "react";
-import { Blockchain,explorerUrl } from "@coral-xyz/common";
+import { Blockchain, explorerUrl } from "@coral-xyz/common";
 import {
   EmptyState,
   isFirstLastListItemStyle,
@@ -214,10 +214,12 @@ export function _RecentActivityList({
   minimize?: boolean;
 }) {
   const theme = useCustomTheme();
-  // Load transactions if not passed in as a prop
-  const transactions = _transactions
-    ? _transactions
-    : useRecentTransactions(blockchain!, address!, contractAddresses!);
+  const transactions = useRecentTransactions({
+    blockchain: blockchain!,
+    address: address!,
+    contractAddresses: contractAddresses!,
+    transactions: _transactions,
+  });
 
   if (!style) {
     style = {};

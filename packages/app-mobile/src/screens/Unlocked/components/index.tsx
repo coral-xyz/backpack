@@ -1,21 +1,12 @@
 import type { Blockchain } from "@coral-xyz/common";
-import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
 
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text } from "react-native";
 
-import { Row } from "@components";
-import {
-  // ETH_NATIVE_MINT,
-  // NAV_COMPONENT_TOKEN,
-  // SOL_NATIVE_MINT,
-  toTitleCase,
-  // walletAddressDisplay,
-} from "@coral-xyz/common";
+import { toTitleCase } from "@coral-xyz/common";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useBlockchainLogo, useTheme } from "@hooks";
 
-// TODO move this
-export type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
+import { Row } from "@components/index";
+import { useBlockchainLogo, useTheme } from "@hooks/index";
 
 export function TableHeader({
   onPress,
@@ -63,10 +54,6 @@ export function TableHeader({
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#eee",
-    flex: 1,
-  },
   title: {
     fontWeight: "500",
     lineHeight: 24,

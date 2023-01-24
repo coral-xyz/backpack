@@ -1,13 +1,24 @@
+import type { RecentTransaction } from "@coral-xyz/common";
 import { Blockchain } from "@coral-xyz/common";
 import { useRecoilValue } from "recoil";
 
 import * as atoms from "../../atoms";
 
-export function useRecentTransactions(
-  blockchain: Blockchain,
-  address: string,
-  contractAddresses?: Array<string>
-) {
+export function useRecentTransactions({
+  blockchain,
+  address,
+  contractAddresses,
+  transactions,
+}: {
+  blockchain: Blockchain;
+  address: string;
+  contractAddresses: string[];
+  transactions?: RecentTransaction[];
+}) {
+  if (transactions) {
+    return transactions;
+  }
+
   if (blockchain === Blockchain.SOLANA) {
     return useRecoilValue(atoms.recentSolanaTransactions({ address }));
   } else if (blockchain === Blockchain.ETHEREUM) {

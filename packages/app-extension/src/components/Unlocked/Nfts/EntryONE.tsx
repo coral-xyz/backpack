@@ -93,7 +93,7 @@ export default function EntryONE() {
   const isLoading = false || !imageLoaded || isONELive === "loading";
 
   const openXNFT = () => {
-    openPlugin("4ekUZj2TKNoyCwnRDstvViCZYkhnhNoWNQpa5bBLwhq4");
+    openPlugin("CkqWjTWzRMAtYN3CSs8Gp4K9H891htmaN1ysNXqcULc8");
   };
 
   return (
