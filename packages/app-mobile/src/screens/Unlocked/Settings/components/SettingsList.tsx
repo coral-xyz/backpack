@@ -1,6 +1,7 @@
+import React from "react";
+
 import * as Linking from "expo-linking";
 
-import { Margin, RoundedContainerGroup } from "@components";
 import {
   BACKPACK_FEATURE_XNFT,
   DISCORD_INVITE_LINK,
@@ -8,10 +9,11 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
 } from "@coral-xyz/common";
 import { useBackgroundClient, useFeatureGates } from "@coral-xyz/recoil";
-import { useTheme } from "@hooks";
 import { useNavigation } from "@react-navigation/native";
 
 import { DiscordIcon } from "@components/Icon";
+import { Margin, RoundedContainerGroup } from "@components/index";
+import { useTheme } from "@hooks/index";
 
 import {
   IconLaunchDetail,
@@ -19,6 +21,14 @@ import {
   IconPushDetail,
   SettingsRow,
 } from "./SettingsRow";
+
+type SettingsMenuItem = {
+  label: string;
+  onPress: () => void;
+  icon?: JSX.Element | undefined;
+  disabled?: boolean;
+  detailIcon: JSX.Element | null;
+};
 
 export function SettingsList() {
   const featureGates = useFeatureGates();
@@ -71,6 +81,7 @@ export function SettingsList() {
   if (BACKPACK_FEATURE_XNFT) {
     settingsMenu.push({
       label: "xNFTs",
+      disabled: true,
       onPress: () => navigation.push("xNFTSettings"),
       icon: <IconLeft name="apps" />,
       detailIcon: <IconPushDetail />,
@@ -97,22 +108,43 @@ export function SettingsList() {
     <>
       <Margin bottom={24}>
         <RoundedContainerGroup>
-          {walletsMenu.map((item) => {
-            return (
-              <SettingsRow
-                key={item.label}
-                label={item.label}
-                onPress={item.onPress}
-                icon={item.icon}
-                detailIcon={item.detailIcon}
-              />
-            );
-          })}
+          <>
+            {walletsMenu.map((item: SettingsMenuItem) => {
+              return (
+                <SettingsRow
+                  key={item.label}
+                  label={item.label}
+                  onPress={item.onPress}
+                  icon={item.icon}
+                  detailIcon={item.detailIcon}
+                  disabled={item.disabled}
+                />
+              );
+            })}
+          </>
         </RoundedContainerGroup>
       </Margin>
       <Margin bottom={24}>
         <RoundedContainerGroup>
-          {settingsMenu.map((item) => {
+          <>
+            {settingsMenu.map((item: SettingsMenuItem) => {
+              return (
+                <SettingsRow
+                  key={item.label}
+                  label={item.label}
+                  onPress={item.onPress}
+                  icon={item.icon}
+                  detailIcon={item.detailIcon}
+                  disabled={item.disabled}
+                />
+              );
+            })}
+          </>
+        </RoundedContainerGroup>
+      </Margin>
+      <RoundedContainerGroup>
+        <>
+          {discordList.map((item: SettingsMenuItem) => {
             return (
               <SettingsRow
                 key={item.label}
@@ -123,20 +155,7 @@ export function SettingsList() {
               />
             );
           })}
-        </RoundedContainerGroup>
-      </Margin>
-      <RoundedContainerGroup>
-        {discordList.map((item) => {
-          return (
-            <SettingsRow
-              key={item.label}
-              label={item.label}
-              onPress={item.onPress}
-              icon={item.icon}
-              detailIcon={item.detailIcon}
-            />
-          );
-        })}
+        </>
       </RoundedContainerGroup>
     </>
   );

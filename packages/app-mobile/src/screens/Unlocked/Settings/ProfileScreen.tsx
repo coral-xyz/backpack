@@ -3,19 +3,19 @@ import type { Blockchain } from "@coral-xyz/common";
 import { useState } from "react";
 import { SectionList, View } from "react-native";
 
-import {
-  AddConnectWalletButton,
-  Avatar,
-  Margin,
-  RoundedContainerGroup,
-  Screen,
-} from "@components";
 import { toTitleCase } from "@coral-xyz/common";
 import { useActiveWallets, useWalletPublicKeys } from "@coral-xyz/recoil";
 import { WalletListItem } from "@screens/Unlocked/EditWalletsScreen";
 import { SettingsList } from "@screens/Unlocked/Settings/components/SettingsList";
 
 import { ExpandCollapseIcon } from "@components/Icon";
+import {
+  AddConnectWalletButton,
+  Avatar,
+  Margin,
+  RoundedContainerGroup,
+  Screen,
+} from "@components/index";
 
 type Wallet = {
   name: string;

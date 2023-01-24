@@ -7,7 +7,15 @@ import { useRecoilValueLoadable } from "recoil";
 import { ProxyImage } from "@components/index";
 import { useTheme } from "@hooks/useTheme";
 
-export function BaseCard({ onPress, imageUrl, subtitle }): JSX.Element {
+export function BaseCard({
+  onPress,
+  imageUrl,
+  subtitle,
+}: {
+  onPress: () => void;
+  imageUrl: string | null;
+  subtitle?: { name: string; length: string };
+}): JSX.Element {
   const theme = useTheme();
   return (
     <Pressable

@@ -90,6 +90,9 @@ select_permissions:
     permission:
       columns:
         - avatar_nft
+        - created_at
+        - id
+        - is_internal
         - username
       filter: {}
 update_permissions:

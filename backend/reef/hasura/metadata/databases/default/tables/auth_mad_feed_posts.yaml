@@ -62,6 +62,16 @@ select_permissions:
         - text
       filter: {}
       allow_aggregations: true
+  - role: public_avatar
+    permission:
+      columns:
+        - author
+        - expanded_url
+        - parent_post_id
+        - post_id
+        - published
+        - text
+      filter: {}
 update_permissions:
   - role: one_xnft
     permission:

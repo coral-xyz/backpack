@@ -12,3 +12,10 @@ select_permissions:
         - total_score
         - user_id
       filter: {}
+  - role: public_avatar
+    permission:
+      columns:
+        - rank
+        - total_score
+        - user_id
+      filter: {}

@@ -16,7 +16,7 @@ module.exports = {
     module: false,
     require: false,
   },
-  extends: ["prettier"],
+  extends: ["prettier", "turbo"],
   plugins: ["import", "node"],
   rules: {
     "no-multiple-empty-lines": ["error", { max: 1, maxEOF: 0 }],

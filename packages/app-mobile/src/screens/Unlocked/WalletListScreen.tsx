@@ -17,6 +17,7 @@ import {
   useBackgroundClient,
   useBlockchainActiveWallet,
 } from "@coral-xyz/recoil";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { HardwareIcon, ImportedIcon, MnemonicIcon } from "@components/Icon";
 import {
@@ -37,6 +38,7 @@ type Wallet = {
 };
 
 export function WalletListScreen({ navigation, route }): JSX.Element {
+  const insets = useSafeAreaInsets();
   const activeWallet = useBlockchainActiveWallet(Blockchain.SOLANA);
   const background = useBackgroundClient();
   const wallets = useAllWallets();
@@ -51,7 +53,7 @@ export function WalletListScreen({ navigation, route }): JSX.Element {
   };
 
   return (
-    <Screen>
+    <Screen style={{ marginBottom: insets.bottom }}>
       <FlatList
         data={wallets}
         ItemSeparatorComponent={() => <ListRowSeparator />}
