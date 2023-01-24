@@ -36,6 +36,10 @@ jobs:
     name: Build App
     timeout-minutes: 45
     runs-on: ubuntu-latest
+    # To use Remote Caching, uncomment the next lines and follow the steps below.
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
     steps:
       # Checkout must come before a custom action
       - name: 🏗 Setup repository
