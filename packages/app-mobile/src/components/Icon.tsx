@@ -1,16 +1,9 @@
 import type { SvgProps } from "react-native-svg";
 
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
-import { useTheme } from "@hooks";
-import Svg, {
-  Defs,
-  LinearGradient,
-  Path,
-  Rect,
-  Stop,
-  ClipPath,
-  G,
-} from "react-native-svg";
+import Svg, { Defs, LinearGradient, Path, Rect, Stop } from "react-native-svg";
+
+import { useTheme } from "@hooks/index";
 
 export const CheckBadge = (props: SvgProps) => (
   // <div
@@ -36,14 +29,25 @@ export const CheckBadge = (props: SvgProps) => (
   </Svg>
 );
 
-export const RedBackpack = (props: SvgProps) => (
-  <Svg viewBox="0 0 55 80" width={55} height={80} fill="none" {...props}>
-    <Path
-      d="M32.71 6.29c2.908 0 5.635.39 8.16 1.113C38.398 1.641 33.266 0 27.553 0c-5.724 0-10.866 1.647-13.333 7.437 2.507-.748 5.222-1.147 8.12-1.147H32.71Zm-11.036 5.785C7.867 12.075 0 22.937 0 36.336V50.1c0 1.34 1.12 2.4 2.5 2.4h50c1.38 0 2.5-1.06 2.5-2.4V36.336c0-13.399-9.148-24.26-22.955-24.26H21.674Zm5.806 24.38a8.75 8.75 0 1 0 0-17.5 8.75 8.75 0 0 0 0 17.5ZM0 60.59c0-1.34 1.12-2.426 2.5-2.426h50c1.38 0 2.5 1.086 2.5 2.426v14.557c0 2.68-2.239 4.852-5 4.852H5c-2.761 0-5-2.173-5-4.852V60.59Z"
-      fill="#E33E3F"
-    />
-  </Svg>
-);
+export function RedBackpack(props: SvgProps) {
+  return (
+    <Svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="55"
+      height="80"
+      viewBox="0 0 55 80"
+      fill="none"
+      {...props}
+    >
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M32.71 6.29026C35.6178 6.29026 38.3452 6.68005 40.8705 7.40296C38.3982 1.64085 33.2649 0 27.5519 0C21.8277 0 16.6855 1.64729 14.2188 7.43692C16.7255 6.68856 19.4412 6.29026 22.339 6.29026H32.71ZM21.6739 12.0752C7.86677 12.0752 0 22.9371 0 36.336V50.1C0 51.4399 1.11929 52.5 2.5 52.5H52.5C53.8807 52.5 55 51.4399 55 50.1V36.336C55 22.9371 45.8521 12.0752 32.0449 12.0752H21.6739ZM27.4805 36.4551C32.313 36.4551 36.2305 32.5376 36.2305 27.7051C36.2305 22.8726 32.313 18.9551 27.4805 18.9551C22.648 18.9551 18.7305 22.8726 18.7305 27.7051C18.7305 32.5376 22.648 36.4551 27.4805 36.4551ZM0 60.5901C0 59.2503 1.11929 58.1641 2.5 58.1641H52.5C53.8807 58.1641 55 59.2503 55 60.5901V75.1466C55 77.8264 52.7614 79.9988 50 79.9988H5C2.23857 79.9988 0 77.8264 0 75.1466V60.5901Z"
+        fill="#E33E3F"
+      />
+    </Svg>
+  );
+}
 
 export const EthereumIcon = (props: SvgProps) => (
   <Svg
