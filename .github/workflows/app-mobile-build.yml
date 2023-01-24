@@ -22,6 +22,14 @@ on:
         options:
           - development
           - production
+      app_env:
+        description: APP_ENV (development/production)
+        type: choice
+        required: true
+        default: development
+        options:
+          - development
+          - production
 
 jobs:
   mobile:
@@ -32,8 +40,6 @@ jobs:
       # Checkout must come before a custom action
       - name: 🏗 Setup repository
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 2
 
       - name: 🏗 Setup monorepo
         uses: ./.github/actions/app-mobile-monorepo-setup
@@ -56,5 +62,5 @@ jobs:
       - name: 🚀 Build mobile
         working-directory: packages/app-mobile
         env:
-          APP_ENV: "production"
+          APP_ENV: ${{ github.event.inputs.app_env }}
         run: eas build --non-interactive --wait --platform=${{ github.event.inputs.platform }} --profile=${{ github.event.inputs.profile }}
