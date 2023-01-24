@@ -1,4 +1,4 @@
-import React, { Suspense, useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   openAddUserAccount,
   openPopupWindow,
@@ -17,7 +17,6 @@ import { Add, Check } from "@mui/icons-material";
 import { Button, IconButton, Popover, Typography } from "@mui/material";
 
 import { useBreakpoints } from "../../../components/common/Layout/hooks";
-import { WalletList as _WalletList } from "../../../components/common/WalletList";
 
 import { SettingsNavStackDrawer } from "./SettingsNavStackDrawer";
 
@@ -131,7 +130,7 @@ function AvatarMenu() {
           borderTop: theme.custom.colors.borderFull,
         }}
       />
-      <AuxMenuList closePopover={() => {}} />
+      <AuxMenuList />
     </div>
   );
 }
@@ -192,6 +191,7 @@ function UsersMenuList() {
       {users.map((user: any) => {
         return (
           <UserMenuItem
+            key={user.uuid}
             user={user}
             onClick={async () => {
               close();
@@ -236,7 +236,7 @@ function UsersMenuList() {
     </MenuList>
   );
 }
-function AuxMenuList({ closePopover }: { closePopover: any }) {
+function AuxMenuList() {
   const theme = useCustomTheme();
   const { openSettings } = usePopoverContext();
   return (
