@@ -36,6 +36,7 @@ export function ImportSecretKey({
   const [openDrawer, setOpenDrawer] = useState(false);
   const [newPublicKey, setNewPublicKey] = useState("");
   const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     const prevTitle = nav.title;
     nav.setTitle("");
