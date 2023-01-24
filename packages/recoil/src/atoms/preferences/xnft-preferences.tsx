@@ -17,6 +17,7 @@ export const xnftPreferences = atom<XnftPreferenceStore | null>({
       });
 
       const result: XnftPreferenceStore = {
+        // Set default pushNotification permissions for ONE xNFT
         "4ekUZj2TKNoyCwnRDstvViCZYkhnhNoWNQpa5bBLwhq4": {
           disabled: false,
           pushNotifications: true,
