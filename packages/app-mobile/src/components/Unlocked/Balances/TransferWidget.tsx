@@ -30,7 +30,7 @@ export function TransferWidget({
   rampEnabled: boolean;
   onPressOption: (action: NavTokenAction, options: NavTokenOptions) => void;
   token?: Token;
-}) {
+}): JSX.Element {
   const eb = useRecoilValueLoadable(enabledBlockchainsAtom);
   const enabledBlockchains = eb.state === "hasValue" ? eb.contents : [];
   const enableOnramp = ENABLE_ONRAMP;
@@ -80,7 +80,7 @@ function TransferButton({
   icon: string;
   label: string;
   onPress: () => void;
-}) {
+}): JSX.Element {
   const theme = useTheme();
   return (
     <Pressable onPress={onPress} style={{ alignItems: "center" }}>
@@ -133,7 +133,7 @@ function SwapButton({
       <TransferButton
         label="Swap"
         icon="compare-arrows"
-        onPress={() => onPress("Swap", { blockchain })}
+        onPress={() => onPress(NavTokenAction.Swap, { blockchain })}
       />
     </SwapProvider>
   );
@@ -147,12 +147,20 @@ function SendButton({
   blockchain?: Blockchain;
   onPress: (route: NavTokenAction, options: NavTokenOptions) => void;
   token?: Token;
-}) {
+}): JSX.Element {
   return (
     <TransferButton
       label="Send"
       icon="arrow-upward"
-      onPress={() => onPress("Send", { blockchain, token, title: "TODO" })}
+      onPress={() =>
+        onPress(NavTokenAction.Send, {
+          blockchain,
+          token: token
+            ? { ...token, nativeBalance: token.nativeBalance.toString() }
+            : null,
+          title: "TODO",
+        })
+      }
     />
   );
 }
@@ -163,12 +171,12 @@ function ReceiveButton({
 }: {
   blockchain?: Blockchain;
   onPress: (route: NavTokenAction, options: NavTokenOptions) => void;
-}) {
+}): JSX.Element {
   return (
     <TransferButton
       label="Receive"
       icon="arrow-downward"
-      onPress={() => onPress("Receive", { blockchain })}
+      onPress={() => onPress(NavTokenAction.Receive, { blockchain })}
     />
   );
 }
@@ -179,6 +187,6 @@ function RampButton({
 }: {
   blockchain?: Blockchain;
   address?: string;
-}) {
+}): null {
   return null;
 }
