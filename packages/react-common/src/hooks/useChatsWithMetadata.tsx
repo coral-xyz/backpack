@@ -11,7 +11,6 @@ export const useChatsWithMetadata = ({
   room,
   type,
 }: {
-  uuids: string;
   room: string;
   type: SubscriptionType;
 }): {
