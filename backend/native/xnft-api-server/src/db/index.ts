@@ -1,7 +1,7 @@
-import { HASURA_URL, JWT } from "../config";
-
 import { Chain } from "@coral-xyz/zeus";
-import { NotificationProps } from "../controllers/notifications";
+
+import { HASURA_URL, JWT } from "../config";
+import type { NotificationProps } from "../controllers/notifications";
 
 const chain = Chain(HASURA_URL, {
   headers: {
@@ -43,9 +43,19 @@ export const hasNotificationAccess = async (
       },
     ],
   });
+
   if (response.auth_xnft_preferences?.[0]?.notifications) {
     return true;
   }
+
+  // if no preferences found.
+  if (!response.auth_xnft_preferences?.[0]) {
+    // allow notifications by default for ONE xNFT
+    if (xnftId === "4ekUZj2TKNoyCwnRDstvViCZYkhnhNoWNQpa5bBLwhq4") {
+      return true;
+    }
+  }
+
   return false;
 };
 
