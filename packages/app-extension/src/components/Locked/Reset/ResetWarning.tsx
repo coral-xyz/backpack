@@ -107,18 +107,15 @@ function Warning({
           justifyContent: "space-between",
         }}
       >
-        <Box sx={{ width: "167.5px" }}>
-          <SecondaryButton
-            label="Cancel"
-            onClick={close}
-            style={{
-              border: `${theme.custom.colors.borderFull}`,
-            }}
-          />
-        </Box>
-        <Box sx={{ width: "167.5px" }}>
-          <DangerButton label={buttonTitle} onClick={onNext} />
-        </Box>
+        <SecondaryButton
+          label="Cancel"
+          onClick={close}
+          style={{
+            marginRight: "8px",
+            border: `${theme.custom.colors.borderFull}`,
+          }}
+        />
+        <DangerButton label={buttonTitle} onClick={onNext} />
       </Box>
     </Box>
   );
