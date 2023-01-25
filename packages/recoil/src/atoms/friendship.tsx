@@ -9,7 +9,7 @@ import type { EnrichedInboxDb } from "@coral-xyz/common/dist/esm/messages/db";
 import { getFriendshipByUserId } from "@coral-xyz/db";
 import { atomFamily, selectorFamily } from "recoil";
 
-import * as atoms from "./index";
+import * as atoms from "./preferences/index";
 
 export const friendship = atomFamily<Friendship | null, { userId: string }>({
   key: "friendship",
