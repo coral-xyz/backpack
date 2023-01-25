@@ -50,7 +50,6 @@ insert_permissions:
         - post_id
         - published
         - text
-        - value
 select_permissions:
   - role: one_xnft
     permission:
@@ -61,7 +60,6 @@ select_permissions:
         - post_id
         - published
         - text
-        - value
       filter: {}
       allow_aggregations: true
   - role: public_avatar
@@ -73,7 +71,6 @@ select_permissions:
         - post_id
         - published
         - text
-        - value
       filter: {}
 update_permissions:
   - role: one_xnft
@@ -85,7 +82,6 @@ update_permissions:
         - post_id
         - published
         - text
-        - value
       filter: {}
       check: {}
 delete_permissions:
