@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { MessageKind, MessageMetadata } from "@coral-xyz/common";
 import { BACKEND_API_URL, CHAT_MESSAGES } from "@coral-xyz/common";
 import { createEmptyFriendship, useDbUser } from "@coral-xyz/db";
-import { SignalingManager } from "@coral-xyz/react-common";
+import { SignalingManager, useUsersMetadata } from "@coral-xyz/react-common";
 import { useActiveSolanaWallet, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import ArrowForwardIos from "@mui/icons-material/ArrowForwardIos";
@@ -107,10 +107,8 @@ export const SendMessage = () => {
     type,
     chats,
   } = useChatContext();
-  const remoteUserImage: string | undefined = useDbUser(
-    uuid,
-    remoteUserId
-  )?.image;
+  const remoteUsers = useUsersMetadata({ remoteUserIds: [remoteUserId] });
+  const remoteUserImage = remoteUsers?.[0]?.image;
 
   const sendMessage = async (
     messageTxt,

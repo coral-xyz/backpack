@@ -27,8 +27,6 @@ export function useUsersMetadata({
     );
     if (newIds.length) {
       const newUsersMetadata = await refreshUsers(uuid, newIds);
-      console.error("newUsersMetadata");
-      console.error(newUsersMetadata);
       if (newUsersMetadata) {
         const newUsersMetadataMap = {};
         newUsersMetadata?.forEach((x) => (newUsersMetadataMap[x.uuid] = x));

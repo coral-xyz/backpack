@@ -24,6 +24,7 @@ import {
   ProfileScreen,
   RequestsScreen,
 } from "@coral-xyz/message-sdk";
+import { useUsersMetadata } from "@coral-xyz/react-common";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import {
   useDarkMode,
@@ -418,7 +419,8 @@ function useNavBar() {
   const { props }: any = useDecodedSearchParams(); // TODO: fix type
   const { uuid } = useUser();
   const { isXs } = useBreakpoints();
-  const image: string | undefined = useDbUser(uuid, props?.userId)?.image;
+  const profileUser = useUsersMetadata({ remoteUserIds: [props?.userId] });
+  const image: string | undefined = profileUser[props?.userId]?.image;
 
   let navButtonLeft = null as any;
   let navButtonRight = null as any;

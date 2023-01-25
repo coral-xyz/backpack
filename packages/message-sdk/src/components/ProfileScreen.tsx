@@ -10,6 +10,7 @@ import {
   MessageIcon,
   PrimaryButton,
   ProxyImage,
+  useUsersMetadata,
 } from "@coral-xyz/react-common";
 import { useNavigation, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
@@ -34,7 +35,7 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
   const [loading, setLoading] = useState(true);
   const classes = useStyles();
   const theme = useCustomTheme();
-  const userMetadata = useDbUser(uuid, userId);
+  const userMetadata = useUsersMetadata({ remoteUserIds: [userId] });
   const { push, toRoot } = useNavigation();
 
   async function getChatRoom() {
@@ -83,7 +84,10 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
       <div style={{ flex: 1 }}>
         <div className={classes.horizontalCenter}>
           <div className={classes.topImageOuter}>
-            <img className={classes.topImage} src={userMetadata?.image} />
+            <img
+              className={classes.topImage}
+              src={userMetadata[userId]?.image}
+            />
           </div>
         </div>
         <br />

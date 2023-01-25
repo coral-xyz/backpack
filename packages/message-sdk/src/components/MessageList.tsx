@@ -11,8 +11,11 @@ import {
   parseMessage,
 } from "@coral-xyz/common";
 import { NAV_COMPONENT_MESSAGE_GROUP_CHAT } from "@coral-xyz/common/src/constants";
-import { useUsersFromUuids } from "@coral-xyz/db";
-import { isFirstLastListItemStyle, ProxyImage } from "@coral-xyz/react-common";
+import {
+  isFirstLastListItemStyle,
+  ProxyImage,
+  useUsersMetadata,
+} from "@coral-xyz/react-common";
 import {
   requestsOpen,
   useDecodedSearchParams,
@@ -128,16 +131,11 @@ export function ChatListItem({
   const { props }: any = useDecodedSearchParams();
   const parts = parseMessage(message);
   const pathname = useLocation().pathname;
-  const users: any = useUsersFromUuids(
-    uuid,
-    parts.filter((x) => x.type === "tag").map((x) => x.value)
-  );
+  const users: any = useUsersMetadata({
+    remoteUserIds: parts.filter((x) => x.type === "tag").map((x) => x.value),
+  });
   const printText = parts
-    .map((x) =>
-      x.type === "tag"
-        ? users?.find((user) => user?.uuid === x.value)?.username
-        : x.value
-    )
+    .map((x) => (x.type === "tag" ? users[x.value]?.username : x.value))
     .join("");
 
   function formatAMPM(date: Date) {
