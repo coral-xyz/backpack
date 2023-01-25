@@ -29,6 +29,7 @@ export const MediaContent = ({
               background: theme.custom.colors.background,
               boxShadow: 24,
               p: isXs ? 1 : 3,
+              outline: "none",
             }}
           >
             {mediaKind === "video" ? (
