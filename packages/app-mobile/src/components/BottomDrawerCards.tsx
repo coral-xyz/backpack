@@ -1,25 +1,78 @@
 import type { Blockchain } from "@coral-xyz/common";
 import type { BigNumber } from "ethers";
 
-import { Text, View } from "react-native";
+import { Text, View, StyleSheet, StyleProp, ViewStyle } from "react-native";
 
 import * as Linking from "expo-linking";
 
-import {
-  Loading,
-  PrimaryButton,
-  SecondaryButton,
-  TokenAmountHeader,
-} from "@components";
 import { explorerUrl } from "@coral-xyz/common";
 import {
   useBlockchainConnectionUrl,
   useBlockchainExplorer,
 } from "@coral-xyz/recoil";
-import { MaterialIcons } from "@expo/vector-icons";
-import { useTheme } from "@hooks";
 
-import { CheckIcon, CrossIcon } from "@components/Icons";
+import { CheckIcon, CrossIcon } from "@components/Icon";
+import {
+  Margin,
+  Loading,
+  PrimaryButton,
+  SecondaryButton,
+  TokenAmountHeader,
+} from "@components/index";
+import { useTheme } from "@hooks/index";
+
+function Container({
+  children,
+  style,
+}: {
+  children: React.ReactNode;
+  style?: StyleProp<ViewStyle>;
+}): JSX.Element {
+  return <View style={[styles.container, style]}>{children}</View>;
+}
+
+function IconContainer({
+  children,
+}: {
+  children: React.ReactNode;
+}): JSX.Element {
+  return (
+    <Margin top={24} bottom={36}>
+      <View style={{ height: 50, alignItems: "center" }}>{children}</View>
+    </Margin>
+  );
+}
+
+function SubHeader({
+  isError,
+  text,
+}: {
+  isError?: boolean;
+  text: string;
+}): JSX.Element {
+  const theme = useTheme();
+  const color = isError
+    ? theme.custom.colors.error
+    : theme.custom.colors.secondary;
+  return (
+    <Text
+      style={{
+        textAlign: "center",
+        color,
+        fontSize: 14,
+        fontWeight: "500",
+      }}
+    >
+      {text}
+    </Text>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 16,
+  },
+});
 
 export function Sending({
   blockchain,
@@ -36,75 +89,35 @@ export function Sending({
   isComplete: boolean;
   titleOverride?: string;
 }) {
-  const theme = useTheme();
   const explorer = useBlockchainExplorer(blockchain);
   const connectionUrl = useBlockchainConnectionUrl(blockchain);
   return (
-    <View>
-      <Text
-        style={{
-          textAlign: "center",
-          color: theme.custom.colors.secondary,
-          fontSize: 14,
-          fontWeight: "500",
-          marginTop: 30,
-        }}
-      >
-        {titleOverride ? titleOverride : isComplete ? "Sent" : "Sending..."}
-      </Text>
-      <TokenAmountHeader
-        style={{
-          marginTop: 16,
-          marginBottom: 0,
-        }}
-        amount={amount}
-        token={token}
-      />
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-        }}
-      >
-        {isComplete ? (
-          <CheckIcon />
-        ) : (
-          <Loading
-          // size={48}
-          // iconStyle={{
-          //   color: theme.custom.colors.primaryButton,
-          //   display: "flex",
-          //   marginLeft: "auto",
-          //   marginRight: "auto",
-          // }}
-          // thickness={6}
-          />
-        )}
+    <Container>
+      <View>
+        <SubHeader
+          text={
+            titleOverride ? titleOverride : isComplete ? "Sent" : "Sending..."
+          }
+        />
+        <Margin vertical={18}>
+          <TokenAmountHeader amount={amount} token={token} />
+        </Margin>
+        <IconContainer>
+          {isComplete ? <CheckIcon /> : <Loading size="large" />}
+        </IconContainer>
       </View>
-      <View
-        style={{
-          marginBottom: 16,
-          marginLeft: 16,
-          marginRight: 16,
-        }}
-      >
-        {explorer && connectionUrl && (
+      <View>
+        {explorer && connectionUrl ? (
           <SecondaryButton
-            onClick={() => {
-              if (isComplete) {
-                // nav.toRoot();
-                // drawer.close();
-              } else {
-                Linking.openURL(
-                  explorerUrl(explorer, signature, connectionUrl)
-                );
-              }
-            }}
+            disabled={!isComplete}
             label={isComplete ? "View Balances" : "View Explorer"}
+            onPress={() => {
+              Linking.openURL(explorerUrl(explorer, signature, connectionUrl));
+            }}
           />
-        )}
+        ) : null}
       </View>
-    </View>
+    </Container>
   );
 }
 
@@ -124,52 +137,21 @@ export function Error({
   const theme = useTheme();
 
   return (
-    <View
-      style={{
-        height: 340,
-        justifyContent: "space-between",
-        padding: 16,
-      }}
-    >
-      <View
-        style={{
-          marginTop: 8,
-        }}
-      >
-        <Text
-          style={{
-            marginBottom: 16,
-            color: theme.custom.colors.fontColor,
+    <Container>
+      <SubHeader isError text="Error" />
+      <IconContainer>
+        <CrossIcon />
+      </IconContainer>
+      <Text style={{ color: theme.custom.colors.fontColor }}>{error}</Text>
+      {explorer && connectionUrl && signature ? (
+        <SecondaryButton
+          label="View Explorer"
+          onPress={() => {
+            Linking.openURL(explorerUrl(explorer, signature, connectionUrl));
           }}
-        >
-          Error
-        </Text>
-        <View
-          style={{
-            height: 48,
-          }}
-        >
-          <CrossIcon />
-        </View>
-        <Text
-          style={{
-            marginTop: 16,
-            marginBottom: 16,
-            color: theme.custom.colors.fontColor,
-          }}
-        >
-          {error}
-        </Text>
-        {explorer && connectionUrl && signature && (
-          <SecondaryButton
-            label="View Explorer"
-            onClick={() =>
-              Linking.openURL(explorerUrl(explorer, signature, connectionUrl))
-            }
-          />
-        )}
-      </View>
-      <PrimaryButton label="Retry" onClick={() => onRetry()} />
-    </View>
+        />
+      ) : null}
+      <PrimaryButton label="Retry" onPress={() => onRetry()} />
+    </Container>
   );
 }

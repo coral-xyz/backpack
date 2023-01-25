@@ -3,9 +3,10 @@ import type { BigNumber } from "ethers";
 import type { StyleProp, ViewStyle } from "react-native";
 import { StyleSheet, Text, View } from "react-native";
 
-import { Margin, ProxyImage } from "@components";
-import { useTheme } from "@hooks";
 import { ethers } from "ethers";
+
+import { ProxyImage } from "@components/index";
+import { useTheme } from "@hooks/index";
 
 //
 // Displays token amount header with logo.
@@ -64,6 +65,7 @@ const styles = StyleSheet.create({
     height: 32,
     borderRadius: 16,
     aspectRatio: 1,
+    marginRight: 8,
   },
   amountLabel: {
     fontWeight: "500",

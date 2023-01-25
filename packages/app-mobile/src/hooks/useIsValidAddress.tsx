@@ -58,6 +58,7 @@ export function useIsValidAddress(
 
             pubkey = owner.registry.owner;
           } catch (e) {
+            console.log("useIsValid error", e);
             setAddressError(true);
             return;
           }
@@ -68,6 +69,7 @@ export function useIsValidAddress(
           try {
             pubkey = new PublicKey(address);
           } catch (err) {
+            console.log("useIsValid error", err);
             setAddressError(true);
             // Not valid address so don't bother validating it.
             return;
@@ -75,7 +77,7 @@ export function useIsValidAddress(
         }
 
         const account = await solanaConnection?.getAccountInfo(pubkey);
-        console.log("getAccountInfo:account", account);
+        console.log("useIsValid:account", account);
 
         // Null data means the account has no lamports. This is valid.
         if (!account) {
@@ -85,11 +87,21 @@ export function useIsValidAddress(
           return;
         }
 
+        console.log(
+          "useIsValid account.owner",
+          account.owner,
+          SystemProgram.programId
+        );
+
         // Only allow system program accounts to be given. ATAs only!
+        // TODO display an error to the user letting them know this type of address won't accept SOL, etc
         if (!account.owner.equals(SystemProgram.programId)) {
+          console.log("useIsValid: account owner error");
           setAddressError(true);
           return;
         }
+
+        console.log("useIsValid valid");
 
         // The account data has been successfully validated.
         setAddressError(false);
