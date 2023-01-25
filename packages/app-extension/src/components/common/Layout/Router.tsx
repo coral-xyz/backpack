@@ -33,7 +33,6 @@ import {
   useFriendships,
   useNavigation,
   useRedirectUrl,
-  useRequestsOpen,
   useUser,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
@@ -175,6 +174,10 @@ function MessageNativeInner() {
   const { uuid, username } = useUser();
   const { props } = useDecodedSearchParams<any>();
   const { isXs } = useBreakpoints();
+
+  if (hash.startsWith("/messages/requests")) {
+    return <NavScreen component={<RequestsScreen />} />;
+  }
 
   if (hash.startsWith("/messages/chat")) {
     return (

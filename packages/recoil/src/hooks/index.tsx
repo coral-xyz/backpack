@@ -13,7 +13,6 @@ export * from "./useFriendship";
 export * from "./useLoader";
 export * from "./usePriceData";
 export * from "./useRecentNotifications";
-export * from "./useRequestsOpen";
 export * from "./useTotalBalance";
 export * from "./useTransactionData";
 export * from "./useXnftPreferences";

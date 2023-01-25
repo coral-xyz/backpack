@@ -16,11 +16,7 @@ import {
   ProxyImage,
   useUsersMetadata,
 } from "@coral-xyz/react-common";
-import {
-  requestsOpen,
-  useDecodedSearchParams,
-  useUser,
-} from "@coral-xyz/recoil";
+import { useDecodedSearchParams, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import MarkChatUnreadIcon from "@mui/icons-material/MarkChatUnread";
 import VerifiedIcon from "@mui/icons-material/Verified";
@@ -287,15 +283,17 @@ export function RequestsChatItem({
 }) {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const location = useLocation();
-  const [_, setRequestsOpen] = useRecoilState(requestsOpen);
 
   return (
     <ListItem
       button
       disableRipple
       onClick={() => {
-        setRequestsOpen(true);
+        ParentCommunicationManager.getInstance().push({
+          title: `Requests`,
+          componentId: NAV_COMPONENT_MESSAGE_REQUESTS,
+          componentProps: {},
+        });
       }}
       style={{
         padding: "10px",
