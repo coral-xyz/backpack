@@ -185,8 +185,8 @@ function QueryApproval() {
   }
 
   return (
-    <WithEnabledBlockchain blockchain={blockchain!}>
-      <WithUnlock>
+    <WithUnlock>
+      <WithEnabledBlockchain blockchain={blockchain!}>
         <ApproveOrigin
           origin={origin}
           title={title}
@@ -198,8 +198,8 @@ function QueryApproval() {
             });
           }}
         />
-      </WithUnlock>
-    </WithEnabledBlockchain>
+      </WithEnabledBlockchain>
+    </WithUnlock>
   );
 }
 
