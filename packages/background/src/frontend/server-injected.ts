@@ -191,7 +191,7 @@ async function handle<T = any>(
     case SOLANA_RPC_METHOD_SIGN_MESSAGE:
       return await handleSolanaSignMessage(ctx, params[0], params[1]);
     case SOLANA_RPC_METHOD_SIMULATE:
-      return await handleSolanaSimulate(ctx, params[0], params[1], params[2]);
+      return await handleSolanaSimulate(ctx, params[0], params[1]);
     case SOLANA_RPC_METHOD_OPEN_XNFT:
       return await handleSolanaOpenXnft(ctx, params[0]);
     default:
@@ -520,14 +520,9 @@ async function handleSolanaSignMessage(
 async function handleSolanaSimulate(
   ctx: Context<Backend>,
   txStr: string,
-  walletAddress: string,
-  includeAccounts?: boolean | Array<string>
+  accounts: Array<string>
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.solanaSimulate(
-    txStr,
-    walletAddress,
-    includeAccounts
-  );
+  const resp = await ctx.backend.solanaSimulate(txStr, accounts);
   return [resp];
 }
 
