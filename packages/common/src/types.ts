@@ -103,7 +103,6 @@ export type BlockchainKeyringInit = {
   accountIndex: number;
   publicKey: string;
   signature: string;
-  isCold?: boolean;
 };
 
 export interface XnftPreference {
@@ -147,7 +146,6 @@ export type ImportedDerivationPath = {
   path: string;
   account: number;
   publicKey: string;
-  isCold?: boolean;
 };
 
 export type SolanaFeeConfig = { computeUnits: number; priorityFee: bigint };
