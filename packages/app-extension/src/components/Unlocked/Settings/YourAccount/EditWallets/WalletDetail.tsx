@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
-import type { Blockchain } from "@coral-xyz/common";
+import {
+  Blockchain,
+  UI_RPC_METHOD_KEY_IS_COLD_UPDATE,
+} from "@coral-xyz/common";
 import { UI_RPC_METHOD_KEYNAME_READ } from "@coral-xyz/common";
 import { useBackgroundClient, useWalletPublicKeys } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
@@ -9,13 +12,15 @@ import { Typography } from "@mui/material";
 import { useNavStack } from "../../../../common/Layout/NavStack";
 import { SettingsList } from "../../../../common/Settings/List";
 import { WithCopyTooltip } from "../../../../common/WithCopyTooltip";
+import { ModeSwitch } from "../../Preferences";
 
 export const WalletDetail: React.FC<{
   blockchain: Blockchain;
   publicKey: string;
   name: string;
   type: string;
-}> = ({ blockchain, publicKey, name, type }) => {
+  isCold?: boolean;
+}> = ({ blockchain, publicKey, name, type, isCold }) => {
   const nav = useNavStack();
   const theme = useCustomTheme();
   const background = useBackgroundClient();
@@ -114,6 +119,28 @@ export const WalletDetail: React.FC<{
     },
   };
 
+  const _isCold = {
+    Cold: {
+      onClick: async () => {
+        await background.request({
+          method: UI_RPC_METHOD_KEY_IS_COLD_UPDATE,
+          params: [publicKey, !isCold],
+        });
+      },
+      detail: (
+        <ModeSwitch
+          enabled={isCold ?? false}
+          onSwitch={async (enabled) => {
+            await background.request({
+              method: UI_RPC_METHOD_KEY_IS_COLD_UPDATE,
+              params: [publicKey, enabled],
+            });
+          }}
+        />
+      ),
+    },
+  };
+
   return (
     <div>
       <WithCopyTooltip tooltipOpen={tooltipOpen}>
@@ -121,6 +148,7 @@ export const WalletDetail: React.FC<{
           <SettingsList menuItems={menuItems} />
         </div>
       </WithCopyTooltip>
+      {type === "hardware" && <SettingsList menuItems={_isCold} />}
       {type !== "hardware" && type !== "dehydrated" && (
         <SettingsList menuItems={secrets} />
       )}

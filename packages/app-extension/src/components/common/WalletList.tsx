@@ -408,6 +408,7 @@ export function WalletList({
     publicKey: string;
     type: string;
     blockchain: Blockchain;
+    isCold?: boolean;
   }>;
   clickWallet: (w: {
     name: string;
@@ -418,6 +419,7 @@ export function WalletList({
   style: React.CSSProperties;
   selectedWalletPublicKey?: string;
 }) {
+  console.log("ARMANI HERE WALLETS", wallets);
   return (
     <List style={style}>
       {wallets.map(
@@ -427,6 +429,7 @@ export function WalletList({
             publicKey: string;
             type: string;
             blockchain: Blockchain;
+            isCold?: boolean;
           },
           idx: number
         ) => {
@@ -465,6 +468,7 @@ export function WalletListItem({
     publicKey: string;
     type: string;
     blockchain: Blockchain;
+    isCold?: boolean;
   };
   isSelected: boolean;
   isFirst: boolean;
@@ -479,7 +483,6 @@ export function WalletListItem({
   const theme = useCustomTheme();
   const nav = useNavStack();
   const { publicKey, name, blockchain, type } = wallet;
-
   return (
     <ListItem
       key={publicKey.toString()}
@@ -495,6 +498,8 @@ export function WalletListItem({
         border: isSelected
           ? `solid 2px ${theme.custom.colors.secondary}`
           : "none",
+        background: wallet.isCold ? `#c7c7ff !important` : undefined,
+        backgroundColor: wallet.isCold ? `#c7c7ff !important` : undefined,
       }}
       button={type !== "dehydrated"}
     >

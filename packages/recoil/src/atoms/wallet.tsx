@@ -21,12 +21,13 @@ export const walletPublicKeyData = atom<{
   key: "walletPublicKeyData",
   default: selector({
     key: "walletPublicKeyDataDefault",
-    get: ({ get }) => {
+    get: async ({ get }) => {
       const background = get(backgroundClient);
-      return background.request({
+      const resp = await background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEY_DATA,
         params: [],
       });
+      return resp;
     },
   }),
 });
@@ -61,6 +62,7 @@ export const allWallets = selector<
     type: string;
     publicKey: string;
     blockchain: Blockchain;
+    isCold?: boolean;
   }>
 >({
   key: "allWallets",
@@ -78,6 +80,7 @@ export const allWalletsDisplayed = selector<
     type: string;
     publicKey: string;
     blockchain: Blockchain;
+    isCold?: boolean;
   }>
 >({
   key: "allWalletsDisplayed",
@@ -97,6 +100,7 @@ export const allWalletsPerBlockchain = selectorFamily<
     type: string;
     publicKey: string;
     blockchain: Blockchain;
+    isCold?: boolean;
   }>,
   Blockchain
 >({
@@ -130,6 +134,7 @@ export const activeWallet = selector<{
   name: string;
   blockchain: Blockchain;
   type: string;
+  isCold?: boolean;
 }>({
   key: "activeWallet",
   get: ({ get }) => {
