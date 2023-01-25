@@ -17,16 +17,13 @@ import {
   TextFieldLabel,
 } from "@coral-xyz/react-common";
 import {
-  useActiveSolanaWallet,
   useActiveWallet,
   useJupiterOutputMints,
   useSplTokenRegistry,
   useSwapContext,
-  useWalletName,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ExpandMore, SwapVert } from "@mui/icons-material";
-import type { Button } from "@mui/material";
 import { IconButton, InputAdornment, Typography } from "@mui/material";
 import { ethers, FixedNumber } from "ethers";
 
@@ -215,12 +212,12 @@ export function Swap({ blockchain }: { blockchain: Blockchain }) {
     throw new Error("only Solana swaps are supported currently");
   }
 
-  return <_Swap blockchain={blockchain ?? Blockchain.SOLANA} />;
+  return <_Swap />;
 }
 
-function _Swap({ blockchain }: { blockchain: Blockchain }) {
+function _Swap() {
   const classes = useStyles();
-  const { toAmount, swapToFromMints } = useSwapContext();
+  const { swapToFromMints } = useSwapContext();
   const [openDrawer, setOpenDrawer] = useState(false);
   const { close } = useDrawerContext();
 
@@ -266,7 +263,7 @@ function _Swap({ blockchain }: { blockchain: Blockchain }) {
                 <SwapInfo />
               </div>
             </div>
-            <ConfirmSwapButton type="submit" blockchain={blockchain} />
+            <ConfirmSwapButton />
           </div>
         </div>
       </form>
@@ -407,11 +404,11 @@ const InsufficientBalanceButton = () => {
   return <DangerButton label="Insufficient balance" disabled={true} />;
 };
 
-const ConfirmSwapButton = ({
-  ...buttonProps
-}: {
-  blockchain: Blockchain;
-} & React.ComponentProps<typeof Button>) => {
+const InsufficientFeeButton = () => {
+  return <DangerButton label="Insufficient balance for fee" disabled={true} />;
+};
+
+const ConfirmSwapButton = () => {
   const {
     toAmount,
     toMint,
@@ -419,15 +416,22 @@ const ConfirmSwapButton = ({
     fromMint,
     isJupiterError,
     exceedsBalance,
+    feeExceedsBalance,
     isLoadingRoutes,
     isLoadingTransactions,
   } = useSwapContext();
   const tokenAccounts = useJupiterOutputMints(fromMint);
 
+  // Parameters aren't all entered or the swap data is loading
+  const isIncomplete =
+    !fromAmount || !toAmount || isLoadingRoutes || isLoadingTransactions;
+
   if (fromMint === toMint) {
     return <SwapInvalidButton />;
   } else if (exceedsBalance) {
     return <InsufficientBalanceButton />;
+  } else if (feeExceedsBalance && !isIncomplete) {
+    return <InsufficientFeeButton />;
   } else if (isJupiterError || tokenAccounts.length === 0) {
     return <SwapUnavailableButton />;
   }
@@ -441,15 +445,7 @@ const ConfirmSwapButton = ({
     label = "Review";
   }
 
-  return (
-    <PrimaryButton
-      label={label}
-      disabled={
-        !fromAmount || !toAmount || isLoadingRoutes || isLoadingTransactions
-      }
-      {...buttonProps}
-    />
-  );
+  return <PrimaryButton type="submit" label={label} disabled={isIncomplete} />;
 };
 
 //
