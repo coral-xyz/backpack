@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
+import { useRecoilValue } from "recoil";
 import {
   Blockchain,
   UI_RPC_METHOD_KEY_IS_COLD_UPDATE,
 } from "@coral-xyz/common";
 import { UI_RPC_METHOD_KEYNAME_READ } from "@coral-xyz/common";
-import { useBackgroundClient, useWalletPublicKeys } from "@coral-xyz/recoil";
+import {
+  isKeyCold,
+  useBackgroundClient,
+  useWalletPublicKeys,
+} from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ContentCopy } from "@mui/icons-material";
 import { Typography } from "@mui/material";
@@ -19,14 +24,14 @@ export const WalletDetail: React.FC<{
   publicKey: string;
   name: string;
   type: string;
-  isCold?: boolean;
-}> = ({ blockchain, publicKey, name, type, isCold }) => {
+}> = ({ blockchain, publicKey, name, type }) => {
   const nav = useNavStack();
   const theme = useCustomTheme();
   const background = useBackgroundClient();
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [walletName, setWalletName] = useState(name);
   const publicKeyData = useWalletPublicKeys();
+  const isCold = useRecoilValue(isKeyCold(publicKey));
 
   useEffect(() => {
     (async () => {

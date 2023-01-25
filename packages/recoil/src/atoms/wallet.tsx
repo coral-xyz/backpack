@@ -53,6 +53,17 @@ export const activeBlockchain = selector<Blockchain>({
   },
 });
 
+export const isKeyCold = selectorFamily<boolean, string>({
+  key: "isKeyCold",
+  get:
+    (publicKey) =>
+    ({ get }) => {
+      const wallets = get(allWallets);
+      const { isCold } = wallets.find((w) => w.publicKey === publicKey)!;
+      return isCold ?? false;
+    },
+});
+
 // All wallets enabled in the wallet. The assets for each wallet may or may
 // not be displayed in the balance view depending on the aggregate wallets
 // setting.
