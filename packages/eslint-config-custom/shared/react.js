@@ -18,6 +18,19 @@ module.exports = {
       "warn",
       { allowArrowFunctions: true, allowFunctions: true },
     ],
+
+    "react/jsx-key": [
+      "warn",
+      {
+        checkFragmentShorthand: true,
+        checkKeyMustBeforeSpread: true,
+        warnOnDuplicates: true,
+      },
+    ],
+    "react/no-array-index-key": "warn",
+    "react/jsx-pascal-case": ["error", { allowLeadingUnderscore: true }],
+    "react/jsx-no-useless-fragment": ["error", { allowExpressions: true }],
+    "react/jsx-no-leaked-render": ["error", { validStrategies: ["ternary"] }],
     "react/jsx-no-duplicate-props": "error",
     "react/jsx-no-undef": "error",
     "react/jsx-props-no-multi-spaces": "warn",
@@ -39,6 +52,7 @@ module.exports = {
     "react/require-render-return": "warn",
     "react/self-closing-comp": "warn",
 
+    "react/hook-use-state": "warn",
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": [
       "warn",

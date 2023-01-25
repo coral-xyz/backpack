@@ -2,10 +2,9 @@ import type { Connection } from "@solana/web3.js";
 import type { BigNumber } from "ethers";
 
 import { useState } from "react";
-import { Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 
 import { programs, tryGetAccount } from "@cardinal/token-manager";
-import { PrimaryButton, TokenAmountHeader } from "@components";
 import {
   Blockchain,
   confirmTransaction,
@@ -15,11 +14,12 @@ import {
   walletAddressDisplay,
 } from "@coral-xyz/common";
 import { useSolanaCtx } from "@coral-xyz/recoil";
-import { useTheme } from "@hooks";
 import { SettingsList } from "@screens/Unlocked/Settings/components/SettingsMenuList";
 import { PublicKey } from "@solana/web3.js";
 
 import { Error, Sending } from "@components/BottomDrawerCards";
+import { Margin, PrimaryButton, TokenAmountHeader } from "@components/index";
+import { useTheme } from "@hooks/index";
 
 const logger = getLogger("send-solana-confirmation-card");
 
@@ -168,45 +168,25 @@ export function ConfirmSendSolana({
 }) {
   const theme = useTheme();
   return (
-    <div
-      style={{
-        padding: 16,
-        height: 402,
-        display: "flex",
-        justifyContent: "space-between",
-        flexDirection: "column",
-        paddingBottom: 24,
-      }}
-    >
-      <div>
-        <Text
-          style={{
-            color: theme.custom.colors.fontColor,
-            fontWeight: "500",
-            fontSize: 18,
-            lineHeight: 24,
-            textAlign: "center",
-          }}
-        >
-          Review Send
-        </Text>
-        <TokenAmountHeader
-          style={{
-            marginTop: 40,
-            marginBottom: 40,
-          }}
-          amount={amount}
-          token={token}
-        />
+    <View style={{ paddingHorizontal: 16 }}>
+      <Text
+        style={{
+          color: theme.custom.colors.fontColor,
+          fontWeight: "500",
+          fontSize: 18,
+          textAlign: "center",
+        }}
+      >
+        Review Send
+      </Text>
+      <Margin vertical={24}>
+        <TokenAmountHeader amount={amount} token={token} />
+      </Margin>
+      <Margin bottom={24}>
         <ConfirmSendSolanaTable destinationAddress={destinationAddress} />
-      </div>
-      <PrimaryButton
-        onClick={() => onConfirm()}
-        label="Send"
-        type="submit"
-        data-testid="Send"
-      />
-    </div>
+      </Margin>
+      <PrimaryButton onPress={() => onConfirm()} label="Send" />
+    </View>
   );
 }
 
@@ -218,27 +198,26 @@ const ConfirmSendSolanaTable: React.FC<{
 
   const menuItems = {
     From: {
+      disabled: true,
       onPress: () => {},
       detail: <Text>{walletAddressDisplay(solanaCtx.walletPublicKey)}</Text>,
-      // classes: { root: classes.confirmTableListItem },
-      // button: false,
     },
     To: {
+      disabled: true,
       onPress: () => {},
       detail: <Text>{walletAddressDisplay(destinationAddress)}</Text>,
-      // classes: { root: classes.confirmTableListItem },
-      // button: false,
     },
     "Network fee": {
+      disabled: true,
       onPress: () => {},
       detail: (
-        <Text>
-          0.000005{" "}
-          <span style={{ color: theme.custom.colors.secondary }}>SOL</span>
-        </Text>
+        <>
+          <Text>0.000005</Text>
+          <Text style={{ marginLeft: 8, color: theme.custom.colors.secondary }}>
+            SOL
+          </Text>
+        </>
       ),
-      // classes: { root: classes.confirmTableListItem },
-      // button: false,
     },
   };
 
@@ -246,12 +225,6 @@ const ConfirmSendSolanaTable: React.FC<{
     <SettingsList
       borderColor={theme.custom.colors.approveTransactionTableBackground}
       menuItems={menuItems}
-      style={{
-        margin: 0,
-      }}
-      textStyle={{
-        color: theme.custom.colors.secondary,
-      }}
     />
   );
 };

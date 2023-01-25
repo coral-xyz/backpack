@@ -54,6 +54,31 @@ module.exports = {
     },
   ],
   rules: {
+    "react/forbid-elements": [
+      "error",
+      {
+        forbid: [
+          { element: "div", message: "Use <View> from react-native" },
+          { element: "span", message: "Use <Text> from react-native" },
+          { element: "button", message: "Use @components/PrimaryButton" },
+        ],
+      },
+    ],
+    "react/forbid-component-props": [
+      "error",
+      {
+        forbid: [
+          {
+            propName: "className",
+            message: "use style",
+          },
+          {
+            propName: "onClick",
+            message: "use onPress",
+          },
+        ],
+      },
+    ],
     "@peterpme/react-native/no-unused-styles": "warn",
     "@peterpme/react-native/split-platform-components": "warn",
     // "react-native/no-inline-styles": "warn",

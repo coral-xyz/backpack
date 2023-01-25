@@ -1,10 +1,12 @@
-import type { Blockchain } from "@coral-xyz/common";
+import type { UnlockedNavigatorStackParamList } from "@navigation/UnlockedNavigator";
+import type { StackScreenProps } from "@react-navigation/stack";
 
-import { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import { StyleSheet, View, KeyboardAvoidingView, Platform } from "react-native";
 
 import { Token } from "@@types/types";
 import {
+  Blockchain,
   ETH_NATIVE_MINT,
   NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
   SOL_NATIVE_MINT,
@@ -13,6 +15,10 @@ import {
 import { useAnchorContext, useEthereumCtx } from "@coral-xyz/recoil";
 import { BigNumber } from "ethers";
 
+// import { SendEthereumConfirmationCard } from "@components/BottomDrawerEthereumConfirmation";
+import { Error, Sending } from "@components/BottomDrawerCards";
+import { ConfirmSendSolana } from "@components/BottomDrawerSolanaConfirmation";
+import { BottomSheetModal } from "@components/BottomSheetModal";
 import { InputField, InputFieldMaxLabel } from "@components/Form";
 import {
   DangerButton,
@@ -25,25 +31,27 @@ import { useIsValidAddress } from "@hooks/index";
 
 import { SearchableTokenTables } from "./components/Balances";
 
-export function SendTokenDetailScreen({ route }): JSX.Element {
+export function SendTokenDetailScreen({
+  route,
+}: StackScreenProps<
+  UnlockedNavigatorStackParamList,
+  "SendTokenModal"
+>): JSX.Element {
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const { blockchain, token } = route.params;
-  console.log("token:Detail", token);
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
 
-  const [address, setAddress] = useState("");
-  const [amount, setAmount] = useState<BigNumber | undefined>(undefined);
+  const [address, setAddress] = useState(
+    "6XxjKYFbcndh2gDcsUrmZgVEsoDxXMnfsaGY6fpTJzNr"
+  );
+  const [amount, setAmount] = useState<BigNumber | undefined>(
+    BigNumber.from(0)
+  );
   const [feeOffset, setFeeOffset] = useState(BigNumber.from(0));
-
-  const onSubmit = () => {
-    console.log("onSubmit", { amount, address });
-    // setOnboardingData({ password });
-    // navigation.push("Finished");
-  };
 
   const {
     isValidAddress,
-    isFreshAddress: _,
     isErrorAddress,
     normalizedAddress: destinationAddress,
   } = useIsValidAddress(
@@ -53,30 +61,32 @@ export function SendTokenDetailScreen({ route }): JSX.Element {
     ethereumCtx.provider
   );
 
-  // useEffect(() => {
-  //   if (!token) {
-  //     return;
-  //   }
-  //   if (token.mint === SOL_NATIVE_MINT) {
-  //     // When sending SOL, account for the tx fee and rent exempt minimum.
-  //     setFeeOffset(
-  //       BigNumber.from(5000).add(
-  //         BigNumber.from(NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS)
-  //       )
-  //     );
-  //   } else if (token.address === ETH_NATIVE_MINT) {
-  //     // 21,000 GWEI for a standard ETH transfer
-  //     setFeeOffset(
-  //       BigNumber.from("21000")
-  //         .mul(ethereumCtx?.feeData.maxFeePerGas!)
-  //         .add(
-  //           BigNumber.from("21000").mul(
-  //             ethereumCtx?.feeData.maxPriorityFeePerGas!
-  //           )
-  //         )
-  //     );
-  //   }
-  // }, [blockchain, token, ethereumCtx?.feeData]);
+  console.log({ address, isValidAddress, isErrorAddress });
+
+  useEffect(() => {
+    if (!token || !ethereumCtx?.feeData) {
+      return;
+    }
+    if (token.mint === SOL_NATIVE_MINT) {
+      // When sending SOL, account for the tx fee and rent exempt minimum.
+      setFeeOffset(
+        BigNumber.from(5000).add(
+          BigNumber.from(NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS)
+        )
+      );
+    } else if (token.address === ETH_NATIVE_MINT) {
+      // 21,000 GWEI for a standard ETH transfer
+      setFeeOffset(
+        BigNumber.from("21000")
+          .mul(ethereumCtx?.feeData.maxFeePerGas!)
+          .add(
+            BigNumber.from("21000").mul(
+              ethereumCtx?.feeData.maxPriorityFeePerGas!
+            )
+          )
+      );
+    }
+  }, [blockchain, token]); // eslint-disable-line
 
   const amountSubFee = BigNumber.from(token.nativeBalance).sub(feeOffset);
   const maxAmount = amountSubFee.gt(0) ? amountSubFee : BigNumber.from(0);
@@ -84,53 +94,111 @@ export function SendTokenDetailScreen({ route }): JSX.Element {
   const isSendDisabled = !isValidAddress || amount === null || !!exceedsBalance;
   const isAmountError = amount && exceedsBalance;
 
-  let sendButton;
-  if (isErrorAddress) {
-    sendButton = <DangerButton disabled label="Invalid Address" />;
-  } else if (isAmountError) {
-    sendButton = <DangerButton disabled label="Insufficient Balance" />;
-  } else {
-    sendButton = (
-      <PrimaryButton
-        disabled={isSendDisabled}
-        label="Send"
-        onPress={() => onSubmit()}
-      />
-    );
-  }
+  const getButton = useCallback(
+    (
+      isErrorAddress: boolean,
+      isSendDisabled: boolean,
+      isAmountError: boolean | undefined
+    ): JSX.Element => {
+      const handleShowPreviewConfirmation = () => {
+        setIsModalVisible(() => true);
+      };
+
+      if (isErrorAddress) {
+        return (
+          <DangerButton disabled label="Invalid Address" onPress={() => {}} />
+        );
+      } else if (isAmountError) {
+        return (
+          <DangerButton
+            disabled
+            label="Insufficient Balance"
+            onPress={() => {}}
+          />
+        );
+      } else {
+        return (
+          <PrimaryButton
+            disabled={isSendDisabled}
+            label="Send"
+            onPress={handleShowPreviewConfirmation}
+          />
+        );
+      }
+    },
+    []
+  );
+
+  const SendConfirmComponent = {
+    // [Blockchain.SOLANA]: SendSolanaConfirmationCard,
+    // [Blockchain.ETHEREUM]: SendEthereumConfirmationCard,
+
+    [Blockchain.SOLANA]: null,
+    [Blockchain.ETHEREUM]: null,
+  }[blockchain];
 
   return (
-    <Screen style={styles.container}>
-      <View>
-        <InputField leftLabel="Send to">
-          <StyledTextInput
-            value={address}
-            placeholder={`${toTitleCase(blockchain)} address`}
-            onChangeText={(address: string) => setAddress(address.trim())}
-          />
-        </InputField>
-        <InputField
-          leftLabel="Amount"
-          rightLabelComponent={
-            <InputFieldMaxLabel
-              amount={maxAmount}
-              onSetAmount={setAmount}
-              decimals={token.decimals}
-            />
-          }
-        >
-          <StyledTokenTextInput
-            value={amount}
-            decimals={token.decimals}
-            placeholder="Amount"
-            onChangeText={setAmount}
-          />
-        </InputField>
-      </View>
-      {sendButton}
-    </Screen>
+    <>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <Screen style={styles.container}>
+          <View>
+            <InputField leftLabel="Send to">
+              <StyledTextInput
+                value={address}
+                placeholder={`${toTitleCase(blockchain)} address`}
+                onChangeText={(address: string) => setAddress(address.trim())}
+              />
+            </InputField>
+            <InputField
+              leftLabel="Amount"
+              rightLabelComponent={
+                <InputFieldMaxLabel
+                  amount={maxAmount}
+                  onSetAmount={setAmount}
+                  decimals={token.decimals}
+                />
+              }
+            >
+              <StyledTokenTextInput
+                value={amount}
+                decimals={token.decimals}
+                placeholder="Amount"
+                onChangeText={setAmount}
+              />
+            </InputField>
+            {getButton(isErrorAddress, isSendDisabled, isAmountError)}
+          </View>
+        </Screen>
+      </KeyboardAvoidingView>
+      <BottomSheetModal
+        snapPoints={[400, 320]}
+        contentHeight={320}
+        isVisible
+        resetVisibility={() => {
+          setIsModalVisible(() => false);
+        }}
+      >
+        <Sending
+          blockchain={Blockchain.SOLANA}
+          isComplete
+          amount={amount}
+          token={token}
+          signature="abc123"
+        />
+      </BottomSheetModal>
+    </>
   );
 }
+
+// <ConfirmSendSolana
+//   token={token}
+//   destinationAddress={destinationAddress}
+//   amount={amount!}
+//   onConfirm={console.log}
+// />
 
 export function SendTokenListScreen({ navigation }): JSX.Element {
   return (

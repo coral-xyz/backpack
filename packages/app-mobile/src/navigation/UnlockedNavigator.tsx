@@ -2,9 +2,8 @@ import type { Token } from "@@types/types";
 import type { Blockchain } from "@coral-xyz/common";
 
 import { useCallback } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
-import { MaterialIcons } from "@expo/vector-icons";
 import { AccountSettingsNavigator } from "@navigation/AccountSettingsNavigator";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { getHeaderTitle } from "@react-navigation/elements";
@@ -33,7 +32,7 @@ import {
 import { NavHeader } from "@components/index";
 import { useTheme } from "@hooks/index";
 
-type UnlockedNavigatorStackParamList = {
+export type UnlockedNavigatorStackParamList = {
   Tabs: undefined;
   AccountSettings: undefined;
   RecentActivity: undefined;
@@ -50,7 +49,7 @@ type UnlockedNavigatorStackParamList = {
 };
 
 const Stack = createStackNavigator<UnlockedNavigatorStackParamList>();
-export default function UnlockedNavigator(): JSX.Element {
+export function UnlockedNavigator(): JSX.Element {
   const theme = useTheme();
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -105,13 +104,9 @@ export default function UnlockedNavigator(): JSX.Element {
           component={RecentActivityModal}
         />
         <Stack.Screen
+          options={{ title: "Wallets" }}
           name="wallet-picker"
           component={WalletListScreen}
-          options={({ navigation }) => {
-            return {
-              title: "Wallets",
-            };
-          }}
         />
       </Stack.Group>
     </Stack.Navigator>
