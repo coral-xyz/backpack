@@ -56,6 +56,10 @@ export class BlockchainKeyring {
     };
   }
 
+  public isCold(publicKey: string): boolean {
+    const keyring = this.getKeyring(publicKey);
+  }
+
   public async initFromMnemonic(
     mnemonic: string,
     derivationPath: DerivationPath,

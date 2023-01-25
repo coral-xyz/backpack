@@ -16,6 +16,7 @@ import { makeUrl } from "./hooks";
 export type NamedPublicKey = {
   publicKey: string;
   name: string;
+  isCold?: boolean;
 };
 
 export type WalletPublicKeys = {

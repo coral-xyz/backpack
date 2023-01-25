@@ -47,6 +47,7 @@ export class LedgerKeyringBase {
 
   public toString(): string {
     return JSON.stringify({
+      // TODO: does this need to be plural?
       derivationPath: this.derivationPaths,
     });
   }

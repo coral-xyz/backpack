@@ -654,7 +654,8 @@ class UserKeyring {
         blockchainKeyring.blockchain,
         blockchainKeyring.derivationPath,
         blockchainKeyring.accountIndex,
-        blockchainKeyring.publicKey
+        blockchainKeyring.publicKey,
+        blockchainKeyring.isCold
       );
     }
 
@@ -748,7 +749,8 @@ class UserKeyring {
     blockchain: Blockchain,
     derivationPath: DerivationPath,
     accountIndex: number,
-    publicKey?: string
+    publicKey?: string,
+    isCold?: boolean
   ): Promise<string> {
     const keyring = keyringForBlockchain(blockchain);
     let newPublicKey: string;
@@ -772,6 +774,7 @@ class UserKeyring {
           path: derivationPath,
           account: accountIndex,
           publicKey,
+          isCold,
         },
       ]);
       // This is the same as the public key that was passed in, it is returned

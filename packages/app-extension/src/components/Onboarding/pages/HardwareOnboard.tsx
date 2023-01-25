@@ -155,6 +155,7 @@ export function useHardwareOnboardSteps({
                 derivationPath: derivationPath,
                 accountIndex: account.index,
                 signature,
+                isCold: true,
               });
               if (successComponent) {
                 nextStep();
