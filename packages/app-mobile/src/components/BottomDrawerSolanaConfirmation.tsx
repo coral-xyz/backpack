@@ -16,7 +16,12 @@ import { useSolanaCtx } from "@coral-xyz/recoil";
 import { SettingsList } from "@screens/Unlocked/Settings/components/SettingsMenuList";
 import { PublicKey } from "@solana/web3.js";
 
-import { Error, Sending } from "@components/BottomDrawerCards";
+import {
+  Error,
+  Sending,
+  Header,
+  Container,
+} from "@components/BottomDrawerCards";
 import { Margin, PrimaryButton, TokenAmountHeader } from "@components/index";
 import { useTheme } from "@hooks/index";
 
@@ -161,19 +166,9 @@ export function ConfirmSendSolana({
   amount: BigNumber;
   onConfirm: () => void;
 }) {
-  const theme = useTheme();
   return (
-    <View style={{ paddingHorizontal: 16 }}>
-      <Text
-        style={{
-          color: theme.custom.colors.fontColor,
-          fontWeight: "500",
-          fontSize: 18,
-          textAlign: "center",
-        }}
-      >
-        Review Send
-      </Text>
+    <Container>
+      <Header text="Review Send" />
       <Margin vertical={24}>
         <TokenAmountHeader amount={amount} token={token} />
       </Margin>
@@ -181,7 +176,7 @@ export function ConfirmSendSolana({
         <ConfirmSendSolanaTable destinationAddress={destinationAddress} />
       </Margin>
       <PrimaryButton onPress={() => onConfirm()} label="Send" />
-    </View>
+    </Container>
   );
 }
 
