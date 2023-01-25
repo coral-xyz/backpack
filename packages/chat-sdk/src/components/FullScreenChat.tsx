@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import type { EnrichedMessageWithMetadata } from "@coral-xyz/common";
-import { fetchMoreChatsFor } from "@coral-xyz/db";
+import { fetchMoreChatsFor, Loading } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
+import { Loader } from "@giphy/react-components";
+import { CircularProgress } from "@mui/material";
 
 import { Banner } from "./Banner";
 import { useChatContext } from "./ChatContext";
@@ -11,14 +13,13 @@ import { MessagesSkeleton } from "./MessagesSkeleton";
 import { ScrollBarImpl } from "./ScrollbarImpl";
 import { SendMessage } from "./SendMessage";
 
-export const FullScreenChat = () => {
+export const FullScreenChat = ({ messageRef, setMessageRef }) => {
   const { loading, chats, userId, roomId, type, nftMint, publicKey } =
     useChatContext();
   const [autoScroll, setAutoScroll] = useState(true);
   const theme = useCustomTheme();
   const existingMessagesRef = useRef<EnrichedMessageWithMetadata[]>([]);
-
-  const [messageRef, setMessageRef] = useState(null);
+  const [fetchingMoreChats, setFetchingMoreChats] = useState(false);
 
   useEffect(() => {
     if (messageRef && autoScroll) {
@@ -56,7 +57,7 @@ export const FullScreenChat = () => {
         }}
       >
         <ScrollBarImpl
-          onScrollStop={() => {
+          onScrollStop={async () => {
             // @ts-ignore
             const scrollContainer = messageRef?.container?.children?.[0];
             if (scrollContainer) {
@@ -74,7 +75,19 @@ export const FullScreenChat = () => {
                 }
               }
               if (scrollContainer.scrollTop === 0) {
-                fetchMoreChatsFor(userId, roomId, type, nftMint, publicKey);
+                setFetchingMoreChats(true);
+                try {
+                  await fetchMoreChatsFor(
+                    userId,
+                    roomId,
+                    type,
+                    nftMint,
+                    publicKey
+                  );
+                } catch (e) {
+                  console.error(e);
+                }
+                setFetchingMoreChats(false);
               }
             }
           }}
@@ -82,6 +95,19 @@ export const FullScreenChat = () => {
           height={"calc(100% - 40px)"}
         >
           <div id={"scrolling1"}>
+            {fetchingMoreChats && (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginBottom: 3,
+                  marginTop: 3,
+                }}
+              >
+                {" "}
+                <CircularProgress size={20} />{" "}
+              </div>
+            )}
             <Banner />
             {loading && <MessagesSkeleton />}
             {!loading && chats?.length === 0 && <EmptyChat />}

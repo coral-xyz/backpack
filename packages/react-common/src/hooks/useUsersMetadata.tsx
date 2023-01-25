@@ -30,7 +30,7 @@ export function useUsersMetadata({
       if (newUsersMetadata) {
         const newUsersMetadataMap = {};
         newUsersMetadata?.forEach((x) => (newUsersMetadataMap[x.uuid] = x));
-        setUsers({ ...usersMetadataMap, ...newUsersMetadata });
+        setUsers({ ...usersMetadataMap, ...newUsersMetadataMap });
       }
     }
   };

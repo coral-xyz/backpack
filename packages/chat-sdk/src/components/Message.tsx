@@ -5,7 +5,7 @@ import {
   NAV_COMPONENT_MESSAGE_PROFILE,
   parseMessage,
 } from "@coral-xyz/common";
-import { refreshIndividualChatsFor } from "@coral-xyz/db";
+import { refreshIndividualChatsFor } from "@coral-xyz/react-common";
 import {
   blockchainTokenData,
   SOL_LOGO_URI,
