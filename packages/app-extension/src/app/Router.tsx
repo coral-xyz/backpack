@@ -358,7 +358,7 @@ function WithEnabledBlockchain({
         <EmptyState
           icon={(props: any) => <BlockIcon {...props} />}
           title={`${toTitleCase(blockchain)} is disabled`}
-          subtitle={`Enable ${toTitleCase(blockchain)} in blockchain settings`}
+          subtitle={`Add a ${toTitleCase(blockchain)} wallet in Backpack`}
         />
       )}
     </>
