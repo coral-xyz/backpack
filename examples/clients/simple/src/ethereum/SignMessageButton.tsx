@@ -1,4 +1,4 @@
-import { FC } from "react";
+import type { FC } from "react";
 import { useSignMessage } from "wagmi";
 
 export const SignMessageButton: FC = () => {

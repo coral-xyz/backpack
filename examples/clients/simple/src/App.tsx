@@ -1,13 +1,12 @@
-import { SolanaWallet } from "./SolanaWallet";
-import { SendLamportButton } from "./solana/SendLamportButton";
-import { SendAllButton } from "./solana/SendAllButton";
-import { SignMessageButton } from "./solana/SignMessageButton";
-import { SendTokenButton } from "./solana/SendTokenButton";
-import { OpenXnftButton } from "./solana/OpenXnftButton";
-
-import { EthereumWallet } from "./EthereumWallet";
-import { SignMessageButton as EthereumSignMessageButton } from "./ethereum/SignMessageButton";
 import { SendWeiButton } from "./ethereum/SendWeiButton";
+import { SignMessageButton as EthereumSignMessageButton } from "./ethereum/SignMessageButton";
+import { OpenXnftButton } from "./solana/OpenXnftButton";
+import { SendAllButton } from "./solana/SendAllButton";
+import { SendLamportButton } from "./solana/SendLamportButton";
+import { SendTokenButton } from "./solana/SendTokenButton";
+import { SignMessageButton } from "./solana/SignMessageButton";
+import { EthereumWallet } from "./EthereumWallet";
+import { SolanaWallet } from "./SolanaWallet";
 
 function App() {
   return (
