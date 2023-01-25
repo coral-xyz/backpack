@@ -32,7 +32,7 @@ import {
 import { NavHeader } from "@components/index";
 import { useTheme } from "@hooks/index";
 
-type UnlockedNavigatorStackParamList = {
+export type UnlockedNavigatorStackParamList = {
   Tabs: undefined;
   AccountSettings: undefined;
   RecentActivity: undefined;

@@ -75,6 +75,7 @@ export function useIsValidAddress(
         }
 
         const account = await solanaConnection?.getAccountInfo(pubkey);
+        console.log("getAccountInfo:account", account);
 
         // Null data means the account has no lamports. This is valid.
         if (!account) {

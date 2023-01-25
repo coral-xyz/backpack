@@ -1,7 +1,9 @@
 import type { Blockchain } from "@coral-xyz/common";
+import type { UnlockedNavigatorStackParamList } from "@navigation/UnlockedNavigator";
+import type { StackScreenProps } from "@react-navigation/stack";
 
 import { useCallback, useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 
 import { Token } from "@@types/types";
 import {
@@ -25,25 +27,26 @@ import { useIsValidAddress } from "@hooks/index";
 
 import { SearchableTokenTables } from "./components/Balances";
 
-export function SendTokenDetailScreen({ route }): JSX.Element {
+export function SendTokenDetailScreen({
+  route,
+}: StackScreenProps<
+  UnlockedNavigatorStackParamList,
+  "SendTokenModal"
+>): JSX.Element {
   const { blockchain, token } = route.params;
-  console.log("token:Detail", token);
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
 
-  const [address, setAddress] = useState("");
+  const [address, setAddress] = useState(
+    "6XxjKYFbcndh2gDcsUrmZgVEsoDxXMnfsaGY6fpTJzNr"
+  );
   const [amount, setAmount] = useState<BigNumber | undefined>(undefined);
   const [feeOffset, setFeeOffset] = useState(BigNumber.from(0));
 
-  const onSubmit = () => {
-    console.log("onSubmit", { amount, address });
-    // setOnboardingData({ password });
-    // navigation.push("Finished");
-  };
+  console.log({ address, amount, feeOffset });
 
   const {
     isValidAddress,
-    isFreshAddress: _,
     isErrorAddress,
     normalizedAddress: destinationAddress,
   } = useIsValidAddress(
@@ -53,68 +56,77 @@ export function SendTokenDetailScreen({ route }): JSX.Element {
     ethereumCtx.provider
   );
 
-  useEffect(() => {
-    if (!token) return;
-    if (token.mint === SOL_NATIVE_MINT) {
-      // When sending SOL, account for the tx fee and rent exempt minimum.
-      setFeeOffset(
-        BigNumber.from(5000).add(
-          BigNumber.from(NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS)
-        )
-      );
-    } else if (token.address === ETH_NATIVE_MINT) {
-      // 21,000 GWEI for a standard ETH transfer
-      setFeeOffset(
-        BigNumber.from("21000")
-          .mul(ethereumCtx?.feeData.maxFeePerGas!)
-          .add(
-            BigNumber.from("21000").mul(
-              ethereumCtx?.feeData.maxPriorityFeePerGas!
-            )
-          )
-      );
-    }
-  }, [blockchain, token]);
-  const amountSubFee = BigNumber.from(token.nativeBalance).sub(feeOffset);
-  const maxAmount = amountSubFee.gt(0) ? amountSubFee : BigNumber.from(0);
-  const exceedsBalance = amount && amount.gt(maxAmount);
-  const isSendDisabled = !isValidAddress || amount === null || !!exceedsBalance;
-  const isAmountError = amount && exceedsBalance;
+  console.log({ isValidAddress, isErrorAddress, destinationAddress });
 
-  const getButton = useCallback(
-    (
-      isErrorAddress: boolean,
-      isSendDisabled: boolean,
-      isAmountError: boolean | undefined
-    ): JSX.Element => {
-      const handleShowPreviewConfirmation = () => {
-        console.log("data");
-      };
+  //
+  // useEffect(() => {
+  //   if (!token || !ethereumCtx?.feeData) {
+  //     return;
+  //   }
+  //
+  //   if (token.mint === SOL_NATIVE_MINT) {
+  //     // When sending SOL, account for the tx fee and rent exempt minimum.
+  //     setFeeOffset(
+  //       BigNumber.from(5000).add(
+  //         BigNumber.from(NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS)
+  //       )
+  //     );
+  //   } else if (token.address === ETH_NATIVE_MINT) {
+  //     // 21,000 GWEI for a standard ETH transfer
+  //     setFeeOffset(
+  //       BigNumber.from("21000")
+  //         .mul(ethereumCtx?.feeData.maxFeePerGas!)
+  //         .add(
+  //           BigNumber.from("21000").mul(
+  //             ethereumCtx?.feeData.maxPriorityFeePerGas!
+  //           )
+  //         )
+  //     );
+  //   }
+  // }, [blockchain, token]); // eslint-disable-line
 
-      if (isErrorAddress) {
-        return (
-          <DangerButton disabled label="Invalid Address" onPress={() => {}} />
-        );
-      } else if (isAmountError) {
-        return (
-          <DangerButton
-            disabled
-            label="Insufficient Balance"
-            onPress={() => {}}
-          />
-        );
-      } else {
-        return (
-          <PrimaryButton
-            disabled={isSendDisabled}
-            label="Send"
-            onPress={handleShowPreviewConfirmation}
-          />
-        );
-      }
-    },
-    []
-  );
+  // const amountSubFee = BigNumber.from(token.nativeBalance).sub(feeOffset);
+  // const maxAmount = amountSubFee.gt(0) ? amountSubFee : BigNumber.from(0);
+  // const exceedsBalance = amount && amount.gt(maxAmount);
+  // const isSendDisabled = !isValidAddress || amount === null || !!exceedsBalance;
+  // const isAmountError = amount && exceedsBalance;
+
+  // console.log({ feeOffset, amountSubFee, maxAmount });
+
+  // const getButton = useCallback(
+  //   (
+  //     isErrorAddress: boolean,
+  //     isSendDisabled: boolean,
+  //     isAmountError: boolean | undefined
+  //   ): JSX.Element => {
+  //     const handleShowPreviewConfirmation = () => {
+  //       console.log("data");
+  //     };
+  //
+  //     if (isErrorAddress) {
+  //       return (
+  //         <DangerButton disabled label="Invalid Address" onPress={() => {}} />
+  //       );
+  //     } else if (isAmountError) {
+  //       return (
+  //         <DangerButton
+  //           disabled
+  //           label="Insufficient Balance"
+  //           onPress={() => {}}
+  //         />
+  //       );
+  //     } else {
+  //       return (
+  //         <PrimaryButton
+  //           disabled={isSendDisabled}
+  //           label="Send"
+  //           onPress={handleShowPreviewConfirmation}
+  //         />
+  //       );
+  //     }
+  //   },
+  //   []
+  // );
 
   return (
     <Screen style={styles.container}>
@@ -126,28 +138,29 @@ export function SendTokenDetailScreen({ route }): JSX.Element {
             onChangeText={(address: string) => setAddress(address.trim())}
           />
         </InputField>
-        <InputField
-          leftLabel="Amount"
-          rightLabelComponent={
-            <InputFieldMaxLabel
-              amount={maxAmount}
-              onSetAmount={setAmount}
-              decimals={token.decimals}
-            />
-          }
-        >
-          <StyledTokenTextInput
-            value={amount}
-            decimals={token.decimals}
-            placeholder="Amount"
-            onChangeText={setAmount}
-          />
-        </InputField>
       </View>
-      {getButton(isErrorAddress, isSendDisabled, isAmountError)}
     </Screen>
   );
 }
+
+// <InputField
+//   leftLabel="Amount"
+//   rightLabelComponent={
+//     <InputFieldMaxLabel
+//       amount={maxAmount}
+//       onSetAmount={setAmount}
+//       decimals={token.decimals}
+//     />
+//   }
+// >
+//   <StyledTokenTextInput
+//     value={amount}
+//     decimals={token.decimals}
+//     placeholder="Amount"
+//     onChangeText={setAmount}
+//   />
+// </InputField>
+// {getButton(isErrorAddress, isSendDisabled, isAmountError)}
 
 export function SendTokenListScreen({ navigation }): JSX.Element {
   return (
