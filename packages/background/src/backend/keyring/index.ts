@@ -654,8 +654,7 @@ class UserKeyring {
         blockchainKeyring.blockchain,
         blockchainKeyring.derivationPath,
         blockchainKeyring.accountIndex,
-        blockchainKeyring.publicKey,
-        blockchainKeyring.isCold
+        blockchainKeyring.publicKey
       );
     }
 
@@ -749,8 +748,7 @@ class UserKeyring {
     blockchain: Blockchain,
     derivationPath: DerivationPath,
     accountIndex: number,
-    publicKey?: string,
-    isCold?: boolean
+    publicKey?: string
   ): Promise<string> {
     const keyring = keyringForBlockchain(blockchain);
     let newPublicKey: string;
@@ -774,7 +772,6 @@ class UserKeyring {
           path: derivationPath,
           account: accountIndex,
           publicKey,
-          isCold,
         },
       ]);
       // This is the same as the public key that was passed in, it is returned
@@ -849,6 +846,7 @@ class UserKeyring {
     const name = DefaultKeyname.defaultLedger(ledgerKeyring.keyCount());
     await ledgerKeyring.ledgerImport(dPath, account, pubkey);
     await store.setKeyname(pubkey, name);
+    await store.setIsCold(pubkey, true);
   }
 
   public async keyDelete(blockchain: Blockchain, pubkey: string) {

@@ -749,6 +749,7 @@ export class Backend {
           namedPublicKeys[blockchain][keyring].push({
             publicKey,
             name: await store.getKeyname(publicKey),
+            isCold: await store.getIsCold(publicKey),
           });
         }
       }
