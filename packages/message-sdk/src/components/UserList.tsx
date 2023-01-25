@@ -108,6 +108,7 @@ function UserListItem({
           </div>
           <div>
             <div
+              className={classes.userRequestText}
               style={{
                 height: "100%",
                 display: "flex",
