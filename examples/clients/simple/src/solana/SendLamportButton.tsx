@@ -1,4 +1,5 @@
-import React, { FC, useCallback } from "react";
+import type { FC } from "react";
+import React, { useCallback } from "react";
 import { WalletNotConnectedError } from "@solana/wallet-adapter-base";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { Keypair, SystemProgram, Transaction } from "@solana/web3.js";

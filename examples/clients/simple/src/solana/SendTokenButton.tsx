@@ -1,11 +1,12 @@
-import React, { FC, useCallback } from "react";
+import type { FC } from "react";
+import React, { useCallback } from "react";
+import {
+  createTransferCheckedInstruction,
+  getAssociatedTokenAddress,
+} from "@solana/spl-token";
 import { WalletNotConnectedError } from "@solana/wallet-adapter-base";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey, Transaction } from "@solana/web3.js";
-import {
-  getAssociatedTokenAddress,
-  createTransferCheckedInstruction,
-} from "@solana/spl-token";
 
 export const TOKEN_PROGRAM_ID = new PublicKey(
   "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
@@ -14,7 +15,7 @@ export const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey(
   "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
 );
 
-const SRM_MINT = new PublicKey("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
+const USDC_MINT = new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v");
 
 export const SendTokenButton: FC = () => {
   const { connection } = useConnection();
@@ -30,18 +31,18 @@ export const SendTokenButton: FC = () => {
 
     const toAccount = "AqP1ABfSsRUBcgY3bwiDRB4kiBxgESUqCdcdDLMVSrWS";
     const fromTokenAccount = await getAssociatedTokenAddress(
-      SRM_MINT,
+      USDC_MINT,
       new PublicKey(wallet.publicKey)
     );
     const toTokenAccount = await getAssociatedTokenAddress(
-      SRM_MINT,
+      USDC_MINT,
       new PublicKey(toAccount)
     );
 
     const transaction = new Transaction().add(
       createTransferCheckedInstruction(
         fromTokenAccount,
-        SRM_MINT,
+        USDC_MINT,
         toTokenAccount,
         wallet.publicKey,
         1,
@@ -70,7 +71,7 @@ export const SendTokenButton: FC = () => {
 
   return (
     <button onClick={onClick} disabled={!wallet.publicKey}>
-      Send 0.000001 SRM to AqP1...VSrWS
+      Send 0.000001 USDC to AqP1...VSrWS
     </button>
   );
 };

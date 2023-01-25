@@ -1,7 +1,8 @@
-import React, { FC, useCallback } from "react";
+import type { FC } from "react";
+import React, { useCallback } from "react";
+import * as anchor from "@project-serum/anchor";
 import { WalletNotConnectedError } from "@solana/wallet-adapter-base";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import * as anchor from "@project-serum/anchor";
 
 export const SignMessageButton: FC = () => {
   const { connection } = useConnection();
