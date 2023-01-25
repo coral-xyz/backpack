@@ -25,11 +25,13 @@ import {
 import { Margin, PrimaryButton, TokenAmountHeader } from "@components/index";
 import { useTheme } from "@hooks/index";
 
+type Step = "confirm" | "sending" | "complete" | "error";
+
 export function SendSolanaConfirmationCard({
   token,
   destinationAddress,
   amount,
-  onComplete,
+  onCompleteStep,
 }: {
   token: {
     address: string;
@@ -40,19 +42,24 @@ export function SendSolanaConfirmationCard({
   };
   destinationAddress: string;
   amount: BigNumber;
-  onComplete?: () => void;
+  onCompleteStep?: (step: Step) => void;
 }): JSX.Element {
   const [txSignature, setTxSignature] = useState<string | null>(null);
   const solanaCtx = useSolanaCtx();
   const [error, setError] = useState(
     "Error 422. Transaction time out. Runtime error. Reticulating splines."
   );
-  const [cardType, setCardType] = useState<
-    "confirm" | "sending" | "complete" | "error"
-  >("confirm");
+  const [cardType, setCardType] = useState<Step>("confirm");
+
+  const handleChangeStep = (step: Step) => {
+    setCardType(step);
+    if (onCompleteStep) {
+      onCompleteStep(step);
+    }
+  };
 
   const onConfirm = async () => {
-    setCardType("sending");
+    handleChangeStep("sending");
     //
     // Send the tx.
     //
@@ -86,7 +93,7 @@ export function SendSolanaConfirmationCard({
       }
     } catch (err: any) {
       setError(err.toString());
-      setCardType("error");
+      handleChangeStep("error");
       return;
     }
 
@@ -104,13 +111,10 @@ export function SendSolanaConfirmationCard({
           ? "confirmed"
           : solanaCtx.commitment
       );
-      setCardType("complete");
-      if (onComplete) {
-        onComplete();
-      }
+      handleChangeStep("complete");
     } catch (err: any) {
       setError(err.toString());
-      setCardType("error");
+      handleChangeStep("error");
     }
   };
 

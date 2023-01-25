@@ -2,7 +2,13 @@ import type { UnlockedNavigatorStackParamList } from "@navigation/UnlockedNaviga
 import type { StackScreenProps } from "@react-navigation/stack";
 
 import { useCallback, useEffect, useState } from "react";
-import { StyleSheet, View, KeyboardAvoidingView, Platform } from "react-native";
+import {
+  StyleSheet,
+  View,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
+} from "react-native";
 
 import { Token } from "@@types/types";
 import {
@@ -88,6 +94,7 @@ export function SendTokenDetailScreen({
   const exceedsBalance = amount && amount.gt(maxAmount);
   const isSendDisabled = !isValidAddress || amount === null || !!exceedsBalance;
   const isAmountError = Boolean(amount && exceedsBalance);
+  const [modalIndex, setModalIndex] = useState(0);
 
   const getButton = useCallback(
     (
@@ -97,6 +104,7 @@ export function SendTokenDetailScreen({
     ): JSX.Element => {
       const handleShowPreviewConfirmation = () => {
         setIsModalVisible(() => true);
+        Keyboard.dismiss();
       };
 
       if (isErrorAddress) {
@@ -167,8 +175,8 @@ export function SendTokenDetailScreen({
       </KeyboardAvoidingView>
       <BottomSheetModal
         snapPoints={[400, 320]}
-        contentHeight={320}
         isVisible={isModalVisible}
+        index={modalIndex}
         resetVisibility={() => {
           setIsModalVisible(() => false);
         }}
@@ -177,6 +185,12 @@ export function SendTokenDetailScreen({
           token={token}
           destinationAddress={destinationAddress}
           amount={amount!}
+          onCompleteStep={(step) => {
+            console.log("onCompleteStep", step);
+            if (step !== "confirm") {
+              setModalIndex(() => 1);
+            }
+          }}
         />
       </BottomSheetModal>
     </>
