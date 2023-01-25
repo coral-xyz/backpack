@@ -737,10 +737,6 @@ export class Backend {
     const namedPublicKeys = {};
     for (const [blockchain, blockchainKeyring] of Object.entries(publicKeys)) {
       namedPublicKeys[blockchain] = {};
-      const keyringObj =
-        this.keyringStore.activeUserKeyring.keyringForBlockchain(
-          blockchain as Blockchain
-        );
       for (const [keyring, publicKeys] of Object.entries(blockchainKeyring)) {
         if (!namedPublicKeys[blockchain][keyring]) {
           namedPublicKeys[blockchain][keyring] = [];
