@@ -16,8 +16,7 @@ import { useAnchorContext, useEthereumCtx } from "@coral-xyz/recoil";
 import { BigNumber } from "ethers";
 
 // import { SendEthereumConfirmationCard } from "@components/BottomDrawerEthereumConfirmation";
-import { Error, Sending } from "@components/BottomDrawerCards";
-import { ConfirmSendSolana } from "@components/BottomDrawerSolanaConfirmation";
+import { SendSolanaConfirmationCard } from "@components/BottomDrawerSolanaConfirmation";
 import { BottomSheetModal } from "@components/BottomSheetModal";
 import { InputField, InputFieldMaxLabel } from "@components/Form";
 import {
@@ -42,13 +41,11 @@ export function SendTokenDetailScreen({
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
 
-  const [address, setAddress] = useState(
-    "6XxjKYFbcndh2gDcsUrmZgVEsoDxXMnfsaGY6fpTJzNr"
-  );
+  const [address, setAddress] = useState<string>("");
   const [amount, setAmount] = useState<BigNumber | undefined>(
     BigNumber.from(0)
   );
-  const [feeOffset, setFeeOffset] = useState(BigNumber.from(0));
+  const [feeOffset, setFeeOffset] = useState<BigNumber>(BigNumber.from(0));
 
   const {
     isValidAddress,
@@ -60,8 +57,6 @@ export function SendTokenDetailScreen({
     solanaProvider.connection,
     ethereumCtx.provider
   );
-
-  console.log({ address, isValidAddress, isErrorAddress });
 
   useEffect(() => {
     if (!token || !ethereumCtx?.feeData) {
@@ -130,10 +125,8 @@ export function SendTokenDetailScreen({
   );
 
   const SendConfirmComponent = {
-    // [Blockchain.SOLANA]: SendSolanaConfirmationCard,
+    [Blockchain.SOLANA]: SendSolanaConfirmationCard,
     // [Blockchain.ETHEREUM]: SendEthereumConfirmationCard,
-
-    [Blockchain.SOLANA]: null,
     [Blockchain.ETHEREUM]: null,
   }[blockchain];
 
@@ -176,29 +169,20 @@ export function SendTokenDetailScreen({
       <BottomSheetModal
         snapPoints={[400, 320]}
         contentHeight={320}
-        isVisible
+        isVisible={isModalVisible}
         resetVisibility={() => {
           setIsModalVisible(() => false);
         }}
       >
-        <Sending
-          blockchain={Blockchain.SOLANA}
-          isComplete
-          amount={amount}
+        <SendConfirmComponent
           token={token}
-          signature="abc123"
+          destinationAddress={destinationAddress}
+          amount={amount!}
         />
       </BottomSheetModal>
     </>
   );
 }
-
-// <ConfirmSendSolana
-//   token={token}
-//   destinationAddress={destinationAddress}
-//   amount={amount!}
-//   onConfirm={console.log}
-// />
 
 export function SendTokenListScreen({ navigation }): JSX.Element {
   return (

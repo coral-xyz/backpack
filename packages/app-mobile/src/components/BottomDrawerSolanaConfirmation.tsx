@@ -2,13 +2,12 @@ import type { Connection } from "@solana/web3.js";
 import type { BigNumber } from "ethers";
 
 import { useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text } from "react-native";
 
 import { programs, tryGetAccount } from "@cardinal/token-manager";
 import {
   Blockchain,
   confirmTransaction,
-  getLogger,
   SOL_NATIVE_MINT,
   Solana,
   walletAddressDisplay,
@@ -20,8 +19,6 @@ import { PublicKey } from "@solana/web3.js";
 import { Error, Sending } from "@components/BottomDrawerCards";
 import { Margin, PrimaryButton, TokenAmountHeader } from "@components/index";
 import { useTheme } from "@hooks/index";
-
-const logger = getLogger("send-solana-confirmation-card");
 
 export function SendSolanaConfirmationCard({
   token,
@@ -39,7 +36,7 @@ export function SendSolanaConfirmationCard({
   destinationAddress: string;
   amount: BigNumber;
   onComplete?: () => void;
-}) {
+}): JSX.Element {
   const [txSignature, setTxSignature] = useState<string | null>(null);
   const solanaCtx = useSolanaCtx();
   const [error, setError] = useState(
@@ -83,7 +80,6 @@ export function SendSolanaConfirmationCard({
         });
       }
     } catch (err: any) {
-      logger.error("solana transaction failed", err);
       setError(err.toString());
       setCardType("error");
       return;
@@ -108,7 +104,6 @@ export function SendSolanaConfirmationCard({
         onComplete();
       }
     } catch (err: any) {
-      logger.error("unable to confirm", err);
       setError(err.toString());
       setCardType("error");
     }
@@ -211,12 +206,10 @@ const ConfirmSendSolanaTable: React.FC<{
       disabled: true,
       onPress: () => {},
       detail: (
-        <>
+        <Text>
           <Text>0.000005</Text>
-          <Text style={{ marginLeft: 8, color: theme.custom.colors.secondary }}>
-            SOL
-          </Text>
-        </>
+          <Text style={{ color: theme.custom.colors.secondary }}>SOL</Text>
+        </Text>
       ),
     },
   };
@@ -249,6 +242,7 @@ const isCardinalWrappedToken = async (
       );
       return true;
     } catch (error) {
+      console.error(error);
       console.log("Invalid transfer authority");
     }
   }
