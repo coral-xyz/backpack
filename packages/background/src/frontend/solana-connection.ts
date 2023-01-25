@@ -194,12 +194,10 @@ async function handleGetAccountInfo(
   pubkey: string,
   commitment?: Commitment
 ) {
-  logger.debug("handleGetAccountInfo:init");
   const resp = await ctx.backend.getAccountInfo(
     new PublicKey(pubkey),
     commitment
   );
-  // @ts-ignore
   return [BackgroundSolanaConnection.accountInfoToJson(resp)];
 }
 
