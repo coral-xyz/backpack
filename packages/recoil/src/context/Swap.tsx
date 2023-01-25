@@ -60,6 +60,7 @@ type SwapContext = {
   isJupiterError: boolean;
   availableForSwap: BigNumber;
   exceedsBalance: boolean | undefined;
+  feeExceedsBalance: boolean | undefined;
   inputTokenAccounts: any;
 };
 
@@ -164,6 +165,7 @@ export function SwapProvider({
   const pollIdRef: { current: NodeJS.Timeout | null } = useRef(null);
 
   const swapFromToken = inputTokenAccounts.find((t) => t.mint === fromMint);
+
   let availableForSwap = swapFromToken
     ? BigNumber.from(swapFromToken.nativeBalance)
     : Zero;
@@ -182,6 +184,15 @@ export function SwapProvider({
   const exceedsBalance = fromAmount
     ? fromAmount.gt(availableForSwap)
     : undefined;
+
+  const solanaToken = inputTokenAccounts.find(
+    (t) => t.mint === SOL_NATIVE_MINT
+  );
+
+  const feeExceedsBalance =
+    transactionFee && solanaToken
+      ? transactionFee.gt(solanaToken.nativeBalance)
+      : undefined;
 
   const stopRoutePolling = () => {
     if (pollIdRef.current) {
@@ -411,6 +422,7 @@ export function SwapProvider({
         isJupiterError,
         availableForSwap,
         exceedsBalance,
+        feeExceedsBalance,
         inputTokenAccounts,
       }}
     >
