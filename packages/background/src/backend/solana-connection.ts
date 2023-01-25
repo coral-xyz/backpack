@@ -494,6 +494,7 @@ export class SolanaConnectionBackend {
         configOrSigners
       );
     } else {
+      // Deprecated
       return await this.connection!.simulateTransaction(
         transactionOrMessage,
         configOrSigners as Array<Signer>,

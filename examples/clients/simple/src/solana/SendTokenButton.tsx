@@ -27,13 +27,16 @@ export const SendTokenButton: FC = () => {
     //
     // @ts-ignore
     const bh = await window.backpack.connection.getLatestBlockhash();
+
     console.log("got latest blockhash", bh);
 
     const toAccount = "AqP1ABfSsRUBcgY3bwiDRB4kiBxgESUqCdcdDLMVSrWS";
+
     const fromTokenAccount = await getAssociatedTokenAddress(
       USDC_MINT,
       new PublicKey(wallet.publicKey)
     );
+
     const toTokenAccount = await getAssociatedTokenAddress(
       USDC_MINT,
       new PublicKey(toAccount)

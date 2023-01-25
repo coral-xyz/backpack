@@ -183,28 +183,21 @@ export class Backend {
     return await blockchainKeyring.signMessage(msg, walletAddress);
   }
 
-  async solanaSimulate(
-    txStr: string,
-    walletAddress: string,
-    includeAccounts?: boolean | Array<string>
-  ): Promise<any> {
+  async solanaSimulate(txStr: string, addresses: Array<string>): Promise<any> {
     const tx = deserializeTransaction(txStr);
     const signersOrConf =
       "message" in tx
         ? ({
             accounts: {
               encoding: "base64",
-              addresses: [new PublicKey(walletAddress).toBase58()],
+              addresses,
             },
           } as SimulateTransactionConfig)
         : undefined;
-
     return await this.solanaConnectionBackend.simulateTransaction(
       tx,
       signersOrConf,
-      typeof includeAccounts === "boolean"
-        ? includeAccounts
-        : includeAccounts && includeAccounts.map((a) => new PublicKey(a))
+      addresses.length > 0 ? addresses.map((k) => new PublicKey(k)) : undefined
     );
   }
 

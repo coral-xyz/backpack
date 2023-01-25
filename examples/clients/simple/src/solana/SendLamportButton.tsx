@@ -20,7 +20,9 @@ export const SendLamportButton: FC = () => {
       SystemProgram.transfer({
         fromPubkey: wallet.publicKey,
         toPubkey: Keypair.generate().publicKey,
-        lamports: 1000000,
+        // Note you can't send below minimum required for rent exemption to a random
+        // account so use something above that value
+        lamports: 10000000,
       })
     );
 
@@ -45,7 +47,7 @@ export const SendLamportButton: FC = () => {
 
   return (
     <button onClick={onClick} disabled={!wallet.publicKey}>
-      Send 1 lamport to a random address!
+      Send 10000000 lamports to a random address!
     </button>
   );
 };
