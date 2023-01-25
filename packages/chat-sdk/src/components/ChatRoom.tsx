@@ -125,6 +125,7 @@ export const ChatRoom = ({
         chats[0]?.client_generated_uuid
     ) {
       // a message was added to the top
+      //@ts-ignore
       const element = messageRef?.container?.children?.[0];
       if (element) {
         setScrollFromBottom(element.scrollHeight - (element.scrollTop || 100));
@@ -135,6 +136,7 @@ export const ChatRoom = ({
 
   useLayoutEffect(() => {
     if (scrollFromBottom || scrollFromBottom === 0) {
+      //@ts-ignore
       const element = messageRef?.container?.children?.[0];
       if (element) {
         element.scrollTop = element.scrollHeight - scrollFromBottom;
