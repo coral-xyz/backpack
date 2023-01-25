@@ -5,6 +5,7 @@ import {
   Blockchain,
   deserializeLegacyTransaction,
   deserializeTransaction,
+  SOL_NATIVE_MINT,
   UI_RPC_METHOD_SOLANA_SIMULATE,
 } from "@coral-xyz/common";
 import type { TransactionRequest } from "@ethersproject/abstract-provider";
@@ -14,7 +15,6 @@ import type { Message } from "@solana/web3.js";
 import {
   ComputeBudgetInstruction,
   ComputeBudgetProgram,
-  LAMPORTS_PER_SOL,
   PublicKey,
 } from "@solana/web3.js";
 import { BigNumber, ethers } from "ethers";
@@ -325,30 +325,49 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
         });
         if (result.value.err) {
           console.warn("failed to simulate", result.value.err);
+          // TODO handle InsufficientFundsForRent
           setSimulationError(true);
         } else {
           const balanceChanges = result.value.accounts.reduce(
-            (result: any, a: any) => {
-              if (a.owner === TOKEN_PROGRAM_ID.toString()) {
+            (result: any, account: any) => {
+              // Token changes
+              const isToken = account.owner === TOKEN_PROGRAM_ID.toString();
+              const isNativeSol = account.owner === SOL_NATIVE_MINT;
+              if (isToken || isNativeSol) {
                 try {
-                  const buf = Buffer.from(a.data[0], a.data[1]);
-                  const account = AccountLayout.decode(buf);
-                  // Check account owner is active Solana public key
-                  if (
-                    !new PublicKey(account.owner).equals(
-                      new PublicKey(walletPublicKey)
-                    )
-                  ) {
-                    return result;
+                  let accountNativeBalance: BigNumber;
+                  let tokenMint: PublicKey;
+                  if (isToken) {
+                    const tokenAccount = AccountLayout.decode(
+                      Buffer.from(account.data[0], account.data[1])
+                    );
+                    if (
+                      !new PublicKey(tokenAccount.owner).equals(
+                        new PublicKey(walletPublicKey)
+                      )
+                    ) {
+                      // Return the reducer state umodified if token account is not owned
+                      return result;
+                    }
+                    accountNativeBalance = BigNumber.from(
+                      account.amount.toString()
+                    );
+                    // Standard token mint
+                    tokenMint = new PublicKey(account.mint);
+                  } else {
+                    accountNativeBalance = BigNumber.from(
+                      account.lamports.toString()
+                    );
+                    // Faux mint for native SOL
+                    tokenMint = new PublicKey(SOL_NATIVE_MINT);
                   }
+
                   // Find the existing token account
                   const existingTokenAccount = tokenAccountsSorted.find((t) =>
-                    new PublicKey(t.mint!).equals(new PublicKey(account.mint))
+                    new PublicKey(t.mint!).equals(tokenMint)
                   );
                   // Find the token in the registry to get the symbol for return
-                  const token = tokenRegistry.get(
-                    new PublicKey(account.mint).toString()
-                  );
+                  const token = tokenRegistry.get(tokenMint.toString());
                   if (!token) {
                     return result;
                   }
@@ -357,9 +376,9 @@ export function useSolanaTxData(serializedTx: any): TransactionData {
                     : ethers.constants.Zero;
                   //
                   // Calculate the native balance change
-                  const nativeChange = BigNumber.from(
-                    account.amount.toString()
-                  ).sub(existingNativeBalance);
+                  const nativeChange = accountNativeBalance.sub(
+                    existingNativeBalance
+                  );
 
                   result[token.symbol] = {
                     nativeChange,
