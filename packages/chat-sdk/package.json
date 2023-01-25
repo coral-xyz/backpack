@@ -13,6 +13,7 @@
   "dependencies": {
     "@coral-xyz/common": "*",
     "@coral-xyz/db": "*",
+    "@coral-xyz/recoil": "*",
     "@coral-xyz/react-common": "*",
     "@coral-xyz/themes": "*",
     "@giphy/js-fetch-api": "^4.4.0",

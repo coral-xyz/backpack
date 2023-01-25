@@ -22,6 +22,8 @@ export interface EnrichedInboxDb extends InboxDb {
   areFriends: 0 | 1;
   unread: 0 | 1;
   friendshipId: string;
+  requested: 0 | 1;
+  remoteRequested: 0 | 1;
 }
 
 export interface Friendship {

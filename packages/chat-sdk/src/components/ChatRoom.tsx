@@ -1,11 +1,14 @@
-import React, { useEffect, useRef, useState } from "react";
-import type { SubscriptionType } from "@coral-xyz/common";
-import { SUBSCRIBE, UNSUBSCRIBE } from "@coral-xyz/common";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import type {
+  EnrichedMessageWithMetadata,
+  SubscriptionType,
+} from "@coral-xyz/common";
+import { EnrichedMessage, SUBSCRIBE, UNSUBSCRIBE } from "@coral-xyz/common";
 import {
   refreshChatsFor,
   SignalingManager,
-  useRoomChatsWithMetadata,
-} from "@coral-xyz/db";
+  useChatsWithMetadata,
+} from "@coral-xyz/react-common";
 
 import { ChatProvider } from "./ChatContext";
 import { FullScreenChat } from "./FullScreenChat";
@@ -52,6 +55,8 @@ export const ChatRoom = ({
   publicKey,
 }: ChatRoomProps) => {
   const [reconnecting, setReconnecting] = useState(false);
+  const existingChatRef = useRef<any>();
+  const [scrollFromBottom, setScrollFromBottom] = useState<null | number>(null);
   // TODO: Make state propogte from outside the state since this'll be expensive
   const [activeReply, setActiveReply] = useState({
     parent_username: "",
@@ -59,11 +64,13 @@ export const ChatRoom = ({
     parent_message_author_uuid: "",
     text: "",
   });
-  const chats = useRoomChatsWithMetadata(userId, roomId, type);
+  const { chats, usersMetadata } = useChatsWithMetadata({ room: roomId, type });
   const [refreshing, setRefreshing] = useState(true);
+  const [messageRef, setMessageRef] = useState(null);
 
   useEffect(() => {
     if (roomId) {
+      setRefreshing(true);
       refreshChatsFor(userId, roomId, type, nftMint, publicKey)
         .then(() => {
           setRefreshing(false);
@@ -112,7 +119,31 @@ export const ChatRoom = ({
         nftMint
       );
     }
+    if (
+      existingChatRef.current &&
+      existingChatRef.current[0]?.client_generated_uuid !==
+        chats[0]?.client_generated_uuid
+    ) {
+      // a message was added to the top
+      //@ts-ignore
+      const element = messageRef?.container?.children?.[0];
+      if (element) {
+        setScrollFromBottom(element.scrollHeight - (element.scrollTop || 100));
+      }
+    }
+    existingChatRef.current = chats;
   }, [chats]);
+
+  useLayoutEffect(() => {
+    if (scrollFromBottom || scrollFromBottom === 0) {
+      //@ts-ignore
+      const element = messageRef?.container?.children?.[0];
+      if (element) {
+        element.scrollTop = element.scrollHeight - scrollFromBottom;
+      }
+    }
+    setScrollFromBottom(null);
+  }, [scrollFromBottom, chats]);
 
   return (
     <ChatProvider
@@ -138,8 +169,9 @@ export const ChatRoom = ({
       reconnecting={reconnecting}
       nftMint={nftMint}
       publicKey={publicKey}
+      usersMetadata={usersMetadata}
     >
-      <FullScreenChat />
+      <FullScreenChat messageRef={messageRef} setMessageRef={setMessageRef} />
     </ChatProvider>
   );
 };

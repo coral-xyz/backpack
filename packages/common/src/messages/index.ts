@@ -3,6 +3,26 @@ export * from "./fromServer";
 export * from "./ToPubsub";
 export * from "./toServer";
 
+const COLORS = [
+  "#1abc9c",
+  "#2ecc71",
+  "#3498db",
+  "#9b59b6",
+  "#34495e",
+  "#16a085",
+  "#27ae60",
+  "#8e44ad",
+  "#2c3e50",
+  "#e74c3c",
+  "#c0392b",
+  "#d35400",
+  "#c0392b",
+];
+
+export const getRandomColor = () => {
+  return COLORS[Math.floor(COLORS.length * Math.random())];
+};
+
 export const parseMessage = (
   message: string
 ): { type: "text" | "tag"; value: string }[] => {

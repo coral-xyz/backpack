@@ -1,8 +1,7 @@
 import { Fragment, useContext, useEffect, useRef, useState } from "react";
 import { RichMentionsContext, RichMentionsInput } from "react-rich-mentions";
-import { useUsersFromUuids } from "@coral-xyz/db";
-import { useUser } from "@coral-xyz/recoil";
-import { useCustomTheme, styles } from "@coral-xyz/themes";
+import { useUsersMetadata } from "@coral-xyz/react-common";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { CircularProgress } from "@mui/material";
 
 import { useChatContext } from "../ChatContext";
@@ -51,11 +50,7 @@ export const CustomAutoComplete = ({
   const { loading, results, activeSearch, selectItem } =
     useContext(RichMentionsContext);
 
-  const { uuid } = useUser();
-  const users = useUsersFromUuids(
-    uuid,
-    results.map((r) => r.id)
-  );
+  const users = useUsersMetadata({ remoteUserIds: results.map((r) => r.id) });
 
   return (
     <div>
@@ -118,7 +113,7 @@ export const CustomAutoComplete = ({
           >
             <img
               style={{ height: 20, borderRadius: 10, marginRight: 5 }}
-              src={users.find((x) => x?.uuid === item.id)?.image}
+              src={users[item.id]?.image}
             />
             <div style={{ fontSize: 15 }}>{item.name}</div>
           </button>

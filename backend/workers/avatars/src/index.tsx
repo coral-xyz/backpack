@@ -41,6 +41,7 @@ app.get("/:username/:cache_bust?", async (c) => {
   const username = c.req.param("username");
   const jwt = c.env.PUBLIC_AVATAR_JWT;
   const hasuraUrl = c.env.HASURA_URL;
+  const size = c.req.query("size") || 500;
 
   const avatarResponse = await fetch(hasuraUrl, {
     method: "POST",
@@ -95,7 +96,7 @@ app.get("/:username/:cache_bust?", async (c) => {
   return c.body(
     renderToStaticMarkup(
       <Avatar
-        size={500}
+        size={size}
         name={username.toLowerCase().trim()}
         variant="pixel"
         colors={["#FEED5B", "#6260FF", "#29DBD1", "#C061F7", "#FF6F5B"]}
@@ -104,6 +105,7 @@ app.get("/:username/:cache_bust?", async (c) => {
     200,
     {
       "Content-Type": "image/svg+xml",
+      "Cache-Control": `max-age=${60}, s-maxage=${60}, stale-while-revalidate=${60}`,
     }
   );
 });

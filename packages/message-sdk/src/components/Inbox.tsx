@@ -6,12 +6,15 @@ import type {
   RemoteUserData,
 } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
-import { refreshFriendships, refreshGroups } from "@coral-xyz/db";
-import { EmptyState } from "@coral-xyz/react-common";
+import {
+  EmptyState,
+  refreshGroupsAndFriendships,
+} from "@coral-xyz/react-common";
 import {
   useFriendships,
   useGroupCollections,
   useRequestsCount,
+  useRequestsOpen,
   useUser,
 } from "@coral-xyz/recoil";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
@@ -20,12 +23,23 @@ import { ParentCommunicationManager } from "../ParentCommunicationManager";
 
 import { MessageList } from "./MessageList";
 import { MessagesSkeleton } from "./MessagesSkeleton";
+import { RequestsScreen } from "./RequestsScreen";
 import { useStyles } from "./styles";
 import { UserList } from "./UserList";
 
 let debouncedTimer;
 
 export function Inbox() {
+  const requestsTab = useRequestsOpen();
+
+  if (requestsTab) {
+    return <RequestsScreen />;
+  }
+
+  return <InboxInner />;
+}
+
+export function InboxInner() {
   const classes = useStyles();
   const { uuid } = useUser();
   const activeChats = useFriendships({ uuid });
@@ -48,7 +62,9 @@ export function Inbox() {
       chatProps: x,
       chatType: "individual",
     })),
-  ];
+  ].sort((a, b) =>
+    a.last_message_timestamp < b.last_message_timestamp ? -1 : 1
+  );
 
   const searchedUsersDistinct = searchResults.filter(
     (result) =>
@@ -62,10 +78,7 @@ export function Inbox() {
   );
 
   useEffect(() => {
-    refreshFriendships(uuid)
-      .then(() => setRefreshing(false))
-      .catch(() => setRefreshing(false));
-    refreshGroups(uuid).catch((e) => console.error(e));
+    refreshGroupsAndFriendships(uuid);
   }, [uuid]);
 
   const debouncedInit = () => {

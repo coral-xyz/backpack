@@ -1,23 +1,18 @@
 import type {
-  EnrichedMessageWithMetadata,
-  MessageWithMetadata,
+  EnrichedMessage,  MessageWithMetadata,
   SubscriptionType,
-  ToServer,
-} from "@coral-xyz/common";
+  ToServer} from "@coral-xyz/common";
 import {
   CHAT_MESSAGES,
   SUBSCRIBE,
   UNSUBSCRIBE,
   WS_READY,
 } from "@coral-xyz/common";
-
-import { updateLastRead } from "../api";
-import { bulkAddChats, createOrUpdateCollection } from "../db/chats";
-import {
-  createDefaultFriendship,
+import { bulkAddChats,   createDefaultFriendship,
+createOrUpdateCollection ,
   getFriendshipByRoom,
   updateFriendship,
-} from "../db/friends";
+updateLastRead , } from "@coral-xyz/db";
 
 import { RECONNECTING, Signaling } from "./Signaling";
 
@@ -28,6 +23,23 @@ export class SignalingManager {
   private signaling?: Signaling;
   private uuid = "";
   updateLastReadTimeout: { [room: string]: number };
+  public onUpdateRecoil = (
+    props:
+      | {
+          type: "friendship";
+        }
+      | { type: "collection" }
+      | {
+          type: "chat";
+          payload: {
+            uuid: string;
+            room: string;
+            type: SubscriptionType;
+            chats: EnrichedMessage[];
+            clear?: boolean;
+          };
+        }
+  ) => {};
   private postSubscribes: Set<{
     room: string;
     type: SubscriptionType;
@@ -53,8 +65,25 @@ export class SignalingManager {
   initHandlers() {
     this.signaling?.on(
       CHAT_MESSAGES,
-      (payload: { messages: MessageWithMetadata[] }) => {
-        bulkAddChats(
+      async (payload: { messages: MessageWithMetadata[] }) => {
+        if (payload.messages && payload.messages[0]) {
+          // we only bulkify messages from the same room yet
+          this.onUpdateRecoil({
+            type: "chat",
+            payload: {
+              room: payload.messages[0].room,
+              type: payload.messages[0].type,
+              uuid: this.uuid,
+              chats: payload.messages.map((chat) => ({
+                ...chat,
+                direction: this.uuid === chat.uuid ? "send" : "recv",
+                received: true,
+                from_http_server: 0,
+              })),
+            },
+          });
+        }
+        await bulkAddChats(
           this.uuid,
           payload.messages.map((chat) => ({
             ...chat,
@@ -70,11 +99,14 @@ export class SignalingManager {
               parseInt(message.room)
             );
             if (friendship?.remoteUserId) {
-              updateFriendship(this.uuid, friendship?.remoteUserId, {
+              await updateFriendship(this.uuid, friendship?.remoteUserId, {
                 last_message_sender: message.uuid,
                 last_message: message.message,
                 last_message_timestamp: new Date().toISOString(),
-                unread: 1,
+                unread: message.uuid === this.uuid ? 0 : 1,
+              });
+              this.onUpdateRecoil({
+                type: "friendship",
               });
             } else {
               if (message.uuid !== this.uuid) {
@@ -124,7 +156,7 @@ export class SignalingManager {
   }
 
   debouncedUpdateLastRead(
-    latestMessage: EnrichedMessageWithMetadata,
+    latestMessage: EnrichedMessage,
     publicKey?: string,
     mint?: string
   ) {
@@ -132,17 +164,29 @@ export class SignalingManager {
       if (this.updateLastReadTimeout[latestMessage.room]) {
         window.clearTimeout(this.updateLastReadTimeout[latestMessage.room]);
       }
-      this.updateLastReadTimeout[latestMessage.room] = window.setTimeout(() => {
-        updateLastRead(
-          this.uuid,
-          latestMessage.client_generated_uuid,
-          latestMessage.room,
-          latestMessage.type,
-          latestMessage.uuid,
-          publicKey,
-          mint
-        );
-      }, DEBOUNCE_INTERVAL_MS);
+      this.updateLastReadTimeout[latestMessage.room] = window.setTimeout(
+        async () => {
+          await updateLastRead(
+            this.uuid,
+            latestMessage.client_generated_uuid,
+            latestMessage.room,
+            latestMessage.type,
+            latestMessage.uuid,
+            publicKey,
+            mint
+          );
+          if (latestMessage.type === "collection") {
+            this.onUpdateRecoil({
+              type: "collection",
+            });
+          } else {
+            this.onUpdateRecoil({
+              type: "friendship",
+            });
+          }
+        },
+        DEBOUNCE_INTERVAL_MS
+      );
     }
   }
 
@@ -156,6 +200,24 @@ export class SignalingManager {
   send(message: ToServer) {
     this.signaling?.send(message);
     if (message.type === CHAT_MESSAGES) {
+      // we only bulkify messages from the same room yet
+      this.onUpdateRecoil({
+        type: "chat",
+        payload: {
+          room: message.payload.room,
+          type: message.payload.type,
+          uuid: this.uuid,
+          chats: message.payload.messages.map((m) => ({
+            ...m,
+            direction: "send",
+            from_http_server: 0,
+            created_at: new Date().getTime().toString(),
+            uuid: this.uuid,
+            room: message.payload.room,
+            type: message.payload.type,
+          })),
+        },
+      });
       bulkAddChats(
         this.uuid,
         message.payload.messages.map((m) => ({
@@ -175,11 +237,14 @@ export class SignalingManager {
             parseInt(message.payload.room)
           );
           if (friendship?.remoteUserId) {
-            updateFriendship(this.uuid, friendship?.remoteUserId, {
+            await updateFriendship(this.uuid, friendship?.remoteUserId, {
               last_message_sender: this.uuid,
               last_message: m.message,
               last_message_timestamp: new Date().toISOString(),
               unread: 0,
+            });
+            this.onUpdateRecoil({
+              type: "friendship",
             });
           }
         } else {

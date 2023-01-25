@@ -1,7 +1,9 @@
+import React from "react";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import { createStyles, makeStyles } from "@mui/styles";
 
 import { useChatContext } from "./ChatContext";
+import { ParsedMessage } from "./ParsedMessage";
 
 const useStyles = makeStyles((theme: any) =>
   createStyles({
@@ -52,7 +54,7 @@ export const ReplyContainer = ({
             paddingLeft: 12,
           }}
         >
-          {text}
+          <ParsedMessage message={text} />
         </div>
       </div>
       {showCloseBtn && (

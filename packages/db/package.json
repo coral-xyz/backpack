@@ -2,7 +2,7 @@
   "name": "@coral-xyz/db",
   "version": "0.1.0",
   "module": "dist/esm/index.js",
-  "source": "src/index.ts ",
+  "source": "src/index.ts",
   "types": "dist/esm/index.d.ts",
   "scripts": {
     "build": "tsc -b && tsc-alias"
@@ -10,7 +10,6 @@
   "license": "MIT",
   "dependencies": {
     "@coral-xyz/common": "*",
-    "@coral-xyz/recoil": "*",
     "dexie": "^3.2.2",
     "dexie-react-hooks": "^1.1.1",
     "react": "^17.0.2",
