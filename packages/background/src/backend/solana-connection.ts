@@ -396,6 +396,7 @@ export class SolanaConnectionBackend {
     publicKey: PublicKey,
     commitment?: Commitment
   ): Promise<AccountInfo<Buffer> | null> {
+    logger.debug("getAccountInfo:this.connection", this.connection);
     return await this.connection!.getAccountInfo(publicKey, commitment);
   }
 
