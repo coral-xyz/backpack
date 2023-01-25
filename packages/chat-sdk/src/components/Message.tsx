@@ -33,6 +33,7 @@ import {
 
 import { useChatContext } from "./ChatContext";
 import { ReplyIcon } from "./Icons";
+import { MediaContent } from "./MediaContent";
 import { ParsedMessage } from "./ParsedMessage";
 import { ReplyContainer } from "./ReplyContainer";
 // use @giphy/js-fetch-api to fetch gifs, instantiate with your api key
@@ -290,26 +291,10 @@ export const MessageLine = (props) => {
                       </>
                     ) : props.messageKind === "media" ? (
                       <div>
-                        {props.metadata?.media_kind === "video" ? (
-                          <video
-                            style={{
-                              height: 180,
-                              maxWidth: 250,
-                              borderRadius: 5,
-                            }}
-                            controls={true}
-                            src={props.metadata?.media_link}
-                          />
-                        ) : (
-                          <img
-                            style={{
-                              height: 180,
-                              maxWidth: 250,
-                              borderRadius: 5,
-                            }}
-                            src={props.metadata?.media_link}
-                          />
-                        )}
+                        <MediaContent
+                          mediaLink={props.metadata?.media_link}
+                          mediaKind={props.metadata?.media_kind}
+                        />
                         <div>{message}</div>
                       </div>
                     ) : (
