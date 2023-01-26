@@ -2,9 +2,10 @@ import { useState } from "react";
 import { findMintManagerId } from "@cardinal/creator-standard";
 import { programs, tryGetAccount } from "@cardinal/token-manager";
 import type { RawMintString } from "@coral-xyz/common";
-import {   Blockchain,
+import {
+  Blockchain,
   confirmTransaction,
-findTokenRecordPda ,
+  findTokenRecordPda,
   getLogger,
   SOL_NATIVE_MINT,
   Solana,
@@ -127,7 +128,7 @@ export function SendSolanaConfirmationCard({
             token.address
           )
         ) {
-          txSig = await Solana.transferNonProgrammable(solanaCtx, {
+          txSig = await Solana.transferProgrammableNonFungible(solanaCtx, {
             destination: new PublicKey(destinationAddress),
             mint: new PublicKey(token.mint!),
             amount: amount.toNumber(),

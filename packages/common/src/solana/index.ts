@@ -16,10 +16,9 @@ import {
 } from "@magiceden-oss/open_creator_protocol";
 import type {
   TransferInstructionAccounts,
-  TransferInstructionArgs} from "@metaplex-foundation/mpl-token-metadata";
-import {
-  createTransferInstruction as createMPLTransferInstruction,
+  TransferInstructionArgs,
 } from "@metaplex-foundation/mpl-token-metadata";
+import { createTransferInstruction as createMPLTransferInstruction } from "@metaplex-foundation/mpl-token-metadata";
 import type { Program, SplToken } from "@project-serum/anchor";
 import * as anchor from "@project-serum/anchor";
 import {
@@ -361,7 +360,7 @@ export class Solana {
     });
   }
 
-  public static async transferNonProgrammable(
+  public static async transferProgrammableNonFungible(
     ctx: SolanaContext,
     req: TransferTokenRequest
   ): Promise<string> {
