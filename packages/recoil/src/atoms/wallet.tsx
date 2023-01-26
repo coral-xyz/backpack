@@ -59,7 +59,11 @@ export const isKeyCold = selectorFamily<boolean, string>({
     (publicKey) =>
     ({ get }) => {
       const wallets = get(allWallets);
-      const { isCold } = wallets.find((w) => w.publicKey === publicKey)!;
+      const w = wallets.find((w) => w.publicKey === publicKey)!;
+      if (!w) {
+        return false;
+      }
+      const { isCold } = w;
       return isCold ?? false;
     },
 });

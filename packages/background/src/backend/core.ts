@@ -869,6 +869,10 @@ export class Backend {
     return publicKey.toString();
   }
 
+  async keyIsCold(publicKey: string): Promise<boolean> {
+    return await store.getIsCold(publicKey);
+  }
+
   async keyIsColdUpdate(publicKey: string, isCold: boolean): Promise<string> {
     await store.setIsCold(publicKey, isCold);
     const walletData = await this.keyringStoreReadAllPubkeyData();

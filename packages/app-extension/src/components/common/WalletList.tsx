@@ -482,7 +482,7 @@ export function WalletListItem({
 }) {
   const theme = useCustomTheme();
   const nav = useNavStack();
-  const { publicKey, name, blockchain, type } = wallet;
+  const { publicKey, name, blockchain, type, isCold } = wallet;
   return (
     <ListItem
       key={publicKey.toString()}
@@ -498,8 +498,6 @@ export function WalletListItem({
         border: isSelected
           ? `solid 2px ${theme.custom.colors.secondary}`
           : "none",
-        background: wallet.isCold ? `#c7c7ff !important` : undefined,
-        backgroundColor: wallet.isCold ? `#c7c7ff !important` : undefined,
       }}
       button={type !== "dehydrated"}
     >
@@ -546,6 +544,7 @@ export function WalletListItem({
               name={name}
               publicKey={publicKey}
               type={type}
+              isCold={isCold}
               isSelected={isSelected}
             />
           </div>
@@ -638,11 +637,13 @@ export function StackedWalletAddress({
   publicKey,
   name,
   type,
+  isCold,
   isSelected = false,
 }: {
   publicKey: string;
   name: string;
   type: string;
+  isCold?: boolean;
   isSelected?: boolean;
 }) {
   const theme = useCustomTheme();

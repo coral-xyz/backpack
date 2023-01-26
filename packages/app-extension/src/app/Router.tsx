@@ -6,6 +6,7 @@ import {
   EXTENSION_WIDTH,
   getLogger,
   openOnboarding,
+  QUERY_COLD,
   QUERY_APPROVAL,
   QUERY_APPROVE_ALL_TRANSACTIONS,
   QUERY_APPROVE_MESSAGE,
@@ -40,6 +41,7 @@ import { Unlocked } from "../components/Unlocked";
 import { ApproveMessage } from "../components/Unlocked/Approvals/ApproveMessage";
 import { ApproveOrigin } from "../components/Unlocked/Approvals/ApproveOrigin";
 import {
+  Cold,
   ApproveAllTransactions,
   ApproveTransaction,
 } from "../components/Unlocked/Approvals/ApproveTransaction";
@@ -138,6 +140,8 @@ function PopupRouter() {
       return <QueryApproveAllTransactions />;
     case QUERY_APPROVE_MESSAGE:
       return <QueryApproveMessage />;
+    case QUERY_COLD:
+      return <QueryCold />;
     default:
       return <FullApp />;
   }
@@ -290,6 +294,27 @@ function QueryApproveAllTransactions() {
         />
       </WithUnlock>
     </WithEnabledBlockchain>
+  );
+}
+
+function QueryCold() {
+  logger.debug("query cold");
+  const bg = useBackgroundResponder();
+  const url = new URL(window.location.href);
+  const wallet = url.searchParams.get("wallet")!;
+  const origin = url.searchParams.get("origin");
+  const title = url.searchParams.get("title");
+
+  return (
+    <Cold
+      wallet={wallet}
+      title={title!}
+      origin={origin!}
+      onCompletion={async () => {
+        bg.response({});
+        window.close();
+      }}
+    />
   );
 }
 

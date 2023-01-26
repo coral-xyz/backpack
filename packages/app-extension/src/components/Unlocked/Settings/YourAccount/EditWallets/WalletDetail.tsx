@@ -153,7 +153,7 @@ export const WalletDetail: React.FC<{
           <SettingsList menuItems={menuItems} />
         </div>
       </WithCopyTooltip>
-      {type === "hardware" && <SettingsList menuItems={_isCold} />}
+      {type !== "dehyrdrated" && <SettingsList menuItems={_isCold} />}
       {type !== "hardware" && type !== "dehydrated" && (
         <SettingsList menuItems={secrets} />
       )}
