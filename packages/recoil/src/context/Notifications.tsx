@@ -15,6 +15,7 @@ import {
   NOTIFICATION_BLOCKCHAIN_ENABLED,
   NOTIFICATION_DARK_MODE_UPDATED,
   NOTIFICATION_DEVELOPER_MODE_UPDATED,
+  NOTIFICATION_DOMAIN_CONTENT_IPFS_GATEWAY_UPDATED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
@@ -107,6 +108,14 @@ export function NotificationsProvider(props: any) {
       return {
         ...current,
         developerMode,
+      };
+    });
+  };
+  const setDomainContentIPFSGateway = (ipfsGateway: string) => {
+    setPreferences((current) => {
+      return {
+        ...current,
+        ipfsGateway,
       };
     });
   };
@@ -250,6 +259,9 @@ export function NotificationsProvider(props: any) {
           break;
         case NOTIFICATION_DEVELOPER_MODE_UPDATED:
           handleIsDeveloperModeUpdated(notif);
+          break;
+        case NOTIFICATION_DOMAIN_CONTENT_IPFS_GATEWAY_UPDATED:
+          handleDomainContentIPFSGatewayUpdated(notif);
           break;
         case NOTIFICATION_SOLANA_EXPLORER_UPDATED:
           handleSolanaExplorerUpdated(notif);
@@ -484,6 +496,9 @@ export function NotificationsProvider(props: any) {
 
     const handleIsDeveloperModeUpdated = (notif: Notification) => {
       setIsDeveloperMode(notif.data.developerMode);
+    };
+    const handleDomainContentIPFSGatewayUpdated = (notif: Notification) => {
+      setDomainContentIPFSGateway(notif.data.ipfsGateway);
     };
 
     const handleSolanaExplorerUpdated = (notif: Notification) => {

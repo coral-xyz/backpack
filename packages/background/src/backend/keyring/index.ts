@@ -27,6 +27,7 @@ import * as store from "../store";
 import {
   DEFAULT_DARK_MODE,
   DEFAULT_DEVELOPER_MODE,
+  DEFAULT_GATEWAY,
   DefaultKeyname,
 } from "../store";
 
@@ -829,6 +830,7 @@ export function defaultPreferences(enabledBlockchains: any): any {
     enabledBlockchains,
     darkMode: DEFAULT_DARK_MODE,
     developerMode: DEFAULT_DEVELOPER_MODE,
+    ipfsGateway: DEFAULT_GATEWAY,
     solana: {
       explorer: SolanaExplorer.DEFAULT,
       cluster: SolanaCluster.DEFAULT,

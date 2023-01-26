@@ -20,6 +20,7 @@ export type WalletData = {
   developerMode: boolean;
   solana: SolanaData;
   ethereum?: EthereumData;
+  ipfsGateway: string;
 };
 
 type SolanaData = {
@@ -53,3 +54,4 @@ function key(uuid: string): string {
 export const DEFAULT_LOCK_INTERVAL_SECS = 15 * 60;
 export const DEFAULT_DARK_MODE = false;
 export const DEFAULT_DEVELOPER_MODE = false;
+export { DEFAULT_GATEWAY } from "@coral-xyz/app-extension/src/redirects/constants";

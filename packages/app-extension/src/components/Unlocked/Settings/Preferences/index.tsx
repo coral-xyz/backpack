@@ -49,6 +49,9 @@ export function Preferences() {
     "Trusted Sites": {
       onClick: () => nav.push("preferences-trusted-sites"),
     },
+    "Domain Content Resolver": {
+      onClick: () => nav.push("preferences-domain-content-resolver"),
+    },
   };
 
   if (BACKPACK_FEATURE_LIGHT_MODE) {

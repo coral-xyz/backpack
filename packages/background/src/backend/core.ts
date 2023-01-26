@@ -1,3 +1,4 @@
+// import { DEFAULT_GATEWAY } from "@coral-xyz/app-extension/src/redirects/constants";
 import { keyringForBlockchain } from "@coral-xyz/blockchain-common";
 import type { BlockchainKeyring } from "@coral-xyz/blockchain-keyring";
 import type {
@@ -24,6 +25,7 @@ import {
   NOTIFICATION_BLOCKCHAIN_ENABLED,
   NOTIFICATION_DARK_MODE_UPDATED,
   NOTIFICATION_DEVELOPER_MODE_UPDATED,
+  NOTIFICATION_DOMAIN_CONTENT_IPFS_GATEWAY_UPDATED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
@@ -75,6 +77,7 @@ import type { Nav, User } from "./store";
 import * as store from "./store";
 import {
   DEFAULT_DARK_MODE,
+  DEFAULT_GATEWAY,
   getWalletDataForUser,
   setUser,
   setWalletDataForUser,
@@ -1236,6 +1239,33 @@ export class Backend {
       },
     });
     return SUCCESS_RESPONSE;
+  }
+
+  async domainContentIPFSGatewayRead(uuid: string): Promise<string> {
+    const data = await store.getWalletDataForUser(uuid);
+    return data.ipfsGateway ?? DEFAULT_GATEWAY;
+  }
+
+  async domainContentIPFSGatewayUpdate(ipfsGateway: string): Promise<boolean> {
+    const uuid = this.keyringStore.activeUserKeyring.uuid;
+    const data = await store.getWalletDataForUser(uuid);
+
+    if (data.ipfsGateway === ipfsGateway) {
+      return false;
+    }
+
+    await store.setWalletDataForUser(uuid, {
+      ...data,
+      ipfsGateway,
+    });
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_DOMAIN_CONTENT_IPFS_GATEWAY_UPDATED,
+      data: {
+        ipfsGateway,
+      },
+    });
+
+    return true;
   }
 
   async isApprovedOrigin(origin: string): Promise<boolean> {

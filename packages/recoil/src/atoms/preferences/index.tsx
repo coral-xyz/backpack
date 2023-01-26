@@ -55,6 +55,14 @@ export const isDeveloperMode = selector<boolean>({
   },
 });
 
+export const domainContentIpfsGateway = selector<string>({
+  key: "domainContentIpfsGateway",
+  get: async ({ get }) => {
+    const p = get(preferences);
+    return p.ipfsGateway;
+  },
+});
+
 export const autoLockSecs = selector<number>({
   key: "autoLockSecs",
   get: async ({ get }) => {
