@@ -251,7 +251,7 @@ const DARK_COLORS = {
   invertedPrimary: "#FFFFFF",
   invertedSecondary: LIGHT_BACKGROUND_COLOR_0,
   avatarPopoverMenuBackground: BACKGROUND_COLOR_0,
-  listItemHover: `rgba(39, 39, 42, ${HOVER_OPACITY}) !important`,
+  listItemHover: `rgba(39, 39, 42, ${HOVER_OPACITY})`,
 };
 
 const LIGHT_COLORS = {

@@ -802,8 +802,8 @@ function CopyButton({
 
         "&:hover": {
           backgroundColor: inverted
-            ? theme.custom.colorsInverted.listItemHover
-            : theme.custom.colors.listItemHover,
+            ? `${theme.custom.colorsInverted.listItemHover} !important`
+            : `${theme.custom.colors.listItemHover} !important`,
         },
       }}
       onClick={(e) => {
