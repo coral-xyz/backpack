@@ -416,22 +416,42 @@ function _WalletList({
             }}
           />
         </div>
-        <WalletList
-          wallets={activeWallets}
-          clickWallet={(wallet) => {
-            if (wallet.type !== "dehydrated") {
-              onChange(wallet);
-              close();
-            }
-          }}
-          style={{
-            borderRadius: "10px",
-            overflow: "hidden",
-            marginLeft: 0,
-            marginRight: 0,
-          }}
-          selectedWalletPublicKey={activeWallet.publicKey}
-        />
+        {activeWallets.length === 0 ? (
+          <div
+            style={{
+              backgroundColor: theme.custom.colors.nav,
+              padding: "16px",
+              borderRadius: "10px",
+            }}
+          >
+            <Typography
+              style={{
+                color: theme.custom.colors.secondary,
+                textAlign: "center",
+                fontWeight: 500,
+              }}
+            >
+              No active wallets found
+            </Typography>
+          </div>
+        ) : (
+          <WalletList
+            wallets={activeWallets}
+            clickWallet={(wallet) => {
+              if (wallet.type !== "dehydrated") {
+                onChange(wallet);
+                close();
+              }
+            }}
+            style={{
+              borderRadius: "10px",
+              overflow: "hidden",
+              marginLeft: 0,
+              marginRight: 0,
+            }}
+            selectedWalletPublicKey={activeWallet.publicKey}
+          />
+        )}
       </div>
       <div
         style={{

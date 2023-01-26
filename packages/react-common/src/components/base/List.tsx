@@ -18,6 +18,9 @@ const useStyles = styles((theme) => ({
     height: "56px",
     display: "flex",
     backgroundColor: `${theme.custom.colorsInverted.nav} !important`,
+    "&:hover": {
+      opacity: 0.6,
+    },
   },
   dividerRoot: {
     borderColor: "transparent !important",
