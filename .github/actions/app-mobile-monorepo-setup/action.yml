@@ -1,17 +1,15 @@
 name: app-mobile monorepo setup
 
-inputs:
-  eas-version:
-    description: Version of EAS CLI to use
-    default: latest
-
-  expo-token:
-    description: Expo token to authenticate with
-    required: false
-
 runs:
   using: composite
   steps:
+    - name: Check for EXPO_TOKEN
+      run: |
+        if [ -z "${{ secrets.EXPO_TOKEN }}" ]; then
+          echo "You must provide an EXPO_TOKEN secret linked to this project's Expo account in this repo's secrets. Learn more: https://docs.expo.dev/eas-update/github-actions"
+          exit 1
+        fi
+
     - name: 🏗 Setup Node
       uses: actions/setup-node@v3
       with:
@@ -21,9 +19,9 @@ runs:
     - name: 🏗 Setup Expo
       uses: expo/expo-github-action@v7
       with:
-        eas-version: ${{ inputs.eas-version }}
+        eas-version: latest
         # expo-version: ${{ inputs.expo-version }}
-        token: ${{ inputs.expo-token }}
+        token: ${{ secrets.EXPO_TOKEN }}
 
     - name: 📦 Install dependencies
       run: yarn install --frozen-lockfile --prefer-offline

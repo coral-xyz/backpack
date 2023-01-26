@@ -34,7 +34,7 @@ on:
 jobs:
   mobile:
     name: Build App
-    timeout-minutes: 45
+    timeout-minutes: 60
     runs-on: ubuntu-latest
     # To use Remote Caching, uncomment the next lines and follow the steps below.
     env:
@@ -47,8 +47,6 @@ jobs:
 
       - name: 🏗 Setup monorepo
         uses: ./.github/actions/app-mobile-monorepo-setup
-        with:
-          expo-token: ${{ secrets.EXPO_TOKEN }}
 
       - name: 👷 Build modules
         env:
