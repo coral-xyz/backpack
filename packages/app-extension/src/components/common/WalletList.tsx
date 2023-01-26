@@ -446,7 +446,7 @@ function _WalletList({
           >
             <Typography
               style={{
-                color: theme.custom.colors.secondary,
+                color: theme.custom.colors.icon,
                 textAlign: "center",
                 fontWeight: 500,
               }}
