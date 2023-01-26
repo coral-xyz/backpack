@@ -128,6 +128,22 @@ app.use("/v4/*", async (c) => {
   return response;
 });
 
+//  TODO: add later and store in KV, not adding now due to node deps
+// app.get("/accounts", async (c) => {
+//   (async function () {
+//     const fees: Record<string, { address: string }> = {};
+//     (
+//       await getPlatformFeeAccounts(
+//         new Connection(c.env.RPC),
+//         new PublicKey(c.env.FEE_AUTHORITY_ADDRESS)
+//       )
+//     ).forEach((account, mint) => {
+//       fees[mint] = { address: account.toBase58() };
+//     });
+//     c.json(fees);
+//   })();
+// });
+
 // end routes ----------------------------------------
 
 const changeOriginToJupiter = (url: string) => {
