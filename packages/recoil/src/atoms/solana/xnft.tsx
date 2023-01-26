@@ -3,6 +3,7 @@ import {
   Blockchain,
   fetchXnfts,
   SIMULATOR_PORT,
+  XNFT_PROGRAM_ID,
 } from "@coral-xyz/common";
 import { externalResourceUri } from "@coral-xyz/common-public";
 import { PublicKey } from "@solana/web3.js";
@@ -59,6 +60,43 @@ export function xnftUrl(url: string) {
   const uri = externalResourceUri(url);
   return [PROXY_URL, uri].join("");
 }
+
+export const collectibleXnft = selectorFamily<
+  string | undefined,
+  { collection?: string; mint?: string } | null
+>({
+  key: "collectibleXnft",
+  get:
+    (params) =>
+    async ({ get }) => {
+      if (!params) {
+        return undefined;
+      }
+
+      const { connection } = get(anchorContext);
+      if (params.collection) {
+        const [maybeCollectionXnft] = await PublicKey.findProgramAddress(
+          [Buffer.from("xnft"), new PublicKey(params.collection).toBytes()],
+          XNFT_PROGRAM_ID
+        );
+
+        const acc = await connection.getAccountInfo(maybeCollectionXnft);
+        if (acc) {
+          return maybeCollectionXnft.toBase58();
+        }
+      }
+
+      if (params.mint) {
+        const [maybeItemXnft] = await PublicKey.findProgramAddress(
+          [Buffer.from("xnft"), new PublicKey(params.mint).toBytes()],
+          XNFT_PROGRAM_ID
+        );
+        const acc = await connection.getAccountInfo(maybeItemXnft);
+        return acc ? maybeItemXnft.toBase58() : undefined;
+      }
+      return undefined;
+    },
+});
 
 export const xnfts = atomFamily<
   any,
