@@ -1,5 +1,6 @@
 import type { SubscriptionType } from "@coral-xyz/common";
 import { DEFAULT_GROUP_CHATS, parseMessage } from "@coral-xyz/common";
+import { WHITELISTED_CHAT_COLLECTIONS } from "@coral-xyz/common/src/constants";
 
 import { getMessages } from "./db/chats";
 import { getLatestReadMessage } from "./db/collection_messages";
@@ -50,6 +51,10 @@ export const processMessage = async ({
       })
       .join(" ");
 
+    const messageSenderUsername = userMetadata.find(
+      (x) => x.id === messageSender
+    )?.username;
+
     if (messageSender === friendship.user1) {
       if (
         friendship.last_message_sender !== friendship.user2 &&
@@ -59,10 +64,9 @@ export const processMessage = async ({
       ) {
         await notify(
           friendship.user2,
-          `New Message from ${
-            userMetadata.find((x) => x.id === messageSender)?.username
-          }`,
-          parsedMessage
+          `New Message from ${messageSenderUsername}`,
+          parsedMessage,
+          getUserHref(messageSender, messageSenderUsername)
         );
       }
     } else {
@@ -74,10 +78,9 @@ export const processMessage = async ({
       ) {
         await notify(
           friendship.user1,
-          `New Message from ${
-            userMetadata.find((x) => x.id === messageSender)?.username
-          }`,
-          parsedMessage
+          `New Message from ${messageSenderUsername}`,
+          parsedMessage,
+          getUserHref(messageSender, messageSenderUsername)
         );
       }
     }
@@ -182,7 +185,13 @@ export const processFannedOutMessage = async ({
       `New Message from ${
         userMetadata.find((x) => x.id === messageSender)?.username
       }`,
-      parsedMessage
+      parsedMessage,
+      getGroupHref(
+        messages[client_generated_uuid]?.id,
+        [...DEFAULT_GROUP_CHATS, ...WHITELISTED_CHAT_COLLECTIONS].find(
+          (x) => x.id === messages[client_generated_uuid]?.id
+        )?.name
+      )
     );
   }
 };
@@ -202,4 +211,15 @@ export const processFriendRequest = async ({
       userMetadata.find((x) => x.id === from)?.username
     }`
   );
+};
+
+const getUserHref = (remoteUserId?: string, username?: string) => {
+  if (!remoteUserId || !username) {
+    return undefined;
+  }
+  return `/popup.html#/messages/chat?props=%7B"userId"%3A"${remoteUserId}"%2C"username"%3A"${username}"%2C"id"%3A"${remoteUserId}"%2C"fromInbox"%3Atrue%7D&title="%40${username}"`;
+};
+
+const getGroupHref = (id: string, name?: string) => {
+  return `/popup.html#/messages/groupchat?props=%7B%22id%22%3A%22${id}%22%2C%22fromInbox%22%3Atrue%7D&title=%22${name}%22&nav=push`;
 };
