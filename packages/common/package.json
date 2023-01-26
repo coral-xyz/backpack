@@ -17,7 +17,7 @@
     "@cardinal/creator-standard": "^2.1.10",
     "@cardinal/token-manager": "^1.7.9",
     "@coral-xyz/common-public": "*",
-    "@metaplex-foundation/mpl-token-metadata": "^2.7.0-beta.2",
+    "@metaplex-foundation/mpl-token-metadata": "^2.5.2",
     "@magiceden-oss/open_creator_protocol": "^0.3.2",
     "@project-serum/anchor": "^0.25.0",
     "@project-serum/token": "^0.1.0",
