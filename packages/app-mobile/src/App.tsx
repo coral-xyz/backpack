@@ -209,8 +209,8 @@ function BackgroundHiddenWebView(): JSX.Element {
     <View style={{ display: "none" }}>
       <WebView
         ref={ref}
-        // cacheMode="LOAD_CACHE_ELSE_NETWORK"
-        // cacheEnabled
+        cacheMode="LOAD_CACHE_ELSE_NETWORK"
+        cacheEnabled
         limitsNavigationsToAppBoundDomains
         source={{ uri: Constants?.expoConfig?.extra?.webviewUrl }}
         onMessage={(event) => {
