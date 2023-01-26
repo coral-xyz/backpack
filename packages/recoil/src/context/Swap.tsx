@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   associatedTokenAddress,
+  BACKPACK_FEATURE_REFERRAL_FEES,
   Blockchain,
   confirmTransaction,
   generateUnwrapSolTx,
@@ -374,7 +375,28 @@ export function SwapProvider({
     // Stop polling for route updates when swap is finalised
     stopRoutePolling();
     try {
-      await sendAndConfirmTransaction(transaction);
+      const signature = await sendAndConfirmTransaction(transaction);
+
+      if (BACKPACK_FEATURE_REFERRAL_FEES) {
+        try {
+          const url =
+            process.env.NODE_ENV === "production"
+              ? "https://jupiter.xnfts.dev"
+              : "http://localhost:8787";
+
+          await fetch(`${url}/swap`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              signature,
+            }),
+          });
+        } catch (e) {
+          //  do nothing as we don't want to block the UI if it fails
+        }
+      }
     } catch (e) {
       console.log("swap error", e);
       return false;
