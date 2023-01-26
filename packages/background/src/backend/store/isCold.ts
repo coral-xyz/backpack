@@ -20,7 +20,7 @@ export async function setIsCold(publicKey: string, isCold?: boolean) {
 
 export async function getIsCold(publicKey: string): Promise<boolean> {
   const isColdKeys = await LocalStorageDb.get(key());
-  const isCold = isColdKeys[publicKey];
+  const isCold = isColdKeys?.[publicKey];
   if (!isCold) {
     return false;
   }
