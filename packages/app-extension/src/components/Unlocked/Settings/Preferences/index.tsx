@@ -143,7 +143,7 @@ export function Preferences() {
   );
 }
 
-function ModeSwitch({
+export function ModeSwitch({
   enabled,
   onSwitch,
 }: {

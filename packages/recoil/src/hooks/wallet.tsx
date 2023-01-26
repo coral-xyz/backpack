@@ -84,6 +84,7 @@ export function useAllWallets(): Array<{
   type: string;
   publicKey: string;
   blockchain: Blockchain;
+  isCold?: boolean;
 }> {
   return useRecoilValue(atoms.allWallets);
 }
@@ -93,6 +94,7 @@ export function useAllWalletsDisplayed(): Array<{
   type: string;
   publicKey: string;
   blockchain: Blockchain;
+  isCold?: boolean;
 }> {
   return useRecoilValue(atoms.allWalletsDisplayed);
 }

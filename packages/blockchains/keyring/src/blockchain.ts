@@ -100,6 +100,7 @@ export class BlockchainKeyring {
     for (const account of accounts) {
       const name = DefaultKeyname.defaultLedger(account.account);
       await store.setKeyname(account.publicKey, name);
+      await store.setIsCold(account.publicKey, true);
       newAccounts.push([account.publicKey, name]);
     }
     return newAccounts;

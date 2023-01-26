@@ -33,7 +33,6 @@ export interface Keyring {
 //
 // HD keyring types
 //
-
 export interface HdKeyringFactory {
   fromMnemonic(
     mnemonic: string,

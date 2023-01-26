@@ -1,6 +1,7 @@
 import {
   EXTENSION_HEIGHT,
   EXTENSION_WIDTH,
+  QUERY_COLD,
   QUERY_ADD_USER_ACCOUNT,
   QUERY_APPROVAL,
   QUERY_APPROVE_ALL_TRANSACTIONS,
@@ -133,6 +134,17 @@ export class BrowserRuntimeExtension {
 
 const POPUP_HTML = "popup.html";
 const EXPANDED_HTML = "options.html";
+
+export async function openColdPopupWindow(
+  origin: string,
+  title: string,
+  requestId: number,
+  walletAddress: string
+): Promise<chrome.windows.Window> {
+  const encodedTitle = encodeURIComponent(title);
+  const url = `${POPUP_HTML}?${QUERY_COLD}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&wallet=${walletAddress}`;
+  return openPopupWindow(url);
+}
 
 export async function openLockedPopupWindow(
   origin: string,
