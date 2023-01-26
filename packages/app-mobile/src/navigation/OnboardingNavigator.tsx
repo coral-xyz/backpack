@@ -9,8 +9,11 @@ import {
   View,
   Platform,
   KeyboardAvoidingView,
+  Text,
+  Pressable,
 } from "react-native";
 
+import Constants from "expo-constants";
 import * as Linking from "expo-linking";
 
 import {
@@ -135,6 +138,7 @@ function OnboardingCreateOrImportWalletScreen({
   const insets = useSafeAreaInsets();
   const { setOnboardingData } = useOnboardingData();
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [showDebug, setShowDebug] = useState(false);
 
   const handlePresentModalPress = () => {
     setIsModalVisible((last) => !last);
@@ -155,7 +159,20 @@ function OnboardingCreateOrImportWalletScreen({
       >
         <HelpModalMenuButton onPress={handlePresentModalPress} />
         <Margin top={48} bottom={24}>
-          <WelcomeLogoHeader />
+          <Pressable onPress={() => setShowDebug((last) => !last)}>
+            <WelcomeLogoHeader />
+          </Pressable>
+          {showDebug ? (
+            <Text
+              style={{
+                marginTop: 16,
+                marginHorizontal: 16,
+                backgroundColor: "white",
+              }}
+            >
+              {JSON.stringify(Constants?.expoConfig?.extra, null, 2)}
+            </Text>
+          ) : null}
         </Margin>
         <View
           style={{
@@ -829,7 +846,7 @@ function OnboardingFinishedScreen() {
       subtitle="Now get started exploring what your Backpack can do."
     >
       <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-        {BACKPACK_FEATURE_XNFT && (
+        {BACKPACK_FEATURE_XNFT ? (
           <Cell style={{ paddingRight: 6 }}>
             <ActionCard
               icon={<WidgetIcon />}
@@ -837,7 +854,7 @@ function OnboardingFinishedScreen() {
               onPress={() => Linking.openURL(XNFT_GG_LINK)}
             />
           </Cell>
-        )}
+        ) : null}
         <Cell style={{ paddingLeft: 6 }}>
           <ActionCard
             icon={<TwitterIcon />}
