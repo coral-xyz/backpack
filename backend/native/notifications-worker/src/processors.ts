@@ -186,3 +186,20 @@ export const processFannedOutMessage = async ({
     );
   }
 };
+
+export const processFriendRequest = async ({
+  from,
+  to,
+}: {
+  from: string;
+  to: string;
+}) => {
+  const userMetadata = await getUsersFromIds([from]);
+  await notify(
+    to,
+    `Friend Request`,
+    `New Friend request from ${
+      userMetadata.find((x) => x.id === from)?.username
+    }`
+  );
+};
