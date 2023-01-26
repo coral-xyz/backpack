@@ -1,15 +1,17 @@
+import { AVATAR_BASE_URL } from "@coral-xyz/common";
 import express from "express";
 
 import { extractUserId } from "../../auth/middleware";
 import {
   getAllFriends,
   getFriendship,
+  getRequests,
   setBlocked,
   setFriendship,
   setSpam,
   unfriend,
 } from "../../db/friendships";
-import { getUser } from "../../db/users";
+import { getUser, getUsers } from "../../db/users";
 import { Redis } from "../../Redis";
 
 import { enrichFriendships } from "./inbox";
@@ -67,6 +69,24 @@ router.post("/unfriend", extractUserId, async (req, res) => {
   }
   await unfriend({ from: uuid, to });
   res.json({});
+});
+
+router.get("/requests", extractUserId, async (req, res) => {
+  //@ts-ignore
+  const uuid: string = req.id; // TODO from from
+
+  const requestUserIds = await getRequests({ uuid });
+  const users = await getUsers(requestUserIds);
+  const requestsWithMetadata = requestUserIds.map((requestUserId) => ({
+    uuid: requestUserId,
+    username: users.find((x) => x.id === requestUserId)?.username,
+    image: `${AVATAR_BASE_URL}/${
+      users.find((x) => x.id === requestUserId)?.username
+    }`,
+  }));
+  res.json({
+    requests: requestsWithMetadata,
+  });
 });
 
 router.post("/request", extractUserId, async (req, res) => {

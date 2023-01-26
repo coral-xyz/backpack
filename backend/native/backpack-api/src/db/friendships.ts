@@ -188,6 +188,60 @@ export const getAllFriendships = async ({
   };
 };
 
+export const getRequests = async ({
+  uuid,
+}: {
+  uuid: string;
+}): Promise<string[]> => {
+  const response = await chain("query")({
+    auth_friend_requests: [
+      {
+        where: {
+          to: { _eq: uuid },
+        },
+      },
+      {
+        from: true,
+      },
+    ],
+    auth_friendships: [
+      {
+        where: {
+          _or: [
+            {
+              user1: { _eq: uuid },
+              _or: [
+                { are_friends: { _eq: true } },
+                { user1_blocked_user2: { _eq: true } },
+              ],
+            },
+            {
+              user2: { _eq: uuid },
+              _or: [
+                { are_friends: { _eq: true } },
+                { user2_blocked_user1: { _eq: true } },
+              ],
+            },
+          ],
+        },
+      },
+      {
+        user1: true,
+        user2: true,
+      },
+    ],
+  });
+
+  const blockedOrFriends: { [userId: string]: boolean } = {};
+  response.auth_friendships.map((x) => {
+    blockedOrFriends[x.user1 || ""] = true;
+    blockedOrFriends[x.user2 || ""] = true;
+  });
+  return response.auth_friend_requests
+    .map((x) => x.from)
+    .filter((userId) => !blockedOrFriends[userId]);
+};
+
 export const getFriendships = async ({
   uuid,
   limit,
