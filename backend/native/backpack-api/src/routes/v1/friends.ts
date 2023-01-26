@@ -1,3 +1,4 @@
+import type { RemoteUserData } from "@coral-xyz/common";
 import { AVATAR_BASE_URL } from "@coral-xyz/common";
 import express from "express";
 
@@ -77,13 +78,18 @@ router.get("/requests", extractUserId, async (req, res) => {
 
   const requestUserIds = await getRequests({ uuid });
   const users = await getUsers(requestUserIds);
-  const requestsWithMetadata = requestUserIds.map((requestUserId) => ({
-    uuid: requestUserId,
-    username: users.find((x) => x.id === requestUserId)?.username,
-    image: `${AVATAR_BASE_URL}/${
-      users.find((x) => x.id === requestUserId)?.username
-    }`,
-  }));
+  const requestsWithMetadata: RemoteUserData[] = requestUserIds.map(
+    (requestUserId) => ({
+      id: requestUserId,
+      username: users.find((x) => x.id === requestUserId)?.username as string,
+      image: `${AVATAR_BASE_URL}/${
+        users.find((x) => x.id === requestUserId)?.username
+      }`,
+      areFriends: false,
+      remoteRequested: true,
+      requested: false,
+    })
+  );
   res.json({
     requests: requestsWithMetadata,
   });

@@ -22,11 +22,14 @@ export const getNftCollections = async (uuid: string): Promise<string[]> => {
       },
       {
         collection_id: true,
+        centralized_group: true,
       },
     ],
   });
 
-  return response.auth_user_nfts.map((x) => x.collection_id || "");
+  return response.auth_user_nfts.map(
+    (x) => x.centralized_group || x.collection_id || ""
+  );
 };
 
 export const getNftCollectionByGroupName = async ({
