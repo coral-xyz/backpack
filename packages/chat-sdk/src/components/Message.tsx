@@ -21,6 +21,8 @@ import { GiphyFetch } from "@giphy/js-fetch-api";
 import { Gif as GifComponent } from "@giphy/react-components";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CallMadeIcon from "@mui/icons-material/CallMade";
+import DoneIcon from "@mui/icons-material/Done";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
 import { Skeleton } from "@mui/material";
 import { createStyles, makeStyles } from "@mui/styles";
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
@@ -33,6 +35,7 @@ import {
 
 import { useChatContext } from "./ChatContext";
 import { ReplyIcon } from "./Icons";
+import { MediaContent } from "./MediaContent";
 import { ParsedMessage } from "./ParsedMessage";
 import { ReplyContainer } from "./ReplyContainer";
 // use @giphy/js-fetch-api to fetch gifs, instantiate with your api key
@@ -196,6 +199,7 @@ export const MessageLine = (props) => {
 
   const photoURL = props.image;
   const displayName = props.username;
+  const received = props.received;
   const classes = useStyles();
 
   function formatAMPM(date) {
@@ -290,26 +294,10 @@ export const MessageLine = (props) => {
                       </>
                     ) : props.messageKind === "media" ? (
                       <div>
-                        {props.metadata?.media_kind === "video" ? (
-                          <video
-                            style={{
-                              height: 180,
-                              maxWidth: 250,
-                              borderRadius: 5,
-                            }}
-                            controls={true}
-                            src={props.metadata?.media_link}
-                          />
-                        ) : (
-                          <img
-                            style={{
-                              height: 180,
-                              maxWidth: 250,
-                              borderRadius: 5,
-                            }}
-                            src={props.metadata?.media_link}
-                          />
-                        )}
+                        <MediaContent
+                          mediaLink={props.metadata?.media_link}
+                          mediaKind={props.metadata?.media_kind}
+                        />
                         <div>{message}</div>
                       </div>
                     ) : (
@@ -339,6 +327,26 @@ export const MessageLine = (props) => {
           <div style={{ minWidth: 63 }}>
             <div className={classes.messageTimeStampRight}>
               {formatAMPM(timestamp)}
+            </div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row-reverse",
+                marginTop: 5,
+              }}
+            >
+              {received ? (
+                <DoneAllIcon
+                  style={{
+                    fontSize: 13,
+                    color: "green",
+                  }}
+                />
+              ) : (
+                <DoneIcon
+                  style={{ color: theme.custom.colors.icon, fontSize: 13 }}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -606,6 +614,7 @@ export function ChatMessages() {
       {chats.map((chat) => {
         return (
           <MessageLine
+            received={chat.received}
             parent_message_author_username={chat.parent_message_author_username}
             parent_message_text={chat.parent_message_text}
             parent_message_author_uuid={chat.parent_message_author_uuid}
@@ -614,7 +623,6 @@ export function ChatMessages() {
             timestamp={chat.created_at}
             key={chat.client_generated_uuid}
             message={chat.message}
-            received={chat.received}
             messageKind={chat.message_kind}
             image={chat.image}
             username={chat.username}

@@ -28,3 +28,6 @@ export const CHAT_ASSETS_AWS_BUCKET =
   process.env.CHAT_ASSETS_AWS_BUCKET || "chat-feed";
 export const CHAT_ASSETS_CLOUDFRONT_URL =
   "https://d3lfr9vwfn0ejn.cloudfront.net";
+
+export const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
+export const NOTIFICATIONS_QUEUE = "NOTIFICATIONS";

@@ -1,4 +1,8 @@
-import { processFannedOutMessage, processMessage } from "./processors";
+import {
+  processFannedOutMessage,
+  processFriendRequest,
+  processMessage,
+} from "./processors";
 import { Redis } from "./Redis";
 
 export const processQueue = async () => {
@@ -26,6 +30,9 @@ const processResponse = async (response: string) => {
     switch (type) {
       case "message":
         await processMessage(payload);
+        break;
+      case "friend_request":
+        await processFriendRequest(payload);
         break;
       case "fanned-out-group-message":
         await processFannedOutMessage(payload);

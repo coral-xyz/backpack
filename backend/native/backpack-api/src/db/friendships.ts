@@ -1,5 +1,4 @@
 import type { InboxDb } from "@coral-xyz/common";
-import { SubscriptionType } from "@coral-xyz/common";
 import { Chain } from "@coral-xyz/zeus";
 
 import { HASURA_URL, JWT } from "../config";
