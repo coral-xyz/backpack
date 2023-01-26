@@ -10,7 +10,7 @@ import {
   metadataAddress,
   UNKNOWN_NFT_ICON_SRC,
 } from "@coral-xyz/common";
-import { Metadata } from "@metaplex-foundation/mpl-token-metadata";
+import { MetadataData } from "@metaplex-foundation/mpl-token-metadata";
 import { PublicKey } from "@solana/web3.js";
 import { selectorFamily } from "recoil";
 
@@ -147,7 +147,7 @@ export const solanaNftById = equalSelectorFamily<
 });
 
 const solanaNftCollection = selectorFamily<
-  Metadata | null,
+  MetadataData | null,
   { collectionPublicKey: string }
 >({
   key: "solanaNftCollection",
@@ -164,7 +164,7 @@ const solanaNftCollection = selectorFamily<
       if (account === null) {
         return null;
       }
-      const metadata = Metadata.deserialize(account.data)[0];
+      const metadata = MetadataData.deserialize(account.data)[0];
       return metadata;
     },
 });
