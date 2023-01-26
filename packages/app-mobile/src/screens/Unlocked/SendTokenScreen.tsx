@@ -186,7 +186,6 @@ export function SendTokenDetailScreen({
           destinationAddress={destinationAddress}
           amount={amount!}
           onCompleteStep={(step) => {
-            console.log("onCompleteStep", step);
             if (step !== "confirm") {
               setModalIndex(() => 1);
             }
