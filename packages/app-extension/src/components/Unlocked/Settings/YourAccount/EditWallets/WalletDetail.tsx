@@ -134,7 +134,7 @@ export const WalletDetail: React.FC<{
       },
       detail: (
         <ModeSwitch
-          enabled={isCold ?? false}
+          enabled={!isCold}
           onSwitch={async (enabled) => {
             await background.request({
               method: UI_RPC_METHOD_KEY_IS_COLD_UPDATE,

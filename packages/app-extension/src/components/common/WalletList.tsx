@@ -473,93 +473,95 @@ function _WalletList({
           />
         )}
       </div>
-      <div
-        style={{
-          background: theme.custom.colorsInverted.background,
-          padding: "16px",
-        }}
-      >
+      {coldWallets.length > 0 && (
         <div
           style={{
-            display: "flex",
-            justifyContent: "space-between",
+            background: theme.custom.colorsInverted.background,
+            padding: "16px",
           }}
         >
           <div
             style={{
-              marginBottom: "12px",
               display: "flex",
+              justifyContent: "space-between",
             }}
           >
+            <div
+              style={{
+                marginBottom: "12px",
+                display: "flex",
+              }}
+            >
+              <Typography
+                style={{
+                  fontWeight: 500,
+                  color: theme.custom.colorsInverted.fontColor,
+                  fontSize: "14px",
+                  lineHeight: "20px",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                }}
+              >
+                Cold
+              </Typography>
+              <Tooltip
+                placement="right"
+                arrow
+                title={"Backpack Cold Wallets can't sign for apps."}
+                componentsProps={{
+                  tooltip: {
+                    sx: {
+                      width: "250px",
+                      fontSize: "14px",
+                      bgcolor: theme.custom.colorsInverted.copyTooltipColor,
+                      color: theme.custom.colorsInverted.copyTooltipTextColor,
+                      "& .MuiTooltip-arrow": {
+                        color: theme.custom.colorsInverted.copyTooltipColor,
+                      },
+                    },
+                  },
+                }}
+              >
+                <InfoIcon
+                  style={{
+                    width: "16px",
+                    marginLeft: "5px",
+                    color: theme.custom.colorsInverted.secondary,
+                  }}
+                />
+              </Tooltip>
+            </div>
             <Typography
               style={{
                 fontWeight: 500,
-                color: theme.custom.colorsInverted.fontColor,
+                color: theme.custom.colorsInverted.secondary,
                 fontSize: "14px",
                 lineHeight: "20px",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
               }}
             >
-              Cold
+              Disable app signing in wallet info
             </Typography>
-            <Tooltip
-              placement="right"
-              arrow
-              title={"Backpack Cold Wallets can't sign for apps."}
-              componentsProps={{
-                tooltip: {
-                  sx: {
-                    width: "250px",
-                    fontSize: "14px",
-                    bgcolor: theme.custom.colorsInverted.copyTooltipColor,
-                    color: theme.custom.colorsInverted.copyTooltipTextColor,
-                    "& .MuiTooltip-arrow": {
-                      color: theme.custom.colorsInverted.copyTooltipColor,
-                    },
-                  },
-                },
-              }}
-            >
-              <InfoIcon
-                style={{
-                  width: "16px",
-                  marginLeft: "5px",
-                  color: theme.custom.colorsInverted.secondary,
-                }}
-              />
-            </Tooltip>
           </div>
-          <Typography
-            style={{
-              fontWeight: 500,
-              color: theme.custom.colorsInverted.secondary,
-              fontSize: "14px",
-              lineHeight: "20px",
+          <WalletList
+            inverted={true}
+            wallets={coldWallets}
+            clickWallet={(wallet) => {
+              if (wallet.type !== "dehydrated") {
+                onChange(wallet);
+                close();
+              }
             }}
-          >
-            Disable app signing in wallet info
-          </Typography>
+            style={{
+              borderRadius: "10px",
+              overflow: "hidden",
+              marginLeft: 0,
+              marginRight: 0,
+            }}
+            selectedWalletPublicKey={activeWallet.publicKey}
+          />
         </div>
-        <WalletList
-          inverted={true}
-          wallets={coldWallets}
-          clickWallet={(wallet) => {
-            if (wallet.type !== "dehydrated") {
-              onChange(wallet);
-              close();
-            }
-          }}
-          style={{
-            borderRadius: "10px",
-            overflow: "hidden",
-            marginLeft: 0,
-            marginRight: 0,
-          }}
-          selectedWalletPublicKey={activeWallet.publicKey}
-        />
-      </div>
+      )}
     </div>
   );
 }
