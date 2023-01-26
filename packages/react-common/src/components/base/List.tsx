@@ -19,7 +19,7 @@ const useStyles = styles((theme) => ({
     display: "flex",
     backgroundColor: `${theme.custom.colorsInverted.nav} !important`,
     "&:hover": {
-      backgroundColor: theme.custom.colorsInverted.listItemHover,
+      backgroundColor: `${theme.custom.colorsInverted.listItemHover} !important`,
     },
   },
   dividerRoot: {

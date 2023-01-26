@@ -323,7 +323,7 @@ const LIGHT_COLORS = {
   invertedPrimary: "#212121",
   invertedSecondary: "rgba(255, 255, 255, 0.1)",
   avatarPopoverMenuBackground: LIGHT_BACKGROUND_COLOR_1,
-  listItemHover: "#F8F8F9 !important",
+  listItemHover: "#F8F8F9",
 };
 
 export const darkTheme: Partial<Theme> & {
