@@ -36,7 +36,7 @@ export const MediaContent = ({
               <video
                 style={{
                   borderRadius: 5,
-                  minWidth: "40vw",
+                  minWidth: "30vw",
                   maxWidth: "80vw",
                   maxHeight: "80vh",
                 }}
@@ -47,7 +47,7 @@ export const MediaContent = ({
               <img
                 style={{
                   borderRadius: 5,
-                  minWidth: "40vw",
+                  minWidth: "30vw",
                   maxWidth: "80vw",
                   maxHeight: "80vh",
                 }}

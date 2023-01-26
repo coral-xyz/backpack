@@ -1,18 +1,23 @@
 import type {
-  EnrichedMessage,  MessageWithMetadata,
+  EnrichedMessage,
+  MessageWithMetadata,
   SubscriptionType,
-  ToServer} from "@coral-xyz/common";
+  ToServer,
+} from "@coral-xyz/common";
 import {
   CHAT_MESSAGES,
   SUBSCRIBE,
   UNSUBSCRIBE,
   WS_READY,
 } from "@coral-xyz/common";
-import { bulkAddChats,   createDefaultFriendship,
-createOrUpdateCollection ,
+import {
+  bulkAddChats,
+  createDefaultFriendship,
+  createOrUpdateCollection,
   getFriendshipByRoom,
   updateFriendship,
-updateLastRead , } from "@coral-xyz/db";
+  updateLastRead,
+} from "@coral-xyz/db";
 
 import { RECONNECTING, Signaling } from "./Signaling";
 
@@ -124,6 +129,9 @@ export class SignalingManager {
                   }
                 );
               }
+              this.onUpdateRecoil({
+                type: "collection",
+              });
             }
           } else {
             // group chat
