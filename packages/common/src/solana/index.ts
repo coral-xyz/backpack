@@ -14,6 +14,12 @@ import {
   findFreezeAuthorityPk,
   findMintStatePk,
 } from "@magiceden-oss/open_creator_protocol";
+import type {
+  TransferInstructionAccounts,
+  TransferInstructionArgs} from "@metaplex-foundation/mpl-token-metadata";
+import {
+  createTransferInstruction as createMPLTransferInstruction,
+} from "@metaplex-foundation/mpl-token-metadata";
 import type { Program, SplToken } from "@project-serum/anchor";
 import * as anchor from "@project-serum/anchor";
 import {
@@ -46,6 +52,7 @@ import * as assertOwner from "./programs/assert-owner";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   associatedTokenAddress,
+  findTokenRecordPda,
   metadataAddress,
 } from "./programs/token";
 import { xnftClient } from "./programs/xnft";
@@ -350,6 +357,100 @@ export class Solana {
 
     return await tokenClient.provider.connection.sendRawTransaction(rawTx, {
       skipPreflight: true,
+      preflightCommitment: commitment,
+    });
+  }
+
+  public static async transferNonProgrammable(
+    ctx: SolanaContext,
+    req: TransferTokenRequest
+  ): Promise<string> {
+    const { walletPublicKey, tokenClient, commitment } = ctx;
+    const { mint, destination, amount } = req;
+
+    const sourceAta = associatedTokenAddress(mint, walletPublicKey);
+    const destinationAta = associatedTokenAddress(mint, destination);
+    const ownerTokenRecord = findTokenRecordPda(mint, sourceAta);
+    const destinationTokenRecord = findTokenRecordPda(mint, destinationAta);
+
+    const [destinationAccount, destinationAtaAccount] =
+      await anchor.utils.rpc.getMultipleAccounts(
+        tokenClient.provider.connection,
+        [destination, destinationAta],
+        commitment
+      );
+
+    //
+    // Require the account to either be a system program account or a brand new
+    // account.
+    //
+    if (
+      destinationAccount &&
+      !destinationAccount.account.owner.equals(SystemProgram.programId)
+    ) {
+      throw new Error("invalid account");
+    }
+
+    // Instructions to execute prior to the transfer.
+    const transaction: Transaction = new Transaction();
+
+    if (!destinationAtaAccount) {
+      transaction.add(
+        assertOwner.assertOwnerInstruction({
+          account: destination,
+          owner: SystemProgram.programId,
+        })
+      );
+      transaction.add(
+        createAssociatedTokenAccountInstruction(
+          walletPublicKey,
+          destinationAta,
+          destination,
+          mint
+        )
+      );
+    }
+    const transferAcccounts: TransferInstructionAccounts = {
+      authority: walletPublicKey,
+      tokenOwner: walletPublicKey,
+      token: sourceAta,
+      metadata: await metadataAddress(mint),
+      destination: destinationAta,
+      destinationOwner: destination,
+      mint,
+      ownerTokenRecord,
+      destinationTokenRecord,
+      payer: walletPublicKey,
+      splTokenProgram: TOKEN_PROGRAM_ID,
+      splAtaProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      sysvarInstructions: SYSVAR_INSTRUCTIONS_PUBKEY,
+    };
+
+    const transferArgs: TransferInstructionArgs = {
+      transferArgs: {
+        __kind: "V1",
+        amount,
+        authorizationData: null,
+      },
+    };
+
+    const transferIx = createMPLTransferInstruction(
+      transferAcccounts,
+      transferArgs
+    );
+
+    transaction.add(transferIx);
+
+    transaction.feePayer = walletPublicKey;
+    transaction.recentBlockhash = (
+      await tokenClient.provider.connection.getLatestBlockhash(commitment)
+    ).blockhash;
+
+    const signedTx = await SolanaProvider.signTransaction(ctx, transaction);
+    const rawTx = signedTx.serialize();
+
+    return await tokenClient.provider.connection.sendRawTransaction(rawTx, {
+      skipPreflight: false,
       preflightCommitment: commitment,
     });
   }

@@ -373,3 +373,19 @@ export async function fetchTokens(
   //
   return new Map(validTokens);
 }
+
+export function findTokenRecordPda(
+  mint: PublicKey,
+  token: PublicKey
+): PublicKey {
+  return PublicKey.findProgramAddressSync(
+    [
+      Buffer.from("metadata"),
+      TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+      mint.toBuffer(),
+      Buffer.from("token_record"),
+      token.toBuffer(),
+    ],
+    TOKEN_METADATA_PROGRAM_ID
+  )[0];
+}

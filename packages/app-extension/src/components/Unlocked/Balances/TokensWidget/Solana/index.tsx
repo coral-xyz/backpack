@@ -2,9 +2,9 @@ import { useState } from "react";
 import { findMintManagerId } from "@cardinal/creator-standard";
 import { programs, tryGetAccount } from "@cardinal/token-manager";
 import type { RawMintString } from "@coral-xyz/common";
-import {
-  Blockchain,
+import {   Blockchain,
   confirmTransaction,
+findTokenRecordPda ,
   getLogger,
   SOL_NATIVE_MINT,
   Solana,
@@ -16,6 +16,10 @@ import {
   findMintStatePk,
   MintState,
 } from "@magiceden-oss/open_creator_protocol";
+import {
+  TokenRecord,
+  TokenState,
+} from "@metaplex-foundation/mpl-token-metadata";
 import { Typography } from "@mui/material";
 import type { AccountInfo, Connection } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
@@ -111,6 +115,19 @@ export function SendSolanaConfirmationCard({
           await isCardinalWrappedToken(solanaCtx.connection, mintId, mintInfo)
         ) {
           txSig = await Solana.transferCardinalManagedToken(solanaCtx, {
+            destination: new PublicKey(destinationAddress),
+            mint: new PublicKey(token.mint!),
+            amount: amount.toNumber(),
+            decimals: token.decimals,
+          });
+        } else if (
+          await isProgrammableNonFungible(
+            solanaCtx.connection,
+            mintId,
+            token.address
+          )
+        ) {
+          txSig = await Solana.transferNonProgrammable(solanaCtx, {
             destination: new PublicKey(destinationAddress),
             mint: new PublicKey(token.mint!),
             amount: amount.toNumber(),
@@ -369,3 +386,27 @@ async function isOpenCreatorProtocol(
     ? MintState.fromAccountInfo(accountInfo)[0]
     : null;
 }
+
+export const isProgrammableNonFungible = async (
+  connection: Connection,
+  mintId: PublicKey,
+  tokenAddress: string
+) => {
+  const tokenId = new PublicKey(tokenAddress);
+  const tokenRecord = findTokenRecordPda(mintId, tokenId);
+  const tokenRecordRawAccountInfo = await connection.getAccountInfo(
+    tokenRecord
+  );
+  if (tokenRecordRawAccountInfo == null) {
+    return false;
+  }
+  const tokenRecordInfo = TokenRecord.fromAccountInfo(
+    tokenRecordRawAccountInfo,
+    0
+  )[0];
+  // no idea if we shall check if it is listed or not.
+  if (tokenRecordInfo.state == TokenState.Locked) {
+    return false;
+  }
+  return true;
+};
