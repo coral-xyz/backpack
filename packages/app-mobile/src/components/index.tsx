@@ -16,10 +16,10 @@ import * as Clipboard from "expo-clipboard";
 import { proxyImageUrl, walletAddressDisplay } from "@coral-xyz/common";
 import { useAvatarUrl } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useTheme } from "@hooks";
 import { SvgUri } from "react-native-svg";
 
 import { ContentCopyIcon, RedBackpack } from "@components/Icon";
+import { useTheme } from "@hooks/index";
 
 export { ActionCard } from "./ActionCard";
 export { BaseCheckBoxLabel, CheckBox } from "./CheckBox";
@@ -99,44 +99,50 @@ export function BaseButton({
   loading?: boolean;
   icon?: JSX.Element;
 }) {
-  const theme = useTheme();
   return (
     <Pressable
+      disabled={disabled}
+      onPress={onPress}
       style={[
+        baseButtonStyles.button,
         {
-          backgroundColor: theme.custom.colors.primaryButton,
-          height: 48,
-          paddingHorizontal: 12,
-          borderRadius: 12,
-          justifyContent: "center",
-          alignItems: "center",
-          flexDirection: "row",
-          width: "100%",
-          opacity: disabled ? 50 : 100, // TODO(peter)
+          opacity: disabled ? 0.7 : 1,
         },
         buttonStyle,
       ]}
-      disabled={disabled}
-      onPress={onPress}
       {...props}
     >
       <Text
         style={[
+          baseButtonStyles.label,
           {
-            fontWeight: "500",
-            fontSize: 16,
-            color: theme.custom.colors.primaryButtonTextColor,
-            opacity: disabled ? 50 : 100, // TODO(peter)
+            opacity: disabled ? 0.5 : 1,
           },
           labelStyle,
         ]}
       >
-        {loading ? "loading..." : label} {disabled ? "(disabled)" : ""}
+        {loading ? "loading..." : label}
       </Text>
       {icon}
     </Pressable>
   );
 }
+
+const baseButtonStyles = StyleSheet.create({
+  button: {
+    height: 48,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+    width: "100%",
+  },
+  label: {
+    fontWeight: "500",
+    fontSize: 16,
+  },
+});
 
 export function PrimaryButton({
   label,
@@ -360,7 +366,7 @@ export function EmptyState({
       >
         {title}
       </Typography>
-      {minimize !== true && (
+      {minimize !== true ? (
         <Typography
           style={{
             marginTop: 8,
@@ -373,8 +379,8 @@ export function EmptyState({
         >
           {subtitle}
         </Typography>
-      )}
-      {minimize !== true && onPress && buttonText && (
+      ) : null}
+      {minimize !== true && onPress && buttonText ? (
         <Margin top={12}>
           <PrimaryButton
             disabled={false}
@@ -382,7 +388,7 @@ export function EmptyState({
             onPress={() => onPress()}
           />
         </Margin>
-      )}
+      ) : null}
     </View>
   );
 }

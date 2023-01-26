@@ -1,104 +1,24 @@
 import { useEffect, useRef, useState } from "react";
-import { Text, View } from "react-native";
+import { Text, View, TextInput } from "react-native";
 
-import { PrimaryButton, SecondaryButton } from "@components";
 import { useEthereumFeeData } from "@coral-xyz/recoil";
-import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
-import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
 import { SettingsList } from "@screens/Unlocked/Settings/components/SettingsMenuList";
 import { ethers } from "ethers";
 
-import { CloseButton } from "./ApproveTransactionDrawer";
-
-const Skeleton = () => <View />;
-const Button = (props: any) => <PrimaryButton {...props} />;
-const TextInput = (props: any) => <TextInput {...props} />;
-const WithMiniDrawer = (props: any) => <View {...props} />;
-
-const useStyles = styles((theme: any) => ({
-  chip: {
-    padding: 16,
-    textTransform: "capitalize",
-    borderRadius: 16,
-  },
-  primaryChip: {
-    borderColor: theme.custom.colors.primaryButton,
-    backgroundColor: theme.custom.colors.primaryButton,
-    color: theme.custom.colors.primaryButtonTextColor,
-    "&:hover": {
-      opacity: HOVER_OPACITY,
-      background: `${theme.custom.colors.primaryButton} !important`,
-      backgroundColor: `${theme.custom.colors.primaryButton} !important,`,
-    },
-  },
-  secondaryChip: {
-    borderColor: theme.custom.colors.secondaryButton,
-    backgroundColor: theme.custom.colors.secondaryButton,
-    color: theme.custom.colors.secondaryButtonTextColor,
-    "&:hover": {
-      opacity: HOVER_OPACITY,
-      background: `${theme.custom.colors.secondaryButton} !important`,
-      backgroundColor: `${theme.custom.colors.secondaryButton} !important,`,
-    },
-  },
-  backgroundChip: {
-    borderColor: theme.custom.colors.background,
-    backgroundColor: theme.custom.colors.background,
-    color: theme.custom.colors.secondaryButtonTextColor,
-    "&:hover": {
-      opacity: HOVER_OPACITY,
-      background: `${theme.custom.colors.background} !important`,
-      backgroundColor: `${theme.custom.colors.background} !important,`,
-    },
-  },
-  listRoot: {
-    "& .MuiText-root": {
-      fontSize: 14,
-    },
-  },
-  inputRoot: {
-    border: `${theme.custom.colors.borderFull}`,
-    background: theme.custom.colors.background,
-    color: theme.custom.colors.secondary,
-    borderRadius: 8,
-    "& .MuiOutlinedInput-root": {
-      borderRadius: 8,
-      "& fieldset": {
-        border: "none",
-      },
-    },
-    "& .MuiInputBase-input": {
-      color: theme.custom.colors.fontColor,
-      borderRadius: 8,
-      fontSize: 14,
-      fontWeight: "700",
-      paddingRight: 8,
-    },
-    "& .MuiInputAdornment-root": {
-      color: theme.custom.colors.secondary,
-      fontWeight: "500",
-      minWidth: 12,
-      fontSize: 14,
-    },
-    "&:hover": {
-      backgroundColor: theme.custom.colors.primary,
-    },
-  },
-}));
+import { IconCloseModal } from "@components/Icon";
+import { PrimaryButton, SecondaryButton } from "@components/index";
+import { useTheme } from "@hooks/index";
 
 type TransactionMode = "normal" | "fast" | "degen" | "custom";
 
 export function TransactionData({
   transactionData,
   menuItems,
-  menuItemClasses,
 }: {
   transactionData: any;
   menuItems: any;
-  menuItemClasses?: any;
 }) {
-  const theme = useCustomTheme();
-  const classes = useStyles();
+  const theme = useTheme();
   const {
     loading,
     network,
@@ -114,39 +34,29 @@ export function TransactionData({
   // The default transaction data that appears on all transactions
   const defaultMenuItems = {
     Network: {
-      onPress: () => {},
+      disabled: true,
       detail: <Text>{network}</Text>,
-      button: false,
-      classes: menuItemClasses,
     },
     "Network Fee": {
-      onPress: () => {},
+      disabled: true,
       detail: loading ? (
-        <Skeleton width={150} />
+        <Text>LOADING TODO</Text>
       ) : (
         <Text>
-          {networkFee} {network === "Ethereum" ? "ETH" : "SOL"}
+          {networkFee} {network === "Ethereum" ? "ETH" : "SOL"}{" "}
         </Text>
       ),
-      button: false,
-      classes: menuItemClasses,
     },
     ...(network === "Ethereum"
       ? {
           Speed: {
             onPress: () => setEthSettingsDrawerOpen(true),
-            detail: (
-              <Button
-                disableRipple
-                disableElevation
-                className={`${classes.chip} ${classes.backgroundChip}`}
-                disabled={loading}
-              >
-                {mode} <ArrowDropDown />
-              </Button>
-            ),
-            button: false,
-            classes: menuItemClasses,
+            detail: <Text> TODO </Text>,
+            // detail: (
+            //   <Button disableRipple disableElevation disabled={loading}>
+            //     {mode} <ArrowDropDown />
+            //   </Button>
+            // ),
           },
         }
       : {}),
@@ -154,16 +64,8 @@ export function TransactionData({
 
   return (
     <>
-      <SettingsList
-        menuItems={{ ...menuItems, ...defaultMenuItems }}
-        style={{
-          margin: 0,
-        }}
-        textStyle={{
-          color: theme.custom.colors.secondary,
-        }}
-      />
-      {simulationError && (
+      <SettingsList menuItems={{ ...menuItems, ...defaultMenuItems }} />
+      {simulationError ? (
         <Text
           style={{
             color: theme.custom.colors.negative,
@@ -173,8 +75,8 @@ export function TransactionData({
         >
           This transaction is unlikely to succeed.
         </Text>
-      )}
-      {network === "Ethereum" && !loading && (
+      ) : null}
+      {network === "Ethereum" && !loading ? (
         <EthereumSettingsDrawer
           mode={mode}
           setMode={setMode}
@@ -184,7 +86,7 @@ export function TransactionData({
           openDrawer={ethSettingsDrawerOpen}
           setOpenDrawer={setEthSettingsDrawerOpen}
         />
-      )}
+      ) : null}
     </>
   );
 }
@@ -198,8 +100,7 @@ export function EthereumSettingsDrawer({
   openDrawer,
   setOpenDrawer,
 }: any) {
-  const theme = useCustomTheme();
-  const classes = useStyles();
+  const theme = useTheme();
   const feeData = useEthereumFeeData();
   const [maxFeePerGas, setMaxFeePerGas] = useState(
     ethers.utils.formatUnits(transactionOverrides.maxFeePerGas, 9)
@@ -303,8 +204,7 @@ export function EthereumSettingsDrawer({
   const menuItems = {
     "Max base fee": {
       detail: editingGas ? (
-        <TextField
-          className={classes.inputRoot}
+        <TextInput
           variant="outlined"
           margin="dense"
           size="small"
@@ -335,17 +235,7 @@ export function EthereumSettingsDrawer({
     },
     "Priority fee": {
       detail: editingGas ? (
-        <TextField
-          className={classes.inputRoot}
-          variant="outlined"
-          margin="dense"
-          size="small"
-          InputLabelProps={{
-            shrink: false,
-            style: {
-              backgroundColor: theme.custom.colors.nav,
-            },
-          }}
+        <TextInput
           value={maxPriorityFeePerGas}
           onChange={(e) => setMaxPriorityFeePerGas(e.target.value)}
         />
@@ -370,17 +260,7 @@ export function EthereumSettingsDrawer({
     },
     "Gas limit": {
       detail: editingGas ? (
-        <TextField
-          className={classes.inputRoot}
-          variant="outlined"
-          margin="dense"
-          size="small"
-          InputLabelProps={{
-            shrink: false,
-            style: {
-              backgroundColor: theme.custom.colors.nav,
-            },
-          }}
+        <TextInput
           value={gasLimit}
           onChange={(e) => setGasLimit(e.target.value)}
         />
@@ -400,24 +280,9 @@ export function EthereumSettingsDrawer({
     },
     Nonce: {
       detail: editingNonce ? (
-        <TextField
-          className={classes.inputRoot}
-          variant="outlined"
-          margin="dense"
-          size="small"
-          InputLabelProps={{
-            shrink: false,
-            style: {
-              backgroundColor: theme.custom.colors.nav,
-            },
-          }}
-          value={nonce}
-          type="number"
-          onChange={(e) => setNonce(e.target.value)}
-        />
+        <TextInput value={nonce} onChange={(e) => setNonce(e.target.value)} />
       ) : (
         <Text
-          style={{ cursor: nonceEditOnClick ? "pointer" : "inherit" }}
           onPress={() => {
             if (nonceEditOnClick) {
               setEditingNonce(true);
@@ -434,22 +299,9 @@ export function EthereumSettingsDrawer({
       ...menuItemBase,
     },
   };
+
   return (
-    <WithMiniDrawer
-      openDrawer={openDrawer}
-      setOpenDrawer={setOpenDrawer}
-      paperProps={{
-        style: {
-          height: "100%",
-        },
-      }}
-      modalProps={{
-        style: {
-          background: "#18181b80",
-        },
-        disableEscapeKeyDown: true,
-      }}
-    >
+    <>
       <View
         onPress={() => setOpenDrawer(false)}
         style={{
@@ -458,14 +310,7 @@ export function EthereumSettingsDrawer({
           backgroundColor: "transparent",
         }}
       >
-        <CloseButton
-          onPress={() => setOpenDrawer(false)}
-          style={{
-            marginTop: 28,
-            marginLeft: 24,
-            zIndex: 1,
-          }}
-        />
+        <IconCloseModal onPress={() => setOpenDrawer(false)} />
       </View>
       <View
         style={{
@@ -473,8 +318,7 @@ export function EthereumSettingsDrawer({
           borderTopRightRadius: 12,
           borderTopWidth: 1,
           borderColor: theme.custom.colors.borderColor,
-          //   height: "100%",
-          background: theme.custom.colors.background,
+          backgroundColor: theme.custom.colors.background,
         }}
       >
         <View
@@ -486,9 +330,8 @@ export function EthereumSettingsDrawer({
         >
           <View
             style={{
-              display: "flex",
+              flexDirection: "row",
               justifyContent: "space-between",
-              flexDirection: "column",
               paddingBottom: 24,
               height: "100%",
             }}
@@ -508,9 +351,8 @@ export function EthereumSettingsDrawer({
               </Text>
               <View
                 style={{
-                  display: "flex",
+                  flexDirection: "row",
                   justifyContent: "space-around",
-                  //   margin: 24px 16px 0 16,
                 }}
               >
                 {["normal", "fast", "degen", "custom"].map((m) => (
@@ -524,26 +366,13 @@ export function EthereumSettingsDrawer({
                 ))}
               </View>
               <View style={{ marginVertical: 24, marginHorizontal: 16 }}>
-                <SettingsList
-                  // className={classes.listRoot}
-                  menuItems={menuItems}
-                  style={{
-                    margin: 0,
-                  }}
-                  textStyle={{
-                    color: theme.custom.colors.secondary,
-                  }}
-                />
+                <SettingsList menuItems={menuItems} />
               </View>
             </View>
             <View style={{ marginHorizontal: 16 }}>
-              {((mode === "custom" && editingGas) || editingNonce) && (
-                <PrimaryButton
-                  style={{ marginBottom: 12 }}
-                  label="Save"
-                  onPress={handleSave}
-                />
-              )}
+              {(mode === "custom" && editingGas) || editingNonce ? (
+                <PrimaryButton label="Save" onPress={handleSave} />
+              ) : null}
               <SecondaryButton
                 label="Close"
                 onPress={() => setOpenDrawer(false)}
@@ -552,7 +381,7 @@ export function EthereumSettingsDrawer({
           </View>
         </View>
       </View>
-    </WithMiniDrawer>
+    </>
   );
 }
 
@@ -570,20 +399,9 @@ function ModeChip({
   disabled?: boolean;
 }) {
   return (
-    <Button
-      disableRipple
-      disableElevation
-      onPress={() => setMode(mode)}
-      // className={`${classes.chip} ${
-      //   mode === currentMode && !disabled
-      //     ? classes.primaryChip
-      //     : classes.secondaryChip
-      // }`}
-      size="small"
-      disabled={disabled}
-    >
+    <PrimaryButton onPress={() => setMode(mode)} disabled={disabled}>
       {mode}
-    </Button>
+    </PrimaryButton>
   );
 }
 
@@ -596,12 +414,12 @@ export function ValueWithUnit({
   unit: string;
   containerProps?: any;
 }) {
-  const theme = useCustomTheme();
+  const theme = useTheme();
   return (
     <View
       {...containerProps}
       style={{
-        display: "flex",
+        flexDirection: "row",
         justifyContent: "space-between",
         width: "50%",
         ...(containerProps.style ? containerProps.style : {}),

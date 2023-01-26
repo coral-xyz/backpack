@@ -21,7 +21,7 @@ import {
 } from "@components/index";
 import { useTheme } from "@hooks/index";
 
-function Container({
+export function Container({
   children,
   style,
 }: {
@@ -30,6 +30,12 @@ function Container({
 }): JSX.Element {
   return <View style={[styles.container, style]}>{children}</View>;
 }
+
+const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 16,
+  },
+});
 
 function IconContainer({
   children,
@@ -40,6 +46,23 @@ function IconContainer({
     <Margin top={24} bottom={36}>
       <View style={{ height: 50, alignItems: "center" }}>{children}</View>
     </Margin>
+  );
+}
+
+export function Header({ text }: { text: string }): JSX.Element {
+  const theme = useTheme();
+  const color = theme.custom.colors.fontColor;
+  return (
+    <Text
+      style={{
+        textAlign: "center",
+        color,
+        fontSize: 18,
+        fontWeight: "500",
+      }}
+    >
+      {text}
+    </Text>
   );
 }
 
@@ -67,12 +90,6 @@ function SubHeader({
     </Text>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 16,
-  },
-});
 
 export function Sending({
   blockchain,
