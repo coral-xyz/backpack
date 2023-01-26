@@ -147,7 +147,11 @@ export const FullScreenChat = ({ messageRef, setMessageRef }) => {
               }}
             >
               {({ getRootProps, getInputProps, isFocused }) => (
-                <div {...getRootProps()}>
+                <div
+                  {...getRootProps({
+                    onClick: (event) => event.stopPropagation(),
+                  })}
+                >
                   <input {...getInputProps()} />
                   <div>
                     {fetchingMoreChats && (
