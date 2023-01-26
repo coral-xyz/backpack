@@ -11,6 +11,7 @@ import {
   SOL_NATIVE_MINT,
   Solana,
   walletAddressDisplay,
+  metadataAddress,
 } from "@coral-xyz/common";
 import { useSolanaCtx } from "@coral-xyz/recoil";
 import { SettingsList } from "@screens/Unlocked/Settings/components/SettingsMenuList";
@@ -24,6 +25,7 @@ import {
 } from "@components/BottomDrawerCards";
 import { Margin, PrimaryButton, TokenAmountHeader } from "@components/index";
 import { useTheme } from "@hooks/index";
+import { Metadata, TokenStandard } from "@metaplex-foundation/mpl-token-metadata";
 
 type Step = "confirm" | "sending" | "complete" | "error";
 
@@ -78,6 +80,19 @@ export function SendSolanaConfirmationCard({
         )
       ) {
         txSig = await Solana.transferCardinalToken(solanaCtx, {
+          destination: new PublicKey(destinationAddress),
+          mint: new PublicKey(token.mint!),
+          amount: amount.toNumber(),
+          decimals: token.decimals,
+        });
+      } else if (
+        await isProgrammableNftToken(
+          solanaCtx.connection,
+          token.mint?.toString() as string
+        )
+      )
+      {
+        txSig = await Solana.transferProgrammableNft(solanaCtx, {
           destination: new PublicKey(destinationAddress),
           mint: new PublicKey(token.mint!),
           amount: amount.toNumber(),
@@ -246,4 +261,22 @@ const isCardinalWrappedToken = async (
     }
   }
   return false;
+};
+
+const isProgrammableNftToken = async (
+  connection: Connection,
+  mintAddress: string
+) => {
+  try {
+    const metadata = await Metadata.fromAccountAddress(
+      connection,
+      await metadataAddress(new PublicKey(mintAddress))
+    );
+
+    return metadata.tokenStandard == TokenStandard.ProgrammableNonFungible;
+  } catch (error) {
+    // most likely this happens if the metadata account does not exist
+    console.log(error);
+    return false;
+  }  
 };

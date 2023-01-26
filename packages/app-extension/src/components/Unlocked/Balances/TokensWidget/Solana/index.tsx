@@ -6,6 +6,7 @@ import {
   Blockchain,
   confirmTransaction,
   getLogger,
+  metadataAddress,
   SOL_NATIVE_MINT,
   Solana,
 } from "@coral-xyz/common";
@@ -16,6 +17,10 @@ import {
   findMintStatePk,
   MintState,
 } from "@magiceden-oss/open_creator_protocol";
+import {
+  Metadata,
+  TokenStandard,
+} from "@metaplex-foundation/mpl-token-metadata";
 import { Typography } from "@mui/material";
 import type { AccountInfo, Connection } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
@@ -81,6 +86,18 @@ export function SendSolanaConfirmationCard({
           source: solanaCtx.walletPublicKey,
           destination: new PublicKey(destinationAddress),
           amount: amount.toNumber(),
+        });
+      } else if (
+        await isProgrammableNftToken(
+          solanaCtx.connection,
+          token.mint?.toString() as string
+        )
+      ) {
+        txSig = await Solana.transferProgrammableNft(solanaCtx, {
+          destination: new PublicKey(destinationAddress),
+          mint: new PublicKey(token.mint!),
+          amount: amount.toNumber(),
+          decimals: token.decimals,
         });
       }
       // Use an else here to avoid an extra request if we are transferring sol native mints.
@@ -368,4 +385,22 @@ async function isOpenCreatorProtocol(
   return accountInfo !== null
     ? MintState.fromAccountInfo(accountInfo)[0]
     : null;
+}
+
+async function isProgrammableNftToken(
+  connection: Connection,
+  mintAddress: string
+): Promise<boolean> {
+  try {
+    const metadata = await Metadata.fromAccountAddress(
+      connection,
+      await metadataAddress(new PublicKey(mintAddress))
+    );
+
+    return metadata.tokenStandard == TokenStandard.ProgrammableNonFungible;
+  } catch (error) {
+    // most likely this happens if the metadata account does not exist
+    console.log(error);
+    return false;
+  }
 }

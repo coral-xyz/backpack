@@ -47,9 +47,21 @@ import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   associatedTokenAddress,
   metadataAddress,
+  masterEditionAddress,
+  tokenRecordAddress,
+  TOKEN_AUTH_RULES_ID,
 } from "./programs/token";
 import { xnftClient } from "./programs/xnft";
 import { SolanaProvider } from "./provider";
+
+import {
+  TransferInstructionAccounts,
+  TransferInstructionArgs,
+  createTransferInstruction as createTokenMetadataTransferInstruction,
+  Metadata,
+  TokenRecord,
+  TokenState
+} from "@metaplex-foundation/mpl-token-metadata";
 
 export * from "./background-connection";
 export * from "./cluster";
@@ -382,6 +394,93 @@ export class Solana {
 
     return await tokenClient.provider.connection.sendRawTransaction(rawTx, {
       skipPreflight: false,
+      preflightCommitment: commitment,
+    });
+  }
+
+  public static async transferProgrammableNft(
+    solanaCtx: SolanaContext,
+    req: TransferTokenRequest
+  ): Promise<string> {
+    const { walletPublicKey, tokenClient, commitment } = solanaCtx;
+    const { amount, mint, destination: destinationOwner } = req;
+
+    const sourceAta = associatedTokenAddress(mint, walletPublicKey);
+    const destinationAta = associatedTokenAddress(mint, destinationOwner);
+
+    const ownerTokenRecord = await tokenRecordAddress(mint, sourceAta);
+
+    // we need to check whether the token is lock or listed
+
+    const tokenRecord = await TokenRecord.fromAccountAddress(
+      tokenClient.provider.connection,
+      ownerTokenRecord
+    );
+
+    if (tokenRecord.state == TokenState.Locked) {
+      throw new Error("token account is locked");
+    } else if (tokenRecord.state == TokenState.Listed) {
+      throw new Error("token is listed");
+    }
+
+    // we need the metadata object to retrieve the programmable config
+
+    const metadata = await Metadata.fromAccountAddress(
+      tokenClient.provider.connection,
+      await metadataAddress(mint)
+    );
+
+    let authorizationRules: PublicKey | undefined;
+
+    if (metadata.programmableConfig) {
+      authorizationRules = metadata.programmableConfig.ruleSet ?? undefined;
+    }
+
+    const transferAcccounts: TransferInstructionAccounts = {
+      authority: walletPublicKey,
+      tokenOwner: walletPublicKey,
+      token: sourceAta,
+      metadata: await metadataAddress(mint),
+      mint,
+      edition: await masterEditionAddress(mint),
+      destinationOwner,
+      destination: destinationAta,
+      payer: walletPublicKey,
+      splTokenProgram: TOKEN_PROGRAM_ID,
+      splAtaProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      sysvarInstructions: SYSVAR_INSTRUCTIONS_PUBKEY,
+      authorizationRules,
+      authorizationRulesProgram: TOKEN_AUTH_RULES_ID,
+      ownerTokenRecord,
+      destinationTokenRecord: await tokenRecordAddress(mint, destinationAta),
+    };
+
+    const transferArgs: TransferInstructionArgs = {
+      transferArgs: {
+        __kind: 'V1',
+        amount,
+        authorizationData: null,
+      },
+    };
+
+    const transferIx = createTokenMetadataTransferInstruction(transferAcccounts, transferArgs);
+
+    const transaction: Transaction = new Transaction();
+    transaction.add(computeBudgetIx, transferIx);
+
+    transaction.feePayer = walletPublicKey;
+    transaction.recentBlockhash = (
+      await tokenClient.provider.connection.getLatestBlockhash(commitment)
+    ).blockhash;
+
+    const signedTx = await SolanaProvider.signTransaction(
+      solanaCtx,
+      transaction
+    );
+    const rawTx = signedTx.serialize();
+
+    return await tokenClient.provider.connection.sendRawTransaction(rawTx, {
+      skipPreflight: true,
       preflightCommitment: commitment,
     });
   }
