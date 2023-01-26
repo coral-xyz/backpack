@@ -4,7 +4,6 @@ export const initPushNotificationHandlers = () => {
   self.addEventListener("push", function (event) {
     const data = event.data.json();
 
-    console.error(data);
     event.waitUntil(
       self.registration.showNotification(data.title, {
         body: data.body,
