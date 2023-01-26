@@ -13,18 +13,26 @@ const useStyles = styles((theme) => ({
     display: "flex",
     backgroundColor: `${theme.custom.colors.nav} !important`,
   },
+  settingsContentListItemInverted: {
+    padding: "8px",
+    height: "56px",
+    display: "flex",
+    backgroundColor: `${theme.custom.colorsInverted.nav} !important`,
+  },
   dividerRoot: {
     borderColor: "transparent !important",
   },
 }));
 
-export function List({ className, style, children }: any) {
+export function List({ className, style, inverted, children }: any) {
   const theme = useCustomTheme();
   return (
     <MuiList
       className={className}
       style={{
-        color: theme.custom.colors.fontColor,
+        color: inverted
+          ? theme.custom.colorsInverted.fontColor
+          : theme.custom.colors.fontColor,
         padding: 0,
         marginLeft: "16px",
         marginRight: "16px",
@@ -48,6 +56,7 @@ export function ListItem({
   button = true,
   borderColor,
   detail,
+  inverted,
   classes,
 }: any) {
   const _classes = useStyles();
@@ -59,7 +68,11 @@ export function ListItem({
         {...buttonProps}
         data-testid={id}
         button={button}
-        className={_classes.settingsContentListItem}
+        className={
+          inverted
+            ? _classes.settingsContentListItemInverted
+            : _classes.settingsContentListItem
+        }
         onClick={onClick}
         style={{
           ...isFirstLastListItemStyle(isFirst, isLast),
