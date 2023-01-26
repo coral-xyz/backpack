@@ -663,6 +663,7 @@ export function WalletListItem({
               type={type}
               isCold={isCold}
               isSelected={isSelected}
+              inverted={inverted}
             />
           </div>
         </div>
@@ -764,12 +765,14 @@ export function StackedWalletAddress({
   type,
   isCold,
   isSelected = false,
+  inverted,
 }: {
   publicKey: string;
   name: string;
   type: string;
   isCold?: boolean;
   isSelected?: boolean;
+  inverted?: boolean;
 }) {
   const theme = useCustomTheme();
   return (
@@ -790,7 +793,15 @@ export function StackedWalletAddress({
       >
         <WalletTypeIcon
           type={type}
-          fill={isSelected ? theme.custom.colors.secondary : undefined}
+          fill={
+            inverted
+              ? isSelected
+                ? theme.custom.colorsInverted.secondary
+                : undefined
+              : isSelected
+              ? theme.custom.colors.secondary
+              : undefined
+          }
         />
         <div
           style={{
@@ -801,7 +812,9 @@ export function StackedWalletAddress({
         >
           <Typography
             style={{
-              color: theme.custom.colors.secondary,
+              color: inverted
+                ? theme.custom.colorsInverted.secondary
+                : theme.custom.colors.secondary,
               fontSize: "14px",
             }}
           >
