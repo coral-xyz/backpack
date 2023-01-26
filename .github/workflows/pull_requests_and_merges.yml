@@ -11,6 +11,17 @@ on:
     branches:
       - master
 
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
 jobs:
   tests:
     runs-on: ubuntu-latest
@@ -74,7 +85,7 @@ jobs:
       - run: yarn test
 
       ##########################################################################
-      # GitHub Pages.
+      # GitHub Pages: background-service-worker (mobile app) & ledge injection (hardware wallets)
       ##########################################################################
 
       - name: Build background-service-worker.html
@@ -83,13 +94,13 @@ jobs:
       - if: github.event_name == 'pull_request'
         name: "set env.commit_sha from latest commit in PR"
         run: echo "commit_sha=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
+
       - if: github.event_name == 'push'
         name: "set env.commit_sha from commit or merge commit"
         run: echo "commit_sha=${{ github.sha }}" >> $GITHUB_ENV
 
       - name: "set env.short_sha"
         run: echo "short_sha=`echo "${{ env.commit_sha }}" | cut -c1-8`" >> $GITHUB_ENV
-
 
       - name: Setup Pages
         uses: actions/configure-pages@v3
