@@ -16,7 +16,9 @@ import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Add, ExpandMore, MoreHoriz } from "@mui/icons-material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import ErrorIcon from "@mui/icons-material/Error";
+import InfoIcon from "@mui/icons-material/Info";
 import { Box, Button, Grid, Typography } from "@mui/material";
+import { Tooltip } from "@mui/material";
 
 import {
   EthereumIconOnboarding as EthereumIcon,
@@ -264,6 +266,9 @@ export function AllWalletsList({ filter }: { filter?: (w: any) => boolean }) {
   const { setTitle, setNavButtonRight } = useNavStack();
   const activeWallet = useActiveWallet();
   const wallets = useAllWallets().filter(filter ? filter : () => true);
+  const activeWallets = wallets.filter((w) => !w.isCold);
+  const coldWallets = wallets.filter((w) => w.isCold);
+
   // Dehydrated public keys are keys that exist on the server but cannot be
   // used on the client as we don't have signing data, e.g. mnemonic, private
   // key or ledger derivation path
@@ -284,7 +289,8 @@ export function AllWalletsList({ filter }: { filter?: (w: any) => boolean }) {
   return (
     <_WalletList
       activeWallet={activeWallet}
-      wallets={wallets.concat(dehydratedWallets)}
+      activeWallets={activeWallets.concat(dehydratedWallets)}
+      coldWallets={coldWallets}
     />
   );
 }
@@ -350,13 +356,16 @@ export function WalletListBlockchainSelector() {
 
 function _WalletList({
   activeWallet,
-  wallets,
+  activeWallets,
+  coldWallets,
 }: {
   activeWallet: any;
-  wallets: any;
+  activeWallets: any;
+  coldWallets: any;
 }) {
   const { close } = useDrawerContext();
   const background = useBackgroundClient();
+  const theme = useCustomTheme();
 
   const onChange = async (w: {
     publicKey: string;
@@ -373,26 +382,186 @@ function _WalletList({
   return (
     <div
       style={{
-        padding: "16px",
         paddingTop: 0,
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
       }}
     >
-      <WalletList
-        wallets={wallets}
-        clickWallet={(wallet) => {
-          if (wallet.type !== "dehydrated") {
-            onChange(wallet);
-            close();
-          }
-        }}
+      <div
         style={{
-          borderRadius: "10px",
-          overflow: "hidden",
-          marginLeft: 0,
-          marginRight: 0,
+          padding: "16px",
+          paddingTop: "0px",
+          flex: 1,
         }}
-        selectedWalletPublicKey={activeWallet.publicKey}
-      />
+      >
+        <div style={{ display: "flex", marginBottom: "8px" }}>
+          <Typography
+            style={{
+              fontWeight: 500,
+              color: theme.custom.colors.fontColor,
+              fontSize: "14px",
+              lineHeight: "20px",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}
+          >
+            Active
+          </Typography>
+          <Tooltip
+            placement="right"
+            arrow
+            title={"Backpack Active Wallets can sign for apps."}
+            componentsProps={{
+              tooltip: {
+                sx: {
+                  width: "250px",
+                  fontSize: "14px",
+                  bgcolor: theme.custom.colors.copyTooltipColor,
+                  color: theme.custom.colors.copyTooltipTextColor,
+                  "& .MuiTooltip-arrow": {
+                    color: theme.custom.colors.copyTooltipColor,
+                  },
+                },
+              },
+            }}
+          >
+            <InfoIcon
+              style={{
+                color: theme.custom.colors.secondary,
+                width: "16px",
+                marginLeft: "5px",
+              }}
+            />
+          </Tooltip>
+        </div>
+        {activeWallets.length === 0 ? (
+          <div
+            style={{
+              backgroundColor: theme.custom.colors.nav,
+              padding: "16px",
+              borderRadius: "10px",
+            }}
+          >
+            <Typography
+              style={{
+                color: theme.custom.colors.icon,
+                textAlign: "center",
+                fontWeight: 500,
+              }}
+            >
+              No active wallets found
+            </Typography>
+          </div>
+        ) : (
+          <WalletList
+            wallets={activeWallets}
+            clickWallet={(wallet) => {
+              if (wallet.type !== "dehydrated") {
+                onChange(wallet);
+                close();
+              }
+            }}
+            style={{
+              borderRadius: "10px",
+              overflow: "hidden",
+              marginLeft: 0,
+              marginRight: 0,
+            }}
+            selectedWalletPublicKey={activeWallet.publicKey}
+          />
+        )}
+      </div>
+      {coldWallets.length > 0 && (
+        <div
+          style={{
+            background: theme.custom.colorsInverted.background,
+            padding: "16px",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <div
+              style={{
+                marginBottom: "12px",
+                display: "flex",
+              }}
+            >
+              <Typography
+                style={{
+                  fontWeight: 500,
+                  color: theme.custom.colorsInverted.fontColor,
+                  fontSize: "14px",
+                  lineHeight: "20px",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                }}
+              >
+                Cold
+              </Typography>
+              <Tooltip
+                placement="right"
+                arrow
+                title={"Backpack Cold Wallets can't sign for apps."}
+                componentsProps={{
+                  tooltip: {
+                    sx: {
+                      width: "250px",
+                      fontSize: "14px",
+                      bgcolor: theme.custom.colorsInverted.copyTooltipColor,
+                      color: theme.custom.colorsInverted.copyTooltipTextColor,
+                      "& .MuiTooltip-arrow": {
+                        color: theme.custom.colorsInverted.copyTooltipColor,
+                      },
+                    },
+                  },
+                }}
+              >
+                <InfoIcon
+                  style={{
+                    width: "16px",
+                    marginLeft: "5px",
+                    color: theme.custom.colorsInverted.secondary,
+                  }}
+                />
+              </Tooltip>
+            </div>
+            <Typography
+              style={{
+                fontWeight: 500,
+                color: theme.custom.colorsInverted.secondary,
+                fontSize: "14px",
+                lineHeight: "20px",
+              }}
+            >
+              Disable app signing in wallet info
+            </Typography>
+          </div>
+          <WalletList
+            inverted={true}
+            wallets={coldWallets}
+            clickWallet={(wallet) => {
+              if (wallet.type !== "dehydrated") {
+                onChange(wallet);
+                close();
+              }
+            }}
+            style={{
+              borderRadius: "10px",
+              overflow: "hidden",
+              marginLeft: 0,
+              marginRight: 0,
+            }}
+            selectedWalletPublicKey={activeWallet.publicKey}
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -402,12 +571,14 @@ export function WalletList({
   clickWallet,
   style,
   selectedWalletPublicKey,
+  inverted,
 }: {
   wallets: Array<{
     name: string;
     publicKey: string;
     type: string;
     blockchain: Blockchain;
+    isCold?: boolean;
   }>;
   clickWallet: (w: {
     name: string;
@@ -417,9 +588,10 @@ export function WalletList({
   }) => void;
   style: React.CSSProperties;
   selectedWalletPublicKey?: string;
+  inverted?: boolean;
 }) {
   return (
-    <List style={style}>
+    <List style={style} inverted={inverted}>
       {wallets.map(
         (
           wallet: {
@@ -427,6 +599,7 @@ export function WalletList({
             publicKey: string;
             type: string;
             blockchain: Blockchain;
+            isCold?: boolean;
           },
           idx: number
         ) => {
@@ -439,6 +612,7 @@ export function WalletList({
             selectedWalletPublicKey === wallet.publicKey.toString();
           return (
             <WalletListItem
+              inverted={inverted}
               key={idx}
               wallet={wallet}
               isSelected={isSelected}
@@ -459,12 +633,14 @@ export function WalletListItem({
   isFirst,
   isLast,
   onClick,
+  inverted,
 }: {
   wallet: {
     name: string;
     publicKey: string;
     type: string;
     blockchain: Blockchain;
+    isCold?: boolean;
   };
   isSelected: boolean;
   isFirst: boolean;
@@ -475,13 +651,14 @@ export function WalletListItem({
     type: string;
     blockchain: Blockchain;
   }) => void;
+  inverted?: boolean;
 }) {
   const theme = useCustomTheme();
   const nav = useNavStack();
-  const { publicKey, name, blockchain, type } = wallet;
-
+  const { publicKey, name, blockchain, type, isCold } = wallet;
   return (
     <ListItem
+      inverted={inverted}
       key={publicKey.toString()}
       onClick={() => onClick(wallet)}
       isFirst={isFirst}
@@ -493,7 +670,11 @@ export function WalletListItem({
         marginBottom: isLast ? 0 : "8px",
         borderRadius: "10px",
         border: isSelected
-          ? `solid 2px ${theme.custom.colors.secondary}`
+          ? `solid 2px ${
+              inverted
+                ? theme.custom.colorsInverted.secondary
+                : theme.custom.colors.secondary
+            }`
           : "none",
       }}
       button={type !== "dehydrated"}
@@ -541,7 +722,9 @@ export function WalletListItem({
               name={name}
               publicKey={publicKey}
               type={type}
+              isCold={isCold}
               isSelected={isSelected}
+              inverted={inverted}
             />
           </div>
         </div>
@@ -559,6 +742,7 @@ export function WalletListItem({
             }}
           >
             <CopyButton
+              inverted={inverted}
               isEditWallets={false}
               onClick={() => {
                 navigator.clipboard.writeText(publicKey);
@@ -573,6 +757,7 @@ export function WalletListItem({
             }}
           >
             <CopyButton
+              inverted={inverted}
               isEditWallets={true}
               onClick={() => {
                 nav.push("edit-wallets-wallet-detail", {
@@ -590,9 +775,11 @@ export function WalletListItem({
 function CopyButton({
   onClick,
   isEditWallets,
+  inverted,
 }: {
   onClick: () => void;
   isEditWallets: boolean;
+  inverted?: boolean;
 }) {
   const [isCopying, setIsCopying] = useState(false);
   const theme = useCustomTheme();
@@ -601,13 +788,23 @@ function CopyButton({
       disableElevation
       disableRipple
       variant="contained"
-      style={{
+      sx={{
         width: "60px",
         height: "32px",
         padding: 0,
         textTransform: "none",
-        color: theme.custom.colors.fontColor,
-        backgroundColor: theme.custom.colors.bg2,
+        color: inverted
+          ? theme.custom.colorsInverted.fontColor
+          : theme.custom.colors.fontColor,
+        backgroundColor: inverted
+          ? theme.custom.colorsInverted.bg2
+          : theme.custom.colors.bg2,
+
+        "&:hover": {
+          backgroundColor: inverted
+            ? `${theme.custom.colorsInverted.listItemHover} !important`
+            : `${theme.custom.colors.listItemHover} !important`,
+        },
       }}
       onClick={(e) => {
         e.stopPropagation();
@@ -633,12 +830,16 @@ export function StackedWalletAddress({
   publicKey,
   name,
   type,
+  isCold,
   isSelected = false,
+  inverted,
 }: {
   publicKey: string;
   name: string;
   type: string;
+  isCold?: boolean;
   isSelected?: boolean;
+  inverted?: boolean;
 }) {
   const theme = useCustomTheme();
   return (
@@ -659,7 +860,15 @@ export function StackedWalletAddress({
       >
         <WalletTypeIcon
           type={type}
-          fill={isSelected ? theme.custom.colors.secondary : undefined}
+          fill={
+            inverted
+              ? isSelected
+                ? theme.custom.colorsInverted.secondary
+                : undefined
+              : isSelected
+              ? theme.custom.colors.secondary
+              : undefined
+          }
         />
         <div
           style={{
@@ -670,7 +879,9 @@ export function StackedWalletAddress({
         >
           <Typography
             style={{
-              color: theme.custom.colors.secondary,
+              color: inverted
+                ? theme.custom.colorsInverted.secondary
+                : theme.custom.colors.secondary,
               fontSize: "14px",
             }}
           >

@@ -11,6 +11,7 @@ export * from "./navigation";
 export * from "./preferences";
 export * from "./usernames";
 export * from "./xnft-preferences";
+export * from "./isCold";
 
 export function reset() {
   return LocalStorageDb.reset();

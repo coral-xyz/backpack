@@ -10,6 +10,7 @@ import {
   CHANNEL_POPUP_NOTIFICATIONS,
   ChannelAppUi,
   getLogger,
+  NOTIFICATION_KEY_IS_COLD_UPDATE,
   NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED,
   NOTIFICATION_AGGREGATE_WALLETS_UPDATED,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
@@ -224,6 +225,9 @@ export function NotificationsProvider(props: any) {
       logger.debug(`received notification ${notif.name}`, notif);
 
       switch (notif.name) {
+        case NOTIFICATION_KEY_IS_COLD_UPDATE:
+          handleKeyIsColdUpdate(notif);
+          break;
         case NOTIFICATION_KEYRING_STORE_CREATED:
           handleKeyringStoreCreated(notif);
           break;
@@ -334,6 +338,9 @@ export function NotificationsProvider(props: any) {
     //
     // Notification handlers.
     //
+    const handleKeyIsColdUpdate = (notif: Notification) => {
+      setWalletData(notif.data.walletData);
+    };
     const handleKeyringStoreCreated = (notif: Notification) => {
       setPreferences(notif.data.preferences);
       setKeyringStoreState(KeyringStoreStateEnum.Unlocked);

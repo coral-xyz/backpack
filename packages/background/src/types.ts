@@ -18,7 +18,11 @@ export type CachedValue<T> = {
   value: T;
 };
 
-export type NamedPublicKeys = Array<{ name: string; publicKey: string }>;
+export type NamedPublicKeys = Array<{
+  name: string;
+  publicKey: string;
+  isCold?: boolean;
+}>;
 
 export type PublicKeyType = {
   [blockchain: string]: {

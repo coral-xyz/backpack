@@ -21,12 +21,13 @@ export const walletPublicKeyData = atom<{
   key: "walletPublicKeyData",
   default: selector({
     key: "walletPublicKeyDataDefault",
-    get: ({ get }) => {
+    get: async ({ get }) => {
       const background = get(backgroundClient);
-      return background.request({
+      const resp = await background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEY_DATA,
         params: [],
       });
+      return resp;
     },
   }),
 });
@@ -52,6 +53,21 @@ export const activeBlockchain = selector<Blockchain>({
   },
 });
 
+export const isKeyCold = selectorFamily<boolean, string>({
+  key: "isKeyCold",
+  get:
+    (publicKey) =>
+    ({ get }) => {
+      const wallets = get(allWallets);
+      const w = wallets.find((w) => w.publicKey === publicKey)!;
+      if (!w) {
+        return false;
+      }
+      const { isCold } = w;
+      return isCold ?? false;
+    },
+});
+
 // All wallets enabled in the wallet. The assets for each wallet may or may
 // not be displayed in the balance view depending on the aggregate wallets
 // setting.
@@ -61,6 +77,7 @@ export const allWallets = selector<
     type: string;
     publicKey: string;
     blockchain: Blockchain;
+    isCold?: boolean;
   }>
 >({
   key: "allWallets",
@@ -78,6 +95,7 @@ export const allWalletsDisplayed = selector<
     type: string;
     publicKey: string;
     blockchain: Blockchain;
+    isCold?: boolean;
   }>
 >({
   key: "allWalletsDisplayed",
@@ -97,6 +115,7 @@ export const allWalletsPerBlockchain = selectorFamily<
     type: string;
     publicKey: string;
     blockchain: Blockchain;
+    isCold?: boolean;
   }>,
   Blockchain
 >({
@@ -130,6 +149,7 @@ export const activeWallet = selector<{
   name: string;
   blockchain: Blockchain;
   type: string;
+  isCold?: boolean;
 }>({
   key: "activeWallet",
   get: ({ get }) => {

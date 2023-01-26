@@ -18,11 +18,17 @@ export type NamedPublicKey = {
   name: string;
 };
 
+export type PublicKeyMetadata = {
+  publicKey: string;
+  name: string;
+  isCold: boolean;
+};
+
 export type WalletPublicKeys = {
   [key: string]: {
-    hdPublicKeys: Array<NamedPublicKey>;
-    importedPublicKeys: Array<NamedPublicKey>;
-    ledgerPublicKeys: Array<NamedPublicKey>;
+    hdPublicKeys: Array<PublicKeyMetadata>;
+    importedPublicKeys: Array<PublicKeyMetadata>;
+    ledgerPublicKeys: Array<PublicKeyMetadata>;
   };
 };
 
