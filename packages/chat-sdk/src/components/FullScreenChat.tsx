@@ -1,9 +1,13 @@
 import { useEffect, useRef, useState } from "react";
+import Dropzone from "react-dropzone";
 import type { EnrichedMessageWithMetadata } from "@coral-xyz/common";
+import { BACKEND_API_URL } from "@coral-xyz/common";
 import { fetchMoreChatsFor, Loading } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Loader } from "@giphy/react-components";
 import { CircularProgress } from "@mui/material";
+
+import { base64ToArrayBuffer } from "../utils/imageUploadUtils";
 
 import { Banner } from "./Banner";
 import { useChatContext } from "./ChatContext";
@@ -20,6 +24,12 @@ export const FullScreenChat = ({ messageRef, setMessageRef }) => {
   const theme = useCustomTheme();
   const existingMessagesRef = useRef<EnrichedMessageWithMetadata[]>([]);
   const [fetchingMoreChats, setFetchingMoreChats] = useState(false);
+  const [selectedMediaKind, setSelectedMediaKind] = useState<"image" | "video">(
+    "image"
+  );
+  const [selectedFile, setSelectedFile] = useState<any>(null);
+  const [uploadingFile, setUploadingFile] = useState(false);
+  const [uploadedImageUri, setUploadedImageUri] = useState("");
 
   useEffect(() => {
     if (messageRef && autoScroll) {
@@ -39,6 +49,41 @@ export const FullScreenChat = ({ messageRef, setMessageRef }) => {
       existingMessagesRef.current = chats;
     }
   }, [chats, autoScroll]);
+
+  const uploadToS3 = async (selectedFile: string, selectedFileName: string) => {
+    try {
+      setUploadingFile(true);
+      const response = await fetch(`${BACKEND_API_URL}/s3/signedUrl`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          filename: selectedFileName,
+        }),
+      });
+
+      const json = await response.json();
+      await fetch(json.uploadUrl, {
+        method: "PUT",
+        body: base64ToArrayBuffer(selectedFile),
+      });
+      setUploadingFile(false);
+      setUploadedImageUri(json.url);
+    } catch (e) {
+      setUploadingFile(false);
+    }
+  };
+
+  const onMediaSelect = (file: File) => {
+    let reader = new FileReader();
+    reader.onload = (e) => {
+      setSelectedMediaKind(file.name.endsWith("mp4") ? "video" : "image");
+      setSelectedFile(e.target?.result);
+      uploadToS3(e.target?.result as string, file.name);
+    };
+    reader.readAsDataURL(file);
+  };
 
   return (
     <div
@@ -94,29 +139,51 @@ export const FullScreenChat = ({ messageRef, setMessageRef }) => {
           setRef={setMessageRef}
           height={"calc(100% - 40px)"}
         >
-          <div id={"scrolling1"}>
-            {fetchingMoreChats && (
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  marginBottom: 3,
-                  marginTop: 3,
-                }}
-              >
-                {" "}
-                <CircularProgress size={20} />{" "}
-              </div>
-            )}
-            <Banner />
-            {loading && <MessagesSkeleton />}
-            {!loading && chats?.length === 0 && <EmptyChat />}
-            {!loading && chats?.length !== 0 && <ChatMessages />}
+          <div>
+            <Dropzone
+              onDrop={(files) => {
+                const selectedFile = files[0];
+                onMediaSelect(selectedFile);
+              }}
+            >
+              {({ getRootProps, getInputProps, isFocused }) => (
+                <div {...getRootProps()}>
+                  <input {...getInputProps()} />
+                  <div>
+                    {fetchingMoreChats && (
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          marginBottom: 3,
+                          marginTop: 3,
+                        }}
+                      >
+                        {" "}
+                        <CircularProgress size={20} />{" "}
+                      </div>
+                    )}
+                    <Banner />
+                    {loading && <MessagesSkeleton />}
+                    {!loading && chats?.length === 0 && <EmptyChat />}
+                    {!loading && chats?.length !== 0 && <ChatMessages />}
+                  </div>
+                </div>
+              )}
+            </Dropzone>
           </div>
         </ScrollBarImpl>
       </div>
       <div style={{ position: "absolute", bottom: 0, width: "100%" }}>
-        <SendMessage />
+        <SendMessage
+          uploadingFile={uploadingFile}
+          setUploadingFile={setUploadingFile}
+          selectedFile={selectedFile}
+          setSelectedFile={setSelectedFile}
+          onMediaSelect={onMediaSelect}
+          uploadedImageUri={uploadedImageUri}
+          selectedMediaKind={selectedMediaKind}
+        />
       </div>
     </div>
   );

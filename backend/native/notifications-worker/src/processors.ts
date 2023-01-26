@@ -1,9 +1,11 @@
 import type { SubscriptionType } from "@coral-xyz/common";
+import { DEFAULT_GROUP_CHATS, parseMessage } from "@coral-xyz/common";
 
 import { getMessages } from "./db/chats";
 import { getLatestReadMessage } from "./db/collection_messages";
 import { getFriendship } from "./db/friendships";
 import { getAllUsersInCollection } from "./db/nft";
+import { getUsersFromIds } from "./db/users";
 import { notify } from "./notifier";
 import { Redis } from "./Redis";
 
@@ -33,6 +35,21 @@ export const processMessage = async ({
     });
     const messageSender = messages[client_generated_uuid].uuid;
 
+    const messageParts = parseMessage(messages[client_generated_uuid]?.message);
+    const taggedUsers = messageParts
+      .filter((x) => x.type === "tag")
+      .map((x) => x.value);
+    const userMetadata = await getUsersFromIds([...taggedUsers, messageSender]);
+    const parsedMessage = messageParts
+      .map(({ type, value }) => {
+        if (type === "tag") {
+          return userMetadata.find((x) => x.id === value)?.username;
+        } else {
+          return value;
+        }
+      })
+      .join(" ");
+
     if (messageSender === friendship.user1) {
       if (
         friendship.last_message_sender !== friendship.user2 &&
@@ -42,8 +59,10 @@ export const processMessage = async ({
       ) {
         await notify(
           friendship.user2,
-          `New Message`,
-          messages[client_generated_uuid].message
+          `New Message from ${
+            userMetadata.find((x) => x.id === messageSender)?.username
+          }`,
+          parsedMessage
         );
       }
     } else {
@@ -55,12 +74,56 @@ export const processMessage = async ({
       ) {
         await notify(
           friendship.user1,
-          `New Message`,
-          messages[client_generated_uuid].message
+          `New Message from ${
+            userMetadata.find((x) => x.id === messageSender)?.username
+          }`,
+          parsedMessage
         );
       }
     }
   } else {
+    if (DEFAULT_GROUP_CHATS.map((x) => x.id).includes(room as string)) {
+      const messages = await getMessages({
+        client_generated_uuid,
+        user1_last_read_message_id: "",
+        user2_last_read_message_id: "",
+      });
+      const messageParts = parseMessage(
+        messages[client_generated_uuid]?.message
+      );
+      const taggedUsers = messageParts
+        .filter((x) => x.type === "tag")
+        .map((x) => x.value);
+      const userMetadata = await getUsersFromIds([
+        ...taggedUsers,
+        messages[client_generated_uuid]?.uuid,
+      ]);
+      const parsedMessage = messageParts
+        .map(({ type, value }) => {
+          if (type === "tag") {
+            return userMetadata.find((x) => x.id === value)?.username;
+          } else {
+            return value;
+          }
+        })
+        .join(" ");
+      await Promise.all(
+        messageParts
+          .filter((x) => x.type === "tag")
+          .map(({ value: remoteUserId }) => {
+            return notify(
+              remoteUserId,
+              `New message from ${
+                userMetadata.find(
+                  (x) => x.id === messages[client_generated_uuid]?.uuid
+                )?.username
+              }`,
+              parsedMessage
+            );
+          })
+      );
+      return;
+    }
     const uuids = await getAllUsersInCollection(room as string);
     uuids.map(async (uuid) => {
       await Redis.getInstance().send(
@@ -93,11 +156,33 @@ export const processFannedOutMessage = async ({
     lastReadMessage: lastReadMessage ? lastReadMessage : "",
   });
 
+  const messageSender = messages[client_generated_uuid]?.uuid;
+  const messageParts = parseMessage(messages[client_generated_uuid]?.message);
+  const taggedUsers = messageParts
+    .filter((x) => x.type === "tag")
+    .map((x) => x.value);
+  const userMetadata = await getUsersFromIds([...taggedUsers, messageSender]);
+  const parsedMessage = messageParts
+    .map(({ type, value }) => {
+      if (type === "tag") {
+        return userMetadata.find((x) => x.id === value)?.username;
+      } else {
+        return value;
+      }
+    })
+    .join(" ");
+
   if (
     !lastReadMessage ||
     new Date(messages[lastReadMessage].created_at) <
       new Date(messages[client_generated_uuid].created_at)
   ) {
-    await notify(uuid, `New Message`, messages[client_generated_uuid].message);
+    await notify(
+      uuid,
+      `New Message from ${
+        userMetadata.find((x) => x.id === messageSender)?.username
+      }`,
+      parsedMessage
+    );
   }
 };

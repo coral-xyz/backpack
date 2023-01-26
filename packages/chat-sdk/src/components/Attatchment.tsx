@@ -7,10 +7,10 @@ import { IconButton } from "@mui/material";
 
 export const Attatchment = ({
   buttonStyle,
-  onImageSelect,
+  onMediaSelect,
 }: {
   buttonStyle: any;
-  onImageSelect: any;
+  onMediaSelect: any;
 }) => {
   const theme = useCustomTheme();
   const hiddenInputRef = useRef<any>();
@@ -19,7 +19,7 @@ export const Attatchment = ({
     if (hiddenInputRef && hiddenInputRef.current) {
       hiddenInputRef.current.onchange = () => {
         const selectedFile = hiddenInputRef.current.files[0];
-        onImageSelect(selectedFile);
+        onMediaSelect(selectedFile);
       };
     }
   }, []);

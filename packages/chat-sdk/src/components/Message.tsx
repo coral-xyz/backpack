@@ -21,6 +21,8 @@ import { GiphyFetch } from "@giphy/js-fetch-api";
 import { Gif as GifComponent } from "@giphy/react-components";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CallMadeIcon from "@mui/icons-material/CallMade";
+import DoneIcon from "@mui/icons-material/Done";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
 import { Skeleton } from "@mui/material";
 import { createStyles, makeStyles } from "@mui/styles";
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
@@ -197,6 +199,7 @@ export const MessageLine = (props) => {
 
   const photoURL = props.image;
   const displayName = props.username;
+  const received = props.received;
   const classes = useStyles();
 
   function formatAMPM(date) {
@@ -324,6 +327,27 @@ export const MessageLine = (props) => {
           <div style={{ minWidth: 63 }}>
             <div className={classes.messageTimeStampRight}>
               {formatAMPM(timestamp)}
+            </div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row-reverse",
+                marginTop: 5,
+              }}
+            >
+              {received ? (
+                <DoneAllIcon
+                  style={{
+                    color: theme.custom.colors.icon,
+                    fontSize: 13,
+                    color: "green",
+                  }}
+                />
+              ) : (
+                <DoneIcon
+                  style={{ color: theme.custom.colors.icon, fontSize: 13 }}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -591,6 +615,7 @@ export function ChatMessages() {
       {chats.map((chat) => {
         return (
           <MessageLine
+            received={chat.received}
             parent_message_author_username={chat.parent_message_author_username}
             parent_message_text={chat.parent_message_text}
             parent_message_author_uuid={chat.parent_message_author_uuid}
@@ -599,7 +624,6 @@ export function ChatMessages() {
             timestamp={chat.created_at}
             key={chat.client_generated_uuid}
             message={chat.message}
-            received={chat.received}
             messageKind={chat.message_kind}
             image={chat.image}
             username={chat.username}

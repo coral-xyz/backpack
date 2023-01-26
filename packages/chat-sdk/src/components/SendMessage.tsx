@@ -82,18 +82,29 @@ const useStyles = makeStyles((theme: any) =>
   })
 );
 
-export const SendMessage = () => {
+export const SendMessage = ({
+  uploadingFile,
+  setUploadingFile,
+  selectedFile,
+  setSelectedFile,
+  onMediaSelect,
+  selectedMediaKind,
+  uploadedImageUri,
+}: {
+  onMediaSelect: any;
+  selectedMediaKind: "video" | "image";
+  uploadedImageUri: string;
+  selectedFile: string;
+  setSelectedFile: any;
+  uploadingFile: boolean;
+  setUploadingFile: any;
+}) => {
   const classes = useStyles();
   const { uuid } = useUser();
-  const [selectedFile, setSelectedFile] = useState<any>(null);
-  const [uploadingFile, setUploadingFile] = useState(false);
-  const [uploadedImageUri, setUploadedImageUri] = useState("");
   const [emojiPicker, setEmojiPicker] = useState(false);
   const [gifPicker, setGifPicker] = useState(false);
   const [emojiMenuOpen, setEmojiMenuOpen] = useState(false);
-  const [selectedMediaKind, setSelectedMediaKind] = useState<"image" | "video">(
-    "image"
-  );
+
   const theme = useCustomTheme();
   const activeSolanaWallet = useActiveSolanaWallet();
   const inputRef = useRef<any>(null);
@@ -182,31 +193,6 @@ export const SendMessage = () => {
         text: "",
       });
       inputRef.current.setValue("");
-    }
-  };
-
-  const uploadToS3 = async (selectedFile: string, selectedFileName: string) => {
-    try {
-      setUploadingFile(true);
-      const response = await fetch(`${BACKEND_API_URL}/s3/signedUrl`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          filename: selectedFileName,
-        }),
-      });
-
-      const json = await response.json();
-      await fetch(json.uploadUrl, {
-        method: "PUT",
-        body: base64ToArrayBuffer(selectedFile),
-      });
-      setUploadingFile(false);
-      setUploadedImageUri(json.url);
-    } catch (e) {
-      setUploadingFile(false);
     }
   };
 
@@ -367,17 +353,7 @@ export const SendMessage = () => {
                   }}
                 />
                 <Attatchment
-                  onImageSelect={(file: File) => {
-                    let reader = new FileReader();
-                    reader.onload = (e) => {
-                      setSelectedMediaKind(
-                        file.name.endsWith("mp4") ? "video" : "image"
-                      );
-                      setSelectedFile(e.target?.result);
-                      uploadToS3(e.target?.result as string, file.name);
-                    };
-                    reader.readAsDataURL(file);
-                  }}
+                  onMediaSelect={onMediaSelect}
                   buttonStyle={{
                     height: "28px",
                   }}
