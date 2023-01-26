@@ -22,7 +22,7 @@
     "@ledgerhq/hw-transport": "^6.24.1",
     "@ledgerhq/hw-transport-webhid": "^6.24.1",
     "@magiceden-oss/open_creator_protocol": "^0.3.2",
-    "@metaplex-foundation/mpl-token-metadata": "^2.5.2",
+    "@metaplex-foundation/mpl-token-metadata": "^2.7.0",
     "@mui/icons-material": "^5.8.0",
     "@mui/material": "^5.8.1",
     "@mui/styles": "^5.8.4",

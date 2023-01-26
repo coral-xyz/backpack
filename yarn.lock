@@ -4490,7 +4490,7 @@
     bn.js "^5.2.0"
     debug "^4.3.4"
 
-"@metaplex-foundation/mpl-token-metadata@^2.5.2":
+"@metaplex-foundation/mpl-token-metadata@^2.7.0":
   version "2.7.0"
   resolved "https://registry.yarnpkg.com/@metaplex-foundation/mpl-token-metadata/-/mpl-token-metadata-2.7.0.tgz#3d404d27fb65c638263bff115e10115c30f94c96"
   integrity sha512-dF20BAD5Kvd/qNOa8xmANO5//xvsmleCsD98HHeqBiz20HwC01y6VMkfwjXgVmrg8WSLpzojlQgMYO6jKhuZtg==
