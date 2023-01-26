@@ -788,7 +788,7 @@ function CopyButton({
       disableElevation
       disableRipple
       variant="contained"
-      style={{
+      sx={{
         width: "60px",
         height: "32px",
         padding: 0,
@@ -799,6 +799,12 @@ function CopyButton({
         backgroundColor: inverted
           ? theme.custom.colorsInverted.bg2
           : theme.custom.colors.bg2,
+
+        "&:hover": {
+          backgroundColor: inverted
+            ? theme.custom.colorsInverted.listItemHover
+            : theme.custom.colors.listItemHover,
+        },
       }}
       onClick={(e) => {
         e.stopPropagation();

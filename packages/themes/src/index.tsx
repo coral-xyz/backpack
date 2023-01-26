@@ -119,6 +119,7 @@ type CustomColors = {
   invertedPrimary: string;
   invertedSecondary: string;
   avatarPopoverMenuBackground: string;
+  listItemHover: string;
 };
 
 const baseTheme = createStyles({
@@ -250,6 +251,7 @@ const DARK_COLORS = {
   invertedPrimary: "#FFFFFF",
   invertedSecondary: LIGHT_BACKGROUND_COLOR_0,
   avatarPopoverMenuBackground: BACKGROUND_COLOR_0,
+  listItemHover: `rgba(39, 39, 42, ${HOVER_OPACITY}) !important`,
 };
 
 const LIGHT_COLORS = {
@@ -321,6 +323,7 @@ const LIGHT_COLORS = {
   invertedPrimary: "#212121",
   invertedSecondary: "rgba(255, 255, 255, 0.1)",
   avatarPopoverMenuBackground: LIGHT_BACKGROUND_COLOR_1,
+  listItemHover: "#F8F8F9 !important",
 };
 
 export const darkTheme: Partial<Theme> & {
