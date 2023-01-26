@@ -12,7 +12,7 @@ import { blockchainBalancesSorted } from "../balance";
 import { SOL_LOGO_URI, splTokenRegistry } from "./token-registry";
 
 export const JUPITER_BASE_URL = BACKPACK_FEATURE_REFERRAL_FEES
-  ? "https://jupiter-proxy.backpack.workers.dev/v4/"
+  ? "https://jupiter.xnfts.dev/v4/"
   : "https://quote-api.jup.ag/v4/";
 
 export const jupiterRouteMap = selector({
