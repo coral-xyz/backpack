@@ -4,11 +4,13 @@ export const initPushNotificationHandlers = () => {
   self.addEventListener("push", function (event) {
     const data = event.data.json();
 
+    console.error(data);
     event.waitUntil(
       self.registration.showNotification(data.title, {
         body: data.body,
         requireInteraction: true,
         image: data.image || "",
+        tag: data.href,
       })
     );
   });
@@ -16,9 +18,9 @@ export const initPushNotificationHandlers = () => {
   self.addEventListener(
     "notificationclick",
     function (event) {
-      const data = event.data.json();
-      if (data.href) {
-        clients.openWindow(data.href);
+      const href = event.notification.tag;
+      if (href) {
+        clients.openWindow(href);
       }
     },
     false
