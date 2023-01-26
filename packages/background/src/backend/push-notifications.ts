@@ -7,6 +7,7 @@ export const initPushNotificationHandlers = () => {
       self.registration.showNotification(data.title, {
         body: data.body,
         requireInteraction: true,
+        image: data.image || "",
       })
     );
   });

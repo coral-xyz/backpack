@@ -338,7 +338,6 @@ export const MessageLine = (props) => {
               {received ? (
                 <DoneAllIcon
                   style={{
-                    color: theme.custom.colors.icon,
                     fontSize: 13,
                     color: "green",
                   }}
