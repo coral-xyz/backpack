@@ -43,3 +43,5 @@ test-ledger/
 .js.map
 .d.ts.map
 .tsbuildinfo
+
+.dev.vars
