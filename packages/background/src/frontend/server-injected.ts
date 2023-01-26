@@ -65,6 +65,8 @@ const whitelistedOrigins = [
   /^http:\/\/localhost:[0-9]{4}$/,
   /^https:\/\/one-nft\.vercel\.app$/,
   /^https:\/\/xnft\.wao\.gg$/,
+  /^https:\/\/one\.xnfts\.dev$/,
+  /^https:\/\/rafffle\.famousfoxes\.com$/,
 ];
 
 export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
