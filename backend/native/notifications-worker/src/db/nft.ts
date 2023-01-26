@@ -33,7 +33,10 @@ export const getAllUsersInCollection = async (collectionId: string) => {
     auth_user_nfts: [
       {
         where: {
-          collection_id: { _eq: collectionId },
+          _or: [
+            { collection_id: { _eq: collectionId } },
+            { centralized_group: { _eq: collectionId } },
+          ],
         },
       },
       {

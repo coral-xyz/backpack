@@ -129,8 +129,9 @@ export class SignalingManager {
                   }
                 );
               }
+
               this.onUpdateRecoil({
-                type: "collection",
+                type: "friendship",
               });
             }
           } else {
@@ -140,6 +141,9 @@ export class SignalingManager {
               lastMessage: message.message,
               lastMessageUuid: message.client_generated_uuid,
               lastMessageTimestamp: new Date().toISOString(),
+            });
+            this.onUpdateRecoil({
+              type: "collection",
             });
           }
         });
