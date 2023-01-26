@@ -125,7 +125,7 @@ export const WalletDetail: React.FC<{
   };
 
   const _isCold = {
-    Cold: {
+    "App Signing": {
       onClick: async () => {
         await background.request({
           method: UI_RPC_METHOD_KEY_IS_COLD_UPDATE,

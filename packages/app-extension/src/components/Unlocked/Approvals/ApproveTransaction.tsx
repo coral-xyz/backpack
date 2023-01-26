@@ -172,8 +172,8 @@ export function Cold({
       >
         <EmptyState
           icon={(props: any) => <BlockIcon {...props} />}
-          title={"Cold Wallet Rejection"}
-          subtitle={`WARNING: ${origin} is trying to sign with your cold wallet. This may be dangerous. To enable, see wallet settings.`}
+          title={"Request Rejected"}
+          subtitle={`WARNING: ${origin} is trying to sign with your wallet. This may be dangerous. To enable, see wallet settings. Do so with caution!`}
           buttonText={""}
           onClick={() => {}}
         />
