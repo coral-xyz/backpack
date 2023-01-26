@@ -18,6 +18,7 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import ErrorIcon from "@mui/icons-material/Error";
 import InfoIcon from "@mui/icons-material/Info";
 import { Box, Button, Grid, Typography } from "@mui/material";
+import { Tooltip } from "@mui/material";
 
 import {
   EthereumIconOnboarding as EthereumIcon,
@@ -408,13 +409,32 @@ function _WalletList({
           >
             Active
           </Typography>
-          <InfoIcon
-            style={{
-              color: theme.custom.colors.secondary,
-              width: "16px",
-              marginLeft: "5px",
+          <Tooltip
+            placement="right"
+            arrow
+            title={"Backpack Active Wallets can sign for apps."}
+            componentsProps={{
+              tooltip: {
+                sx: {
+                  width: "250px",
+                  fontSize: "14px",
+                  bgcolor: theme.custom.colors.copyTooltipColor,
+                  color: theme.custom.colors.copyTooltipTextColor,
+                  "& .MuiTooltip-arrow": {
+                    color: theme.custom.colors.copyTooltipColor,
+                  },
+                },
+              },
             }}
-          />
+          >
+            <InfoIcon
+              style={{
+                color: theme.custom.colors.secondary,
+                width: "16px",
+                marginLeft: "5px",
+              }}
+            />
+          </Tooltip>
         </div>
         {activeWallets.length === 0 ? (
           <div
@@ -484,13 +504,32 @@ function _WalletList({
             >
               Cold
             </Typography>
-            <InfoIcon
-              style={{
-                width: "16px",
-                marginLeft: "5px",
-                color: theme.custom.colorsInverted.secondary,
+            <Tooltip
+              placement="right"
+              arrow
+              title={"Backpack Cold Wallets can't sign for apps."}
+              componentsProps={{
+                tooltip: {
+                  sx: {
+                    width: "250px",
+                    fontSize: "14px",
+                    bgcolor: theme.custom.colorsInverted.copyTooltipColor,
+                    color: theme.custom.colorsInverted.copyTooltipTextColor,
+                    "& .MuiTooltip-arrow": {
+                      color: theme.custom.colorsInverted.copyTooltipColor,
+                    },
+                  },
+                },
               }}
-            />
+            >
+              <InfoIcon
+                style={{
+                  width: "16px",
+                  marginLeft: "5px",
+                  color: theme.custom.colorsInverted.secondary,
+                }}
+              />
+            </Tooltip>
           </div>
           <Typography
             style={{
