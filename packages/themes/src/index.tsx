@@ -120,6 +120,7 @@ type CustomColors = {
   invertedSecondary: string;
   avatarPopoverMenuBackground: string;
   listItemHover: string;
+  walletCopyButtonHover: string;
 };
 
 const baseTheme = createStyles({
@@ -252,6 +253,7 @@ const DARK_COLORS = {
   invertedSecondary: LIGHT_BACKGROUND_COLOR_0,
   avatarPopoverMenuBackground: BACKGROUND_COLOR_0,
   listItemHover: `rgba(39, 39, 42, ${HOVER_OPACITY})`,
+  walletCopyButtonHover: "#18181c",
 };
 
 const LIGHT_COLORS = {
@@ -324,6 +326,7 @@ const LIGHT_COLORS = {
   invertedSecondary: "rgba(255, 255, 255, 0.1)",
   avatarPopoverMenuBackground: LIGHT_BACKGROUND_COLOR_1,
   listItemHover: "#F8F8F9",
+  walletCopyButtonHover: "#d6d6d6",
 };
 
 export const darkTheme: Partial<Theme> & {
