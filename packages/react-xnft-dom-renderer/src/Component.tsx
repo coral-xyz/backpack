@@ -358,7 +358,7 @@ function Iframe({ props, style }: any) {
     <iframe
       name={id}
       ref={ref}
-      sandbox="allow-same-origin allow-scripts allowfullscreen  allow-fullscreen"
+      sandbox="allow-same-origin allow-scripts"
       allow="fullscreen"
       src={props.src}
       height={props.height}
