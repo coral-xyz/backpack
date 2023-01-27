@@ -999,6 +999,7 @@ export const $ = <Type extends GraphQLVariableType, Name extends string>(
 type ZEUS_INTERFACES = never;
 export type ScalarCoders = {
   citext?: ScalarResolver;
+  jsonb?: ScalarResolver;
   timestamptz?: ScalarResolver;
   uuid?: ScalarResolver;
 };
@@ -4033,6 +4034,153 @@ export type ValueTypes = {
   };
   /** ordering argument of a cursor */
   ["cursor_ordering"]: cursor_ordering;
+  /** data used by merkle distributors */
+  ["dropzone_distributors"]: AliasType<{
+    created_at?: boolean | `@${string}`;
+    data?: [
+      {
+        /** JSON select path */
+        path?: string | undefined | null | Variable<any, string>;
+      },
+      boolean | `@${string}`
+    ];
+    id?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** aggregated selection of "dropzone.distributors" */
+  ["dropzone_distributors_aggregate"]: AliasType<{
+    aggregate?: ValueTypes["dropzone_distributors_aggregate_fields"];
+    nodes?: ValueTypes["dropzone_distributors"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** aggregate fields of "dropzone.distributors" */
+  ["dropzone_distributors_aggregate_fields"]: AliasType<{
+    count?: [
+      {
+        columns?:
+          | Array<ValueTypes["dropzone_distributors_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string>;
+        distinct?: boolean | undefined | null | Variable<any, string>;
+      },
+      boolean | `@${string}`
+    ];
+    max?: ValueTypes["dropzone_distributors_max_fields"];
+    min?: ValueTypes["dropzone_distributors_min_fields"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Boolean expression to filter rows from the table "dropzone.distributors". All fields are combined with a logical 'AND'. */
+  ["dropzone_distributors_bool_exp"]: {
+    _and?:
+      | Array<ValueTypes["dropzone_distributors_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    _not?:
+      | ValueTypes["dropzone_distributors_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    _or?:
+      | Array<ValueTypes["dropzone_distributors_bool_exp"]>
+      | undefined
+      | null
+      | Variable<any, string>;
+    created_at?:
+      | ValueTypes["timestamptz_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    data?:
+      | ValueTypes["jsonb_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** unique or primary key constraints on table "dropzone.distributors" */
+  ["dropzone_distributors_constraint"]: dropzone_distributors_constraint;
+  /** input type for inserting data into table "dropzone.distributors" */
+  ["dropzone_distributors_insert_input"]: {
+    data?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
+    id?: string | undefined | null | Variable<any, string>;
+  };
+  /** aggregate max on columns */
+  ["dropzone_distributors_max_fields"]: AliasType<{
+    created_at?: boolean | `@${string}`;
+    id?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** aggregate min on columns */
+  ["dropzone_distributors_min_fields"]: AliasType<{
+    created_at?: boolean | `@${string}`;
+    id?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** response of any mutation on the table "dropzone.distributors" */
+  ["dropzone_distributors_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ValueTypes["dropzone_distributors"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "dropzone.distributors" */
+  ["dropzone_distributors_on_conflict"]: {
+    constraint:
+      | ValueTypes["dropzone_distributors_constraint"]
+      | Variable<any, string>;
+    update_columns:
+      | Array<ValueTypes["dropzone_distributors_update_column"]>
+      | Variable<any, string>;
+    where?:
+      | ValueTypes["dropzone_distributors_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Ordering options when selecting data from "dropzone.distributors". */
+  ["dropzone_distributors_order_by"]: {
+    created_at?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    data?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** select columns of table "dropzone.distributors" */
+  ["dropzone_distributors_select_column"]: dropzone_distributors_select_column;
+  /** Streaming cursor of the table "dropzone_distributors" */
+  ["dropzone_distributors_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value:
+      | ValueTypes["dropzone_distributors_stream_cursor_value_input"]
+      | Variable<any, string>;
+    /** cursor ordering */
+    ordering?:
+      | ValueTypes["cursor_ordering"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["dropzone_distributors_stream_cursor_value_input"]: {
+    created_at?:
+      | ValueTypes["timestamptz"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    data?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
+    id?: string | undefined | null | Variable<any, string>;
+  };
+  /** placeholder for update columns of table "dropzone.distributors" (current role has no relevant permissions) */
+  ["dropzone_distributors_update_column"]: dropzone_distributors_update_column;
   /** columns and relationships of "invitations" */
   ["invitations"]: AliasType<{
     claimed_at?: boolean | `@${string}`;
@@ -4134,6 +4282,49 @@ export type ValueTypes = {
       | null
       | Variable<any, string>;
     id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
+  };
+  ["jsonb"]: unknown;
+  ["jsonb_cast_exp"]: {
+    String?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Boolean expression to compare columns of type "jsonb". All fields are combined with logical 'AND'. */
+  ["jsonb_comparison_exp"]: {
+    _cast?:
+      | ValueTypes["jsonb_cast_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    /** is the column contained in the given json value */
+    _contained_in?:
+      | ValueTypes["jsonb"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    /** does the column contain the given json value at the top level */
+    _contains?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
+    _eq?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
+    _gt?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
+    _gte?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
+    /** does the string exist as a top-level key in the column */
+    _has_key?: string | undefined | null | Variable<any, string>;
+    /** do all of these strings exist as top-level keys in the column */
+    _has_keys_all?: Array<string> | undefined | null | Variable<any, string>;
+    /** do any of these strings exist as top-level keys in the column */
+    _has_keys_any?: Array<string> | undefined | null | Variable<any, string>;
+    _in?: Array<ValueTypes["jsonb"]> | undefined | null | Variable<any, string>;
+    _is_null?: boolean | undefined | null | Variable<any, string>;
+    _lt?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
+    _lte?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
+    _neq?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
+    _nin?:
+      | Array<ValueTypes["jsonb"]>
+      | undefined
+      | null
+      | Variable<any, string>;
   };
   /** mutation root */
   ["mutation_root"]: AliasType<{
@@ -4580,6 +4771,34 @@ export type ValueTypes = {
           | Variable<any, string>;
       },
       ValueTypes["auth_xnft_secrets"]
+    ];
+    insert_dropzone_distributors?: [
+      {
+        /** the rows to be inserted */
+        objects:
+          | Array<ValueTypes["dropzone_distributors_insert_input"]>
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["dropzone_distributors_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["dropzone_distributors_mutation_response"]
+    ];
+    insert_dropzone_distributors_one?: [
+      {
+        /** the row to be inserted */
+        object:
+          | ValueTypes["dropzone_distributors_insert_input"]
+          | Variable<any, string> /** upsert condition */;
+        on_conflict?:
+          | ValueTypes["dropzone_distributors_on_conflict"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["dropzone_distributors"]
     ];
     update_auth_collection_messages?: [
       {
@@ -5654,6 +5873,78 @@ export type ValueTypes = {
       { id: number | Variable<any, string> },
       ValueTypes["auth_xnft_secrets"]
     ];
+    dropzone_distributors?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["dropzone_distributors_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["dropzone_distributors_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["dropzone_distributors_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["dropzone_distributors"]
+    ];
+    dropzone_distributors_aggregate?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["dropzone_distributors_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["dropzone_distributors_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["dropzone_distributors_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["dropzone_distributors_aggregate"]
+    ];
+    dropzone_distributors_by_pk?: [
+      { id: string | Variable<any, string> },
+      ValueTypes["dropzone_distributors"]
+    ];
     invitations?: [
       {
         /** distinct select on columns */
@@ -6614,6 +6905,102 @@ export type ValueTypes = {
           | Variable<any, string>;
       },
       ValueTypes["auth_xnft_secrets"]
+    ];
+    dropzone_distributors?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["dropzone_distributors_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["dropzone_distributors_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["dropzone_distributors_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["dropzone_distributors"]
+    ];
+    dropzone_distributors_aggregate?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["dropzone_distributors_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["dropzone_distributors_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["dropzone_distributors_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["dropzone_distributors_aggregate"]
+    ];
+    dropzone_distributors_by_pk?: [
+      { id: string | Variable<any, string> },
+      ValueTypes["dropzone_distributors"]
+    ];
+    dropzone_distributors_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size:
+          | number
+          | Variable<
+              any,
+              string
+            > /** cursor to stream the results returned by the query */;
+        cursor:
+          | Array<
+              | ValueTypes["dropzone_distributors_stream_cursor_input"]
+              | undefined
+              | null
+            >
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["dropzone_distributors_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["dropzone_distributors"]
     ];
     invitations?: [
       {
@@ -8901,6 +9288,122 @@ export type ResolverInputTypes = {
   };
   /** ordering argument of a cursor */
   ["cursor_ordering"]: cursor_ordering;
+  /** data used by merkle distributors */
+  ["dropzone_distributors"]: AliasType<{
+    created_at?: boolean | `@${string}`;
+    data?: [
+      {
+        /** JSON select path */ path?: string | undefined | null;
+      },
+      boolean | `@${string}`
+    ];
+    id?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** aggregated selection of "dropzone.distributors" */
+  ["dropzone_distributors_aggregate"]: AliasType<{
+    aggregate?: ResolverInputTypes["dropzone_distributors_aggregate_fields"];
+    nodes?: ResolverInputTypes["dropzone_distributors"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** aggregate fields of "dropzone.distributors" */
+  ["dropzone_distributors_aggregate_fields"]: AliasType<{
+    count?: [
+      {
+        columns?:
+          | Array<ResolverInputTypes["dropzone_distributors_select_column"]>
+          | undefined
+          | null;
+        distinct?: boolean | undefined | null;
+      },
+      boolean | `@${string}`
+    ];
+    max?: ResolverInputTypes["dropzone_distributors_max_fields"];
+    min?: ResolverInputTypes["dropzone_distributors_min_fields"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Boolean expression to filter rows from the table "dropzone.distributors". All fields are combined with a logical 'AND'. */
+  ["dropzone_distributors_bool_exp"]: {
+    _and?:
+      | Array<ResolverInputTypes["dropzone_distributors_bool_exp"]>
+      | undefined
+      | null;
+    _not?:
+      | ResolverInputTypes["dropzone_distributors_bool_exp"]
+      | undefined
+      | null;
+    _or?:
+      | Array<ResolverInputTypes["dropzone_distributors_bool_exp"]>
+      | undefined
+      | null;
+    created_at?:
+      | ResolverInputTypes["timestamptz_comparison_exp"]
+      | undefined
+      | null;
+    data?: ResolverInputTypes["jsonb_comparison_exp"] | undefined | null;
+    id?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+  };
+  /** unique or primary key constraints on table "dropzone.distributors" */
+  ["dropzone_distributors_constraint"]: dropzone_distributors_constraint;
+  /** input type for inserting data into table "dropzone.distributors" */
+  ["dropzone_distributors_insert_input"]: {
+    data?: ResolverInputTypes["jsonb"] | undefined | null;
+    id?: string | undefined | null;
+  };
+  /** aggregate max on columns */
+  ["dropzone_distributors_max_fields"]: AliasType<{
+    created_at?: boolean | `@${string}`;
+    id?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** aggregate min on columns */
+  ["dropzone_distributors_min_fields"]: AliasType<{
+    created_at?: boolean | `@${string}`;
+    id?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** response of any mutation on the table "dropzone.distributors" */
+  ["dropzone_distributors_mutation_response"]: AliasType<{
+    /** number of rows affected by the mutation */
+    affected_rows?: boolean | `@${string}`;
+    /** data from the rows affected by the mutation */
+    returning?: ResolverInputTypes["dropzone_distributors"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** on_conflict condition type for table "dropzone.distributors" */
+  ["dropzone_distributors_on_conflict"]: {
+    constraint: ResolverInputTypes["dropzone_distributors_constraint"];
+    update_columns: Array<
+      ResolverInputTypes["dropzone_distributors_update_column"]
+    >;
+    where?:
+      | ResolverInputTypes["dropzone_distributors_bool_exp"]
+      | undefined
+      | null;
+  };
+  /** Ordering options when selecting data from "dropzone.distributors". */
+  ["dropzone_distributors_order_by"]: {
+    created_at?: ResolverInputTypes["order_by"] | undefined | null;
+    data?: ResolverInputTypes["order_by"] | undefined | null;
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** select columns of table "dropzone.distributors" */
+  ["dropzone_distributors_select_column"]: dropzone_distributors_select_column;
+  /** Streaming cursor of the table "dropzone_distributors" */
+  ["dropzone_distributors_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ResolverInputTypes["dropzone_distributors_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ResolverInputTypes["cursor_ordering"] | undefined | null;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["dropzone_distributors_stream_cursor_value_input"]: {
+    created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
+    data?: ResolverInputTypes["jsonb"] | undefined | null;
+    id?: string | undefined | null;
+  };
+  /** placeholder for update columns of table "dropzone.distributors" (current role has no relevant permissions) */
+  ["dropzone_distributors_update_column"]: dropzone_distributors_update_column;
   /** columns and relationships of "invitations" */
   ["invitations"]: AliasType<{
     claimed_at?: boolean | `@${string}`;
@@ -8970,6 +9473,33 @@ export type ResolverInputTypes = {
   ["invitations_stream_cursor_value_input"]: {
     claimed_at?: ResolverInputTypes["timestamptz"] | undefined | null;
     id?: ResolverInputTypes["uuid"] | undefined | null;
+  };
+  ["jsonb"]: unknown;
+  ["jsonb_cast_exp"]: {
+    String?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+  };
+  /** Boolean expression to compare columns of type "jsonb". All fields are combined with logical 'AND'. */
+  ["jsonb_comparison_exp"]: {
+    _cast?: ResolverInputTypes["jsonb_cast_exp"] | undefined | null;
+    /** is the column contained in the given json value */
+    _contained_in?: ResolverInputTypes["jsonb"] | undefined | null;
+    /** does the column contain the given json value at the top level */
+    _contains?: ResolverInputTypes["jsonb"] | undefined | null;
+    _eq?: ResolverInputTypes["jsonb"] | undefined | null;
+    _gt?: ResolverInputTypes["jsonb"] | undefined | null;
+    _gte?: ResolverInputTypes["jsonb"] | undefined | null;
+    /** does the string exist as a top-level key in the column */
+    _has_key?: string | undefined | null;
+    /** do all of these strings exist as top-level keys in the column */
+    _has_keys_all?: Array<string> | undefined | null;
+    /** do any of these strings exist as top-level keys in the column */
+    _has_keys_any?: Array<string> | undefined | null;
+    _in?: Array<ResolverInputTypes["jsonb"]> | undefined | null;
+    _is_null?: boolean | undefined | null;
+    _lt?: ResolverInputTypes["jsonb"] | undefined | null;
+    _lte?: ResolverInputTypes["jsonb"] | undefined | null;
+    _neq?: ResolverInputTypes["jsonb"] | undefined | null;
+    _nin?: Array<ResolverInputTypes["jsonb"]> | undefined | null;
   };
   /** mutation root */
   ["mutation_root"]: AliasType<{
@@ -9348,6 +9878,30 @@ export type ResolverInputTypes = {
           | null;
       },
       ResolverInputTypes["auth_xnft_secrets"]
+    ];
+    insert_dropzone_distributors?: [
+      {
+        /** the rows to be inserted */
+        objects: Array<
+          ResolverInputTypes["dropzone_distributors_insert_input"]
+        > /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["dropzone_distributors_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["dropzone_distributors_mutation_response"]
+    ];
+    insert_dropzone_distributors_one?: [
+      {
+        /** the row to be inserted */
+        object: ResolverInputTypes["dropzone_distributors_insert_input"] /** upsert condition */;
+        on_conflict?:
+          | ResolverInputTypes["dropzone_distributors_on_conflict"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["dropzone_distributors"]
     ];
     update_auth_collection_messages?: [
       {
@@ -10132,6 +10686,62 @@ export type ResolverInputTypes = {
       { id: number },
       ResolverInputTypes["auth_xnft_secrets"]
     ];
+    dropzone_distributors?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["dropzone_distributors_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["dropzone_distributors_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["dropzone_distributors_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["dropzone_distributors"]
+    ];
+    dropzone_distributors_aggregate?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["dropzone_distributors_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["dropzone_distributors_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["dropzone_distributors_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["dropzone_distributors_aggregate"]
+    ];
+    dropzone_distributors_by_pk?: [
+      { id: string },
+      ResolverInputTypes["dropzone_distributors"]
+    ];
     invitations?: [
       {
         /** distinct select on columns */
@@ -10831,6 +11441,78 @@ export type ResolverInputTypes = {
           | null;
       },
       ResolverInputTypes["auth_xnft_secrets"]
+    ];
+    dropzone_distributors?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["dropzone_distributors_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["dropzone_distributors_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["dropzone_distributors_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["dropzone_distributors"]
+    ];
+    dropzone_distributors_aggregate?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["dropzone_distributors_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["dropzone_distributors_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["dropzone_distributors_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["dropzone_distributors_aggregate"]
+    ];
+    dropzone_distributors_by_pk?: [
+      { id: string },
+      ResolverInputTypes["dropzone_distributors"]
+    ];
+    dropzone_distributors_stream?: [
+      {
+        /** maximum number of rows returned in a single batch */
+        batch_size: number /** cursor to stream the results returned by the query */;
+        cursor: Array<
+          | ResolverInputTypes["dropzone_distributors_stream_cursor_input"]
+          | undefined
+          | null
+        > /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["dropzone_distributors_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["dropzone_distributors"]
     ];
     invitations?: [
       {
@@ -12489,6 +13171,84 @@ export type ModelTypes = {
     _similar?: ModelTypes["citext"] | undefined;
   };
   ["cursor_ordering"]: cursor_ordering;
+  /** data used by merkle distributors */
+  ["dropzone_distributors"]: {
+    created_at: ModelTypes["timestamptz"];
+    data: ModelTypes["jsonb"];
+    id: string;
+  };
+  /** aggregated selection of "dropzone.distributors" */
+  ["dropzone_distributors_aggregate"]: {
+    aggregate?:
+      | ModelTypes["dropzone_distributors_aggregate_fields"]
+      | undefined;
+    nodes: Array<ModelTypes["dropzone_distributors"]>;
+  };
+  /** aggregate fields of "dropzone.distributors" */
+  ["dropzone_distributors_aggregate_fields"]: {
+    count: number;
+    max?: ModelTypes["dropzone_distributors_max_fields"] | undefined;
+    min?: ModelTypes["dropzone_distributors_min_fields"] | undefined;
+  };
+  /** Boolean expression to filter rows from the table "dropzone.distributors". All fields are combined with a logical 'AND'. */
+  ["dropzone_distributors_bool_exp"]: {
+    _and?: Array<ModelTypes["dropzone_distributors_bool_exp"]> | undefined;
+    _not?: ModelTypes["dropzone_distributors_bool_exp"] | undefined;
+    _or?: Array<ModelTypes["dropzone_distributors_bool_exp"]> | undefined;
+    created_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
+    data?: ModelTypes["jsonb_comparison_exp"] | undefined;
+    id?: ModelTypes["String_comparison_exp"] | undefined;
+  };
+  ["dropzone_distributors_constraint"]: dropzone_distributors_constraint;
+  /** input type for inserting data into table "dropzone.distributors" */
+  ["dropzone_distributors_insert_input"]: {
+    data?: ModelTypes["jsonb"] | undefined;
+    id?: string | undefined;
+  };
+  /** aggregate max on columns */
+  ["dropzone_distributors_max_fields"]: {
+    created_at?: ModelTypes["timestamptz"] | undefined;
+    id?: string | undefined;
+  };
+  /** aggregate min on columns */
+  ["dropzone_distributors_min_fields"]: {
+    created_at?: ModelTypes["timestamptz"] | undefined;
+    id?: string | undefined;
+  };
+  /** response of any mutation on the table "dropzone.distributors" */
+  ["dropzone_distributors_mutation_response"]: {
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<ModelTypes["dropzone_distributors"]>;
+  };
+  /** on_conflict condition type for table "dropzone.distributors" */
+  ["dropzone_distributors_on_conflict"]: {
+    constraint: ModelTypes["dropzone_distributors_constraint"];
+    update_columns: Array<ModelTypes["dropzone_distributors_update_column"]>;
+    where?: ModelTypes["dropzone_distributors_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "dropzone.distributors". */
+  ["dropzone_distributors_order_by"]: {
+    created_at?: ModelTypes["order_by"] | undefined;
+    data?: ModelTypes["order_by"] | undefined;
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  ["dropzone_distributors_select_column"]: dropzone_distributors_select_column;
+  /** Streaming cursor of the table "dropzone_distributors" */
+  ["dropzone_distributors_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: ModelTypes["dropzone_distributors_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: ModelTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["dropzone_distributors_stream_cursor_value_input"]: {
+    created_at?: ModelTypes["timestamptz"] | undefined;
+    data?: ModelTypes["jsonb"] | undefined;
+    id?: string | undefined;
+  };
+  ["dropzone_distributors_update_column"]: dropzone_distributors_update_column;
   /** columns and relationships of "invitations" */
   ["invitations"]: {
     claimed_at?: ModelTypes["timestamptz"] | undefined;
@@ -12540,6 +13300,33 @@ export type ModelTypes = {
   ["invitations_stream_cursor_value_input"]: {
     claimed_at?: ModelTypes["timestamptz"] | undefined;
     id?: ModelTypes["uuid"] | undefined;
+  };
+  ["jsonb"]: any;
+  ["jsonb_cast_exp"]: {
+    String?: ModelTypes["String_comparison_exp"] | undefined;
+  };
+  /** Boolean expression to compare columns of type "jsonb". All fields are combined with logical 'AND'. */
+  ["jsonb_comparison_exp"]: {
+    _cast?: ModelTypes["jsonb_cast_exp"] | undefined;
+    /** is the column contained in the given json value */
+    _contained_in?: ModelTypes["jsonb"] | undefined;
+    /** does the column contain the given json value at the top level */
+    _contains?: ModelTypes["jsonb"] | undefined;
+    _eq?: ModelTypes["jsonb"] | undefined;
+    _gt?: ModelTypes["jsonb"] | undefined;
+    _gte?: ModelTypes["jsonb"] | undefined;
+    /** does the string exist as a top-level key in the column */
+    _has_key?: string | undefined;
+    /** do all of these strings exist as top-level keys in the column */
+    _has_keys_all?: Array<string> | undefined;
+    /** do any of these strings exist as top-level keys in the column */
+    _has_keys_any?: Array<string> | undefined;
+    _in?: Array<ModelTypes["jsonb"]> | undefined;
+    _is_null?: boolean | undefined;
+    _lt?: ModelTypes["jsonb"] | undefined;
+    _lte?: ModelTypes["jsonb"] | undefined;
+    _neq?: ModelTypes["jsonb"] | undefined;
+    _nin?: Array<ModelTypes["jsonb"]> | undefined;
   };
   /** mutation root */
   ["mutation_root"]: {
@@ -12681,6 +13468,14 @@ export type ModelTypes = {
       | undefined;
     /** insert a single row into the table: "auth.xnft_secrets" */
     insert_auth_xnft_secrets_one?: ModelTypes["auth_xnft_secrets"] | undefined;
+    /** insert data into the table: "dropzone.distributors" */
+    insert_dropzone_distributors?:
+      | ModelTypes["dropzone_distributors_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "dropzone.distributors" */
+    insert_dropzone_distributors_one?:
+      | ModelTypes["dropzone_distributors"]
+      | undefined;
     /** update data of the table: "auth.collection_messages" */
     update_auth_collection_messages?:
       | ModelTypes["auth_collection_messages_mutation_response"]
@@ -12853,6 +13648,14 @@ export type ModelTypes = {
     auth_xnft_secrets: Array<ModelTypes["auth_xnft_secrets"]>;
     /** fetch data from the table: "auth.xnft_secrets" using primary key columns */
     auth_xnft_secrets_by_pk?: ModelTypes["auth_xnft_secrets"] | undefined;
+    /** fetch data from the table: "dropzone.distributors" */
+    dropzone_distributors: Array<ModelTypes["dropzone_distributors"]>;
+    /** fetch aggregated fields from the table: "dropzone.distributors" */
+    dropzone_distributors_aggregate: ModelTypes["dropzone_distributors_aggregate"];
+    /** fetch data from the table: "dropzone.distributors" using primary key columns */
+    dropzone_distributors_by_pk?:
+      | ModelTypes["dropzone_distributors"]
+      | undefined;
     /** fetch data from the table: "invitations" */
     invitations: Array<ModelTypes["invitations"]>;
     /** fetch aggregated fields from the table: "invitations" */
@@ -12951,6 +13754,16 @@ export type ModelTypes = {
     auth_xnft_secrets_by_pk?: ModelTypes["auth_xnft_secrets"] | undefined;
     /** fetch data from the table in a streaming manner: "auth.xnft_secrets" */
     auth_xnft_secrets_stream: Array<ModelTypes["auth_xnft_secrets"]>;
+    /** fetch data from the table: "dropzone.distributors" */
+    dropzone_distributors: Array<ModelTypes["dropzone_distributors"]>;
+    /** fetch aggregated fields from the table: "dropzone.distributors" */
+    dropzone_distributors_aggregate: ModelTypes["dropzone_distributors_aggregate"];
+    /** fetch data from the table: "dropzone.distributors" using primary key columns */
+    dropzone_distributors_by_pk?:
+      | ModelTypes["dropzone_distributors"]
+      | undefined;
+    /** fetch data from the table in a streaming manner: "dropzone.distributors" */
+    dropzone_distributors_stream: Array<ModelTypes["dropzone_distributors"]>;
     /** fetch data from the table: "invitations" */
     invitations: Array<ModelTypes["invitations"]>;
     /** fetch aggregated fields from the table: "invitations" */
@@ -14671,6 +15484,93 @@ export type GraphQLTypes = {
   };
   /** ordering argument of a cursor */
   ["cursor_ordering"]: cursor_ordering;
+  /** data used by merkle distributors */
+  ["dropzone_distributors"]: {
+    __typename: "dropzone_distributors";
+    created_at: GraphQLTypes["timestamptz"];
+    data: GraphQLTypes["jsonb"];
+    id: string;
+  };
+  /** aggregated selection of "dropzone.distributors" */
+  ["dropzone_distributors_aggregate"]: {
+    __typename: "dropzone_distributors_aggregate";
+    aggregate?:
+      | GraphQLTypes["dropzone_distributors_aggregate_fields"]
+      | undefined;
+    nodes: Array<GraphQLTypes["dropzone_distributors"]>;
+  };
+  /** aggregate fields of "dropzone.distributors" */
+  ["dropzone_distributors_aggregate_fields"]: {
+    __typename: "dropzone_distributors_aggregate_fields";
+    count: number;
+    max?: GraphQLTypes["dropzone_distributors_max_fields"] | undefined;
+    min?: GraphQLTypes["dropzone_distributors_min_fields"] | undefined;
+  };
+  /** Boolean expression to filter rows from the table "dropzone.distributors". All fields are combined with a logical 'AND'. */
+  ["dropzone_distributors_bool_exp"]: {
+    _and?: Array<GraphQLTypes["dropzone_distributors_bool_exp"]> | undefined;
+    _not?: GraphQLTypes["dropzone_distributors_bool_exp"] | undefined;
+    _or?: Array<GraphQLTypes["dropzone_distributors_bool_exp"]> | undefined;
+    created_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
+    data?: GraphQLTypes["jsonb_comparison_exp"] | undefined;
+    id?: GraphQLTypes["String_comparison_exp"] | undefined;
+  };
+  /** unique or primary key constraints on table "dropzone.distributors" */
+  ["dropzone_distributors_constraint"]: dropzone_distributors_constraint;
+  /** input type for inserting data into table "dropzone.distributors" */
+  ["dropzone_distributors_insert_input"]: {
+    data?: GraphQLTypes["jsonb"] | undefined;
+    id?: string | undefined;
+  };
+  /** aggregate max on columns */
+  ["dropzone_distributors_max_fields"]: {
+    __typename: "dropzone_distributors_max_fields";
+    created_at?: GraphQLTypes["timestamptz"] | undefined;
+    id?: string | undefined;
+  };
+  /** aggregate min on columns */
+  ["dropzone_distributors_min_fields"]: {
+    __typename: "dropzone_distributors_min_fields";
+    created_at?: GraphQLTypes["timestamptz"] | undefined;
+    id?: string | undefined;
+  };
+  /** response of any mutation on the table "dropzone.distributors" */
+  ["dropzone_distributors_mutation_response"]: {
+    __typename: "dropzone_distributors_mutation_response";
+    /** number of rows affected by the mutation */
+    affected_rows: number;
+    /** data from the rows affected by the mutation */
+    returning: Array<GraphQLTypes["dropzone_distributors"]>;
+  };
+  /** on_conflict condition type for table "dropzone.distributors" */
+  ["dropzone_distributors_on_conflict"]: {
+    constraint: GraphQLTypes["dropzone_distributors_constraint"];
+    update_columns: Array<GraphQLTypes["dropzone_distributors_update_column"]>;
+    where?: GraphQLTypes["dropzone_distributors_bool_exp"] | undefined;
+  };
+  /** Ordering options when selecting data from "dropzone.distributors". */
+  ["dropzone_distributors_order_by"]: {
+    created_at?: GraphQLTypes["order_by"] | undefined;
+    data?: GraphQLTypes["order_by"] | undefined;
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** select columns of table "dropzone.distributors" */
+  ["dropzone_distributors_select_column"]: dropzone_distributors_select_column;
+  /** Streaming cursor of the table "dropzone_distributors" */
+  ["dropzone_distributors_stream_cursor_input"]: {
+    /** Stream column input with initial value */
+    initial_value: GraphQLTypes["dropzone_distributors_stream_cursor_value_input"];
+    /** cursor ordering */
+    ordering?: GraphQLTypes["cursor_ordering"] | undefined;
+  };
+  /** Initial value of the column from where the streaming should start */
+  ["dropzone_distributors_stream_cursor_value_input"]: {
+    created_at?: GraphQLTypes["timestamptz"] | undefined;
+    data?: GraphQLTypes["jsonb"] | undefined;
+    id?: string | undefined;
+  };
+  /** placeholder for update columns of table "dropzone.distributors" (current role has no relevant permissions) */
+  ["dropzone_distributors_update_column"]: dropzone_distributors_update_column;
   /** columns and relationships of "invitations" */
   ["invitations"]: {
     __typename: "invitations";
@@ -14728,6 +15628,33 @@ export type GraphQLTypes = {
   ["invitations_stream_cursor_value_input"]: {
     claimed_at?: GraphQLTypes["timestamptz"] | undefined;
     id?: GraphQLTypes["uuid"] | undefined;
+  };
+  ["jsonb"]: "scalar" & { name: "jsonb" };
+  ["jsonb_cast_exp"]: {
+    String?: GraphQLTypes["String_comparison_exp"] | undefined;
+  };
+  /** Boolean expression to compare columns of type "jsonb". All fields are combined with logical 'AND'. */
+  ["jsonb_comparison_exp"]: {
+    _cast?: GraphQLTypes["jsonb_cast_exp"] | undefined;
+    /** is the column contained in the given json value */
+    _contained_in?: GraphQLTypes["jsonb"] | undefined;
+    /** does the column contain the given json value at the top level */
+    _contains?: GraphQLTypes["jsonb"] | undefined;
+    _eq?: GraphQLTypes["jsonb"] | undefined;
+    _gt?: GraphQLTypes["jsonb"] | undefined;
+    _gte?: GraphQLTypes["jsonb"] | undefined;
+    /** does the string exist as a top-level key in the column */
+    _has_key?: string | undefined;
+    /** do all of these strings exist as top-level keys in the column */
+    _has_keys_all?: Array<string> | undefined;
+    /** do any of these strings exist as top-level keys in the column */
+    _has_keys_any?: Array<string> | undefined;
+    _in?: Array<GraphQLTypes["jsonb"]> | undefined;
+    _is_null?: boolean | undefined;
+    _lt?: GraphQLTypes["jsonb"] | undefined;
+    _lte?: GraphQLTypes["jsonb"] | undefined;
+    _neq?: GraphQLTypes["jsonb"] | undefined;
+    _nin?: Array<GraphQLTypes["jsonb"]> | undefined;
   };
   /** mutation root */
   ["mutation_root"]: {
@@ -14879,6 +15806,14 @@ export type GraphQLTypes = {
     /** insert a single row into the table: "auth.xnft_secrets" */
     insert_auth_xnft_secrets_one?:
       | GraphQLTypes["auth_xnft_secrets"]
+      | undefined;
+    /** insert data into the table: "dropzone.distributors" */
+    insert_dropzone_distributors?:
+      | GraphQLTypes["dropzone_distributors_mutation_response"]
+      | undefined;
+    /** insert a single row into the table: "dropzone.distributors" */
+    insert_dropzone_distributors_one?:
+      | GraphQLTypes["dropzone_distributors"]
       | undefined;
     /** update data of the table: "auth.collection_messages" */
     update_auth_collection_messages?:
@@ -15064,6 +15999,14 @@ export type GraphQLTypes = {
     auth_xnft_secrets: Array<GraphQLTypes["auth_xnft_secrets"]>;
     /** fetch data from the table: "auth.xnft_secrets" using primary key columns */
     auth_xnft_secrets_by_pk?: GraphQLTypes["auth_xnft_secrets"] | undefined;
+    /** fetch data from the table: "dropzone.distributors" */
+    dropzone_distributors: Array<GraphQLTypes["dropzone_distributors"]>;
+    /** fetch aggregated fields from the table: "dropzone.distributors" */
+    dropzone_distributors_aggregate: GraphQLTypes["dropzone_distributors_aggregate"];
+    /** fetch data from the table: "dropzone.distributors" using primary key columns */
+    dropzone_distributors_by_pk?:
+      | GraphQLTypes["dropzone_distributors"]
+      | undefined;
     /** fetch data from the table: "invitations" */
     invitations: Array<GraphQLTypes["invitations"]>;
     /** fetch aggregated fields from the table: "invitations" */
@@ -15165,6 +16108,16 @@ export type GraphQLTypes = {
     auth_xnft_secrets_by_pk?: GraphQLTypes["auth_xnft_secrets"] | undefined;
     /** fetch data from the table in a streaming manner: "auth.xnft_secrets" */
     auth_xnft_secrets_stream: Array<GraphQLTypes["auth_xnft_secrets"]>;
+    /** fetch data from the table: "dropzone.distributors" */
+    dropzone_distributors: Array<GraphQLTypes["dropzone_distributors"]>;
+    /** fetch aggregated fields from the table: "dropzone.distributors" */
+    dropzone_distributors_aggregate: GraphQLTypes["dropzone_distributors_aggregate"];
+    /** fetch data from the table: "dropzone.distributors" using primary key columns */
+    dropzone_distributors_by_pk?:
+      | GraphQLTypes["dropzone_distributors"]
+      | undefined;
+    /** fetch data from the table in a streaming manner: "dropzone.distributors" */
+    dropzone_distributors_stream: Array<GraphQLTypes["dropzone_distributors"]>;
     /** fetch data from the table: "invitations" */
     invitations: Array<GraphQLTypes["invitations"]>;
     /** fetch aggregated fields from the table: "invitations" */
@@ -15459,6 +16412,20 @@ export const enum cursor_ordering {
   ASC = "ASC",
   DESC = "DESC",
 }
+/** unique or primary key constraints on table "dropzone.distributors" */
+export const enum dropzone_distributors_constraint {
+  distributors_pkey = "distributors_pkey",
+}
+/** select columns of table "dropzone.distributors" */
+export const enum dropzone_distributors_select_column {
+  created_at = "created_at",
+  data = "data",
+  id = "id",
+}
+/** placeholder for update columns of table "dropzone.distributors" (current role has no relevant permissions) */
+export const enum dropzone_distributors_update_column {
+  _PLACEHOLDER = "_PLACEHOLDER",
+}
 /** select columns of table "invitations" */
 export const enum invitations_select_column {
   claimed_at = "claimed_at",
@@ -15651,11 +16618,23 @@ type ZEUS_VARIABLES = {
   ["citext"]: ValueTypes["citext"];
   ["citext_comparison_exp"]: ValueTypes["citext_comparison_exp"];
   ["cursor_ordering"]: ValueTypes["cursor_ordering"];
+  ["dropzone_distributors_bool_exp"]: ValueTypes["dropzone_distributors_bool_exp"];
+  ["dropzone_distributors_constraint"]: ValueTypes["dropzone_distributors_constraint"];
+  ["dropzone_distributors_insert_input"]: ValueTypes["dropzone_distributors_insert_input"];
+  ["dropzone_distributors_on_conflict"]: ValueTypes["dropzone_distributors_on_conflict"];
+  ["dropzone_distributors_order_by"]: ValueTypes["dropzone_distributors_order_by"];
+  ["dropzone_distributors_select_column"]: ValueTypes["dropzone_distributors_select_column"];
+  ["dropzone_distributors_stream_cursor_input"]: ValueTypes["dropzone_distributors_stream_cursor_input"];
+  ["dropzone_distributors_stream_cursor_value_input"]: ValueTypes["dropzone_distributors_stream_cursor_value_input"];
+  ["dropzone_distributors_update_column"]: ValueTypes["dropzone_distributors_update_column"];
   ["invitations_bool_exp"]: ValueTypes["invitations_bool_exp"];
   ["invitations_order_by"]: ValueTypes["invitations_order_by"];
   ["invitations_select_column"]: ValueTypes["invitations_select_column"];
   ["invitations_stream_cursor_input"]: ValueTypes["invitations_stream_cursor_input"];
   ["invitations_stream_cursor_value_input"]: ValueTypes["invitations_stream_cursor_value_input"];
+  ["jsonb"]: ValueTypes["jsonb"];
+  ["jsonb_cast_exp"]: ValueTypes["jsonb_cast_exp"];
+  ["jsonb_comparison_exp"]: ValueTypes["jsonb_comparison_exp"];
   ["order_by"]: ValueTypes["order_by"];
   ["timestamptz"]: ValueTypes["timestamptz"];
   ["timestamptz_comparison_exp"]: ValueTypes["timestamptz_comparison_exp"];
