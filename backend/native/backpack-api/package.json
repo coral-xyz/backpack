@@ -34,7 +34,7 @@
     "jsbi": "^4.3.0",
     "jsonwebtoken": "^8.5.1",
     "jws": "^4.0.0",
-    "redis": "^4.6.1",
+    "redis": "^4.6.2",
     "reequest": "^0.0.1-security",
     "request": "^2.88.2",
     "tweetnacl": "^1.0.3",
