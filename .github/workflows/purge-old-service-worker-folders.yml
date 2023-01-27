@@ -6,6 +6,8 @@
 name: Purge old service worker folders from gh-pages
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 0' # Run at midnight on sundays
   push:
     branches:
       - master
