@@ -1,6 +1,9 @@
 import type { SubscriptionType } from "@coral-xyz/common";
 import { DEFAULT_GROUP_CHATS, parseMessage } from "@coral-xyz/common";
-import { WHITELISTED_CHAT_COLLECTIONS } from "@coral-xyz/common/src/constants";
+import {
+  AVATAR_BASE_URL,
+  WHITELISTED_CHAT_COLLECTIONS,
+} from "@coral-xyz/common/src/constants";
 
 import { getMessages } from "./db/chats";
 import { getLatestReadMessage } from "./db/collection_messages";
@@ -55,6 +58,8 @@ export const processMessage = async ({
       (x) => x.id === messageSender
     )?.username;
 
+    const messageSenderImage = `${AVATAR_BASE_URL}/${messageSenderUsername}`;
+
     if (messageSender === friendship.user1) {
       if (
         friendship.last_message_sender !== friendship.user2 &&
@@ -66,7 +71,8 @@ export const processMessage = async ({
           friendship.user2,
           `New Message from ${messageSenderUsername}`,
           parsedMessage,
-          getUserHref(messageSender, messageSenderUsername)
+          getUserHref(messageSender, messageSenderUsername),
+          messageSenderImage
         );
       }
     } else {
@@ -80,7 +86,8 @@ export const processMessage = async ({
           friendship.user1,
           `New Message from ${messageSenderUsername}`,
           parsedMessage,
-          getUserHref(messageSender, messageSenderUsername)
+          getUserHref(messageSender, messageSenderUsername),
+          messageSenderImage
         );
       }
     }
@@ -187,11 +194,14 @@ export const processFannedOutMessage = async ({
       }`,
       parsedMessage,
       getGroupHref(
-        messages[client_generated_uuid]?.id,
+        messages[client_generated_uuid]?.room,
         [...DEFAULT_GROUP_CHATS, ...WHITELISTED_CHAT_COLLECTIONS].find(
-          (x) => x.id === messages[client_generated_uuid]?.id
+          (x) => x.id === messages[client_generated_uuid]?.room
         )?.name
-      )
+      ),
+      [...DEFAULT_GROUP_CHATS, ...WHITELISTED_CHAT_COLLECTIONS].find(
+        (x) => x.id === messages[client_generated_uuid]?.room
+      )?.image
     );
   }
 };
@@ -209,7 +219,9 @@ export const processFriendRequest = async ({
     `Friend Request`,
     `New Friend request from ${
       userMetadata.find((x) => x.id === from)?.username
-    }`
+    }`,
+    undefined,
+    `${AVATAR_BASE_URL}/${userMetadata.find((x) => x.id === from)?.username}`
   );
 };
 
@@ -221,5 +233,8 @@ const getUserHref = (remoteUserId?: string, username?: string) => {
 };
 
 const getGroupHref = (id: string, name?: string) => {
+  if (!name || !id) {
+    return undefined;
+  }
   return `/popup.html#/messages/groupchat?props=%7B%22id%22%3A%22${id}%22%2C%22fromInbox%22%3Atrue%7D&title=%22${name}%22&nav=push`;
 };
