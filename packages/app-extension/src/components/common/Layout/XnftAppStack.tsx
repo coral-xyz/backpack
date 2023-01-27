@@ -14,7 +14,7 @@ export function XnftAppStack() {
   const [searchParams] = useSearchParams();
   const navAction = searchParams.get("nav");
   const theme = useCustomTheme();
-  const deepXnftPath = location.pathname.split(xnftAddress ?? "")[1];
+  const deepXnftPath = location.pathname.split(xnftAddress ?? "")[1] ?? "";
 
   return (
     <motion.div
