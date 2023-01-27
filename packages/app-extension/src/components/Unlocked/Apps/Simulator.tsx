@@ -5,15 +5,12 @@ import { useCustomTheme } from "@coral-xyz/themes";
 
 import { PluginDisplay } from "./Plugin";
 
+const removeTimestamps = /[0-9]{13}/g;
+
 // The refresh code is a big hack. :)
 export function Simulator({ plugin }: { plugin: Plugin }) {
-  const theme = useCustomTheme();
   const refresh = useJavaScriptRefresh(SIMULATOR_URL);
-  return refresh % 2 === 1 ? (
-    <div style={{ backgroundColor: theme.custom.colors.background }}></div>
-  ) : (
-    <PluginDisplay plugin={plugin} />
-  );
+  return <PluginDisplay key={refresh} plugin={plugin} />;
 }
 
 function useJavaScriptRefresh(url: string): number {
@@ -24,22 +21,15 @@ function useJavaScriptRefresh(url: string): number {
     const i = setInterval(() => {
       (async () => {
         const js = await (await fetch(url)).text();
-        if (previous !== null && previous !== js) {
+        const noTSjs = js?.replaceAll(removeTimestamps, ""); // remove cachebusting timestamps next.js
+        if (previous !== null && previous !== noTSjs) {
           setRefresh((r) => r + 1);
         }
-        previous = js;
+        previous = noTSjs;
       })();
     }, 1000);
     return () => clearInterval(i);
   }, []);
-
-  useEffect(() => {
-    if (refresh % 2 === 1) {
-      setTimeout(() => {
-        setRefresh((r) => r + 1);
-      }, 100);
-    }
-  }, [refresh]);
 
   return refresh;
 }
