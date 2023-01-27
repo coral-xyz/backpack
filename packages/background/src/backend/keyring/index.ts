@@ -317,8 +317,7 @@ export class KeyringStore {
   public previewPubkeys(
     blockchain: Blockchain,
     mnemonic: string,
-    derivationPath: DerivationPath,
-    numberOfAccounts: number
+    paths: Array<string>
   ): string[] {
     const factory = hdFactoryForBlockchain(blockchain);
     const hdKeyring = factory.fromMnemonic(mnemonic, derivationPath, [
@@ -820,7 +819,7 @@ class UserKeyring {
       throw new Error("blockchain keyring not initialised");
     } else {
       // Derive the next key.
-      const [publicKey, name] = await blockchainKeyring.importAccountIndex();
+      const [publicKey, name] = await blockchainKeyring.deriveNextKey();
       return [publicKey, name];
     }
   }

@@ -67,7 +67,7 @@ export const Finish = ({
       // Take the first keyring init to fetch the JWT, it doesn't matter which
       // we use if there are multiple.
       const { blockchain, publicKey, signature } =
-        keyringInit.blockchainKeyrings[0];
+        keyringInit.signedPublicKeyPaths[0];
       const authData = {
         blockchain,
         publicKey,
@@ -91,7 +91,7 @@ export const Finish = ({
       username,
       inviteCode,
       waitlistId: getWaitlistId?.(),
-      blockchainPublicKeys: keyringInit.blockchainKeyrings.map((b) => ({
+      blockchainPublicKeys: keyringInit.signedPublicKeyPaths.map((b) => ({
         blockchain: b.blockchain,
         publicKey: b.publicKey,
         signature: b.signature,

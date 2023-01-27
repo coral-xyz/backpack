@@ -2,7 +2,7 @@
 // a loading indicator until it is found (or an error if it not found).
 
 import { useEffect, useState } from "react";
-import type { DerivationPath } from "@coral-xyz/common";
+import type { PublicKeyPath } from "@coral-xyz/common";
 import {
   accountDerivationPath,
   Blockchain,
@@ -17,7 +17,6 @@ import { Box } from "@mui/material";
 import { ethers } from "ethers";
 
 import { Header, SubtextParagraph } from "../../common";
-import type { SelectedAccount } from "../../common/Account/ImportAccounts";
 
 import { DERIVATION_PATHS } from "./MnemonicSearch";
 
@@ -33,7 +32,7 @@ export const HardwareSearch = ({
   blockchain: Blockchain;
   transport: Transport;
   publicKey: string;
-  onNext: (accounts: SelectedAccount[], derivationPath: DerivationPath) => void;
+  onNext: (publicKeyPath: PublicKeyPath) => void;
   onError?: (error: Error) => void;
   onRetry: () => void;
 }) => {
@@ -46,19 +45,18 @@ export const HardwareSearch = ({
         [Blockchain.ETHEREUM]: new Ethereum(transport),
       }[blockchain];
       for (const derivationPath of DERIVATION_PATHS) {
-        for (
-          let accountIndex = 0;
-          accountIndex < LOAD_PUBLIC_KEY_AMOUNT;
-          accountIndex += 1
-        ) {
+        // TODO how many accounts?
+        const account = 0;
+        for (let index = 0; index < LOAD_PUBLIC_KEY_AMOUNT; index += 1) {
           const path = accountDerivationPath(
             blockchain,
             derivationPath,
-            accountIndex
+            account,
+            index
           );
           const ledgerAddress = (await ledger.getAddress(path)).address;
           if (bs58.encode(ledgerAddress) === publicKey) {
-            onNext([{ index: accountIndex, publicKey }], derivationPath);
+            onNext({ blockchain, derivationPath, publicKey, account, index });
             return;
           }
         }

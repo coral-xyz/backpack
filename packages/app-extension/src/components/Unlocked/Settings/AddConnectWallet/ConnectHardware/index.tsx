@@ -1,4 +1,4 @@
-import type { Blockchain, BlockchainKeyringInit } from "@coral-xyz/common";
+import type { Blockchain, SignedPublicKeyPath } from "@coral-xyz/common";
 import {
   getAddMessage,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
@@ -24,31 +24,17 @@ export function ConnectHardware({
   const background = useBackgroundClient();
 
   const handleHardwareOnboardComplete = async (
-    keyringInit: BlockchainKeyringInit
+    signedPublicKeyPath: SignedPublicKeyPath
   ) => {
-    if (createKeyring) {
-      await background.request({
-        method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
-        params: [
-          keyringInit.blockchain,
-          keyringInit.derivationPath,
-          keyringInit.accountIndex,
-          keyringInit.publicKey,
-          keyringInit.signature,
-        ],
-      });
-    } else {
-      await background.request({
-        method: UI_RPC_METHOD_LEDGER_IMPORT,
-        params: [
-          keyringInit.blockchain,
-          keyringInit.derivationPath,
-          keyringInit.accountIndex,
-          keyringInit.publicKey,
-          keyringInit.signature,
-        ],
-      });
-    }
+    const method = createKeyring
+      ? // Create the keyring
+        UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD
+      : // Just import the wallet because the keyring already exists
+        UI_RPC_METHOD_LEDGER_IMPORT;
+    await background.request({
+      method,
+      params: [signedPublicKeyPath],
+    });
   };
 
   return (

@@ -92,18 +92,24 @@ export type NftAttribute = {
 export type KeyringType = "mnemonic" | "ledger";
 
 export type KeyringInit = {
+  signedPublicKeyPaths: Array<SignedPublicKeyPath>;
   // No mnemonic means this is a hardware wallet keyring
   mnemonic?: string;
-  blockchainKeyrings: Array<BlockchainKeyringInit>;
 };
 
-export type BlockchainKeyringInit = {
+// Location of a public key including the public key
+export type PublicKeyPath = {
   blockchain: Blockchain;
   derivationPath: DerivationPath;
-  accountIndex: number;
+  account: number;
+  index: number;
   publicKey: string;
-  signature: string;
 };
+
+// Path to a public key including a signature from the public key
+export type SignedPublicKeyPath = {
+  signature: string;
+} & PublicKeyPath;
 
 export interface XnftPreference {
   disabled: boolean;

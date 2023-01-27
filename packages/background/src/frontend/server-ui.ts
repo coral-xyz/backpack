@@ -9,6 +9,7 @@ import type {
   EventEmitter,
   FEATURE_GATES_MAP,
   Preferences,
+  PublicKeyPath,
   RpcRequest,
   RpcResponse,
   XnftPreference,
@@ -1008,21 +1009,13 @@ async function handleEthereumSignMessage(
 
 async function handleSignMessageForPublicKey(
   ctx: Context<Backend>,
-  blockchain: Blockchain,
   msg: string,
-  publicKey: string,
   keyringInit?: {
-    derivationPath: DerivationPath;
-    accountIndex: number;
+    publicKeyPath: PublicKeyPath;
     mnemonic?: string;
   }
 ) {
-  const resp = await ctx.backend.signMessageForPublicKey(
-    blockchain,
-    msg,
-    publicKey,
-    keyringInit
-  );
+  const resp = await ctx.backend.signMessageForPublicKey(msg, keyringInit);
   return [resp];
 }
 

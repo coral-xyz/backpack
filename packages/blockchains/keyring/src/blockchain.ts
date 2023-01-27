@@ -125,6 +125,22 @@ export class BlockchainKeyring {
     return this.hdKeyring!.derivationPath;
   }
 
+  public async deriveNextKey(): Promise<[string, string]> {
+    const derivationPath = this.derivationPath();
+    if (derivationPath === DerivationPath.Bip44) {
+      // A value for `account` is not set
+      continue;
+    } else if (
+      derivationPath === DerivationPath.Bip44Change ||
+      derivationPath === DerivationPath.SolletDeprecated
+    ) {
+      // A value for `account` has already been set in these accounts
+      continue;
+    }
+    console.log(derivationPath);
+    return ["", ""];
+  }
+
   public async importAccountIndex(
     _accountIndex?: number
   ): Promise<[string, string, number]> {

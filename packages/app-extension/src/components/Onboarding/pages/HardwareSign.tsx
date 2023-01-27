@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Blockchain, DerivationPath } from "@coral-xyz/common";
+import type { PublicKeyPath } from "@coral-xyz/common";
 import {
   toTitleCase,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
@@ -12,19 +12,13 @@ import { encode } from "bs58";
 import { Header, HeaderIcon, SubtextParagraph } from "../../common";
 
 export function HardwareSign({
-  blockchain,
+  publicKeyPath,
   message,
-  publicKey,
-  derivationPath,
-  accountIndex,
   text,
   onNext,
 }: {
-  blockchain: Blockchain;
+  publicKeyPath: PublicKeyPath;
   message: string;
-  publicKey: string;
-  derivationPath: DerivationPath;
-  accountIndex: number;
   text: string;
   onNext: (signature: string) => void;
 }) {
@@ -38,15 +32,7 @@ export function HardwareSign({
         try {
           const signature = await background.request({
             method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-            params: [
-              blockchain,
-              encode(Buffer.from(message, "utf-8")),
-              publicKey,
-              {
-                derivationPath,
-                accountIndex,
-              },
-            ],
+            params: [publicKeyPath, encode(Buffer.from(message, "utf-8"))],
           });
           setSignature(signature);
         } catch (error: unknown) {
@@ -75,7 +61,8 @@ export function HardwareSign({
             <Header text="Enable blind signing" />
             <SubtextParagraph>
               Please enable blind signing in the settings of the{" "}
-              {toTitleCase(blockchain)} app on your hardware wallet.
+              {toTitleCase(publicKeyPath.blockchain)} app on your hardware
+              wallet.
             </SubtextParagraph>
           </>
         ) : (

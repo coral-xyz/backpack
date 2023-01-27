@@ -2,6 +2,7 @@
 // default derivation path.
 
 import { useEffect } from "react";
+import type { PublicKeyPath } from "@coral-xyz/common";
 import {
   accountDerivationPath,
   Blockchain,
@@ -11,9 +12,7 @@ import { Loading } from "@coral-xyz/react-common";
 import Ethereum from "@ledgerhq/hw-app-eth";
 import Solana from "@ledgerhq/hw-app-solana";
 import type Transport from "@ledgerhq/hw-transport";
-import { encode } from "bs58";
-
-import type { SelectedAccount } from "../../common/Account/ImportAccounts";
+import { ethers } from "ethers";
 
 export const HardwareDefaultAccount = ({
   blockchain,
@@ -23,7 +22,7 @@ export const HardwareDefaultAccount = ({
 }: {
   blockchain: Blockchain;
   transport: Transport;
-  onNext: (accounts: SelectedAccount[], derivationPath: DerivationPath) => void;
+  onNext: (publicKeyPath: PublicKeyPath) => void;
   onError?: (error: Error) => void;
 }) => {
   useEffect(() => {
@@ -33,17 +32,22 @@ export const HardwareDefaultAccount = ({
         [Blockchain.ETHEREUM]: new Ethereum(transport),
       }[blockchain];
 
-      const derivationPath = DerivationPath.Default;
-      const accountIndex = 0;
-      const path = accountDerivationPath(
+      const derivationPath = DerivationPath.Default; // BIP44
+      const account = 0; // BIP44 account
+      const index = 0; // BIP44 index
+
+      // The default path for newly created wallets
+      const defaultPath = accountDerivationPath(
         blockchain,
         derivationPath,
-        accountIndex
+        account,
+        index
       );
 
+      // Get the public key for the default path from the hardware wallet
       let ledgerAddress;
       try {
-        ledgerAddress = (await ledger.getAddress(path)).address;
+        ledgerAddress = (await ledger.getAddress(defaultPath)).address;
       } catch (error) {
         if (onError) {
           onError(error as Error);
@@ -55,18 +59,16 @@ export const HardwareDefaultAccount = ({
 
       const publicKey =
         blockchain === Blockchain.SOLANA
-          ? encode(ledgerAddress as Buffer)
+          ? ethers.utils.base58.encode(ledgerAddress as Buffer)
           : ledgerAddress.toString();
 
-      onNext(
-        [
-          {
-            index: accountIndex,
-            publicKey,
-          },
-        ],
-        derivationPath
-      );
+      onNext({
+        blockchain,
+        derivationPath,
+        publicKey,
+        account,
+        index,
+      });
     })();
   }, [blockchain]);
 

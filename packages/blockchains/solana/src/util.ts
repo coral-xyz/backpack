@@ -1,4 +1,8 @@
-import { DerivationPath } from "@coral-xyz/common";
+import {
+  accountDerivationPath,
+  Blockchain,
+  DerivationPath,
+} from "@coral-xyz/common";
 import { Keypair } from "@solana/web3.js";
 import * as bip32 from "bip32";
 import { derivePath } from "ed25519-hd-key";
@@ -32,29 +36,20 @@ export function deriveSolanaKeypair(
 function deriveSeed(
   seedHex: string,
   derivationPath: DerivationPath,
-  accountIndex: number
+  accountIndex: number,
+  walletIndex?: number
 ): any {
-  const pathStr = derivePathStr(derivationPath, accountIndex);
+  const pathStr = accountDerivationPath(
+    Blockchain.SOLANA,
+    derivationPath,
+    accountIndex,
+    walletIndex
+  );
   switch (derivationPath) {
     case DerivationPath.SolletDeprecated:
       return bip32.fromSeed(Buffer.from(seedHex, "hex")).derivePath(pathStr)
         .privateKey;
     default:
       return derivePath(pathStr, seedHex).key;
-  }
-}
-
-function derivePathStr(derivationPath: DerivationPath, accountIndex: number) {
-  switch (derivationPath) {
-    case DerivationPath.Bip44:
-      return accountIndex === 0
-        ? `m/44'/501'`
-        : `m/44'/501'/${accountIndex - 1}'`;
-    case DerivationPath.Bip44Change:
-      return `m/44'/501'/${accountIndex}'/0'`;
-    case DerivationPath.SolletDeprecated:
-      return `m/501'/${accountIndex}'/0/0`;
-    default:
-      throw new Error(`invalid derivation path: ${derivationPath}`);
   }
 }

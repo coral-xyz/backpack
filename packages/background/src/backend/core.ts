@@ -7,6 +7,7 @@ import type {
   KeyringInit,
   KeyringType,
   Preferences,
+  PublicKeyPath,
   XnftPreference,
 } from "@coral-xyz/common";
 import {
@@ -59,11 +60,7 @@ import {
   TAB_XNFT,
 } from "@coral-xyz/common";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
-import {
-  KeyringStoreStateEnum,
-  makeDefaultNav,
-  makeUrl,
-} from "@coral-xyz/recoil";
+import { makeDefaultNav, makeUrl } from "@coral-xyz/recoil";
 import type {
   Commitment,
   SendOptions,
@@ -478,56 +475,27 @@ export class Backend {
    * This is used during onboarding to sign messages prior to the store being initialised.
    */
   async signMessageForPublicKey(
-    blockchain: Blockchain,
+    publicKeyPath: PublicKeyPath,
     msg: string,
-    publicKey: string,
-    keyringInit?: {
-      derivationPath: DerivationPath;
-      accountIndex: number;
-      mnemonic?: string;
-    }
+    mnemonic?: string
   ) {
-    if (
-      !keyringInit &&
-      (await this.keyringStoreState()) !== KeyringStoreStateEnum.Unlocked
-    ) {
-      throw new Error(
-        "provide a keyring init or unlock keyring to sign message"
-      );
-    }
+    const { blockchain, derivationPath, account, publicKey } = publicKeyPath;
 
-    let blockchainKeyring: BlockchainKeyring;
-
-    // If keyring init parameters were provided then init the keyring
-    if (keyringInit) {
-      // Create an empty keyring to init
-      blockchainKeyring = keyringForBlockchain(blockchain);
-      if (keyringInit.mnemonic) {
-        // Using a mnemonic
-        blockchainKeyring.initFromMnemonic(
-          keyringInit.mnemonic,
-          keyringInit.derivationPath,
-          [keyringInit.accountIndex]
-        );
-      } else {
-        // Using a ledger
-        blockchainKeyring.initFromLedger([
-          {
-            path: keyringInit.derivationPath,
-            account: keyringInit.accountIndex,
-            publicKey,
-          },
-        ]);
-      }
+    const blockchainKeyring = keyringForBlockchain(blockchain);
+    if (mnemonic) {
+      blockchainKeyring.initFromMnemonic(mnemonic, derivationPath, [account]);
     } else {
-      blockchainKeyring =
-        this.keyringStore.activeUserKeyring.keyringForBlockchain(blockchain);
+      blockchainKeyring.initFromLedger([
+        {
+          path: derivationPath,
+          account: account,
+          publicKey,
+        },
+      ]);
     }
 
-    // Check if the keyring was initialised properly or if the existing stored
-    // keyring has the correct public key
     if (!blockchainKeyring.hasPublicKey(publicKey)) {
-      throw new Error("invalid public key or keyring init");
+      throw new Error("could not find public key for signing");
     }
 
     if (blockchain === Blockchain.SOLANA) {

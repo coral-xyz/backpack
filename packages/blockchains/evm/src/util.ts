@@ -1,4 +1,8 @@
-import { DerivationPath } from "@coral-xyz/common";
+import {
+  accountDerivationPath,
+  Blockchain,
+  DerivationPath,
+} from "@coral-xyz/common";
 import type { Wallet } from "ethers";
 import { ethers } from "ethers";
 
@@ -9,31 +13,26 @@ export function deriveEthereumWallets(
 ): Array<Wallet> {
   const wallets: Array<Wallet> = [];
   for (const accountIndex of accountIndices) {
-    wallets.push(deriveEthereumWallet(seed, accountIndex, derivationPath));
+    wallets.push(
+      deriveEthereumWallet(seed, derivationPath, accountIndex, walletIndex)
+    );
   }
   return wallets;
 }
 
 export function deriveEthereumWallet(
   seed: Buffer,
+  derivationPath: DerivationPath,
   accountIndex: number,
-  derivationPath: DerivationPath
+  walletIndex?: number
 ): Wallet {
   const hdNode = ethers.utils.HDNode.fromSeed(seed);
-  const path = derivePathStr(derivationPath, accountIndex);
+  const path = accountDerivationPath(
+    Blockchain.ETHEREUM,
+    derivationPath,
+    accountIndex,
+    walletIndex
+  );
   const child = hdNode.derivePath(path);
   return new ethers.Wallet(child.privateKey);
-}
-
-function derivePathStr(derivationPath: DerivationPath, accountIndex: number) {
-  switch (derivationPath) {
-    case DerivationPath.Bip44:
-      return accountIndex === 0
-        ? `m/44'/60'`
-        : `m/44'/60'/${accountIndex - 1}'`;
-    case DerivationPath.Bip44Change:
-      return `m/44'/60'/${accountIndex}'/0'`;
-    default:
-      throw new Error(`invalid derivation path: ${derivationPath}`);
-  }
 }

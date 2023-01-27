@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import type { PublicKeyPath } from "@coral-xyz/common";
 import {
   accountDerivationPath,
   Blockchain,
@@ -37,18 +38,6 @@ import {
 
 const { base58: bs58 } = ethers.utils;
 
-type Account = {
-  publicKey: string;
-  balance: BigNumber;
-  // The account index for the derivation path
-  index: number;
-};
-
-export type SelectedAccount = {
-  index: number;
-  publicKey: string;
-};
-
 const DISPLAY_PUBKEY_AMOUNT = 5;
 
 export function ImportAccounts({
@@ -62,31 +51,35 @@ export function ImportAccounts({
   blockchain: Blockchain;
   mnemonic?: string;
   transport?: Transport | null;
-  onNext: (
-    selectedAccounts: SelectedAccount[],
-    derivationPath: DerivationPath,
-    mnemonic?: string
-  ) => void;
+  onNext: (publicKeyPath: Array<PublicKeyPath>, mnemonic?: string) => void;
   onError?: (error: Error) => void;
   allowMultiple?: boolean;
 }) {
   const background = useBackgroundClient();
   const checkPublicKeyConflicts = useConflictQuery();
   const theme = useCustomTheme();
-  const [accounts, setAccounts] = useState<Array<Account>>([]);
-  const [selectedAccounts, setSelectedAccounts] = useState<SelectedAccount[]>(
+
+  // Loaded balances for each public key
+  const [balances, setBalances] = useState<{ [publicKey: string]: BigNumber }>(
+    {}
+  );
+  // Path to the public key
+  const [publicKeyPaths, setPublicKeyPaths] = useState<Array<PublicKeyPath>>(
     []
   );
+  // Lock flag to prevent changing of derivation path while ledger is loading
   const [ledgerLocked, setLedgerLocked] = useState(false);
   // Public keys that have already been imported on this account
-  const [importedPubkeys, setImportedPubkeys] = useState<string[]>([]);
+  const [importedPublicKeys, setImportedPublicKeys] = useState<string[]>([]);
   // Public keys that are in use on other Backpack accounts
-  const [conflictingPubkeys, setConflictingPubkeys] = useState<string[]>([]);
+  const [conflictingPublicKeys, setConflictingPublicKeys] = useState<string[]>(
+    []
+  );
   const [derivationPath, setDerivationPath] = useState<DerivationPath>(
     DerivationPath.Default
   );
 
-  const disabledPubkeys = [...importedPubkeys, ...conflictingPubkeys];
+  const disabledPublicKeys = [...importedPublicKeys, ...conflictingPublicKeys];
 
   useEffect(() => {
     (async () => {
@@ -96,7 +89,7 @@ export function ImportAccounts({
           params: [],
         });
         const keyring = blockchainKeyrings[blockchain];
-        setImportedPubkeys(
+        setImportedPublicKeys(
           Object.values(keyring)
             .flat()
             .map((a: any) => a.publicKey)
@@ -112,20 +105,20 @@ export function ImportAccounts({
   //
   useEffect(() => {
     (async () => {
-      if (accounts.length === 0) return;
+      if (publicKeyPaths.length === 0) return;
       try {
         const response = await checkPublicKeyConflicts(
-          accounts.map((a) => ({
+          publicKeyPaths.map((a) => ({
             blockchain,
             publicKey: a.publicKey,
           }))
         );
-        setConflictingPubkeys(response.map((r: any) => r.public_key));
+        setConflictingPublicKeys(response.map((r: any) => r.public_key));
       } catch {
         // If the query failed assume all are valid
       }
     })();
-  }, [accounts, blockchain]);
+  }, [publicKeyPaths]);
 
   //
   // Load a list of accounts and their associated balances
@@ -149,9 +142,13 @@ export function ImportAccounts({
     loaderFn(derivationPath)
       .then(async (publicKeys: string[]) => {
         const balances = await loadBalances(publicKeys);
-        setAccounts(
-          balances.sort((a, b) =>
-            b.balance.lt(a.balance) ? -1 : b.balance.eq(a.balance) ? 0 : 1
+        setBalances(
+          Object.fromEntries(
+            balances
+              .sort((a, b) =>
+                b.balance.lt(a.balance) ? -1 : b.balance.eq(a.balance) ? 0 : 1
+              )
+              .map((a) => [a.publicKey, a.balance])
           )
         );
       })
@@ -171,8 +168,8 @@ export function ImportAccounts({
   // Clear accounts and selected acounts on change of derivation path.
   //
   useEffect(() => {
-    setAccounts([]);
-    setSelectedAccounts([]);
+    setBalances({});
+    setPublicKeyPaths([]);
   }, [derivationPath]);
 
   //
@@ -244,18 +241,15 @@ export function ImportAccounts({
   ): Promise<string[]> => {
     const publicKeys = [];
     setLedgerLocked(true);
-
     const ledger = {
       [Blockchain.SOLANA]: new Solana(transport),
       [Blockchain.ETHEREUM]: new Ethereum(transport),
     }[blockchain];
-
     // Add remaining accounts
-    for (let account = 0; account < LOAD_PUBLIC_KEY_AMOUNT; account += 1) {
-      const path = accountDerivationPath(blockchain, derivationPath, account);
+    for (let index = 0; index < LOAD_PUBLIC_KEY_AMOUNT; index += 1) {
+      const path = accountDerivationPath(blockchain, derivationPath, 0, index);
       publicKeys.push((await ledger.getAddress(path)).address);
     }
-
     setLedgerLocked(false);
     return publicKeys.map((p) =>
       blockchain === Blockchain.SOLANA ? bs58.encode(p) : p.toString()
@@ -265,23 +259,30 @@ export function ImportAccounts({
   //
   // Handles checkbox clicks to select accounts to import.
   //
-  const handleSelect = (index: number, publicKey: string) => () => {
-    const currentIndex = selectedAccounts.findIndex((a) => a.index === index);
-    let newSelectedAccounts = [...selectedAccounts];
+  const handleSelect = (publicKey: string, index: number) => () => {
+    const currentIndex = publicKeyPaths.findIndex((a) => a.index === index);
+    let newPublicKeyPaths = [...publicKeyPaths];
     if (currentIndex === -1) {
+      const publicKeyPath = {
+        blockchain,
+        derivationPath,
+        publicKey,
+        account: 0,
+        index,
+      };
       // Adding the account
       if (allowMultiple) {
-        newSelectedAccounts.push({ index, publicKey });
+        newPublicKeyPaths.push(publicKeyPath);
       } else {
-        newSelectedAccounts = [{ index, publicKey }];
+        newPublicKeyPaths = [publicKeyPath];
       }
     } else {
       // Removing the account
-      newSelectedAccounts.splice(currentIndex, 1);
+      newPublicKeyPaths.splice(currentIndex, 1);
     }
     // Sort by account indices
-    newSelectedAccounts.sort((a, b) => a.index - b.index);
-    setSelectedAccounts(newSelectedAccounts);
+    newPublicKeyPaths.sort((a, b) => a.index - b.index);
+    setPublicKeyPaths(newPublicKeyPaths);
   };
 
   const derivationPathOptions = {
@@ -380,7 +381,7 @@ export function ImportAccounts({
             ))}
           </TextInput>
         </div>
-        {accounts.length > 0 && (
+        {publicKeyPaths && balances && (
           <>
             <List
               sx={{
@@ -393,12 +394,12 @@ export function ImportAccounts({
                 paddingBottom: "8px",
               }}
             >
-              {accounts
+              {publicKeyPaths
                 .slice(0, DISPLAY_PUBKEY_AMOUNT)
-                .map(({ publicKey, balance, index }) => (
+                .map(({ publicKey, index }) => (
                   <ListItemButton
                     key={publicKey.toString()}
-                    onClick={handleSelect(index, publicKey)}
+                    onClick={handleSelect(publicKey, index)}
                     sx={{
                       display: "flex",
                       paddinLeft: "16px",
@@ -407,7 +408,7 @@ export function ImportAccounts({
                       paddingBottom: "5px",
                     }}
                     disableRipple
-                    disabled={disabledPubkeys.includes(publicKey.toString())}
+                    disabled={disabledPublicKeys.includes(publicKey.toString())}
                   >
                     <Box style={{ display: "flex", width: "100%" }}>
                       <div
@@ -420,11 +421,11 @@ export function ImportAccounts({
                         <Checkbox
                           edge="start"
                           checked={
-                            selectedAccounts.some((a) => a.index === index) ||
-                            importedPubkeys.includes(publicKey.toString())
+                            publicKeyPaths.some((a) => a.index === index) ||
+                            importedPublicKeys.includes(publicKey.toString())
                           }
                           tabIndex={-1}
-                          disabled={disabledPubkeys.includes(
+                          disabled={disabledPublicKeys.includes(
                             publicKey.toString()
                           )}
                           disableRipple
@@ -447,9 +448,9 @@ export function ImportAccounts({
                           textAlign: "right",
                         }}
                         primary={`${
-                          balance
+                          balances[publicKey]
                             ? (+ethers.utils.formatUnits(
-                                balance,
+                                balances[publicKey],
                                 decimals
                               )).toFixed(4)
                             : 0
@@ -460,9 +461,9 @@ export function ImportAccounts({
                 ))}
             </List>
           </>
-        )}
+        )}{" "}
+        : <Loading />
       </Box>
-      {accounts.length === 0 && <Loading />}
       <Box
         sx={{
           mt: "12px",
@@ -473,8 +474,8 @@ export function ImportAccounts({
       >
         <PrimaryButton
           label={`Import Account${allowMultiple ? "s" : ""}`}
-          onClick={() => onNext(selectedAccounts, derivationPath, mnemonic)}
-          disabled={selectedAccounts.length === 0}
+          onClick={() => onNext(publicKeyPaths, mnemonic)}
+          disabled={publicKeyPaths.length === 0}
         />
       </Box>
     </Box>
