@@ -1,7 +1,11 @@
 #!/bin/bash
 
-one_week_ago=$(date -v-1w +%Y-%m-%d)
-two_weeks_ago=$(date -v-2w +%Y-%m-%d)
+# one_week_ago=$(date -v-1w +%Y-%m-%d)
+# two_weeks_ago=$(date -v-2w +%Y-%m-%d)
+
+# -d doesn't work on OSX, just on GNU-based tooling
+one_week_ago=$(date -d '1 weeks ago' +%Y-%m-%d)
+two_weeks_ago=$(date -d '2 weeks ago' +%Y-%m-%d)
 
 before=$one_week_ago
 after=$two_weeks_ago
@@ -9,7 +13,7 @@ after=$two_weeks_ago
 # Iterate through all the commits and find the ones that have the deploy: message
 # The commits on this branch are different than master, which is why we're doing this!
 commits=$(
-   git log --pretty=format:"%s" --after="$after" --before="$before" \
+   git log --pretty=format:"%s" --after="$after" \
    --grep="deploy:" | sed 's/deploy: //g' | cut -c1-8
  )
 
