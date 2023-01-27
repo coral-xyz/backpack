@@ -24,5 +24,5 @@ for short_sha in "${commits[@]}"; do
   fi
 done
 
-git commit -m "delete folders $before:$after" -m "commit string"
+git commit -m "delete folders $before:$after"
 git push
