@@ -9,11 +9,8 @@ import {
   View,
   Platform,
   KeyboardAvoidingView,
-  Text,
-  Pressable,
 } from "react-native";
 
-import Constants from "expo-constants";
 import * as Linking from "expo-linking";
 
 import {
@@ -159,20 +156,7 @@ function OnboardingCreateOrImportWalletScreen({
       >
         <HelpModalMenuButton onPress={handlePresentModalPress} />
         <Margin top={48} bottom={24}>
-          <Pressable onPress={() => setShowDebug((last) => !last)}>
-            <WelcomeLogoHeader />
-          </Pressable>
-          {showDebug ? (
-            <Text
-              style={{
-                marginTop: 16,
-                marginHorizontal: 16,
-                backgroundColor: "white",
-              }}
-            >
-              {JSON.stringify(Constants?.expoConfig?.extra, null, 2)}
-            </Text>
-          ) : null}
+          <WelcomeLogoHeader />
         </Margin>
         <View
           style={{

@@ -1,5 +1,6 @@
 import type { Blockchain } from "@coral-xyz/common";
 
+import { useState } from "react";
 import type { ImageStyle, StyleProp, TextStyle, ViewStyle } from "react-native";
 import {
   ActivityIndicator,
@@ -12,6 +13,7 @@ import {
 } from "react-native";
 
 import * as Clipboard from "expo-clipboard";
+import Constants from "expo-constants";
 
 import { proxyImageUrl, walletAddressDisplay } from "@coral-xyz/common";
 import { useAvatarUrl } from "@coral-xyz/recoil";
@@ -567,34 +569,50 @@ export function FullScreenLoading() {
 
 export function WelcomeLogoHeader() {
   const theme = useTheme();
+  const [showDebug, setShowDebug] = useState(false);
   return (
-    <View style={{ alignItems: "center" }}>
-      <Margin top={48} bottom={24}>
-        <RedBackpack />
-      </Margin>
-      <Text
-        style={{
-          fontWeight: "600",
-          fontSize: 42,
-          textAlign: "center",
-          color: theme.custom.colors.fontColor,
-        }}
-      >
-        Backpack
-      </Text>
-      <Margin top={8}>
+    <>
+      <View style={{ alignItems: "center" }}>
+        <Margin top={48} bottom={24}>
+          <Pressable onPress={() => setShowDebug((last) => !last)}>
+            <RedBackpack />
+          </Pressable>
+        </Margin>
         <Text
           style={{
-            lineHeight: 24,
-            fontSize: 16,
-            fontWeight: "500",
-            color: theme.custom.colors.secondary,
+            fontWeight: "600",
+            fontSize: 42,
+            textAlign: "center",
+            color: theme.custom.colors.fontColor,
           }}
         >
-          A home for your xNFTs
+          Backpack
         </Text>
-      </Margin>
-    </View>
+        <Margin top={8}>
+          <Text
+            style={{
+              lineHeight: 24,
+              fontSize: 16,
+              fontWeight: "500",
+              color: theme.custom.colors.secondary,
+            }}
+          >
+            A home for your xNFTs
+          </Text>
+        </Margin>
+      </View>
+      {showDebug ? (
+        <Text
+          style={{
+            marginTop: 16,
+            marginHorizontal: 16,
+            backgroundColor: "white",
+          }}
+        >
+          {JSON.stringify(Constants?.expoConfig?.extra, null, 2)}
+        </Text>
+      ) : null}
+    </>
   );
 }
 
