@@ -13,8 +13,8 @@ runs:
       uses: expo/expo-github-action@v7
       with:
         eas-version: latest
-        # expo-version: ${{ inputs.expo-version }}
         token: ${{ secrets.EXPO_TOKEN }}
+        # expo-version: ${{ inputs.expo-version }}
 
     - name: 📦 Install dependencies
       run: yarn install --frozen-lockfile --prefer-offline
