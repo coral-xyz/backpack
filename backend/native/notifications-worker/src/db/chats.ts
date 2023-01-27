@@ -12,10 +12,12 @@ export const getMessages = async ({
   client_generated_uuid,
   user1_last_read_message_id,
   user2_last_read_message_id,
+  lastReadMessage,
 }: {
   client_generated_uuid: string;
-  user1_last_read_message_id: string;
-  user2_last_read_message_id: string;
+  user1_last_read_message_id?: string;
+  user2_last_read_message_id?: string;
+  lastReadMessage?: string;
 }): Promise<{
   [client_generated_uuid: string]: {
     id: string;
@@ -34,8 +36,9 @@ export const getMessages = async ({
           client_generated_uuid: {
             _in: [
               client_generated_uuid,
-              user1_last_read_message_id,
-              user2_last_read_message_id,
+              user1_last_read_message_id || "",
+              user2_last_read_message_id || "",
+              lastReadMessage || "",
             ],
           },
         },
