@@ -6,9 +6,26 @@ import { validateRoom } from "../db/friendships";
 import {
   validateCentralizedGroupOwnership,
   validateCollectionOwnership,
+  validatePublicKeyOwnership,
 } from "../db/nft";
 
 import { clearCookie, setJWTCookie, validateJwt } from "./util";
+
+export const ensureHasPubkeyAccess = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const hasAccess = await validatePublicKeyOwnership(
+    req.id!,
+    req.query.publicKey as string
+  );
+  if (hasAccess) {
+    next();
+    return;
+  }
+  res.status(403).json({ msg: "You dont have access to this public key" });
+};
 
 export const ensureHasRoomAccess = async (
   req: Request,

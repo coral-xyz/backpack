@@ -379,12 +379,7 @@ export function SwapProvider({
 
       if (BACKPACK_FEATURE_REFERRAL_FEES) {
         try {
-          const url =
-            process.env.NODE_ENV === "production"
-              ? "https://jupiter.xnfts.dev"
-              : "http://localhost:8787";
-
-          await fetch(`${url}/swap`, {
+          await fetch("https://jupiter.xnfts.dev/swap", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
