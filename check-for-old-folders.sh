@@ -13,7 +13,7 @@ after=$two_weeks_ago
 # Iterate through all the commits and find the ones that have the deploy: message
 # The commits on this branch are different than master, which is why we're doing this!
 commits=$(
-   git log --pretty=format:"%s" --after="$after" \
+   git log --pretty=format:"%s" --after="$after" --before="$before" \
    --grep="deploy:" | sed 's/deploy: //g' | cut -c1-8
  )
 
