@@ -61,21 +61,23 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
    * and the server and set the auth data.
    */
   useEffect(() => {
-    if (serverAccountState && !serverAccountState.isAuthenticated) {
-      (async () => {
-        const authData = await getAuthSigner(
-          serverAccountState.publicKeys.map((p) => p.publicKey)
-        );
-        if (authData) {
-          setAuthData({
-            ...authData,
-            message: getAuthMessage(user.uuid),
-            userId: user.uuid,
-          });
-        }
-      })();
-    } else {
-      setLoading(false);
+    if (serverAccountState) {
+      if (!serverAccountState.isAuthenticated) {
+        (async () => {
+          const authData = await getAuthSigner(
+            serverAccountState.publicKeys.map((p) => p.publicKey)
+          );
+          if (authData) {
+            setAuthData({
+              ...authData,
+              message: getAuthMessage(user.uuid),
+              userId: user.uuid,
+            });
+          }
+        })();
+      } else {
+        setLoading(false);
+      }
     }
   }, [serverAccountState]);
 
@@ -127,14 +129,12 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
 
   return (
     <>
-      {loading ? (
+      {loading || !serverAccountState ? (
         <Loading />
-      ) : serverAccountState ? (
+      ) : (
         <WithSyncAccount serverPublicKeys={serverAccountState.publicKeys}>
           {children}
         </WithSyncAccount>
-      ) : (
-        children
       )}
       {authData && (
         <WithDrawer
