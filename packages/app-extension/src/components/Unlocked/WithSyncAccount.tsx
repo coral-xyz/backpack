@@ -16,10 +16,8 @@ import { useAuthentication } from "../../hooks/useAuthentication";
 
 export function WithSyncAccount({
   serverPublicKeys,
-  children,
 }: {
   serverPublicKeys: Array<{ blockchain: Blockchain; publicKey: string }>;
-  children: React.ReactElement;
 }) {
   const background = useBackgroundClient();
   const { getSigners } = useAuthentication();
@@ -106,5 +104,5 @@ export function WithSyncAccount({
     })();
   }, [keyringType, dehydratedWallets, syncAttempted]);
 
-  return children;
+  return null;
 }

@@ -44,7 +44,6 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
    */
   useEffect(() => {
     (async () => {
-      setLoading(true);
       setAuthSignature(null);
       const result = await checkAuthentication(user.username, user.jwt);
       // These set state calls should be batched
@@ -75,8 +74,6 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
             });
           }
         })();
-      } else {
-        setLoading(false);
       }
     }
   }, [serverAccountState]);
@@ -121,7 +118,6 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
           method: UI_RPC_METHOD_USER_JWT_UPDATE,
           params: [id, jwt],
         });
-        setLoading(false);
         setOpenDrawer(false);
       }
     })();
@@ -129,13 +125,10 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
 
   return (
     <>
-      {loading || !serverAccountState ? (
-        <Loading />
-      ) : (
-        <WithSyncAccount serverPublicKeys={serverAccountState.publicKeys}>
-          {children}
-        </WithSyncAccount>
+      {serverAccountState && (
+        <WithSyncAccount serverPublicKeys={serverAccountState.publicKeys} />
       )}
+      {children}
       {authData && (
         <WithDrawer
           openDrawer={openDrawer}
