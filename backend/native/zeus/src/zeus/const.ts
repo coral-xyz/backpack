@@ -515,6 +515,11 @@ export const AllTypesProps: Record<string, any> = {
   auth_user_nfts_stream_cursor_value_input: {},
   auth_user_nfts_update_column: "enum" as const,
   auth_users: {
+    dropzone_public_key: {
+      distinct_on: "auth_public_keys_select_column",
+      order_by: "auth_public_keys_order_by",
+      where: "auth_public_keys_bool_exp",
+    },
     public_keys: {
       distinct_on: "auth_public_keys_select_column",
       order_by: "auth_public_keys_order_by",
@@ -562,6 +567,7 @@ export const AllTypesProps: Record<string, any> = {
     _and: "auth_users_bool_exp",
     _not: "auth_users_bool_exp",
     _or: "auth_users_bool_exp",
+    dropzone_public_key: "auth_public_keys_bool_exp",
     id: "uuid_comparison_exp",
     public_keys: "auth_public_keys_bool_exp",
     public_keys_aggregate: "auth_public_keys_aggregate_bool_exp",
@@ -597,6 +603,7 @@ export const AllTypesProps: Record<string, any> = {
     where: "auth_users_bool_exp",
   },
   auth_users_order_by: {
+    dropzone_public_key_aggregate: "auth_public_keys_aggregate_order_by",
     id: "order_by",
     public_keys_aggregate: "auth_public_keys_aggregate_order_by",
     referred_users_aggregate: "auth_users_aggregate_order_by",
@@ -764,6 +771,9 @@ export const AllTypesProps: Record<string, any> = {
     data: "jsonb",
   },
   dropzone_distributors_update_column: "enum" as const,
+  dropzone_user_dropzone_public_key_args: {
+    user_row: "users_scalar",
+  },
   invitations_aggregate_fields: {
     count: {
       columns: "invitations_select_column",
@@ -1164,6 +1174,18 @@ export const AllTypesProps: Record<string, any> = {
       where: "dropzone_distributors_bool_exp",
     },
     dropzone_distributors_by_pk: {},
+    dropzone_user_dropzone_public_key: {
+      args: "dropzone_user_dropzone_public_key_args",
+      distinct_on: "auth_public_keys_select_column",
+      order_by: "auth_public_keys_order_by",
+      where: "auth_public_keys_bool_exp",
+    },
+    dropzone_user_dropzone_public_key_aggregate: {
+      args: "dropzone_user_dropzone_public_key_args",
+      distinct_on: "auth_public_keys_select_column",
+      order_by: "auth_public_keys_order_by",
+      where: "auth_public_keys_bool_exp",
+    },
     invitations: {
       distinct_on: "invitations_select_column",
       order_by: "invitations_order_by",
@@ -1333,6 +1355,18 @@ export const AllTypesProps: Record<string, any> = {
       cursor: "dropzone_distributors_stream_cursor_input",
       where: "dropzone_distributors_bool_exp",
     },
+    dropzone_user_dropzone_public_key: {
+      args: "dropzone_user_dropzone_public_key_args",
+      distinct_on: "auth_public_keys_select_column",
+      order_by: "auth_public_keys_order_by",
+      where: "auth_public_keys_bool_exp",
+    },
+    dropzone_user_dropzone_public_key_aggregate: {
+      args: "dropzone_user_dropzone_public_key_args",
+      distinct_on: "auth_public_keys_select_column",
+      order_by: "auth_public_keys_order_by",
+      where: "auth_public_keys_bool_exp",
+    },
     invitations: {
       distinct_on: "invitations_select_column",
       order_by: "invitations_order_by",
@@ -1359,6 +1393,7 @@ export const AllTypesProps: Record<string, any> = {
     _neq: "timestamptz",
     _nin: "timestamptz",
   },
+  users_scalar: `scalar.users_scalar` as const,
   uuid: `scalar.uuid` as const,
   uuid_comparison_exp: {
     _eq: "uuid",
@@ -1636,6 +1671,7 @@ export const ReturnTypes: Record<string, any> = {
     returning: "auth_user_nfts",
   },
   auth_users: {
+    dropzone_public_key: "auth_public_keys",
     id: "uuid",
     public_keys: "auth_public_keys",
     public_keys_aggregate: "auth_public_keys_aggregate",
@@ -1851,6 +1887,8 @@ export const ReturnTypes: Record<string, any> = {
     dropzone_distributors: "dropzone_distributors",
     dropzone_distributors_aggregate: "dropzone_distributors_aggregate",
     dropzone_distributors_by_pk: "dropzone_distributors",
+    dropzone_user_dropzone_public_key: "auth_public_keys",
+    dropzone_user_dropzone_public_key_aggregate: "auth_public_keys_aggregate",
     invitations: "invitations",
     invitations_aggregate: "invitations_aggregate",
   },
@@ -1899,11 +1937,14 @@ export const ReturnTypes: Record<string, any> = {
     dropzone_distributors_aggregate: "dropzone_distributors_aggregate",
     dropzone_distributors_by_pk: "dropzone_distributors",
     dropzone_distributors_stream: "dropzone_distributors",
+    dropzone_user_dropzone_public_key: "auth_public_keys",
+    dropzone_user_dropzone_public_key_aggregate: "auth_public_keys_aggregate",
     invitations: "invitations",
     invitations_aggregate: "invitations_aggregate",
     invitations_stream: "invitations",
   },
   timestamptz: `scalar.timestamptz` as const,
+  users_scalar: `scalar.users_scalar` as const,
   uuid: `scalar.uuid` as const,
 };
 
