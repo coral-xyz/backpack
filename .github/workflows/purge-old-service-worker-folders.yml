@@ -5,6 +5,7 @@
 
 name: Purge old service worker folders from gh-pages
 on:
+  workflow_dispatch:
   push:
     branches:
       - gh-pages
@@ -15,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: gh-pages # checkout gh-pages branch
       - name: run bash check-for-old-folders.sh
         shell: bash
         run: bash ./check-for-old-folders.sh
