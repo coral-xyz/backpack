@@ -18,7 +18,7 @@ router.use(cors({ origin: "*" }));
  * Creates a distributor transaction, stores data in the DB, returns
  * the transaction to be signed
  */
-router.post("/", async (req, res, next) => {
+router.post("/drops", async (req, res, next) => {
   try {
     const provider = createProvider(new PublicKey(req.body.creator));
     const sdk = MerkleDistributorSDK.load({ provider });
