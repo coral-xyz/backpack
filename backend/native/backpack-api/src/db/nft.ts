@@ -62,6 +62,30 @@ export const validateCentralizedGroupOwnership = async (
   return returnedCollection;
 };
 
+export const validatePublicKeyOwnership = async (
+  uuid: string,
+  publicKey: string
+) => {
+  const response = await chain("query")({
+    auth_public_keys: [
+      {
+        where: {
+          public_key: { _eq: publicKey },
+        },
+        limit: 100,
+      },
+      {
+        user_id: true,
+      },
+    ],
+  });
+
+  if (response.auth_public_keys[0]?.user_id !== uuid) {
+    return false;
+  }
+  return true;
+};
+
 export const validateCollectionOwnership = async (
   uuid: string,
   publicKey: string,
