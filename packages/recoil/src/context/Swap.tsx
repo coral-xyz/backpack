@@ -17,7 +17,7 @@ import * as bs58 from "bs58";
 import { BigNumber, ethers } from "ethers";
 
 import { blockchainTokenData } from "../atoms/balance";
-import { JUPITER_BASE_URL, jupiterInputMints } from "../atoms/solana/jupiter";
+import { JUPITER_BASE_URL,jupiterInputMints } from "../atoms/solana/jupiter";
 import { useLoader, useSolanaCtx, useSplTokenRegistry } from "../hooks";
 
 const { Zero } = ethers.constants;
@@ -379,12 +379,7 @@ export function SwapProvider({
 
       if (BACKPACK_FEATURE_REFERRAL_FEES) {
         try {
-          const url =
-            process.env.NODE_ENV === "production"
-              ? "https://jupiter.xnfts.dev"
-              : "http://localhost:8787";
-
-          await fetch(`${url}/swap`, {
+          await fetch("https://jupiter.xnfts.dev/swap", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
