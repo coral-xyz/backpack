@@ -51,11 +51,7 @@ export const ensureHasRoomAccess = async (
     if (DEFAULT_GROUP_CHATS.map((x) => x.id).includes(room)) {
       hasAccess = true;
     } else if (WHITELISTED_CHAT_COLLECTIONS.map((x) => x.id).includes(room)) {
-      hasAccess = await validateCentralizedGroupOwnership(
-        req.id!,
-        publicKey!,
-        room!
-      );
+      hasAccess = await validateCentralizedGroupOwnership(req.id!, room!);
     } else {
       hasAccess = await validateCollectionOwnership(
         req.id!,

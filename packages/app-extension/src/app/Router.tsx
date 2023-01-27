@@ -6,20 +6,18 @@ import {
   EXTENSION_WIDTH,
   getLogger,
   openOnboarding,
-  QUERY_COLD,
   QUERY_APPROVAL,
   QUERY_APPROVE_ALL_TRANSACTIONS,
   QUERY_APPROVE_MESSAGE,
   QUERY_APPROVE_TRANSACTION,
+  QUERY_COLD,
   QUERY_LOCKED,
   toTitleCase,
 } from "@coral-xyz/common";
-import { refreshFriendships, refreshGroups } from "@coral-xyz/db";
 import {
-  EmptyState,
+ BackgroundChatsSync,  EmptyState,
   refreshGroupsAndFriendships,
-  SignalingManager,
-} from "@coral-xyz/react-common";
+  SignalingManager } from "@coral-xyz/react-common";
 import {
   KeyringStoreStateEnum,
   useApprovedOrigins,
@@ -41,9 +39,9 @@ import { Unlocked } from "../components/Unlocked";
 import { ApproveMessage } from "../components/Unlocked/Approvals/ApproveMessage";
 import { ApproveOrigin } from "../components/Unlocked/Approvals/ApproveOrigin";
 import {
-  Cold,
   ApproveAllTransactions,
   ApproveTransaction,
+  Cold,
 } from "../components/Unlocked/Approvals/ApproveTransaction";
 import { WithAuth } from "../components/Unlocked/WithAuth";
 import { refreshFeatureGates } from "../gates/FEATURES";
@@ -78,7 +76,9 @@ function _Router() {
   const { uuid, jwt } = useUser();
 
   useEffect(() => {
-    refreshGroupsAndFriendships(uuid);
+    refreshGroupsAndFriendships(uuid).then(() => {
+      BackgroundChatsSync.getInstance().updateUuid(uuid);
+    });
     SignalingManager.getInstance().updateUuid(uuid, jwt);
   }, [uuid, jwt]);
 
