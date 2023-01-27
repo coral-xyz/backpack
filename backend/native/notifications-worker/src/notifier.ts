@@ -18,7 +18,8 @@ export const notify = async (
   to: string,
   title: string,
   body: string,
-  href?: string
+  href?: string,
+  image?: string
 ) => {
   const responses = await getSubscriptions(to);
 
@@ -40,6 +41,7 @@ export const notify = async (
             title,
             body,
             href,
+            image,
           })
         );
       } catch (e) {

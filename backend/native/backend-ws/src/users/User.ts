@@ -113,7 +113,6 @@ export class User {
           ) {
             roomValidation = await validateCentralizedGroupOwnership(
               this.userId,
-              message.payload.publicKey,
               message.payload.room
             );
           } else {
