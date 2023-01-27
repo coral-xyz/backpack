@@ -4,11 +4,11 @@
 # two_weeks_ago=$(date -v-2w +%Y-%m-%d)
 
 # -d doesn't work on OSX, just on GNU-based tooling
-yesterday=$(date -d '1 day ago' +%Y-%m-%d)
-# one_week_ago=$(date -d '1 weeks ago' +%Y-%m-%d)
+# yesterday=$(date -d '1 day ago' +%Y-%m-%d)
+one_week_ago=$(date -d '1 weeks ago' +%Y-%m-%d)
 two_weeks_ago=$(date -d '2 weeks ago' +%Y-%m-%d)
 
-before=$yesterday
+before=$one_week_ago
 after=$two_weeks_ago
 
 # Iterate through all the commits and find the ones that have the deploy: message
