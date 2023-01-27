@@ -4,6 +4,7 @@ import { ZodError } from "zod";
 
 import authenticateRouter from "./routes/v1/authenticate";
 import chatRouter from "./routes/v1/chats";
+import dropzoneRouter from "./routes/v1/dropzone";
 import friendsRouter from "./routes/v1/friends";
 import inboxRouter from "./routes/v1/inbox";
 import nftsRouter from "./routes/v1/nft";
@@ -28,17 +29,18 @@ app.use(bodyParser.json());
 app.use(bodyParser.json({ type: "application/json" }));
 app.use("/authenticate", authenticateRouter);
 app.use("/chat", chatRouter);
-app.use("/nft", nftsRouter);
+app.use("/dropzone", dropzoneRouter);
 app.use("/friends", friendsRouter);
 app.use("/inbox", inboxRouter);
+app.use("/nft", nftsRouter);
 app.use("/notifications/", notificationRoutes);
 app.use("/preferences", preferenceRoutes);
 app.use("/proxy", proxyRouter);
 app.use("/publicKeys", publicKeysRouter);
-app.use("/users", usersRouter);
 app.use("/referrals", referralsRouter);
 app.use("/s3", s3Router);
 app.use("/tx-parsing", txParsingRouter);
+app.use("/users", usersRouter);
 
 // @ts-ignore
 app.use((err: any, _req: Request, res: Response, next: NextFunction) => {

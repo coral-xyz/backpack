@@ -724,6 +724,46 @@ export const AllTypesProps: Record<string, any> = {
     _similar: "citext",
   },
   cursor_ordering: "enum" as const,
+  dropzone_distributors: {
+    data: {},
+  },
+  dropzone_distributors_aggregate_fields: {
+    count: {
+      columns: "dropzone_distributors_select_column",
+    },
+  },
+  dropzone_distributors_bool_exp: {
+    _and: "dropzone_distributors_bool_exp",
+    _not: "dropzone_distributors_bool_exp",
+    _or: "dropzone_distributors_bool_exp",
+    created_at: "timestamptz_comparison_exp",
+    data: "jsonb_comparison_exp",
+    id: "String_comparison_exp",
+  },
+  dropzone_distributors_constraint: "enum" as const,
+  dropzone_distributors_insert_input: {
+    data: "jsonb",
+  },
+  dropzone_distributors_on_conflict: {
+    constraint: "dropzone_distributors_constraint",
+    update_columns: "dropzone_distributors_update_column",
+    where: "dropzone_distributors_bool_exp",
+  },
+  dropzone_distributors_order_by: {
+    created_at: "order_by",
+    data: "order_by",
+    id: "order_by",
+  },
+  dropzone_distributors_select_column: "enum" as const,
+  dropzone_distributors_stream_cursor_input: {
+    initial_value: "dropzone_distributors_stream_cursor_value_input",
+    ordering: "cursor_ordering",
+  },
+  dropzone_distributors_stream_cursor_value_input: {
+    created_at: "timestamptz",
+    data: "jsonb",
+  },
+  dropzone_distributors_update_column: "enum" as const,
   invitations_aggregate_fields: {
     count: {
       columns: "invitations_select_column",
@@ -748,6 +788,23 @@ export const AllTypesProps: Record<string, any> = {
   invitations_stream_cursor_value_input: {
     claimed_at: "timestamptz",
     id: "uuid",
+  },
+  jsonb: `scalar.jsonb` as const,
+  jsonb_cast_exp: {
+    String: "String_comparison_exp",
+  },
+  jsonb_comparison_exp: {
+    _cast: "jsonb_cast_exp",
+    _contained_in: "jsonb",
+    _contains: "jsonb",
+    _eq: "jsonb",
+    _gt: "jsonb",
+    _gte: "jsonb",
+    _in: "jsonb",
+    _lt: "jsonb",
+    _lte: "jsonb",
+    _neq: "jsonb",
+    _nin: "jsonb",
   },
   mutation_root: {
     delete_auth_collection_messages: {
@@ -877,6 +934,14 @@ export const AllTypesProps: Record<string, any> = {
     insert_auth_xnft_secrets_one: {
       object: "auth_xnft_secrets_insert_input",
       on_conflict: "auth_xnft_secrets_on_conflict",
+    },
+    insert_dropzone_distributors: {
+      objects: "dropzone_distributors_insert_input",
+      on_conflict: "dropzone_distributors_on_conflict",
+    },
+    insert_dropzone_distributors_one: {
+      object: "dropzone_distributors_insert_input",
+      on_conflict: "dropzone_distributors_on_conflict",
     },
     update_auth_collection_messages: {
       _set: "auth_collection_messages_set_input",
@@ -1088,6 +1153,17 @@ export const AllTypesProps: Record<string, any> = {
       where: "auth_xnft_secrets_bool_exp",
     },
     auth_xnft_secrets_by_pk: {},
+    dropzone_distributors: {
+      distinct_on: "dropzone_distributors_select_column",
+      order_by: "dropzone_distributors_order_by",
+      where: "dropzone_distributors_bool_exp",
+    },
+    dropzone_distributors_aggregate: {
+      distinct_on: "dropzone_distributors_select_column",
+      order_by: "dropzone_distributors_order_by",
+      where: "dropzone_distributors_bool_exp",
+    },
+    dropzone_distributors_by_pk: {},
     invitations: {
       distinct_on: "invitations_select_column",
       order_by: "invitations_order_by",
@@ -1241,6 +1317,21 @@ export const AllTypesProps: Record<string, any> = {
     auth_xnft_secrets_stream: {
       cursor: "auth_xnft_secrets_stream_cursor_input",
       where: "auth_xnft_secrets_bool_exp",
+    },
+    dropzone_distributors: {
+      distinct_on: "dropzone_distributors_select_column",
+      order_by: "dropzone_distributors_order_by",
+      where: "dropzone_distributors_bool_exp",
+    },
+    dropzone_distributors_aggregate: {
+      distinct_on: "dropzone_distributors_select_column",
+      order_by: "dropzone_distributors_order_by",
+      where: "dropzone_distributors_bool_exp",
+    },
+    dropzone_distributors_by_pk: {},
+    dropzone_distributors_stream: {
+      cursor: "dropzone_distributors_stream_cursor_input",
+      where: "dropzone_distributors_bool_exp",
     },
     invitations: {
       distinct_on: "invitations_select_column",
@@ -1597,6 +1688,32 @@ export const ReturnTypes: Record<string, any> = {
     returning: "auth_xnft_secrets",
   },
   citext: `scalar.citext` as const,
+  dropzone_distributors: {
+    created_at: "timestamptz",
+    data: "jsonb",
+    id: "String",
+  },
+  dropzone_distributors_aggregate: {
+    aggregate: "dropzone_distributors_aggregate_fields",
+    nodes: "dropzone_distributors",
+  },
+  dropzone_distributors_aggregate_fields: {
+    count: "Int",
+    max: "dropzone_distributors_max_fields",
+    min: "dropzone_distributors_min_fields",
+  },
+  dropzone_distributors_max_fields: {
+    created_at: "timestamptz",
+    id: "String",
+  },
+  dropzone_distributors_min_fields: {
+    created_at: "timestamptz",
+    id: "String",
+  },
+  dropzone_distributors_mutation_response: {
+    affected_rows: "Int",
+    returning: "dropzone_distributors",
+  },
   invitations: {
     claimed_at: "timestamptz",
     id: "uuid",
@@ -1618,6 +1735,7 @@ export const ReturnTypes: Record<string, any> = {
     claimed_at: "timestamptz",
     id: "uuid",
   },
+  jsonb: `scalar.jsonb` as const,
   mutation_root: {
     delete_auth_collection_messages:
       "auth_collection_messages_mutation_response",
@@ -1665,6 +1783,8 @@ export const ReturnTypes: Record<string, any> = {
     insert_auth_xnft_preferences_one: "auth_xnft_preferences",
     insert_auth_xnft_secrets: "auth_xnft_secrets_mutation_response",
     insert_auth_xnft_secrets_one: "auth_xnft_secrets",
+    insert_dropzone_distributors: "dropzone_distributors_mutation_response",
+    insert_dropzone_distributors_one: "dropzone_distributors",
     update_auth_collection_messages:
       "auth_collection_messages_mutation_response",
     update_auth_collection_messages_by_pk: "auth_collection_messages",
@@ -1728,6 +1848,9 @@ export const ReturnTypes: Record<string, any> = {
     auth_xnft_preferences_by_pk: "auth_xnft_preferences",
     auth_xnft_secrets: "auth_xnft_secrets",
     auth_xnft_secrets_by_pk: "auth_xnft_secrets",
+    dropzone_distributors: "dropzone_distributors",
+    dropzone_distributors_aggregate: "dropzone_distributors_aggregate",
+    dropzone_distributors_by_pk: "dropzone_distributors",
     invitations: "invitations",
     invitations_aggregate: "invitations_aggregate",
   },
@@ -1772,6 +1895,10 @@ export const ReturnTypes: Record<string, any> = {
     auth_xnft_secrets: "auth_xnft_secrets",
     auth_xnft_secrets_by_pk: "auth_xnft_secrets",
     auth_xnft_secrets_stream: "auth_xnft_secrets",
+    dropzone_distributors: "dropzone_distributors",
+    dropzone_distributors_aggregate: "dropzone_distributors_aggregate",
+    dropzone_distributors_by_pk: "dropzone_distributors",
+    dropzone_distributors_stream: "dropzone_distributors",
     invitations: "invitations",
     invitations_aggregate: "invitations_aggregate",
     invitations_stream: "invitations",
