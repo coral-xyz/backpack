@@ -1,15 +1,12 @@
 import type { RecentTransaction } from "@coral-xyz/common";
 import { Blockchain, ETH_NATIVE_MINT } from "@coral-xyz/common";
-import { PublicKey } from "@solana/web3.js";
 import { atomFamily, selectorFamily } from "recoil";
 
 import { ethersContext } from "./ethereum/provider";
 import {
-  fetchNFTMetaData,
   fetchRecentSolanaTransactionDetails,
+  fetchTokenMetadata,
 } from "./solana/recent-transaction-details";
-import { fetchRecentSolanaTransactions } from "./solana/recent-transactions";
-import { anchorContext } from "./solana/wallet";
 
 /**
  * Retrieve recent Ethereum transactions using alchemy_getAssetTransfers.
@@ -125,7 +122,7 @@ export const recentSolanaTransactions = atomFamily<
     key: "recentSolanaTransactionsDefault",
     get:
       ({ address }: { address: string }) =>
-      async () => {
+      async ({ get }: any) => {
         try {
           // get parsed transactions from Helius
           const heliusTransactionDetails =
@@ -141,13 +138,13 @@ export const recentSolanaTransactions = atomFamily<
                   t?.tokenTransfers[0]?.tokenStandard === "NonFungible" &&
                   t?.tokenTransfers[0]?.mint)
               ) {
-                const nftMetadata = await fetchNFTMetaData(
+                const nftMetadata = await fetchTokenMetadata(
                   t?.events?.nft?.nfts[0]?.mint || t?.tokenTransfers[0]?.mint
                 );
                 return {
                   blockchain: Blockchain.SOLANA,
                   ...t,
-                  metaData: nftMetadata,
+                  metadata: nftMetadata,
                 };
               }
 

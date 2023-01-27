@@ -1,11 +1,18 @@
 import type { Dispatch, SetStateAction } from "react";
 import { useState } from "react";
-import { CloseButton } from "react-toastify/dist/components";
+import { useNavigate } from "react-router-dom";
+import { Blockchain, explorerUrl } from "@coral-xyz/common";
 import { PrimaryButton } from "@coral-xyz/react-common";
+import {
+  useActiveWallet,
+  useBlockchainConnectionUrl,
+  useBlockchainExplorer,
+  useSplTokenRegistry,
+} from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { ArrowBack, CallMade } from "@mui/icons-material";
-import { Button, Card, List, ListItem } from "@mui/material";
-import { style } from "@mui/system";
+import { ArrowRightAltRounded, CallMade } from "@mui/icons-material";
+import { Card, List } from "@mui/material";
+import type { TokenInfo } from "@solana/spl-token-registry";
 
 import { WithDrawer } from "../../../common/Layout/Drawer";
 import { NavBackButton } from "../../../common/Layout/Nav";
@@ -16,9 +23,14 @@ import {
 
 import {
   formatTimestamp,
+  getTransactionCaption,
   getTransactionTitle,
   getTruncatedAddress,
+  isNFTTransaction,
+  isUserTxnSender,
 } from "./detail-parser";
+import type { HeliusParsedTransaction } from "./types";
+import { heliusTransactionTypes } from "./types";
 
 const useStyles = styles((theme) => ({
   transactionCard: {
@@ -80,6 +92,9 @@ const useStyles = styles((theme) => ({
     borderBottomLeftRadius: "12px",
     borderBottomRightRadius: "12px",
     backgroundColor: theme.custom.colors.nav,
+    "&:hover": {
+      cursor: "pointer",
+    },
   },
   cell: {
     width: "100%",
@@ -95,6 +110,9 @@ const useStyles = styles((theme) => ({
   confirmedStatus: {
     color: "#35A63A",
   },
+  failedStatus: {
+    color: "#E95050",
+  },
   label: { color: theme.custom.colors.secondary },
 }));
 
@@ -102,19 +120,40 @@ export function TransactionDetail({
   transaction,
   setTransactionDetail,
 }: {
-  transaction: any;
+  transaction: HeliusParsedTransaction;
   setTransactionDetail: Dispatch<SetStateAction<null>>;
 }) {
   const classes = useStyles();
+  const activeWallet = useActiveWallet();
   const theme = useCustomTheme();
+  const navigate = useNavigate();
+  const explorer = useBlockchainExplorer(Blockchain.SOLANA);
+  const connectionUrl = useBlockchainConnectionUrl(Blockchain.SOLANA);
   const [openDrawer, setOpenDrawer] = useState(true);
+  const tokenRegistry = useSplTokenRegistry();
+  let tokenData: (TokenInfo | undefined)[] = [];
+
+  // TODO - this is duplicated in ListItem.tsx, better to pass in setTransactionDetail state
+  // add appropriate metadata
+  if (transaction?.tokenTransfers?.length > 0)
+    transaction?.tokenTransfers?.map((transfer: any) => {
+      if (transfer?.mint && tokenRegistry.get(transfer?.mint)) {
+        tokenData.push(tokenRegistry.get(transfer?.mint));
+      }
+    });
 
   return (
     <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
       <div style={{ height: "100%" }}>
         <NavStackEphemeral
           initialRoute={{ name: "transactionDetails" }}
-          options={() => ({ title: getTransactionTitle(transaction) })}
+          options={() => {
+            if (isNFTTransaction(transaction)) {
+              return { title: getTransactionCaption(transaction, tokenData) };
+            }
+
+            return { title: getTransactionTitle(transaction) };
+          }}
           navButtonLeft={
             <NavBackButton
               onClick={() => {
@@ -128,30 +167,130 @@ export function TransactionDetail({
             name={"transactionDetails"}
             component={(props: any) => (
               <Card {...props} className={classes.transactionCard}>
-                {transaction?.metaData?.offChainData?.image && (
-                  <>
-                    <img
-                      className={classes.nft}
-                      src={transaction?.metaData?.offChainData?.image}
-                    />
+                {transaction?.metadata?.onChaindata?.data?.uri ||
+                  (transaction?.metadata?.offChainData?.image && (
+                    <>
+                      <img
+                        className={classes.nft}
+                        src={
+                          transaction?.metadata?.onChaindata?.data?.uri ||
+                          transaction?.metadata?.offChainData?.image
+                        }
+                      />
+                      <div
+                        style={{
+                          fontSize: "24px",
+                          color: theme.custom.colors.fontColor,
+                          paddingTop: "16px",
+                        }}
+                      >
+                        {getTransactionTitle(transaction)}
+                      </div>
+                    </>
+                  ))}
+
+                {transaction?.type === heliusTransactionTypes.swap && (
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      marginTop: "40px",
+                      marginBottom: "40px",
+                    }}
+                  >
                     <div
                       style={{
-                        fontSize: "24px",
-                        color: theme.custom.colors.fontColor,
-                        paddingTop: "16px",
+                        display: "flex",
+                        alignItems: "center",
+                        flexDirection: "column",
                       }}
                     >
-                      {getTransactionTitle(transaction)}
+                      <img
+                        style={{
+                          borderRadius: "50%",
+                          width: "56px",
+                          height: "56px",
+                        }}
+                        src={tokenData[0] && tokenData[0]?.logoURI}
+                      />
+
+                      <div
+                        style={{
+                          fontSize: "16px",
+                          lineHeight: "24px",
+                          color: "white",
+                          marginTop: "5px",
+                        }}
+                      >
+                        {new Number(
+                          transaction?.description?.split(" ")[2]
+                        ).toFixed(2) +
+                          " " +
+                          tokenData[0]?.symbol ||
+                          getTruncatedAddress(
+                            transaction?.tokenTransfers?.[0]?.mint
+                          )}
+                      </div>
                     </div>
-                  </>
+
+                    <ArrowRightAltRounded
+                      style={{
+                        color: theme.custom.colors.alpha,
+                        width: "80px",
+                        fontSize: "35px",
+                      }}
+                    />
+
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        flexDirection: "column",
+                      }}
+                    >
+                      <img
+                        style={{
+                          borderRadius: "50%",
+                          width: "56px",
+                          height: "56px",
+                        }}
+                        src={tokenData[1] && tokenData[1]?.logoURI}
+                      />
+                      <div
+                        style={{
+                          fontSize: "16px",
+                          lineHeight: "24px",
+                          color: "white",
+                          marginTop: "5px",
+                        }}
+                      >
+                        {new Number(
+                          transaction?.description?.split(" ")[5]
+                        ).toFixed(2) +
+                          " " +
+                          tokenData[1]?.symbol ||
+                          getTruncatedAddress(
+                            transaction?.tokenTransfers?.[0]?.mint
+                          )}
+                      </div>
+                    </div>
+                  </div>
                 )}
 
-                <PrimaryButton
-                  className={classes.ctaButton}
-                  label="View on Solscan"
-                >
-                  Call to Action
-                </PrimaryButton>
+                {/* TODO - Default to check/error */}
+
+                {/* TODO - add other functionality for this CTA button */}
+                {transaction?.type === heliusTransactionTypes.nftSale &&
+                  transaction.feePayer === activeWallet.publicKey && (
+                    <PrimaryButton
+                      className={classes.ctaButton}
+                      label="View in your gallery"
+                      onClick={() => {
+                        navigate("/nfts");
+                      }}
+                    />
+                  )}
+
                 <List className={classes.detailList}>
                   <div className={classes.firstRow}>
                     <div className={classes.cell}>
@@ -164,6 +303,77 @@ export function TransactionDetail({
                       </div>
                     </div>
                   </div>
+
+                  {(transaction?.type === heliusTransactionTypes.unknown ||
+                    transaction.type === heliusTransactionTypes.transfer) &&
+                    isUserTxnSender(transaction) &&
+                    transaction?.tokenTransfers?.[0]?.toUserAccount && (
+                      <div className={classes.middleRow}>
+                        <div className={classes.cell}>
+                          <div className={classes.label}>To</div>
+
+                          <div className={classes.cellValue}>
+                            {getTruncatedAddress(
+                              transaction?.tokenTransfers?.[0]?.toUserAccount
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  {(transaction?.type === heliusTransactionTypes.unknown ||
+                    transaction.type === heliusTransactionTypes.transfer) &&
+                    isUserTxnSender(transaction) === false &&
+                    transaction?.tokenTransfers?.[0]?.fromUserAccount && (
+                      <div className={classes.middleRow}>
+                        <div className={classes.cell}>
+                          <div className={classes.label}>From</div>
+
+                          <div className={classes.cellValue}>
+                            {getTruncatedAddress(
+                              transaction?.tokenTransfers?.[0]?.fromUserAccount
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                  {transaction?.type === heliusTransactionTypes.swap && (
+                    <>
+                      <div className={classes.middleRow}>
+                        <div className={classes.cell}>
+                          <div className={classes.label}>You paid</div>
+
+                          <div className={classes.cellValue}>
+                            {new Number(
+                              transaction?.description?.split(" ")[2]
+                            ).toFixed(2) +
+                              " " +
+                              tokenData[0]?.symbol ||
+                              getTruncatedAddress(
+                                transaction?.tokenTransfers?.[0]?.mint
+                              )}
+                          </div>
+                        </div>
+                      </div>
+                      <div className={classes.middleRow}>
+                        <div className={classes.cell}>
+                          <div className={classes.label}>You Received</div>
+
+                          <div className={classes.confirmedStatus}>
+                            {new Number(
+                              transaction?.description?.split(" ")[5]
+                            ).toFixed(2) +
+                              " " +
+                              tokenData[1]?.symbol ||
+                              getTruncatedAddress(
+                                transaction?.tokenTransfers?.[0]?.mint
+                              )}
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+
                   <div className={classes.middleRow}>
                     <div className={classes.cell}>
                       <div className={classes.label}>Network Fee</div>
@@ -177,11 +387,25 @@ export function TransactionDetail({
                     <div className={classes.cell}>
                       <div className={classes.label}>Status</div>
 
-                      {/* all transactions from helius are confirmed */}
-                      <div className={classes.confirmedStatus}>Confirmed</div>
+                      {transaction?.transactionError ? (
+                        <div className={classes.failedStatus}>Failed</div>
+                      ) : (
+                        <div className={classes.confirmedStatus}>Confirmed</div>
+                      )}
                     </div>
                   </div>
-                  <div className={classes.lastRow}>
+                  <div
+                    className={classes.lastRow}
+                    onClick={() => {
+                      window.open(
+                        explorerUrl(
+                          explorer!,
+                          transaction.signature,
+                          connectionUrl!
+                        )
+                      );
+                    }}
+                  >
                     <div className={classes.cell}>
                       <div className={classes.label}>Signature</div>
 
