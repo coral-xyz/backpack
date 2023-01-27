@@ -8,9 +8,17 @@ import { PluginDisplay } from "./Plugin";
 const removeTimestamps = /[0-9]{13}/g;
 
 // The refresh code is a big hack. :)
-export function Simulator({ plugin }: { plugin: Plugin }) {
+export function Simulator({
+  plugin,
+  deepXnftPath,
+}: {
+  plugin: Plugin;
+  deepXnftPath: string;
+}) {
   const refresh = useJavaScriptRefresh(SIMULATOR_URL);
-  return <PluginDisplay key={refresh} plugin={plugin} />;
+  return (
+    <PluginDisplay key={refresh} plugin={plugin} deepXnftPath={deepXnftPath} />
+  );
 }
 
 function useJavaScriptRefresh(url: string): number {

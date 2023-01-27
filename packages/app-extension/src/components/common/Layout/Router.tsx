@@ -84,6 +84,7 @@ export function Router() {
           Auto-lock functionality is dependent on checking if the URL contains
           "xnft", if this changes then please verify that it still works
           */}
+        <Route path="/xnft/:xnftAddress/*" element={<XnftAppStack />} />
         <Route path="/xnft/:xnftAddress" element={<XnftAppStack />} />
         <Route path="*" element={<Redirect />} />
       </Routes>

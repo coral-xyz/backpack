@@ -9,10 +9,12 @@ import { PluginApp } from "../../Unlocked/Apps/Plugin";
 
 export function XnftAppStack() {
   let { xnftAddress } = useParams();
+  const location = useLocation();
   const closePlugin = useClosePlugin();
   const [searchParams] = useSearchParams();
   const navAction = searchParams.get("nav");
   const theme = useCustomTheme();
+  const deepXnftPath = location.pathname.split(xnftAddress ?? "")[1];
 
   return (
     <motion.div
@@ -34,6 +36,7 @@ export function XnftAppStack() {
     >
       <PluginApp
         xnftAddress={xnftAddress}
+        deepXnftPath={deepXnftPath}
         closePlugin={() => {
           closePlugin();
         }}
