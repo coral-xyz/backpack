@@ -26,7 +26,6 @@ export class BackgroundChatsSync {
         activeChat.last_message_client_uuid !==
         lastMessage?.client_generated_uuid
       ) {
-        console.error(`refresh room ${activeChat.friendshipId}`);
         refreshChatsFor(uuid, activeChat.friendshipId, "individual");
       }
     });
@@ -37,7 +36,6 @@ export class BackgroundChatsSync {
         "collection"
       );
       if (activeChat.lastMessageUuid !== lastMessage.client_generated_uuid) {
-        console.error(`refresh room ${activeChat.collectionId}`);
         refreshChatsFor(uuid, activeChat.collectionId, "collection", "", "");
       }
     });
