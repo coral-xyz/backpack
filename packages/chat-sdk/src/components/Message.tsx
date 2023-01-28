@@ -3,7 +3,7 @@ import {
   BACKEND_API_URL,
   Blockchain,
   NAV_COMPONENT_MESSAGE_PROFILE,
-  parseMessage,
+  NEW_COLORS,
 } from "@coral-xyz/common";
 import { refreshIndividualChatsFor } from "@coral-xyz/react-common";
 import {
@@ -189,6 +189,7 @@ const GifDemo = ({
 
 export const MessageLine = (props) => {
   const { push } = useNavigation();
+  const { isDarkMode } = useChatContext();
   const message = props.message ? props.message : "";
   const timestamp = props.timestamp
     ? new Date(parseInt(props.timestamp))
@@ -243,7 +244,15 @@ export const MessageLine = (props) => {
             <div
               onClick={() => openProfilePage({ uuid: props.uuid })}
               className={classes.displayName}
-              style={{ color: props.color, cursor: "pointer" }}
+              style={{
+                color:
+                  props.colorIndex || props.colorIndex === 0
+                    ? NEW_COLORS[props.colorIndex || 0][
+                        isDarkMode ? "dark" : "light"
+                      ]
+                    : props.color,
+                cursor: "pointer",
+              }}
             >
               {displayName ? (
                 `@${displayName}`
@@ -620,6 +629,7 @@ export function ChatMessages() {
             parent_message_author_uuid={chat.parent_message_author_uuid}
             client_generated_uuid={chat.client_generated_uuid}
             color={chat.color || theme.custom.colors.fontColor2}
+            colorIndex={chat.colorIndex}
             timestamp={chat.created_at}
             key={chat.client_generated_uuid}
             message={chat.message}

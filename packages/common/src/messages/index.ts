@@ -3,6 +3,65 @@ export * from "./fromServer";
 export * from "./ToPubsub";
 export * from "./toServer";
 
+export const NEW_COLORS = [
+  {
+    light: "#E02929",
+    dark: "#F88484",
+  },
+  {
+    light: "#CC2578",
+    dark: "#E57AB0",
+  },
+  {
+    light: "#9930B8",
+    dark: "#DA8BE7",
+  },
+  {
+    light: "#5E35B1",
+    dark: "#C2A6F4",
+  },
+  {
+    light: "#3949AB",
+    dark: "#97A4F4",
+  },
+  {
+    light: "#0072DB",
+    dark: "#57AEFF",
+  },
+  {
+    light: "#0C5ADF",
+    dark: "#5596F6",
+  },
+  {
+    light: "#008577",
+    dark: "#7ACCC7",
+  },
+  {
+    light: "#1A841F",
+    dark: "#75DD7A",
+  },
+  {
+    light: "#6C7D26",
+    dark: "#BEE05A",
+  },
+  {
+    light: "#BD5B00",
+    dark: "#FFD080",
+  },
+  {
+    light: "#CC4218",
+    dark: "#FA9476",
+  },
+  {
+    light: "#6D4C41",
+    dark: "#BCAAA4",
+  },
+  {
+    light: "#2D4363",
+    dark: "#A3B5CF",
+  },
+];
+
 const COLORS = [
   "#1abc9c",
   "#2ecc71",
@@ -21,6 +80,10 @@ const COLORS = [
 
 export const getRandomColor = () => {
   return COLORS[Math.floor(COLORS.length * Math.random())];
+};
+
+export const getRandomColorIndex = () => {
+  return Math.floor(NEW_COLORS.length * Math.random());
 };
 
 export const parseMessage = (
