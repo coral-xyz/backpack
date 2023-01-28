@@ -51,11 +51,11 @@ router.post("/drops", async (req, res, next) => {
       throw new Error("Some usernames were not found");
     }
 
-    const data = auth_users.reduce((acc, curr) => {
+    const data = auth_users.reduce((acc, curr, index) => {
       const username = curr.username as string;
       acc[curr.dropzone_public_key![0].public_key] = [
         req.body.balances[username],
-        usernames.indexOf(username),
+        index,
         username,
       ];
       return acc;
