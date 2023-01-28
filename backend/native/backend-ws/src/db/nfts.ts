@@ -50,7 +50,14 @@ export const getNftCollectionByGroupName = async ({
               },
             },
           },
-          centralized_group: { _eq: centralizedGroup },
+          _or: [
+            {
+              centralized_group: { _eq: centralizedGroup },
+            },
+            {
+              collection_id: { _eq: centralizedGroup },
+            },
+          ],
         },
       },
       {
@@ -96,29 +103,12 @@ export const getNftCollection = async ({
 
 export const validateCollectionOwnership = async (
   uuid: string,
-  publicKey: string,
-  mint: string,
   collection: string
 ): Promise<boolean> => {
-  const response = await chain("query")({
-    auth_public_keys: [
-      {
-        where: {
-          public_key: { _eq: publicKey },
-        },
-        limit: 100,
-      },
-      {
-        user_id: true,
-      },
-    ],
+  const returnedCollection = await getNftCollectionByGroupName({
+    centralizedGroup: collection,
+    uuid,
   });
 
-  if (response.auth_public_keys[0]?.user_id !== uuid) {
-    return false;
-  }
-
-  const returnedCollection = await getNftCollection({ mint, publicKey });
-
-  return returnedCollection === collection;
+  return returnedCollection ? true : false;
 };
