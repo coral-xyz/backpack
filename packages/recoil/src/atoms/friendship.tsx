@@ -121,7 +121,13 @@ export const groupCollections = atomFamily<
 });
 
 export const remoteUsersMetadata = atomFamily<
-  { username: string; image: string; color: string; loading: boolean },
+  {
+    username: string;
+    image: string;
+    color: string;
+    loading: boolean;
+    colorIndex: number;
+  },
   { uuid: string; remoteUserId: string }
 >({
   key: "remoteUsersMetadata",
@@ -135,6 +141,7 @@ export const remoteUsersMetadata = atomFamily<
           image: "",
           loading: false,
           color: "",
+          colorIndex: 0,
         };
       },
   }),
