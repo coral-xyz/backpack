@@ -141,6 +141,7 @@ export const remoteUsersMetadata = atomFamily<
           image: "",
           loading: false,
           color: "",
+          colorIndex: 0,
         };
       },
   }),
