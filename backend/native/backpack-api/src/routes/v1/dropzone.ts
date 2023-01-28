@@ -164,7 +164,7 @@ router.get("/drops/:distributor", async (req, res, next) => {
   }
 });
 
-router.get("/claims/:claimant", async (req, res, next) => {
+router.get("/claims/:claimant", isValidClaimant, async (req, res, next) => {
   try {
     const { dropzone_distributors: query } = await chain("query")({
       dropzone_distributors: [
@@ -200,8 +200,15 @@ router.get("/claims/:claimant", async (req, res, next) => {
  */
 router.get(
   "/drops/:distributor/claimants/:claimant",
+  isValidClaimant,
   async (req, res, next) => {
     try {
+      try {
+        new PublicKey(req.params.claimant);
+      } catch (err) {
+        throw new Error("Invalid claimant address");
+      }
+
       const { dropzone_distributors_by_pk } = await chain("query")({
         dropzone_distributors_by_pk: [
           { id: req.params.distributor },
@@ -242,6 +249,7 @@ router.get(
 
 router.get(
   "/drops/:distributor/claimants/:claimant/claim",
+  isValidClaimant,
   async (req, res, next) => {
     try {
       const { dropzone_distributors_by_pk } = await chain("query")({
@@ -339,3 +347,12 @@ const chain = Chain(HASURA_URL, {
     Authorization: `Bearer ${JWT}`,
   },
 });
+
+function isValidClaimant(req: Request, res: Response, next: NextFunction) {
+  try {
+    new PublicKey(req.params.claimant);
+    next();
+  } catch (err) {
+    res.status(400).json({ error: "Invalid claimant address" });
+  }
+}
