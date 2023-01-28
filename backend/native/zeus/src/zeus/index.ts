@@ -4090,6 +4090,7 @@ export type ValueTypes = {
       boolean | `@${string}`
     ];
     id?: boolean | `@${string}`;
+    mint?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
   /** aggregated selection of "dropzone.distributors" */
@@ -4147,6 +4148,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    mint?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
   };
   /** unique or primary key constraints on table "dropzone.distributors" */
   ["dropzone_distributors_constraint"]: dropzone_distributors_constraint;
@@ -4154,17 +4160,20 @@ export type ValueTypes = {
   ["dropzone_distributors_insert_input"]: {
     data?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
     id?: string | undefined | null | Variable<any, string>;
+    mint?: string | undefined | null | Variable<any, string>;
   };
   /** aggregate max on columns */
   ["dropzone_distributors_max_fields"]: AliasType<{
     created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
+    mint?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
   /** aggregate min on columns */
   ["dropzone_distributors_min_fields"]: AliasType<{
     created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
+    mint?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
   /** response of any mutation on the table "dropzone.distributors" */
@@ -4198,6 +4207,7 @@ export type ValueTypes = {
       | Variable<any, string>;
     data?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    mint?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
   };
   /** select columns of table "dropzone.distributors" */
   ["dropzone_distributors_select_column"]: dropzone_distributors_select_column;
@@ -4223,6 +4233,7 @@ export type ValueTypes = {
       | Variable<any, string>;
     data?: ValueTypes["jsonb"] | undefined | null | Variable<any, string>;
     id?: string | undefined | null | Variable<any, string>;
+    mint?: string | undefined | null | Variable<any, string>;
   };
   /** placeholder for update columns of table "dropzone.distributors" (current role has no relevant permissions) */
   ["dropzone_distributors_update_column"]: dropzone_distributors_update_column;
@@ -9533,6 +9544,7 @@ export type ResolverInputTypes = {
       boolean | `@${string}`
     ];
     id?: boolean | `@${string}`;
+    mint?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
   /** aggregated selection of "dropzone.distributors" */
@@ -9577,6 +9589,7 @@ export type ResolverInputTypes = {
       | null;
     data?: ResolverInputTypes["jsonb_comparison_exp"] | undefined | null;
     id?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    mint?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
   };
   /** unique or primary key constraints on table "dropzone.distributors" */
   ["dropzone_distributors_constraint"]: dropzone_distributors_constraint;
@@ -9584,17 +9597,20 @@ export type ResolverInputTypes = {
   ["dropzone_distributors_insert_input"]: {
     data?: ResolverInputTypes["jsonb"] | undefined | null;
     id?: string | undefined | null;
+    mint?: string | undefined | null;
   };
   /** aggregate max on columns */
   ["dropzone_distributors_max_fields"]: AliasType<{
     created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
+    mint?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
   /** aggregate min on columns */
   ["dropzone_distributors_min_fields"]: AliasType<{
     created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
+    mint?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
   /** response of any mutation on the table "dropzone.distributors" */
@@ -9621,6 +9637,7 @@ export type ResolverInputTypes = {
     created_at?: ResolverInputTypes["order_by"] | undefined | null;
     data?: ResolverInputTypes["order_by"] | undefined | null;
     id?: ResolverInputTypes["order_by"] | undefined | null;
+    mint?: ResolverInputTypes["order_by"] | undefined | null;
   };
   /** select columns of table "dropzone.distributors" */
   ["dropzone_distributors_select_column"]: dropzone_distributors_select_column;
@@ -9636,6 +9653,7 @@ export type ResolverInputTypes = {
     created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
     data?: ResolverInputTypes["jsonb"] | undefined | null;
     id?: string | undefined | null;
+    mint?: string | undefined | null;
   };
   /** placeholder for update columns of table "dropzone.distributors" (current role has no relevant permissions) */
   ["dropzone_distributors_update_column"]: dropzone_distributors_update_column;
@@ -13529,6 +13547,7 @@ export type ModelTypes = {
     created_at: ModelTypes["timestamptz"];
     data: ModelTypes["jsonb"];
     id: string;
+    mint: string;
   };
   /** aggregated selection of "dropzone.distributors" */
   ["dropzone_distributors_aggregate"]: {
@@ -13551,22 +13570,26 @@ export type ModelTypes = {
     created_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
     data?: ModelTypes["jsonb_comparison_exp"] | undefined;
     id?: ModelTypes["String_comparison_exp"] | undefined;
+    mint?: ModelTypes["String_comparison_exp"] | undefined;
   };
   ["dropzone_distributors_constraint"]: dropzone_distributors_constraint;
   /** input type for inserting data into table "dropzone.distributors" */
   ["dropzone_distributors_insert_input"]: {
     data?: ModelTypes["jsonb"] | undefined;
     id?: string | undefined;
+    mint?: string | undefined;
   };
   /** aggregate max on columns */
   ["dropzone_distributors_max_fields"]: {
     created_at?: ModelTypes["timestamptz"] | undefined;
     id?: string | undefined;
+    mint?: string | undefined;
   };
   /** aggregate min on columns */
   ["dropzone_distributors_min_fields"]: {
     created_at?: ModelTypes["timestamptz"] | undefined;
     id?: string | undefined;
+    mint?: string | undefined;
   };
   /** response of any mutation on the table "dropzone.distributors" */
   ["dropzone_distributors_mutation_response"]: {
@@ -13586,6 +13609,7 @@ export type ModelTypes = {
     created_at?: ModelTypes["order_by"] | undefined;
     data?: ModelTypes["order_by"] | undefined;
     id?: ModelTypes["order_by"] | undefined;
+    mint?: ModelTypes["order_by"] | undefined;
   };
   ["dropzone_distributors_select_column"]: dropzone_distributors_select_column;
   /** Streaming cursor of the table "dropzone_distributors" */
@@ -13600,6 +13624,7 @@ export type ModelTypes = {
     created_at?: ModelTypes["timestamptz"] | undefined;
     data?: ModelTypes["jsonb"] | undefined;
     id?: string | undefined;
+    mint?: string | undefined;
   };
   ["dropzone_distributors_update_column"]: dropzone_distributors_update_column;
   ["dropzone_user_dropzone_public_key_args"]: {
@@ -15865,6 +15890,7 @@ export type GraphQLTypes = {
     created_at: GraphQLTypes["timestamptz"];
     data: GraphQLTypes["jsonb"];
     id: string;
+    mint: string;
   };
   /** aggregated selection of "dropzone.distributors" */
   ["dropzone_distributors_aggregate"]: {
@@ -15889,6 +15915,7 @@ export type GraphQLTypes = {
     created_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
     data?: GraphQLTypes["jsonb_comparison_exp"] | undefined;
     id?: GraphQLTypes["String_comparison_exp"] | undefined;
+    mint?: GraphQLTypes["String_comparison_exp"] | undefined;
   };
   /** unique or primary key constraints on table "dropzone.distributors" */
   ["dropzone_distributors_constraint"]: dropzone_distributors_constraint;
@@ -15896,18 +15923,21 @@ export type GraphQLTypes = {
   ["dropzone_distributors_insert_input"]: {
     data?: GraphQLTypes["jsonb"] | undefined;
     id?: string | undefined;
+    mint?: string | undefined;
   };
   /** aggregate max on columns */
   ["dropzone_distributors_max_fields"]: {
     __typename: "dropzone_distributors_max_fields";
     created_at?: GraphQLTypes["timestamptz"] | undefined;
     id?: string | undefined;
+    mint?: string | undefined;
   };
   /** aggregate min on columns */
   ["dropzone_distributors_min_fields"]: {
     __typename: "dropzone_distributors_min_fields";
     created_at?: GraphQLTypes["timestamptz"] | undefined;
     id?: string | undefined;
+    mint?: string | undefined;
   };
   /** response of any mutation on the table "dropzone.distributors" */
   ["dropzone_distributors_mutation_response"]: {
@@ -15928,6 +15958,7 @@ export type GraphQLTypes = {
     created_at?: GraphQLTypes["order_by"] | undefined;
     data?: GraphQLTypes["order_by"] | undefined;
     id?: GraphQLTypes["order_by"] | undefined;
+    mint?: GraphQLTypes["order_by"] | undefined;
   };
   /** select columns of table "dropzone.distributors" */
   ["dropzone_distributors_select_column"]: dropzone_distributors_select_column;
@@ -15943,6 +15974,7 @@ export type GraphQLTypes = {
     created_at?: GraphQLTypes["timestamptz"] | undefined;
     data?: GraphQLTypes["jsonb"] | undefined;
     id?: string | undefined;
+    mint?: string | undefined;
   };
   /** placeholder for update columns of table "dropzone.distributors" (current role has no relevant permissions) */
   ["dropzone_distributors_update_column"]: dropzone_distributors_update_column;
@@ -16812,6 +16844,7 @@ export const enum dropzone_distributors_select_column {
   created_at = "created_at",
   data = "data",
   id = "id",
+  mint = "mint",
 }
 /** placeholder for update columns of table "dropzone.distributors" (current role has no relevant permissions) */
 export const enum dropzone_distributors_update_column {
