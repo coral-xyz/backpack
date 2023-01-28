@@ -44,6 +44,7 @@ export function useUserMetadata({ remoteUserId }: { remoteUserId: string }) {
           username: json.users[0].username,
           image: json.users[0].image,
           color,
+          colorIndex,
         },
       ]);
     } catch (e) {
