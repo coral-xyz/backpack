@@ -9,6 +9,7 @@ import {
   SignalingManager,
   useChatsWithMetadata,
 } from "@coral-xyz/react-common";
+import { useUser } from "@coral-xyz/recoil";
 
 import { ChatProvider } from "./ChatContext";
 import { FullScreenChat } from "./FullScreenChat";
@@ -56,6 +57,7 @@ export const ChatRoom = ({
 }: ChatRoomProps) => {
   const [reconnecting, setReconnecting] = useState(false);
   const existingChatRef = useRef<any>();
+  const { uuid } = useUser();
   const [scrollFromBottom, setScrollFromBottom] = useState<null | number>(null);
   // TODO: Make state propogte from outside the state since this'll be expensive
   const [activeReply, setActiveReply] = useState({
@@ -67,6 +69,8 @@ export const ChatRoom = ({
   const { chats, usersMetadata } = useChatsWithMetadata({ room: roomId, type });
   const [refreshing, setRefreshing] = useState(true);
   const [messageRef, setMessageRef] = useState(null);
+  const [jumpToBottom, setShowJumpToBottom] = useState(false);
+  const [localUnreadCount, setLocalUnreadCount] = useState(0);
 
   useEffect(() => {
     if (roomId) {
@@ -116,6 +120,42 @@ export const ChatRoom = ({
         setScrollFromBottom(element.scrollHeight - (element.scrollTop || 100));
       }
     }
+
+    //ts-ignore
+    const scrollContainer = messageRef?.container?.children?.[0];
+    let counter = chats ? chats?.length - 1 : 0;
+    if (
+      scrollContainer &&
+      existingChatRef.current?.[existingChatRef.current.length - 1]
+        ?.client_generated_uuid !== chats[counter]?.client_generated_uuid
+    ) {
+      if (
+        scrollContainer.scrollHeight -
+          scrollContainer.scrollTop -
+          scrollContainer.clientHeight >
+        10
+      ) {
+        while (counter > 0) {
+          if (
+            existingChatRef.current?.[existingChatRef.current.length - 1]
+              ?.client_generated_uuid === chats[counter]?.client_generated_uuid
+          ) {
+            break;
+          }
+          if (chats[counter].from_http_server) {
+            // only websocket messages should appear as unread
+            break;
+          }
+          if (chats[counter].uuid === uuid) {
+            break;
+          }
+
+          counter--;
+        }
+
+        setLocalUnreadCount((x) => x + chats.length - 1 - counter);
+      }
+    }
     existingChatRef.current = chats;
   }, [chats]);
 
@@ -156,7 +196,14 @@ export const ChatRoom = ({
       publicKey={publicKey}
       usersMetadata={usersMetadata}
     >
-      <FullScreenChat messageRef={messageRef} setMessageRef={setMessageRef} />
+      <FullScreenChat
+        setLocalUnreadCount={setLocalUnreadCount}
+        localUnreadCount={localUnreadCount}
+        jumpToBottom={jumpToBottom}
+        setShowJumpToBottom={setShowJumpToBottom}
+        messageRef={messageRef}
+        setMessageRef={setMessageRef}
+      />
     </ChatProvider>
   );
 };
