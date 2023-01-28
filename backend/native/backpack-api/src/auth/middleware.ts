@@ -32,10 +32,9 @@ export const ensureHasRoomAccess = async (
   res: Response,
   next: NextFunction
 ) => {
-  const room = req.query.room;
+  //@ts-ignore
+  const room: string = req.query.room;
   const type = req.query.type;
-  const publicKey = req.query.publicKey;
-  const mint = req.query.mint;
 
   if (type === "individual") {
     const roomMetadata = await validateRoom(req.id!, room);
@@ -53,12 +52,7 @@ export const ensureHasRoomAccess = async (
     } else if (WHITELISTED_CHAT_COLLECTIONS.map((x) => x.id).includes(room)) {
       hasAccess = await validateCentralizedGroupOwnership(req.id!, room!);
     } else {
-      hasAccess = await validateCollectionOwnership(
-        req.id!,
-        publicKey!,
-        mint!,
-        room!
-      );
+      hasAccess = await validateCollectionOwnership(req.id!, room!);
     }
     if (hasAccess) {
       // @ts-ignore
