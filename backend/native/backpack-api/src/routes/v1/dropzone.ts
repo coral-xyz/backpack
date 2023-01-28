@@ -173,6 +173,7 @@ router.get("/claims/:claimant", isValidClaimant, async (req, res, next) => {
           id: true,
           data: [{ path: `$["${req.params.claimant}"]` }, true],
           created_at: true,
+          mint: true,
         },
       ],
     });
