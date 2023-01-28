@@ -1,5 +1,7 @@
 import { emptyWallet } from "@cardinal/common";
+import type { order_by } from "@coral-xyz/zeus";
 import { Chain } from "@coral-xyz/zeus";
+import type { PublicKeyString } from "@metaplex-foundation/js";
 import { MerkleDistributorSDK, utils } from "@saberhq/merkle-distributor";
 import { SignerWallet, SolanaProvider } from "@saberhq/solana-contrib";
 import { u64 } from "@saberhq/token-utils";
@@ -14,15 +16,65 @@ import { HASURA_URL, JWT } from "../../config";
 const router = express.Router();
 router.use(cors({ origin: "*" }));
 
+type DropzoneData = Record<PublicKeyString, [number, number, string]>;
+
 /**
  * Creates a distributor transaction, stores data in the DB, returns
  * the transaction to be signed
  */
 router.post("/drops", async (req, res, next) => {
   try {
+    const usernames = Object.keys(req.body.balances);
+
+    const { auth_users } = await chain("query")({
+      auth_users: [
+        {
+          where: {
+            username: {
+              _in: Object.keys(req.body.balances),
+            },
+          },
+        },
+        {
+          username: true,
+          dropzone_public_key: [
+            {},
+            {
+              public_key: true,
+            },
+          ],
+        },
+      ],
+    });
+
+    if (auth_users.length < usernames.length) {
+      throw new Error("Some usernames were not found");
+    }
+
+    const data = auth_users.reduce((acc, curr) => {
+      const username = curr.username as string;
+      acc[curr.dropzone_public_key![0].public_key] = [
+        req.body.balances[username],
+        usernames.indexOf(username),
+        username,
+      ];
+      return acc;
+    }, {} as DropzoneData);
+
     const provider = createProvider(new PublicKey(req.body.creator));
     const sdk = MerkleDistributorSDK.load({ provider });
-    const _tree = req.body.balances;
+
+    const _tree = Object.entries(data).reduce(
+      (acc, [account, [amount]]) => acc.concat({ account, amount }),
+      [] as { account: PublicKeyString; amount: number }[]
+    );
+
+    console.log({
+      _tree: _tree.map((t) => ({
+        account: new PublicKey(t.account).toString(),
+        amount: new u64(t.amount).toNumber(),
+      })),
+    });
 
     const tree = new utils.BalanceTree(
       _tree.map((t) => ({
@@ -66,7 +118,8 @@ router.post("/drops", async (req, res, next) => {
         variables: {
           object: {
             id: pendingDistributor.distributor.toBase58(),
-            data: req.body.balances,
+            data,
+            mint: req.body.mint,
           },
         },
       }),
@@ -111,6 +164,37 @@ router.get("/drops/:distributor", async (req, res, next) => {
   }
 });
 
+router.get("/claims/:claimant", async (req, res, next) => {
+  try {
+    const { dropzone_distributors: query } = await chain("query")({
+      dropzone_distributors: [
+        {
+          order_by: [{ created_at: "desc" as order_by.desc }],
+          where: {
+            data: {
+              _has_key: req.params.claimant,
+            },
+          },
+        },
+        {
+          id: true,
+          data: [{ path: `$["${req.params.claimant}"]` }, true],
+          created_at: true,
+        },
+      ],
+    });
+
+    const claims = query.map(({ data, ...distributor }) => ({
+      ...distributor,
+      amount: (data as any)[0],
+    }));
+
+    res.json(claims);
+  } catch (err) {
+    next(err);
+  }
+});
+
 /**
  * Gets the status of a claimant's claim on a distributor
  */
@@ -121,28 +205,28 @@ router.get(
       const { dropzone_distributors_by_pk } = await chain("query")({
         dropzone_distributors_by_pk: [
           { id: req.params.distributor },
-          { id: true, data: [{ path: "$" }, true] },
+          { id: true, data: [{ path: `$["${req.params.claimant}"]` }, true] },
         ],
       });
-
-      if (!dropzone_distributors_by_pk) throw new Error("Not found");
+      if (!dropzone_distributors_by_pk) {
+        throw new Error("Distributor not found");
+      }
+      if (!dropzone_distributors_by_pk.data) {
+        throw new Error("Claimant not found");
+      }
 
       const query = dropzone_distributors_by_pk as {
         id: string;
-        data: Array<{ account: string; amount: number }>;
+        data: DropzoneData[string];
       };
 
       const distributor = await getDistributor(query.id);
 
-      const index = query.data.findIndex(
-        (t) => t.account === req.params.claimant
-      );
-
-      if (index < 0) throw new Error("Claimant not found in drop");
-
       try {
         // claimed
-        const claimStatus = await distributor.getClaimStatus(new u64(index));
+        const claimStatus = await distributor.getClaimStatus(
+          new u64(query.data[1])
+        );
         res.json({
           claimStatus,
         });
@@ -166,20 +250,23 @@ router.get(
           { id: true, data: [{ path: "$" }, true] },
         ],
       });
-      if (!dropzone_distributors_by_pk) throw new Error("Not found");
+      if (!dropzone_distributors_by_pk) {
+        throw new Error("Distributor not found");
+      }
+      if (
+        !(dropzone_distributors_by_pk.data as DropzoneData)[req.params.claimant]
+      ) {
+        throw new Error("Claimant not found");
+      }
+
       const query = dropzone_distributors_by_pk as {
         id: string;
-        data: Array<{ account: string; amount: number }>;
+        data: DropzoneData;
       };
 
       const provider = createProvider(new PublicKey(req.params.claimant));
       const distributor = await getDistributor(query.id, provider);
-
-      const index = query.data.findIndex(
-        (t) => t.account === req.params.claimant
-      );
-
-      if (index < 0) throw new Error("Claimant not found in drop");
+      const [integerAmount, index] = query.data[req.params.claimant];
 
       try {
         const claimStatus = await distributor.getClaimStatus(new u64(index));
@@ -188,10 +275,8 @@ router.get(
         if (err.message === "Already claimed") throw err;
       }
 
-      const record = query.data[index];
-
-      const claimant = new PublicKey(record.account);
-      const amount = new u64(record.amount);
+      const claimant = new PublicKey(req.params.claimant);
+      const amount = new u64(integerAmount);
 
       console.log({
         index,
@@ -200,9 +285,9 @@ router.get(
       });
 
       const tree = new utils.BalanceTree(
-        query.data.map((t) => ({
-          amount: new u64(t.amount),
-          account: new PublicKey(t.account),
+        Object.entries(query.data).map(([k, v]) => ({
+          amount: new u64(v[0]),
+          account: new PublicKey(k),
         }))
       );
 
