@@ -287,10 +287,12 @@ router.get(
       });
 
       const tree = new utils.BalanceTree(
-        Object.entries(query.data).map(([k, v]) => ({
-          amount: new u64(v[0]),
-          account: new PublicKey(k),
-        }))
+        Object.entries(query.data)
+          .sort((a, b) => a[1][1] - b[1][1])
+          .map(([k, v]) => ({
+            amount: new u64(v[0]),
+            account: new PublicKey(k),
+          }))
       );
 
       const claim = await distributor.claim({
