@@ -69,13 +69,6 @@ router.post("/drops", async (req, res, next) => {
       [] as { account: PublicKeyString; amount: number }[]
     );
 
-    console.log({
-      _tree: _tree.map((t) => ({
-        account: new PublicKey(t.account).toString(),
-        amount: new u64(t.amount).toNumber(),
-      })),
-    });
-
     const tree = new utils.BalanceTree(
       _tree.map((t) => ({
         account: new PublicKey(t.account),
@@ -180,6 +173,7 @@ router.get("/claims/:claimant", isValidClaimant, async (req, res, next) => {
           id: true,
           data: [{ path: `$["${req.params.claimant}"]` }, true],
           created_at: true,
+          mint: true,
         },
       ],
     });
@@ -293,10 +287,12 @@ router.get(
       });
 
       const tree = new utils.BalanceTree(
-        Object.entries(query.data).map(([k, v]) => ({
-          amount: new u64(v[0]),
-          account: new PublicKey(k),
-        }))
+        Object.entries(query.data)
+          .sort((a, b) => a[1][1] - b[1][1])
+          .map(([k, v]) => ({
+            amount: new u64(v[0]),
+            account: new PublicKey(k),
+          }))
       );
 
       const claim = await distributor.claim({
