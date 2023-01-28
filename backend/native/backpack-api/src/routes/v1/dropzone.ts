@@ -69,13 +69,6 @@ router.post("/drops", async (req, res, next) => {
       [] as { account: PublicKeyString; amount: number }[]
     );
 
-    console.log({
-      _tree: _tree.map((t) => ({
-        account: new PublicKey(t.account).toString(),
-        amount: new u64(t.amount).toNumber(),
-      })),
-    });
-
     const tree = new utils.BalanceTree(
       _tree.map((t) => ({
         account: new PublicKey(t.account),
