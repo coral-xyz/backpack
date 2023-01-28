@@ -746,6 +746,7 @@ export const AllTypesProps: Record<string, any> = {
     created_at: "timestamptz_comparison_exp",
     data: "jsonb_comparison_exp",
     id: "String_comparison_exp",
+    mint: "String_comparison_exp",
   },
   dropzone_distributors_constraint: "enum" as const,
   dropzone_distributors_insert_input: {
@@ -760,6 +761,7 @@ export const AllTypesProps: Record<string, any> = {
     created_at: "order_by",
     data: "order_by",
     id: "order_by",
+    mint: "order_by",
   },
   dropzone_distributors_select_column: "enum" as const,
   dropzone_distributors_stream_cursor_input: {
@@ -1728,6 +1730,7 @@ export const ReturnTypes: Record<string, any> = {
     created_at: "timestamptz",
     data: "jsonb",
     id: "String",
+    mint: "String",
   },
   dropzone_distributors_aggregate: {
     aggregate: "dropzone_distributors_aggregate_fields",
@@ -1741,10 +1744,12 @@ export const ReturnTypes: Record<string, any> = {
   dropzone_distributors_max_fields: {
     created_at: "timestamptz",
     id: "String",
+    mint: "String",
   },
   dropzone_distributors_min_fields: {
     created_at: "timestamptz",
     id: "String",
+    mint: "String",
   },
   dropzone_distributors_mutation_response: {
     affected_rows: "Int",
