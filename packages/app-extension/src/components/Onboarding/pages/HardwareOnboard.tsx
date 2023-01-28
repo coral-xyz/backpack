@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import type {
   Blockchain,
   SignedWalletDescriptor,
@@ -11,6 +11,7 @@ import { useSteps } from "../../../hooks/useSteps";
 import { ImportWallets } from "../../common/Account/ImportWallets";
 import { CloseButton } from "../../common/Layout/Drawer";
 import { NavBackButton, WithNav } from "../../common/Layout/Nav";
+import { ConnectHardwareKeystone } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareKeystone";
 import { ConnectHardwareSearching } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareSearching";
 import { ConnectHardwareWelcome } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareWelcome";
 
@@ -18,6 +19,11 @@ import { HardwareDefaultWallet } from "./HardwareDefaultWallet";
 import { HardwareDeriveWallet } from "./HardwareDeriveWallet";
 import { HardwareSearchWallet } from "./HardwareSearchWallet";
 import { HardwareSign } from "./HardwareSign";
+
+export enum HardwareType {
+  Keystone = "keystone",
+  USB = "usb",
+}
 
 // We are using a hook here to generate the steps for the hardware onboard
 // component to allow these steps to be used in the middle of the RecoverAccount
@@ -47,20 +53,30 @@ export function useHardwareOnboardSteps({
   const [transportError, setTransportError] = useState(false);
   const [walletDescriptor, setWalletDescriptor] =
     useState<WalletDescriptor | null>(null);
-
+  const [hardwareType, setHardwareType] = useState<HardwareType>(
+    HardwareType.Keystone
+  );
+  const onWelcomeNext = useCallback((type: HardwareType) => {
+    setHardwareType(type);
+    nextStep();
+  }, []);
   //
   // Flow for onboarding a hardware wallet.
   //
   const steps = [
-    <ConnectHardwareWelcome onNext={nextStep} />,
-    <ConnectHardwareSearching
-      blockchain={blockchain}
-      onNext={(transport) => {
-        setTransport(transport);
-        nextStep();
-      }}
-      isConnectFailure={!!transportError}
-    />,
+    <ConnectHardwareWelcome onNext={onWelcomeNext} />,
+    hardwareType === HardwareType.USB ? (
+      <ConnectHardwareSearching
+        blockchain={blockchain}
+        onNext={(transport) => {
+          setTransport(transport);
+          nextStep();
+        }}
+        isConnectFailure={!!transportError}
+      />
+    ) : (
+      <ConnectHardwareKeystone />
+    ),
     //
     // Use a component to get a wallet to proceed with. The create flow uses a
     // component that gets a default wallet on an unused account index, the search
