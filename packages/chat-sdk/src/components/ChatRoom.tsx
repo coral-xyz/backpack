@@ -83,8 +83,6 @@ export const ChatRoom = ({
 
   useEffect(() => {
     if (roomId) {
-      // TODO : remote this timeout, caused because unsubsribe cleanup
-      // is slow and 2 subsequent re-renders calls unsubscribe very slowly
       SignalingManager.getInstance().send({
         type: SUBSCRIBE,
         payload: {
