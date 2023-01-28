@@ -278,13 +278,5 @@ export class SignalingManager {
         publicKey: message.payload.publicKey || "",
       });
     }
-    if (message.type === UNSUBSCRIBE) {
-      this.postSubscribes.delete({
-        room: message.payload.room,
-        type: message.payload.type,
-        mint: message.payload.mint || "",
-        publicKey: message.payload.publicKey || "",
-      });
-    }
   }
 }

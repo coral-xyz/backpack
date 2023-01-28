@@ -87,6 +87,14 @@ export class User {
         });
         break;
       case SUBSCRIBE:
+        if (
+          this.subscriptions.find(
+            (x) =>
+              x.room === message.payload.room && x.type === message.payload.type
+          )
+        ) {
+          return;
+        }
         let roomValidation = false;
         if (message.payload.type === "individual") {
           // @ts-ignore
@@ -133,17 +141,6 @@ export class User {
             roomValidation
           );
         }
-        break;
-      case UNSUBSCRIBE:
-        this.subscriptions = this.subscriptions.filter(
-          (x) =>
-            x.room !== message.payload.room || x.type !== message.payload.type
-        );
-        RedisSubscriptionManager.getInstance().postUnsubscribe(
-          this.id,
-          message.payload.type,
-          message.payload.room
-        );
         break;
     }
   }

@@ -83,30 +83,15 @@ export const ChatRoom = ({
 
   useEffect(() => {
     if (roomId) {
-      window.setTimeout(() => {
-        // TODO : remote this timeout, caused because unsubsribe cleanup
-        // is slow and 2 subsequent re-renders calls unsubscribe very slowly
-        SignalingManager.getInstance().send({
-          type: SUBSCRIBE,
-          payload: {
-            type,
-            room: roomId,
-            mint: nftMint,
-            publicKey,
-          },
-        });
-      }, 250);
-      return () => {
-        SignalingManager.getInstance().send({
-          type: UNSUBSCRIBE,
-          payload: {
-            type,
-            room: roomId,
-            mint: nftMint,
-            publicKey,
-          },
-        });
-      };
+      SignalingManager.getInstance().send({
+        type: SUBSCRIBE,
+        payload: {
+          type,
+          room: roomId,
+          mint: nftMint,
+          publicKey,
+        },
+      });
     }
     return () => {};
   }, [roomId]);
