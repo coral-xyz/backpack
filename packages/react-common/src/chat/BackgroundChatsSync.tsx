@@ -26,7 +26,7 @@ export class BackgroundChatsSync {
         activeChat.last_message_client_uuid !==
         lastMessage?.client_generated_uuid
       ) {
-        refreshChatsFor(uuid, activeChat.friendshipId, "individual");
+        refreshChatsFor(uuid, activeChat.friendshipId.toString(), "individual");
       }
     });
     activeGroups.forEach(async (activeChat) => {
@@ -35,7 +35,7 @@ export class BackgroundChatsSync {
         activeChat.collectionId,
         "collection"
       );
-      if (activeChat.lastMessageUuid !== lastMessage.client_generated_uuid) {
+      if (activeChat.lastMessageUuid !== lastMessage?.client_generated_uuid) {
         refreshChatsFor(uuid, activeChat.collectionId, "collection", "", "");
       }
     });
