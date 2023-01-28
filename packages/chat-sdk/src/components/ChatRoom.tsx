@@ -121,7 +121,7 @@ export const ChatRoom = ({
       }
     }
 
-    //ts-ignore
+    //@ts-ignore
     const scrollContainer = messageRef?.container?.children?.[0];
     let counter = chats ? chats?.length - 1 : 0;
     if (
