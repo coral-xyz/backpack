@@ -204,5 +204,11 @@ function UserListItem({
 
 function UserIcon({ image }: any) {
   const classes = useStyles();
-  return <ProxyImage src={image} className={classes.iconCircular} />;
+  return (
+    <ProxyImage
+      loadingStyles={{ marginRight: "8px", height: "32px", width: "32px" }}
+      src={image}
+      className={classes.iconCircular}
+    />
+  );
 }
