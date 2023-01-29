@@ -2,6 +2,7 @@ import { useEffect } from "react";
 
 import { useNavStack } from "../../common/Layout/NavStack";
 
+import { Requests } from "./Requests";
 import { SearchUsers } from "./SearchUsers";
 
 export const Contacts = () => {
@@ -9,6 +10,7 @@ export const Contacts = () => {
   useEffect(() => {
     nav.setTitle("Contacts");
   }, [nav]);
+
   return (
     <div>
       <SearchUsers />

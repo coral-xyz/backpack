@@ -26,7 +26,7 @@ export const friendship = atomFamily<Friendship | null, { userId: string }>({
         if (friendship) {
           return {
             id: friendship.friendshipId,
-            areFriends: friendship.are_friends ? true : false,
+            areFriends: friendship.areFriends === 1 ? true : false,
             blocked: friendship.blocked === 1 ? true : false,
             requested: friendship.requested === 1 ? true : false,
             spam: friendship.spam === 1 ? true : false,
