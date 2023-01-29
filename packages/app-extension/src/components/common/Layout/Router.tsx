@@ -356,6 +356,9 @@ function NavScreen({
   };
 }) {
   const { title, isRoot, pop } = useNavigation();
+  const { isXs } = useBreakpoints();
+  const pathname = useLocation().pathname;
+
   const {
     style,
     navButtonLeft,
@@ -368,7 +371,7 @@ function NavScreen({
 
   const _navButtonLeft = navButtonLeft ? (
     navButtonLeft
-  ) : isRoot ? null : (
+  ) : isRoot || (!isXs && pathname.startsWith("/messages")) ? null : (
     <NavBackButton onClick={() => pop()} />
   );
 
