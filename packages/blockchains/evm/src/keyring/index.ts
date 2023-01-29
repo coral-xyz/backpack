@@ -99,9 +99,8 @@ export class EthereumHdKeyringFactory implements HdKeyringFactory {
       throw new Error("Invalid seed words");
     }
     const seed = mnemonicToSeedSync(mnemonic);
-    const hdNode = ethers.utils.HDNode.fromSeed(seed);
-    const wallets = derivationPaths.map(
-      (path) => new ethers.Wallet(hdNode.derivePath(path).privateKey)
+    const wallets = derivationPaths.map((path) =>
+      ethers.Wallet.fromMnemonic(mnemonic, path)
     );
     return new EthereumHdKeyring({
       mnemonic,
@@ -114,9 +113,8 @@ export class EthereumHdKeyringFactory implements HdKeyringFactory {
   public fromJson(obj: HdKeyringJson): HdKeyring {
     const { mnemonic, seed: seedStr, derivationPaths } = obj;
     const seed = Buffer.from(seedStr, "hex");
-    const hdNode = ethers.utils.HDNode.fromSeed(seed);
-    const wallets = derivationPaths.map(
-      (path) => new ethers.Wallet(hdNode.derivePath(path).privateKey)
+    const wallets = derivationPaths.map((path) =>
+      ethers.Wallet.fromMnemonic(mnemonic, path)
     );
     return new EthereumHdKeyring({
       mnemonic,
