@@ -160,6 +160,7 @@ export const UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC =
   "ui-rpc-method-validate-mnemonic";
 export const UI_RPC_METHOD_LEDGER_CONNECT = "ui-rpc-method-ledger-connect";
 export const UI_RPC_METHOD_LEDGER_IMPORT = "ui-rpc-method-ledger-import";
+export const UI_RPC_METHOD_KEYSTONE_IMPORT = "ui-rpc-method-keystone-import";
 export const UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE =
   "ui-rpc-method-navigation-active-tab-update";
 export const UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE =
