@@ -21,10 +21,13 @@ export function DangerButton({
   );
   return (
     <NegativeButton
-      style={buttonStyle}
       buttonLabelStyle={buttonLabelStyle}
       label={label}
       {...buttonProps}
+      style={{
+        ...(buttonProps.style || {}),
+        ...buttonStyle,
+      }}
     />
   );
 }

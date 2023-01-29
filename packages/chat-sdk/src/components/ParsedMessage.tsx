@@ -14,7 +14,7 @@ export function ParsedMessage({ message }) {
   const { usersMetadata } = useChatContext();
   return (
     <div style={{ display: "flex" }}>
-      {parts.map((part) => {
+      {parts.map((part, i) => {
         if (part.type === "text") {
           return (
             <span style={{ wordBreak: "break-word" }}>
@@ -24,11 +24,12 @@ export function ParsedMessage({ message }) {
         } else {
           const user = usersMetadata[part.value];
           if (user) {
+            const handle = `@${user.username}`;
             return (
               <div
                 onClick={() => {
                   push({
-                    title: `@${user.username}`,
+                    title: handle,
                     componentId: NAV_COMPONENT_MESSAGE_PROFILE,
                     componentProps: {
                       userId: user.uuid,
@@ -36,22 +37,16 @@ export function ParsedMessage({ message }) {
                   });
                 }}
                 style={{
-                  marginLeft: 3,
                   cursor: "pointer",
                   display: "flex",
                   color: theme.custom.colors.blue,
                 }}
               >
-                <img
-                  style={{
-                    height: 16,
-                    borderRadius: 8,
-                    marginTop: 3,
-                    marginRight: 1,
-                  }}
-                  src={`${user.image}?size=25`}
-                />
-                <div>{user.username}</div>
+                <div>
+                  {i > 0 && <>&nbsp;</>}
+                  {handle}
+                  {i < parts.length - 1 && <>&nbsp;</>}
+                </div>
               </div>
             );
           } else {
