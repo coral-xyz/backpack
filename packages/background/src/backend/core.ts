@@ -1209,8 +1209,8 @@ export class Backend {
       // Signature should only be undefined for non hardware wallets
       signature = await this.signMessageForPublicKey(
         blockchain,
-        bs58.encode(Buffer.from(getAddMessage(publicKey), "utf-8")),
-        publicKey
+        publicKey,
+        bs58.encode(Buffer.from(getAddMessage(publicKey), "utf-8"))
       );
     }
 
