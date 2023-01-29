@@ -108,9 +108,10 @@ export const MediaContent = ({
           <img
             onClick={() => setModalOpen(true)}
             style={{
-              height: !isXs ? 270 : 180,
+              height: "fit-content",
               maxWidth: !isXs ? 375 : 250,
               borderRadius: 5,
+              objectFit: "contain",
               cursor: "pointer",
             }}
             src={mediaLink}
