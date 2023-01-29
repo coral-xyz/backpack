@@ -132,7 +132,12 @@ function TextBanner({
   const theme = useCustomTheme();
   const classes = useStyles({ type });
   return (
-    <div style={fixed ? { position: "absolute", top: 0, width: "100%" } : {}}>
+    <div
+      style={{
+        marginBottom: "12px",
+        ...(fixed ? { position: "absolute", top: 0, width: "100%" } : {}),
+      }}
+    >
       <div
         className={`${classes.noContactBanner} ${classes.horizontalCenter} ${classes.text}`}
         style={{
