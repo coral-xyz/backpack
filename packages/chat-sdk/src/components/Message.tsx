@@ -235,7 +235,7 @@ export const MessageLine = (props) => {
             alt={displayName}
             className={classes.avatar}
             src={`${photoURL}?size=25`}
-          ></img>
+          />
         ) : (
           <Skeleton variant="circular" width={40} height={40} />
         )}
