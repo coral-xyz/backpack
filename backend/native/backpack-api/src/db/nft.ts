@@ -151,7 +151,7 @@ export const getAllUsers = async (
           username: { _like: `${prefix}%` },
         },
         limit,
-        offset,
+        offset: limit * offset,
       },
       {
         id: true,
@@ -198,7 +198,7 @@ export const getNftMembers = async (
           },
         },
         limit,
-        offset,
+        offset: limit * offset,
       },
       {
         id: true,
