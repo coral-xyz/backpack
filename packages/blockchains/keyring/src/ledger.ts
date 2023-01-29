@@ -31,6 +31,7 @@ export class LedgerKeyringBase {
   }
 
   public publicKeys(): Array<string> {
+    console.log(this.publicKeyPaths);
     return this.publicKeyPaths.map((x) => x.publicKey);
   }
 

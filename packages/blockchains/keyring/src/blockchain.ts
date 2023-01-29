@@ -157,7 +157,6 @@ export class BlockchainKeyring {
       );
       throw new Error("public key not found");
     }
-
     keyring.deletePublicKey(publicKey);
   }
 
@@ -215,11 +214,13 @@ export class BlockchainKeyring {
   }
 
   private getKeyring(publicKey: string): Keyring {
+    console.log(this);
     for (const keyring of [
       this.hdKeyring,
       this.importedKeyring,
       this.ledgerKeyring,
     ]) {
+      console.log(keyring && keyring.publicKeys());
       if (keyring && keyring.publicKeys().find((k) => k === publicKey)) {
         return keyring;
       }
