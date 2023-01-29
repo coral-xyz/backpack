@@ -23,7 +23,7 @@ export class BIP44Path {
     "^((m/)?(44'?))(/[0-9]+'?){2}((/[0-9]+){2})?$";
   // Elements of the derivation path in order, e.g. address_index would be at
   // index 4
-  private _elements: Array<number | undefined>;
+  private _elements: Array<number | undefined> = [];
 
   public static blockchainCoinType(blockchain: Blockchain) {
     // TODO could use SLIP44?
@@ -69,7 +69,7 @@ export class BIP44Path {
 
   set account(account: number | undefined) {
     // Enforce hardening
-    if (account && account < BIP44Path.HARDENING)
+    if (account !== undefined && account < BIP44Path.HARDENING)
       account += BIP44Path.HARDENING;
     this._elements[2] = account;
   }
@@ -91,13 +91,13 @@ export class BIP44Path {
   }
 
   toString() {
-    return `m/${this._elements
+    return `m/${[this.purpose, ...this._elements]
       .map((n) =>
-        n !== undefined && n > BIP44Path.HARDENING
+        n !== undefined && n >= BIP44Path.HARDENING
           ? `${n - BIP44Path.HARDENING}'`
           : n
       )
-      .filter(Boolean)
+      .filter((n) => n !== undefined)
       .join("/")}`;
   }
 
