@@ -169,6 +169,9 @@ export const FullScreenChat = ({
             >
               {({ getRootProps, getInputProps, isFocused }) => (
                 <div
+                  style={{
+                    paddingBottom: 20,
+                  }}
                   {...getRootProps({
                     onClick: (event) => event.stopPropagation(),
                   })}
