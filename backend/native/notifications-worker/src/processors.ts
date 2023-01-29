@@ -9,6 +9,7 @@ import { getMessages } from "./db/chats";
 import { getLatestReadMessage } from "./db/collection_messages";
 import { getFriendship } from "./db/friendships";
 import { getAllUsersInCollection } from "./db/nft";
+import { insertNotification } from "./db/notifications";
 import { getUsersFromIds } from "./db/users";
 import { notify } from "./notifier";
 import { Redis } from "./Redis";
@@ -214,13 +215,19 @@ export const processFriendRequest = async ({
   to: string;
 }) => {
   const userMetadata = await getUsersFromIds([from]);
+  await insertNotification("friend_requests", to, {
+    title: "Friend request",
+    body: JSON.stringify({
+      from,
+    }),
+  });
   await notify(
     to,
     `Friend Request`,
     `New Friend request from ${
       userMetadata.find((x) => x.id === from)?.username
     }`,
-    undefined,
+    `/popup.html#/notifications?title="Notifications"&props=%7B%7D&nav=tab`,
     `${AVATAR_BASE_URL}/${userMetadata.find((x) => x.id === from)?.username}`
   );
 };

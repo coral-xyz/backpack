@@ -1,14 +1,19 @@
-import type { RemoteUserData } from "@coral-xyz/common";
+import type { Friendship, RemoteUserData } from "@coral-xyz/common";
 import {
   NAV_COMPONENT_MESSAGE_PROFILE,
   sendFriendRequest,
   unFriend,
 } from "@coral-xyz/common";
 import { updateFriendshipIfExists } from "@coral-xyz/db";
-import { isFirstLastListItemStyle, ProxyImage } from "@coral-xyz/react-common";
-import { useNavigation, useUser } from "@coral-xyz/recoil";
+import {
+  isFirstLastListItemStyle,
+  ProxyImage,
+  SignalingManager,
+} from "@coral-xyz/react-common";
+import { friendship, useNavigation, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { List, ListItem } from "@mui/material";
+import { useRecoilState } from "recoil";
 
 import { useStyles } from "./styles";
 
@@ -57,6 +62,8 @@ function UserListItem({
   const { push } = useNavigation();
   const classes = useStyles();
   const { uuid } = useUser();
+  const [friendshipValue, setFriendshipValue] =
+    useRecoilState<Friendship | null>(friendship({ userId: user.id }));
   return (
     <ListItem
       button
@@ -123,12 +130,19 @@ function UserListItem({
                     areFriends: 0,
                     requested: 0,
                   });
+                  setFriendshipValue((x: any) => ({
+                    ...x,
+                    requested: false,
+                    areFriends: false,
+                  }));
                   setMembers?.((members) =>
                     members.map((m) => {
                       if (m.id === user.id) {
                         return {
                           ...m,
                           areFriends: false,
+                          requested: false,
+                          remoteRequested: false,
                         };
                       }
                       return m;
@@ -139,6 +153,10 @@ function UserListItem({
                   await updateFriendshipIfExists(uuid, user.id, {
                     requested: 0,
                   });
+                  setFriendshipValue((x: any) => ({
+                    ...x,
+                    requested: false,
+                  }));
                   setMembers?.((members) =>
                     members.map((m) => {
                       if (m.id === user.id) {
@@ -156,12 +174,18 @@ function UserListItem({
                     requested: 0,
                     areFriends: 1,
                   });
+                  setFriendshipValue((x: any) => ({
+                    ...x,
+                    requested: false,
+                    areFriends: true,
+                  }));
                   setMembers?.((members) =>
                     members.map((m) => {
                       if (m.id === user.id) {
                         return {
                           ...m,
                           requested: false,
+                          remoteRequested: false,
                           areFriends: true,
                         };
                       }
@@ -173,6 +197,10 @@ function UserListItem({
                   await updateFriendshipIfExists(uuid, user.id, {
                     requested: 1,
                   });
+                  setFriendshipValue((x: any) => ({
+                    ...x,
+                    requested: true,
+                  }));
                   setMembers?.((members) =>
                     members.map((m) => {
                       if (m.id === user.id) {
@@ -185,6 +213,9 @@ function UserListItem({
                     })
                   );
                 }
+                SignalingManager.getInstance().onUpdateRecoil({
+                  type: "friendship",
+                });
               }}
             >
               {user.areFriends
