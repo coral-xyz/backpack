@@ -14,7 +14,6 @@ import {
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Button, Divider } from "@mui/material";
-import { PublicKey } from "@solana/web3.js";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 
 import { PluginRenderer } from "../../../plugin/Renderer";
@@ -70,8 +69,7 @@ export function LoadPlugin({ xnftAddress }: { xnftAddress?: string }) {
     connectionBackgroundClient,
     openPlugin,
   });
-
-  if (xnftAddress === PublicKey.default.toString()) {
+  if (xnftAddress === "11111111111111111111111111111111") {
     return <Simulator plugin={plugin} />;
   }
   return <PluginDisplay plugin={plugin} />;

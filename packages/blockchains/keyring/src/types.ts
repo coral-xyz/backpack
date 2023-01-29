@@ -30,8 +30,7 @@ export interface Keyring {
 
 //
 // HD keyring types
-//k
-
+//
 export interface HdKeyringFactory {
   init(mnemonic: string, derivationPaths: Array<string>): HdKeyring;
   fromJson(obj: HdKeyringJson): HdKeyring;

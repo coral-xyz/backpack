@@ -1,5 +1,4 @@
-import type {
-  PublicKeyPath} from "@coral-xyz/common";
+import type { PublicKeyPath } from "@coral-xyz/common";
 import {
   generateUniqueId,
   LEDGER_INJECTED_CHANNEL_REQUEST,
@@ -45,7 +44,7 @@ export class LedgerKeyringBase {
 
   public toString(): string {
     return JSON.stringify({
-      derivationPath: this.publicKeyPaths,
+      publicKeyPaths: this.publicKeyPaths,
     });
   }
 

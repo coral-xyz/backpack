@@ -43,18 +43,26 @@ export function BottomSheetModal({
   snapPoints,
   contentHeight,
   children,
+  initialIndex = 0,
+  index,
 }: {
   isVisible: boolean;
   resetVisibility: () => void;
   snapPoints: (string | number)[];
-  contentHeight: number;
+  contentHeight?: number;
   children: JSX.Element;
+  initialIndex?: number;
+  index?: number;
 }): JSX.Element {
   const theme = useTheme();
   const bottomSheetModalRef = useRef<_BottomSheetModal>(null);
 
   useEffect(() => {
     function handle() {
+      if (index && index !== initialIndex) {
+        bottomSheetModalRef.current?.snapToIndex(index);
+      }
+
       if (isVisible) {
         bottomSheetModalRef.current?.present();
         // Resets visibility since dismissing it is built-in
@@ -63,7 +71,7 @@ export function BottomSheetModal({
     }
 
     handle();
-  }, [isVisible, resetVisibility]);
+  }, [isVisible, resetVisibility, index, initialIndex]);
 
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
@@ -80,7 +88,7 @@ export function BottomSheetModal({
   return (
     <_BottomSheetModal
       ref={bottomSheetModalRef}
-      index={0}
+      index={initialIndex}
       snapPoints={snapPoints}
       backdropComponent={renderBackdrop}
       contentHeight={contentHeight}

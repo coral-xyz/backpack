@@ -2,7 +2,13 @@ import type { UnlockedNavigatorStackParamList } from "@navigation/UnlockedNaviga
 import type { StackScreenProps } from "@react-navigation/stack";
 
 import { useCallback, useEffect, useState } from "react";
-import { StyleSheet, View, KeyboardAvoidingView, Platform } from "react-native";
+import {
+  StyleSheet,
+  View,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
+} from "react-native";
 
 import { Token } from "@@types/types";
 import {
@@ -15,7 +21,7 @@ import {
 import { useAnchorContext, useEthereumCtx } from "@coral-xyz/recoil";
 import { BigNumber } from "ethers";
 
-// import { SendEthereumConfirmationCard } from "@components/BottomDrawerEthereumConfirmation";
+import { SendEthereumConfirmationCard } from "@components/BottomDrawerEthereumConfirmation";
 import { SendSolanaConfirmationCard } from "@components/BottomDrawerSolanaConfirmation";
 import { BottomSheetModal } from "@components/BottomSheetModal";
 import { InputField, InputFieldMaxLabel } from "@components/Form";
@@ -42,7 +48,7 @@ export function SendTokenDetailScreen({
   const ethereumCtx = useEthereumCtx();
 
   const [address, setAddress] = useState<string>("");
-  const [amount, setAmount] = useState<BigNumber | undefined>(
+  const [amount, setAmount] = useState<BigNumber | null | undefined>(
     BigNumber.from(0)
   );
   const [feeOffset, setFeeOffset] = useState<BigNumber>(BigNumber.from(0));
@@ -87,16 +93,18 @@ export function SendTokenDetailScreen({
   const maxAmount = amountSubFee.gt(0) ? amountSubFee : BigNumber.from(0);
   const exceedsBalance = amount && amount.gt(maxAmount);
   const isSendDisabled = !isValidAddress || amount === null || !!exceedsBalance;
-  const isAmountError = amount && exceedsBalance;
+  const isAmountError = Boolean(amount && exceedsBalance);
+  const [modalIndex, setModalIndex] = useState(0);
 
   const getButton = useCallback(
     (
       isErrorAddress: boolean,
       isSendDisabled: boolean,
-      isAmountError: boolean | undefined
+      isAmountError: boolean
     ): JSX.Element => {
       const handleShowPreviewConfirmation = () => {
         setIsModalVisible(() => true);
+        Keyboard.dismiss();
       };
 
       if (isErrorAddress) {
@@ -126,8 +134,7 @@ export function SendTokenDetailScreen({
 
   const SendConfirmComponent = {
     [Blockchain.SOLANA]: SendSolanaConfirmationCard,
-    // [Blockchain.ETHEREUM]: SendEthereumConfirmationCard,
-    [Blockchain.ETHEREUM]: null,
+    [Blockchain.ETHEREUM]: SendEthereumConfirmationCard,
   }[blockchain];
 
   return (
@@ -168,8 +175,8 @@ export function SendTokenDetailScreen({
       </KeyboardAvoidingView>
       <BottomSheetModal
         snapPoints={[400, 320]}
-        contentHeight={320}
         isVisible={isModalVisible}
+        index={modalIndex}
         resetVisibility={() => {
           setIsModalVisible(() => false);
         }}
@@ -178,6 +185,11 @@ export function SendTokenDetailScreen({
           token={token}
           destinationAddress={destinationAddress}
           amount={amount!}
+          onCompleteStep={(step) => {
+            if (step !== "confirm") {
+              setModalIndex(() => 1);
+            }
+          }}
         />
       </BottomSheetModal>
     </>

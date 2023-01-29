@@ -35,6 +35,7 @@ import {
   NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
   NOTIFICATION_ETHEREUM_EXPLORER_UPDATED,
   NOTIFICATION_FEATURE_GATES_UPDATED,
+  NOTIFICATION_KEY_IS_COLD_UPDATE,
   NOTIFICATION_KEYNAME_UPDATE,
   NOTIFICATION_KEYRING_DERIVED_WALLET,
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
@@ -720,6 +721,7 @@ export class Backend {
           namedPublicKeys[blockchain][keyring].push({
             publicKey,
             name: await store.getKeyname(publicKey),
+            isCold: await store.getIsCold(publicKey),
           });
         }
       }
@@ -840,6 +842,24 @@ export class Backend {
 
     // Return the newly added public key
     return publicKey.toString();
+  }
+
+  async keyIsCold(publicKey: string): Promise<boolean> {
+    return await store.getIsCold(publicKey);
+  }
+
+  async keyIsColdUpdate(publicKey: string, isCold: boolean): Promise<string> {
+    await store.setIsCold(publicKey, isCold);
+    const walletData = await this.keyringStoreReadAllPubkeyData();
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_KEY_IS_COLD_UPDATE,
+      data: {
+        publicKey,
+        isCold,
+        walletData,
+      },
+    });
+    return SUCCESS_RESPONSE;
   }
 
   /**

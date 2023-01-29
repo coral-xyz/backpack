@@ -38,6 +38,7 @@ export const useChatsWithMetadata = ({
       image: users[chat.uuid]?.image || "",
       username: users[chat.uuid]?.username || "",
       color: users[chat.uuid]?.color,
+      colorIndex: users[chat.uuid]?.colorIndex,
       parent_message_author_username:
         users[chat.parent_message_author_uuid]?.username,
     })),

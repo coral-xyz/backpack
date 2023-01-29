@@ -2,8 +2,8 @@ import type { UnsignedTransaction } from "@ethersproject/transactions";
 import type { BigNumber } from "ethers";
 
 import { useEffect, useState } from "react";
+import { Text } from "react-native";
 
-import { PrimaryButton, TokenAmountHeader } from "@components";
 import {
   Blockchain,
   Ethereum,
@@ -11,12 +11,16 @@ import {
   walletAddressDisplay,
 } from "@coral-xyz/common";
 import { useEthereumCtx, useTransactionData } from "@coral-xyz/recoil";
-import { useCustomTheme } from "@coral-xyz/themes";
-import { Typography } from "@mui/material";
 import { ethers } from "ethers";
 
-import { Error, Sending } from "@components/BottomDrawerCards";
+import {
+  Error,
+  Sending,
+  Header,
+  Container,
+} from "@components/BottomDrawerCards";
 import { TransactionData } from "@components/TransactionData";
+import { PrimaryButton, TokenAmountHeader, Margin } from "@components/index";
 
 const logger = getLogger("send-ethereum-confirmation-card");
 const { base58: bs58 } = ethers.utils;
@@ -40,7 +44,7 @@ export function SendEthereumConfirmationCard({
 }) {
   const ethereumCtx = useEthereumCtx();
   const [txSignature, setTxSignature] = useState<string | null>(null);
-  const [error] = useState(
+  const [error, _] = useState(
     "Error 422. Transaction time out. Runtime error. Reticulating splines."
   );
   const [transaction, setTransaction] = useState<UnsignedTransaction | null>(
@@ -117,13 +121,13 @@ export function SendEthereumConfirmationCard({
 
   if (!transaction) {
     // TODO loader
-    return <></>;
+    return null;
   }
 
   const retry = () => onConfirm(transaction);
 
   return (
-    <div>
+    <>
       {cardType === "confirm" ? (
         <ConfirmSendEthereum
           token={token}
@@ -156,7 +160,7 @@ export function SendEthereumConfirmationCard({
           error={error}
         />
       )}
-    </div>
+    </>
   );
 }
 
@@ -178,7 +182,6 @@ export function ConfirmSendEthereum({
   transaction: UnsignedTransaction;
   onConfirm: (transactionToSend: UnsignedTransaction) => void;
 }) {
-  const theme = useCustomTheme();
   const transactionData = useTransactionData(
     Blockchain.ETHEREUM,
     bs58.encode(ethers.utils.serializeTransaction(transaction))
@@ -188,66 +191,36 @@ export function ConfirmSendEthereum({
 
   const menuItems = {
     From: {
-      onClick: () => {},
-      detail: <Typography>{walletAddressDisplay(from)}</Typography>,
-      button: false,
+      disabled: true,
+      detail: <Text>{walletAddressDisplay(from)}</Text>,
     },
     To: {
-      onClick: () => {},
-      detail: (
-        <Typography>{walletAddressDisplay(destinationAddress)}</Typography>
-      ),
-      button: false,
+      disabled: true,
+      detail: <Text>{walletAddressDisplay(destinationAddress)}</Text>,
     },
   };
 
   return (
-    <div
-      style={{
-        padding: "16px",
-        display: "flex",
-        justifyContent: "space-between",
-        flexDirection: "column",
-        paddingBottom: "24px",
-      }}
-    >
-      <div>
-        <Typography
-          style={{
-            color: theme.custom.colors.fontColor,
-            fontWeight: 500,
-            fontSize: "18px",
-            lineHeight: "24px",
-            textAlign: "center",
-          }}
-        >
-          Review Send
-        </Typography>
-        <TokenAmountHeader
-          style={{
-            marginTop: "40px",
-            marginBottom: "40px",
-          }}
-          amount={amount}
-          token={token}
-        />
+    <Container>
+      <Header text="Review Send" />
+      <Margin vertical={24}>
+        <TokenAmountHeader amount={amount} token={token} />
+      </Margin>
+      <Margin bottom={24}>
         <TransactionData
           transactionData={transactionData}
           menuItems={menuItems}
         />
-      </div>
+      </Margin>
       <PrimaryButton
+        label="Send"
         disabled={loading}
-        style={{ marginTop: "16px" }}
-        onClick={() =>
+        onPress={() =>
           onConfirm(
             ethers.utils.parseTransaction(bs58.decode(transactionToSend))
           )
         }
-        label="Send"
-        type="submit"
-        data-testid="Send"
       />
-    </div>
+    </Container>
   );
 }

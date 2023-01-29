@@ -5,6 +5,7 @@ Android and iOS apps powered via react-native.
 ## Requirements
 
 - A phone or Simulator (Download XCode)
+- At least two terminal windows
 
 ## Quick Start
 
@@ -20,13 +21,13 @@ npm install -g expo-cli
 npm install -g eas-cli
 ```
 
-- From the root backpack folder run:
+- In one terminal window, from the _root backpack folder_ run:
 
 ```sh
 yarn build:mobile && yarn start:mobile
 ```
 
-- From another terminal window run:
+- In another terminal window, from `packages/app-mobile`, run:
 
 ```sh
 yarn ios

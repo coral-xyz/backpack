@@ -792,6 +792,7 @@ class UserKeyring {
     );
     await ledgerKeyring.add(publicKeyPath);
     await store.setKeyname(publicKeyPath.publicKey, name);
+    await store.setIsCold(publicKeyPath.publicKey, true);
   }
 
   public async keyDelete(blockchain: Blockchain, pubkey: string) {

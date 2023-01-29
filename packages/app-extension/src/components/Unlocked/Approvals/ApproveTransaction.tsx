@@ -1,7 +1,8 @@
 import type { Blockchain, FeeConfig } from "@coral-xyz/common";
-import { Loading } from "@coral-xyz/react-common";
+import { EmptyState , Loading } from "@coral-xyz/react-common";
 import { useTransactionData, useWalletBlockchain } from "@coral-xyz/recoil";
-import { styles } from "@coral-xyz/themes";
+import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { Block as BlockIcon } from "@mui/icons-material";
 import { Typography } from "@mui/material";
 import { BigNumber, ethers } from "ethers";
 
@@ -138,6 +139,46 @@ export function ApproveTransaction({
         </div>
       )}
     </WithApproval>
+  );
+}
+
+export function Cold({
+  origin,
+  title,
+  wallet,
+  onCompletion,
+}: {
+  origin: string;
+  title: string;
+  wallet: string;
+  onCompletion: () => Promise<void>;
+}) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+      }}
+    >
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          justifyContent: "center",
+          flexDirection: "column",
+        }}
+      >
+        <EmptyState
+          icon={(props: any) => <BlockIcon {...props} />}
+          title={"Request Rejected"}
+          subtitle={`WARNING: ${origin} is trying to sign with your wallet. This may be dangerous. To enable, see wallet settings. Do so with caution!`}
+          buttonText={""}
+          onClick={() => {}}
+        />
+        <div></div>
+      </div>
+    </div>
   );
 }
 

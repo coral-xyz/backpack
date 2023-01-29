@@ -1,14 +1,23 @@
 import React, { useEffect, useState } from "react";
-import type { Blockchain } from "@coral-xyz/common";
-import { UI_RPC_METHOD_KEYNAME_READ } from "@coral-xyz/common";
-import { useBackgroundClient, useWalletPublicKeys } from "@coral-xyz/recoil";
+import type {
+  Blockchain} from "@coral-xyz/common";
+import {
+  UI_RPC_METHOD_KEY_IS_COLD_UPDATE,
+ UI_RPC_METHOD_KEYNAME_READ } from "@coral-xyz/common";
+import {
+  isKeyCold,
+  useBackgroundClient,
+  useWalletPublicKeys,
+} from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ContentCopy } from "@mui/icons-material";
 import { Typography } from "@mui/material";
+import { useRecoilValue } from "recoil";
 
 import { useNavStack } from "../../../../common/Layout/NavStack";
 import { SettingsList } from "../../../../common/Settings/List";
 import { WithCopyTooltip } from "../../../../common/WithCopyTooltip";
+import { ModeSwitch } from "../../Preferences";
 
 export const WalletDetail: React.FC<{
   blockchain: Blockchain;
@@ -22,6 +31,7 @@ export const WalletDetail: React.FC<{
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [walletName, setWalletName] = useState(name);
   const publicKeyData = useWalletPublicKeys();
+  const isCold = useRecoilValue(isKeyCold(publicKey));
 
   useEffect(() => {
     (async () => {
@@ -114,6 +124,28 @@ export const WalletDetail: React.FC<{
     },
   };
 
+  const _isCold = {
+    "App Signing": {
+      onClick: async () => {
+        await background.request({
+          method: UI_RPC_METHOD_KEY_IS_COLD_UPDATE,
+          params: [publicKey, !isCold],
+        });
+      },
+      detail: (
+        <ModeSwitch
+          enabled={!isCold}
+          onSwitch={async (enabled) => {
+            await background.request({
+              method: UI_RPC_METHOD_KEY_IS_COLD_UPDATE,
+              params: [publicKey, enabled],
+            });
+          }}
+        />
+      ),
+    },
+  };
+
   return (
     <div>
       <WithCopyTooltip tooltipOpen={tooltipOpen}>
@@ -121,6 +153,7 @@ export const WalletDetail: React.FC<{
           <SettingsList menuItems={menuItems} />
         </div>
       </WithCopyTooltip>
+      {type !== "dehyrdrated" && <SettingsList menuItems={_isCold} />}
       {type !== "hardware" && type !== "dehydrated" && (
         <SettingsList menuItems={secrets} />
       )}

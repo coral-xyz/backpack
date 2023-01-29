@@ -24,6 +24,7 @@ import {
   NOTIFICATION_ETHEREUM_FEE_DATA_DID_UPDATE,
   NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
   NOTIFICATION_FEATURE_GATES_UPDATED,
+  NOTIFICATION_KEY_IS_COLD_UPDATE,
   NOTIFICATION_KEYNAME_UPDATE,
   NOTIFICATION_KEYRING_DERIVED_WALLET,
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
@@ -224,6 +225,9 @@ export function NotificationsProvider(props: any) {
       logger.debug(`received notification ${notif.name}`, notif);
 
       switch (notif.name) {
+        case NOTIFICATION_KEY_IS_COLD_UPDATE:
+          handleKeyIsColdUpdate(notif);
+          break;
         case NOTIFICATION_KEYRING_STORE_CREATED:
           handleKeyringStoreCreated(notif);
           break;
@@ -334,6 +338,9 @@ export function NotificationsProvider(props: any) {
     //
     // Notification handlers.
     //
+    const handleKeyIsColdUpdate = (notif: Notification) => {
+      setWalletData(notif.data.walletData);
+    };
     const handleKeyringStoreCreated = (notif: Notification) => {
       setPreferences(notif.data.preferences);
       setKeyringStoreState(KeyringStoreStateEnum.Unlocked);

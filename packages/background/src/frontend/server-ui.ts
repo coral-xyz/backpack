@@ -38,6 +38,7 @@ import {
   UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION,
   UI_RPC_METHOD_GET_FEATURE_GATES,
   UI_RPC_METHOD_GET_XNFT_PREFERENCES,
+  UI_RPC_METHOD_KEY_IS_COLD_UPDATE,
   UI_RPC_METHOD_KEYNAME_READ,
   UI_RPC_METHOD_KEYNAME_UPDATE,
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
@@ -305,6 +306,8 @@ async function handle<T = any>(
       );
     case UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ:
       return await handleBlockchainKeyringsRead(ctx);
+    case UI_RPC_METHOD_KEY_IS_COLD_UPDATE:
+      return await handleKeyIsColdUpdate(ctx, params[0], params[1]);
     //
     // Nicknames for keys.
     //
@@ -520,6 +523,15 @@ async function handleKeyringDeriveWallet(
   blockchain: Blockchain
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.keyringDeriveWallet(blockchain);
+  return [resp];
+}
+
+async function handleKeyIsColdUpdate(
+  ctx: Context<Backend>,
+  publicKey: string,
+  isCold: boolean
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.keyIsColdUpdate(publicKey, isCold);
   return [resp];
 }
 

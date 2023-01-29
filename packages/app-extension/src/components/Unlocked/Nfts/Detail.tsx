@@ -23,12 +23,14 @@ import {
   TextInput,
 } from "@coral-xyz/react-common";
 import {
+  collectibleXnft,
   nftById,
   useAnchorContext,
   useBackgroundClient,
   useDecodedSearchParams,
   useEthereumCtx,
   useEthereumExplorer,
+  useOpenPlugin,
   useSolanaCtx,
   useSolanaExplorer,
 } from "@coral-xyz/recoil";
@@ -73,6 +75,12 @@ export function NftsDetail({
     nftById({ publicKey, connectionUrl, nftId })
   );
   const nft = (state === "hasValue" && contents) || null;
+  const { contents: xnftContents, state: xnftState } = useRecoilValueLoadable(
+    collectibleXnft(
+      nft ? { collection: nft.metadataCollectionId, mint: nft.mint } : null
+    )
+  );
+  const xnft = (xnftState === "hasValue" && xnftContents) || null;
   //@ts-ignore
   const whitelistedChatCollection = WHITELISTED_CHAT_COLLECTIONS.find(
     (x) => x.collectionId === nft?.metadataCollectionId
@@ -118,11 +126,13 @@ export function NftsDetail({
       style={{
         paddingLeft: "16px",
         paddingRight: "16px",
+        paddingBottom: "8px",
       }}
     >
       <Image nft={nft} />
       <Description nft={nft} />
       <SendButton nft={nft} />
+      {xnft && <OpenButton xnft={xnft} />}
       {whitelistedChatCollectionId && (
         <SecondaryButton
           style={{ marginTop: 12 }}
@@ -153,7 +163,7 @@ export function NftsDetail({
           }}
         />
       )}
-      {nft.attributes && <Attributes nft={nft} />}
+      {nft.attributes && nft.attributes.length > 0 && <Attributes nft={nft} />}
     </div>
   );
 }
@@ -247,6 +257,22 @@ function SendButton({ nft }: { nft: any }) {
           </NavStackEphemeral>
         </div>
       </WithDrawer>
+    </>
+  );
+}
+
+function OpenButton({ xnft }: { xnft: string }) {
+  const openPlugin = useOpenPlugin();
+  const handleClick = () => {
+    openPlugin(xnft);
+  };
+  return (
+    <>
+      <SecondaryButton
+        style={{ marginTop: "12px" }}
+        label="Open"
+        onClick={handleClick}
+      />
     </>
   );
 }

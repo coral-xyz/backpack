@@ -11,6 +11,7 @@ import {
 import { Logout, ResetWarning } from "../../Locked/Reset/ResetWarning";
 import { ResetWelcome } from "../../Locked/Reset/ResetWelcome";
 import { Contacts } from "../Messages/Contacts";
+import { Requests } from "../Messages/Requests";
 
 import { ImportSecretKey } from "./AddConnectWallet/ImportSecretKey";
 import { PreferencesAutoLock } from "./Preferences/AutoLock";
@@ -197,6 +198,11 @@ export function SettingsNavStackDrawer({
           <NavStackScreen
             name={"contacts"}
             component={(props: any) => <Contacts {...props} />}
+          />
+
+          <NavStackScreen
+            name={"requests"}
+            component={(props: any) => <Requests {...props} />}
           />
           <NavStackScreen
             name={"about-backpack"}
