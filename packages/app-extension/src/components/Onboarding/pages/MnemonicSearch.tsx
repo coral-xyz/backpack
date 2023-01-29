@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import type { Blockchain, PublicKeyPath } from "@coral-xyz/common";
 import {
-  DerivationPath,
+  getRecoveryPaths,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
   walletAddressDisplay,
 } from "@coral-xyz/common";
@@ -13,11 +13,6 @@ import { useBackgroundClient } from "@coral-xyz/recoil";
 import { Box } from "@mui/material";
 
 import { Header, SubtextParagraph } from "../../common";
-
-export const DERIVATION_PATHS = [
-  DerivationPath.Bip44,
-  DerivationPath.Bip44Change,
-];
 
 export const MnemonicSearch = ({
   blockchain,
@@ -37,14 +32,14 @@ export const MnemonicSearch = ({
 
   useEffect(() => {
     (async () => {
-      const paths = getRecoveryPaths(blockchain);
+      const recoveryPaths = getRecoveryPaths(blockchain);
       const publicKeys = await background.request({
         method: UI_RPC_METHOD_PREVIEW_PUBKEYS,
-        params: [blockchain, mnemonic, paths],
+        params: [blockchain, mnemonic, recoveryPaths],
       });
       const index = publicKeys.findIndex((p: string) => p === publicKey);
       if (index !== -1) {
-        onNext(derivationPath, index);
+        onNext({ blockchain, derivationPath: recoveryPaths[index], publicKey });
         return;
       }
       setError(true);

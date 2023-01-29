@@ -3,11 +3,7 @@
 
 import { useEffect } from "react";
 import type { PublicKeyPath } from "@coral-xyz/common";
-import {
-  accountDerivationPath,
-  Blockchain,
-  DerivationPath,
-} from "@coral-xyz/common";
+import { Blockchain, getIndexedPath } from "@coral-xyz/common";
 import { Loading } from "@coral-xyz/react-common";
 import Ethereum from "@ledgerhq/hw-app-eth";
 import Solana from "@ledgerhq/hw-app-solana";
@@ -32,22 +28,12 @@ export const HardwareDefaultAccount = ({
         [Blockchain.ETHEREUM]: new Ethereum(transport),
       }[blockchain];
 
-      const derivationPath = DerivationPath.Default; // BIP44
-      const account = 0; // BIP44 account
-      const index = 0; // BIP44 index
-
       // The default path for newly created wallets
-      const defaultPath = accountDerivationPath(
-        blockchain,
-        derivationPath,
-        account,
-        index
-      );
-
+      const derivationPath = getIndexedPath(blockchain).toString();
       // Get the public key for the default path from the hardware wallet
       let ledgerAddress;
       try {
-        ledgerAddress = (await ledger.getAddress(defaultPath)).address;
+        ledgerAddress = (await ledger.getAddress(derivationPath)).address;
       } catch (error) {
         if (onError) {
           onError(error as Error);
@@ -66,8 +52,6 @@ export const HardwareDefaultAccount = ({
         blockchain,
         derivationPath,
         publicKey,
-        account,
-        index,
       });
     })();
   }, [blockchain]);

@@ -9,7 +9,7 @@ import {
   SolanaKeyringFactory,
   SolanaLedgerKeyringFactory,
 } from "@coral-xyz/blockchain-solana";
-import { Blockchain, DerivationPath } from "@coral-xyz/common";
+import { Blockchain } from "@coral-xyz/common";
 
 export function hdFactoryForBlockchain(blockchain: Blockchain) {
   return {

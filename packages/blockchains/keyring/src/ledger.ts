@@ -1,40 +1,38 @@
+import type {
+  PublicKeyPath} from "@coral-xyz/common";
 import {
   generateUniqueId,
   LEDGER_INJECTED_CHANNEL_REQUEST,
   LEDGER_INJECTED_CHANNEL_RESPONSE,
 } from "@coral-xyz/common";
 
-import type { ImportedDerivationPath, LedgerKeyringJson } from "./types";
+import type { LedgerKeyringJson } from "./types";
 
 export class LedgerKeyringBase {
-  protected derivationPaths: Array<ImportedDerivationPath>;
+  protected publicKeyPaths: Array<PublicKeyPath>;
 
-  constructor(derivationPaths: Array<ImportedDerivationPath>) {
-    this.derivationPaths = derivationPaths;
-  }
-
-  public keyCount(): number {
-    return this.derivationPaths.length;
+  constructor(publicKeyPaths: Array<PublicKeyPath>) {
+    this.publicKeyPaths = publicKeyPaths;
   }
 
   public deletePublicKey(publicKey: string) {
-    this.derivationPaths = this.derivationPaths.filter(
-      (dp) => dp.publicKey !== publicKey
+    this.publicKeyPaths = this.publicKeyPaths.filter(
+      (x) => x.publicKey !== publicKey
     );
   }
 
-  public async ledgerImport(path: string, account: number, publicKey: string) {
-    const found = this.derivationPaths.find(
-      ({ publicKey: pk }) => publicKey === pk
+  public async add(publicKeyPath: PublicKeyPath) {
+    const found = this.publicKeyPaths.find(
+      (x) => x.publicKey === publicKeyPath.publicKey
     );
     if (found) {
       throw new Error("ledger account already exists");
     }
-    this.derivationPaths.push({ path, account, publicKey });
+    this.publicKeyPaths.push(publicKeyPath);
   }
 
   public publicKeys(): Array<string> {
-    return this.derivationPaths.map((dp) => dp.publicKey);
+    return this.publicKeyPaths.map((x) => x.publicKey);
   }
 
   exportSecretKey(): string | null {
@@ -47,13 +45,13 @@ export class LedgerKeyringBase {
 
   public toString(): string {
     return JSON.stringify({
-      derivationPath: this.derivationPaths,
+      derivationPath: this.publicKeyPaths,
     });
   }
 
   public toJson(): LedgerKeyringJson {
     return {
-      derivationPaths: this.derivationPaths,
+      publicKeyPaths: this.publicKeyPaths,
     };
   }
 

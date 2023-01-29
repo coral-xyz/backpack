@@ -5,7 +5,7 @@ import type {
   PublicKeyPath,
   SignedPublicKeyPath,
 } from "@coral-xyz/common";
-import { DerivationPath, getCreateMessage } from "@coral-xyz/common";
+import { getCreateMessage, getIndexedPath } from "@coral-xyz/common";
 
 import { useOnboarding } from "../../../hooks/useOnboarding";
 import { useSteps } from "../../../hooks/useSteps";
@@ -81,9 +81,7 @@ export const OnboardAccount = ({
         // Default path
         addPublicKeyPath({
           blockchain,
-          derivationPath: DerivationPath.Bip44,
-          account: 0,
-          index: 0,
+          derivationPath: getIndexedPath(blockchain, 0, 0).toString(),
           publicKey: "",
         });
       }

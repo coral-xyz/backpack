@@ -1,79 +1,135 @@
 import { LOAD_PUBLIC_KEY_AMOUNT } from "./constants";
 import { Blockchain } from "./types";
 
-export const DerivationPath: { [key: string]: DerivationPath } = {
-  Bip44: "bip44",
-  Bip44Change: "bip44-change",
-  SolletDeprecated: "sollet-deprecated",
-  Default: "bip44",
-};
-
-export type DerivationPath = "bip44" | "bip44-change" | "sollet-deprecated";
-
-export const derivationPathPrefix = (
-  blockchain: Blockchain,
-  derivationPath: DerivationPath
-) => {
-  const paths = {
-    [Blockchain.ETHEREUM]: {
-      [DerivationPath.Bip44]: "m/44'/60'",
-      [DerivationPath.Bip44Change]: "m/44'/60'/0'",
-    },
-    [Blockchain.SOLANA]: {
-      [DerivationPath.Bip44]: "m/44'/501'",
-      [DerivationPath.Bip44Change]: "m/44'/501'/0'",
-      [DerivationPath.SolletDeprecated]: "m/501'/0'/0/0",
-    },
-  };
-
-  if (!paths[blockchain] || !paths[blockchain][derivationPath]) {
-    throw new Error("derivation path prefix not found");
-  }
-
-  return paths[blockchain][derivationPath];
-};
-
-/**
- * Get the complete derivation path for an account. Note that account 0 is
- * reindex to be the root, and account 1 becomes the 0th account.
+/*
+ * BIP44 path defines the following levels:
+ * - m / purpose' / coin_type' / account' / change / address_index
+ *
+ * This class allows passing undefined account, change and address_index to
+ * generate
+ * root paths which may not be strictly conformant. E.g.
+ *
+ * - m/44'/501'/
+ * - m/44'/501'/0'
+ *
+ * https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
+ * https://github.com/bitcoin/bips/blob/master/bip-0043.mediawiki
+ * https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki
  */
-export const accountDerivationPath = (
-  blockchain: Blockchain,
-  derivationPath: DerivationPath,
-  account: number,
-  index?: number
-) => {
-  if (!index) {
-    // Deprecated paths but still required for recovery
-    if (account === 0) {
-      return derivationPathPrefix(blockchain, derivationPath);
-    } else {
-      return `${derivationPathPrefix(blockchain, derivationPath)}/${
-        account - 1
-      }`;
+
+export class BIP44Path {
+  public static readonly HARDENING: number = 0x80000000;
+  private static readonly REGEX_VALID_BIP44: string =
+    "^((m/)?(44'?))(/[0-9]+'?){2}((/[0-9]+){2})?$";
+  // Elements of the derivation path in order, e.g. address_index would be at
+  // index 4
+  private _elements: Array<number | undefined>;
+
+  public static blockchainCoinType(blockchain: Blockchain) {
+    // TODO could use SLIP44?
+    const coinType = {
+      [Blockchain.ETHEREUM]: 60 + BIP44Path.HARDENING,
+      [Blockchain.SOLANA]: 501 + BIP44Path.HARDENING,
+    }[blockchain];
+    if (!coinType) {
+      throw new Error("Invalid blockchain");
     }
+    return coinType;
   }
-  // New Backpack derivation path scheme
-  if (index === 0) {
-    return `${derivationPathPrefix(blockchain, derivationPath)}/${account}`;
-  } else {
-    return `${derivationPathPrefix(blockchain, derivationPath)}/${account}/0/${
-      index - 1
-    }`;
-  }
-};
 
-/**
- * Get up to `count` public keys for a given blockchain and derivation path
- */
-export const getPublicKeysForAccount = (
+  constructor(
+    coinType: number,
+    account?: number,
+    change?: number,
+    addressIndex?: number
+  ) {
+    this.coinType = coinType;
+    this.account = account;
+    this.change = change;
+    this.addressIndex = addressIndex;
+  }
+
+  get purpose() {
+    return 44 + BIP44Path.HARDENING;
+  }
+
+  get coinType() {
+    return this._elements[1]!;
+  }
+
+  set coinType(coinType: number) {
+    // Enforce hardening
+    if (coinType < BIP44Path.HARDENING) coinType += BIP44Path.HARDENING;
+    this._elements[1] = coinType;
+  }
+
+  get account() {
+    return this._elements[2]!;
+  }
+
+  set account(account: number | undefined) {
+    // Enforce hardening
+    if (account && account < BIP44Path.HARDENING)
+      account += BIP44Path.HARDENING;
+    this._elements[2] = account;
+  }
+
+  get change() {
+    return this._elements[3];
+  }
+
+  set change(change: number | undefined) {
+    this._elements[3] = change;
+  }
+
+  get addressIndex() {
+    return this._elements[4];
+  }
+
+  set addressIndex(addressIndex: number | undefined) {
+    this._elements[4] = addressIndex;
+  }
+
+  toString() {
+    return `m/${this._elements
+      .map((n) =>
+        n !== undefined && n > BIP44Path.HARDENING
+          ? `${n - BIP44Path.HARDENING}'`
+          : n
+      )
+      .filter(Boolean)
+      .join("/")}`;
+  }
+
+  fromString(path: string) {
+    if (!path.toString().match(new RegExp(BIP44Path.REGEX_VALID_BIP44, "g"))) {
+      throw new Error(`${path} is an invalid path`);
+    }
+    const _elements: number[] = [];
+    for (const level in path.replace("m/", "").split("/")) {
+      let element = parseInt(level, 10);
+      if (level.length > 1 && level.endsWith("'")) {
+        element += BIP44Path.HARDENING;
+      }
+      _elements.push(element);
+    }
+    this._elements = _elements;
+  }
+}
+
+export const getLegacyIndexedPath = (blockchain: Blockchain, index) => {};
+
+// Get the nth index account according to the Backpack derivation path scheme
+export const getIndexedPath = (
   blockchain: Blockchain,
-  derivationPath: DerivationPath,
-  account: number,
-  count = LOAD_PUBLIC_KEY_AMOUNT
+  account = 0,
+  index = 0
 ) => {
-  return [...Array(count).keys()].map((i) =>
-    accountDerivationPath(blockchain, derivationPath, account, i)
+  return new BIP44Path(
+    BIP44Path.blockchainCoinType(blockchain),
+    account + BIP44Path.HARDENING,
+    0 + BIP44Path.HARDENING,
+    index === 0 ? undefined : index - 1
   );
 };
 
@@ -103,18 +159,27 @@ export const getRecoveryPaths = (blockchain: Blockchain) => {
 
   // Build an array of derivation paths to search for recovery
   const paths: Array<string> = [];
-
   // Legacy created/imported accounts (m/44/501'/ and m/44/501'/{0...n})
   paths.concat(
     [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map((i) =>
-      accountDerivationPath(blockchain, DerivationPath.Bip44, i)
+      // Pass undefined for the 0th index so the first is the root
+      new BIP44Path(
+        BIP44Path.blockchainCoinType(blockchain),
+        i === 0 ? undefined : i - 1
+      ).toString()
     )
   );
 
   // Legacy imported accounts (m/44/501'/0' and m/44/501'/0'/{0...n})
   paths.concat(
     [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map((i) =>
-      accountDerivationPath(blockchain, DerivationPath.Bip44Change, i)
+      new BIP44Path(
+        BIP44Path.blockchainCoinType(blockchain),
+        // Harden the account
+        i + BIP44Path.HARDENING,
+        // Pass undefined for the 0th index so first is the root
+        i === 0 ? undefined : i - 1
+      ).toString()
     )
   );
 
@@ -128,7 +193,7 @@ export const getRecoveryPaths = (blockchain: Blockchain) => {
     [...Array(numAccounts).keys()]
       .map((k) =>
         [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map((j) =>
-          accountDerivationPath(blockchain, DerivationPath.Bip44, k, j)
+          getIndexedPath(blockchain, k, j).toString()
         )
       )
       .flat()

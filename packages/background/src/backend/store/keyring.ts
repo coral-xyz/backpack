@@ -44,6 +44,12 @@ export async function getKeyringStore(
   }
 
   //
+  // Migrate derivation path storage.
+  //
+
+  console.log(json);
+
+  //
   // Migrate user from single username -> multi username account management.
   //
   // TODO.

@@ -1,6 +1,6 @@
 import type { Commitment } from "@solana/web3.js";
 
-import type { DerivationPath } from "./crypto";
+import type { BIP44Path } from "./crypto";
 
 export type Context<Backend> = {
   sender: any;
@@ -99,10 +99,9 @@ export type KeyringInit = {
 
 // Location of a public key including the public key
 export type PublicKeyPath = {
+  // TODO refactor out blockchain? It's encoded in the derivation path
   blockchain: Blockchain;
-  derivationPath: DerivationPath;
-  account: number;
-  index: number;
+  derivationPath: string;
   publicKey: string;
 };
 
@@ -140,18 +139,11 @@ export type KeyringJson = {
 export type HdKeyringJson = {
   mnemonic: string;
   seed: string;
-  accountIndices: Array<number>;
-  derivationPath: DerivationPath;
+  derivationPaths: Array<string>;
 };
 
 export type LedgerKeyringJson = {
-  derivationPaths: Array<ImportedDerivationPath>;
-};
-
-export type ImportedDerivationPath = {
-  path: string;
-  account: number;
-  publicKey: string;
+  publicKeyPaths: Array<PublicKeyPath>;
 };
 
 export type SolanaFeeConfig = { computeUnits: number; priorityFee: bigint };

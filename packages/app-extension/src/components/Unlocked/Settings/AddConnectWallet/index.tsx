@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import {
-  DerivationPath,
+  BIP44Path,
   openAddUserAccount,
   openConnectHardware,
   TAB_APPS,
@@ -192,21 +192,28 @@ export function AddWalletMenu({
   const [lockCreateButton, setLockCreateButton] = useState(false);
 
   const createNewDerived = async () => {
+    // Mnemonic based keyring. This is the simple case because we don't
+    // need to prompt for the user to open their Ledger app to get the
+    // required public key. We also don't need a signature to prove
+    // ownership of the public key because that can't be done
+    // transparently by the backend.
     if (lockCreateButton) {
       return;
     }
     setLockCreateButton(true);
     let newPublicKey;
     if (!keyringExists) {
-      // Mnemonic based keyring. This is the simple case because we don't
-      // need to prompt for the user to open their Ledger app to get the
-      // required public key. We also don't need a signature to prove
-      // ownership of the public key because that can't be done
-      // transparently by the backend.
       try {
         newPublicKey = await background.request({
           method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
-          params: [blockchain, DerivationPath.Default, 0],
+          params: [
+            blockchain,
+            new BIP44Path(
+              BIP44Path.blockchainCoinType(blockchain),
+              0,
+              0 + BIP44Path.HARDENING
+            ),
+          ],
         });
       } catch (error) {
         setError("Wallet address is used by another Backpack account.");

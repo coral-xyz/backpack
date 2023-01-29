@@ -4,9 +4,8 @@
 import { useEffect, useState } from "react";
 import type { PublicKeyPath } from "@coral-xyz/common";
 import {
-  accountDerivationPath,
   Blockchain,
-  LOAD_PUBLIC_KEY_AMOUNT,
+  getRecoveryPaths,
   walletAddressDisplay,
 } from "@coral-xyz/common";
 import { Loading, PrimaryButton } from "@coral-xyz/react-common";
@@ -17,8 +16,6 @@ import { Box } from "@mui/material";
 import { ethers } from "ethers";
 
 import { Header, SubtextParagraph } from "../../common";
-
-import { DERIVATION_PATHS } from "./MnemonicSearch";
 
 const { base58: bs58 } = ethers.utils;
 
@@ -44,21 +41,11 @@ export const HardwareSearch = ({
         [Blockchain.SOLANA]: new Solana(transport),
         [Blockchain.ETHEREUM]: new Ethereum(transport),
       }[blockchain];
-      for (const derivationPath of DERIVATION_PATHS) {
-        // TODO how many accounts?
-        const account = 0;
-        for (let index = 0; index < LOAD_PUBLIC_KEY_AMOUNT; index += 1) {
-          const path = accountDerivationPath(
-            blockchain,
-            derivationPath,
-            account,
-            index
-          );
-          const ledgerAddress = (await ledger.getAddress(path)).address;
-          if (bs58.encode(ledgerAddress) === publicKey) {
-            onNext({ blockchain, derivationPath, publicKey, account, index });
-            return;
-          }
+      for (const derivationPath of getRecoveryPaths(blockchain)) {
+        const ledgerAddress = (await ledger.getAddress(derivationPath)).address;
+        if (bs58.encode(ledgerAddress) === publicKey) {
+          onNext({ blockchain, derivationPath, publicKey });
+          return;
         }
       }
       setError(true);

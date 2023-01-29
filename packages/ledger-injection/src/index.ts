@@ -1,7 +1,5 @@
-import type { DerivationPath } from "@coral-xyz/common";
+import type { BIP44Path } from "@coral-xyz/common";
 import {
-  accountDerivationPath,
-  Blockchain,
   getLogger,
   LEDGER_INJECTED_CHANNEL_REQUEST,
   LEDGER_INJECTED_CHANNEL_RESPONSE,
@@ -54,29 +52,19 @@ class LedgerInjection {
           case LEDGER_METHOD_ETHEREUM_SIGN_TRANSACTION:
             result = await this.handleEthereumSignTransaction(
               params[0],
-              params[1],
-              params[2]
+              params[1]
             );
             break;
           case LEDGER_METHOD_ETHEREUM_SIGN_MESSAGE:
-            result = await this.handleEthereumSignMessage(
-              params[0],
-              params[1],
-              params[2]
-            );
+            result = await this.handleEthereumSignMessage(params[0], params[1]);
             break;
           case LEDGER_METHOD_ETHEREUM_SIGN_EIP712_MESSAGE:
-            result = await this.handleEthereumSignMessage(
-              params[0],
-              params[1],
-              params[2]
-            );
+            result = await this.handleEthereumSignMessage(params[0], params[1]);
             break;
           case LEDGER_METHOD_SOLANA_SIGN_TRANSACTION:
             result = await this.handleSolanaSignTransaction(
               params[0],
-              params[1],
-              params[2]
+              params[1]
             );
             break;
           case LEDGER_METHOD_SOLANA_SIGN_MESSAGE:
@@ -111,12 +99,11 @@ class LedgerInjection {
 
   async handleEthereumSignTransaction(
     transaction: UnsignedTransaction,
-    derivationPath: DerivationPath,
-    account: number
+    derivationPath: BIP44Path
   ) {
     await this.connectIfNeeded();
     const result = await this.ethereum!.signTransaction(
-      accountDerivationPath(Blockchain.ETHEREUM, derivationPath, account),
+      derivationPath.toString(),
       ethers.utils.serializeTransaction(transaction).substring(2)
     );
     return ethers.utils.serializeTransaction(transaction, {
@@ -126,14 +113,10 @@ class LedgerInjection {
     });
   }
 
-  async handleEthereumSignMessage(
-    message: string,
-    derivationPath: DerivationPath,
-    account: number
-  ) {
+  async handleEthereumSignMessage(message: string, derivationPath: BIP44Path) {
     await this.connectIfNeeded();
     const result = await this.ethereum!.signPersonalMessage(
-      accountDerivationPath(Blockchain.ETHEREUM, derivationPath, account),
+      derivationPath.toString(),
       message
     );
     return ethers.utils.joinSignature({
@@ -145,25 +128,20 @@ class LedgerInjection {
 
   async handleEthereumSignEIP712Message(
     message: any,
-    derivationPath: DerivationPath,
-    account: number
+    derivationPath: BIP44Path
   ) {
     await this.connectIfNeeded();
     const result = await this.ethereum!.signEIP712Message(
-      accountDerivationPath(Blockchain.ETHEREUM, derivationPath, account),
+      derivationPath.toString(),
       message
     );
     return result;
   }
 
-  async handleSolanaSignTransaction(
-    tx: string,
-    derivationPath: DerivationPath,
-    account: number
-  ) {
+  async handleSolanaSignTransaction(tx: string, derivationPath: BIP44Path) {
     await this.connectIfNeeded();
     const result = await this.solana!.signTransaction(
-      accountDerivationPath(Blockchain.SOLANA, derivationPath, account),
+      derivationPath.toString(),
       Buffer.from(bs58.decode(tx))
     );
     return bs58.encode(result.signature);

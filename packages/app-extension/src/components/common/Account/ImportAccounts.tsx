@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
 import type { PublicKeyPath } from "@coral-xyz/common";
 import {
-  accountDerivationPath,
+  BIP44Path,
   Blockchain,
   DEFAULT_SOLANA_CLUSTER,
-  DerivationPath,
-  derivationPathPrefix,
   EthereumConnectionUrl,
   LOAD_PUBLIC_KEY_AMOUNT,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
@@ -75,9 +73,89 @@ export function ImportAccounts({
   const [conflictingPublicKeys, setConflictingPublicKeys] = useState<string[]>(
     []
   );
-  const [derivationPath, setDerivationPath] = useState<DerivationPath>(
-    DerivationPath.Default
+
+  const derivationPathOptions = {
+    [Blockchain.SOLANA]: [
+      {
+        path: (i: number) =>
+          new BIP44Path(
+            BIP44Path.blockchainCoinType(Blockchain.SOLANA),
+            // Pass undefined for the 0th index so the first derivation path is the root
+            i === 0 ? undefined : i - 1 + BIP44Path.HARDENING
+          ).toString(),
+        label: "m/44/501'/",
+      },
+      {
+        path: (i: number) =>
+          new BIP44Path(
+            BIP44Path.blockchainCoinType(Blockchain.SOLANA),
+            0,
+            i + BIP44Path.HARDENING
+          ).toString(),
+        label: "m/44/501'/0'",
+      },
+      {
+        path: (i: number) =>
+          new BIP44Path(
+            BIP44Path.blockchainCoinType(Blockchain.SOLANA),
+            0,
+            i + BIP44Path.HARDENING,
+            0 + BIP44Path.HARDENING
+          ).toString(),
+        label: "m/44/501'/0'/0'",
+      },
+    ]
+      // Note: We only allow importing the deprecated sollet derivation path for
+      //       hot wallets. This UI is hidden behind a local storage flag we
+      //       expect people to manually set, since this derivation path was only
+      //       used by mostly technical early Solana users.
+      .concat(
+        mnemonic && window.localStorage.getItem("sollet")
+          ? [
+              {
+                // TODO
+                path: () => "501'/0'/0/0",
+                label: "501'/0'/0/0",
+              },
+            ]
+          : []
+      ),
+    [Blockchain.ETHEREUM]: [
+      {
+        path: (i: number) =>
+          new BIP44Path(
+            BIP44Path.blockchainCoinType(Blockchain.ETHEREUM),
+            // Pass undefined for the 0th index so the first derivation path is the root
+            i === 0 ? undefined : i - 1 + BIP44Path.HARDENING
+          ).toString(),
+        label: "m/44/501'/",
+      },
+      {
+        path: (i: number) =>
+          new BIP44Path(
+            BIP44Path.blockchainCoinType(Blockchain.ETHEREUM),
+            0,
+            i + BIP44Path.HARDENING
+          ).toString(),
+        label: "m/44/501'/0'",
+      },
+      {
+        path: (i: number) =>
+          new BIP44Path(
+            BIP44Path.blockchainCoinType(Blockchain.ETHEREUM),
+            0,
+            i + BIP44Path.HARDENING,
+            0 + BIP44Path.HARDENING
+          ).toString(),
+        label: "m/44/501'/0'/0'",
+      },
+    ],
+  }[blockchain];
+
+  const [derivationPathLabel, setDerivationPathLabel] = useState<string>(
+    derivationPathOptions[0].label
   );
+  const [derivationPaths, setDerivationPaths] = useState<Array<string>>([]);
 
   const disabledPublicKeys = [...importedPublicKeys, ...conflictingPublicKeys];
 
@@ -124,22 +202,22 @@ export function ImportAccounts({
   // Load a list of accounts and their associated balances
   //
   useEffect(() => {
-    if (!derivationPath) return;
+    if (!derivationPaths) return;
 
     let loaderFn;
     if (mnemonic) {
       // Loading accounts from a mnemonic
-      loaderFn = (derivationPath: DerivationPath) =>
-        loadMnemonicPublicKeys(mnemonic, derivationPath);
+      loaderFn = (derivationPaths: Array<string>) =>
+        loadMnemonicPublicKeys(mnemonic, derivationPaths);
     } else if (transport) {
       // Loading accounts from a Ledger
-      loaderFn = (derivationPath: DerivationPath) =>
-        loadLedgerPublicKeys(transport, derivationPath);
+      loaderFn = (derivationPaths: Array<string>) =>
+        loadLedgerPublicKeys(transport, derivationPaths);
     } else {
       return;
     }
 
-    loaderFn(derivationPath)
+    loaderFn(derivationPaths)
       .then(async (publicKeys: string[]) => {
         const balances = await loadBalances(publicKeys);
         setBalances(
@@ -162,7 +240,7 @@ export function ImportAccounts({
           throw error;
         }
       });
-  }, [mnemonic, transport, derivationPath]);
+  }, [mnemonic, transport, derivationPaths]);
 
   //
   // Clear accounts and selected acounts on change of derivation path.
@@ -170,7 +248,18 @@ export function ImportAccounts({
   useEffect(() => {
     setBalances({});
     setPublicKeyPaths([]);
-  }, [derivationPath]);
+    if (derivationPathLabel !== null) {
+      const derivationPath = derivationPathOptions.find(
+        (d) => d.label === derivationPathLabel
+      );
+      if (!derivationPath) throw new Error("Invalid derivation path label");
+      setDerivationPaths(
+        [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map((i) =>
+          derivationPath.path(i)
+        )
+      );
+    }
+  }, [derivationPathLabel]);
 
   //
   // Load balances for accounts that have been loaded
@@ -224,11 +313,11 @@ export function ImportAccounts({
   //
   const loadMnemonicPublicKeys = async (
     mnemonic: string,
-    derivationPath: DerivationPath
+    derivationPaths: Array<string>
   ) => {
     return await background.request({
       method: UI_RPC_METHOD_PREVIEW_PUBKEYS,
-      params: [blockchain, mnemonic, derivationPath, LOAD_PUBLIC_KEY_AMOUNT],
+      params: [blockchain, mnemonic, derivationPaths],
     });
   };
 
@@ -237,7 +326,7 @@ export function ImportAccounts({
   //
   const loadLedgerPublicKeys = async (
     transport: Transport,
-    derivationPath: DerivationPath
+    derivationPaths: Array<string>
   ): Promise<string[]> => {
     const publicKeys = [];
     setLedgerLocked(true);
@@ -246,9 +335,8 @@ export function ImportAccounts({
       [Blockchain.ETHEREUM]: new Ethereum(transport),
     }[blockchain];
     // Add remaining accounts
-    for (let index = 0; index < LOAD_PUBLIC_KEY_AMOUNT; index += 1) {
-      const path = accountDerivationPath(blockchain, derivationPath, 0, index);
-      publicKeys.push((await ledger.getAddress(path)).address);
+    for (const derivationPath in derivationPaths) {
+      publicKeys.push((await ledger.getAddress(derivationPath)).address);
     }
     setLedgerLocked(false);
     return publicKeys.map((p) =>
@@ -259,16 +347,16 @@ export function ImportAccounts({
   //
   // Handles checkbox clicks to select accounts to import.
   //
-  const handleSelect = (publicKey: string, index: number) => () => {
-    const currentIndex = publicKeyPaths.findIndex((a) => a.index === index);
+  const handleSelect = (publicKey: string, derivationPath: string) => () => {
+    const currentIndex = publicKeyPaths.findIndex(
+      (a) => a.publicKey === publicKey
+    );
     let newPublicKeyPaths = [...publicKeyPaths];
     if (currentIndex === -1) {
       const publicKeyPath = {
         blockchain,
         derivationPath,
         publicKey,
-        account: 0,
-        index,
       };
       // Adding the account
       if (allowMultiple) {
@@ -280,57 +368,10 @@ export function ImportAccounts({
       // Removing the account
       newPublicKeyPaths.splice(currentIndex, 1);
     }
-    // Sort by account indices
-    newPublicKeyPaths.sort((a, b) => a.index - b.index);
+    // TODO Sort by account indices
+    // newPublicKeyPaths.sort((a, b) => a.index - b.index);
     setPublicKeyPaths(newPublicKeyPaths);
   };
-
-  const derivationPathOptions = {
-    [Blockchain.SOLANA]: [
-      {
-        path: DerivationPath.Bip44,
-        label: derivationPathPrefix(Blockchain.SOLANA, DerivationPath.Bip44),
-      },
-      {
-        path: DerivationPath.Bip44Change,
-        label: derivationPathPrefix(
-          Blockchain.SOLANA,
-          DerivationPath.Bip44Change
-        ),
-      },
-    ]
-      // Note: We only allow importing the deprecated sollet derivation path for
-      //       hot wallets. This UI is hidden behind a local storage flag we
-      //       expect people to manually set, since this derivation path was only
-      //       used by mostly technical early Solana users.
-      .concat(
-        mnemonic && window.localStorage.getItem("sollet")
-          ? [
-              {
-                path: DerivationPath.SolletDeprecated,
-                label:
-                  derivationPathPrefix(
-                    Blockchain.SOLANA,
-                    DerivationPath.SolletDeprecated
-                  ) + " (deprecated)",
-              },
-            ]
-          : []
-      ),
-    [Blockchain.ETHEREUM]: [
-      {
-        path: DerivationPath.Bip44,
-        label: derivationPathPrefix(Blockchain.ETHEREUM, DerivationPath.Bip44),
-      },
-      {
-        path: DerivationPath.Bip44Change,
-        label: derivationPathPrefix(
-          Blockchain.ETHEREUM,
-          DerivationPath.Bip44Change
-        ),
-      },
-    ],
-  }[blockchain];
 
   // Symbol for balance displays
   const symbol = {
@@ -369,13 +410,13 @@ export function ImportAccounts({
         <div style={{ margin: "16px" }}>
           <TextInput
             placeholder="Derivation Path"
-            value={derivationPath}
-            setValue={(e) => setDerivationPath(e.target.value)}
+            value={derivationPathLabel}
+            setValue={(e) => setDerivationPathLabel(e.target.value)}
             select={true}
             disabled={ledgerLocked}
           >
-            {derivationPathOptions.map((o, idx) => (
-              <MenuItem value={o.path} key={idx}>
+            {derivationPathOptions.map((o, index) => (
+              <MenuItem value={o.label} key={index}>
                 {o.label}
               </MenuItem>
             ))}
@@ -396,10 +437,10 @@ export function ImportAccounts({
             >
               {publicKeyPaths
                 .slice(0, DISPLAY_PUBKEY_AMOUNT)
-                .map(({ publicKey, index }) => (
+                .map(({ publicKey, derivationPath }) => (
                   <ListItemButton
                     key={publicKey.toString()}
-                    onClick={handleSelect(publicKey, index)}
+                    onClick={handleSelect(publicKey, derivationPath)}
                     sx={{
                       display: "flex",
                       paddinLeft: "16px",
@@ -421,7 +462,9 @@ export function ImportAccounts({
                         <Checkbox
                           edge="start"
                           checked={
-                            publicKeyPaths.some((a) => a.index === index) ||
+                            publicKeyPaths.some(
+                              (a) => a.derivationPath === derivationPath
+                            ) ||
                             importedPublicKeys.includes(publicKey.toString())
                           }
                           tabIndex={-1}
