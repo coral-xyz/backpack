@@ -99,10 +99,9 @@ export class SolanaHdKeyringFactory implements HdKeyringFactory {
     if (!validateMnemonic(mnemonic)) {
       throw new Error("Invalid seed words");
     }
-    const seed = mnemonicToSeedSync(mnemonic);
     return new SolanaHdKeyring({
       mnemonic,
-      seed,
+      seed: mnemonicToSeedSync(mnemonic),
       derivationPaths,
     });
   }
@@ -131,9 +130,7 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
     seed: Buffer;
     derivationPaths: Array<string>;
   }) {
-    const keypairs = derivationPaths.map((d) =>
-      deriveSolanaKeypair(seed.toString(), d)
-    );
+    const keypairs = derivationPaths.map((d) => deriveSolanaKeypair(seed, d));
     super(keypairs);
     this.mnemonic = mnemonic;
     this.seed = seed;

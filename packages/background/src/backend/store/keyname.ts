@@ -22,9 +22,7 @@ export async function getKeyname(publicKey: string): Promise<string> {
   const names = await LocalStorageDb.get(key());
   const name = names[publicKey];
   if (!name) {
-    // TODO figure out why name for wallet disappeared
-    console.warn(`unable to find name for key: ${publicKey.toString()}`);
-    return "";
+    throw new Error(`unable to find name for key: ${publicKey.toString()}`);
   }
   return name;
 }

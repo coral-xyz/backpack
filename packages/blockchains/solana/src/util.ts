@@ -5,17 +5,15 @@ import nacl from "tweetnacl";
 
 // Returns the account Keypair for the given seed and derivation path.
 export function deriveSolanaKeypair(
-  seedHex: string,
+  seed: Buffer,
   derivationPath: string
 ): Keypair {
   let derivedSeed: Buffer;
   if (derivationPath.startsWith("501'")) {
     // Sollet deprecated path
-    derivedSeed = bip32
-      .fromSeed(Buffer.from(seedHex, "hex"))
-      .derivePath(derivationPath).privateKey!;
+    derivedSeed = bip32.fromSeed(seed).derivePath(derivationPath).privateKey!;
   } else {
-    derivedSeed = derivePath(derivationPath, seedHex).key;
+    derivedSeed = derivePath(derivationPath, seed.toString("hex")).key;
   }
   const secret = nacl.sign.keyPair.fromSeed(derivedSeed).secretKey;
   return Keypair.fromSecretKey(secret);
