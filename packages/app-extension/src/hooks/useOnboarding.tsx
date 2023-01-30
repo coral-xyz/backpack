@@ -4,7 +4,10 @@ import type {
   PublicKeyPath,
   SignedPublicKeyPath,
 } from "@coral-xyz/common";
-import { UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY } from "@coral-xyz/common";
+import {
+  getBlockchainFromPath,
+  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
+} from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { ethers } from "ethers";
 
@@ -21,13 +24,14 @@ export const useOnboarding = (mnemonic?: string) => {
   };
 
   const signMessageForWallet = async (
+    blockchain: Blockchain,
     publicKeyPath: PublicKeyPath,
     message: string
   ) => {
     return await background.request({
       method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
       params: [
-        publicKeyPath.blockchain,
+        blockchain,
         publicKeyPath.publicKey,
         ethers.utils.base58.encode(Buffer.from(message, "utf-8")),
         [mnemonic, [publicKeyPath.derivationPath]],
@@ -41,12 +45,16 @@ export const useOnboarding = (mnemonic?: string) => {
   };
 
   const selectedBlockchains = [
-    ...new Set(signedPublicKeyPaths.map((s) => s.blockchain)),
+    ...new Set(
+      signedPublicKeyPaths.map((s) => getBlockchainFromPath(s.derivationPath))
+    ),
   ];
 
   const removeBlockchain = (blockchain: Blockchain) => {
     setSignedPublicKeyPaths(
-      signedPublicKeyPaths.filter((s) => s.blockchain !== blockchain)
+      signedPublicKeyPaths.filter(
+        (s) => getBlockchainFromPath(s.derivationPath) !== blockchain
+      )
     );
   };
 

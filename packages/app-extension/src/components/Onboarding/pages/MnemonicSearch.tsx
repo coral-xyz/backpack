@@ -39,7 +39,7 @@ export const MnemonicSearch = ({
       });
       const index = publicKeys.findIndex((p: string) => p === publicKey);
       if (index !== -1) {
-        onNext({ blockchain, derivationPath: recoveryPaths[index], publicKey });
+        onNext({ derivationPath: recoveryPaths[index], publicKey });
         return;
       }
       setError(true);

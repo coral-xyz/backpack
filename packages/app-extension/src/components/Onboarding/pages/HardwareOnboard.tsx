@@ -124,6 +124,7 @@ export function useHardwareOnboardSteps({
     ...(publicKeyPath
       ? [
           <HardwareSign
+            blockchain={blockchain}
             publicKeyPath={publicKeyPath}
             message={
               typeof signMessage === "string"

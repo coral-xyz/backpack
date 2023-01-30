@@ -5,16 +5,27 @@ import { Blockchain } from "./types";
 
 export const HARDENING = 0x80000000;
 
-const getCoinType = (blockchain: Blockchain) => {
-  // TODO could use SLIP44?
-  const coinType = {
-    [Blockchain.ETHEREUM]: 60,
-    [Blockchain.SOLANA]: 501,
-  }[blockchain];
+// TODO could use SLIP44
+export const blockchainCoinType = {
+  [Blockchain.ETHEREUM]: 60,
+  [Blockchain.SOLANA]: 501,
+};
+
+export const getCoinType = (blockchain: Blockchain) => {
+  const coinType = blockchainCoinType[blockchain];
   if (!coinType) {
     throw new Error("Invalid blockchain");
   }
   return coinType + HARDENING;
+};
+
+export const getBlockchainFromPath = (derivationPath: string): Blockchain => {
+  const coinType = BIPPath.fromString(derivationPath)[1];
+  return Object.keys(blockchainCoinType).find(
+    (key) =>
+      blockchainCoinType[key] === coinType ||
+      blockchainCoinType[key] === coinType - HARDENING
+  ) as Blockchain;
 };
 
 export const legacyBip44Indexed = (blockchain: Blockchain, index: number) => {

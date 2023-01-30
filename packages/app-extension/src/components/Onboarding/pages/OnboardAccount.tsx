@@ -80,11 +80,11 @@ export const OnboardAccount = ({
         setOpenDrawer(true);
       } else if (action === "create") {
         const publicKeyPath = {
-          blockchain,
           derivationPath: getIndexedPath(blockchain, 0, 0).toString(),
           publicKey: "",
         };
         const signature = await signMessageForWallet(
+          blockchain,
           publicKeyPath,
           getCreateMessage(publicKeyPath.publicKey)
         );
@@ -208,6 +208,7 @@ export const OnboardAccount = ({
               // Should only be one public key path
               const publicKeyPath = publicKeyPaths[0];
               const signature = await signMessageForWallet(
+                blockchain!,
                 publicKeyPath,
                 getCreateMessage(publicKeyPath.publicKey)
               );

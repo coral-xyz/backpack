@@ -49,7 +49,6 @@ export const HardwareDefaultAccount = ({
           : ledgerAddress.toString();
 
       onNext({
-        blockchain,
         derivationPath,
         publicKey,
       });

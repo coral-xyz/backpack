@@ -108,6 +108,7 @@ export const RecoverAccount = ({
             publicKey={publicKey!}
             onNext={async (publicKeyPath: PublicKeyPath) => {
               const signature = await signMessageForWallet(
+                blockchain!,
                 publicKeyPath,
                 authMessage
               );

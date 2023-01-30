@@ -33,7 +33,7 @@ export function ConnectHardware({
         UI_RPC_METHOD_LEDGER_IMPORT;
     await background.request({
       method,
-      params: [signedPublicKeyPath],
+      params: [blockchain, signedPublicKeyPath],
     });
   };
 

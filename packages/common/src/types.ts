@@ -97,8 +97,6 @@ export type KeyringInit = {
 
 // Location of a public key including the public key
 export type PublicKeyPath = {
-  // TODO refactor out blockchain? It's encoded in the derivation path
-  blockchain: Blockchain;
   derivationPath: string;
   publicKey: string;
 };

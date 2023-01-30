@@ -4,6 +4,7 @@ import {
   BACKEND_API_URL,
   BrowserRuntimeExtension,
   getAuthMessage,
+  getBlockchainFromPath,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
@@ -66,10 +67,10 @@ export const Finish = ({
       // Authenticate the user that the recovery has a JWT.
       // Take the first keyring init to fetch the JWT, it doesn't matter which
       // we use if there are multiple.
-      const { blockchain, publicKey, signature } =
+      const { derivationPath, publicKey, signature } =
         keyringInit.signedPublicKeyPaths[0];
       const authData = {
-        blockchain,
+        blockchain: getBlockchainFromPath(derivationPath),
         publicKey,
         signature,
         message: getAuthMessage(userId),
@@ -92,7 +93,7 @@ export const Finish = ({
       inviteCode,
       waitlistId: getWaitlistId?.(),
       blockchainPublicKeys: keyringInit.signedPublicKeyPaths.map((b) => ({
-        blockchain: b.blockchain,
+        blockchain: getBlockchainFromPath(b.derivationPath),
         publicKey: b.publicKey,
         signature: b.signature,
       })),

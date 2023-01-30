@@ -47,7 +47,7 @@ export const HardwareSearch = ({
           await ledger.getAddress(derivationPath.replace("m/", ""))
         ).address;
         if (bs58.encode(ledgerAddress) === publicKey) {
-          onNext({ blockchain, derivationPath, publicKey });
+          onNext({ derivationPath, publicKey });
           return;
         }
       }

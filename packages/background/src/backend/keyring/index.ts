@@ -15,6 +15,7 @@ import {
   BACKEND_EVENT,
   DEFAULT_AUTO_LOCK_INTERVAL_SECS,
   defaultPreferences,
+  getBlockchainFromPath,
   NOTIFICATION_KEYRING_STORE_LOCKED,
 } from "@coral-xyz/common";
 import type { KeyringStoreState } from "@coral-xyz/recoil";
@@ -395,10 +396,14 @@ export class KeyringStore {
    * Initialise a blockchain keyring.
    */
   public async blockchainKeyringAdd(
+    blockchain: Blockchain,
     publicKeyPath: PublicKeyPath,
     persist = true
   ): Promise<string> {
-    await this.activeUserKeyring.blockchainKeyringAdd(publicKeyPath);
+    await this.activeUserKeyring.blockchainKeyringAdd(
+      blockchain,
+      publicKeyPath
+    );
     if (persist) {
       await this.persist();
     }
@@ -629,10 +634,15 @@ class UserKeyring {
     keyring.username = username;
     keyring.mnemonic = keyringInit.mnemonic;
     for (const signedPublicKeyPath of keyringInit.signedPublicKeyPaths) {
-      await keyring.blockchainKeyringAdd(signedPublicKeyPath);
+      await keyring.blockchainKeyringAdd(
+        getBlockchainFromPath(signedPublicKeyPath.derivationPath),
+        signedPublicKeyPath
+      );
     }
     // Set the active wallet to be the first keyring.
-    keyring.activeBlockchain = keyringInit.signedPublicKeyPaths[0].blockchain;
+    keyring.activeBlockchain = getBlockchainFromPath(
+      keyringInit.signedPublicKeyPaths[0].derivationPath
+    );
     return keyring;
   }
 
@@ -714,9 +724,10 @@ class UserKeyring {
   ///////////////////////////////////////////////////////////////////////////////
 
   public async blockchainKeyringAdd(
+    blockchain: Blockchain,
     publicKeyPath: PublicKeyPath
   ): Promise<string> {
-    const keyring = keyringForBlockchain(publicKeyPath.blockchain);
+    const keyring = keyringForBlockchain(blockchain);
     if (this.mnemonic) {
       // Initialising using a mnemonic
       await keyring.initFromMnemonic(this.mnemonic, [
@@ -726,7 +737,7 @@ class UserKeyring {
       // Initialising using a hardware wallet
       await keyring.initFromLedger([publicKeyPath]);
     }
-    this.blockchains.set(publicKeyPath.blockchain, keyring);
+    this.blockchains.set(blockchain, keyring);
     return publicKeyPath.publicKey;
   }
 
@@ -787,10 +798,10 @@ class UserKeyring {
   ) {
     const blockchainKeyring = this.blockchains.get(blockchain);
     const ledgerKeyring = blockchainKeyring!.ledgerKeyring!;
+    await ledgerKeyring.add(publicKeyPath);
     const name = DefaultKeyname.defaultLedger(
       ledgerKeyring.publicKeys().length
     );
-    await ledgerKeyring.add(publicKeyPath);
     await store.setKeyname(publicKeyPath.publicKey, name);
     await store.setIsCold(publicKeyPath.publicKey, true);
   }
