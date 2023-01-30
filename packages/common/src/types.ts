@@ -1,7 +1,5 @@
 import type { Commitment } from "@solana/web3.js";
 
-import type { BIP44Path } from "./crypto";
-
 export type Context<Backend> = {
   sender: any;
   backend: Backend;

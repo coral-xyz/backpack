@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import type { PublicKeyPath } from "@coral-xyz/common";
 import {
-  BIP44Path,
   Blockchain,
   DEFAULT_SOLANA_CLUSTER,
   EthereumConnectionUrl,
+  legacyBip44ChangeIndexed,
+  legacyBip44Indexed,
+  legacySolletIndexed,
   LOAD_PUBLIC_KEY_AMOUNT,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
@@ -77,31 +79,16 @@ export function ImportAccounts({
   const derivationPathOptions = {
     [Blockchain.SOLANA]: [
       {
-        path: (i: number) =>
-          new BIP44Path(
-            BIP44Path.blockchainCoinType(Blockchain.SOLANA),
-            // Pass undefined for the 0th index so the first derivation path is the root
-            i === 0 ? undefined : i - 1 + BIP44Path.HARDENING
-          ).toString(),
+        path: (i: number) => legacyBip44Indexed(Blockchain.SOLANA, i),
         label: "m/44/501'/",
       },
       {
-        path: (i: number) =>
-          new BIP44Path(
-            BIP44Path.blockchainCoinType(Blockchain.SOLANA),
-            0,
-            i + BIP44Path.HARDENING
-          ).toString(),
+        path: (i: number) => legacyBip44ChangeIndexed(Blockchain.SOLANA, i),
         label: "m/44/501'/0'",
       },
       {
         path: (i: number) =>
-          new BIP44Path(
-            BIP44Path.blockchainCoinType(Blockchain.SOLANA),
-            0,
-            i + BIP44Path.HARDENING,
-            0 + BIP44Path.HARDENING
-          ).toString(),
+          legacyBip44ChangeIndexed(Blockchain.SOLANA, i) + "/0'",
         label: "m/44/501'/0'/0'",
       },
     ]
@@ -113,40 +100,24 @@ export function ImportAccounts({
         mnemonic && window.localStorage.getItem("sollet")
           ? [
               {
-                // TODO
-                path: () => "501'/0'/0/0",
-                label: "501'/0'/0/0",
+                path: (i: number) => legacySolletIndexed(i),
+                label: "501'/0'/0/0 (Deprecated)",
               },
             ]
           : []
       ),
     [Blockchain.ETHEREUM]: [
       {
-        path: (i: number) =>
-          new BIP44Path(
-            BIP44Path.blockchainCoinType(Blockchain.ETHEREUM),
-            // Pass undefined for the 0th index so the first derivation path is the root
-            i === 0 ? undefined : i - 1 + BIP44Path.HARDENING
-          ).toString(),
+        path: (i: number) => legacyBip44Indexed(Blockchain.ETHEREUM, i),
         label: "m/44/501'/",
       },
       {
-        path: (i: number) =>
-          new BIP44Path(
-            BIP44Path.blockchainCoinType(Blockchain.ETHEREUM),
-            0,
-            i + BIP44Path.HARDENING
-          ).toString(),
+        path: (i: number) => legacyBip44ChangeIndexed(Blockchain.ETHEREUM, i),
         label: "m/44/501'/0'",
       },
       {
         path: (i: number) =>
-          new BIP44Path(
-            BIP44Path.blockchainCoinType(Blockchain.ETHEREUM),
-            0,
-            i + BIP44Path.HARDENING,
-            0 + BIP44Path.HARDENING
-          ).toString(),
+          legacyBip44ChangeIndexed(Blockchain.ETHEREUM, i) + "/0'",
         label: "m/44/501'/0'/0'",
       },
     ],

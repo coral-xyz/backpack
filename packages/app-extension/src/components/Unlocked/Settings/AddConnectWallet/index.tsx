@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import {
-  BIP44Path,
+  getIndexedPath,
   openAddUserAccount,
   openConnectHardware,
   TAB_APPS,
@@ -206,14 +206,7 @@ export function AddWalletMenu({
       try {
         newPublicKey = await background.request({
           method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
-          params: [
-            blockchain,
-            new BIP44Path(
-              BIP44Path.blockchainCoinType(blockchain),
-              0,
-              0 + BIP44Path.HARDENING
-            ),
-          ],
+          params: [blockchain, getIndexedPath(blockchain, 0)],
         });
       } catch (error) {
         setError("Wallet address is used by another Backpack account.");

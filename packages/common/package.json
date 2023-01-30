@@ -27,6 +27,7 @@
     "@solana/spl-token-registry": "^0.2.3225",
     "@solana/wallet-adapter-base": "^0.9.18",
     "@solana/web3.js": "^1.63.1",
+    "bip32-path": "^0.4.2",
     "bn.js": "^5.2.1",
     "bs58": "^5.0.0",
     "ethereum-multicall": "^2.14.1",

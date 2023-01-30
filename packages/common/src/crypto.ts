@@ -1,142 +1,43 @@
+import BIPPath from "bip32-path";
+
 import { LOAD_PUBLIC_KEY_AMOUNT } from "./constants";
 import { Blockchain } from "./types";
 
-/*
- * BIP44 path defines the following levels:
- * - m / purpose' / coin_type' / account' / change / address_index
- *
- * This class allows passing undefined account, change and address_index to
- * generate
- * root paths which may not be strictly conformant. E.g.
- *
- * - m/44'/501'/
- * - m/44'/501'/0'
- *
- * https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
- * https://github.com/bitcoin/bips/blob/master/bip-0043.mediawiki
- * https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki
- */
+export const HARDENING = 0x80000000;
 
-export class BIP44Path {
-  public static readonly HARDENING: number = 0x80000000;
-  private static readonly REGEX_VALID_BIP44: string =
-    "^((m/)?(44'?))(/[0-9]+'?){2}((/[0-9]+){2})?$";
-  // Elements of the derivation path in order, e.g. address_index would be at
-  // index 4
-  private _elements: Array<number | undefined> = [];
-
-  public static blockchainCoinType(blockchain: Blockchain) {
-    // TODO could use SLIP44?
-    const coinType = {
-      [Blockchain.ETHEREUM]: 60 + BIP44Path.HARDENING,
-      [Blockchain.SOLANA]: 501 + BIP44Path.HARDENING,
-    }[blockchain];
-    if (!coinType) {
-      throw new Error("Invalid blockchain");
-    }
-    return coinType;
+const getCoinType = (blockchain: Blockchain) => {
+  // TODO could use SLIP44?
+  const coinType = {
+    [Blockchain.ETHEREUM]: 60,
+    [Blockchain.SOLANA]: 501,
+  }[blockchain];
+  if (!coinType) {
+    throw new Error("Invalid blockchain");
   }
-
-  constructor(
-    coinType: number,
-    account?: number,
-    change?: number,
-    addressIndex?: number
-  ) {
-    this.coinType = coinType;
-    this.account = account;
-    this.change = change;
-    this.addressIndex = addressIndex;
-  }
-
-  get purpose() {
-    return 44 + BIP44Path.HARDENING;
-  }
-
-  get coinType() {
-    return this._elements[1]!;
-  }
-
-  set coinType(coinType: number) {
-    // Enforce hardening
-    if (coinType < BIP44Path.HARDENING) coinType += BIP44Path.HARDENING;
-    this._elements[1] = coinType;
-  }
-
-  get account() {
-    return this._elements[2]!;
-  }
-
-  set account(account: number | undefined) {
-    // Enforce hardening
-    if (account !== undefined && account < BIP44Path.HARDENING)
-      account += BIP44Path.HARDENING;
-    this._elements[2] = account;
-  }
-
-  get change() {
-    return this._elements[3];
-  }
-
-  set change(change: number | undefined) {
-    this._elements[3] = change;
-  }
-
-  get addressIndex() {
-    return this._elements[4];
-  }
-
-  set addressIndex(addressIndex: number | undefined) {
-    this._elements[4] = addressIndex;
-  }
-
-  toString() {
-    return `m/${[this.purpose, ...this._elements]
-      .map((n) =>
-        n !== undefined && n >= BIP44Path.HARDENING
-          ? `${n - BIP44Path.HARDENING}'`
-          : n
-      )
-      .filter((n) => n !== undefined)
-      .join("/")}`;
-  }
-
-  fromString(path: string) {
-    if (!path.toString().match(new RegExp(BIP44Path.REGEX_VALID_BIP44, "g"))) {
-      throw new Error(`${path} is an invalid path`);
-    }
-    const _elements: number[] = [];
-    for (const level in path.replace("m/", "").split("/")) {
-      let element = parseInt(level, 10);
-      if (level.length > 1 && level.endsWith("'")) {
-        element += BIP44Path.HARDENING;
-      }
-      _elements.push(element);
-    }
-    this._elements = _elements;
-  }
-}
+  return coinType + HARDENING;
+};
 
 export const legacyBip44Indexed = (blockchain: Blockchain, index: number) => {
-  return new BIP44Path(
-    // @ts-ignore
-    BIP44Path.blockchainCoinType(blockchain as Blockchain),
-    index === 0 ? undefined : index - 1 + BIP44Path.HARDENING
-  ).toString();
+  const coinType = getCoinType(blockchain);
+  const path = [44 + HARDENING, coinType];
+  if (index > 0) path.push(index - 1 + HARDENING);
+  return new BIPPath.fromPathArray(path).toString();
 };
 
 export const legacyBip44ChangeIndexed = (
   blockchain: Blockchain,
   index: number
 ) => {
-  return new BIP44Path(
-    BIP44Path.blockchainCoinType(blockchain as Blockchain),
-    0 + BIP44Path.HARDENING,
-    index === 0 ? undefined : index - 1 + BIP44Path.HARDENING
-  ).toString();
+  const coinType = getCoinType(blockchain);
+  const path = [44 + HARDENING, coinType, 0 + HARDENING];
+  if (index > 0) path.push(index - 1 + HARDENING);
+  return new BIPPath.fromPathArray(path).toString();
 };
 
-export const legacySolletIndexed = (index: number) => {};
+export const legacySolletIndexed = (index: number) => {
+  // TODO
+  return "";
+};
 
 // Get the nth index account according to the Backpack derivation path scheme
 export const getIndexedPath = (
@@ -144,12 +45,10 @@ export const getIndexedPath = (
   account = 0,
   index = 0
 ) => {
-  return new BIP44Path(
-    BIP44Path.blockchainCoinType(blockchain),
-    account + BIP44Path.HARDENING,
-    0 + BIP44Path.HARDENING,
-    index === 0 ? undefined : index - 1 + BIP44Path.HARDENING
-  );
+  const coinType = getCoinType(blockchain);
+  const path = [44 + HARDENING, coinType, account + HARDENING, 0 + HARDENING];
+  if (index > 0) path.push(index - 1 + HARDENING);
+  return new BIPPath.fromPathArray(path).toString();
 };
 
 export const getRecoveryPaths = (blockchain: Blockchain) => {
