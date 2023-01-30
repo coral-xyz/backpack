@@ -27,7 +27,6 @@ export function PreferencesIpfsGateway() {
 
   const currentIpfsGatewayUrl = useIpfsGateway();
   const changeIpfsGateway = async (url: string) => {
-    console.log("IT's triggering!: ", url.toString());
     try {
       background
         .request({
@@ -40,7 +39,6 @@ export function PreferencesIpfsGateway() {
     } catch (err) {
       console.error(err);
     }
-    console.log("CURRENT GATEWAY: ", currentIpfsGatewayUrl.toString());
   };
 
   useEffect(() => {
