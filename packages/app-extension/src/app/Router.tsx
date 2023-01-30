@@ -10,15 +10,17 @@ import {
   QUERY_APPROVE_ALL_TRANSACTIONS,
   QUERY_APPROVE_MESSAGE,
   QUERY_APPROVE_TRANSACTION,
-  QUERY_COLD,
   QUERY_LOCKED,
   toTitleCase,
 } from "@coral-xyz/common";
 import {
- BackgroundChatsSync,  EmptyState,
+  BackgroundChatsSync,
+  EmptyState,
   refreshGroupsAndFriendships,
-  SignalingManager } from "@coral-xyz/react-common";
+  SignalingManager,
+} from "@coral-xyz/react-common";
 import {
+  isKeyCold,
   KeyringStoreStateEnum,
   useApprovedOrigins,
   useBackgroundClient,
@@ -32,6 +34,7 @@ import {
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Block as BlockIcon } from "@mui/icons-material";
 import { AnimatePresence, motion } from "framer-motion";
+import { useRecoilValue } from "recoil";
 
 import { refreshXnftPreferences } from "../api/preferences";
 import { Locked } from "../components/Locked";
@@ -140,8 +143,6 @@ function PopupRouter() {
       return <QueryApproveAllTransactions />;
     case QUERY_APPROVE_MESSAGE:
       return <QueryApproveMessage />;
-    case QUERY_COLD:
-      return <QueryCold />;
     default:
       return <FullApp />;
   }
@@ -216,8 +217,16 @@ function QueryApproveTransaction() {
   const tx = url.searchParams.get("tx");
   const wallet = url.searchParams.get("wallet")!;
   const blockchain = url.searchParams.get("blockchain")! as Blockchain;
+  const _isKeyCold = useRecoilValue(isKeyCold(wallet));
 
-  return (
+  return _isKeyCold ? (
+    <Cold
+      title={title!}
+      origin={origin!}
+      wallet={wallet}
+      onCompletion={async () => {}}
+    />
+  ) : (
     <WithEnabledBlockchain blockchain={blockchain}>
       <WithUnlock>
         <ApproveTransaction
@@ -276,8 +285,16 @@ function QueryApproveAllTransactions() {
   const txs = JSON.parse(url.searchParams.get("txs")!);
   const wallet = url.searchParams.get("wallet")!;
   const blockchain = url.searchParams.get("blockchain")! as Blockchain;
+  const _isKeyCold = useRecoilValue(isKeyCold(wallet));
 
-  return (
+  return _isKeyCold ? (
+    <Cold
+      title={title!}
+      origin={origin!}
+      wallet={wallet}
+      onCompletion={async () => {}}
+    />
+  ) : (
     <WithEnabledBlockchain blockchain={blockchain}>
       <WithUnlock>
         <ApproveAllTransactions
@@ -297,27 +314,6 @@ function QueryApproveAllTransactions() {
   );
 }
 
-function QueryCold() {
-  logger.debug("query cold");
-  const bg = useBackgroundResponder();
-  const url = new URL(window.location.href);
-  const wallet = url.searchParams.get("wallet")!;
-  const origin = url.searchParams.get("origin");
-  const title = url.searchParams.get("title");
-
-  return (
-    <Cold
-      wallet={wallet}
-      title={title!}
-      origin={origin!}
-      onCompletion={async () => {
-        bg.response({});
-        window.close();
-      }}
-    />
-  );
-}
-
 function QueryApproveMessage() {
   logger.debug("query approve message");
   const bg = useBackgroundResponder();
@@ -328,8 +324,16 @@ function QueryApproveMessage() {
   const requestId = parseInt(url.searchParams.get("requestId")!);
   const wallet = url.searchParams.get("wallet")!;
   const blockchain = url.searchParams.get("blockchain")! as Blockchain;
+  const _isKeyCold = useRecoilValue(isKeyCold(wallet));
 
-  return (
+  return _isKeyCold ? (
+    <Cold
+      title={title!}
+      origin={origin!}
+      wallet={wallet}
+      onCompletion={async () => {}}
+    />
+  ) : (
     <WithEnabledBlockchain blockchain={blockchain}>
       <WithUnlock>
         <ApproveMessage
