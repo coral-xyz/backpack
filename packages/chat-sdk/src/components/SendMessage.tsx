@@ -317,6 +317,7 @@ export const SendMessage = ({
         {activeReply.parent_client_generated_uuid && (
           <ReplyContainer
             marginBottom={6}
+            padding={12}
             parent_username={activeReply.parent_username || ""}
             showCloseBtn={true}
             text={activeReply.text}

@@ -56,6 +56,7 @@ type CustomColors = {
   smallTextColor: string;
   brandColor: string;
   backgroundBackdrop: string;
+  successButton: string;
   background: string;
   nav: string;
   bg2: string;
@@ -234,6 +235,7 @@ const DARK_COLORS = {
   avatarIconBackground: "#DFE0E5",
   text: TEXT_COLOR,
   dangerButton: DANGER_DARK_COLOR,
+  successButton: "#2ecc71",
   alpha: "#8F929E",
   scrollbarTrack: BACKGROUND_COLOR_0,
   scrollbarThumb: SCROLLBAR_THUMB_COLOR,
@@ -268,6 +270,7 @@ const LIGHT_COLORS = {
   bg3: LIGHT_BACKGROUND_COLOR_1,
   bg4: LIGHT_BACKGROUND_COLOR_0,
   fontColor: LIGHT_FONT_COLOR,
+  successButton: "#2ecc71",
   fontColor2: LIGHT_FONT_COLOR_2,
   fontColor3: LIGHT_FONT_COLOR_3,
   fontColor4: LIGHT_FONT_COLOR_2,

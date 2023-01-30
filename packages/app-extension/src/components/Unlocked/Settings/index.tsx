@@ -115,12 +115,6 @@ function SettingsList() {
       icon: (props: any) => <ContactsIcon {...props} />,
       detailIcon: <PushDetail />,
     });
-    settingsMenu.push({
-      label: "Requests",
-      onClick: () => nav.push("requests"),
-      icon: (props: any) => <ContactsIcon {...props} />,
-      detailIcon: <PushDetail />,
-    });
   }
 
   if (BACKPACK_FEATURE_XNFT) {

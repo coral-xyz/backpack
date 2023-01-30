@@ -5,6 +5,7 @@ import { BACKEND_API_URL } from "@coral-xyz/common";
 import { fetchMoreChatsFor, Loading } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Loader } from "@giphy/react-components";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import { CircularProgress } from "@mui/material";
 
 import { base64ToArrayBuffer } from "../utils/imageUploadUtils";
@@ -17,7 +18,14 @@ import { MessagesSkeleton } from "./MessagesSkeleton";
 import { ScrollBarImpl } from "./ScrollbarImpl";
 import { SendMessage } from "./SendMessage";
 
-export const FullScreenChat = ({ messageRef, setMessageRef }) => {
+export const FullScreenChat = ({
+  setLocalUnreadCount,
+  messageRef,
+  setMessageRef,
+  jumpToBottom,
+  setShowJumpToBottom,
+  localUnreadCount,
+}) => {
   const { loading, chats, userId, roomId, type, nftMint, publicKey } =
     useChatContext();
   const [autoScroll, setAutoScroll] = useState(true);
@@ -113,10 +121,23 @@ export const FullScreenChat = ({ messageRef, setMessageRef }) => {
                 1
               ) {
                 setAutoScroll(true);
+                setShowJumpToBottom(false);
+                window.setTimeout(() => {
+                  setLocalUnreadCount(0);
+                }, 150);
               } else {
                 // User has scrolled up, don't autoscroll as more messages come in.
                 if (autoScroll) {
                   setAutoScroll(false);
+                }
+                if (
+                  scrollContainer.scrollHeight -
+                    scrollContainer.scrollTop -
+                    scrollContainer.clientHeight >
+                  500
+                ) {
+                  // user has scrolled way up, give them a way to come down
+                  setShowJumpToBottom(true);
                 }
               }
               if (scrollContainer.scrollTop === 0) {
@@ -148,6 +169,9 @@ export const FullScreenChat = ({ messageRef, setMessageRef }) => {
             >
               {({ getRootProps, getInputProps, isFocused }) => (
                 <div
+                  style={{
+                    paddingBottom: 20,
+                  }}
                   {...getRootProps({
                     onClick: (event) => event.stopPropagation(),
                   })}
@@ -177,6 +201,51 @@ export const FullScreenChat = ({ messageRef, setMessageRef }) => {
             </Dropzone>
           </div>
         </ScrollBarImpl>
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          bottom: 70,
+          width: "100%",
+          transition: "opacity 0.1s",
+          opacity: jumpToBottom ? 1 : 0,
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row-reverse",
+            marginRight: 10,
+          }}
+        >
+          <div
+            style={{
+              fontSize: 12,
+              fontWeight: 500,
+              display: "inline-flex",
+              cursor: "pointer",
+              padding: "8px 12px 8px 16px",
+              background: theme.custom.colors.invertedPrimary,
+              color: theme.custom.colors.background,
+              borderRadius: 16,
+            }}
+            onClick={() => messageRef?.scrollToBottom?.()}
+          >
+            {localUnreadCount
+              ? localUnreadCount === 1
+                ? "1 unread message"
+                : `${localUnreadCount} unread messages`
+              : "Jump to bottom"}{" "}
+            <ArrowDownwardIcon
+              style={{
+                color: theme.custom.colors.icon,
+                fontSize: 14,
+                marginTop: 2,
+                marginLeft: 2,
+              }}
+            />
+          </div>
+        </div>
       </div>
       <div style={{ position: "absolute", bottom: 0, width: "100%" }}>
         <SendMessage

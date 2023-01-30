@@ -42,7 +42,6 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
    */
   useEffect(() => {
     (async () => {
-      setLoading(true);
       setAuthSignature(null);
       const result = await checkAuthentication(user.username, user.jwt);
       // These set state calls should be batched
@@ -59,21 +58,21 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
    * and the server and set the auth data.
    */
   useEffect(() => {
-    if (serverAccountState && !serverAccountState.isAuthenticated) {
-      (async () => {
-        const authData = await getAuthSigner(
-          serverAccountState.publicKeys.map((p) => p.publicKey)
-        );
-        if (authData) {
-          setAuthData({
-            ...authData,
-            message: getAuthMessage(user.uuid),
-            userId: user.uuid,
-          });
-        }
-      })();
-    } else {
-      setLoading(false);
+    if (serverAccountState) {
+      if (!serverAccountState.isAuthenticated) {
+        (async () => {
+          const authData = await getAuthSigner(
+            serverAccountState.publicKeys.map((p) => p.publicKey)
+          );
+          if (authData) {
+            setAuthData({
+              ...authData,
+              message: getAuthMessage(user.uuid),
+              userId: user.uuid,
+            });
+          }
+        })();
+      }
     }
   }, [serverAccountState]);
 
@@ -119,7 +118,6 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
           method: UI_RPC_METHOD_USER_JWT_UPDATE,
           params: [id, jwt],
         });
-        setLoading(false);
         setOpenDrawer(false);
       }
     })();
@@ -127,15 +125,10 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
 
   return (
     <>
-      {loading ? (
-        <Loading />
-      ) : serverAccountState ? (
-        <WithSyncAccount serverPublicKeys={serverAccountState.publicKeys}>
-          {children}
-        </WithSyncAccount>
-      ) : (
-        children
+      {serverAccountState && (
+        <WithSyncAccount serverPublicKeys={serverAccountState.publicKeys} />
       )}
+      {children}
       {authData && (
         <WithDrawer
           openDrawer={openDrawer}
