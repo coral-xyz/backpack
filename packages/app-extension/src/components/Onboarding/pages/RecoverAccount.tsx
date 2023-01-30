@@ -44,7 +44,8 @@ export const RecoverAccount = ({
 
   const authMessage = userId ? getAuthMessage(userId) : "";
 
-  const { addPublicKeyPath, keyringInit } = useOnboarding(mnemonic);
+  const { addPublicKeyPath, keyringInit, signMessageForWallet } =
+    useOnboarding(mnemonic);
 
   const hardwareOnboardSteps = useHardwareOnboardSteps({
     blockchain: blockchain!,
@@ -105,8 +106,12 @@ export const RecoverAccount = ({
             blockchain={blockchain!}
             mnemonic={mnemonic!}
             publicKey={publicKey!}
-            onNext={(publicKeyPath: PublicKeyPath) => {
-              addPublicKeyPath(publicKeyPath);
+            onNext={async (publicKeyPath: PublicKeyPath) => {
+              const signature = await signMessageForWallet(
+                publicKeyPath,
+                authMessage
+              );
+              addPublicKeyPath({ ...publicKeyPath, signature });
               nextStep();
             }}
             onRetry={prevStep}

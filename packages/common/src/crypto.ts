@@ -117,7 +117,26 @@ export class BIP44Path {
   }
 }
 
-export const getLegacyIndexedPath = (blockchain: Blockchain, index) => {};
+export const legacyBip44Indexed = (blockchain: Blockchain, index: number) => {
+  return new BIP44Path(
+    // @ts-ignore
+    BIP44Path.blockchainCoinType(blockchain as Blockchain),
+    index === 0 ? undefined : index - 1 + BIP44Path.HARDENING
+  ).toString();
+};
+
+export const legacyBip44ChangeIndexed = (
+  blockchain: Blockchain,
+  index: number
+) => {
+  return new BIP44Path(
+    BIP44Path.blockchainCoinType(blockchain as Blockchain),
+    0 + BIP44Path.HARDENING,
+    index === 0 ? undefined : index - 1 + BIP44Path.HARDENING
+  ).toString();
+};
+
+export const legacySolletIndexed = (index: number) => {};
 
 // Get the nth index account according to the Backpack derivation path scheme
 export const getIndexedPath = (
@@ -129,7 +148,7 @@ export const getIndexedPath = (
     BIP44Path.blockchainCoinType(blockchain),
     account + BIP44Path.HARDENING,
     0 + BIP44Path.HARDENING,
-    index === 0 ? undefined : index - 1
+    index === 0 ? undefined : index - 1 + BIP44Path.HARDENING
   );
 };
 
@@ -158,28 +177,18 @@ export const getRecoveryPaths = (blockchain: Blockchain) => {
    */
 
   // Build an array of derivation paths to search for recovery
-  const paths: Array<string> = [];
+  let paths: Array<string> = [];
   // Legacy created/imported accounts (m/44/501'/ and m/44/501'/{0...n})
-  paths.concat(
+  paths = paths.concat(
     [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map((i) =>
-      // Pass undefined for the 0th index so the first is the root
-      new BIP44Path(
-        BIP44Path.blockchainCoinType(blockchain),
-        i === 0 ? undefined : i - 1
-      ).toString()
+      legacyBip44Indexed(blockchain, i)
     )
   );
 
   // Legacy imported accounts (m/44/501'/0' and m/44/501'/0'/{0...n})
-  paths.concat(
+  paths = paths.concat(
     [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map((i) =>
-      new BIP44Path(
-        BIP44Path.blockchainCoinType(blockchain),
-        // Harden the account
-        i + BIP44Path.HARDENING,
-        // Pass undefined for the 0th index so first is the root
-        i === 0 ? undefined : i - 1
-      ).toString()
+      legacyBip44ChangeIndexed(blockchain, i)
     )
   );
 
@@ -189,7 +198,7 @@ export const getRecoveryPaths = (blockchain: Blockchain) => {
   const numAccounts = 5;
   // New derivation path scheme, search the first `LOAD_PUBLIC_KEY_AMOUNT`
   // indexes on the first `numAccounts` account paths
-  paths.concat(
+  paths = paths.concat(
     [...Array(numAccounts).keys()]
       .map((k) =>
         [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map((j) =>

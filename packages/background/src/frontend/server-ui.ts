@@ -429,7 +429,8 @@ async function handle<T = any>(
         ctx,
         params[0],
         params[1],
-        params[2]
+        params[2],
+        params[3]
       );
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);

@@ -4,11 +4,7 @@ import type {
   PublicKeyPath,
   SignedPublicKeyPath,
 } from "@coral-xyz/common";
-import {
-  getCreateMessage,
-  UI_RPC_METHOD_PREVIEW_PUBKEYS,
-  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-} from "@coral-xyz/common";
+import { UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { ethers } from "ethers";
 
@@ -20,26 +16,23 @@ export const useOnboarding = (mnemonic?: string) => {
   >([]);
 
   // Add the initialisation parameters for a blockchain keyring to state
-  const addPublicKeyPath = async (
-    publicKeyPath: PublicKeyPath | SignedPublicKeyPath
+  const addPublicKeyPath = async (signedPublicKeyPath: SignedPublicKeyPath) => {
+    setSignedPublicKeyPaths([...signedPublicKeyPaths, signedPublicKeyPath]);
+  };
+
+  const signMessageForWallet = async (
+    publicKeyPath: PublicKeyPath,
+    message: string
   ) => {
-    if ("signature" in publicKeyPath) {
-      // Sign if required
-      publicKeyPath.signature = await background.request({
-        method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-        params: [
-          publicKeyPath,
-          ethers.utils.base58.encode(
-            Buffer.from(getCreateMessage(publicKeyPath.publicKey!), "utf-8")
-          ),
-          mnemonic,
-        ],
-      });
-    }
-    setSignedPublicKeyPaths([
-      ...signedPublicKeyPaths,
-      publicKeyPath as SignedPublicKeyPath,
-    ]);
+    return await background.request({
+      method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
+      params: [
+        publicKeyPath.blockchain,
+        publicKeyPath.publicKey,
+        ethers.utils.base58.encode(Buffer.from(message, "utf-8")),
+        [mnemonic, [publicKeyPath.derivationPath]],
+      ],
+    });
   };
 
   const keyringInit = {
@@ -65,5 +58,6 @@ export const useOnboarding = (mnemonic?: string) => {
     removeBlockchain,
     resetPublicKeyPaths,
     selectedBlockchains,
+    signMessageForWallet,
   };
 };

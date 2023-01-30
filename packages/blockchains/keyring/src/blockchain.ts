@@ -65,15 +65,13 @@ export class BlockchainKeyring {
     this.ledgerKeyring = this.ledgerKeyringFactory.init([]);
     // Empty imported keyring to hold imported secret keys
     this.importedKeyring = this.keyringFactory.init([]);
-    // TODO
-    this.activeWallet = "";
+    this.activeWallet = this.hdKeyring.publicKeys()[0];
     this.deletedWallets = [];
 
     // Persist a given name for this wallet.
     const newAccounts: Array<[string, string]> = [];
-
-    for (const publicKey of this.hdKeyring.publicKeys()) {
-      const name = ""; // TODO DefaultKeyname.defaultDerived(index);
+    for (const [index, publicKey] of this.hdKeyring.publicKeys().entries()) {
+      const name = DefaultKeyname.defaultDerived(index + 1);
       await store.setKeyname(publicKey, name);
       newAccounts.push([publicKey, name]);
     }
@@ -87,13 +85,13 @@ export class BlockchainKeyring {
     this.ledgerKeyring = this.ledgerKeyringFactory.init(publicKeyPaths);
     // Empty imported keyring to hold imported secret keys
     this.importedKeyring = this.keyringFactory.init([]);
-    this.activeWallet = publicKeyPaths[0].publicKey;
+    this.activeWallet = this.ledgerKeyring.publicKeys()[0];
     this.deletedWallets = [];
 
     // Persist a given name for this wallet.
     const newAccounts: Array<[string, string]> = [];
     for (const [index, publicKeyPath] of publicKeyPaths.entries()) {
-      const name = DefaultKeyname.defaultLedger(index);
+      const name = DefaultKeyname.defaultLedger(index + 1);
       await store.setKeyname(publicKeyPath.publicKey, name);
       await store.setIsCold(publicKeyPath.publicKey, true);
       newAccounts.push([publicKeyPath.publicKey, name]);
@@ -117,14 +115,37 @@ export class BlockchainKeyring {
     return this.hdKeyring!.mnemonic;
   }
 
-  public async deriveNextKey(): Promise<[string, string, string]> {
-    return ["", "", ""];
+  public async deriveNextKey(): Promise<{
+    publicKey: string;
+    derivationPath: string;
+    name: string;
+  }> {
+    const { publicKey, derivationPath } = await this.hdKeyring!.deriveNextKey();
+
+    // Save a default name.
+    const name = DefaultKeyname.defaultDerived(
+      this.hdKeyring!.publicKeys().length
+    );
+    await store.setKeyname(publicKey, name);
+
+    return { publicKey, derivationPath, name };
   }
 
   public async addDerivationPath(
     derivationPath: string
-  ): Promise<[string, string]> {
-    return ["", ""];
+  ): Promise<{ publicKey: string; name: string }> {
+    const publicKey = await this.hdKeyring!.addDerivationPath(derivationPath);
+
+    // Save a default name.
+    const name = DefaultKeyname.defaultDerived(
+      this.hdKeyring!.publicKeys().length
+    );
+    await store.setKeyname(publicKey, name);
+
+    return {
+      publicKey,
+      name,
+    };
   }
 
   public async importSecretKey(
@@ -214,13 +235,11 @@ export class BlockchainKeyring {
   }
 
   private getKeyring(publicKey: string): Keyring {
-    console.log(this);
     for (const keyring of [
       this.hdKeyring,
       this.importedKeyring,
       this.ledgerKeyring,
     ]) {
-      console.log(keyring && keyring.publicKeys());
       if (keyring && keyring.publicKeys().find((k) => k === publicKey)) {
         return keyring;
       }

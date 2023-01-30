@@ -499,10 +499,10 @@ export class Backend {
       blockchainKeyring = keyringForBlockchain(blockchain);
       if (keyringInit.length === 2) {
         // Using a mnemonic
-        blockchainKeyring.initFromMnemonic(...keyringInit);
+        blockchainKeyring.initFromMnemonic(keyringInit[0], keyringInit[1]);
       } else {
         // Using a ledger
-        blockchainKeyring.initFromLedger(...keyringInit);
+        blockchainKeyring.initFromLedger(keyringInit[0]);
       }
     } else {
       blockchainKeyring =
@@ -815,7 +815,9 @@ export class Backend {
    * @param blockchain - Blockchain to add the wallet for
    */
   async keyringDeriveWallet(blockchain: Blockchain): Promise<string> {
-    const [publicKey, name] = await this.keyringStore.deriveNextKey(blockchain);
+    const { publicKey, name } = await this.keyringStore.deriveNextKey(
+      blockchain
+    );
 
     try {
       await this.userAccountPublicKeyCreate(blockchain, publicKey);
@@ -832,7 +834,7 @@ export class Backend {
       name: NOTIFICATION_KEYRING_DERIVED_WALLET,
       data: {
         blockchain,
-        publicKey: publicKey.toString(),
+        publicKey,
         name,
       },
     });
@@ -1141,6 +1143,7 @@ export class Backend {
         if (index !== -1) {
           // There is a match among the recovery paths
           let blockchainKeyring: BlockchainKeyring | undefined = undefined;
+
           // Check if the blockchain keyring already exists
           try {
             blockchainKeyring =
@@ -1148,28 +1151,32 @@ export class Backend {
                 blockchain
               );
           } catch {
-            // Pass
+            // Doesn't exist, we can create it
           }
+
           if (blockchainKeyring) {
             // Exists, just add the missing derivation path
-            const [publicKey, name] = await this.keyringStore.activeUserKeyring
-              .keyringForBlockchain(blockchain)
-              .addDerivationPath(recoveryPaths[index]);
+            const { publicKey, name } =
+              await this.keyringStore.activeUserKeyring
+                .keyringForBlockchain(blockchain)
+                .addDerivationPath(recoveryPaths[index]);
             this.events.emit(BACKEND_EVENT, {
               name: NOTIFICATION_KEYRING_DERIVED_WALLET,
               data: {
                 blockchain,
-                publicKey: publicKey.toString(),
+                publicKey,
                 name,
               },
             });
           } else {
             // Create blockchain keyring
-            await this.blockchainKeyringsAdd(blockchain, {
+            const publicKeyPath = {
               blockchain,
               publicKey: publicKeys[index],
               derivationPath: recoveryPaths[index],
-              // TODO
+            };
+            await this.blockchainKeyringsAdd(blockchain, {
+              ...publicKeyPath,
               signature: "",
             });
           }
@@ -1506,21 +1513,26 @@ export class Backend {
    */
   async blockchainKeyringsAdd(
     blockchain: Blockchain,
-    signedPublicKeyPath: SignedPublicKeyPath
+    maybeSignedPublicKeyPath: PublicKeyPath | SignedPublicKeyPath
   ): Promise<string> {
-    const { publicKey, signature } = signedPublicKeyPath;
+    const { publicKey } = maybeSignedPublicKeyPath;
 
     await this.keyringStore.blockchainKeyringAdd(
-      signedPublicKeyPath as PublicKeyPath
+      maybeSignedPublicKeyPath as PublicKeyPath
     );
 
-    // Add the new public key to the API
-    try {
-      await this.userAccountPublicKeyCreate(blockchain, publicKey, signature);
-    } catch (error) {
-      // Roll back the added blockchain keyring
-      await this.keyringStore.blockchainKeyringRemove(blockchain);
-      throw error;
+    // In recovery cases, this public key may already exist on the API, so don't
+    // enforce a signature
+    if ("signature" in maybeSignedPublicKeyPath) {
+      const { signature } = maybeSignedPublicKeyPath;
+      // Add the new public key to the API
+      try {
+        await this.userAccountPublicKeyCreate(blockchain, publicKey, signature);
+      } catch (error) {
+        // Roll back the added blockchain keyring
+        await this.keyringStore.blockchainKeyringRemove(blockchain);
+        throw error;
+      }
     }
 
     const publicKeyData = await this.keyringStoreReadAllPubkeyData();

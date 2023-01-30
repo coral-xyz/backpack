@@ -55,6 +55,7 @@ export const OnboardAccount = ({
     removeBlockchain,
     resetPublicKeyPaths,
     selectedBlockchains,
+    signMessageForWallet,
   } = useOnboarding(mnemonic);
 
   useEffect(() => {
@@ -78,12 +79,17 @@ export const OnboardAccount = ({
         setBlockchain(blockchain);
         setOpenDrawer(true);
       } else if (action === "create") {
-        // Default path
-        addPublicKeyPath({
+        const publicKeyPath = {
           blockchain,
           derivationPath: getIndexedPath(blockchain, 0, 0).toString(),
           publicKey: "",
-        });
+        };
+        const signature = await signMessageForWallet(
+          publicKeyPath,
+          getCreateMessage(publicKeyPath.publicKey)
+        );
+        // Default path
+        addPublicKeyPath({ ...publicKeyPath, signature });
       }
     }
   };
@@ -198,9 +204,14 @@ export const OnboardAccount = ({
             blockchain={blockchain!}
             mnemonic={mnemonic!}
             allowMultiple={false}
-            onNext={(publicKeyPaths: Array<PublicKeyPath>) => {
+            onNext={async (publicKeyPaths: Array<PublicKeyPath>) => {
               // Should only be one public key path
-              addPublicKeyPath(publicKeyPaths[0]);
+              const publicKeyPath = publicKeyPaths[0];
+              const signature = await signMessageForWallet(
+                publicKeyPath,
+                getCreateMessage(publicKeyPath.publicKey)
+              );
+              addPublicKeyPath({ ...publicKeyPath, signature });
               setOpenDrawer(false);
             }}
           />

@@ -150,12 +150,18 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
     super.deletePublicKey(publicKey);
   }
 
-  public deriveNextKey(): [string, string, string] {
-    return ["", "", ""];
+  public deriveNextKey(): { publicKey: string; derivationPath: string } {
+    return {
+      publicKey: "",
+      derivationPath: "",
+    };
   }
 
-  public addDerivationPath(derivationPath: string): [string, string] {
-    return ["", ""];
+  public addDerivationPath(derivationPath: string): string {
+    const keypair = deriveSolanaKeypair(this.seed, derivationPath);
+    this.keypairs.push(keypair);
+    this.derivationPaths.push(derivationPath);
+    return keypair.publicKey.toString();
   }
 
   public toJson(): HdKeyringJson {

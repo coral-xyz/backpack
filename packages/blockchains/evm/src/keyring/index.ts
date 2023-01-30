@@ -14,6 +14,7 @@ import {
   LEDGER_METHOD_ETHEREUM_SIGN_MESSAGE,
   LEDGER_METHOD_ETHEREUM_SIGN_TRANSACTION,
 } from "@coral-xyz/common";
+import { HDNode } from "@ethersproject/hdnode";
 import { mnemonicToSeedSync, validateMnemonic } from "bip39";
 import type { Wallet } from "ethers";
 import { ethers } from "ethers";
@@ -99,8 +100,10 @@ export class EthereumHdKeyringFactory implements HdKeyringFactory {
       throw new Error("Invalid seed words");
     }
     const seed = mnemonicToSeedSync(mnemonic);
-    const wallets = derivationPaths.map((path) =>
-      ethers.Wallet.fromMnemonic(mnemonic, path)
+    const node = HDNode.fromMnemonic(mnemonic);
+    // TODO this is slow for many derivation paths
+    const wallets = derivationPaths.map(
+      (path) => new ethers.Wallet(node.derivePath(path))
     );
     return new EthereumHdKeyring({
       mnemonic,
@@ -142,12 +145,17 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
     this.seed = seed;
   }
 
-  deriveNextKey(): [string, string, string] {
-    return ["", "", ""];
+  deriveNextKey(): { publicKey: string; derivationPath: string } {
+    return {
+      publicKey: "",
+      derivationPath: "",
+    };
   }
 
-  addDerivationPath(derivationPath: string): [string, string] {
-    return ["", ""];
+  addDerivationPath(derivationPath: string): string {
+    const wallet = ethers.Wallet.fromMnemonic(this.mnemonic, derivationPath);
+    this.wallets.push(wallet);
+    return wallet.address;
   }
 
   // @ts-ignore
