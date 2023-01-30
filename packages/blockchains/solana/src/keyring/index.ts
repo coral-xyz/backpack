@@ -1,10 +1,13 @@
-import type {
+import {
   HdKeyring,
   HdKeyringFactory,
   HdKeyringJson,
   Keyring,
   KeyringFactory,
   KeyringJson,
+  KeystoneKeyring,
+  KeystoneKeyringBase,
+  KeystoneKeyringFactory,
   LedgerKeyring,
   LedgerKeyringJson,
 } from "@coral-xyz/blockchain-keyring";
@@ -13,8 +16,10 @@ import type { WalletDescriptor } from "@coral-xyz/common";
 import {
   Blockchain,
   getIndexedPath,
+  KeystoneKeyringJson,
   LEDGER_METHOD_SOLANA_SIGN_MESSAGE,
   LEDGER_METHOD_SOLANA_SIGN_TRANSACTION,
+  UR,
   nextIndicesFromPaths,
 } from "@coral-xyz/common";
 import { Keypair, PublicKey } from "@solana/web3.js";
@@ -23,6 +28,7 @@ import { ethers } from "ethers";
 import nacl from "tweetnacl";
 
 import { deriveSolanaKeypair } from "../util";
+import { KeystoneKeyring as KeystoneKeyringOrigin } from './keystone';
 
 const { base58 } = ethers.utils;
 
@@ -281,5 +287,113 @@ export class SolanaLedgerKeyring
         walletDescriptor.derivationPath.replace("m/", ""),
       ],
     });
+  }
+}
+
+export class SolanaKeystoneKeyringFactory implements KeystoneKeyringFactory {
+  public fromAccounts(accounts: Array<ImportedDerivationPath>): KeystoneKeyring {
+    return new SolanaKeystoneKeyring();
+  }
+
+  public fromUR(ur: UR): KeystoneKeyring {
+    return SolanaKeystoneKeyring.fromUR(ur);
+  }
+
+  public fromJson(obj: KeystoneKeyringJson): KeystoneKeyring {
+    return new SolanaKeystoneKeyring();
+  }
+}
+
+export class SolanaKeystoneKeyring extends KeystoneKeyringBase implements KeystoneKeyring {
+  private keyring: KeystoneKeyringOrigin;
+
+  public async signTransaction(tx: Buffer, address: string): Promise<string> {
+    return '';
+  }
+
+  public async signMessage(msg: Buffer, address: string): Promise<string> {
+    return '';
+  }
+
+  public async keystoneImport(ur: UR) {
+    this.keyring = new KeystoneKeyringOrigin();
+    this.keyring.getInteraction().onRead(() => ur);
+    await this.keyring.readKeyring();
+  }
+
+  public static fromUR(ur: UR) {
+    return new SolanaKeystoneKeyring();
+  }
+
+  public publicKeys() {
+    return this.keyring.getAccounts().map(e => e.pubKey);
+  }
+
+  public getAccounts(): ImportedDerivationPath[] {
+    return this.keyring.getAccounts().map(e => ({
+      path: e.hdPath,
+      account: e.index,
+      publicKey: e.pubKey,
+    }));
+  }
+
+  public toJson() {
+    return {
+      accounts: this.getAccounts(),
+    };
+  }
+}
+
+export class SolanaKeystoneKeyringFactory implements KeystoneKeyringFactory {
+  public fromAccounts(accounts: Array<ImportedDerivationPath>): KeystoneKeyring {
+    return new SolanaKeystoneKeyring();
+  }
+
+  public fromUR(ur: UR): KeystoneKeyring {
+    return SolanaKeystoneKeyring.fromUR(ur);
+  }
+
+  public fromJson(obj: KeystoneKeyringJson): KeystoneKeyring {
+    return new SolanaKeystoneKeyring();
+  }
+}
+
+export class SolanaKeystoneKeyring extends KeystoneKeyringBase implements KeystoneKeyring {
+  private keyring: KeystoneKeyringOrigin;
+
+  public async signTransaction(tx: Buffer, address: string): Promise<string> {
+    return '';
+  }
+
+  public async signMessage(msg: Buffer, address: string): Promise<string> {
+    return '';
+  }
+
+  public async keystoneImport(ur: UR) {
+    this.keyring = new KeystoneKeyringOrigin();
+    this.keyring.getInteraction().onRead(() => ur);
+    await this.keyring.readKeyring();
+  }
+
+  public static fromUR(ur: UR) {
+    return new SolanaKeystoneKeyring();
+  }
+
+  public publicKeys() {
+    return this.keyring.getAccounts().map(e => e.pubKey);
+  }
+
+  public getAccounts(): ImportedDerivationPath[] {
+    return this.keyring.getAccounts().map(e => ({
+      path: e.hdPath,
+      account: e.index,
+      publicKey: e.pubKey,
+    }));
+  }
+
+  public toJson() {
+    return {
+      accounts: this.getAccounts(),
+    };
   }
 }

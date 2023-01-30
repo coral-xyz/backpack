@@ -9,6 +9,7 @@ import {
   deriveSolanaPrivateKey,
   SolanaHdKeyringFactory,
   SolanaKeyringFactory,
+  SolanaKeystoneKeyringFactory,
   SolanaLedgerKeyringFactory,
 } from "@coral-xyz/blockchain-solana";
 import { Blockchain } from "@coral-xyz/common";
@@ -28,12 +29,14 @@ export function keyringForBlockchain(
     [Blockchain.SOLANA]: new BlockchainKeyring(
       new SolanaHdKeyringFactory(),
       new SolanaKeyringFactory(),
-      new SolanaLedgerKeyringFactory()
+      new SolanaLedgerKeyringFactory(),
+      new SolanaKeystoneKeyringFactory(),
     ),
     [Blockchain.ETHEREUM]: new BlockchainKeyring(
       new EthereumHdKeyringFactory(),
       new EthereumKeyringFactory(),
-      new EthereumLedgerKeyringFactory()
+      new EthereumLedgerKeyringFactory(),
+      new SolanaKeystoneKeyringFactory(),
     ),
   }[blockchain];
 }

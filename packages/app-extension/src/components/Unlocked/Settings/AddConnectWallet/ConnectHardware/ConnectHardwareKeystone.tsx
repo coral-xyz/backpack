@@ -1,4 +1,4 @@
-import { UI_RPC_METHOD_KEYSTONE_IMPORT } from "@coral-xyz/common";
+import { Blockchain, UI_RPC_METHOD_KEYSTONE_IMPORT } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { URType, useAnimatedQRScanner } from "@keystonehq/animated-qr";
 
@@ -17,7 +17,11 @@ export function ConnectHardwareKeystone() {
     t = Date.now();
     await background.request({
       method: UI_RPC_METHOD_KEYSTONE_IMPORT,
-      params: [type, cbor],
+      params: [
+        Blockchain.SOLANA,
+        {type, cbor},
+        ''
+      ],
     });
   };
 

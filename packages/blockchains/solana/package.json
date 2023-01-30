@@ -18,7 +18,10 @@
   },
   "dependencies": {
     "@coral-xyz/blockchain-keyring": "*",
-    "@coral-xyz/common": "*"
+    "@coral-xyz/common": "*",
+    "@keystonehq/bc-ur-registry": "^0.5.4",
+    "@keystonehq/bc-ur-registry-sol": "^0.5.1",
+    "@keystonehq/sol-keyring": "^0.5.2"
   },
   "devDependencies": {
     "eslint-config-custom": "*",
