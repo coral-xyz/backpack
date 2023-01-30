@@ -15,6 +15,9 @@ import { Requests } from "../Messages/Requests";
 
 import { ImportSecretKey } from "./AddConnectWallet/ImportSecretKey";
 import { PreferencesAutoLock } from "./Preferences/AutoLock";
+import { PreferencesDomainContent } from "./Preferences/DomainContentResolver";
+import { PreferencesCustomIpfsGateway } from "./Preferences/DomainContentResolver/IpfsGatewayCustom";
+import { PreferencesIpfsGateway } from "./Preferences/DomainContentResolver/IpfsGatewaySwitch";
 import { PreferencesEthereum } from "./Preferences/Ethereum";
 import { PreferencesEthereumConnection } from "./Preferences/Ethereum/Connection";
 import { PreferenceEthereumCustomRpcUrl } from "./Preferences/Ethereum/CustomRpcUrl";
@@ -86,6 +89,20 @@ export function SettingsNavStackDrawer({
           <NavStackScreen
             name={"preferences-trusted-sites"}
             component={(props: any) => <PreferencesTrustedSites {...props} />}
+          />
+          <NavStackScreen
+            name={"preferences-domain-content-resolver"}
+            component={(props: any) => <PreferencesDomainContent {...props} />}
+          />
+          <NavStackScreen
+            name={"preferences-ipfs-gateway"}
+            component={(props: any) => <PreferencesIpfsGateway {...props} />}
+          />
+          <NavStackScreen
+            name={"preferences-edit-ipfs-gateway-custom"}
+            component={(props: any) => (
+              <PreferencesCustomIpfsGateway {...props} />
+            )}
           />
           <NavStackScreen
             name={"preferences-solana"}

@@ -36,6 +36,10 @@ export function useDeveloperMode(): boolean {
   return useRecoilValue(atoms.isDeveloperMode)!;
 }
 
+export function useIpfsGateway(): string {
+  return useRecoilValue(atoms.domainContentIpfsGateway)!;
+}
+
 export function useIsAggregateWallets(): boolean {
   return useRecoilValue(atoms.isAggregateWallets);
 }

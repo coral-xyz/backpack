@@ -189,6 +189,10 @@ export const UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_READ =
   "ui-rpc-method-settings-developer-mode-read";
 export const UI_RPC_METHOD_SETTINGS_DEVELOPER_MODE_UPDATE =
   "ui-rpc-method-settings-developer-mode-update";
+export const UI_RPC_METHOD_SETTINGS_DOMAIN_CONTENT_IPFS_GATEWAY_READ =
+  "ui-rpc-method-settings-domain-content-ipfs-gateway-read";
+export const UI_RPC_METHOD_SETTINGS_DOMAIN_CONTENT_IPFS_GATEWAY_UPDATE =
+  "ui-rpc-method-settings-domain-content-ipfs-gateway-update";
 export const UI_RPC_METHOD_SETTINGS_AGGREGATE_WALLETS_UPDATE =
   "ui-rpc-method-settings-aggregate-wallet-update";
 export const UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY =
@@ -274,6 +278,8 @@ export const NOTIFICATION_AGGREGATE_WALLETS_UPDATED =
 export const NOTIFICATION_DARK_MODE_UPDATED = "notification-dark-mode-updated";
 export const NOTIFICATION_DEVELOPER_MODE_UPDATED =
   "notification-developer-mode-updated";
+export const NOTIFICATION_DOMAIN_CONTENT_IPFS_GATEWAY_UPDATED =
+  "notification-domain-content-ipfs-gateway-updated";
 export const NOTIFICATION_FEATURE_GATES_UPDATED =
   "notification-feature-gates-updated";
 export const NOTIFICATION_KEYNAME_UPDATE = "notification-keyname-update";

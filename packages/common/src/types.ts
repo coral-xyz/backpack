@@ -156,6 +156,7 @@ export type Preferences = {
   approvedOrigins: string[];
   darkMode: boolean;
   developerMode: boolean;
+  ipfsGateway: string;
   aggregateWallets: boolean;
   solana: SolanaData;
   ethereum: EthereumData;

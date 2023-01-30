@@ -10,7 +10,6 @@ import {
   CHANNEL_POPUP_NOTIFICATIONS,
   ChannelAppUi,
   getLogger,
-  NOTIFICATION_KEY_IS_COLD_UPDATE,
   NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED,
   NOTIFICATION_AGGREGATE_WALLETS_UPDATED,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
@@ -19,12 +18,14 @@ import {
   NOTIFICATION_BLOCKCHAIN_KEYRING_DELETED,
   NOTIFICATION_DARK_MODE_UPDATED,
   NOTIFICATION_DEVELOPER_MODE_UPDATED,
+  NOTIFICATION_DOMAIN_CONTENT_IPFS_GATEWAY_UPDATED,
   NOTIFICATION_ETHEREUM_ACTIVE_WALLET_UPDATED,
   NOTIFICATION_ETHEREUM_CHAIN_ID_UPDATED,
   NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
   NOTIFICATION_ETHEREUM_FEE_DATA_DID_UPDATE,
   NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE,
   NOTIFICATION_FEATURE_GATES_UPDATED,
+  NOTIFICATION_KEY_IS_COLD_UPDATE,
   NOTIFICATION_KEYNAME_UPDATE,
   NOTIFICATION_KEYRING_DERIVED_WALLET,
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
@@ -126,6 +127,16 @@ export function NotificationsProvider(props: any) {
       };
     });
   };
+
+  const setDomainContentIPFSGateway = (ipfsGateway: string) => {
+    setPreferences((current) => {
+      return {
+        ...current,
+        ipfsGateway,
+      };
+    });
+  };
+
   const setIsAggregateWallets = (aggregateWallets: boolean) => {
     setPreferences((current) => {
       return {
@@ -269,6 +280,9 @@ export function NotificationsProvider(props: any) {
           break;
         case NOTIFICATION_DEVELOPER_MODE_UPDATED:
           handleIsDeveloperModeUpdated(notif);
+          break;
+        case NOTIFICATION_DOMAIN_CONTENT_IPFS_GATEWAY_UPDATED:
+          handleDomainContentIPFSGatewayUpdated(notif);
           break;
         case NOTIFICATION_AGGREGATE_WALLETS_UPDATED:
           handleAggregateWalletsUpdated(notif);
@@ -521,6 +535,10 @@ export function NotificationsProvider(props: any) {
 
     const handleIsDeveloperModeUpdated = (notif: Notification) => {
       setIsDeveloperMode(notif.data.developerMode);
+    };
+
+    const handleDomainContentIPFSGatewayUpdated = (notif: Notification) => {
+      setDomainContentIPFSGateway(notif.data.ipfsGateway);
     };
 
     const handleAggregateWalletsUpdated = (notif: Notification) => {
