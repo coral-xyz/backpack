@@ -10,6 +10,7 @@ import {
 } from "@mui/icons-material";
 import { ListItem, Typography } from "@mui/material";
 import type { TokenInfo } from "@solana/spl-token-registry";
+import { TransactionType } from "helius-sdk/dist/types";
 
 import {
   getTransactionCaption,
@@ -19,7 +20,6 @@ import {
   isUserTxnSender,
 } from "./detail-parser";
 import type { HeliusParsedTransaction } from "./types";
-import { heliusTransactionTypes } from "./types";
 
 const useStyles = styles((theme) => ({
   recentActivityListItemIconContainer: {
@@ -151,7 +151,7 @@ function RecentActivityListItemIcon(
   const classes = useStyles();
 
   // SWAP token icon -> token icon
-  if (transaction.type === heliusTransactionTypes.swap) {
+  if (transaction.type === TransactionType.SWAP) {
     return (
       <div style={{ display: "flex", alignItems: "center" }}>
         <img
@@ -199,8 +199,8 @@ function RecentActivityListItemIcon(
 
   // TRANSFER, display token logo if available, otherwise appropriate sent/recieved icon
   if (
-    transaction.type === heliusTransactionTypes.transfer ||
-    transaction.type === heliusTransactionTypes.unknown
+    transaction.type === TransactionType.TRANSFER ||
+    transaction.type === TransactionType.UNKNOWN
   ) {
     if (tokenData[0]?.logoURI) {
       return (
@@ -245,7 +245,7 @@ function RecentActivityListItemIcon(
     );
   }
   // BURN
-  if (transaction?.type === heliusTransactionTypes.burn) {
+  if (transaction?.type === TransactionType.BURN) {
     return (
       <div className={classes.recentActivityListItemIconContainer}>
         <WhatshotRounded
@@ -269,7 +269,7 @@ function RecentActivityListItemData(
 ): JSX.Element {
   const theme = useCustomTheme();
 
-  if (transaction.type === heliusTransactionTypes.swap) {
+  if (transaction.type === TransactionType.SWAP) {
     return (
       <>
         <div
@@ -302,7 +302,7 @@ function RecentActivityListItemData(
     );
   }
   // BURN
-  if (transaction?.type === heliusTransactionTypes.burn) {
+  if (transaction?.type === TransactionType.BURN) {
     return (
       <div
         style={{
@@ -323,8 +323,8 @@ function RecentActivityListItemData(
 
   // TRANSFER, display token logo if available, otherwise appropriate sent/recieved icon
   if (
-    transaction.type === heliusTransactionTypes.transfer ||
-    transaction.type === heliusTransactionTypes.unknown
+    transaction.type === TransactionType.TRANSFER ||
+    transaction.type === TransactionType.UNKNOWN
   ) {
     // USER === SENDER
     if (isUserTxnSender(transaction)) {

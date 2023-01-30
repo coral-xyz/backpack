@@ -1,8 +1,8 @@
 import { useActiveWallet } from "@coral-xyz/recoil";
 import type { TokenInfo } from "@solana/spl-token-registry";
+import { Source, TransactionType } from "helius-sdk/dist/types";
 
 import type { HeliusParsedTransaction } from "./types";
-import { heliusSourceTypes, heliusTransactionTypes } from "./types";
 
 export const isNFTTransaction = (
   transaction: HeliusParsedTransaction
@@ -62,16 +62,16 @@ export const isUserTxnSender = (transaction: HeliusParsedTransaction) => {
 
 export const getTransactionTitle = (transaction: HeliusParsedTransaction) => {
   switch (transaction.type) {
-    case heliusTransactionTypes.burn:
+    case TransactionType.BURN:
       return "Burned";
-    case heliusTransactionTypes.unknown:
-    case heliusTransactionTypes.transfer:
+    case TransactionType.UNKNOWN:
+    case TransactionType.TRANSFER:
       if (isUserTxnSender(transaction)) return "Sent";
       else if (isUserTxnSender(transaction) === false) return "Recieved";
-      if (heliusTransactionTypes.transfer) return "Transferred";
+      if (TransactionType.TRANSFER) return "Transferred";
       return "Transaction";
 
-    case heliusTransactionTypes.swap:
+    case TransactionType.SWAP:
       return "Token Swap";
     default:
       let title = "Transaction";
@@ -98,10 +98,7 @@ export const getTransactionTitle = (transaction: HeliusParsedTransaction) => {
       }
 
       // if we have a type, format it and set it as the title
-      if (
-        transaction?.type &&
-        transaction?.type !== heliusTransactionTypes.unknown
-      ) {
+      if (transaction?.type && transaction?.type !== TransactionType.UNKNOWN) {
         title = getSourceOrTypeFormatted(transaction.type);
         return title;
       }
@@ -118,8 +115,8 @@ export const getTransactionCaption = (
   const activeWallet = useActiveWallet();
 
   switch (transaction.type) {
-    case heliusTransactionTypes.unknown:
-    case heliusTransactionTypes.transfer:
+    case TransactionType.UNKNOWN:
+    case TransactionType.TRANSFER:
       if (isUserTxnSender(transaction)) {
         return `To: ${getTruncatedAddress(
           transaction?.tokenTransfers[0]?.toUserAccount
@@ -129,12 +126,12 @@ export const getTransactionCaption = (
           transaction?.tokenTransfers[0]?.fromUserAccount
         )}`;
       }
-      // if (heliusTransactionTypes.transfer) return "Transferred";
+      // if (TransactionType.TRANSFER) return "Transferred";
       return transaction?.source &&
-        transaction?.source !== heliusSourceTypes.unknown
+        transaction?.source !== TransactionType.UNKNOWN
         ? getSourceOrTypeFormatted(transaction?.source)
         : "";
-    case heliusTransactionTypes.swap:
+    case TransactionType.SWAP:
       // fallback to truncated mint address if token metadata was not found
       return `${
         tokenData?.[0]?.symbol ??
@@ -144,27 +141,26 @@ export const getTransactionCaption = (
         getTruncatedAddress(transaction?.tokenTransfers?.[1]?.mint)
       }`;
 
-    case heliusTransactionTypes.nftListing:
+    case TransactionType.NFT_LISTING:
       return `Listed on ${getSourceOrTypeFormatted(transaction.source)}`;
-    case heliusTransactionTypes.nftSale:
+    case TransactionType.NFT_SALE:
       return `${
         transaction.feePayer === activeWallet.publicKey ? "Bought" : "Sold"
       } on ${getSourceOrTypeFormatted(transaction.source)}`;
 
-    case heliusTransactionTypes.nftCancelListing:
+    case TransactionType.NFT_CANCEL_LISTING:
       return `
         Canceled listing on ${getSourceOrTypeFormatted(transaction.source)}`;
 
     default:
-      if (transaction?.source === heliusSourceTypes.cardinalRent)
-        return "Rent Paid";
+      if (transaction?.source === Source.CARDINAL_RENT) return "Rent Paid";
 
       if (transaction?.description)
         return transaction?.description.split(" ").slice(1).join(" ");
 
       if (
         transaction?.source &&
-        transaction?.source !== heliusTransactionTypes.unknown
+        transaction?.source !== TransactionType.UNKNOWN
       )
         return getSourceOrTypeFormatted(transaction.source);
       return "";

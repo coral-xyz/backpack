@@ -122,7 +122,7 @@ export const recentSolanaTransactions = atomFamily<
     key: "recentSolanaTransactionsDefault",
     get:
       ({ address }: { address: string }) =>
-      async ({ get }: any) => {
+      async () => {
         try {
           // get parsed transactions from Helius
           const heliusTransactionDetails =

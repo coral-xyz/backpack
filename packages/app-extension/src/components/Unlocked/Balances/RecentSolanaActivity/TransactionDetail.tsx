@@ -13,6 +13,7 @@ import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ArrowRightAltRounded, CallMade } from "@mui/icons-material";
 import { Card, List } from "@mui/material";
 import type { TokenInfo } from "@solana/spl-token-registry";
+import { TransactionType } from "helius-sdk/dist/types";
 
 import { WithDrawer } from "../../../common/Layout/Drawer";
 import { NavBackButton } from "../../../common/Layout/Nav";
@@ -30,7 +31,6 @@ import {
   isUserTxnSender,
 } from "./detail-parser";
 import type { HeliusParsedTransaction } from "./types";
-import { heliusTransactionTypes } from "./types";
 
 const useStyles = styles((theme) => ({
   transactionCard: {
@@ -189,7 +189,7 @@ export function TransactionDetail({
                     </>
                   ))}
 
-                {transaction?.type === heliusTransactionTypes.swap && (
+                {transaction?.type === TransactionType.SWAP && (
                   <div
                     style={{
                       display: "flex",
@@ -280,7 +280,7 @@ export function TransactionDetail({
                 {/* TODO - Default to check/error */}
 
                 {/* TODO - add other functionality for this CTA button */}
-                {transaction?.type === heliusTransactionTypes.nftSale &&
+                {transaction?.type === TransactionType.NFT_SALE &&
                   transaction.feePayer === activeWallet.publicKey && (
                     <PrimaryButton
                       className={classes.ctaButton}
@@ -304,8 +304,8 @@ export function TransactionDetail({
                     </div>
                   </div>
 
-                  {(transaction?.type === heliusTransactionTypes.unknown ||
-                    transaction.type === heliusTransactionTypes.transfer) &&
+                  {(transaction?.type === TransactionType.UNKNOWN ||
+                    transaction.type === TransactionType.TRANSFER) &&
                     isUserTxnSender(transaction) &&
                     transaction?.tokenTransfers?.[0]?.toUserAccount && (
                       <div className={classes.middleRow}>
@@ -320,8 +320,8 @@ export function TransactionDetail({
                         </div>
                       </div>
                     )}
-                  {(transaction?.type === heliusTransactionTypes.unknown ||
-                    transaction.type === heliusTransactionTypes.transfer) &&
+                  {(transaction?.type === TransactionType.UNKNOWN ||
+                    transaction.type === TransactionType.TRANSFER) &&
                     isUserTxnSender(transaction) === false &&
                     transaction?.tokenTransfers?.[0]?.fromUserAccount && (
                       <div className={classes.middleRow}>
@@ -337,7 +337,7 @@ export function TransactionDetail({
                       </div>
                     )}
 
-                  {transaction?.type === heliusTransactionTypes.swap && (
+                  {transaction?.type === TransactionType.SWAP && (
                     <>
                       <div className={classes.middleRow}>
                         <div className={classes.cell}>
