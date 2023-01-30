@@ -37,6 +37,7 @@ import {
   openApproveAllTransactionsPopupWindow,
   openApproveMessagePopupWindow,
   openApproveTransactionPopupWindow,
+  openLockedApprovalPopupWindow,
   openLockedPopupWindow,
   openOnboarding,
   openPopupWindow,
@@ -232,20 +233,30 @@ async function handleConnect(
   let didApprove = false;
   let resp: any;
 
-  if (
-    keyringStoreState === "locked" &&
-    (await ctx.backend.isApprovedOrigin(origin))
-  ) {
-    logger.debug("origin approved but need to unlock");
-    resp = await RequestManager.requestUiAction((requestId: number) => {
-      return openLockedPopupWindow(
-        ctx.sender.origin,
-        getTabTitle(ctx),
-        requestId,
-        blockchain
-      );
-    });
-    didApprove = !resp.windowClosed && resp.result.didApprove;
+  if (keyringStoreState === "locked") {
+    if (await ctx.backend.isApprovedOrigin(origin)) {
+      logger.debug("origin approved but need to unlock");
+      resp = await RequestManager.requestUiAction((requestId: number) => {
+        return openLockedPopupWindow(
+          ctx.sender.origin,
+          getTabTitle(ctx),
+          requestId,
+          blockchain
+        );
+      });
+      didApprove = !resp.windowClosed && resp.result;
+    } else {
+      logger.debug("origin not apporved and needs to unlock");
+      resp = await RequestManager.requestUiAction((requestId: number) => {
+        return openLockedApprovalPopupWindow(
+          ctx.sender.origin,
+          getTabTitle(ctx),
+          requestId,
+          blockchain
+        );
+      });
+      didApprove = !resp.windowClosed && resp.result.didApprove;
+    }
   } else {
     if (await ctx.backend.isApprovedOrigin(origin)) {
       logger.debug("origin approved so automatically connecting");
