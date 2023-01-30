@@ -11,6 +11,7 @@ import {
   QUERY_APPROVE_MESSAGE,
   QUERY_APPROVE_TRANSACTION,
   QUERY_LOCKED,
+  QUERY_LOCKED_APPROVAL,
   toTitleCase,
 } from "@coral-xyz/common";
 import {
@@ -135,6 +136,8 @@ function PopupRouter() {
   switch (query) {
     case QUERY_LOCKED:
       return <QueryLocked />;
+    case QUERY_LOCKED_APPROVAL:
+      return <QueryLockedApproval />;
     case QUERY_APPROVAL:
       return <QueryApproval />;
     case QUERY_APPROVE_TRANSACTION:
@@ -170,6 +173,13 @@ function QueryLocked() {
       }}
     />
   );
+}
+
+function QueryLockedApproval() {
+  logger.debug("query locked approval");
+  const keyringStoreState = useKeyringStoreState();
+  const isLocked = keyringStoreState === KeyringStoreStateEnum.Locked;
+  return isLocked ? <LockedBootstrap /> : <QueryApproval />;
 }
 
 function QueryApproval() {

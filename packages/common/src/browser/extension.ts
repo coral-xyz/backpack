@@ -8,6 +8,7 @@ import {
   QUERY_APPROVE_TRANSACTION,
   QUERY_CONNECT_HARDWARE,
   QUERY_LOCKED,
+  QUERY_LOCKED_APPROVAL,
   QUERY_ONBOARDING,
 } from "../constants";
 import type { Blockchain } from "../types";
@@ -142,6 +143,17 @@ export async function openLockedPopupWindow(
 ): Promise<chrome.windows.Window> {
   const encodedTitle = encodeURIComponent(title);
   const url = `${POPUP_HTML}?${QUERY_LOCKED}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&blockchain=${blockchain}`;
+  return openPopupWindow(url);
+}
+
+export function openLockedApprovalPopupWindow(
+  origin: string,
+  title: string,
+  requestId: number,
+  blockchain: Blockchain
+): Promise<chrome.windows.Window> {
+  const encodedTitle = encodeURIComponent(title);
+  const url = `${POPUP_HTML}?${QUERY_LOCKED_APPROVAL}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&blockchain=${blockchain}`;
   return openPopupWindow(url);
 }
 
