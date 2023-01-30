@@ -79,10 +79,12 @@ export function useNavigationSegue() {
       title,
       componentId,
       componentProps,
+      pushAboveRoot,
     }: {
       title: string;
       componentId: string;
       componentProps: any;
+      pushAboveRoot?: boolean;
     },
     tab?: string
   ) => {
@@ -92,7 +94,7 @@ export function useNavigationSegue() {
     });
     return await background.request({
       method: UI_RPC_METHOD_NAVIGATION_PUSH,
-      params: [url, tab, !isXs && url.startsWith("/messages") ? true : false],
+      params: [url, tab, !isXs && pushAboveRoot ? true : false],
     });
   };
   const pop = async (tab?: string) => {

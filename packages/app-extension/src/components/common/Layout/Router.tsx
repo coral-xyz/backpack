@@ -371,7 +371,7 @@ function NavScreen({
 
   const _navButtonLeft = navButtonLeft ? (
     navButtonLeft
-  ) : isRoot || (!isXs && pathname.startsWith("/messages")) ? null : (
+  ) : isRoot ? null : (
     <NavBackButton onClick={() => pop()} />
   );
 
