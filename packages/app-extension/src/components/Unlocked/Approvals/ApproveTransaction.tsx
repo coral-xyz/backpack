@@ -1,5 +1,5 @@
 import type { Blockchain, FeeConfig } from "@coral-xyz/common";
-import { EmptyState , Loading } from "@coral-xyz/react-common";
+import { EmptyState, Loading } from "@coral-xyz/react-common";
 import { useTransactionData, useWalletBlockchain } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Block as BlockIcon } from "@mui/icons-material";
@@ -147,11 +147,13 @@ export function Cold({
   title,
   wallet,
   onCompletion,
+  style,
 }: {
   origin: string;
   title: string;
   wallet: string;
   onCompletion: () => Promise<void>;
+  style?: React.CSSProperties;
 }) {
   return (
     <div
@@ -175,6 +177,7 @@ export function Cold({
           subtitle={`WARNING: ${origin} is trying to sign with your wallet. This may be dangerous. To enable, see wallet settings. Do so with caution!`}
           buttonText={""}
           onClick={() => {}}
+          style={style}
         />
         <div></div>
       </div>

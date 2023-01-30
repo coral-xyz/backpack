@@ -5,7 +5,6 @@ import { BACKEND_API_URL } from "@coral-xyz/common";
 import {
   useActiveSolanaWallet,
   useDecodedSearchParams,
-  useUser,
 } from "@coral-xyz/recoil";
 
 import { useChatContext } from "../ChatContext";

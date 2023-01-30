@@ -9,6 +9,7 @@ import {
   QUERY_COLD,
   QUERY_CONNECT_HARDWARE,
   QUERY_LOCKED,
+  QUERY_LOCKED_APPROVAL,
   QUERY_ONBOARDING,
 } from "../constants";
 import type { Blockchain } from "../types";
@@ -135,17 +136,6 @@ export class BrowserRuntimeExtension {
 const POPUP_HTML = "popup.html";
 const EXPANDED_HTML = "options.html";
 
-export async function openColdPopupWindow(
-  origin: string,
-  title: string,
-  requestId: number,
-  walletAddress: string
-): Promise<chrome.windows.Window> {
-  const encodedTitle = encodeURIComponent(title);
-  const url = `${POPUP_HTML}?${QUERY_COLD}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&wallet=${walletAddress}`;
-  return openPopupWindow(url);
-}
-
 export async function openLockedPopupWindow(
   origin: string,
   title: string,
@@ -154,6 +144,17 @@ export async function openLockedPopupWindow(
 ): Promise<chrome.windows.Window> {
   const encodedTitle = encodeURIComponent(title);
   const url = `${POPUP_HTML}?${QUERY_LOCKED}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&blockchain=${blockchain}`;
+  return openPopupWindow(url);
+}
+
+export function openLockedApprovalPopupWindow(
+  origin: string,
+  title: string,
+  requestId: number,
+  blockchain: Blockchain
+): Promise<chrome.windows.Window> {
+  const encodedTitle = encodeURIComponent(title);
+  const url = `${POPUP_HTML}?${QUERY_LOCKED_APPROVAL}&origin=${origin}&title=${encodedTitle}&requestId=${requestId}&blockchain=${blockchain}`;
   return openPopupWindow(url);
 }
 

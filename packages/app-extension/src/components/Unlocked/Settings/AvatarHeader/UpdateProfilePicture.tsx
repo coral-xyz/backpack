@@ -185,6 +185,7 @@ export function UpdateProfilePicture({
                 body: JSON.stringify({ avatar: tempAvatar.id }),
               });
               await fetch(AVATAR_BASE_URL + "/" + username + "?bust_cache=1"); // bust edge cache
+              setLoading(false);
               setNewAvatar(tempAvatar);
               setTempAvatar(null);
               setOpenDrawer(false);
