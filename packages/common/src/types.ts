@@ -153,6 +153,7 @@ export type BlockchainKeyringJson = {
   hdKeyring: HdKeyringJson;
   importedKeyring: KeyringJson;
   ledgerKeyring: LedgerKeyringJson;
+  keystoneKeyring: KeystoneKeyringJson;
   activeWallet: string;
   deletedWallets: Array<string>;
 };
@@ -191,6 +192,15 @@ export type AutolockSettings = {
   seconds?: number;
   option?: AutolockSettingsOption;
 };
+
+export type UR = {
+  type: string;
+  cbor: string;
+};
+
+export type KeystoneKeyringJson = {
+  accounts: ImportedDerivationPath[]
+}
 
 // Legacy types. Don't use these.
 export type DeprecatedWalletDataDoNotUse = {
