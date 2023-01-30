@@ -20,7 +20,7 @@ export const getCoinType = (blockchain: Blockchain) => {
 };
 
 export const getBlockchainFromPath = (derivationPath: string): Blockchain => {
-  const coinType = BIPPath.fromString(derivationPath)[1];
+  const coinType = BIPPath.fromString(derivationPath).toPathArray()[1];
   return Object.keys(blockchainCoinType).find(
     (key) =>
       blockchainCoinType[key] === coinType ||
