@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { TextInput } from "@coral-xyz/react-common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { GiphyFetch } from "@giphy/js-fetch-api";
-import { Carousel, SearchContextManager } from "@giphy/react-components";
-import GifIcon from "@mui/icons-material/Gif";
+import { Carousel } from "@giphy/react-components";
+import GifIcon from "@mui/icons-material/GifBoxOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import { IconButton } from "@mui/material";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -73,7 +73,13 @@ export const GifPicker = ({
     >
       <IconButton
         size={"small"}
-        style={{ color: theme.custom.colors.icon, ...buttonStyle }}
+        sx={{
+          color: theme.custom.colors.icon,
+          "&:hover": {
+            background: `${theme.custom.colors.avatarIconBackground} !important`,
+          },
+        }}
+        style={buttonStyle}
         onClick={(e) => {
           setGifPicker((x) => !x);
           if (!gifPicker) {
