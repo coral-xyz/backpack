@@ -232,7 +232,7 @@ export function ChatListItem({
                       style={{
                         fontSize: 19,
                         marginLeft: 3,
-                        color: theme.custom.colors.blue,
+                        color: theme.custom.colors.verified,
                       }}
                     />
                   )}
