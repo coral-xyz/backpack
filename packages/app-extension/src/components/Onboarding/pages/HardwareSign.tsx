@@ -32,7 +32,12 @@ export function HardwareSign({
         try {
           const signature = await background.request({
             method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-            params: [publicKeyPath, encode(Buffer.from(message, "utf-8"))],
+            params: [
+              publicKeyPath.blockchain,
+              publicKeyPath.publicKey,
+              encode(Buffer.from(message, "utf-8")),
+              [[publicKeyPath]],
+            ],
           });
           setSignature(signature);
         } catch (error: unknown) {

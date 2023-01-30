@@ -425,13 +425,8 @@ async function handle<T = any>(
     case UI_RPC_METHOD_ETHEREUM_SIGN_MESSAGE:
       return await handleEthereumSignMessage(ctx, params[0], params[1]);
     case UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY:
-      return await handleSignMessageForPublicKey(
-        ctx,
-        params[0],
-        params[1],
-        params[2],
-        params[3]
-      );
+      // @ts-ignore
+      return await handleSignMessageForPublicKey(ctx, ...params);
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
   }

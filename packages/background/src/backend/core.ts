@@ -1093,12 +1093,9 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  async ledgerImport(
-    blockchain: Blockchain,
-    signedPublicKeyPath: SignedPublicKeyPath
-  ) {
+  async ledgerImport(signedPublicKeyPath: SignedPublicKeyPath) {
     const { signature, ...publicKeyPath } = signedPublicKeyPath;
-    const { publicKey } = publicKeyPath;
+    const { blockchain, publicKey } = publicKeyPath;
     await this.keyringStore.ledgerImport(blockchain, publicKeyPath);
     try {
       await this.userAccountPublicKeyCreate(blockchain, publicKey, signature);

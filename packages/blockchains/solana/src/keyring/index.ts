@@ -196,7 +196,7 @@ export class SolanaLedgerKeyring
     }
     return await this.request({
       method: LEDGER_METHOD_SOLANA_SIGN_TRANSACTION,
-      params: [bs58.encode(tx), publicKeyPath.derivationPath],
+      params: [bs58.encode(tx), publicKeyPath.derivationPath.replace("m/", "")],
     });
   }
 
@@ -209,7 +209,10 @@ export class SolanaLedgerKeyring
     }
     return await this.request({
       method: LEDGER_METHOD_SOLANA_SIGN_MESSAGE,
-      params: [bs58.encode(msg), publicKeyPath.derivationPath],
+      params: [
+        bs58.encode(msg),
+        publicKeyPath.derivationPath.replace("m/", ""),
+      ],
     });
   }
 }
