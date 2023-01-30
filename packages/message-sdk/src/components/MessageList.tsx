@@ -13,19 +13,18 @@ import {
 import { NAV_COMPONENT_MESSAGE_GROUP_CHAT } from "@coral-xyz/common/src/constants";
 import {
   isFirstLastListItemStyle,
-  ProxyImage,
   useUsersMetadata,
 } from "@coral-xyz/react-common";
-import { useDecodedSearchParams, useUser } from "@coral-xyz/recoil";
+import { useDecodedSearchParams } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import MarkChatUnreadIcon from "@mui/icons-material/MarkChatUnread";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import { List, ListItem } from "@mui/material";
-import { useRecoilState } from "recoil";
 
 import { ParentCommunicationManager } from "../ParentCommunicationManager";
 
 import { useStyles } from "./styles";
+
 export const MessageList = ({
   activeChats,
   requestCount = 0,
@@ -122,7 +121,6 @@ export function ChatListItem({
   isUnread: boolean;
 }) {
   const classes = useStyles();
-  const { uuid } = useUser();
   const theme = useCustomTheme();
   const { props }: any = useDecodedSearchParams();
   const parts = parseMessage(message);
