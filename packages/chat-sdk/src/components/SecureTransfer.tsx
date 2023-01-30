@@ -18,19 +18,17 @@ import {
   useActiveSolanaWallet,
   useAnchorContext,
   useBackgroundClient,
-  useBlockchainTokenAccount,
   useLoader,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import CheckIcon from "@mui/icons-material/Check";
-import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import { IconButton } from "@mui/material";
 import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Typography from "@mui/material/Typography";
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
-import { BigNumber } from "ethers";
 
 import { createEscrow } from "../utils/secure-transfer/secureTransfer";
 
@@ -107,11 +105,18 @@ export const SecureTransfer = ({
     >
       <IconButton
         size={"small"}
-        style={{ color: theme.custom.colors.icon, ...buttonStyle }}
+        sx={{
+          color: theme.custom.colors.icon,
+          "&:hover": {
+            background: `${theme.custom.colors.avatarIconBackground} !important`,
+          },
+          cursor: "no-drop",
+        }}
+        style={buttonStyle}
       >
-        <MonetizationOnIcon
-          style={{ color: theme.custom.colors.icon, fontSize: 20 }}
-          onClick={() => setModal(true)}
+        <AttachMoneyIcon
+          style={{ fontSize: 20 }}
+          // onClick={() => setModal(true)}
         />
       </IconButton>
       <Modal
