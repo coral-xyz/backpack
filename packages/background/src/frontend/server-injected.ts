@@ -244,6 +244,7 @@ async function handleConnect(
           blockchain
         );
       });
+      didApprove = !resp.windowClosed && resp.result;
     } else {
       logger.debug("origin not apporved and needs to unlock");
       resp = await RequestManager.requestUiAction((requestId: number) => {
@@ -254,8 +255,8 @@ async function handleConnect(
           blockchain
         );
       });
+      didApprove = !resp.windowClosed && resp.result.didApprove;
     }
-    didApprove = !resp.windowClosed && resp.result.didApprove;
   } else {
     if (await ctx.backend.isApprovedOrigin(origin)) {
       logger.debug("origin approved so automatically connecting");
