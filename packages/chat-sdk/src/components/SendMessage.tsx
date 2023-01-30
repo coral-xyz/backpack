@@ -78,12 +78,6 @@ const useStyles = makeStyles((theme: any) =>
         outline: "none",
       },
     },
-    plusIconOuter: {
-      color: "#555C6B",
-      "&:hover": {
-        backgroundColor: `${theme.custom.colors.avatarIconBackground} !important`,
-      },
-    },
   })
 );
 
@@ -340,8 +334,13 @@ export const SendMessage = ({
           >
             <IconButton
               disableRipple
-              className={classes.plusIconOuter}
               size="small"
+              sx={{
+                color: "#555C6B",
+                "&:hover": {
+                  backgroundColor: `${theme.custom.colors.hoverIconBackground} !important`,
+                },
+              }}
               onClick={() => {
                 setEmojiMenuOpen(!emojiMenuOpen);
               }}
