@@ -356,8 +356,6 @@ function NavScreen({
   };
 }) {
   const { title, isRoot, pop } = useNavigation();
-  const { isXs } = useBreakpoints();
-  const pathname = useLocation().pathname;
 
   const {
     style,
