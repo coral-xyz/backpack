@@ -321,8 +321,7 @@ export class KeyringStore {
     derivationPaths: Array<string>
   ): string[] {
     const factory = hdFactoryForBlockchain(blockchain);
-    // TODO accountIndex
-    return factory.init(mnemonic, derivationPaths, 0).publicKeys();
+    return factory.init(mnemonic, derivationPaths).publicKeys();
   }
 
   public reset() {

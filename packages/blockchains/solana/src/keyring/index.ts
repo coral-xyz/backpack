@@ -12,6 +12,7 @@ import { LedgerKeyringBase } from "@coral-xyz/blockchain-keyring";
 import type { PublicKeyPath } from "@coral-xyz/common";
 import {
   Blockchain,
+  derivationPathsToIndexes,
   getIndexedPath,
   LEDGER_METHOD_SOLANA_SIGN_MESSAGE,
   LEDGER_METHOD_SOLANA_SIGN_TRANSACTION,
@@ -94,19 +95,18 @@ class SolanaKeyring implements Keyring {
 }
 
 export class SolanaHdKeyringFactory implements HdKeyringFactory {
-  public init(
-    mnemonic: string,
-    derivationPaths: Array<string>,
-    accountIndex: number
-  ): HdKeyring {
+  public init(mnemonic: string, derivationPaths: Array<string>): HdKeyring {
     if (!validateMnemonic(mnemonic)) {
       throw new Error("Invalid seed words");
     }
+    const { accountIndex, walletIndex } =
+      derivationPathsToIndexes(derivationPaths);
     return new SolanaHdKeyring({
       mnemonic,
       seed: mnemonicToSeedSync(mnemonic),
       derivationPaths,
       accountIndex,
+      walletIndex,
     });
   }
 
@@ -132,7 +132,7 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
   private seed: Buffer;
   private derivationPaths: Array<string>;
   private accountIndex: number;
-  private walletIndex?: number;
+  private walletIndex: number;
 
   constructor({
     mnemonic,
@@ -145,7 +145,7 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
     seed: Buffer;
     derivationPaths: Array<string>;
     accountIndex: number;
-    walletIndex?: number;
+    walletIndex: number;
   }) {
     const keypairs = derivationPaths.map((d) => deriveSolanaKeypair(seed, d));
     super(keypairs);

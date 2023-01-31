@@ -90,6 +90,31 @@ export const legacyBip44ChangeRecoveryPaths = (blockchain: Blockchain) => {
   );
 };
 
+//
+// Get a sensible account and wallet index from a list of derivation paths.
+//
+export const derivationPathsToIndexes = (
+  derivationPaths: Array<string>
+): { accountIndex: number; walletIndex: number } => {
+  const pathArrays = derivationPaths.map(BIPPath.toPathArray);
+  const accountIndex = Math.max(
+    ...pathArrays
+      // Account index should be the element at index 2, this is not true for
+      //  deprecated sollet paths but they are 0 anyway
+      .map((p: Array<number>) => (p[2] ? p[2] : 0))
+      .map((i: number) => (i > HARDENING ? i - HARDENING : i))
+  );
+  const walletIndex = Math.max(
+    ...pathArrays
+      // Account index should be the element at index 2, this is not true for
+      //  deprecated sollet paths but they are 0 anyway
+      .map((p: Array<number>) => (p[4] ? p[4] : 0))
+      .map((i: number) => (i > HARDENING ? i - HARDENING : i))
+  );
+  console.log("account index", accountIndex, "wallet index", walletIndex);
+  return { accountIndex, walletIndex };
+};
+
 export const getRecoveryPaths = (blockchain: Blockchain) => {
   /**
    * There is a fixed set of derivation paths we should check for wallets when

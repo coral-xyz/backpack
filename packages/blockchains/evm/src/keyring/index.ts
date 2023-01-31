@@ -12,6 +12,7 @@ import { LedgerKeyringBase } from "@coral-xyz/blockchain-keyring";
 import type { PublicKeyPath } from "@coral-xyz/common";
 import {
   Blockchain,
+  derivationPathsToIndexes,
   getIndexedPath,
   LEDGER_METHOD_ETHEREUM_SIGN_MESSAGE,
   LEDGER_METHOD_ETHEREUM_SIGN_TRANSACTION,
@@ -97,20 +98,19 @@ export class EthereumKeyring implements Keyring {
 }
 
 export class EthereumHdKeyringFactory implements HdKeyringFactory {
-  public init(
-    mnemonic: string,
-    derivationPaths: Array<string>,
-    accountIndex: number
-  ): HdKeyring {
+  public init(mnemonic: string, derivationPaths: Array<string>): HdKeyring {
     if (!validateMnemonic(mnemonic)) {
       throw new Error("Invalid seed words");
     }
     const seed = mnemonicToSeedSync(mnemonic);
+    const { accountIndex, walletIndex } =
+      derivationPathsToIndexes(derivationPaths);
     return new EthereumHdKeyring({
       mnemonic,
       seed,
       derivationPaths,
       accountIndex,
+      walletIndex,
     });
   }
 
@@ -136,7 +136,7 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
   readonly mnemonic: string;
   private seed: Buffer;
   private accountIndex: number;
-  private walletIndex?: number;
+  private walletIndex: number;
 
   constructor({
     mnemonic,
@@ -149,7 +149,7 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
     seed: Buffer;
     derivationPaths: Array<string>;
     accountIndex: number;
-    walletIndex?: number;
+    walletIndex: number;
   }) {
     const node = HDNode.fromMnemonic(mnemonic);
     const wallets = derivationPaths.map(
@@ -166,10 +166,7 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
     publicKey: string;
     derivationPath: string;
   } {
-    this.walletIndex =
-      this.walletIndex === undefined
-        ? skipKeys
-        : this.walletIndex + 1 + skipKeys;
+    this.walletIndex += 1 + skipKeys;
     const derivationPath = getIndexedPath(
       Blockchain.ETHEREUM,
       this.accountIndex,

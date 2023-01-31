@@ -145,7 +145,7 @@ export type HdKeyringJson = {
   seed: string;
   derivationPaths: Array<string>;
   accountIndex: number;
-  walletIndex?: number;
+  walletIndex: number;
 };
 
 export type LedgerKeyringJson = {

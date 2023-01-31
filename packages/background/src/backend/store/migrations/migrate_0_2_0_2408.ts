@@ -37,6 +37,7 @@ export async function migrate_0_2_0_2408(json: any) {
           seed: hdKeyring.seed,
           derivationPaths,
           accountIndex: Math.max(hdKeyring.accountIndices),
+          walletIndex: 0,
         };
       }
 
