@@ -332,6 +332,7 @@ export const MessageLine = (props) => {
                   onClick={() => openProfilePage({ uuid: props.uuid })}
                   className={classes.displayName}
                   style={{
+                    display: "inline-flex",
                     color:
                       props.colorIndex || props.colorIndex === 0
                         ? NEW_COLORS[props.colorIndex || 0][

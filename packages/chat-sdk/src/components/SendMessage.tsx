@@ -242,7 +242,10 @@ export const SendMessage = ({
     return Object.keys(userMap).map((uuid) => userMap[uuid]);
   };
   return (
-    <MessageInputProvider inputRef={inputRef}>
+    <MessageInputProvider
+      inputRef={inputRef}
+      offlineMembers={getOfflineMembers().slice(0, 5)}
+    >
       <div className={classes.outerDiv}>
         {selectedFile && (
           <div>
@@ -322,7 +325,7 @@ export const SendMessage = ({
             text={activeReply.text}
           />
         )}
-        <CustomAutoComplete offlineMembers={getOfflineMembers().slice(0, 5)} />
+        <CustomAutoComplete />
         <div style={{ display: "flex" }}>
           <div
             style={{
