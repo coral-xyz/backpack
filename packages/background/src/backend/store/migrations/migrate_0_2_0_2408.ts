@@ -33,9 +33,13 @@ export async function migrate_0_2_0_2408(json: any) {
           }
         });
         json.users[user].blockchains[blockchain].hdKeyring = {
-          derivationPaths,
           mnemonic: hdKeyring.mnemonic,
           seed: hdKeyring.seed,
+          derivationPaths,
+          accountIndex: Math.max(hdKeyring.accountIndices),
+          // Legacy derivation path scheme parameters to maintain same derive
+          // behaviour
+          legacyPathType: hdKeyring.derivationPath,
         };
       }
 
@@ -57,7 +61,7 @@ export async function migrate_0_2_0_2408(json: any) {
                 d.account
               );
             } else {
-              // TODO sollet deprecated
+              // TODO sollet deprekjcated
               derivationPath = "";
             }
             return {

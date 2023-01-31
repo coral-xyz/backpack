@@ -11,8 +11,12 @@ import type {
 import { LedgerKeyringBase } from "@coral-xyz/blockchain-keyring";
 import type { PublicKeyPath } from "@coral-xyz/common";
 import {
+  Blockchain,
+  getIndexedPath,
   LEDGER_METHOD_ETHEREUM_SIGN_MESSAGE,
   LEDGER_METHOD_ETHEREUM_SIGN_TRANSACTION,
+  legacyBip44ChangeIndexed,
+  legacyBip44Indexed,
 } from "@coral-xyz/common";
 import { HDNode } from "@ethersproject/hdnode";
 import { mnemonicToSeedSync, validateMnemonic } from "bip39";
@@ -95,34 +99,39 @@ export class EthereumKeyring implements Keyring {
 }
 
 export class EthereumHdKeyringFactory implements HdKeyringFactory {
-  public init(mnemonic: string, derivationPaths: Array<string>): HdKeyring {
+  public init(
+    mnemonic: string,
+    derivationPaths: Array<string>,
+    accountIndex: number
+  ): HdKeyring {
     if (!validateMnemonic(mnemonic)) {
       throw new Error("Invalid seed words");
     }
     const seed = mnemonicToSeedSync(mnemonic);
-    const node = HDNode.fromMnemonic(mnemonic);
-    // TODO this is slow for many derivation paths
-    const wallets = derivationPaths.map(
-      (path) => new ethers.Wallet(node.derivePath(path))
-    );
     return new EthereumHdKeyring({
       mnemonic,
       seed,
-      wallets,
+      derivationPaths,
+      accountIndex,
     });
   }
 
   // @ts-ignore
-  public fromJson(obj: HdKeyringJson): HdKeyring {
-    const { mnemonic, seed: seedStr, derivationPaths } = obj;
-    const seed = Buffer.from(seedStr, "hex");
-    const wallets = derivationPaths.map((path) =>
-      ethers.Wallet.fromMnemonic(mnemonic, path)
-    );
+  public fromJson({
+    mnemonic,
+    seed,
+    derivationPaths,
+    accountIndex,
+    walletIndex,
+    legacyPathType,
+  }: HdKeyringJson): HdKeyring {
     return new EthereumHdKeyring({
       mnemonic,
-      seed,
-      wallets,
+      seed: Buffer.from(seed, "hex"),
+      derivationPaths,
+      accountIndex,
+      walletIndex,
+      legacyPathType,
     });
   }
 }
@@ -130,25 +139,75 @@ export class EthereumHdKeyringFactory implements HdKeyringFactory {
 export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
   readonly mnemonic: string;
   private seed: Buffer;
+  private accountIndex: number;
+  private walletIndex?: number;
+  private legacyPathType?: "bip44" | "bip44change" | "sollet-deprecated";
 
   constructor({
     mnemonic,
     seed,
-    wallets,
+    derivationPaths,
+    accountIndex,
+    walletIndex,
+    legacyPathType,
   }: {
     mnemonic: string;
     seed: Buffer;
-    wallets: Array<Wallet>;
+    derivationPaths: Array<string>;
+    accountIndex: number;
+    walletIndex?: number;
+    legacyPathType?: "bip44" | "bip44change" | "sollet-deprecated";
   }) {
+    const node = HDNode.fromMnemonic(mnemonic);
+    const wallets = derivationPaths.map(
+      (path) => new ethers.Wallet(node.derivePath(path))
+    );
     super(wallets);
     this.mnemonic = mnemonic;
     this.seed = seed;
+    this.accountIndex = accountIndex;
+    this.walletIndex = walletIndex;
+    this.legacyPathType = legacyPathType;
   }
 
   deriveNextKey(): { publicKey: string; derivationPath: string } {
+    let derivationPath: string;
+    if (this.legacyPathType) {
+      if (this.legacyPathType === "sollet-deprecated") {
+        throw new Error("evm keyring does not support legacy path type");
+      }
+      // accountIndex maintains the same meaning it did in the legacy derivation
+      // path system, i.e. the index of the last generated wallet, but it does
+      // not correspond to the account index field of BIP44
+      this.accountIndex += 1;
+      console.debug("old derivation", this.accountIndex);
+      if (this.legacyPathType === "bip44") {
+        derivationPath = legacyBip44Indexed(
+          Blockchain.ETHEREUM,
+          this.accountIndex
+        );
+      } else {
+        derivationPath = legacyBip44ChangeIndexed(
+          Blockchain.ETHEREUM,
+          this.accountIndex
+        );
+      }
+    } else {
+      // New style derivation paths
+      if (this.accountIndex) throw new Error("invalid account index");
+      console.debug("new derivation", this.accountIndex, this.walletIndex);
+      this.walletIndex = this.walletIndex ? this.walletIndex + 1 : 0;
+      derivationPath = getIndexedPath(
+        Blockchain.ETHEREUM,
+        this.accountIndex,
+        this.walletIndex
+      );
+    }
+    const wallet = ethers.Wallet.fromMnemonic(this.mnemonic, derivationPath);
+    this.wallets.push(wallet);
     return {
-      publicKey: "",
-      derivationPath: "",
+      publicKey: wallet.address,
+      derivationPath,
     };
   }
 
@@ -165,6 +224,9 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
       seed: this.seed.toString("hex"),
       // Serialize wallets as derivation paths
       derivationPaths: this.wallets.map((w) => w.mnemonic.path),
+      accountIndex: this.accountIndex,
+      walletIndex: this.walletIndex,
+      legacyPathType: this.legacyPathType,
     };
   }
 }

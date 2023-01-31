@@ -32,7 +32,11 @@ export interface Keyring {
 // HD keyring types
 //
 export interface HdKeyringFactory {
-  init(mnemonic: string, derivationPaths: Array<string>): HdKeyring;
+  init(
+    mnemonic: string,
+    derivationPaths: Array<string>,
+    accountIndex: number
+  ): HdKeyring;
   fromJson(obj: HdKeyringJson): HdKeyring;
 }
 
@@ -45,7 +49,6 @@ export interface HdKeyring extends Keyring {
 //
 // Ledger keyring types
 //
-
 export interface LedgerKeyringFactory {
   init(publicKeyPaths: Array<PublicKeyPath>): LedgerKeyring;
   fromJson(obj: LedgerKeyringJson): LedgerKeyring;

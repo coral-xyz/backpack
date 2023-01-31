@@ -60,7 +60,12 @@ export class BlockchainKeyring {
     derivationPaths: Array<string>
   ): Promise<Array<[string, string]>> {
     // Initialize keyrings.
-    this.hdKeyring = this.hdKeyringFactory.init(mnemonic, derivationPaths);
+    const accountIndex = 0; // TODO
+    this.hdKeyring = this.hdKeyringFactory.init(
+      mnemonic,
+      derivationPaths,
+      accountIndex
+    );
     // Empty ledger keyring to hold one off ledger imports
     this.ledgerKeyring = this.ledgerKeyringFactory.init([]);
     // Empty imported keyring to hold imported secret keys
