@@ -1,10 +1,16 @@
-import { useState, useEffect } from "react";
+import { useEffect,useState } from "react";
 import {
   BACKPACK_CONFIG_VERSION,
   BACKPACK_FEATURE_FORCE_LATEST_VERSION,
 } from "@coral-xyz/common";
+
 import { WithDrawer } from "../common/Layout/Drawer";
 
+/**
+ * WithVersion does a check to make sure the app is running with the latest version
+ * as determinied by a remote worker. If the app is not on the latest version, then
+ * we present a drawer to force the user to update.
+ */
 export function WithVersion({ children }: { children: any }) {
   const [openDrawer, setOpenDrawer] = useState(false);
 
