@@ -11,6 +11,7 @@ export type {
   HdKeyringJson,
   KeyringJson,
   LedgerKeyringJson,
+  PathType,
 } from "@coral-xyz/common";
 
 export interface KeyringFactory {
@@ -35,6 +36,7 @@ export interface HdKeyringFactory {
   init(
     mnemonic: string,
     derivationPaths: Array<string>,
+    pathType: PathType,
     accountIndex: number
   ): HdKeyring;
   fromJson(obj: HdKeyringJson): HdKeyring;

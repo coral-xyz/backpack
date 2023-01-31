@@ -62,6 +62,30 @@ export const getIndexedPath = (
   return new BIPPath.fromPathArray(path).toString();
 };
 
+//
+// Legacy scheme for newly created wallets
+//
+//     m/44/501'/ and m/44/501'/{0...n}
+//
+export const legacyBip44RecoveryPaths = (blockchain: Blockchain) => {
+  return [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map((i) =>
+    legacyBip44Indexed(blockchain, i)
+  );
+};
+
+//
+// Legacy scheme for newly created wallets
+//
+//     m/44/501'/{0...n}'/0'
+//
+export const legacyBip44ChangeRecoveryPaths = (blockchain: Blockchain) => {
+  return [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map((i) =>
+    legacyBip44ChangeIndexed(blockchain, i)
+  );
+};
+
+export const pathTypeFromPaths = (derivationPaths: Array<string>) => {};
+
 export const getRecoveryPaths = (blockchain: Blockchain) => {
   /**
    * There is a fixed set of derivation paths we should check for wallets when
@@ -69,38 +93,29 @@ export const getRecoveryPaths = (blockchain: Blockchain) => {
    *
    * Created wallets from the legacy derivation scheme used by Backpack were
    *
-   *     m/44/501'/ and m/44/501'/{0...n}
+   *     m/44/501'/ and m/44/501'/{0...n}'
    *
-   * It was possible to import wallets from the paths:
+   * It was possible to import and then derive more wallets from the paths:
    *
-   *     m/44/501'/ and m/44/501'/{0...n}
-   *     m/44/501'/0' and m/44/501'/0'/{0...n}
+   *     m/44/501'/ and m/44/501'/{0...n} (same as above)
+   *     m/44/501'/{0...n}'/0'
    *
    * Under the new derivation path scheme created wallets use the derivation
    * paths:
    *
    *     1st account: m/44/501'/, m/44/501'/0', and m/44/501'/0'/0/{0...n}
-   *     2nd account: m/44/501'/1', and m/44/501'/1'/0/{0...n}
-   *     3rd account: m/44/501'/2', and m/44/501'/2'/0/{0...n}
+   *     2nd account: m/44/501'/1'/0', and m/44/501'/1'/0'/{0...n}
+   *     3rd account: m/44/501'/2'/0', and m/44/501'/2'/0'/{0...n}
    *     etc
    *
    */
-
   // Build an array of derivation paths to search for recovery
   let paths: Array<string> = [];
   // Legacy created/imported accounts (m/44/501'/ and m/44/501'/{0...n})
-  paths = paths.concat(
-    [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map((i) =>
-      legacyBip44Indexed(blockchain, i)
-    )
-  );
+  paths = paths.concat(legacyBip44RecoveryPaths(blockchain));
 
   // Legacy imported accounts (m/44/501'/0' and m/44/501'/0'/{0...n})
-  paths = paths.concat(
-    [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map((i) =>
-      legacyBip44ChangeIndexed(blockchain, i)
-    )
-  );
+  paths = paths.concat(legacyBip44ChangeRecoveryPaths(blockchain));
 
   // TODO
   // How many accounts should be searched before giving up? It's possible that

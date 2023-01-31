@@ -36,10 +36,8 @@ export async function migrate_0_2_0_2408(json: any) {
           mnemonic: hdKeyring.mnemonic,
           seed: hdKeyring.seed,
           derivationPaths,
+          pathType: hdKeyring.derivationPath,
           accountIndex: Math.max(hdKeyring.accountIndices),
-          // Legacy derivation path scheme parameters to maintain same derive
-          // behaviour
-          legacyPathType: hdKeyring.derivationPath,
         };
       }
 
@@ -61,7 +59,7 @@ export async function migrate_0_2_0_2408(json: any) {
                 d.account
               );
             } else {
-              // TODO sollet deprekjcated
+              // TODO sollet deprecated
               derivationPath = "";
             }
             return {

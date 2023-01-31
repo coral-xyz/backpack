@@ -122,15 +122,15 @@ export const Finish = ({
   //
   async function createStore(uuid: string, jwt: string) {
     try {
-      //
-      // If usernames are disabled, use a default one for developing.
-      //
       if (isAddingAccount) {
+        // Add a new account if needed, this will also create the new keyring
+        // store
         await background.request({
           method: UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
           params: [username, keyringInit, uuid, jwt],
         });
       } else {
+        // Add a new keyring store under the new account
         await background.request({
           method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
           params: [username, password, keyringInit, uuid, jwt],

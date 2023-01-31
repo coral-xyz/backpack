@@ -9,7 +9,7 @@ import type {
   LedgerKeyringJson,
 } from "@coral-xyz/blockchain-keyring";
 import { LedgerKeyringBase } from "@coral-xyz/blockchain-keyring";
-import type { PublicKeyPath } from "@coral-xyz/common";
+import type { PathType, PublicKeyPath } from "@coral-xyz/common";
 import {
   Blockchain,
   getIndexedPath,
@@ -102,6 +102,7 @@ export class EthereumHdKeyringFactory implements HdKeyringFactory {
   public init(
     mnemonic: string,
     derivationPaths: Array<string>,
+    pathType: PathType,
     accountIndex: number
   ): HdKeyring {
     if (!validateMnemonic(mnemonic)) {
@@ -111,6 +112,7 @@ export class EthereumHdKeyringFactory implements HdKeyringFactory {
     return new EthereumHdKeyring({
       mnemonic,
       seed,
+      pathType,
       derivationPaths,
       accountIndex,
     });
@@ -121,17 +123,17 @@ export class EthereumHdKeyringFactory implements HdKeyringFactory {
     mnemonic,
     seed,
     derivationPaths,
+    pathType,
     accountIndex,
     walletIndex,
-    legacyPathType,
   }: HdKeyringJson): HdKeyring {
     return new EthereumHdKeyring({
       mnemonic,
       seed: Buffer.from(seed, "hex"),
       derivationPaths,
+      pathType,
       accountIndex,
       walletIndex,
-      legacyPathType,
     });
   }
 }
@@ -139,24 +141,24 @@ export class EthereumHdKeyringFactory implements HdKeyringFactory {
 export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
   readonly mnemonic: string;
   private seed: Buffer;
+  private pathType: PathType;
   private accountIndex: number;
   private walletIndex?: number;
-  private legacyPathType?: "bip44" | "bip44change" | "sollet-deprecated";
 
   constructor({
     mnemonic,
     seed,
     derivationPaths,
+    pathType,
     accountIndex,
     walletIndex,
-    legacyPathType,
   }: {
     mnemonic: string;
     seed: Buffer;
     derivationPaths: Array<string>;
+    pathType: PathType;
     accountIndex: number;
     walletIndex?: number;
-    legacyPathType?: "bip44" | "bip44change" | "sollet-deprecated";
   }) {
     const node = HDNode.fromMnemonic(mnemonic);
     const wallets = derivationPaths.map(
@@ -165,23 +167,22 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
     super(wallets);
     this.mnemonic = mnemonic;
     this.seed = seed;
+    this.pathType = pathType;
     this.accountIndex = accountIndex;
     this.walletIndex = walletIndex;
-    this.legacyPathType = legacyPathType;
   }
 
   deriveNextKey(): { publicKey: string; derivationPath: string } {
     let derivationPath: string;
-    if (this.legacyPathType) {
-      if (this.legacyPathType === "sollet-deprecated") {
+    if (this.pathType) {
+      if (this.pathType === "sollet-deprecated") {
         throw new Error("evm keyring does not support legacy path type");
       }
       // accountIndex maintains the same meaning it did in the legacy derivation
       // path system, i.e. the index of the last generated wallet, but it does
       // not correspond to the account index field of BIP44
       this.accountIndex += 1;
-      console.debug("old derivation", this.accountIndex);
-      if (this.legacyPathType === "bip44") {
+      if (this.pathType === "bip44") {
         derivationPath = legacyBip44Indexed(
           Blockchain.ETHEREUM,
           this.accountIndex
@@ -195,7 +196,6 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
     } else {
       // New style derivation paths
       if (this.accountIndex) throw new Error("invalid account index");
-      console.debug("new derivation", this.accountIndex, this.walletIndex);
       this.walletIndex =
         this.walletIndex === undefined ? 0 : this.walletIndex + 1;
       derivationPath = getIndexedPath(
@@ -227,7 +227,7 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
       derivationPaths: this.wallets.map((w) => w.mnemonic.path),
       accountIndex: this.accountIndex,
       walletIndex: this.walletIndex,
-      legacyPathType: this.legacyPathType,
+      pathType: this.pathType,
     };
   }
 }

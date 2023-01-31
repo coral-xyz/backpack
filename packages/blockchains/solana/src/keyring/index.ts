@@ -9,7 +9,7 @@ import type {
   LedgerKeyringJson,
 } from "@coral-xyz/blockchain-keyring";
 import { LedgerKeyringBase } from "@coral-xyz/blockchain-keyring";
-import type { PublicKeyPath } from "@coral-xyz/common";
+import type { PathType, PublicKeyPath } from "@coral-xyz/common";
 import {
   Blockchain,
   getIndexedPath,
@@ -34,9 +34,6 @@ export class SolanaKeyringFactory implements KeyringFactory {
     return new SolanaKeyring(keypairs);
   }
 
-  /**
-   *
-   */
   public fromJson(payload: KeyringJson): SolanaKeyring {
     const keypairs = payload.secretKeys.map((secret: string) =>
       Keypair.fromSecretKey(Buffer.from(secret, "hex"))
@@ -103,6 +100,7 @@ export class SolanaHdKeyringFactory implements HdKeyringFactory {
   public init(
     mnemonic: string,
     derivationPaths: Array<string>,
+    pathType: PathType,
     accountIndex: number
   ): HdKeyring {
     if (!validateMnemonic(mnemonic)) {
@@ -112,6 +110,7 @@ export class SolanaHdKeyringFactory implements HdKeyringFactory {
       mnemonic,
       seed: mnemonicToSeedSync(mnemonic),
       derivationPaths,
+      pathType,
       accountIndex,
     });
   }
@@ -120,17 +119,17 @@ export class SolanaHdKeyringFactory implements HdKeyringFactory {
     mnemonic,
     seed,
     derivationPaths,
+    pathType,
     accountIndex,
     walletIndex,
-    legacyPathType,
   }: HdKeyringJson): HdKeyring {
     return new SolanaHdKeyring({
       mnemonic,
       seed: Buffer.from(seed, "hex"),
       derivationPaths,
+      pathType,
       accountIndex,
       walletIndex,
-      legacyPathType,
     });
   }
 }
@@ -139,33 +138,33 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
   readonly mnemonic: string;
   private seed: Buffer;
   private derivationPaths: Array<string>;
+  private pathType: PathType;
   private accountIndex: number;
   private walletIndex?: number;
-  private legacyPathType?: "bip44" | "bip44change" | "sollet-deprecated";
 
   constructor({
     mnemonic,
     seed,
     derivationPaths,
+    pathType,
     accountIndex,
     walletIndex,
-    legacyPathType,
   }: {
     mnemonic: string;
     seed: Buffer;
     derivationPaths: Array<string>;
+    pathType: PathType;
     accountIndex: number;
     walletIndex?: number;
-    legacyPathType?: "bip44" | "bip44change" | "sollet-deprecated";
   }) {
     const keypairs = derivationPaths.map((d) => deriveSolanaKeypair(seed, d));
     super(keypairs);
     this.mnemonic = mnemonic;
     this.seed = seed;
     this.derivationPaths = derivationPaths;
+    this.pathType = pathType;
     this.accountIndex = accountIndex;
     this.walletIndex = walletIndex;
-    this.legacyPathType = legacyPathType;
   }
 
   public deletePublicKey(publicKey: string) {
@@ -183,18 +182,17 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
 
   public deriveNextKey(): { publicKey: string; derivationPath: string } {
     let derivationPath: string;
-    if (this.legacyPathType) {
+    if (this.pathType) {
       // accountIndex maintains the same meaning it did in the legacy derivation
       // path system, i.e. the index of the last generated wallet, but it does
       // not correspond to the account index field of BIP44
       this.accountIndex += 1;
-      console.debug("old derivation", this.accountIndex);
-      if (this.legacyPathType === "bip44") {
+      if (this.pathType === "bip44") {
         derivationPath = legacyBip44Indexed(
           Blockchain.SOLANA,
           this.accountIndex
         );
-      } else if (this.legacyPathType === "bip44change") {
+      } else if (this.pathType === "bip44change") {
         derivationPath = legacyBip44ChangeIndexed(
           Blockchain.SOLANA,
           this.accountIndex
@@ -206,8 +204,8 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
     } else {
       // New style derivation paths
       if (this.accountIndex) throw new Error("invalid account index");
-      console.debug("new derivation", this.accountIndex, this.walletIndex);
-      this.walletIndex = this.walletIndex ? this.walletIndex + 1 : 0;
+      this.walletIndex =
+        this.walletIndex === undefined ? 0 : this.walletIndex + 1;
       derivationPath = getIndexedPath(
         Blockchain.SOLANA,
         this.accountIndex,
@@ -237,7 +235,7 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
       derivationPaths: this.derivationPaths,
       accountIndex: this.accountIndex,
       walletIndex: this.walletIndex,
-      legacyPathType: this.legacyPathType,
+      pathType: this.pathType,
     };
   }
 }

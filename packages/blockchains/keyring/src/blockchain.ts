@@ -1,6 +1,10 @@
 import * as store from "@coral-xyz/background/src/backend/store";
 import { DefaultKeyname } from "@coral-xyz/background/src/backend/store";
-import type { BlockchainKeyringJson, PublicKeyPath } from "@coral-xyz/common";
+import type {
+  BlockchainKeyringJson,
+  PathType,
+  PublicKeyPath,
+} from "@coral-xyz/common";
 import { getLogger } from "@coral-xyz/common";
 import * as bs58 from "bs58";
 
@@ -57,13 +61,15 @@ export class BlockchainKeyring {
 
   public async initFromMnemonic(
     mnemonic: string,
-    derivationPaths: Array<string>
+    derivationPaths: Array<string>,
+    pathType: PathType
   ): Promise<Array<[string, string]>> {
     // Initialize keyrings.
     const accountIndex = 0; // TODO
     this.hdKeyring = this.hdKeyringFactory.init(
       mnemonic,
       derivationPaths,
+      pathType,
       accountIndex
     );
     // Empty ledger keyring to hold one off ledger imports
