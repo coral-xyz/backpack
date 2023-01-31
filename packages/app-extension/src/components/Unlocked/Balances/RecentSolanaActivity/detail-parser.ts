@@ -101,7 +101,6 @@ export const getTransactionTitle = (transaction: HeliusParsedTransaction) => {
     // case TransactionType.UNKNOWN:
     case TransactionType.TRANSFER:
       // send/receive NFT's are returned as TransactionType.TRANSFER
-
       const nftName =
         transaction?.metadata?.onChainData?.data?.name ||
         transaction?.metadata?.offChainData?.name;
@@ -110,11 +109,6 @@ export const getTransactionTitle = (transaction: HeliusParsedTransaction) => {
       }
       if (isUserTxnSender(transaction)) return "Sent";
       else if (isUserTxnSender(transaction) === false) return "Received";
-
-      // SOL TRANSFER
-      // if (transaction.source === Source.SYSTEM_PROGRAM) {
-      // }
-      // if (TransactionType.TRANSFER) return "Transferred";
       return "App Interaction";
 
     case TransactionType.SWAP:
@@ -123,18 +117,13 @@ export const getTransactionTitle = (transaction: HeliusParsedTransaction) => {
       let title = "App Interaction";
 
       // if (transaction?.source) title = "App Interaction";
-      // if transaction is an NFT, set the NFT name as the Title
-      if (
-        isNFTTransaction(transaction)
-        // &&
-        //   transaction?.metadata?.onChainData?.data?.name) ||
-        // (isNFTTransaction(transaction) &&
-        //   transaction?.metadata?.offChainData?.name
-      ) {
-        title =
-          transaction?.metadata?.onChainData?.data?.name ||
-          transaction?.metadata?.offChainData?.name;
-        return title;
+      // if transaction is of type NFT and was not caught above under 'TRANSFER' case
+      // TODO: test this case to see if it is necessary
+      const nonTransferNftName =
+        transaction?.metadata?.onChainData?.data?.name ||
+        transaction?.metadata?.offChainData?.name;
+      if (isNFTTransaction(transaction) && nonTransferNftName) {
+        return nonTransferNftName;
       }
 
       if (transaction?.type?.includes("MINT")) return "Minted";
@@ -223,12 +212,8 @@ export const getTokenData = (
 
   let tokenData: (TokenInfo | undefined)[] = [];
 
-  // add appropriate token metadata
-  // TODO: some token metadata appearing in balance table, but not in registry
-  // where can this be found?
-
   if (transaction.type === TransactionType.SWAP) {
-    // handle nativeInput/nativeOutput for swapping to and from Sol
+    // if token is isNativeInput/isNativeOutput, token swap is to/from SOL
     let tokenInput, tokenOutput;
     const isNativeInput = transaction.events?.swap?.nativeInput;
     const isNativeOutput = transaction.events?.swap?.nativeOutput;
@@ -247,6 +232,7 @@ export const getTokenData = (
     }
   }
 
+  // add appropriate token metadata
   if (transaction.type === TransactionType.TRANSFER) {
     const transferredToken = transaction.tokenTransfers?.[0]?.mint;
     if (transferredToken && tokenRegistry.get(transferredToken)) {

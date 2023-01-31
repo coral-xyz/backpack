@@ -128,21 +128,16 @@ export const recentSolanaTransactions = atomFamily<
           const heliusTransactionDetails =
             await fetchRecentSolanaTransactionDetails(address);
 
-          // console.log(heliusTransactionDetails);
+          console.log(heliusTransactionDetails);
 
           return await Promise.all(
             heliusTransactionDetails?.map(async (t) => {
-              // if transaction is of a type related to NFT, query for additional metadata to be displayed
-              // so far have identified two patterns matching NFT object, there are potentially/likely more to add
-              if (
-                (t.type.includes("NFT") && t?.events?.nft?.nfts[0]?.mint) ||
-                (t.type === "TRANSFER" &&
-                  t?.tokenTransfers[0]?.tokenStandard === "NonFungible" &&
-                  t?.tokenTransfers[0]?.mint)
-              ) {
-                const nftMetadata = await fetchNFTMetaData(
-                  t?.events?.nft?.nfts[0]?.mint || t?.tokenTransfers[0]?.mint
-                );
+              // if transaction has a NFT mint address, query for additional metadata
+              // fallback to first token in tokenTransfers if nft event not present
+              const nftMint =
+                t?.events?.nft?.nfts[0]?.mint || t?.tokenTransfers[0]?.mint;
+              if (nftMint) {
+                const nftMetadata = await fetchNFTMetaData(nftMint);
                 return {
                   blockchain: Blockchain.SOLANA,
                   ...t,

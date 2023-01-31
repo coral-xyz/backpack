@@ -7,7 +7,6 @@ import {
   useActiveWallet,
   useBlockchainConnectionUrl,
   useBlockchainExplorer,
-  useSplTokenRegistry,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ArrowRightAltRounded, CallMade } from "@mui/icons-material";
@@ -24,6 +23,7 @@ import {
 
 import {
   formatTimestamp,
+  getTokenData,
   getTransactionCaption,
   getTransactionTitle,
   getTruncatedAddress,
@@ -127,20 +127,10 @@ export function TransactionDetail({
   const activeWallet = useActiveWallet();
   const theme = useCustomTheme();
   const navigate = useNavigate();
-  const explorer = useBlockchainExplorer(Blockchain.SOLANA);
-  const connectionUrl = useBlockchainConnectionUrl(Blockchain.SOLANA);
   const [openDrawer, setOpenDrawer] = useState(true);
-  const tokenRegistry = useSplTokenRegistry();
-  let tokenData: (TokenInfo | undefined)[] = [];
 
   // TODO - this is duplicated in ListItem.tsx, better to pass in setTransactionDetail state
-  // add appropriate metadata
-  if (transaction?.tokenTransfers?.length > 0)
-    transaction?.tokenTransfers?.map((transfer: any) => {
-      if (transfer?.mint && tokenRegistry.get(transfer?.mint)) {
-        tokenData.push(tokenRegistry.get(transfer?.mint));
-      }
-    });
+  const tokenData = getTokenData(transaction);
 
   return (
     <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
@@ -184,7 +174,7 @@ export function TransactionDetail({
                           paddingTop: "16px",
                         }}
                       >
-                        {getTransactionTitle(transaction)}
+                        {(getTransactionTitle(transaction), "hi")}
                       </div>
                     </>
                   ))}
@@ -291,139 +281,145 @@ export function TransactionDetail({
                     />
                   )}
 
-                <List className={classes.detailList}>
-                  <div className={classes.firstRow}>
-                    <div className={classes.cell}>
-                      <div className={classes.label}>Date</div>
-
-                      <div className={classes.cellValue}>
-                        {formatTimestamp(transaction?.timestamp)}
-                      </div>
-                    </div>
-                  </div>
-
-                  {(transaction?.type === TransactionType.UNKNOWN ||
-                    transaction.type === TransactionType.TRANSFER) &&
-                    isUserTxnSender(transaction) &&
-                    transaction?.tokenTransfers?.[0]?.toUserAccount && (
-                      <div className={classes.middleRow}>
-                        <div className={classes.cell}>
-                          <div className={classes.label}>To</div>
-
-                          <div className={classes.cellValue}>
-                            {getTruncatedAddress(
-                              transaction?.tokenTransfers?.[0]?.toUserAccount
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  {(transaction?.type === TransactionType.UNKNOWN ||
-                    transaction.type === TransactionType.TRANSFER) &&
-                    isUserTxnSender(transaction) === false &&
-                    transaction?.tokenTransfers?.[0]?.fromUserAccount && (
-                      <div className={classes.middleRow}>
-                        <div className={classes.cell}>
-                          <div className={classes.label}>From</div>
-
-                          <div className={classes.cellValue}>
-                            {getTruncatedAddress(
-                              transaction?.tokenTransfers?.[0]?.fromUserAccount
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                  {transaction?.type === TransactionType.SWAP && (
-                    <>
-                      <div className={classes.middleRow}>
-                        <div className={classes.cell}>
-                          <div className={classes.label}>You paid</div>
-
-                          <div className={classes.cellValue}>
-                            {new Number(
-                              transaction?.description?.split(" ")[2]
-                            ).toFixed(2) +
-                              " " +
-                              tokenData[0]?.symbol ||
-                              getTruncatedAddress(
-                                transaction?.tokenTransfers?.[0]?.mint
-                              )}
-                          </div>
-                        </div>
-                      </div>
-                      <div className={classes.middleRow}>
-                        <div className={classes.cell}>
-                          <div className={classes.label}>You Received</div>
-
-                          <div className={classes.confirmedStatus}>
-                            {new Number(
-                              transaction?.description?.split(" ")[5]
-                            ).toFixed(2) +
-                              " " +
-                              tokenData[1]?.symbol ||
-                              getTruncatedAddress(
-                                transaction?.tokenTransfers?.[0]?.mint
-                              )}
-                          </div>
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                  <div className={classes.middleRow}>
-                    <div className={classes.cell}>
-                      <div className={classes.label}>Network Fee</div>
-
-                      <div className={classes.cellValue}>
-                        {transaction?.fee / 10 ** 9} SOL
-                      </div>
-                    </div>
-                  </div>
-                  <div className={classes.middleRow}>
-                    <div className={classes.cell}>
-                      <div className={classes.label}>Status</div>
-
-                      {transaction?.transactionError ? (
-                        <div className={classes.failedStatus}>Failed</div>
-                      ) : (
-                        <div className={classes.confirmedStatus}>Confirmed</div>
-                      )}
-                    </div>
-                  </div>
-                  <div
-                    className={classes.lastRow}
-                    onClick={() => {
-                      window.open(
-                        explorerUrl(
-                          explorer!,
-                          transaction.signature,
-                          connectionUrl!
-                        )
-                      );
-                    }}
-                  >
-                    <div className={classes.cell}>
-                      <div className={classes.label}>Signature</div>
-
-                      <div className={classes.cellValue}>
-                        {getTruncatedAddress(transaction?.signature)}
-                        <CallMade
-                          style={{
-                            color: theme.custom.colors.icon,
-                            paddingLeft: "2px",
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </List>
+                {DetailTable(transaction, tokenData)}
               </Card>
             )}
           />
         </NavStackEphemeral>
       </div>
     </WithDrawer>
+  );
+}
+
+function DetailTable(
+  transaction: HeliusParsedTransaction,
+  tokenData: (TokenInfo | undefined)[]
+): JSX.Element {
+  const classes = useStyles();
+  const theme = useCustomTheme();
+  const explorer = useBlockchainExplorer(Blockchain.SOLANA);
+  const connectionUrl = useBlockchainConnectionUrl(Blockchain.SOLANA);
+
+  return (
+    <List className={classes.detailList}>
+      <div className={classes.firstRow}>
+        <div className={classes.cell}>
+          <div className={classes.label}>Date</div>
+
+          <div className={classes.cellValue}>
+            {formatTimestamp(transaction?.timestamp)}
+          </div>
+        </div>
+      </div>
+
+      {(transaction?.type === TransactionType.UNKNOWN ||
+        transaction.type === TransactionType.TRANSFER) &&
+        isUserTxnSender(transaction) &&
+        transaction?.tokenTransfers?.[0]?.toUserAccount && (
+          <div className={classes.middleRow}>
+            <div className={classes.cell}>
+              <div className={classes.label}>To</div>
+
+              <div className={classes.cellValue}>
+                {getTruncatedAddress(
+                  transaction?.tokenTransfers?.[0]?.toUserAccount
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      {(transaction?.type === TransactionType.UNKNOWN ||
+        transaction.type === TransactionType.TRANSFER) &&
+        isUserTxnSender(transaction) === false &&
+        transaction?.tokenTransfers?.[0]?.fromUserAccount && (
+          <div className={classes.middleRow}>
+            <div className={classes.cell}>
+              <div className={classes.label}>From</div>
+
+              <div className={classes.cellValue}>
+                {getTruncatedAddress(
+                  transaction?.tokenTransfers?.[0]?.fromUserAccount
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+      {transaction?.type === TransactionType.SWAP && (
+        <>
+          <div className={classes.middleRow}>
+            <div className={classes.cell}>
+              <div className={classes.label}>You paid</div>
+
+              <div className={classes.cellValue}>
+                {new Number(transaction?.description?.split(" ")[2]).toFixed(
+                  2
+                ) +
+                  " " +
+                  tokenData[0]?.symbol ||
+                  getTruncatedAddress(transaction?.tokenTransfers?.[0]?.mint)}
+              </div>
+            </div>
+          </div>
+          <div className={classes.middleRow}>
+            <div className={classes.cell}>
+              <div className={classes.label}>You Received</div>
+
+              <div className={classes.confirmedStatus}>
+                {new Number(transaction?.description?.split(" ")[5]).toFixed(
+                  2
+                ) +
+                  " " +
+                  tokenData[1]?.symbol ||
+                  getTruncatedAddress(transaction?.tokenTransfers?.[0]?.mint)}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      <div className={classes.middleRow}>
+        <div className={classes.cell}>
+          <div className={classes.label}>Network Fee</div>
+
+          <div className={classes.cellValue}>
+            {transaction?.fee / 10 ** 9} SOL
+          </div>
+        </div>
+      </div>
+      <div className={classes.middleRow}>
+        <div className={classes.cell}>
+          <div className={classes.label}>Status</div>
+
+          {transaction?.transactionError ? (
+            <div className={classes.failedStatus}>Failed</div>
+          ) : (
+            <div className={classes.confirmedStatus}>Confirmed</div>
+          )}
+        </div>
+      </div>
+      <div
+        className={classes.lastRow}
+        onClick={() => {
+          window.open(
+            explorerUrl(explorer!, transaction.signature, connectionUrl!)
+          );
+        }}
+      >
+        <div className={classes.cell}>
+          <div className={classes.label}>Signature</div>
+
+          <div className={classes.cellValue}>
+            {getTruncatedAddress(transaction?.signature)}
+            <CallMade
+              style={{
+                color: theme.custom.colors.icon,
+                paddingLeft: "2px",
+              }}
+            />
+          </div>
+        </div>
+      </div>
+    </List>
   );
 }

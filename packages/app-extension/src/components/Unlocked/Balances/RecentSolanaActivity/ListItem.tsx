@@ -15,6 +15,7 @@ import {
 import { ListItemIcons } from "./Icons";
 import type { HeliusParsedTransaction } from "./types";
 
+// TODO: clean this up. lot of duplicate styling, more efficient way to write this.
 const useStyles = styles((theme) => ({
   title: {
     color: theme.custom.colors.fontColor,
@@ -27,16 +28,26 @@ const useStyles = styles((theme) => ({
     fontSize: "12px",
     fontWeight: 500,
     lineHeight: "24px",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
   },
   textReceived: {
     fontSize: "16px",
     color: theme.custom.colors.positive,
     lineHeight: "24px",
+    textAlign: "end",
   },
   textSent: {
     fontSize: "16px",
     color: theme.custom.colors.negative,
     lineHeight: "24px",
+    textAlign: "end",
+  },
+  textSecondary: {
+    fontSize: "16px",
+    color: theme.custom.colors.secondary,
+    lineHeight: "24px",
+    textAlign: "end",
   },
   lineDataWrapper: {
     display: "flex",
@@ -55,6 +66,8 @@ export function SolanaTransactionListItem({
   const theme = useCustomTheme();
 
   const tokenData = getTokenData(transaction);
+
+  console.log(transaction, "wha", tokenData);
 
   const onClick = () => {
     setTransactionDetail(transaction);
@@ -139,12 +152,15 @@ function RecentActivityListItemIcon(
     if (transaction.source === Source.SYSTEM_PROGRAM) {
       return ListItemIcons["SOL"]();
     }
-    // other SPL token Transfer
-    if (tokenData[0]?.logoURI)
-      return ListItemIcons[TransactionType.TRANSFER](tokenData[0]?.logoURI);
+    // other SPL token Transfer. Check tokenRegistry first, then Helius metadata
+    const transferIcon =
+      tokenData[0]?.logoURI ||
+      transaction?.metadata?.onChaindata?.data?.uri ||
+      transaction?.metadata?.offChainData?.image;
+    if (transferIcon)
+      return ListItemIcons[TransactionType.TRANSFER](transferIcon);
 
-    // if it is an NFT transfer and no NFT image was found above, show default
-    // NFT icon
+    // if it is an NFT transfer and no NFT image was found above, show default Icon
     if (transaction?.tokenTransfers?.[0]?.tokenStandard === "NonFungible") {
       return ListItemIcons["NFT_DEFAULT"]();
     }
@@ -172,26 +188,14 @@ function RecentActivityListItemData(
   if (transaction.type === TransactionType.SWAP) {
     return (
       <>
-        <div
-          style={{
-            fontSize: "16px",
-            color: theme.custom.colors.positive,
-            lineHeight: "24px",
-          }}
-        >
+        <div className={classes.textReceived}>
           {"+ " +
-            transaction?.tokenTransfers?.[1]?.tokenAmount.toFixed(2) +
+            transaction?.tokenTransfers?.[1]?.tokenAmount.toFixed(5) +
             " " +
             tokenData[1]?.symbol ||
             getTruncatedAddress(transaction?.tokenTransfers?.[1]?.mint)}
         </div>
-        <div
-          style={{
-            fontSize: "14px",
-            color: theme.custom.colors.secondary,
-            lineHeight: "20px",
-          }}
-        >
+        <div className={classes.textSecondary}>
           {"- " +
             transaction?.tokenTransfers[0]?.tokenAmount.toFixed(5) +
             " " +
@@ -204,13 +208,7 @@ function RecentActivityListItemData(
   // BURN
   if (transaction?.type === TransactionType.BURN) {
     return (
-      <div
-        style={{
-          fontSize: "16px",
-          color: theme.custom.colors.secondary,
-          lineHeight: "24px",
-        }}
-      >
+      <div className={classes.textSecondary}>
         {transaction?.tokenTransfers[0]?.tokenAmount}
       </div>
     );
@@ -242,7 +240,10 @@ function RecentActivityListItemData(
             transaction?.tokenTransfers?.[0]?.tokenAmount.toFixed(5)
           ) +
             " " +
-            (tokenData[0]?.symbol || "")}
+            (tokenData[0]?.symbol ||
+              transaction?.metadata?.onChaindata?.data?.symbol ||
+              transaction?.metadata?.offChainData?.symbol ||
+              "")}
         </div>
       );
 
@@ -263,7 +264,10 @@ function RecentActivityListItemData(
             transaction?.tokenTransfers?.[0]?.tokenAmount.toFixed(5)
           ) +
             " " +
-            (tokenData[0]?.symbol || "")}
+            (tokenData[0]?.symbol ||
+              transaction?.metadata?.onChaindata?.data?.symbol ||
+              transaction?.metadata?.offChainData?.symbol ||
+              "")}
         </div>
       );
     }
