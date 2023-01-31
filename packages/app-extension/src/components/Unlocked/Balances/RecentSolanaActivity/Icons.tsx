@@ -1,7 +1,9 @@
+import { SOL_LOGO_URI } from "@coral-xyz/recoil";
 import {
   ArrowDownwardRounded,
   Check,
   ClearRounded,
+  Image,
   SendRounded,
   WhatshotRounded,
 } from "@mui/icons-material";
@@ -45,6 +47,19 @@ export const ListItemIcons = {
           marginRight: "15px",
         }}
         src={tokenLogo}
+      />
+    );
+  },
+  SOL: () => {
+    return (
+      <img
+        style={{
+          borderRadius: "50%",
+          width: "44px",
+          height: "44px",
+          marginRight: "15px",
+        }}
+        src={SOL_LOGO_URI}
       />
     );
   },
@@ -105,6 +120,19 @@ export const ListItemIcons = {
           }}
         />
       </div>
+    );
+  },
+  NFT_DEFAULT: () => {
+    return (
+      <Image
+        style={{
+          borderRadius: "4px",
+          width: "44px",
+          height: "44px",
+          marginRight: "15px",
+          fill: "#99A4B4",
+        }}
+      />
     );
   },
   ERROR: () => {

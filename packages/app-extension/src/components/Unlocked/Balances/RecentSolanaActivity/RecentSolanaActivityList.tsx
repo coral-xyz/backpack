@@ -4,9 +4,11 @@ import { useRecentTransactions } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { List } from "@mui/material";
 
+import { formatTimestampListView, groupTxnsByDate } from "./detail-parser";
 import { SolanaTransactionListItem } from "./ListItem";
 import { NoRecentActivityLabel } from "./NoRecentActivity";
 import { TransactionDetail } from "./TransactionDetail";
+import type { HeliusParsedTransaction } from "./types";
 
 export function _RecentSolanaActivityList({
   blockchain,
@@ -42,6 +44,7 @@ export function _RecentSolanaActivityList({
       />
     );
   }
+  const txnsGroupedByDate = groupTxnsByDate(transactions);
 
   return transactions?.length > 0 ? (
     <div
@@ -49,28 +52,48 @@ export function _RecentSolanaActivityList({
         paddingBottom: "16px",
       }}
     >
-      <List
-        style={{
-          marginTop: "16px",
-          paddingTop: 0,
-          paddingBottom: 0,
-          marginLeft: "16px",
-          marginRight: "16px",
-          borderRadius: "14px",
-          border: `${theme.custom.colors.borderFull}`,
-          ...style,
-        }}
-      >
-        {transactions.map((tx: any, idx: number) => (
-          <SolanaTransactionListItem
-            key={idx}
-            transaction={tx}
-            isFirst={idx === 0}
-            isLast={idx === transactions.length - 1}
-            setTransactionDetail={setTransactionDetail}
-          />
-        ))}
-      </List>
+      {txnsGroupedByDate.map((group: HeliusParsedTransaction[], i: number) => {
+        return (
+          <>
+            <div
+              key={i}
+              style={{
+                fontSize: "16px",
+                color: theme.custom.colors.alpha,
+                lineHeight: "24px",
+                marginLeft: "28px",
+                marginTop: "16px",
+              }}
+            >
+              {formatTimestampListView(group[0].timestamp)}
+            </div>
+            <List
+              style={{
+                marginTop: "5px",
+                paddingTop: 0,
+                paddingBottom: 0,
+                marginLeft: "16px",
+                marginRight: "16px",
+                borderRadius: "14px",
+                border: `${theme.custom.colors.borderFull}`,
+                ...style,
+              }}
+            >
+              {group.map((tx: HeliusParsedTransaction, idx: number) => {
+                return (
+                  <SolanaTransactionListItem
+                    key={idx}
+                    transaction={tx}
+                    isFirst={idx === 0}
+                    isLast={idx === group.length - 1}
+                    setTransactionDetail={setTransactionDetail}
+                  />
+                );
+              })}
+            </List>
+          </>
+        );
+      })}
     </div>
   ) : (
     <NoRecentActivityLabel minimize={!!minimize} />

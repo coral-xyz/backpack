@@ -13,7 +13,8 @@ export const isNFTTransaction = (
   );
 };
 
-export const formatTimestamp = (date: Date): string => {
+export const formatTimestamp = (timestamp: number): string => {
+  const date = new Date(timestamp * 1000);
   let hours = date.getHours();
   let minutes: string | number = date.getMinutes();
   let ampm = hours >= 12 ? "pm" : "am";
@@ -31,6 +32,35 @@ export const formatTimestamp = (date: Date): string => {
     " " +
     ampm
   );
+};
+
+export const formatTimestampListView = (timestamp: number): string => {
+  const date = new Date(timestamp * 1000);
+  return (
+    date.getDate() +
+    " " +
+    new Intl.DateTimeFormat("en-US", { month: "long" }).format(date) +
+    ", " +
+    date.getFullYear()
+  );
+};
+
+export const groupTxnsByDate = (
+  arr: HeliusParsedTransaction[]
+): HeliusParsedTransaction[][] => {
+  const result: HeliusParsedTransaction[][] = [];
+  let currentDate = "";
+
+  for (const item of arr) {
+    const date = new Date(item?.timestamp * 1000).toDateString();
+    if (date !== currentDate) {
+      console.log(date, "!");
+      currentDate = date;
+      result.push([]);
+    }
+    result[result.length - 1].push(item);
+  }
+  return result;
 };
 
 export const getSourceOrTypeFormatted = (sourceOrType: string): string => {
@@ -70,8 +100,16 @@ export const getTransactionTitle = (transaction: HeliusParsedTransaction) => {
       return "Burned";
     // case TransactionType.UNKNOWN:
     case TransactionType.TRANSFER:
+      // send/receive NFT's are returned as TransactionType.TRANSFER
+
+      const nftName =
+        transaction?.metadata?.onChainData?.data?.name ||
+        transaction?.metadata?.offChainData?.name;
+      if (isNFTTransaction(transaction) && nftName) {
+        return nftName;
+      }
       if (isUserTxnSender(transaction)) return "Sent";
-      else if (isUserTxnSender(transaction) === false) return "Recieved";
+      else if (isUserTxnSender(transaction) === false) return "Received";
 
       // SOL TRANSFER
       // if (transaction.source === Source.SYSTEM_PROGRAM) {

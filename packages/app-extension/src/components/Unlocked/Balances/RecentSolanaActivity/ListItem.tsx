@@ -1,5 +1,5 @@
 import { isFirstLastListItemStyle } from "@coral-xyz/react-common";
-import { useSplTokenRegistry } from "@coral-xyz/recoil";
+import { useAnchorContext, useSplTokenRegistry } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ListItem, Typography } from "@mui/material";
 import type { TokenInfo } from "@solana/spl-token-registry";
@@ -33,6 +33,11 @@ const useStyles = styles((theme) => ({
     color: theme.custom.colors.positive,
     lineHeight: "24px",
   },
+  textSent: {
+    fontSize: "16px",
+    color: theme.custom.colors.negative,
+    lineHeight: "24px",
+  },
   lineDataWrapper: {
     display: "flex",
     flexDirection: "column",
@@ -48,10 +53,13 @@ export function SolanaTransactionListItem({
 }: any) {
   const classes = useStyles();
   const theme = useCustomTheme();
+  // const { connection } = useAnchorContext();
   const tokenRegistry = useSplTokenRegistry();
   let tokenData: (TokenInfo | undefined)[] = [];
 
   // add appropriate token metadata
+  // TODO: some token metadata appearing in balance table, but not in registry
+  // where can this be found?
   if (transaction?.tokenTransfers?.length > 0)
     transaction?.tokenTransfers?.map((transfer: any) => {
       if (transfer?.mint && tokenRegistry.get(transfer?.mint)) {
@@ -78,8 +86,10 @@ export function SolanaTransactionListItem({
         backgroundColor: theme.custom.colors.nav,
         borderBottom: isLast
           ? undefined
-          : `solid 1pt ${theme.custom.colors.border}`,
+          : `solid 1pt ${theme.custom.colors.border1}`,
         ...isFirstLastListItemStyle(isFirst, isLast, 12),
+        borderBottomLeftRadius: isLast ? "12px" : 0,
+        borderBottomRightRadius: isLast ? "12px" : 0,
       }}
     >
       <div
@@ -128,17 +138,28 @@ function RecentActivityListItemIcon(
   }
 
   // if NFT url available, display it. Check on-chain data first
-  if (isNFTTransaction(transaction)) {
-    return ListItemIcons["NFT"](
-      transaction?.metadata?.onChaindata?.data?.uri ||
-        transaction?.metadata?.offChainData?.image
-    );
+  const nftImage =
+    transaction?.metadata?.onChaindata?.data?.uri ||
+    transaction?.metadata?.offChainData?.image;
+  if (isNFTTransaction(transaction) && nftImage) {
+    return ListItemIcons["NFT"](nftImage);
   }
 
   if (transaction.type === TransactionType.TRANSFER) {
+    //SOL transfer
+    if (transaction.source === Source.SYSTEM_PROGRAM) {
+      return ListItemIcons["SOL"]();
+    }
+    // other SPL token Transfer
     if (tokenData[0]?.logoURI)
       return ListItemIcons[TransactionType.TRANSFER](tokenData[0]?.logoURI);
 
+    // if it is an NFT transfer and no NFT image was found above, show default
+    // NFT icon
+    if (transaction?.tokenTransfers?.[0]?.tokenStandard === "NonFungible") {
+      return ListItemIcons["NFT_DEFAULT"]();
+    }
+    // default
     if (isUserTxnSender(transaction)) return ListItemIcons["SENT"]();
     return ListItemIcons["RECEIVED"]();
   }
@@ -211,7 +232,6 @@ function RecentActivityListItemData(
     return <div></div>;
   }
 
-  // TRANSFER, display token logo if available, otherwise appropriate sent/recieved icon
   if (
     transaction.type === TransactionType.TRANSFER
     // || transaction.type === TransactionType.UNKNOWN
@@ -221,25 +241,13 @@ function RecentActivityListItemData(
       // SOL Transfer
       if (transaction.source === Source.SYSTEM_PROGRAM) {
         return (
-          <div
-            style={{
-              fontSize: "16px",
-              color: theme.custom.colors.negative,
-              lineHeight: "24px",
-            }}
-          >
+          <div className={classes.textSent}>
             - {transaction?.nativeTransfers[0]?.amount / 10 ** 9 + " SOL"}
           </div>
         );
       }
       return (
-        <div
-          style={{
-            fontSize: "16px",
-            color: theme.custom.colors.negative,
-            lineHeight: "24px",
-          }}
-        >
+        <div className={classes.textSent}>
           -{" "}
           {new Number(
             transaction?.tokenTransfers?.[0]?.tokenAmount.toFixed(5)
@@ -274,17 +282,7 @@ function RecentActivityListItemData(
 
   // FAILURE
   if (transaction?.transactionError) {
-    return (
-      <div
-        style={{
-          fontSize: "16px",
-          color: theme.custom.colors.secondary,
-          lineHeight: "24px",
-        }}
-      >
-        Failed
-      </div>
-    );
+    return <div className={classes.caption}>Failed</div>;
   }
 
   // default

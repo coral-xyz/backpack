@@ -297,9 +297,7 @@ export function TransactionDetail({
                       <div className={classes.label}>Date</div>
 
                       <div className={classes.cellValue}>
-                        {formatTimestamp(
-                          new Date(transaction?.timestamp * 1000)
-                        )}
+                        {formatTimestamp(transaction?.timestamp)}
                       </div>
                     </div>
                   </div>
