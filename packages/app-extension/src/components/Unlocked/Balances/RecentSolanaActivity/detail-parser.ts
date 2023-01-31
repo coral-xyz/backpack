@@ -50,11 +50,16 @@ export const isUserTxnSender = (transaction: HeliusParsedTransaction) => {
   const activeWallet = useActiveWallet();
 
   if (
-    transaction?.tokenTransfers[0]?.fromUserAccount === activeWallet.publicKey
+    transaction?.tokenTransfers[0]?.fromUserAccount ===
+      activeWallet.publicKey ||
+    transaction?.nativeTransfers[0]?.fromUserAccount === activeWallet.publicKey
   )
     return true;
 
-  if (transaction?.tokenTransfers[0]?.toUserAccount === activeWallet.publicKey)
+  if (
+    transaction?.tokenTransfers[0]?.toUserAccount === activeWallet.publicKey ||
+    transaction?.nativeTransfers[0]?.toUserAccount === activeWallet.publicKey
+  )
     return false;
 
   return null;
@@ -64,25 +69,30 @@ export const getTransactionTitle = (transaction: HeliusParsedTransaction) => {
   switch (transaction.type) {
     case TransactionType.BURN:
       return "Burned";
-    case TransactionType.UNKNOWN:
+    // case TransactionType.UNKNOWN:
     case TransactionType.TRANSFER:
       if (isUserTxnSender(transaction)) return "Sent";
       else if (isUserTxnSender(transaction) === false) return "Recieved";
-      if (TransactionType.TRANSFER) return "Transferred";
-      return "Transaction";
+
+      // SOL TRANSFER
+      // if (transaction.source === Source.SYSTEM_PROGRAM) {
+      // }
+      // if (TransactionType.TRANSFER) return "Transferred";
+      return "App Interaction";
 
     case TransactionType.SWAP:
       return "Token Swap";
     default:
-      let title = "Transaction";
+      let title = "App Interaction";
 
-      if (transaction?.source) title = "App Interaction";
+      // if (transaction?.source) title = "App Interaction";
       // if transaction is an NFT, set the NFT name as the Title
       if (
-        (isNFTTransaction(transaction) &&
-          transaction?.metadata?.onChainData?.data?.name) ||
-        (isNFTTransaction(transaction) &&
-          transaction?.metadata?.offChainData?.name)
+        isNFTTransaction(transaction)
+        // &&
+        //   transaction?.metadata?.onChainData?.data?.name) ||
+        // (isNFTTransaction(transaction) &&
+        //   transaction?.metadata?.offChainData?.name
       ) {
         title =
           transaction?.metadata?.onChainData?.data?.name ||
@@ -98,10 +108,10 @@ export const getTransactionTitle = (transaction: HeliusParsedTransaction) => {
       }
 
       // if we have a type, format it and set it as the title
-      if (transaction?.type && transaction?.type !== TransactionType.UNKNOWN) {
-        title = getSourceOrTypeFormatted(transaction.type);
-        return title;
-      }
+      // if (transaction?.type && transaction?.type !== TransactionType.UNKNOWN) {
+      //   title = getSourceOrTypeFormatted(transaction.type);
+      //   return title;
+      // }
 
       return title;
   }
@@ -115,15 +125,17 @@ export const getTransactionCaption = (
   const activeWallet = useActiveWallet();
 
   switch (transaction.type) {
-    case TransactionType.UNKNOWN:
+    // case TransactionType.UNKNOWN:
     case TransactionType.TRANSFER:
       if (isUserTxnSender(transaction)) {
         return `To: ${getTruncatedAddress(
-          transaction?.tokenTransfers[0]?.toUserAccount
+          transaction?.tokenTransfers[0]?.toUserAccount ||
+            transaction?.nativeTransfers[0]?.toUserAccount
         )}`;
       } else if (isUserTxnSender(transaction) === false) {
         return `From: ${getTruncatedAddress(
-          transaction?.tokenTransfers[0]?.fromUserAccount
+          transaction?.tokenTransfers[0]?.fromUserAccount ||
+            transaction?.nativeTransfers[0]?.fromUserAccount
         )}`;
       }
       // if (TransactionType.TRANSFER) return "Transferred";

@@ -10,7 +10,7 @@ import {
 } from "@mui/icons-material";
 import { ListItem, Typography } from "@mui/material";
 import type { TokenInfo } from "@solana/spl-token-registry";
-import { TransactionType } from "helius-sdk/dist/types";
+import { Source, TransactionType } from "helius-sdk/dist/types";
 
 import {
   getTransactionCaption,
@@ -19,6 +19,7 @@ import {
   isNFTTransaction,
   isUserTxnSender,
 } from "./detail-parser";
+import { ListItemIcons } from "./Icons";
 import type { HeliusParsedTransaction } from "./types";
 
 const useStyles = styles((theme) => ({
@@ -58,6 +59,26 @@ const useStyles = styles((theme) => ({
     fontWeight: 500,
     lineHeight: "24px",
   },
+  tokenSwapIconLeft: {
+    borderRadius: "50%",
+    width: "24px",
+    height: "24px",
+    marginRight: "10px",
+    marginBottom: "15px",
+    zIndex: "10",
+  },
+  tokenSwapIconRight: {
+    borderRadius: "50%",
+    width: "24px",
+    height: "24px",
+    marginRight: "15px",
+    marginLeft: "-15px",
+  },
+  textReceived: {
+    fontSize: "16px",
+    color: theme.custom.colors.positive,
+    lineHeight: "24px",
+  },
 }));
 
 export function SolanaTransactionListItem({
@@ -71,7 +92,7 @@ export function SolanaTransactionListItem({
   const tokenRegistry = useSplTokenRegistry();
   let tokenData: (TokenInfo | undefined)[] = [];
 
-  // add appropriate metadata
+  // add appropriate token metadata
   if (transaction?.tokenTransfers?.length > 0)
     transaction?.tokenTransfers?.map((transfer: any) => {
       if (transfer?.mint && tokenRegistry.get(transfer?.mint)) {
@@ -144,122 +165,39 @@ export function SolanaTransactionListItem({
 }
 
 // Controls left icon on 'Transactions' list
+// To add a new ruleset for helius parsed TXN type or source
+// 1.) add desired icon to ListItemIcons in "./Icons";
+// 2.) map txn to icon below
 function RecentActivityListItemIcon(
   transaction: HeliusParsedTransaction,
   tokenData: (TokenInfo | undefined)[]
 ): JSX.Element {
-  const classes = useStyles();
-
-  // SWAP token icon -> token icon
   if (transaction.type === TransactionType.SWAP) {
-    return (
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <img
-          style={{
-            borderRadius: "50%",
-            width: "24px",
-            height: "24px",
-            marginRight: "10px",
-            marginBottom: "15px",
-            zIndex: "10",
-          }}
-          src={tokenData[0] && tokenData[0]?.logoURI}
-        />
-        <img
-          style={{
-            borderRadius: "50%",
-            width: "24px",
-            height: "24px",
-            marginRight: "15px",
-            marginLeft: "-15px",
-          }}
-          src={tokenData[1] && tokenData[1]?.logoURI}
-        />
-      </div>
+    return ListItemIcons[TransactionType.SWAP](
+      tokenData[0]?.logoURI,
+      tokenData[1]?.logoURI
     );
   }
 
   // if NFT url available, display it
-  if (
-    isNFTTransaction(transaction) &&
-    transaction?.metadata?.offChainData?.image
-  ) {
-    return (
-      <img
-        style={{
-          borderRadius: "4px",
-          width: "44px",
-          height: "44px",
-          marginRight: "15px",
-        }}
-        src={transaction?.metadata?.offChainData?.image}
-      />
-    );
+  if (isNFTTransaction(transaction)) {
+    return ListItemIcons["NFT"](transaction?.metadata?.offChainData?.image);
   }
 
-  // TRANSFER, display token logo if available, otherwise appropriate sent/recieved icon
-  if (
-    transaction.type === TransactionType.TRANSFER ||
-    transaction.type === TransactionType.UNKNOWN
-  ) {
+  if (transaction.type === TransactionType.TRANSFER) {
     if (tokenData[0]?.logoURI) {
-      return (
-        <img
-          style={{
-            borderRadius: "4px",
-            width: "44px",
-            height: "44px",
-            marginRight: "15px",
-          }}
-          src={tokenData[0]?.logoURI}
-        />
-      );
+      return ListItemIcons[TransactionType.TRANSFER](tokenData[0]?.logoURI);
     }
-
-    // USER === SENDER
-    if (isUserTxnSender(transaction)) {
-      return (
-        <div className={classes.recentActivityListItemIconContainer}>
-          <SendRounded className={classes.recentActivityListItemIconDefault} />
-        </div>
-      );
-
-      // USER === RECEIVER
-    } else if (isUserTxnSender(transaction) === false) {
-      return (
-        <div className={classes.recentActivityListItemIconContainer}>
-          <ArrowDownwardRounded
-            className={classes.recentActivityListItemIconDefault}
-          />
-        </div>
-      );
-    }
+    if (isUserTxnSender(transaction)) return ListItemIcons["SENT"]();
+    return ListItemIcons["RECEIVED"]();
   }
 
-  // FAILURE
-  if (transaction?.transactionError) {
-    return (
-      <div className={classes.recentActivityListItemIconContainer}>
-        <ClearRounded className={classes.recentActivityListItemIconNegative} />
-      </div>
-    );
-  }
-  // BURN
-  if (transaction?.type === TransactionType.BURN) {
-    return (
-      <div className={classes.recentActivityListItemIconContainer}>
-        <WhatshotRounded
-          className={classes.recentActivityListItemIconNegative}
-        />
-      </div>
-    );
-  }
-  // default green check
-  return (
-    <div className={classes.recentActivityListItemIconContainer}>
-      <Check className={classes.recentActivityListItemIconPositive} />
-    </div>
-  );
+  if (transaction?.transactionError) return ListItemIcons["ERROR"]();
+
+  if (transaction?.type === TransactionType.BURN)
+    return ListItemIcons[TransactionType.BURN]();
+
+  return ListItemIcons["DEFAULT"]();
 }
 
 // Controls data displayed on right side of 'Transactions' list
@@ -268,6 +206,7 @@ function RecentActivityListItemData(
   tokenData: (TokenInfo | undefined)[]
 ): JSX.Element {
   const theme = useCustomTheme();
+  const classes = useStyles();
 
   if (transaction.type === TransactionType.SWAP) {
     return (
@@ -279,11 +218,11 @@ function RecentActivityListItemData(
             lineHeight: "24px",
           }}
         >
-          +{" "}
-          {new Number(transaction?.description?.split(" ")[5]).toFixed(2) +
+          {"+ " +
+            transaction?.tokenTransfers?.[1]?.tokenAmount.toFixed(2) +
             " " +
             tokenData[1]?.symbol ||
-            getTruncatedAddress(transaction?.tokenTransfers?.[0]?.mint)}
+            getTruncatedAddress(transaction?.tokenTransfers?.[1]?.mint)}
         </div>
         <div
           style={{
@@ -292,11 +231,11 @@ function RecentActivityListItemData(
             lineHeight: "20px",
           }}
         >
-          -{" "}
-          {new Number(transaction?.description?.split(" ")[2]).toFixed(2) +
+          {"- " +
+            transaction?.tokenTransfers[0]?.tokenAmount.toFixed(5) +
             " " +
             tokenData[0]?.symbol ||
-            getTruncatedAddress(transaction?.tokenTransfers?.[1]?.mint)}
+            getTruncatedAddress(transaction?.tokenTransfers?.[0]?.mint)}
         </div>
       </>
     );
@@ -323,11 +262,25 @@ function RecentActivityListItemData(
 
   // TRANSFER, display token logo if available, otherwise appropriate sent/recieved icon
   if (
-    transaction.type === TransactionType.TRANSFER ||
-    transaction.type === TransactionType.UNKNOWN
+    transaction.type === TransactionType.TRANSFER
+    // || transaction.type === TransactionType.UNKNOWN
   ) {
     // USER === SENDER
     if (isUserTxnSender(transaction)) {
+      // SOL Transfer
+      if (transaction.source === Source.SYSTEM_PROGRAM) {
+        return (
+          <div
+            style={{
+              fontSize: "16px",
+              color: theme.custom.colors.negative,
+              lineHeight: "24px",
+            }}
+          >
+            - {transaction?.nativeTransfers[0]?.amount / 10 ** 9 + " SOL"}
+          </div>
+        );
+      }
       return (
         <div
           style={{
@@ -337,9 +290,9 @@ function RecentActivityListItemData(
           }}
         >
           -{" "}
-          {(new Number(
+          {new Number(
             transaction?.tokenTransfers?.[0]?.tokenAmount.toFixed(5)
-          ) || new Number(transaction?.description?.split(" ")[5]).toFixed(3)) +
+          ) +
             " " +
             (tokenData[0]?.symbol || "")}
         </div>
@@ -347,18 +300,20 @@ function RecentActivityListItemData(
 
       // USER === RECEIVER
     } else if (isUserTxnSender(transaction) === false) {
+      // SOL Transfer
+      if (transaction.source === Source.SYSTEM_PROGRAM) {
+        return (
+          <div className={classes.textReceived}>
+            + {transaction?.nativeTransfers[0]?.amount / 10 ** 9 + " SOL"}
+          </div>
+        );
+      }
       return (
-        <div
-          style={{
-            fontSize: "16px",
-            color: theme.custom.colors.positive,
-            lineHeight: "24px",
-          }}
-        >
+        <div className={classes.textReceived}>
           +{" "}
-          {(new Number(
+          {new Number(
             transaction?.tokenTransfers?.[0]?.tokenAmount.toFixed(5)
-          ) || new Number(transaction?.description?.split(" ")[5]).toFixed(3)) +
+          ) +
             " " +
             (tokenData[0]?.symbol || "")}
         </div>
