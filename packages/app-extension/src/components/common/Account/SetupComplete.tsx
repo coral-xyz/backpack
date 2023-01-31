@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   BACKPACK_FEATURE_XNFT,
   DISCORD_INVITE_LINK,
@@ -16,40 +15,11 @@ import {
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Box, Grid, Typography } from "@mui/material";
 
-import {
-  registerNotificationServiceWorker,
-  saveSubscription,
-} from "../../../permissions/utils";
 import { Header, SubtextParagraph } from "../../common";
 import { ActionCard } from "../../common/Layout/ActionCard";
-import { SwitchToggle } from "../../Unlocked/Settings/Preferences";
 
 export function SetupComplete({ onClose }: { onClose: () => void }) {
   const theme = useCustomTheme();
-  const [notificationPermissionGranted, setNotificationPermissionGranted] =
-    useState(false);
-
-  const requestNotificationPermission = async () => {
-    const permission = await window.Notification.requestPermission();
-    if (permission !== "granted") {
-      setNotificationPermissionGranted(false);
-    }
-  };
-
-  const registerSubscription = async () => {
-    registerNotificationServiceWorker()
-      .then(async function (subscription) {
-        setNotificationPermissionGranted(true);
-        if (!subscription) {
-          // Set appropriate app states.
-          return;
-        }
-        await saveSubscription(subscription);
-      })
-      .catch(function () {
-        setNotificationPermissionGranted(false);
-      });
-  };
 
   return (
     <>
@@ -79,41 +49,14 @@ export function SetupComplete({ onClose }: { onClose: () => void }) {
               mr: "24px",
             }}
           >
-            <Header text="You’ve set up Backpack!" />
+            <Header text="You've set up Backpack!" />
             <SubtextParagraph
               style={{
-                marginBottom: "18px",
+                marginBottom: "25px",
               }}
             >
               Now get started exploring what your Backpack can do.
             </SubtextParagraph>
-          </Box>
-
-          <Box
-            sx={{
-              ml: "24px",
-              mr: "24px",
-            }}
-            style={{ display: "flex", justifyContent: "space-between" }}
-          >
-            <div>
-              <SubtextParagraph
-                style={{
-                  marginBottom: "24px",
-                }}
-              >
-                Turn on notifications
-              </SubtextParagraph>
-            </div>
-            <div style={{ marginBottom: -5 }}>
-              <SwitchToggle
-                enabled={notificationPermissionGranted}
-                onChange={async () => {
-                  await requestNotificationPermission();
-                  await registerSubscription();
-                }}
-              />
-            </div>
           </Box>
           <Box
             sx={{

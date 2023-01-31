@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import {
-  BACKPACK_CONFIG_VERSION,
   BACKPACK_FEATURE_AGGREGATE_WALLETS,
   BACKPACK_FEATURE_LIGHT_MODE,
   Blockchain,
@@ -16,7 +15,7 @@ import {
   useIsAggregateWallets,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { Switch, Typography } from "@mui/material";
+import { Switch } from "@mui/material";
 
 import { useNavStack } from "../../../common/Layout/NavStack";
 import { SettingsList } from "../../../common/Settings/List";
