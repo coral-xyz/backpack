@@ -60,9 +60,27 @@ jobs:
           BACKPACK_FEATURE_LIGHT_MODE: "true"
           BACKPACK_FEATURE_POP_MODE: "true"
           BACKPACK_FEATURE_XNFT: "true"
+          BACKPACK_FEATURE_FORCE_LATEST_VERSION: "true"
           # CI!=true so that build warnings aren't treated like errors (for now)
           CI: ""
         run: yarn build
+      #
+      # Build the extension, edge release.
+      #
+      - name: "build edge"
+        env:
+          BACKPACK_CONFIG_VERSION: "${{ env.RELEASE_PREFIX }}-latest-edge-${{ github.run_number }}"
+          BACKPACK_CONFIG_LOG_LEVEL: "info"
+          BACKPACK_FEATURE_LIGHT_MODE: "true"
+          BACKPACK_FEATURE_POP_MODE: "true"
+          BACKPACK_FEATURE_XNFT: "true"
+          BACKPACK_FEATURE_FORCE_LATEST_VERSION: "false"
+          # CI!=true so that build warnings aren't treated like errors (for now)
+          CI: ""
+        run: yarn build
+      - name: "rename edge build"
+        working-directory: packages/app-extension
+        run: mv build build-edge
       - name: "rename beta build"
         working-directory: packages/app-extension
         run: mv build build-beta
@@ -125,6 +143,20 @@ jobs:
           name: backpack-build-beta
           path: packages/app-extension/build-beta-${{ github.run_number }}.zip
 
+      #
+      # Upload edge artifact.
+      #
+      - name: "zip edge build artifacts"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        working-directory: packages/app-extension
+        run: zip -r build-edge-${{ github.run_number }}.zip build-edge/
+      - name: "upload build artifacts"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: actions/upload-artifact@v2
+        with:
+          name: backpack-build-edge
+          path: packages/app-extension/build-edge-${{ github.run_number }}.zip
+
       ##########################################################################
       # Release.
       ##########################################################################
@@ -141,6 +173,11 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         with:
           name: backpack-build-beta
+          path: ./
+      - uses: actions/download-artifact@v2
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        with:
+          name: backpack-build-edge
           path: ./
 
       #
@@ -169,6 +206,15 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./build-beta-${{ github.run_number }}.zip
           asset_name: build-beta-${{ github.run_number }}.zip
+          asset_content_type: application/zip
+      - uses: actions/upload-release-asset@v1.0.1
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build-edge-${{ github.run_number }}.zip
+          asset_name: build-edge-${{ github.run_number }}.zip
           asset_content_type: application/zip
 
       ##########################################################################
