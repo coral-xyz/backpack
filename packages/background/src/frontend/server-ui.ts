@@ -234,7 +234,7 @@ async function handle<T = any>(
     // Navigation.
     //
     case UI_RPC_METHOD_NAVIGATION_PUSH:
-      return await handleNavigationPush(ctx, params[0], params[1]);
+      return await handleNavigationPush(ctx, params[0], params[1], params[2]);
     case UI_RPC_METHOD_NAVIGATION_POP:
       return await handleNavigationPop(ctx, params[0]);
     case UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE:
@@ -731,9 +731,10 @@ async function handleKeyringTypeRead(ctx: Context<Backend>) {
 async function handleNavigationPush(
   ctx: Context<Backend>,
   url: string,
-  tab?: string
+  tab?: string,
+  pushAboveRoot?: boolean
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.navigationPush(url, tab);
+  const resp = await ctx.backend.navigationPush(url, tab, pushAboveRoot);
   return [resp];
 }
 

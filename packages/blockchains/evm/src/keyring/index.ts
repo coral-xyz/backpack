@@ -102,7 +102,6 @@ export class EthereumHdKeyringFactory implements HdKeyringFactory {
   public init(
     mnemonic: string,
     derivationPaths: Array<string>,
-    pathType: PathType,
     accountIndex: number
   ): HdKeyring {
     if (!validateMnemonic(mnemonic)) {
@@ -112,7 +111,6 @@ export class EthereumHdKeyringFactory implements HdKeyringFactory {
     return new EthereumHdKeyring({
       mnemonic,
       seed,
-      pathType,
       derivationPaths,
       accountIndex,
     });
@@ -123,7 +121,6 @@ export class EthereumHdKeyringFactory implements HdKeyringFactory {
     mnemonic,
     seed,
     derivationPaths,
-    pathType,
     accountIndex,
     walletIndex,
   }: HdKeyringJson): HdKeyring {
@@ -131,7 +128,6 @@ export class EthereumHdKeyringFactory implements HdKeyringFactory {
       mnemonic,
       seed: Buffer.from(seed, "hex"),
       derivationPaths,
-      pathType,
       accountIndex,
       walletIndex,
     });
@@ -141,7 +137,6 @@ export class EthereumHdKeyringFactory implements HdKeyringFactory {
 export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
   readonly mnemonic: string;
   private seed: Buffer;
-  private pathType: PathType;
   private accountIndex: number;
   private walletIndex?: number;
 
@@ -149,14 +144,12 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
     mnemonic,
     seed,
     derivationPaths,
-    pathType,
     accountIndex,
     walletIndex,
   }: {
     mnemonic: string;
     seed: Buffer;
     derivationPaths: Array<string>;
-    pathType: PathType;
     accountIndex: number;
     walletIndex?: number;
   }) {
@@ -167,45 +160,24 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
     super(wallets);
     this.mnemonic = mnemonic;
     this.seed = seed;
-    this.pathType = pathType;
     this.accountIndex = accountIndex;
     this.walletIndex = walletIndex;
   }
 
   deriveNextKey(): { publicKey: string; derivationPath: string } {
-    let derivationPath: string;
-    if (this.pathType) {
-      if (this.pathType === "sollet-deprecated") {
-        throw new Error("evm keyring does not support legacy path type");
-      }
-      // accountIndex maintains the same meaning it did in the legacy derivation
-      // path system, i.e. the index of the last generated wallet, but it does
-      // not correspond to the account index field of BIP44
-      this.accountIndex += 1;
-      if (this.pathType === "bip44") {
-        derivationPath = legacyBip44Indexed(
-          Blockchain.ETHEREUM,
-          this.accountIndex
-        );
-      } else {
-        derivationPath = legacyBip44ChangeIndexed(
-          Blockchain.ETHEREUM,
-          this.accountIndex
-        );
-      }
-    } else {
-      // New style derivation paths
-      if (this.accountIndex) throw new Error("invalid account index");
-      this.walletIndex =
-        this.walletIndex === undefined ? 0 : this.walletIndex + 1;
-      derivationPath = getIndexedPath(
-        Blockchain.ETHEREUM,
-        this.accountIndex,
-        this.walletIndex
-      );
-    }
+    if (this.accountIndex) throw new Error("invalid account index");
+
+    this.walletIndex =
+      this.walletIndex === undefined ? 0 : this.walletIndex + 1;
+
+    const derivationPath = getIndexedPath(
+      Blockchain.ETHEREUM,
+      this.accountIndex,
+      this.walletIndex
+    );
     const wallet = ethers.Wallet.fromMnemonic(this.mnemonic, derivationPath);
     this.wallets.push(wallet);
+
     return {
       publicKey: wallet.address,
       derivationPath,
@@ -227,7 +199,6 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
       derivationPaths: this.wallets.map((w) => w.mnemonic.path),
       accountIndex: this.accountIndex,
       walletIndex: this.walletIndex,
-      pathType: this.pathType,
     };
   }
 }

@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
+import { useBreakpoints } from "@coral-xyz/app-extension/src/components/common/Layout/hooks";
 import type { Blockchain } from "@coral-xyz/common";
 import {
   TAB_SET,
@@ -71,16 +72,19 @@ export function useUpdateSearchParams(): (params: URLSearchParams) => void {
 
 export function useNavigationSegue() {
   const background = useRecoilValue(atoms.backgroundClient);
+  const { isXs } = useBreakpoints();
 
   const push = async (
     {
       title,
       componentId,
       componentProps,
+      pushAboveRoot,
     }: {
       title: string;
       componentId: string;
       componentProps: any;
+      pushAboveRoot?: boolean;
     },
     tab?: string
   ) => {
@@ -90,7 +94,7 @@ export function useNavigationSegue() {
     });
     return await background.request({
       method: UI_RPC_METHOD_NAVIGATION_PUSH,
-      params: [url, tab],
+      params: [url, tab, !isXs && pushAboveRoot ? true : false],
     });
   };
   const pop = async (tab?: string) => {

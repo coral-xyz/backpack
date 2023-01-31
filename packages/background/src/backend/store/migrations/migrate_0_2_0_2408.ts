@@ -36,7 +36,6 @@ export async function migrate_0_2_0_2408(json: any) {
           mnemonic: hdKeyring.mnemonic,
           seed: hdKeyring.seed,
           derivationPaths,
-          pathType: hdKeyring.derivationPath,
           accountIndex: Math.max(hdKeyring.accountIndices),
         };
       }

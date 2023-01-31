@@ -100,7 +100,6 @@ export class SolanaHdKeyringFactory implements HdKeyringFactory {
   public init(
     mnemonic: string,
     derivationPaths: Array<string>,
-    pathType: PathType,
     accountIndex: number
   ): HdKeyring {
     if (!validateMnemonic(mnemonic)) {
@@ -110,7 +109,6 @@ export class SolanaHdKeyringFactory implements HdKeyringFactory {
       mnemonic,
       seed: mnemonicToSeedSync(mnemonic),
       derivationPaths,
-      pathType,
       accountIndex,
     });
   }
@@ -119,7 +117,6 @@ export class SolanaHdKeyringFactory implements HdKeyringFactory {
     mnemonic,
     seed,
     derivationPaths,
-    pathType,
     accountIndex,
     walletIndex,
   }: HdKeyringJson): HdKeyring {
@@ -127,7 +124,6 @@ export class SolanaHdKeyringFactory implements HdKeyringFactory {
       mnemonic,
       seed: Buffer.from(seed, "hex"),
       derivationPaths,
-      pathType,
       accountIndex,
       walletIndex,
     });
@@ -138,7 +134,6 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
   readonly mnemonic: string;
   private seed: Buffer;
   private derivationPaths: Array<string>;
-  private pathType: PathType;
   private accountIndex: number;
   private walletIndex?: number;
 
@@ -146,14 +141,12 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
     mnemonic,
     seed,
     derivationPaths,
-    pathType,
     accountIndex,
     walletIndex,
   }: {
     mnemonic: string;
     seed: Buffer;
     derivationPaths: Array<string>;
-    pathType: PathType;
     accountIndex: number;
     walletIndex?: number;
   }) {
@@ -162,7 +155,6 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
     this.mnemonic = mnemonic;
     this.seed = seed;
     this.derivationPaths = derivationPaths;
-    this.pathType = pathType;
     this.accountIndex = accountIndex;
     this.walletIndex = walletIndex;
   }
@@ -181,40 +173,20 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
   }
 
   public deriveNextKey(): { publicKey: string; derivationPath: string } {
-    let derivationPath: string;
-    if (this.pathType) {
-      // accountIndex maintains the same meaning it did in the legacy derivation
-      // path system, i.e. the index of the last generated wallet, but it does
-      // not correspond to the account index field of BIP44
-      this.accountIndex += 1;
-      if (this.pathType === "bip44") {
-        derivationPath = legacyBip44Indexed(
-          Blockchain.SOLANA,
-          this.accountIndex
-        );
-      } else if (this.pathType === "bip44change") {
-        derivationPath = legacyBip44ChangeIndexed(
-          Blockchain.SOLANA,
-          this.accountIndex
-        );
-      } else {
-        // TODO sollet deprecated
-        derivationPath = "";
-      }
-    } else {
-      // New style derivation paths
-      if (this.accountIndex) throw new Error("invalid account index");
-      this.walletIndex =
-        this.walletIndex === undefined ? 0 : this.walletIndex + 1;
-      derivationPath = getIndexedPath(
-        Blockchain.SOLANA,
-        this.accountIndex,
-        this.walletIndex
-      );
-    }
+    // New style derivation paths
+    if (this.accountIndex) throw new Error("invalid account index");
+
+    this.walletIndex =
+      this.walletIndex === undefined ? 0 : this.walletIndex + 1;
+    const derivationPath = getIndexedPath(
+      Blockchain.SOLANA,
+      this.accountIndex,
+      this.walletIndex
+    );
     const keypair = deriveSolanaKeypair(this.seed, derivationPath);
     this.keypairs.push(keypair);
     this.derivationPaths.push(derivationPath);
+
     return {
       publicKey: keypair.publicKey.toString(),
       derivationPath,
@@ -235,7 +207,6 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
       derivationPaths: this.derivationPaths,
       accountIndex: this.accountIndex,
       walletIndex: this.walletIndex,
-      pathType: this.pathType,
     };
   }
 }

@@ -28,12 +28,14 @@ import { useStyles } from "./styles";
 export const MessageList = ({
   activeChats,
   requestCount = 0,
+  toRoot = true,
 }: {
   activeChats: (
     | { chatType: "individual"; chatProps: EnrichedInboxDb }
     | { chatType: "collection"; chatProps: CollectionChatData }
   )[];
   requestCount?: number;
+  toRoot?: boolean;
 }) => {
   const theme = useCustomTheme();
 
@@ -56,6 +58,7 @@ export const MessageList = ({
         )}
         {activeChats.map((activeChat, index) => (
           <ChatListItem
+            toRoot={toRoot}
             type={activeChat.chatType}
             image={
               activeChat.chatType === "individual"
@@ -109,6 +112,7 @@ export function ChatListItem({
   isLast,
   id,
   isUnread,
+  toRoot,
 }: {
   type: SubscriptionType;
   image: string;
@@ -119,6 +123,7 @@ export function ChatListItem({
   isLast: boolean;
   id: string;
   isUnread: boolean;
+  toRoot: boolean;
 }) {
   const classes = useStyles();
   const theme = useCustomTheme();
@@ -159,6 +164,7 @@ export function ChatListItem({
             id: id,
             fromInbox: true,
           },
+          pushAboveRoot: toRoot,
         });
       }}
       style={{
@@ -209,6 +215,8 @@ export function ChatListItem({
                     componentProps: {
                       userId: id,
                     },
+
+                    pushAboveRoot: toRoot,
                   });
                 }}
                 image={image}
@@ -232,7 +240,7 @@ export function ChatListItem({
                       style={{
                         fontSize: 19,
                         marginLeft: 3,
-                        color: theme.custom.colors.blue,
+                        color: theme.custom.colors.verified,
                       }}
                     />
                   )}
@@ -291,6 +299,7 @@ export function RequestsChatItem({
           title: `Requests`,
           componentId: NAV_COMPONENT_MESSAGE_REQUESTS,
           componentProps: {},
+          pushAboveRoot: true,
         });
       }}
       style={{

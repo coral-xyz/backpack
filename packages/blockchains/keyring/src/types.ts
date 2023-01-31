@@ -36,7 +36,6 @@ export interface HdKeyringFactory {
   init(
     mnemonic: string,
     derivationPaths: Array<string>,
-    pathType: PathType,
     accountIndex: number
   ): HdKeyring;
   fromJson(obj: HdKeyringJson): HdKeyring;

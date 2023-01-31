@@ -356,6 +356,7 @@ function NavScreen({
   };
 }) {
   const { title, isRoot, pop } = useNavigation();
+
   const {
     style,
     navButtonLeft,
@@ -420,7 +421,6 @@ function useNavBar() {
   const pathname = useLocation().pathname;
   const theme = useCustomTheme();
   const { props }: any = useDecodedSearchParams(); // TODO: fix type
-  const { uuid } = useUser();
   const { isXs } = useBreakpoints();
   const profileUser = useUsersMetadata({ remoteUserIds: [props?.userId] });
   const image: string | undefined = profileUser[props?.userId]?.image;

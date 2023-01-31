@@ -61,15 +61,13 @@ export class BlockchainKeyring {
 
   public async initFromMnemonic(
     mnemonic: string,
-    derivationPaths: Array<string>,
-    pathType: PathType
+    derivationPaths: Array<string>
   ): Promise<Array<[string, string]>> {
     // Initialize keyrings.
     const accountIndex = 0; // TODO
     this.hdKeyring = this.hdKeyringFactory.init(
       mnemonic,
       derivationPaths,
-      pathType,
       accountIndex
     );
     // Empty ledger keyring to hold one off ledger imports

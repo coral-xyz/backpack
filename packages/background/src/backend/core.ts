@@ -1614,7 +1614,11 @@ export class Backend {
   // Navigation.
   ///////////////////////////////////////////////////////////////////////////////
 
-  async navigationPush(url: string, tab?: string): Promise<string> {
+  async navigationPush(
+    url: string,
+    tab?: string,
+    pushAboveRoot?: boolean
+  ): Promise<string> {
     let nav = await store.getNav();
     if (!nav) {
       throw new Error("nav not found");
@@ -1627,6 +1631,10 @@ export class Backend {
 
     if (urls.length > 0 && urls[urls.length - 1] === url) {
       return SUCCESS_RESPONSE;
+    }
+
+    if (pushAboveRoot && nav.data[targetTab].urls[0]) {
+      nav.data[targetTab].urls = [nav.data[targetTab].urls[0]];
     }
 
     nav.data[targetTab].urls.push(url);

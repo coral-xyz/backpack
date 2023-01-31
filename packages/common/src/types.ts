@@ -146,7 +146,6 @@ export type HdKeyringJson = {
   derivationPaths: Array<string>;
   accountIndex: number;
   walletIndex?: number;
-  pathType?: "bip44" | "bip44change" | "sollet-deprecated" | "backpack";
 };
 
 export type LedgerKeyringJson = {
