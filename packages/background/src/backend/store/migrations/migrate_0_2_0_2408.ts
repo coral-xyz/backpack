@@ -8,6 +8,7 @@ import type { Blockchain } from "@coral-xyz/common";
 import {
   legacyBip44ChangeIndexed,
   legacyBip44Indexed,
+  legacySolletIndexed,
 } from "@coral-xyz/common";
 
 export async function migrate_0_2_0_2408(json: any) {
@@ -28,8 +29,7 @@ export async function migrate_0_2_0_2408(json: any) {
           } else if (hdKeyring.derivationPath === "bip44change") {
             return legacyBip44ChangeIndexed(blockchain as Blockchain, i);
           } else {
-            // TODO sollet deprecated
-            return "";
+            return legacySolletIndexed(i);
           }
         });
         json.users[user].blockchains[blockchain].hdKeyring = {
@@ -58,8 +58,7 @@ export async function migrate_0_2_0_2408(json: any) {
                 d.account
               );
             } else {
-              // TODO sollet deprecated
-              derivationPath = "";
+              derivationPath = legacySolletIndexed(d.account);
             }
             return {
               derivationPath,

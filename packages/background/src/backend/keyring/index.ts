@@ -446,10 +446,11 @@ export class KeyringStore {
 
   // Derive the next key for the given blockchain.
   public async deriveNextKey(
-    blockchain: Blockchain
+    blockchain: Blockchain,
+    skipKeys: number
   ): Promise<{ publicKey: string; derivationPath: string; name: string }> {
     return await this.withUnlockAndPersist(async () => {
-      return await this.activeUserKeyring.deriveNextKey(blockchain);
+      return await this.activeUserKeyring.deriveNextKey(blockchain, skipKeys);
     });
   }
 
@@ -773,13 +774,14 @@ class UserKeyring {
    * Get the next derived key for the mnemonic.
    */
   public async deriveNextKey(
-    blockchain: Blockchain
+    blockchain: Blockchain,
+    skipKeys: number
   ): Promise<{ publicKey: string; derivationPath: string; name: string }> {
     let blockchainKeyring = this.blockchains.get(blockchain);
     if (!blockchainKeyring) {
       throw new Error("blockchain keyring not initialised");
     } else {
-      return await blockchainKeyring.deriveNextKey();
+      return await blockchainKeyring.deriveNextKey(skipKeys);
     }
   }
 

@@ -9,14 +9,12 @@ import type {
   LedgerKeyringJson,
 } from "@coral-xyz/blockchain-keyring";
 import { LedgerKeyringBase } from "@coral-xyz/blockchain-keyring";
-import type { PathType, PublicKeyPath } from "@coral-xyz/common";
+import type { PublicKeyPath } from "@coral-xyz/common";
 import {
   Blockchain,
   getIndexedPath,
   LEDGER_METHOD_ETHEREUM_SIGN_MESSAGE,
   LEDGER_METHOD_ETHEREUM_SIGN_TRANSACTION,
-  legacyBip44ChangeIndexed,
-  legacyBip44Indexed,
 } from "@coral-xyz/common";
 import { HDNode } from "@ethersproject/hdnode";
 import { mnemonicToSeedSync, validateMnemonic } from "bip39";
@@ -164,12 +162,14 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
     this.walletIndex = walletIndex;
   }
 
-  deriveNextKey(): { publicKey: string; derivationPath: string } {
-    if (this.accountIndex) throw new Error("invalid account index");
-
+  deriveNextKey(skipKeys: number): {
+    publicKey: string;
+    derivationPath: string;
+  } {
     this.walletIndex =
-      this.walletIndex === undefined ? 0 : this.walletIndex + 1;
-
+      this.walletIndex === undefined
+        ? skipKeys
+        : this.walletIndex + 1 + skipKeys;
     const derivationPath = getIndexedPath(
       Blockchain.ETHEREUM,
       this.accountIndex,
@@ -177,7 +177,6 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
     );
     const wallet = ethers.Wallet.fromMnemonic(this.mnemonic, derivationPath);
     this.wallets.push(wallet);
-
     return {
       publicKey: wallet.address,
       derivationPath,

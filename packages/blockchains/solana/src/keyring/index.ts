@@ -9,15 +9,12 @@ import type {
   LedgerKeyringJson,
 } from "@coral-xyz/blockchain-keyring";
 import { LedgerKeyringBase } from "@coral-xyz/blockchain-keyring";
-import type { PathType, PublicKeyPath } from "@coral-xyz/common";
+import type { PublicKeyPath } from "@coral-xyz/common";
 import {
   Blockchain,
   getIndexedPath,
   LEDGER_METHOD_SOLANA_SIGN_MESSAGE,
   LEDGER_METHOD_SOLANA_SIGN_TRANSACTION,
-  legacyBip44ChangeIndexed,
-  legacyBip44Indexed,
-  // legacySolletIndexed,
 } from "@coral-xyz/common";
 import { Keypair, PublicKey } from "@solana/web3.js";
 import { mnemonicToSeedSync, validateMnemonic } from "bip39";
@@ -172,12 +169,14 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
     super.deletePublicKey(publicKey);
   }
 
-  public deriveNextKey(): { publicKey: string; derivationPath: string } {
-    // New style derivation paths
-    if (this.accountIndex) throw new Error("invalid account index");
-
+  public deriveNextKey(skipKeys: number): {
+    publicKey: string;
+    derivationPath: string;
+  } {
     this.walletIndex =
-      this.walletIndex === undefined ? 0 : this.walletIndex + 1;
+      this.walletIndex === undefined
+        ? skipKeys
+        : this.walletIndex + 1 + skipKeys;
     const derivationPath = getIndexedPath(
       Blockchain.SOLANA,
       this.accountIndex,
@@ -186,7 +185,6 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
     const keypair = deriveSolanaKeypair(this.seed, derivationPath);
     this.keypairs.push(keypair);
     this.derivationPaths.push(derivationPath);
-
     return {
       publicKey: keypair.publicKey.toString(),
       derivationPath,

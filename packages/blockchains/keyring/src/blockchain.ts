@@ -124,12 +124,13 @@ export class BlockchainKeyring {
     return this.hdKeyring!.mnemonic;
   }
 
-  public async deriveNextKey(): Promise<{
+  public async deriveNextKey(skipKeys: number): Promise<{
     publicKey: string;
     derivationPath: string;
     name: string;
   }> {
-    const { publicKey, derivationPath } = await this.hdKeyring!.deriveNextKey();
+    const { publicKey, derivationPath } =
+      this.hdKeyring!.deriveNextKey(skipKeys);
 
     // Save a default name.
     const name = DefaultKeyname.defaultDerived(

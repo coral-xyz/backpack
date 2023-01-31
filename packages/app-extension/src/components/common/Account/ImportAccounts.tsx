@@ -4,6 +4,7 @@ import {
   Blockchain,
   DEFAULT_SOLANA_CLUSTER,
   EthereumConnectionUrl,
+  getIndexedPath,
   legacyBip44ChangeIndexed,
   legacyBip44Indexed,
   legacySolletIndexed,
@@ -80,7 +81,7 @@ export function ImportAccounts({
     [Blockchain.SOLANA]: [
       {
         path: (i: number) => legacyBip44Indexed(Blockchain.SOLANA, i),
-        label: "m/44/501'/",
+        label: "m/44/501'/ ",
       },
       {
         path: (i: number) => legacyBip44ChangeIndexed(Blockchain.SOLANA, i),
@@ -90,6 +91,10 @@ export function ImportAccounts({
         path: (i: number) =>
           legacyBip44ChangeIndexed(Blockchain.SOLANA, i) + "/0'",
         label: "m/44/501'/0'/0'",
+      },
+      {
+        path: (i: number) => getIndexedPath(Blockchain.SOLANA, i),
+        label: "Backpack",
       },
     ]
       // Note: We only allow importing the deprecated sollet derivation path for
@@ -119,6 +124,10 @@ export function ImportAccounts({
         path: (i: number) =>
           legacyBip44ChangeIndexed(Blockchain.ETHEREUM, i) + "/0'",
         label: "m/44/501'/0'/0'",
+      },
+      {
+        path: (i: number) => getIndexedPath(Blockchain.SOLANA, i),
+        label: "Backpack",
       },
     ],
   }[blockchain];

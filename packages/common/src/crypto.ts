@@ -40,25 +40,31 @@ export const legacyBip44ChangeIndexed = (
   index: number
 ) => {
   const coinType = getCoinType(blockchain);
-  const path = [44 + HARDENING, coinType, 0 + HARDENING];
-  if (index > 0) path.push(index - 1 + HARDENING);
+  const path = [44 + HARDENING, coinType, index + HARDENING, 0 + HARDENING];
   return new BIPPath.fromPathArray(path).toString();
 };
 
 export const legacySolletIndexed = (index: number) => {
-  // TODO
-  return "";
+  const coinType = 501 + HARDENING;
+  const path = [coinType, index + HARDENING, 0, 0];
+  return new BIPPath.fromPathArray(path).toString();
 };
 
 // Get the nth index account according to the Backpack derivation path scheme
 export const getIndexedPath = (
   blockchain: Blockchain,
-  account = 0,
-  index = 0
+  accountIndex = 0,
+  walletIndex = 0
 ) => {
   const coinType = getCoinType(blockchain);
-  const path = [44 + HARDENING, coinType, account + HARDENING, 0 + HARDENING];
-  if (index > 0) path.push(index - 1 + HARDENING);
+  const path = [
+    44 + HARDENING,
+    coinType,
+    accountIndex + HARDENING,
+    0 + HARDENING,
+  ];
+  // If walletIndex is 0, this is the same as legacyBip44ChangeIndexed
+  if (walletIndex > 0) path.push(walletIndex - 1 + HARDENING);
   return new BIPPath.fromPathArray(path).toString();
 };
 
@@ -83,8 +89,6 @@ export const legacyBip44ChangeRecoveryPaths = (blockchain: Blockchain) => {
     legacyBip44ChangeIndexed(blockchain, i)
   );
 };
-
-export const pathTypeFromPaths = (derivationPaths: Array<string>) => {};
 
 export const getRecoveryPaths = (blockchain: Blockchain) => {
   /**
