@@ -1,4 +1,5 @@
-import { useActiveWallet } from "@coral-xyz/recoil";
+import { SOL_NATIVE_MINT } from "@coral-xyz/common";
+import { useActiveWallet, useSplTokenRegistry } from "@coral-xyz/recoil";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { NftEventTypes, Source, TransactionType } from "helius-sdk/dist/types";
 
@@ -54,7 +55,6 @@ export const groupTxnsByDate = (
   for (const item of arr) {
     const date = new Date(item?.timestamp * 1000).toDateString();
     if (date !== currentDate) {
-      console.log(date, "!");
       currentDate = date;
       result.push([]);
     }
@@ -214,4 +214,45 @@ export const getTransactionCaption = (
         return getSourceOrTypeFormatted(transaction.source);
       return "";
   }
+};
+
+export const getTokenData = (
+  transaction: HeliusParsedTransaction
+): (TokenInfo | undefined)[] => {
+  const tokenRegistry = useSplTokenRegistry();
+
+  let tokenData: (TokenInfo | undefined)[] = [];
+
+  // add appropriate token metadata
+  // TODO: some token metadata appearing in balance table, but not in registry
+  // where can this be found?
+
+  if (transaction.type === TransactionType.SWAP) {
+    // handle nativeInput/nativeOutput for swapping to and from Sol
+    let tokenInput, tokenOutput;
+    const isNativeInput = transaction.events?.swap?.nativeInput;
+    const isNativeOutput = transaction.events?.swap?.nativeOutput;
+    tokenInput = isNativeInput
+      ? SOL_NATIVE_MINT
+      : transaction.events?.swap?.tokenInputs?.[0]?.mint;
+    tokenOutput = isNativeOutput
+      ? SOL_NATIVE_MINT
+      : transaction.events?.swap?.tokenOutputs?.[0]?.mint;
+
+    if (tokenInput && tokenRegistry.get(tokenInput)) {
+      tokenData.push(tokenRegistry.get(tokenInput));
+    }
+    if (tokenOutput && tokenRegistry.get(tokenOutput)) {
+      tokenData.push(tokenRegistry.get(tokenOutput));
+    }
+  }
+
+  if (transaction.type === TransactionType.TRANSFER) {
+    const transferredToken = transaction.tokenTransfers?.[0]?.mint;
+    if (transferredToken && tokenRegistry.get(transferredToken)) {
+      tokenData.push(tokenRegistry.get(transferredToken));
+    }
+  }
+
+  return tokenData;
 };

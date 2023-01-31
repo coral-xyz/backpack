@@ -26,7 +26,7 @@ export type HeliusParsedTransaction = {
   accountData: Array<AccountData>;
   blockchain: string;
   description: string;
-  events: Object;
+  events: any;
   fee: number;
   feePayer: string;
   instructions: Array<Instruction>;

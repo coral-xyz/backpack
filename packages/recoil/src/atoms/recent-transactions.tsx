@@ -5,7 +5,7 @@ import { atomFamily, selectorFamily } from "recoil";
 import { ethersContext } from "./ethereum/provider";
 import {
   fetchRecentSolanaTransactionDetails,
-  fetchTokenMetadata,
+  fetchNFTMetaData,
 } from "./solana/recent-transaction-details";
 
 /**
@@ -128,7 +128,7 @@ export const recentSolanaTransactions = atomFamily<
           const heliusTransactionDetails =
             await fetchRecentSolanaTransactionDetails(address);
 
-          console.log(heliusTransactionDetails);
+          // console.log(heliusTransactionDetails);
 
           return await Promise.all(
             heliusTransactionDetails?.map(async (t) => {
@@ -140,7 +140,7 @@ export const recentSolanaTransactions = atomFamily<
                   t?.tokenTransfers[0]?.tokenStandard === "NonFungible" &&
                   t?.tokenTransfers[0]?.mint)
               ) {
-                const nftMetadata = await fetchTokenMetadata(
+                const nftMetadata = await fetchNFTMetaData(
                   t?.events?.nft?.nfts[0]?.mint || t?.tokenTransfers[0]?.mint
                 );
                 return {

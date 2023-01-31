@@ -1,6 +1,13 @@
 import { useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
+<<<<<<< HEAD
 import { useRecentTransactions } from "@coral-xyz/recoil";
+=======
+import {
+  useActiveWallet,
+  useRecentSolanaTransactions,
+} from "@coral-xyz/recoil";
+>>>>>>> bf8f909f (fix incorrect tokenData bug, refactor into function)
 import { useCustomTheme } from "@coral-xyz/themes";
 import { List } from "@mui/material";
 

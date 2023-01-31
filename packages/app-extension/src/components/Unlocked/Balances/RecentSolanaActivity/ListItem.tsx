@@ -1,11 +1,11 @@
 import { isFirstLastListItemStyle } from "@coral-xyz/react-common";
-import { useAnchorContext, useSplTokenRegistry } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ListItem, Typography } from "@mui/material";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { Source, TransactionType } from "helius-sdk/dist/types";
 
 import {
+  getTokenData,
   getTransactionCaption,
   getTransactionTitle,
   getTruncatedAddress,
@@ -53,19 +53,8 @@ export function SolanaTransactionListItem({
 }: any) {
   const classes = useStyles();
   const theme = useCustomTheme();
-  // const { connection } = useAnchorContext();
-  const tokenRegistry = useSplTokenRegistry();
-  let tokenData: (TokenInfo | undefined)[] = [];
 
-  // add appropriate token metadata
-  // TODO: some token metadata appearing in balance table, but not in registry
-  // where can this be found?
-  if (transaction?.tokenTransfers?.length > 0)
-    transaction?.tokenTransfers?.map((transfer: any) => {
-      if (transfer?.mint && tokenRegistry.get(transfer?.mint)) {
-        tokenData.push(tokenRegistry.get(transfer?.mint));
-      }
-    });
+  const tokenData = getTokenData(transaction);
 
   const onClick = () => {
     setTransactionDetail(transaction);
