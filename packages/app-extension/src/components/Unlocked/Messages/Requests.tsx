@@ -2,20 +2,11 @@ import { useEffect, useState } from "react";
 import type { RemoteUserData } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import { UserList } from "@coral-xyz/message-sdk";
-import {
-  isFirstLastListItemStyle,
-  Loading,
-  TextInput,
-} from "@coral-xyz/react-common";
+import { isFirstLastListItemStyle } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Skeleton } from "@mui/material";
 
-import { useNavStack } from "../../common/Layout/NavStack";
-
-import { useStyles } from "./styles";
-
 export const Requests = ({ searchFilter }: { searchFilter: string }) => {
-  const classes = useStyles();
   const [requests, setRequests] = useState<RemoteUserData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const theme = useCustomTheme();
