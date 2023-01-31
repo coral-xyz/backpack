@@ -18,7 +18,7 @@ import { base64ToArrayBuffer } from "../utils/imageUploadUtils";
 
 import { CustomAutoComplete, MessageInput } from "./messageInput/MessageInput";
 import { MessageInputProvider } from "./messageInput/MessageInputProvider";
-import { Attatchment } from "./Attatchment";
+import { Attachment } from "./Attatchment";
 import { useChatContext } from "./ChatContext";
 import { EmojiPickerComponent } from "./EmojiPicker";
 import { GifPicker } from "./GifPicker";
@@ -364,7 +364,7 @@ export const SendMessage = () => {
                     height: "28px",
                   }}
                 />
-                <Attatchment
+                <Attachment
                   onImageSelect={(file: File) => {
                     let reader = new FileReader();
                     reader.onload = (e) => {

@@ -5,7 +5,7 @@ import AttachFileIcon from "@mui/icons-material/AttachFile";
 import GifIcon from "@mui/icons-material/Gif";
 import { IconButton } from "@mui/material";
 
-export const Attatchment = ({
+export const Attachment = ({
   buttonStyle,
   onImageSelect,
 }: {
