@@ -22,9 +22,11 @@ import { Simulator } from "./Simulator";
 
 export function PluginApp({
   xnftAddress,
+  deepXnftPath,
   closePlugin,
 }: {
-  xnftAddress?: string;
+  xnftAddress: string | undefined;
+  deepXnftPath: string;
   closePlugin: () => void;
 }) {
   const theme = useCustomTheme();
@@ -37,13 +39,19 @@ export function PluginApp({
     >
       <PluginControl closePlugin={closePlugin} />
       <Suspense fallback={<Loading />}>
-        <LoadPlugin xnftAddress={xnftAddress} />
+        <LoadPlugin xnftAddress={xnftAddress} deepXnftPath={deepXnftPath} />
       </Suspense>
     </div>
   );
 }
 
-export function LoadPlugin({ xnftAddress }: { xnftAddress?: string }) {
+export function LoadPlugin({
+  xnftAddress,
+  deepXnftPath,
+}: {
+  xnftAddress: string | undefined;
+  deepXnftPath: string;
+}) {
   const { publicKey } = useActiveSolanaWallet(); // TODO: aggregate wallet considerations.
   const plugins = usePlugins(publicKey);
   const segue = useNavigationSegue();
@@ -59,7 +67,12 @@ export function LoadPlugin({ xnftAddress }: { xnftAddress?: string }) {
   const plugin = plugins?.find((p) => p.xnftAddress.toString() === xnftAddress);
 
   if (!plugin) {
-    return <DisplayFreshPlugin xnftAddress={xnftAddress} />;
+    return (
+      <DisplayFreshPlugin
+        xnftAddress={xnftAddress}
+        deepXnftPath={deepXnftPath}
+      />
+    );
   }
   plugin.setHostApi({
     push: segue.push,
@@ -69,21 +82,34 @@ export function LoadPlugin({ xnftAddress }: { xnftAddress?: string }) {
     connectionBackgroundClient,
     openPlugin,
   });
+
   if (xnftAddress === "11111111111111111111111111111111") {
-    return <Simulator plugin={plugin} />;
+    return <Simulator plugin={plugin} deepXnftPath={deepXnftPath} />;
   }
-  return <PluginDisplay plugin={plugin} />;
+  return <PluginDisplay plugin={plugin} deepXnftPath={deepXnftPath} />;
 }
 
-function DisplayFreshPlugin({ xnftAddress }: { xnftAddress: string }) {
+function DisplayFreshPlugin({
+  xnftAddress,
+  deepXnftPath,
+}: {
+  xnftAddress: string;
+  deepXnftPath: string;
+}) {
   const p = useFreshPlugin(xnftAddress);
   if (!p.result) {
     return null;
   }
-  return <PluginDisplay plugin={p.result} />;
+  return <PluginDisplay plugin={p.result} deepXnftPath={deepXnftPath} />;
 }
 
-export function PluginDisplay({ plugin }: { plugin?: Plugin }) {
+export function PluginDisplay({
+  plugin,
+  deepXnftPath,
+}: {
+  plugin?: Plugin;
+  deepXnftPath: string;
+}) {
   const xnftPreference = useRecoilValue(
     xnftPreferenceAtom(plugin?.xnftInstallAddress?.toString())
   );
@@ -98,6 +124,7 @@ export function PluginDisplay({ plugin }: { plugin?: Plugin }) {
       key={plugin.iframeRootUrl}
       plugin={plugin}
       xnftPreference={xnftPreference}
+      deepXnftPath={deepXnftPath}
     />
   );
 }
