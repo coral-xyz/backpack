@@ -85,7 +85,11 @@ export function Router() {
           "xnft", if this changes then please verify that it still works
           */}
         <Route path="/xnft/:xnftAddress" element={<XnftAppStack />} />
-        <Route path="*" element={<Redirect />} />
+        {isXs ? (
+          <Route path="*" element={<RedirectXs />} />
+        ) : (
+          <Route path="*" element={<Redirect />} />
+        )}
       </Routes>
     </AnimatePresence>
   );
@@ -102,6 +106,13 @@ export function RecentActivityPage() {
 export function Redirect() {
   let url = useRedirectUrl();
   return <Navigate to={url} replace />;
+}
+
+// We use a separate redirect for the xs size because some routes, e.g., /notifications
+// and /recent-activity don't exist on the xs size--for xs, they are ephemeral drawers,
+// for larger screens they are normal routes.
+export function RedirectXs() {
+  return <Navigate to={"/balances"} replace />;
 }
 
 function BalancesPage() {
