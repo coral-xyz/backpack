@@ -538,6 +538,7 @@ export const BACKEND_EVENT = "backend-event";
 // Popup query routes.
 //
 export const QUERY_LOCKED = "locked=true";
+export const QUERY_LOCKED_APPROVAL = "locked-approval=true";
 export const QUERY_APPROVAL = "approve-origin=true";
 export const QUERY_APPROVE_TRANSACTION = "approve-tx=true";
 export const QUERY_APPROVE_ALL_TRANSACTIONS = "approve-all-txs=true";
@@ -545,7 +546,6 @@ export const QUERY_APPROVE_MESSAGE = "approve-message=true";
 export const QUERY_CONNECT_HARDWARE = "connect-hardware=true";
 export const QUERY_ONBOARDING = "onboarding=true";
 export const QUERY_ADD_USER_ACCOUNT = "add-user-account=true";
-export const QUERY_COLD = "cold=true";
 
 export const SIMULATOR_PORT = 9933;
 

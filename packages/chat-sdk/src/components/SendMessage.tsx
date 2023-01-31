@@ -1,17 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import type { MessageKind, MessageMetadata } from "@coral-xyz/common";
-import { BACKEND_API_URL, CHAT_MESSAGES } from "@coral-xyz/common";
-import { createEmptyFriendship, useDbUser } from "@coral-xyz/db";
+import { CHAT_MESSAGES } from "@coral-xyz/common";
+import { createEmptyFriendship } from "@coral-xyz/db";
 import { SignalingManager, useUsersMetadata } from "@coral-xyz/react-common";
 import { useActiveSolanaWallet, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import ArrowForwardIos from "@mui/icons-material/ArrowForwardIos";
+import AddIcon from "@mui/icons-material/Add";
+import CloseIcon from "@mui/icons-material/Close";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import { CircularProgress, IconButton } from "@mui/material";
 import { createStyles, makeStyles } from "@mui/styles";
 import { v4 as uuidv4 } from "uuid";
-
-import { base64ToArrayBuffer } from "../utils/imageUploadUtils";
 
 import { CustomAutoComplete, MessageInput } from "./messageInput/MessageInput";
 import { MessageInputProvider } from "./messageInput/MessageInputProvider";
@@ -26,10 +25,10 @@ const useStyles = makeStyles((theme: any) =>
   createStyles({
     outerDiv: {
       padding: 2,
-      background: theme.custom.colors.textInputBackground,
+      background: theme.custom.colors.listItemHover,
       backdropFilter: "blur(6px)",
-      borderTopLeftRadius: 10,
-      borderTopRightRadius: 10,
+      borderRadius: 8,
+      margin: 12,
     },
     text: {
       color: theme.custom.colors.fontColor2,
@@ -317,6 +316,7 @@ export const SendMessage = ({
         {activeReply.parent_client_generated_uuid && (
           <ReplyContainer
             marginBottom={6}
+            padding={12}
             parent_username={activeReply.parent_username || ""}
             showCloseBtn={true}
             text={activeReply.text}
@@ -324,92 +324,87 @@ export const SendMessage = ({
         )}
         <CustomAutoComplete offlineMembers={getOfflineMembers().slice(0, 5)} />
         <div style={{ display: "flex" }}>
-          <>
-            {emojiMenuOpen ? (
-              <div style={{ display: "flex" }}>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                  }}
-                ></div>
-                <EmojiPickerComponent
-                  setEmojiPicker={setEmojiPicker}
-                  emojiPicker={emojiPicker}
-                  setGifPicker={setGifPicker}
-                  inputRef={inputRef}
-                  buttonStyle={{
-                    height: "28px",
-                  }}
-                />
-                <GifPicker
-                  sendMessage={sendMessage}
-                  setGifPicker={setGifPicker}
-                  gifPicker={gifPicker}
-                  setEmojiPicker={setEmojiPicker}
-                  buttonStyle={{
-                    height: "28px",
-                  }}
-                />
-                <Attatchment
-                  onMediaSelect={onMediaSelect}
-                  buttonStyle={{
-                    height: "28px",
-                  }}
-                />
-                {/*{activeSolanaWallet?.publicKey && (*/}
-                {/*  <SecureTransfer*/}
-                {/*    buttonStyle={{*/}
-                {/*      height: "28px",*/}
-                {/*    }}*/}
-                {/*    remoteUserId={remoteUserId}*/}
-                {/*    onTxFinalized={({ signature, counter, escrow }) => {*/}
-                {/*      sendMessage("Secure transfer", "secure-transfer", {*/}
-                {/*        signature,*/}
-                {/*        counter,*/}
-                {/*        escrow,*/}
-                {/*        current_state: "pending",*/}
-                {/*      });*/}
-                {/*    }}*/}
-                {/*  />*/}
-                {/*)}*/}
-                {/*<IconButton>*/}
-                {/*  {" "}*/}
-                {/*  <SendIcon*/}
-                {/*    className={classes.icon}*/}
-                {/*    onClick={() => sendMessage(messageContent)}*/}
-                {/*  />{" "}*/}
-                {/*</IconButton>*/}
-              </div>
-            ) : (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                }}
-              >
-                <IconButton
-                  size={"small"}
-                  style={{ color: theme.custom.colors.icon }}
-                  onClick={() => {
-                    setEmojiMenuOpen(true);
-                  }}
-                >
-                  <ArrowForwardIos
-                    style={{
-                      height: "18px",
-                      color: theme.custom.colors.icon,
-                      fontSize: 20,
-                    }}
-                  />
-                </IconButton>
-              </div>
-            )}
-          </>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              marginLeft: 5,
+            }}
+          >
+            <IconButton
+              disableRipple
+              size="small"
+              sx={{
+                color: "#555C6B",
+                "&:hover": {
+                  backgroundColor: `${theme.custom.colors.hoverIconBackground} !important`,
+                },
+              }}
+              onClick={() => {
+                setEmojiMenuOpen(!emojiMenuOpen);
+              }}
+            >
+              {emojiMenuOpen ? (
+                <CloseIcon style={{ fontSize: 24 }} />
+              ) : (
+                <AddIcon style={{ fontSize: 24 }} />
+              )}
+            </IconButton>
+          </div>
           <MessageInput setEmojiMenuOpen={setEmojiMenuOpen} />
         </div>
+        {emojiMenuOpen && (
+          <div style={{ display: "flex", marginLeft: 8, paddingBottom: 5 }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            ></div>
+            <EmojiPickerComponent
+              setEmojiPicker={setEmojiPicker}
+              emojiPicker={emojiPicker}
+              setGifPicker={setGifPicker}
+              inputRef={inputRef}
+              buttonStyle={{
+                height: "28px",
+              }}
+            />
+            <GifPicker
+              sendMessage={sendMessage}
+              setGifPicker={setGifPicker}
+              gifPicker={gifPicker}
+              setEmojiPicker={setEmojiPicker}
+              buttonStyle={{
+                height: "28px",
+              }}
+            />
+            <Attatchment
+              onMediaSelect={onMediaSelect}
+              buttonStyle={{
+                height: "28px",
+              }}
+            />
+            {activeSolanaWallet?.publicKey && (
+              <SecureTransfer
+                buttonStyle={{
+                  height: "28px",
+                }}
+                remoteUserId={remoteUserId}
+                onTxFinalized={({ signature, counter, escrow }) => {
+                  sendMessage("Secure transfer", "secure-transfer", {
+                    signature,
+                    counter,
+                    escrow,
+                    current_state: "pending",
+                  });
+                }}
+              />
+            )}
+          </div>
+        )}
       </div>
     </MessageInputProvider>
   );

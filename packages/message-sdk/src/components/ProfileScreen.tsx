@@ -4,17 +4,17 @@ import {
   NAV_COMPONENT_MESSAGE_CHAT,
   sendFriendRequest,
 } from "@coral-xyz/common";
-import { useDbUser } from "@coral-xyz/db";
 import {
   Loading,
+  MessageBubbleIcon,
   MessageIcon,
   PrimaryButton,
-  ProxyImage,
   useUsersMetadata,
 } from "@coral-xyz/react-common";
 import { useNavigation, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import LockIcon from "@mui/icons-material/Lock";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import { IconButton } from "@mui/material";
@@ -107,7 +107,7 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
                 });
               }}
             >
-              <MessageIcon
+              <MessageBubbleIcon
                 style={{ padding: 2 }}
                 fill={theme.custom.colors.fontColor}
               />
@@ -130,7 +130,7 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
               className={classes.icon}
             >
               <ArrowUpwardIcon
-                style={{ color: theme.custom.colors.fontColor }}
+                style={{ height: 21, color: theme.custom.colors.fontColor }}
               />
             </IconButton>
             <div

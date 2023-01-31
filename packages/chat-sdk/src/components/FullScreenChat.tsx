@@ -105,7 +105,7 @@ export const FullScreenChat = ({
       <div
         id={"messageContainer"}
         style={{
-          height: "calc(100% - 40px)",
+          height: "calc(100% - 50px)",
           background: theme.custom.colors.bg3,
         }}
       >
@@ -158,7 +158,7 @@ export const FullScreenChat = ({
             }
           }}
           setRef={setMessageRef}
-          height={"calc(100% - 40px)"}
+          height={"calc(100% - 50px)"}
         >
           <div>
             <Dropzone
@@ -169,6 +169,9 @@ export const FullScreenChat = ({
             >
               {({ getRootProps, getInputProps, isFocused }) => (
                 <div
+                  style={{
+                    paddingBottom: 20,
+                  }}
                   {...getRootProps({
                     onClick: (event) => event.stopPropagation(),
                   })}

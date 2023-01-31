@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useBreakpoints } from "@coral-xyz/app-extension/src/components/common/Layout/hooks";
 import { useCustomTheme } from "@coral-xyz/themes";
+import CloseIcon from "@mui/icons-material/Close";
 import DownloadIcon from "@mui/icons-material/Download";
 import OpenInFullIcon from "@mui/icons-material/OpenInFull";
-import { Box, Modal, Typography } from "@mui/material";
+import { Modal } from "@mui/material";
 
 export const MediaContent = ({
   mediaLink,
@@ -19,26 +20,45 @@ export const MediaContent = ({
   return (
     <>
       {modalOpen && (
-        <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
-          <Box
-            sx={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              background: theme.custom.colors.background,
-              boxShadow: 24,
-              p: isXs ? 1 : 3,
-              outline: "none",
-            }}
-          >
+        <Modal
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+          componentsProps={{
+            root: {
+              style: {
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "0 10px",
+                height: "100vh",
+                gap: 4,
+              },
+            },
+            backdrop: {
+              style: {
+                background: "rgba(24, 24, 27, 0.9)",
+                backdropFilter: "blur(5px)",
+              },
+            },
+          }}
+        >
+          <>
+            <CloseIcon
+              style={{
+                color: theme.custom.colors.icon,
+                cursor: "pointer",
+                alignSelf: "flex-end",
+                marginTop: 10,
+              }}
+              onClick={() => setModalOpen(false)}
+            />
             {mediaKind === "video" ? (
               <video
                 style={{
                   borderRadius: 5,
-                  minWidth: "30vw",
-                  maxWidth: "80vw",
-                  maxHeight: "80vh",
+                  objectFit: "contain",
+                  maxHeight: "85vh",
                 }}
                 controls={true}
                 src={mediaLink}
@@ -46,29 +66,29 @@ export const MediaContent = ({
             ) : (
               <img
                 style={{
+                  background: "white",
                   borderRadius: 5,
-                  minWidth: "30vw",
-                  maxWidth: "80vw",
-                  maxHeight: "80vh",
+                  objectFit: "contain",
+                  maxHeight: "85vh",
+                  maxWidth: "85vw",
                 }}
                 src={mediaLink}
               />
             )}
-
-            <div
+            <a
               style={{
-                display: "flex",
-                flexDirection: "row-reverse",
-                marginTop: 5,
+                alignSelf: "flex-end",
+                marginBottom: 10,
               }}
+              href={mediaLink}
+              download="AwesomeImage.png"
             >
-              <a href={mediaLink} download="AwesomeImage.png">
-                <DownloadIcon
-                  style={{ color: theme.custom.colors.icon, cursor: "pointer" }}
-                />
-              </a>
-            </div>
-          </Box>
+              <DownloadIcon
+                style={{ color: theme.custom.colors.icon, cursor: "pointer" }}
+                onClick={() => setModalOpen(false)}
+              />
+            </a>
+          </>
         </Modal>
       )}
       <div style={{ marginTop: 3 }}>
@@ -108,9 +128,10 @@ export const MediaContent = ({
           <img
             onClick={() => setModalOpen(true)}
             style={{
-              height: "fit-content",
-              maxWidth: !isXs ? 375 : 250,
+              height: "full",
+              maxWidth: !isXs ? 375 : "60vw",
               borderRadius: 5,
+              marginTop: 5,
               objectFit: "contain",
               cursor: "pointer",
             }}

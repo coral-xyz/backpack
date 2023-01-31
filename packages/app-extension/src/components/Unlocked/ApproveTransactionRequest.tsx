@@ -22,7 +22,9 @@ import {
   SecondaryButton,
 } from "@coral-xyz/react-common";
 import {
+  isKeyCold,
   useActivePublicKeys,
+  useActiveWallet,
   useBackgroundClient,
   usePluginUrl,
   useSolanaCtx,
@@ -33,12 +35,14 @@ import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
 import * as anchor from "@project-serum/anchor";
 import type { ConfirmOptions, SendOptions } from "@solana/web3.js";
+import { useRecoilValue } from "recoil";
 
 import { sanitizeTransactionWithFeeConfig } from "../../utils/solana";
 import { walletAddressDisplay } from "../common";
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
 import { Scrollbar } from "../common/Layout/Scrollbar";
 import { TransactionData } from "../common/TransactionData";
+import { Cold } from "../Unlocked/Approvals/ApproveTransaction";
 
 import { ErrorTransaction } from "./XnftPopovers/ErrorTransaction";
 import { Sending } from "./XnftPopovers/Sending";
@@ -104,24 +108,23 @@ const pluginRpcBlockchainMap = {
 
 export function ApproveTransactionRequest() {
   const [request, setRequest] = useTransactionRequest();
-  const activePublicKeys = useActivePublicKeys();
+  const { publicKey } = useActiveWallet();
   const [openDrawer, setOpenDrawer] = useState(false);
   const [signature, setSignature] = useState<string | null>(null);
+  const _isKeyCold = useRecoilValue(isKeyCold(publicKey));
 
   useEffect(() => {
     setOpenDrawer(request !== undefined);
   }, [request, signature]);
 
-  if (!request) return <></>;
+  if (!request) {
+    return <></>;
+  }
 
   const rpcMethod = pluginUiRpcMap[request!.kind];
   const blockchain = pluginRpcBlockchainMap[request!.kind];
-  const publicKey = activePublicKeys[blockchain];
 
-  // TODO: this check shouldn't be necessary.
-  if (request && !Object.values(activePublicKeys).includes(request.publicKey)) {
-    throw new Error("invariant violation");
-  }
+  if (!request) return <></>;
 
   const onResolve = (signature: string) => {
     request!.resolve(signature);
@@ -144,10 +147,6 @@ export function ApproveTransactionRequest() {
     PLUGIN_REQUEST_SOLANA_SIGN_MESSAGE,
   ].includes(request!.kind);
 
-  if (!request) {
-    return <></>;
-  }
-
   return (
     <ApproveTransactionDrawer
       openDrawer={openDrawer}
@@ -161,7 +160,18 @@ export function ApproveTransactionRequest() {
       }}
     >
       <Suspense fallback={<DisabledRequestPrompt />}>
-        {isMessageSign ? (
+        {_isKeyCold ? (
+          <Cold
+            origin={"This xNFT"}
+            title={""}
+            wallet={publicKey}
+            onCompletion={async () => {}}
+            style={{
+              padding: 0,
+              width: "100%",
+            }}
+          />
+        ) : isMessageSign ? (
           <SignMessageRequest
             publicKey={publicKey}
             message={request!.data as string}

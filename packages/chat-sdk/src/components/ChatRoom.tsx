@@ -1,9 +1,6 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import type {
-  EnrichedMessageWithMetadata,
-  SubscriptionType,
-} from "@coral-xyz/common";
-import { EnrichedMessage, SUBSCRIBE, UNSUBSCRIBE } from "@coral-xyz/common";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import type { SubscriptionType } from "@coral-xyz/common";
+import { SUBSCRIBE } from "@coral-xyz/common";
 import {
   refreshChatsFor,
   SignalingManager,
