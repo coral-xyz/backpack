@@ -1,3 +1,4 @@
+import type { CSSProperties, MouseEvent } from "react";
 import type { Friendship, RemoteUserData } from "@coral-xyz/common";
 import {
   NAV_COMPONENT_MESSAGE_PROFILE,
@@ -64,6 +65,149 @@ function UserListItem({
   const { uuid } = useUser();
   const [friendshipValue, setFriendshipValue] =
     useRecoilState<Friendship | null>(friendship({ userId: user.id }));
+
+  const onUnfriend = async (ev: MouseEvent<HTMLDivElement>) => {
+    ev.stopPropagation();
+    await unFriend({ to: user.id });
+    await updateFriendshipIfExists(uuid, user.id, {
+      areFriends: 0,
+      requested: 0,
+    });
+    setFriendshipValue((x: any) => ({
+      ...x,
+      requested: false,
+      areFriends: false,
+    }));
+    setMembers?.((members) =>
+      members.map((m) => {
+        if (m.id === user.id) {
+          return {
+            ...m,
+            areFriends: false,
+            requested: false,
+            remoteRequested: false,
+          };
+        }
+        return m;
+      })
+    );
+    SignalingManager.getInstance().onUpdateRecoil({
+      type: "friendship",
+    });
+  };
+
+  const onCancelRequest = async (ev: MouseEvent<HTMLDivElement>) => {
+    ev.stopPropagation();
+    await sendFriendRequest({ to: user.id, sendRequest: false });
+    await updateFriendshipIfExists(uuid, user.id, {
+      requested: 0,
+    });
+    setFriendshipValue((x: any) => ({
+      ...x,
+      requested: false,
+    }));
+    setMembers?.((members) =>
+      members.map((m) => {
+        if (m.id === user.id) {
+          return {
+            ...m,
+            requested: false,
+          };
+        }
+        return m;
+      })
+    );
+    SignalingManager.getInstance().onUpdateRecoil({
+      type: "friendship",
+    });
+  };
+
+  const onAccept = async (ev: MouseEvent<HTMLDivElement>) => {
+    ev.stopPropagation();
+    await sendFriendRequest({ to: user.id, sendRequest: true });
+    await updateFriendshipIfExists(uuid, user.id, {
+      requested: 0,
+      areFriends: 1,
+    });
+    setFriendshipValue((x: any) => ({
+      ...x,
+      requested: false,
+      areFriends: true,
+    }));
+    setMembers?.((members) =>
+      members.map((m) => {
+        if (m.id === user.id) {
+          return {
+            ...m,
+            requested: false,
+            remoteRequested: false,
+            areFriends: true,
+          };
+        }
+        return m;
+      })
+    );
+    SignalingManager.getInstance().onUpdateRecoil({
+      type: "friendship",
+    });
+  };
+
+  const onDecline = async (ev: MouseEvent<HTMLDivElement>) => {
+    ev.stopPropagation();
+    await sendFriendRequest({ to: user.id, sendRequest: true });
+    await updateFriendshipIfExists(uuid, user.id, {
+      requested: 0,
+      areFriends: 0,
+    });
+    setFriendshipValue((x: any) => ({
+      ...x,
+      requested: false,
+      areFriends: false,
+    }));
+    setMembers?.((members) =>
+      members.map((m) => {
+        if (m.id === user.id) {
+          return {
+            ...m,
+            requested: false,
+            remoteRequested: false,
+            areFriends: false,
+          };
+        }
+        return m;
+      })
+    );
+    SignalingManager.getInstance().onUpdateRecoil({
+      type: "friendship",
+    });
+  };
+
+  const onSendRequest = async (ev: MouseEvent<HTMLDivElement>) => {
+    ev.stopPropagation();
+    await sendFriendRequest({ to: user.id, sendRequest: true });
+    await updateFriendshipIfExists(uuid, user.id, {
+      requested: 1,
+    });
+    setFriendshipValue((x: any) => ({
+      ...x,
+      requested: true,
+    }));
+    setMembers?.((members) =>
+      members.map((m) => {
+        if (m.id === user.id) {
+          return {
+            ...m,
+            requested: true,
+          };
+        }
+        return m;
+      })
+    );
+    SignalingManager.getInstance().onUpdateRecoil({
+      type: "friendship",
+    });
+  };
+
   return (
     <ListItem
       button
@@ -99,7 +243,12 @@ function UserListItem({
         }}
       >
         <div
-          style={{ flex: 1, display: "flex", justifyContent: "space-between" }}
+          style={{
+            flex: 1,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
         >
           <div style={{ display: "flex" }}>
             <div
@@ -114,122 +263,53 @@ function UserListItem({
             <div className={classes.userText}>{user.username}</div>
           </div>
           <div>
-            <div
-              className={classes.userRequestText}
-              style={{
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-              }}
-              onClick={async (e) => {
-                e.stopPropagation();
-                if (user.areFriends) {
-                  await unFriend({ to: user.id });
-                  await updateFriendshipIfExists(uuid, user.id, {
-                    areFriends: 0,
-                    requested: 0,
-                  });
-                  setFriendshipValue((x: any) => ({
-                    ...x,
-                    requested: false,
-                    areFriends: false,
-                  }));
-                  setMembers?.((members) =>
-                    members.map((m) => {
-                      if (m.id === user.id) {
-                        return {
-                          ...m,
-                          areFriends: false,
-                          requested: false,
-                          remoteRequested: false,
-                        };
-                      }
-                      return m;
-                    })
-                  );
-                } else if (user.requested) {
-                  await sendFriendRequest({ to: user.id, sendRequest: false });
-                  await updateFriendshipIfExists(uuid, user.id, {
-                    requested: 0,
-                  });
-                  setFriendshipValue((x: any) => ({
-                    ...x,
-                    requested: false,
-                  }));
-                  setMembers?.((members) =>
-                    members.map((m) => {
-                      if (m.id === user.id) {
-                        return {
-                          ...m,
-                          requested: false,
-                        };
-                      }
-                      return m;
-                    })
-                  );
-                } else if (user.remoteRequested) {
-                  await sendFriendRequest({ to: user.id, sendRequest: true });
-                  await updateFriendshipIfExists(uuid, user.id, {
-                    requested: 0,
-                    areFriends: 1,
-                  });
-                  setFriendshipValue((x: any) => ({
-                    ...x,
-                    requested: false,
-                    areFriends: true,
-                  }));
-                  setMembers?.((members) =>
-                    members.map((m) => {
-                      if (m.id === user.id) {
-                        return {
-                          ...m,
-                          requested: false,
-                          remoteRequested: false,
-                          areFriends: true,
-                        };
-                      }
-                      return m;
-                    })
-                  );
-                } else {
-                  await sendFriendRequest({ to: user.id, sendRequest: true });
-                  await updateFriendshipIfExists(uuid, user.id, {
-                    requested: 1,
-                  });
-                  setFriendshipValue((x: any) => ({
-                    ...x,
-                    requested: true,
-                  }));
-                  setMembers?.((members) =>
-                    members.map((m) => {
-                      if (m.id === user.id) {
-                        return {
-                          ...m,
-                          requested: true,
-                        };
-                      }
-                      return m;
-                    })
-                  );
-                }
-                SignalingManager.getInstance().onUpdateRecoil({
-                  type: "friendship",
-                });
-              }}
-            >
-              {user.areFriends
-                ? "Unfriend"
-                : user.requested
-                ? "Cancel Request"
-                : user.remoteRequested
-                ? "Accept Request"
-                : "Send Request"}{" "}
-            </div>
+            {user.areFriends ? (
+              <UserAction text="Unfriend" onClick={onUnfriend} />
+            ) : user.requested ? (
+              <UserAction text="Cancel Request" onClick={onCancelRequest} />
+            ) : user.remoteRequested ? (
+              <div style={{ display: "flex", gap: 12 }}>
+                <UserAction text="Decline" onClick={onDecline} />
+                <UserAction
+                  style={{ color: theme.custom.colors.blue }}
+                  text="Accept"
+                  onClick={onAccept}
+                />
+              </div>
+            ) : (
+              <UserAction text="Send Request" onClick={onSendRequest} />
+            )}
           </div>
         </div>
       </div>
     </ListItem>
+  );
+}
+
+function UserAction({
+  text,
+  onClick,
+  style,
+}: {
+  text: string;
+  onClick: (ev: MouseEvent) => void;
+  style?: CSSProperties;
+}) {
+  const classes = useStyles();
+  return (
+    <div
+      className={classes.userRequestText}
+      style={{
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        ...style,
+      }}
+      onClick={onClick}
+    >
+      {text}
+    </div>
   );
 }
 

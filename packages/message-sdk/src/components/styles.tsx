@@ -102,7 +102,7 @@ export const useStyles = styles((theme) => ({
     color: theme.custom.colors.fontColor2,
   },
   userRequestText: {
-    color: theme.custom.colors.fontColor2,
+    color: theme.custom.colors.textPlaceholder,
   },
   timestamp: {
     fontSize: 14,

@@ -1,35 +1,24 @@
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import type { EnrichedNotification, Friendship } from "@coral-xyz/common";
-import { sendFriendRequest, unFriend } from "@coral-xyz/common";
-import { updateFriendshipIfExists } from "@coral-xyz/db";
 import {
-  DangerButton,
   EmptyState,
   isFirstLastListItemStyle,
   Loading,
-  PrimaryButton,
   ProxyImage,
-  SecondaryButton,
-  SuccessButton,
   useUserMetadata,
 } from "@coral-xyz/react-common";
-import {
-  friendship,
-  useFriendship,
-  useRecentNotifications,
-  useUser,
-} from "@coral-xyz/recoil";
+import { friendship, useRecentNotifications, useUser } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import { Button,IconButton, List, ListItem, Typography  } from "@mui/material";
-import { useRecoilState } from "recoil";
+import { IconButton, List, ListItem, Typography } from "@mui/material";
 
 import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
 import {
   NavStackEphemeral,
   NavStackScreen,
+  useNavStack,
 } from "../../common/Layout/NavStack";
+import { Contacts } from "../Messages/Contacts";
 
 const useStyles = styles((theme) => ({
   recentActivityLabel: {
@@ -123,6 +112,10 @@ export function NotificationButton() {
               name={"root"}
               component={(props: any) => <Notifications {...props} />}
             />
+            <NavStackScreen
+              name={"contacts"}
+              component={(props: any) => <Contacts {...props} />}
+            />
           </NavStackEphemeral>
         </div>
       </WithDrawer>
@@ -180,6 +173,7 @@ const getGroupedNotifications = (notifications: EnrichedNotification[]) => {
 };
 
 export function Notifications() {
+  const nav = useNavStack();
   const notifications: EnrichedNotification[] = useRecentNotifications({
     limit: 50,
     offset: 0,
@@ -189,6 +183,11 @@ export function Notifications() {
     date: string;
     notifications: EnrichedNotification[];
   }[] = getGroupedNotifications(notifications);
+
+  useEffect(() => {
+    nav.setTitle("Notifications");
+  }, [nav]);
+
   return (
     <Suspense fallback={<NotificationsLoader />}>
       <NotificationList groupedNotifications={groupedNotifications} />
@@ -245,42 +244,44 @@ export function NotificationList({
   const theme = useCustomTheme();
 
   return groupedNotifications.length > 0 ? (
-    <div
-      style={{
-        paddingBottom: "16px",
-      }}
-    >
-      {groupedNotifications.map(({ date, notifications }) => (
-        <div
-          style={{
-            marginLeft: "16px",
-            marginRight: "16px",
-            marginTop: "16px",
-          }}
-        >
-          <div style={{ color: "#99A4B4", padding: 10 }}>{date}</div>
-          <List
+    <>
+      <div
+        style={{
+          paddingBottom: "16px",
+        }}
+      >
+        {groupedNotifications.map(({ date, notifications }) => (
+          <div
             style={{
-              paddingTop: 0,
-              paddingBottom: 0,
-              borderRadius: "14px",
-              border: `${theme.custom.colors.borderFull}`,
+              marginLeft: "16px",
+              marginRight: "16px",
+              marginTop: "16px",
             }}
           >
-            <div>
-              {notifications.map((notification: any, idx: number) => (
-                <NotificationListItem
-                  key={idx}
-                  notification={notification}
-                  isFirst={idx === 0}
-                  isLast={idx === notifications.length - 1}
-                />
-              ))}
-            </div>
-          </List>
-        </div>
-      ))}
-    </div>
+            <div style={{ color: "#99A4B4", padding: 10 }}>{date}</div>
+            <List
+              style={{
+                paddingTop: 0,
+                paddingBottom: 0,
+                borderRadius: "12px",
+                border: `${theme.custom.colors.borderFull}`,
+              }}
+            >
+              <div>
+                {notifications.map((notification: any, idx: number) => (
+                  <NotificationListItem
+                    key={idx}
+                    notification={notification}
+                    isFirst={idx === 0}
+                    isLast={idx === notifications.length - 1}
+                  />
+                ))}
+              </div>
+            </List>
+          </div>
+        ))}
+      </div>
+    </>
   ) : (
     <NoNotificationsLabel minimize={false} />
   );
@@ -294,25 +295,25 @@ const getTimeStr = (timestamp: number) => {
   if (elapsedTimeSeconds / 60 < 60) {
     const min = Math.floor(elapsedTimeSeconds / 60);
     if (min === 1) {
-      return "1 minute ago";
+      return "1 minute";
     } else {
-      return `${min} minutes ago`;
+      return `${min} minutes`;
     }
   }
 
   if (elapsedTimeSeconds / 3600 < 24) {
     const hours = Math.floor(elapsedTimeSeconds / 3600);
     if (hours === 1) {
-      return "1 hour ago";
+      return "1 hour";
     } else {
-      return `${hours} hours ago`;
+      return `${hours} hours`;
     }
   }
   const days = Math.floor(elapsedTimeSeconds / 3600 / 24);
   if (days === 1) {
-    return `1 day ago`;
+    return `1 day`;
   }
-  return `${days} day ago`;
+  return `${days} day`;
 };
 
 function NotificationListItem({
@@ -405,6 +406,7 @@ function FriendRequestListItem({
   isFirst: boolean;
   isLast: boolean;
 }) {
+  const nav = useNavStack();
   const user = useUserMetadata({
     remoteUserId: parseJson(notification.body).from,
   });
@@ -435,6 +437,7 @@ function FriendRequestListItem({
           width: "100%",
           display: "flex",
           justifyContent: "space-between",
+          alignItems: "center",
         }}
       >
         <div style={{ flex: 1, display: "flex" }}>
@@ -448,112 +451,23 @@ function FriendRequestListItem({
             <NotificationListItemIcon image={user?.image} />
           </div>
           <div>
-            <Typography className={classes.txSig}>Friend request</Typography>
-            <Typography className={classes.txBody}>
-              {user.username} requested to connect
-            </Typography>
+            <Typography className={classes.txSig}>Contact request</Typography>
+            <Typography className={classes.txBody}>@{user.username}</Typography>
           </div>
         </div>
-        <div className={classes.time}>
-          <AcceptRejectRequest userId={parseJson(notification.body).from} />
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-end",
+          }}
+          className={classes.time}
+        >
+          {getTimeStr(notification.timestamp)}
+          <span onClick={() => nav.push("contacts")}>View</span>
         </div>
       </div>
     </ListItem>
-  );
-}
-
-function AcceptRejectRequest({ userId }: { userId: string }) {
-  const [friendshipValue, setFriendshipValue] =
-    useRecoilState<Friendship | null>(friendship({ userId }));
-  const { uuid } = useUser();
-
-  if (friendshipValue?.areFriends) {
-    return (
-      <div style={{ marginTop: 5 }}>
-        {" "}
-        <DangerButton
-          style={{ height: 38 }}
-          label={"Unfriend"}
-          onClick={async () => {
-            await unFriend({ to: userId });
-            await updateFriendshipIfExists(uuid, userId, {
-              areFriends: 0,
-              requested: 0,
-            });
-
-            setFriendshipValue((x: any) => ({
-              ...x,
-              requested: false,
-              areFriends: false,
-            }));
-          }}
-        />{" "}
-      </div>
-    );
-  }
-
-  if (friendshipValue?.remoteRequested) {
-    return (
-      <div style={{ display: "flex", marginTop: 5 }}>
-        <SuccessButton
-          label={"Accept"}
-          style={{ marginRight: 10, height: 38 }}
-          onClick={async () => {
-            await sendFriendRequest({ to: userId, sendRequest: true });
-            await updateFriendshipIfExists(uuid, userId, {
-              requested: 0,
-              areFriends: 1,
-            });
-
-            setFriendshipValue((x: any) => ({
-              ...x,
-              requested: false,
-              areFriends: true,
-            }));
-          }}
-        />
-      </div>
-    );
-  }
-
-  if (friendshipValue?.requested) {
-    return (
-      <div style={{ display: "flex", marginTop: 5 }}>
-        <DangerButton
-          style={{ height: 38 }}
-          label={"Cancel request"}
-          onClick={async () => {
-            await sendFriendRequest({ to: userId, sendRequest: false });
-            await updateFriendshipIfExists(uuid, userId, {
-              requested: 0,
-            });
-            setFriendshipValue((x: any) => ({
-              ...x,
-              requested: false,
-            }));
-          }}
-        />
-      </div>
-    );
-  }
-
-  return (
-    <div style={{ display: "flex", marginTop: 5 }}>
-      <SuccessButton
-        onClick={async () => {
-          await sendFriendRequest({ to: userId, sendRequest: true });
-          await updateFriendshipIfExists(uuid, userId, {
-            requested: 1,
-          });
-          setFriendshipValue((x: any) => ({
-            ...x,
-            requested: true,
-          }));
-        }}
-        style={{ height: 38 }}
-        label={"Send request"}
-      />
-    </div>
   );
 }
 
