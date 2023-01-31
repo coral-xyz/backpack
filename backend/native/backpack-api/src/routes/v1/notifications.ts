@@ -20,6 +20,7 @@ router.delete("/", extractUserId, async (req, res) => {
   // @ts-ignore
   const uuid = req.id || "";
   await deleteSubscriptions({ uuid });
+  res.json({});
 });
 
 router.get("/", extractUserId, async (req, res) => {
