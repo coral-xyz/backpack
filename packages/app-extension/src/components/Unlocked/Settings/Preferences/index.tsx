@@ -31,9 +31,7 @@ export function Preferences() {
   const isDarkMode = useDarkMode();
   const isDeveloperMode = useDeveloperMode();
   const isAggregateWallets = useIsAggregateWallets();
-  const [isNotificationsOn, setIsNotificationsOn] = useState(
-    window.Notification.permission === "granted"
-  );
+  const [isNotificationsOn, setIsNotificationsOn] = useState(false);
 
   useEffect(() => {
     hasActiveSubscription()
@@ -68,6 +66,7 @@ export function Preferences() {
 
   const onNotificationsSwitch = async (isNotificationsEnabled: boolean) => {
     if (isNotificationsEnabled) {
+      setIsNotificationsOn(true);
       window.open(
         "/permissions.html?notifications=true",
         "_blank",
@@ -76,6 +75,7 @@ export function Preferences() {
     } else {
       await deleteSubscription();
       await unregisterNotificationServiceWorker();
+      setIsNotificationsOn(false);
     }
   };
 
