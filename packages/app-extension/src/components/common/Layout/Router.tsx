@@ -112,7 +112,11 @@ export function Redirect() {
 // and /recent-activity don't exist on the xs size--for xs, they are ephemeral drawers,
 // for larger screens they are normal routes.
 export function RedirectXs() {
-  return <Navigate to={"/balances"} replace />;
+  let url = useRedirectUrl();
+  if (url.startsWith("/notifications") || url.startsWith("/recent-activity")) {
+    return <Navigate to={"/balances"} replace />;
+  }
+  return <Navigate to={url} replace />;
 }
 
 function BalancesPage() {
