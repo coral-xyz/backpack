@@ -1,8 +1,11 @@
-import { useEffect,useState } from "react";
+import { useEffect, useState } from "react";
 import {
   BACKPACK_CONFIG_VERSION,
   BACKPACK_FEATURE_FORCE_LATEST_VERSION,
 } from "@coral-xyz/common";
+import { EmptyState } from "@coral-xyz/react-common";
+import { Block } from "@mui/icons-material";
+import { Typography } from "@mui/material";
 
 import { WithDrawer } from "../common/Layout/Drawer";
 
@@ -46,12 +49,17 @@ export function WithVersion({ children }: { children: any }) {
 
 function VersionWarning() {
   return (
-    <div>
-      test here During the duration of the public beta program, Backpack will
-      require users to use the most up to date version of the extension. Please
-      update your extension or enable auto updating if you have not already. If
-      you have, p[lease give some time for the store to update your browser.
-      Sometimes updates can take a while to upgrade.
+    <div
+      style={{
+        height: "100%",
+      }}
+    >
+      <EmptyState
+        icon={(props: any) => <Block {...props} />}
+        title={"Please upgrade your Backpack"}
+        subtitle={`During the duration of the beta program, Backpack
+				requires users to use the most up to date version of the extension.`}
+      />
     </div>
   );
 }
