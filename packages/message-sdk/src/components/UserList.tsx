@@ -1,6 +1,7 @@
 import type { CSSProperties, MouseEvent } from "react";
 import type { Friendship, RemoteUserData } from "@coral-xyz/common";
 import {
+  CustomSplTokenAccountsResponseString,
   NAV_COMPONENT_MESSAGE_PROFILE,
   sendFriendRequest,
   unFriend,
@@ -14,7 +15,7 @@ import {
 import { friendship, useNavigation, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { List, ListItem } from "@mui/material";
-import { useRecoilState } from "recoil";
+import { useRecoilCallback, useRecoilState } from "recoil";
 
 import { useStyles } from "./styles";
 
@@ -63,8 +64,7 @@ function UserListItem({
   const { push } = useNavigation();
   const classes = useStyles();
   const { uuid } = useUser();
-  const [friendshipValue, setFriendshipValue] =
-    useRecoilState<Friendship | null>(friendship({ userId: user.id }));
+  const setFriendshipValue = useUpdateFriendships();
 
   const onUnfriend = async (ev: MouseEvent<HTMLDivElement>) => {
     ev.stopPropagation();
@@ -73,11 +73,13 @@ function UserListItem({
       areFriends: 0,
       requested: 0,
     });
-    setFriendshipValue((x: any) => ({
-      ...x,
-      requested: false,
-      areFriends: false,
-    }));
+    setFriendshipValue({
+      userId: user.id,
+      friendshipValue: {
+        requested: false,
+        areFriends: false,
+      },
+    });
     setMembers?.((members) =>
       members.map((m) => {
         if (m.id === user.id) {
@@ -102,10 +104,13 @@ function UserListItem({
     await updateFriendshipIfExists(uuid, user.id, {
       requested: 0,
     });
-    setFriendshipValue((x: any) => ({
-      ...x,
-      requested: false,
-    }));
+
+    setFriendshipValue({
+      userId: user.id,
+      friendshipValue: {
+        requested: false,
+      },
+    });
     setMembers?.((members) =>
       members.map((m) => {
         if (m.id === user.id) {
@@ -129,11 +134,14 @@ function UserListItem({
       requested: 0,
       areFriends: 1,
     });
-    setFriendshipValue((x: any) => ({
-      ...x,
-      requested: false,
-      areFriends: true,
-    }));
+
+    setFriendshipValue({
+      userId: user.id,
+      friendshipValue: {
+        requested: false,
+        areFriends: true,
+      },
+    });
     setMembers?.((members) =>
       members.map((m) => {
         if (m.id === user.id) {
@@ -159,11 +167,14 @@ function UserListItem({
       requested: 0,
       areFriends: 0,
     });
-    setFriendshipValue((x: any) => ({
-      ...x,
-      requested: false,
-      areFriends: false,
-    }));
+
+    setFriendshipValue({
+      userId: user.id,
+      friendshipValue: {
+        requested: false,
+        areFriends: false,
+      },
+    });
     setMembers?.((members) =>
       members.map((m) => {
         if (m.id === user.id) {
@@ -188,10 +199,13 @@ function UserListItem({
     await updateFriendshipIfExists(uuid, user.id, {
       requested: 1,
     });
-    setFriendshipValue((x: any) => ({
-      ...x,
-      requested: true,
-    }));
+
+    setFriendshipValue({
+      userId: user.id,
+      friendshipValue: {
+        requested: true,
+      },
+    });
     setMembers?.((members) =>
       members.map((m) => {
         if (m.id === user.id) {
@@ -323,3 +337,21 @@ function UserIcon({ image }: any) {
     />
   );
 }
+
+export const useUpdateFriendships = () =>
+  useRecoilCallback(
+    ({ set, snapshot }: any) =>
+      async ({
+        friendshipValue,
+        userId,
+      }: {
+        friendshipValue: any;
+        userId: string;
+      }) => {
+        const currentFriendship = snapshot.getLoadable(friendship({ userId }));
+        set(friendship({ userId }), {
+          ...(currentFriendship.valueMaybe() || {}),
+          ...friendshipValue,
+        });
+      }
+  );

@@ -727,6 +727,7 @@ export function ChatMessages() {
           <MessageLine
             received={chat.received}
             sameUserMessage={
+              chats[index]?.username &&
               index > 0 &&
               index < chats.length &&
               chats[index]?.username === chats[index - 1]?.username
