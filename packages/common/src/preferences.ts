@@ -1,5 +1,3 @@
-import { DEFAULT_GATEWAY } from "@coral-xyz/app-extension/src/redirects/constants";
-
 import { EthereumConnectionUrl, EthereumExplorer } from "./ethereum";
 import { SolanaCluster, SolanaExplorer } from "./solana";
 import type { Blockchain, Preferences } from "./types";
@@ -8,7 +6,19 @@ export const DEFAULT_DARK_MODE = false;
 export const DEFAULT_DEVELOPER_MODE = false;
 export const DEFAULT_AGGREGATE_WALLETS = false;
 export const DEFAULT_AUTO_LOCK_INTERVAL_SECS = 15 * 60;
-export { DEFAULT_GATEWAY };
+
+export const DEFAULT_IPFS_GATEWAYS: string[] = [
+  "4everland.io",
+  "dweb.link",
+  "infura-ipfs.io",
+  "cf-ipfs.com",
+  "astyanax.io",
+  "ipfs.io",
+  "cloudflare-ipfs.com",
+  "gateway.pinata.cloud",
+];
+
+export const DEFAULT_GATEWAY = DEFAULT_IPFS_GATEWAYS[0];
 
 export function defaultPreferences(): Preferences {
   return {
