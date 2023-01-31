@@ -5,13 +5,9 @@ import type {
   PublicKeyPath,
   SignedPublicKeyPath,
 } from "@coral-xyz/common";
-import {
-  getCreateMessage,
-  getIndexedPath,
-  UI_RPC_METHOD_PREVIEW_PUBKEYS,
-} from "@coral-xyz/common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
+import { getCreateMessage } from "@coral-xyz/common";
 
+import { useDefaultPublicKeyPath } from "../../../hooks/useDefaultPublicKeyPath";
 import { useOnboarding } from "../../../hooks/useOnboarding";
 import { useSteps } from "../../../hooks/useSteps";
 import { CreatePassword } from "../../common/Account/CreatePassword";
@@ -45,7 +41,7 @@ export const OnboardAccount = ({
   isOnboarded?: boolean;
 }) => {
   const { step, nextStep, prevStep } = useSteps();
-  const background = useBackgroundClient();
+  const { getDefaultPublicKeyPath } = useDefaultPublicKeyPath();
   const [inviteCode, setInviteCode] = useState<string | undefined>(undefined);
   const [username, setUsername] = useState<string | null>(null);
   const [action, setAction] = useState<"create" | "import">();
@@ -63,8 +59,6 @@ export const OnboardAccount = ({
     selectedBlockchains,
     signMessageForWallet,
   } = useOnboarding(mnemonic);
-
-  console.log(selectedBlockchains);
 
   useEffect(() => {
     // Reset blockchain keyrings on certain changes that invalidate the addresses
@@ -87,16 +81,10 @@ export const OnboardAccount = ({
         setBlockchain(blockchain);
         setOpenDrawer(true);
       } else if (action === "create") {
-        const defaultDerivationPath = getIndexedPath(blockchain, 0, 0);
-        const publicKeys = await background.request({
-          method: UI_RPC_METHOD_PREVIEW_PUBKEYS,
-          params: [blockchain, mnemonic, [defaultDerivationPath]],
-        });
-        const publicKey = publicKeys[0];
-        const publicKeyPath = {
-          derivationPath: defaultDerivationPath,
-          publicKey,
-        };
+        const publicKeyPath = await getDefaultPublicKeyPath(
+          blockchain,
+          mnemonic!
+        );
         const signature = await signMessageForWallet(
           blockchain,
           publicKeyPath,

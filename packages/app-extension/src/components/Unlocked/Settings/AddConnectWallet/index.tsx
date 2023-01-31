@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import {
-  getIndexedPath,
   openAddUserAccount,
   openConnectHardware,
   TAB_APPS,
@@ -191,7 +190,7 @@ export function AddWalletMenu({
   // than the user expects.
   const [lockCreateButton, setLockCreateButton] = useState(false);
 
-  const createNewDerived = async () => {
+  const createNew = async () => {
     // Mnemonic based keyring. This is the simple case because we don't
     // need to prompt for the user to open their Ledger app to get the
     // required public key. We also don't need a signature to prove
@@ -206,7 +205,9 @@ export function AddWalletMenu({
       try {
         newPublicKey = await background.request({
           method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
-          params: [blockchain, getIndexedPath(blockchain, 0)],
+          // Not passing a signedPublicKeyPath so will just use the default
+          // derivation path in backend to create the new keyring
+          params: [blockchain],
         });
       } catch (error) {
         setError("Wallet address is used by another Backpack account.");
@@ -250,7 +251,7 @@ export function AddWalletMenu({
                     />
                   }
                   text="Create a new wallet"
-                  onClick={createNewDerived}
+                  onClick={createNew}
                 />
               </Grid>
             )}

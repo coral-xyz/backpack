@@ -21,6 +21,7 @@ import {
   EthereumConnectionUrl,
   EthereumExplorer,
   getAddMessage,
+  getIndexedPath,
   getRecoveryPaths,
   NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED,
   NOTIFICATION_AGGREGATE_WALLETS_UPDATED,
@@ -492,13 +493,11 @@ export class Backend {
     }
 
     let blockchainKeyring: BlockchainKeyring;
-
     // If keyring init parameters were provided then init the keyring
     if (keyringInit) {
       // Create an empty keyring to init
       blockchainKeyring = keyringForBlockchain(blockchain);
       if (keyringInit.length === 2) {
-        // Using a mnemonic
         blockchainKeyring.initFromMnemonic(keyringInit[0], keyringInit[1]);
       } else {
         // Using a ledger
@@ -1513,27 +1512,43 @@ export class Backend {
    */
   async blockchainKeyringsAdd(
     blockchain: Blockchain,
-    maybeSignedPublicKeyPath: PublicKeyPath | SignedPublicKeyPath
+    signedPublicKeyPath?: SignedPublicKeyPath
   ): Promise<string> {
-    const { publicKey } = maybeSignedPublicKeyPath;
+    if (!signedPublicKeyPath) {
+      // No derivation path, public key, and signature given. Use default.
+      // This requires that the keyring store is unlocked so is not used for
+      // onboarding etc.
+      const mnemonic = this.keyringStore.activeUserKeyring.exportMnemonic();
+      const defaultDerivationPath = getIndexedPath(blockchain, 0, 0);
+      // Get the public key
+      const publicKeys = await this.previewPubkeys(blockchain, mnemonic, [
+        defaultDerivationPath,
+      ]);
+      const publicKey = publicKeys[0];
+      signedPublicKeyPath = {
+        derivationPath: defaultDerivationPath,
+        publicKey,
+        // Empty signature will be populated in this.userAccountPublicKeyCreate
+        // Again, this signing requires the keyring store is unlocked but we
+        // already require that to read the mnemonic
+        signature: "",
+      };
+    }
 
     await this.keyringStore.blockchainKeyringAdd(
       blockchain,
-      maybeSignedPublicKeyPath as PublicKeyPath
+      signedPublicKeyPath as PublicKeyPath
     );
 
-    // In recovery cases, this public key may already exist on the API, so don't
-    // enforce a signature
-    if ("signature" in maybeSignedPublicKeyPath) {
-      const { signature } = maybeSignedPublicKeyPath;
-      // Add the new public key to the API
-      try {
-        await this.userAccountPublicKeyCreate(blockchain, publicKey, signature);
-      } catch (error) {
-        // Roll back the added blockchain keyring
-        await this.keyringStore.blockchainKeyringRemove(blockchain);
-        throw error;
-      }
+    const { signature, publicKey } = signedPublicKeyPath;
+
+    // Add the new public key to the API
+    try {
+      await this.userAccountPublicKeyCreate(blockchain, publicKey, signature);
+    } catch (error) {
+      // Roll back the added blockchain keyring
+      await this.keyringStore.blockchainKeyringRemove(blockchain);
+      throw error;
     }
 
     const publicKeyData = await this.keyringStoreReadAllPubkeyData();

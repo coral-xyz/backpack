@@ -196,7 +196,8 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
       // New style derivation paths
       if (this.accountIndex) throw new Error("invalid account index");
       console.debug("new derivation", this.accountIndex, this.walletIndex);
-      this.walletIndex = this.walletIndex ? this.walletIndex + 1 : 0;
+      this.walletIndex =
+        this.walletIndex === undefined ? 0 : this.walletIndex + 1;
       derivationPath = getIndexedPath(
         Blockchain.ETHEREUM,
         this.accountIndex,

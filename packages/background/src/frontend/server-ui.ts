@@ -1067,7 +1067,7 @@ async function handleSetXnftPreferences(
 async function handleBlockchainKeyringsAdd(
   ctx: Context<Backend>,
   blockchain: Blockchain,
-  signedPublicKeyPath: SignedPublicKeyPath
+  signedPublicKeyPath?: SignedPublicKeyPath
 ): Promise<RpcResponse<Array<string>>> {
   const resp = await ctx.backend.blockchainKeyringsAdd(
     blockchain,
