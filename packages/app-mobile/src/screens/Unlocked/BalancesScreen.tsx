@@ -1,8 +1,8 @@
-import type { Token } from "./components/index";
-import type { SearchParamsFor } from "@coral-xyz/recoil";
+import type { StackScreenProps } from "@react-navigation/stack";
 
 import { StyleSheet, View } from "react-native";
 
+import { Token, NavTokenAction, NavTokenOptions } from "@@types/types";
 import {
   Blockchain,
   ETH_NATIVE_MINT,
@@ -23,37 +23,15 @@ import {
 import { BalanceSummaryWidget } from "./components/BalanceSummaryWidget";
 import { TokenTables, UsdBalanceAndPercentChange } from "./components/Balances";
 
-const Stack = createStackNavigator();
-export function BalancesNavigator() {
-  return (
-    <Stack.Navigator
-      initialRouteName="BalanceList"
-      screenOptions={{ presentation: "modal" }}
-    >
-      <Stack.Group screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="BalanceList" component={BalanceListScreen} />
-      </Stack.Group>
-      <Stack.Screen
-        name="BalanceDetail"
-        component={BalanceDetailScreen}
-        options={({ route: { params } }) => {
-          const title = `${toTitleCase(params.blockchain)} / ${
-            params.token.ticker
-          }`;
-          return {
-            title,
-          };
-        }}
-      />
-    </Stack.Navigator>
-  );
-}
-
 function TokenHeader({
   blockchain,
   address,
   onPressOption,
-}: SearchParamsFor.Token["props"]) {
+}: {
+  blockchain: Blockchain;
+  address: string;
+  onPressOption: (route: NavTokenAction, options: NavTokenOptions) => void;
+}) {
   const { data: wallet } = useBlockchainActiveWallet(blockchain);
   const { data: token, loading } = useBlockchainTokenData({
     publicKey: wallet.publicKey.toString(),
@@ -94,35 +72,40 @@ function TokenHeader({
   );
 }
 
-function BalanceDetailScreen({ route, navigation }) {
-  const { blockchain, token } = route.params;
-  const { address } = token;
+function BalanceDetailScreen({
+  route,
+  navigation,
+}: StackScreenProps<
+  BalancesStackParamList,
+  "BalanceDetail"
+>): JSX.Element | null {
+  const { blockchain, tokenAddress } = route.params;
 
   // We only use ethereumWallet here, even though its shared on the Solana side too.
   const { data: ethereumWallet, loading } = useActiveEthereumWallet();
-  if (!blockchain || !address || loading) {
+  if (!blockchain || !tokenAddress || loading) {
     return null;
   }
 
   const activityAddress =
-    blockchain === Blockchain.ETHEREUM ? ethereumWallet.publicKey : address;
+    blockchain === Blockchain.ETHEREUM
+      ? ethereumWallet.publicKey
+      : tokenAddress;
   const contractAddresses =
-    blockchain === Blockchain.ETHEREUM ? [address] : undefined;
-
-  const handlePressOption = (
-    route: "Receive" | "Send" | "Swap",
-    options: any
-  ) => {
-    const name = route === "Receive" ? "DepositSingle" : "SendTokenModal";
-    navigation.push(name, options);
-  };
+    blockchain === Blockchain.ETHEREUM ? [tokenAddress] : undefined;
 
   return (
     <Screen>
       <TokenHeader
         blockchain={blockchain}
-        address={address}
-        onPressOption={handlePressOption}
+        address={tokenAddress}
+        onPressOption={(route: NavTokenAction, options: NavTokenOptions) => {
+          const name =
+            route === NavTokenAction.Receive
+              ? "DepositSingle"
+              : "SendTokenModal";
+          navigation.push(name, options);
+        }}
       />
       <RecentActivityList
         blockchain={blockchain}
@@ -135,29 +118,35 @@ function BalanceDetailScreen({ route, navigation }) {
   );
 }
 
-function BalanceListScreen({ navigation }) {
-  const onPressTokenRow = (blockchain: Blockchain, token: Token) => {
-    navigation.push("BalanceDetail", { token, blockchain });
-  };
-
-  const handlePressOption = (
-    route: "Receive" | "Send" | "Swap",
-    options: any
-  ) => {
-    const name = route === "Receive" ? "DepositList" : "SendSelectTokenModal";
-    navigation.push(name, options);
-  };
-
+function BalanceListScreen({
+  navigation,
+}: StackScreenProps<BalancesStackParamList, "BalanceList">): JSX.Element {
   return (
     <Screen>
       <Margin bottom={18}>
         <BalanceSummaryWidget />
       </Margin>
       <Margin bottom={18}>
-        <TransferWidget onPressOption={handlePressOption} />
+        <TransferWidget
+          rampEnabled={false}
+          onPressOption={(route: NavTokenAction, options: NavTokenOptions) => {
+            const name =
+              route === NavTokenAction.Receive
+                ? "DepositList"
+                : "SendSelectTokenModal";
+
+            navigation.push(name, options);
+          }}
+        />
       </Margin>
       <TokenTables
-        onPressRow={onPressTokenRow}
+        onPressRow={(blockchain: Blockchain, token: Token) => {
+          navigation.push("BalanceDetail", {
+            blockchain,
+            tokenAddress: token.address,
+            tokenTicker: token.ticker,
+          });
+        }}
         customFilter={(token: Token) => {
           if (token.mint && token.mint === SOL_NATIVE_MINT) {
             return true;
@@ -178,3 +167,40 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
 });
+
+type BalancesStackParamList = {
+  BalanceList: undefined;
+  BalanceDetail: {
+    blockchain: Blockchain;
+    tokenAddress: string;
+    tokenTicker: string;
+  };
+};
+
+const Stack = createStackNavigator<BalancesStackParamList>();
+export function BalancesNavigator(): JSX.Element {
+  return (
+    <Stack.Navigator
+      initialRouteName="BalanceList"
+      screenOptions={{ presentation: "modal" }}
+    >
+      <Stack.Group screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="BalanceList" component={BalanceListScreen} />
+      </Stack.Group>
+      <Stack.Screen
+        name="BalanceDetail"
+        component={BalanceDetailScreen}
+        options={({
+          route: {
+            params: { blockchain, tokenTicker },
+          },
+        }) => {
+          const title = `${toTitleCase(blockchain)} / ${tokenTicker}`;
+          return {
+            title,
+          };
+        }}
+      />
+    </Stack.Navigator>
+  );
+}

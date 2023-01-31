@@ -28,7 +28,7 @@ export const oldestReceivedMessage = async (
 };
 
 export const bulkAddChats = (uuid: string, chats: EnrichedMessage[]) => {
-  getDb(uuid).messages.bulkPut(chats);
+  return getDb(uuid).messages.bulkPut(chats);
 };
 
 export const clearChats = (uuid: string, room: string, type: string) => {

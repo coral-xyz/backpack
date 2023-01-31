@@ -1,48 +1,60 @@
-import type { Token } from "./components/index";
-import type { Blockchain } from "@coral-xyz/common";
+import type { UnlockedNavigatorStackParamList } from "@navigation/UnlockedNavigator";
+import type { StackScreenProps } from "@react-navigation/stack";
 
-import { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import {
+  StyleSheet,
+  View,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
+} from "react-native";
 
+import { Token } from "@@types/types";
 import {
-  DangerButton,
-  PrimaryButton,
-  Screen,
-  StyledTextInput,
-  StyledTokenTextInput,
-} from "@components";
-import {
+  Blockchain,
   ETH_NATIVE_MINT,
   NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
   SOL_NATIVE_MINT,
   toTitleCase,
 } from "@coral-xyz/common";
 import { useAnchorContext, useEthereumCtx } from "@coral-xyz/recoil";
-import { useIsValidAddress } from "@hooks";
 import { BigNumber } from "ethers";
 
+import { SendEthereumConfirmationCard } from "@components/BottomDrawerEthereumConfirmation";
+import { SendSolanaConfirmationCard } from "@components/BottomDrawerSolanaConfirmation";
+import { BottomSheetModal } from "@components/BottomSheetModal";
 import { InputField, InputFieldMaxLabel } from "@components/Form";
+import {
+  DangerButton,
+  PrimaryButton,
+  Screen,
+  StyledTextInput,
+  StyledTokenTextInput,
+} from "@components/index";
+import { useIsValidAddress } from "@hooks/index";
 
 import { SearchableTokenTables } from "./components/Balances";
 
-export function SendTokenDetailScreen({ route }) {
+export function SendTokenDetailScreen({
+  route,
+}: StackScreenProps<
+  UnlockedNavigatorStackParamList,
+  "SendTokenModal"
+>): JSX.Element {
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const { blockchain, token } = route.params;
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
 
-  const [address, setAddress] = useState("");
-  const [amount, setAmount] = useState<BigNumber | undefined>(undefined);
-  const [feeOffset, setFeeOffset] = useState(BigNumber.from(0));
-
-  const onSubmit = () => {
-    console.log("onSubmit", { amount, address });
-    // setOnboardingData({ password });
-    // navigation.push("Finished");
-  };
+  const [address, setAddress] = useState<string>("");
+  const [amount, setAmount] = useState<BigNumber | null | undefined>(
+    BigNumber.from(0)
+  );
+  const [feeOffset, setFeeOffset] = useState<BigNumber>(BigNumber.from(0));
 
   const {
     isValidAddress,
-    isFreshAddress: _,
     isErrorAddress,
     normalizedAddress: destinationAddress,
   } = useIsValidAddress(
@@ -53,7 +65,7 @@ export function SendTokenDetailScreen({ route }) {
   );
 
   useEffect(() => {
-    if (!token) {
+    if (!token || !ethereumCtx?.feeData) {
       return;
     }
     if (token.mint === SOL_NATIVE_MINT) {
@@ -75,74 +87,130 @@ export function SendTokenDetailScreen({ route }) {
           )
       );
     }
-  }, [blockchain, token]);
+  }, [blockchain, token]); // eslint-disable-line
 
-  const amountSubFee = BigNumber.from(token!.nativeBalance).sub(feeOffset);
+  const amountSubFee = BigNumber.from(token.nativeBalance).sub(feeOffset);
   const maxAmount = amountSubFee.gt(0) ? amountSubFee : BigNumber.from(0);
   const exceedsBalance = amount && amount.gt(maxAmount);
   const isSendDisabled = !isValidAddress || amount === null || !!exceedsBalance;
-  const isAmountError = amount && exceedsBalance;
+  const isAmountError = Boolean(amount && exceedsBalance);
+  const [modalIndex, setModalIndex] = useState(0);
 
-  let sendButton;
-  if (isErrorAddress) {
-    sendButton = <DangerButton disabled label="Invalid Address" />;
-  } else if (isAmountError) {
-    sendButton = <DangerButton disabled label="Insufficient Balance" />;
-  } else {
-    sendButton = (
-      <PrimaryButton
-        disabled={isSendDisabled}
-        label="Send"
-        onPress={() => onSubmit()}
-      />
-    );
-  }
+  const getButton = useCallback(
+    (
+      isErrorAddress: boolean,
+      isSendDisabled: boolean,
+      isAmountError: boolean
+    ): JSX.Element => {
+      const handleShowPreviewConfirmation = () => {
+        setIsModalVisible(() => true);
+        Keyboard.dismiss();
+      };
+
+      if (isErrorAddress) {
+        return (
+          <DangerButton disabled label="Invalid Address" onPress={() => {}} />
+        );
+      } else if (isAmountError) {
+        return (
+          <DangerButton
+            disabled
+            label="Insufficient Balance"
+            onPress={() => {}}
+          />
+        );
+      } else {
+        return (
+          <PrimaryButton
+            disabled={isSendDisabled}
+            label="Send"
+            onPress={handleShowPreviewConfirmation}
+          />
+        );
+      }
+    },
+    []
+  );
+
+  const SendConfirmComponent = {
+    [Blockchain.SOLANA]: SendSolanaConfirmationCard,
+    [Blockchain.ETHEREUM]: SendEthereumConfirmationCard,
+  }[blockchain];
 
   return (
-    <Screen style={styles.container}>
-      <View>
-        <InputField leftLabel="Send to">
-          <StyledTextInput
-            value={address}
-            placeholder={`${toTitleCase(blockchain)} address`}
-            onChangeText={(address: string) => setAddress(address.trim())}
-          />
-        </InputField>
-        <InputField
-          leftLabel="Amount"
-          rightLabelComponent={
-            <InputFieldMaxLabel
-              amount={maxAmount}
-              onSetAmount={setAmount}
-              decimals={token.decimals}
-            />
-          }
-        >
-          <StyledTokenTextInput
-            value={amount}
-            decimals={token.decimals}
-            placeholder="Amount"
-            onChangeText={setAmount}
-          />
-        </InputField>
-      </View>
-      {sendButton}
-    </Screen>
+    <>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <Screen style={styles.container}>
+          <View>
+            <InputField leftLabel="Send to">
+              <StyledTextInput
+                value={address}
+                placeholder={`${toTitleCase(blockchain)} address`}
+                onChangeText={(address: string) => setAddress(address.trim())}
+              />
+            </InputField>
+            <InputField
+              leftLabel="Amount"
+              rightLabelComponent={
+                <InputFieldMaxLabel
+                  amount={maxAmount}
+                  onSetAmount={setAmount}
+                  decimals={token.decimals}
+                />
+              }
+            >
+              <StyledTokenTextInput
+                value={amount}
+                decimals={token.decimals}
+                placeholder="Amount"
+                onChangeText={setAmount}
+              />
+            </InputField>
+            {getButton(isErrorAddress, isSendDisabled, isAmountError)}
+          </View>
+        </Screen>
+      </KeyboardAvoidingView>
+      <BottomSheetModal
+        snapPoints={[400, 320]}
+        isVisible={isModalVisible}
+        index={modalIndex}
+        resetVisibility={() => {
+          setIsModalVisible(() => false);
+        }}
+      >
+        <SendConfirmComponent
+          token={token}
+          destinationAddress={destinationAddress}
+          amount={amount!}
+          onCompleteStep={(step) => {
+            if (step !== "confirm") {
+              setModalIndex(() => 1);
+            }
+          }}
+        />
+      </BottomSheetModal>
+    </>
   );
 }
 
-export function SendTokenListScreen({ navigation }) {
-  const onPressTokenRow = (blockchain: Blockchain, token: Token) => {
-    navigation.push("SendTokenModal", {
-      blockchain,
-      token,
-    });
-  };
-
+export function SendTokenListScreen({ navigation }): JSX.Element {
   return (
     <Screen>
       <SearchableTokenTables
-        onPressRow={onPressTokenRow}
+        onPressRow={(blockchain: Blockchain, token: Token) => {
+          const title = `Send ${toTitleCase(blockchain)} / ${token.ticker}`;
+          navigation.push("SendTokenModal", {
+            title,
+            blockchain,
+            token: {
+              ...token,
+              nativeBalance: token.nativeBalance.toString(),
+            },
+          });
+        }}
         customFilter={(token: Token) => {
           if (token.mint && token.mint === SOL_NATIVE_MINT) {
             return true;

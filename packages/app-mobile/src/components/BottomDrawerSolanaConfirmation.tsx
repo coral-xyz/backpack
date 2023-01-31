@@ -2,32 +2,38 @@ import type { Connection } from "@solana/web3.js";
 import type { BigNumber } from "ethers";
 
 import { useState } from "react";
-import { Text } from "react-native";
+import { View, Text } from "react-native";
 
 import { programs, tryGetAccount } from "@cardinal/token-manager";
-import { PrimaryButton, TokenAmountHeader } from "@components";
 import {
   Blockchain,
   confirmTransaction,
-  getLogger,
   SOL_NATIVE_MINT,
   Solana,
   walletAddressDisplay,
+  metadataAddress,
 } from "@coral-xyz/common";
 import { useSolanaCtx } from "@coral-xyz/recoil";
-import { useTheme } from "@hooks";
 import { SettingsList } from "@screens/Unlocked/Settings/components/SettingsMenuList";
 import { PublicKey } from "@solana/web3.js";
 
-import { Error, Sending } from "@components/BottomDrawerCards";
+import {
+  Error,
+  Sending,
+  Header,
+  Container,
+} from "@components/BottomDrawerCards";
+import { Margin, PrimaryButton, TokenAmountHeader } from "@components/index";
+import { useTheme } from "@hooks/index";
+import { Metadata, TokenStandard } from "@metaplex-foundation/mpl-token-metadata";
 
-const logger = getLogger("send-solana-confirmation-card");
+type Step = "confirm" | "sending" | "complete" | "error";
 
 export function SendSolanaConfirmationCard({
   token,
   destinationAddress,
   amount,
-  onComplete,
+  onCompleteStep,
 }: {
   token: {
     address: string;
@@ -38,19 +44,24 @@ export function SendSolanaConfirmationCard({
   };
   destinationAddress: string;
   amount: BigNumber;
-  onComplete?: () => void;
-}) {
+  onCompleteStep?: (step: Step) => void;
+}): JSX.Element {
   const [txSignature, setTxSignature] = useState<string | null>(null);
   const solanaCtx = useSolanaCtx();
   const [error, setError] = useState(
     "Error 422. Transaction time out. Runtime error. Reticulating splines."
   );
-  const [cardType, setCardType] = useState<
-    "confirm" | "sending" | "complete" | "error"
-  >("confirm");
+  const [cardType, setCardType] = useState<Step>("confirm");
+
+  const handleChangeStep = (step: Step) => {
+    setCardType(step);
+    if (onCompleteStep) {
+      onCompleteStep(step);
+    }
+  };
 
   const onConfirm = async () => {
-    setCardType("sending");
+    handleChangeStep("sending");
     //
     // Send the tx.
     //
@@ -74,6 +85,19 @@ export function SendSolanaConfirmationCard({
           amount: amount.toNumber(),
           decimals: token.decimals,
         });
+      } else if (
+        await isProgrammableNftToken(
+          solanaCtx.connection,
+          token.mint?.toString() as string
+        )
+      )
+      {
+        txSig = await Solana.transferProgrammableNft(solanaCtx, {
+          destination: new PublicKey(destinationAddress),
+          mint: new PublicKey(token.mint!),
+          amount: amount.toNumber(),
+          decimals: token.decimals,
+        });
       } else {
         txSig = await Solana.transferToken(solanaCtx, {
           destination: new PublicKey(destinationAddress),
@@ -83,9 +107,8 @@ export function SendSolanaConfirmationCard({
         });
       }
     } catch (err: any) {
-      logger.error("solana transaction failed", err);
       setError(err.toString());
-      setCardType("error");
+      handleChangeStep("error");
       return;
     }
 
@@ -103,14 +126,10 @@ export function SendSolanaConfirmationCard({
           ? "confirmed"
           : solanaCtx.commitment
       );
-      setCardType("complete");
-      if (onComplete) {
-        onComplete();
-      }
+      handleChangeStep("complete");
     } catch (err: any) {
-      logger.error("unable to confirm", err);
       setError(err.toString());
-      setCardType("error");
+      handleChangeStep("error");
     }
   };
 
@@ -166,47 +185,17 @@ export function ConfirmSendSolana({
   amount: BigNumber;
   onConfirm: () => void;
 }) {
-  const theme = useTheme();
   return (
-    <div
-      style={{
-        padding: 16,
-        height: 402,
-        display: "flex",
-        justifyContent: "space-between",
-        flexDirection: "column",
-        paddingBottom: 24,
-      }}
-    >
-      <div>
-        <Text
-          style={{
-            color: theme.custom.colors.fontColor,
-            fontWeight: "500",
-            fontSize: 18,
-            lineHeight: 24,
-            textAlign: "center",
-          }}
-        >
-          Review Send
-        </Text>
-        <TokenAmountHeader
-          style={{
-            marginTop: 40,
-            marginBottom: 40,
-          }}
-          amount={amount}
-          token={token}
-        />
+    <Container>
+      <Header text="Review Send" />
+      <Margin vertical={24}>
+        <TokenAmountHeader amount={amount} token={token} />
+      </Margin>
+      <Margin bottom={24}>
         <ConfirmSendSolanaTable destinationAddress={destinationAddress} />
-      </div>
-      <PrimaryButton
-        onClick={() => onConfirm()}
-        label="Send"
-        type="submit"
-        data-testid="Send"
-      />
-    </div>
+      </Margin>
+      <PrimaryButton onPress={() => onConfirm()} label="Send" />
+    </Container>
   );
 }
 
@@ -218,27 +207,24 @@ const ConfirmSendSolanaTable: React.FC<{
 
   const menuItems = {
     From: {
+      disabled: true,
       onPress: () => {},
       detail: <Text>{walletAddressDisplay(solanaCtx.walletPublicKey)}</Text>,
-      // classes: { root: classes.confirmTableListItem },
-      // button: false,
     },
     To: {
+      disabled: true,
       onPress: () => {},
       detail: <Text>{walletAddressDisplay(destinationAddress)}</Text>,
-      // classes: { root: classes.confirmTableListItem },
-      // button: false,
     },
     "Network fee": {
+      disabled: true,
       onPress: () => {},
       detail: (
         <Text>
-          0.000005{" "}
-          <span style={{ color: theme.custom.colors.secondary }}>SOL</span>
+          <Text>0.000005</Text>
+          <Text style={{ color: theme.custom.colors.secondary }}>SOL</Text>
         </Text>
       ),
-      // classes: { root: classes.confirmTableListItem },
-      // button: false,
     },
   };
 
@@ -246,12 +232,6 @@ const ConfirmSendSolanaTable: React.FC<{
     <SettingsList
       borderColor={theme.custom.colors.approveTransactionTableBackground}
       menuItems={menuItems}
-      style={{
-        margin: 0,
-      }}
-      textStyle={{
-        color: theme.custom.colors.secondary,
-      }}
     />
   );
 };
@@ -276,8 +256,27 @@ const isCardinalWrappedToken = async (
       );
       return true;
     } catch (error) {
+      console.error(error);
       console.log("Invalid transfer authority");
     }
   }
   return false;
+};
+
+const isProgrammableNftToken = async (
+  connection: Connection,
+  mintAddress: string
+) => {
+  try {
+    const metadata = await Metadata.fromAccountAddress(
+      connection,
+      await metadataAddress(new PublicKey(mintAddress))
+    );
+
+    return metadata.tokenStandard == TokenStandard.ProgrammableNonFungible;
+  } catch (error) {
+    // most likely this happens if the metadata account does not exist
+    console.log(error);
+    return false;
+  }  
 };

@@ -20,6 +20,7 @@ import {
   ChannelAppUi,
   getLogger,
   TAB_XNFT,
+  UI_RPC_METHOD_KEY_IS_COLD_UPDATE,
   UI_RPC_METHOD_ACTIVE_USER_UPDATE,
   UI_RPC_METHOD_ALL_USERS_READ,
   UI_RPC_METHOD_APPROVED_ORIGINS_DELETE,
@@ -313,6 +314,8 @@ async function handle<T = any>(
       );
     case UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ:
       return await handleBlockchainKeyringsRead(ctx);
+    case UI_RPC_METHOD_KEY_IS_COLD_UPDATE:
+      return await handleKeyIsColdUpdate(ctx, params[0], params[1]);
     //
     // Nicknames for keys.
     //
@@ -379,7 +382,7 @@ async function handle<T = any>(
     // Solana.
     //
     case UI_RPC_METHOD_SOLANA_SIMULATE:
-      return await handleSolanaSimulate(ctx, params[0], params[1], params[2]);
+      return await handleSolanaSimulate(ctx, params[0], params[1]);
     case UI_RPC_METHOD_SOLANA_SIGN_TRANSACTION:
       return await handleSolanaSignTransaction(ctx, params[0], params[1]);
     case UI_RPC_METHOD_SOLANA_SIGN_ALL_TRANSACTIONS:
@@ -529,6 +532,15 @@ async function handleKeyringDeriveWallet(
   blockchain: Blockchain
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.keyringDeriveWallet(blockchain);
+  return [resp];
+}
+
+async function handleKeyIsColdUpdate(
+  ctx: Context<Backend>,
+  publicKey: string,
+  isCold: boolean
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.keyIsColdUpdate(publicKey, isCold);
   return [resp];
 }
 
@@ -884,14 +896,9 @@ async function handleSolanaExplorerUpdate(
 async function handleSolanaSimulate(
   ctx: Context<Backend>,
   txStr: string,
-  walletAddress: string,
-  includeAccounts?: boolean | Array<string>
+  accounts: Array<string>
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.solanaSimulate(
-    txStr,
-    walletAddress,
-    includeAccounts
-  );
+  const resp = await ctx.backend.solanaSimulate(txStr, accounts);
   return [resp];
 }
 

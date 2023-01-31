@@ -1,15 +1,29 @@
 import { Suspense, useState } from "react";
-import type { EnrichedNotification } from "@coral-xyz/common";
+import type { EnrichedNotification, Friendship } from "@coral-xyz/common";
+import { sendFriendRequest, unFriend } from "@coral-xyz/common";
+import { updateFriendshipIfExists } from "@coral-xyz/db";
 import {
+  DangerButton,
   EmptyState,
   isFirstLastListItemStyle,
   Loading,
+  PrimaryButton,
   ProxyImage,
+  SecondaryButton,
+  SuccessButton,
+  useUserMetadata,
 } from "@coral-xyz/react-common";
-import { useRecentNotifications } from "@coral-xyz/recoil";
+import {
+  friendship,
+  useFriendship,
+  useRecentNotifications,
+  useUser,
+} from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import { IconButton, List, ListItem, Typography } from "@mui/material";
+import { Button,IconButton, List, ListItem, Typography  } from "@mui/material";
+import { useRecoilState } from "recoil";
 
 import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
 import {
@@ -170,11 +184,11 @@ export function Notifications() {
     limit: 50,
     offset: 0,
   });
+
   const groupedNotifications: {
     date: string;
     notifications: EnrichedNotification[];
   }[] = getGroupedNotifications(notifications);
-  console.error(groupedNotifications);
   return (
     <Suspense fallback={<NotificationsLoader />}>
       <NotificationList groupedNotifications={groupedNotifications} />
@@ -313,6 +327,16 @@ function NotificationListItem({
   const classes = useStyles();
   const theme = useCustomTheme();
 
+  if (notification.xnft_id === "friend_requests") {
+    return (
+      <FriendRequestListItem
+        notification={notification}
+        isFirst={isFirst}
+        isLast={isLast}
+      />
+    );
+  }
+
   return (
     <ListItem
       button
@@ -364,6 +388,175 @@ function NotificationListItem({
   );
 }
 
+function parseJson(body: string) {
+  try {
+    return JSON.parse(body);
+  } catch (ex) {
+    return {};
+  }
+}
+
+function FriendRequestListItem({
+  notification,
+  isFirst,
+  isLast,
+}: {
+  notification: EnrichedNotification;
+  isFirst: boolean;
+  isLast: boolean;
+}) {
+  const user = useUserMetadata({
+    remoteUserId: parseJson(notification.body).from,
+  });
+  const classes = useStyles();
+  const theme = useCustomTheme();
+
+  return (
+    <ListItem
+      button
+      disableRipple
+      onClick={() => {}}
+      style={{
+        paddingLeft: "12px",
+        paddingRight: "12px",
+        paddingTop: "10px",
+        paddingBottom: "10px",
+        display: "flex",
+        height: "68px",
+        backgroundColor: theme.custom.colors.nav,
+        borderBottom: isLast
+          ? undefined
+          : `solid 1pt ${theme.custom.colors.border}`,
+        ...isFirstLastListItemStyle(isFirst, isLast, 12),
+      }}
+    >
+      <div
+        style={{
+          width: "100%",
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
+        <div style={{ flex: 1, display: "flex" }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}
+          >
+            <NotificationListItemIcon image={user?.image} />
+          </div>
+          <div>
+            <Typography className={classes.txSig}>Friend request</Typography>
+            <Typography className={classes.txBody}>
+              {user.username} requested to connect
+            </Typography>
+          </div>
+        </div>
+        <div className={classes.time}>
+          <AcceptRejectRequest userId={parseJson(notification.body).from} />
+        </div>
+      </div>
+    </ListItem>
+  );
+}
+
+function AcceptRejectRequest({ userId }: { userId: string }) {
+  const [friendshipValue, setFriendshipValue] =
+    useRecoilState<Friendship | null>(friendship({ userId }));
+  const { uuid } = useUser();
+
+  if (friendshipValue?.areFriends) {
+    return (
+      <div style={{ marginTop: 5 }}>
+        {" "}
+        <DangerButton
+          style={{ height: 38 }}
+          label={"Unfriend"}
+          onClick={async () => {
+            await unFriend({ to: userId });
+            await updateFriendshipIfExists(uuid, userId, {
+              areFriends: 0,
+              requested: 0,
+            });
+
+            setFriendshipValue((x: any) => ({
+              ...x,
+              requested: false,
+              areFriends: false,
+            }));
+          }}
+        />{" "}
+      </div>
+    );
+  }
+
+  if (friendshipValue?.remoteRequested) {
+    return (
+      <div style={{ display: "flex", marginTop: 5 }}>
+        <SuccessButton
+          label={"Accept"}
+          style={{ marginRight: 10, height: 38 }}
+          onClick={async () => {
+            await sendFriendRequest({ to: userId, sendRequest: true });
+            await updateFriendshipIfExists(uuid, userId, {
+              requested: 0,
+              areFriends: 1,
+            });
+
+            setFriendshipValue((x: any) => ({
+              ...x,
+              requested: false,
+              areFriends: true,
+            }));
+          }}
+        />
+      </div>
+    );
+  }
+
+  if (friendshipValue?.requested) {
+    return (
+      <div style={{ display: "flex", marginTop: 5 }}>
+        <DangerButton
+          style={{ height: 38 }}
+          label={"Cancel request"}
+          onClick={async () => {
+            await sendFriendRequest({ to: userId, sendRequest: false });
+            await updateFriendshipIfExists(uuid, userId, {
+              requested: 0,
+            });
+            setFriendshipValue((x: any) => ({
+              ...x,
+              requested: false,
+            }));
+          }}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ display: "flex", marginTop: 5 }}>
+      <SuccessButton
+        onClick={async () => {
+          await sendFriendRequest({ to: userId, sendRequest: true });
+          await updateFriendshipIfExists(uuid, userId, {
+            requested: 1,
+          });
+          setFriendshipValue((x: any) => ({
+            ...x,
+            requested: true,
+          }));
+        }}
+        style={{ height: 38 }}
+        label={"Send request"}
+      />
+    </div>
+  );
+}
+
 function NotificationListItemIcon({ image }: any) {
   const classes = useStyles();
   return (
@@ -383,9 +576,7 @@ function NoNotificationsLabel({ minimize }: { minimize: boolean }) {
       <EmptyState
         icon={(props: any) => <NotificationsIcon {...props} />}
         title={"No Notifications"}
-        subtitle={
-          "These come from xNFTs, but you don't have any apps installed."
-        }
+        subtitle={"You don't have any notifications yet."}
         buttonText={"Browse the xNFT Library"}
         onClick={() => window.open("https://xnft.gg")}
         innerStyle={{

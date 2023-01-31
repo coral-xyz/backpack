@@ -15,7 +15,6 @@ import * as Linking from "expo-linking";
 
 import {
   BACKEND_API_URL,
-  BACKPACK_FEATURE_USERNAMES,
   BACKPACK_FEATURE_XNFT,
   DerivationPath,
   DISCORD_INVITE_LINK,
@@ -136,6 +135,7 @@ function OnboardingCreateOrImportWalletScreen({
   const insets = useSafeAreaInsets();
   const { setOnboardingData } = useOnboardingData();
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [showDebug, setShowDebug] = useState(false);
 
   const handlePresentModalPress = () => {
     setIsModalVisible((last) => !last);
@@ -712,7 +712,7 @@ function OnboardingImportAccountsScreen({
 function OnboardingFinishedScreen() {
   const background = useBackgroundClient();
   const { onboardingData } = useOnboardingData();
-  let {
+  const {
     password,
     mnemonic,
     blockchainKeyrings,
@@ -791,10 +791,6 @@ function OnboardingFinishedScreen() {
       //
       // If usernames are disabled, use a default one for developing.
       //
-      if (!BACKPACK_FEATURE_USERNAMES) {
-        username = uuidv4().split("-")[0];
-      }
-
       if (isAddingAccount) {
         await background.request({
           method: UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
@@ -834,7 +830,7 @@ function OnboardingFinishedScreen() {
       subtitle="Now get started exploring what your Backpack can do."
     >
       <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-        {BACKPACK_FEATURE_XNFT && (
+        {BACKPACK_FEATURE_XNFT ? (
           <Cell style={{ paddingRight: 6 }}>
             <ActionCard
               icon={<WidgetIcon />}
@@ -842,7 +838,7 @@ function OnboardingFinishedScreen() {
               onPress={() => Linking.openURL(XNFT_GG_LINK)}
             />
           </Cell>
-        )}
+        ) : null}
         <Cell style={{ paddingLeft: 6 }}>
           <ActionCard
             icon={<TwitterIcon />}

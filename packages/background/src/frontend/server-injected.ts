@@ -37,6 +37,7 @@ import {
   openApproveAllTransactionsPopupWindow,
   openApproveMessagePopupWindow,
   openApproveTransactionPopupWindow,
+  openLockedApprovalPopupWindow,
   openLockedPopupWindow,
   openOnboarding,
   openPopupWindow,
@@ -191,7 +192,7 @@ async function handle<T = any>(
     case SOLANA_RPC_METHOD_SIGN_MESSAGE:
       return await handleSolanaSignMessage(ctx, params[0], params[1]);
     case SOLANA_RPC_METHOD_SIMULATE:
-      return await handleSolanaSimulate(ctx, params[0], params[1], params[2]);
+      return await handleSolanaSimulate(ctx, params[0], params[1]);
     case SOLANA_RPC_METHOD_OPEN_XNFT:
       return await handleSolanaOpenXnft(ctx, params[0]);
     default:
@@ -232,20 +233,30 @@ async function handleConnect(
   let didApprove = false;
   let resp: any;
 
-  if (
-    keyringStoreState === "locked" &&
-    (await ctx.backend.isApprovedOrigin(origin))
-  ) {
-    logger.debug("origin approved but need to unlock");
-    resp = await RequestManager.requestUiAction((requestId: number) => {
-      return openLockedPopupWindow(
-        ctx.sender.origin,
-        getTabTitle(ctx),
-        requestId,
-        blockchain
-      );
-    });
-    didApprove = !resp.windowClosed && resp.result.didApprove;
+  if (keyringStoreState === "locked") {
+    if (await ctx.backend.isApprovedOrigin(origin)) {
+      logger.debug("origin approved but need to unlock");
+      resp = await RequestManager.requestUiAction((requestId: number) => {
+        return openLockedPopupWindow(
+          ctx.sender.origin,
+          getTabTitle(ctx),
+          requestId,
+          blockchain
+        );
+      });
+      didApprove = !resp.windowClosed && resp.result;
+    } else {
+      logger.debug("origin not apporved and needs to unlock");
+      resp = await RequestManager.requestUiAction((requestId: number) => {
+        return openLockedApprovalPopupWindow(
+          ctx.sender.origin,
+          getTabTitle(ctx),
+          requestId,
+          blockchain
+        );
+      });
+      didApprove = !resp.windowClosed && resp.result.didApprove;
+    }
   } else {
     if (await ctx.backend.isApprovedOrigin(origin)) {
       logger.debug("origin approved so automatically connecting");
@@ -520,14 +531,9 @@ async function handleSolanaSignMessage(
 async function handleSolanaSimulate(
   ctx: Context<Backend>,
   txStr: string,
-  walletAddress: string,
-  includeAccounts?: boolean | Array<string>
+  accounts: Array<string>
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.solanaSimulate(
-    txStr,
-    walletAddress,
-    includeAccounts
-  );
+  const resp = await ctx.backend.solanaSimulate(txStr, accounts);
   return [resp];
 }
 

@@ -6,6 +6,18 @@ select_permissions:
     permission:
       columns:
         - rank
+        - total_post_comments_score
+        - total_post_votes_score
+        - total_promoted_score
+        - total_promotion_results_score
+        - total_score
+        - user_id
+      filter: {}
+  - role: public_avatar
+    permission:
+      columns:
+        - rank
+        - total_post_comments_score
         - total_post_votes_score
         - total_promoted_score
         - total_promotion_results_score

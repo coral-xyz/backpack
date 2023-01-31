@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import type { Blockchain, BlockchainKeyringInit } from "@coral-xyz/common";
 import {
-  BACKPACK_FEATURE_JWT,
-  BACKPACK_FEATURE_USERNAMES,
   getAuthMessage,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
   UI_RPC_METHOD_USER_JWT_UPDATE,
@@ -40,26 +38,18 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
     publicKeys: Array<{ blockchain: Blockchain; publicKey: string }>;
   } | null>(null);
 
-  const jwtEnabled = !!(BACKPACK_FEATURE_USERNAMES && BACKPACK_FEATURE_JWT);
-
   /**
    * Check authentication status and take required actions to authenticate if
    * not authenticated.
    */
   useEffect(() => {
     (async () => {
-      if (!jwtEnabled) {
-        // Already authenticated or not using JWTs
-        setLoading(false);
-      } else {
-        setLoading(true);
-        setAuthSignature(null);
-        const result = await checkAuthentication(user.username, user.jwt);
-        // These set state calls should be batched
-        if (result) {
-          const { isAuthenticated, publicKeys } = result;
-          setServerAccountState({ isAuthenticated, publicKeys });
-        }
+      setAuthSignature(null);
+      const result = await checkAuthentication(user.username, user.jwt);
+      // These set state calls should be batched
+      if (result) {
+        const { isAuthenticated, publicKeys } = result;
+        setServerAccountState({ isAuthenticated, publicKeys });
       }
     })();
     // Rerun authentication on user changes
@@ -70,21 +60,21 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
    * and the server and set the auth data.
    */
   useEffect(() => {
-    if (serverAccountState && !serverAccountState.isAuthenticated) {
-      (async () => {
-        const authData = await getAuthSigner(
-          serverAccountState.publicKeys.map((p) => p.publicKey)
-        );
-        if (authData) {
-          setAuthData({
-            ...authData,
-            message: getAuthMessage(user.uuid),
-            userId: user.uuid,
-          });
-        }
-      })();
-    } else {
-      setLoading(false);
+    if (serverAccountState) {
+      if (!serverAccountState.isAuthenticated) {
+        (async () => {
+          const authData = await getAuthSigner(
+            serverAccountState.publicKeys.map((p) => p.publicKey)
+          );
+          if (authData) {
+            setAuthData({
+              ...authData,
+              message: getAuthMessage(user.uuid),
+              userId: user.uuid,
+            });
+          }
+        })();
+      }
     }
   }, [serverAccountState]);
 
@@ -128,7 +118,6 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
           method: UI_RPC_METHOD_USER_JWT_UPDATE,
           params: [id, jwt],
         });
-        setLoading(false);
         setOpenDrawer(false);
       }
     })();
@@ -136,15 +125,10 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
 
   return (
     <>
-      {loading ? (
-        <Loading />
-      ) : jwtEnabled && serverAccountState ? (
-        <WithSyncAccount serverPublicKeys={serverAccountState.publicKeys}>
-          {children}
-        </WithSyncAccount>
-      ) : (
-        children
+      {serverAccountState && (
+        <WithSyncAccount serverPublicKeys={serverAccountState.publicKeys} />
       )}
+      {children}
       {authData && (
         <WithDrawer
           openDrawer={openDrawer}

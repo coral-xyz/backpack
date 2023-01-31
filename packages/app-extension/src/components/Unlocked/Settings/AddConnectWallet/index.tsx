@@ -96,7 +96,7 @@ export function AddConnectPreview() {
           }}
         >
           This connection will be public, so if you'd prefer to create a
-          separate wallet, create a new user.
+          separate wallet, create a new account.
         </Typography>
       </div>
       <div
@@ -110,7 +110,7 @@ export function AddConnectPreview() {
           onClick={() => nav.push("edit-wallets-blockchain-selector")}
         />
         <SecondaryButton
-          label={`Create a new user`}
+          label={`Create a new account`}
           style={{
             marginTop: "16px",
             marginBottom: "16px",

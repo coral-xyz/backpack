@@ -1,6 +1,13 @@
+import type { CollectionChatData,SubscriptionType  } from "@coral-xyz/common";
 import { useRecoilValue } from "recoil";
 
-import { friendship, friendships, groupCollections, requestCount } from "../";
+import {
+  friendship,
+  friendships,
+  groupCollections,
+  requestCount,
+  roomChats,
+} from "../";
 
 export function useFriendship({ userId }: { userId: string }): any {
   return useRecoilValue(friendship({ userId }));
@@ -14,6 +21,22 @@ export function useRequestsCount({ uuid }: { uuid: string }): any {
   return useRecoilValue(requestCount({ uuid }));
 }
 
-export function useGroupCollections({ uuid }: { uuid: string }): any {
+export function useGroupCollections({
+  uuid,
+}: {
+  uuid: string;
+}): CollectionChatData[] {
   return useRecoilValue(groupCollections({ uuid }));
+}
+
+export function useChats({
+  uuid,
+  room,
+  type,
+}: {
+  uuid: string;
+  room: string;
+  type: SubscriptionType;
+}): any {
+  return useRecoilValue(roomChats({ uuid, room, type }));
 }

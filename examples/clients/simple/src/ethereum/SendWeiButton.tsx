@@ -1,5 +1,5 @@
-import { useSendTransaction, usePrepareSendTransaction } from "wagmi";
 import { BigNumber } from "ethers";
+import { usePrepareSendTransaction, useSendTransaction } from "wagmi";
 
 export function SendWeiButton() {
   const { config } = usePrepareSendTransaction({

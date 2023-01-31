@@ -846,6 +846,7 @@ class UserKeyring {
     const name = DefaultKeyname.defaultLedger(ledgerKeyring.keyCount());
     await ledgerKeyring.ledgerImport(dPath, account, pubkey);
     await store.setKeyname(pubkey, name);
+    await store.setIsCold(pubkey, true);
   }
 
   public async keyDelete(blockchain: Blockchain, pubkey: string) {

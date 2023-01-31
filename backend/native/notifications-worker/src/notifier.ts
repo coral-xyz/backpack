@@ -14,7 +14,13 @@ webpush.setVapidDetails(
   vapidKeys.privateKey
 );
 
-export const notify = async (to: string, title: string, body: string) => {
+export const notify = async (
+  to: string,
+  title: string,
+  body: string,
+  href?: string,
+  image?: string
+) => {
   const responses = await getSubscriptions(to);
 
   await Promise.all(
@@ -34,6 +40,8 @@ export const notify = async (to: string, title: string, body: string) => {
           JSON.stringify({
             title,
             body,
+            href,
+            image,
           })
         );
       } catch (e) {

@@ -1,8 +1,14 @@
-import React, { FC } from "react";
-import { useAccount, useConnect, useDisconnect } from "wagmi";
-import { WagmiConfig, createClient } from "wagmi";
-import { InjectedConnector } from "wagmi/connectors/injected";
+import type { FC } from "react";
+import React from "react";
 import { getDefaultProvider } from "ethers";
+import {
+  createClient,
+  useAccount,
+  useConnect,
+  useDisconnect,
+  WagmiConfig,
+} from "wagmi";
+import { InjectedConnector } from "wagmi/connectors/injected";
 
 const client = createClient({
   autoConnect: true,

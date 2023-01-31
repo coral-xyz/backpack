@@ -1,7 +1,9 @@
-import { Pressable, Text, View } from "react-native";
+import type { Token } from "@@types/types";
+import type { Blockchain } from "@coral-xyz/common";
 
-import { toTitleCase } from "@coral-xyz/common";
-import { MaterialIcons } from "@expo/vector-icons";
+import { useCallback } from "react";
+import { Text, View } from "react-native";
+
 import { AccountSettingsNavigator } from "@navigation/AccountSettingsNavigator";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { getHeaderTitle } from "@react-navigation/elements";
@@ -30,10 +32,24 @@ import {
 import { NavHeader } from "@components/index";
 import { useTheme } from "@hooks/index";
 
-const Tab = createBottomTabNavigator();
-const Stack = createStackNavigator();
+export type UnlockedNavigatorStackParamList = {
+  Tabs: undefined;
+  AccountSettings: undefined;
+  RecentActivity: undefined;
+  DepositList: undefined;
+  DepositSingle: undefined;
+  SendSelectTokenModal: undefined;
+  "wallet-picker": undefined;
+  SendTokenModal: {
+    title: string;
+    blockchain: Blockchain;
+    token: Token;
+  };
+  SwapModal: undefined;
+};
 
-export default function UnlockedNavigator(): JSX.Element {
+const Stack = createStackNavigator<UnlockedNavigatorStackParamList>();
+export function UnlockedNavigator(): JSX.Element {
   const theme = useTheme();
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -44,17 +60,19 @@ export default function UnlockedNavigator(): JSX.Element {
           component={AccountSettingsNavigator}
         />
       </Stack.Group>
-      <Stack.Group screenOptions={{ presentation: "modal", headerShown: true }}>
-        <Stack.Screen
-          name="RecentActivity"
-          component={RecentActivityScreen}
-          options={{
-            title: "Recent Activity",
-            headerBackTitleVisible: false,
-            headerTintColor: theme.custom.colors.fontColor,
-            headerBackImage: IconCloseModal,
-          }}
-        />
+      <Stack.Group
+        screenOptions={{
+          presentation: "modal",
+          headerShown: true,
+          headerBackTitleVisible: false,
+          headerTintColor: theme.custom.colors.fontColor,
+          headerBackImage: IconCloseModal,
+          // headerStyle: {
+          //   backgroundColor: theme.custom.colors.background,
+          // },
+        }}
+      >
+        <Stack.Screen name="RecentActivity" component={RecentActivityScreen} />
         <Stack.Screen
           options={{ title: "Deposit" }}
           name="DepositList"
@@ -71,35 +89,10 @@ export default function UnlockedNavigator(): JSX.Element {
           component={SendTokenListScreen}
         />
         <Stack.Screen
-          name="wallet-picker"
-          component={WalletListScreen}
-          options={({ navigation }) => {
-            return {
-              title: "Wallets",
-              headerLeft: undefined,
-              headerRight: ({ tintColor }) => {
-                return (
-                  <Pressable
-                    onPress={() => navigation.navigate("edit-wallets")}
-                  >
-                    <MaterialIcons
-                      name="settings"
-                      size={24}
-                      style={{ padding: 8 }}
-                      color={tintColor}
-                    />
-                  </Pressable>
-                );
-              },
-            };
-          }}
-        />
-        <Stack.Screen
           name="SendTokenModal"
           component={SendTokenDetailScreen}
           options={({ route }) => {
-            const { blockchain, token } = route.params;
-            const title = `Send ${toTitleCase(blockchain)} / ${token.ticker}`;
+            const { title } = route.params;
             return {
               title,
             };
@@ -109,6 +102,11 @@ export default function UnlockedNavigator(): JSX.Element {
           options={{ title: "Swap" }}
           name="SwapModal"
           component={RecentActivityModal}
+        />
+        <Stack.Screen
+          options={{ title: "Wallets" }}
+          name="wallet-picker"
+          component={WalletListScreen}
         />
       </Stack.Group>
     </Stack.Navigator>
@@ -123,9 +121,16 @@ function RecentActivityModal() {
   );
 }
 
+type UnlockedTabNavigatorParamList = {
+  Balances: undefined;
+  Applications: undefined;
+  Collectibles: undefined;
+};
+
+const Tab = createBottomTabNavigator<UnlockedTabNavigatorParamList>();
 function UnlockedBottomTabNavigator(): JSX.Element {
   const theme = useTheme();
-  const getIcon = (routeName: string) => {
+  const getIcon = useCallback((routeName: string) => {
     switch (routeName) {
       case "Balances":
         return TabIconBalances;
@@ -138,7 +143,7 @@ function UnlockedBottomTabNavigator(): JSX.Element {
       default:
         return TabIconBalances;
     }
-  };
+  }, []);
 
   return (
     <Tab.Navigator

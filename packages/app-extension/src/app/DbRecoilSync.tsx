@@ -1,54 +1,164 @@
 import { useEffect } from "react";
-import {
-  getNftCollectionGroups,
-  useActiveChats,
-  useRequestsCount,
-} from "@coral-xyz/db";
+import type { EnrichedMessage, SubscriptionType } from "@coral-xyz/common";
+import { RecoilSync } from "@coral-xyz/db";
+import { SignalingManager } from "@coral-xyz/react-common";
 import {
   friendships,
   groupCollections,
   requestCount,
+  roomChats,
   useUser,
 } from "@coral-xyz/recoil";
-import { useRecoilState } from "recoil";
+import { useRecoilCallback, useRecoilState } from "recoil";
 
 export const DbRecoilSync = () => {
   const { uuid } = useUser();
-  const activeChats = useActiveChats(uuid);
-  const collectionsChatMetadata = getNftCollectionGroups(uuid);
-  const count = useRequestsCount(uuid);
-  const [friendshipValue, setFriendshipsValue] = useRecoilState(
+  const [_friendshipValue, setFriendshipsValue] = useRecoilState(
     friendships({ uuid })
   );
-  const [requestCountValue, setRequestCountValue] = useRecoilState(
+  const [_requestCountValue, setRequestCountValue] = useRecoilState(
     requestCount({ uuid })
   );
-  const [groupCollectionsValue, setGroupCollectionsValue] = useRecoilState(
+  const [_groupCollectionsValue, setGroupCollectionsValue] = useRecoilState(
     groupCollections({ uuid })
   );
+  const updateChats = useUpdateChats();
 
-  useEffect(() => {
-    if (JSON.stringify(friendshipValue) === JSON.stringify(activeChats)) {
-      return;
-    }
+  const getGroupedRooms = (
+    chats: EnrichedMessage[]
+  ): {
+    room: string;
+    type: SubscriptionType;
+    messages: EnrichedMessage[];
+  }[] => {
+    const roomMap: { [key: string]: any } = {};
+    chats.forEach((chat) => {
+      const room: string = chat.room;
+      if (!roomMap[room]) {
+        roomMap[room] = {
+          room: chat.room,
+          type: chat.type,
+          messages: [chat],
+        };
+      } else {
+        roomMap[room]?.messages?.push(chat);
+      }
+    });
+    return Object.keys(roomMap).map((roomId: string) => ({
+      room: roomMap[roomId].room,
+      type: roomMap[roomId].type,
+      messages: roomMap[roomId].messages,
+    }));
+  };
+
+  const sync = async (uuid: string) => {
+    const activeChats = await RecoilSync.getInstance().getActiveChats(uuid);
     setFriendshipsValue(activeChats);
-  }, [uuid, activeChats, friendshipValue, setFriendshipsValue]);
+    const activeGroups = await RecoilSync.getInstance().getActiveGroups(uuid);
+    setGroupCollectionsValue(activeGroups);
+    const requestCount = await RecoilSync.getInstance().getRequestCount(uuid);
+    setRequestCountValue(requestCount);
+    const allMessages = await RecoilSync.getInstance().getAllChats(uuid);
+    const groups = getGroupedRooms(allMessages);
+    groups.forEach((group) => {
+      updateChats({
+        uuid,
+        room: group.room,
+        type: group.type,
+        chats: group.messages,
+      });
+    });
+  };
 
   useEffect(() => {
-    if (count !== requestCountValue) {
-      setRequestCountValue(count || 0);
-    }
-  }, [count, requestCountValue, setRequestCountValue]);
+    sync(uuid);
+  }, [uuid]);
 
   useEffect(() => {
-    if (
-      JSON.stringify(groupCollectionsValue) ===
-      JSON.stringify(collectionsChatMetadata)
-    ) {
-      return;
-    }
-    setGroupCollectionsValue(collectionsChatMetadata || []);
-  }, [collectionsChatMetadata, setGroupCollectionsValue]);
+    SignalingManager.getInstance().onUpdateRecoil = async (
+      props:
+        | {
+            type: "friendship";
+          }
+        | { type: "collection" }
+        | {
+            type: "chat";
+            payload: {
+              uuid: string;
+              room: string;
+              type: SubscriptionType;
+              clear?: boolean;
+              chats: EnrichedMessage[];
+            };
+          }
+    ) => {
+      switch (props.type) {
+        case "friendship":
+          const activeChats = await RecoilSync.getInstance().getActiveChats(
+            uuid
+          );
+          setFriendshipsValue(activeChats);
+          break;
+        case "collection":
+          const activeGroups = await RecoilSync.getInstance().getActiveGroups(
+            uuid
+          );
+          setGroupCollectionsValue(activeGroups);
+          break;
+        case "chat":
+          updateChats({
+            uuid: props.payload.uuid,
+            room: props.payload.room,
+            type: props.payload.type,
+            chats: props.payload.chats,
+            clear: props.payload.clear,
+          });
+      }
+    };
+  }, []);
 
   return <></>;
+};
+
+export const useUpdateChats = () =>
+  useRecoilCallback(
+    ({ set, snapshot }: any) =>
+      async ({
+        uuid,
+        room,
+        type,
+        chats,
+        clear,
+      }: {
+        uuid: string;
+        room: string;
+        type: SubscriptionType;
+        chats: EnrichedMessage[];
+        clear?: boolean;
+      }) => {
+        const currentChats = snapshot.getLoadable(
+          roomChats({ uuid, room, type })
+        );
+        const allChats = merge(clear ? [] : currentChats.valueMaybe(), chats);
+        set(roomChats({ uuid, room, type }), allChats);
+      }
+  );
+
+const merge = (
+  originalChats: EnrichedMessage[] | undefined,
+  updatedChats: EnrichedMessage[]
+) => {
+  if (!originalChats) {
+    return updatedChats.sort((a, b) => (a.created_at < b.created_at ? -1 : 1));
+  }
+  const chatMapping: { [key: string]: EnrichedMessage } = {};
+  originalChats.forEach(
+    (chat) => (chatMapping[chat.client_generated_uuid] = chat)
+  );
+  updatedChats.forEach(
+    (chat) => (chatMapping[chat.client_generated_uuid] = chat)
+  );
+  return Object.keys(chatMapping)
+    .map((client_generated_uuid) => chatMapping[client_generated_uuid])
+    .sort((a, b) => (a.created_at < b.created_at ? -1 : 1));
 };

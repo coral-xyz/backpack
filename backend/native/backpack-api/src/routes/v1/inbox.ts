@@ -66,18 +66,23 @@ router.get("/all", extractUserId, async (req, res) => {
     return res.json({ chats: [] });
   }
 
-  const friendships = await getAllFriendships({
+  const { friendships, friendRequests } = await getAllFriendships({
     uuid,
     limit,
     offset,
   });
 
-  const enrichedFriendships = await enrichFriendships(friendships, uuid);
+  const enrichedFriendships = await enrichFriendships(
+    friendships,
+    friendRequests,
+    uuid
+  );
   res.json({ chats: enrichedFriendships });
 });
 
 export async function enrichFriendships(
   friendships: InboxDb[],
+  friendRequests: { id: string; from: string; to: string }[],
   uuid: string
 ): Promise<EnrichedInboxDb[]> {
   const userIds: string[] = [
@@ -91,6 +96,8 @@ export async function enrichFriendships(
   return friendships.map((friendship) => {
     const remoteUserId =
       friendship.user1 === uuid ? friendship.user2 : friendship.user1;
+    const localUserId =
+      friendship.user1 === uuid ? friendship.user1 : friendship.user2;
     const spam =
       friendship.user1 === uuid
         ? friendship.user1_spam_user2
@@ -104,6 +111,13 @@ export async function enrichFriendships(
       friendship.user1 === uuid
         ? friendship.user1_interacted
         : friendship.user2_interacted;
+
+    const requested = friendRequests.find(
+      ({ from, to }) => from === localUserId && to === remoteUserId
+    );
+    const remoteRequested = friendRequests.find(
+      ({ from, to }) => to === localUserId && from === remoteUserId
+    );
 
     const remoteInteracted =
       friendship.user1 === uuid
@@ -141,6 +155,8 @@ export async function enrichFriendships(
       interacted: interacted ? 1 : 0,
       remoteInteracted: remoteInteracted ? 1 : 0,
       unread: unread ? 1 : 0,
+      requested: requested ? 1 : 0,
+      remoteRequested: remoteRequested ? 1 : 0,
     };
   });
 }

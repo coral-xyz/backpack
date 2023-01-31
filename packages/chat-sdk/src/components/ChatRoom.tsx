@@ -1,11 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { SubscriptionType } from "@coral-xyz/common";
-import { SUBSCRIBE, UNSUBSCRIBE } from "@coral-xyz/common";
+import { SUBSCRIBE } from "@coral-xyz/common";
 import {
   refreshChatsFor,
   SignalingManager,
-  useRoomChatsWithMetadata,
-} from "@coral-xyz/db";
+  useChatsWithMetadata,
+} from "@coral-xyz/react-common";
+import { useUser } from "@coral-xyz/recoil";
 
 import { ChatProvider } from "./ChatContext";
 import { FullScreenChat } from "./FullScreenChat";
@@ -52,6 +53,9 @@ export const ChatRoom = ({
   publicKey,
 }: ChatRoomProps) => {
   const [reconnecting, setReconnecting] = useState(false);
+  const existingChatRef = useRef<any>();
+  const { uuid } = useUser();
+  const [scrollFromBottom, setScrollFromBottom] = useState<null | number>(null);
   // TODO: Make state propogte from outside the state since this'll be expensive
   const [activeReply, setActiveReply] = useState({
     parent_username: "",
@@ -59,11 +63,15 @@ export const ChatRoom = ({
     parent_message_author_uuid: "",
     text: "",
   });
-  const chats = useRoomChatsWithMetadata(userId, roomId, type);
+  const { chats, usersMetadata } = useChatsWithMetadata({ room: roomId, type });
   const [refreshing, setRefreshing] = useState(true);
+  const [messageRef, setMessageRef] = useState(null);
+  const [jumpToBottom, setShowJumpToBottom] = useState(false);
+  const [localUnreadCount, setLocalUnreadCount] = useState(0);
 
   useEffect(() => {
     if (roomId) {
+      setRefreshing(true);
       refreshChatsFor(userId, roomId, type, nftMint, publicKey)
         .then(() => {
           setRefreshing(false);
@@ -76,30 +84,15 @@ export const ChatRoom = ({
 
   useEffect(() => {
     if (roomId) {
-      window.setTimeout(() => {
-        // TODO : remote this timeout, caused because unsubsribe cleanup
-        // is slow and 2 subsequent re-renders calls unsubscribe very slowly
-        SignalingManager.getInstance().send({
-          type: SUBSCRIBE,
-          payload: {
-            type,
-            room: roomId,
-            mint: nftMint,
-            publicKey,
-          },
-        });
-      }, 250);
-      return () => {
-        SignalingManager.getInstance().send({
-          type: UNSUBSCRIBE,
-          payload: {
-            type,
-            room: roomId,
-            mint: nftMint,
-            publicKey,
-          },
-        });
-      };
+      SignalingManager.getInstance().send({
+        type: SUBSCRIBE,
+        payload: {
+          type,
+          room: roomId,
+          mint: nftMint,
+          publicKey,
+        },
+      });
     }
     return () => {};
   }, [roomId]);
@@ -112,7 +105,67 @@ export const ChatRoom = ({
         nftMint
       );
     }
+    if (
+      existingChatRef.current &&
+      existingChatRef.current[0]?.client_generated_uuid !==
+        chats[0]?.client_generated_uuid
+    ) {
+      // a message was added to the top
+      //@ts-ignore
+      const element = messageRef?.container?.children?.[0];
+      if (element) {
+        setScrollFromBottom(element.scrollHeight - (element.scrollTop || 100));
+      }
+    }
+
+    //@ts-ignore
+    const scrollContainer = messageRef?.container?.children?.[0];
+    let counter = chats ? chats?.length - 1 : 0;
+    if (
+      scrollContainer &&
+      existingChatRef.current?.[existingChatRef.current.length - 1]
+        ?.client_generated_uuid !== chats[counter]?.client_generated_uuid
+    ) {
+      if (
+        scrollContainer.scrollHeight -
+          scrollContainer.scrollTop -
+          scrollContainer.clientHeight >
+        10
+      ) {
+        while (counter > 0) {
+          if (
+            existingChatRef.current?.[existingChatRef.current.length - 1]
+              ?.client_generated_uuid === chats[counter]?.client_generated_uuid
+          ) {
+            break;
+          }
+          if (chats[counter].from_http_server) {
+            // only websocket messages should appear as unread
+            break;
+          }
+          if (chats[counter].uuid === uuid) {
+            break;
+          }
+
+          counter--;
+        }
+
+        setLocalUnreadCount((x) => x + chats.length - 1 - counter);
+      }
+    }
+    existingChatRef.current = chats;
   }, [chats]);
+
+  useLayoutEffect(() => {
+    if (scrollFromBottom || scrollFromBottom === 0) {
+      //@ts-ignore
+      const element = messageRef?.container?.children?.[0];
+      if (element) {
+        element.scrollTop = element.scrollHeight - scrollFromBottom;
+      }
+    }
+    setScrollFromBottom(null);
+  }, [scrollFromBottom, chats]);
 
   return (
     <ChatProvider
@@ -138,8 +191,16 @@ export const ChatRoom = ({
       reconnecting={reconnecting}
       nftMint={nftMint}
       publicKey={publicKey}
+      usersMetadata={usersMetadata}
     >
-      <FullScreenChat />
+      <FullScreenChat
+        setLocalUnreadCount={setLocalUnreadCount}
+        localUnreadCount={localUnreadCount}
+        jumpToBottom={jumpToBottom}
+        setShowJumpToBottom={setShowJumpToBottom}
+        messageRef={messageRef}
+        setMessageRef={setMessageRef}
+      />
     </ChatProvider>
   );
 };

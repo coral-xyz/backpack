@@ -1,7 +1,9 @@
-import HighlightOffIcon from "@mui/icons-material/HighlightOff";
+import React from "react";
+import Close from "@mui/icons-material/Close";
 import { createStyles, makeStyles } from "@mui/styles";
 
 import { useChatContext } from "./ChatContext";
+import { ParsedMessage } from "./ParsedMessage";
 
 const useStyles = makeStyles((theme: any) =>
   createStyles({
@@ -14,7 +16,8 @@ const useStyles = makeStyles((theme: any) =>
       color: theme.custom.colors.fontColor2,
     },
     icon: {
-      color: theme.custom.colors.fontColor2,
+      color: theme.custom.colors.icon,
+      width: "0.8em",
     },
   })
 );
@@ -24,9 +27,11 @@ export const ReplyContainer = ({
   text,
   showCloseBtn,
   marginBottom,
+  padding,
   align = "left",
 }) => {
   const { setActiveReply } = useChatContext();
+
   const classes = useStyles();
   return (
     <div
@@ -35,6 +40,8 @@ export const ReplyContainer = ({
         display: "flex",
         justifyContent: "space-between",
         flexDirection: align === "left" ? "row" : "row-reverse",
+        padding: padding,
+        paddingBottom: 0,
       }}
     >
       <div>
@@ -52,7 +59,7 @@ export const ReplyContainer = ({
             paddingLeft: 12,
           }}
         >
-          {text}
+          <ParsedMessage message={text} />
         </div>
       </div>
       {showCloseBtn && (
@@ -60,7 +67,7 @@ export const ReplyContainer = ({
           style={{ cursor: "pointer" }}
           onClick={() => setActiveReply({ parent_client_generated_uuid: null })}
         >
-          <HighlightOffIcon className={classes.icon} />
+          <Close className={classes.icon} />
         </div>
       )}
     </div>

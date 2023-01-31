@@ -5,7 +5,6 @@ import {
   isAggregateWallets,
   useActiveWallet,
   useAllWalletsDisplayed,
-  useEnabledBlockchains,
   useLoader,
   useOpenPlugin,
   useSolanaConnectionUrl,

@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import type { KeyringInit } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
-  BACKPACK_FEATURE_USERNAMES,
   BrowserRuntimeExtension,
   getAuthMessage,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
@@ -125,9 +124,6 @@ export const Finish = ({
       //
       // If usernames are disabled, use a default one for developing.
       //
-      if (!BACKPACK_FEATURE_USERNAMES) {
-        username = uuidv4().split("-")[0];
-      }
       if (isAddingAccount) {
         await background.request({
           method: UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,

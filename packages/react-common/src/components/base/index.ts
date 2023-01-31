@@ -8,3 +8,4 @@ export * from "./NegativeButton";
 export * from "./PrimaryButton";
 export * from "./ProxyImage";
 export * from "./SecondaryButton";
+export * from "./SuccessButton";

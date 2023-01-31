@@ -1,14 +1,8 @@
-import { useEffect, useState } from "react";
-import type { EnrichedInboxDb } from "@coral-xyz/common";
-import { BACKEND_API_URL } from "@coral-xyz/common";
 import { useRequests } from "@coral-xyz/db";
 import { useUser } from "@coral-xyz/recoil";
 
-import { ParentCommunicationManager } from "../ParentCommunicationManager";
-
 import { EmptyRequests } from "./EmptyRequests";
 import { MessageList } from "./MessageList";
-import { MessagesSkeleton } from "./MessagesSkeleton";
 import { useStyles } from "./styles";
 
 export const RequestsScreen = () => {

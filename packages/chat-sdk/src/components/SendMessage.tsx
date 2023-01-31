@@ -1,20 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import type { MessageKind, MessageMetadata } from "@coral-xyz/common";
-import { BACKEND_API_URL, CHAT_MESSAGES } from "@coral-xyz/common";
-import {
-  createEmptyFriendship,
-  SignalingManager,
-  useDbUser,
-} from "@coral-xyz/db";
+import { CHAT_MESSAGES } from "@coral-xyz/common";
+import { createEmptyFriendship } from "@coral-xyz/db";
+import { SignalingManager, useUsersMetadata } from "@coral-xyz/react-common";
 import { useActiveSolanaWallet, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import ArrowForwardIos from "@mui/icons-material/ArrowForwardIos";
+import AddIcon from "@mui/icons-material/Add";
+import CloseIcon from "@mui/icons-material/Close";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import { CircularProgress, IconButton } from "@mui/material";
 import { createStyles, makeStyles } from "@mui/styles";
 import { v4 as uuidv4 } from "uuid";
-
-import { base64ToArrayBuffer } from "../utils/imageUploadUtils";
 
 import { CustomAutoComplete, MessageInput } from "./messageInput/MessageInput";
 import { MessageInputProvider } from "./messageInput/MessageInputProvider";
@@ -29,10 +25,10 @@ const useStyles = makeStyles((theme: any) =>
   createStyles({
     outerDiv: {
       padding: 2,
-      background: theme.custom.colors.textInputBackground,
+      background: theme.custom.colors.listItemHover,
       backdropFilter: "blur(6px)",
-      borderTopLeftRadius: 10,
-      borderTopRightRadius: 10,
+      borderRadius: 8,
+      margin: 12,
     },
     text: {
       color: theme.custom.colors.fontColor2,
@@ -85,18 +81,29 @@ const useStyles = makeStyles((theme: any) =>
   })
 );
 
-export const SendMessage = () => {
+export const SendMessage = ({
+  uploadingFile,
+  setUploadingFile,
+  selectedFile,
+  setSelectedFile,
+  onMediaSelect,
+  selectedMediaKind,
+  uploadedImageUri,
+}: {
+  onMediaSelect: any;
+  selectedMediaKind: "video" | "image";
+  uploadedImageUri: string;
+  selectedFile: string;
+  setSelectedFile: any;
+  uploadingFile: boolean;
+  setUploadingFile: any;
+}) => {
   const classes = useStyles();
   const { uuid } = useUser();
-  const [selectedFile, setSelectedFile] = useState<any>(null);
-  const [uploadingFile, setUploadingFile] = useState(false);
-  const [uploadedImageUri, setUploadedImageUri] = useState("");
   const [emojiPicker, setEmojiPicker] = useState(false);
   const [gifPicker, setGifPicker] = useState(false);
   const [emojiMenuOpen, setEmojiMenuOpen] = useState(false);
-  const [selectedMediaKind, setSelectedMediaKind] = useState<"image" | "video">(
-    "image"
-  );
+
   const theme = useCustomTheme();
   const activeSolanaWallet = useActiveSolanaWallet();
   const inputRef = useRef<any>(null);
@@ -110,10 +117,8 @@ export const SendMessage = () => {
     type,
     chats,
   } = useChatContext();
-  const remoteUserImage: string | undefined = useDbUser(
-    uuid,
-    remoteUserId
-  )?.image;
+  const remoteUsers = useUsersMetadata({ remoteUserIds: [remoteUserId] });
+  const remoteUserImage = remoteUsers?.[0]?.image;
 
   const sendMessage = async (
     messageTxt,
@@ -190,31 +195,6 @@ export const SendMessage = () => {
     }
   };
 
-  const uploadToS3 = async (selectedFile: string, selectedFileName: string) => {
-    try {
-      setUploadingFile(true);
-      const response = await fetch(`${BACKEND_API_URL}/s3/signedUrl`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          filename: selectedFileName,
-        }),
-      });
-
-      const json = await response.json();
-      await fetch(json.uploadUrl, {
-        method: "PUT",
-        body: base64ToArrayBuffer(selectedFile),
-      });
-      setUploadingFile(false);
-      setUploadedImageUri(json.url);
-    } catch (e) {
-      setUploadingFile(false);
-    }
-  };
-
   useEffect(() => {
     function keyDownTextField(event) {
       if (event.key === "Enter") {
@@ -234,7 +214,14 @@ export const SendMessage = () => {
     return () => {
       document.removeEventListener("keydown", keyDownTextField);
     };
-  }, [inputRef, selectedFile, uploadedImageUri, selectedMediaKind]);
+  }, [
+    inputRef,
+    selectedFile,
+    uploadedImageUri,
+    selectedMediaKind,
+    activeReply,
+    chats,
+  ]);
 
   const getOfflineMembers = () => {
     if (type === "individual") {
@@ -329,6 +316,7 @@ export const SendMessage = () => {
         {activeReply.parent_client_generated_uuid && (
           <ReplyContainer
             marginBottom={6}
+            padding={12}
             parent_username={activeReply.parent_username || ""}
             showCloseBtn={true}
             text={activeReply.text}
@@ -336,102 +324,88 @@ export const SendMessage = () => {
         )}
         <CustomAutoComplete offlineMembers={getOfflineMembers().slice(0, 5)} />
         <div style={{ display: "flex" }}>
-          <>
-            {emojiMenuOpen ? (
-              <div style={{ display: "flex" }}>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                  }}
-                ></div>
-                <EmojiPickerComponent
-                  setEmojiPicker={setEmojiPicker}
-                  emojiPicker={emojiPicker}
-                  setGifPicker={setGifPicker}
-                  inputRef={inputRef}
-                  buttonStyle={{
-                    height: "28px",
-                  }}
-                />
-                <GifPicker
-                  sendMessage={sendMessage}
-                  setGifPicker={setGifPicker}
-                  gifPicker={gifPicker}
-                  setEmojiPicker={setEmojiPicker}
-                  buttonStyle={{
-                    height: "28px",
-                  }}
-                />
-                <Attachment
-                  onImageSelect={(file: File) => {
-                    let reader = new FileReader();
-                    reader.onload = (e) => {
-                      setSelectedMediaKind(
-                        file.name.endsWith("mp4") ? "video" : "image"
-                      );
-                      setSelectedFile(e.target?.result);
-                      uploadToS3(e.target?.result as string, file.name);
-                    };
-                    reader.readAsDataURL(file);
-                  }}
-                  buttonStyle={{
-                    height: "28px",
-                  }}
-                />
-                {/*{activeSolanaWallet?.publicKey && (*/}
-                {/*  <SecureTransfer*/}
-                {/*    buttonStyle={{*/}
-                {/*      height: "28px",*/}
-                {/*    }}*/}
-                {/*    remoteUserId={remoteUserId}*/}
-                {/*    onTxFinalized={({ signature, counter, escrow }) => {*/}
-                {/*      sendMessage("Secure transfer", "secure-transfer", {*/}
-                {/*        signature,*/}
-                {/*        counter,*/}
-                {/*        escrow,*/}
-                {/*        current_state: "pending",*/}
-                {/*      });*/}
-                {/*    }}*/}
-                {/*  />*/}
-                {/*)}*/}
-                {/*<IconButton>*/}
-                {/*  {" "}*/}
-                {/*  <SendIcon*/}
-                {/*    className={classes.icon}*/}
-                {/*    onClick={() => sendMessage(messageContent)}*/}
-                {/*  />{" "}*/}
-                {/*</IconButton>*/}
-              </div>
-            ) : (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                }}
-              >
-                <IconButton
-                  size={"small"}
-                  style={{ color: theme.custom.colors.icon }}
-                  onClick={() => {
-                    setEmojiMenuOpen(true);
-                  }}
-                >
-                  <ArrowForwardIos
-                    style={{
-                      height: "18px",
-                      color: theme.custom.colors.icon,
-                      fontSize: 20,
-                    }}
-                  />
-                </IconButton>
-              </div>
-            )}
-          </>
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              marginLeft: 5,
+            }}
+          >
+            <IconButton
+              disableRipple
+              size="small"
+              sx={{
+                color: "#555C6B",
+                "&:hover": {
+                  backgroundColor: `${theme.custom.colors.hoverIconBackground} !important`,
+                },
+              }}
+              onClick={() => {
+                setEmojiMenuOpen(!emojiMenuOpen);
+              }}
+            >
+              {emojiMenuOpen ? (
+                <CloseIcon style={{ fontSize: 24 }} />
+              ) : (
+                <AddIcon style={{ fontSize: 24 }} />
+              )}
+            </IconButton>
+          </div>
           <MessageInput setEmojiMenuOpen={setEmojiMenuOpen} />
         </div>
+        {emojiMenuOpen && (
+          <div style={{ display: "flex", marginLeft: 8, paddingBottom: 5 }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            ></div>
+            <EmojiPickerComponent
+              setEmojiPicker={setEmojiPicker}
+              emojiPicker={emojiPicker}
+              setGifPicker={setGifPicker}
+              inputRef={inputRef}
+              buttonStyle={{
+                height: "28px",
+              }}
+            />
+            <GifPicker
+              sendMessage={sendMessage}
+              setGifPicker={setGifPicker}
+              gifPicker={gifPicker}
+              setEmojiPicker={setEmojiPicker}
+              buttonStyle={{
+                height: "28px",
+              }}
+            />
+            <Attatchment
+              onMediaSelect={onMediaSelect}
+              buttonStyle={{
+                height: "28px",
+              }}
+            />
+            {activeSolanaWallet?.publicKey && (
+              <SecureTransfer
+                buttonStyle={{
+                  height: "28px",
+                }}
+                remoteUserId={remoteUserId}
+                onTxFinalized={({ signature, counter, escrow }) => {
+                  sendMessage("Secure transfer", "secure-transfer", {
+                    signature,
+                    counter,
+                    escrow,
+                    current_state: "pending",
+                  });
+                }}
+              />
+            )}
+          </div>
+        )}
       </div>
     </MessageInputProvider>
   );

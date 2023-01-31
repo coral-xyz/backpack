@@ -24,6 +24,7 @@ import {
   ProfileScreen,
   RequestsScreen,
 } from "@coral-xyz/message-sdk";
+import { useUsersMetadata } from "@coral-xyz/react-common";
 import type { SearchParamsFor } from "@coral-xyz/recoil";
 import {
   useDarkMode,
@@ -174,6 +175,10 @@ function MessageNativeInner() {
   const { props } = useDecodedSearchParams<any>();
   const { isXs } = useBreakpoints();
 
+  if (hash.startsWith("/messages/requests")) {
+    return <NavScreen component={<RequestsScreen />} />;
+  }
+
   if (hash.startsWith("/messages/chat")) {
     return (
       <NavScreen
@@ -203,10 +208,6 @@ function MessageNativeInner() {
     return <></>;
   }
 
-  if (hash.startsWith("/messages/requests")) {
-    return <NavScreen component={<RequestsScreen />} />;
-  }
-
   return <NavScreen component={<Inbox />} />;
 }
 
@@ -214,9 +215,6 @@ function FullChatPage() {
   const { props } = useDecodedSearchParams<any>();
   const [userId, setRefresh] = useState(props.userId);
   const [collectionId, setCollectionIdRefresh] = useState(props.id);
-  const { uuid } = useUser();
-  const hash = location.hash.slice(1);
-  const activeChats = useFriendships({ uuid });
 
   useEffect(() => {
     if (props.userId !== userId) {
@@ -230,15 +228,13 @@ function FullChatPage() {
       setCollectionIdRefresh(props.id);
     }
   }, [props.id]);
-  const requestsTab =
-    hash.startsWith("/messages/requests") ||
-    (hash.startsWith("/messages/chat") &&
-      !activeChats?.map((x: any) => x.remoteUserId).includes(props.userId));
 
   return (
     <div style={{ height: "100%", display: "flex" }}>
       <div style={{ width: "365px" }}>
-        <Scrollbar>{requestsTab ? <RequestsScreen /> : <Inbox />}</Scrollbar>
+        <Scrollbar>
+          <Inbox />
+        </Scrollbar>
       </div>
       <div
         style={{
@@ -424,9 +420,9 @@ function useNavBar() {
   const pathname = useLocation().pathname;
   const theme = useCustomTheme();
   const { props }: any = useDecodedSearchParams(); // TODO: fix type
-  const { uuid } = useUser();
   const { isXs } = useBreakpoints();
-  const image: string | undefined = useDbUser(uuid, props?.userId)?.image;
+  const profileUser = useUsersMetadata({ remoteUserIds: [props?.userId] });
+  const image: string | undefined = profileUser[props?.userId]?.image;
 
   let navButtonLeft = null as any;
   let navButtonRight = null as any;

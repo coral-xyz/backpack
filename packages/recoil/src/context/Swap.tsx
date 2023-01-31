@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   associatedTokenAddress,
+  BACKPACK_FEATURE_REFERRAL_FEES,
   Blockchain,
   confirmTransaction,
   generateUnwrapSolTx,
@@ -16,7 +17,7 @@ import * as bs58 from "bs58";
 import { BigNumber, ethers } from "ethers";
 
 import { blockchainTokenData } from "../atoms/balance";
-import { JUPITER_BASE_URL, jupiterInputMints } from "../atoms/solana/jupiter";
+import { JUPITER_BASE_URL,jupiterInputMints } from "../atoms/solana/jupiter";
 import { useLoader, useSolanaCtx, useSplTokenRegistry } from "../hooks";
 
 const { Zero } = ethers.constants;
@@ -60,6 +61,7 @@ type SwapContext = {
   isJupiterError: boolean;
   availableForSwap: BigNumber;
   exceedsBalance: boolean | undefined;
+  feeExceedsBalance: boolean | undefined;
   inputTokenAccounts: any;
 };
 
@@ -164,6 +166,7 @@ export function SwapProvider({
   const pollIdRef: { current: NodeJS.Timeout | null } = useRef(null);
 
   const swapFromToken = inputTokenAccounts.find((t) => t.mint === fromMint);
+
   let availableForSwap = swapFromToken
     ? BigNumber.from(swapFromToken.nativeBalance)
     : Zero;
@@ -182,6 +185,15 @@ export function SwapProvider({
   const exceedsBalance = fromAmount
     ? fromAmount.gt(availableForSwap)
     : undefined;
+
+  const solanaToken = inputTokenAccounts.find(
+    (t) => t.mint === SOL_NATIVE_MINT
+  );
+
+  const feeExceedsBalance =
+    transactionFee && solanaToken
+      ? transactionFee.gt(solanaToken.nativeBalance)
+      : undefined;
 
   const stopRoutePolling = () => {
     if (pollIdRef.current) {
@@ -363,7 +375,23 @@ export function SwapProvider({
     // Stop polling for route updates when swap is finalised
     stopRoutePolling();
     try {
-      await sendAndConfirmTransaction(transaction);
+      const signature = await sendAndConfirmTransaction(transaction);
+
+      if (BACKPACK_FEATURE_REFERRAL_FEES) {
+        try {
+          await fetch("https://jupiter.xnfts.dev/swap", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              signature,
+            }),
+          });
+        } catch (e) {
+          //  do nothing as we don't want to block the UI if it fails
+        }
+      }
     } catch (e) {
       console.log("swap error", e);
       return false;
@@ -411,6 +439,7 @@ export function SwapProvider({
         isJupiterError,
         availableForSwap,
         exceedsBalance,
+        feeExceedsBalance,
         inputTokenAccounts,
       }}
     >

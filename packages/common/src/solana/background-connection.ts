@@ -1,3 +1,4 @@
+import { IS_MOBILE } from "@coral-xyz/common-public";
 import type {
   AccountBalancePair,
   AccountChangeCallback,
@@ -276,12 +277,38 @@ export class BackgroundSolanaConnection extends Connection {
       method: SOLANA_CONNECTION_RPC_GET_ACCOUNT_INFO,
       params: [publicKey.toString(), commitment],
     });
+
     if (resp === null) {
       return resp;
     }
-    resp.data = Buffer.from(resp.data);
-    resp.owner = new PublicKey(resp.owner);
-    return resp;
+
+    return BackgroundSolanaConnection.accountInfoFromJson(resp);
+  }
+
+  static accountInfoToJson(res) {
+    if (!IS_MOBILE) {
+      return res;
+    }
+
+    return {
+      ...res,
+      owner: res.owner.toString(),
+      data: res.data?.toString(),
+    };
+  }
+
+  static accountInfoFromJson(res) {
+    if (!IS_MOBILE) {
+      res.data = Buffer.from(res.data);
+      res.owner = new PublicKey(res.owner);
+      return res;
+    }
+
+    return {
+      ...res,
+      owner: new PublicKey(res.owner),
+      data: Buffer.from(res.data),
+    };
   }
 
   async getLatestBlockhash(commitment?: Commitment): Promise<{

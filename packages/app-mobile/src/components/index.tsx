@@ -1,5 +1,6 @@
 import type { Blockchain } from "@coral-xyz/common";
 
+import { useState } from "react";
 import type { ImageStyle, StyleProp, TextStyle, ViewStyle } from "react-native";
 import {
   ActivityIndicator,
@@ -12,14 +13,15 @@ import {
 } from "react-native";
 
 import * as Clipboard from "expo-clipboard";
+import Constants from "expo-constants";
 
 import { proxyImageUrl, walletAddressDisplay } from "@coral-xyz/common";
 import { useAvatarUrl } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useTheme } from "@hooks";
 import { SvgUri } from "react-native-svg";
 
 import { ContentCopyIcon, RedBackpack } from "@components/Icon";
+import { useTheme } from "@hooks/index";
 
 export { ActionCard } from "./ActionCard";
 export { BaseCheckBoxLabel, CheckBox } from "./CheckBox";
@@ -99,44 +101,50 @@ export function BaseButton({
   loading?: boolean;
   icon?: JSX.Element;
 }) {
-  const theme = useTheme();
   return (
     <Pressable
+      disabled={disabled}
+      onPress={onPress}
       style={[
+        baseButtonStyles.button,
         {
-          backgroundColor: theme.custom.colors.primaryButton,
-          height: 48,
-          paddingHorizontal: 12,
-          borderRadius: 12,
-          justifyContent: "center",
-          alignItems: "center",
-          flexDirection: "row",
-          width: "100%",
-          opacity: disabled ? 50 : 100, // TODO(peter)
+          opacity: disabled ? 0.7 : 1,
         },
         buttonStyle,
       ]}
-      disabled={disabled}
-      onPress={onPress}
       {...props}
     >
       <Text
         style={[
+          baseButtonStyles.label,
           {
-            fontWeight: "500",
-            fontSize: 16,
-            color: theme.custom.colors.primaryButtonTextColor,
-            opacity: disabled ? 50 : 100, // TODO(peter)
+            opacity: disabled ? 0.5 : 1,
           },
           labelStyle,
         ]}
       >
-        {loading ? "loading..." : label} {disabled ? "(disabled)" : ""}
+        {loading ? "loading..." : label}
       </Text>
       {icon}
     </Pressable>
   );
 }
+
+const baseButtonStyles = StyleSheet.create({
+  button: {
+    height: 48,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+    width: "100%",
+  },
+  label: {
+    fontWeight: "500",
+    fontSize: 16,
+  },
+});
 
 export function PrimaryButton({
   label,
@@ -360,7 +368,7 @@ export function EmptyState({
       >
         {title}
       </Typography>
-      {minimize !== true && (
+      {minimize !== true ? (
         <Typography
           style={{
             marginTop: 8,
@@ -373,8 +381,8 @@ export function EmptyState({
         >
           {subtitle}
         </Typography>
-      )}
-      {minimize !== true && onPress && buttonText && (
+      ) : null}
+      {minimize !== true && onPress && buttonText ? (
         <Margin top={12}>
           <PrimaryButton
             disabled={false}
@@ -382,7 +390,7 @@ export function EmptyState({
             onPress={() => onPress()}
           />
         </Margin>
-      )}
+      ) : null}
     </View>
   );
 }
@@ -561,34 +569,50 @@ export function FullScreenLoading() {
 
 export function WelcomeLogoHeader() {
   const theme = useTheme();
+  const [showDebug, setShowDebug] = useState(false);
   return (
-    <View style={{ alignItems: "center" }}>
-      <Margin top={48} bottom={24}>
-        <RedBackpack />
-      </Margin>
-      <Text
-        style={{
-          fontWeight: "600",
-          fontSize: 42,
-          textAlign: "center",
-          color: theme.custom.colors.fontColor,
-        }}
-      >
-        Backpack
-      </Text>
-      <Margin top={8}>
+    <>
+      <View style={{ alignItems: "center" }}>
+        <Margin top={48} bottom={24}>
+          <Pressable onPress={() => setShowDebug((last) => !last)}>
+            <RedBackpack />
+          </Pressable>
+        </Margin>
         <Text
           style={{
-            lineHeight: 24,
-            fontSize: 16,
-            fontWeight: "500",
-            color: theme.custom.colors.secondary,
+            fontWeight: "600",
+            fontSize: 42,
+            textAlign: "center",
+            color: theme.custom.colors.fontColor,
           }}
         >
-          A home for your xNFTs
+          Backpack
         </Text>
-      </Margin>
-    </View>
+        <Margin top={8}>
+          <Text
+            style={{
+              lineHeight: 24,
+              fontSize: 16,
+              fontWeight: "500",
+              color: theme.custom.colors.secondary,
+            }}
+          >
+            A home for your xNFTs
+          </Text>
+        </Margin>
+      </View>
+      {showDebug ? (
+        <Text
+          style={{
+            marginTop: 16,
+            marginHorizontal: 16,
+            backgroundColor: "white",
+          }}
+        >
+          {JSON.stringify(Constants?.expoConfig?.extra, null, 2)}
+        </Text>
+      ) : null}
+    </>
   );
 }
 

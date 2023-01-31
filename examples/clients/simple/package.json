@@ -24,6 +24,8 @@
   },
   "scripts": {
     "start": "rimraf dist && parcel",
-    "build": "rimraf dist && parcel build"
+    "build": "rimraf dist && parcel build",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
+    "lint:fix": "yarn run lint --fix"
   }
 }

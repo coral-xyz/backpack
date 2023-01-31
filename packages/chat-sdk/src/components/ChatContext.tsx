@@ -1,7 +1,9 @@
 import React, { useContext } from "react";
 import type {
+  EnrichedMessage,
   EnrichedMessageWithMetadata,
   SubscriptionType,
+  UserMetadata,
 } from "@coral-xyz/common";
 
 type ChatContext = {
@@ -32,6 +34,7 @@ type ChatContext = {
   reconnecting: boolean;
   nftMint?: string;
   publicKey?: string;
+  usersMetadata: { [key: string]: UserMetadata };
 };
 
 export const _ChatContext = React.createContext<ChatContext | null>(null);
@@ -65,6 +68,7 @@ export function ChatProvider(props: {
   reconnecting: boolean;
   nftMint?: string;
   publicKey?: string;
+  usersMetadata: { [key: string]: UserMetadata };
 }) {
   return (
     <_ChatContext.Provider
@@ -91,6 +95,7 @@ export function ChatProvider(props: {
         reconnecting: props.reconnecting,
         nftMint: props.nftMint,
         publicKey: props.publicKey,
+        usersMetadata: props.usersMetadata,
       }}
     >
       {props.children}

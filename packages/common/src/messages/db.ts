@@ -6,7 +6,7 @@ export interface InboxDb {
   user1: string;
   user2: string;
   are_friends: boolean;
-  last_message_client_uuid: boolean;
+  last_message_client_uuid: string;
   user1_last_read_message_id: boolean;
   user2_last_read_message_id: boolean;
 }
@@ -22,6 +22,8 @@ export interface EnrichedInboxDb extends InboxDb {
   areFriends: 0 | 1;
   unread: 0 | 1;
   friendshipId: string;
+  requested: 0 | 1;
+  remoteRequested: 0 | 1;
 }
 
 export interface Friendship {

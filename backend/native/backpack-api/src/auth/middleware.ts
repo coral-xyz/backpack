@@ -6,19 +6,35 @@ import { validateRoom } from "../db/friendships";
 import {
   validateCentralizedGroupOwnership,
   validateCollectionOwnership,
+  validatePublicKeyOwnership,
 } from "../db/nft";
 
 import { clearCookie, setJWTCookie, validateJwt } from "./util";
+
+export const ensureHasPubkeyAccess = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const hasAccess = await validatePublicKeyOwnership(
+    req.id!,
+    req.query.publicKey as string
+  );
+  if (hasAccess) {
+    next();
+    return;
+  }
+  res.status(403).json({ msg: "You dont have access to this public key" });
+};
 
 export const ensureHasRoomAccess = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const room = req.query.room;
+  //@ts-ignore
+  const room: string = req.query.room;
   const type = req.query.type;
-  const publicKey = req.query.publicKey;
-  const mint = req.query.mint;
 
   if (type === "individual") {
     const roomMetadata = await validateRoom(req.id!, room);
@@ -34,18 +50,9 @@ export const ensureHasRoomAccess = async (
     if (DEFAULT_GROUP_CHATS.map((x) => x.id).includes(room)) {
       hasAccess = true;
     } else if (WHITELISTED_CHAT_COLLECTIONS.map((x) => x.id).includes(room)) {
-      hasAccess = await validateCentralizedGroupOwnership(
-        req.id!,
-        publicKey!,
-        room!
-      );
+      hasAccess = await validateCentralizedGroupOwnership(req.id!, room!);
     } else {
-      hasAccess = await validateCollectionOwnership(
-        req.id!,
-        publicKey!,
-        mint!,
-        room!
-      );
+      hasAccess = await validateCollectionOwnership(req.id!, room!);
     }
     if (hasAccess) {
       // @ts-ignore

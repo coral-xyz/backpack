@@ -106,6 +106,8 @@ export const UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD =
   "ui-rpc-method-blockchain-keyrings-add";
 export const UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ =
   "ui-rpc-method-blockchain-keyrings-read";
+export const UI_RPC_METHOD_KEY_IS_COLD_UPDATE =
+  "ui-rpc-method-key-is-cold-update";
 export const UI_RPC_METHOD_KEYNAME_READ = "ui-rpc-method-keyname-read";
 export const UI_RPC_METHOD_KEYNAME_UPDATE = "ui-rpc-method-keyname-update";
 export const UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE =
@@ -257,6 +259,8 @@ export const UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION =
 // Notifications sent from the background script to observers.
 //
 
+export const NOTIFICATION_KEY_IS_COLD_UPDATE =
+  "notification-key-is-cold-update";
 export const NOTIFICATION_APPROVED_ORIGINS_UPDATE =
   "notification-approved-origins-update";
 export const NOTIFICATION_AUTO_LOCK_SETTINGS_UPDATED =
@@ -534,6 +538,7 @@ export const BACKEND_EVENT = "backend-event";
 // Popup query routes.
 //
 export const QUERY_LOCKED = "locked=true";
+export const QUERY_LOCKED_APPROVAL = "locked-approval=true";
 export const QUERY_APPROVAL = "approve-origin=true";
 export const QUERY_APPROVE_TRANSACTION = "approve-tx=true";
 export const QUERY_APPROVE_ALL_TRANSACTIONS = "approve-all-txs=true";

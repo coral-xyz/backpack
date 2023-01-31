@@ -31,6 +31,18 @@ select_permissions:
         - media_id
         - post_id
       filter: {}
+  - role: public_avatar
+    permission:
+      columns:
+        - metadata
+        - thumbnail_metadata
+        - thumbnail_type
+        - thumbnail_url
+        - type
+        - url
+        - media_id
+        - post_id
+      filter: {}
 update_permissions:
   - role: one_xnft
     permission:

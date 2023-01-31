@@ -5,7 +5,6 @@ import type {
   KeyringType,
 } from "@coral-xyz/common";
 import {
-  BACKPACK_FEATURE_USERNAMES,
   DerivationPath,
   getCreateMessage,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
@@ -140,25 +139,21 @@ export const OnboardAccount = ({
   };
 
   const steps = [
-    ...(BACKPACK_FEATURE_USERNAMES
-      ? [
-          <InviteCodeForm
-            onClickWaiting={onWaiting}
-            onClickRecover={onRecover}
-            onSubmit={(inviteCode) => {
-              setInviteCode(inviteCode);
-              nextStep();
-            }}
-          />,
-          <UsernameForm
-            inviteCode={inviteCode!}
-            onNext={(username) => {
-              setUsername(username);
-              nextStep();
-            }}
-          />,
-        ]
-      : []),
+    <InviteCodeForm
+      onClickWaiting={onWaiting}
+      onClickRecover={onRecover}
+      onSubmit={(inviteCode) => {
+        setInviteCode(inviteCode);
+        nextStep();
+      }}
+    />,
+    <UsernameForm
+      inviteCode={inviteCode!}
+      onNext={(username) => {
+        setUsername(username);
+        nextStep();
+      }}
+    />,
     <CreateOrImportWallet
       onNext={(action) => {
         setAction(action);

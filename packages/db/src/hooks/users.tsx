@@ -23,27 +23,6 @@ export const useUsers = (uuid: string, chats: any[]) => {
   return reqs || [];
 };
 
-export const useUsersFromUuids = (uuid: string, uuids: string[]) => {
-  const [existingUuids, setExistingUuids] = useState<string[]>([]);
-  const reqs = useLiveQuery(async () => {
-    const userUuids = existingUuids || [];
-    const uniqueUserUuids = userUuids.filter(
-      (x, index) => userUuids.indexOf(x) === index
-    );
-    refreshUsers(uuid, uniqueUserUuids);
-    return getDb(uuid).users.bulkGet(uniqueUserUuids);
-  }, [existingUuids]);
-
-  useEffect(() => {
-    if (JSON.stringify(existingUuids) === JSON.stringify(uuids)) {
-      return;
-    }
-    setExistingUuids(uuids);
-  }, [uuids]);
-
-  return reqs || [];
-};
-
 export const useDbUser = (
   uuid: string,
   remoteUserId: string

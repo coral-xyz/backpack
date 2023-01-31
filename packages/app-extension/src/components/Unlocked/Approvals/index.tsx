@@ -28,6 +28,7 @@ const useStyles = styles((theme) => ({
   connectableDescription: {
     color: theme.custom.colors.secondary,
     fontSize: "14px",
+    textAlign: "center",
   },
 }));
 

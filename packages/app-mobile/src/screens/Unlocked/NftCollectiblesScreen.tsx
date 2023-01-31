@@ -321,7 +321,7 @@ function NftCollectionDetailScreen({ navigation, route }): JSX.Element | null {
   );
 }
 
-export type NftStackParamList = {
+type NftStackParamList = {
   NftCollectionList: undefined;
   NftCollectionDetail: {
     title: string;

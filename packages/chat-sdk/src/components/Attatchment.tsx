@@ -7,10 +7,10 @@ import { IconButton } from "@mui/material";
 
 export const Attachment = ({
   buttonStyle,
-  onImageSelect,
+  onMediaSelect,
 }: {
   buttonStyle: any;
-  onImageSelect: any;
+  onMediaSelect: any;
 }) => {
   const theme = useCustomTheme();
   const hiddenInputRef = useRef<any>();
@@ -19,7 +19,7 @@ export const Attachment = ({
     if (hiddenInputRef && hiddenInputRef.current) {
       hiddenInputRef.current.onchange = () => {
         const selectedFile = hiddenInputRef.current.files[0];
-        onImageSelect(selectedFile);
+        onMediaSelect(selectedFile);
       };
     }
   }, []);
@@ -34,7 +34,13 @@ export const Attachment = ({
     >
       <IconButton
         size={"small"}
-        style={{ color: theme.custom.colors.icon, ...buttonStyle }}
+        sx={{
+          color: theme.custom.colors.icon,
+          "&:hover": {
+            background: `${theme.custom.colors.avatarIconBackground} !important`,
+          },
+        }}
+        style={buttonStyle}
         onClick={async (e) => {
           hiddenInputRef.current.click();
         }}

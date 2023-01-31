@@ -1,3 +1,4 @@
+import { useLocation } from "react-router-dom";
 import type {
   CollectionChatData,
   EnrichedInboxDb,
@@ -10,9 +11,11 @@ import {
   parseMessage,
 } from "@coral-xyz/common";
 import { NAV_COMPONENT_MESSAGE_GROUP_CHAT } from "@coral-xyz/common/src/constants";
-import { useUsersFromUuids } from "@coral-xyz/db";
-import { isFirstLastListItemStyle, ProxyImage } from "@coral-xyz/react-common";
-import { useUser } from "@coral-xyz/recoil";
+import {
+  isFirstLastListItemStyle,
+  useUsersMetadata,
+} from "@coral-xyz/react-common";
+import { useDecodedSearchParams } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import MarkChatUnreadIcon from "@mui/icons-material/MarkChatUnread";
 import VerifiedIcon from "@mui/icons-material/Verified";
@@ -21,6 +24,7 @@ import { List, ListItem } from "@mui/material";
 import { ParentCommunicationManager } from "../ParentCommunicationManager";
 
 import { useStyles } from "./styles";
+
 export const MessageList = ({
   activeChats,
   requestCount = 0,
@@ -117,19 +121,15 @@ export function ChatListItem({
   isUnread: boolean;
 }) {
   const classes = useStyles();
-  const { uuid } = useUser();
   const theme = useCustomTheme();
+  const { props }: any = useDecodedSearchParams();
   const parts = parseMessage(message);
-  const users = useUsersFromUuids(
-    uuid,
-    parts.filter((x) => x.type === "tag").map((x) => x.value)
-  );
+  const pathname = useLocation().pathname;
+  const users: any = useUsersMetadata({
+    remoteUserIds: parts.filter((x) => x.type === "tag").map((x) => x.value),
+  });
   const printText = parts
-    .map((x) =>
-      x.type === "tag"
-        ? users.find((user) => user?.uuid === x.value)?.username
-        : x.value
-    )
+    .map((x) => (x.type === "tag" ? users[x.value]?.username : x.value))
     .join("");
 
   function formatAMPM(date: Date) {
@@ -167,9 +167,13 @@ export function ChatListItem({
         paddingRight: "16px",
         display: "flex",
         height: "72px",
-        backgroundColor: isUnread
-          ? theme.custom.colors.unreadBackground
-          : theme.custom.colors.nav,
+        backgroundColor:
+          (pathname === "/messages/chat" && props.userId === id) ||
+          (pathname === "/messages/groupchat" && props.id === id)
+            ? theme.custom.colors.bg4
+            : isUnread
+            ? theme.custom.colors.unreadBackground
+            : theme.custom.colors.nav,
         borderBottom: isLast
           ? undefined
           : `solid 1pt ${theme.custom.colors.border}`,
@@ -228,7 +232,7 @@ export function ChatListItem({
                       style={{
                         fontSize: 19,
                         marginLeft: 3,
-                        color: theme.custom.colors.blue,
+                        color: theme.custom.colors.verified,
                       }}
                     />
                   )}
@@ -366,5 +370,5 @@ export function RequestsChatItem({
 
 function UserIcon({ image }: any) {
   const classes = useStyles();
-  return <img src={image} className={classes.iconCircularBig} />;
+  return <img src={`${image}?size=25`} className={classes.iconCircularBig} />;
 }
