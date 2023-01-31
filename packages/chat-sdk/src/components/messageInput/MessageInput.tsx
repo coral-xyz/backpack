@@ -68,7 +68,7 @@ export const CustomAutoComplete = () => {
             width: "100%",
             background:
               index === cursor ? "#1264a3" : theme.custom.colors.background,
-            color: theme.custom.colors.fontColor,
+            color: index === cursor ? "#fff" : theme.custom.colors.fontColor,
             border: "none",
             boxShadow: `${theme.custom.colors.boxShadow}`,
             textAlign: "left",
