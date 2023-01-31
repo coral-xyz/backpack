@@ -161,7 +161,7 @@ export class ProviderSolanaInjection
     this.#connection = this.defaultConnection();
   }
 
-  async openXnft(xnftAddress: PublicKey) {
+  async openXnft(xnftAddress: string | PublicKey) {
     await this.#requestManager.request({
       method: SOLANA_RPC_METHOD_OPEN_XNFT,
       params: [xnftAddress.toString()],
