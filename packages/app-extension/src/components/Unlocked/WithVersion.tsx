@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import {
-  BACKPACK_CONFIG_VERSION,
+  BACKPACK_CONFIG_GITHUB_RUN_NUMBER,
   BACKPACK_FEATURE_FORCE_LATEST_VERSION,
 } from "@coral-xyz/common";
 import { EmptyState } from "@coral-xyz/react-common";
 import { Block } from "@mui/icons-material";
-import { Typography } from "@mui/material";
 
 import { WithDrawer } from "../common/Layout/Drawer";
 
@@ -25,7 +24,7 @@ export function WithVersion({ children }: { children: any }) {
       if (BACKPACK_FEATURE_FORCE_LATEST_VERSION) {
         let buildNumber: number | undefined;
         try {
-          buildNumber = parseInt(BACKPACK_CONFIG_VERSION);
+          buildNumber = parseInt(BACKPACK_CONFIG_GITHUB_RUN_NUMBER);
           if (buildNumber < version) {
             setOpenDrawer(true);
           }

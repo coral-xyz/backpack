@@ -56,6 +56,7 @@ jobs:
       - name: "build beta"
         env:
           BACKPACK_CONFIG_VERSION: "${{ env.RELEASE_PREFIX }}-latest-beta-${{ github.run_number }}"
+          BACKPACK_CONFIG_GITHUB_RUN_NUMBER: "${{ github.run_number }}"
           BACKPACK_CONFIG_LOG_LEVEL: "info"
           BACKPACK_FEATURE_LIGHT_MODE: "true"
           BACKPACK_FEATURE_POP_MODE: "true"
