@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import type { KeyringInit} from "@coral-xyz/common";
-import {   BACKEND_API_URL,
+import type { KeyringInit } from "@coral-xyz/common";
+import {
+  BACKEND_API_URL,
   BrowserRuntimeExtension,
   getAuthMessage,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
-XNFT_GG_LINK ,
+  XNFT_GG_LINK,
 } from "@coral-xyz/common";
 import { Loading } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";

@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import type {
   Blockchain,
   BlockchainKeyringInit,
-  KeyringType
+  KeyringType,
 } from "@coral-xyz/common";
 import {
   DerivationPath,
   getCreateMessage,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
-  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY} from "@coral-xyz/common";
+  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
+} from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { encode } from "bs58";
 
