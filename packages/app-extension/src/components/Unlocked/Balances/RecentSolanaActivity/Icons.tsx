@@ -6,6 +6,7 @@ import {
   WhatshotRounded,
 } from "@mui/icons-material";
 
+// TODO: move reused styles into classes
 export const ListItemIcons = {
   SWAP: (tokenLogoOne?: string, tokenLogoTwo?: string) => {
     return (

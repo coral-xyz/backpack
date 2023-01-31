@@ -1,13 +1,6 @@
 import { isFirstLastListItemStyle } from "@coral-xyz/react-common";
 import { useSplTokenRegistry } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import {
-  ArrowDownwardRounded,
-  Check,
-  ClearRounded,
-  SendRounded,
-  WhatshotRounded,
-} from "@mui/icons-material";
 import { ListItem, Typography } from "@mui/material";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { Source, TransactionType } from "helius-sdk/dist/types";
@@ -23,30 +16,6 @@ import { ListItemIcons } from "./Icons";
 import type { HeliusParsedTransaction } from "./types";
 
 const useStyles = styles((theme) => ({
-  recentActivityListItemIconContainer: {
-    width: "44px",
-    height: "44px",
-    borderRadius: "22px",
-    marginRight: "12px",
-    display: "flex",
-    justifyContent: "center",
-    flexDirection: "column",
-  },
-  recentActivityListItemIconDefault: {
-    color: theme.custom.colors.alpha,
-    marginLeft: "auto",
-    marginRight: "auto",
-  },
-  recentActivityListItemIconPositive: {
-    color: theme.custom.colors.positive,
-    marginLeft: "auto",
-    marginRight: "auto",
-  },
-  recentActivityListItemIconNegative: {
-    color: theme.custom.colors.negative,
-    marginLeft: "auto",
-    marginRight: "auto",
-  },
   title: {
     color: theme.custom.colors.fontColor,
     fontSize: "16px",
@@ -59,25 +28,15 @@ const useStyles = styles((theme) => ({
     fontWeight: 500,
     lineHeight: "24px",
   },
-  tokenSwapIconLeft: {
-    borderRadius: "50%",
-    width: "24px",
-    height: "24px",
-    marginRight: "10px",
-    marginBottom: "15px",
-    zIndex: "10",
-  },
-  tokenSwapIconRight: {
-    borderRadius: "50%",
-    width: "24px",
-    height: "24px",
-    marginRight: "15px",
-    marginLeft: "-15px",
-  },
   textReceived: {
     fontSize: "16px",
     color: theme.custom.colors.positive,
     lineHeight: "24px",
+  },
+  lineDataWrapper: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
   },
 }));
 
@@ -131,13 +90,7 @@ export function SolanaTransactionListItem({
         }}
       >
         <div style={{ flex: 1, display: "flex" }}>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-            }}
-          >
+          <div className={classes.lineDataWrapper}>
             {RecentActivityListItemIcon(transaction, tokenData)}
           </div>
           <div>
@@ -149,13 +102,7 @@ export function SolanaTransactionListItem({
             </Typography>
           </div>
         </div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-          }}
-        >
+        <div className={classes.lineDataWrapper}>
           {RecentActivityListItemData(transaction, tokenData)}
           <div></div>
         </div>
