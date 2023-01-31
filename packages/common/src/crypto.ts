@@ -93,12 +93,12 @@ export const getRecoveryPaths = (blockchain: Blockchain) => {
    *
    * Created wallets from the legacy derivation scheme used by Backpack were
    *
-   *     m/44/501'/ and m/44/501'/{0...n}'
+   *     m/44/501'/ and m/44/501'/{0...n}' (bip44)
    *
    * It was possible to import and then derive more wallets from the paths:
    *
-   *     m/44/501'/ and m/44/501'/{0...n} (same as above)
-   *     m/44/501'/{0...n}'/0'
+   *     m/44/501'/ and m/44/501'/{0...n} (bip44)
+   *     m/44/501'/{0...n}'/0' (bip44change)
    *
    * Under the new derivation path scheme created wallets use the derivation
    * paths:
