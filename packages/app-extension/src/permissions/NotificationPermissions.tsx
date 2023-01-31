@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import { BACKEND_API_URL } from "@coral-xyz/common";
-import { useUser } from "@coral-xyz/recoil";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import NotificationsOffIcon from "@mui/icons-material/NotificationsOff";
 
@@ -21,20 +19,19 @@ export const NotificationPermissions = () => {
   };
 
   const registerSubscription = async () => {
-    registerNotificationServiceWorker()
-      .then(async function (subscription) {
-        if (!subscription) {
-          // Set appropriate app states.
-          return;
-        }
-        await saveSubscription(subscription);
-        setPermissionGranted(true);
-        setInProgress(false);
-      })
-      .catch(function () {
-        setPermissionGranted(false);
-        setInProgress(false);
-      });
+    try {
+      const sub = await registerNotificationServiceWorker();
+      if (!sub) {
+        return;
+      }
+      await saveSubscription(sub);
+      setPermissionGranted(true);
+    } catch (err) {
+      console.error(err);
+      setPermissionGranted(false);
+    } finally {
+      setInProgress(false);
+    }
   };
 
   const init = async () => {

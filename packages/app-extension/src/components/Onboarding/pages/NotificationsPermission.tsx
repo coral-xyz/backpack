@@ -11,35 +11,30 @@ import { Header, SubtextParagraph } from "../../common";
 
 export const NotificationsPermission = ({ onNext }: { onNext: () => void }) => {
   const theme = useCustomTheme();
-  const [permissionGranted, setPermissionGranted] = useState(false);
 
-  const requestNotificationPermission = async () => {
+  const requestNotificationPermission = async (): Promise<boolean> => {
     const permission = await window.Notification.requestPermission();
-    if (permission === "granted") {
-      setPermissionGranted(true);
-    }
+    return permission === "granted";
   };
 
   const registerSubscription = async () => {
-    if (!permissionGranted) return;
-
     try {
       const sub = await registerNotificationServiceWorker();
       if (!sub) {
         // Set appropriate app states
         return;
       }
-
       await saveSubscription(sub);
     } catch (err) {
       console.error(err);
-      setPermissionGranted(false);
     }
   };
 
   const handleAllow = async () => {
-    await requestNotificationPermission();
-    await registerSubscription();
+    const success = await requestNotificationPermission();
+    if (success) {
+      await registerSubscription();
+    }
     onNext();
   };
 

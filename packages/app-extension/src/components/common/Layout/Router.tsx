@@ -16,7 +16,6 @@ import {
   MESSAGING_COMMUNICATION_FETCH,
   MESSAGING_COMMUNICATION_PUSH,
 } from "@coral-xyz/common/src/constants";
-import { useDbUser } from "@coral-xyz/db";
 import {
   ChatScreen,
   Inbox,
@@ -30,7 +29,6 @@ import {
   useDarkMode,
   useDecodedSearchParams,
   useFeatureGates,
-  useFriendships,
   useNavigation,
   useRedirectUrl,
   useUser,
@@ -52,7 +50,6 @@ import { NftOptionsButton, NftsDetail } from "../../Unlocked/Nfts/Detail";
 import { NftChat, NftsExperience } from "../../Unlocked/Nfts/Experience";
 import { SettingsButton } from "../../Unlocked/Settings";
 
-import { AvatarPopoverButton } from "./../../Unlocked/Settings/AvatarPopover";
 import { useBreakpoints } from "./hooks";
 import { NavBackButton, WithNav } from "./Nav";
 import { WithMotion } from "./NavStack";
