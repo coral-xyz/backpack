@@ -24,6 +24,7 @@ export const getMessages = async ({
     uuid: string;
     created_at: string;
     message: string;
+    room: string;
   };
 }> => {
   const response = await chain("query")({
@@ -50,6 +51,7 @@ export const getMessages = async ({
         client_generated_uuid: true,
         message_kind: true,
         created_at: true,
+        room: true,
       },
     ],
   });
@@ -60,6 +62,7 @@ export const getMessages = async ({
       uuid: string;
       created_at: string;
       message: string;
+      room: string;
     };
   } = {};
 
@@ -69,6 +72,7 @@ export const getMessages = async ({
       uuid: chat?.uuid || "",
       created_at: chat?.created_at || "",
       message: chat?.message || "",
+      room: chat?.room || "",
     };
   });
   return result;

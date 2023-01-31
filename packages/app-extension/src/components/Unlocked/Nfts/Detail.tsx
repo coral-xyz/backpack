@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import {
+  AVATAR_BASE_URL,
   BACKEND_API_URL,
   Blockchain,
   confirmTransaction,
@@ -12,7 +13,6 @@ import {
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
   WHITELISTED_CHAT_COLLECTIONS,
 } from "@coral-xyz/common";
-import { NAV_COMPONENT_NFT_CHAT } from "@coral-xyz/common/dist/esm/constants";
 import {
   List,
   ListItem,
@@ -24,6 +24,7 @@ import {
 } from "@coral-xyz/react-common";
 import {
   collectibleXnft,
+  newAvatarAtom,
   nftById,
   useAnchorContext,
   useBackgroundClient,
@@ -33,6 +34,7 @@ import {
   useOpenPlugin,
   useSolanaCtx,
   useSolanaExplorer,
+  useUser,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { CallMade, Whatshot } from "@mui/icons-material";
@@ -40,7 +42,7 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { IconButton, Popover, Typography } from "@mui/material";
 import { PublicKey } from "@solana/web3.js";
 import { BigNumber } from "ethers";
-import { useRecoilValueLoadable } from "recoil";
+import { useRecoilValueLoadable, useSetRecoilState } from "recoil";
 
 import { ApproveTransactionDrawer } from "../../common/ApproveTransactionDrawer";
 import {
@@ -467,6 +469,8 @@ function Attributes({ nft }: { nft: any }) {
 export function NftOptionsButton() {
   const theme = useCustomTheme();
   const background = useBackgroundClient();
+  const { username } = useUser();
+  const setNewAvatar = useSetRecoilState(newAvatarAtom(username));
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [openDrawer, setOpenDrawer] = useState(false);
   const searchParams = useDecodedSearchParams();
@@ -514,6 +518,24 @@ export function NftOptionsButton() {
   const onBurn = () => {
     onClose();
     setOpenDrawer(true);
+  };
+
+  const onSetPfp = async () => {
+    if (nft) {
+      const id = `${nft.blockchain}/${
+        nft.blockchain === "solana" ? nft.mint : nft.id
+      }`;
+
+      await fetch(BACKEND_API_URL + "/users/avatar", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify({ avatar: id }),
+      });
+      await fetch(`${AVATAR_BASE_URL}/${username}?bust_cache=1`);
+      setNewAvatar({ id, url: nft.imageUrl });
+    }
   };
 
   return (
@@ -579,6 +601,12 @@ export function NftOptionsButton() {
                   color: theme.custom.colors.secondary,
                 }}
               />
+            </ListItem>
+            <ListItem
+              style={{ width: "100%", height: "30px" }}
+              onClick={onSetPfp}
+            >
+              <Typography style={{ fontSize: "14px" }}>Set as PFP</Typography>
             </ListItem>
             {!isEthereum && (
               <ListItem

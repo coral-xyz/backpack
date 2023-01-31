@@ -36,6 +36,7 @@ export interface EnrichedMessageWithMetadata extends EnrichedMessage {
   username: string;
   image: string;
   color?: string;
+  colorIndex?: number;
   parent_message_author_username?: string;
 }
 
@@ -44,6 +45,7 @@ export interface UserMetadata {
   image: string;
   username: string;
   color?: string;
+  colorIndex: number;
 }
 
 export type ReceiveChat = {

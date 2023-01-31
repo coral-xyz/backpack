@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   BACKEND_API_URL,
   Blockchain,
   NAV_COMPONENT_MESSAGE_PROFILE,
-  parseMessage,
+  NEW_COLORS,
 } from "@coral-xyz/common";
 import { refreshIndividualChatsFor } from "@coral-xyz/react-common";
 import {
@@ -45,7 +45,6 @@ const useStyles = makeStyles((theme: any) =>
   createStyles({
     messageRow: {
       display: "flex",
-      marginBottom: 25,
     },
     messageContainer: {
       position: "relative",
@@ -189,18 +188,21 @@ const GifDemo = ({
 
 export const MessageLine = (props) => {
   const { push } = useNavigation();
+  const { isDarkMode } = useChatContext();
   const message = props.message ? props.message : "";
   const timestamp = props.timestamp
     ? new Date(parseInt(props.timestamp))
     : new Date();
   const { uuid } = useUser();
-  const { setActiveReply } = useChatContext();
-  const theme = useCustomTheme();
 
   const photoURL = props.image;
   const displayName = props.username;
   const received = props.received;
+  const theme = useCustomTheme();
+  const sameUserMessage = props.sameUserMessage;
+
   const classes = useStyles();
+  const { setActiveReply } = useChatContext();
 
   function formatAMPM(date) {
     let hours = date.getHours();
@@ -227,88 +229,76 @@ export const MessageLine = (props) => {
 
   return (
     <>
-      <div className={classes.messageRow}>
-        {photoURL ? (
-          <img
-            onClick={() => openProfilePage({ uuid: props.uuid })}
-            alt={displayName}
-            className={classes.avatar}
-            src={`${photoURL}?size=25`}
-          ></img>
-        ) : (
-          <Skeleton variant="circular" width={40} height={40} />
-        )}
-        <div className={`${classes.messageLine} ${classes.hoverParent}`}>
-          <div style={{ width: "calc(100% - 80px)" }}>
-            <div
-              onClick={() => openProfilePage({ uuid: props.uuid })}
-              className={classes.displayName}
-              style={{ color: props.color, cursor: "pointer" }}
-            >
-              {displayName ? (
-                `@${displayName}`
-              ) : (
-                <Skeleton width={30} height={20} style={{ marginTop: "0px" }} />
-              )}
-            </div>
-            <div
-              className={classes.messageContainer}
-              style={{ display: "flex" }}
-            >
-              <div>
-                {props.parent_message_author_uuid && (
-                  <div style={{}}>
-                    <ReplyContainer
-                      marginBottom={0}
-                      parent_username={
-                        props.parent_message_author_username || ""
-                      }
-                      showCloseBtn={false}
-                      text={props.parent_message_text}
-                    />
-                  </div>
-                )}
-                <div>
-                  <p className={classes.messageContent}>
-                    {props.messageKind === "gif" ? (
-                      <div
-                        style={{
-                          height: 150,
-                          maxWidth: 220,
-                          overflow: "hidden",
-                        }}
-                      >
-                        <GifDemo id={message} height={150} />
-                      </div>
-                    ) : props.messageKind === "secure-transfer" ? (
-                      <>
-                        <SecureTransferElement
-                          messageId={props.messageId}
-                          senderUuid={props.uuid}
-                          escrow={props.metadata.escrow}
-                          counter={props.metadata.counter}
-                          currentState={props.metadata.current_state}
-                          remoteUsername={props.username}
-                          finalTxId={props.metadata.final_txn_signature}
-                        />
-                      </>
-                    ) : props.messageKind === "media" ? (
-                      <div>
-                        <MediaContent
-                          mediaLink={props.metadata?.media_link}
-                          mediaKind={props.metadata?.media_kind}
-                        />
-                        <div>{message}</div>
-                      </div>
-                    ) : (
-                      <ParsedMessage message={message} />
-                    )}
-                  </p>
+      <div
+        className={classes.messageRow}
+        style={{
+          marginTop: sameUserMessage ? 0 : 25,
+          paddingLeft: sameUserMessage ? 40 : 0,
+        }}
+      >
+        {sameUserMessage ? (
+          <div
+            className={`${classes.messageContainer} ${classes.hoverParent}`}
+            style={{ display: "flex" }}
+          >
+            <div>
+              {props.parent_message_author_uuid && (
+                <div style={{}}>
+                  <ReplyContainer
+                    marginBottom={2}
+                    padding={0}
+                    parent_username={props.parent_message_author_username || ""}
+                    showCloseBtn={false}
+                    text={props.parent_message_text}
+                  />
                 </div>
+              )}
+              <div>
+                <p className={classes.messageContent}>
+                  {props.messageKind === "gif" ? (
+                    <div
+                      style={{
+                        height: 150,
+                        maxWidth: 220,
+                        overflow: "hidden",
+                      }}
+                    >
+                      <GifDemo id={message} height={150} />
+                    </div>
+                  ) : props.messageKind === "secure-transfer" ? (
+                    <>
+                      <SecureTransferElement
+                        messageId={props.messageId}
+                        senderUuid={props.uuid}
+                        escrow={props.metadata.escrow}
+                        counter={props.metadata.counter}
+                        currentState={props.metadata.current_state}
+                        remoteUsername={props.username}
+                        finalTxId={props.metadata.final_txn_signature}
+                      />
+                    </>
+                  ) : props.messageKind === "media" ? (
+                    <div>
+                      <MediaContent
+                        mediaLink={props.metadata?.media_link}
+                        mediaKind={props.metadata?.media_kind}
+                      />
+                      <div>{message}</div>
+                    </div>
+                  ) : (
+                    <ParsedMessage message={message} />
+                  )}
+                </p>
               </div>
+            </div>
+            <div>
               {props.messageKind === "text" && (
                 <div
-                  style={{ marginLeft: 10, marginTop: 3, cursor: "pointer" }}
+                  style={{
+                    marginLeft: 10,
+                    marginTop: 3,
+                    cursor: "pointer",
+                  }}
                   className={classes.hoverChild}
                   onClick={() => {
                     setActiveReply({
@@ -324,32 +314,153 @@ export const MessageLine = (props) => {
               )}
             </div>
           </div>
-          <div style={{ minWidth: 63 }}>
-            <div className={classes.messageTimeStampRight}>
-              {formatAMPM(timestamp)}
-            </div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row-reverse",
-                marginTop: 5,
-              }}
-            >
-              {received ? (
-                <DoneAllIcon
+        ) : (
+          <>
+            {photoURL ? (
+              <img
+                onClick={() => openProfilePage({ uuid: props.uuid })}
+                alt={displayName}
+                className={classes.avatar}
+                src={`${photoURL}?size=25`}
+              ></img>
+            ) : (
+              <Skeleton variant="circular" width={40} height={40} />
+            )}
+            <div className={`${classes.messageLine} ${classes.hoverParent}`}>
+              <div style={{ width: "calc(100% - 80px)" }}>
+                <div
+                  onClick={() => openProfilePage({ uuid: props.uuid })}
+                  className={classes.displayName}
                   style={{
-                    fontSize: 13,
-                    color: "green",
+                    display: "inline-flex",
+                    color:
+                      props.colorIndex || props.colorIndex === 0
+                        ? NEW_COLORS[props.colorIndex || 0][
+                            isDarkMode ? "dark" : "light"
+                          ]
+                        : props.color,
+                    cursor: "pointer",
                   }}
-                />
-              ) : (
-                <DoneIcon
-                  style={{ color: theme.custom.colors.icon, fontSize: 13 }}
-                />
-              )}
+                >
+                  {displayName ? (
+                    `@${displayName}`
+                  ) : (
+                    <Skeleton
+                      width={30}
+                      height={20}
+                      style={{ marginTop: "0px" }}
+                    />
+                  )}
+                </div>
+                <div
+                  className={`${classes.messageContainer} ${classes.hoverParent}`}
+                  style={{ display: "flex" }}
+                >
+                  <div>
+                    {props.parent_message_author_uuid && (
+                      <div style={{}}>
+                        <ReplyContainer
+                          marginBottom={0}
+                          padding={0}
+                          parent_username={
+                            props.parent_message_author_username || ""
+                          }
+                          showCloseBtn={false}
+                          text={props.parent_message_text}
+                        />
+                      </div>
+                    )}
+                    <div>
+                      <p className={classes.messageContent}>
+                        {props.messageKind === "gif" ? (
+                          <div
+                            style={{
+                              height: 150,
+                              maxWidth: 220,
+                              overflow: "hidden",
+                            }}
+                          >
+                            <GifDemo id={message} height={150} />
+                          </div>
+                        ) : props.messageKind === "secure-transfer" ? (
+                          <>
+                            <SecureTransferElement
+                              messageId={props.messageId}
+                              senderUuid={props.uuid}
+                              escrow={props.metadata.escrow}
+                              counter={props.metadata.counter}
+                              currentState={props.metadata.current_state}
+                              remoteUsername={props.username}
+                              finalTxId={props.metadata.final_txn_signature}
+                            />
+                          </>
+                        ) : props.messageKind === "media" ? (
+                          <div>
+                            <MediaContent
+                              mediaLink={props.metadata?.media_link}
+                              mediaKind={props.metadata?.media_kind}
+                            />
+                            <div>{message}</div>
+                          </div>
+                        ) : (
+                          <ParsedMessage message={message} />
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                  <div>
+                    {props.messageKind === "text" && (
+                      <div
+                        style={{
+                          marginLeft: 10,
+                          marginTop: 3,
+                          cursor: "pointer",
+                        }}
+                        className={classes.hoverChild}
+                        onClick={() => {
+                          setActiveReply({
+                            parent_client_generated_uuid:
+                              props.client_generated_uuid,
+                            text: message,
+                            parent_username: `@${props.username}`,
+                            parent_message_author_uuid: props.userId,
+                          });
+                        }}
+                      >
+                        <ReplyIcon fill={theme.custom.colors.icon} />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div style={{ minWidth: 63 }}>
+                <div className={classes.messageTimeStampRight}>
+                  {formatAMPM(timestamp)}
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row-reverse",
+                    marginTop: 5,
+                  }}
+                >
+                  {received ? (
+                    <DoneAllIcon
+                      style={{
+                        fontSize: 13,
+                        color: "green",
+                      }}
+                    />
+                  ) : (
+                    <DoneIcon
+                      style={{ color: theme.custom.colors.icon, fontSize: 13 }}
+                    />
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </>
+        )}
       </div>
     </>
   );
@@ -611,15 +722,21 @@ export function ChatMessages() {
 
   return (
     <div style={{ paddingLeft: 18, paddingRight: 18 }}>
-      {chats.map((chat) => {
+      {chats.map((chat, index) => {
         return (
           <MessageLine
             received={chat.received}
+            sameUserMessage={
+              index > 0 &&
+              index < chats.length &&
+              chats[index]?.username === chats[index - 1]?.username
+            }
             parent_message_author_username={chat.parent_message_author_username}
             parent_message_text={chat.parent_message_text}
             parent_message_author_uuid={chat.parent_message_author_uuid}
             client_generated_uuid={chat.client_generated_uuid}
             color={chat.color || theme.custom.colors.fontColor2}
+            colorIndex={chat.colorIndex}
             timestamp={chat.created_at}
             key={chat.client_generated_uuid}
             message={chat.message}
@@ -694,6 +811,7 @@ function MessageLeft(props) {
         <div style={{ paddingLeft: 19, marginBottom: -10 }}>
           <ReplyContainer
             marginBottom={0}
+            padding={0}
             parent_username={props.parent_message_author_username || ""}
             showCloseBtn={false}
             text={props.parent_message_text}
@@ -752,6 +870,7 @@ function MessageRight(props) {
           <ReplyContainer
             align={"right"}
             marginBottom={0}
+            padding={0}
             parent_username={props.parent_message_author_username || ""}
             showCloseBtn={false}
             text={props.parent_message_text}

@@ -33,11 +33,11 @@ import {
   NOTIFICATION_SOLANA_CONNECTED,
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_DISCONNECTED,
-  openColdPopupWindow,
   openApprovalPopupWindow,
   openApproveAllTransactionsPopupWindow,
   openApproveMessagePopupWindow,
   openApproveTransactionPopupWindow,
+  openLockedApprovalPopupWindow,
   openLockedPopupWindow,
   openOnboarding,
   openPopupWindow,
@@ -233,20 +233,30 @@ async function handleConnect(
   let didApprove = false;
   let resp: any;
 
-  if (
-    keyringStoreState === "locked" &&
-    (await ctx.backend.isApprovedOrigin(origin))
-  ) {
-    logger.debug("origin approved but need to unlock");
-    resp = await RequestManager.requestUiAction((requestId: number) => {
-      return openLockedPopupWindow(
-        ctx.sender.origin,
-        getTabTitle(ctx),
-        requestId,
-        blockchain
-      );
-    });
-    didApprove = !resp.windowClosed && resp.result.didApprove;
+  if (keyringStoreState === "locked") {
+    if (await ctx.backend.isApprovedOrigin(origin)) {
+      logger.debug("origin approved but need to unlock");
+      resp = await RequestManager.requestUiAction((requestId: number) => {
+        return openLockedPopupWindow(
+          ctx.sender.origin,
+          getTabTitle(ctx),
+          requestId,
+          blockchain
+        );
+      });
+      didApprove = !resp.windowClosed && resp.result;
+    } else {
+      logger.debug("origin not apporved and needs to unlock");
+      resp = await RequestManager.requestUiAction((requestId: number) => {
+        return openLockedApprovalPopupWindow(
+          ctx.sender.origin,
+          getTabTitle(ctx),
+          requestId,
+          blockchain
+        );
+      });
+      didApprove = !resp.windowClosed && resp.result.didApprove;
+    }
   } else {
     if (await ctx.backend.isApprovedOrigin(origin)) {
       logger.debug("origin approved so automatically connecting");
@@ -334,20 +344,6 @@ async function handleSolanaSignAndSendTx(
   walletAddress: string,
   options?: SendOptions
 ): Promise<RpcResponse<string>> {
-  if (await ctx.backend.keyIsCold(walletAddress)) {
-    const _uiResp = await RequestManager.requestUiAction(
-      (requestId: number) => {
-        return openColdPopupWindow(
-          ctx.sender.origin,
-          getTabTitle(ctx),
-          requestId,
-          walletAddress
-        );
-      }
-    );
-    return [undefined, "external site cannot sign for a cold wallet"];
-  }
-
   // Get user approval.
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
     return openApproveTransactionPopupWindow(
@@ -397,20 +393,6 @@ async function handleSolanaSignTx(
   tx: string,
   walletAddress: string
 ): Promise<RpcResponse<string>> {
-  if (await ctx.backend.keyIsCold(walletAddress)) {
-    const _uiResp = await RequestManager.requestUiAction(
-      (requestId: number) => {
-        return openColdPopupWindow(
-          ctx.sender.origin,
-          getTabTitle(ctx),
-          requestId,
-          walletAddress
-        );
-      }
-    );
-    return [undefined, "external site cannot sign for a cold wallet"];
-  }
-
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
     return openApproveTransactionPopupWindow(
       ctx.sender.origin,
@@ -459,20 +441,6 @@ async function handleSolanaSignAllTxs(
   txs: Array<string>,
   walletAddress: string
 ): Promise<RpcResponse<Array<string>>> {
-  if (await ctx.backend.keyIsCold(walletAddress)) {
-    const _uiResp = await RequestManager.requestUiAction(
-      (requestId: number) => {
-        return openColdPopupWindow(
-          ctx.sender.origin,
-          getTabTitle(ctx),
-          requestId,
-          walletAddress
-        );
-      }
-    );
-    return [undefined, "external site cannot sign for a cold wallet"];
-  }
-
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
     return openApproveAllTransactionsPopupWindow(
       ctx.sender.origin,

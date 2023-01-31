@@ -1,0 +1,17 @@
+{
+  "name": "version",
+  "version": "0.0.0",
+  "devDependencies": {
+    "@cloudflare/workers-types": "^3.16.0",
+    "typescript": "~4.9.3",
+    "wrangler": "^2.1.6"
+  },
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev --local",
+    "deploy": "wrangler publish"
+  },
+  "dependencies": {
+    "hono": "^2.2.1"
+  }
+}

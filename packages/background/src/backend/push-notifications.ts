@@ -8,7 +8,8 @@ export const initPushNotificationHandlers = () => {
       self.registration.showNotification(data.title, {
         body: data.body,
         requireInteraction: true,
-        image: data.image || "",
+        icon: data.image,
+        image: data.image,
         tag: data.href,
       })
     );

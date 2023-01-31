@@ -1,7 +1,11 @@
 import express from "express";
 
 import { extractUserId } from "../../auth/middleware";
-import { getNotifications } from "../../db/notifications";
+import {
+  deleteSubscriptions,
+  getNotifications,
+  getSubscriptions,
+} from "../../db/notifications";
 import { insertSubscription } from "../../db/preference";
 const router = express.Router();
 
@@ -14,6 +18,19 @@ router.post("/register", extractUserId, async (req, res) => {
   await insertSubscription(publicKey, uuid, subscription);
 
   res.json({});
+});
+
+router.delete("/", extractUserId, async (req, res) => {
+  // @ts-ignore
+  const uuid = req.id || "";
+  await deleteSubscriptions({ uuid });
+  res.json({});
+});
+
+router.get("/subscriptions", extractUserId, async (req, res) => {
+  const uuid = req.id || "";
+  const subscriptions = await getSubscriptions({ uuid });
+  res.json(subscriptions);
 });
 
 router.get("/", extractUserId, async (req, res) => {

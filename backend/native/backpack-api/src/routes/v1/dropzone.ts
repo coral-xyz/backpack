@@ -1,5 +1,7 @@
 import { emptyWallet } from "@cardinal/common";
+import type { order_by } from "@coral-xyz/zeus";
 import { Chain } from "@coral-xyz/zeus";
+import type { PublicKeyString } from "@metaplex-foundation/js";
 import { MerkleDistributorSDK, utils } from "@saberhq/merkle-distributor";
 import { SignerWallet, SolanaProvider } from "@saberhq/solana-contrib";
 import { u64 } from "@saberhq/token-utils";
@@ -14,15 +16,58 @@ import { HASURA_URL, JWT } from "../../config";
 const router = express.Router();
 router.use(cors({ origin: "*" }));
 
+type DropzoneData = Record<PublicKeyString, [number, number, string]>;
+
 /**
  * Creates a distributor transaction, stores data in the DB, returns
  * the transaction to be signed
  */
 router.post("/drops", async (req, res, next) => {
   try {
+    const usernames = Object.keys(req.body.balances);
+
+    const { auth_users } = await chain("query")({
+      auth_users: [
+        {
+          where: {
+            username: {
+              _in: Object.keys(req.body.balances),
+            },
+          },
+        },
+        {
+          username: true,
+          dropzone_public_key: [
+            {},
+            {
+              public_key: true,
+            },
+          ],
+        },
+      ],
+    });
+
+    if (auth_users.length < usernames.length) {
+      throw new Error("Some usernames were not found");
+    }
+
+    const data = auth_users.reduce((acc, curr, index) => {
+      const username = curr.username as string;
+      acc[curr.dropzone_public_key![0].public_key] = [
+        req.body.balances[username],
+        index,
+        username,
+      ];
+      return acc;
+    }, {} as DropzoneData);
+
     const provider = createProvider(new PublicKey(req.body.creator));
     const sdk = MerkleDistributorSDK.load({ provider });
-    const _tree = req.body.balances;
+
+    const _tree = Object.entries(data).reduce(
+      (acc, [account, [amount]]) => acc.concat({ account, amount }),
+      [] as { account: PublicKeyString; amount: number }[]
+    );
 
     const tree = new utils.BalanceTree(
       _tree.map((t) => ({
@@ -66,7 +111,8 @@ router.post("/drops", async (req, res, next) => {
         variables: {
           object: {
             id: pendingDistributor.distributor.toBase58(),
-            data: req.body.balances,
+            data,
+            mint: req.body.mint,
           },
         },
       }),
@@ -111,38 +157,102 @@ router.get("/drops/:distributor", async (req, res, next) => {
   }
 });
 
+router.get("/claims/:claimant", isValidClaimant, async (req, res, next) => {
+  try {
+    const { dropzone_distributors: query } = await chain("query")({
+      dropzone_distributors: [
+        {
+          order_by: [{ created_at: "desc" as order_by.desc }],
+          where: {
+            data: {
+              _has_key: req.params.claimant,
+            },
+          },
+        },
+        {
+          id: true,
+          data: [{ path: `$["${req.params.claimant}"]` }, true],
+          created_at: true,
+          mint: true,
+        },
+      ],
+    });
+
+    const claims = query.map(({ data, ...distributor }) => ({
+      ...distributor,
+      amount: (data as any)[0],
+      _index: (data as any)[1],
+    }));
+
+    // TODO: index claims in db or run this from frontend, otherwise in the
+    // meantime batch the requests and/or make more robust if RPC fails
+    const claimsIncludingClaimedAt = await Promise.all(
+      claims.map(async ({ _index, ...claim }) => {
+        let claimedAt = undefined;
+        try {
+          const distributor = await getDistributor(claim.id);
+          const status = await distributor.getClaimStatus(new u64(_index));
+          claimedAt = new Date(
+            status.claimedAt.toNumber() * 1000
+          ).toISOString();
+        } catch (err) {
+          // unclaimed
+        }
+        return {
+          ...claim,
+          claimed_at: claimedAt,
+        };
+      })
+    );
+
+    res.json({
+      claimed: claimsIncludingClaimedAt.filter((c) => c.claimed_at),
+      unclaimed: claimsIncludingClaimedAt.filter((c) => !c.claimed_at),
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 /**
  * Gets the status of a claimant's claim on a distributor
  */
 router.get(
   "/drops/:distributor/claimants/:claimant",
+  isValidClaimant,
   async (req, res, next) => {
     try {
+      try {
+        new PublicKey(req.params.claimant);
+      } catch (err) {
+        throw new Error("Invalid claimant address");
+      }
+
       const { dropzone_distributors_by_pk } = await chain("query")({
         dropzone_distributors_by_pk: [
           { id: req.params.distributor },
-          { id: true, data: [{ path: "$" }, true] },
+          { id: true, data: [{ path: `$["${req.params.claimant}"]` }, true] },
         ],
       });
-
-      if (!dropzone_distributors_by_pk) throw new Error("Not found");
+      if (!dropzone_distributors_by_pk) {
+        throw new Error("Distributor not found");
+      }
+      if (!dropzone_distributors_by_pk.data) {
+        throw new Error("Claimant not found");
+      }
 
       const query = dropzone_distributors_by_pk as {
         id: string;
-        data: Array<{ account: string; amount: number }>;
+        data: DropzoneData[string];
       };
 
       const distributor = await getDistributor(query.id);
 
-      const index = query.data.findIndex(
-        (t) => t.account === req.params.claimant
-      );
-
-      if (index < 0) throw new Error("Claimant not found in drop");
-
       try {
         // claimed
-        const claimStatus = await distributor.getClaimStatus(new u64(index));
+        const claimStatus = await distributor.getClaimStatus(
+          new u64(query.data[1])
+        );
         res.json({
           claimStatus,
         });
@@ -158,6 +268,7 @@ router.get(
 
 router.get(
   "/drops/:distributor/claimants/:claimant/claim",
+  isValidClaimant,
   async (req, res, next) => {
     try {
       const { dropzone_distributors_by_pk } = await chain("query")({
@@ -166,20 +277,23 @@ router.get(
           { id: true, data: [{ path: "$" }, true] },
         ],
       });
-      if (!dropzone_distributors_by_pk) throw new Error("Not found");
+      if (!dropzone_distributors_by_pk) {
+        throw new Error("Distributor not found");
+      }
+      if (
+        !(dropzone_distributors_by_pk.data as DropzoneData)[req.params.claimant]
+      ) {
+        throw new Error("Claimant not found");
+      }
+
       const query = dropzone_distributors_by_pk as {
         id: string;
-        data: Array<{ account: string; amount: number }>;
+        data: DropzoneData;
       };
 
       const provider = createProvider(new PublicKey(req.params.claimant));
       const distributor = await getDistributor(query.id, provider);
-
-      const index = query.data.findIndex(
-        (t) => t.account === req.params.claimant
-      );
-
-      if (index < 0) throw new Error("Claimant not found in drop");
+      const [integerAmount, index] = query.data[req.params.claimant];
 
       try {
         const claimStatus = await distributor.getClaimStatus(new u64(index));
@@ -188,10 +302,8 @@ router.get(
         if (err.message === "Already claimed") throw err;
       }
 
-      const record = query.data[index];
-
-      const claimant = new PublicKey(record.account);
-      const amount = new u64(record.amount);
+      const claimant = new PublicKey(req.params.claimant);
+      const amount = new u64(integerAmount);
 
       console.log({
         index,
@@ -200,10 +312,12 @@ router.get(
       });
 
       const tree = new utils.BalanceTree(
-        query.data.map((t) => ({
-          amount: new u64(t.amount),
-          account: new PublicKey(t.account),
-        }))
+        Object.entries(query.data)
+          .sort((a, b) => a[1][1] - b[1][1])
+          .map(([k, v]) => ({
+            amount: new u64(v[0]),
+            account: new PublicKey(k),
+          }))
       );
 
       const claim = await distributor.claim({
@@ -254,3 +368,12 @@ const chain = Chain(HASURA_URL, {
     Authorization: `Bearer ${JWT}`,
   },
 });
+
+function isValidClaimant(req: Request, res: Response, next: NextFunction) {
+  try {
+    new PublicKey(req.params.claimant);
+    next();
+  } catch (err) {
+    res.status(400).json({ error: "Invalid claimant address" });
+  }
+}

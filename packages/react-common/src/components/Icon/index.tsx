@@ -460,9 +460,9 @@ export function MessageBubbleIcon({ fill = "#99A4B4", ...props }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="26"
-      height="26"
-      viewBox="0 -4 26 26"
+      width="22"
+      height="21"
+      viewBox="0 0 22 21"
       fill="none"
       {...props}
     >

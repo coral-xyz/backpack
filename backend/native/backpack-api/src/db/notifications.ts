@@ -31,3 +31,27 @@ export const getNotifications = async (
   });
   return response.auth_notifications || [];
 };
+
+export const getSubscriptions = async ({ uuid }: { uuid: string }) => {
+  return chain("query")({
+    auth_notification_subscriptions: [
+      { where: { uuid: { _eq: uuid } } },
+      { id: true },
+    ],
+  });
+};
+
+export const deleteSubscriptions = async ({ uuid }: { uuid: string }) => {
+  return chain("mutation")({
+    delete_auth_notification_subscriptions: [
+      {
+        where: {
+          uuid: { _eq: uuid },
+        },
+      },
+      {
+        affected_rows: true,
+      },
+    ],
+  });
+};

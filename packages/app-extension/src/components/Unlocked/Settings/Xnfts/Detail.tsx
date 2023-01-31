@@ -26,7 +26,6 @@ import {
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Button, Typography } from "@mui/material";
-import { PublicKey } from "@solana/web3.js";
 import { useRecoilValue } from "recoil";
 
 import { updateRemotePreference } from "../../../../api/preferences";
@@ -49,7 +48,10 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
   const background = useBackgroundClient();
   const { username } = useUser();
 
-  const isDisabled = xnft.install.publicKey === PublicKey.default.toString();
+  // Using the raw string here instead of PublicKey.default.toString() because
+  // typescript sucks and is throwing inexplicable errors.
+  const isDisabled =
+    xnft.install.publicKey === "11111111111111111111111111111111";
 
   useEffect(() => {
     nav.setTitle(xnft.title);

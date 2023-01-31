@@ -2,18 +2,24 @@ import { useEffect, useState } from "react";
 import type { RemoteUserData } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import { UserList } from "@coral-xyz/message-sdk";
-import { Loading, TextInput } from "@coral-xyz/react-common";
+import {
+  isFirstLastListItemStyle,
+  Loading,
+  TextInput,
+} from "@coral-xyz/react-common";
+import { useCustomTheme } from "@coral-xyz/themes";
+import { Skeleton } from "@mui/material";
 
 import { useNavStack } from "../../common/Layout/NavStack";
 
-import { SearchUsers } from "./SearchUsers";
 import { useStyles } from "./styles";
 
-export const Requests = () => {
+export const Requests = ({ searchFilter }: { searchFilter: string }) => {
   const classes = useStyles();
   const [requests, setRequests] = useState<RemoteUserData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [searchFilter, setSearchFilter] = useState("");
+  const theme = useCustomTheme();
+
   const filteredRequests = requests
     .filter((x) => x.username.includes(searchFilter))
     .map((x: RemoteUserData) => ({
@@ -25,7 +31,6 @@ export const Requests = () => {
       requested: x.requested,
       remoteRequested: x.remoteRequested,
     }));
-  const nav = useNavStack();
 
   const fetchRequests = async () => {
     const response = await fetch(`${BACKEND_API_URL}/friends/requests`, {
@@ -44,36 +49,94 @@ export const Requests = () => {
     fetchRequests();
   }, []);
 
-  useEffect(() => {
-    nav.setTitle("Requests");
-  }, [nav]);
-
   if (loading) {
-    return <Loading />;
+    return (
+      <div style={{ marginTop: 5 }}>
+        {" "}
+        <SkeletonContainer />
+      </div>
+    );
   }
 
   return (
-    <div className={classes.container}>
-      <TextInput
-        className={classes.searchField}
-        placeholder={"Search"}
-        value={searchFilter}
-        setValue={async (e) => {
-          const prefix = e.target.value;
-          setSearchFilter(prefix);
-        }}
-        inputProps={{
-          style: {
-            height: "48px",
-          },
-        }}
-      />
+    <div style={{ marginTop: 5 }}>
       {filteredRequests.length !== 0 && (
         <UserList
           setMembers={setRequests}
           users={filteredRequests as RemoteUserData[]}
         />
       )}
+      {filteredRequests.length === 0 && (
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <div style={{ color: theme.custom.colors.fontColor }}>
+            You have no pending requests
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+
+export function SkeletonContainer() {
+  return (
+    <>
+      <UserSkeleton isFirst={true} isLast={false} />
+      <UserSkeleton isFirst={false} isLast={false} />
+      <UserSkeleton isFirst={false} isLast={false} />
+      <UserSkeleton isFirst={false} isLast={true} />
+    </>
+  );
+}
+
+export function UserSkeleton({
+  isFirst,
+  isLast,
+}: {
+  isFirst: boolean;
+  isLast: boolean;
+}) {
+  const theme = useCustomTheme();
+  return (
+    <div
+      onClick={() => {}}
+      style={{
+        paddingLeft: "8px",
+        paddingRight: "8px",
+        paddingTop: "12px",
+        height: 48,
+        paddingBottom: "12px",
+        display: "flex",
+        backgroundColor: theme.custom.colors.nav,
+        borderBottom: isLast
+          ? undefined
+          : `solid 1pt ${theme.custom.colors.border}`,
+        ...isFirstLastListItemStyle(isFirst, isLast, 12),
+      }}
+    >
+      <div
+        style={{
+          height: "100%",
+          width: "100%",
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
+        <div>
+          <Skeleton variant="circular" width={32} height={32} />
+        </div>
+        <div
+          style={{
+            marginLeft: "5px",
+            width: "100%",
+            display: "flex",
+            justifyContent: "space-between",
+            marginTop: 5,
+          }}
+        >
+          <Skeleton width="80px" height={35} style={{ marginTop: "-6px" }} />
+          <Skeleton width="70px" height={35} style={{ marginTop: "-6px" }} />
+        </div>
+      </div>
+    </div>
+  );
+}
