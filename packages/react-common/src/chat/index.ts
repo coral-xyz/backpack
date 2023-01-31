@@ -1,3 +1,4 @@
+export * from "./BackgroundChatsSync";
 export * from "./fetchMoreChatsFor";
 export * from "./refreshChatsFor";
 export * from "./refreshGroupsAndFriendships";

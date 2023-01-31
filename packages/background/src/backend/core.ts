@@ -21,7 +21,6 @@ import {
   EthereumExplorer,
   getAddMessage,
   LOAD_PUBLIC_KEY_AMOUNT,
-  NOTIFICATION_KEY_IS_COLD_UPDATE,
   NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED,
   NOTIFICATION_AGGREGATE_WALLETS_UPDATED,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
@@ -35,6 +34,7 @@ import {
   NOTIFICATION_ETHEREUM_CONNECTION_URL_UPDATED,
   NOTIFICATION_ETHEREUM_EXPLORER_UPDATED,
   NOTIFICATION_FEATURE_GATES_UPDATED,
+  NOTIFICATION_KEY_IS_COLD_UPDATE,
   NOTIFICATION_KEYNAME_UPDATE,
   NOTIFICATION_KEYRING_DERIVED_WALLET,
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
@@ -1629,7 +1629,11 @@ export class Backend {
   // Navigation.
   ///////////////////////////////////////////////////////////////////////////////
 
-  async navigationPush(url: string, tab?: string): Promise<string> {
+  async navigationPush(
+    url: string,
+    tab?: string,
+    pushAboveRoot?: boolean
+  ): Promise<string> {
     let nav = await store.getNav();
     if (!nav) {
       throw new Error("nav not found");
@@ -1642,6 +1646,10 @@ export class Backend {
 
     if (urls.length > 0 && urls[urls.length - 1] === url) {
       return SUCCESS_RESPONSE;
+    }
+
+    if (pushAboveRoot && nav.data[targetTab].urls[0]) {
+      nav.data[targetTab].urls = [nav.data[targetTab].urls[0]];
     }
 
     nav.data[targetTab].urls.push(url);

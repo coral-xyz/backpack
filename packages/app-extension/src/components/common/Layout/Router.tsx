@@ -16,7 +16,6 @@ import {
   MESSAGING_COMMUNICATION_FETCH,
   MESSAGING_COMMUNICATION_PUSH,
 } from "@coral-xyz/common/src/constants";
-import { useDbUser } from "@coral-xyz/db";
 import {
   ChatScreen,
   Inbox,
@@ -30,7 +29,6 @@ import {
   useDarkMode,
   useDecodedSearchParams,
   useFeatureGates,
-  useFriendships,
   useNavigation,
   useRedirectUrl,
   useUser,
@@ -52,7 +50,6 @@ import { NftOptionsButton, NftsDetail } from "../../Unlocked/Nfts/Detail";
 import { NftChat, NftsExperience } from "../../Unlocked/Nfts/Experience";
 import { SettingsButton } from "../../Unlocked/Settings";
 
-import { AvatarPopoverButton } from "./../../Unlocked/Settings/AvatarPopover";
 import { useBreakpoints } from "./hooks";
 import { NavBackButton, WithNav } from "./Nav";
 import { WithMotion } from "./NavStack";
@@ -85,7 +82,11 @@ export function Router() {
           "xnft", if this changes then please verify that it still works
           */}
         <Route path="/xnft/:xnftAddress" element={<XnftAppStack />} />
-        <Route path="*" element={<Redirect />} />
+        {isXs ? (
+          <Route path="*" element={<RedirectXs />} />
+        ) : (
+          <Route path="*" element={<Redirect />} />
+        )}
       </Routes>
     </AnimatePresence>
   );
@@ -101,6 +102,17 @@ export function RecentActivityPage() {
 
 export function Redirect() {
   let url = useRedirectUrl();
+  return <Navigate to={url} replace />;
+}
+
+// We use a separate redirect for the xs size because some routes, e.g., /notifications
+// and /recent-activity don't exist on the xs size--for xs, they are ephemeral drawers,
+// for larger screens they are normal routes.
+export function RedirectXs() {
+  let url = useRedirectUrl();
+  if (url.startsWith("/notifications") || url.startsWith("/recent-activity")) {
+    return <Navigate to={"/balances"} replace />;
+  }
   return <Navigate to={url} replace />;
 }
 
@@ -356,6 +368,7 @@ function NavScreen({
   };
 }) {
   const { title, isRoot, pop } = useNavigation();
+
   const {
     style,
     navButtonLeft,
@@ -420,7 +433,6 @@ function useNavBar() {
   const pathname = useLocation().pathname;
   const theme = useCustomTheme();
   const { props }: any = useDecodedSearchParams(); // TODO: fix type
-  const { uuid } = useUser();
   const { isXs } = useBreakpoints();
   const profileUser = useUsersMetadata({ remoteUserIds: [props?.userId] });
   const image: string | undefined = profileUser[props?.userId]?.image;

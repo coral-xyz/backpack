@@ -71,10 +71,22 @@ export class User {
             x.room === message.payload.room && x.type === message.payload.type
         );
         if (!subscription) {
-          console.log(
-            `User has not yet post subscribed to the room ${message.payload.room}`
+          await this.validateOwnership(
+            message.payload.room,
+            message.payload.type,
+            message.payload.publicKey,
+            message.payload.mint
           );
-          return;
+          const updatedSubs = this.subscriptions.find(
+            (x) =>
+              x.room === message.payload.room && x.type === message.payload.type
+          );
+          if (!updatedSubs) {
+            console.log(
+              `User has not yet post subscribed to the room ${message.payload.room}`
+            );
+            return;
+          }
         }
         message.payload.messages.map((m) => {
           RedisSubscriptionManager.getInstance().addChatMessage(
@@ -87,65 +99,65 @@ export class User {
         });
         break;
       case SUBSCRIBE:
-        let roomValidation = false;
-        if (message.payload.type === "individual") {
-          // @ts-ignore
-          roomValidation = await validateRoom(
-            this.userId,
-            //@ts-ignore (all individual rooms are stored as integers)
-            message.payload.room as number
-          );
-          if (!roomValidation) {
-            console.log(
-              `User ${this.userId} doesn't have access to room ${message.payload.room} `
-            );
-            return;
-          }
-        } else {
-          if (
-            DEFAULT_GROUP_CHATS.map((x) => x.id).includes(message.payload.room)
-          ) {
-            roomValidation = true;
-          } else if (
-            WHITELISTED_CHAT_COLLECTIONS.map((x) => x.id).includes(
-              message.payload.room
-            )
-          ) {
-            roomValidation = await validateCentralizedGroupOwnership(
-              this.userId,
-              message.payload.publicKey,
-              message.payload.room
-            );
-          } else {
-            roomValidation = await validateCollectionOwnership(
-              this.userId,
-              message.payload.publicKey || "",
-              message.payload.mint || "",
-              message.payload.room
-            );
-          }
+        if (
+          this.subscriptions.find(
+            (x) =>
+              x.room === message.payload.room && x.type === message.payload.type
+          )
+        ) {
+          return;
         }
-        if (roomValidation) {
-          this.subscriptions.push(message.payload);
-          RedisSubscriptionManager.getInstance().postSubscribe(
-            this.id,
-            message.payload.type,
-            message.payload.room,
-            roomValidation
-          );
-        }
-        break;
-      case UNSUBSCRIBE:
-        this.subscriptions = this.subscriptions.filter(
-          (x) =>
-            x.room !== message.payload.room || x.type !== message.payload.type
-        );
-        RedisSubscriptionManager.getInstance().postUnsubscribe(
-          this.id,
+        await this.validateOwnership(
+          message.payload.room,
           message.payload.type,
-          message.payload.room
+          message.payload.publicKey,
+          message.payload.mint
         );
         break;
+    }
+  }
+
+  async validateOwnership(
+    room: string,
+    type: SubscriptionType,
+    publicKey?: string,
+    mint?: string
+  ) {
+    let roomValidation = false;
+    if (type === "individual") {
+      // @ts-ignore
+      roomValidation = await validateRoom(
+        this.userId,
+        //@ts-ignore (all individual rooms are stored as integers)
+        room as number
+      );
+      if (!roomValidation) {
+        console.log(`User ${this.userId} doesn't have access to room ${room} `);
+        return;
+      }
+    } else {
+      if (DEFAULT_GROUP_CHATS.map((x) => x.id).includes(room)) {
+        roomValidation = true;
+      } else if (WHITELISTED_CHAT_COLLECTIONS.map((x) => x.id).includes(room)) {
+        roomValidation = await validateCentralizedGroupOwnership(
+          this.userId,
+          room
+        );
+      } else {
+        roomValidation = await validateCollectionOwnership(this.userId, room);
+      }
+    }
+    if (roomValidation) {
+      this.subscriptions.push({
+        type,
+        room,
+      });
+      RedisSubscriptionManager.getInstance().postSubscribe(
+        this.id,
+        type,
+        room,
+        roomValidation
+      );
     }
   }
 

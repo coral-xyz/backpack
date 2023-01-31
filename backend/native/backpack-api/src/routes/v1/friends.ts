@@ -1,15 +1,19 @@
+import type { RemoteUserData } from "@coral-xyz/common";
+import { AVATAR_BASE_URL } from "@coral-xyz/common";
 import express from "express";
 
 import { extractUserId } from "../../auth/middleware";
 import {
   getAllFriends,
   getFriendship,
+  getRequests,
   setBlocked,
   setFriendship,
   setSpam,
   unfriend,
 } from "../../db/friendships";
-import { getUser } from "../../db/users";
+import { getUser, getUsers } from "../../db/users";
+import { Redis } from "../../Redis";
 
 import { enrichFriendships } from "./inbox";
 
@@ -68,6 +72,29 @@ router.post("/unfriend", extractUserId, async (req, res) => {
   res.json({});
 });
 
+router.get("/requests", extractUserId, async (req, res) => {
+  //@ts-ignore
+  const uuid: string = req.id; // TODO from from
+
+  const requestUserIds = await getRequests({ uuid });
+  const users = await getUsers(requestUserIds);
+  const requestsWithMetadata: RemoteUserData[] = requestUserIds.map(
+    (requestUserId) => ({
+      id: requestUserId,
+      username: users.find((x) => x.id === requestUserId)?.username as string,
+      image: `${AVATAR_BASE_URL}/${
+        users.find((x) => x.id === requestUserId)?.username
+      }`,
+      areFriends: false,
+      remoteRequested: true,
+      requested: false,
+    })
+  );
+  res.json({
+    requests: requestsWithMetadata,
+  });
+});
+
 router.post("/request", extractUserId, async (req, res) => {
   //@ts-ignore
   const uuid: string = req.id; // TODO from from
@@ -84,6 +111,17 @@ router.post("/request", extractUserId, async (req, res) => {
   const sendRequest: boolean = req.body.sendRequest;
 
   await setFriendship({ from: uuid, to, sendRequest });
+  if (sendRequest) {
+    await Redis.getInstance().send(
+      JSON.stringify({
+        type: "friend_request",
+        payload: {
+          from: uuid,
+          to,
+        },
+      })
+    );
+  }
   res.json({});
 });
 

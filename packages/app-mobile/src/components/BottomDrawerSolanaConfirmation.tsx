@@ -11,20 +11,29 @@ import {
   SOL_NATIVE_MINT,
   Solana,
   walletAddressDisplay,
+  metadataAddress,
 } from "@coral-xyz/common";
 import { useSolanaCtx } from "@coral-xyz/recoil";
 import { SettingsList } from "@screens/Unlocked/Settings/components/SettingsMenuList";
 import { PublicKey } from "@solana/web3.js";
 
-import { Error, Sending } from "@components/BottomDrawerCards";
+import {
+  Error,
+  Sending,
+  Header,
+  Container,
+} from "@components/BottomDrawerCards";
 import { Margin, PrimaryButton, TokenAmountHeader } from "@components/index";
 import { useTheme } from "@hooks/index";
+import { Metadata, TokenStandard } from "@metaplex-foundation/mpl-token-metadata";
+
+type Step = "confirm" | "sending" | "complete" | "error";
 
 export function SendSolanaConfirmationCard({
   token,
   destinationAddress,
   amount,
-  onComplete,
+  onCompleteStep,
 }: {
   token: {
     address: string;
@@ -35,19 +44,24 @@ export function SendSolanaConfirmationCard({
   };
   destinationAddress: string;
   amount: BigNumber;
-  onComplete?: () => void;
+  onCompleteStep?: (step: Step) => void;
 }): JSX.Element {
   const [txSignature, setTxSignature] = useState<string | null>(null);
   const solanaCtx = useSolanaCtx();
   const [error, setError] = useState(
     "Error 422. Transaction time out. Runtime error. Reticulating splines."
   );
-  const [cardType, setCardType] = useState<
-    "confirm" | "sending" | "complete" | "error"
-  >("confirm");
+  const [cardType, setCardType] = useState<Step>("confirm");
+
+  const handleChangeStep = (step: Step) => {
+    setCardType(step);
+    if (onCompleteStep) {
+      onCompleteStep(step);
+    }
+  };
 
   const onConfirm = async () => {
-    setCardType("sending");
+    handleChangeStep("sending");
     //
     // Send the tx.
     //
@@ -71,6 +85,19 @@ export function SendSolanaConfirmationCard({
           amount: amount.toNumber(),
           decimals: token.decimals,
         });
+      } else if (
+        await isProgrammableNftToken(
+          solanaCtx.connection,
+          token.mint?.toString() as string
+        )
+      )
+      {
+        txSig = await Solana.transferProgrammableNft(solanaCtx, {
+          destination: new PublicKey(destinationAddress),
+          mint: new PublicKey(token.mint!),
+          amount: amount.toNumber(),
+          decimals: token.decimals,
+        });
       } else {
         txSig = await Solana.transferToken(solanaCtx, {
           destination: new PublicKey(destinationAddress),
@@ -81,7 +108,7 @@ export function SendSolanaConfirmationCard({
       }
     } catch (err: any) {
       setError(err.toString());
-      setCardType("error");
+      handleChangeStep("error");
       return;
     }
 
@@ -99,13 +126,10 @@ export function SendSolanaConfirmationCard({
           ? "confirmed"
           : solanaCtx.commitment
       );
-      setCardType("complete");
-      if (onComplete) {
-        onComplete();
-      }
+      handleChangeStep("complete");
     } catch (err: any) {
       setError(err.toString());
-      setCardType("error");
+      handleChangeStep("error");
     }
   };
 
@@ -161,19 +185,9 @@ export function ConfirmSendSolana({
   amount: BigNumber;
   onConfirm: () => void;
 }) {
-  const theme = useTheme();
   return (
-    <View style={{ paddingHorizontal: 16 }}>
-      <Text
-        style={{
-          color: theme.custom.colors.fontColor,
-          fontWeight: "500",
-          fontSize: 18,
-          textAlign: "center",
-        }}
-      >
-        Review Send
-      </Text>
+    <Container>
+      <Header text="Review Send" />
       <Margin vertical={24}>
         <TokenAmountHeader amount={amount} token={token} />
       </Margin>
@@ -181,7 +195,7 @@ export function ConfirmSendSolana({
         <ConfirmSendSolanaTable destinationAddress={destinationAddress} />
       </Margin>
       <PrimaryButton onPress={() => onConfirm()} label="Send" />
-    </View>
+    </Container>
   );
 }
 
@@ -247,4 +261,22 @@ const isCardinalWrappedToken = async (
     }
   }
   return false;
+};
+
+const isProgrammableNftToken = async (
+  connection: Connection,
+  mintAddress: string
+) => {
+  try {
+    const metadata = await Metadata.fromAccountAddress(
+      connection,
+      await metadataAddress(new PublicKey(mintAddress))
+    );
+
+    return metadata.tokenStandard == TokenStandard.ProgrammableNonFungible;
+  } catch (error) {
+    // most likely this happens if the metadata account does not exist
+    console.log(error);
+    return false;
+  }  
 };

@@ -135,6 +135,7 @@ function OnboardingCreateOrImportWalletScreen({
   const insets = useSafeAreaInsets();
   const { setOnboardingData } = useOnboardingData();
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [showDebug, setShowDebug] = useState(false);
 
   const handlePresentModalPress = () => {
     setIsModalVisible((last) => !last);
@@ -829,7 +830,7 @@ function OnboardingFinishedScreen() {
       subtitle="Now get started exploring what your Backpack can do."
     >
       <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-        {BACKPACK_FEATURE_XNFT && (
+        {BACKPACK_FEATURE_XNFT ? (
           <Cell style={{ paddingRight: 6 }}>
             <ActionCard
               icon={<WidgetIcon />}
@@ -837,7 +838,7 @@ function OnboardingFinishedScreen() {
               onPress={() => Linking.openURL(XNFT_GG_LINK)}
             />
           </Cell>
-        )}
+        ) : null}
         <Cell style={{ paddingLeft: 6 }}>
           <ActionCard
             icon={<TwitterIcon />}

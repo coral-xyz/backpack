@@ -69,5 +69,14 @@ export const updateFriendshipIfExists = async (
   const friendship = await getFriendshipByUserId(uuid, remoteUserId);
   if (friendship) {
     await getDb(uuid).inbox.update(remoteUserId, updatedProps);
+    if (
+      updatedProps.areFriends === 0 &&
+      !friendship.remoteInteracted &&
+      !friendship.interacted
+    ) {
+      // If you unfriend someone you haven't ever interacted with,
+      // we remove them from the in memory DB
+      await getDb(uuid).inbox.delete(friendship.remoteUserId);
+    }
   }
 };

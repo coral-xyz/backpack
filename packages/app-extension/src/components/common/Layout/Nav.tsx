@@ -36,7 +36,7 @@ const useStyles = styles((theme) => ({
     position: "absolute",
     left: 0,
     "&:hover": {
-      background: "transparent",
+      background: "transparent !important",
     },
   },
 }));
@@ -270,7 +270,7 @@ function CenterDisplay({
             style={{
               fontSize: 19,
               marginLeft: 3,
-              color: theme.custom.colors.blue,
+              color: theme.custom.colors.verified,
             }}
           />
         )}

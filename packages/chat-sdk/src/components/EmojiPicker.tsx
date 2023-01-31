@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useCustomTheme } from "@coral-xyz/themes";
-import SentimentVerySatisfiedIcon from "@mui/icons-material/SentimentVerySatisfied";
+import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticonRounded";
 import { IconButton } from "@mui/material";
 import Popover from "@mui/material/Popover";
 import EmojiPicker, { Theme } from "emoji-picker-react";
@@ -28,7 +28,13 @@ export const EmojiPickerComponent = ({
     >
       <IconButton
         size={"small"}
-        style={{ color: theme.custom.colors.icon, ...buttonStyle }}
+        sx={{
+          color: theme.custom.colors.icon,
+          "&:hover": {
+            background: `${theme.custom.colors.avatarIconBackground} !important`,
+          },
+        }}
+        style={buttonStyle}
         onClick={(e) => {
           setEmojiPicker((x) => !x);
           if (!emojiPicker) {
@@ -38,7 +44,7 @@ export const EmojiPickerComponent = ({
         }}
       >
         {" "}
-        <SentimentVerySatisfiedIcon
+        <InsertEmoticonIcon
           style={{ color: theme.custom.colors.icon, fontSize: 20 }}
         />{" "}
       </IconButton>

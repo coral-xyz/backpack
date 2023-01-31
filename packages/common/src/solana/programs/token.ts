@@ -30,6 +30,9 @@ export const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey(
 export const TOKEN_METADATA_PROGRAM_ID = new PublicKey(
   "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
 );
+export const TOKEN_AUTH_RULES_ID = new PublicKey(
+  "auth9SigNpDKz4sJJ1DfCTuZrZNSAgh9sFD3rboVmgg"
+);
 export const USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
 export const WSOL_MINT = "So11111111111111111111111111111111111111112";
 //
@@ -330,6 +333,37 @@ export async function metadataAddress(mint: PublicKey): Promise<PublicKey> {
         Buffer.from("metadata"),
         TOKEN_METADATA_PROGRAM_ID.toBuffer(),
         mint.toBuffer(),
+      ],
+      TOKEN_METADATA_PROGRAM_ID
+    )
+  )[0];
+}
+
+export async function masterEditionAddress(
+  mint: PublicKey
+): Promise<PublicKey> {
+  return (
+    await PublicKey.findProgramAddress(
+      [
+        Buffer.from("metadata"),
+        TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+        mint.toBuffer(),
+        Buffer.from("edition"),
+      ],
+      TOKEN_METADATA_PROGRAM_ID
+    )
+  )[0];
+}
+
+export async function tokenRecordAddress(mint: PublicKey, token: PublicKey): Promise<PublicKey> {
+  return (
+    await PublicKey.findProgramAddress(
+      [
+        Buffer.from("metadata"),
+        TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+        mint.toBuffer(),
+        Buffer.from("token_record"),
+        token.toBuffer(),
       ],
       TOKEN_METADATA_PROGRAM_ID
     )

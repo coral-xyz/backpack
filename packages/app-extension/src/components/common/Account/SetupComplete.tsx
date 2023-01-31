@@ -4,10 +4,11 @@ import {
   TWITTER_LINK,
   XNFT_GG_LINK,
 } from "@coral-xyz/common";
-import {   DiscordIcon,
+import {
+  DiscordIcon,
   ExtensionIcon,
   PinIcon,
-PrimaryButton ,
+  PrimaryButton,
   TwitterIcon,
   WidgetIcon,
 } from "@coral-xyz/react-common";
@@ -19,6 +20,7 @@ import { ActionCard } from "../../common/Layout/ActionCard";
 
 export function SetupComplete({ onClose }: { onClose: () => void }) {
   const theme = useCustomTheme();
+
   return (
     <>
       <div
@@ -47,10 +49,10 @@ export function SetupComplete({ onClose }: { onClose: () => void }) {
               mr: "24px",
             }}
           >
-            <Header text="You’ve set up Backpack!" />
+            <Header text="You've set up Backpack!" />
             <SubtextParagraph
               style={{
-                marginBottom: "24px",
+                marginBottom: "25px",
               }}
             >
               Now get started exploring what your Backpack can do.

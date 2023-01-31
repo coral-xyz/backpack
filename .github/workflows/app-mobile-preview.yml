@@ -13,14 +13,12 @@ concurrency:
 jobs:
   mobile:
     name: Preview App
-    timeout-minutes: 45
+    timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
       # Checkout must come before a custom action
       - name: 🏗 Setup repository
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 2
 
       - name: 🏗 Setup monorepo
         uses: ./.github/actions/app-mobile-monorepo-setup

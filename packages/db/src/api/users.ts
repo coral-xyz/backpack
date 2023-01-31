@@ -1,4 +1,8 @@
-import { BACKEND_API_URL, getRandomColor } from "@coral-xyz/common";
+import {
+  BACKEND_API_URL,
+  getRandomColor,
+  getRandomColorIndex,
+} from "@coral-xyz/common";
 
 import { bulkAddUsers, getNewUsers } from "../db/users";
 
@@ -20,6 +24,7 @@ export const refreshUsers = async (uuid: string, uniqueUserIds: string[]) => {
         json.users.map((user) => ({
           ...user,
           color: getRandomColor(),
+          colorIndex: getRandomColorIndex(),
         })) || [];
       bulkAddUsers(uuid, newUsersMetadata);
       return newUsersMetadata;

@@ -56,6 +56,7 @@ type CustomColors = {
   smallTextColor: string;
   brandColor: string;
   backgroundBackdrop: string;
+  successButton: string;
   background: string;
   nav: string;
   bg2: string;
@@ -121,6 +122,7 @@ type CustomColors = {
   avatarPopoverMenuBackground: string;
   listItemHover: string;
   walletCopyButtonHover: string;
+  verified: string;
 };
 
 const baseTheme = createStyles({
@@ -184,7 +186,7 @@ const darkComponentOverrides = {
   },
 };
 
-const DARK_COLORS = {
+const DARK_COLORS: CustomColors = {
   blue: "#3498db",
   smallTextColor: DARK_TEXT_SMALL_COLOR,
   brandColor: BRAND_COLOR,
@@ -234,6 +236,7 @@ const DARK_COLORS = {
   avatarIconBackground: "#DFE0E5",
   text: TEXT_COLOR,
   dangerButton: DANGER_DARK_COLOR,
+  successButton: "#2ecc71",
   alpha: "#8F929E",
   scrollbarTrack: BACKGROUND_COLOR_0,
   scrollbarThumb: SCROLLBAR_THUMB_COLOR,
@@ -254,9 +257,10 @@ const DARK_COLORS = {
   avatarPopoverMenuBackground: BACKGROUND_COLOR_0,
   listItemHover: `rgba(39, 39, 42, ${HOVER_OPACITY})`,
   walletCopyButtonHover: "#18181c",
+  verified: "#DFE0E5",
 };
 
-const LIGHT_COLORS = {
+const LIGHT_COLORS: CustomColors = {
   blue: "blue",
   smallTextColor: LIGHT_TEXT_SMALL_COLOR,
   brandColor: LIGHT_BRAND_COLOR,
@@ -268,6 +272,7 @@ const LIGHT_COLORS = {
   bg3: LIGHT_BACKGROUND_COLOR_1,
   bg4: LIGHT_BACKGROUND_COLOR_0,
   fontColor: LIGHT_FONT_COLOR,
+  successButton: "#2ecc71",
   fontColor2: LIGHT_FONT_COLOR_2,
   fontColor3: LIGHT_FONT_COLOR_3,
   fontColor4: LIGHT_FONT_COLOR_2,
@@ -302,7 +307,7 @@ const LIGHT_COLORS = {
   icon: "#8F929E",
   approveTransactionTableBackground: LIGHT_BACKGROUND_COLOR_1,
   approveTransactionCloseBackground: "#C2C4CC",
-  hoverIconBackground: LIGHT_ICON_HOVER_COLOR,
+  hoverIconBackground: "#DFE0E5",
   avatarIconBackground: "#DFE0E5",
   text: LIGHT_TEXT_COLOR,
 
@@ -327,6 +332,7 @@ const LIGHT_COLORS = {
   avatarPopoverMenuBackground: LIGHT_BACKGROUND_COLOR_1,
   listItemHover: "#F8F8F9",
   walletCopyButtonHover: "#d6d6d6",
+  verified: "#212938",
 };
 
 export const darkTheme: Partial<Theme> & {

@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import {
   BACKEND_API_URL,
   getRandomColor,
+  getRandomColorIndex,
   UserMetadata,
 } from "@coral-xyz/common";
-import { bulkAddUsers , getBulkUsers , refreshUsers } from "@coral-xyz/db";
-import { remoteUsersMetadata,useUser } from "@coral-xyz/recoil";
+import { bulkAddUsers, getBulkUsers, refreshUsers } from "@coral-xyz/db";
+import { remoteUsersMetadata, useUser } from "@coral-xyz/recoil";
 import { useRecoilState } from "recoil";
 
 export function useUserMetadata({ remoteUserId }: { remoteUserId: string }) {
@@ -27,11 +28,14 @@ export function useUserMetadata({ remoteUserId }: { remoteUserId: string }) {
       });
       const json = await response.json();
       const color = getRandomColor();
+      const colorIndex = getRandomColorIndex();
+
       setUserMetadata({
         username: json.users[0].username,
         image: json.users[0].image,
         loading: false,
         color,
+        colorIndex,
       });
 
       bulkAddUsers(uuid, [
@@ -40,6 +44,7 @@ export function useUserMetadata({ remoteUserId }: { remoteUserId: string }) {
           username: json.users[0].username,
           image: json.users[0].image,
           color,
+          colorIndex,
         },
       ]);
     } catch (e) {
