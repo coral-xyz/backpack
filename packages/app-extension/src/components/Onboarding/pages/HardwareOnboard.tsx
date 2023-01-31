@@ -3,6 +3,7 @@ import type {
   Blockchain,
   SignedWalletDescriptor,
   WalletDescriptor,
+  UR,
 } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import type Transport from "@ledgerhq/hw-transport";
@@ -56,6 +57,7 @@ export function useHardwareOnboardSteps({
   const [hardwareType, setHardwareType] = useState<HardwareType>(
     HardwareType.Keystone
   );
+  const [ur, setUR] = useState<UR>();
   const onWelcomeNext = useCallback((type: HardwareType) => {
     setHardwareType(type);
     nextStep();
@@ -75,7 +77,13 @@ export function useHardwareOnboardSteps({
         isConnectFailure={!!transportError}
       />
     ) : (
-      <ConnectHardwareKeystone />
+      <ConnectHardwareKeystone
+        blockchain={blockchain}
+        onNext={(ur: UR) => {
+          setUR(ur);
+          nextStep();
+        }}
+      />
     ),
     //
     // Use a component to get a wallet to proceed with. The create flow uses a
@@ -141,6 +149,7 @@ export function useHardwareOnboardSteps({
         <ImportWallets
           blockchain={blockchain}
           transport={transport!}
+          ur={ur}
           allowMultiple={false} // Only allow a single wallet to be selected
           onNext={(walletDescriptors: Array<WalletDescriptor>) => {
             setWalletDescriptor(walletDescriptors[0]);

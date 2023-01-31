@@ -1206,11 +1206,12 @@ export class Backend {
     ur: UR,
     signature?: string
   ) {
-    const publicKey = '';
-    await this.keyringStore.keystoneImport(
+    const accounts = await this.keyringStore.keystoneImport(
       blockchain,
       ur
     );
+    console.log('keyringStore', accounts);
+    const publicKey = accounts[accounts.length - 1].publicKey;
     try {
       await this.userAccountPublicKeyCreate(blockchain, publicKey, signature);
     } catch (error) {
@@ -1222,6 +1223,17 @@ export class Backend {
     // Set the active wallet to the newly added public key
     await this.activeWalletUpdate(publicKey, blockchain);
     return SUCCESS_RESPONSE;
+  }
+
+  async keystoneURDecode(
+    blockchain: Blockchain,
+    ur: UR,
+  ) {
+    const accounts = await this.keyringStore.keystoneImport(
+      blockchain,
+      ur
+    );
+    return accounts;
   }
 
   validateMnemonic(mnemonic: string): boolean {

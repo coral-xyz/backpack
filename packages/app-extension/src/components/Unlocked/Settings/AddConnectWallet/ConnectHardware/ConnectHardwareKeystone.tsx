@@ -1,33 +1,25 @@
-import { Blockchain, UI_RPC_METHOD_KEYSTONE_IMPORT } from "@coral-xyz/common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
+import type { Blockchain, UR } from "@coral-xyz/common";
 import { URType, useAnimatedQRScanner } from "@keystonehq/animated-qr";
+import { Stack } from '@mui/material';
 
-export function ConnectHardwareKeystone() {
+export function ConnectHardwareKeystone({ blockchain, onNext }: {
+  blockchain: Blockchain;
+  onNext: (ur: UR) => void;
+}) {
   const { AnimatedQRScanner, setIsDone } = useAnimatedQRScanner({});
-  const background = useBackgroundClient();
 
-  let t = Date.now();
   const handleError = (err: string) => {
-    console.log("handleError", Date.now() - t, err);
-    t = Date.now();
+    console.error(blockchain, err);
     setIsDone(false);
   };
-  const handleScan = async ({ type, cbor }: { type: string; cbor: string }) => {
-    console.log("handleScan", Date.now() - t, type, cbor);
-    t = Date.now();
-    await background.request({
-      method: UI_RPC_METHOD_KEYSTONE_IMPORT,
-      params: [
-        Blockchain.SOLANA,
-        {type, cbor},
-        ''
-      ],
-    });
+  const handleScan = async (ur: { type: string; cbor: string }) => {
+    console.log(blockchain, ur);
+    onNext(ur);
   };
 
   return (
-    <>
-      <p>Keystone1</p>
+    <Stack direction="column" alignItems="center">
+      <p>Keystone</p>
       <AnimatedQRScanner
         urTypes={[URType.CRYPTO_MULTI_ACCOUNTS]}
         handleError={handleError}
@@ -38,6 +30,6 @@ export function ConnectHardwareKeystone() {
           blur: false,
         }}
       />
-    </>
+    </Stack>
   );
 }
