@@ -356,6 +356,7 @@ function NavScreen({
   };
 }) {
   const { title, isRoot, pop } = useNavigation();
+
   const {
     style,
     navButtonLeft,

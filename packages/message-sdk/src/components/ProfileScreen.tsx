@@ -36,7 +36,7 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
   const classes = useStyles();
   const theme = useCustomTheme();
   const userMetadata = useUsersMetadata({ remoteUserIds: [userId] });
-  const { push, toRoot } = useNavigation();
+  const { push } = useNavigation();
 
   async function getChatRoom() {
     const res = await ParentCommunicationManager.getInstance().fetch(
@@ -96,8 +96,7 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
             <IconButton
               size={"large"}
               className={classes.icon}
-              onClick={() => {
-                toRoot();
+              onClick={async () => {
                 push({
                   title: `@${user.username}`,
                   componentId: NAV_COMPONENT_MESSAGE_CHAT,
