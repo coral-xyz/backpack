@@ -111,7 +111,8 @@ export function SolanaTransactionListItem({
   );
 }
 
-// Controls left icon on 'Transactions' list
+// Controls left icon on 'Transactions' list. Created in a way
+//  that may be easily extended to further/future Helius types
 // To add a new ruleset for helius parsed TXN type or source
 // 1.) add desired icon to ListItemIcons in "./Icons";
 // 2.) map txn to icon below
@@ -126,15 +127,18 @@ function RecentActivityListItemIcon(
     );
   }
 
-  // if NFT url available, display it
+  // if NFT url available, display it. Check on-chain data first
   if (isNFTTransaction(transaction)) {
-    return ListItemIcons["NFT"](transaction?.metadata?.offChainData?.image);
+    return ListItemIcons["NFT"](
+      transaction?.metadata?.onChaindata?.data?.uri ||
+        transaction?.metadata?.offChainData?.image
+    );
   }
 
   if (transaction.type === TransactionType.TRANSFER) {
-    if (tokenData[0]?.logoURI) {
+    if (tokenData[0]?.logoURI)
       return ListItemIcons[TransactionType.TRANSFER](tokenData[0]?.logoURI);
-    }
+
     if (isUserTxnSender(transaction)) return ListItemIcons["SENT"]();
     return ListItemIcons["RECEIVED"]();
   }

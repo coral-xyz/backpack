@@ -1,6 +1,6 @@
 import { useActiveWallet } from "@coral-xyz/recoil";
 import type { TokenInfo } from "@solana/spl-token-registry";
-import { Source, TransactionType } from "helius-sdk/dist/types";
+import { NftEventTypes, Source, TransactionType } from "helius-sdk/dist/types";
 
 import type { HeliusParsedTransaction } from "./types";
 
@@ -8,9 +8,8 @@ export const isNFTTransaction = (
   transaction: HeliusParsedTransaction
 ): boolean => {
   return (
-    (transaction?.type?.includes("NFT") ||
-      transaction?.tokenTransfers[0]?.tokenStandard === "NonFungible") &&
-    transaction?.metadata?.offChainData?.image
+    NftEventTypes.includes(transaction?.type as TransactionType) ||
+    transaction?.tokenTransfers[0]?.tokenStandard === "NonFungible"
   );
 };
 
