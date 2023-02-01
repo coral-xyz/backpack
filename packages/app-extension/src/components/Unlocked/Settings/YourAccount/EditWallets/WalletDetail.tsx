@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useRecoilValue } from "recoil";
+import type { Blockchain } from "@coral-xyz/common";
 import {
-  Blockchain,
   UI_RPC_METHOD_KEY_IS_COLD_UPDATE,
+  UI_RPC_METHOD_KEYNAME_READ,
 } from "@coral-xyz/common";
-import { UI_RPC_METHOD_KEYNAME_READ } from "@coral-xyz/common";
 import {
   isKeyCold,
   useBackgroundClient,
@@ -13,6 +12,7 @@ import {
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ContentCopy } from "@mui/icons-material";
 import { Typography } from "@mui/material";
+import { useRecoilValue } from "recoil";
 
 import { useNavStack } from "../../../../common/Layout/NavStack";
 import { SettingsList } from "../../../../common/Settings/List";
@@ -126,19 +126,14 @@ export const WalletDetail: React.FC<{
 
   const _isCold = {
     "App Signing": {
-      onClick: async () => {
-        await background.request({
-          method: UI_RPC_METHOD_KEY_IS_COLD_UPDATE,
-          params: [publicKey, !isCold],
-        });
-      },
+      onClick: () => {},
       detail: (
         <ModeSwitch
           enabled={!isCold}
-          onSwitch={async (enabled) => {
+          onSwitch={async () => {
             await background.request({
               method: UI_RPC_METHOD_KEY_IS_COLD_UPDATE,
-              params: [publicKey, enabled],
+              params: [publicKey, !isCold],
             });
           }}
         />
@@ -153,7 +148,7 @@ export const WalletDetail: React.FC<{
           <SettingsList menuItems={menuItems} />
         </div>
       </WithCopyTooltip>
-      {type !== "dehyrdrated" && <SettingsList menuItems={_isCold} />}
+      {type !== "dehydrated" && <SettingsList menuItems={_isCold} />}
       {type !== "hardware" && type !== "dehydrated" && (
         <SettingsList menuItems={secrets} />
       )}
