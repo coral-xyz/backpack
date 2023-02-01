@@ -46,6 +46,7 @@ const useStyles = styles((theme) => ({
   transactionCard: {
     display: "flex",
     padding: "16px",
+    paddingTop: "24px",
     flexDirection: "column",
     height: "100%",
     alignItems: "center",
@@ -124,6 +125,17 @@ const useStyles = styles((theme) => ({
     color: "#E95050",
   },
   label: { color: theme.custom.colors.secondary },
+  transferAmount: {
+    fontSize: "30px",
+    color: theme.custom.colors.fontColor,
+    fontWeight: 600,
+    marginTop: "8px",
+  },
+  tokenLogo: {
+    borderRadius: "50%",
+    width: "56px",
+    height: "56px",
+  },
 }));
 
 export function TransactionDetail({
@@ -135,7 +147,6 @@ export function TransactionDetail({
 }) {
   const classes = useStyles();
   const activeWallet = useActiveWallet();
-  const theme = useCustomTheme();
   const navigate = useNavigate();
   const [openDrawer, setOpenDrawer] = useState(true);
 
@@ -167,7 +178,16 @@ export function TransactionDetail({
             name={"transactionDetails"}
             component={(props: any) => (
               <Card {...props} className={classes.transactionCard}>
-                {DetailCardHeader(transaction, tokenData)}
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    paddingBottom: "10px",
+                  }}
+                >
+                  {DetailCardHeader(transaction, tokenData)}
+                </div>
 
                 {/* TODO - Default to check/error */}
 
@@ -349,14 +369,7 @@ function DetailCardHeader(
             flexDirection: "column",
           }}
         >
-          <img
-            style={{
-              borderRadius: "50%",
-              width: "56px",
-              height: "56px",
-            }}
-            src={tokenData[0]?.logoURI}
-          />
+          <img className={classes.tokenLogo} src={tokenData[0]?.logoURI} />
 
           <div
             style={{
@@ -388,14 +401,7 @@ function DetailCardHeader(
             flexDirection: "column",
           }}
         >
-          <img
-            style={{
-              borderRadius: "50%",
-              width: "56px",
-              height: "56px",
-            }}
-            src={tokenData[1]?.logoURI}
-          />
+          <img className={classes.tokenLogo} src={tokenData[1]?.logoURI} />
           <div
             style={{
               fontSize: "16px",
@@ -439,14 +445,18 @@ function DetailCardHeader(
     //SOL transfer
     if (transaction.source === Source.SYSTEM_PROGRAM) {
       return (
-        <img
-          style={{
-            borderRadius: "50%",
-            width: "56px",
-            height: "56px",
-          }}
-          src={SOL_LOGO_URI}
-        />
+        <>
+          <img className={classes.tokenLogo} src={SOL_LOGO_URI} />
+          <div className={classes.transferAmount}>
+            {isUserTxnSender(transaction)
+              ? "- " +
+                transaction?.nativeTransfers?.[0]?.amount / 10 ** 9 +
+                " SOL"
+              : "+ " +
+                transaction?.nativeTransfers?.[0]?.amount / 10 ** 9 +
+                " SOL"}
+          </div>
+        </>
       );
     }
     // other SPL token Transfer. Check tokenRegistry first, then Helius metadata
@@ -455,16 +465,7 @@ function DetailCardHeader(
       transaction?.metadata?.onChaindata?.data?.uri ||
       transaction?.metadata?.offChainData?.image;
     if (transferIcon) {
-      return (
-        <img
-          style={{
-            borderRadius: "50%",
-            width: "56px",
-            height: "56px",
-          }}
-          src={transferIcon}
-        />
-      );
+      return <img className={classes.tokenLogo} src={transferIcon} />;
     }
 
     // if it is an NFT transfer and no NFT image was found above, show default Icon
