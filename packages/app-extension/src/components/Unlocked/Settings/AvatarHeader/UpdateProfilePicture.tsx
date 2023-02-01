@@ -311,7 +311,7 @@ function RenderNFT({
           removeOnError={true}
         />
       ),
-    [nft]
+    [nft, nftId, tempAvatar]
   );
 }
 
