@@ -2,7 +2,6 @@ import * as store from "@coral-xyz/background/src/backend/store";
 import { DefaultKeyname } from "@coral-xyz/background/src/backend/store";
 import type {
   BlockchainKeyringJson,
-  PathType,
   WalletDescriptor,
 } from "@coral-xyz/common";
 import { getLogger } from "@coral-xyz/common";

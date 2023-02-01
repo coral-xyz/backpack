@@ -89,14 +89,6 @@ export type NftAttribute = {
 
 export type KeyringType = "mnemonic" | "ledger";
 
-export type PathType =
-  // Legacy types
-  | "bip44"
-  | "bip44change"
-  | "sollet-deprecated"
-  // New derivation scheme
-  | "backpack";
-
 export type KeyringInit = {
   signedWalletDescriptors: Array<SignedWalletDescriptor>;
   // No mnemonic means this is a hardware wallet keyring

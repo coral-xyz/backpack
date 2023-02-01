@@ -11,7 +11,6 @@ export type {
   HdKeyringJson,
   KeyringJson,
   LedgerKeyringJson,
-  PathType,
 } from "@coral-xyz/common";
 
 export interface KeyringFactory {
