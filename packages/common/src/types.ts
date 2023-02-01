@@ -136,8 +136,8 @@ export type HdKeyringJson = {
   mnemonic: string;
   seed: string;
   derivationPaths: Array<string>;
-  accountIndex: number;
-  walletIndex: number;
+  accountIndex?: number;
+  walletIndex?: number;
 };
 
 export type LedgerKeyringJson = {

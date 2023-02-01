@@ -104,14 +104,10 @@ export class EthereumHdKeyringFactory implements HdKeyringFactory {
       throw new Error("Invalid seed words");
     }
     const seed = mnemonicToSeedSync(mnemonic);
-    const { accountIndex, walletIndex } =
-      derivationPathsToIndexes(derivationPaths);
     return new EthereumHdKeyring({
       mnemonic,
       seed,
       derivationPaths,
-      accountIndex,
-      walletIndex,
     });
   }
 
@@ -137,8 +133,8 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
   readonly mnemonic: string;
   private derivationPaths: Array<string>;
   private seed: Buffer;
-  private accountIndex: number;
-  private walletIndex: number;
+  private accountIndex?: number;
+  private walletIndex?: number;
 
   constructor({
     mnemonic,
@@ -150,8 +146,8 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
     mnemonic: string;
     seed: Buffer;
     derivationPaths: Array<string>;
-    accountIndex: number;
-    walletIndex: number;
+    accountIndex?: number;
+    walletIndex?: number;
   }) {
     const wallets = derivationPaths.map((d) => deriveEthereumWallet(seed, d));
     super(wallets);
@@ -166,6 +162,16 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
     publicKey: string;
     derivationPath: string;
   } {
+    // If account index and wallet index don't exist, make a best guess based
+    // on the existing derivation paths for the keyring
+    if (!this.accountIndex || !this.walletIndex) {
+      const { accountIndex, walletIndex } = derivationPathsToIndexes(
+        this.derivationPaths
+      );
+      if (!this.accountIndex) this.accountIndex = accountIndex;
+      if (!this.walletIndex) this.walletIndex = walletIndex;
+    }
+    // Move to the next wallet index for the derivation
     this.walletIndex += 1 + skipKeys;
     const derivationPath = getIndexedPath(
       Blockchain.ETHEREUM,
