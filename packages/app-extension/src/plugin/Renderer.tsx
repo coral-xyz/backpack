@@ -1,4 +1,3 @@
-import { useEffect, useRef, useState } from "react";
 import type { Plugin, XnftPreference } from "@coral-xyz/common";
 import { Loading } from "@coral-xyz/react-common";
 import {
@@ -7,6 +6,7 @@ import {
   useUser,
   useXnftJwt,
 } from "@coral-xyz/recoil";
+import { useEffect, useRef, useState } from "react";
 
 export function PluginRenderer({
   plugin,
@@ -17,7 +17,7 @@ export function PluginRenderer({
   xnftPreference: XnftPreference | null;
   deepXnftPath: string;
 }) {
-  const ref = useRef<any>();
+  const ref = useRef<HTMLDivElement>(null);
   const [loaded, setLoaded] = useState(false);
   const { username } = useUser();
   const isDarkMode = useDarkMode();
@@ -32,7 +32,7 @@ export function PluginRenderer({
         setLoaded(true);
       });
       plugin.iframeRoot!.style.display = "none";
-      ref.current.appendChild(plugin.iframeRoot);
+      ref.current.appendChild(plugin.iframeRoot!);
       return () => {
         plugin.unmount();
       };
