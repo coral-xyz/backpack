@@ -20,6 +20,7 @@ import { HardwareDefaultWallet } from "./HardwareDefaultWallet";
 import { HardwareDeriveWallet } from "./HardwareDeriveWallet";
 import { HardwareSearchWallet } from "./HardwareSearchWallet";
 import { HardwareSign } from "./HardwareSign";
+import { KeystoneSign } from './KeystoneSign';
 
 export enum HardwareType {
   Keystone = "keystone",
@@ -57,11 +58,14 @@ export function useHardwareOnboardSteps({
   const [hardwareType, setHardwareType] = useState<HardwareType>(
     HardwareType.Keystone
   );
-  const [ur, setUR] = useState<UR>();
+  const [ur, setUR] = useState<UR>({ type: '', cbor: '' });
   const onWelcomeNext = useCallback((type: HardwareType) => {
     setHardwareType(type);
     nextStep();
   }, []);
+
+  const SignMessage = hardwareType === HardwareType.USB ? HardwareSign : KeystoneSign;
+
   //
   // Flow for onboarding a hardware wallet.
   //
@@ -165,16 +169,17 @@ export function useHardwareOnboardSteps({
     ...(walletDescriptor
       ? [
           // Sign the found wallet descriptor for API submit
-        <HardwareSign
-          blockchain={blockchain}
-          walletDescriptor={walletDescriptor}
-          message={
+          <SignMessage
+            blockchain={blockchain}
+            walletDescriptor={walletDescriptor}
+            message={
               typeof signMessage === "string"
                 ? signMessage
                 : signMessage(walletDescriptor.publicKey)
             }
-          text={signText}
-          onNext={(signature: string) => {
+            text={signText}
+            ur={ur}
+            onNext={(signature: string) => {
               onComplete({
                 ...walletDescriptor,
                 signature,
