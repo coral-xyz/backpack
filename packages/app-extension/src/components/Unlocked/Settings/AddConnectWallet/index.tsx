@@ -7,7 +7,7 @@ import {
   TAB_BALANCES,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
-  UI_RPC_METHOD_FIND_SIGNED_PUBLIC_KEY_PATH,
+  UI_RPC_METHOD_FIND_SIGNED_WALLET_DESCRIPTOR,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
 } from "@coral-xyz/common";
@@ -209,7 +209,7 @@ export function AddWalletMenu({
     let newPublicKey;
     if (!keyringExists) {
       const signedWalletDescriptor = await background.request({
-        method: UI_RPC_METHOD_FIND_SIGNED_PUBLIC_KEY_PATH,
+        method: UI_RPC_METHOD_FIND_SIGNED_WALLET_DESCRIPTOR,
         params: [blockchain, 0],
       });
       await background.request({

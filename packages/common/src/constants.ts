@@ -106,7 +106,7 @@ export const UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD =
   "ui-rpc-method-blockchain-keyrings-add";
 export const UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ =
   "ui-rpc-method-blockchain-keyrings-read";
-export const UI_RPC_METHOD_FIND_SIGNED_PUBLIC_KEY_PATH =
+export const UI_RPC_METHOD_FIND_SIGNED_WALLET_DESCRIPTOR =
   "ui-rpc-method-find-signed-public-key-path";
 export const UI_RPC_METHOD_KEY_IS_COLD_UPDATE =
   "ui-rpc-method-key-is-cold-update";

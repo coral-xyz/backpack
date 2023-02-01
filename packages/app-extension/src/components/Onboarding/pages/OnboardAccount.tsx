@@ -7,7 +7,7 @@ import type {
 } from "@coral-xyz/common";
 import {
   getCreateMessage,
-  UI_RPC_METHOD_FIND_SIGNED_PUBLIC_KEY_PATH,
+  UI_RPC_METHOD_FIND_SIGNED_WALLET_DESCRIPTOR,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 
@@ -85,8 +85,8 @@ export const OnboardAccount = ({
         setOpenDrawer(true);
       } else if (action === "create") {
         const signedWalletDescriptor = await background.request({
-          method: UI_RPC_METHOD_FIND_SIGNED_PUBLIC_KEY_PATH,
-          params: [blockchain, 0, mnemonic],
+          method: UI_RPC_METHOD_FIND_SIGNED_WALLET_DESCRIPTOR,
+          params: [blockchain, 0, true, mnemonic],
         });
         addSignedWalletDescriptor(signedWalletDescriptor);
       }

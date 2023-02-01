@@ -22,6 +22,7 @@ import {
   EthereumExplorer,
   getAccountRecoveryPaths,
   getAddMessage,
+  getCreateMessage,
   getRecoveryPaths,
   NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED,
   NOTIFICATION_AGGREGATE_WALLETS_UPDATED,
@@ -1405,6 +1406,7 @@ export class Backend {
   async findSignedWalletDescriptor(
     blockchain: Blockchain,
     accountIndex = 0,
+    create = false,
     mnemonic?: string
   ): Promise<SignedWalletDescriptor> {
     // If mnemonic is not passed as an argument, use the keyring store stored mnemonic.
@@ -1435,13 +1437,17 @@ export class Backend {
       // Take the root for the public key path
       const publicKey = publicKeys[0];
       const derivationPath = recoveryPaths[0];
+      // TODO remove this, signing different messages is just extra friction
+      const message = create
+        ? getCreateMessage(publicKey)
+        : getAddMessage(publicKey);
       return {
         publicKey,
         derivationPath,
         signature: await this.signMessageForPublicKey(
           blockchain,
           publicKey,
-          bs58.encode(Buffer.from(getAddMessage(publicKey), "utf-8")),
+          bs58.encode(Buffer.from(message, "utf-8")),
           [mnemonic, [derivationPath]]
         ),
       };
@@ -1450,6 +1456,7 @@ export class Backend {
       return this.findSignedWalletDescriptor(
         blockchain,
         accountIndex + 1,
+        create,
         mnemonic
       );
     }

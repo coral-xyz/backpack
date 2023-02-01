@@ -52,10 +52,7 @@ export function ImportAccounts({
   blockchain: Blockchain;
   mnemonic?: string;
   transport?: Transport | null;
-  onNext: (
-    walletDescriptor: Array<WalletDescriptor>,
-    mnemonic?: string
-  ) => void;
+  onNext: (walletDescriptor: Array<WalletDescriptor>) => void;
   onError?: (error: Error) => void;
   allowMultiple?: boolean;
 }) {
@@ -69,6 +66,9 @@ export function ImportAccounts({
   );
   // Path to the public key
   const [walletDescriptors, setWalletDescriptors] = useState<
+    Array<WalletDescriptor>
+  >([]);
+  const [checkedWalletDescriptors, setCheckedWalletDescriptors] = useState<
     Array<WalletDescriptor>
   >([]);
   // Lock flag to prevent changing of derivation path while ledger is loading
@@ -187,6 +187,8 @@ export function ImportAccounts({
   useEffect(() => {
     if (!derivationPaths) return;
 
+    setCheckedWalletDescriptors([]);
+
     let loaderFn;
     if (mnemonic) {
       // Loading accounts from a mnemonic
@@ -202,6 +204,12 @@ export function ImportAccounts({
 
     loaderFn(derivationPaths)
       .then(async (publicKeys: string[]) => {
+        setWalletDescriptors(
+          derivationPaths.map((derivationPath, i) => ({
+            publicKey: publicKeys[i],
+            derivationPath,
+          }))
+        );
         const balances = await loadBalances(publicKeys);
         setBalances(
           Object.fromEntries(
@@ -331,29 +339,30 @@ export function ImportAccounts({
   // Handles checkbox clicks to select accounts to import.
   //
   const handleSelect = (publicKey: string, derivationPath: string) => () => {
-    const currentIndex = walletDescriptors.findIndex(
+    const currentIndex = checkedWalletDescriptors.findIndex(
       (a) => a.publicKey === publicKey
     );
-    let newWalletDescriptors = [...walletDescriptors];
+    let newCheckedWalletDescriptors = [...checkedWalletDescriptors];
     if (currentIndex === -1) {
+      // Not selected, add it
       const walletDescriptor = {
-        blockchain,
         derivationPath,
         publicKey,
-      };
+      } as WalletDescriptor;
+      console.log(walletDescriptor);
       // Adding the account
       if (allowMultiple) {
-        newWalletDescriptors.push(walletDescriptor);
+        newCheckedWalletDescriptors.push(walletDescriptor);
       } else {
-        newWalletDescriptors = [walletDescriptor];
+        newCheckedWalletDescriptors = [walletDescriptor];
       }
     } else {
       // Removing the account
-      newWalletDescriptors.splice(currentIndex, 1);
+      newCheckedWalletDescriptors.splice(currentIndex, 1);
     }
     // TODO Sort by account indices
-    // newWalletDescriptors.sort((a, b) => a.index - b.index);
-    setWalletDescriptors(newWalletDescriptors);
+    // newCheckedWalletDescriptors.sort((a, b) => a.index - b.index);
+    setCheckedWalletDescriptors(newCheckedWalletDescriptors);
   };
 
   // Symbol for balance displays
@@ -405,7 +414,7 @@ export function ImportAccounts({
             ))}
           </TextInput>
         </div>
-        {walletDescriptors && balances && (
+        {balances ? (
           <>
             <List
               sx={{
@@ -445,7 +454,7 @@ export function ImportAccounts({
                         <Checkbox
                           edge="start"
                           checked={
-                            walletDescriptors.some(
+                            checkedWalletDescriptors.some(
                               (a) => a.derivationPath === derivationPath
                             ) ||
                             importedPublicKeys.includes(publicKey.toString())
@@ -479,7 +488,7 @@ export function ImportAccounts({
                                 balances[publicKey],
                                 decimals
                               )).toFixed(4)
-                            : 0
+                            : "-"
                         } ${symbol}`}
                       />
                     </Box>
@@ -487,8 +496,9 @@ export function ImportAccounts({
                 ))}
             </List>
           </>
-        )}{" "}
-        : <Loading />
+        ) : (
+          <Loading />
+        )}
       </Box>
       <Box
         sx={{
@@ -500,7 +510,7 @@ export function ImportAccounts({
       >
         <PrimaryButton
           label={`Import Account${allowMultiple ? "s" : ""}`}
-          onClick={() => onNext(walletDescriptors, mnemonic)}
+          onClick={() => onNext(checkedWalletDescriptors)}
           disabled={walletDescriptors.length === 0}
         />
       </Box>
