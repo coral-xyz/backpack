@@ -4,15 +4,13 @@ import {
   NAV_COMPONENT_MESSAGE_CHAT,
   sendFriendRequest,
 } from "@coral-xyz/common";
-import { useDbUser } from "@coral-xyz/db";
 import {
   Loading,
-  MessageIcon,
+  MessageBubbleIcon,
   PrimaryButton,
-  ProxyImage,
   useUsersMetadata,
 } from "@coral-xyz/react-common";
-import { useNavigation, useUser } from "@coral-xyz/recoil";
+import { useNavigation } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import LockIcon from "@mui/icons-material/Lock";
@@ -24,7 +22,6 @@ import { ParentCommunicationManager } from "../ParentCommunicationManager";
 import { useStyles } from "./styles";
 
 export const ProfileScreen = ({ userId }: { userId: string }) => {
-  const { uuid } = useUser();
   const [friendship, setFriendship] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
   const [user, setUser] = useState<{
@@ -36,7 +33,7 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
   const classes = useStyles();
   const theme = useCustomTheme();
   const userMetadata = useUsersMetadata({ remoteUserIds: [userId] });
-  const { push, toRoot } = useNavigation();
+  const { push } = useNavigation();
 
   async function getChatRoom() {
     const res = await ParentCommunicationManager.getInstance().fetch(
@@ -97,7 +94,6 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
               size={"large"}
               className={classes.icon}
               onClick={async () => {
-                await toRoot();
                 push({
                   title: `@${user.username}`,
                   componentId: NAV_COMPONENT_MESSAGE_CHAT,
@@ -108,7 +104,7 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
                 });
               }}
             >
-              <MessageIcon
+              <MessageBubbleIcon
                 style={{ padding: 2 }}
                 fill={theme.custom.colors.fontColor}
               />
@@ -131,7 +127,7 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
               className={classes.icon}
             >
               <ArrowUpwardIcon
-                style={{ color: theme.custom.colors.fontColor }}
+                style={{ height: 21, color: theme.custom.colors.fontColor }}
               />
             </IconButton>
             <div

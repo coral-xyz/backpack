@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import type { EnrichedMessage, SubscriptionType } from "@coral-xyz/common";
+import { BACKEND_API_URL } from "@coral-xyz/common";
 import { RecoilSync } from "@coral-xyz/db";
 import { SignalingManager } from "@coral-xyz/react-common";
 import {
@@ -7,6 +8,7 @@ import {
   groupCollections,
   requestCount,
   roomChats,
+  unreadCount,
   useUser,
 } from "@coral-xyz/recoil";
 import { useRecoilCallback, useRecoilState } from "recoil";
@@ -22,7 +24,23 @@ export const DbRecoilSync = () => {
   const [_groupCollectionsValue, setGroupCollectionsValue] = useRecoilState(
     groupCollections({ uuid })
   );
+  const [_unreadCount, setUnreadCount] = useRecoilState(unreadCount);
   const updateChats = useUpdateChats();
+
+  const updateUnread = async () => {
+    const response = await fetch(
+      `${BACKEND_API_URL}/notifications/unreadCount`,
+      {
+        method: "GET",
+      }
+    );
+    try {
+      const json = await response.json();
+      setUnreadCount(json.unreadCount || 0);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const getGroupedRooms = (
     chats: EnrichedMessage[]
@@ -68,6 +86,8 @@ export const DbRecoilSync = () => {
         chats: group.messages,
       });
     });
+    RecoilSync.getInstance().refreshUsersMetadata(uuid);
+    updateUnread();
   };
 
   useEffect(() => {

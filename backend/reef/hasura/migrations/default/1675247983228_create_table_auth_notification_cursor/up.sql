@@ -1,0 +1,1 @@
+CREATE TABLE "auth"."notification_cursor" ("uuid" text NOT NULL, "last_read_notificaiton" integer NOT NULL, PRIMARY KEY ("uuid") , FOREIGN KEY ("last_read_notificaiton") REFERENCES "auth"."notifications"("id") ON UPDATE no action ON DELETE no action);

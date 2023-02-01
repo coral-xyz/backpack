@@ -17,7 +17,7 @@ import * as bs58 from "bs58";
 import { BigNumber, ethers } from "ethers";
 
 import { blockchainTokenData } from "../atoms/balance";
-import { JUPITER_BASE_URL,jupiterInputMints } from "../atoms/solana/jupiter";
+import { JUPITER_BASE_URL, jupiterInputMints } from "../atoms/solana/jupiter";
 import { useLoader, useSolanaCtx, useSplTokenRegistry } from "../hooks";
 
 const { Zero } = ethers.constants;

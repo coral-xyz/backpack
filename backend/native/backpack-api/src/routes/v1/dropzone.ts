@@ -181,9 +181,34 @@ router.get("/claims/:claimant", isValidClaimant, async (req, res, next) => {
     const claims = query.map(({ data, ...distributor }) => ({
       ...distributor,
       amount: (data as any)[0],
+      _index: (data as any)[1],
     }));
 
-    res.json(claims);
+    // TODO: index claims in db or run this from frontend, otherwise in the
+    // meantime batch the requests and/or make more robust if RPC fails
+    const claimsIncludingClaimedAt = await Promise.all(
+      claims.map(async ({ _index, ...claim }) => {
+        let claimedAt = undefined;
+        try {
+          const distributor = await getDistributor(claim.id);
+          const status = await distributor.getClaimStatus(new u64(_index));
+          claimedAt = new Date(
+            status.claimedAt.toNumber() * 1000
+          ).toISOString();
+        } catch (err) {
+          // unclaimed
+        }
+        return {
+          ...claim,
+          claimed_at: claimedAt,
+        };
+      })
+    );
+
+    res.json({
+      claimed: claimsIncludingClaimedAt.filter((c) => c.claimed_at),
+      unclaimed: claimsIncludingClaimedAt.filter((c) => !c.claimed_at),
+    });
   } catch (err) {
     next(err);
   }

@@ -1,17 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import type { MessageKind, MessageMetadata } from "@coral-xyz/common";
-import { BACKEND_API_URL, CHAT_MESSAGES } from "@coral-xyz/common";
-import { createEmptyFriendship, useDbUser } from "@coral-xyz/db";
+import { CHAT_MESSAGES } from "@coral-xyz/common";
+import { createEmptyFriendship } from "@coral-xyz/db";
 import { SignalingManager, useUsersMetadata } from "@coral-xyz/react-common";
 import { useActiveSolanaWallet, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import ArrowForwardIos from "@mui/icons-material/ArrowForwardIos";
+import AddIcon from "@mui/icons-material/Add";
+import CloseIcon from "@mui/icons-material/Close";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import { CircularProgress, IconButton } from "@mui/material";
 import { createStyles, makeStyles } from "@mui/styles";
 import { v4 as uuidv4 } from "uuid";
-
-import { base64ToArrayBuffer } from "../utils/imageUploadUtils";
 
 import { CustomAutoComplete, MessageInput } from "./messageInput/MessageInput";
 import { MessageInputProvider } from "./messageInput/MessageInputProvider";
@@ -242,7 +241,10 @@ export const SendMessage = ({
     return Object.keys(userMap).map((uuid) => userMap[uuid]);
   };
   return (
-    <MessageInputProvider inputRef={inputRef}>
+    <MessageInputProvider
+      inputRef={inputRef}
+      offlineMembers={getOfflineMembers().slice(0, 5)}
+    >
       <div className={classes.outerDiv}>
         {selectedFile && (
           <div>
@@ -422,8 +424,59 @@ export const SendMessage = ({
               )}
             </>
             <MessageInput setEmojiMenuOpen={setEmojiMenuOpen} />
-          </div>
+          </div> 
         </div>
+        {emojiMenuOpen && (
+          <div style={{ display: "flex", marginLeft: 8, paddingBottom: 5 }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            ></div>
+            <EmojiPickerComponent
+              setEmojiPicker={setEmojiPicker}
+              emojiPicker={emojiPicker}
+              setGifPicker={setGifPicker}
+              inputRef={inputRef}
+              buttonStyle={{
+                height: "28px",
+              }}
+            />
+            <GifPicker
+              sendMessage={sendMessage}
+              setGifPicker={setGifPicker}
+              gifPicker={gifPicker}
+              setEmojiPicker={setEmojiPicker}
+              buttonStyle={{
+                height: "28px",
+              }}
+            />
+            <Attatchment
+              onMediaSelect={onMediaSelect}
+              buttonStyle={{
+                height: "28px",
+              }}
+            />
+            {activeSolanaWallet?.publicKey && (
+              <SecureTransfer
+                buttonStyle={{
+                  height: "28px",
+                }}
+                remoteUserId={remoteUserId}
+                onTxFinalized={({ signature, counter, escrow }) => {
+                  sendMessage("Secure transfer", "secure-transfer", {
+                    signature,
+                    counter,
+                    escrow,
+                    current_state: "pending",
+                  });
+                }}
+              />
+            )}
+          </div>
+        )}
       </div>
     </MessageInputProvider>
   );

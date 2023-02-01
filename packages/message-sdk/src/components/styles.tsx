@@ -31,6 +31,7 @@ export const useStyles = styles((theme) => ({
   topImageOuter: {
     width: 150,
     height: 150,
+    border: `solid 3px ${theme.custom.colors.avatarIconBackground}`,
     borderRadius: "50%",
     display: "inline-block",
     overflow: "hidden",
@@ -101,7 +102,7 @@ export const useStyles = styles((theme) => ({
     color: theme.custom.colors.fontColor2,
   },
   userRequestText: {
-    color: theme.custom.colors.fontColor2,
+    color: theme.custom.colors.textPlaceholder,
   },
   timestamp: {
     fontSize: 14,

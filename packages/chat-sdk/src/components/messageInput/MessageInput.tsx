@@ -1,4 +1,4 @@
-import { Fragment, useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { RichMentionsContext, RichMentionsInput } from "react-rich-mentions";
 import { useUsersMetadata } from "@coral-xyz/react-common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
@@ -19,10 +19,16 @@ export function MessageInput({ setEmojiMenuOpen }: { setEmojiMenuOpen: any }) {
   const classes = useStyles();
   const theme = useCustomTheme();
   const { type, remoteUsername } = useChatContext();
+  const { activeSearch } = useContext(RichMentionsContext);
 
   return (
     <div style={{ width: "100%", padding: 10 }}>
       <RichMentionsInput
+        onKeyDown={(event) => {
+          if (event.key === "Enter" && activeSearch) {
+            event.stopPropagation();
+          }
+        }}
         className={classes.input}
         onClick={() => setEmojiMenuOpen(false)}
         placeholder={
@@ -41,14 +47,13 @@ export function MessageInput({ setEmojiMenuOpen }: { setEmojiMenuOpen: any }) {
   );
 }
 
-export const CustomAutoComplete = ({
-  offlineMembers,
-}: {
-  offlineMembers: { username: string; uuid: string; image: string }[];
-}) => {
+export const CustomAutoComplete = () => {
   const theme = useCustomTheme();
-  const { loading, results, activeSearch, selectItem } =
+  const { loading, results, activeSearch, selectItem, index } =
     useContext(RichMentionsContext);
+  const cursor = index;
+
+  const shownResults = useMemo(() => results, [results]);
 
   const users = useUsersMetadata({ remoteUserIds: results.map((r) => r.id) });
 

@@ -6,7 +6,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 
 export const useStyles = styles((theme) => ({
   searchField: {
-    marginTop: "0px",
+    marginTop: "10px",
     marginBottom: "16px",
     width: "inherit",
     display: "flex",
