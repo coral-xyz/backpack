@@ -47,6 +47,9 @@ export const useStyles = styles((theme) => ({
       height: "calc(100vh - 8px)",
       borderTopLeftRadius: "15px",
       borderTopRightRadius: "15px",
+      "&::-webkit-scrollbar": {
+        display: "none",
+      },
     },
   },
 }));
