@@ -95,15 +95,12 @@ class SolanaKeyring implements Keyring {
 }
 
 export class SolanaHdKeyringFactory implements HdKeyringFactory {
-  public init(
-    mnemonic: string,
-    derivationPaths: Array<string>,
-    accountIndex?: number,
-    walletIndex?: number
-  ): HdKeyring {
+  public init(mnemonic: string, derivationPaths: Array<string>): HdKeyring {
     if (!validateMnemonic(mnemonic)) {
       throw new Error("Invalid seed words");
     }
+    const { accountIndex, walletIndex } =
+      derivationPathsToIndexes(derivationPaths);
     return new SolanaHdKeyring({
       mnemonic,
       seed: mnemonicToSeedSync(mnemonic),
@@ -134,8 +131,8 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
   readonly mnemonic: string;
   private seed: Buffer;
   private derivationPaths: Array<string>;
-  private accountIndex?: number;
-  private walletIndex?: number;
+  private accountIndex: number;
+  private walletIndex: number;
 
   constructor({
     mnemonic,
@@ -147,8 +144,8 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
     mnemonic: string;
     seed: Buffer;
     derivationPaths: Array<string>;
-    accountIndex?: number;
-    walletIndex?: number;
+    accountIndex: number;
+    walletIndex: number;
   }) {
     const keypairs = derivationPaths.map((d) => deriveSolanaKeypair(seed, d));
     super(keypairs);
@@ -176,17 +173,10 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
     publicKey: string;
     derivationPath: string;
   } {
-    // If account index and wallet index don't exist, make a best guess based
-    // on the existing derivation paths for the keyring
-    if (!this.accountIndex || !this.walletIndex) {
-      const { accountIndex, walletIndex } = derivationPathsToIndexes(
-        this.derivationPaths
-      );
-      if (!this.accountIndex) this.accountIndex = accountIndex;
-      if (!this.walletIndex) this.walletIndex = walletIndex;
-    }
-    // Move to the next wallet index for the derivation
-    this.walletIndex += 1 + skipKeys;
+    this.walletIndex =
+      this.walletIndex === undefined
+        ? skipKeys
+        : this.walletIndex + 1 + skipKeys;
     const derivationPath = getIndexedPath(
       Blockchain.SOLANA,
       this.accountIndex,

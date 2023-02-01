@@ -2,6 +2,7 @@ import * as store from "@coral-xyz/background/src/backend/store";
 import { DefaultKeyname } from "@coral-xyz/background/src/backend/store";
 import type {
   BlockchainKeyringJson,
+  PathType,
   WalletDescriptor,
 } from "@coral-xyz/common";
 import { getLogger } from "@coral-xyz/common";
@@ -138,7 +139,7 @@ export class BlockchainKeyring {
   public async addDerivationPath(
     derivationPath: string
   ): Promise<{ publicKey: string; name: string }> {
-    const publicKey = this.hdKeyring!.addDerivationPath(derivationPath);
+    const publicKey = await this.hdKeyring!.addDerivationPath(derivationPath);
 
     // Save a default name.
     const name = DefaultKeyname.defaultDerived(
