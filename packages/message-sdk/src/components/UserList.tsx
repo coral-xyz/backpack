@@ -5,6 +5,8 @@ import {
   NAV_COMPONENT_MESSAGE_PROFILE,
   sendFriendRequest,
   unFriend,
+  usernameDisplay,
+  walletAddressDisplay,
 } from "@coral-xyz/common";
 import { updateFriendshipIfExists } from "@coral-xyz/db";
 import {
@@ -274,7 +276,19 @@ function UserListItem({
             >
               <UserIcon image={user.image} />
             </div>
-            <div className={classes.userText}>{user.username}</div>
+            <div className={classes.userText}>
+              {usernameDisplay(user.username)}{" "}
+              {user.searchedSolPubKey ? (
+                <> ({walletAddressDisplay(user.searchedSolPubKey, 2)})</>
+              ) : (
+                ""
+              )}{" "}
+              {user.searchedEthPubKey ? (
+                <>({walletAddressDisplay(user.searchedEthPubKey, 2)})</>
+              ) : (
+                ""
+              )}
+            </div>
           </div>
           <div>
             {user.areFriends ? (

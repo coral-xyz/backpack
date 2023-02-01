@@ -39,7 +39,6 @@ export function InboxInner() {
   const groupCollections = useGroupCollections({ uuid });
   const [searchResults, setSearchResults] = useState<RemoteUserData[]>([]);
   const [searchFilter, setSearchFilter] = useState("");
-  const [refreshing, setRefreshing] = useState(true);
 
   const getDefaultChats = () => {
     return groupCollections.filter((x) => x.name && x.image) || [];
@@ -107,9 +106,9 @@ export function InboxInner() {
           debouncedInit();
         }}
       />
-      {(!allChats || (refreshing && !allChats.length)) && <MessagesSkeleton />}
+      {(!allChats || !allChats.length) && <MessagesSkeleton />}
       {allChats &&
-        (allChats.length || !refreshing) &&
+        allChats.length &&
         (allChats.filter((x) =>
           (x.chatType === "individual"
             ? x.chatProps.remoteUsername || ""
@@ -142,7 +141,7 @@ export function InboxInner() {
         </div>
       )}
       {allChats &&
-        (allChats.length || !refreshing) &&
+        allChats.length &&
         searchFilter.length < 3 &&
         requestCount === 0 &&
         allChats.length === 0 && (
