@@ -42,7 +42,6 @@ export const HardwareSearch = ({
         [Blockchain.ETHEREUM]: new Ethereum(transport),
       }[blockchain];
       for (const derivationPath of getRecoveryPaths(blockchain)) {
-        // TODO remove m/ everywhere?
         const ledgerAddress = (
           await ledger.getAddress(derivationPath.replace("m/", ""))
         ).address;
