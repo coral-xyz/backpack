@@ -43,6 +43,8 @@ export const useStyles = styles((theme) => ({
   },
   drawer: {
     "& .MuiDrawer-paper": {
+      background: theme.custom.colors.nav,
+      height: "calc(100vh - 8px)",
       borderTopLeftRadius: "15px",
       borderTopRightRadius: "15px",
     },
@@ -114,6 +116,7 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
         </div>
         {count !== 0 && <MembersList count={count} members={staticMembers} />}
         <SearchBox
+          placeholder="Search username"
           onChange={(prefix: string) => {
             setSearchFilter(prefix);
             debouncedInit(prefix, 0);
@@ -122,12 +125,19 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
         <div
           style={{
             display: "flex",
-            justifyContent: "space-between",
+            justifyContent: "flex-end",
+            gap: 5,
             color: theme.custom.colors.smallTextColor,
           }}
         >
           <div
-            style={{ padding: 5, cursor: "pointer" }}
+            style={{
+              padding: 5,
+              cursor: "pointer",
+              fontWeight: 600,
+              fontSize: "14px",
+              color: theme.custom.colors.blue,
+            }}
             onClick={() => {
               debouncedInit(searchFilter, Math.max(offset - 1, 0));
             }}
@@ -137,7 +147,13 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
           {/* TODO: clean up this logic */}
           {members.length === LIMIT && (
             <div
-              style={{ padding: 5, cursor: "pointer" }}
+              style={{
+                padding: 5,
+                cursor: "pointer",
+                fontWeight: 600,
+                fontSize: "14px",
+                color: theme.custom.colors.blue,
+              }}
               onClick={() => {
                 debouncedInit(searchFilter, offset + 1);
               }}
@@ -157,6 +173,12 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
                   .includes(searchFilter?.toLocaleLowerCase())
               ).length !== 0 ? (
                 <UserList
+                  style={{
+                    border: "none",
+                  }}
+                  itemStyle={{
+                    backgroundColor: theme.custom.colors.nav,
+                  }}
                   setMembers={setMembers}
                   users={members.filter((x) =>
                     x.username
@@ -183,17 +205,32 @@ function MembersList({
   members: RemoteUserData[];
 }) {
   const theme = useCustomTheme();
+  const countText = count >= 1000 ? `${(count / 1000).toFixed(1)}k` : count;
   return (
     <div
-      style={{ justifyContent: "center", display: "flex", paddingBottom: 25 }}
+      style={{
+        justifyContent: "center",
+        display: "flex",
+        alignItems: "center",
+        paddingBottom: 20,
+      }}
     >
-      {members.map((member) => (
-        <img src={member.image} style={{ height: 25 }} />
+      {members.map((member, idx) => (
+        <img
+          key={idx}
+          src={member.image}
+          style={{
+            border: `solid 2px ${theme.custom.colors.nav}`,
+            borderRadius: "50%",
+            height: 30,
+            ...(idx > 0 ? { marginLeft: "-12px" } : {}),
+          }}
+        />
       ))}
       <div
         style={{ color: theme.custom.colors.smallTextColor, paddingLeft: 10 }}
       >
-        {count} members
+        {countText} members
       </div>
     </div>
   );

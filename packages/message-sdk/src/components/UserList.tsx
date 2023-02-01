@@ -23,9 +23,13 @@ import { useStyles } from "./styles";
 export const UserList = ({
   users,
   setMembers,
+  style,
+  itemStyle,
 }: {
   users: RemoteUserData[];
   setMembers?: React.Dispatch<React.SetStateAction<RemoteUserData[]>>;
+  style?: CSSProperties;
+  itemStyle?: CSSProperties;
 }) => {
   const theme = useCustomTheme();
 
@@ -36,6 +40,7 @@ export const UserList = ({
         paddingBottom: 0,
         borderRadius: "14px",
         border: `${theme.custom.colors.borderFull}`,
+        ...style,
       }}
     >
       {users.map((user, index) => (
@@ -45,6 +50,7 @@ export const UserList = ({
           isFirst={index === 0}
           isLast={index === users.length - 1}
           setMembers={setMembers}
+          style={itemStyle}
         />
       ))}
     </List>
@@ -56,11 +62,13 @@ function UserListItem({
   isFirst,
   isLast,
   setMembers,
+  style,
 }: {
   user: RemoteUserData;
   isFirst: boolean;
   isLast: boolean;
   setMembers?: React.Dispatch<React.SetStateAction<RemoteUserData[]>>;
+  style?: CSSProperties;
 }) {
   const theme = useCustomTheme();
   const { push } = useNavigation();
@@ -249,6 +257,7 @@ function UserListItem({
           ? undefined
           : `solid 1pt ${theme.custom.colors.border}`,
         ...isFirstLastListItemStyle(isFirst, isLast, 12),
+        ...style,
       }}
     >
       <div
