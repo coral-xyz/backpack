@@ -1,10 +1,9 @@
 import { useLayoutEffect, useRef, useState } from "react";
-import { useOpenPlugin } from "@coral-xyz/recoil";
+import { isOneLive, useOpenPlugin } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 import { Skeleton } from "@mui/material";
 import Card from "@mui/material/Card";
-
-import { useIsONELive } from "../../../hooks/useIsONELive";
+import { useRecoilValue } from "recoil";
 
 const useStyles = styles((theme) => ({
   blockchainCard: {
@@ -34,7 +33,6 @@ const useStyles = styles((theme) => ({
     zIndex: "1",
     height: "117px",
     width: "547px",
-    backgroundImage: "url(https://xnft.wao.gg/one-entry-bg.png)",
     backgroundSize: "547px 234px",
     backgroundRepeat: "no-repeat",
     backgroundPosition: "0px 0px",
@@ -68,7 +66,7 @@ const useStyles = styles((theme) => ({
 export default function EntryONE() {
   const [imageLoaded, setImageLoaded] = useState(false);
   const ref = useRef<HTMLImageElement>(null);
-  const isONELive = useIsONELive();
+  const isONELive = useRecoilValue(isOneLive);
   const classes = useStyles();
   const openPlugin = useOpenPlugin();
 
@@ -90,10 +88,12 @@ export default function EntryONE() {
     };
   }, []);
 
-  const isLoading = false || !imageLoaded || isONELive === "loading";
+  const isLoading = false || !imageLoaded;
 
   const openXNFT = () => {
-    openPlugin("CkqWjTWzRMAtYN3CSs8Gp4K9H891htmaN1ysNXqcULc8");
+    if (isONELive.isLive) {
+      openPlugin("CkqWjTWzRMAtYN3CSs8Gp4K9H891htmaN1ysNXqcULc8");
+    }
   };
 
   return (
@@ -106,12 +106,17 @@ export default function EntryONE() {
           isLoading ? classes.hidden : ""
         }`}
       >
-        <div className={`${classes.image}`} />
+        <div
+          className={`${classes.image}`}
+          style={{
+            backgroundImage: `url(${isONELive.banner})`,
+          }}
+        />
       </div>
       <img
         ref={ref}
         className={classes.visuallyHidden}
-        src="https://xnft.wao.gg/one-entry-bg.png"
+        src={isONELive.banner}
       />
     </Card>
   );
