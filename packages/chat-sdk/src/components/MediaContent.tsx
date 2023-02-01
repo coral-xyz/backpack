@@ -15,7 +15,7 @@ export const MediaContent = ({
   const [modalOpen, setModalOpen] = useState(false);
   const theme = useCustomTheme();
   const { isXs } = useBreakpoints();
-
+  console.log("background - ", theme.custom.colors.background);
   return (
     <>
       {modalOpen && (
@@ -74,11 +74,18 @@ export const MediaContent = ({
       <div style={{ marginTop: 3 }}>
         {mediaKind === "video" ? (
           <div style={{ display: "flex" }}>
-            <div style={{ position: "relative" }}>
+            <div
+              style={{
+                position: "relative",
+                maxHeight: !isXs ? 260 : 180,
+                width: 1,
+              }}
+            >
               <video
                 style={{
-                  height: !isXs ? 270 : 180,
-                  maxWidth: !isXs ? 375 : 250,
+                  maxHeight: !isXs ? 260 : 180,
+                  maxWidth: !isXs ? "30vw" : "70vw",
+                  objectFit: "contain",
                   borderRadius: 5,
                 }}
                 controls={true}
@@ -105,18 +112,25 @@ export const MediaContent = ({
             </div>
           </div>
         ) : (
-          <img
-            onClick={() => setModalOpen(true)}
+          <div
             style={{
-              height: "full",
-              maxWidth: !isXs ? 375 : "60vw",
-              borderRadius: 5,
+              maxHeight: !isXs ? 320 : 220,
+              width: 1,
               marginTop: 5,
-              objectFit: "contain",
-              cursor: "pointer",
             }}
-            src={mediaLink}
-          />
+          >
+            <img
+              onClick={() => setModalOpen(true)}
+              style={{
+                cursor: "pointer",
+                borderRadius: 5,
+                maxHeight: !isXs ? 320 : 220,
+                maxWidth: !isXs ? "30vw" : "70vw",
+                objectFit: "contain",
+              }}
+              src={mediaLink}
+            />
+          </div>
         )}
       </div>
     </>

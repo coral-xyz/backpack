@@ -26,8 +26,7 @@ const useStyles = makeStyles((theme: any) =>
   createStyles({
     outerDiv: {
       padding: 2,
-      background: theme.custom.colors.textInputBackground,
-      backdropFilter: "blur(6px)",
+      background: "transparent",
       borderTopLeftRadius: 10,
       borderTopRightRadius: 10,
     },
@@ -316,100 +315,114 @@ export const SendMessage = ({
         )}
         {activeReply.parent_client_generated_uuid && (
           <ReplyContainer
-            marginBottom={6}
-            padding={12}
+            marginBottom={"0"}
+            padding={10}
             parent_username={activeReply.parent_username || ""}
             showCloseBtn={true}
             text={activeReply.text}
           />
         )}
         <CustomAutoComplete offlineMembers={getOfflineMembers().slice(0, 5)} />
-        <div style={{ display: "flex" }}>
-          <>
-            {emojiMenuOpen ? (
-              <div style={{ display: "flex" }}>
+        <div style={{ backgroundColor: theme.custom.colors.bg3 }}>
+          <div
+            style={{
+              display: "flex",
+              backgroundColor: theme.custom.colors.bg4,
+              marginLeft: 10,
+              marginRight: 10,
+              marginBottom: 10,
+              paddingTop: 4,
+              paddingBottom: 4,
+              borderRadius: 8,
+            }}
+          >
+            <>
+              {emojiMenuOpen ? (
+                <div style={{ display: "flex", paddingLeft: 4 }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                    }}
+                  ></div>
+                  <EmojiPickerComponent
+                    setEmojiPicker={setEmojiPicker}
+                    emojiPicker={emojiPicker}
+                    setGifPicker={setGifPicker}
+                    inputRef={inputRef}
+                    buttonStyle={{
+                      height: "28px",
+                    }}
+                  />
+                  <GifPicker
+                    sendMessage={sendMessage}
+                    setGifPicker={setGifPicker}
+                    gifPicker={gifPicker}
+                    setEmojiPicker={setEmojiPicker}
+                    buttonStyle={{
+                      height: "28px",
+                    }}
+                  />
+                  <Attatchment
+                    onMediaSelect={onMediaSelect}
+                    buttonStyle={{
+                      height: "28px",
+                    }}
+                  />
+                  {/*{activeSolanaWallet?.publicKey && (*/}
+                  {/*  <SecureTransfer*/}
+                  {/*    buttonStyle={{*/}
+                  {/*      height: "28px",*/}
+                  {/*    }}*/}
+                  {/*    remoteUserId={remoteUserId}*/}
+                  {/*    onTxFinalized={({ signature, counter, escrow }) => {*/}
+                  {/*      sendMessage("Secure transfer", "secure-transfer", {*/}
+                  {/*        signature,*/}
+                  {/*        counter,*/}
+                  {/*        escrow,*/}
+                  {/*        current_state: "pending",*/}
+                  {/*      });*/}
+                  {/*    }}*/}
+                  {/*  />*/}
+                  {/*)}*/}
+                  {/*<IconButton>*/}
+                  {/*  {" "}*/}
+                  {/*  <SendIcon*/}
+                  {/*    className={classes.icon}*/}
+                  {/*    onClick={() => sendMessage(messageContent)}*/}
+                  {/*  />{" "}*/}
+                  {/*</IconButton>*/}
+                </div>
+              ) : (
                 <div
                   style={{
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "center",
-                  }}
-                ></div>
-                <EmojiPickerComponent
-                  setEmojiPicker={setEmojiPicker}
-                  emojiPicker={emojiPicker}
-                  setGifPicker={setGifPicker}
-                  inputRef={inputRef}
-                  buttonStyle={{
-                    height: "28px",
-                  }}
-                />
-                <GifPicker
-                  sendMessage={sendMessage}
-                  setGifPicker={setGifPicker}
-                  gifPicker={gifPicker}
-                  setEmojiPicker={setEmojiPicker}
-                  buttonStyle={{
-                    height: "28px",
-                  }}
-                />
-                <Attatchment
-                  onMediaSelect={onMediaSelect}
-                  buttonStyle={{
-                    height: "28px",
-                  }}
-                />
-                {/*{activeSolanaWallet?.publicKey && (*/}
-                {/*  <SecureTransfer*/}
-                {/*    buttonStyle={{*/}
-                {/*      height: "28px",*/}
-                {/*    }}*/}
-                {/*    remoteUserId={remoteUserId}*/}
-                {/*    onTxFinalized={({ signature, counter, escrow }) => {*/}
-                {/*      sendMessage("Secure transfer", "secure-transfer", {*/}
-                {/*        signature,*/}
-                {/*        counter,*/}
-                {/*        escrow,*/}
-                {/*        current_state: "pending",*/}
-                {/*      });*/}
-                {/*    }}*/}
-                {/*  />*/}
-                {/*)}*/}
-                {/*<IconButton>*/}
-                {/*  {" "}*/}
-                {/*  <SendIcon*/}
-                {/*    className={classes.icon}*/}
-                {/*    onClick={() => sendMessage(messageContent)}*/}
-                {/*  />{" "}*/}
-                {/*</IconButton>*/}
-              </div>
-            ) : (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                }}
-              >
-                <IconButton
-                  size={"small"}
-                  style={{ color: theme.custom.colors.icon }}
-                  onClick={() => {
-                    setEmojiMenuOpen(true);
+                    paddingLeft: 4,
                   }}
                 >
-                  <ArrowForwardIos
-                    style={{
-                      height: "18px",
-                      color: theme.custom.colors.icon,
-                      fontSize: 20,
+                  <IconButton
+                    size={"small"}
+                    style={{ color: theme.custom.colors.icon }}
+                    onClick={() => {
+                      setEmojiMenuOpen(true);
                     }}
-                  />
-                </IconButton>
-              </div>
-            )}
-          </>
-          <MessageInput setEmojiMenuOpen={setEmojiMenuOpen} />
+                  >
+                    <ArrowForwardIos
+                      style={{
+                        height: "18px",
+                        color: theme.custom.colors.icon,
+                        fontSize: 20,
+                      }}
+                    />
+                  </IconButton>
+                </div>
+              )}
+            </>
+            <MessageInput setEmojiMenuOpen={setEmojiMenuOpen} />
+          </div>
         </div>
       </div>
     </MessageInputProvider>

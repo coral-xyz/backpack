@@ -54,88 +54,100 @@ export const CustomAutoComplete = ({
 
   return (
     <div>
-      {activeSearch !== "" && activeSearch && activeSearch.length !== 0 && (
-        <div>
-          {" "}
-          {offlineMembers
-            .filter((x) => x.username.includes(activeSearch.slice(1)))
-            .map((item) => (
-              <button
-                style={{
-                  display: "flex",
-                  padding: 8,
-                  cursor: "pointer",
-                  width: "100%",
-                  background: theme.custom.colors.background,
-                  color: theme.custom.colors.fontColor,
-                  textAlign: "left",
-                  border: "none",
-                  boxShadow: `${theme.custom.colors.boxShadow}`,
-                }}
-                key={item.uuid}
-                onClick={() => {
-                  selectItem({
-                    name: item.username,
-                    id: item.uuid,
-                    ref: `<@${item.username}|u${item.uuid}>`,
-                  });
-                }}
-              >
-                <img
-                  style={{ height: 20, borderRadius: 10, marginRight: 5 }}
-                  src={item.image}
-                />
-                <div style={{ fontSize: 15 }}>{item.username}</div>
-              </button>
-            ))}
-        </div>
-      )}
-
-      {results
-        .filter((x) => !offlineMembers.map((x) => x.uuid).includes(x.id))
-        .map((item, i) => (
-          <button
-            style={{
-              padding: 8,
-              display: "flex",
-              cursor: "pointer",
-              width: "100%",
-              background: theme.custom.colors.background,
-              color: theme.custom.colors.fontColor,
-              border: "none",
-              boxShadow: `${theme.custom.colors.boxShadow}`,
-              textAlign: "left",
-            }}
-            key={item.ref}
-            onClick={() => {
-              selectItem(item);
-            }}
-          >
-            <img
-              style={{ height: 20, borderRadius: 10, marginRight: 5 }}
-              src={users[item.id]?.image}
-            />
-            <div style={{ fontSize: 15 }}>{item.name}</div>
-          </button>
-        ))}
-      {activeSearch !== "" &&
-      activeSearch &&
-      activeSearch.length !== 0 &&
-      loading ? (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            marginBottom: 3,
-            marginTop: 3,
-          }}
-        >
-          {" "}
-          <CircularProgress size={20} />{" "}
-        </div>
-      ) : (
-        <></>
-      )}
+      <div
+        style={{
+          background: theme.custom.colors.bg2,
+          width: 200,
+          boxShadow:
+            "0px 1px 3px rgba(0, 0, 0, 0.1), 0px 1px 2px rgba(0, 0, 0, 0.06)",
+          borderRadius: "12px",
+          marginLeft: 10,
+          marginRight: 10,
+          marginBottom: 4,
+          padding: activeSearch && 12,
+        }}
+      >
+        {activeSearch !== "" && activeSearch && activeSearch.length !== 0 && (
+          <>
+            {offlineMembers
+              .filter((x) => x.username.includes(activeSearch.slice(1)))
+              .map((item) => (
+                <button
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    padding: 8,
+                    cursor: "pointer",
+                    width: 180,
+                    color: theme.custom.colors.fontColor,
+                    textAlign: "left",
+                    border: "none",
+                    backgroundColor: "transparent",
+                  }}
+                  key={item.uuid}
+                  onClick={() => {
+                    selectItem({
+                      name: item.username,
+                      id: item.uuid,
+                      ref: `<@${item.username}|u${item.uuid}>`,
+                    });
+                  }}
+                >
+                  <img
+                    style={{ height: 26, borderRadius: 16, marginRight: 5 }}
+                    src={item.image}
+                  />
+                  <div style={{ fontSize: 15, fontWeight: 500 }}>
+                    @{item.username}
+                  </div>
+                </button>
+              ))}
+          </>
+        )}
+        {results
+          .filter((x) => !offlineMembers.map((x) => x.uuid).includes(x.id))
+          .map((item, i) => (
+            <button
+              style={{
+                padding: 8,
+                display: "flex",
+                cursor: "pointer",
+                width: "180px",
+                color: theme.custom.colors.fontColor,
+                backgroundColor: "transparent",
+                border: "none",
+                textAlign: "left",
+              }}
+              key={item.ref}
+              onClick={() => {
+                selectItem(item);
+              }}
+            >
+              <img
+                style={{ height: 26, borderRadius: 16, marginRight: 5 }}
+                src={users[item.id]?.image}
+              />
+              <div style={{ fontSize: 15 }}>@{item.name}</div>
+            </button>
+          ))}
+        {activeSearch !== "" &&
+          activeSearch &&
+          activeSearch.length !== 0 &&
+          loading && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                backgroundColor: "transparent",
+                marginBottom: 3,
+                paddingTop: 3,
+                width: 180,
+              }}
+            >
+              <CircularProgress size={20} />
+            </div>
+          )}
+      </div>
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import React from "react";
+import { useCustomTheme } from "@coral-xyz/themes";
 import Close from "@mui/icons-material/Close";
 import { createStyles, makeStyles } from "@mui/styles";
 
@@ -33,43 +34,58 @@ export const ReplyContainer = ({
   const { setActiveReply } = useChatContext();
 
   const classes = useStyles();
+  const theme = useCustomTheme();
   return (
     <div
       style={{
-        marginBottom: marginBottom || 6,
-        display: "flex",
-        justifyContent: "space-between",
-        flexDirection: align === "left" ? "row" : "row-reverse",
         padding: padding,
+        marginBottom: marginBottom || 6,
+        background: theme.custom.colors.bg3,
+        transform: showCloseBtn && "translateY(10px)",
         paddingBottom: 0,
       }}
     >
-      <div>
-        <div
-          className={classes.text}
-          style={{ fontWeight: 500, fontSize: 14, marginBottom: 8 }}
-        >
-          Replying to {parent_username || ""}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          flexDirection: align === "left" ? "row" : "row-reverse",
+          backgroundColor: showCloseBtn && theme.custom.colors.bg4,
+          paddingBottom: showCloseBtn && 6,
+          borderTopLeftRadius: showCloseBtn && 8,
+          borderTopRightRadius: showCloseBtn && 8,
+          padding: showCloseBtn && 6,
+        }}
+      >
+        <div>
+          <div
+            className={classes.text}
+            style={{ fontWeight: 500, fontSize: 14, marginBottom: 8 }}
+          >
+            Replying to {parent_username || ""}
+          </div>
+          <div
+            className={classes.text}
+            style={{
+              borderLeft: "2px solid #DFE0E6",
+              fontWeight: 600,
+              paddingLeft: 12,
+            }}
+          >
+            <ParsedMessage message={text} />
+          </div>
         </div>
-        <div
-          className={classes.text}
-          style={{
-            borderLeft: "2px solid #DFE0E6",
-            fontWeight: 600,
-            paddingLeft: 12,
-          }}
-        >
-          <ParsedMessage message={text} />
-        </div>
+        {showCloseBtn && (
+          <div
+            style={{ cursor: "pointer" }}
+            onClick={() =>
+              setActiveReply({ parent_client_generated_uuid: null })
+            }
+          >
+            <Close className={classes.icon} />
+          </div>
+        )}
       </div>
-      {showCloseBtn && (
-        <div
-          style={{ cursor: "pointer" }}
-          onClick={() => setActiveReply({ parent_client_generated_uuid: null })}
-        >
-          <Close className={classes.icon} />
-        </div>
-      )}
     </div>
   );
 };
