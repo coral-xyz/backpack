@@ -326,8 +326,10 @@ export function ImportAccounts({
       [Blockchain.ETHEREUM]: new Ethereum(transport),
     }[blockchain];
     // Add remaining accounts
-    for (const derivationPath in derivationPaths) {
-      publicKeys.push((await ledger.getAddress(derivationPath)).address);
+    for (const derivationPath of derivationPaths) {
+      publicKeys.push(
+        (await ledger.getAddress(derivationPath.replace("m/", ""))).address
+      );
     }
     setLedgerLocked(false);
     return publicKeys.map((p) =>
@@ -414,7 +416,7 @@ export function ImportAccounts({
             ))}
           </TextInput>
         </div>
-        {balances ? (
+        {Object.keys(balances).length > 0 ? (
           <>
             <List
               sx={{
