@@ -816,11 +816,10 @@ export class Backend {
    */
   async keyringDeriveWallet(
     blockchain: Blockchain,
-    skipKeys = 0
+    retries = 0
   ): Promise<string> {
     const { publicKey, name } = await this.keyringStore.deriveNextKey(
-      blockchain,
-      skipKeys
+      blockchain
     );
 
     try {
@@ -831,10 +830,10 @@ export class Backend {
       // the next account index gets incremented. This is the correct behaviour
       // because it should allow for sensible retries on conflicts.
       await this.keyringKeyDelete(blockchain, publicKey);
-      if (skipKeys < 10) {
-        // Key conflict with already exist account, retry but skip last key(s)
-        skipKeys += 1;
-        return await this.keyringDeriveWallet(blockchain, skipKeys);
+      if (retries < 10) {
+        // Key conflict with already exist account, retry
+        // Last key will be skipped because the wallet index will have incremented
+        return await this.keyringDeriveWallet(blockchain, retries);
       }
       throw error;
     }

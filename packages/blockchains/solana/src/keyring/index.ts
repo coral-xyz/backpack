@@ -172,18 +172,23 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
     super.deletePublicKey(publicKey);
   }
 
-  public deriveNextKey(skipKeys: number): {
+  public deriveNextKey(): {
     publicKey: string;
     derivationPath: string;
   } {
     this.ensureIndices();
     // Move to the next wallet index for the derivation
-    this.walletIndex! += 1 + skipKeys;
+    this.walletIndex! += 1;
     const derivationPath = getIndexedPath(
       Blockchain.SOLANA,
       this.accountIndex,
       this.walletIndex
     );
+    if (this.derivationPaths.includes(derivationPath)) {
+      // This key is already included for some reason, try again with
+      // incremented walletIndex
+      return this.deriveNextKey();
+    }
     const publicKey = this.addDerivationPath(derivationPath);
     return {
       publicKey,
@@ -193,8 +198,11 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
 
   public addDerivationPath(derivationPath: string): string {
     const keypair = deriveSolanaKeypair(this.seed, derivationPath);
-    this.keypairs.push(keypair);
-    this.derivationPaths.push(derivationPath);
+    if (!this.derivationPaths.includes(derivationPath)) {
+      // Don't persist duplicate public keys
+      this.keypairs.push(keypair);
+      this.derivationPaths.push(derivationPath);
+    }
     return keypair.publicKey.toString();
   }
 

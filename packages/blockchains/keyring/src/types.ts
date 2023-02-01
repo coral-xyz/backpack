@@ -39,7 +39,7 @@ export interface HdKeyringFactory {
 export interface HdKeyring extends Keyring {
   readonly mnemonic: string;
   addDerivationPath(derivationPath: string): string;
-  deriveNextKey(skipKeys: number): {
+  deriveNextKey(): {
     publicKey: string;
     derivationPath: string;
   };

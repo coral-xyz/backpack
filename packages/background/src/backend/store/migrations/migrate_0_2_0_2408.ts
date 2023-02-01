@@ -6,6 +6,7 @@
 
 import type { Blockchain } from "@coral-xyz/common";
 import {
+  derivationPathsToIndexes,
   legacyBip44ChangeIndexed,
   legacyBip44Indexed,
   legacySolletIndexed,
@@ -32,12 +33,14 @@ export async function migrate_0_2_0_2408(json: any) {
             return legacySolletIndexed(i);
           }
         });
+        const { accountIndex, walletIndex } =
+          derivationPathsToIndexes(derivationPaths);
         json.users[user].blockchains[blockchain].hdKeyring = {
           mnemonic: hdKeyring.mnemonic,
           seed: hdKeyring.seed,
           derivationPaths,
-          accountIndex: Math.max(hdKeyring.accountIndices),
-          walletIndex: 0,
+          accountIndex,
+          walletIndex,
         };
       }
 

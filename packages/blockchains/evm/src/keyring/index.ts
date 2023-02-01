@@ -158,18 +158,23 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
     this.walletIndex = walletIndex;
   }
 
-  deriveNextKey(skipKeys: number): {
+  deriveNextKey(): {
     publicKey: string;
     derivationPath: string;
   } {
     this.ensureIndices();
     // Move to the next wallet index for the derivation
-    this.walletIndex! += 1 + skipKeys;
+    this.walletIndex! += 1;
     const derivationPath = getIndexedPath(
       Blockchain.ETHEREUM,
       this.accountIndex,
       this.walletIndex
     );
+    if (this.derivationPaths.includes(derivationPath)) {
+      // This key is already included for some reason, try again with
+      // incremented walletIndex
+      return this.deriveNextKey();
+    }
     const publicKey = this.addDerivationPath(derivationPath);
     return {
       publicKey,
@@ -178,9 +183,12 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
   }
 
   addDerivationPath(derivationPath: string): string {
-    this.derivationPaths.push(derivationPath);
     const wallet = ethers.Wallet.fromMnemonic(this.mnemonic, derivationPath);
-    this.wallets.push(wallet);
+    if (!this.derivationPaths.includes(derivationPath)) {
+      // Don't persist duplicate public keys
+      this.derivationPaths.push(derivationPath);
+      this.wallets.push(wallet);
+    }
     return wallet.address;
   }
 
