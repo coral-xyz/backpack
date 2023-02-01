@@ -13,6 +13,7 @@ import {
 import { NAV_COMPONENT_MESSAGE_GROUP_CHAT } from "@coral-xyz/common/src/constants";
 import {
   isFirstLastListItemStyle,
+  LocalImage,
   useUsersMetadata,
 } from "@coral-xyz/react-common";
 import { useDecodedSearchParams } from "@coral-xyz/recoil";
@@ -379,5 +380,5 @@ export function RequestsChatItem({
 
 function UserIcon({ image }: any) {
   const classes = useStyles();
-  return <img src={`${image}?size=25`} className={classes.iconCircularBig} />;
+  return <LocalImage src={`image`} className={classes.iconCircularBig} />;
 }
