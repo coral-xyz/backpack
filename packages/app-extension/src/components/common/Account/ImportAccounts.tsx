@@ -95,10 +95,12 @@ export function ImportAccounts({
           legacyBip44ChangeIndexed(Blockchain.SOLANA, i) + "/0'",
         label: "m/44/501'/0'/0'",
       },
+      /**
       {
         path: (i: number) => getIndexedPath(Blockchain.SOLANA, i),
         label: "Backpack",
       },
+      **/
     ]
       // Note: We only allow importing the deprecated sollet derivation path for
       //       hot wallets. This UI is hidden behind a local storage flag we
@@ -128,10 +130,12 @@ export function ImportAccounts({
           legacyBip44ChangeIndexed(Blockchain.ETHEREUM, i) + "/0'",
         label: "m/44/501'/0'/0'",
       },
+      /**
       {
         path: (i: number) => getIndexedPath(Blockchain.SOLANA, i),
         label: "Backpack",
       },
+      **/
     ],
   }[blockchain];
 
