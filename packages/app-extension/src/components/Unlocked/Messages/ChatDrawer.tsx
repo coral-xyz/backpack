@@ -5,6 +5,7 @@ import { BACKEND_API_URL } from "@coral-xyz/common";
 import { UserList } from "@coral-xyz/message-sdk";
 import {
   useActiveSolanaWallet,
+  useDarkMode,
   useDecodedSearchParams,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
@@ -16,46 +17,49 @@ import { UserListSkeleton } from "./UserListSkeleton";
 const LIMIT = 25;
 let debouncedTimer = 0;
 
-export const useStyles = styles((theme) => ({
-  container: {
-    padding: 0,
-    backgroundColor: `${theme.custom.colors.nav}`,
-    color: theme.custom.colors.fontColor2,
-  },
-  icon: {
-    color: theme.custom.colors.icon,
-    marginRight: 10,
-    height: "24px",
-    width: "24px",
-  },
-  horizontalCenter: {
-    justifyContent: "center",
-    display: "flex",
-  },
-  title: {
-    marginTop: 20,
-    marginBottom: 20,
-    color: theme.custom.colors.fontColor4,
-  },
-  drawerContainer: {
-    padding: 10,
-    height: "80vh",
-  },
-  drawer: {
-    "& .MuiDrawer-paper": {
-      background: theme.custom.colors.nav,
-      height: "calc(100vh - 8px)",
-      borderTopLeftRadius: "15px",
-      borderTopRightRadius: "15px",
-      "&::-webkit-scrollbar": {
-        display: "none",
+export const useStyles = (isDark: boolean) =>
+  styles((theme) => ({
+    container: {
+      padding: 0,
+      color: theme.custom.colors.fontColor2,
+    },
+    icon: {
+      color: theme.custom.colors.icon,
+      marginRight: 10,
+      height: "24px",
+      width: "24px",
+    },
+    horizontalCenter: {
+      justifyContent: "center",
+      display: "flex",
+    },
+    title: {
+      marginTop: 20,
+      marginBottom: 20,
+      color: theme.custom.colors.fontColor4,
+    },
+    drawerContainer: {
+      padding: 10,
+      height: "80vh",
+    },
+    drawer: {
+      "& .MuiDrawer-paper": {
+        background: isDark
+          ? theme.custom.colors.background
+          : theme.custom.colors.nav,
+        height: "calc(100vh - 8px)",
+        borderTopLeftRadius: "15px",
+        borderTopRightRadius: "15px",
+        "&::-webkit-scrollbar": {
+          display: "none",
+        },
       },
     },
-  },
-}));
+  }));
 
 export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
-  const classes = useStyles();
+  const isDark = useDarkMode();
+  const classes = useStyles(isDark)();
   const { props, title }: any = useDecodedSearchParams();
   const { publicKey } = useActiveSolanaWallet();
   const [members, setMembers] = useState<RemoteUserData[]>([]);
@@ -180,7 +184,10 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
                     border: "none",
                   }}
                   itemStyle={{
-                    backgroundColor: theme.custom.colors.nav,
+                    backgroundColor: isDark
+                      ? theme.custom.colors.background
+                      : undefined,
+                    border: "none",
                   }}
                   setMembers={setMembers}
                   users={members.filter((x) =>
