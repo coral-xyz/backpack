@@ -26,6 +26,7 @@ import { Finish } from "./Finish";
 import { HardwareOnboard } from "./HardwareOnboard";
 import { InviteCodeForm } from "./InviteCodeForm";
 import { KeyringTypeSelector } from "./KeyringTypeSelector";
+import { NotificationsPermission } from "./NotificationsPermission";
 import { UsernameForm } from "./UsernameForm";
 
 export const OnboardAccount = ({
@@ -150,6 +151,7 @@ export const OnboardAccount = ({
           />,
         ]
       : []),
+    <NotificationsPermission onNext={nextStep} />,
     <Finish
       inviteCode={inviteCode}
       username={username}

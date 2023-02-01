@@ -53,10 +53,10 @@ export const MessageList = ({
           <RequestsChatItem
             requestCount={requestCount}
             isFirst={true}
-            isLast={activeChats.length === 0}
+            isLast={activeChats?.length === 0}
           />
         )}
-        {activeChats.map((activeChat, index) => (
+        {activeChats?.map((activeChat, index) => (
           <ChatListItem
             toRoot={toRoot}
             type={activeChat.chatType}
@@ -86,7 +86,7 @@ export const MessageList = ({
                 : activeChat.chatProps.lastMessageTimestamp || ""
             }
             isFirst={requestCount === 0 && index === 0}
-            isLast={index === activeChats.length - 1}
+            isLast={index === activeChats?.length - 1}
             isUnread={
               activeChat.chatType === "individual"
                 ? activeChat.chatProps.unread
@@ -128,7 +128,7 @@ export function ChatListItem({
   const classes = useStyles();
   const theme = useCustomTheme();
   const { props }: any = useDecodedSearchParams();
-  const parts = parseMessage(message);
+  const parts = parseMessage(message || "");
   const pathname = useLocation().pathname;
   const users: any = useUsersMetadata({
     remoteUserIds: parts.filter((x) => x.type === "tag").map((x) => x.value),

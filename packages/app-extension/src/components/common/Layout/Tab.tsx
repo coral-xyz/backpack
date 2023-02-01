@@ -27,10 +27,10 @@ import {
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import { Tab, Tabs } from "@mui/material";
 
 import { AvatarPopoverButton } from "../../Unlocked/Settings/AvatarPopover";
+import { NotificationIconWithBadge } from "../NotificationIconWithBadge";
 
 import { useBreakpoints } from "./hooks";
 
@@ -294,7 +294,7 @@ function TabBar() {
                   tab === TAB_MESSAGES ? classes.activeTab : ""
                 }`}
                 icon={
-                  <NotificationsIcon
+                  <NotificationIconWithBadge
                     style={{
                       width: "28px",
                       height: "28px",

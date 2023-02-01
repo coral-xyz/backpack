@@ -7,6 +7,7 @@
 - "!include auth_mad_feed_media.yaml"
 - "!include auth_mad_feed_posts.yaml"
 - "!include auth_mad_feed_votes.yaml"
+- "!include auth_notification_cursor.yaml"
 - "!include auth_notification_subscriptions.yaml"
 - "!include auth_notifications.yaml"
 - "!include auth_public_keys.yaml"

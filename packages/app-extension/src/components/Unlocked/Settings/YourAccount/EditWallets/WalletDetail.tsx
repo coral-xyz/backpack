@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import type {
-  Blockchain} from "@coral-xyz/common";
+import type { Blockchain } from "@coral-xyz/common";
 import {
   UI_RPC_METHOD_KEY_IS_COLD_UPDATE,
- UI_RPC_METHOD_KEYNAME_READ } from "@coral-xyz/common";
+  UI_RPC_METHOD_KEYNAME_READ,
+} from "@coral-xyz/common";
 import {
   isKeyCold,
   useBackgroundClient,
@@ -135,10 +135,10 @@ export const WalletDetail: React.FC<{
       detail: (
         <ModeSwitch
           enabled={!isCold}
-          onSwitch={async (enabled) => {
+          onSwitch={async () => {
             await background.request({
               method: UI_RPC_METHOD_KEY_IS_COLD_UPDATE,
-              params: [publicKey, enabled],
+              params: [publicKey, !isCold],
             });
           }}
         />
@@ -153,7 +153,7 @@ export const WalletDetail: React.FC<{
           <SettingsList menuItems={menuItems} />
         </div>
       </WithCopyTooltip>
-      {type !== "dehyrdrated" && <SettingsList menuItems={_isCold} />}
+      {type !== "dehydrated" && <SettingsList menuItems={_isCold} />}
       {type !== "hardware" && type !== "dehydrated" && (
         <SettingsList menuItems={secrets} />
       )}

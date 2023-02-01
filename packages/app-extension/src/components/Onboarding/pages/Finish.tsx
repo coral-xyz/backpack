@@ -8,6 +8,7 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
+  XNFT_GG_LINK,
 } from "@coral-xyz/common";
 import { Loading } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
@@ -148,7 +149,12 @@ export const Finish = ({
   }
 
   return isValid ? (
-    <SetupComplete onClose={BrowserRuntimeExtension.closeActiveTab} />
+    <SetupComplete
+      onClose={() => {
+        BrowserRuntimeExtension.closeActiveTab();
+        window.open(XNFT_GG_LINK, "_blank");
+      }}
+    />
   ) : (
     <Loading />
   );

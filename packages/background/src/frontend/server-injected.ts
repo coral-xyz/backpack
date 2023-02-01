@@ -66,6 +66,8 @@ const whitelistedOrigins = [
   /^http:\/\/localhost:[0-9]{4}$/,
   /^https:\/\/one-nft\.vercel\.app$/,
   /^https:\/\/xnft\.wao\.gg$/,
+  /^https:\/\/one\.xnfts\.dev$/,
+  /^https:\/\/rafffle\.famousfoxes\.com$/,
 ];
 
 export function start(cfg: Config, events: EventEmitter, b: Backend): Handle {
@@ -543,7 +545,7 @@ async function handleSolanaOpenXnft(
 ): Promise<RpcResponse<string>> {
   const url = `xnft/${xnftAddress}`;
   await ctx.backend.navigationPush(url, TAB_XNFT);
-  await openPopupWindow(`popup.html#/${url}`);
+  await openPopupWindow(`popup.html`);
   return ["success"];
 }
 

@@ -316,22 +316,36 @@ export const MessageLine = (props) => {
           </div>
         ) : (
           <>
-            {photoURL ? (
-              <img
-                onClick={() => openProfilePage({ uuid: props.uuid })}
-                alt={displayName}
-                className={classes.avatar}
-                src={`${photoURL}?size=25`}
-              ></img>
-            ) : (
-              <Skeleton variant="circular" width={40} height={40} />
-            )}
+            <div
+              style={{
+                width: 40,
+              }}
+            >
+              {photoURL ? (
+                <img
+                  onClick={() => openProfilePage({ uuid: props.uuid })}
+                  alt={displayName}
+                  className={classes.avatar}
+                  src={`${photoURL}?size=40`}
+                ></img>
+              ) : (
+                <Skeleton
+                  variant="circular"
+                  width={40}
+                  height={40}
+                  style={{
+                    minWidth: 40,
+                  }}
+                />
+              )}
+            </div>
             <div className={`${classes.messageLine} ${classes.hoverParent}`}>
               <div style={{ width: "calc(100% - 80px)" }}>
                 <div
                   onClick={() => openProfilePage({ uuid: props.uuid })}
                   className={classes.displayName}
                   style={{
+                    display: "inline-flex",
                     color:
                       props.colorIndex || props.colorIndex === 0
                         ? NEW_COLORS[props.colorIndex || 0][
@@ -345,8 +359,8 @@ export const MessageLine = (props) => {
                     `@${displayName}`
                   ) : (
                     <Skeleton
-                      width={30}
-                      height={20}
+                      width={50}
+                      height={16}
                       style={{ marginTop: "0px" }}
                     />
                   )}
@@ -726,6 +740,7 @@ export function ChatMessages() {
           <MessageLine
             received={chat.received}
             sameUserMessage={
+              chats[index]?.username &&
               index > 0 &&
               index < chats.length &&
               chats[index]?.username === chats[index - 1]?.username

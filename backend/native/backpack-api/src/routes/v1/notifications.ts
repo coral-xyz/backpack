@@ -1,7 +1,13 @@
 import express from "express";
 
 import { extractUserId } from "../../auth/middleware";
-import { deleteSubscriptions, getNotifications } from "../../db/notifications";
+import {
+  deleteSubscriptions,
+  getNotifications,
+  getSubscriptions,
+  getUnreadCount,
+  updateCursor,
+} from "../../db/notifications";
 import { insertSubscription } from "../../db/preference";
 const router = express.Router();
 
@@ -20,6 +26,27 @@ router.delete("/", extractUserId, async (req, res) => {
   // @ts-ignore
   const uuid = req.id || "";
   await deleteSubscriptions({ uuid });
+  res.json({});
+});
+
+router.get("/subscriptions", extractUserId, async (req, res) => {
+  const uuid = req.id || "";
+  const subscriptions = await getSubscriptions({ uuid });
+  res.json(subscriptions);
+});
+
+router.get("/unreadCount", extractUserId, async (req, res) => {
+  const uuid = req.id || "";
+  const unreadCount = await getUnreadCount({ uuid });
+  res.json({
+    unreadCount,
+  });
+});
+
+router.put("/cursor", extractUserId, async (req, res) => {
+  const uuid = req.id || "";
+  const lastNotificationId = req.body.lastNotificationId;
+  const unreadCount = await updateCursor({ uuid, lastNotificationId });
   res.json({});
 });
 

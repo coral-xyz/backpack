@@ -27,6 +27,7 @@ select_permissions:
         - xnft_id
         - timestamp
       filter: {}
+      allow_aggregations: true
 update_permissions:
   - role: auth_worker
     permission:
