@@ -549,7 +549,11 @@ function FriendRequestListItem({
 function NotificationListItemIcon({ image }: any) {
   const classes = useStyles();
   return (
-    <ProxyImage src={image} className={classes.recentActivityListItemIcon} />
+    <ProxyImage
+      loadingStyles={{ marginRight: "12px", height: "44px", width: "44px" }}
+      src={image}
+      className={classes.recentActivityListItemIcon}
+    />
   );
 }
 
