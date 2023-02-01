@@ -161,6 +161,9 @@ export const getTransactionDetailTitle = (
 
     case TransactionType.NFT_LISTING:
       return "Listed";
+
+    case TransactionType.NFT_CANCEL_LISTING:
+      return "Listed Canceled";
     default:
       let title = "App Interaction";
 
