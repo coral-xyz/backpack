@@ -3,7 +3,7 @@ import { DefaultKeyname } from "@coral-xyz/background/src/backend/store";
 import type {
   BlockchainKeyringJson,
   PathType,
-  PublicKeyPath,
+  WalletDescriptor,
 } from "@coral-xyz/common";
 import { getLogger } from "@coral-xyz/common";
 import * as bs58 from "bs58";
@@ -83,10 +83,10 @@ export class BlockchainKeyring {
   }
 
   public async initFromLedger(
-    publicKeyPaths: Array<PublicKeyPath>
+    walletDescriptors: Array<WalletDescriptor>
   ): Promise<Array<[string, string]>> {
     // Empty ledger keyring to hold one off ledger imports
-    this.ledgerKeyring = this.ledgerKeyringFactory.init(publicKeyPaths);
+    this.ledgerKeyring = this.ledgerKeyringFactory.init(walletDescriptors);
     // Empty imported keyring to hold imported secret keys
     this.importedKeyring = this.keyringFactory.init([]);
     this.activeWallet = this.ledgerKeyring.publicKeys()[0];
@@ -94,11 +94,11 @@ export class BlockchainKeyring {
 
     // Persist a given name for this wallet.
     const newAccounts: Array<[string, string]> = [];
-    for (const [index, publicKeyPath] of publicKeyPaths.entries()) {
+    for (const [index, walletDescriptor] of walletDescriptors.entries()) {
       const name = DefaultKeyname.defaultLedger(index + 1);
-      await store.setKeyname(publicKeyPath.publicKey, name);
-      await store.setIsCold(publicKeyPath.publicKey, true);
-      newAccounts.push([publicKeyPath.publicKey, name]);
+      await store.setKeyname(walletDescriptor.publicKey, name);
+      await store.setIsCold(walletDescriptor.publicKey, true);
+      newAccounts.push([walletDescriptor.publicKey, name]);
     }
     return newAccounts;
   }

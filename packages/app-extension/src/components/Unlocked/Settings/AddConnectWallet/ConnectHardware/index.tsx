@@ -1,4 +1,4 @@
-import type { Blockchain, SignedPublicKeyPath } from "@coral-xyz/common";
+import type { Blockchain, SignedWalletDescriptor } from "@coral-xyz/common";
 import {
   getAddMessage,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
@@ -24,7 +24,7 @@ export function ConnectHardware({
   const background = useBackgroundClient();
 
   const handleHardwareOnboardComplete = async (
-    signedPublicKeyPath: SignedPublicKeyPath
+    signedWalletDescriptor: SignedWalletDescriptor
   ) => {
     const method = createKeyring
       ? // Create the keyring
@@ -33,7 +33,7 @@ export function ConnectHardware({
         UI_RPC_METHOD_LEDGER_IMPORT;
     await background.request({
       method,
-      params: [blockchain, signedPublicKeyPath],
+      params: [blockchain, signedWalletDescriptor],
     });
   };
 

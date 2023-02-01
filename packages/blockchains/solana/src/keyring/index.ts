@@ -9,7 +9,7 @@ import type {
   LedgerKeyringJson,
 } from "@coral-xyz/blockchain-keyring";
 import { LedgerKeyringBase } from "@coral-xyz/blockchain-keyring";
-import type { PublicKeyPath } from "@coral-xyz/common";
+import type { WalletDescriptor } from "@coral-xyz/common";
 import {
   Blockchain,
   derivationPathsToIndexes,
@@ -210,12 +210,12 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
 }
 
 export class SolanaLedgerKeyringFactory {
-  public init(publicKeyPaths: Array<PublicKeyPath>): LedgerKeyring {
-    return new SolanaLedgerKeyring(publicKeyPaths);
+  public init(walletDescriptors: Array<WalletDescriptor>): LedgerKeyring {
+    return new SolanaLedgerKeyring(walletDescriptors);
   }
 
   public fromJson(obj: LedgerKeyringJson): LedgerKeyring {
-    return new SolanaLedgerKeyring(obj.publicKeyPaths);
+    return new SolanaLedgerKeyring(obj.walletDescriptors);
   }
 }
 
@@ -224,30 +224,33 @@ export class SolanaLedgerKeyring
   implements LedgerKeyring
 {
   public async signTransaction(tx: Buffer, publicKey: string): Promise<string> {
-    const publicKeyPath = this.publicKeyPaths.find(
+    const walletDescriptor = this.walletDescriptors.find(
       (p) => p.publicKey === publicKey
     );
-    if (!publicKeyPath) {
+    if (!walletDescriptor) {
       throw new Error("ledger address not found");
     }
     return await this.request({
       method: LEDGER_METHOD_SOLANA_SIGN_TRANSACTION,
-      params: [bs58.encode(tx), publicKeyPath.derivationPath.replace("m/", "")],
+      params: [
+        bs58.encode(tx),
+        walletDescriptor.derivationPath.replace("m/", ""),
+      ],
     });
   }
 
   public async signMessage(msg: Buffer, publicKey: string): Promise<string> {
-    const publicKeyPath = this.publicKeyPaths.find(
+    const walletDescriptor = this.walletDescriptors.find(
       (p) => p.publicKey === publicKey
     );
-    if (!publicKeyPath) {
+    if (!walletDescriptor) {
       throw new Error("ledger public key not found");
     }
     return await this.request({
       method: LEDGER_METHOD_SOLANA_SIGN_MESSAGE,
       params: [
         bs58.encode(msg),
-        publicKeyPath.derivationPath.replace("m/", ""),
+        walletDescriptor.derivationPath.replace("m/", ""),
       ],
     });
   }

@@ -1,8 +1,8 @@
 import { useState } from "react";
 import type {
   Blockchain,
-  PublicKeyPath,
-  SignedPublicKeyPath,
+  SignedWalletDescriptor,
+  WalletDescriptor,
 } from "@coral-xyz/common";
 import {
   getBlockchainFromPath,
@@ -14,16 +14,21 @@ import { ethers } from "ethers";
 export const useOnboarding = (mnemonic?: string) => {
   const background = useBackgroundClient();
 
-  const [signedPublicKeyPaths, setSignedPublicKeyPaths] = useState<
-    Array<SignedPublicKeyPath>
+  const [signedWalletDescriptors, setSignedWalletDescriptors] = useState<
+    Array<SignedWalletDescriptor>
   >([]);
 
   // Add the initialisation parameters for a blockchain keyring to state
-  const addSignedPublicKeyPath = (signedPublicKeyPath: SignedPublicKeyPath) => {
-    setSignedPublicKeyPaths([...signedPublicKeyPaths, signedPublicKeyPath]);
+  const addSignedWalletDescriptor = (
+    signedWalletDescriptor: SignedWalletDescriptor
+  ) => {
+    setSignedWalletDescriptors([
+      ...signedWalletDescriptors,
+      signedWalletDescriptor,
+    ]);
   };
 
-  const resetSignedPublicKeyPaths = () => setSignedPublicKeyPaths([]);
+  const resetSignedWalletDescriptors = () => setSignedWalletDescriptors([]);
 
   /**
    * Parse the derivation paths of the signed public key paths to determine
@@ -31,7 +36,9 @@ export const useOnboarding = (mnemonic?: string) => {
    */
   const selectedBlockchains = [
     ...new Set(
-      signedPublicKeyPaths.map((s) => getBlockchainFromPath(s.derivationPath))
+      signedWalletDescriptors.map((s) =>
+        getBlockchainFromPath(s.derivationPath)
+      )
     ),
   ];
 
@@ -39,8 +46,8 @@ export const useOnboarding = (mnemonic?: string) => {
    * Filter a particular blockchain from the signed public key derivation paths.
    */
   const removeBlockchain = (blockchain: Blockchain) => {
-    setSignedPublicKeyPaths(
-      signedPublicKeyPaths.filter(
+    setSignedWalletDescriptors(
+      signedWalletDescriptors.filter(
         (s) => getBlockchainFromPath(s.derivationPath) !== blockchain
       )
     );
@@ -48,28 +55,28 @@ export const useOnboarding = (mnemonic?: string) => {
 
   const signMessageForWallet = async (
     blockchain: Blockchain,
-    publicKeyPath: PublicKeyPath,
+    walletDescriptor: WalletDescriptor,
     message: string
   ) => {
     return await background.request({
       method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
       params: [
         blockchain,
-        publicKeyPath.publicKey,
+        walletDescriptor.publicKey,
         ethers.utils.base58.encode(Buffer.from(message, "utf-8")),
-        [mnemonic, [publicKeyPath.derivationPath]],
+        [mnemonic, [walletDescriptor.derivationPath]],
       ],
     });
   };
 
   const keyringInit = {
     mnemonic,
-    signedPublicKeyPaths,
+    signedWalletDescriptors,
   };
 
   return {
-    addSignedPublicKeyPath,
-    resetSignedPublicKeyPaths,
+    addSignedWalletDescriptor,
+    resetSignedWalletDescriptors,
     keyringInit,
     removeBlockchain,
     selectedBlockchains,

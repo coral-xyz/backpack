@@ -9,7 +9,7 @@ import type {
   LedgerKeyringJson,
 } from "@coral-xyz/blockchain-keyring";
 import { LedgerKeyringBase } from "@coral-xyz/blockchain-keyring";
-import type { PublicKeyPath } from "@coral-xyz/common";
+import type { WalletDescriptor } from "@coral-xyz/common";
 import {
   Blockchain,
   derivationPathsToIndexes,
@@ -199,12 +199,12 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
 }
 
 export class EthereumLedgerKeyringFactory {
-  public init(publicKeyPaths: Array<PublicKeyPath>): LedgerKeyring {
-    return new EthereumLedgerKeyring(publicKeyPaths);
+  public init(walletDescriptors: Array<WalletDescriptor>): LedgerKeyring {
+    return new EthereumLedgerKeyring(walletDescriptors);
   }
 
   public fromJson(obj: LedgerKeyringJson): LedgerKeyring {
-    return new EthereumLedgerKeyring(obj.publicKeyPaths);
+    return new EthereumLedgerKeyring(obj.walletDescriptors);
   }
 }
 
@@ -216,10 +216,10 @@ export class EthereumLedgerKeyring
     serializedTx: Buffer,
     publicKey: string
   ): Promise<string> {
-    const publicKeyPath = this.publicKeyPaths.find(
+    const walletDescriptor = this.walletDescriptors.find(
       (p) => p.publicKey === publicKey
     );
-    if (!publicKeyPath) {
+    if (!walletDescriptor) {
       throw new Error("ledger public key not found");
     }
     const tx = ethers.utils.parseTransaction(
@@ -227,20 +227,20 @@ export class EthereumLedgerKeyring
     );
     return await this.request({
       method: LEDGER_METHOD_ETHEREUM_SIGN_TRANSACTION,
-      params: [tx, publicKeyPath.derivationPath],
+      params: [tx, walletDescriptor.derivationPath],
     });
   }
 
   public async signMessage(msg: Buffer, publicKey: string): Promise<string> {
-    const publicKeyPath = this.publicKeyPaths.find(
+    const walletDescriptor = this.walletDescriptors.find(
       (p) => p.publicKey === publicKey
     );
-    if (!publicKeyPath) {
+    if (!walletDescriptor) {
       throw new Error("ledger public key not found");
     }
     return await this.request({
       method: LEDGER_METHOD_ETHEREUM_SIGN_MESSAGE,
-      params: [msg, publicKeyPath.derivationPath],
+      params: [msg, walletDescriptor.derivationPath],
     });
   }
 }

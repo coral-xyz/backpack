@@ -2,12 +2,15 @@ import { useEffect, useState } from "react";
 import type {
   Blockchain,
   KeyringType,
-  PublicKeyPath,
-  SignedPublicKeyPath,
+  SignedWalletDescriptor,
+  WalletDescriptor,
 } from "@coral-xyz/common";
-import { getCreateMessage } from "@coral-xyz/common";
+import {
+  getCreateMessage,
+  UI_RPC_METHOD_FIND_SIGNED_PUBLIC_KEY_PATH,
+} from "@coral-xyz/common";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 
-import { useDefaultPublicKeyPath } from "../../../hooks/useDefaultPublicKeyPath";
 import { useOnboarding } from "../../../hooks/useOnboarding";
 import { useSteps } from "../../../hooks/useSteps";
 import { CreatePassword } from "../../common/Account/CreatePassword";
@@ -40,8 +43,8 @@ export const OnboardAccount = ({
   isAddingAccount?: boolean;
   isOnboarded?: boolean;
 }) => {
+  const background = useBackgroundClient();
   const { step, nextStep, prevStep } = useSteps();
-  const { getDefaultPublicKeyPath } = useDefaultPublicKeyPath();
   const [inviteCode, setInviteCode] = useState<string | undefined>(undefined);
   const [username, setUsername] = useState<string | null>(null);
   const [action, setAction] = useState<"create" | "import">();
@@ -52,10 +55,10 @@ export const OnboardAccount = ({
   const [openDrawer, setOpenDrawer] = useState(false);
 
   const {
-    addSignedPublicKeyPath,
+    addSignedWalletDescriptor,
     keyringInit,
     removeBlockchain,
-    resetSignedPublicKeyPaths,
+    resetSignedWalletDescriptors,
     selectedBlockchains,
     signMessageForWallet,
   } = useOnboarding(mnemonic);
@@ -64,7 +67,7 @@ export const OnboardAccount = ({
     // Reset blockchain keyrings on certain changes that invalidate the addresses
     // and signatures that they might contain
     // e.g. user has navigated backward through the onboarding flow
-    resetSignedPublicKeyPaths();
+    resetSignedWalletDescriptors();
   }, [action, keyringType, mnemonic]);
 
   const handleBlockchainClick = async (blockchain: Blockchain) => {
@@ -81,17 +84,11 @@ export const OnboardAccount = ({
         setBlockchain(blockchain);
         setOpenDrawer(true);
       } else if (action === "create") {
-        const publicKeyPath = await getDefaultPublicKeyPath(
-          blockchain,
-          mnemonic!
-        );
-        const signature = await signMessageForWallet(
-          blockchain,
-          publicKeyPath,
-          getCreateMessage(publicKeyPath.publicKey)
-        );
-        // Default path
-        addSignedPublicKeyPath({ ...publicKeyPath, signature });
+        const signedWalletDescriptor = await background.request({
+          method: UI_RPC_METHOD_FIND_SIGNED_PUBLIC_KEY_PATH,
+          params: [blockchain, 0, mnemonic],
+        });
+        addSignedWalletDescriptor(signedWalletDescriptor);
       }
     }
   };
@@ -195,8 +192,8 @@ export const OnboardAccount = ({
             action={action!}
             signMessage={(publicKey: string) => getCreateMessage(publicKey)}
             signText={`Sign the message to authenticate with Backpack.`}
-            onComplete={(signedPublicKeyPath: SignedPublicKeyPath) => {
-              addSignedPublicKeyPath(signedPublicKeyPath);
+            onComplete={(signedWalletDescriptor: SignedWalletDescriptor) => {
+              addSignedWalletDescriptor(signedWalletDescriptor);
               setOpenDrawer(false);
             }}
             onClose={() => setOpenDrawer(false)}
@@ -206,15 +203,15 @@ export const OnboardAccount = ({
             blockchain={blockchain!}
             mnemonic={mnemonic!}
             allowMultiple={false}
-            onNext={async (publicKeyPaths: Array<PublicKeyPath>) => {
+            onNext={async (walletDescriptors: Array<WalletDescriptor>) => {
               // Should only be one public key path
-              const publicKeyPath = publicKeyPaths[0];
+              const walletDescriptor = walletDescriptors[0];
               const signature = await signMessageForWallet(
                 blockchain!,
-                publicKeyPath,
-                getCreateMessage(publicKeyPath.publicKey)
+                walletDescriptor,
+                getCreateMessage(walletDescriptor.publicKey)
               );
-              addSignedPublicKeyPath({ ...publicKeyPath, signature });
+              addSignedWalletDescriptor({ ...walletDescriptor, signature });
               setOpenDrawer(false);
             }}
           />

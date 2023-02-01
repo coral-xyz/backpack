@@ -2,7 +2,7 @@
 // a loading indicator until it is found (or an error if it not found).
 
 import { useEffect, useState } from "react";
-import type { PublicKeyPath } from "@coral-xyz/common";
+import type { WalletDescriptor } from "@coral-xyz/common";
 import {
   Blockchain,
   getRecoveryPaths,
@@ -29,7 +29,7 @@ export const HardwareSearch = ({
   blockchain: Blockchain;
   transport: Transport;
   publicKey: string;
-  onNext: (publicKeyPath: PublicKeyPath) => void;
+  onNext: (walletDescriptor: WalletDescriptor) => void;
   onError?: (error: Error) => void;
   onRetry: () => void;
 }) => {

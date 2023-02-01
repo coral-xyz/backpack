@@ -1,4 +1,4 @@
-import type { PublicKeyPath } from "@coral-xyz/common";
+import type { WalletDescriptor } from "@coral-xyz/common";
 import {
   generateUniqueId,
   LEDGER_INJECTED_CHANNEL_REQUEST,
@@ -8,30 +8,30 @@ import {
 import type { LedgerKeyringJson } from "./types";
 
 export class LedgerKeyringBase {
-  protected publicKeyPaths: Array<PublicKeyPath>;
+  protected walletDescriptors: Array<WalletDescriptor>;
 
-  constructor(publicKeyPaths: Array<PublicKeyPath>) {
-    this.publicKeyPaths = publicKeyPaths;
+  constructor(walletDescriptors: Array<WalletDescriptor>) {
+    this.walletDescriptors = walletDescriptors;
   }
 
   public deletePublicKey(publicKey: string) {
-    this.publicKeyPaths = this.publicKeyPaths.filter(
+    this.walletDescriptors = this.walletDescriptors.filter(
       (x) => x.publicKey !== publicKey
     );
   }
 
-  public async add(publicKeyPath: PublicKeyPath) {
-    const found = this.publicKeyPaths.find(
-      (x) => x.publicKey === publicKeyPath.publicKey
+  public async add(walletDescriptor: WalletDescriptor) {
+    const found = this.walletDescriptors.find(
+      (x) => x.publicKey === walletDescriptor.publicKey
     );
     if (found) {
       throw new Error("ledger account already exists");
     }
-    this.publicKeyPaths.push(publicKeyPath);
+    this.walletDescriptors.push(walletDescriptor);
   }
 
   public publicKeys(): Array<string> {
-    return this.publicKeyPaths.map((x) => x.publicKey);
+    return this.walletDescriptors.map((x) => x.publicKey);
   }
 
   exportSecretKey(): string | null {
@@ -44,13 +44,13 @@ export class LedgerKeyringBase {
 
   public toString(): string {
     return JSON.stringify({
-      publicKeyPaths: this.publicKeyPaths,
+      walletDescriptors: this.walletDescriptors,
     });
   }
 
   public toJson(): LedgerKeyringJson {
     return {
-      publicKeyPaths: this.publicKeyPaths,
+      walletDescriptors: this.walletDescriptors,
     };
   }
 

@@ -98,21 +98,21 @@ export type PathType =
   | "backpack";
 
 export type KeyringInit = {
-  signedPublicKeyPaths: Array<SignedPublicKeyPath>;
+  signedWalletDescriptors: Array<SignedWalletDescriptor>;
   // No mnemonic means this is a hardware wallet keyring
   mnemonic?: string;
 };
 
 // Location of a public key including the public key
-export type PublicKeyPath = {
+export type WalletDescriptor = {
   derivationPath: string;
   publicKey: string;
 };
 
 // Path to a public key including a signature from the public key
-export type SignedPublicKeyPath = {
+export type SignedWalletDescriptor = {
   signature: string;
-} & PublicKeyPath;
+} & WalletDescriptor;
 
 export interface XnftPreference {
   disabled: boolean;
@@ -149,7 +149,7 @@ export type HdKeyringJson = {
 };
 
 export type LedgerKeyringJson = {
-  publicKeyPaths: Array<PublicKeyPath>;
+  walletDescriptors: Array<WalletDescriptor>;
 };
 
 export type SolanaFeeConfig = { computeUnits: number; priorityFee: bigint };

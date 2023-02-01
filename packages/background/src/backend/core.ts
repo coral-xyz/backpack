@@ -7,8 +7,8 @@ import type {
   KeyringInit,
   KeyringType,
   Preferences,
-  PublicKeyPath,
-  SignedPublicKeyPath,
+  SignedWalletDescriptor,
+  WalletDescriptor,
   XnftPreference,
 } from "@coral-xyz/common";
 import {
@@ -1103,11 +1103,11 @@ export class Backend {
 
   async ledgerImport(
     blockchain: Blockchain,
-    signedPublicKeyPath: SignedPublicKeyPath
+    signedWalletDescriptor: SignedWalletDescriptor
   ) {
-    const { signature, ...publicKeyPath } = signedPublicKeyPath;
-    const { publicKey } = publicKeyPath;
-    await this.keyringStore.ledgerImport(blockchain, publicKeyPath);
+    const { signature, ...walletDescriptor } = signedWalletDescriptor;
+    const { publicKey } = walletDescriptor;
+    await this.keyringStore.ledgerImport(blockchain, walletDescriptor);
     try {
       await this.userAccountPublicKeyCreate(blockchain, publicKey, signature);
     } catch (error) {
@@ -1178,13 +1178,13 @@ export class Backend {
             });
           } else {
             // Create blockchain keyring
-            const publicKeyPath = {
+            const walletDescriptor = {
               blockchain,
               publicKey: publicKeys[index],
               derivationPath: recoveryPaths[index],
             };
             await this.blockchainKeyringsAdd(blockchain, {
-              ...publicKeyPath,
+              ...walletDescriptor,
               signature: "",
             });
           }
@@ -1398,15 +1398,15 @@ export class Backend {
   }
 
   /**
-   * Find a `SignedPublicKeyPath` that can be used to create a new account.
+   * Find a `SignedWalletDescriptor` that can be used to create a new account.
    * This requires that the sub wallets on the account index are not used by a
    * existing user account. This is checked by querying the Backpack API.
    */
-  async findSignedPublicKeyPath(
+  async findSignedWalletDescriptor(
     blockchain: Blockchain,
     accountIndex = 0,
     mnemonic?: string
-  ): Promise<SignedPublicKeyPath> {
+  ): Promise<SignedWalletDescriptor> {
     // If mnemonic is not passed as an argument, use the keyring store stored mnemonic.
     // Wallet must be unlocked.
     if (!mnemonic)
@@ -1447,7 +1447,7 @@ export class Backend {
       };
     } else {
       // Iterate on account index
-      return this.findSignedPublicKeyPath(
+      return this.findSignedWalletDescriptor(
         blockchain,
         accountIndex + 1,
         mnemonic
@@ -1579,14 +1579,14 @@ export class Backend {
    */
   async blockchainKeyringsAdd(
     blockchain: Blockchain,
-    signedPublicKeyPath: SignedPublicKeyPath
+    signedWalletDescriptor: SignedWalletDescriptor
   ): Promise<string> {
     await this.keyringStore.blockchainKeyringAdd(
       blockchain,
-      signedPublicKeyPath as PublicKeyPath
+      signedWalletDescriptor as WalletDescriptor
     );
 
-    const { signature, publicKey } = signedPublicKeyPath;
+    const { signature, publicKey } = signedWalletDescriptor;
 
     // Add the new public key to the API
     try {

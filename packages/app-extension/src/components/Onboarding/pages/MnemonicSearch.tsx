@@ -2,7 +2,7 @@
 // a loading indicator until it is found (or an error if it not found).
 
 import { useEffect, useState } from "react";
-import type { Blockchain, PublicKeyPath } from "@coral-xyz/common";
+import type { Blockchain, WalletDescriptor } from "@coral-xyz/common";
 import {
   getRecoveryPaths,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
@@ -24,7 +24,7 @@ export const MnemonicSearch = ({
   blockchain: Blockchain;
   mnemonic: string;
   publicKey: string;
-  onNext: (publicKeyPath: PublicKeyPath) => void;
+  onNext: (walletDescriptor: WalletDescriptor) => void;
   onRetry: () => void;
 }) => {
   const [error, setError] = useState(false);

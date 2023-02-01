@@ -5,10 +5,10 @@ import {
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 
-export const useDefaultPublicKeyPath = () => {
+export const useDefaultWalletDescriptor = () => {
   const background = useBackgroundClient();
 
-  const getDefaultPublicKeyPath = async (
+  const getDefaultWalletDescriptor = async (
     blockchain: Blockchain,
     mnemonic: string
   ) => {
@@ -25,6 +25,6 @@ export const useDefaultPublicKeyPath = () => {
   };
 
   return {
-    getDefaultPublicKeyPath,
+    getDefaultWalletDescriptor,
   };
 };

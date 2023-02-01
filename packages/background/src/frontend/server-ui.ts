@@ -10,7 +10,7 @@ import type {
   Preferences,
   RpcRequest,
   RpcResponse,
-  SignedPublicKeyPath,
+  SignedWalletDescriptor,
   XnftPreference,
 } from "@coral-xyz/common";
 import {
@@ -354,7 +354,7 @@ async function handle<T = any>(
       return await handleUserAccountRead(ctx, ...params);
     case UI_RPC_METHOD_FIND_SIGNED_PUBLIC_KEY_PATH:
       // @ts-ignore
-      return await handleFindSignedPublicKeyPath(ctx, ...params);
+      return await handleFindSignedWalletDescriptor(ctx, ...params);
     //
     // Password.
     //
@@ -639,11 +639,11 @@ async function handleUserAccountRead(
   return [resp];
 }
 
-async function handleFindSignedPublicKeyPath(
+async function handleFindSignedWalletDescriptor(
   ctx: Context<Backend>,
-  ...args: Parameters<Backend["findSignedPublicKeyPath"]>
+  ...args: Parameters<Backend["findSignedWalletDescriptor"]>
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.findSignedPublicKeyPath(...args);
+  const resp = await ctx.backend.findSignedWalletDescriptor(...args);
   return [resp];
 }
 
@@ -1080,11 +1080,11 @@ async function handleSetXnftPreferences(
 async function handleBlockchainKeyringsAdd(
   ctx: Context<Backend>,
   blockchain: Blockchain,
-  signedPublicKeyPath: SignedPublicKeyPath
+  signedWalletDescriptor: SignedWalletDescriptor
 ): Promise<RpcResponse<Array<string>>> {
   const resp = await ctx.backend.blockchainKeyringsAdd(
     blockchain,
-    signedPublicKeyPath
+    signedWalletDescriptor
   );
   return [resp];
 }

@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import type {
   Blockchain,
   KeyringType,
-  PublicKeyPath,
-  SignedPublicKeyPath,
+  SignedWalletDescriptor,
+  WalletDescriptor,
 } from "@coral-xyz/common";
 import { BACKEND_API_URL, getAuthMessage } from "@coral-xyz/common";
 
@@ -44,7 +44,7 @@ export const RecoverAccount = ({
 
   const authMessage = userId ? getAuthMessage(userId) : "";
 
-  const { addSignedPublicKeyPath, keyringInit, signMessageForWallet } =
+  const { addSignedWalletDescriptor, keyringInit, signMessageForWallet } =
     useOnboarding(mnemonic);
 
   const hardwareOnboardSteps = useHardwareOnboardSteps({
@@ -53,8 +53,8 @@ export const RecoverAccount = ({
     searchPublicKey: publicKey!,
     signMessage: authMessage,
     signText: "Sign the message to authenticate with Backpack",
-    onComplete: (signedPublicKeyPath: SignedPublicKeyPath) => {
-      addSignedPublicKeyPath(signedPublicKeyPath);
+    onComplete: (signedWalletDescriptor: SignedWalletDescriptor) => {
+      addSignedWalletDescriptor(signedWalletDescriptor);
       nextStep();
     },
     nextStep,
@@ -106,14 +106,14 @@ export const RecoverAccount = ({
             blockchain={blockchain!}
             mnemonic={mnemonic!}
             publicKey={publicKey!}
-            onNext={async (publicKeyPath: PublicKeyPath) => {
+            onNext={async (walletDescriptor: WalletDescriptor) => {
               const signature = await signMessageForWallet(
                 blockchain!,
-                publicKeyPath,
+                walletDescriptor,
                 authMessage
               );
-              addSignedPublicKeyPath({
-                ...publicKeyPath,
+              addSignedWalletDescriptor({
+                ...walletDescriptor,
                 signature,
               });
               nextStep();
@@ -132,7 +132,7 @@ export const RecoverAccount = ({
           />,
         ]
       : []),
-    ...(keyringInit.signedPublicKeyPaths.length > 0
+    ...(keyringInit.signedWalletDescriptors.length > 0
       ? [
           <Finish
             inviteCode={undefined} // Recovery so no invite code

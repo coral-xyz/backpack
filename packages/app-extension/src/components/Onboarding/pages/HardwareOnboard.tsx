@@ -1,8 +1,8 @@
 import { useState } from "react";
 import type {
   Blockchain,
-  PublicKeyPath,
-  SignedPublicKeyPath,
+  SignedWalletDescriptor,
+  WalletDescriptor,
 } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import type Transport from "@ledgerhq/hw-transport";
@@ -38,15 +38,14 @@ export function useHardwareOnboardSteps({
   signMessage: string | ((publicKey: string) => string);
   signText: string;
   successComponent?: React.ReactElement;
-  onComplete: (signedPublicKeyPath: SignedPublicKeyPath) => void;
+  onComplete: (signedWalletDescriptor: SignedWalletDescriptor) => void;
   nextStep: () => void;
   prevStep: () => void;
 }) {
   const [transport, setTransport] = useState<Transport | null>(null);
   const [transportError, setTransportError] = useState(false);
-  const [publicKeyPath, setPublicKeyPath] = useState<PublicKeyPath | null>(
-    null
-  );
+  const [walletDescriptor, setWalletDescriptor] =
+    useState<WalletDescriptor | null>(null);
 
   //
   // Flow for onboarding a hardware wallet.
@@ -75,8 +74,8 @@ export function useHardwareOnboardSteps({
         <HardwareDefaultAccount
           blockchain={blockchain}
           transport={transport!}
-          onNext={(publicKeyPath: PublicKeyPath) => {
-            setPublicKeyPath(publicKeyPath);
+          onNext={(walletDescriptor: WalletDescriptor) => {
+            setWalletDescriptor(walletDescriptor);
             nextStep();
           }}
           onError={() => {
@@ -92,8 +91,8 @@ export function useHardwareOnboardSteps({
           blockchain={blockchain!}
           transport={transport!}
           publicKey={searchPublicKey!}
-          onNext={(publicKeyPath: PublicKeyPath) => {
-            setPublicKeyPath(publicKeyPath);
+          onNext={(walletDescriptor: WalletDescriptor) => {
+            setWalletDescriptor(walletDescriptor);
             nextStep();
           }}
           onError={() => {
@@ -110,8 +109,8 @@ export function useHardwareOnboardSteps({
           blockchain={blockchain}
           transport={transport}
           allowMultiple={false}
-          onNext={(publicKeyPaths: Array<PublicKeyPath>) => {
-            setPublicKeyPath(publicKeyPaths[0]);
+          onNext={(walletDescriptors: Array<WalletDescriptor>) => {
+            setWalletDescriptor(walletDescriptors[0]);
             nextStep();
           }}
           onError={() => {
@@ -121,20 +120,20 @@ export function useHardwareOnboardSteps({
         />
       ),
     }[action],
-    ...(publicKeyPath
+    ...(walletDescriptor
       ? [
           <HardwareSign
             blockchain={blockchain}
-            publicKeyPath={publicKeyPath}
+            walletDescriptor={walletDescriptor}
             message={
               typeof signMessage === "string"
                 ? signMessage
-                : signMessage(publicKeyPath.publicKey)
+                : signMessage(walletDescriptor.publicKey)
             }
             text={signText}
             onNext={(signature: string) => {
               onComplete({
-                ...publicKeyPath,
+                ...walletDescriptor,
                 signature,
               });
               if (successComponent) {
@@ -169,7 +168,7 @@ export function HardwareOnboard({
   signMessage: string | ((publicKey: string) => string);
   signText: string;
   successComponent?: React.ReactElement;
-  onComplete: (signedPublicKeyPath: SignedPublicKeyPath) => void;
+  onComplete: (signedWalletDescriptor: SignedWalletDescriptor) => void;
   onClose?: () => void;
 }) {
   const theme = useCustomTheme();

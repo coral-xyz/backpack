@@ -2,7 +2,7 @@ import type {
   HdKeyringJson,
   KeyringJson,
   LedgerKeyringJson,
-  PublicKeyPath,
+  WalletDescriptor,
 } from "@coral-xyz/common";
 
 import type { LedgerKeyringBase } from "./ledger";
@@ -50,12 +50,12 @@ export interface HdKeyring extends Keyring {
 // Ledger keyring types
 //
 export interface LedgerKeyringFactory {
-  init(publicKeyPaths: Array<PublicKeyPath>): LedgerKeyring;
+  init(walletDescriptors: Array<WalletDescriptor>): LedgerKeyring;
   fromJson(obj: LedgerKeyringJson): LedgerKeyring;
 }
 
 export interface LedgerKeyring extends LedgerKeyringBase {
   signTransaction(tx: Buffer, address: string): Promise<string>;
   signMessage(tx: Buffer, address: string): Promise<string>;
-  add(publicKeyPath: PublicKeyPath): Promise<void>;
+  add(walletDescriptor: WalletDescriptor): Promise<void>;
 }

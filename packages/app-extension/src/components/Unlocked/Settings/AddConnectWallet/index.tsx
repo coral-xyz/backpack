@@ -208,15 +208,15 @@ export function AddWalletMenu({
     setLockCreateButton(true);
     let newPublicKey;
     if (!keyringExists) {
-      const signedPublicKeyPath = await background.request({
+      const signedWalletDescriptor = await background.request({
         method: UI_RPC_METHOD_FIND_SIGNED_PUBLIC_KEY_PATH,
         params: [blockchain, 0],
       });
       await background.request({
         method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
-        params: [blockchain, signedPublicKeyPath],
+        params: [blockchain, signedWalletDescriptor],
       });
-      newPublicKey = signedPublicKeyPath.publicKey;
+      newPublicKey = signedWalletDescriptor.publicKey;
       // Keyring now exists, toggle to other options
       setKeyringExists(true);
     } else {

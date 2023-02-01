@@ -45,7 +45,7 @@ export async function migrate_0_2_0_2408(json: any) {
       // @ts-ignore
       let ledgerKeyring = blockchainKeyring.ledgerKeyring;
       if (ledgerKeyring.derivationPaths !== undefined) {
-        const publicKeyPaths = ledgerKeyring.derivationPaths.map(
+        const walletDescriptors = ledgerKeyring.derivationPaths.map(
           (d: { path: string; account: number; publicKey: string }) => {
             let derivationPath: string;
             if (d.path === "bip44") {
@@ -68,7 +68,7 @@ export async function migrate_0_2_0_2408(json: any) {
           }
         );
         json.users[user].blockchains[blockchain].ledgerKeyring = {
-          publicKeyPaths,
+          walletDescriptors,
         };
       }
     }

@@ -8,7 +8,7 @@ import type {
   Blockchain,
   EventEmitter,
   KeyringInit,
-  PublicKeyPath,
+  WalletDescriptor,
 } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
@@ -397,17 +397,17 @@ export class KeyringStore {
    */
   public async blockchainKeyringAdd(
     blockchain: Blockchain,
-    publicKeyPath: PublicKeyPath,
+    walletDescriptor: WalletDescriptor,
     persist = true
   ): Promise<string> {
     await this.activeUserKeyring.blockchainKeyringAdd(
       blockchain,
-      publicKeyPath
+      walletDescriptor
     );
     if (persist) {
       await this.persist();
     }
-    return publicKeyPath.publicKey;
+    return walletDescriptor.publicKey;
   }
 
   /**
@@ -461,12 +461,12 @@ export class KeyringStore {
 
   public async ledgerImport(
     blockchain: Blockchain,
-    publicKeyPath: PublicKeyPath
+    walletDescriptor: WalletDescriptor
   ) {
     return await this.withUnlockAndPersist(async () => {
       return await this.activeUserKeyring.ledgerImport(
         blockchain,
-        publicKeyPath
+        walletDescriptor
       );
     });
   }
@@ -634,15 +634,15 @@ class UserKeyring {
     keyring.uuid = uuid;
     keyring.username = username;
     keyring.mnemonic = keyringInit.mnemonic;
-    for (const signedPublicKeyPath of keyringInit.signedPublicKeyPaths) {
+    for (const signedWalletDescriptor of keyringInit.signedWalletDescriptors) {
       await keyring.blockchainKeyringAdd(
-        getBlockchainFromPath(signedPublicKeyPath.derivationPath),
-        signedPublicKeyPath
+        getBlockchainFromPath(signedWalletDescriptor.derivationPath),
+        signedWalletDescriptor
       );
     }
     // Set the active wallet to be the first keyring.
     keyring.activeBlockchain = getBlockchainFromPath(
-      keyringInit.signedPublicKeyPaths[0].derivationPath
+      keyringInit.signedWalletDescriptors[0].derivationPath
     );
     return keyring;
   }
@@ -726,20 +726,20 @@ class UserKeyring {
 
   public async blockchainKeyringAdd(
     blockchain: Blockchain,
-    publicKeyPath: PublicKeyPath
+    walletDescriptor: WalletDescriptor
   ): Promise<string> {
     const keyring = keyringForBlockchain(blockchain);
     if (this.mnemonic) {
       // Initialising using a mnemonic
       await keyring.initFromMnemonic(this.mnemonic, [
-        publicKeyPath.derivationPath,
+        walletDescriptor.derivationPath,
       ]);
     } else {
       // Initialising using a hardware wallet
-      await keyring.initFromLedger([publicKeyPath]);
+      await keyring.initFromLedger([walletDescriptor]);
     }
     this.blockchains.set(blockchain, keyring);
-    return publicKeyPath.publicKey;
+    return walletDescriptor.publicKey;
   }
 
   public async blockchainKeyringRemove(blockchain: Blockchain): Promise<void> {
@@ -796,16 +796,16 @@ class UserKeyring {
 
   public async ledgerImport(
     blockchain: Blockchain,
-    publicKeyPath: PublicKeyPath
+    walletDescriptor: WalletDescriptor
   ) {
     const blockchainKeyring = this.blockchains.get(blockchain);
     const ledgerKeyring = blockchainKeyring!.ledgerKeyring!;
-    await ledgerKeyring.add(publicKeyPath);
+    await ledgerKeyring.add(walletDescriptor);
     const name = DefaultKeyname.defaultLedger(
       ledgerKeyring.publicKeys().length
     );
-    await store.setKeyname(publicKeyPath.publicKey, name);
-    await store.setIsCold(publicKeyPath.publicKey, true);
+    await store.setKeyname(walletDescriptor.publicKey, name);
+    await store.setIsCold(walletDescriptor.publicKey, true);
   }
 
   public async keyDelete(blockchain: Blockchain, pubkey: string) {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Blockchain, PublicKeyPath } from "@coral-xyz/common";
+import type { Blockchain, WalletDescriptor } from "@coral-xyz/common";
 import {
   toTitleCase,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
@@ -13,13 +13,13 @@ import { Header, HeaderIcon, SubtextParagraph } from "../../common";
 
 export function HardwareSign({
   blockchain,
-  publicKeyPath,
+  walletDescriptor,
   message,
   text,
   onNext,
 }: {
   blockchain: Blockchain;
-  publicKeyPath: PublicKeyPath;
+  walletDescriptor: WalletDescriptor;
   message: string;
   text: string;
   onNext: (signature: string) => void;
@@ -36,9 +36,9 @@ export function HardwareSign({
             method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
             params: [
               blockchain,
-              publicKeyPath.publicKey,
+              walletDescriptor.publicKey,
               encode(Buffer.from(message, "utf-8")),
-              [[publicKeyPath]],
+              [[walletDescriptor]],
             ],
           });
           setSignature(signature);

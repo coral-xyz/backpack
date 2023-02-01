@@ -2,7 +2,7 @@
 // default derivation path.
 
 import { useEffect } from "react";
-import type { PublicKeyPath } from "@coral-xyz/common";
+import type { WalletDescriptor } from "@coral-xyz/common";
 import { Blockchain, getIndexedPath } from "@coral-xyz/common";
 import { Loading } from "@coral-xyz/react-common";
 import Ethereum from "@ledgerhq/hw-app-eth";
@@ -18,7 +18,7 @@ export const HardwareDefaultAccount = ({
 }: {
   blockchain: Blockchain;
   transport: Transport;
-  onNext: (publicKeyPath: PublicKeyPath) => void;
+  onNext: (walletDescriptor: WalletDescriptor) => void;
   onError?: (error: Error) => void;
 }) => {
   useEffect(() => {

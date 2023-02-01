@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { PublicKeyPath } from "@coral-xyz/common";
+import type { WalletDescriptor } from "@coral-xyz/common";
 import {
   Blockchain,
   DEFAULT_SOLANA_CLUSTER,
@@ -52,7 +52,10 @@ export function ImportAccounts({
   blockchain: Blockchain;
   mnemonic?: string;
   transport?: Transport | null;
-  onNext: (publicKeyPath: Array<PublicKeyPath>, mnemonic?: string) => void;
+  onNext: (
+    walletDescriptor: Array<WalletDescriptor>,
+    mnemonic?: string
+  ) => void;
   onError?: (error: Error) => void;
   allowMultiple?: boolean;
 }) {
@@ -65,9 +68,9 @@ export function ImportAccounts({
     {}
   );
   // Path to the public key
-  const [publicKeyPaths, setPublicKeyPaths] = useState<Array<PublicKeyPath>>(
-    []
-  );
+  const [walletDescriptors, setWalletDescriptors] = useState<
+    Array<WalletDescriptor>
+  >([]);
   // Lock flag to prevent changing of derivation path while ledger is loading
   const [ledgerLocked, setLedgerLocked] = useState(false);
   // Public keys that have already been imported on this account
@@ -163,10 +166,10 @@ export function ImportAccounts({
   //
   useEffect(() => {
     (async () => {
-      if (publicKeyPaths.length === 0) return;
+      if (walletDescriptors.length === 0) return;
       try {
         const response = await checkPublicKeyConflicts(
-          publicKeyPaths.map((a) => ({
+          walletDescriptors.map((a) => ({
             blockchain,
             publicKey: a.publicKey,
           }))
@@ -176,7 +179,7 @@ export function ImportAccounts({
         // If the query failed assume all are valid
       }
     })();
-  }, [publicKeyPaths]);
+  }, [walletDescriptors]);
 
   //
   // Load a list of accounts and their associated balances
@@ -227,7 +230,7 @@ export function ImportAccounts({
   //
   useEffect(() => {
     setBalances({});
-    setPublicKeyPaths([]);
+    setWalletDescriptors([]);
     if (derivationPathLabel !== null) {
       const derivationPath = derivationPathOptions.find(
         (d) => d.label === derivationPathLabel
@@ -328,29 +331,29 @@ export function ImportAccounts({
   // Handles checkbox clicks to select accounts to import.
   //
   const handleSelect = (publicKey: string, derivationPath: string) => () => {
-    const currentIndex = publicKeyPaths.findIndex(
+    const currentIndex = walletDescriptors.findIndex(
       (a) => a.publicKey === publicKey
     );
-    let newPublicKeyPaths = [...publicKeyPaths];
+    let newWalletDescriptors = [...walletDescriptors];
     if (currentIndex === -1) {
-      const publicKeyPath = {
+      const walletDescriptor = {
         blockchain,
         derivationPath,
         publicKey,
       };
       // Adding the account
       if (allowMultiple) {
-        newPublicKeyPaths.push(publicKeyPath);
+        newWalletDescriptors.push(walletDescriptor);
       } else {
-        newPublicKeyPaths = [publicKeyPath];
+        newWalletDescriptors = [walletDescriptor];
       }
     } else {
       // Removing the account
-      newPublicKeyPaths.splice(currentIndex, 1);
+      newWalletDescriptors.splice(currentIndex, 1);
     }
     // TODO Sort by account indices
-    // newPublicKeyPaths.sort((a, b) => a.index - b.index);
-    setPublicKeyPaths(newPublicKeyPaths);
+    // newWalletDescriptors.sort((a, b) => a.index - b.index);
+    setWalletDescriptors(newWalletDescriptors);
   };
 
   // Symbol for balance displays
@@ -402,7 +405,7 @@ export function ImportAccounts({
             ))}
           </TextInput>
         </div>
-        {publicKeyPaths && balances && (
+        {walletDescriptors && balances && (
           <>
             <List
               sx={{
@@ -415,7 +418,7 @@ export function ImportAccounts({
                 paddingBottom: "8px",
               }}
             >
-              {publicKeyPaths
+              {walletDescriptors
                 .slice(0, DISPLAY_PUBKEY_AMOUNT)
                 .map(({ publicKey, derivationPath }) => (
                   <ListItemButton
@@ -442,7 +445,7 @@ export function ImportAccounts({
                         <Checkbox
                           edge="start"
                           checked={
-                            publicKeyPaths.some(
+                            walletDescriptors.some(
                               (a) => a.derivationPath === derivationPath
                             ) ||
                             importedPublicKeys.includes(publicKey.toString())
@@ -497,8 +500,8 @@ export function ImportAccounts({
       >
         <PrimaryButton
           label={`Import Account${allowMultiple ? "s" : ""}`}
-          onClick={() => onNext(publicKeyPaths, mnemonic)}
-          disabled={publicKeyPaths.length === 0}
+          onClick={() => onNext(walletDescriptors, mnemonic)}
+          disabled={walletDescriptors.length === 0}
         />
       </Box>
     </Box>

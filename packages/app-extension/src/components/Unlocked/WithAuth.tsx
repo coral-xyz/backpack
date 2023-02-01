@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Blockchain, SignedPublicKeyPath } from "@coral-xyz/common";
+import type { Blockchain, SignedWalletDescriptor } from "@coral-xyz/common";
 import {
   getAuthMessage,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
@@ -145,8 +145,8 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
             searchPublicKey={authData!.publicKey}
             signMessage={authData!.message}
             signText="Sign the message to authenticate with Backpack."
-            onComplete={(signedPublicKeyPath: SignedPublicKeyPath) => {
-              setAuthSignature(signedPublicKeyPath.signature);
+            onComplete={(signedWalletDescriptor: SignedWalletDescriptor) => {
+              setAuthSignature(signedWalletDescriptor.signature);
             }}
           />
         </WithDrawer>
