@@ -156,8 +156,6 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
     this.derivationPaths = derivationPaths;
     this.accountIndex = accountIndex;
     this.walletIndex = walletIndex;
-    console.log(this.derivationPaths);
-    console.log(this.publicKeys());
   }
 
   deriveNextKey(skipKeys: number): {
@@ -167,7 +165,6 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
     this.ensureIndices();
     // Move to the next wallet index for the derivation
     this.walletIndex! += 1 + skipKeys;
-    console.log(this.walletIndex);
     const derivationPath = getIndexedPath(
       Blockchain.ETHEREUM,
       this.accountIndex,

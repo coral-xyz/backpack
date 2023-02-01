@@ -355,7 +355,6 @@ export function ImportAccounts({
         derivationPath,
         publicKey,
       } as WalletDescriptor;
-      console.log(walletDescriptor);
       // Adding the account
       if (allowMultiple) {
         newCheckedWalletDescriptors.push(walletDescriptor);
