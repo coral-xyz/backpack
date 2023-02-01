@@ -3480,6 +3480,7 @@ export type ValueTypes = {
   ["auth_user_nfts_update_column"]: auth_user_nfts_update_column;
   /** columns and relationships of "auth.users" */
   ["auth_users"]: AliasType<{
+    created_at?: boolean | `@${string}`;
     dropzone_public_key?: [
       {
         /** distinct select on columns */
@@ -3741,6 +3742,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    created_at?:
+      | ValueTypes["timestamptz_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     dropzone_public_key?:
       | ValueTypes["auth_public_keys_bool_exp"]
       | undefined
@@ -3812,12 +3818,18 @@ export type ValueTypes = {
   };
   /** aggregate max on columns */
   ["auth_users_max_fields"]: AliasType<{
+    created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
   /** order by max() on columns of table "auth.users" */
   ["auth_users_max_order_by"]: {
+    created_at?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     username?:
       | ValueTypes["order_by"]
@@ -3827,12 +3839,18 @@ export type ValueTypes = {
   };
   /** aggregate min on columns */
   ["auth_users_min_fields"]: AliasType<{
+    created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
   /** order by min() on columns of table "auth.users" */
   ["auth_users_min_order_by"]: {
+    created_at?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     username?:
       | ValueTypes["order_by"]
@@ -3872,6 +3890,11 @@ export type ValueTypes = {
   };
   /** Ordering options when selecting data from "auth.users". */
   ["auth_users_order_by"]: {
+    created_at?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     dropzone_public_key_aggregate?:
       | ValueTypes["auth_public_keys_aggregate_order_by"]
       | undefined
@@ -3933,6 +3956,11 @@ export type ValueTypes = {
   };
   /** Initial value of the column from where the streaming should start */
   ["auth_users_stream_cursor_value_input"]: {
+    created_at?:
+      | ValueTypes["timestamptz"]
+      | undefined
+      | null
+      | Variable<any, string>;
     id?: ValueTypes["uuid"] | undefined | null | Variable<any, string>;
     username?: ValueTypes["citext"] | undefined | null | Variable<any, string>;
   };
@@ -9619,6 +9647,7 @@ export type ResolverInputTypes = {
   ["auth_user_nfts_update_column"]: auth_user_nfts_update_column;
   /** columns and relationships of "auth.users" */
   ["auth_users"]: AliasType<{
+    created_at?: boolean | `@${string}`;
     dropzone_public_key?: [
       {
         /** distinct select on columns */
@@ -9806,6 +9835,10 @@ export type ResolverInputTypes = {
     _and?: Array<ResolverInputTypes["auth_users_bool_exp"]> | undefined | null;
     _not?: ResolverInputTypes["auth_users_bool_exp"] | undefined | null;
     _or?: Array<ResolverInputTypes["auth_users_bool_exp"]> | undefined | null;
+    created_at?:
+      | ResolverInputTypes["timestamptz_comparison_exp"]
+      | undefined
+      | null;
     dropzone_public_key?:
       | ResolverInputTypes["auth_public_keys_bool_exp"]
       | undefined
@@ -9853,23 +9886,27 @@ export type ResolverInputTypes = {
   };
   /** aggregate max on columns */
   ["auth_users_max_fields"]: AliasType<{
+    created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
   /** order by max() on columns of table "auth.users" */
   ["auth_users_max_order_by"]: {
+    created_at?: ResolverInputTypes["order_by"] | undefined | null;
     id?: ResolverInputTypes["order_by"] | undefined | null;
     username?: ResolverInputTypes["order_by"] | undefined | null;
   };
   /** aggregate min on columns */
   ["auth_users_min_fields"]: AliasType<{
+    created_at?: boolean | `@${string}`;
     id?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
   /** order by min() on columns of table "auth.users" */
   ["auth_users_min_order_by"]: {
+    created_at?: ResolverInputTypes["order_by"] | undefined | null;
     id?: ResolverInputTypes["order_by"] | undefined | null;
     username?: ResolverInputTypes["order_by"] | undefined | null;
   };
@@ -9898,6 +9935,7 @@ export type ResolverInputTypes = {
   };
   /** Ordering options when selecting data from "auth.users". */
   ["auth_users_order_by"]: {
+    created_at?: ResolverInputTypes["order_by"] | undefined | null;
     dropzone_public_key_aggregate?:
       | ResolverInputTypes["auth_public_keys_aggregate_order_by"]
       | undefined
@@ -9934,6 +9972,7 @@ export type ResolverInputTypes = {
   };
   /** Initial value of the column from where the streaming should start */
   ["auth_users_stream_cursor_value_input"]: {
+    created_at?: ResolverInputTypes["timestamptz"] | undefined | null;
     id?: ResolverInputTypes["uuid"] | undefined | null;
     username?: ResolverInputTypes["citext"] | undefined | null;
   };
@@ -14169,6 +14208,7 @@ export type ModelTypes = {
   ["auth_user_nfts_update_column"]: auth_user_nfts_update_column;
   /** columns and relationships of "auth.users" */
   ["auth_users"]: {
+    created_at: ModelTypes["timestamptz"];
     /** the user's first solana public key inside an array due to hasura limitation */
     dropzone_public_key?: Array<ModelTypes["auth_public_keys"]> | undefined;
     id: ModelTypes["uuid"];
@@ -14221,6 +14261,7 @@ export type ModelTypes = {
     _and?: Array<ModelTypes["auth_users_bool_exp"]> | undefined;
     _not?: ModelTypes["auth_users_bool_exp"] | undefined;
     _or?: Array<ModelTypes["auth_users_bool_exp"]> | undefined;
+    created_at?: ModelTypes["timestamptz_comparison_exp"] | undefined;
     dropzone_public_key?: ModelTypes["auth_public_keys_bool_exp"] | undefined;
     id?: ModelTypes["uuid_comparison_exp"] | undefined;
     public_keys?: ModelTypes["auth_public_keys_bool_exp"] | undefined;
@@ -14249,21 +14290,25 @@ export type ModelTypes = {
   };
   /** aggregate max on columns */
   ["auth_users_max_fields"]: {
+    created_at?: ModelTypes["timestamptz"] | undefined;
     id?: ModelTypes["uuid"] | undefined;
     username?: ModelTypes["citext"] | undefined;
   };
   /** order by max() on columns of table "auth.users" */
   ["auth_users_max_order_by"]: {
+    created_at?: ModelTypes["order_by"] | undefined;
     id?: ModelTypes["order_by"] | undefined;
     username?: ModelTypes["order_by"] | undefined;
   };
   /** aggregate min on columns */
   ["auth_users_min_fields"]: {
+    created_at?: ModelTypes["timestamptz"] | undefined;
     id?: ModelTypes["uuid"] | undefined;
     username?: ModelTypes["citext"] | undefined;
   };
   /** order by min() on columns of table "auth.users" */
   ["auth_users_min_order_by"]: {
+    created_at?: ModelTypes["order_by"] | undefined;
     id?: ModelTypes["order_by"] | undefined;
     username?: ModelTypes["order_by"] | undefined;
   };
@@ -14288,6 +14333,7 @@ export type ModelTypes = {
   };
   /** Ordering options when selecting data from "auth.users". */
   ["auth_users_order_by"]: {
+    created_at?: ModelTypes["order_by"] | undefined;
     dropzone_public_key_aggregate?:
       | ModelTypes["auth_public_keys_aggregate_order_by"]
       | undefined;
@@ -14320,6 +14366,7 @@ export type ModelTypes = {
   };
   /** Initial value of the column from where the streaming should start */
   ["auth_users_stream_cursor_value_input"]: {
+    created_at?: ModelTypes["timestamptz"] | undefined;
     id?: ModelTypes["uuid"] | undefined;
     username?: ModelTypes["citext"] | undefined;
   };
@@ -16699,6 +16746,7 @@ export type GraphQLTypes = {
   /** columns and relationships of "auth.users" */
   ["auth_users"]: {
     __typename: "auth_users";
+    created_at: GraphQLTypes["timestamptz"];
     /** the user's first solana public key inside an array due to hasura limitation */
     dropzone_public_key?: Array<GraphQLTypes["auth_public_keys"]> | undefined;
     id: GraphQLTypes["uuid"];
@@ -16753,6 +16801,7 @@ export type GraphQLTypes = {
     _and?: Array<GraphQLTypes["auth_users_bool_exp"]> | undefined;
     _not?: GraphQLTypes["auth_users_bool_exp"] | undefined;
     _or?: Array<GraphQLTypes["auth_users_bool_exp"]> | undefined;
+    created_at?: GraphQLTypes["timestamptz_comparison_exp"] | undefined;
     dropzone_public_key?: GraphQLTypes["auth_public_keys_bool_exp"] | undefined;
     id?: GraphQLTypes["uuid_comparison_exp"] | undefined;
     public_keys?: GraphQLTypes["auth_public_keys_bool_exp"] | undefined;
@@ -16785,22 +16834,26 @@ export type GraphQLTypes = {
   /** aggregate max on columns */
   ["auth_users_max_fields"]: {
     __typename: "auth_users_max_fields";
+    created_at?: GraphQLTypes["timestamptz"] | undefined;
     id?: GraphQLTypes["uuid"] | undefined;
     username?: GraphQLTypes["citext"] | undefined;
   };
   /** order by max() on columns of table "auth.users" */
   ["auth_users_max_order_by"]: {
+    created_at?: GraphQLTypes["order_by"] | undefined;
     id?: GraphQLTypes["order_by"] | undefined;
     username?: GraphQLTypes["order_by"] | undefined;
   };
   /** aggregate min on columns */
   ["auth_users_min_fields"]: {
     __typename: "auth_users_min_fields";
+    created_at?: GraphQLTypes["timestamptz"] | undefined;
     id?: GraphQLTypes["uuid"] | undefined;
     username?: GraphQLTypes["citext"] | undefined;
   };
   /** order by min() on columns of table "auth.users" */
   ["auth_users_min_order_by"]: {
+    created_at?: GraphQLTypes["order_by"] | undefined;
     id?: GraphQLTypes["order_by"] | undefined;
     username?: GraphQLTypes["order_by"] | undefined;
   };
@@ -16826,6 +16879,7 @@ export type GraphQLTypes = {
   };
   /** Ordering options when selecting data from "auth.users". */
   ["auth_users_order_by"]: {
+    created_at?: GraphQLTypes["order_by"] | undefined;
     dropzone_public_key_aggregate?:
       | GraphQLTypes["auth_public_keys_aggregate_order_by"]
       | undefined;
@@ -16859,6 +16913,7 @@ export type GraphQLTypes = {
   };
   /** Initial value of the column from where the streaming should start */
   ["auth_users_stream_cursor_value_input"]: {
+    created_at?: GraphQLTypes["timestamptz"] | undefined;
     id?: GraphQLTypes["uuid"] | undefined;
     username?: GraphQLTypes["citext"] | undefined;
   };
@@ -18046,6 +18101,7 @@ export const enum auth_users_constraint {
 }
 /** select columns of table "auth.users" */
 export const enum auth_users_select_column {
+  created_at = "created_at",
   id = "id",
   username = "username",
 }

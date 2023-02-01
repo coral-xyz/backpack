@@ -11,6 +11,7 @@ import cors from "cors";
 import type { NextFunction, Request, Response } from "express";
 import express from "express";
 
+import { extractUserId } from "../../auth/middleware";
 import { HASURA_URL, JWT } from "../../config";
 
 const router = express.Router();
@@ -157,62 +158,87 @@ router.get("/drops/:distributor", async (req, res, next) => {
   }
 });
 
-router.get("/claims/:claimant", isValidClaimant, async (req, res, next) => {
-  try {
-    const { dropzone_distributors: query } = await chain("query")({
-      dropzone_distributors: [
-        {
-          order_by: [{ created_at: "desc" as order_by.desc }],
-          where: {
-            data: {
-              _has_key: req.params.claimant,
+router.get(
+  "/claims/:claimant",
+  isValidClaimant,
+  extractUserId,
+  async (req, res, next) => {
+    try {
+      const { auth_users_by_pk, dropzone_distributors: query } = await chain(
+        "query"
+      )({
+        auth_users_by_pk: [
+          {
+            id: req.id,
+          },
+          {
+            username: true,
+            dropzone_public_key: [{}, { public_key: true }],
+            referred_users: [
+              {},
+              {
+                username: true,
+                created_at: true,
+              },
+            ],
+          },
+        ],
+        dropzone_distributors: [
+          {
+            order_by: [{ created_at: "desc" as order_by.desc }],
+            where: {
+              data: {
+                _has_key: req.params.claimant,
+              },
             },
           },
-        },
-        {
-          id: true,
-          data: [{ path: `$["${req.params.claimant}"]` }, true],
-          created_at: true,
-          mint: true,
-        },
-      ],
-    });
+          {
+            id: true,
+            data: [{ path: `$["${req.params.claimant}"]` }, true],
+            created_at: true,
+            mint: true,
+          },
+        ],
+      });
 
-    const claims = query.map(({ data, ...distributor }) => ({
-      ...distributor,
-      amount: (data as any)[0],
-      _index: (data as any)[1],
-    }));
+      const claims = query.map(({ data, ...distributor }) => ({
+        ...distributor,
+        amount: (data as any)[0],
+        _index: (data as any)[1],
+      }));
 
-    // TODO: index claims in db or run this from frontend, otherwise in the
-    // meantime batch the requests and/or make more robust if RPC fails
-    const claimsIncludingClaimedAt = await Promise.all(
-      claims.map(async ({ _index, ...claim }) => {
-        let claimedAt = undefined;
-        try {
-          const distributor = await getDistributor(claim.id);
-          const status = await distributor.getClaimStatus(new u64(_index));
-          claimedAt = new Date(
-            status.claimedAt.toNumber() * 1000
-          ).toISOString();
-        } catch (err) {
-          // unclaimed
-        }
-        return {
-          ...claim,
-          claimed_at: claimedAt,
-        };
-      })
-    );
+      // TODO: index claims in db or run this from frontend, otherwise in the
+      // meantime batch the requests and/or make more robust if RPC fails
+      const claimsIncludingClaimedAt = await Promise.all(
+        claims.map(async ({ _index, ...claim }) => {
+          let claimedAt = undefined;
+          try {
+            const distributor = await getDistributor(claim.id);
+            const status = await distributor.getClaimStatus(new u64(_index));
+            claimedAt = new Date(
+              status.claimedAt.toNumber() * 1000
+            ).toISOString();
+          } catch (err) {
+            // unclaimed
+          }
+          return {
+            ...claim,
+            claimed_at: claimedAt,
+          };
+        })
+      );
 
-    res.json({
-      claimed: claimsIncludingClaimedAt.filter((c) => c.claimed_at),
-      unclaimed: claimsIncludingClaimedAt.filter((c) => !c.claimed_at),
-    });
-  } catch (err) {
-    next(err);
+      res.json({
+        ...auth_users_by_pk,
+        claimed: claimsIncludingClaimedAt.filter((c) => c.claimed_at),
+        unclaimed: claimsIncludingClaimedAt.filter((c) => !c.claimed_at),
+      });
+    } catch (err) {
+      console.error(err);
+      next(err);
+    }
   }
-});
+);
 
 /**
  * Gets the status of a claimant's claim on a distributor
