@@ -33,13 +33,12 @@ import {
 import {
   formatTimestamp,
   getTokenData,
-  getTransactionCaption,
+  getTransactionDetailTitle,
   getTransactionTitle,
   getTruncatedAddress,
   isNFTTransaction,
   isUserTxnSender,
 } from "./detail-parser";
-import { ListItemIcons } from "./Icons";
 import type { HeliusParsedTransaction } from "./types";
 
 const useStyles = styles((theme) => ({
@@ -159,11 +158,12 @@ export function TransactionDetail({
         <NavStackEphemeral
           initialRoute={{ name: "transactionDetails" }}
           options={() => {
-            if (isNFTTransaction(transaction)) {
-              return { title: getTransactionCaption(transaction, tokenData) };
-            }
-
-            return { title: getTransactionTitle(transaction) };
+            return {
+              title: getTransactionDetailTitle(
+                transaction,
+                activeWallet?.publicKey
+              ),
+            };
           }}
           navButtonLeft={
             <NavBackButton

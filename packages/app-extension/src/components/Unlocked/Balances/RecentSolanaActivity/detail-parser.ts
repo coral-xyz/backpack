@@ -98,7 +98,6 @@ export const getTransactionTitle = (transaction: HeliusParsedTransaction) => {
   switch (transaction.type) {
     case TransactionType.BURN:
       return "Burned";
-    // case TransactionType.UNKNOWN:
     case TransactionType.TRANSFER:
       // send/receive NFT's are returned as TransactionType.TRANSFER
       const nftName =
@@ -138,6 +137,38 @@ export const getTransactionTitle = (transaction: HeliusParsedTransaction) => {
       //   title = getSourceOrTypeFormatted(transaction.type);
       //   return title;
       // }
+
+      return title;
+  }
+};
+
+export const getTransactionDetailTitle = (
+  transaction: HeliusParsedTransaction,
+  publicKey: string
+) => {
+  switch (transaction.type) {
+    case TransactionType.BURN:
+      return "Burned";
+    case TransactionType.TRANSFER:
+      if (isUserTxnSender(transaction)) return "Sent";
+      else if (isUserTxnSender(transaction) === false) return "Received";
+      return "App Interaction";
+
+    case TransactionType.SWAP:
+      return "Swap";
+    case TransactionType.NFT_SALE:
+      return transaction?.events?.nft?.seller === publicKey ? "Sold" : "Bought";
+
+    case TransactionType.NFT_LISTING:
+      return "Listed";
+    default:
+      let title = "App Interaction";
+
+      if (transaction?.type?.includes("MINT")) return "Minted";
+
+      if (transaction?.transactionError) {
+        title = "Failed";
+      }
 
       return title;
   }
