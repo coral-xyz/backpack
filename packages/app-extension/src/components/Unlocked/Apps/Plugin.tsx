@@ -66,6 +66,7 @@ export function LoadPlugin({
 
   const plugin = plugins?.find((p) => p.xnftAddress.toString() === xnftAddress);
 
+  console.log(plugin);
   if (!plugin) {
     return (
       <DisplayFreshPlugin
