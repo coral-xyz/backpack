@@ -183,6 +183,39 @@ export const AllTypesProps: Record<string, any> = {
     _set: "auth_friendships_set_input",
     where: "auth_friendships_bool_exp",
   },
+  auth_notification_cursor_bool_exp: {
+    _and: "auth_notification_cursor_bool_exp",
+    _not: "auth_notification_cursor_bool_exp",
+    _or: "auth_notification_cursor_bool_exp",
+    last_read_notificaiton: "Int_comparison_exp",
+    uuid: "String_comparison_exp",
+  },
+  auth_notification_cursor_constraint: "enum" as const,
+  auth_notification_cursor_inc_input: {},
+  auth_notification_cursor_insert_input: {},
+  auth_notification_cursor_on_conflict: {
+    constraint: "auth_notification_cursor_constraint",
+    update_columns: "auth_notification_cursor_update_column",
+    where: "auth_notification_cursor_bool_exp",
+  },
+  auth_notification_cursor_order_by: {
+    last_read_notificaiton: "order_by",
+    uuid: "order_by",
+  },
+  auth_notification_cursor_pk_columns_input: {},
+  auth_notification_cursor_select_column: "enum" as const,
+  auth_notification_cursor_set_input: {},
+  auth_notification_cursor_stream_cursor_input: {
+    initial_value: "auth_notification_cursor_stream_cursor_value_input",
+    ordering: "cursor_ordering",
+  },
+  auth_notification_cursor_stream_cursor_value_input: {},
+  auth_notification_cursor_update_column: "enum" as const,
+  auth_notification_cursor_updates: {
+    _inc: "auth_notification_cursor_inc_input",
+    _set: "auth_notification_cursor_set_input",
+    where: "auth_notification_cursor_bool_exp",
+  },
   auth_notification_subscriptions_bool_exp: {
     _and: "auth_notification_subscriptions_bool_exp",
     _not: "auth_notification_subscriptions_bool_exp",
@@ -883,6 +916,14 @@ export const AllTypesProps: Record<string, any> = {
       object: "auth_friendships_insert_input",
       on_conflict: "auth_friendships_on_conflict",
     },
+    insert_auth_notification_cursor: {
+      objects: "auth_notification_cursor_insert_input",
+      on_conflict: "auth_notification_cursor_on_conflict",
+    },
+    insert_auth_notification_cursor_one: {
+      object: "auth_notification_cursor_insert_input",
+      on_conflict: "auth_notification_cursor_on_conflict",
+    },
     insert_auth_notification_subscriptions: {
       objects: "auth_notification_subscriptions_insert_input",
       on_conflict: "auth_notification_subscriptions_on_conflict",
@@ -992,6 +1033,19 @@ export const AllTypesProps: Record<string, any> = {
     update_auth_friendships_many: {
       updates: "auth_friendships_updates",
     },
+    update_auth_notification_cursor: {
+      _inc: "auth_notification_cursor_inc_input",
+      _set: "auth_notification_cursor_set_input",
+      where: "auth_notification_cursor_bool_exp",
+    },
+    update_auth_notification_cursor_by_pk: {
+      _inc: "auth_notification_cursor_inc_input",
+      _set: "auth_notification_cursor_set_input",
+      pk_columns: "auth_notification_cursor_pk_columns_input",
+    },
+    update_auth_notification_cursor_many: {
+      updates: "auth_notification_cursor_updates",
+    },
     update_auth_notification_subscriptions: {
       _inc: "auth_notification_subscriptions_inc_input",
       _set: "auth_notification_subscriptions_set_input",
@@ -1100,6 +1154,12 @@ export const AllTypesProps: Record<string, any> = {
       where: "auth_friendships_bool_exp",
     },
     auth_friendships_by_pk: {},
+    auth_notification_cursor: {
+      distinct_on: "auth_notification_cursor_select_column",
+      order_by: "auth_notification_cursor_order_by",
+      where: "auth_notification_cursor_bool_exp",
+    },
+    auth_notification_cursor_by_pk: {},
     auth_notification_subscriptions: {
       distinct_on: "auth_notification_subscriptions_select_column",
       order_by: "auth_notification_subscriptions_order_by",
@@ -1244,6 +1304,16 @@ export const AllTypesProps: Record<string, any> = {
     auth_friendships_stream: {
       cursor: "auth_friendships_stream_cursor_input",
       where: "auth_friendships_bool_exp",
+    },
+    auth_notification_cursor: {
+      distinct_on: "auth_notification_cursor_select_column",
+      order_by: "auth_notification_cursor_order_by",
+      where: "auth_notification_cursor_bool_exp",
+    },
+    auth_notification_cursor_by_pk: {},
+    auth_notification_cursor_stream: {
+      cursor: "auth_notification_cursor_stream_cursor_input",
+      where: "auth_notification_cursor_bool_exp",
     },
     auth_notification_subscriptions: {
       distinct_on: "auth_notification_subscriptions_select_column",
@@ -1529,6 +1599,14 @@ export const ReturnTypes: Record<string, any> = {
   auth_friendships_variance_fields: {
     id: "Float",
   },
+  auth_notification_cursor: {
+    last_read_notificaiton: "Int",
+    uuid: "String",
+  },
+  auth_notification_cursor_mutation_response: {
+    affected_rows: "Int",
+    returning: "auth_notification_cursor",
+  },
   auth_notification_subscriptions: {
     auth: "String",
     endpoint: "String",
@@ -1806,6 +1884,9 @@ export const ReturnTypes: Record<string, any> = {
     insert_auth_friend_requests_one: "auth_friend_requests",
     insert_auth_friendships: "auth_friendships_mutation_response",
     insert_auth_friendships_one: "auth_friendships",
+    insert_auth_notification_cursor:
+      "auth_notification_cursor_mutation_response",
+    insert_auth_notification_cursor_one: "auth_notification_cursor",
     insert_auth_notification_subscriptions:
       "auth_notification_subscriptions_mutation_response",
     insert_auth_notification_subscriptions_one:
@@ -1837,6 +1918,11 @@ export const ReturnTypes: Record<string, any> = {
     update_auth_friendships: "auth_friendships_mutation_response",
     update_auth_friendships_by_pk: "auth_friendships",
     update_auth_friendships_many: "auth_friendships_mutation_response",
+    update_auth_notification_cursor:
+      "auth_notification_cursor_mutation_response",
+    update_auth_notification_cursor_by_pk: "auth_notification_cursor",
+    update_auth_notification_cursor_many:
+      "auth_notification_cursor_mutation_response",
     update_auth_notification_subscriptions:
       "auth_notification_subscriptions_mutation_response",
     update_auth_notification_subscriptions_by_pk:
@@ -1870,6 +1956,8 @@ export const ReturnTypes: Record<string, any> = {
     auth_friendships: "auth_friendships",
     auth_friendships_aggregate: "auth_friendships_aggregate",
     auth_friendships_by_pk: "auth_friendships",
+    auth_notification_cursor: "auth_notification_cursor",
+    auth_notification_cursor_by_pk: "auth_notification_cursor",
     auth_notification_subscriptions: "auth_notification_subscriptions",
     auth_notification_subscriptions_by_pk: "auth_notification_subscriptions",
     auth_notifications: "auth_notifications",
@@ -1911,6 +1999,9 @@ export const ReturnTypes: Record<string, any> = {
     auth_friendships_aggregate: "auth_friendships_aggregate",
     auth_friendships_by_pk: "auth_friendships",
     auth_friendships_stream: "auth_friendships",
+    auth_notification_cursor: "auth_notification_cursor",
+    auth_notification_cursor_by_pk: "auth_notification_cursor",
+    auth_notification_cursor_stream: "auth_notification_cursor",
     auth_notification_subscriptions: "auth_notification_subscriptions",
     auth_notification_subscriptions_by_pk: "auth_notification_subscriptions",
     auth_notification_subscriptions_stream: "auth_notification_subscriptions",
