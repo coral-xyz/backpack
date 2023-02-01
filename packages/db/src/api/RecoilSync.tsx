@@ -2,6 +2,8 @@ import type { SubscriptionType } from "@coral-xyz/common";
 
 import { getDb } from "../db";
 
+import { refreshUsers } from "./users";
+
 export class RecoilSync {
   private static instance: RecoilSync;
   private constructor() {}
@@ -36,6 +38,14 @@ export class RecoilSync {
 
   getAllChats(uuid: string) {
     return getDb(uuid).messages.toArray();
+  }
+
+  async refreshUsersMetadata(uuid: string) {
+    const users = await getDb(uuid).users.toArray();
+    refreshUsers(
+      uuid,
+      users.map((x) => x.uuid)
+    );
   }
 
   getChatsForRoom(uuid: string, room: string, type: SubscriptionType) {

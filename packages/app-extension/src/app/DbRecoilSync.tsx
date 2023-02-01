@@ -68,6 +68,7 @@ export const DbRecoilSync = () => {
         chats: group.messages,
       });
     });
+    RecoilSync.getInstance().refreshUsersMetadata(uuid);
   };
 
   useEffect(() => {
