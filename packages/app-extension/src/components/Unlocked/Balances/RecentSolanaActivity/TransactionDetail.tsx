@@ -253,9 +253,7 @@ function DetailTable(
               <div className={classes.label}>You paid</div>
 
               <div className={classes.cellValue}>
-                {new Number(transaction?.description?.split(" ")[2]).toFixed(
-                  2
-                ) +
+                {transaction?.tokenTransfers[0]?.tokenAmount.toFixed(5) +
                   " " +
                   tokenData[0]?.symbol ||
                   getTruncatedAddress(transaction?.tokenTransfers?.[0]?.mint)}
@@ -267,9 +265,7 @@ function DetailTable(
               <div className={classes.label}>You Received</div>
 
               <div className={classes.confirmedStatus}>
-                {new Number(transaction?.description?.split(" ")[5]).toFixed(
-                  2
-                ) +
+                {transaction?.tokenTransfers[1]?.tokenAmount.toFixed(5) +
                   " " +
                   tokenData[1]?.symbol ||
                   getTruncatedAddress(transaction?.tokenTransfers?.[0]?.mint)}
@@ -359,7 +355,7 @@ function DetailCardHeader(
               width: "56px",
               height: "56px",
             }}
-            src={tokenData[0] && tokenData[0]?.logoURI}
+            src={tokenData[0]?.logoURI}
           />
 
           <div
@@ -370,7 +366,7 @@ function DetailCardHeader(
               marginTop: "5px",
             }}
           >
-            {new Number(transaction?.description?.split(" ")[2]).toFixed(2) +
+            {transaction?.tokenTransfers[0]?.tokenAmount.toFixed(5) +
               " " +
               tokenData[0]?.symbol ||
               getTruncatedAddress(transaction?.tokenTransfers?.[0]?.mint)}
@@ -398,7 +394,7 @@ function DetailCardHeader(
               width: "56px",
               height: "56px",
             }}
-            src={tokenData[1] && tokenData[1]?.logoURI}
+            src={tokenData[1]?.logoURI}
           />
           <div
             style={{
@@ -408,7 +404,7 @@ function DetailCardHeader(
               marginTop: "5px",
             }}
           >
-            {new Number(transaction?.description?.split(" ")[5]).toFixed(2) +
+            {transaction?.tokenTransfers[1]?.tokenAmount.toFixed(5) +
               " " +
               tokenData[1]?.symbol ||
               getTruncatedAddress(transaction?.tokenTransfers?.[0]?.mint)}
