@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import type { Plugin, XnftPreference } from "@coral-xyz/common";
 import { Loading } from "@coral-xyz/react-common";
 import {
@@ -6,7 +7,6 @@ import {
   useUser,
   useXnftJwt,
 } from "@coral-xyz/recoil";
-import { useEffect, useRef, useState } from "react";
 
 export function PluginRenderer({
   plugin,
