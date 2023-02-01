@@ -1,6 +1,6 @@
-import { Suspense, useState } from "react";
-import type { EnrichedNotification} from "@coral-xyz/common";
-import { Friendship } from "@coral-xyz/common";
+import { Suspense, useEffect, useState } from "react";
+import type { EnrichedNotification } from "@coral-xyz/common";
+import { BACKEND_API_URL, Friendship } from "@coral-xyz/common";
 import {
   EmptyState,
   isFirstLastListItemStyle,
@@ -8,10 +8,16 @@ import {
   ProxyImage,
   useUserMetadata,
 } from "@coral-xyz/react-common";
-import { friendship, useRecentNotifications, useUser } from "@coral-xyz/recoil";
+import {
+  friendship,
+  unreadCount,
+  useRecentNotifications,
+  useUser,
+} from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { IconButton, List, ListItem, Typography } from "@mui/material";
+import { useRecoilState } from "recoil";
 
 import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
 import { useBreakpoints } from "../../common/Layout/hooks";
@@ -20,6 +26,7 @@ import {
   NavStackScreen,
   useNavStack,
 } from "../../common/Layout/NavStack";
+import { NotificationIconWithBadge } from "../../common/NotificationIconWithBadge";
 import { Contacts } from "../Messages/Contacts";
 
 const useStyles = styles((theme) => ({
@@ -83,16 +90,12 @@ const useStyles = styles((theme) => ({
       background: "transparent",
     },
   },
-  networkSettingsIcon: {
-    color: theme.custom.colors.icon,
-    backgroundColor: "transparent",
-    borderRadius: "12px",
-  },
 }));
 
 export function NotificationButton() {
   const classes = useStyles();
   const [openDrawer, setOpenDrawer] = useState(false);
+  const theme = useCustomTheme();
   return (
     <div className={classes.networkSettingsButtonContainer}>
       <IconButton
@@ -101,7 +104,13 @@ export function NotificationButton() {
         onClick={() => setOpenDrawer(true)}
         size="large"
       >
-        <NotificationsIcon className={classes.networkSettingsIcon} />
+        <NotificationIconWithBadge
+          style={{
+            color: theme.custom.colors.icon,
+            backgroundColor: "transparent",
+            borderRadius: "12px",
+          }}
+        />
       </IconButton>
       <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
         <div style={{ height: "100%" }}>
@@ -180,10 +189,26 @@ export function Notifications() {
     ? [false, () => {}]
     : useState(false);
 
+  const [_unreadCount, setUnreadCount] = useRecoilState(unreadCount);
+
   const notifications: EnrichedNotification[] = useRecentNotifications({
     limit: 50,
     offset: 0,
   });
+
+  useEffect(() => {
+    const latestNotification = notifications[notifications.length - 1];
+    if (latestNotification && latestNotification.id) {
+      fetch(`${BACKEND_API_URL}/notifications/cursor`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          lastNotificationId: latestNotification.id,
+        }),
+      });
+    }
+    setUnreadCount(0);
+  }, [notifications, setUnreadCount]);
 
   const groupedNotifications: {
     date: string;
