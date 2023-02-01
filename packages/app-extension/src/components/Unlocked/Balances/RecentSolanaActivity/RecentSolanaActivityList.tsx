@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 <<<<<<< HEAD
 import { useRecentTransactions } from "@coral-xyz/recoil";
@@ -61,9 +61,8 @@ export function _RecentSolanaActivityList({
     >
       {txnsGroupedByDate.map((group: HeliusParsedTransaction[], i: number) => {
         return (
-          <>
+          <Fragment key={i}>
             <div
-              key={i}
               style={{
                 fontSize: "16px",
                 color: theme.custom.colors.alpha,
@@ -98,7 +97,7 @@ export function _RecentSolanaActivityList({
                 );
               })}
             </List>
-          </>
+          </Fragment>
         );
       })}
     </div>

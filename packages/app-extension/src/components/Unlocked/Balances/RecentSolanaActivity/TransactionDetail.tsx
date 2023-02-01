@@ -240,7 +240,10 @@ function DetailCardHeader(
             flexDirection: "column",
           }}
         >
-          <img className={classes.tokenLogo} src={tokenData[0]?.logoURI} />
+          <img
+            className={classes.tokenLogo}
+            src={tokenData[0] && tokenData[0]?.logoURI}
+          />
 
           <div
             style={{
@@ -272,7 +275,10 @@ function DetailCardHeader(
             flexDirection: "column",
           }}
         >
-          <img className={classes.tokenLogo} src={tokenData[1]?.logoURI} />
+          <img
+            className={classes.tokenLogo}
+            src={tokenData[1] && tokenData[1]?.logoURI}
+          />
           <div
             style={{
               fontSize: "16px",
