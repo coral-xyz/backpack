@@ -33,7 +33,19 @@ select_permissions:
         - public_key
       filter: {}
       allow_aggregations: true
+  - role: one_xnft
+    permission:
+      columns:
+        - nft_id
+        - public_key
+        - collection_id
+        - blockchain
+        - centralized_group
+      filter: {}
 delete_permissions:
   - role: auth_worker
+    permission:
+      filter: {}
+  - role: one_xnft
     permission:
       filter: {}
