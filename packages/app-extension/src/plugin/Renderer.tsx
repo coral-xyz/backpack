@@ -17,7 +17,7 @@ export function PluginRenderer({
   xnftPreference: XnftPreference | null;
   deepXnftPath: string;
 }) {
-  const ref = useRef<any>();
+  const ref = useRef<HTMLDivElement>(null);
   const [loaded, setLoaded] = useState(false);
   const { username } = useUser();
   const isDarkMode = useDarkMode();
@@ -32,7 +32,7 @@ export function PluginRenderer({
         setLoaded(true);
       });
       plugin.iframeRoot!.style.display = "none";
-      ref.current.appendChild(plugin.iframeRoot);
+      ref.current.appendChild(plugin.iframeRoot!);
       return () => {
         plugin.unmount();
       };

@@ -64,7 +64,9 @@ export const SearchUsers = ({
               marginBottom: "8px",
             }}
           >
-            <Typography fontSize={14}>Your contacts</Typography>
+            <Typography color={theme.custom.colors.fontColor} fontSize={14}>
+              Your contacts
+            </Typography>
             {requests.received.length > 0 && (
               <Typography
                 sx={{ cursor: "pointer" }}
