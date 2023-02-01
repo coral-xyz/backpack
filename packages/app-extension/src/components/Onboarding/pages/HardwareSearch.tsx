@@ -2,11 +2,10 @@
 // a loading indicator until it is found (or an error if it not found).
 
 import { useEffect, useState } from "react";
-import type { DerivationPath } from "@coral-xyz/common";
+import type { WalletDescriptor } from "@coral-xyz/common";
 import {
-  accountDerivationPath,
   Blockchain,
-  LOAD_PUBLIC_KEY_AMOUNT,
+  getRecoveryPaths,
   walletAddressDisplay,
 } from "@coral-xyz/common";
 import { Loading, PrimaryButton } from "@coral-xyz/react-common";
@@ -17,9 +16,6 @@ import { Box } from "@mui/material";
 import { ethers } from "ethers";
 
 import { Header, SubtextParagraph } from "../../common";
-import type { SelectedAccount } from "../../common/Account/ImportAccounts";
-
-import { DERIVATION_PATHS } from "./MnemonicSearch";
 
 const { base58: bs58 } = ethers.utils;
 
@@ -33,7 +29,7 @@ export const HardwareSearch = ({
   blockchain: Blockchain;
   transport: Transport;
   publicKey: string;
-  onNext: (accounts: SelectedAccount[], derivationPath: DerivationPath) => void;
+  onNext: (walletDescriptor: WalletDescriptor) => void;
   onError?: (error: Error) => void;
   onRetry: () => void;
 }) => {
@@ -45,22 +41,13 @@ export const HardwareSearch = ({
         [Blockchain.SOLANA]: new Solana(transport),
         [Blockchain.ETHEREUM]: new Ethereum(transport),
       }[blockchain];
-      for (const derivationPath of DERIVATION_PATHS) {
-        for (
-          let accountIndex = 0;
-          accountIndex < LOAD_PUBLIC_KEY_AMOUNT;
-          accountIndex += 1
-        ) {
-          const path = accountDerivationPath(
-            blockchain,
-            derivationPath,
-            accountIndex
-          );
-          const ledgerAddress = (await ledger.getAddress(path)).address;
-          if (bs58.encode(ledgerAddress) === publicKey) {
-            onNext([{ index: accountIndex, publicKey }], derivationPath);
-            return;
-          }
+      for (const derivationPath of getRecoveryPaths(blockchain)) {
+        const ledgerAddress = (
+          await ledger.getAddress(derivationPath.replace("m/", ""))
+        ).address;
+        if (bs58.encode(ledgerAddress) === publicKey) {
+          onNext({ derivationPath, publicKey });
+          return;
         }
       }
       setError(true);

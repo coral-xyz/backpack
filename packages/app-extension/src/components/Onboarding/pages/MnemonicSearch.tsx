@@ -2,10 +2,9 @@
 // a loading indicator until it is found (or an error if it not found).
 
 import { useEffect, useState } from "react";
-import type { Blockchain } from "@coral-xyz/common";
+import type { Blockchain, WalletDescriptor } from "@coral-xyz/common";
 import {
-  DerivationPath,
-  LOAD_PUBLIC_KEY_AMOUNT,
+  getRecoveryPaths,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
   walletAddressDisplay,
 } from "@coral-xyz/common";
@@ -15,10 +14,6 @@ import { Box } from "@mui/material";
 
 import { Header, SubtextParagraph } from "../../common";
 
-export const DERIVATION_PATHS = [
-  DerivationPath.Bip44,
-  DerivationPath.Bip44Change,
-];
 export const MnemonicSearch = ({
   blockchain,
   mnemonic,
@@ -29,7 +24,7 @@ export const MnemonicSearch = ({
   blockchain: Blockchain;
   mnemonic: string;
   publicKey: string;
-  onNext: (derivationPath: DerivationPath, accountIndex: number) => void;
+  onNext: (walletDescriptor: WalletDescriptor) => void;
   onRetry: () => void;
 }) => {
   const [error, setError] = useState(false);
@@ -37,21 +32,15 @@ export const MnemonicSearch = ({
 
   useEffect(() => {
     (async () => {
-      for (const derivationPath of DERIVATION_PATHS) {
-        const publicKeys = await background.request({
-          method: UI_RPC_METHOD_PREVIEW_PUBKEYS,
-          params: [
-            blockchain,
-            mnemonic,
-            derivationPath,
-            LOAD_PUBLIC_KEY_AMOUNT,
-          ],
-        });
-        const index = publicKeys.findIndex((p: string) => p === publicKey);
-        if (index !== -1) {
-          onNext(derivationPath, index);
-          return;
-        }
+      const recoveryPaths = getRecoveryPaths(blockchain);
+      const publicKeys = await background.request({
+        method: UI_RPC_METHOD_PREVIEW_PUBKEYS,
+        params: [blockchain, mnemonic, recoveryPaths],
+      });
+      const index = publicKeys.findIndex((p: string) => p === publicKey);
+      if (index !== -1) {
+        onNext({ derivationPath: recoveryPaths[index], publicKey });
+        return;
       }
       setError(true);
     })();

@@ -1,6 +1,6 @@
 import { Suspense, useEffect, useState } from "react";
 import type { EnrichedNotification } from "@coral-xyz/common";
-import { BACKEND_API_URL, Friendship } from "@coral-xyz/common";
+import { BACKEND_API_URL } from "@coral-xyz/common";
 import {
   EmptyState,
   isFirstLastListItemStyle,
@@ -8,12 +8,7 @@ import {
   ProxyImage,
   useUserMetadata,
 } from "@coral-xyz/react-common";
-import {
-  friendship,
-  unreadCount,
-  useRecentNotifications,
-  useUser,
-} from "@coral-xyz/recoil";
+import { unreadCount, useRecentNotifications } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { IconButton, List, ListItem, Typography } from "@mui/material";

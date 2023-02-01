@@ -1,7 +1,5 @@
 import type { Commitment } from "@solana/web3.js";
 
-import type { DerivationPath } from "./crypto";
-
 export type Context<Backend> = {
   sender: any;
   backend: Backend;
@@ -92,18 +90,21 @@ export type NftAttribute = {
 export type KeyringType = "mnemonic" | "ledger";
 
 export type KeyringInit = {
+  signedWalletDescriptors: Array<SignedWalletDescriptor>;
   // No mnemonic means this is a hardware wallet keyring
   mnemonic?: string;
-  blockchainKeyrings: Array<BlockchainKeyringInit>;
 };
 
-export type BlockchainKeyringInit = {
-  blockchain: Blockchain;
-  derivationPath: DerivationPath;
-  accountIndex: number;
+// Location of a public key including the public key
+export type WalletDescriptor = {
+  derivationPath: string;
   publicKey: string;
-  signature: string;
 };
+
+// Path to a public key including a signature from the public key
+export type SignedWalletDescriptor = {
+  signature: string;
+} & WalletDescriptor;
 
 export interface XnftPreference {
   disabled: boolean;
@@ -134,18 +135,13 @@ export type KeyringJson = {
 export type HdKeyringJson = {
   mnemonic: string;
   seed: string;
-  accountIndices: Array<number>;
-  derivationPath: DerivationPath;
+  derivationPaths: Array<string>;
+  accountIndex?: number;
+  walletIndex?: number;
 };
 
 export type LedgerKeyringJson = {
-  derivationPaths: Array<ImportedDerivationPath>;
-};
-
-export type ImportedDerivationPath = {
-  path: string;
-  account: number;
-  publicKey: string;
+  walletDescriptors: Array<WalletDescriptor>;
 };
 
 export type SolanaFeeConfig = { computeUnits: number; priorityFee: bigint };

@@ -1,18 +1,13 @@
 import { useEffect, useState } from "react";
 import type {
   Blockchain,
-  BlockchainKeyringInit,
-  DerivationPath,
   KeyringType,
+  SignedWalletDescriptor,
+  WalletDescriptor,
 } from "@coral-xyz/common";
-import {
-  BACKEND_API_URL,
-  getAuthMessage,
-  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-} from "@coral-xyz/common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
-import { encode } from "bs58";
+import { BACKEND_API_URL, getAuthMessage } from "@coral-xyz/common";
 
+import { useOnboarding } from "../../../hooks/useOnboarding";
 import { useSteps } from "../../../hooks/useSteps";
 import { CreatePassword } from "../../common/Account/CreatePassword";
 // import { BlockchainSelector } from "./BlockchainSelector";
@@ -38,7 +33,6 @@ export const RecoverAccount = ({
   isOnboarded?: boolean;
 }) => {
   const { step, nextStep, prevStep } = useSteps();
-  const background = useBackgroundClient();
 
   const [username, setUsername] = useState<string | null>(null);
   const [password, setPassword] = useState<string | null>(null);
@@ -47,14 +41,11 @@ export const RecoverAccount = ({
   const [blockchain, setBlockchain] = useState<Blockchain | null>(null);
   const [mnemonic, setMnemonic] = useState<string | undefined>(undefined);
   const [userId, setUserId] = useState<string | undefined>(undefined);
-  // TODO onboarded blockchains is currently unused but it will be used to recover
-  // multiple accounts on different blockchains
-  const [, setOnboardedBlockchains] = useState<Array<Blockchain>>([]);
-  const [blockchainKeyrings, setBlockchainKeyrings] = useState<
-    Array<BlockchainKeyringInit>
-  >([]);
 
   const authMessage = userId ? getAuthMessage(userId) : "";
+
+  const { addSignedWalletDescriptor, keyringInit, signMessageForWallet } =
+    useOnboarding(mnemonic);
 
   const hardwareOnboardSteps = useHardwareOnboardSteps({
     blockchain: blockchain!,
@@ -62,8 +53,8 @@ export const RecoverAccount = ({
     searchPublicKey: publicKey!,
     signMessage: authMessage,
     signText: "Sign the message to authenticate with Backpack",
-    onComplete: (keyringInit: BlockchainKeyringInit) => {
-      addBlockchainKeyring(keyringInit);
+    onComplete: (signedWalletDescriptor: SignedWalletDescriptor) => {
+      addSignedWalletDescriptor(signedWalletDescriptor);
       nextStep();
     },
     nextStep,
@@ -78,61 +69,13 @@ export const RecoverAccount = ({
         if (response.ok) {
           setUserId(json.id);
           if (json.publicKeys.length > 0) {
-            setOnboardedBlockchains(
-              json.publicKeys.map(
-                (b: { blockchain: Blockchain }) => b.blockchain
-              )
-            );
-            // Default to first available blockchain. For mnemonic keyrings we
-            // can do this and search all available public keys for the mnemonic
-            // to find a match. For ledger keyrings we need to prompt them to open
-            // a specific app on the ledger so we'll allow them to select which
-            // blockchain they want to use as part of the flow.
+            // Default to first available blockchain for recovery
             setBlockchain(json.publicKeys[0].blockchain);
           }
         }
       }
     })();
   }, [username]);
-
-  const signForWallet = async (
-    blockchain: Blockchain,
-    derivationPath: DerivationPath,
-    accountIndex: number,
-    publicKey?: string
-  ) => {
-    const signature = await background.request({
-      method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-      params: [
-        blockchain,
-        encode(Buffer.from(authMessage, "utf-8")),
-        publicKey!,
-        {
-          derivationPath,
-          accountIndex,
-          mnemonic,
-        },
-      ],
-    });
-
-    addBlockchainKeyring({
-      blockchain: blockchain!,
-      derivationPath,
-      accountIndex,
-      publicKey: publicKey!,
-      signature,
-    });
-  };
-
-  // Add the initialisation parameters for a blockchain keyring to state
-  const addBlockchainKeyring = (blockchainKeyring: BlockchainKeyringInit) => {
-    setBlockchainKeyrings([...blockchainKeyrings, blockchainKeyring]);
-  };
-
-  const keyringInit = {
-    mnemonic,
-    blockchainKeyrings,
-  };
 
   const steps = [
     <RecoverAccountUsernameForm
@@ -163,13 +106,16 @@ export const RecoverAccount = ({
             blockchain={blockchain!}
             mnemonic={mnemonic!}
             publicKey={publicKey!}
-            onNext={(derivationPath: DerivationPath, accountIndex: number) => {
-              signForWallet(
+            onNext={async (walletDescriptor: WalletDescriptor) => {
+              const signature = await signMessageForWallet(
                 blockchain!,
-                derivationPath,
-                accountIndex,
-                publicKey!
+                walletDescriptor,
+                authMessage
               );
+              addSignedWalletDescriptor({
+                ...walletDescriptor,
+                signature,
+              });
               nextStep();
             }}
             onRetry={prevStep}
@@ -186,10 +132,10 @@ export const RecoverAccount = ({
           />,
         ]
       : []),
-    ...(blockchainKeyrings.length > 0
+    ...(keyringInit.signedWalletDescriptors.length > 0
       ? [
           <Finish
-            inviteCode={undefined}
+            inviteCode={undefined} // Recovery so no invite code
             userId={userId}
             username={username}
             password={password!}

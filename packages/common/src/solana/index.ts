@@ -14,6 +14,15 @@ import {
   findFreezeAuthorityPk,
   findMintStatePk,
 } from "@magiceden-oss/open_creator_protocol";
+import type {
+  TransferInstructionAccounts,
+  TransferInstructionArgs} from "@metaplex-foundation/mpl-token-metadata";
+import {
+  createTransferInstruction as createTokenMetadataTransferInstruction,
+  Metadata,
+  TokenRecord,
+  TokenState
+} from "@metaplex-foundation/mpl-token-metadata";
 import type { Program, SplToken } from "@project-serum/anchor";
 import * as anchor from "@project-serum/anchor";
 import {
@@ -46,22 +55,13 @@ import * as assertOwner from "./programs/assert-owner";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   associatedTokenAddress,
-  metadataAddress,
   masterEditionAddress,
-  tokenRecordAddress,
+  metadataAddress,
   TOKEN_AUTH_RULES_ID,
+  tokenRecordAddress,
 } from "./programs/token";
 import { xnftClient } from "./programs/xnft";
 import { SolanaProvider } from "./provider";
-
-import {
-  TransferInstructionAccounts,
-  TransferInstructionArgs,
-  createTransferInstruction as createTokenMetadataTransferInstruction,
-  Metadata,
-  TokenRecord,
-  TokenState
-} from "@metaplex-foundation/mpl-token-metadata";
 
 export * from "./background-connection";
 export * from "./cluster";
@@ -457,13 +457,16 @@ export class Solana {
 
     const transferArgs: TransferInstructionArgs = {
       transferArgs: {
-        __kind: 'V1',
+        __kind: "V1",
         amount,
         authorizationData: null,
       },
     };
 
-    const transferIx = createTokenMetadataTransferInstruction(transferAcccounts, transferArgs);
+    const transferIx = createTokenMetadataTransferInstruction(
+      transferAcccounts,
+      transferArgs
+    );
 
     const transaction: Transaction = new Transaction();
     transaction.add(computeBudgetIx, transferIx);

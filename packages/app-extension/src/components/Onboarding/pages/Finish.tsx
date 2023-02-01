@@ -4,6 +4,7 @@ import {
   BACKEND_API_URL,
   BrowserRuntimeExtension,
   getAuthMessage,
+  getBlockchainFromPath,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
@@ -67,10 +68,10 @@ export const Finish = ({
       // Authenticate the user that the recovery has a JWT.
       // Take the first keyring init to fetch the JWT, it doesn't matter which
       // we use if there are multiple.
-      const { blockchain, publicKey, signature } =
-        keyringInit.blockchainKeyrings[0];
+      const { derivationPath, publicKey, signature } =
+        keyringInit.signedWalletDescriptors[0];
       const authData = {
-        blockchain,
+        blockchain: getBlockchainFromPath(derivationPath),
         publicKey,
         signature,
         message: getAuthMessage(userId),
@@ -92,8 +93,8 @@ export const Finish = ({
       username,
       inviteCode,
       waitlistId: getWaitlistId?.(),
-      blockchainPublicKeys: keyringInit.blockchainKeyrings.map((b) => ({
-        blockchain: b.blockchain,
+      blockchainPublicKeys: keyringInit.signedWalletDescriptors.map((b) => ({
+        blockchain: getBlockchainFromPath(b.derivationPath),
         publicKey: b.publicKey,
         signature: b.signature,
       })),
@@ -122,15 +123,15 @@ export const Finish = ({
   //
   async function createStore(uuid: string, jwt: string) {
     try {
-      //
-      // If usernames are disabled, use a default one for developing.
-      //
       if (isAddingAccount) {
+        // Add a new account if needed, this will also create the new keyring
+        // store
         await background.request({
           method: UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
           params: [username, keyringInit, uuid, jwt],
         });
       } else {
+        // Add a new keyring store under the new account
         await background.request({
           method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
           params: [username, password, keyringInit, uuid, jwt],
