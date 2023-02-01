@@ -27,7 +27,7 @@ import {
   useNavStack,
 } from "../../common/Layout/NavStack";
 import { NotificationIconWithBadge } from "../../common/NotificationIconWithBadge";
-import { Contacts } from "../Messages/Contacts";
+import { ContactRequests, Contacts } from "../Messages/Contacts";
 
 const useStyles = styles((theme) => ({
   recentActivityLabel: {
@@ -126,6 +126,14 @@ export function NotificationButton() {
             <NavStackScreen
               name={"contacts"}
               component={(props: any) => <Contacts {...props} />}
+            />
+            <NavStackScreen
+              name={"contact-requests"}
+              component={(props: any) => <ContactRequests {...props} />}
+            />
+            <NavStackScreen
+              name={"contact-requests-sent"}
+              component={(props: any) => <ContactRequests {...props} />}
             />
           </NavStackEphemeral>
         </div>
@@ -236,6 +244,14 @@ export function Notifications() {
               <NavStackScreen
                 name={"root"}
                 component={(props: any) => <Contacts {...props} />}
+              />
+              <NavStackScreen
+                name={"contact-requests"}
+                component={(props: any) => <ContactRequests {...props} />}
+              />
+              <NavStackScreen
+                name={"contact-requests-sent"}
+                component={(props: any) => <ContactRequests {...props} />}
               />
             </NavStackEphemeral>
           </div>

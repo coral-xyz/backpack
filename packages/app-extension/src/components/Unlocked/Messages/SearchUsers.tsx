@@ -16,7 +16,7 @@ export const SearchUsers = ({
   requests,
 }: {
   allChats: EnrichedInboxDb[];
-  requests: RemoteUserData[];
+  requests: { received: RemoteUserData[]; sent: RemoteUserData[] };
 }) => {
   const nav = useNavStack();
   const classes = useStyles();
@@ -65,14 +65,24 @@ export const SearchUsers = ({
             }}
           >
             <Typography fontSize={14}>Your contacts</Typography>
-            {requests.length > 0 && (
+            {requests.received.length > 0 && (
               <Typography
                 sx={{ cursor: "pointer" }}
                 color={theme.custom.colors.fontColor3}
                 fontSize={14}
-                onClick={() => nav.push("contact-requests", { requests })}
+                onClick={() =>
+                  nav.push("contact-requests", {
+                    description: (
+                      <>
+                        These people wanted to add you as a contact.
+                        <br /> Click someone to view their profile.
+                      </>
+                    ),
+                    requests,
+                  })
+                }
               >
-                Requests ({requests.length})
+                Requests ({requests.received.length})
               </Typography>
             )}
           </div>

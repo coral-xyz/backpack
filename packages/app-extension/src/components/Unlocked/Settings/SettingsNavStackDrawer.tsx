@@ -204,6 +204,10 @@ export function SettingsNavStackDrawer({
             component={(props: any) => <ContactRequests {...props} />}
           />
           <NavStackScreen
+            name={"contact-requests-sent"}
+            component={(props: any) => <ContactRequests {...props} />}
+          />
+          <NavStackScreen
             name={"requests"}
             component={(props: any) => <Requests {...props} />}
           />

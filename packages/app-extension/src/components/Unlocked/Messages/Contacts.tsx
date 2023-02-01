@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { type RemoteUserData,BACKEND_API_URL } from "@coral-xyz/common";
+import { type ReactNode, useEffect, useState } from "react";
+import { type RemoteUserData, BACKEND_API_URL } from "@coral-xyz/common";
 import { useContacts } from "@coral-xyz/db";
 import { UserList } from "@coral-xyz/message-sdk";
 import { useUser } from "@coral-xyz/recoil";
@@ -11,17 +11,25 @@ import { useNavStack } from "../../common/Layout/NavStack";
 import { SearchUsers } from "./SearchUsers";
 import { useStyles } from "./styles";
 
-async function getRequests(): Promise<RemoteUserData[]> {
-  const response = await fetch(`${BACKEND_API_URL}/friends/requests`);
-  const json = await response.json();
-  return json.requests;
+async function getRequests(): Promise<{
+  received: RemoteUserData[];
+  sent: RemoteUserData[];
+}> {
+  const [received, sent] = await Promise.all([
+    fetch(`${BACKEND_API_URL}/friends/requests`).then((res) => res.json()),
+    fetch(`${BACKEND_API_URL}/friends/sent`).then((res) => res.json()),
+  ]);
+
+  return { received: received.requests, sent: sent.requests };
 }
 
 export const Contacts = () => {
   const nav = useNavStack();
   const { uuid } = useUser();
   const allChats = useContacts(uuid);
-  const [requests, setRequests] = useState<RemoteUserData[]>([]);
+  const [requests, setRequests] = useState<
+    Record<"received" | "sent", RemoteUserData[]>
+  >({ received: [], sent: [] });
 
   useEffect(() => {
     getRequests().then(setRequests).catch(console.error);
@@ -39,20 +47,21 @@ export const Contacts = () => {
 };
 
 export const ContactRequests = ({
+  description,
+  isSent,
   requests,
 }: {
-  requests: RemoteUserData[];
+  description: ReactNode;
+  isSent?: boolean;
+  requests: { received: RemoteUserData[]; sent: RemoteUserData[] };
 }) => {
   const nav = useNavStack();
   const classes = useStyles();
   const theme = useCustomTheme();
 
   useEffect(() => {
-    nav.setTitle("Requests Received");
+    nav.setTitle(`Requests ${isSent ? "Sent" : "Received"}`);
   }, [nav]);
-
-  const received = requests.filter((r) => r.remoteRequested);
-  const sent = requests.filter((r) => r.requested);
 
   return (
     <div className={classes.container}>
@@ -61,22 +70,32 @@ export const ContactRequests = ({
         fontSize={14}
         color={theme.custom.colors.fontColor3}
       >
-        These people wanted to add you as a contact.
-        <br />
-        Click someone to view their profile.
+        {description}
       </Typography>
-      <div>
-        {sent.length > 0 && (
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        {!isSent && requests.sent.length > 0 && (
           <Typography
-            sx={{ cursor: "pointer", float: "right" }}
+            sx={{ cursor: "pointer", alignSelf: "flex-end", mb: "8px" }}
             fontSize={14}
+            fontWeight={600}
             color={theme.custom.colors.fontColor3}
-            onClick={() => {}}
+            onClick={() =>
+              nav.push("contact-requests-sent", {
+                description: (
+                  <>
+                    People you added as contacts.
+                    <br /> Click someone to view their profile.
+                  </>
+                ),
+                isSent: true,
+                requests,
+              })
+            }
           >
-            Sent ({sent.length})
+            Sent ({requests.sent.length})
           </Typography>
         )}
-        <UserList users={received} />
+        <UserList users={isSent ? requests.sent : requests.received} />
       </div>
     </div>
   );
