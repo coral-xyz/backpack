@@ -72,7 +72,7 @@ export const getSourceOrTypeFormatted = (sourceOrType: string): string => {
 };
 
 export const getTruncatedAddress = (address: string): string => {
-  return `${address.slice(0, 5)}...${address.slice(address.length - 5)}`;
+  return `${address?.slice(0, 5)}...${address?.slice(address?.length - 5)}`;
 };
 
 export const isUserTxnSender = (transaction: HeliusParsedTransaction) => {
@@ -183,7 +183,9 @@ export const getTransactionCaption = (
       return `Listed on ${getSourceOrTypeFormatted(transaction.source)}`;
     case TransactionType.NFT_SALE:
       return `${
-        transaction.feePayer === activeWallet.publicKey ? "Bought" : "Sold"
+        transaction?.events?.nft?.buyer === activeWallet.publicKey
+          ? "Bought"
+          : "Sold"
       } on ${getSourceOrTypeFormatted(transaction.source)}`;
 
     case TransactionType.NFT_CANCEL_LISTING:
@@ -193,14 +195,15 @@ export const getTransactionCaption = (
     default:
       if (transaction?.source === Source.CARDINAL_RENT) return "Rent Paid";
 
-      if (transaction?.description)
-        return transaction?.description.split(" ").slice(1).join(" ");
+      // disable additional cases for now. Can uncomment/extend when needed
+      // if (transaction?.description)
+      //   return transaction?.description.split(" ")?.slice(1).join(" ");
 
-      if (
-        transaction?.source &&
-        transaction?.source !== TransactionType.UNKNOWN
-      )
-        return getSourceOrTypeFormatted(transaction.source);
+      // if (
+      //   transaction?.source &&
+      //   transaction?.source !== TransactionType.UNKNOWN
+      // )
+      //   return getSourceOrTypeFormatted(transaction.source);
       return "";
   }
 };

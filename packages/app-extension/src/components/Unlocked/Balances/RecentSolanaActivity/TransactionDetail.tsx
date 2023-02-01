@@ -4,16 +4,25 @@ import { useNavigate } from "react-router-dom";
 import { Blockchain, explorerUrl } from "@coral-xyz/common";
 import { PrimaryButton } from "@coral-xyz/react-common";
 import {
+  SOL_LOGO_URI,
   useActiveWallet,
   useBlockchainConnectionUrl,
   useBlockchainExplorer,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { ArrowRightAltRounded, CallMade } from "@mui/icons-material";
+import {
+  ArrowDownwardRounded,
+  ArrowRightAltRounded,
+  CallMade,
+  Image,
+  SendRounded,
+  WhatshotRounded,
+} from "@mui/icons-material";
 import { Card, List } from "@mui/material";
 import type { TokenInfo } from "@solana/spl-token-registry";
-import { TransactionType } from "helius-sdk/dist/types";
+import { Source, TransactionType } from "helius-sdk/dist/types";
 
+import { TransactionFail, TransactionSuccess } from "../../../common/Icon";
 import { WithDrawer } from "../../../common/Layout/Drawer";
 import { NavBackButton } from "../../../common/Layout/Nav";
 import {
@@ -30,6 +39,7 @@ import {
   isNFTTransaction,
   isUserTxnSender,
 } from "./detail-parser";
+import { ListItemIcons } from "./Icons";
 import type { HeliusParsedTransaction } from "./types";
 
 const useStyles = styles((theme) => ({
@@ -157,115 +167,7 @@ export function TransactionDetail({
             name={"transactionDetails"}
             component={(props: any) => (
               <Card {...props} className={classes.transactionCard}>
-                {transaction?.metadata?.onChaindata?.data?.uri ||
-                  (transaction?.metadata?.offChainData?.image && (
-                    <>
-                      <img
-                        className={classes.nft}
-                        src={
-                          transaction?.metadata?.onChaindata?.data?.uri ||
-                          transaction?.metadata?.offChainData?.image
-                        }
-                      />
-                      <div
-                        style={{
-                          fontSize: "24px",
-                          color: theme.custom.colors.fontColor,
-                          paddingTop: "16px",
-                        }}
-                      >
-                        {(getTransactionTitle(transaction), "hi")}
-                      </div>
-                    </>
-                  ))}
-
-                {transaction?.type === TransactionType.SWAP && (
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      marginTop: "40px",
-                      marginBottom: "40px",
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        flexDirection: "column",
-                      }}
-                    >
-                      <img
-                        style={{
-                          borderRadius: "50%",
-                          width: "56px",
-                          height: "56px",
-                        }}
-                        src={tokenData[0] && tokenData[0]?.logoURI}
-                      />
-
-                      <div
-                        style={{
-                          fontSize: "16px",
-                          lineHeight: "24px",
-                          color: "white",
-                          marginTop: "5px",
-                        }}
-                      >
-                        {new Number(
-                          transaction?.description?.split(" ")[2]
-                        ).toFixed(2) +
-                          " " +
-                          tokenData[0]?.symbol ||
-                          getTruncatedAddress(
-                            transaction?.tokenTransfers?.[0]?.mint
-                          )}
-                      </div>
-                    </div>
-
-                    <ArrowRightAltRounded
-                      style={{
-                        color: theme.custom.colors.alpha,
-                        width: "80px",
-                        fontSize: "35px",
-                      }}
-                    />
-
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        flexDirection: "column",
-                      }}
-                    >
-                      <img
-                        style={{
-                          borderRadius: "50%",
-                          width: "56px",
-                          height: "56px",
-                        }}
-                        src={tokenData[1] && tokenData[1]?.logoURI}
-                      />
-                      <div
-                        style={{
-                          fontSize: "16px",
-                          lineHeight: "24px",
-                          color: "white",
-                          marginTop: "5px",
-                        }}
-                      >
-                        {new Number(
-                          transaction?.description?.split(" ")[5]
-                        ).toFixed(2) +
-                          " " +
-                          tokenData[1]?.symbol ||
-                          getTruncatedAddress(
-                            transaction?.tokenTransfers?.[0]?.mint
-                          )}
-                      </div>
-                    </div>
-                  </div>
-                )}
+                {DetailCardHeader(transaction, tokenData)}
 
                 {/* TODO - Default to check/error */}
 
@@ -314,8 +216,7 @@ function DetailTable(
 
       {(transaction?.type === TransactionType.UNKNOWN ||
         transaction.type === TransactionType.TRANSFER) &&
-        isUserTxnSender(transaction) &&
-        transaction?.tokenTransfers?.[0]?.toUserAccount && (
+        isUserTxnSender(transaction) && (
           <div className={classes.middleRow}>
             <div className={classes.cell}>
               <div className={classes.label}>To</div>
@@ -330,15 +231,15 @@ function DetailTable(
         )}
       {(transaction?.type === TransactionType.UNKNOWN ||
         transaction.type === TransactionType.TRANSFER) &&
-        isUserTxnSender(transaction) === false &&
-        transaction?.tokenTransfers?.[0]?.fromUserAccount && (
+        isUserTxnSender(transaction) === false && (
           <div className={classes.middleRow}>
             <div className={classes.cell}>
               <div className={classes.label}>From</div>
 
               <div className={classes.cellValue}>
                 {getTruncatedAddress(
-                  transaction?.tokenTransfers?.[0]?.fromUserAccount
+                  transaction?.tokenTransfers?.[0]?.fromUserAccount ||
+                    transaction?.nativeTransfers?.[0]?.fromUserAccount
                 )}
               </div>
             </div>
@@ -377,7 +278,8 @@ function DetailTable(
           </div>
         </>
       )}
-
+      {/* ALL txn types have  first row (Date) rest of data 
+      rows below (Network Fee, Status, Signature)*/}
       <div className={classes.middleRow}>
         <div className={classes.cell}>
           <div className={classes.label}>Network Fee</div>
@@ -422,4 +324,198 @@ function DetailTable(
       </div>
     </List>
   );
+}
+
+// similar to RecentActivityListItemIcon in ListItem.tsx. Controls graphic displayed in
+// top-half of detail card. May be best to further abstract to icon Object map like in RecentSolanaActivity/Icons.tsx
+function DetailCardHeader(
+  transaction: HeliusParsedTransaction,
+  tokenData: (TokenInfo | undefined)[]
+): JSX.Element {
+  const classes = useStyles();
+  const theme = useCustomTheme();
+  if (transaction?.transactionError) return TransactionFail();
+
+  if (transaction.type === TransactionType.SWAP) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          marginTop: "40px",
+          marginBottom: "40px",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            flexDirection: "column",
+          }}
+        >
+          <img
+            style={{
+              borderRadius: "50%",
+              width: "56px",
+              height: "56px",
+            }}
+            src={tokenData[0] && tokenData[0]?.logoURI}
+          />
+
+          <div
+            style={{
+              fontSize: "16px",
+              lineHeight: "24px",
+              color: theme.custom.colors.fontColor,
+              marginTop: "5px",
+            }}
+          >
+            {new Number(transaction?.description?.split(" ")[2]).toFixed(2) +
+              " " +
+              tokenData[0]?.symbol ||
+              getTruncatedAddress(transaction?.tokenTransfers?.[0]?.mint)}
+          </div>
+        </div>
+
+        <ArrowRightAltRounded
+          style={{
+            color: theme.custom.colors.alpha,
+            width: "80px",
+            fontSize: "35px",
+          }}
+        />
+
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            flexDirection: "column",
+          }}
+        >
+          <img
+            style={{
+              borderRadius: "50%",
+              width: "56px",
+              height: "56px",
+            }}
+            src={tokenData[1] && tokenData[1]?.logoURI}
+          />
+          <div
+            style={{
+              fontSize: "16px",
+              lineHeight: "24px",
+              color: theme.custom.colors.fontColor,
+              marginTop: "5px",
+            }}
+          >
+            {new Number(transaction?.description?.split(" ")[5]).toFixed(2) +
+              " " +
+              tokenData[1]?.symbol ||
+              getTruncatedAddress(transaction?.tokenTransfers?.[0]?.mint)}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // if NFT url available, display it. Check on-chain data first
+  const nftImage =
+    transaction?.metadata?.onChaindata?.data?.uri ||
+    transaction?.metadata?.offChainData?.image;
+  if (isNFTTransaction(transaction) && nftImage) {
+    return (
+      <>
+        <img className={classes.nft} src={nftImage} />
+        <div
+          style={{
+            fontSize: "24px",
+            color: theme.custom.colors.fontColor,
+            paddingTop: "16px",
+          }}
+        >
+          {getTransactionTitle(transaction)}
+        </div>
+      </>
+    );
+  }
+
+  if (transaction.type === TransactionType.TRANSFER) {
+    //SOL transfer
+    if (transaction.source === Source.SYSTEM_PROGRAM) {
+      return (
+        <img
+          style={{
+            borderRadius: "50%",
+            width: "56px",
+            height: "56px",
+          }}
+          src={SOL_LOGO_URI}
+        />
+      );
+    }
+    // other SPL token Transfer. Check tokenRegistry first, then Helius metadata
+    const transferIcon =
+      tokenData[0]?.logoURI ||
+      transaction?.metadata?.onChaindata?.data?.uri ||
+      transaction?.metadata?.offChainData?.image;
+    if (transferIcon) {
+      return (
+        <img
+          style={{
+            borderRadius: "50%",
+            width: "56px",
+            height: "56px",
+          }}
+          src={transferIcon}
+        />
+      );
+    }
+
+    // if it is an NFT transfer and no NFT image was found above, show default Icon
+    if (transaction?.tokenTransfers?.[0]?.tokenStandard === "NonFungible") {
+      return (
+        <Image
+          style={{
+            borderRadius: "2px",
+            width: "168px",
+            height: "168px",
+            fill: "#99A4B4",
+          }}
+        />
+      );
+    }
+    // default
+    if (isUserTxnSender(transaction))
+      return (
+        <SendRounded
+          style={{
+            color: "#8F929E",
+            width: "56px",
+            height: "56px",
+          }}
+        />
+      );
+    return (
+      <ArrowDownwardRounded
+        style={{
+          color: "#8F929E",
+          width: "56px",
+          height: "56px",
+        }}
+      />
+    );
+  }
+
+  if (transaction?.type === TransactionType.BURN)
+    return (
+      <WhatshotRounded
+        style={{
+          color: "#E95050",
+          width: "56px",
+          height: "56px",
+        }}
+      />
+    );
+
+  return TransactionSuccess();
 }

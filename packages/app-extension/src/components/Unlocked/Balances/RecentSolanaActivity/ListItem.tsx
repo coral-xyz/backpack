@@ -67,8 +67,6 @@ export function SolanaTransactionListItem({
 
   const tokenData = getTokenData(transaction);
 
-  console.log(transaction, "wha", tokenData);
-
   const onClick = () => {
     setTransactionDetail(transaction);
   };
@@ -132,6 +130,8 @@ function RecentActivityListItemIcon(
   transaction: HeliusParsedTransaction,
   tokenData: (TokenInfo | undefined)[]
 ): JSX.Element {
+  if (transaction?.transactionError) return ListItemIcons["ERROR"]();
+
   if (transaction.type === TransactionType.SWAP) {
     return ListItemIcons[TransactionType.SWAP](
       tokenData[0]?.logoURI,
@@ -169,8 +169,6 @@ function RecentActivityListItemIcon(
     return ListItemIcons["RECEIVED"]();
   }
 
-  if (transaction?.transactionError) return ListItemIcons["ERROR"]();
-
   if (transaction?.type === TransactionType.BURN)
     return ListItemIcons[TransactionType.BURN]();
 
@@ -182,8 +180,12 @@ function RecentActivityListItemData(
   transaction: HeliusParsedTransaction,
   tokenData: (TokenInfo | undefined)[]
 ): JSX.Element {
-  const theme = useCustomTheme();
   const classes = useStyles();
+
+  // FAILURE
+  if (transaction?.transactionError) {
+    return <div className={classes.caption}>Failed</div>;
+  }
 
   if (transaction.type === TransactionType.SWAP) {
     return (
@@ -271,11 +273,6 @@ function RecentActivityListItemData(
         </div>
       );
     }
-  }
-
-  // FAILURE
-  if (transaction?.transactionError) {
-    return <div className={classes.caption}>Failed</div>;
   }
 
   // default
