@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import type { NftCollection } from "@coral-xyz/common";
 import {
   AVATAR_BASE_URL,
@@ -26,7 +26,8 @@ import {
   useUser,
 } from "@coral-xyz/recoil";
 import { styled, useCustomTheme } from "@coral-xyz/themes";
-import { CircularProgress, Grid } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { CircularProgress, Grid, IconButton } from "@mui/material";
 import Collapse from "@mui/material/Collapse";
 import Typography from "@mui/material/Typography";
 import {
@@ -57,10 +58,30 @@ export function UpdateProfilePicture({
   const setNewAvatar = useSetRecoilState(newAvatarAtom(username));
   const theme = useCustomTheme();
   const { contents, state } = useRecoilValueLoadable(nftCollectionsWithIds);
+  const [isDefaultAvatar, setIsDefaultAvatar] = useState(true);
+
+  useEffect(() => {
+    if (!avatarUrl || avatarUrl === "" || !username || username === "") return;
+
+    Promise.all([
+      fetch(avatarUrl).then((res) => res.text()),
+      fetch(`https://avatars.xnfts.dev/v1/${username}?size=500`).then((res) =>
+        res.text()
+      ),
+    ])
+      .then((avatars) => {
+        if (avatars[0] !== avatars[1]) {
+          setIsDefaultAvatar(false);
+        }
+      })
+      .catch(console.error);
+  }, [avatarUrl, username]);
+
   const allWalletCollections: Array<{
     publicKey: string;
     collections: Array<NftCollection>;
   }> = (state === "hasValue" && contents) || [];
+
   const numberOfNFTs = allWalletCollections.reduce(
     (acc, c) => acc + (c.collections ?? []).length,
     0
@@ -68,9 +89,34 @@ export function UpdateProfilePicture({
 
   return (
     <Container>
-      <AvatarWrapper>
-        <Avatar src={tempAvatar?.url || avatarUrl} />
-      </AvatarWrapper>
+      <div
+        style={{ display: "flex", justifyContent: "center", padding: "5px" }}
+      >
+        <div style={{ position: "relative", width: "max-content" }}>
+          <AvatarWrapper>
+            <Avatar src={tempAvatar?.url || avatarUrl} />
+          </AvatarWrapper>
+          {!isDefaultAvatar && (
+            <IconButton
+              disableRipple
+              sx={{
+                position: "absolute",
+                top: "-8px",
+                right: "-8px",
+                color: theme.custom.colors.icon,
+              }}
+              onClick={() =>
+                setTempAvatar({
+                  id: "",
+                  url: `https://avatars.xnfts.dev/v1/${username}`,
+                })
+              }
+            >
+              <DeleteIcon />
+            </IconButton>
+          )}
+        </div>
+      </div>
       <Typography
         style={{
           textAlign: "center",
@@ -182,7 +228,9 @@ export function UpdateProfilePicture({
                   "Content-Type": "application/json",
                 },
                 method: "POST",
-                body: JSON.stringify({ avatar: tempAvatar.id }),
+                body: JSON.stringify({
+                  avatar: tempAvatar.id === "" ? null : tempAvatar.id,
+                }),
               });
               await fetch(AVATAR_BASE_URL + "/" + username + "?bust_cache=1"); // bust edge cache
               setLoading(false);
@@ -311,7 +359,7 @@ function RenderNFT({
           removeOnError={true}
         />
       ),
-    [nft]
+    [nft, nftId, tempAvatar]
   );
 }
 

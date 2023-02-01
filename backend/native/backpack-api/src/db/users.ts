@@ -263,7 +263,7 @@ export async function updateUserAvatar({
   avatar,
 }: {
   userId: string;
-  avatar: string;
+  avatar: string | null;
 }) {
   const response = await chain("mutation")({
     update_auth_users: [
