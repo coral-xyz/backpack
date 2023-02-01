@@ -7,14 +7,12 @@ import {
 import {
   Loading,
   MessageBubbleIcon,
-  MessageIcon,
   PrimaryButton,
   useUsersMetadata,
 } from "@coral-xyz/react-common";
-import { useNavigation, useUser } from "@coral-xyz/recoil";
+import { useNavigation } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
-import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import LockIcon from "@mui/icons-material/Lock";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import { IconButton } from "@mui/material";
@@ -24,7 +22,6 @@ import { ParentCommunicationManager } from "../ParentCommunicationManager";
 import { useStyles } from "./styles";
 
 export const ProfileScreen = ({ userId }: { userId: string }) => {
-  const { uuid } = useUser();
   const [friendship, setFriendship] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
   const [user, setUser] = useState<{

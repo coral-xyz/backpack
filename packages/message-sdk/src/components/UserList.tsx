@@ -1,7 +1,6 @@
 import type { CSSProperties, MouseEvent } from "react";
-import type { Friendship, RemoteUserData } from "@coral-xyz/common";
+import type { RemoteUserData } from "@coral-xyz/common";
 import {
-  CustomSplTokenAccountsResponseString,
   NAV_COMPONENT_MESSAGE_PROFILE,
   sendFriendRequest,
   unFriend,
@@ -17,7 +16,7 @@ import {
 import { friendship, useNavigation, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { List, ListItem } from "@mui/material";
-import { useRecoilCallback, useRecoilState } from "recoil";
+import { useRecoilCallback } from "recoil";
 
 import { useStyles } from "./styles";
 
@@ -41,6 +40,7 @@ export const UserList = ({
     >
       {users.map((user, index) => (
         <UserListItem
+          key={index}
           user={user}
           isFirst={index === 0}
           isLast={index === users.length - 1}
@@ -332,6 +332,7 @@ function UserAction({
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
+        fontSize: "14px",
         ...style,
       }}
       onClick={onClick}
