@@ -52,10 +52,10 @@ export const OnboardAccount = ({
   const [openDrawer, setOpenDrawer] = useState(false);
 
   const {
-    addPublicKeyPath,
+    addSignedPublicKeyPath,
     keyringInit,
     removeBlockchain,
-    resetPublicKeyPaths,
+    resetSignedPublicKeyPaths,
     selectedBlockchains,
     signMessageForWallet,
   } = useOnboarding(mnemonic);
@@ -64,7 +64,7 @@ export const OnboardAccount = ({
     // Reset blockchain keyrings on certain changes that invalidate the addresses
     // and signatures that they might contain
     // e.g. user has navigated backward through the onboarding flow
-    resetPublicKeyPaths();
+    resetSignedPublicKeyPaths();
   }, [action, keyringType, mnemonic]);
 
   const handleBlockchainClick = async (blockchain: Blockchain) => {
@@ -91,7 +91,7 @@ export const OnboardAccount = ({
           getCreateMessage(publicKeyPath.publicKey)
         );
         // Default path
-        addPublicKeyPath({ ...publicKeyPath, signature });
+        addSignedPublicKeyPath({ ...publicKeyPath, signature });
       }
     }
   };
@@ -196,7 +196,7 @@ export const OnboardAccount = ({
             signMessage={(publicKey: string) => getCreateMessage(publicKey)}
             signText={`Sign the message to authenticate with Backpack.`}
             onComplete={(signedPublicKeyPath: SignedPublicKeyPath) => {
-              addPublicKeyPath(signedPublicKeyPath);
+              addSignedPublicKeyPath(signedPublicKeyPath);
               setOpenDrawer(false);
             }}
             onClose={() => setOpenDrawer(false)}
@@ -214,7 +214,7 @@ export const OnboardAccount = ({
                 publicKeyPath,
                 getCreateMessage(publicKeyPath.publicKey)
               );
-              addPublicKeyPath({ ...publicKeyPath, signature });
+              addSignedPublicKeyPath({ ...publicKeyPath, signature });
               setOpenDrawer(false);
             }}
           />

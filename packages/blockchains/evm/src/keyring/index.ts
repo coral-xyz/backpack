@@ -17,10 +17,11 @@ import {
   LEDGER_METHOD_ETHEREUM_SIGN_MESSAGE,
   LEDGER_METHOD_ETHEREUM_SIGN_TRANSACTION,
 } from "@coral-xyz/common";
-import { HDNode } from "@ethersproject/hdnode";
 import { mnemonicToSeedSync, validateMnemonic } from "bip39";
 import type { Wallet } from "ethers";
 import { ethers } from "ethers";
+
+import { deriveEthereumWallet } from "../util";
 
 export class EthereumKeyringFactory implements KeyringFactory {
   init(secretKeys: Array<string>): Keyring {
@@ -134,6 +135,7 @@ export class EthereumHdKeyringFactory implements HdKeyringFactory {
 
 export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
   readonly mnemonic: string;
+  private derivationPaths: Array<string>;
   private seed: Buffer;
   private accountIndex: number;
   private walletIndex: number;
@@ -151,13 +153,11 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
     accountIndex: number;
     walletIndex: number;
   }) {
-    const node = HDNode.fromMnemonic(mnemonic);
-    const wallets = derivationPaths.map(
-      (path) => new ethers.Wallet(node.derivePath(path))
-    );
+    const wallets = derivationPaths.map((d) => deriveEthereumWallet(seed, d));
     super(wallets);
     this.mnemonic = mnemonic;
     this.seed = seed;
+    this.derivationPaths = derivationPaths;
     this.accountIndex = accountIndex;
     this.walletIndex = walletIndex;
   }
@@ -191,8 +191,7 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
     return {
       mnemonic: this.mnemonic,
       seed: this.seed.toString("hex"),
-      // Serialize wallets as derivation paths
-      derivationPaths: this.wallets.map((w) => w.mnemonic.path),
+      derivationPaths: this.derivationPaths,
       accountIndex: this.accountIndex,
       walletIndex: this.walletIndex,
     };

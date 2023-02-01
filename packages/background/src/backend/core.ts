@@ -20,8 +20,8 @@ import {
   deserializeTransaction,
   EthereumConnectionUrl,
   EthereumExplorer,
+  getAccountRecoveryPaths,
   getAddMessage,
-  getIndexedPath,
   getRecoveryPaths,
   NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED,
   NOTIFICATION_AGGREGATE_WALLETS_UPDATED,
@@ -1397,6 +1397,64 @@ export class Backend {
     return json;
   }
 
+  /**
+   * Find a `SignedPublicKeyPath` that can be used to create a new account.
+   * This requires that the sub wallets on the account index are not used by a
+   * existing user account. This is checked by querying the Backpack API.
+   */
+  async findSignedPublicKeyPath(
+    blockchain: Blockchain,
+    accountIndex = 0,
+    mnemonic?: string
+  ): Promise<SignedPublicKeyPath> {
+    // If mnemonic is not passed as an argument, use the keyring store stored mnemonic.
+    // Wallet must be unlocked.
+    if (!mnemonic)
+      mnemonic = this.keyringStore.activeUserKeyring.exportMnemonic();
+    const recoveryPaths = getAccountRecoveryPaths(blockchain, accountIndex);
+    const publicKeys = await this.previewPubkeys(
+      blockchain,
+      mnemonic,
+      recoveryPaths
+    );
+    const response = await fetch(`${BACKEND_API_URL}/publicKeys`, {
+      method: "POST",
+      body: JSON.stringify(
+        publicKeys.map((publicKey) => ({
+          blockchain,
+          publicKey,
+        }))
+      ),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const json = await response.json();
+    if (json.length === 0) {
+      // No users for any of the passed public keys, good to go
+      // Take the root for the public key path
+      const publicKey = publicKeys[0];
+      const derivationPath = recoveryPaths[0];
+      return {
+        publicKey,
+        derivationPath,
+        signature: await this.signMessageForPublicKey(
+          blockchain,
+          publicKey,
+          bs58.encode(Buffer.from(getAddMessage(publicKey), "utf-8")),
+          [mnemonic, [derivationPath]]
+        ),
+      };
+    } else {
+      // Iterate on account index
+      return this.findSignedPublicKeyPath(
+        blockchain,
+        accountIndex + 1,
+        mnemonic
+      );
+    }
+  }
+
   ///////////////////////////////////////////////////////////////////////////////
   // Preferences.
   ///////////////////////////////////////////////////////////////////////////////
@@ -1521,29 +1579,8 @@ export class Backend {
    */
   async blockchainKeyringsAdd(
     blockchain: Blockchain,
-    signedPublicKeyPath?: SignedPublicKeyPath
+    signedPublicKeyPath: SignedPublicKeyPath
   ): Promise<string> {
-    if (!signedPublicKeyPath) {
-      // No derivation path, public key, and signature given. Use default.
-      // This requires that the keyring store is unlocked so is not used for
-      // onboarding etc.
-      const mnemonic = this.keyringStore.activeUserKeyring.exportMnemonic();
-      const defaultDerivationPath = getIndexedPath(blockchain, 0, 0);
-      // Get the public key
-      const publicKeys = await this.previewPubkeys(blockchain, mnemonic, [
-        defaultDerivationPath,
-      ]);
-      const publicKey = publicKeys[0];
-      signedPublicKeyPath = {
-        derivationPath: defaultDerivationPath,
-        publicKey,
-        // Empty signature will be populated in this.userAccountPublicKeyCreate
-        // Again, this signing requires the keyring store is unlocked but we
-        // already require that to read the mnemonic
-        signature: "",
-      };
-    }
-
     await this.keyringStore.blockchainKeyringAdd(
       blockchain,
       signedPublicKeyPath as PublicKeyPath

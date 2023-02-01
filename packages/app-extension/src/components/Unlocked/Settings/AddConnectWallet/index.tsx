@@ -7,6 +7,7 @@ import {
   TAB_BALANCES,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
+  UI_RPC_METHOD_FIND_SIGNED_PUBLIC_KEY_PATH,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
 } from "@coral-xyz/common";
@@ -159,13 +160,17 @@ export function AddConnectWalletMenu({
     return (
       <RecoverWalletMenu
         blockchain={blockchain}
-        keyringExists={keyringExists}
         publicKey={publicKey}
+        keyringExists={keyringExists}
       />
     );
   } else {
     return (
-      <AddWalletMenu blockchain={blockchain} keyringExists={keyringExists} />
+      <AddWalletMenu
+        blockchain={blockchain}
+        keyringExists={keyringExists}
+        setKeyringExists={setKeyringExists}
+      />
     );
   }
 }
@@ -173,9 +178,11 @@ export function AddConnectWalletMenu({
 export function AddWalletMenu({
   blockchain,
   keyringExists,
+  setKeyringExists,
 }: {
   blockchain: Blockchain;
   keyringExists: boolean;
+  setKeyringExists: (exists: boolean) => void;
 }) {
   const nav = useNavStack();
   const background = useBackgroundClient();
@@ -183,7 +190,6 @@ export function AddWalletMenu({
   const theme = useCustomTheme();
   const [newPublicKey, setNewPublicKey] = useState("");
   const [openDrawer, setOpenDrawer] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   // Lock to ensure that the create new wallet button cannot be accidentally
   // spammed or double clicked, which is undesireable as it creates more wallets
@@ -202,16 +208,17 @@ export function AddWalletMenu({
     setLockCreateButton(true);
     let newPublicKey;
     if (!keyringExists) {
-      try {
-        newPublicKey = await background.request({
-          method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
-          // Not passing a signedPublicKeyPath so will just use the default
-          // derivation path in backend to create the new keyring
-          params: [blockchain],
-        });
-      } catch (error) {
-        setError("Wallet address is used by another Backpack account.");
-      }
+      const signedPublicKeyPath = await background.request({
+        method: UI_RPC_METHOD_FIND_SIGNED_PUBLIC_KEY_PATH,
+        params: [blockchain, 0],
+      });
+      await background.request({
+        method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
+        params: [blockchain, signedPublicKeyPath],
+      });
+      newPublicKey = signedPublicKeyPath.publicKey;
+      // Keyring now exists, toggle to other options
+      setKeyringExists(true);
     } else {
       newPublicKey = await background.request({
         method: UI_RPC_METHOD_KEYRING_DERIVE_WALLET,

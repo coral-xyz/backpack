@@ -36,6 +36,7 @@ import {
   UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
   UI_RPC_METHOD_ETHEREUM_SIGN_MESSAGE,
   UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION,
+  UI_RPC_METHOD_FIND_SIGNED_PUBLIC_KEY_PATH,
   UI_RPC_METHOD_GET_FEATURE_GATES,
   UI_RPC_METHOD_GET_XNFT_PREFERENCES,
   UI_RPC_METHOD_KEY_IS_COLD_UPDATE,
@@ -351,6 +352,9 @@ async function handle<T = any>(
     case UI_RPC_METHOD_USER_ACCOUNT_READ:
       // @ts-ignore
       return await handleUserAccountRead(ctx, ...params);
+    case UI_RPC_METHOD_FIND_SIGNED_PUBLIC_KEY_PATH:
+      // @ts-ignore
+      return await handleFindSignedPublicKeyPath(ctx, ...params);
     //
     // Password.
     //
@@ -632,6 +636,14 @@ async function handleUserAccountRead(
   ...args: Parameters<Backend["userAccountRead"]>
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.userAccountRead(...args);
+  return [resp];
+}
+
+async function handleFindSignedPublicKeyPath(
+  ctx: Context<Backend>,
+  ...args: Parameters<Backend["findSignedPublicKeyPath"]>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.findSignedPublicKeyPath(...args);
   return [resp];
 }
 
@@ -1068,7 +1080,7 @@ async function handleSetXnftPreferences(
 async function handleBlockchainKeyringsAdd(
   ctx: Context<Backend>,
   blockchain: Blockchain,
-  signedPublicKeyPath?: SignedPublicKeyPath
+  signedPublicKeyPath: SignedPublicKeyPath
 ): Promise<RpcResponse<Array<string>>> {
   const resp = await ctx.backend.blockchainKeyringsAdd(
     blockchain,

@@ -44,7 +44,7 @@ export const RecoverAccount = ({
 
   const authMessage = userId ? getAuthMessage(userId) : "";
 
-  const { addPublicKeyPath, keyringInit, signMessageForWallet } =
+  const { addSignedPublicKeyPath, keyringInit, signMessageForWallet } =
     useOnboarding(mnemonic);
 
   const hardwareOnboardSteps = useHardwareOnboardSteps({
@@ -54,7 +54,7 @@ export const RecoverAccount = ({
     signMessage: authMessage,
     signText: "Sign the message to authenticate with Backpack",
     onComplete: (signedPublicKeyPath: SignedPublicKeyPath) => {
-      addPublicKeyPath(signedPublicKeyPath);
+      addSignedPublicKeyPath(signedPublicKeyPath);
       nextStep();
     },
     nextStep,
@@ -112,7 +112,10 @@ export const RecoverAccount = ({
                 publicKeyPath,
                 authMessage
               );
-              addPublicKeyPath({ ...publicKeyPath, signature });
+              addSignedPublicKeyPath({
+                ...publicKeyPath,
+                signature,
+              });
               nextStep();
             }}
             onRetry={prevStep}

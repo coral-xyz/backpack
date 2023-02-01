@@ -91,25 +91,39 @@ export const legacyBip44ChangeRecoveryPaths = (blockchain: Blockchain) => {
 };
 
 //
+// New derivation path scheme
+//
+export const getAccountRecoveryPaths = (
+  blockchain: Blockchain,
+  accountIndex: number
+) => {
+  return [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map((j) =>
+    getIndexedPath(blockchain, accountIndex, j).toString()
+  );
+};
+
+//
 // Get a sensible account and wallet index from a list of derivation paths.
 //
 export const derivationPathsToIndexes = (
   derivationPaths: Array<string>
 ): { accountIndex: number; walletIndex: number } => {
-  const pathArrays = derivationPaths.map(BIPPath.toPathArray);
+  const pathArrays = derivationPaths.map((x) =>
+    BIPPath.fromString(x).toPathArray()
+  );
   const accountIndex = Math.max(
     ...pathArrays
       // Account index should be the element at index 2, this is not true for
       //  deprecated sollet paths but they are 0 anyway
       .map((p: Array<number>) => (p[2] ? p[2] : 0))
-      .map((i: number) => (i > HARDENING ? i - HARDENING : i))
+      .map((i: number) => (i >= HARDENING ? i - HARDENING : i))
   );
   const walletIndex = Math.max(
     ...pathArrays
       // Account index should be the element at index 2, this is not true for
       //  deprecated sollet paths but they are 0 anyway
       .map((p: Array<number>) => (p[4] ? p[4] : 0))
-      .map((i: number) => (i > HARDENING ? i - HARDENING : i))
+      .map((i: number) => (i >= HARDENING ? i - HARDENING : i))
   );
   console.log("account index", accountIndex, "wallet index", walletIndex);
   return { accountIndex, walletIndex };
@@ -154,11 +168,7 @@ export const getRecoveryPaths = (blockchain: Blockchain) => {
   // indexes on the first `numAccounts` account paths
   paths = paths.concat(
     [...Array(numAccounts).keys()]
-      .map((k) =>
-        [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map((j) =>
-          getIndexedPath(blockchain, k, j).toString()
-        )
-      )
+      .map((j) => getAccountRecoveryPaths(blockchain, j))
       .flat()
   );
 

@@ -19,8 +19,31 @@ export const useOnboarding = (mnemonic?: string) => {
   >([]);
 
   // Add the initialisation parameters for a blockchain keyring to state
-  const addPublicKeyPath = async (signedPublicKeyPath: SignedPublicKeyPath) => {
+  const addSignedPublicKeyPath = (signedPublicKeyPath: SignedPublicKeyPath) => {
     setSignedPublicKeyPaths([...signedPublicKeyPaths, signedPublicKeyPath]);
+  };
+
+  const resetSignedPublicKeyPaths = () => setSignedPublicKeyPaths([]);
+
+  /**
+   * Parse the derivation paths of the signed public key paths to determine
+   * which blockchains will be onboarded.
+   */
+  const selectedBlockchains = [
+    ...new Set(
+      signedPublicKeyPaths.map((s) => getBlockchainFromPath(s.derivationPath))
+    ),
+  ];
+
+  /**
+   * Filter a particular blockchain from the signed public key derivation paths.
+   */
+  const removeBlockchain = (blockchain: Blockchain) => {
+    setSignedPublicKeyPaths(
+      signedPublicKeyPaths.filter(
+        (s) => getBlockchainFromPath(s.derivationPath) !== blockchain
+      )
+    );
   };
 
   const signMessageForWallet = async (
@@ -44,27 +67,11 @@ export const useOnboarding = (mnemonic?: string) => {
     signedPublicKeyPaths,
   };
 
-  const selectedBlockchains = [
-    ...new Set(
-      signedPublicKeyPaths.map((s) => getBlockchainFromPath(s.derivationPath))
-    ),
-  ];
-
-  const removeBlockchain = (blockchain: Blockchain) => {
-    setSignedPublicKeyPaths(
-      signedPublicKeyPaths.filter(
-        (s) => getBlockchainFromPath(s.derivationPath) !== blockchain
-      )
-    );
-  };
-
-  const resetPublicKeyPaths = () => setSignedPublicKeyPaths([]);
-
   return {
-    addPublicKeyPath,
+    addSignedPublicKeyPath,
+    resetSignedPublicKeyPaths,
     keyringInit,
     removeBlockchain,
-    resetPublicKeyPaths,
     selectedBlockchains,
     signMessageForWallet,
   };
