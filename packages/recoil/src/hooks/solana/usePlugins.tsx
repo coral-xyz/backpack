@@ -159,6 +159,7 @@ export function useFreshPlugin(address?: string): {
         setResult(plugin);
         setState("done");
       } catch (err) {
+        console.error(err);
         setState("error");
       }
     })();

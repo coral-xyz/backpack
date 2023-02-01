@@ -26,12 +26,13 @@ export class PluginServer {
       const url = new URL(this.url);
       if (
         // TODO: hardcode allowed origin(s)
-        event.origin !== url.origin ||
-        event.data.href !== url.href ||
+        (!url.origin.startsWith("http://localhost:9933") &&
+          (event.origin !== url.origin || event.data.href !== url.href)) ||
         event.data.type !== this.requestChannel
       ) {
-        return;
+        throw new Error("Unknown Origin or channel");
       }
+
       const id = event.data.detail.id;
       const iframeIdentifiers = event.data.iframeIdentifiers;
       const [result, error] = await handlerFn(event);

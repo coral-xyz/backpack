@@ -146,17 +146,17 @@ export class Plugin {
     this.iframeRoot.style.width = "100%";
     this.iframeRoot.style.height = "100vh";
     this.iframeRoot.style.border = "none";
-
-    if (preference?.mediaPermissions) {
-      this.iframeRoot.setAttribute(
-        "allow",
-        "camera;microphone;display-capture;fullscreen"
-      );
-    }
+    this.iframeRoot.setAttribute(
+      "allow",
+      preference?.mediaPermissions
+        ? "camera;microphone;display-capture;fullscreen"
+        : "fullscreen"
+    );
     this.iframeRoot.setAttribute("fetchpriority", "low");
     this.iframeRoot.src = url.toString();
     this.iframeRoot.sandbox.add("allow-same-origin");
     this.iframeRoot.sandbox.add("allow-scripts");
+    this.iframeRoot.sandbox.add("allow-forms");
     this.iframeRoot.onload = () => this.handleRootIframeOnLoad();
   }
 

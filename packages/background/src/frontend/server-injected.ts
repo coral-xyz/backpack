@@ -545,7 +545,7 @@ async function handleSolanaOpenXnft(
 ): Promise<RpcResponse<string>> {
   const url = `xnft/${xnftAddress}`;
   await ctx.backend.navigationPush(url, TAB_XNFT);
-  await openPopupWindow(`popup.html#/${url}`);
+  await openPopupWindow(`popup.html`);
   return ["success"];
 }
 

@@ -60,7 +60,7 @@ export function LoadPlugin({
   const connectionBackgroundClient = useConnectionBackgroundClient();
   const openPlugin = useOpenPlugin();
 
-  if (!plugins || !xnftAddress) {
+  if (!xnftAddress) {
     return <Loading />;
   }
 
