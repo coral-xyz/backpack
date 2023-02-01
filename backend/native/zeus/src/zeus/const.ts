@@ -605,6 +605,7 @@ export const AllTypesProps: Record<string, any> = {
     _and: "auth_users_bool_exp",
     _not: "auth_users_bool_exp",
     _or: "auth_users_bool_exp",
+    created_at: "timestamptz_comparison_exp",
     dropzone_public_key: "auth_public_keys_bool_exp",
     id: "uuid_comparison_exp",
     public_keys: "auth_public_keys_bool_exp",
@@ -624,10 +625,12 @@ export const AllTypesProps: Record<string, any> = {
     username: "citext",
   },
   auth_users_max_order_by: {
+    created_at: "order_by",
     id: "order_by",
     username: "order_by",
   },
   auth_users_min_order_by: {
+    created_at: "order_by",
     id: "order_by",
     username: "order_by",
   },
@@ -641,6 +644,7 @@ export const AllTypesProps: Record<string, any> = {
     where: "auth_users_bool_exp",
   },
   auth_users_order_by: {
+    created_at: "order_by",
     dropzone_public_key_aggregate: "auth_public_keys_aggregate_order_by",
     id: "order_by",
     public_keys_aggregate: "auth_public_keys_aggregate_order_by",
@@ -661,6 +665,7 @@ export const AllTypesProps: Record<string, any> = {
     ordering: "cursor_ordering",
   },
   auth_users_stream_cursor_value_input: {
+    created_at: "timestamptz",
     id: "uuid",
     username: "citext",
   },
@@ -1827,6 +1832,7 @@ export const ReturnTypes: Record<string, any> = {
     returning: "auth_user_nfts",
   },
   auth_users: {
+    created_at: "timestamptz",
     dropzone_public_key: "auth_public_keys",
     id: "uuid",
     public_keys: "auth_public_keys",
@@ -1846,10 +1852,12 @@ export const ReturnTypes: Record<string, any> = {
     min: "auth_users_min_fields",
   },
   auth_users_max_fields: {
+    created_at: "timestamptz",
     id: "uuid",
     username: "citext",
   },
   auth_users_min_fields: {
+    created_at: "timestamptz",
     id: "uuid",
     username: "citext",
   },

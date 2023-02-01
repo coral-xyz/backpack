@@ -159,7 +159,27 @@ router.get("/drops/:distributor", async (req, res, next) => {
 
 router.get("/claims/:claimant", isValidClaimant, async (req, res, next) => {
   try {
-    const { dropzone_distributors: query } = await chain("query")({
+    const { auth_users, dropzone_distributors: query } = await chain("query")({
+      auth_users: [
+        {
+          limit: 1,
+          where: {
+            dropzone_public_key: {
+              public_key: { _eq: req.params.claimant },
+            },
+          },
+        },
+        {
+          username: true,
+          referred_users: [
+            {},
+            {
+              username: true,
+              created_at: true,
+            },
+          ],
+        },
+      ],
       dropzone_distributors: [
         {
           order_by: [{ created_at: "desc" as order_by.desc }],
@@ -177,6 +197,8 @@ router.get("/claims/:claimant", isValidClaimant, async (req, res, next) => {
         },
       ],
     });
+
+    const [user] = auth_users;
 
     const claims = query.map(({ data, ...distributor }) => ({
       ...distributor,
@@ -206,10 +228,12 @@ router.get("/claims/:claimant", isValidClaimant, async (req, res, next) => {
     );
 
     res.json({
+      ...user,
       claimed: claimsIncludingClaimedAt.filter((c) => c.claimed_at),
       unclaimed: claimsIncludingClaimedAt.filter((c) => !c.claimed_at),
     });
   } catch (err) {
+    console.error(err);
     next(err);
   }
 });
