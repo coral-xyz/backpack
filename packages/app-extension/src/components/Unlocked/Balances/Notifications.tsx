@@ -1,5 +1,6 @@
-import { Suspense, useEffect, useState } from "react";
-import type { EnrichedNotification, Friendship } from "@coral-xyz/common";
+import { Suspense, useState } from "react";
+import type { EnrichedNotification} from "@coral-xyz/common";
+import { Friendship } from "@coral-xyz/common";
 import {
   EmptyState,
   isFirstLastListItemStyle,
@@ -13,6 +14,7 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import { IconButton, List, ListItem, Typography } from "@mui/material";
 
 import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
+import { useBreakpoints } from "../../common/Layout/hooks";
 import {
   NavStackEphemeral,
   NavStackScreen,
@@ -173,7 +175,11 @@ const getGroupedNotifications = (notifications: EnrichedNotification[]) => {
 };
 
 export function Notifications() {
-  const nav = useNavStack();
+  const { isXs } = useBreakpoints();
+  const [openDrawer, setOpenDrawer] = isXs
+    ? [false, () => {}]
+    : useState(false);
+
   const notifications: EnrichedNotification[] = useRecentNotifications({
     limit: 50,
     offset: 0,
@@ -184,14 +190,33 @@ export function Notifications() {
     notifications: EnrichedNotification[];
   }[] = getGroupedNotifications(notifications);
 
-  useEffect(() => {
-    nav.setTitle("Notifications");
-  }, [nav]);
-
   return (
-    <Suspense fallback={<NotificationsLoader />}>
-      <NotificationList groupedNotifications={groupedNotifications} />
-    </Suspense>
+    <>
+      <Suspense fallback={<NotificationsLoader />}>
+        <NotificationList
+          onOpenDrawer={() => setOpenDrawer(true)}
+          groupedNotifications={groupedNotifications}
+        />
+      </Suspense>
+      {!isXs && (
+        <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
+          <div style={{ height: "100%" }}>
+            <NavStackEphemeral
+              initialRoute={{ name: "root" }}
+              options={() => ({ title: "Notifications" })}
+              navButtonLeft={
+                <CloseButton onClick={() => setOpenDrawer(false)} />
+              }
+            >
+              <NavStackScreen
+                name={"root"}
+                component={(props: any) => <Contacts {...props} />}
+              />
+            </NavStackEphemeral>
+          </div>
+        </WithDrawer>
+      )}
+    </>
   );
 }
 
@@ -235,11 +260,13 @@ function NotificationsLoader() {
 
 export function NotificationList({
   groupedNotifications,
+  onOpenDrawer,
 }: {
   groupedNotifications: {
     date: string;
     notifications: EnrichedNotification[];
   }[];
+  onOpenDrawer?: () => void;
 }) {
   const theme = useCustomTheme();
 
@@ -274,6 +301,7 @@ export function NotificationList({
                     notification={notification}
                     isFirst={idx === 0}
                     isLast={idx === notifications.length - 1}
+                    onOpenDrawer={onOpenDrawer}
                   />
                 ))}
               </div>
@@ -320,10 +348,12 @@ function NotificationListItem({
   notification,
   isFirst,
   isLast,
+  onOpenDrawer,
 }: {
   notification: EnrichedNotification;
   isFirst: boolean;
   isLast: boolean;
+  onOpenDrawer?: () => void;
 }) {
   const classes = useStyles();
   const theme = useCustomTheme();
@@ -334,6 +364,7 @@ function NotificationListItem({
         notification={notification}
         isFirst={isFirst}
         isLast={isLast}
+        onOpenDrawer={onOpenDrawer}
       />
     );
   }
@@ -401,12 +432,15 @@ function FriendRequestListItem({
   notification,
   isFirst,
   isLast,
+  onOpenDrawer,
 }: {
   notification: EnrichedNotification;
   isFirst: boolean;
   isLast: boolean;
+  onOpenDrawer?: () => void;
 }) {
-  const nav = useNavStack();
+  const { isXs } = useBreakpoints();
+  const nav = isXs ? useNavStack() : undefined;
   const user = useUserMetadata({
     remoteUserId: parseJson(notification.body).from,
   });
@@ -417,7 +451,7 @@ function FriendRequestListItem({
     <ListItem
       button
       disableRipple
-      onClick={() => {}}
+      onClick={() => (isXs ? nav!.push("contacts") : onOpenDrawer!())}
       style={{
         paddingLeft: "12px",
         paddingRight: "12px",
@@ -464,7 +498,7 @@ function FriendRequestListItem({
           className={classes.time}
         >
           {getTimeStr(notification.timestamp)}
-          <span onClick={() => nav.push("contacts")}>View</span>
+          <span>View</span>
         </div>
       </div>
     </ListItem>
