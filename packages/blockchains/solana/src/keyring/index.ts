@@ -176,27 +176,17 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
     publicKey: string;
     derivationPath: string;
   } {
-    // If account index and wallet index don't exist, make a best guess based
-    // on the existing derivation paths for the keyring
-    if (!this.accountIndex || !this.walletIndex) {
-      const { accountIndex, walletIndex } = derivationPathsToIndexes(
-        this.derivationPaths
-      );
-      if (!this.accountIndex) this.accountIndex = accountIndex;
-      if (!this.walletIndex) this.walletIndex = walletIndex;
-    }
+    this.ensureIndices();
     // Move to the next wallet index for the derivation
-    this.walletIndex += 1 + skipKeys;
+    this.walletIndex! += 1 + skipKeys;
     const derivationPath = getIndexedPath(
       Blockchain.SOLANA,
       this.accountIndex,
       this.walletIndex
     );
-    const keypair = deriveSolanaKeypair(this.seed, derivationPath);
-    this.keypairs.push(keypair);
-    this.derivationPaths.push(derivationPath);
+    const publicKey = this.addDerivationPath(derivationPath);
     return {
-      publicKey: keypair.publicKey.toString(),
+      publicKey,
       derivationPath,
     };
   }
@@ -206,6 +196,19 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
     this.keypairs.push(keypair);
     this.derivationPaths.push(derivationPath);
     return keypair.publicKey.toString();
+  }
+
+  // TODO duplicated in the evm keyring
+  ensureIndices() {
+    // If account index and wallet index don't exist, make a best guess based
+    // on the existing derivation paths for the keyring
+    if (this.accountIndex === undefined || this.walletIndex === undefined) {
+      const { accountIndex, walletIndex } = derivationPathsToIndexes(
+        this.derivationPaths
+      );
+      if (!this.accountIndex) this.accountIndex = accountIndex;
+      if (!this.walletIndex) this.walletIndex = walletIndex;
+    }
   }
 
   public toJson(): HdKeyringJson {

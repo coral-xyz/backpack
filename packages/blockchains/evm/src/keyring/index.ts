@@ -156,40 +156,47 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
     this.derivationPaths = derivationPaths;
     this.accountIndex = accountIndex;
     this.walletIndex = walletIndex;
+    console.log(this.derivationPaths);
+    console.log(this.publicKeys());
   }
 
   deriveNextKey(skipKeys: number): {
     publicKey: string;
     derivationPath: string;
   } {
+    this.ensureIndices();
+    // Move to the next wallet index for the derivation
+    this.walletIndex! += 1 + skipKeys;
+    console.log(this.walletIndex);
+    const derivationPath = getIndexedPath(
+      Blockchain.ETHEREUM,
+      this.accountIndex,
+      this.walletIndex
+    );
+    const publicKey = this.addDerivationPath(derivationPath);
+    return {
+      publicKey,
+      derivationPath,
+    };
+  }
+
+  addDerivationPath(derivationPath: string): string {
+    this.derivationPaths.push(derivationPath);
+    const wallet = ethers.Wallet.fromMnemonic(this.mnemonic, derivationPath);
+    this.wallets.push(wallet);
+    return wallet.address;
+  }
+
+  ensureIndices() {
     // If account index and wallet index don't exist, make a best guess based
     // on the existing derivation paths for the keyring
-    if (!this.accountIndex || !this.walletIndex) {
+    if (this.accountIndex === undefined || this.walletIndex === undefined) {
       const { accountIndex, walletIndex } = derivationPathsToIndexes(
         this.derivationPaths
       );
       if (!this.accountIndex) this.accountIndex = accountIndex;
       if (!this.walletIndex) this.walletIndex = walletIndex;
     }
-    // Move to the next wallet index for the derivation
-    this.walletIndex += 1 + skipKeys;
-    const derivationPath = getIndexedPath(
-      Blockchain.ETHEREUM,
-      this.accountIndex,
-      this.walletIndex
-    );
-    const wallet = ethers.Wallet.fromMnemonic(this.mnemonic, derivationPath);
-    this.wallets.push(wallet);
-    return {
-      publicKey: wallet.address,
-      derivationPath,
-    };
-  }
-
-  addDerivationPath(derivationPath: string): string {
-    const wallet = ethers.Wallet.fromMnemonic(this.mnemonic, derivationPath);
-    this.wallets.push(wallet);
-    return wallet.address;
   }
 
   // @ts-ignore
