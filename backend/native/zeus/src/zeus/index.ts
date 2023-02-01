@@ -2264,6 +2264,42 @@ export type ValueTypes = {
     xnft_id?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
+  /** aggregated selection of "auth.notifications" */
+  ["auth_notifications_aggregate"]: AliasType<{
+    aggregate?: ValueTypes["auth_notifications_aggregate_fields"];
+    nodes?: ValueTypes["auth_notifications"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** aggregate fields of "auth.notifications" */
+  ["auth_notifications_aggregate_fields"]: AliasType<{
+    avg?: ValueTypes["auth_notifications_avg_fields"];
+    count?: [
+      {
+        columns?:
+          | Array<ValueTypes["auth_notifications_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string>;
+        distinct?: boolean | undefined | null | Variable<any, string>;
+      },
+      boolean | `@${string}`
+    ];
+    max?: ValueTypes["auth_notifications_max_fields"];
+    min?: ValueTypes["auth_notifications_min_fields"];
+    stddev?: ValueTypes["auth_notifications_stddev_fields"];
+    stddev_pop?: ValueTypes["auth_notifications_stddev_pop_fields"];
+    stddev_samp?: ValueTypes["auth_notifications_stddev_samp_fields"];
+    sum?: ValueTypes["auth_notifications_sum_fields"];
+    var_pop?: ValueTypes["auth_notifications_var_pop_fields"];
+    var_samp?: ValueTypes["auth_notifications_var_samp_fields"];
+    variance?: ValueTypes["auth_notifications_variance_fields"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** aggregate avg on columns */
+  ["auth_notifications_avg_fields"]: AliasType<{
+    id?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
   /** Boolean expression to filter rows from the table "auth.notifications". All fields are combined with a logical 'AND'. */
   ["auth_notifications_bool_exp"]: {
     _and?:
@@ -2343,6 +2379,30 @@ export type ValueTypes = {
     uuid?: string | undefined | null | Variable<any, string>;
     xnft_id?: string | undefined | null | Variable<any, string>;
   };
+  /** aggregate max on columns */
+  ["auth_notifications_max_fields"]: AliasType<{
+    body?: boolean | `@${string}`;
+    id?: boolean | `@${string}`;
+    image?: boolean | `@${string}`;
+    timestamp?: boolean | `@${string}`;
+    title?: boolean | `@${string}`;
+    username?: boolean | `@${string}`;
+    uuid?: boolean | `@${string}`;
+    xnft_id?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** aggregate min on columns */
+  ["auth_notifications_min_fields"]: AliasType<{
+    body?: boolean | `@${string}`;
+    id?: boolean | `@${string}`;
+    image?: boolean | `@${string}`;
+    timestamp?: boolean | `@${string}`;
+    title?: boolean | `@${string}`;
+    username?: boolean | `@${string}`;
+    uuid?: boolean | `@${string}`;
+    xnft_id?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
   /** response of any mutation on the table "auth.notifications" */
   ["auth_notifications_mutation_response"]: AliasType<{
     /** number of rows affected by the mutation */
@@ -2400,6 +2460,21 @@ export type ValueTypes = {
     uuid?: string | undefined | null | Variable<any, string>;
     xnft_id?: string | undefined | null | Variable<any, string>;
   };
+  /** aggregate stddev on columns */
+  ["auth_notifications_stddev_fields"]: AliasType<{
+    id?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** aggregate stddev_pop on columns */
+  ["auth_notifications_stddev_pop_fields"]: AliasType<{
+    id?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** aggregate stddev_samp on columns */
+  ["auth_notifications_stddev_samp_fields"]: AliasType<{
+    id?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
   /** Streaming cursor of the table "auth_notifications" */
   ["auth_notifications_stream_cursor_input"]: {
     /** Stream column input with initial value */
@@ -2428,6 +2503,11 @@ export type ValueTypes = {
     uuid?: string | undefined | null | Variable<any, string>;
     xnft_id?: string | undefined | null | Variable<any, string>;
   };
+  /** aggregate sum on columns */
+  ["auth_notifications_sum_fields"]: AliasType<{
+    id?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
   /** update columns of table "auth.notifications" */
   ["auth_notifications_update_column"]: auth_notifications_update_column;
   ["auth_notifications_updates"]: {
@@ -2445,6 +2525,21 @@ export type ValueTypes = {
       | Variable<any, string>;
     where: ValueTypes["auth_notifications_bool_exp"] | Variable<any, string>;
   };
+  /** aggregate var_pop on columns */
+  ["auth_notifications_var_pop_fields"]: AliasType<{
+    id?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** aggregate var_samp on columns */
+  ["auth_notifications_var_samp_fields"]: AliasType<{
+    id?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** aggregate variance on columns */
+  ["auth_notifications_variance_fields"]: AliasType<{
+    id?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
   /** columns and relationships of "auth.public_keys" */
   ["auth_public_keys"]: AliasType<{
     blockchain?: boolean | `@${string}`;
@@ -5845,6 +5940,40 @@ export type ValueTypes = {
       },
       ValueTypes["auth_notifications"]
     ];
+    auth_notifications_aggregate?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_notifications_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_notifications_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_notifications_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_notifications_aggregate"]
+    ];
     auth_notifications_by_pk?: [
       { id: number | Variable<any, string> },
       ValueTypes["auth_notifications"]
@@ -6847,6 +6976,40 @@ export type ValueTypes = {
           | Variable<any, string>;
       },
       ValueTypes["auth_notifications"]
+    ];
+    auth_notifications_aggregate?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["auth_notifications_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["auth_notifications_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["auth_notifications_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["auth_notifications_aggregate"]
     ];
     auth_notifications_by_pk?: [
       { id: number | Variable<any, string> },
@@ -8574,6 +8737,41 @@ export type ResolverInputTypes = {
     xnft_id?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
+  /** aggregated selection of "auth.notifications" */
+  ["auth_notifications_aggregate"]: AliasType<{
+    aggregate?: ResolverInputTypes["auth_notifications_aggregate_fields"];
+    nodes?: ResolverInputTypes["auth_notifications"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** aggregate fields of "auth.notifications" */
+  ["auth_notifications_aggregate_fields"]: AliasType<{
+    avg?: ResolverInputTypes["auth_notifications_avg_fields"];
+    count?: [
+      {
+        columns?:
+          | Array<ResolverInputTypes["auth_notifications_select_column"]>
+          | undefined
+          | null;
+        distinct?: boolean | undefined | null;
+      },
+      boolean | `@${string}`
+    ];
+    max?: ResolverInputTypes["auth_notifications_max_fields"];
+    min?: ResolverInputTypes["auth_notifications_min_fields"];
+    stddev?: ResolverInputTypes["auth_notifications_stddev_fields"];
+    stddev_pop?: ResolverInputTypes["auth_notifications_stddev_pop_fields"];
+    stddev_samp?: ResolverInputTypes["auth_notifications_stddev_samp_fields"];
+    sum?: ResolverInputTypes["auth_notifications_sum_fields"];
+    var_pop?: ResolverInputTypes["auth_notifications_var_pop_fields"];
+    var_samp?: ResolverInputTypes["auth_notifications_var_samp_fields"];
+    variance?: ResolverInputTypes["auth_notifications_variance_fields"];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** aggregate avg on columns */
+  ["auth_notifications_avg_fields"]: AliasType<{
+    id?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
   /** Boolean expression to filter rows from the table "auth.notifications". All fields are combined with a logical 'AND'. */
   ["auth_notifications_bool_exp"]: {
     _and?:
@@ -8614,6 +8812,30 @@ export type ResolverInputTypes = {
     uuid?: string | undefined | null;
     xnft_id?: string | undefined | null;
   };
+  /** aggregate max on columns */
+  ["auth_notifications_max_fields"]: AliasType<{
+    body?: boolean | `@${string}`;
+    id?: boolean | `@${string}`;
+    image?: boolean | `@${string}`;
+    timestamp?: boolean | `@${string}`;
+    title?: boolean | `@${string}`;
+    username?: boolean | `@${string}`;
+    uuid?: boolean | `@${string}`;
+    xnft_id?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** aggregate min on columns */
+  ["auth_notifications_min_fields"]: AliasType<{
+    body?: boolean | `@${string}`;
+    id?: boolean | `@${string}`;
+    image?: boolean | `@${string}`;
+    timestamp?: boolean | `@${string}`;
+    title?: boolean | `@${string}`;
+    username?: boolean | `@${string}`;
+    uuid?: boolean | `@${string}`;
+    xnft_id?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
   /** response of any mutation on the table "auth.notifications" */
   ["auth_notifications_mutation_response"]: AliasType<{
     /** number of rows affected by the mutation */
@@ -8660,6 +8882,21 @@ export type ResolverInputTypes = {
     uuid?: string | undefined | null;
     xnft_id?: string | undefined | null;
   };
+  /** aggregate stddev on columns */
+  ["auth_notifications_stddev_fields"]: AliasType<{
+    id?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** aggregate stddev_pop on columns */
+  ["auth_notifications_stddev_pop_fields"]: AliasType<{
+    id?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** aggregate stddev_samp on columns */
+  ["auth_notifications_stddev_samp_fields"]: AliasType<{
+    id?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
   /** Streaming cursor of the table "auth_notifications" */
   ["auth_notifications_stream_cursor_input"]: {
     /** Stream column input with initial value */
@@ -8678,6 +8915,11 @@ export type ResolverInputTypes = {
     uuid?: string | undefined | null;
     xnft_id?: string | undefined | null;
   };
+  /** aggregate sum on columns */
+  ["auth_notifications_sum_fields"]: AliasType<{
+    id?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
   /** update columns of table "auth.notifications" */
   ["auth_notifications_update_column"]: auth_notifications_update_column;
   ["auth_notifications_updates"]: {
@@ -8693,6 +8935,21 @@ export type ResolverInputTypes = {
       | null;
     where: ResolverInputTypes["auth_notifications_bool_exp"];
   };
+  /** aggregate var_pop on columns */
+  ["auth_notifications_var_pop_fields"]: AliasType<{
+    id?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** aggregate var_samp on columns */
+  ["auth_notifications_var_samp_fields"]: AliasType<{
+    id?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** aggregate variance on columns */
+  ["auth_notifications_variance_fields"]: AliasType<{
+    id?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
   /** columns and relationships of "auth.public_keys" */
   ["auth_public_keys"]: AliasType<{
     blockchain?: boolean | `@${string}`;
@@ -11184,6 +11441,32 @@ export type ResolverInputTypes = {
       },
       ResolverInputTypes["auth_notifications"]
     ];
+    auth_notifications_aggregate?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_notifications_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_notifications_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_notifications_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_notifications_aggregate"]
+    ];
     auth_notifications_by_pk?: [
       { id: number },
       ResolverInputTypes["auth_notifications"]
@@ -11930,6 +12213,32 @@ export type ResolverInputTypes = {
           | null;
       },
       ResolverInputTypes["auth_notifications"]
+    ];
+    auth_notifications_aggregate?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["auth_notifications_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["auth_notifications_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["auth_notifications_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["auth_notifications_aggregate"]
     ];
     auth_notifications_by_pk?: [
       { id: number },
@@ -13225,6 +13534,31 @@ export type ModelTypes = {
     uuid: string;
     xnft_id: string;
   };
+  /** aggregated selection of "auth.notifications" */
+  ["auth_notifications_aggregate"]: {
+    aggregate?: ModelTypes["auth_notifications_aggregate_fields"] | undefined;
+    nodes: Array<ModelTypes["auth_notifications"]>;
+  };
+  /** aggregate fields of "auth.notifications" */
+  ["auth_notifications_aggregate_fields"]: {
+    avg?: ModelTypes["auth_notifications_avg_fields"] | undefined;
+    count: number;
+    max?: ModelTypes["auth_notifications_max_fields"] | undefined;
+    min?: ModelTypes["auth_notifications_min_fields"] | undefined;
+    stddev?: ModelTypes["auth_notifications_stddev_fields"] | undefined;
+    stddev_pop?: ModelTypes["auth_notifications_stddev_pop_fields"] | undefined;
+    stddev_samp?:
+      | ModelTypes["auth_notifications_stddev_samp_fields"]
+      | undefined;
+    sum?: ModelTypes["auth_notifications_sum_fields"] | undefined;
+    var_pop?: ModelTypes["auth_notifications_var_pop_fields"] | undefined;
+    var_samp?: ModelTypes["auth_notifications_var_samp_fields"] | undefined;
+    variance?: ModelTypes["auth_notifications_variance_fields"] | undefined;
+  };
+  /** aggregate avg on columns */
+  ["auth_notifications_avg_fields"]: {
+    id?: number | undefined;
+  };
   /** Boolean expression to filter rows from the table "auth.notifications". All fields are combined with a logical 'AND'. */
   ["auth_notifications_bool_exp"]: {
     _and?: Array<ModelTypes["auth_notifications_bool_exp"]> | undefined;
@@ -13246,6 +13580,28 @@ export type ModelTypes = {
   };
   /** input type for inserting data into table "auth.notifications" */
   ["auth_notifications_insert_input"]: {
+    body?: string | undefined;
+    id?: number | undefined;
+    image?: string | undefined;
+    timestamp?: ModelTypes["timestamptz"] | undefined;
+    title?: string | undefined;
+    username?: string | undefined;
+    uuid?: string | undefined;
+    xnft_id?: string | undefined;
+  };
+  /** aggregate max on columns */
+  ["auth_notifications_max_fields"]: {
+    body?: string | undefined;
+    id?: number | undefined;
+    image?: string | undefined;
+    timestamp?: ModelTypes["timestamptz"] | undefined;
+    title?: string | undefined;
+    username?: string | undefined;
+    uuid?: string | undefined;
+    xnft_id?: string | undefined;
+  };
+  /** aggregate min on columns */
+  ["auth_notifications_min_fields"]: {
     body?: string | undefined;
     id?: number | undefined;
     image?: string | undefined;
@@ -13294,6 +13650,18 @@ export type ModelTypes = {
     uuid?: string | undefined;
     xnft_id?: string | undefined;
   };
+  /** aggregate stddev on columns */
+  ["auth_notifications_stddev_fields"]: {
+    id?: number | undefined;
+  };
+  /** aggregate stddev_pop on columns */
+  ["auth_notifications_stddev_pop_fields"]: {
+    id?: number | undefined;
+  };
+  /** aggregate stddev_samp on columns */
+  ["auth_notifications_stddev_samp_fields"]: {
+    id?: number | undefined;
+  };
   /** Streaming cursor of the table "auth_notifications" */
   ["auth_notifications_stream_cursor_input"]: {
     /** Stream column input with initial value */
@@ -13312,6 +13680,10 @@ export type ModelTypes = {
     uuid?: string | undefined;
     xnft_id?: string | undefined;
   };
+  /** aggregate sum on columns */
+  ["auth_notifications_sum_fields"]: {
+    id?: number | undefined;
+  };
   ["auth_notifications_update_column"]: auth_notifications_update_column;
   ["auth_notifications_updates"]: {
     /** increments the numeric columns with given value of the filtered values */
@@ -13319,6 +13691,18 @@ export type ModelTypes = {
     /** sets the columns of the filtered rows to the given values */
     _set?: ModelTypes["auth_notifications_set_input"] | undefined;
     where: ModelTypes["auth_notifications_bool_exp"];
+  };
+  /** aggregate var_pop on columns */
+  ["auth_notifications_var_pop_fields"]: {
+    id?: number | undefined;
+  };
+  /** aggregate var_samp on columns */
+  ["auth_notifications_var_samp_fields"]: {
+    id?: number | undefined;
+  };
+  /** aggregate variance on columns */
+  ["auth_notifications_variance_fields"]: {
+    id?: number | undefined;
   };
   /** columns and relationships of "auth.public_keys" */
   ["auth_public_keys"]: {
@@ -14638,6 +15022,8 @@ export type ModelTypes = {
       | undefined;
     /** fetch data from the table: "auth.notifications" */
     auth_notifications: Array<ModelTypes["auth_notifications"]>;
+    /** fetch aggregated fields from the table: "auth.notifications" */
+    auth_notifications_aggregate: ModelTypes["auth_notifications_aggregate"];
     /** fetch data from the table: "auth.notifications" using primary key columns */
     auth_notifications_by_pk?: ModelTypes["auth_notifications"] | undefined;
     /** fetch data from the table: "auth.public_keys" */
@@ -14746,6 +15132,8 @@ export type ModelTypes = {
     >;
     /** fetch data from the table: "auth.notifications" */
     auth_notifications: Array<ModelTypes["auth_notifications"]>;
+    /** fetch aggregated fields from the table: "auth.notifications" */
+    auth_notifications_aggregate: ModelTypes["auth_notifications_aggregate"];
     /** fetch data from the table: "auth.notifications" using primary key columns */
     auth_notifications_by_pk?: ModelTypes["auth_notifications"] | undefined;
     /** fetch data from the table in a streaming manner: "auth.notifications" */
@@ -15616,6 +16004,36 @@ export type GraphQLTypes = {
     uuid: string;
     xnft_id: string;
   };
+  /** aggregated selection of "auth.notifications" */
+  ["auth_notifications_aggregate"]: {
+    __typename: "auth_notifications_aggregate";
+    aggregate?: GraphQLTypes["auth_notifications_aggregate_fields"] | undefined;
+    nodes: Array<GraphQLTypes["auth_notifications"]>;
+  };
+  /** aggregate fields of "auth.notifications" */
+  ["auth_notifications_aggregate_fields"]: {
+    __typename: "auth_notifications_aggregate_fields";
+    avg?: GraphQLTypes["auth_notifications_avg_fields"] | undefined;
+    count: number;
+    max?: GraphQLTypes["auth_notifications_max_fields"] | undefined;
+    min?: GraphQLTypes["auth_notifications_min_fields"] | undefined;
+    stddev?: GraphQLTypes["auth_notifications_stddev_fields"] | undefined;
+    stddev_pop?:
+      | GraphQLTypes["auth_notifications_stddev_pop_fields"]
+      | undefined;
+    stddev_samp?:
+      | GraphQLTypes["auth_notifications_stddev_samp_fields"]
+      | undefined;
+    sum?: GraphQLTypes["auth_notifications_sum_fields"] | undefined;
+    var_pop?: GraphQLTypes["auth_notifications_var_pop_fields"] | undefined;
+    var_samp?: GraphQLTypes["auth_notifications_var_samp_fields"] | undefined;
+    variance?: GraphQLTypes["auth_notifications_variance_fields"] | undefined;
+  };
+  /** aggregate avg on columns */
+  ["auth_notifications_avg_fields"]: {
+    __typename: "auth_notifications_avg_fields";
+    id?: number | undefined;
+  };
   /** Boolean expression to filter rows from the table "auth.notifications". All fields are combined with a logical 'AND'. */
   ["auth_notifications_bool_exp"]: {
     _and?: Array<GraphQLTypes["auth_notifications_bool_exp"]> | undefined;
@@ -15638,6 +16056,30 @@ export type GraphQLTypes = {
   };
   /** input type for inserting data into table "auth.notifications" */
   ["auth_notifications_insert_input"]: {
+    body?: string | undefined;
+    id?: number | undefined;
+    image?: string | undefined;
+    timestamp?: GraphQLTypes["timestamptz"] | undefined;
+    title?: string | undefined;
+    username?: string | undefined;
+    uuid?: string | undefined;
+    xnft_id?: string | undefined;
+  };
+  /** aggregate max on columns */
+  ["auth_notifications_max_fields"]: {
+    __typename: "auth_notifications_max_fields";
+    body?: string | undefined;
+    id?: number | undefined;
+    image?: string | undefined;
+    timestamp?: GraphQLTypes["timestamptz"] | undefined;
+    title?: string | undefined;
+    username?: string | undefined;
+    uuid?: string | undefined;
+    xnft_id?: string | undefined;
+  };
+  /** aggregate min on columns */
+  ["auth_notifications_min_fields"]: {
+    __typename: "auth_notifications_min_fields";
     body?: string | undefined;
     id?: number | undefined;
     image?: string | undefined;
@@ -15688,6 +16130,21 @@ export type GraphQLTypes = {
     uuid?: string | undefined;
     xnft_id?: string | undefined;
   };
+  /** aggregate stddev on columns */
+  ["auth_notifications_stddev_fields"]: {
+    __typename: "auth_notifications_stddev_fields";
+    id?: number | undefined;
+  };
+  /** aggregate stddev_pop on columns */
+  ["auth_notifications_stddev_pop_fields"]: {
+    __typename: "auth_notifications_stddev_pop_fields";
+    id?: number | undefined;
+  };
+  /** aggregate stddev_samp on columns */
+  ["auth_notifications_stddev_samp_fields"]: {
+    __typename: "auth_notifications_stddev_samp_fields";
+    id?: number | undefined;
+  };
   /** Streaming cursor of the table "auth_notifications" */
   ["auth_notifications_stream_cursor_input"]: {
     /** Stream column input with initial value */
@@ -15706,6 +16163,11 @@ export type GraphQLTypes = {
     uuid?: string | undefined;
     xnft_id?: string | undefined;
   };
+  /** aggregate sum on columns */
+  ["auth_notifications_sum_fields"]: {
+    __typename: "auth_notifications_sum_fields";
+    id?: number | undefined;
+  };
   /** update columns of table "auth.notifications" */
   ["auth_notifications_update_column"]: auth_notifications_update_column;
   ["auth_notifications_updates"]: {
@@ -15714,6 +16176,21 @@ export type GraphQLTypes = {
     /** sets the columns of the filtered rows to the given values */
     _set?: GraphQLTypes["auth_notifications_set_input"] | undefined;
     where: GraphQLTypes["auth_notifications_bool_exp"];
+  };
+  /** aggregate var_pop on columns */
+  ["auth_notifications_var_pop_fields"]: {
+    __typename: "auth_notifications_var_pop_fields";
+    id?: number | undefined;
+  };
+  /** aggregate var_samp on columns */
+  ["auth_notifications_var_samp_fields"]: {
+    __typename: "auth_notifications_var_samp_fields";
+    id?: number | undefined;
+  };
+  /** aggregate variance on columns */
+  ["auth_notifications_variance_fields"]: {
+    __typename: "auth_notifications_variance_fields";
+    id?: number | undefined;
   };
   /** columns and relationships of "auth.public_keys" */
   ["auth_public_keys"]: {
@@ -17134,6 +17611,8 @@ export type GraphQLTypes = {
       | undefined;
     /** fetch data from the table: "auth.notifications" */
     auth_notifications: Array<GraphQLTypes["auth_notifications"]>;
+    /** fetch aggregated fields from the table: "auth.notifications" */
+    auth_notifications_aggregate: GraphQLTypes["auth_notifications_aggregate"];
     /** fetch data from the table: "auth.notifications" using primary key columns */
     auth_notifications_by_pk?: GraphQLTypes["auth_notifications"] | undefined;
     /** fetch data from the table: "auth.public_keys" */
@@ -17245,6 +17724,8 @@ export type GraphQLTypes = {
     >;
     /** fetch data from the table: "auth.notifications" */
     auth_notifications: Array<GraphQLTypes["auth_notifications"]>;
+    /** fetch aggregated fields from the table: "auth.notifications" */
+    auth_notifications_aggregate: GraphQLTypes["auth_notifications_aggregate"];
     /** fetch data from the table: "auth.notifications" using primary key columns */
     auth_notifications_by_pk?: GraphQLTypes["auth_notifications"] | undefined;
     /** fetch data from the table in a streaming manner: "auth.notifications" */

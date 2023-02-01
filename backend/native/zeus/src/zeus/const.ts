@@ -261,6 +261,11 @@ export const AllTypesProps: Record<string, any> = {
     _set: "auth_notification_subscriptions_set_input",
     where: "auth_notification_subscriptions_bool_exp",
   },
+  auth_notifications_aggregate_fields: {
+    count: {
+      columns: "auth_notifications_select_column",
+    },
+  },
   auth_notifications_bool_exp: {
     _and: "auth_notifications_bool_exp",
     _not: "auth_notifications_bool_exp",
@@ -1171,6 +1176,11 @@ export const AllTypesProps: Record<string, any> = {
       order_by: "auth_notifications_order_by",
       where: "auth_notifications_bool_exp",
     },
+    auth_notifications_aggregate: {
+      distinct_on: "auth_notifications_select_column",
+      order_by: "auth_notifications_order_by",
+      where: "auth_notifications_bool_exp",
+    },
     auth_notifications_by_pk: {},
     auth_public_keys: {
       distinct_on: "auth_public_keys_select_column",
@@ -1326,6 +1336,11 @@ export const AllTypesProps: Record<string, any> = {
       where: "auth_notification_subscriptions_bool_exp",
     },
     auth_notifications: {
+      distinct_on: "auth_notifications_select_column",
+      order_by: "auth_notifications_order_by",
+      where: "auth_notifications_bool_exp",
+    },
+    auth_notifications_aggregate: {
       distinct_on: "auth_notifications_select_column",
       order_by: "auth_notifications_order_by",
       where: "auth_notifications_bool_exp",
@@ -1631,9 +1646,70 @@ export const ReturnTypes: Record<string, any> = {
     uuid: "String",
     xnft_id: "String",
   },
+  auth_notifications_aggregate: {
+    aggregate: "auth_notifications_aggregate_fields",
+    nodes: "auth_notifications",
+  },
+  auth_notifications_aggregate_fields: {
+    avg: "auth_notifications_avg_fields",
+    count: "Int",
+    max: "auth_notifications_max_fields",
+    min: "auth_notifications_min_fields",
+    stddev: "auth_notifications_stddev_fields",
+    stddev_pop: "auth_notifications_stddev_pop_fields",
+    stddev_samp: "auth_notifications_stddev_samp_fields",
+    sum: "auth_notifications_sum_fields",
+    var_pop: "auth_notifications_var_pop_fields",
+    var_samp: "auth_notifications_var_samp_fields",
+    variance: "auth_notifications_variance_fields",
+  },
+  auth_notifications_avg_fields: {
+    id: "Float",
+  },
+  auth_notifications_max_fields: {
+    body: "String",
+    id: "Int",
+    image: "String",
+    timestamp: "timestamptz",
+    title: "String",
+    username: "String",
+    uuid: "String",
+    xnft_id: "String",
+  },
+  auth_notifications_min_fields: {
+    body: "String",
+    id: "Int",
+    image: "String",
+    timestamp: "timestamptz",
+    title: "String",
+    username: "String",
+    uuid: "String",
+    xnft_id: "String",
+  },
   auth_notifications_mutation_response: {
     affected_rows: "Int",
     returning: "auth_notifications",
+  },
+  auth_notifications_stddev_fields: {
+    id: "Float",
+  },
+  auth_notifications_stddev_pop_fields: {
+    id: "Float",
+  },
+  auth_notifications_stddev_samp_fields: {
+    id: "Float",
+  },
+  auth_notifications_sum_fields: {
+    id: "Int",
+  },
+  auth_notifications_var_pop_fields: {
+    id: "Float",
+  },
+  auth_notifications_var_samp_fields: {
+    id: "Float",
+  },
+  auth_notifications_variance_fields: {
+    id: "Float",
   },
   auth_public_keys: {
     blockchain: "String",
@@ -1961,6 +2037,7 @@ export const ReturnTypes: Record<string, any> = {
     auth_notification_subscriptions: "auth_notification_subscriptions",
     auth_notification_subscriptions_by_pk: "auth_notification_subscriptions",
     auth_notifications: "auth_notifications",
+    auth_notifications_aggregate: "auth_notifications_aggregate",
     auth_notifications_by_pk: "auth_notifications",
     auth_public_keys: "auth_public_keys",
     auth_public_keys_aggregate: "auth_public_keys_aggregate",
@@ -2006,6 +2083,7 @@ export const ReturnTypes: Record<string, any> = {
     auth_notification_subscriptions_by_pk: "auth_notification_subscriptions",
     auth_notification_subscriptions_stream: "auth_notification_subscriptions",
     auth_notifications: "auth_notifications",
+    auth_notifications_aggregate: "auth_notifications_aggregate",
     auth_notifications_by_pk: "auth_notifications",
     auth_notifications_stream: "auth_notifications",
     auth_public_keys: "auth_public_keys",
