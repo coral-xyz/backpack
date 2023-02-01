@@ -380,5 +380,5 @@ export function RequestsChatItem({
 
 function UserIcon({ image }: any) {
   const classes = useStyles();
-  return <LocalImage src={`image`} className={classes.iconCircularBig} />;
+  return <LocalImage src={image} className={classes.iconCircularBig} />;
 }
