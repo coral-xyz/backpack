@@ -47,7 +47,7 @@ export const useStyles = (isDark: boolean) =>
         background: isDark
           ? theme.custom.colors.background
           : theme.custom.colors.nav,
-        height: "calc(100vh - 8px)",
+        height: "90vh",
         borderTopLeftRadius: "15px",
         borderTopRightRadius: "15px",
         "&::-webkit-scrollbar": {
@@ -86,10 +86,7 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
         pathname === "/messages/groupchat" ? props.id : props.collectionId
       }&mint=${
         props.nftMint
-      }&publicKey=${publicKey}&type=collection&limit=${LIMIT}&offset=${offset}&prefix=${prefix}`,
-      {
-        method: "GET",
-      }
+      }&publicKey=${publicKey}&type=collection&limit=${LIMIT}&offset=${offset}&prefix=${prefix}`
     );
     const json = await response.json();
     setMembers(json.members);
