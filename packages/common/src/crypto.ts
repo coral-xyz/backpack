@@ -98,7 +98,7 @@ export const getAccountRecoveryPaths = (
   accountIndex: number
 ) => {
   return [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map((j) =>
-    getIndexedPath(blockchain, accountIndex, j).toString()
+    getIndexedPath(blockchain, accountIndex, j)
   );
 };
 
@@ -125,7 +125,6 @@ export const derivationPathsToIndexes = (
       .map((p: Array<number>) => (p[4] ? p[4] : 0))
       .map((i: number) => (i >= HARDENING ? i - HARDENING : i))
   );
-  console.log("account index", accountIndex, "wallet index", walletIndex);
   return { accountIndex, walletIndex };
 };
 
@@ -163,7 +162,7 @@ export const getRecoveryPaths = (blockchain: Blockchain) => {
   // TODO
   // How many accounts should be searched before giving up? It's possible that
   // the user created up to the nth account and deleted all the rest
-  const numAccounts = 5;
+  const numAccounts = 2;
   // New derivation path scheme, search the first `LOAD_PUBLIC_KEY_AMOUNT`
   // indexes on the first `numAccounts` account paths
   paths = paths.concat(
