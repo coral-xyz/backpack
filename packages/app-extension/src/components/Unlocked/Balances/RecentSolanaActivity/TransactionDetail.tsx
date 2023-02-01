@@ -191,9 +191,11 @@ export function TransactionDetail({
 
                 {/* TODO - Default to check/error */}
 
-                {/* TODO - add other functionality for this CTA button */}
+                {/* TODO - add other functionality for this CTA button. Will need to 
+                create mappings for 'verified' sites to determine correct URL*/}
                 {transaction?.type === TransactionType.NFT_SALE &&
-                  transaction.feePayer === activeWallet.publicKey && (
+                  transaction?.events?.nft?.buyer ===
+                    activeWallet.publicKey && (
                     <PrimaryButton
                       className={classes.ctaButton}
                       label="View in your gallery"
@@ -301,6 +303,9 @@ function DetailCardHeader(
   const nftImage =
     transaction?.metadata?.onChaindata?.data?.uri ||
     transaction?.metadata?.offChainData?.image;
+  const nftPrice = transaction?.events?.nft?.amount
+    ? transaction?.events?.nft?.amount / 10 ** 9
+    : null;
   if (isNFTTransaction(transaction) && nftImage) {
     return (
       <>
@@ -314,6 +319,27 @@ function DetailCardHeader(
         >
           {getTransactionTitle(transaction)}
         </div>
+        {nftPrice && (
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <img
+              style={{
+                borderRadius: "50%",
+                width: "16px",
+                height: "16px",
+                marginRight: "5px",
+              }}
+              src={SOL_LOGO_URI}
+            />
+            <div
+              style={{
+                fontSize: "16px",
+                color: theme.custom.colors.fontColor,
+              }}
+            >
+              {nftPrice + " SOL"}
+            </div>
+          </div>
+        )}
       </>
     );
   }
