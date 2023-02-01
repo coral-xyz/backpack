@@ -42,10 +42,37 @@ export class RecoilSync {
 
   async refreshUsersMetadata(uuid: string) {
     const users = await getDb(uuid).users.toArray();
-    refreshUsers(
+    const newUsersMetadata = await refreshUsers(
       uuid,
-      users.map((x) => x.uuid)
+      users.map((x) => x.uuid),
+      true
     );
+    for (let i = 0; i < newUsersMetadata?.length; i++) {
+      await this.storeImageInLocalStorage(newUsersMetadata[i]?.image);
+    }
+  }
+
+  async storeImageInLocalStorage(url: string) {
+    return new Promise((resolve, reject) => {
+      const canvas = document.createElement("canvas");
+      //@ts-ignore
+      const context = canvas.getContext("2d");
+      const base_image = new Image();
+      base_image.src = url;
+      base_image.onload = function () {
+        const aspectRatio = base_image.width / base_image.height;
+        canvas.width = 400;
+        canvas.height = 400 / aspectRatio;
+        //@ts-ignore
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        //@ts-ignore
+        context.drawImage(base_image, 0, 0, canvas.width, canvas.height);
+        // @ts-ignore
+        const dataURL = canvas.toDataURL("image/webp");
+        localStorage.setItem(`img-${url}`, dataURL);
+        resolve("");
+      };
+    });
   }
 
   getChatsForRoom(uuid: string, room: string, type: SubscriptionType) {

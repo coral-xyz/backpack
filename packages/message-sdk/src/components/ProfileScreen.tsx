@@ -6,6 +6,7 @@ import {
 } from "@coral-xyz/common";
 import {
   Loading,
+  LocalImage,
   MessageBubbleIcon,
   MessageIcon,
   PrimaryButton,
@@ -84,7 +85,7 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
       <div style={{ flex: 1 }}>
         <div className={classes.horizontalCenter}>
           <div className={classes.topImageOuter}>
-            <img
+            <LocalImage
               className={classes.topImage}
               src={userMetadata[userId]?.image}
             />

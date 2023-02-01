@@ -5,7 +5,7 @@ import {
   NAV_COMPONENT_MESSAGE_PROFILE,
   NEW_COLORS,
 } from "@coral-xyz/common";
-import { refreshIndividualChatsFor } from "@coral-xyz/react-common";
+import { LocalImage,refreshIndividualChatsFor } from "@coral-xyz/react-common";
 import {
   blockchainTokenData,
   SOL_LOGO_URI,
@@ -322,12 +322,12 @@ export const MessageLine = (props) => {
               }}
             >
               {photoURL ? (
-                <img
+                <LocalImage
                   onClick={() => openProfilePage({ uuid: props.uuid })}
                   alt={displayName}
                   className={classes.avatar}
-                  src={`${photoURL}?size=40`}
-                ></img>
+                  src={photoURL}
+                ></LocalImage>
               ) : (
                 <Skeleton
                   variant="circular"
