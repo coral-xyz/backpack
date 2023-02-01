@@ -22,7 +22,7 @@ export async function migrate_0_2_0_2408(json: any) {
       // of derivation paths
       // @ts-ignore
       let hdKeyring = blockchainKeyring.hdKeyring;
-      if (hdKeyring.accountIndices !== undefined) {
+      if (hdKeyring && hdKeyring.accountIndices !== undefined) {
         const derivationPaths = hdKeyring.accountIndices.map((i: number) => {
           if (hdKeyring.derivationPath === "bip44") {
             return legacyBip44Indexed(blockchain as Blockchain, i);
