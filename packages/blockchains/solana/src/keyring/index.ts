@@ -22,7 +22,7 @@ import {
   UR,
   nextIndicesFromPaths,
 } from "@coral-xyz/common";
-import { Keypair, PublicKey } from "@solana/web3.js";
+import { Keypair, PublicKey, Transaction } from "@solana/web3.js";
 import { mnemonicToSeedSync, validateMnemonic } from "bip39";
 import { ethers } from "ethers";
 import nacl from "tweetnacl";
@@ -361,12 +361,21 @@ export class SolanaKeystoneKeyringFactory implements KeystoneKeyringFactory {
 export class SolanaKeystoneKeyring extends KeystoneKeyringBase implements KeystoneKeyring {
   private keyring: KeystoneKeyringOrigin;
 
+  public onPlay(fn: (ur: UR) => Promise<void>) {
+    this.keyring.getInteraction().onPlay(fn);
+  }
+
+  public onRead(fn: () => Promise<UR>) {
+    this.keyring.getInteraction().onRead(fn);
+  }
+
   public async signTransaction(tx: Buffer, address: string): Promise<string> {
-    return '';
+    const signedTx = await this.keyring.signTransaction(address, Transaction.from(tx));
+    return signedTx.signature ? Buffer.from(signedTx.signature).toString('hex') : '';
   }
 
   public async signMessage(msg: Buffer, address: string): Promise<string> {
-    return '';
+    return Buffer.from(await this.keyring.signMessage(address, msg)).toString('hex');
   }
 
   public async keystoneImport(ur: UR) {
@@ -376,7 +385,9 @@ export class SolanaKeystoneKeyring extends KeystoneKeyringBase implements Keysto
   }
 
   public static fromUR(ur: UR) {
-    return new SolanaKeystoneKeyring();
+    const inst = new SolanaKeystoneKeyring();
+    inst.keystoneImport(ur);
+    return inst;
   }
 
   public publicKeys() {
