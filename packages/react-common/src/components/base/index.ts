@@ -10,3 +10,4 @@ export * from "./PrimaryButton";
 export * from "./ProxyImage";
 export * from "./SecondaryButton";
 export * from "./SuccessButton";
+export * from "./UserIcon";

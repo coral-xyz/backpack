@@ -11,6 +11,7 @@ import {
   NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
   SOL_NATIVE_MINT,
   toTitleCase,
+  walletAddressDisplay,
 } from "@coral-xyz/common";
 import {
   CheckIcon,
@@ -22,6 +23,7 @@ import {
   SecondaryButton,
   TextFieldLabel,
   TextInput,
+  UserIcon,
 } from "@coral-xyz/react-common";
 import type { TokenData } from "@coral-xyz/recoil";
 import {
@@ -171,16 +173,22 @@ export function SendLoader({
 export function Send({
   blockchain,
   token,
+  to,
 }: {
   blockchain: Blockchain;
   token: TokenData;
+  to?: {
+    address: string;
+    username: string;
+    image: string;
+  };
 }) {
   const classes = useStyles() as any;
   const nav = useNavigationEphemeral();
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
   const [openDrawer, setOpenDrawer] = useState(false);
-  const [address, setAddress] = useState("");
+  const [address, setAddress] = useState(to?.address || "");
   const [amount, setAmount] = useState<BigNumber | undefined>(undefined);
   const [feeOffset, setFeeOffset] = useState(BigNumber.from(0));
 
@@ -280,13 +288,27 @@ export function Send({
           <div style={{ margin: "0 12px" }}>
             <TextInput
               placeholder={`${toTitleCase(blockchain)} address`}
-              value={address}
-              setValue={(e) => setAddress(e.target.value.trim())}
+              value={
+                to
+                  ? `${to.username} (${walletAddressDisplay(to.address)})`
+                  : address
+              }
+              setValue={(e) => {
+                if (to) {
+                  // to address is forced via props
+                  return;
+                }
+                setAddress(e.target.value.trim());
+              }}
               error={isErrorAddress}
               inputProps={{
                 name: "to",
                 spellCheck: "false",
+                readOnly: to ? true : false,
               }}
+              startAdornment={
+                to?.image ? <UserIcon size={32} image={to?.image} /> : <></>
+              }
               margin="none"
             />
           </div>
@@ -329,6 +351,14 @@ export function Send({
           <SendConfirmComponent
             token={token}
             destinationAddress={destinationAddress}
+            destinationUser={
+              to
+                ? {
+                    username: to.username,
+                    image: to.image,
+                  }
+                : undefined
+            }
             amount={amount!}
           />
         </ApproveTransactionDrawer>
