@@ -11,7 +11,6 @@ import { updateFriendshipIfExists } from "@coral-xyz/db";
 import {
   isFirstLastListItemStyle,
   LocalImage,
-  ProxyImage,
   SignalingManager,
 } from "@coral-xyz/react-common";
 import { friendship, useNavigation, useUser } from "@coral-xyz/recoil";
