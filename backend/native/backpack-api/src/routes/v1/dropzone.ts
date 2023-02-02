@@ -11,7 +11,6 @@ import cors from "cors";
 import type { NextFunction, Request, Response } from "express";
 import express from "express";
 
-import { extractUserId } from "../../auth/middleware";
 import { HASURA_URL, JWT } from "../../config";
 
 const router = express.Router();
@@ -161,19 +160,24 @@ router.get("/drops/:distributor", async (req, res, next) => {
 router.get(
   "/claims/:claimant",
   isValidClaimant,
-  extractUserId,
+  // extractUserId,
   async (req, res, next) => {
     try {
-      const { auth_users_by_pk, dropzone_distributors: query } = await chain(
-        "query"
-      )({
-        auth_users_by_pk: [
+      const {
+        auth_users: [user],
+        dropzone_distributors: query,
+      } = await chain("query")({
+        auth_users: [
           {
-            id: req.id,
+            limit: 1,
+            where: {
+              dropzone_public_key: {
+                public_key: { _eq: req.params.claimant },
+              },
+            },
           },
           {
             username: true,
-            dropzone_public_key: [{}, { public_key: true }],
             referred_users: [
               {},
               {
@@ -229,7 +233,7 @@ router.get(
       );
 
       res.json({
-        ...auth_users_by_pk,
+        ...user,
         claimed: claimsIncludingClaimedAt.filter((c) => c.claimed_at),
         unclaimed: claimsIncludingClaimedAt.filter((c) => !c.claimed_at),
       });
