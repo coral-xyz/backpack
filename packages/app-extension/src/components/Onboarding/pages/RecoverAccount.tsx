@@ -153,8 +153,8 @@ export const RecoverAccount = ({
   return (
     <WithNav
       navButtonLeft={
-        step > 0 && step !== steps.length - 1 ? (
-          <NavBackButton onClick={prevStep} />
+        step !== steps.length - 1 ? (
+          <NavBackButton onClick={step > 0 ? prevStep : onClose} />
         ) : undefined
       }
       {...navProps}
