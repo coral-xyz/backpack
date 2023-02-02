@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { Blockchain, DerivationPath, UR } from "@coral-xyz/common";
 import { HardwareWalletIcon, PrimaryButton } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
@@ -6,6 +6,7 @@ import { Box } from "@mui/material";
 
 import { Header, HeaderIcon, SubtextParagraph } from "../../common";
 import { SolanaKeystoneKeyring } from '@coral-xyz/blockchain-solana';
+import { AnimatedQRCode, useAnimatedQRScanner, URType } from '@keystonehq/animated-qr';
 
 export function KeystoneSign({
   blockchain,
@@ -27,17 +28,31 @@ export function KeystoneSign({
   const background = useBackgroundClient();
   const [signature, setSignature] = useState<string | null>(null);
   const [msgPlayUR, setMsgPlayUR] = useState<UR>();
+  const { AnimatedQRScanner } = useAnimatedQRScanner({});
 
-  const keyring = SolanaKeystoneKeyring.fromUR(ur);
-  let readQRResolve, readQRReject;
-  keyring.onPlay(async e => {
-    setMsgPlayUR(e);
-  });
-  keyring.onRead(() => new Promise((resolve, reject) => {
-    readQRResolve = resolve;
-    readQRReject = reject;
-  }));
-  keyring.signMessage(Buffer.from(message), publicKey);
+  let readQRResolve: (ur: UR) => void, readQRReject;
+
+  const signMsg = async () => {
+    const keyring = await SolanaKeystoneKeyring.fromUR(ur);
+    keyring.onPlay(async e => {
+      setMsgPlayUR(e);
+    });
+    keyring.onRead(() => new Promise((resolve, reject) => {
+      readQRResolve = resolve;
+      readQRReject = reject;
+    }));
+    const sig = await keyring.signMessage(Buffer.from(message), publicKey);
+    onNext(sig);
+  }
+
+  const handleScan = useCallback(ur => {
+    console.log(ur);
+    readQRResolve(ur);
+  }, [])
+
+  useEffect(() => {
+    signMsg()
+  }, [ur]);
 
   return (
     <Box
@@ -52,6 +67,20 @@ export function KeystoneSign({
         <HeaderIcon icon={<HardwareWalletIcon />} />
         <Header text="Sign the message by Keystone" />
         <SubtextParagraph>{ur.type}</SubtextParagraph>
+        {msgPlayUR && <AnimatedQRCode
+          type={msgPlayUR.type}
+          cbor={msgPlayUR.cbor}
+        />}
+        <AnimatedQRScanner
+          urTypes={[URType.SOL_SIGNATURE]}
+          handleError={console.error}
+          handleScan={handleScan}
+          options={{
+            width: 200,
+            height: 200,
+            blur: false
+          }}
+        />
       </Box>
       <Box
         sx={{

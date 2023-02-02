@@ -210,7 +210,7 @@ export const OnboardAccount = ({
           borderTopRightRadius: "12px",
         }}
       >
-        {keyringType === "ledger" ? (
+        {keyringType === "ledger" || keyringType === "keystone" ? (
           <HardwareOnboard
             blockchain={blockchain!}
             // @ts-expect-error not assignable to type string ...

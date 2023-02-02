@@ -87,7 +87,7 @@ export interface KeystoneKeyring extends Keyring {
 
 export interface KeystoneKeyringFactory {
   fromAccounts(accounts: Array<ImportedDerivationPath>): KeystoneKeyring;
-  fromUR(ur: UR): KeystoneKeyring;
+  fromUR(ur: UR): Promise<KeystoneKeyring>;
   fromJson(obj: KeystoneKeyringJson): KeystoneKeyring;
 }
 

@@ -349,8 +349,8 @@ export class SolanaKeystoneKeyringFactory implements KeystoneKeyringFactory {
     return new SolanaKeystoneKeyring();
   }
 
-  public fromUR(ur: UR): KeystoneKeyring {
-    return SolanaKeystoneKeyring.fromUR(ur);
+  public async fromUR(ur: UR): Promise<KeystoneKeyring> {
+    return await SolanaKeystoneKeyring.fromUR(ur);
   }
 
   public fromJson(obj: KeystoneKeyringJson): KeystoneKeyring {
@@ -360,6 +360,11 @@ export class SolanaKeystoneKeyringFactory implements KeystoneKeyringFactory {
 
 export class SolanaKeystoneKeyring extends KeystoneKeyringBase implements KeystoneKeyring {
   private keyring: KeystoneKeyringOrigin;
+
+  constructor() {
+    super()
+    this.keyring = new KeystoneKeyringOrigin();
+  }
 
   public onPlay(fn: (ur: UR) => Promise<void>) {
     this.keyring.getInteraction().onPlay(fn);
@@ -379,14 +384,13 @@ export class SolanaKeystoneKeyring extends KeystoneKeyringBase implements Keysto
   }
 
   public async keystoneImport(ur: UR) {
-    this.keyring = new KeystoneKeyringOrigin();
     this.keyring.getInteraction().onRead(() => ur);
     await this.keyring.readKeyring();
   }
 
-  public static fromUR(ur: UR) {
+  public static async fromUR(ur: UR) {
     const inst = new SolanaKeystoneKeyring();
-    inst.keystoneImport(ur);
+    await inst.keystoneImport(ur);
     return inst;
   }
 
