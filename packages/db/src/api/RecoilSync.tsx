@@ -47,8 +47,14 @@ export class RecoilSync {
       users.map((x) => x.uuid),
       true
     );
-    for (let i = 0; i < newUsersMetadata?.length; i++) {
-      await this.storeImageInLocalStorage(newUsersMetadata[i]?.image);
+    const sortedUsersMetadata = newUsersMetadata?.sort((a) => {
+      if (localStorage.getItem(`img-${a.image}`)) {
+        return 1;
+      }
+      return -1;
+    });
+    for (let i = 0; i < sortedUsersMetadata?.length; i++) {
+      await this.storeImageInLocalStorage(sortedUsersMetadata[i]?.image);
     }
   }
 
