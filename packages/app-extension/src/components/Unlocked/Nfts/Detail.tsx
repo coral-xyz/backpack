@@ -14,8 +14,6 @@ import {
   WHITELISTED_CHAT_COLLECTIONS,
 } from "@coral-xyz/common";
 import {
-  List,
-  ListItem,
   NegativeButton,
   PrimaryButton,
   ProxyImage,
@@ -37,9 +35,9 @@ import {
   useUser,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { CallMade, Whatshot } from "@mui/icons-material";
+import { Whatshot } from "@mui/icons-material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import { IconButton, Popover, Typography } from "@mui/material";
+import { IconButton, Typography } from "@mui/material";
 import { PublicKey } from "@solana/web3.js";
 import { BigNumber } from "ethers";
 import { useRecoilValueLoadable, useSetRecoilState } from "recoil";
@@ -54,6 +52,7 @@ import {
   NavStackEphemeral,
   NavStackScreen,
 } from "../../common/Layout/NavStack";
+import PopoverMenu from "../../common/PopoverMenu";
 import { SendEthereumConfirmationCard } from "../Balances/TokensWidget/Ethereum";
 import {
   Error as ErrorConfirmation,
@@ -553,83 +552,32 @@ export function NftOptionsButton() {
           }}
         />
       </IconButton>
-      <Popover
+      <PopoverMenu.Root
         open={Boolean(anchorEl)}
         anchorEl={anchorEl}
         onClose={onClose}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right",
-        }}
-        PaperProps={{
-          style: {
-            background: theme.custom.colors.nav,
-          },
-        }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
       >
-        <div
-          style={{
-            padding: "4px",
-          }}
-        >
-          <List
-            style={{
-              margin: 0,
+        <PopoverMenu.Group>
+          <PopoverMenu.Item
+            onClick={() => {
+              const url = explorerNftUrl(explorer, nft, connectionUrl);
+              window.open(url, "_blank");
             }}
           >
-            <ListItem
-              style={{
-                width: "100%",
-                height: "30px",
-              }}
-              isFirst={true}
-              isLast={isEthereum}
-              onClick={() => {
-                const url = explorerNftUrl(explorer, nft, connectionUrl);
-                window.open(url, "_blank");
-              }}
-            >
-              <Typography
-                style={{
-                  fontSize: "14px",
-                }}
-              >
-                View on Explorer
-              </Typography>
-              <CallMade
-                style={{
-                  color: theme.custom.colors.secondary,
-                }}
-              />
-            </ListItem>
-            <ListItem
-              style={{ width: "100%", height: "30px" }}
-              onClick={onSetPfp}
-            >
-              <Typography style={{ fontSize: "14px" }}>Set as PFP</Typography>
-            </ListItem>
-            {!isEthereum && (
-              <ListItem
-                style={{
-                  width: "100%",
-                  height: "30px",
-                }}
-                isLast={true}
-                onClick={() => onBurn()}
-              >
-                <Typography
-                  style={{
-                    fontSize: "14px",
-                    color: theme.custom.colors.negative,
-                  }}
-                >
-                  Burn Token
-                </Typography>
-              </ListItem>
-            )}
-          </List>
-        </div>
-      </Popover>
+            View on Explorer
+          </PopoverMenu.Item>
+          <PopoverMenu.Item onClick={onSetPfp}>Set as PFP</PopoverMenu.Item>
+        </PopoverMenu.Group>
+        <PopoverMenu.Group>
+          <PopoverMenu.Item
+            sx={{ color: `${theme.custom.colors.negative} !important` }}
+            onClick={onBurn}
+          >
+            Burn Token
+          </PopoverMenu.Item>
+        </PopoverMenu.Group>
+      </PopoverMenu.Root>
       <ApproveTransactionDrawer
         openDrawer={openDrawer}
         setOpenDrawer={setOpenDrawer}

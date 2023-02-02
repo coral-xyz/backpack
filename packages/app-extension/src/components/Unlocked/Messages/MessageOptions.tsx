@@ -9,9 +9,10 @@ import { toast } from "@coral-xyz/react-common";
 import { friendship, useDecodedSearchParams } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import { Fade, Menu, MenuItem } from "@mui/material";
-import Divider from "@mui/material/Divider";
+import { Fade } from "@mui/material";
 import { useRecoilState } from "recoil";
+
+import PopoverMenu from "../../common/PopoverMenu";
 
 import { useStyles } from "./styles";
 
@@ -54,20 +55,15 @@ export const MessageOptions = () => {
         onClick={handleClick}
         style={{ cursor: "pointer", color: theme.custom.colors.icon }}
       />
-      <Menu
-        id="fade-menu"
-        MenuListProps={{
-          "aria-labelledby": "fade-button",
-        }}
-        anchorEl={anchorEl}
+      <PopoverMenu.Root
         open={open}
+        anchorEl={anchorEl}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
         onClose={handleClose}
         TransitionComponent={Fade}
-        className={classes.menu}
       >
-        <div style={{ background: theme.custom.colors.background }}>
-          <MenuItem
-            className={classes.menuItem}
+        <PopoverMenu.Group>
+          <PopoverMenu.Item
             disabled={friendshipValue?.blocked}
             onClick={async () => {
               if (friendshipValue?.areFriends) {
@@ -103,10 +99,10 @@ export const MessageOptions = () => {
               : friendshipValue?.remoteRequested
               ? "Accept Contact Request"
               : "Add to contacts"}
-          </MenuItem>
-          <Divider style={{ marginTop: 0, marginBottom: 0 }} />
-          <MenuItem
-            className={classes.menuItem}
+          </PopoverMenu.Item>
+        </PopoverMenu.Group>
+        <PopoverMenu.Group>
+          <PopoverMenu.Item
             disabled={friendshipValue?.spam}
             onClick={async () => {
               const updatedValue = !friendshipValue?.blocked;
@@ -132,9 +128,8 @@ export const MessageOptions = () => {
             }}
           >
             {friendshipValue?.blocked ? "Unblock" : "Block"}
-          </MenuItem>
-          <MenuItem
-            className={classes.menuItem}
+          </PopoverMenu.Item>
+          <PopoverMenu.Item
             onClick={async () => {
               const updatedValue = !friendshipValue?.spam;
               await fetch(`${BACKEND_API_URL}/friends/spam`, {
@@ -152,9 +147,9 @@ export const MessageOptions = () => {
             }}
           >
             {friendshipValue?.spam ? `Remove spam` : `Mark as spam`}
-          </MenuItem>
-        </div>
-      </Menu>
+          </PopoverMenu.Item>
+        </PopoverMenu.Group>
+      </PopoverMenu.Root>
     </div>
   );
 };
