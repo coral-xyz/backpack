@@ -123,6 +123,7 @@ type CustomColors = {
   listItemHover: string;
   walletCopyButtonHover: string;
   verified: string;
+  chatFadeGradient: string;
 };
 
 const baseTheme = createStyles({
@@ -258,6 +259,8 @@ const DARK_COLORS: CustomColors = {
   listItemHover: `rgba(39, 39, 42, ${HOVER_OPACITY})`,
   walletCopyButtonHover: "#18181c",
   verified: "#DFE0E5",
+  chatFadeGradient:
+    "linear-gradient(180deg, rgba(255, 255, 255, 0.04) 20%, rgba(0, 0, 0, 0) 100%), #18181B",
 };
 
 const LIGHT_COLORS: CustomColors = {
@@ -310,7 +313,6 @@ const LIGHT_COLORS: CustomColors = {
   hoverIconBackground: "#DFE0E5",
   avatarIconBackground: "#DFE0E5",
   text: LIGHT_TEXT_COLOR,
-
   dangerButton: DANGER_COLOR,
   alpha: "#8F929E",
   scrollbarTrack: LIGHT_BACKGROUND_COLOR_0,
@@ -333,6 +335,8 @@ const LIGHT_COLORS: CustomColors = {
   listItemHover: "#F8F8F9",
   walletCopyButtonHover: "#d6d6d6",
   verified: "#212938",
+  chatFadeGradient:
+    "linear-gradient(360deg, rgb(255, 255, 255) 20%, rgba(240, 240, 242, 0.5) 100%), #FFFFFF",
 };
 
 export const darkTheme: Partial<Theme> & {

@@ -106,7 +106,7 @@ export const FullScreenChat = ({
         display: "flex",
         flexFlow: "column",
         height: "100%",
-        background: theme.custom.colors.bg3,
+        background: theme.custom.colors.chatFadeGradient,
       }}
     >
       <div
@@ -115,7 +115,6 @@ export const FullScreenChat = ({
           onClick: (event) => event.stopPropagation(),
           style: {
             height: "calc(100% - 50px)",
-            background: theme.custom.colors.bg3,
           },
         })}
       >
