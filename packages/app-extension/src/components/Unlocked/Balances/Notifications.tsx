@@ -202,7 +202,11 @@ export function Notifications() {
   useEffect(() => {
     const sortedNotifications = notifications
       .slice()
-      .sort((a, b) => (a.timestamp < b.timestamp ? 1 : -1));
+      .sort((a, b) =>
+        new Date(a.timestamp).getTime() < new Date(b.timestamp).getTime()
+          ? -1
+          : 1
+      );
     const latestNotification =
       sortedNotifications[sortedNotifications.length - 1];
     if (latestNotification && latestNotification.id) {
