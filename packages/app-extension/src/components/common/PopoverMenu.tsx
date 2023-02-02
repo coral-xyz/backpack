@@ -14,7 +14,7 @@ export const PopoverMenu: FunctionComponent<PopoverProps> = ({
         style={{
           width: "100%",
           background: theme.custom.colors.background,
-          padding: 2,
+          padding: 1,
           display: "flex",
           flexDirection: "column",
           gap: 2,
