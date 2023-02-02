@@ -63,7 +63,7 @@ export const MnemonicSearch = ({
         <Header text="Unable to recover wallet" />
         <SubtextParagraph>
           We couldn't find the public key {walletAddressDisplay(publicKey)}{" "}
-          using your hardware wallet.
+          using your recovery phrase.
         </SubtextParagraph>
       </Box>
       <Box
