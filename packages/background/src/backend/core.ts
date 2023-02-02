@@ -1204,14 +1204,14 @@ export class Backend {
   async keystoneImport(
     blockchain: Blockchain,
     ur: UR,
+    publicKey: string,
     signature?: string
   ) {
-    const accounts = await this.keyringStore.keystoneImport(
+    await this.keyringStore.keystoneImport(
       blockchain,
-      ur
+      ur,
+      publicKey
     );
-    console.log('keyringStore', accounts);
-    const publicKey = accounts[accounts.length - 1].publicKey;
     try {
       await this.userAccountPublicKeyCreate(blockchain, publicKey, signature);
     } catch (error) {

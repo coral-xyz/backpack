@@ -257,6 +257,7 @@ async function handle<T = any>(
         params[0],
         params[1],
         params[2],
+        params[3],
       );
     case UI_RPC_METHOD_KEYSTONE_UR_DECODE:
       return await handleKeyringKeystoneURDecode(
@@ -1182,11 +1183,13 @@ async function handleKeyringKeystoneImport(
   ctx: Context<Backend>,
   blockchain: Blockchain,
   ur: UR,
+  publicKey: string,
   signature?: string
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.keystoneImport(
     blockchain,
     ur,
+    publicKey,
     signature
   );
   return [resp];
