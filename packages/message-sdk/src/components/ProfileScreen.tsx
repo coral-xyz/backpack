@@ -85,6 +85,7 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
             <LocalImage
               className={classes.topImage}
               src={userMetadata[userId]?.image}
+              style={{ width: 150, height: 150 }}
             />
           </div>
         </div>

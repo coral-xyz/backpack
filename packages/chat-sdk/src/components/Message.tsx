@@ -327,6 +327,7 @@ export const MessageLine = (props) => {
                   onClick={() => openProfilePage({ uuid: props.uuid })}
                   alt={displayName}
                   className={classes.avatar}
+                  style={{ width: 32, height: 32 }}
                   src={photoURL}
                 ></LocalImage>
               ) : (
