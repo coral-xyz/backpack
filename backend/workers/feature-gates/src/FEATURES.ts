@@ -3,4 +3,5 @@ export const FEATURE_GATES = {
   NOTIFICATIONS_ENABLED: true,
   MESSAGES_ENABLED: true,
   MESSAGE_IFRAME_ENABLED: false,
+  OFFLINE_IMAGES: true,
 };

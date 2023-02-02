@@ -1,8 +1,13 @@
 import { useRef, useState } from "react";
+import { OFFLINE_IMAGES } from "@coral-xyz/common";
+import { useFeatureGates } from "@coral-xyz/recoil";
 
 export const LocalImage = (props) => {
+  const featureGates = useFeatureGates();
   const [imageUrl, setImageUrl] = useState(
-    localStorage.getItem(`img-${props.src}`) || props.src
+    featureGates[OFFLINE_IMAGES]
+      ? localStorage.getItem(`img-${props.src}`) || props.src
+      : props.src
   );
   const imageRef = useRef<HTMLImageElement>(null);
 
