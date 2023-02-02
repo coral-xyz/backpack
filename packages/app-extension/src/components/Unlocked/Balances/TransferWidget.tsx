@@ -19,9 +19,13 @@ import type { Token } from "../../common/TokenTable";
 import { SearchableTokenTables } from "../../common/TokenTable";
 import { Swap, SwapSelectToken } from "../../Unlocked/Swap";
 
+import {
+  AddressSelector,
+  AddressSelectorLoader,
+} from "./TokensWidget/AddressSelector";
 import { Deposit } from "./TokensWidget/Deposit";
 import { Ramp } from "./TokensWidget/Ramp";
-import { Send, SendLoader } from "./TokensWidget/Send";
+import { Send } from "./TokensWidget/Send";
 import { WithHeaderButton } from "./TokensWidget/Token";
 import { StripeRamp } from "./StripeRamp";
 
@@ -157,14 +161,19 @@ function SendButton({
         blockchain && address
           ? [
               {
-                name: "send",
-                component: (props: any) => <SendLoader {...props} />,
-                title: `Send`,
+                name: "select-user",
+                component: (props: any) => <AddressSelectorLoader {...props} />,
+                title: "",
                 props: {
                   blockchain,
                   address,
                   publicKey,
                 },
+              },
+              {
+                name: "send",
+                component: (props: any) => <Send {...props} />,
+                title: `Send`,
               },
             ]
           : [
@@ -172,6 +181,11 @@ function SendButton({
                 name: "select-token",
                 component: SendToken,
                 title: "Select Token",
+              },
+              {
+                name: "select-user",
+                component: (props: any) => <AddressSelector {...props} />,
+                title: "",
               },
               {
                 name: "send",
@@ -328,7 +342,7 @@ function SendToken() {
   const { push } = useNavStack();
 
   const onClickRow = (blockchain: Blockchain, token: Token) => {
-    push("send", { blockchain, token });
+    push("select-user", { blockchain, token });
   };
 
   return (
