@@ -15,7 +15,6 @@ export const MediaContent = ({
   const [modalOpen, setModalOpen] = useState(false);
   const theme = useCustomTheme();
   const { isXs } = useBreakpoints();
-  console.log("background - ", theme.custom.colors.background);
   return (
     <>
       {modalOpen && (

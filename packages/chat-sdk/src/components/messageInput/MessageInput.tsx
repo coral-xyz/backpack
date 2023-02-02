@@ -1,4 +1,11 @@
-import { Fragment, useContext, useEffect, useRef, useState } from "react";
+import {
+  Fragment,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { RichMentionsContext, RichMentionsInput } from "react-rich-mentions";
 import { useUsersMetadata } from "@coral-xyz/react-common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
@@ -41,14 +48,13 @@ export function MessageInput({ setEmojiMenuOpen }: { setEmojiMenuOpen: any }) {
   );
 }
 
-export const CustomAutoComplete = ({
-  offlineMembers,
-}: {
-  offlineMembers: { username: string; uuid: string; image: string }[];
-}) => {
+export const CustomAutoComplete = () => {
   const theme = useCustomTheme();
-  const { loading, results, activeSearch, selectItem } =
+  const { loading, results, activeSearch, selectItem, index } =
     useContext(RichMentionsContext);
+  const cursor = index;
+
+  const shownResults = useMemo(() => results, [results]);
 
   const users = useUsersMetadata({ remoteUserIds: results.map((r) => r.id) });
 
@@ -67,69 +73,41 @@ export const CustomAutoComplete = ({
           padding: activeSearch && 12,
         }}
       >
-        {activeSearch !== "" && activeSearch && activeSearch.length !== 0 && (
-          <>
-            {offlineMembers
-              .filter((x) => x.username.includes(activeSearch.slice(1)))
-              .map((item) => (
-                <button
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    padding: 8,
-                    cursor: "pointer",
-                    width: 180,
-                    color: theme.custom.colors.fontColor,
-                    textAlign: "left",
-                    border: "none",
-                    backgroundColor: "transparent",
-                  }}
-                  key={item.uuid}
-                  onClick={() => {
-                    selectItem({
-                      name: item.username,
-                      id: item.uuid,
-                      ref: `<@${item.username}|u${item.uuid}>`,
-                    });
-                  }}
-                >
-                  <img
-                    style={{ height: 26, borderRadius: 16, marginRight: 5 }}
-                    src={item.image}
-                  />
-                  <div style={{ fontSize: 15, fontWeight: 500 }}>
-                    @{item.username}
-                  </div>
-                </button>
-              ))}
-          </>
-        )}
-        {results
-          .filter((x) => !offlineMembers.map((x) => x.uuid).includes(x.id))
-          .map((item, i) => (
-            <button
+        {shownResults.map((item, index) => (
+          <button
+            style={{
+              display: "flex",
+              alignItems: "center",
+              padding: 8,
+              cursor: "pointer",
+              background:
+                index === cursor ? "#1264a3" : theme.custom.colors.background,
+              color: index === cursor ? "#fff" : theme.custom.colors.fontColor,
+              width: 180,
+              textAlign: "left",
+              border: "none",
+              backgroundColor: "transparent",
+            }}
+            key={item.index}
+            onClick={() => {
+              selectItem(item);
+            }}
+          >
+            <img
+              style={{ height: 26, borderRadius: 12, marginRight: 5 }}
+              src={users[item.id]?.image}
+            />
+            <div
               style={{
-                padding: 8,
-                display: "flex",
-                cursor: "pointer",
-                width: "180px",
-                color: theme.custom.colors.fontColor,
-                backgroundColor: "transparent",
-                border: "none",
-                textAlign: "left",
-              }}
-              key={item.ref}
-              onClick={() => {
-                selectItem(item);
+                fontSize: 15,
+                color: theme.custom.colors.fontColor2,
+                fontWeight: 500,
               }}
             >
-              <img
-                style={{ height: 26, borderRadius: 16, marginRight: 5 }}
-                src={users[item.id]?.image}
-              />
-              <div style={{ fontSize: 15 }}>@{item.name}</div>
-            </button>
-          ))}
+              @{item.name}
+            </div>
+          </button>
+        ))}
         {activeSearch !== "" &&
           activeSearch &&
           activeSearch.length !== 0 &&

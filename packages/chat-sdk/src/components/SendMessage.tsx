@@ -322,7 +322,7 @@ export const SendMessage = ({
             text={activeReply.text}
           />
         )}
-        <CustomAutoComplete offlineMembers={getOfflineMembers().slice(0, 5)} />
+        <CustomAutoComplete />
         <div style={{ backgroundColor: theme.custom.colors.bg3 }}>
           <div
             style={{
