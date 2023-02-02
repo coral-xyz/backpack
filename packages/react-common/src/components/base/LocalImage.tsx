@@ -4,16 +4,15 @@ import { useFeatureGates } from "@coral-xyz/recoil";
 
 export const LocalImage = (props) => {
   const featureGates = useFeatureGates();
-  const [imageUrl, setImageUrl] = useState(
-    featureGates[OFFLINE_IMAGES]
-      ? localStorage.getItem(`img-${props.src}`) || props.src
-      : props.src
-  );
   const imageRef = useRef<HTMLImageElement>(null);
 
   return (
     <img
-      src={imageUrl}
+      src={
+        featureGates[OFFLINE_IMAGES]
+          ? localStorage.getItem(`img-${props.src}`) || props.src
+          : props.src
+      }
       ref={imageRef}
       onError={(...e) => {
         if (imageRef.current) imageRef.current.src = props.src;
