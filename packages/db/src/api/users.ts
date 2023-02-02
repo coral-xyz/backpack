@@ -6,8 +6,14 @@ import {
 
 import { bulkAddUsers, getNewUsers } from "../db/users";
 
-export const refreshUsers = async (uuid: string, uniqueUserIds: string[]) => {
-  const newUsers = await getNewUsers(uuid, uniqueUserIds);
+export const refreshUsers = async (
+  uuid: string,
+  uniqueUserIds: string[],
+  force?: boolean
+) => {
+  const newUsers = force
+    ? uniqueUserIds
+    : await getNewUsers(uuid, uniqueUserIds);
   if (newUsers.length) {
     try {
       const response = await fetch(`${BACKEND_API_URL}/users/metadata`, {

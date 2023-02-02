@@ -10,6 +10,7 @@ import {
 import { updateFriendshipIfExists } from "@coral-xyz/db";
 import {
   isFirstLastListItemStyle,
+  LocalImage,
   ProxyImage,
   SignalingManager,
 } from "@coral-xyz/react-common";
@@ -353,13 +354,7 @@ function UserAction({
 
 function UserIcon({ image }: any) {
   const classes = useStyles();
-  return (
-    <ProxyImage
-      loadingStyles={{ marginRight: "8px", height: "32px", width: "32px" }}
-      src={image}
-      className={classes.iconCircular}
-    />
-  );
+  return <LocalImage src={image} className={classes.iconCircular} />;
 }
 
 export const useUpdateFriendships = () =>

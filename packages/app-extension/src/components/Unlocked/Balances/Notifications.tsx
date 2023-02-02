@@ -200,7 +200,11 @@ export function Notifications() {
   });
 
   useEffect(() => {
-    const latestNotification = notifications[notifications.length - 1];
+    const sortedNotifications = notifications
+      .slice()
+      .sort((a, b) => (a.timestamp < b.timestamp ? 1 : -1));
+    const latestNotification =
+      sortedNotifications[sortedNotifications.length - 1];
     if (latestNotification && latestNotification.id) {
       fetch(`${BACKEND_API_URL}/notifications/cursor`, {
         method: "PUT",
