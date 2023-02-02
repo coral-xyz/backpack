@@ -119,49 +119,7 @@ export const FullScreenChat = ({
           },
         })}
       >
-        {isDragAccept && (
-          <div
-            style={{
-              position: "absolute",
-              height: "100%",
-              width: "100%",
-              background: `${theme.custom.colors.background}30`,
-              backdropFilter: "blur(10px)",
-              zIndex: 50,
-              display: "flex",
-              justifyContent: "center",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                height: "100%",
-                width: "80%",
-                textAlign: "center",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <FileUploadIcon
-                sx={{
-                  color: theme.custom.colors.icon,
-                  fontSize: "38px",
-                  mb: "8px",
-                }}
-              />
-              <Typography
-                fontSize="24px"
-                sx={{ color: theme.custom.colors.fontColor, mb: "8px" }}
-              >
-                Upload
-              </Typography>
-              <Typography sx={{ color: theme.custom.colors.fontColor3 }}>
-                Drop photos, GIFs, and videos anywhere to upload.
-              </Typography>
-            </div>
-          </div>
-        )}
+        {isDragAccept && <DropzonePopup />}
         <ScrollBarImpl
           onScrollStop={async () => {
             // @ts-ignore
@@ -298,3 +256,50 @@ export const FullScreenChat = ({
     </div>
   );
 };
+
+function DropzonePopup() {
+  const theme = useCustomTheme();
+  return (
+    <div
+      style={{
+        position: "absolute",
+        height: "100%",
+        width: "100%",
+        background: `${theme.custom.colors.nav}85`,
+        backdropFilter: "blur(20px)",
+        zIndex: 50,
+        display: "flex",
+        justifyContent: "center",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+          width: "80%",
+          textAlign: "center",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <FileUploadIcon
+          sx={{
+            color: theme.custom.colors.icon,
+            fontSize: "38px",
+            mb: "8px",
+          }}
+        />
+        <Typography
+          fontSize="24px"
+          sx={{ color: theme.custom.colors.fontColor, mb: "8px" }}
+        >
+          Upload
+        </Typography>
+        <Typography sx={{ color: theme.custom.colors.fontColor3 }}>
+          Drop photos, GIFs, and videos anywhere to upload.
+        </Typography>
+      </div>
+    </div>
+  );
+}
