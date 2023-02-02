@@ -39,6 +39,21 @@ export const updateCursor = async ({
   uuid: string;
   lastNotificationId: number;
 }) => {
+  const currentCursor = await chain("query")({
+    auth_notification_cursor: [
+      {
+        where: { uuid: { _eq: uuid } },
+      },
+      {
+        last_read_notificaiton: true,
+      },
+    ],
+  });
+  const currentCursorId =
+    currentCursor.auth_notification_cursor[0]?.last_read_notificaiton;
+  if (currentCursorId && currentCursorId >= lastNotificationId) {
+    return;
+  }
   await chain("mutation")({
     insert_auth_notification_cursor_one: [
       {

@@ -17,6 +17,7 @@ export const LocalImage = (props) => {
       onClick={props.onClick}
       alt={props.alt}
       className={props.className}
+      style={props.style}
     />
   );
 };
