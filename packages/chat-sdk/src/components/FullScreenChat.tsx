@@ -102,23 +102,18 @@ export const FullScreenChat = ({
 
   return (
     <div
-      style={{
-        display: "flex",
-        flexFlow: "column",
-        height: "100%",
-        background: theme.custom.colors.chatFadeGradient,
-      }}
+      {...getRootProps({
+        onClick: (event) => event.stopPropagation(),
+        style: {
+          display: "flex",
+          flexFlow: "column",
+          height: "100%",
+          background: theme.custom.colors.chatFadeGradient,
+        },
+      })}
     >
-      <div
-        id={"messageContainer"}
-        {...getRootProps({
-          onClick: (event) => event.stopPropagation(),
-          style: {
-            height: "calc(100% - 50px)",
-          },
-        })}
-      >
-        {isDragAccept && <DropzonePopup />}
+      {isDragAccept && <DropzonePopup />}
+      <div id={"messageContainer"} style={{ height: "calc(100% - 50px)" }}>
         <ScrollBarImpl
           onScrollStop={async () => {
             // @ts-ignore
