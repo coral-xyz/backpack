@@ -128,8 +128,6 @@ export const recentSolanaTransactions = atomFamily<
           const heliusTransactionDetails =
             await fetchRecentSolanaTransactionDetails(address);
 
-          console.log(heliusTransactionDetails);
-
           return await Promise.all(
             heliusTransactionDetails?.map(async (t) => {
               // if transaction has a NFT mint address, query for additional metadata
