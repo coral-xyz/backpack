@@ -152,7 +152,11 @@ export const RecoverAccount = ({
 
   return (
     <WithNav
-      navButtonLeft={<NavBackButton onClick={step > 0 ? prevStep : onClose} />}
+      navButtonLeft={
+        <NavBackButton
+          onClick={step > 0 && step !== steps.length - 1 ? prevStep : onClose}
+        />
+      }
       {...navProps}
       // Only display the onboarding menu on the first step
       navButtonRight={undefined}
