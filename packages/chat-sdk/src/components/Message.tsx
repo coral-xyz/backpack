@@ -5,7 +5,7 @@ import {
   NAV_COMPONENT_MESSAGE_PROFILE,
   NEW_COLORS,
 } from "@coral-xyz/common";
-import { LocalImage,refreshIndividualChatsFor } from "@coral-xyz/react-common";
+import { LocalImage, refreshIndividualChatsFor } from "@coral-xyz/react-common";
 import {
   blockchainTokenData,
   SOL_LOGO_URI,
@@ -740,10 +740,10 @@ export function ChatMessages() {
           <MessageLine
             received={chat.received}
             sameUserMessage={
-              chats[index]?.username &&
+              chats[index]?.uuid &&
               index > 0 &&
               index < chats.length &&
-              chats[index]?.username === chats[index - 1]?.username
+              chats[index]?.uuid === chats[index - 1]?.uuid
             }
             parent_message_author_username={chat.parent_message_author_username}
             parent_message_text={chat.parent_message_text}
