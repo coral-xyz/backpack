@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useContext, useMemo } from "react";
 import { RichMentionsContext, RichMentionsInput } from "react-rich-mentions";
 import { useUsersMetadata } from "@coral-xyz/react-common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
@@ -18,7 +18,7 @@ export function MessageInput({ setEmojiMenuOpen }: { setEmojiMenuOpen: any }) {
   const defaultValue = "";
   const classes = useStyles();
   const theme = useCustomTheme();
-  const { type, remoteUsername } = useChatContext();
+  const { type, remoteUsername, activeReply } = useChatContext();
   const { activeSearch } = useContext(RichMentionsContext);
 
   return (
@@ -34,6 +34,8 @@ export function MessageInput({ setEmojiMenuOpen }: { setEmojiMenuOpen: any }) {
         placeholder={
           type === "individual"
             ? `Message @${remoteUsername}`
+            : activeReply?.parent_username
+            ? "Reply"
             : "Write a message..."
         }
         style={{
