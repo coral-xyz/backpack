@@ -58,11 +58,10 @@ export class RecoilSync {
       //@ts-ignore
       const context = canvas.getContext("2d");
       const base_image = new Image();
-      base_image.src = url;
       base_image.onload = function () {
         const aspectRatio = base_image.width / base_image.height;
-        canvas.width = 400;
-        canvas.height = 400 / aspectRatio;
+        canvas.width = 200;
+        canvas.height = 200 / aspectRatio;
         //@ts-ignore
         context.clearRect(0, 0, canvas.width, canvas.height);
         //@ts-ignore
@@ -72,6 +71,7 @@ export class RecoilSync {
         localStorage.setItem(`img-${url}`, dataURL);
         resolve("");
       };
+      base_image.src = url;
     });
   }
 
