@@ -120,6 +120,7 @@ export const FullScreenChat = ({
         })}
       >
         {isDragAccept && <DropzonePopup />}
+        <FadeGradient />
         <ScrollBarImpl
           onScrollStop={async () => {
             // @ts-ignore
@@ -256,6 +257,22 @@ export const FullScreenChat = ({
     </div>
   );
 };
+
+function FadeGradient() {
+  return (
+    <div
+      style={{
+        pointerEvents: "none",
+        position: "absolute",
+        height: "100%",
+        width: "100%",
+        background:
+          "linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 50.1%)",
+        zIndex: 25,
+      }}
+    ></div>
+  );
+}
 
 function DropzonePopup() {
   const theme = useCustomTheme();
