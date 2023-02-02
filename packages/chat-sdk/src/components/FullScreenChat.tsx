@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import Dropzone from "react-dropzone";
+import { useDropzone } from "react-dropzone";
 import type { EnrichedMessageWithMetadata } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
-import { fetchMoreChatsFor, Loading } from "@coral-xyz/react-common";
+import { fetchMoreChatsFor } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { Loader } from "@giphy/react-components";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-import { CircularProgress } from "@mui/material";
+import FileUploadIcon from "@mui/icons-material/FileUploadRounded";
+import { CircularProgress, Typography } from "@mui/material";
 
 import { base64ToArrayBuffer } from "../utils/imageUploadUtils";
 
@@ -38,6 +38,13 @@ export const FullScreenChat = ({
   const [selectedFile, setSelectedFile] = useState<any>(null);
   const [uploadingFile, setUploadingFile] = useState(false);
   const [uploadedImageUri, setUploadedImageUri] = useState("");
+
+  const { getRootProps, getInputProps, isDragAccept } = useDropzone({
+    onDrop: (files) => {
+      const selectedFile = files[0];
+      onMediaSelect(selectedFile);
+    },
+  });
 
   useEffect(() => {
     if (messageRef && autoScroll) {
@@ -104,11 +111,57 @@ export const FullScreenChat = ({
     >
       <div
         id={"messageContainer"}
-        style={{
-          height: "calc(100% - 50px)",
-          background: theme.custom.colors.bg3,
-        }}
+        {...getRootProps({
+          onClick: (event) => event.stopPropagation(),
+          style: {
+            height: "calc(100% - 50px)",
+            background: theme.custom.colors.bg3,
+          },
+        })}
       >
+        {isDragAccept && (
+          <div
+            style={{
+              position: "absolute",
+              height: "100%",
+              width: "100%",
+              background: `${theme.custom.colors.background}30`,
+              backdropFilter: "blur(10px)",
+              zIndex: 50,
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+                width: "80%",
+                textAlign: "center",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <FileUploadIcon
+                sx={{
+                  color: theme.custom.colors.icon,
+                  fontSize: "38px",
+                  mb: "8px",
+                }}
+              />
+              <Typography
+                fontSize="24px"
+                sx={{ color: theme.custom.colors.fontColor, mb: "8px" }}
+              >
+                Upload
+              </Typography>
+              <Typography sx={{ color: theme.custom.colors.fontColor3 }}>
+                Drop photos, GIFs, and videos anywhere to upload.
+              </Typography>
+            </div>
+          </div>
+        )}
         <ScrollBarImpl
           onScrollStop={async () => {
             // @ts-ignore
@@ -161,44 +214,28 @@ export const FullScreenChat = ({
           height={"calc(100% - 50px)"}
         >
           <div>
-            <Dropzone
-              onDrop={(files) => {
-                const selectedFile = files[0];
-                onMediaSelect(selectedFile);
-              }}
-            >
-              {({ getRootProps, getInputProps, isFocused }) => (
-                <div
-                  style={{
-                    paddingBottom: 20,
-                  }}
-                  {...getRootProps({
-                    onClick: (event) => event.stopPropagation(),
-                  })}
-                >
-                  <input {...getInputProps()} />
-                  <div>
-                    {fetchingMoreChats && (
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          marginBottom: 3,
-                          marginTop: 3,
-                        }}
-                      >
-                        {" "}
-                        <CircularProgress size={20} />{" "}
-                      </div>
-                    )}
-                    <Banner />
-                    {loading && <MessagesSkeleton />}
-                    {!loading && chats?.length === 0 && <EmptyChat />}
-                    {!loading && chats?.length !== 0 && <ChatMessages />}
+            <div style={{ paddingBottom: 20 }}>
+              <input {...getInputProps()} />
+              <div>
+                {fetchingMoreChats && (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      marginBottom: 3,
+                      marginTop: 3,
+                    }}
+                  >
+                    {" "}
+                    <CircularProgress size={20} />{" "}
                   </div>
-                </div>
-              )}
-            </Dropzone>
+                )}
+                <Banner />
+                {loading && <MessagesSkeleton />}
+                {!loading && chats?.length === 0 && <EmptyChat />}
+                {!loading && chats?.length !== 0 && <ChatMessages />}
+              </div>
+            </div>
           </div>
         </ScrollBarImpl>
       </div>
