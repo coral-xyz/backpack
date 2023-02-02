@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme: any) =>
       width: "100%",
       textAlign: "left",
       fontSize: "14px",
-      color: theme.custom.colors.fontColor2,
+      color: theme.custom.colors.fontColor,
     },
     messageContent: {
       padding: 0,
