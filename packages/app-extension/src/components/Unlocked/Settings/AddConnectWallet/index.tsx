@@ -14,6 +14,7 @@ import {
 import {
   CheckIcon,
   HardwareWalletIcon,
+  Loading,
   PrimaryButton,
   ProxyImage,
   SecondaryButton,
@@ -190,6 +191,7 @@ export function AddWalletMenu({
   const theme = useCustomTheme();
   const [newPublicKey, setNewPublicKey] = useState("");
   const [openDrawer, setOpenDrawer] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Lock to ensure that the create new wallet button cannot be accidentally
   // spammed or double clicked, which is undesireable as it creates more wallets
@@ -205,6 +207,8 @@ export function AddWalletMenu({
     if (lockCreateButton) {
       return;
     }
+    setOpenDrawer(true);
+    setLoading(true);
     setLockCreateButton(true);
     let newPublicKey;
     if (!keyringExists) {
@@ -226,7 +230,7 @@ export function AddWalletMenu({
       });
     }
     setNewPublicKey(newPublicKey);
-    setOpenDrawer(true);
+    setLoading(false);
     setLockCreateButton(false);
   };
 
@@ -314,6 +318,7 @@ export function AddWalletMenu({
           blockchain={blockchain}
           publicKey={newPublicKey}
           setOpenDrawer={setOpenDrawer}
+          isLoading={loading}
         />
       </WithMiniDrawer>
     </>
@@ -416,7 +421,8 @@ export const ConfirmCreateWallet: React.FC<{
   blockchain: Blockchain;
   publicKey: string;
   setOpenDrawer: (b: boolean) => void;
-}> = ({ blockchain, publicKey, setOpenDrawer }) => {
+  isLoading?: boolean;
+}> = ({ blockchain, publicKey, setOpenDrawer, isLoading = false }) => {
   const theme = useCustomTheme();
   const walletName = useWalletName(publicKey);
   const background = useBackgroundClient();
@@ -433,57 +439,63 @@ export const ConfirmCreateWallet: React.FC<{
         justifyContent: "space-between",
       }}
     >
-      <div>
-        <Typography
-          style={{
-            marginTop: "16px",
-            textAlign: "center",
-            fontWeight: 500,
-            fontSize: "18px",
-            lineHeight: "24px",
-            color: theme.custom.colors.fontColor,
-          }}
-        >
-          Wallet Created
-        </Typography>
-        <div
-          style={{
-            textAlign: "center",
-            marginTop: "24px",
-          }}
-        >
-          <CheckIcon />
-        </div>
-      </div>
-      <div>
-        <WalletListItem
-          blockchain={blockchain}
-          name={walletName}
-          publicKey={publicKey}
-          showDetailMenu={false}
-          isFirst={true}
-          isLast={true}
-          onClick={() => {
-            if (tab === TAB_BALANCES) {
-              // Experience won't go back to TAB_BALANCES so we poke it
-              background.request({
-                method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
-                params: [TAB_APPS],
-              });
-            }
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <>
+          <div>
+            <Typography
+              style={{
+                marginTop: "16px",
+                textAlign: "center",
+                fontWeight: 500,
+                fontSize: "18px",
+                lineHeight: "24px",
+                color: theme.custom.colors.fontColor,
+              }}
+            >
+              Wallet Created
+            </Typography>
+            <div
+              style={{
+                textAlign: "center",
+                marginTop: "24px",
+              }}
+            >
+              <CheckIcon />
+            </div>
+          </div>
+          <div>
+            <WalletListItem
+              blockchain={blockchain}
+              name={walletName}
+              publicKey={publicKey}
+              showDetailMenu={false}
+              isFirst={true}
+              isLast={true}
+              onClick={() => {
+                if (tab === TAB_BALANCES) {
+                  // Experience won't go back to TAB_BALANCES so we poke it
+                  background.request({
+                    method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+                    params: [TAB_APPS],
+                  });
+                }
 
-            background.request({
-              method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
-              params: [TAB_BALANCES],
-            });
+                background.request({
+                  method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+                  params: [TAB_BALANCES],
+                });
 
-            // Close mini drawer.
-            setOpenDrawer(false);
-            // Close main drawer.
-            close();
-          }}
-        />
-      </div>
+                // Close mini drawer.
+                setOpenDrawer(false);
+                // Close main drawer.
+                close();
+              }}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 };
