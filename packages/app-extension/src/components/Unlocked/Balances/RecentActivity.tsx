@@ -111,7 +111,7 @@ export function RecentActivityButton() {
         <div style={{ height: "100%" }}>
           <NavStackEphemeral
             initialRoute={{ name: "root" }}
-            options={() => ({ title: "Transactions" })}
+            options={() => ({ title: "Recent Activity" })}
             navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
           >
             <NavStackScreen
