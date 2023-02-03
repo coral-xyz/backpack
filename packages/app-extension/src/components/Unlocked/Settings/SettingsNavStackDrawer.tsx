@@ -1,6 +1,5 @@
 import {
   AllWalletsList,
-  WalletList as _WalletList,
   WalletListBlockchainSelector,
 } from "../../../components/common/WalletList";
 import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
