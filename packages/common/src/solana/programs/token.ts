@@ -355,7 +355,10 @@ export async function masterEditionAddress(
   )[0];
 }
 
-export async function tokenRecordAddress(mint: PublicKey, token: PublicKey): Promise<PublicKey> {
+export async function tokenRecordAddress(
+  mint: PublicKey,
+  token: PublicKey
+): Promise<PublicKey> {
   return (
     await PublicKey.findProgramAddress(
       [

@@ -8,4 +8,5 @@ export interface DbNotification {
   body: string;
   xnft_id: string;
   timestamp: number;
+  id: number;
 }

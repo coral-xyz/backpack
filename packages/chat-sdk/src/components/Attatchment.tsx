@@ -34,7 +34,13 @@ export const Attatchment = ({
     >
       <IconButton
         size={"small"}
-        style={{ color: theme.custom.colors.icon, ...buttonStyle }}
+        sx={{
+          color: theme.custom.colors.icon,
+          "&:hover": {
+            background: `${theme.custom.colors.avatarIconBackground} !important`,
+          },
+        }}
+        style={buttonStyle}
         onClick={async (e) => {
           hiddenInputRef.current.click();
         }}

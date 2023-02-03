@@ -106,6 +106,8 @@ export const UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD =
   "ui-rpc-method-blockchain-keyrings-add";
 export const UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ =
   "ui-rpc-method-blockchain-keyrings-read";
+export const UI_RPC_METHOD_FIND_SIGNED_WALLET_DESCRIPTOR =
+  "ui-rpc-method-find-signed-public-key-path";
 export const UI_RPC_METHOD_KEY_IS_COLD_UPDATE =
   "ui-rpc-method-key-is-cold-update";
 export const UI_RPC_METHOD_KEYNAME_READ = "ui-rpc-method-keyname-read";
@@ -136,8 +138,6 @@ export const UI_RPC_METHOD_KEYRING_STORE_LOCK =
   "ui-rpc-method-keyring-store-lock";
 export const UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE =
   "ui-rpc-method-keyring-mnemonic-create";
-export const UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_SYNC =
-  "ui-rpc-method-keyring-mnemonic-sync";
 export const UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS =
   "ui-rpc-method-keyring-read-all-pubkeys";
 export const UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEY_DATA =
@@ -544,6 +544,7 @@ export const BACKEND_EVENT = "backend-event";
 // Popup query routes.
 //
 export const QUERY_LOCKED = "locked=true";
+export const QUERY_LOCKED_APPROVAL = "locked-approval=true";
 export const QUERY_APPROVAL = "approve-origin=true";
 export const QUERY_APPROVE_TRANSACTION = "approve-tx=true";
 export const QUERY_APPROVE_ALL_TRANSACTIONS = "approve-all-txs=true";
@@ -551,7 +552,6 @@ export const QUERY_APPROVE_MESSAGE = "approve-message=true";
 export const QUERY_CONNECT_HARDWARE = "connect-hardware=true";
 export const QUERY_ONBOARDING = "onboarding=true";
 export const QUERY_ADD_USER_ACCOUNT = "add-user-account=true";
-export const QUERY_COLD = "cold=true";
 
 export const SIMULATOR_PORT = 9933;
 

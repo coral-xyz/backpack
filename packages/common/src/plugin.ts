@@ -131,25 +131,32 @@ export class Plugin {
   //
   // Loads the plugin javascript code inside the iframe.
   //
-  public createIframe(preference?: XnftPreference) {
+  public createIframe(
+    preference: XnftPreference | null,
+    deepXnftPath?: string
+  ) {
     logger.debug("creating iframe element");
-
+    const url = new URL(this.iframeRootUrl);
+    if (deepXnftPath) {
+      // url.searchParams.set("deepXnftPath", deepXnftPath);
+      url.hash = deepXnftPath;
+    }
     this._nextRenderId = 0;
     this.iframeRoot = document.createElement("iframe");
     this.iframeRoot.style.width = "100%";
     this.iframeRoot.style.height = "100vh";
     this.iframeRoot.style.border = "none";
-
-    if (preference?.mediaPermissions) {
-      this.iframeRoot.setAttribute(
-        "allow",
-        "camera;microphone;display-capture"
-      );
-    }
+    this.iframeRoot.setAttribute(
+      "allow",
+      preference?.mediaPermissions
+        ? "camera;microphone;display-capture;fullscreen"
+        : "fullscreen"
+    );
     this.iframeRoot.setAttribute("fetchpriority", "low");
-    this.iframeRoot.src = this.iframeRootUrl;
+    this.iframeRoot.src = url.toString();
     this.iframeRoot.sandbox.add("allow-same-origin");
     this.iframeRoot.sandbox.add("allow-scripts");
+    this.iframeRoot.sandbox.add("allow-forms");
     this.iframeRoot.onload = () => this.handleRootIframeOnLoad();
   }
 
@@ -227,8 +234,8 @@ export class Plugin {
   // Rendering.
   //////////////////////////////////////////////////////////////////////////////
 
-  public mount(preference?: XnftPreference) {
-    this.createIframe(preference);
+  public mount(preference: XnftPreference | null, deepXnftPath: string) {
+    this.createIframe(preference, deepXnftPath);
     this.didFinishSetup!.then(() => {
       this.pushMountNotification();
     });
