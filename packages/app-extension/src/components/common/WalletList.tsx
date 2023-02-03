@@ -15,6 +15,7 @@ import {
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Add, ExpandMore, MoreHoriz } from "@mui/icons-material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import ErrorIcon from "@mui/icons-material/Error";
 import InfoIcon from "@mui/icons-material/Info";
 import { Box, Button, Grid, Tooltip, Typography } from "@mui/material";
 
@@ -731,26 +732,13 @@ export function WalletListItem({
               justifyContent: "center",
             }}
           >
-            {type === "dehydrated" ? (
-              <RecoverButton
-                inverted={inverted}
-                onClick={() => {
-                  nav.push("add-connect-wallet", {
-                    blockchain: wallet.blockchain,
-                    publicKey: wallet.publicKey,
-                    isRecovery: true,
-                  });
-                }}
-              />
-            ) : (
-              <CopyButton
-                inverted={inverted}
-                isEditWallets={false}
-                onClick={() => {
-                  navigator.clipboard.writeText(publicKey);
-                }}
-              />
-            )}
+            <CopyButton
+              inverted={inverted}
+              isEditWallets={false}
+              onClick={() => {
+                navigator.clipboard.writeText(publicKey);
+              }}
+            />
           </div>
           <div
             style={{
@@ -792,7 +780,9 @@ function CopyButton({
       disableRipple
       variant="contained"
       sx={{
-        padding: "4px 12px",
+        width: "60px",
+        height: "32px",
+        padding: 0,
         textTransform: "none",
         color: inverted
           ? theme.custom.colorsInverted.fontColor
@@ -827,44 +817,6 @@ function CopyButton({
   );
 }
 
-function RecoverButton({
-  onClick,
-  inverted,
-}: {
-  onClick: () => void;
-  inverted?: boolean;
-}) {
-  const theme = useCustomTheme();
-  return (
-    <Button
-      disableElevation
-      disableRipple
-      variant="contained"
-      sx={{
-        padding: "4px 12px",
-        textTransform: "none",
-        color: inverted
-          ? theme.custom.colorsInverted.fontColor
-          : theme.custom.colors.fontColor,
-        backgroundColor: inverted
-          ? theme.custom.colorsInverted.bg2
-          : theme.custom.colors.bg2,
-        "&:hover": {
-          backgroundColor: inverted
-            ? `${theme.custom.colorsInverted.walletCopyButtonHover} !important`
-            : `${theme.custom.colors.walletCopyButtonHover} !important`,
-        },
-      }}
-      onClick={(e) => {
-        e.stopPropagation();
-        onClick();
-      }}
-    >
-      Recover
-    </Button>
-  );
-}
-
 export function StackedWalletAddress({
   publicKey,
   name,
@@ -885,10 +837,9 @@ export function StackedWalletAddress({
         style={{
           fontSize: "16px",
           fontWeight: isSelected ? 600 : 500,
-          color: type === "dehydrated" ? theme.custom.colors.negative : "",
         }}
       >
-        {type === "dehydrated" ? "Import error" : name}
+        {name}
       </Typography>
       <div
         style={{
