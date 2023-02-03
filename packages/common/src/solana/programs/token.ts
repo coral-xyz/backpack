@@ -7,9 +7,9 @@ import type { Program, Provider, SplToken } from "@project-serum/anchor";
 import * as anchor from "@project-serum/anchor";
 import { AnchorProvider, BN, Spl } from "@project-serum/anchor";
 import type { RawMint } from "@solana/spl-token";
-import { MintLayout } from "@solana/spl-token";
-import type { Connection } from "@solana/web3.js";
-import { PublicKey } from "@solana/web3.js";
+import { getAssociatedTokenAddress , MintLayout } from "@solana/spl-token";
+import type { Connection} from "@solana/web3.js";
+import { Keypair , PublicKey } from "@solana/web3.js";
 
 import type {
   ReplaceTypes,
@@ -89,12 +89,14 @@ export async function customSplTokenAccounts(
   //
   // Separate out fungible and non-fungible tokens.
   //
-  const { fungibleTokens, fungibleTokenMetadata, nftTokens, nftTokenMetadata } =
-    splitOutNfts(
-      tokenAccountsArray,
-      tokenMetadata,
-      new Map(mintsMap) as Map<string, RawMint>
-    );
+  const { fungibleTokens, fungibleTokenMetadata } = splitOutNfts(
+    tokenAccountsArray,
+    tokenMetadata,
+    new Map(mintsMap) as Map<string, RawMint>
+  );
+
+  // TODO(jon): Add a feature-flag here
+  const { nftTokens, nftTokenMetadata } = await fetchReadApiNfts(publicKey);
 
   //
   // Add native SOL to the token and metadata list.
@@ -192,6 +194,115 @@ export async function fetchSplMetadata(
   );
 
   return tokenMetaAccounts;
+}
+
+export async function fetchReadApiNfts(publicKey: PublicKey) {
+  const options = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      method: "get_assets_by_owner",
+      // TODO(jon): This should uniquely identify this operation
+      id: "rpd-op-123",
+      params: [
+        // publicKey,
+        new PublicKey("6kPuZ1ZU684dwUSnJFXXFsCJfxKSaWnHRn2V5k4PgYm6"),
+        { sortBy: "updated", sortDirection: "desc" },
+        // change limit
+        5,
+        // change page
+        0,
+        "",
+        "",
+      ],
+    }),
+  };
+
+  // The Metaplex Read API is surfaced on the same connection URL as the typical Solana RPC
+  const json =
+    await // TODO(jon): Make this replaceable / use the existing providers RPC methods
+    (await fetch("https://rpc-devnet.aws.metaplex.com/", options)).json();
+  const nftTokens: any[] = [];
+  const nftTokenMetadata: any[] = [];
+
+  for (const nft of json.result.items) {
+    nftTokens.push({
+      mint: nft.id,
+      authority: nft.ownership.owner,
+      amount: 1,
+      // TODO(jon): Figure out what this state is
+      state: 1,
+      isNative: null,
+      delegatedAmount: nft.ownership.delegated ? "1" : "0",
+      key: await getAssociatedTokenAddress(
+        new PublicKey(nft.id),
+        new PublicKey(nft.ownership.owner)
+      ),
+      compression: {
+        ...nft.compression,
+        ownership: {
+          ...nft.ownership,
+        },
+      },
+    });
+
+    const nftCollection = nft.grouping.find(
+      ({ group_key }) => group_key === "collection"
+    );
+
+    const [metadataAddress] = PublicKey.findProgramAddressSync(
+      [
+        Buffer.from("metadata"),
+        TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+        new PublicKey(nft.id).toBuffer(),
+      ],
+      TOKEN_METADATA_PROGRAM_ID
+    );
+
+    const updateAuthority = nft.authorities.find((authority) =>
+      authority.scopes.includes("full")
+    );
+
+    const metadata = {
+      publicKey: metadataAddress,
+      account: {
+        key: 4,
+        mint: new PublicKey(nft.id),
+        updateAuthority: updateAuthority
+          ? new PublicKey(updateAuthority.address)
+          : null,
+        data: {
+          name: nft.content.metadata.name,
+          symbol: nft.content.metadata.symbol,
+          uri: nft.content.json_uri,
+          sellerFeeBasisPoint: nft.royalty.basis_points,
+          creators: nft.creators,
+        },
+        primarySaleHappened: nft.royalty.primary_sale_happened,
+        isMutable: nft.mutable,
+        editionNonce: nft.supply.edition_nonce,
+        // TODO(jon): Figure out which one to use
+        tokenStandard: nft.interface,
+        // TODO(jon): Figure this out
+        collection: nftCollection
+          ? { key: new PublicKey(nftCollection.group_value) }
+          : null,
+        // TODO(jon): Figure this out
+        collectionDetails: null,
+        // TODO(jon): get this exposed in the API
+        uses: 0,
+        programmableConfig: null,
+      },
+      compression: {
+        ...nft.compression,
+      },
+    };
+
+    nftTokenMetadata.push(metadata);
+  }
+
+  return { nftTokens, nftTokenMetadata };
 }
 
 /**
@@ -355,7 +466,10 @@ export async function masterEditionAddress(
   )[0];
 }
 
-export async function tokenRecordAddress(mint: PublicKey, token: PublicKey): Promise<PublicKey> {
+export async function tokenRecordAddress(
+  mint: PublicKey,
+  token: PublicKey
+): Promise<PublicKey> {
   return (
     await PublicKey.findProgramAddress(
       [

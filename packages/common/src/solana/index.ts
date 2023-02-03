@@ -14,8 +14,27 @@ import {
   findFreezeAuthorityPk,
   findMintStatePk,
 } from "@magiceden-oss/open_creator_protocol";
+import {
+  createTransferInstruction as createTransferLeafInstruction,
+  PROGRAM_ID as BUBBLEGUM_PROGRAM_ID,
+} from "@metaplex-foundation/mpl-bubblegum";
+import type {
+  TransferInstructionAccounts,
+  TransferInstructionArgs} from "@metaplex-foundation/mpl-token-metadata";
+import {
+  createTransferInstruction as createTokenMetadataTransferInstruction,
+  Metadata,
+  TokenRecord,
+  TokenState
+} from "@metaplex-foundation/mpl-token-metadata";
 import type { Program, SplToken } from "@project-serum/anchor";
 import * as anchor from "@project-serum/anchor";
+import { bs58 } from "@project-serum/anchor/dist/cjs/utils/bytes";
+import {
+  ConcurrentMerkleTreeAccount,
+  SPL_ACCOUNT_COMPRESSION_PROGRAM_ID,
+  SPL_NOOP_PROGRAM_ID,
+} from "@solana/spl-account-compression";
 import {
   createAssociatedTokenAccountInstruction,
   createCloseAccountInstruction,
@@ -46,22 +65,13 @@ import * as assertOwner from "./programs/assert-owner";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   associatedTokenAddress,
-  metadataAddress,
   masterEditionAddress,
-  tokenRecordAddress,
+  metadataAddress,
   TOKEN_AUTH_RULES_ID,
+  tokenRecordAddress,
 } from "./programs/token";
 import { xnftClient } from "./programs/xnft";
 import { SolanaProvider } from "./provider";
-
-import {
-  TransferInstructionAccounts,
-  TransferInstructionArgs,
-  createTransferInstruction as createTokenMetadataTransferInstruction,
-  Metadata,
-  TokenRecord,
-  TokenState
-} from "@metaplex-foundation/mpl-token-metadata";
 
 export * from "./background-connection";
 export * from "./cluster";
@@ -298,6 +308,109 @@ export class Solana {
     });
   }
 
+  public static async transferCompressedNft(
+    solanaCtx: SolanaContext,
+    req: Omit<TransferTokenRequest, "amount"> & {
+      compression: {
+        ownership: {
+          delegated: boolean;
+          delegate: string;
+          owner: string;
+        };
+        seq: number;
+        tree: string;
+        data_hash: string;
+        creator_hash: string;
+      };
+    }
+  ): Promise<string> {
+    const { walletPublicKey, tokenClient, commitment } = solanaCtx;
+    const { mint, destination, compression } = req;
+
+    const transaction: Transaction = new Transaction();
+
+    const [treeAuthority] = PublicKey.findProgramAddressSync(
+      [bs58.decode(compression.tree)],
+      BUBBLEGUM_PROGRAM_ID
+    );
+
+    const treeAccount = await ConcurrentMerkleTreeAccount.fromAccountAddress(
+      solanaCtx.connection,
+      new PublicKey(compression.tree)
+    );
+    const canopyHeight = treeAccount.getCanopyDepth();
+
+    const options = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        method: "get_asset_proof",
+        // TODO(jon): This should uniquely identify this operation
+        id: "rpd-op-123",
+        params: [mint.toBase58()],
+      }),
+    };
+
+    // The Metaplex Read API is surfaced on the same connection URL as the typical Solana RPC
+    // Hardcoding for now until testing is complete.
+    const response = await fetch(
+      "https://rpc-devnet.aws.metaplex.com/",
+      options
+    );
+    const { result: assetProof, error } = await response.json();
+    if (error) {
+      // TODO(jon): Handle this a little better
+      console.error(error);
+      throw new Error("something went wrong");
+    }
+
+    const { root, proof, node_index, leaf, tree_id } = assetProof;
+    const { ownership, seq } = compression;
+
+    const transferInstruction = createTransferLeafInstruction(
+      {
+        treeAuthority,
+        leafOwner: new PublicKey(ownership.owner),
+        leafDelegate: ownership.delegated
+          ? new PublicKey(ownership.delegate)
+          : new PublicKey(ownership.owner),
+        newLeafOwner: destination,
+        merkleTree: new PublicKey(tree_id),
+        logWrapper: SPL_NOOP_PROGRAM_ID,
+        compressionProgram: SPL_ACCOUNT_COMPRESSION_PROGRAM_ID,
+        anchorRemainingAccounts: canopyHeight
+          ? proof.slice(0, proof.length - canopyHeight)
+          : proof,
+      },
+      {
+        root: [...bs58.decode(root)],
+        dataHash: [...bs58.decode(compression.data_hash.trim())],
+        creatorHash: [...bs58.decode(compression.creator_hash.trim())],
+        nonce: seq,
+        index: node_index,
+      }
+    );
+
+    transferInstruction.keys;
+
+    transaction.feePayer = walletPublicKey;
+    transaction.recentBlockhash = (
+      await tokenClient.provider.connection.getLatestBlockhash(commitment)
+    ).blockhash;
+
+    const signedTx = await SolanaProvider.signTransaction(
+      solanaCtx,
+      transaction
+    );
+    const rawTx = signedTx.serialize();
+
+    return await tokenClient.provider.connection.sendRawTransaction(rawTx, {
+      skipPreflight: false,
+      preflightCommitment: commitment,
+    });
+  }
+
   public static async transferOpenCreatorProtocol(
     solanaCtx: SolanaContext,
     req: TransferTokenRequest,
@@ -457,13 +570,16 @@ export class Solana {
 
     const transferArgs: TransferInstructionArgs = {
       transferArgs: {
-        __kind: 'V1',
+        __kind: "V1",
         amount,
         authorizationData: null,
       },
     };
 
-    const transferIx = createTokenMetadataTransferInstruction(transferAcccounts, transferArgs);
+    const transferIx = createTokenMetadataTransferInstruction(
+      transferAcccounts,
+      transferArgs
+    );
 
     const transaction: Transaction = new Transaction();
     transaction.add(computeBudgetIx, transferIx);

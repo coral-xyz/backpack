@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { findMintManagerId } from "@cardinal/creator-standard";
 import { programs, tryGetAccount } from "@cardinal/token-manager";
-import type { RawMintString } from "@coral-xyz/common";
+import type {
+  RawMintString,
+  SolanaTokenAccountWithKeyString,
+} from "@coral-xyz/common";
 import {
   Blockchain,
   confirmTransaction,
@@ -11,7 +14,11 @@ import {
   Solana,
 } from "@coral-xyz/common";
 import { PrimaryButton } from "@coral-xyz/react-common";
-import { useSolanaCtx, useSolanaTokenMint } from "@coral-xyz/recoil";
+import {
+  useSolanaCtx,
+  useSolanaTokenAccount,
+  useSolanaTokenMint,
+} from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import {
   findMintStatePk,
@@ -71,6 +78,25 @@ export function SendSolanaConfirmationCard({
     publicKey: solanaCtx.walletPublicKey.toString(),
     tokenAddress: token.address,
   });
+  const accountInfo:
+    | (SolanaTokenAccountWithKeyString & {
+        compression?: {
+          compressed: boolean;
+          ownership: {
+            delegated: boolean;
+            delegate: string;
+            owner: string;
+          };
+          seq: number;
+          tree: string;
+          data_hash: string;
+          creator_hash: string;
+        };
+      })
+    | null = useSolanaTokenAccount({
+    publicKey: solanaCtx.walletPublicKey.toString(),
+    tokenAddress: token.address,
+  });
 
   const onConfirm = async () => {
     setCardType("sending");
@@ -78,6 +104,15 @@ export function SendSolanaConfirmationCard({
     // Send the tx.
     //
     let txSig;
+
+    // Compressed NFTs don't have on-chain mint information, but will have some associated compression information provided by the API.
+    if (!mintInfo && accountInfo && accountInfo.compression?.compressed) {
+      txSig = await Solana.transferCompressedNft(solanaCtx, {
+        mint: new PublicKey(token.address),
+        destination: new PublicKey(destinationAddress),
+        compression: accountInfo.compression,
+      });
+    }
 
     try {
       const mintId = new PublicKey(token.mint?.toString() as string);
