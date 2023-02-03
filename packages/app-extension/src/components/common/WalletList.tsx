@@ -17,8 +17,7 @@ import { Add, ExpandMore, MoreHoriz } from "@mui/icons-material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import ErrorIcon from "@mui/icons-material/Error";
 import InfoIcon from "@mui/icons-material/Info";
-import { Box, Button, Grid, Typography } from "@mui/material";
-import { Tooltip } from "@mui/material";
+import { Box, Button, Grid, Tooltip, Typography } from "@mui/material";
 
 import {
   EthereumIconOnboarding as EthereumIcon,
