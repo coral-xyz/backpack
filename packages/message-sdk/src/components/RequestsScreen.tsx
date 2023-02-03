@@ -29,6 +29,7 @@ export const RequestsScreen = () => {
       </div>
       {activeChats.length !== 0 && (
         <MessageList
+          toRoot={false}
           activeChats={activeChats.map((x) => ({
             chatType: "individual",
             chatProps: x,

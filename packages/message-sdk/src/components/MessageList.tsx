@@ -13,28 +13,30 @@ import {
 import { NAV_COMPONENT_MESSAGE_GROUP_CHAT } from "@coral-xyz/common/src/constants";
 import {
   isFirstLastListItemStyle,
-  ProxyImage,
+  LocalImage,
   useUsersMetadata,
 } from "@coral-xyz/react-common";
-import { useDecodedSearchParams, useUser } from "@coral-xyz/recoil";
+import { useDecodedSearchParams } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import MarkChatUnreadIcon from "@mui/icons-material/MarkChatUnread";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import { List, ListItem } from "@mui/material";
-import { useRecoilState } from "recoil";
 
 import { ParentCommunicationManager } from "../ParentCommunicationManager";
 
 import { useStyles } from "./styles";
+
 export const MessageList = ({
   activeChats,
   requestCount = 0,
+  toRoot = true,
 }: {
   activeChats: (
     | { chatType: "individual"; chatProps: EnrichedInboxDb }
     | { chatType: "collection"; chatProps: CollectionChatData }
   )[];
   requestCount?: number;
+  toRoot?: boolean;
 }) => {
   const theme = useCustomTheme();
 
@@ -52,11 +54,12 @@ export const MessageList = ({
           <RequestsChatItem
             requestCount={requestCount}
             isFirst={true}
-            isLast={activeChats.length === 0}
+            isLast={activeChats?.length === 0}
           />
         )}
-        {activeChats.map((activeChat, index) => (
+        {activeChats?.map((activeChat, index) => (
           <ChatListItem
+            toRoot={toRoot}
             type={activeChat.chatType}
             image={
               activeChat.chatType === "individual"
@@ -84,7 +87,7 @@ export const MessageList = ({
                 : activeChat.chatProps.lastMessageTimestamp || ""
             }
             isFirst={requestCount === 0 && index === 0}
-            isLast={index === activeChats.length - 1}
+            isLast={index === activeChats?.length - 1}
             isUnread={
               activeChat.chatType === "individual"
                 ? activeChat.chatProps.unread
@@ -110,6 +113,7 @@ export function ChatListItem({
   isLast,
   id,
   isUnread,
+  toRoot,
 }: {
   type: SubscriptionType;
   image: string;
@@ -120,12 +124,12 @@ export function ChatListItem({
   isLast: boolean;
   id: string;
   isUnread: boolean;
+  toRoot: boolean;
 }) {
   const classes = useStyles();
-  const { uuid } = useUser();
   const theme = useCustomTheme();
   const { props }: any = useDecodedSearchParams();
-  const parts = parseMessage(message);
+  const parts = parseMessage(message || "");
   const pathname = useLocation().pathname;
   const users: any = useUsersMetadata({
     remoteUserIds: parts.filter((x) => x.type === "tag").map((x) => x.value),
@@ -161,6 +165,7 @@ export function ChatListItem({
             id: id,
             fromInbox: true,
           },
+          pushAboveRoot: toRoot,
         });
       }}
       style={{
@@ -211,6 +216,8 @@ export function ChatListItem({
                     componentProps: {
                       userId: id,
                     },
+
+                    pushAboveRoot: toRoot,
                   });
                 }}
                 image={image}
@@ -234,7 +241,7 @@ export function ChatListItem({
                       style={{
                         fontSize: 19,
                         marginLeft: 3,
-                        color: theme.custom.colors.blue,
+                        color: theme.custom.colors.verified,
                       }}
                     />
                   )}
@@ -293,6 +300,7 @@ export function RequestsChatItem({
           title: `Requests`,
           componentId: NAV_COMPONENT_MESSAGE_REQUESTS,
           componentProps: {},
+          pushAboveRoot: true,
         });
       }}
       style={{
@@ -372,5 +380,11 @@ export function RequestsChatItem({
 
 function UserIcon({ image }: any) {
   const classes = useStyles();
-  return <img src={`${image}?size=25`} className={classes.iconCircularBig} />;
+  return (
+    <LocalImage
+      style={{ width: 40, height: 40 }}
+      src={image}
+      className={classes.iconCircularBig}
+    />
+  );
 }

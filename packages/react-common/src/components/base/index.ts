@@ -4,6 +4,7 @@ export * from "./Inputs";
 export * from "./Labels";
 export * from "./List";
 export * from "./Loading";
+export * from "./LocalImage";
 export * from "./NegativeButton";
 export * from "./PrimaryButton";
 export * from "./ProxyImage";

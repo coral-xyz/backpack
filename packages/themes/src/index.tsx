@@ -122,6 +122,8 @@ type CustomColors = {
   avatarPopoverMenuBackground: string;
   listItemHover: string;
   walletCopyButtonHover: string;
+  verified: string;
+  chatFadeGradient: string;
 };
 
 const baseTheme = createStyles({
@@ -185,7 +187,7 @@ const darkComponentOverrides = {
   },
 };
 
-const DARK_COLORS = {
+const DARK_COLORS: CustomColors = {
   blue: "#3498db",
   smallTextColor: DARK_TEXT_SMALL_COLOR,
   brandColor: BRAND_COLOR,
@@ -256,9 +258,12 @@ const DARK_COLORS = {
   avatarPopoverMenuBackground: BACKGROUND_COLOR_0,
   listItemHover: `rgba(39, 39, 42, ${HOVER_OPACITY})`,
   walletCopyButtonHover: "#18181c",
+  verified: "#DFE0E5",
+  chatFadeGradient:
+    "linear-gradient(180deg, rgba(255, 255, 255, 0.04) 20%, rgba(0, 0, 0, 0) 100%), #18181B",
 };
 
-const LIGHT_COLORS = {
+const LIGHT_COLORS: CustomColors = {
   blue: "blue",
   smallTextColor: LIGHT_TEXT_SMALL_COLOR,
   brandColor: LIGHT_BRAND_COLOR,
@@ -305,10 +310,9 @@ const LIGHT_COLORS = {
   icon: "#8F929E",
   approveTransactionTableBackground: LIGHT_BACKGROUND_COLOR_1,
   approveTransactionCloseBackground: "#C2C4CC",
-  hoverIconBackground: LIGHT_ICON_HOVER_COLOR,
+  hoverIconBackground: "#DFE0E5",
   avatarIconBackground: "#DFE0E5",
   text: LIGHT_TEXT_COLOR,
-
   dangerButton: DANGER_COLOR,
   alpha: "#8F929E",
   scrollbarTrack: LIGHT_BACKGROUND_COLOR_0,
@@ -330,6 +334,9 @@ const LIGHT_COLORS = {
   avatarPopoverMenuBackground: LIGHT_BACKGROUND_COLOR_1,
   listItemHover: "#F8F8F9",
   walletCopyButtonHover: "#d6d6d6",
+  verified: "#212938",
+  chatFadeGradient:
+    "linear-gradient(360deg, rgb(255, 255, 255) 20%, rgba(240, 240, 242, 0.5) 100%), #FFFFFF",
 };
 
 export const darkTheme: Partial<Theme> & {

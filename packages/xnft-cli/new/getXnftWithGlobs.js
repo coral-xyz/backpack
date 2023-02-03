@@ -16,6 +16,9 @@ module.exports = async (xnftPath) => {
 
   Object.values(xnft.entrypoints).forEach((entrypoint) => {
     Object.values(entrypoint).forEach((filePath) => {
+      if (filePath.startsWith("http")) {
+        return;
+      }
       const stats = statSync(filePath);
       if (stats.isDirectory()) {
         include.push(path.join(filePath, "/**/*"));
