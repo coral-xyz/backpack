@@ -44,6 +44,33 @@ export const legacyBip44ChangeIndexed = (
   return new BIPPath.fromPathArray(path).toString();
 };
 
+/**
+ * m/44'/60'/0'/0
+ */
+export const ethereumIndexed = (index: number) => {
+  const coinType = getCoinType(Blockchain.ETHEREUM);
+  const path = [44 + HARDENING, coinType, 0 + HARDENING, 0, index];
+  return new BIPPath.fromPathArray(path).toString();
+};
+
+/**
+ * m/44'/60'/0'
+ */
+export const legacyLedgerIndexed = (index: number) => {
+  const coinType = getCoinType(Blockchain.ETHEREUM);
+  const path = [44 + HARDENING, coinType, 0 + HARDENING, index];
+  return new BIPPath.fromPathArray(path).toString();
+};
+
+/**
+ * m/44'/60'
+ */
+export const legacyLedgerLiveIndexed = (index: number) => {
+  const coinType = getCoinType(Blockchain.ETHEREUM);
+  const path = [44 + HARDENING, coinType, index];
+  return new BIPPath.fromPathArray(path).toString();
+};
+
 export const legacySolletIndexed = (index: number) => {
   const coinType = 501 + HARDENING;
   const path = [coinType, index + HARDENING, 0, 0];
@@ -90,9 +117,6 @@ export const legacyBip44ChangeRecoveryPaths = (blockchain: Blockchain) => {
   );
 };
 
-//
-// New derivation path scheme
-//
 export const getAccountRecoveryPaths = (
   blockchain: Blockchain,
   accountIndex: number
@@ -158,6 +182,22 @@ export const getRecoveryPaths = (blockchain: Blockchain) => {
 
   // Legacy imported accounts (m/44/501'/0' and m/44/501'/0'/{0...n})
   paths = paths.concat(legacyBip44ChangeRecoveryPaths(blockchain));
+
+  if (blockchain === Blockchain.SOLANA) {
+    paths = paths.concat(
+      [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map(legacySolletIndexed)
+    );
+  } else if (blockchain === Blockchain.ETHEREUM) {
+    paths = paths.concat(
+      [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map(ethereumIndexed)
+    );
+    paths = paths.concat(
+      [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map(legacyLedgerIndexed)
+    );
+    paths = paths.concat(
+      [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map(legacyLedgerLiveIndexed)
+    );
+  }
 
   // TODO
   // How many accounts should be searched before giving up? It's possible that
