@@ -58,7 +58,7 @@ function pluginURL(pluginName: string) {
 
 export function xnftUrl(url: string) {
   const uri = externalResourceUri(url);
-  return [PROXY_URL, uri].join("");
+  return uri;
 }
 
 export const collectibleXnft = selectorFamily<
