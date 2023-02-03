@@ -14,7 +14,10 @@ import * as bs58 from "bs58";
 import { ethers } from "ethers";
 
 import { Header, SubtextParagraph } from "../../../common";
-import { WithMiniDrawer } from "../../../common/Layout/Drawer";
+import {
+  useDrawerContext,
+  WithMiniDrawer,
+} from "../../../common/Layout/Drawer";
 import { useNavStack } from "../../../common/Layout/NavStack";
 
 import { ConfirmCreateWallet } from ".";
@@ -36,6 +39,7 @@ export function ImportSecretKey({
   const [openDrawer, setOpenDrawer] = useState(false);
   const [newPublicKey, setNewPublicKey] = useState("");
   const [loading, setLoading] = useState(false);
+  const { close: closeParentDrawer } = useDrawerContext();
 
   useEffect(() => {
     const prevTitle = nav.title;
@@ -165,7 +169,10 @@ export function ImportSecretKey({
         <ConfirmCreateWallet
           blockchain={blockchain}
           publicKey={newPublicKey}
-          setOpenDrawer={setOpenDrawer}
+          onClose={() => {
+            setOpenDrawer(false);
+            closeParentDrawer();
+          }}
         />
       </WithMiniDrawer>
     </>
