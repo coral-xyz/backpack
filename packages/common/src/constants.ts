@@ -464,10 +464,12 @@ export const SOLANA_CONNECTION_RPC_GET_PARSED_PROGRAM_ACCOUNTS =
 //
 // Ledger API.
 //
-export const LEDGER_IFRAME_URL =
+export const LEDGER_IFRAME_URL = "https://localhost:4443/dist";
+/*
   BACKPACK_CONFIG_VERSION === "development"
     ? "https://localhost:4443/dist"
     : "https://coral-xyz.github.io/ledger-injection/";
+*/
 
 export const LEDGER_INJECTED_CHANNEL_REQUEST = "ledger-injected-request";
 export const LEDGER_INJECTED_CHANNEL_RESPONSE = "ledger-injected-response";
