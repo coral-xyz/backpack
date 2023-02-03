@@ -14,6 +14,10 @@ import {
   metadataAddress,
 } from "@coral-xyz/common";
 import { useSolanaCtx } from "@coral-xyz/recoil";
+import {
+  Metadata,
+  TokenStandard,
+} from "@metaplex-foundation/mpl-token-metadata";
 import { SettingsList } from "@screens/Unlocked/Settings/components/SettingsMenuList";
 import { PublicKey } from "@solana/web3.js";
 
@@ -25,7 +29,6 @@ import {
 } from "@components/BottomDrawerCards";
 import { Margin, PrimaryButton, TokenAmountHeader } from "@components/index";
 import { useTheme } from "@hooks/index";
-import { Metadata, TokenStandard } from "@metaplex-foundation/mpl-token-metadata";
 
 type Step = "confirm" | "sending" | "complete" | "error";
 
@@ -90,8 +93,7 @@ export function SendSolanaConfirmationCard({
           solanaCtx.connection,
           token.mint?.toString() as string
         )
-      )
-      {
+      ) {
         txSig = await Solana.transferProgrammableNft(solanaCtx, {
           destination: new PublicKey(destinationAddress),
           mint: new PublicKey(token.mint!),
@@ -278,5 +280,5 @@ const isProgrammableNftToken = async (
     // most likely this happens if the metadata account does not exist
     console.log(error);
     return false;
-  }  
+  }
 };

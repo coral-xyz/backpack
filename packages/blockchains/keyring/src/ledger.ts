@@ -1,40 +1,37 @@
+import type { WalletDescriptor } from "@coral-xyz/common";
 import {
   generateUniqueId,
   LEDGER_INJECTED_CHANNEL_REQUEST,
   LEDGER_INJECTED_CHANNEL_RESPONSE,
 } from "@coral-xyz/common";
 
-import type { ImportedDerivationPath, LedgerKeyringJson } from "./types";
+import type { LedgerKeyringJson } from "./types";
 
 export class LedgerKeyringBase {
-  protected derivationPaths: Array<ImportedDerivationPath>;
+  protected walletDescriptors: Array<WalletDescriptor>;
 
-  constructor(derivationPaths: Array<ImportedDerivationPath>) {
-    this.derivationPaths = derivationPaths;
-  }
-
-  public keyCount(): number {
-    return this.derivationPaths.length;
+  constructor(walletDescriptors: Array<WalletDescriptor>) {
+    this.walletDescriptors = walletDescriptors;
   }
 
   public deletePublicKey(publicKey: string) {
-    this.derivationPaths = this.derivationPaths.filter(
-      (dp) => dp.publicKey !== publicKey
+    this.walletDescriptors = this.walletDescriptors.filter(
+      (x) => x.publicKey !== publicKey
     );
   }
 
-  public async ledgerImport(path: string, account: number, publicKey: string) {
-    const found = this.derivationPaths.find(
-      ({ publicKey: pk }) => publicKey === pk
+  public async add(walletDescriptor: WalletDescriptor) {
+    const found = this.walletDescriptors.find(
+      (x) => x.publicKey === walletDescriptor.publicKey
     );
     if (found) {
       throw new Error("ledger account already exists");
     }
-    this.derivationPaths.push({ path, account, publicKey });
+    this.walletDescriptors.push(walletDescriptor);
   }
 
   public publicKeys(): Array<string> {
-    return this.derivationPaths.map((dp) => dp.publicKey);
+    return this.walletDescriptors.map((x) => x.publicKey);
   }
 
   exportSecretKey(): string | null {
@@ -47,14 +44,13 @@ export class LedgerKeyringBase {
 
   public toString(): string {
     return JSON.stringify({
-      // TODO: does this need to be plural?
-      derivationPath: this.derivationPaths,
+      walletDescriptors: this.walletDescriptors,
     });
   }
 
   public toJson(): LedgerKeyringJson {
     return {
-      derivationPaths: this.derivationPaths,
+      walletDescriptors: this.walletDescriptors,
     };
   }
 
@@ -72,7 +68,7 @@ export class LedgerKeyringBase {
           ...req,
         },
       };
-      postMessageToIframe(msg);
+      postMessageToIframe(msg, true);
     });
   }
 }
@@ -82,7 +78,8 @@ export class LedgerKeyringBase {
  * @param message object with message data
  */
 export const postMessageToIframe = (
-  message: Record<string, any> & { type: any }
+  message: Record<string, any> & { type: any },
+  requiresFocus = false
 ) => {
   globalThis.clients
     .matchAll({
@@ -93,7 +90,9 @@ export const postMessageToIframe = (
     })
     .then((clients) => {
       clients.forEach((client) => {
-        client.postMessage(message);
+        if (!requiresFocus || client.focused) {
+          client.postMessage(message);
+        }
       });
     });
 };

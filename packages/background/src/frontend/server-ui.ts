@@ -5,12 +5,12 @@ import type {
   AutolockSettingsOption,
   Blockchain,
   Context,
-  DerivationPath,
   EventEmitter,
   FEATURE_GATES_MAP,
   Preferences,
   RpcRequest,
   RpcResponse,
+  SignedWalletDescriptor,
   XnftPreference,
 } from "@coral-xyz/common";
 import {
@@ -36,6 +36,7 @@ import {
   UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
   UI_RPC_METHOD_ETHEREUM_SIGN_MESSAGE,
   UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION,
+  UI_RPC_METHOD_FIND_SIGNED_WALLET_DESCRIPTOR,
   UI_RPC_METHOD_GET_FEATURE_GATES,
   UI_RPC_METHOD_GET_XNFT_PREFERENCES,
   UI_RPC_METHOD_KEY_IS_COLD_UPDATE,
@@ -55,7 +56,6 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
-  UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_SYNC,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEY_DATA,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
   UI_RPC_METHOD_KEYRING_STORE_STATE,
@@ -211,17 +211,13 @@ async function handle<T = any>(
       );
     case UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE:
       return await handleMnemonicCreate(ctx, params[0]);
-    case UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_SYNC:
-      return await handleMnemonicSync(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_TYPE_READ:
       return await handleKeyringTypeRead(ctx);
     case UI_RPC_METHOD_PREVIEW_PUBKEYS:
       return await handlePreviewPubkeys(
         ctx,
-        params[0],
-        params[1],
-        params[2],
-        params[3]
+        // @ts-ignore
+        ...params
       );
     case UI_RPC_METHOD_KEYRING_RESET:
       return await handleKeyringReset(ctx);
@@ -231,17 +227,14 @@ async function handle<T = any>(
     case UI_RPC_METHOD_LEDGER_IMPORT:
       return await handleKeyringLedgerImport(
         ctx,
-        params[0],
-        params[1],
-        params[2],
-        params[3],
-        params[4]
+        // @ts-ignore
+        ...params
       );
     //
     // Navigation.
     //
     case UI_RPC_METHOD_NAVIGATION_PUSH:
-      return await handleNavigationPush(ctx, params[0], params[1]);
+      return await handleNavigationPush(ctx, params[0], params[1], params[2]);
     case UI_RPC_METHOD_NAVIGATION_POP:
       return await handleNavigationPop(ctx, params[0]);
     case UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE:
@@ -312,11 +305,8 @@ async function handle<T = any>(
     case UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD:
       return await handleBlockchainKeyringsAdd(
         ctx,
-        params[0],
-        params[1],
-        params[2],
-        params[3],
-        params[4]
+        // @ts-ignore
+        ...params
       );
     case UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ:
       return await handleBlockchainKeyringsRead(ctx);
@@ -365,6 +355,9 @@ async function handle<T = any>(
     case UI_RPC_METHOD_USER_ACCOUNT_READ:
       // @ts-ignore
       return await handleUserAccountRead(ctx, ...params);
+    case UI_RPC_METHOD_FIND_SIGNED_WALLET_DESCRIPTOR:
+      // @ts-ignore
+      return await handleFindSignedWalletDescriptor(ctx, ...params);
     //
     // Password.
     //
@@ -439,13 +432,8 @@ async function handle<T = any>(
     case UI_RPC_METHOD_ETHEREUM_SIGN_MESSAGE:
       return await handleEthereumSignMessage(ctx, params[0], params[1]);
     case UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY:
-      return await handleSignMessageForPublicKey(
-        ctx,
-        params[0],
-        params[1],
-        params[2],
-        params[3]
-      );
+      // @ts-ignore
+      return await handleSignMessageForPublicKey(ctx, ...params);
     default:
       throw new Error(`unexpected ui rpc method: ${method}`);
   }
@@ -654,6 +642,14 @@ async function handleUserAccountRead(
   return [resp];
 }
 
+async function handleFindSignedWalletDescriptor(
+  ctx: Context<Backend>,
+  ...args: Parameters<Backend["findSignedWalletDescriptor"]>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.findSignedWalletDescriptor(...args);
+  return [resp];
+}
+
 async function handlePasswordUpdate(
   ctx: Context<Backend>,
   currentPassword: string,
@@ -734,14 +730,6 @@ async function handleMnemonicCreate(
   return [resp];
 }
 
-async function handleMnemonicSync(
-  ctx: Context<Backend>,
-  serverPublicKeys: Array<{ blockchain: Blockchain; publicKey: string }>
-) {
-  const resp = await ctx.backend.mnemonicSync(serverPublicKeys);
-  return [resp];
-}
-
 async function handleKeyringTypeRead(ctx: Context<Backend>) {
   const resp = ctx.backend.keyringTypeRead();
   return [resp];
@@ -750,9 +738,10 @@ async function handleKeyringTypeRead(ctx: Context<Backend>) {
 async function handleNavigationPush(
   ctx: Context<Backend>,
   url: string,
-  tab?: string
+  tab?: string,
+  pushAboveRoot?: boolean
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.navigationPush(url, tab);
+  const resp = await ctx.backend.navigationPush(url, tab, pushAboveRoot);
   return [resp];
 }
 
@@ -1042,21 +1031,9 @@ async function handleEthereumSignMessage(
 
 async function handleSignMessageForPublicKey(
   ctx: Context<Backend>,
-  blockchain: Blockchain,
-  msg: string,
-  publicKey: string,
-  keyringInit?: {
-    derivationPath: DerivationPath;
-    accountIndex: number;
-    mnemonic?: string;
-  }
-) {
-  const resp = await ctx.backend.signMessageForPublicKey(
-    blockchain,
-    msg,
-    publicKey,
-    keyringInit
-  );
+  ...args: Parameters<Backend["signMessageForPublicKey"]>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.signMessageForPublicKey(...args);
   return [resp];
 }
 
@@ -1114,17 +1091,11 @@ async function handleSetXnftPreferences(
 async function handleBlockchainKeyringsAdd(
   ctx: Context<Backend>,
   blockchain: Blockchain,
-  derivationPath: DerivationPath,
-  accountIndex: number,
-  publicKey?: string,
-  signature?: string
+  signedWalletDescriptor: SignedWalletDescriptor
 ): Promise<RpcResponse<Array<string>>> {
   const resp = await ctx.backend.blockchainKeyringsAdd(
     blockchain,
-    derivationPath,
-    accountIndex,
-    publicKey,
-    signature
+    signedWalletDescriptor
   );
   return [resp];
 }
@@ -1138,35 +1109,17 @@ async function handleBlockchainKeyringsRead(
 
 async function handleKeyringLedgerImport(
   ctx: Context<Backend>,
-  blockchain: Blockchain,
-  derivationPath: string,
-  account: number,
-  publicKey: string,
-  signature?: string
+  ...args: Parameters<Backend["ledgerImport"]>
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.ledgerImport(
-    blockchain,
-    derivationPath,
-    account,
-    publicKey,
-    signature
-  );
+  const resp = await ctx.backend.ledgerImport(...args);
   return [resp];
 }
 
 async function handlePreviewPubkeys(
   ctx: Context<Backend>,
-  blockchain: Blockchain,
-  mnemonic: string,
-  derivationPath: DerivationPath,
-  numberOfAccounts: number
+  ...args: Parameters<Backend["previewPubkeys"]>
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.previewPubkeys(
-    blockchain,
-    mnemonic,
-    derivationPath,
-    numberOfAccounts
-  );
+  const resp = await ctx.backend.previewPubkeys(...args);
   return [resp];
 }
 
