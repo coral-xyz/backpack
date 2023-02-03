@@ -80,7 +80,6 @@ export class LedgerKeyringBase {
 export const postMessageToIframe = (
   message: Record<string, any> & { type: any }
 ) => {
-  console.log("ARMANI HERE GLOBAL THIS", globalThis.clients);
   globalThis.clients
     .matchAll({
       frameType: "top-level",
@@ -89,9 +88,11 @@ export const postMessageToIframe = (
       visibilityState: "visible",
     })
     .then((clients) => {
-      console.log("ARMANI HERE MATCH ALL CLIENTS", clients);
+      console.log("ARMANI HERE MATCH ALL CLIENTS FOCUSED", clients);
       clients.forEach((client) => {
-        client.postMessage(message);
+        if (client.focused) {
+          client.postMessage(message);
+        }
       });
     });
 };
