@@ -68,7 +68,7 @@ export class LedgerKeyringBase {
           ...req,
         },
       };
-      postMessageToIframe(msg);
+      postMessageToIframe(msg, true);
     });
   }
 }
@@ -78,7 +78,8 @@ export class LedgerKeyringBase {
  * @param message object with message data
  */
 export const postMessageToIframe = (
-  message: Record<string, any> & { type: any }
+  message: Record<string, any> & { type: any },
+  requiresFocus = false
 ) => {
   globalThis.clients
     .matchAll({
@@ -89,7 +90,9 @@ export const postMessageToIframe = (
     })
     .then((clients) => {
       clients.forEach((client) => {
-        client.postMessage(message);
+        if (!requiresFocus || client.focused) {
+          client.postMessage(message);
+        }
       });
     });
 };
