@@ -274,7 +274,9 @@ router.get(
 
       res.json({
         ...user,
-        claimed: claimsIncludingClaimedAt.filter((c) => c.claimed_at),
+        claimed: claimsIncludingClaimedAt
+          .filter((c) => c.claimed_at)
+          .sort((a, b) => new Date(b.claimed_at) - new Date(a.claimed_at)),
         unclaimed: claimsIncludingClaimedAt.filter((c) => !c.claimed_at),
       });
     } catch (err) {
