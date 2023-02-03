@@ -5,6 +5,8 @@ import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
 
+import { BACKPACK_FEATURE_REFERRAL_FEES } from "../../generated-config";
+
 export const XNFT_PROGRAM_ID = new PublicKey(
   "xnft5aaToUM4UFETUQfj7NUDUBdvYHTVhNFThEYTm55"
 );
@@ -73,6 +75,24 @@ export async function fetchXnfts(
       reserved: Array(64).fill(0),
     },
   });
+
+  if (BACKPACK_FEATURE_REFERRAL_FEES) {
+    // HACK to get Dropzone xNFT installed for everyone
+    xnftInstalls.push({
+      // @ts-ignore
+      publicKey: "CVkbt7dscJdjAJFF2uKrtin6ve9M8DA4gsUccAjePUHH",
+      // @ts-ignore
+      account: {
+        authority: PublicKey.default,
+        xnft: new PublicKey("CVkbt7dscJdjAJFF2uKrtin6ve9M8DA4gsUccAjePUHH"),
+        masterMetadata: new PublicKey(
+          "3ir4m8m51eWdLTx5e1XSkiwzu6TF24DYEi5ar5XnYK9u"
+        ),
+        edition: new anchor.BN("00"),
+        reserved: Array(64).fill(0),
+      },
+    });
+  }
 
   if (xnftInstalls.length === 0) {
     return [];
