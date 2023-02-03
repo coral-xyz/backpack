@@ -24,6 +24,7 @@ export const HardwareSearch = ({
   transport,
   publicKey,
   onNext,
+  onError,
   onRetry,
 }: {
   blockchain: Blockchain;
@@ -42,9 +43,20 @@ export const HardwareSearch = ({
         [Blockchain.ETHEREUM]: new Ethereum(transport),
       }[blockchain];
       for (const derivationPath of getRecoveryPaths(blockchain)) {
-        const ledgerAddress = (
-          await ledger.getAddress(derivationPath.replace("m/", ""))
-        ).address;
+        let ledgerAddress;
+        try {
+          ledgerAddress = (
+            await ledger.getAddress(derivationPath.replace("m/", ""))
+          ).address;
+        } catch (error) {
+          if (onError) {
+            console.debug("hardware search transport error", error);
+            onError(error as Error);
+            return;
+          } else {
+            throw error;
+          }
+        }
         if (bs58.encode(ledgerAddress) === publicKey) {
           onNext({ derivationPath, publicKey });
           return;

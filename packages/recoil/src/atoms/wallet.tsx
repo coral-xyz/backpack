@@ -1,10 +1,11 @@
+import type { ServerPublicKey } from "@coral-xyz/common";
 import {
   Blockchain,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEY_DATA,
 } from "@coral-xyz/common";
 import { atom, selector, selectorFamily } from "recoil";
 
-import type { ServerPublicKey, WalletPublicKeys } from "../types";
+import type { WalletPublicKeys } from "../types";
 
 import { backgroundClient } from "./client";
 import { isAggregateWallets } from "./preferences";
