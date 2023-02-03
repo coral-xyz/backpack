@@ -4,7 +4,6 @@ import {
   Blockchain,
   DEFAULT_SOLANA_CLUSTER,
   EthereumConnectionUrl,
-  getIndexedPath,
   legacyBip44ChangeIndexed,
   legacyBip44Indexed,
   legacySolletIndexed,

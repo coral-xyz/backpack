@@ -634,10 +634,21 @@ class UserKeyring {
     keyring.username = username;
     keyring.mnemonic = keyringInit.mnemonic;
     for (const signedWalletDescriptor of keyringInit.signedWalletDescriptors) {
-      await keyring.blockchainKeyringAdd(
-        getBlockchainFromPath(signedWalletDescriptor.derivationPath),
-        signedWalletDescriptor
+      const blockchainKeyring = keyring.blockchains.get(
+        getBlockchainFromPath(signedWalletDescriptor.derivationPath)
       );
+      if (blockchainKeyring) {
+        // Blockchain keyring already exists, just add the derivation path
+        await blockchainKeyring.addDerivationPath(
+          signedWalletDescriptor.derivationPath
+        );
+      } else {
+        // No blockchain keyring, create it
+        await keyring.blockchainKeyringAdd(
+          getBlockchainFromPath(signedWalletDescriptor.derivationPath),
+          signedWalletDescriptor
+        );
+      }
     }
     // Set the active wallet to be the first keyring.
     keyring.activeBlockchain = getBlockchainFromPath(

@@ -33,9 +33,12 @@ export const HardwareDefaultAccount = ({
       // Get the public key for the default path from the hardware wallet
       let ledgerAddress;
       try {
-        ledgerAddress = (await ledger.getAddress(derivationPath)).address;
+        ledgerAddress = (
+          await ledger.getAddress(derivationPath.replace("m/", ""))
+        ).address;
       } catch (error) {
         if (onError) {
+          console.debug("hardware default account transport error", error);
           onError(error as Error);
           return;
         } else {

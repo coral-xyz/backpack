@@ -106,6 +106,12 @@ export type SignedWalletDescriptor = {
   signature: string;
 } & WalletDescriptor;
 
+// The way public keys are stored on the API
+export type ServerPublicKey = {
+  blockchain: Blockchain;
+  publicKey: string;
+};
+
 export interface XnftPreference {
   disabled: boolean;
   mediaPermissions: boolean;
