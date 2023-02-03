@@ -11,7 +11,7 @@ import cors from "cors";
 import type { NextFunction, Request, Response } from "express";
 import express from "express";
 
-import { HASURA_URL, JWT } from "../../config";
+import { DROPZONE_XNFT_SECRET, HASURA_URL, JWT } from "../../config";
 
 const router = express.Router();
 router.use(cors({ origin: "*" }));
@@ -36,6 +36,7 @@ router.post("/drops", async (req, res, next) => {
           },
         },
         {
+          id: true,
           username: true,
           dropzone_public_key: [
             {},
@@ -117,6 +118,38 @@ router.post("/drops", async (req, res, next) => {
         },
       }),
     });
+
+    // Send push notifications to drop receipients in batches of 500
+    // TODO: group multiple mint drop notifications into a single one
+    try {
+      if (DROPZONE_XNFT_SECRET) {
+        for (const userIds of sliceIntoChunks(
+          auth_users.map((u) => u.id),
+          500
+        )) {
+          try {
+            await fetch("https://xnft-api-server.xnfts.dev/v1/notifications", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${DROPZONE_XNFT_SECRET}`,
+              },
+              body: JSON.stringify({
+                userIds,
+                title: "Dropzone Drop",
+                body: "You received a drop!",
+              }),
+            });
+          } catch (err) {
+            // chunk failed, catch and continue, maybe other chunks will succeed
+            console.error(err);
+          }
+        }
+      }
+    } catch (err) {
+      // fail silently
+      console.error(err);
+    }
 
     res.json({
       msg: encode(tx.serialize({ requireAllSignatures: false })),
@@ -406,4 +439,13 @@ function isValidClaimant(req: Request, res: Response, next: NextFunction) {
   } catch (err) {
     res.status(400).json({ error: "Invalid claimant address" });
   }
+}
+
+function sliceIntoChunks<T>(arr: Array<T>, chunkSize: number) {
+  const res = [] as Array<Array<T>>;
+  for (let i = 0; i < arr.length; i += chunkSize) {
+    const chunk = arr.slice(i, i + chunkSize);
+    res.push(chunk);
+  }
+  return res;
 }
