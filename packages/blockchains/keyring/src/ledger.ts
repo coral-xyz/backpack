@@ -88,7 +88,6 @@ export const postMessageToIframe = (
       visibilityState: "visible",
     })
     .then((clients) => {
-      console.log("ARMANI HERE MATCH ALL CLIENTS FOCUSED", clients);
       clients.forEach((client) => {
         if (client.focused) {
           client.postMessage(message);

@@ -216,7 +216,6 @@ async function handleConnect(
   ctx: Context<Backend>,
   blockchain: Blockchain
 ): Promise<RpcResponse<string>> {
-  console.log("ARMANI HERE handle coinnect 23 testing", ctx, globalThis.client);
   const origin = ctx.sender.origin;
 
   if (locks.has(origin)) {

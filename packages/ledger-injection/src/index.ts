@@ -38,7 +38,6 @@ class LedgerInjection {
 
   start() {
     window.addEventListener("message", async (event) => {
-      console.log("ARMANI IFRAME MESSAGE HERE", event);
       if (event.data.type !== LEDGER_INJECTED_CHANNEL_REQUEST) {
         return;
       }
@@ -145,9 +144,7 @@ class LedgerInjection {
   }
 
   async connectIfNeeded() {
-    console.log("ARMANI CONNECTING IF NEEDED", this.transport);
     if (!this.transport) {
-      console.log("ARMANI HERE TRANSPORT");
       this.transport = await TransportWebHid.create();
       this.solana = new Solana(this.transport);
       this.ethereum = new Ethereum(this.transport);

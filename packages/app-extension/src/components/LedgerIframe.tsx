@@ -14,12 +14,8 @@ const LedgerIframe = () => {
   const iframe = useRef<HTMLIFrameElement>(null);
   useEffect(() => {
     let handleMessage: (event: MessageEvent) => void;
-    console.log("ARMANI REGISTERING HERE WITH FETCH", self);
-    self.addEventListener("fetch", (event) => {
-      console.log("ARMANIF FETCH EVENT HERE", event);
-    });
-    fetch("https://xnfts.dev").then(console.log);
-    navigator.serviceWorker.ready.then((registration) => {
+
+    navigator.serviceWorker.ready.then(() => {
       //
       // Response: relays message from the injected ledger iframe to the
       //           background script.
