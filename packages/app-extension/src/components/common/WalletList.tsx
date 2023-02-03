@@ -17,7 +17,7 @@ import { Add, ExpandMore, MoreHoriz } from "@mui/icons-material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import ErrorIcon from "@mui/icons-material/Error";
 import InfoIcon from "@mui/icons-material/Info";
-import { Box, Button, Grid, Tooltip,Typography  } from "@mui/material";
+import { Box, Button, Grid, Tooltip, Typography } from "@mui/material";
 
 import {
   EthereumIconOnboarding as EthereumIcon,
@@ -531,16 +531,6 @@ function _WalletList({
                 />
               </Tooltip>
             </div>
-            <Typography
-              style={{
-                fontWeight: 500,
-                color: theme.custom.colorsInverted.secondary,
-                fontSize: "14px",
-                lineHeight: "20px",
-              }}
-            >
-              Disable app signing in wallet info
-            </Typography>
           </div>
           <WalletList
             inverted={true}
