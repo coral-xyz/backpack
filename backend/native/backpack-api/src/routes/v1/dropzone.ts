@@ -197,27 +197,34 @@ router.get(
   async (req, res, next) => {
     try {
       const {
-        auth_users: [user],
+        auth_public_keys: [{ user }],
         dropzone_distributors: query,
       } = await chain("query")({
-        auth_users: [
+        // TODO: fetch user by JWT id instead
+        auth_public_keys: [
           {
             limit: 1,
             where: {
-              dropzone_public_key: {
-                public_key: { _eq: req.params.claimant },
-              },
+              blockchain: { _eq: "solana" },
+              public_key: { _eq: req.params.claimant },
             },
           },
           {
-            username: true,
-            referred_users: [
-              {},
-              {
-                username: true,
-                created_at: true,
-              },
-            ],
+            user: {
+              username: true,
+              dropzone_public_key: [
+                {},
+                {
+                  public_key: true,
+                },
+              ],
+              referred_users: [
+                {
+                  order_by: [{ created_at: "desc" as order_by.desc }],
+                },
+                { username: true, created_at: true },
+              ],
+            },
           },
         ],
         dropzone_distributors: [
