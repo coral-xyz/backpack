@@ -883,16 +883,56 @@ export function StackedWalletAddress({
 }
 
 function WalletTypeIcon({ type, fill }: { type: string; fill?: string }) {
+  const theme = useCustomTheme();
   switch (type) {
     case "imported":
       return <ImportedIcon fill={fill} />;
     case "hardware":
       return <HardwareIcon fill={fill} />;
     case "dehydrated":
-      return null;
+      return (
+        <ErrorIcon
+          style={{
+            color: theme.custom.colors.dangerButton,
+            height: "24px",
+            width: "24px",
+            padding: "4px",
+          }}
+        />
+      );
     default:
       return <MnemonicIcon fill={fill} />;
   }
+}
+
+export function ImportTypeBadge({ type }: { type: string }) {
+  const theme = useCustomTheme();
+  return type === "derived" ? (
+    <></>
+  ) : (
+    <div
+      style={{
+        paddingLeft: "10px",
+        paddingRight: "10px",
+        paddingTop: "2px",
+        paddingBottom: "2px",
+        backgroundColor: theme.custom.colors.bg2,
+        height: "20px",
+        borderRadius: "10px",
+      }}
+    >
+      <Typography
+        style={{
+          color: theme.custom.colors.fontColor,
+          fontSize: "12px",
+          lineHeight: "16px",
+          fontWeight: 600,
+        }}
+      >
+        {type === "imported" ? "IMPORTED" : "HARDWARE"}
+      </Typography>
+    </div>
+  );
 }
 
 function NetworkIcon({
