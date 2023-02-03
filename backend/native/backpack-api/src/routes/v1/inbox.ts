@@ -127,6 +127,9 @@ export async function enrichFriendships(
     const remoteUsername =
       (metadatas.find((x) => x.id === remoteUserId)?.username as string) || "";
 
+    const public_keys = (metadatas.find((x) => x.id === remoteUserId)
+      ?.public_keys || []) as { blockchain: string; publicKey: string }[];
+
     const unread =
       friendship.last_message_sender === remoteUserId &&
       friendship.last_message_client_uuid !==
@@ -138,6 +141,7 @@ export async function enrichFriendships(
       id: friendship.id,
       friendshipId: friendship.id,
       last_message: friendship.last_message,
+      public_keys: public_keys,
       last_message_timestamp: friendship.last_message_timestamp,
       last_message_sender: friendship.last_message_sender,
       user1: friendship.user1,

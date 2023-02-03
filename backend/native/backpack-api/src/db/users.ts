@@ -21,6 +21,7 @@ export const getUsers = async (
       {
         id: true,
         username: true,
+        public_keys: [{}, { blockchain: true, public_key: true }],
       },
     ],
   });
