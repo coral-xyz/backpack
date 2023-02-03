@@ -6,7 +6,8 @@ import { extractUserId } from "../../auth/middleware";
 import {
   getAllFriends,
   getFriendship,
-  getRequests,
+  getReceivedRequests,
+  getSentRequests,
   setBlocked,
   setFriendship,
   setSpam,
@@ -72,11 +73,32 @@ router.post("/unfriend", extractUserId, async (req, res) => {
   res.json({});
 });
 
+router.get("/sent", extractUserId, async (req, res) => {
+  // @ts-ignore
+  const uuid: string = req.id;
+
+  const requestedUserIds = await getSentRequests({ uuid });
+  const users = await getUsers(requestedUserIds);
+  const requestedWithMetadata: RemoteUserData[] = requestedUserIds.map(
+    (userId) => ({
+      id: userId,
+      username: users.find((x) => x.id === userId)?.username as string,
+      image: `${AVATAR_BASE_URL}/${
+        users.find((x) => x.id === userId)?.username
+      }`,
+      areFriends: false,
+      remoteRequested: false,
+      requested: true,
+    })
+  );
+  res.json({ requests: requestedWithMetadata });
+});
+
 router.get("/requests", extractUserId, async (req, res) => {
   //@ts-ignore
   const uuid: string = req.id; // TODO from from
 
-  const requestUserIds = await getRequests({ uuid });
+  const requestUserIds = await getReceivedRequests({ uuid });
   const users = await getUsers(requestUserIds);
   const requestsWithMetadata: RemoteUserData[] = requestUserIds.map(
     (requestUserId) => ({
