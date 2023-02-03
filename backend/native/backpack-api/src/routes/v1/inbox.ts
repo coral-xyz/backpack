@@ -138,6 +138,7 @@ export async function enrichFriendships(
       id: friendship.id,
       friendshipId: friendship.id,
       last_message: friendship.last_message,
+      public_keys: friendship.public_keys,
       last_message_timestamp: friendship.last_message_timestamp,
       last_message_sender: friendship.last_message_sender,
       user1: friendship.user1,
