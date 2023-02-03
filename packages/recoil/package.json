@@ -18,7 +18,6 @@
     "@coral-xyz/common": "*",
     "@coral-xyz/db": "*",
     "@metaplex-foundation/mpl-token-metadata": "^2.5.2",
-    "@metaplex-foundation/mpl-bubblegum": "^0.1.4",
     "@project-serum/anchor": "^0.25.0",
     "@solana/spl-token": "^0.3.6",
     "@solana/spl-token-registry": "^0.2.3225",

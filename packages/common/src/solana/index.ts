@@ -20,12 +20,13 @@ import {
 } from "@metaplex-foundation/mpl-bubblegum";
 import type {
   TransferInstructionAccounts,
-  TransferInstructionArgs} from "@metaplex-foundation/mpl-token-metadata";
+  TransferInstructionArgs,
+} from "@metaplex-foundation/mpl-token-metadata";
 import {
   createTransferInstruction as createTokenMetadataTransferInstruction,
   Metadata,
   TokenRecord,
-  TokenState
+  TokenState,
 } from "@metaplex-foundation/mpl-token-metadata";
 import type { Program, SplToken } from "@project-serum/anchor";
 import * as anchor from "@project-serum/anchor";
@@ -391,8 +392,6 @@ export class Solana {
         index: node_index,
       }
     );
-
-    transferInstruction.keys;
 
     transaction.feePayer = walletPublicKey;
     transaction.recentBlockhash = (
