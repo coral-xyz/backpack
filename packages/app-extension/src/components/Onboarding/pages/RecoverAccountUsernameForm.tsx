@@ -1,4 +1,5 @@
 import { type FormEvent, useCallback, useEffect, useState } from "react";
+import type { ServerPublicKey } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import { PrimaryButton, TextInput } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
@@ -10,7 +11,11 @@ import { Header, SubtextParagraph } from "../../common";
 export const RecoverAccountUsernameForm = ({
   onNext,
 }: {
-  onNext: (username: string, publicKey: string) => void;
+  onNext: (
+    userId: string,
+    username: string,
+    serverPublicKeys: Array<ServerPublicKey>
+  ) => void;
 }) => {
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
@@ -28,7 +33,7 @@ export const RecoverAccountUsernameForm = ({
         const json = await response.json();
         if (!response.ok) throw new Error(json.msg);
         // Use the first found public key
-        onNext(username, json.publicKeys[0].publicKey);
+        onNext(json.id, username, json.publicKeys);
       } catch (err: any) {
         setError(err.message || "Something went wrong");
       }

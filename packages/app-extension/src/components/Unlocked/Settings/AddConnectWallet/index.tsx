@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import {
-  DerivationPath,
   openAddUserAccount,
   openConnectHardware,
   TAB_APPS,
   TAB_BALANCES,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
+  UI_RPC_METHOD_FIND_SIGNED_WALLET_DESCRIPTOR,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
 } from "@coral-xyz/common";
@@ -160,13 +160,17 @@ export function AddConnectWalletMenu({
     return (
       <RecoverWalletMenu
         blockchain={blockchain}
-        keyringExists={keyringExists}
         publicKey={publicKey}
+        keyringExists={keyringExists}
       />
     );
   } else {
     return (
-      <AddWalletMenu blockchain={blockchain} keyringExists={keyringExists} />
+      <AddWalletMenu
+        blockchain={blockchain}
+        keyringExists={keyringExists}
+        setKeyringExists={setKeyringExists}
+      />
     );
   }
 }
@@ -174,9 +178,11 @@ export function AddConnectWalletMenu({
 export function AddWalletMenu({
   blockchain,
   keyringExists,
+  setKeyringExists,
 }: {
   blockchain: Blockchain;
   keyringExists: boolean;
+  setKeyringExists: (exists: boolean) => void;
 }) {
   const nav = useNavStack();
   const background = useBackgroundClient();
@@ -184,33 +190,35 @@ export function AddWalletMenu({
   const theme = useCustomTheme();
   const [newPublicKey, setNewPublicKey] = useState("");
   const [openDrawer, setOpenDrawer] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   // Lock to ensure that the create new wallet button cannot be accidentally
   // spammed or double clicked, which is undesireable as it creates more wallets
   // than the user expects.
   const [lockCreateButton, setLockCreateButton] = useState(false);
 
-  const createNewDerived = async () => {
+  const createNew = async () => {
+    // Mnemonic based keyring. This is the simple case because we don't
+    // need to prompt for the user to open their Ledger app to get the
+    // required public key. We also don't need a signature to prove
+    // ownership of the public key because that can't be done
+    // transparently by the backend.
     if (lockCreateButton) {
       return;
     }
     setLockCreateButton(true);
     let newPublicKey;
     if (!keyringExists) {
-      // Mnemonic based keyring. This is the simple case because we don't
-      // need to prompt for the user to open their Ledger app to get the
-      // required public key. We also don't need a signature to prove
-      // ownership of the public key because that can't be done
-      // transparently by the backend.
-      try {
-        newPublicKey = await background.request({
-          method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
-          params: [blockchain, DerivationPath.Default, 0],
-        });
-      } catch (error) {
-        setError("Wallet address is used by another Backpack account.");
-      }
+      const signedWalletDescriptor = await background.request({
+        method: UI_RPC_METHOD_FIND_SIGNED_WALLET_DESCRIPTOR,
+        params: [blockchain, 0],
+      });
+      await background.request({
+        method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
+        params: [blockchain, signedWalletDescriptor],
+      });
+      newPublicKey = signedWalletDescriptor.publicKey;
+      // Keyring now exists, toggle to other options
+      setKeyringExists(true);
     } else {
       newPublicKey = await background.request({
         method: UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
@@ -250,7 +258,7 @@ export function AddWalletMenu({
                     />
                   }
                   text="Create a new wallet"
-                  onClick={createNewDerived}
+                  onClick={createNew}
                 />
               </Grid>
             )}

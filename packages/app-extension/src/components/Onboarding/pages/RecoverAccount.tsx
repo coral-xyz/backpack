@@ -1,21 +1,15 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type {
-  Blockchain,
-  BlockchainKeyringInit,
-  DerivationPath,
   KeyringType,
+  ServerPublicKey,
+  SignedWalletDescriptor,
+  WalletDescriptor,
 } from "@coral-xyz/common";
-import {
-  BACKEND_API_URL,
-  getAuthMessage,
-  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-} from "@coral-xyz/common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
-import { encode } from "bs58";
+import { Blockchain, getAuthMessage } from "@coral-xyz/common";
 
+import { useSignMessageForWallet } from "../../../hooks/useSignMessageForWallet";
 import { useSteps } from "../../../hooks/useSteps";
 import { CreatePassword } from "../../common/Account/CreatePassword";
-// import { BlockchainSelector } from "./BlockchainSelector";
 import { MnemonicInput } from "../../common/Account/MnemonicInput";
 import { NavBackButton, WithNav } from "../../common/Layout/Nav";
 import { useHardwareOnboardSteps } from "../../Onboarding/pages/HardwareOnboard";
@@ -38,107 +32,50 @@ export const RecoverAccount = ({
   isOnboarded?: boolean;
 }) => {
   const { step, nextStep, prevStep } = useSteps();
-  const background = useBackgroundClient();
-
   const [username, setUsername] = useState<string | null>(null);
   const [password, setPassword] = useState<string | null>(null);
-  const [publicKey, setPublicKey] = useState<string | null>(null);
   const [keyringType, setKeyringType] = useState<KeyringType | null>(null);
-  const [blockchain, setBlockchain] = useState<Blockchain | null>(null);
   const [mnemonic, setMnemonic] = useState<string | undefined>(undefined);
   const [userId, setUserId] = useState<string | undefined>(undefined);
-  // TODO onboarded blockchains is currently unused but it will be used to recover
-  // multiple accounts on different blockchains
-  const [, setOnboardedBlockchains] = useState<Array<Blockchain>>([]);
-  const [blockchainKeyrings, setBlockchainKeyrings] = useState<
-    Array<BlockchainKeyringInit>
+  const [serverPublicKeys, setServerPublicKeys] = useState<
+    Array<ServerPublicKey>
   >([]);
-
+  const [signedWalletDescriptors, setSignedWalletDescriptors] = useState<
+    Array<SignedWalletDescriptor>
+  >([]);
   const authMessage = userId ? getAuthMessage(userId) : "";
-
+  const signMessageForWallet = useSignMessageForWallet(mnemonic);
   const hardwareOnboardSteps = useHardwareOnboardSteps({
-    blockchain: blockchain!,
+    blockchain:
+      serverPublicKeys.length > 0
+        ? serverPublicKeys[0].blockchain!
+        : Blockchain.SOLANA, // TODO refactor out this default requirement
     action: "search",
-    searchPublicKey: publicKey!,
+    searchPublicKey:
+      serverPublicKeys.length > 0 ? serverPublicKeys[0].publicKey : undefined,
     signMessage: authMessage,
     signText: "Sign the message to authenticate with Backpack",
-    onComplete: (keyringInit: BlockchainKeyringInit) => {
-      addBlockchainKeyring(keyringInit);
+    onComplete: (signedWalletDescriptor: SignedWalletDescriptor) => {
+      setSignedWalletDescriptors([
+        ...signedWalletDescriptors,
+        signedWalletDescriptor,
+      ]);
       nextStep();
     },
     nextStep,
     prevStep,
   });
 
-  useEffect(() => {
-    (async () => {
-      if (username) {
-        const response = await fetch(`${BACKEND_API_URL}/users/${username}`);
-        const json = await response.json();
-        if (response.ok) {
-          setUserId(json.id);
-          if (json.publicKeys.length > 0) {
-            setOnboardedBlockchains(
-              json.publicKeys.map(
-                (b: { blockchain: Blockchain }) => b.blockchain
-              )
-            );
-            // Default to first available blockchain. For mnemonic keyrings we
-            // can do this and search all available public keys for the mnemonic
-            // to find a match. For ledger keyrings we need to prompt them to open
-            // a specific app on the ledger so we'll allow them to select which
-            // blockchain they want to use as part of the flow.
-            setBlockchain(json.publicKeys[0].blockchain);
-          }
-        }
-      }
-    })();
-  }, [username]);
-
-  const signForWallet = async (
-    blockchain: Blockchain,
-    derivationPath: DerivationPath,
-    accountIndex: number,
-    publicKey?: string
-  ) => {
-    const signature = await background.request({
-      method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-      params: [
-        blockchain,
-        encode(Buffer.from(authMessage, "utf-8")),
-        publicKey!,
-        {
-          derivationPath,
-          accountIndex,
-          mnemonic,
-        },
-      ],
-    });
-
-    addBlockchainKeyring({
-      blockchain: blockchain!,
-      derivationPath,
-      accountIndex,
-      publicKey: publicKey!,
-      signature,
-    });
-  };
-
-  // Add the initialisation parameters for a blockchain keyring to state
-  const addBlockchainKeyring = (blockchainKeyring: BlockchainKeyringInit) => {
-    setBlockchainKeyrings([...blockchainKeyrings, blockchainKeyring]);
-  };
-
-  const keyringInit = {
-    mnemonic,
-    blockchainKeyrings,
-  };
-
   const steps = [
     <RecoverAccountUsernameForm
-      onNext={(username: string, publicKey: string) => {
+      onNext={(
+        userId: string,
+        username: string,
+        serverPublicKeys: Array<ServerPublicKey>
+      ) => {
+        setUserId(userId);
         setUsername(username);
-        setPublicKey(publicKey);
+        setServerPublicKeys(serverPublicKeys);
         nextStep();
       }}
     />,
@@ -160,16 +97,16 @@ export const RecoverAccount = ({
             }}
           />,
           <MnemonicSearch
-            blockchain={blockchain!}
+            serverPublicKeys={serverPublicKeys!}
             mnemonic={mnemonic!}
-            publicKey={publicKey!}
-            onNext={(derivationPath: DerivationPath, accountIndex: number) => {
-              signForWallet(
-                blockchain!,
-                derivationPath,
-                accountIndex,
-                publicKey!
+            onNext={async (walletDescriptors: Array<WalletDescriptor>) => {
+              const signedWalletDescriptors = await Promise.all(
+                walletDescriptors.map(async (w) => ({
+                  ...w,
+                  signature: await signMessageForWallet(w, authMessage),
+                }))
               );
+              setSignedWalletDescriptors(signedWalletDescriptors);
               nextStep();
             }}
             onRetry={prevStep}
@@ -186,27 +123,37 @@ export const RecoverAccount = ({
           />,
         ]
       : []),
-    ...(blockchainKeyrings.length > 0
+    ...(signedWalletDescriptors.length > 0
       ? [
           <Finish
-            inviteCode={undefined}
+            inviteCode={undefined} // Recovery so no invite code
             userId={userId}
             username={username}
             password={password!}
-            keyringInit={keyringInit!}
+            keyringInit={{ mnemonic, signedWalletDescriptors }}
             isAddingAccount={isAddingAccount}
           />,
         ]
       : []),
   ];
 
-  if (isOnboarded && step !== steps.length - 1) {
+  // Cant go backwards from the last step as the keyring is already created
+  const isLastStep = step === steps.length - 1;
+  // Cant go backwards from the password step as can hit mnemonic search which
+  // auto progresses. This could be handled by jumping to a step.
+  const isPasswordStep = steps[step].type.name === "CreatePassword";
+  // Display message if already onboarded and not on last step
+  if (isOnboarded && !isLastStep) {
     return <AlreadyOnboarded />;
   }
 
   return (
     <WithNav
-      navButtonLeft={<NavBackButton onClick={step > 0 ? prevStep : onClose} />}
+      navButtonLeft={
+        !isLastStep && !isPasswordStep ? (
+          <NavBackButton onClick={step > 0 ? prevStep : onClose} />
+        ) : undefined
+      }
       {...navProps}
       // Only display the onboarding menu on the first step
       navButtonRight={undefined}

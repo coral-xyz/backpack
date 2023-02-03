@@ -1,10 +1,9 @@
 import type { Blockchain, FeeConfig } from "@coral-xyz/common";
-import { EmptyState } from "@coral-xyz/react-common";
-import { Loading } from "@coral-xyz/react-common";
+import { EmptyState, Loading } from "@coral-xyz/react-common";
 import { useTransactionData, useWalletBlockchain } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { Typography } from "@mui/material";
 import { Block as BlockIcon } from "@mui/icons-material";
+import { Typography } from "@mui/material";
 import { BigNumber, ethers } from "ethers";
 
 import { TransactionData } from "../../common/TransactionData";
@@ -148,11 +147,13 @@ export function Cold({
   title,
   wallet,
   onCompletion,
+  style,
 }: {
   origin: string;
   title: string;
   wallet: string;
   onCompletion: () => Promise<void>;
+  style?: React.CSSProperties;
 }) {
   return (
     <div
@@ -173,9 +174,10 @@ export function Cold({
         <EmptyState
           icon={(props: any) => <BlockIcon {...props} />}
           title={"Request Rejected"}
-          subtitle={`WARNING: ${origin} is trying to sign with your wallet. This may be dangerous. To enable, see wallet settings. Do so with caution!`}
+          subtitle={`WARNING: ${origin} is trying to sign with your cold wallet. This may be dangerous. To enable, see your wallet settings and enable "App Signing". Do so with caution!`}
           buttonText={""}
           onClick={() => {}}
+          style={style}
         />
         <div></div>
       </div>

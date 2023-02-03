@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { EmptyState } from "@coral-xyz/react-common";
 import {
   isAggregateWallets,
+  isOneLive,
   nftCollectionsWithIds,
   useActiveWallet,
   useAllWalletsDisplayed,
@@ -9,14 +10,13 @@ import {
 import { Image as ImageIcon } from "@mui/icons-material";
 import { useRecoilValue, useRecoilValueLoadable } from "recoil";
 
-import { useIsONELive } from "../../../hooks/useIsONELive";
 import { _BalancesTableHead } from "../Balances/Balances";
 
 import EntryONE from "./EntryONE";
 import { NftTable } from "./NftTable";
 
 export function Nfts() {
-  const isONELive = useIsONELive();
+  const isONELive = useRecoilValue(isOneLive);
   const activeWallet = useActiveWallet();
   const wallets = useAllWalletsDisplayed();
   const _isAggregateWallets = useRecoilValue(isAggregateWallets);
@@ -28,7 +28,7 @@ export function Nfts() {
     return (
       <NftTable
         prependItems={
-          isONELive
+          isONELive.isLive
             ? [{ height: 129, key: "oneEntry", component: <EntryONE /> }]
             : []
         }
@@ -59,7 +59,7 @@ export function Nfts() {
     >
       {isEmpty ? (
         <>
-          {isONELive && <EntryONE />}
+          {isONELive.isLive && <EntryONE />}
           <EmptyState
             icon={(props: any) => <ImageIcon {...props} />}
             title={"No NFTs"}

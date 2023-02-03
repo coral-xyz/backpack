@@ -6,7 +6,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 
 export const useStyles = styles((theme) => ({
   searchField: {
-    marginTop: "0px",
+    marginTop: "10px",
     marginBottom: "16px",
     width: "inherit",
     display: "flex",
@@ -22,7 +22,13 @@ export const useStyles = styles((theme) => ({
   },
 }));
 
-export const SearchBox = ({ onChange }: { onChange: any }) => {
+export const SearchBox = ({
+  onChange,
+  placeholder,
+}: {
+  onChange: any;
+  placeholder?: string;
+}) => {
   const classes = useStyles();
   const theme = useCustomTheme();
   const [searchFilter, setSearchFilter] = useState("");
@@ -30,7 +36,7 @@ export const SearchBox = ({ onChange }: { onChange: any }) => {
   return (
     <TextInput
       className={classes.searchField}
-      placeholder={"Search for people"}
+      placeholder={placeholder ?? "Search for people"}
       value={searchFilter}
       startAdornment={
         <InputAdornment position="start">

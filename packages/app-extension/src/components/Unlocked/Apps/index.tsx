@@ -124,7 +124,7 @@ function PluginGrid() {
         icon={(props: any) => <BlockIcon {...props} />}
         title={"No xNFTs"}
         subtitle={"Get started with your first xNFT"}
-        buttonText={"Browse xNFTs"}
+        buttonText={"Browse the xNFT Library"}
         onClick={() => window.open("https://xnft.gg")}
         header={
           !_isAggregateWallets && (

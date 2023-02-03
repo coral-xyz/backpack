@@ -1,6 +1,5 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
-  BACKPACK_CONFIG_VERSION,
   BACKPACK_FEATURE_AGGREGATE_WALLETS,
   BACKPACK_FEATURE_LIGHT_MODE,
   Blockchain,
@@ -15,19 +14,34 @@ import {
   useDeveloperMode,
   useIsAggregateWallets,
 } from "@coral-xyz/recoil";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { Switch, Typography } from "@mui/material";
+import { styles } from "@coral-xyz/themes";
+import { Switch } from "@mui/material";
 
+import {
+  deleteSubscription,
+  hasActiveSubscription,
+  unregisterNotificationServiceWorker,
+} from "../../../../permissions/utils";
 import { useNavStack } from "../../../common/Layout/NavStack";
 import { SettingsList } from "../../../common/Settings/List";
 
 export function Preferences() {
-  const theme = useCustomTheme();
   const nav = useNavStack();
   const background = useBackgroundClient();
   const isDarkMode = useDarkMode();
   const isDeveloperMode = useDeveloperMode();
   const isAggregateWallets = useIsAggregateWallets();
+  const [isNotificationsOn, setIsNotificationsOn] = useState(false);
+
+  useEffect(() => {
+    hasActiveSubscription()
+      .then((status) => {
+        setIsNotificationsOn(
+          window.Notification.permission === "granted" && status
+        );
+      })
+      .catch(console.error);
+  }, [window.Notification.permission]);
 
   const onDarkModeSwitch = async (isDarkMode: boolean) => {
     await background.request({
@@ -48,6 +62,21 @@ export function Preferences() {
       method: UI_RPC_METHOD_SETTINGS_AGGREGATE_WALLETS_UPDATE,
       params: [isAggregateWallets],
     });
+  };
+
+  const onNotificationsSwitch = async (isNotificationsEnabled: boolean) => {
+    if (isNotificationsEnabled) {
+      setIsNotificationsOn(true);
+      window.open(
+        "/permissions.html?notifications=true",
+        "_blank",
+        "noreferrer"
+      );
+    } else {
+      await deleteSubscription();
+      await unregisterNotificationServiceWorker();
+      setIsNotificationsOn(false);
+    }
   };
 
   //
@@ -83,6 +112,16 @@ export function Preferences() {
       <ModeSwitch
         enabled={isDeveloperMode}
         onSwitch={(enabled) => onDeveloperModeSwitch(enabled)}
+      />
+    ),
+  };
+
+  menuItems["Notifications"] = {
+    onClick: () => onNotificationsSwitch(!isNotificationsOn),
+    detail: (
+      <ModeSwitch
+        enabled={isNotificationsOn}
+        onSwitch={(enabled) => onNotificationsSwitch(enabled)}
       />
     ),
   };
@@ -168,9 +207,9 @@ export function SwitchToggle({
   const classes = useStyles();
   return (
     <Switch
+      disableRipple
       disabled={disableUiState}
       checked={enabled}
-      disableRipple
       onChange={onChange}
       classes={{
         switchBase: classes.switchBase,
@@ -184,9 +223,9 @@ export function SwitchToggle({
 const useStyles = styles((theme) => ({
   switchBase: {
     "&:hover": {
-      backgroundColor: "transparent",
+      backgroundColor: "transparent !important",
       "@media (hover: none)": {
-        backgroundColor: "transparent",
+        backgroundColor: "transparent !important",
       },
     },
   },
