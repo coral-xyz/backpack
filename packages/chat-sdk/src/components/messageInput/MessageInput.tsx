@@ -2,7 +2,7 @@ import { useContext, useMemo } from "react";
 import { RichMentionsContext, RichMentionsInput } from "react-rich-mentions";
 import { useUsersMetadata } from "@coral-xyz/react-common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, Hidden } from "@mui/material";
 
 import { useChatContext } from "../ChatContext";
 
@@ -60,19 +60,36 @@ export const CustomAutoComplete = () => {
   const users = useUsersMetadata({ remoteUserIds: results.map((r) => r.id) });
 
   return (
-    <div>
+    <div
+      style={{
+        width: 180,
+        position: "absolute",
+        bottom: 44,
+        boxShadow: theme.custom.colors.boxShadow,
+        background: theme.custom.colors.bg3,
+        paddingTop: activeSearch && 8,
+        paddingBottom: activeSearch && 8,
+        borderRadius: 8,
+        backdropFilter: "blur(20px)",
+        overflow: "hidden",
+      }}
+    >
       {shownResults.map((item, index) => (
         <button
           style={{
-            padding: 8,
+            paddingLeft: 10,
+            paddingRight: 10,
+            paddingTop: 8,
+            paddingBottom: 8,
             display: "flex",
             cursor: "pointer",
             width: "100%",
             background:
-              index === cursor ? "#1264a3" : theme.custom.colors.background,
-            color: index === cursor ? "#fff" : theme.custom.colors.fontColor,
+              index === cursor
+                ? theme.custom.colors.listItemHover
+                : "transparent",
+            color: theme.custom.colors.fontColor,
             border: "none",
-            boxShadow: `${theme.custom.colors.boxShadow}`,
             textAlign: "left",
           }}
           key={item.ref}
@@ -81,10 +98,10 @@ export const CustomAutoComplete = () => {
           }}
         >
           <img
-            style={{ height: 20, borderRadius: 10, marginRight: 5 }}
+            style={{ height: 24, borderRadius: 12, marginRight: 8 }}
             src={users[item.id]?.image}
           />
-          <div style={{ fontSize: 15 }}>{item.name}</div>
+          <div style={{ fontSize: 15 }}>@{item.name}</div>
         </button>
       ))}
       {activeSearch !== "" &&
