@@ -23,13 +23,13 @@ export function Logout() {
   const { close } = useDrawerContext();
 
   useEffect(() => {
-    nav.setTitle(`Logout ${user.username}`);
+    nav.setTitle(`Log out ${user.username}`);
   }, []);
 
   return (
     <Warning
-      buttonTitle={"Logout"}
-      title={"Logout"}
+      buttonTitle={"Log out"}
+      title={"Log out"}
       subtext={
         "This will remove all the wallets you have created or imported. Make sure you have your existing secret recovery phrase and private keys saved."
       }

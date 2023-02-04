@@ -69,7 +69,7 @@ export function ListItem({
   const handleClick = useCallback(
     (ev: MouseEvent<HTMLDivElement>) => {
       ev.preventDefault();
-      onClick(ev);
+      onClick?.(ev);
     },
     [onClick]
   );

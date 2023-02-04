@@ -12,7 +12,14 @@ const chain = Chain(HASURA_URL, {
 
 export const getUsers = async (
   userIds: string[]
-): Promise<{ username: unknown; id: unknown; avatar_nft: unknown }[]> => {
+): Promise<
+  {
+    username: unknown;
+    id: unknown;
+    avatar_nft: unknown;
+    public_keys: unknown[];
+  }[]
+> => {
   const response = await chain("query")({
     auth_users: [
       {
@@ -21,6 +28,7 @@ export const getUsers = async (
       {
         id: true,
         username: true,
+        public_keys: [{}, { blockchain: true, public_key: true }],
       },
     ],
   });

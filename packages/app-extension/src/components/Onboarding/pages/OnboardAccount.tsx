@@ -6,12 +6,13 @@ import type {
   WalletDescriptor,
 } from "@coral-xyz/common";
 import {
+  getBlockchainFromPath,
   getCreateMessage,
   UI_RPC_METHOD_FIND_SIGNED_WALLET_DESCRIPTOR,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 
-import { useOnboarding } from "../../../hooks/useOnboarding";
+import { useSignMessageForWallet } from "../../../hooks/useSignMessageForWallet";
 import { useSteps } from "../../../hooks/useSteps";
 import { CreatePassword } from "../../common/Account/CreatePassword";
 import { ImportAccounts } from "../../common/Account/ImportAccounts";
@@ -54,28 +55,36 @@ export const OnboardAccount = ({
   const [password, setPassword] = useState<string | null>(null);
   const [mnemonic, setMnemonic] = useState<string | undefined>(undefined);
   const [openDrawer, setOpenDrawer] = useState(false);
+  const [signedWalletDescriptors, setSignedWalletDescriptors] = useState<
+    Array<SignedWalletDescriptor>
+  >([]);
 
-  const {
-    addSignedWalletDescriptor,
-    keyringInit,
-    removeBlockchain,
-    resetSignedWalletDescriptors,
-    selectedBlockchains,
-    signMessageForWallet,
-  } = useOnboarding(mnemonic);
+  const signMessageForWallet = useSignMessageForWallet(mnemonic);
+
+  const selectedBlockchains = [
+    ...new Set(
+      signedWalletDescriptors.map((s) =>
+        getBlockchainFromPath(s.derivationPath)
+      )
+    ),
+  ];
 
   useEffect(() => {
     // Reset blockchain keyrings on certain changes that invalidate the addresses
     // and signatures that they might contain
     // e.g. user has navigated backward through the onboarding flow
-    resetSignedWalletDescriptors();
+    setSignedWalletDescriptors([]);
   }, [action, keyringType, mnemonic]);
 
   const handleBlockchainClick = async (blockchain: Blockchain) => {
     if (selectedBlockchains.includes(blockchain)) {
       // Blockchain is being deselected
       setBlockchain(null);
-      removeBlockchain(blockchain);
+      setSignedWalletDescriptors(
+        signedWalletDescriptors.filter(
+          (s) => getBlockchainFromPath(s.derivationPath) !== blockchain
+        )
+      );
     } else {
       // Blockchain is being selected
       if (keyringType === "ledger" || action === "import") {
@@ -89,7 +98,10 @@ export const OnboardAccount = ({
           method: UI_RPC_METHOD_FIND_SIGNED_WALLET_DESCRIPTOR,
           params: [blockchain, 0, true, mnemonic],
         });
-        addSignedWalletDescriptor(signedWalletDescriptor);
+        setSignedWalletDescriptors([
+          ...signedWalletDescriptors,
+          signedWalletDescriptor,
+        ]);
       }
     }
   };
@@ -156,7 +168,7 @@ export const OnboardAccount = ({
       inviteCode={inviteCode}
       username={username}
       password={password!}
-      keyringInit={keyringInit!}
+      keyringInit={{ mnemonic, signedWalletDescriptors }}
       isAddingAccount={isAddingAccount}
     />,
   ];
@@ -195,7 +207,10 @@ export const OnboardAccount = ({
             signMessage={(publicKey: string) => getCreateMessage(publicKey)}
             signText={`Sign the message to authenticate with Backpack.`}
             onComplete={(signedWalletDescriptor: SignedWalletDescriptor) => {
-              addSignedWalletDescriptor(signedWalletDescriptor);
+              setSignedWalletDescriptors([
+                ...signedWalletDescriptors,
+                signedWalletDescriptor,
+              ]);
               setOpenDrawer(false);
             }}
             onClose={() => setOpenDrawer(false)}
@@ -209,11 +224,16 @@ export const OnboardAccount = ({
               // Should only be one public key path
               const walletDescriptor = walletDescriptors[0];
               const signature = await signMessageForWallet(
-                blockchain!,
                 walletDescriptor,
                 getCreateMessage(walletDescriptor.publicKey)
               );
-              addSignedWalletDescriptor({ ...walletDescriptor, signature });
+              setSignedWalletDescriptors([
+                ...signedWalletDescriptors,
+                {
+                  ...walletDescriptor,
+                  signature,
+                },
+              ]);
               setOpenDrawer(false);
             }}
           />

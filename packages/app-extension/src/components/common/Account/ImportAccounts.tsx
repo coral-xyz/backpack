@@ -4,9 +4,11 @@ import {
   Blockchain,
   DEFAULT_SOLANA_CLUSTER,
   EthereumConnectionUrl,
-  getIndexedPath,
+  ethereumIndexed,
   legacyBip44ChangeIndexed,
   legacyBip44Indexed,
+  legacyLedgerIndexed,
+  legacyLedgerLiveIndexed,
   legacySolletIndexed,
   LOAD_PUBLIC_KEY_AMOUNT,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
@@ -117,25 +119,37 @@ export function ImportAccounts({
           : []
       ),
     [Blockchain.ETHEREUM]: [
+      /**
+      // Used in older versions of Backpack
       {
         path: (i: number) => legacyBip44Indexed(Blockchain.ETHEREUM, i),
-        label: "m/44/501'/",
+        label: "m/44/60'/",
       },
+      **/
+      {
+        path: (i: number) => legacyLedgerLiveIndexed(i),
+        label: "m/44/60' - Ledger Live",
+      },
+      /**
+      // Used in older versions of Backpack
       {
         path: (i: number) => legacyBip44ChangeIndexed(Blockchain.ETHEREUM, i),
-        label: "m/44/501'/0'",
+        label: "m/44/60'/0'",
+      },
+      **/
+      {
+        path: (i: number) => legacyLedgerIndexed(i),
+        label: "m/44/60'/0' - Ledger",
+      },
+      {
+        path: (i: number) => ethereumIndexed(i),
+        label: "m/44/60'/0'/0 - Ethereum Standard",
       },
       {
         path: (i: number) =>
           legacyBip44ChangeIndexed(Blockchain.ETHEREUM, i) + "/0'",
-        label: "m/44/501'/0'/0'",
+        label: "m/44/60'/0'/0'",
       },
-      /**
-      {
-        path: (i: number) => getIndexedPath(Blockchain.SOLANA, i),
-        label: "Backpack",
-      },
-      **/
     ],
   }[blockchain];
 

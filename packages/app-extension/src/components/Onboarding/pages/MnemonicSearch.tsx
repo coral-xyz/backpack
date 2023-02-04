@@ -2,7 +2,7 @@
 // a loading indicator until it is found (or an error if it not found).
 
 import { useEffect, useState } from "react";
-import type { Blockchain, WalletDescriptor } from "@coral-xyz/common";
+import type { ServerPublicKey, WalletDescriptor } from "@coral-xyz/common";
 import {
   getRecoveryPaths,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
@@ -15,16 +15,14 @@ import { Box } from "@mui/material";
 import { Header, SubtextParagraph } from "../../common";
 
 export const MnemonicSearch = ({
-  blockchain,
+  serverPublicKeys,
   mnemonic,
-  publicKey,
   onNext,
   onRetry,
 }: {
-  blockchain: Blockchain;
+  serverPublicKeys: Array<ServerPublicKey>;
   mnemonic: string;
-  publicKey: string;
-  onNext: (walletDescriptor: WalletDescriptor) => void;
+  onNext: (walletDescriptors: Array<WalletDescriptor>) => void;
   onRetry: () => void;
 }) => {
   const [error, setError] = useState(false);
@@ -32,19 +30,36 @@ export const MnemonicSearch = ({
 
   useEffect(() => {
     (async () => {
-      const recoveryPaths = getRecoveryPaths(blockchain);
-      const publicKeys = await background.request({
-        method: UI_RPC_METHOD_PREVIEW_PUBKEYS,
-        params: [blockchain, mnemonic, recoveryPaths],
-      });
-      const index = publicKeys.findIndex((p: string) => p === publicKey);
-      if (index !== -1) {
-        onNext({ derivationPath: recoveryPaths[index], publicKey });
-        return;
+      const walletDescriptors: Array<WalletDescriptor> = [];
+      const blockchains = [
+        ...new Set(serverPublicKeys.map((x) => x.blockchain)),
+      ];
+      for (const blockchain of blockchains) {
+        const recoveryPaths = getRecoveryPaths(blockchain);
+        const publicKeys = await background.request({
+          method: UI_RPC_METHOD_PREVIEW_PUBKEYS,
+          params: [blockchain, mnemonic, recoveryPaths],
+        });
+        const searchPublicKeys = serverPublicKeys
+          .filter((b) => b.blockchain === blockchain)
+          .map((p) => p.publicKey);
+        for (const publicKey of searchPublicKeys) {
+          const index = publicKeys.findIndex((p: string) => p === publicKey);
+          if (index !== -1) {
+            walletDescriptors.push({
+              derivationPath: recoveryPaths[index],
+              publicKey,
+            });
+          }
+        }
       }
-      setError(true);
+      if (walletDescriptors.length > 0) {
+        onNext(walletDescriptors);
+      } else {
+        setError(true);
+      }
     })();
-  }, [mnemonic, publicKey]);
+  }, [serverPublicKeys, mnemonic]);
 
   if (!error) {
     return <Loading />;
@@ -62,8 +77,15 @@ export const MnemonicSearch = ({
       <Box sx={{ margin: "24px" }}>
         <Header text="Unable to recover wallet" />
         <SubtextParagraph>
-          We couldn't find the public key {walletAddressDisplay(publicKey)}{" "}
-          using your recovery phrase.
+          {serverPublicKeys.length === 1 ? (
+            <>
+              We couldn't find the public key{" "}
+              {walletAddressDisplay(serverPublicKeys[0].publicKey)} using your
+              recovery phrase.
+            </>
+          ) : (
+            <>We couldn't find any wallets using your recovery phrase.</>
+          )}
         </SubtextParagraph>
       </Box>
       <Box

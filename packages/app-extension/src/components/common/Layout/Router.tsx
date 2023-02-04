@@ -444,9 +444,6 @@ function useNavBar() {
   let navStyle = {
     fontSize: "18px",
   } as React.CSSProperties;
-  if (pathname === "/messages/chat" || pathname === "/messages/groupchat") {
-    navStyle.background = theme.custom.colors.bg3;
-  }
 
   if (isRoot) {
     navButtonRight = isXs ? <SettingsButton /> : undefined;

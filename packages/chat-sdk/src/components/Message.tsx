@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme: any) =>
       width: "100%",
       textAlign: "left",
       fontSize: "14px",
-      color: theme.custom.colors.fontColor2,
+      color: theme.custom.colors.fontColor,
     },
     messageContent: {
       padding: 0,
@@ -66,10 +66,11 @@ const useStyles = makeStyles((theme: any) =>
       minWidth: 63,
       display: "flex",
       flexDirection: "row-reverse",
+      opacity: 0.5,
     },
     avatar: {
-      width: 40,
-      height: 40,
+      width: 32,
+      height: 32,
       cursor: "pointer",
       borderRadius: "50%",
     },
@@ -232,7 +233,7 @@ export const MessageLine = (props) => {
       <div
         className={classes.messageRow}
         style={{
-          marginTop: sameUserMessage ? 0 : 25,
+          marginTop: sameUserMessage ? 0 : 20,
           paddingLeft: sameUserMessage ? 40 : 0,
         }}
       >
@@ -318,7 +319,7 @@ export const MessageLine = (props) => {
           <>
             <div
               style={{
-                width: 40,
+                width: 32,
               }}
             >
               {photoURL ? (
@@ -326,15 +327,16 @@ export const MessageLine = (props) => {
                   onClick={() => openProfilePage({ uuid: props.uuid })}
                   alt={displayName}
                   className={classes.avatar}
+                  style={{ width: 32, height: 32 }}
                   src={photoURL}
                 ></LocalImage>
               ) : (
                 <Skeleton
                   variant="circular"
-                  width={40}
-                  height={40}
+                  width={32}
+                  height={32}
                   style={{
-                    minWidth: 40,
+                    minWidth: 32,
                   }}
                 />
               )}
@@ -346,6 +348,7 @@ export const MessageLine = (props) => {
                   className={classes.displayName}
                   style={{
                     display: "inline-flex",
+                    paddingBottom: "4px",
                     color:
                       props.colorIndex || props.colorIndex === 0
                         ? NEW_COLORS[props.colorIndex || 0][
@@ -738,6 +741,7 @@ export function ChatMessages() {
       {chats.map((chat, index) => {
         return (
           <MessageLine
+            key={chat.client_generated_uuid}
             received={chat.received}
             sameUserMessage={
               chats[index]?.uuid &&
@@ -752,7 +756,6 @@ export function ChatMessages() {
             color={chat.color || theme.custom.colors.fontColor2}
             colorIndex={chat.colorIndex}
             timestamp={chat.created_at}
-            key={chat.client_generated_uuid}
             message={chat.message}
             messageKind={chat.message_kind}
             image={chat.image}

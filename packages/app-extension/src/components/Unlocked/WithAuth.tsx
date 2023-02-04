@@ -5,15 +5,12 @@ import {
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
   UI_RPC_METHOD_USER_JWT_UPDATE,
 } from "@coral-xyz/common";
-import { Loading } from "@coral-xyz/react-common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { ethers } from "ethers";
 
 import { useAuthentication } from "../../hooks/useAuthentication";
 import { WithDrawer } from "../common/Layout/Drawer";
 import { HardwareOnboard } from "../Onboarding/pages/HardwareOnboard";
-
-import { WithSyncAccount } from "./WithSyncAccount";
 
 export function WithAuth({ children }: { children: React.ReactElement }) {
   const { authenticate, checkAuthentication, getAuthSigner } =
@@ -29,7 +26,6 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
     userId: string;
   } | null>(null);
   const [authSignature, setAuthSignature] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
   const [openDrawer, setOpenDrawer] = useState(false);
   const [serverAccountState, setServerAccountState] = useState<{
     isAuthenticated: boolean;
@@ -125,9 +121,6 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
 
   return (
     <>
-      {serverAccountState && (
-        <WithSyncAccount serverPublicKeys={serverAccountState.publicKeys} />
-      )}
       {children}
       {authData && (
         <WithDrawer

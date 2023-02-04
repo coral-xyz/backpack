@@ -3,17 +3,15 @@ import type { Blockchain } from "@coral-xyz/common";
 import {
   openAddUserAccount,
   openConnectHardware,
-  TAB_APPS,
-  TAB_BALANCES,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
   UI_RPC_METHOD_FIND_SIGNED_WALLET_DESCRIPTOR,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
-  UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
 } from "@coral-xyz/common";
 import {
   CheckIcon,
   HardwareWalletIcon,
+  Loading,
   PrimaryButton,
   ProxyImage,
   SecondaryButton,
@@ -190,6 +188,8 @@ export function AddWalletMenu({
   const theme = useCustomTheme();
   const [newPublicKey, setNewPublicKey] = useState("");
   const [openDrawer, setOpenDrawer] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { close: closeParentDrawer } = useDrawerContext();
 
   // Lock to ensure that the create new wallet button cannot be accidentally
   // spammed or double clicked, which is undesireable as it creates more wallets
@@ -205,6 +205,8 @@ export function AddWalletMenu({
     if (lockCreateButton) {
       return;
     }
+    setOpenDrawer(true);
+    setLoading(true);
     setLockCreateButton(true);
     let newPublicKey;
     if (!keyringExists) {
@@ -226,7 +228,7 @@ export function AddWalletMenu({
       });
     }
     setNewPublicKey(newPublicKey);
-    setOpenDrawer(true);
+    setLoading(false);
     setLockCreateButton(false);
   };
 
@@ -313,7 +315,11 @@ export function AddWalletMenu({
         <ConfirmCreateWallet
           blockchain={blockchain}
           publicKey={newPublicKey}
-          setOpenDrawer={setOpenDrawer}
+          onClose={() => {
+            setOpenDrawer(false);
+            closeParentDrawer();
+          }}
+          isLoading={loading}
         />
       </WithMiniDrawer>
     </>
@@ -332,6 +338,7 @@ export function RecoverWalletMenu({
   const nav = useNavStack();
   const theme = useCustomTheme();
   const [openDrawer, setOpenDrawer] = useState(false);
+  const { close: closeParentDrawer } = useDrawerContext();
 
   return (
     <>
@@ -405,7 +412,10 @@ export function RecoverWalletMenu({
         <ConfirmCreateWallet
           blockchain={blockchain}
           publicKey={publicKey}
-          setOpenDrawer={setOpenDrawer}
+          onClose={() => {
+            setOpenDrawer(false);
+            closeParentDrawer();
+          }}
         />
       </WithMiniDrawer>
     </>
@@ -415,13 +425,14 @@ export function RecoverWalletMenu({
 export const ConfirmCreateWallet: React.FC<{
   blockchain: Blockchain;
   publicKey: string;
-  setOpenDrawer: (b: boolean) => void;
-}> = ({ blockchain, publicKey, setOpenDrawer }) => {
+  onClose: () => void;
+  isLoading?: boolean;
+}> = ({ blockchain, publicKey, onClose, isLoading = false }) => {
   const theme = useCustomTheme();
   const walletName = useWalletName(publicKey);
   const background = useBackgroundClient();
   const tab = useTab();
-  const { close } = useDrawerContext();
+
   return (
     <div
       style={{
@@ -433,57 +444,47 @@ export const ConfirmCreateWallet: React.FC<{
         justifyContent: "space-between",
       }}
     >
-      <div>
-        <Typography
-          style={{
-            marginTop: "16px",
-            textAlign: "center",
-            fontWeight: 500,
-            fontSize: "18px",
-            lineHeight: "24px",
-            color: theme.custom.colors.fontColor,
-          }}
-        >
-          Wallet Created
-        </Typography>
-        <div
-          style={{
-            textAlign: "center",
-            marginTop: "24px",
-          }}
-        >
-          <CheckIcon />
-        </div>
-      </div>
-      <div>
-        <WalletListItem
-          blockchain={blockchain}
-          name={walletName}
-          publicKey={publicKey}
-          showDetailMenu={false}
-          isFirst={true}
-          isLast={true}
-          onClick={() => {
-            if (tab === TAB_BALANCES) {
-              // Experience won't go back to TAB_BALANCES so we poke it
-              background.request({
-                method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
-                params: [TAB_APPS],
-              });
-            }
-
-            background.request({
-              method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
-              params: [TAB_BALANCES],
-            });
-
-            // Close mini drawer.
-            setOpenDrawer(false);
-            // Close main drawer.
-            close();
-          }}
-        />
-      </div>
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <>
+          <div>
+            <Typography
+              style={{
+                marginTop: "16px",
+                textAlign: "center",
+                fontWeight: 500,
+                fontSize: "18px",
+                lineHeight: "24px",
+                color: theme.custom.colors.fontColor,
+              }}
+            >
+              Wallet Created
+            </Typography>
+            <div
+              style={{
+                textAlign: "center",
+                marginTop: "24px",
+              }}
+            >
+              <CheckIcon />
+            </div>
+          </div>
+          <div>
+            <WalletListItem
+              blockchain={blockchain}
+              name={walletName}
+              publicKey={publicKey}
+              showDetailMenu={false}
+              isFirst={true}
+              isLast={true}
+              onClick={() => {
+                onClose();
+              }}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 };

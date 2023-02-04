@@ -92,7 +92,7 @@ export const MediaContent = ({
           </>
         </Modal>
       )}
-      <div style={{ marginTop: 3 }}>
+      <div style={{ marginTop: 3, width: 1 }}>
         {mediaKind === "video" ? (
           <div style={{ display: "flex" }}>
             <div style={{ position: "relative" }}>

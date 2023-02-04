@@ -138,8 +138,6 @@ export const UI_RPC_METHOD_KEYRING_STORE_LOCK =
   "ui-rpc-method-keyring-store-lock";
 export const UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE =
   "ui-rpc-method-keyring-mnemonic-create";
-export const UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_SYNC =
-  "ui-rpc-method-keyring-mnemonic-sync";
 export const UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS =
   "ui-rpc-method-keyring-read-all-pubkeys";
 export const UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEY_DATA =

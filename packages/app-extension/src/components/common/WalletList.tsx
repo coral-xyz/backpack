@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Blockchain,
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
@@ -17,7 +17,7 @@ import { Add, ExpandMore, MoreHoriz } from "@mui/icons-material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import ErrorIcon from "@mui/icons-material/Error";
 import InfoIcon from "@mui/icons-material/Info";
-import { Box, Button, Grid, Tooltip,Typography  } from "@mui/material";
+import { Box, Button, Grid, Tooltip, Typography } from "@mui/material";
 
 import {
   EthereumIconOnboarding as EthereumIcon,
@@ -73,23 +73,16 @@ export function WalletDrawerButton({
   wallet: { name: string; publicKey: string };
   style?: React.CSSProperties;
 }) {
-  const [openDrawer, setOpenDrawer] = useState(false);
-
+  const { setOpen } = useWalletDrawerContext();
   return (
-    <>
-      <WalletButton
-        wallet={wallet}
-        onClick={(e: any) => {
-          e.stopPropagation();
-          setOpenDrawer(true);
-        }}
-        style={style}
-      />
-      <WalletDrawerNavStack
-        openDrawer={openDrawer}
-        setOpenDrawer={setOpenDrawer}
-      />
-    </>
+    <WalletButton
+      wallet={wallet}
+      onClick={(e: any) => {
+        e.stopPropagation();
+        setOpen(true);
+      }}
+      style={style}
+    />
   );
 }
 
@@ -531,16 +524,6 @@ function _WalletList({
                 />
               </Tooltip>
             </div>
-            <Typography
-              style={{
-                fontWeight: 500,
-                color: theme.custom.colorsInverted.secondary,
-                fontSize: "14px",
-                lineHeight: "20px",
-              }}
-            >
-              Disable app signing in wallet info
-            </Typography>
           </div>
           <WalletList
             inverted={true}
@@ -654,7 +637,7 @@ export function WalletListItem({
 }) {
   const theme = useCustomTheme();
   const nav = useNavStack();
-  const { publicKey, name, blockchain, type, isCold } = wallet;
+  const { publicKey, name, blockchain, type } = wallet;
   return (
     <ListItem
       inverted={inverted}
@@ -721,7 +704,6 @@ export function WalletListItem({
               name={name}
               publicKey={publicKey}
               type={type}
-              isCold={isCold}
               isSelected={isSelected}
               inverted={inverted}
             />
@@ -829,14 +811,12 @@ export function StackedWalletAddress({
   publicKey,
   name,
   type,
-  isCold,
   isSelected = false,
   inverted,
 }: {
   publicKey: string;
   name: string;
   type: string;
-  isCold?: boolean;
   isSelected?: boolean;
   inverted?: boolean;
 }) {
@@ -954,4 +934,38 @@ function NetworkIcon({
 }) {
   const blockchainLogo = useBlockchainLogo(blockchain);
   return <img src={blockchainLogo} style={style} />;
+}
+
+type WalletDrawerContext = {
+  open: boolean;
+  setOpen: any;
+};
+
+const _WalletDrawerContext = React.createContext<WalletDrawerContext | null>(
+  null
+);
+
+export function WalletDrawerProvider({ children }: any) {
+  const [open, setOpen] = useState(false);
+  return (
+    <_WalletDrawerContext.Provider
+      value={{
+        open,
+        setOpen,
+      }}
+    >
+      <>
+        {children}
+        <WalletDrawerNavStack openDrawer={open} setOpenDrawer={setOpen} />
+      </>
+    </_WalletDrawerContext.Provider>
+  );
+}
+
+export function useWalletDrawerContext(): WalletDrawerContext {
+  const ctx = useContext(_WalletDrawerContext);
+  if (ctx === null) {
+    throw new Error("Context not available");
+  }
+  return ctx;
 }

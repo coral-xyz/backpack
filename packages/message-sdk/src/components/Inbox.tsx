@@ -72,14 +72,14 @@ export function InboxInner() {
     refreshGroupsAndFriendships(uuid);
   }, [uuid]);
 
-  const debouncedInit = () => {
+  const debouncedInit = (prefix: string) => {
     clearTimeout(debouncedTimer);
     debouncedTimer = setTimeout(() => {
-      handleContactSearch();
+      handleContactSearch(prefix);
     }, 250);
   };
 
-  const handleContactSearch = async () => {
+  const handleContactSearch = async (searchFilter: string) => {
     if (searchFilter.length > 1) {
       const response = await ParentCommunicationManager.getInstance().fetch(
         `${BACKEND_API_URL}/users?usernamePrefix=${searchFilter}`
@@ -103,7 +103,7 @@ export function InboxInner() {
       <SearchBox
         onChange={async (prefix: string) => {
           setSearchFilter(prefix);
-          debouncedInit();
+          debouncedInit(prefix);
         }}
       />
       {(!allChats || !allChats.length) && <MessagesSkeleton />}
@@ -122,12 +122,24 @@ export function InboxInner() {
             )}
             <MessageList
               requestCount={searchFilter.length < 3 ? requestCount : 0}
-              activeChats={allChats.filter((x) =>
-                (x.chatType === "individual"
-                  ? x.chatProps.remoteUsername
-                  : x.chatProps.name
-                )?.includes(searchFilter)
-              )}
+              activeChats={allChats.filter((x) => {
+                const displayName =
+                  x.chatType === "individual"
+                    ? x.chatProps.remoteUsername
+                    : x.chatProps.name;
+                if (displayName?.includes(searchFilter)) {
+                  return true;
+                }
+                if (
+                  x.chatType === "individual" &&
+                  x.chatProps.public_keys
+                    ?.map((x) => x.public_key)
+                    ?.includes(searchFilter)
+                ) {
+                  return true;
+                }
+                return false;
+              })}
             />
           </>
         )}

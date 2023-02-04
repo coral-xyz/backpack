@@ -166,7 +166,9 @@ const getGroupedNotifications = (notifications: EnrichedNotification[]) => {
 
   const sortedNotifications = notifications
     .slice()
-    .sort((a, b) => (a.timestamp < b.timestamp ? 1 : -1));
+    .sort((a, b) =>
+      new Date(a.timestamp).getTime() < new Date(b.timestamp).getTime() ? 1 : -1
+    );
   for (let i = 0; i < sortedNotifications.length; i++) {
     const date = formatDate(new Date(sortedNotifications[i].timestamp));
     if (
