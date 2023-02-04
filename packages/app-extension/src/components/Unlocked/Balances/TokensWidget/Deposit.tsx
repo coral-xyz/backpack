@@ -11,6 +11,7 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import QrCodeIcon from "@mui/icons-material/QrCode";
 import { IconButton, Modal, Typography } from "@mui/material";
 
+import { truncateName } from "../../../../utils/util";
 import { TextField, walletAddressDisplay } from "../../../common";
 import { CloseButton, useDrawerContext } from "../../../common/Layout/Drawer";
 import { WithCopyTooltip } from "../../../common/WithCopyTooltip";
@@ -417,7 +418,7 @@ export function _Deposit({
             color: theme.custom.colors.fontColor,
           }}
         >
-          {name}
+          {truncateName(name, 20)}
         </Typography>
         <div
           style={{

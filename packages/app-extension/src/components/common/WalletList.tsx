@@ -18,6 +18,7 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import InfoIcon from "@mui/icons-material/Info";
 import { Box, Button, Grid, Tooltip, Typography } from "@mui/material";
 
+import { truncateName } from "../../utils/util";
 import {
   EthereumIconOnboarding as EthereumIcon,
   HardwareIcon,
@@ -115,7 +116,7 @@ function WalletButton({
       }}
     >
       <Button disableRipple className={classes.addressButton} onClick={onClick}>
-        {wallet.name}
+        {truncateName(wallet.name, 20)}
         <ExpandMore
           style={{
             width: "18px",
@@ -882,7 +883,7 @@ export function StackedWalletAddress({
           color: type === "dehydrated" ? theme.custom.colors.negative : "",
         }}
       >
-        {type === "dehydrated" ? "Import error" : name}
+        {type === "dehydrated" ? "Import error" : truncateName(name, 20)}
       </Typography>
       <div
         style={{
