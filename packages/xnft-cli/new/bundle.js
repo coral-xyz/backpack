@@ -17,6 +17,7 @@ module.exports = (program) => {
     }) {
       xnftPath = path.resolve(xnftPath);
       const basePath = path.dirname(xnftPath);
+      const manifestFilename = path.basename(xnftPath);
       const destPath = path.join(
         process.cwd(),
         dest.replace(/\.zip$/, "") + ".zip"
@@ -33,6 +34,9 @@ module.exports = (program) => {
 
       await Promise.all(
         filePaths.map(async (file) => {
+          if (file === xnftPath) {
+            file = file.replace(manifestFilename, "xnft.json");
+          }
           zip.file(path.relative(basePath, file), await readFile(file));
         })
       );
