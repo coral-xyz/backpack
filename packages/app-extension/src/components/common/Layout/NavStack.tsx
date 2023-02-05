@@ -170,7 +170,6 @@ type NavStackContext = {
   activeRoute: { name: string; props?: any; navAction?: "push" | "pop" };
   push: (route: string, props?: any) => void;
   pop: (count?: number) => void;
-  //  close: () => void;
   isRoot: boolean;
   title: string;
   navButtonRight: any;
