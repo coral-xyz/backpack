@@ -27,13 +27,13 @@ const WaitingRoom = ({ onboarded }: { onboarded?: boolean }) => {
     let previousTitle: string;
     if (onboarded && nav) {
       previousTitle = nav.title;
-      nav.setTitle("");
+      nav.setOptions({ headerTitle: "" });
       nav.setNavButtonRight(<SocialNavbarButtons />);
     }
 
     return () => {
       if (onboarded && nav) {
-        nav.setTitle(previousTitle);
+        nav.setOptions({ headerTitle: previousTitle });
         nav.setNavButtonRight();
       }
     };

@@ -14,7 +14,7 @@ export function PreferencesSolanaCommitment() {
   const background = useBackgroundClient();
 
   useEffect(() => {
-    nav.setTitle("Confirmation Commitment");
+    nav.setOptions({ headerTitle: "Confirmation Commitment" });
   }, [nav]);
 
   const menuItems = {

@@ -21,7 +21,7 @@ export function PreferencesEthereumConnection() {
   const nav = useNavigation();
 
   useEffect(() => {
-    nav.setTitle("RPC Connection");
+    nav.setOptions({ headerTitle: "RPC Connection" });
   }, [nav]);
 
   const menuItems = {

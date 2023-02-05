@@ -27,9 +27,9 @@ export function ChangePassword() {
 
   useEffect(() => {
     const title = nav.title;
-    nav.setTitle("Change password");
+    nav.setOptions({ headerTitle: "Change password" });
     return () => {
-      nav.setTitle(title);
+      nav.setOptions({ headerTitle: title });
     };
   }, []);
 

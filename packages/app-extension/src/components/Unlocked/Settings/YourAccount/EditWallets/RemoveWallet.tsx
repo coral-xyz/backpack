@@ -30,7 +30,7 @@ export const RemoveWallet: React.FC<{
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    nav.setTitle("Remove Wallet");
+    nav.setOptions({ headerTitle: "Remove Wallet" });
   }, [nav]);
 
   const onRemove = async () => {

@@ -58,7 +58,7 @@ export function ShowRecoveryPhraseWarning() {
 
   useEffect(() => {
     const navButton = nav.navButtonRight;
-    nav.setTitle("Secret recovery phrase");
+    nav.setOptions({ headerTitle: "Secret recovery phrase" });
     return () => {
       nav.setNavButtonRight(navButton);
     };

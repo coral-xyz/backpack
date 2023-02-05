@@ -47,11 +47,11 @@ export function SettingsButton() {
 }
 
 export function SettingsMenu() {
-  const { setTitle } = useNavigation();
+  const nav = useNavigation();
 
   useEffect(() => {
-    setTitle(<UserAccountsMenuButton />);
-  }, [setTitle]);
+    nav.setOptions({ headerTitle: <UserAccountsMenuButton /> });
+  }, [nav.setOptions]);
 
   return (
     <Suspense fallback={<div></div>}>

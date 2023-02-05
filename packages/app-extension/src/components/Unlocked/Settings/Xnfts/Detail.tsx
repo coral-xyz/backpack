@@ -54,7 +54,9 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
     xnft.install.publicKey === "11111111111111111111111111111111";
 
   useEffect(() => {
-    nav.setTitle(xnft.title);
+    nav.setOptions({
+      headerTitle: xnft.title,
+    });
   }, []);
 
   const menuItems = {

@@ -30,9 +30,9 @@ export function PreferenceSolanaCustomRpcUrl() {
 
   useEffect(() => {
     const title = nav.title;
-    nav.setTitle("Change RPC Connection");
+    nav.setOptions({ headerTitle: "Change RPC Connection" });
     return () => {
-      nav.setTitle(title);
+      nav.setOptions({ headerTitle: title });
     };
   }, []);
 

@@ -121,6 +121,21 @@ function NavStackProvider({
     setStack(newStack);
   };
 
+  const setOptions = ({
+    headerTitle,
+    headerRight,
+  }: {
+    headerTitle?: string | React.ReactElement;
+    headerRight?: React.ReactElement;
+  }) => {
+    if (headerTitle) {
+      setTitleOverride(headerTitle);
+    }
+    if (headerRight) {
+      setNavButtonRightOverride(headerRight);
+    }
+  };
+
   return (
     <_NavStackContext.Provider
       value={{
@@ -129,7 +144,6 @@ function NavStackProvider({
         pop,
         isRoot: stack.length === 1,
         title: titleOverride,
-        setTitle: setTitleOverride,
         navButtonRight: navButtonRightOverride,
         setNavButtonRight: setNavButtonRightOverride,
         navButtonLeft: navButtonLeftOverride,
@@ -139,6 +153,7 @@ function NavStackProvider({
         contentStyle,
         setContentStyle,
         close: onClose,
+        setOptions,
       }}
     >
       {children}
@@ -165,7 +180,6 @@ type NavStackContext = {
   close: () => void;
   isRoot: boolean;
   title: string;
-  setTitle: any;
   navButtonRight: any;
   setNavButtonRight: any;
   navButtonLeft: any;
@@ -174,6 +188,13 @@ type NavStackContext = {
   setStyle: any;
   contentStyle: any;
   setContentStyle: any;
+  setOptions: ({
+    headerTitle,
+    headerRight,
+  }: {
+    headerTitle?: string | React.ReactElement;
+    headerRight?: React.ReactElement;
+  }) => void;
 };
 
 const _NavStackContext = React.createContext<NavStackContext | null>(null);

@@ -205,7 +205,9 @@ enum SwapState {
 export function Swap({ blockchain }: { blockchain: Blockchain }) {
   const nav = useNavigation();
   useEffect(() => {
-    nav.setTitle("Swap");
+    nav.setOptions({
+      headerTitle: "Swap",
+    });
   }, [nav]);
 
   if (blockchain && blockchain !== Blockchain.SOLANA) {
@@ -832,7 +834,7 @@ export function SwapSelectToken({
   };
 
   useEffect(() => {
-    nav.setTitle("Select Token");
+    nav.setOptions({ headerTitle: "Select Token" });
   }, [nav]);
 
   return (

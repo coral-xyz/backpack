@@ -16,7 +16,7 @@ export function PreferencesSolanaExplorer() {
   const nav = useNavigation();
 
   useEffect(() => {
-    nav.setTitle("Explorer");
+    nav.setOptions({ headerTitle: "Explorer" });
   }, [nav]);
 
   const menuItems = {

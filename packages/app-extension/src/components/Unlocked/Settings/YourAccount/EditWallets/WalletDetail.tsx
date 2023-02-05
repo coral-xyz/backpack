@@ -49,7 +49,7 @@ export const WalletDetail: React.FC<{
         keyname = walletAddressDisplay(publicKey);
       }
       setWalletName(keyname);
-      nav.setTitle(keyname);
+      nav.setOptions({ headerTitle: keyname });
     })();
   }, []);
 

@@ -27,8 +27,8 @@ export function XnftSettings() {
   );
 
   useEffect(() => {
-    nav.setTitle("xNFTs");
-  }, [nav.setTitle]);
+    nav.setOptions({ headerTitle: "xNFTs" });
+  }, [nav.setOptions]);
 
   if (state !== "hasValue" && state === "loading") {
     return (
