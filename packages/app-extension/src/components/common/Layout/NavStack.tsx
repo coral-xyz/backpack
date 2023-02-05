@@ -18,7 +18,6 @@ export function NavStackEphemeral({
   style,
   navButtonRight,
   navButtonLeft,
-  onClose,
 }: {
   initialRoute: { name: string; title?: string; props?: any };
   children: any;
@@ -26,7 +25,6 @@ export function NavStackEphemeral({
   style?: React.CSSProperties;
   navButtonRight?: React.ReactNode;
   navButtonLeft?: React.ReactNode;
-  onClose?: () => void;
 }) {
   const isArray = children && children.length !== undefined;
   const navScreens =
@@ -37,7 +35,6 @@ export function NavStackEphemeral({
       style={style}
       navButtonRight={navButtonRight}
       navButtonLeft={navButtonLeft}
-      onClose={onClose}
     >
       <NavStackInner navScreens={navScreens} options={options} />
     </NavStackProvider>
@@ -59,7 +56,6 @@ function NavStackInner({
     navButtonLeft,
     title,
     style,
-    contentStyle,
   } = useNavigation();
   const _navButtonLeft =
     navButtonLeft && isRoot ? (
@@ -85,7 +81,6 @@ function NavStackInner({
           navButtonLeft={_navButtonLeft}
           navButtonRight={navButtonRight}
           navbarStyle={style}
-          navContentStyle={contentStyle}
         >
           {activeScreen.props.component({ ...(activeRoute.props ?? {}) })}
         </WithNav>
@@ -100,7 +95,6 @@ function NavStackProvider({
   navButtonLeft,
   style,
   children,
-  onClose,
 }: any) {
   const [stack, setStack] = useState([{ navAction: "push", ...initialRoute }]);
   const [titleOverride, setTitleOverride] = useState(initialRoute.title);
@@ -109,7 +103,6 @@ function NavStackProvider({
   const [navButtonLeftOverride, setNavButtonLeftOverride] =
     useState<any>(navButtonLeft);
   const [_style, setStyle] = useState(style);
-  const [contentStyle, setContentStyle] = useState({});
 
   const push = (route: string, props: any) => {
     setStack([...stack, { name: route, props, navAction: "push" }]);
@@ -122,12 +115,17 @@ function NavStackProvider({
   };
 
   const setOptions = ({
+    headerLeft,
     headerTitle,
     headerRight,
   }: {
+    headerLeft?: React.ReactElement | null;
     headerTitle?: string | React.ReactElement;
     headerRight?: React.ReactElement | null;
   }) => {
+    if (headerLeft !== undefined) {
+      setNavButtonLeftOverride(headerLeft);
+    }
     if (headerTitle !== undefined) {
       setTitleOverride(headerTitle);
     }
@@ -146,12 +144,8 @@ function NavStackProvider({
         title: titleOverride,
         navButtonRight: navButtonRightOverride,
         navButtonLeft: navButtonLeftOverride,
-        setNavButtonLeft: setNavButtonLeftOverride,
         style: _style,
         setStyle,
-        contentStyle,
-        setContentStyle,
-        close: onClose,
         setOptions,
       }}
     >
@@ -176,20 +170,19 @@ type NavStackContext = {
   activeRoute: { name: string; props?: any; navAction?: "push" | "pop" };
   push: (route: string, props?: any) => void;
   pop: (count?: number) => void;
-  close: () => void;
+  //  close: () => void;
   isRoot: boolean;
   title: string;
   navButtonRight: any;
   navButtonLeft: any;
-  setNavButtonLeft: any;
   style: any;
   setStyle: any;
-  contentStyle: any;
-  setContentStyle: any;
   setOptions: ({
+    headerLeft,
     headerTitle,
     headerRight,
   }: {
+    headerLeft?: React.ReactElement | null;
     headerTitle?: string | React.ReactElement;
     headerRight?: React.ReactElement | null;
   }) => void;

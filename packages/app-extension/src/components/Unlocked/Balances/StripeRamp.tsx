@@ -5,7 +5,7 @@ import type { CustomTheme } from "@coral-xyz/themes";
 import { styles } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
 
-import { useNavigation } from "../../common/Layout/NavStack";
+import { useDrawerContext } from "../../common/Layout/Drawer";
 
 const STRIP_RAMP_URL = "https://auth.xnfts.dev";
 
@@ -35,10 +35,10 @@ export const StripeRamp = ({
   blockchain: Blockchain;
   publicKey: string;
 }) => {
+  const { close } = useDrawerContext();
   const [, setLoading] = useState(false);
   const [err, setErr] = useState("");
   const [, setClientSecret] = useState(false);
-  const nav = useNavigation();
   const classes = useStyles();
 
   const fetchToken = () => {
@@ -66,7 +66,7 @@ export const StripeRamp = ({
             width=400,
             height=600`
         );
-        nav.close();
+        close();
       })
       .catch((e) => {
         console.error(e);
