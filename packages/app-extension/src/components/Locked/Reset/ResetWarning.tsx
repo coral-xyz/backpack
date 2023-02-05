@@ -23,7 +23,7 @@ export function Logout() {
   const { close } = useDrawerContext();
 
   useEffect(() => {
-    nav.setTitle(`Log out ${user.username}`);
+    nav.setOptions({ headerTitle: `Log out ${user.username}` });
   }, []);
 
   return (
@@ -49,7 +49,7 @@ export function ResetWarning() {
   const nav = useNavigation();
 
   useEffect(() => {
-    nav.setTitle("Reset Backpack");
+    nav.setOptions({ headerTitle: "Reset Backpack" });
   }, []);
 
   return (

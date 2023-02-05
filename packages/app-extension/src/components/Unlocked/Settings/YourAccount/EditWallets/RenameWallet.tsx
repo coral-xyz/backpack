@@ -21,7 +21,7 @@ export const RenameWallet: React.FC<{ publicKey: string; name: string }> = ({
   const background = useBackgroundClient();
 
   useEffect(() => {
-    nav.setTitle("Rename Wallet");
+    nav.setOptions({ headerTitle: "Rename Wallet" });
   }, [nav]);
 
   const cancel = () => {

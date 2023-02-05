@@ -171,7 +171,7 @@ export function Preferences() {
   };
 
   useEffect(() => {
-    nav.setTitle("Preferences");
+    nav.setOptions({ headerTitle: "Preferences" });
   }, []);
 
   return (

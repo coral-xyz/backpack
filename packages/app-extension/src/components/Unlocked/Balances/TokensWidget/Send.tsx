@@ -176,7 +176,7 @@ export function Send({
   token: TokenData;
 }) {
   const classes = useStyles() as any;
-  const { title, setTitle } = useNavigationEphemeral();
+  const nav = useNavigationEphemeral();
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -185,10 +185,10 @@ export function Send({
   const [feeOffset, setFeeOffset] = useState(BigNumber.from(0));
 
   useEffect(() => {
-    const prev = title;
-    setTitle(`Send ${token.ticker}`);
+    const prev = nav.title;
+    nav.setOptions({ headerTitle: `Send ${token.ticker}` });
     return () => {
-      setTitle(prev);
+      nav.setOptions({ headerTitle: prev });
     };
   }, []);
 

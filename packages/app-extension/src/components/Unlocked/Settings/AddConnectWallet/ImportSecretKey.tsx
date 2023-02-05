@@ -43,9 +43,9 @@ export function ImportSecretKey({
 
   useEffect(() => {
     const prevTitle = nav.title;
-    nav.setTitle("");
+    nav.setOptions({ headerTitle: "" });
     return () => {
-      nav.setTitle(prevTitle);
+      nav.setOptions({ headerTitle: prevTitle });
     };
   }, [theme]);
 

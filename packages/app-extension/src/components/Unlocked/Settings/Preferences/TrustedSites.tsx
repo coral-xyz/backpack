@@ -19,7 +19,7 @@ export function PreferencesTrustedSites() {
   const approvedOrigins = useApprovedOrigins();
 
   useEffect(() => {
-    nav.setTitle("Trusted Sites");
+    nav.setOptions({ headerTitle: "Trusted Sites" });
   }, [nav]);
 
   return approvedOrigins.length === 0 ? (

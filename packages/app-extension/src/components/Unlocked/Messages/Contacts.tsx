@@ -36,7 +36,7 @@ export const Contacts = () => {
   }, []);
 
   useEffect(() => {
-    nav.setTitle("Contacts");
+    nav.setOptions({ headerTitle: "Contacts" });
   }, [nav]);
 
   return (
@@ -60,7 +60,7 @@ export const ContactRequests = ({
   const theme = useCustomTheme();
 
   useEffect(() => {
-    nav.setTitle(`Requests ${isSent ? "Sent" : "Received"}`);
+    nav.setOptions({ headerTitle: `Requests ${isSent ? "Sent" : "Received"}` });
   }, [nav]);
 
   return (

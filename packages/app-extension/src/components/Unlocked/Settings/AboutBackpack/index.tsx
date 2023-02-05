@@ -26,8 +26,8 @@ export function AboutBackpack() {
   const theme = useCustomTheme();
 
   useEffect(() => {
-    nav.setTitle("About");
-  }, [nav.setTitle]);
+    nav.setOptions({ headerTitle: "About" });
+  }, [nav.setOptions]);
 
   const settingsMenu = [
     {

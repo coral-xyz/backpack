@@ -25,7 +25,7 @@ export function YourAccount() {
   };
 
   useEffect(() => {
-    nav.setTitle("Your Account");
+    nav.setOptions({ headerTitle: "Your Account" });
   }, []);
 
   return <SettingsList menuItems={menuItems} />;

@@ -45,7 +45,7 @@ export function AddConnectPreview() {
   const { close } = useDrawerContext();
 
   useEffect(() => {
-    nav.setTitle("");
+    nav.setOptions({ headerTitle: "" });
   }, [nav]);
 
   return (
@@ -137,9 +137,9 @@ export function AddConnectWalletMenu({
 
   useEffect(() => {
     const prevTitle = nav.title;
-    nav.setTitle("");
+    nav.setOptions({ headerTitle: "" });
     return () => {
-      nav.setTitle(prevTitle);
+      nav.setOptions({ headerTitle: prevTitle });
     };
   }, [nav.setContentStyle]);
 

@@ -12,7 +12,7 @@ export const PreferencesEthereum = () => {
   };
 
   useEffect(() => {
-    nav.setTitle("Ethereum");
+    nav.setOptions({ headerTitle: "Ethereum" });
   }, [nav]);
 
   return <SettingsList menuItems={ethereumMenuItems} />;

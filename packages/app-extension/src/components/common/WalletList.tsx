@@ -254,7 +254,7 @@ function WalletNavStack({
 }
 
 export function AllWalletsList({ filter }: { filter?: (w: any) => boolean }) {
-  const { setTitle, setNavButtonRight } = useNavigation();
+  const nav = useNavigation();
   const activeWallet = useActiveWallet();
   const wallets = useAllWallets().filter(filter ? filter : () => true);
   const activeWallets = wallets.filter((w) => !w.isCold);
@@ -270,10 +270,10 @@ export function AllWalletsList({ filter }: { filter?: (w: any) => boolean }) {
   }));
 
   useEffect(() => {
-    setNavButtonRight(<WalletSettingsButton />);
-    setTitle("Wallets");
+    nav.setNavButtonRight(<WalletSettingsButton />);
+    nav.setOptions({ headerTitle: "Wallets" });
     return () => {
-      setNavButtonRight(null);
+      nav.setNavButtonRight(null);
     };
   }, []);
 
@@ -314,7 +314,7 @@ function WalletSettingsButton() {
 export function WalletListBlockchainSelector() {
   const nav = useNavigation();
   useEffect(() => {
-    nav.setTitle("Blockchains");
+    nav.setOptions({ headerTitle: "Blockchains" });
   }, [nav]);
 
   const onClick = (blockchain: Blockchain) => {

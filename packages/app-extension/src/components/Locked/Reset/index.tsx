@@ -9,7 +9,7 @@ export function Reset() {
   const { close } = useDrawerContext();
   const nav = useNavigation();
   useEffect(() => {
-    nav.setTitle("");
+    nav.setOptions({ headerTitle: "" });
   }, []);
   return <ResetWelcome onClose={close} />;
 }

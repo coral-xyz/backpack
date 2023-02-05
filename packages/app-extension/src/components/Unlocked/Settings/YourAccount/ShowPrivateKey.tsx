@@ -112,7 +112,7 @@ export function ShowPrivateKeyWarning({ publicKey }: { publicKey: string }) {
 
   useEffect(() => {
     const navButton = nav.navButtonRight;
-    nav.setTitle("Show private key");
+    nav.setOptions({ headerTitle: "Show private key" });
     return () => {
       nav.setNavButtonRight(navButton);
     };
@@ -226,7 +226,7 @@ export function ShowPrivateKey({ privateKey }: { privateKey: string }) {
   const nav = useNavigation();
 
   useEffect(() => {
-    nav.setTitle("Private key");
+    nav.setOptions({ headerTitle: "Private key" });
   }, []);
 
   return (
