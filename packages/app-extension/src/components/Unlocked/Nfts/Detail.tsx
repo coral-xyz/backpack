@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   AVATAR_BASE_URL,
   BACKEND_API_URL,
@@ -21,6 +21,7 @@ import {
   TextInput,
 } from "@coral-xyz/react-common";
 import {
+  appStoreMetaTags,
   collectibleXnft,
   newAvatarAtom,
   nftById,
@@ -37,7 +38,7 @@ import {
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Whatshot } from "@mui/icons-material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import { IconButton, Typography } from "@mui/material";
+import { Button, IconButton, Typography } from "@mui/material";
 import { PublicKey } from "@solana/web3.js";
 import { BigNumber } from "ethers";
 import { useRecoilValueLoadable, useSetRecoilState } from "recoil";
@@ -72,6 +73,7 @@ export function NftsDetail({
   connectionUrl: string;
   nftId: string;
 }) {
+  const background = useBackgroundClient();
   const { contents, state } = useRecoilValueLoadable(
     nftById({ publicKey, connectionUrl, nftId })
   );
@@ -89,7 +91,6 @@ export function NftsDetail({
   const [chatJoined, setChatJoined] = useState(false);
   const [joiningChat, setJoiningChat] = useState(false);
   let whitelistedChatCollectionId = whitelistedChatCollection?.collectionId;
-  const background = useBackgroundClient();
 
   if (whitelistedChatCollection) {
     Object.keys(whitelistedChatCollection.attributeMapping || {}).forEach(
@@ -131,9 +132,9 @@ export function NftsDetail({
       }}
     >
       <Image nft={nft} />
-      <Description nft={nft} />
       <SendButton nft={nft} />
-      {xnft && <OpenButton xnft={xnft} />}
+      {xnft && <XnftButton xnft={xnft} />}
+      <Description nft={nft} />
       {whitelistedChatCollectionId && (
         <SecondaryButton
           style={{ marginTop: 12 }}
@@ -192,6 +193,88 @@ function Image({ nft }: { nft: any }) {
         removeOnError={true}
       />
     </div>
+  );
+}
+
+function XnftButton({ xnft }: { xnft: string }) {
+  const theme = useCustomTheme();
+  const openPlugin = useOpenPlugin();
+  const { contents, state } = useRecoilValueLoadable(appStoreMetaTags(xnft));
+
+  const data = (state === "hasValue" && contents) || null;
+
+  const handleClick = () => {
+    openPlugin(xnft);
+  };
+
+  return (
+    data && (
+      <div
+        style={{
+          marginTop: "20px",
+          position: "relative",
+        }}
+      >
+        <Typography
+          style={{
+            color: theme.custom.colors.secondary,
+            fontWeight: 500,
+            fontSize: "16px",
+            lineHeight: "24px",
+            marginBottom: "4px",
+          }}
+        >
+          xNFT
+        </Typography>
+        <div
+          style={{
+            position: "relative",
+            width: "100%",
+            borderRadius: "12px",
+            background: theme.custom.colors.nav,
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            padding: "12px",
+          }}
+        >
+          <img src={data.image} height={64} width={64} />
+          <div
+            style={{
+              flexGrow: 1,
+              whiteSpace: "nowrap",
+              overflowX: "hidden",
+            }}
+          >
+            <Typography sx={{ color: theme.custom.colors.fontColor }}>
+              {data.name}
+            </Typography>
+            <Typography
+              sx={{
+                color: theme.custom.colors.fontColor3,
+                fontSize: "14px",
+                lineHeight: "20px",
+                overflowX: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {data.description}
+            </Typography>
+          </div>
+          <Button
+            disableRipple
+            sx={{
+              color: theme.custom.colors.fontColor,
+              background: theme.custom.colors.bg2,
+              borderRadius: "12px",
+            }}
+            onClick={handleClick}
+          >
+            Open
+          </Button>
+        </div>
+      </div>
+    )
   );
 }
 
@@ -258,22 +341,6 @@ function SendButton({ nft }: { nft: any }) {
           </NavStackEphemeral>
         </div>
       </WithDrawer>
-    </>
-  );
-}
-
-function OpenButton({ xnft }: { xnft: string }) {
-  const openPlugin = useOpenPlugin();
-  const handleClick = () => {
-    openPlugin(xnft);
-  };
-  return (
-    <>
-      <SecondaryButton
-        style={{ marginTop: "12px" }}
-        label="Open"
-        onClick={handleClick}
-      />
     </>
   );
 }
