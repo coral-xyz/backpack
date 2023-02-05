@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import Image from 'next/image';
+import Image from 'next/legacy/image';
 
 function AppNoLink({ iconUrl, name }: AppNoLinkPros) {
   return (
@@ -12,8 +12,8 @@ function AppNoLink({ iconUrl, name }: AppNoLinkPros) {
             blurDataURL="/brands/aurory.jpg" //TODO: fix me
             placeholder="blur"
             quality={50}
-            width="100px"
-            height="100px"
+            width={100}
+            height={100}
             style={{ borderRadius: '4px' }}
           />
         </div>
