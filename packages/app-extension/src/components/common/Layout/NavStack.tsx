@@ -15,14 +15,12 @@ export function NavStackEphemeral({
   initialRoute,
   children,
   options,
-  style,
   navButtonRight,
   navButtonLeft,
 }: {
   initialRoute: { name: string; title?: string; props?: any };
   children: any;
   options: NavStackOptions;
-  style?: React.CSSProperties;
   navButtonRight?: React.ReactNode;
   navButtonLeft?: React.ReactNode;
 }) {
@@ -32,7 +30,6 @@ export function NavStackEphemeral({
   return (
     <NavStackProvider
       initialRoute={initialRoute}
-      style={style}
       navButtonRight={navButtonRight}
       navButtonLeft={navButtonLeft}
     >
@@ -48,15 +45,8 @@ function NavStackInner({
   navScreens: any;
   options: NavStackOptions;
 }) {
-  let {
-    isRoot,
-    activeRoute,
-    pop,
-    navButtonRight,
-    navButtonLeft,
-    title,
-    style,
-  } = useNavigation();
+  let { isRoot, activeRoute, pop, navButtonRight, navButtonLeft, title } =
+    useNavigation();
   const _navButtonLeft =
     navButtonLeft && isRoot ? (
       navButtonLeft
@@ -80,7 +70,6 @@ function NavStackInner({
           title={title}
           navButtonLeft={_navButtonLeft}
           navButtonRight={navButtonRight}
-          navbarStyle={style}
         >
           {activeScreen.props.component({ ...(activeRoute.props ?? {}) })}
         </WithNav>
@@ -93,7 +82,6 @@ function NavStackProvider({
   initialRoute,
   navButtonRight,
   navButtonLeft,
-  style,
   children,
 }: any) {
   const [stack, setStack] = useState([{ navAction: "push", ...initialRoute }]);
@@ -102,7 +90,6 @@ function NavStackProvider({
     useState<any>(navButtonRight);
   const [navButtonLeftOverride, setNavButtonLeftOverride] =
     useState<any>(navButtonLeft);
-  const [_style, setStyle] = useState(style);
 
   const push = (route: string, props: any) => {
     setStack([...stack, { name: route, props, navAction: "push" }]);
@@ -144,8 +131,6 @@ function NavStackProvider({
         title: titleOverride,
         navButtonRight: navButtonRightOverride,
         navButtonLeft: navButtonLeftOverride,
-        style: _style,
-        setStyle,
         setOptions,
       }}
     >
@@ -174,8 +159,6 @@ type NavStackContext = {
   title: string;
   navButtonRight: any;
   navButtonLeft: any;
-  style: any;
-  setStyle: any;
   setOptions: ({
     headerLeft,
     headerTitle,
