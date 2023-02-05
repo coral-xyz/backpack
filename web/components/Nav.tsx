@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { Disclosure } from '@headlessui/react';
 import { ExternalLinkIcon, MenuIcon, XIcon } from '@heroicons/react/outline';
-import Image from 'next/legacy/image';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
@@ -39,7 +39,7 @@ function Nav() {
                   {/* Logo */}
                   <Link href="/">
                     <div className="flex">
-                      <Image alt="Backpack" src="/backpack.svg" width={150} height={50} />
+                      <Image alt="Backpack" src="/backpack.svg" width="150px" height="50px" />
                     </div>
                   </Link>
                 </div>
