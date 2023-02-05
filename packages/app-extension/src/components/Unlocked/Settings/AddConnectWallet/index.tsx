@@ -141,7 +141,7 @@ export function AddConnectWalletMenu({
     return () => {
       nav.setOptions({ headerTitle: prevTitle });
     };
-  }, [nav.setContentStyle]);
+  }, [nav.setOptions]);
 
   useEffect(() => {
     (async () => {
