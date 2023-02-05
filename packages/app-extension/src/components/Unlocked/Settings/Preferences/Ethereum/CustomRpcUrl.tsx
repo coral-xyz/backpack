@@ -3,13 +3,13 @@ import { InputListItem, Inputs, PrimaryButton } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 
 import { useDrawerContext } from "../../../../common/Layout/Drawer";
-import { useNavStack } from "../../../../common/Layout/NavStack";
+import { useNavigation } from "../../../../common/Layout/NavStack";
 
 import { changeNetwork } from "./common";
 
 export function PreferenceEthereumCustomRpcUrl() {
   const { close } = useDrawerContext();
-  const nav = useNavStack();
+  const nav = useNavigation();
   const background = useBackgroundClient();
   const [rpcUrl, setRpcUrl] = useState("");
   const [chainId, setChainId] = useState("");

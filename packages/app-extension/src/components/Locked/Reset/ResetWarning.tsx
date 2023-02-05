@@ -14,11 +14,11 @@ import { Box } from "@mui/material";
 
 import { Header, HeaderIcon, SubtextParagraph } from "../../common";
 import { useDrawerContext } from "../../common/Layout/Drawer";
-import { useNavStack } from "../../common/Layout/NavStack";
+import { useNavigation } from "../../common/Layout/NavStack";
 
 export function Logout() {
   const background = useBackgroundClient();
-  const nav = useNavStack();
+  const nav = useNavigation();
   const user = useUser();
   const { close } = useDrawerContext();
 
@@ -46,7 +46,7 @@ export function Logout() {
 
 export function ResetWarning() {
   const background = useBackgroundClient();
-  const nav = useNavStack();
+  const nav = useNavigation();
 
   useEffect(() => {
     nav.setTitle("Reset Backpack");

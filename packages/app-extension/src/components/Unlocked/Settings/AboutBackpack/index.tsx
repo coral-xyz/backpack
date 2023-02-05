@@ -19,10 +19,10 @@ import { GitHub, OpenInBrowser } from "@mui/icons-material";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import { Typography } from "@mui/material";
 
-import { useNavStack } from "../../../common/Layout/NavStack";
+import { useNavigation } from "../../../common/Layout/NavStack";
 
 export function AboutBackpack() {
-  const nav = useNavStack();
+  const nav = useNavigation();
   const theme = useCustomTheme();
 
   useEffect(() => {

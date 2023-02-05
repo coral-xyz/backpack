@@ -34,11 +34,11 @@ import {
   useDrawerContext,
   WithMiniDrawer,
 } from "../../../common/Layout/Drawer";
-import { useNavStack } from "../../../common/Layout/NavStack";
+import { useNavigation } from "../../../common/Layout/NavStack";
 import { WalletListItem } from "../YourAccount/EditWallets";
 
 export function AddConnectPreview() {
-  const nav = useNavStack();
+  const nav = useNavigation();
   const user = useUser();
   const avatarUrl = useAvatarUrl(72, user.username);
   const theme = useCustomTheme();
@@ -131,7 +131,7 @@ export function AddConnectWalletMenu({
   blockchain: Blockchain;
   publicKey?: string;
 }) {
-  const nav = useNavStack();
+  const nav = useNavigation();
   const background = useBackgroundClient();
   const [keyringExists, setKeyringExists] = useState(false);
 
@@ -182,7 +182,7 @@ export function AddWalletMenu({
   keyringExists: boolean;
   setKeyringExists: (exists: boolean) => void;
 }) {
-  const nav = useNavStack();
+  const nav = useNavigation();
   const background = useBackgroundClient();
   const keyringType = useKeyringType();
   const theme = useCustomTheme();
@@ -335,7 +335,7 @@ export function RecoverWalletMenu({
   keyringExists: boolean;
   publicKey: string;
 }) {
-  const nav = useNavStack();
+  const nav = useNavigation();
   const theme = useCustomTheme();
   const [openDrawer, setOpenDrawer] = useState(false);
   const { close: closeParentDrawer } = useDrawerContext();

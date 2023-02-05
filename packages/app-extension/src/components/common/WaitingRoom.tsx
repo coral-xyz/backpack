@@ -3,7 +3,7 @@ import { useDarkMode, useUser } from "@coral-xyz/recoil";
 
 import { WithNav } from "../common/Layout/Nav";
 
-import { useNavStack } from "./Layout/NavStack";
+import { useNavigation } from "./Layout/NavStack";
 import SocialNavbarButtons from "./SocialNavbarButtons";
 
 const WAITLIST_RES_ID_KEY = "waitlist-form-res-id";
@@ -17,10 +17,10 @@ export const getWaitlistId = () =>
 const WaitingRoom = ({ onboarded }: { onboarded?: boolean }) => {
   const isDarkMode = useDarkMode();
 
-  let nav: ReturnType<typeof useNavStack>;
+  let nav: ReturnType<typeof useNavigation>;
 
   if (onboarded) {
-    nav = useNavStack();
+    nav = useNavigation();
   }
 
   useEffect(() => {

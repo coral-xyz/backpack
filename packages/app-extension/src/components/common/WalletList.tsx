@@ -31,7 +31,7 @@ import { useDrawerContext, WithMiniDrawer } from "../common/Layout/Drawer";
 import {
   NavStackEphemeral,
   NavStackScreen,
-  useNavStack,
+  useNavigation,
 } from "../common/Layout/NavStack";
 import {
   AddConnectPreview,
@@ -255,7 +255,7 @@ function WalletNavStack({
 }
 
 export function AllWalletsList({ filter }: { filter?: (w: any) => boolean }) {
-  const { setTitle, setNavButtonRight } = useNavStack();
+  const { setTitle, setNavButtonRight } = useNavigation();
   const activeWallet = useActiveWallet();
   const wallets = useAllWallets().filter(filter ? filter : () => true);
   const activeWallets = wallets.filter((w) => !w.isCold);
@@ -289,7 +289,7 @@ export function AllWalletsList({ filter }: { filter?: (w: any) => boolean }) {
 
 function WalletSettingsButton() {
   const theme = useCustomTheme();
-  const { push } = useNavStack();
+  const { push } = useNavigation();
   return (
     <Button
       onClick={() => {
@@ -313,7 +313,7 @@ function WalletSettingsButton() {
 }
 
 export function WalletListBlockchainSelector() {
-  const nav = useNavStack();
+  const nav = useNavigation();
   useEffect(() => {
     nav.setTitle("Blockchains");
   }, [nav]);
@@ -636,7 +636,7 @@ export function WalletListItem({
   inverted?: boolean;
 }) {
   const theme = useCustomTheme();
-  const nav = useNavStack();
+  const nav = useNavigation();
   const { publicKey, name, blockchain, type } = wallet;
   return (
     <ListItem

@@ -60,7 +60,7 @@ function NavStackInner({
     title,
     style,
     contentStyle,
-  } = useNavStack();
+  } = useNavigation();
   const _navButtonLeft =
     navButtonLeft && isRoot ? (
       navButtonLeft
@@ -120,9 +120,6 @@ function NavStackProvider({
     newStack[newStack.length - 1]["navAction"] = "pop";
     setStack(newStack);
   };
-  const toRoot = () => {
-    setStack([stack[0]]);
-  };
 
   return (
     <_NavStackContext.Provider
@@ -131,7 +128,6 @@ function NavStackProvider({
         push,
         pop,
         isRoot: stack.length === 1,
-        toRoot,
         title: titleOverride,
         setTitle: setTitleOverride,
         navButtonRight: navButtonRightOverride,
@@ -168,7 +164,6 @@ type NavStackContext = {
   pop: (count?: number) => void;
   close: () => void;
   isRoot: boolean;
-  toRoot: () => void;
   title: string;
   setTitle: any;
   navButtonRight: any;
@@ -183,7 +178,7 @@ type NavStackContext = {
 
 const _NavStackContext = React.createContext<NavStackContext | null>(null);
 
-export function useNavStack(): NavStackContext {
+export function useNavigation(): NavStackContext {
   const ctx = useContext(_NavStackContext);
   if (ctx === null) {
     throw new Error("Context not available");
