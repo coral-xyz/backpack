@@ -27,14 +27,15 @@ const WaitingRoom = ({ onboarded }: { onboarded?: boolean }) => {
     let previousTitle: string;
     if (onboarded && nav) {
       previousTitle = nav.title;
-      nav.setOptions({ headerTitle: "" });
-      nav.setNavButtonRight(<SocialNavbarButtons />);
+      nav.setOptions({
+        headerTitle: "",
+        headerRight: <SocialNavbarButtons />,
+      });
     }
 
     return () => {
       if (onboarded && nav) {
-        nav.setOptions({ headerTitle: previousTitle });
-        nav.setNavButtonRight();
+        nav.setOptions({ headerTitle: previousTitle, headerRight: null });
       }
     };
   }, []);
