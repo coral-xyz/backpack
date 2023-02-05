@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import Image from 'next/image';
+import Image from 'next/legacy/image';
 
 function CoralFooter() {
   return (
@@ -20,7 +20,7 @@ function CoralFooter() {
             target="_blank"
             rel="noreferrer"
           >
-            <Image alt="twitter-icon" src="/brands/twitter.png" width="20px" height="20px" />
+            <Image alt="twitter-icon" src="/brands/twitter.png" width={20} height={20} />
           </a>
         </div>
         <a
@@ -29,7 +29,7 @@ function CoralFooter() {
           target="_blank"
           rel="noreferrer"
         >
-          <Image alt="icon-github" src="/brands/github.png" width="20px" height="20px" />
+          <Image alt="icon-github" src="/brands/github.png" width={20} height={20} />
         </a>
       </div>
     </div>
