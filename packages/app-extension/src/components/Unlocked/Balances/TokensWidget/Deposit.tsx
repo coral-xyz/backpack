@@ -14,7 +14,7 @@ import { IconButton, Modal, Typography } from "@mui/material";
 
 import { TextField, walletAddressDisplay } from "../../../common";
 import { CloseButton, useDrawerContext } from "../../../common/Layout/Drawer";
-import { useNavStack } from "../../../common/Layout/NavStack";
+import { useNavigation } from "../../../common/Layout/NavStack";
 import { WithCopyTooltip } from "../../../common/WithCopyTooltip";
 
 export function Deposit({ ...props }: any) {
@@ -32,7 +32,7 @@ export function Deposit({ ...props }: any) {
 }
 
 function DepositMultiWallet() {
-  const nav = useNavStack();
+  const nav = useNavigation();
   const { close } = useDrawerContext();
   const activeWallets = useAllWalletsDisplayed();
 

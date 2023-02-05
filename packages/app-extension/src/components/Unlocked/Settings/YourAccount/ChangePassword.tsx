@@ -10,12 +10,12 @@ import { Button, Typography } from "@mui/material";
 
 import { SubtextParagraph } from "../../../common";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
-import { useNavStack } from "../../../common/Layout/NavStack";
+import { useNavigation } from "../../../common/Layout/NavStack";
 
 export function ChangePassword() {
   const theme = useCustomTheme();
   const { close } = useDrawerContext();
-  const nav = useNavStack();
+  const nav = useNavigation();
   const background = useBackgroundClient();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPw1, setNewPw1] = useState("");

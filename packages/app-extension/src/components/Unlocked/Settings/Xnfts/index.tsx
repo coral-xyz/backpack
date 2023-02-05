@@ -14,11 +14,11 @@ import {
 import { Apps } from "@mui/icons-material";
 import { useRecoilValueLoadable } from "recoil";
 
-import { useNavStack } from "../../../common/Layout/NavStack";
+import { useNavigation } from "../../../common/Layout/NavStack";
 import { SettingsList } from "../../../common/Settings/List";
 
 export function XnftSettings() {
-  const nav = useNavStack();
+  const nav = useNavigation();
   // TODO: Aggregate view.
   const { publicKey } = useActiveSolanaWallet();
   const connectionUrl = useSolanaConnectionUrl();

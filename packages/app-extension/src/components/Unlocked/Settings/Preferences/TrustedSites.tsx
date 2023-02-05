@@ -1,16 +1,21 @@
 import { useEffect } from "react";
 import { UI_RPC_METHOD_APPROVED_ORIGINS_DELETE } from "@coral-xyz/common";
-import { EmptyState,List, ListItem, PrimaryButton  } from "@coral-xyz/react-common";
+import {
+  EmptyState,
+  List,
+  ListItem,
+  PrimaryButton,
+} from "@coral-xyz/react-common";
 import { useApprovedOrigins, useBackgroundClient } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { GppBad } from "@mui/icons-material";
 import { ListItemText } from "@mui/material";
 
-import { useNavStack } from "../../../common/Layout/NavStack";
+import { useNavigation } from "../../../common/Layout/NavStack";
 
 export function PreferencesTrustedSites() {
   const theme = useCustomTheme();
-  const nav = useNavStack();
+  const nav = useNavigation();
   const approvedOrigins = useApprovedOrigins();
 
   useEffect(() => {

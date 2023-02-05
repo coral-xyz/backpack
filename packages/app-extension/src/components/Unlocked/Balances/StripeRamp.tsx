@@ -5,7 +5,7 @@ import type { CustomTheme } from "@coral-xyz/themes";
 import { styles } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
 
-import { useNavStack } from "../../common/Layout/NavStack";
+import { useNavigation } from "../../common/Layout/NavStack";
 
 const STRIP_RAMP_URL = "https://auth.xnfts.dev";
 
@@ -38,7 +38,7 @@ export const StripeRamp = ({
   const [, setLoading] = useState(false);
   const [err, setErr] = useState("");
   const [, setClientSecret] = useState(false);
-  const nav = useNavStack();
+  const nav = useNavigation();
   const classes = useStyles();
 
   const fetchToken = () => {
