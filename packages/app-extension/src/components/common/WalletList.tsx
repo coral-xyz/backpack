@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Blockchain,
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
@@ -30,7 +30,7 @@ import { useDrawerContext, WithMiniDrawer } from "../common/Layout/Drawer";
 import {
   NavStackEphemeral,
   NavStackScreen,
-  useNavStack,
+  useNavigation,
 } from "../common/Layout/NavStack";
 import {
   AddConnectPreview,
@@ -72,23 +72,16 @@ export function WalletDrawerButton({
   wallet: { name: string; publicKey: string };
   style?: React.CSSProperties;
 }) {
-  const [openDrawer, setOpenDrawer] = useState(false);
-
+  const { setOpen } = useWalletDrawerContext();
   return (
-    <>
-      <WalletButton
-        wallet={wallet}
-        onClick={(e: any) => {
-          e.stopPropagation();
-          setOpenDrawer(true);
-        }}
-        style={style}
-      />
-      <WalletDrawerNavStack
-        openDrawer={openDrawer}
-        setOpenDrawer={setOpenDrawer}
-      />
-    </>
+    <WalletButton
+      wallet={wallet}
+      onClick={(e: any) => {
+        e.stopPropagation();
+        setOpen(true);
+      }}
+      style={style}
+    />
   );
 }
 
@@ -261,7 +254,7 @@ function WalletNavStack({
 }
 
 export function AllWalletsList({ filter }: { filter?: (w: any) => boolean }) {
-  const { setTitle, setNavButtonRight } = useNavStack();
+  const { setTitle, setNavButtonRight } = useNavigation();
   const activeWallet = useActiveWallet();
   const wallets = useAllWallets().filter(filter ? filter : () => true);
   const activeWallets = wallets.filter((w) => !w.isCold);
@@ -295,7 +288,7 @@ export function AllWalletsList({ filter }: { filter?: (w: any) => boolean }) {
 
 function WalletSettingsButton() {
   const theme = useCustomTheme();
-  const { push } = useNavStack();
+  const { push } = useNavigation();
   return (
     <Button
       onClick={() => {
@@ -319,7 +312,7 @@ function WalletSettingsButton() {
 }
 
 export function WalletListBlockchainSelector() {
-  const nav = useNavStack();
+  const nav = useNavigation();
   useEffect(() => {
     nav.setTitle("Blockchains");
   }, [nav]);
@@ -530,16 +523,6 @@ function _WalletList({
                 />
               </Tooltip>
             </div>
-            <Typography
-              style={{
-                fontWeight: 500,
-                color: theme.custom.colorsInverted.secondary,
-                fontSize: "14px",
-                lineHeight: "20px",
-              }}
-            >
-              Disable app signing in wallet info
-            </Typography>
           </div>
           <WalletList
             inverted={true}
@@ -652,8 +635,8 @@ export function WalletListItem({
   inverted?: boolean;
 }) {
   const theme = useCustomTheme();
-  const nav = useNavStack();
-  const { publicKey, name, blockchain, type, isCold } = wallet;
+  const nav = useNavigation();
+  const { publicKey, name, blockchain, type } = wallet;
   return (
     <ListItem
       inverted={inverted}
@@ -720,7 +703,6 @@ export function WalletListItem({
               name={name}
               publicKey={publicKey}
               type={type}
-              isCold={isCold}
               isSelected={isSelected}
               inverted={inverted}
             />
@@ -877,14 +859,12 @@ export function StackedWalletAddress({
   publicKey,
   name,
   type,
-  isCold,
   isSelected = false,
   inverted,
 }: {
   publicKey: string;
   name: string;
   type: string;
-  isCold?: boolean;
   isSelected?: boolean;
   inverted?: boolean;
 }) {
@@ -993,4 +973,38 @@ function NetworkIcon({
 }) {
   const blockchainLogo = useBlockchainLogo(blockchain);
   return <img src={blockchainLogo} style={style} />;
+}
+
+type WalletDrawerContext = {
+  open: boolean;
+  setOpen: any;
+};
+
+const _WalletDrawerContext = React.createContext<WalletDrawerContext | null>(
+  null
+);
+
+export function WalletDrawerProvider({ children }: any) {
+  const [open, setOpen] = useState(false);
+  return (
+    <_WalletDrawerContext.Provider
+      value={{
+        open,
+        setOpen,
+      }}
+    >
+      <>
+        {children}
+        <WalletDrawerNavStack openDrawer={open} setOpenDrawer={setOpen} />
+      </>
+    </_WalletDrawerContext.Provider>
+  );
+}
+
+export function useWalletDrawerContext(): WalletDrawerContext {
+  const ctx = useContext(_WalletDrawerContext);
+  if (ctx === null) {
+    throw new Error("Context not available");
+  }
+  return ctx;
 }

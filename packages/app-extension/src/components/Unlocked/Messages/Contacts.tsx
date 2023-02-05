@@ -6,7 +6,7 @@ import { useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
 
-import { useNavStack } from "../../common/Layout/NavStack";
+import { useNavigation } from "../../common/Layout/NavStack";
 
 import { SearchUsers } from "./SearchUsers";
 import { useStyles } from "./styles";
@@ -24,7 +24,7 @@ async function getRequests(): Promise<{
 }
 
 export const Contacts = () => {
-  const nav = useNavStack();
+  const nav = useNavigation();
   const { uuid } = useUser();
   const allChats = useContacts(uuid);
   const [requests, setRequests] = useState<
@@ -55,7 +55,7 @@ export const ContactRequests = ({
   isSent?: boolean;
   requests: { received: RemoteUserData[]; sent: RemoteUserData[] };
 }) => {
-  const nav = useNavStack();
+  const nav = useNavigation();
   const classes = useStyles();
   const theme = useCustomTheme();
 

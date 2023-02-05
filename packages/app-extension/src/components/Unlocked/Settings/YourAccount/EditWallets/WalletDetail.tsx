@@ -17,7 +17,7 @@ import { Typography } from "@mui/material";
 import { useRecoilValue } from "recoil";
 
 import { HeaderIcon } from "../../../../common";
-import { useNavStack } from "../../../../common/Layout/NavStack";
+import { useNavigation } from "../../../../common/Layout/NavStack";
 import { SettingsList } from "../../../../common/Settings/List";
 import { WithCopyTooltip } from "../../../../common/WithCopyTooltip";
 import { ModeSwitch } from "../../Preferences";
@@ -28,7 +28,7 @@ export const WalletDetail: React.FC<{
   name: string;
   type: string;
 }> = ({ blockchain, publicKey, name, type }) => {
-  const nav = useNavStack();
+  const nav = useNavigation();
   const theme = useCustomTheme();
   const background = useBackgroundClient();
   const [tooltipOpen, setTooltipOpen] = useState(false);

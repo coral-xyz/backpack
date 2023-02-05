@@ -16,7 +16,7 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
 
 import { WithMiniDrawer } from "../../../../common/Layout/Drawer";
-import { useNavStack } from "../../../../common/Layout/NavStack";
+import { useNavigation } from "../../../../common/Layout/NavStack";
 
 export const RemoveWallet: React.FC<{
   blockchain: Blockchain;
@@ -24,7 +24,7 @@ export const RemoveWallet: React.FC<{
   type: string;
 }> = ({ blockchain, publicKey, type }) => {
   const theme = useCustomTheme();
-  const nav = useNavStack();
+  const nav = useNavigation();
   const background = useBackgroundClient();
   const [showSuccess, setShowSuccess] = useState(false);
   const [loading, setLoading] = useState(false);

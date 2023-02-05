@@ -45,7 +45,7 @@ import { BigNumber, ethers } from "ethers";
 
 import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
-import { useNavStack } from "../../../common/Layout/NavStack";
+import { useNavigation as useNavigationEphemeral } from "../../../common/Layout/NavStack";
 import { TokenAmountHeader } from "../../../common/TokenAmountHeader";
 import { TokenInputField } from "../../../common/TokenInput";
 
@@ -176,7 +176,7 @@ export function Send({
   token: TokenData;
 }) {
   const classes = useStyles() as any;
-  const { title, setTitle } = useNavStack();
+  const { title, setTitle } = useNavigationEphemeral();
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
   const [openDrawer, setOpenDrawer] = useState(false);

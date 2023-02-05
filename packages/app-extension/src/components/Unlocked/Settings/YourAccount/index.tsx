@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { useKeyringType } from "@coral-xyz/recoil";
 
-import { useNavStack } from "../../../common/Layout/NavStack";
+import { useNavigation } from "../../../common/Layout/NavStack";
 import { SettingsList } from "../../../common/Settings/List";
 
 export function YourAccount() {
-  const nav = useNavStack();
+  const nav = useNavigation();
   const keyringType = useKeyringType();
 
   const menuItems = {

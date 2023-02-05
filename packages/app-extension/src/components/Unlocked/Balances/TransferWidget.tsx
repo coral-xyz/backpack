@@ -14,7 +14,7 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import { ArrowDownward, ArrowUpward, SwapHoriz } from "@mui/icons-material";
 import { Typography } from "@mui/material";
 
-import { useNavStack } from "../../common/Layout/NavStack";
+import { useNavigation } from "../../common/Layout/NavStack";
 import type { Token } from "../../common/TokenTable";
 import { SearchableTokenTables } from "../../common/TokenTable";
 import { Swap, SwapSelectToken } from "../../Unlocked/Swap";
@@ -325,7 +325,7 @@ function TransferButton({
 }
 
 function SendToken() {
-  const { push } = useNavStack();
+  const { push } = useNavigation();
 
   const onClickRow = (blockchain: Blockchain, token: Token) => {
     push("send", { blockchain, token });
