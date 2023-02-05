@@ -114,7 +114,7 @@ export function ShowPrivateKeyWarning({ publicKey }: { publicKey: string }) {
     const navButton = nav.navButtonRight;
     nav.setOptions({ headerTitle: "Show private key" });
     return () => {
-      nav.setNavButtonRight(navButton);
+      nav.setOptions({ headerRight: navButton });
     };
   }, []);
 

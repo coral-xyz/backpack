@@ -270,10 +270,12 @@ export function AllWalletsList({ filter }: { filter?: (w: any) => boolean }) {
   }));
 
   useEffect(() => {
-    nav.setNavButtonRight(<WalletSettingsButton />);
-    nav.setOptions({ headerTitle: "Wallets" });
+    nav.setOptions({
+      headerTitle: "Wallets",
+      headerRight: <WalletSettingsButton />,
+    });
     return () => {
-      nav.setNavButtonRight(null);
+      nav.setOptions({ headerRight: null });
     };
   }, []);
 

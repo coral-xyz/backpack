@@ -126,12 +126,12 @@ function NavStackProvider({
     headerRight,
   }: {
     headerTitle?: string | React.ReactElement;
-    headerRight?: React.ReactElement;
+    headerRight?: React.ReactElement | null;
   }) => {
-    if (headerTitle) {
+    if (headerTitle !== undefined) {
       setTitleOverride(headerTitle);
     }
-    if (headerRight) {
+    if (headerRight !== undefined) {
       setNavButtonRightOverride(headerRight);
     }
   };
@@ -145,7 +145,6 @@ function NavStackProvider({
         isRoot: stack.length === 1,
         title: titleOverride,
         navButtonRight: navButtonRightOverride,
-        setNavButtonRight: setNavButtonRightOverride,
         navButtonLeft: navButtonLeftOverride,
         setNavButtonLeft: setNavButtonLeftOverride,
         style: _style,
@@ -181,7 +180,6 @@ type NavStackContext = {
   isRoot: boolean;
   title: string;
   navButtonRight: any;
-  setNavButtonRight: any;
   navButtonLeft: any;
   setNavButtonLeft: any;
   style: any;
@@ -193,7 +191,7 @@ type NavStackContext = {
     headerRight,
   }: {
     headerTitle?: string | React.ReactElement;
-    headerRight?: React.ReactElement;
+    headerRight?: React.ReactElement | null;
   }) => void;
 };
 
