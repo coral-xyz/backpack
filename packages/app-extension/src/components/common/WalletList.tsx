@@ -931,7 +931,7 @@ function WalletTypeIcon({ type, fill }: { type: string; fill?: string }) {
       return <ImportedIcon fill={fill} />;
     case "hardware":
       return <HardwareIcon fill={fill} />;
-    case "mnemonic":
+    case "derived":
       return <MnemonicIcon fill={fill} />;
     default:
       return null;
