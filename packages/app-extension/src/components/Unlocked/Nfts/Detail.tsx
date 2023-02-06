@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { type CSSProperties, useEffect, useState } from "react";
 import {
   AVATAR_BASE_URL,
   BACKEND_API_URL,
@@ -73,6 +73,7 @@ export function NftsDetail({
   connectionUrl: string;
   nftId: string;
 }) {
+  const theme = useCustomTheme();
   const background = useBackgroundClient();
   const { contents, state } = useRecoilValueLoadable(
     nftById({ publicKey, connectionUrl, nftId })
@@ -132,39 +133,52 @@ export function NftsDetail({
       }}
     >
       <Image nft={nft} />
-      <SendButton nft={nft} />
-      {xnft && <XnftButton xnft={xnft} />}
-      <Description nft={nft} />
-      {whitelistedChatCollectionId && (
-        <SecondaryButton
-          style={{ marginTop: 12 }}
-          disabled={chatJoined || joiningChat}
-          label={joiningChat ? "Joining" : chatJoined ? "Joined" : "Join chat"}
-          onClick={async () => {
-            setJoiningChat(true);
-            await fetch(`${BACKEND_API_URL}/nft/bulk`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                publicKey: publicKey,
-                nfts: [
-                  {
-                    collectionId: whitelistedChatCollection?.collectionId,
-                    nftId: nft?.mint,
-                    centralizedGroup: whitelistedChatCollection?.id,
-                  },
-                ],
-              }),
-            });
-            setJoiningChat(false);
-            background.request({
-              method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
-              params: [TAB_MESSAGES],
-            });
-            setChatJoined(true);
-          }}
+      <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+        {whitelistedChatCollectionId && (
+          <PrimaryButton
+            disabled={chatJoined || joiningChat}
+            label={
+              joiningChat ? "Joining" : chatJoined ? "Joined" : "Join chat"
+            }
+            onClick={async () => {
+              setJoiningChat(true);
+              await fetch(`${BACKEND_API_URL}/nft/bulk`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  publicKey: publicKey,
+                  nfts: [
+                    {
+                      collectionId: whitelistedChatCollection?.collectionId,
+                      nftId: nft?.mint,
+                      centralizedGroup: whitelistedChatCollection?.id,
+                    },
+                  ],
+                }),
+              });
+              setJoiningChat(false);
+              background.request({
+                method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+                params: [TAB_MESSAGES],
+              });
+              setChatJoined(true);
+            }}
+          />
+        )}
+        <SendButton
+          style={
+            whitelistedChatCollectionId
+              ? {
+                  backgroundColor: theme.custom.colors.secondaryButton,
+                  color: theme.custom.colors.secondaryButtonTextColor,
+                }
+              : undefined
+          }
+          nft={nft}
         />
-      )}
+      </div>
+      {xnft && <ApplicationButton xnft={xnft} />}
+      <Description nft={nft} />
       {nft.attributes && nft.attributes.length > 0 && <Attributes nft={nft} />}
     </div>
   );
@@ -196,7 +210,7 @@ function Image({ nft }: { nft: any }) {
   );
 }
 
-function XnftButton({ xnft }: { xnft: string }) {
+function ApplicationButton({ xnft }: { xnft: string }) {
   const theme = useCustomTheme();
   const openPlugin = useOpenPlugin();
   const { contents, state } = useRecoilValueLoadable(appStoreMetaTags(xnft));
@@ -224,7 +238,7 @@ function XnftButton({ xnft }: { xnft: string }) {
             marginBottom: "4px",
           }}
         >
-          xNFT
+          Application
         </Typography>
         <div
           style={{
@@ -311,20 +325,14 @@ function Description({ nft }: { nft: any }) {
   );
 }
 
-function SendButton({ nft }: { nft: any }) {
+function SendButton({ nft, style }: { nft: any; style?: CSSProperties }) {
   const [openDrawer, setOpenDrawer] = useState(false);
   const send = () => {
     setOpenDrawer(true);
   };
   return (
     <>
-      <PrimaryButton
-        style={{
-          marginTop: "24px",
-        }}
-        onClick={() => send()}
-        label={"Send"}
-      />
+      <PrimaryButton style={style} onClick={() => send()} label={"Send"} />
       <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
         <div style={{ height: "100%" }}>
           <NavStackEphemeral
