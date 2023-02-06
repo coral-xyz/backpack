@@ -492,15 +492,25 @@ function AcceptRejectRequest({ userId }: { userId: string }) {
   const friendshipValue = useFriendship({ userId });
   const { uuid } = useUser();
   const setFriendshipValue = useUpdateFriendships();
+  const [inProgress, setInProgress] = useState(false);
 
-  if (friendshipValue?.remoteRequested) {
+  if (friendshipValue?.remoteRequested && !friendshipValue?.areFriends) {
     return (
       <div style={{ display: "flex", marginTop: 5 }}>
         <SuccessButton
+          disabled={inProgress}
           label={"Confirm"}
-          style={{ marginRight: 10, height: 35, width: "inherit" }}
+          style={{
+            marginRight: 8,
+            height: 32,
+            width: "inherit",
+            paddingLeft: 10,
+            paddingRight: 10,
+            borderRadius: 6,
+          }}
           onClick={async (e: any) => {
             e.stopPropagation();
+            setInProgress(true);
             await sendFriendRequest({ to: userId, sendRequest: true });
             await updateFriendshipIfExists(uuid, userId, {
               requested: 0,
@@ -511,14 +521,41 @@ function AcceptRejectRequest({ userId }: { userId: string }) {
               friendshipValue: {
                 requested: false,
                 areFriends: true,
+                remoteRequested: false,
               },
             });
+            setInProgress(false);
           }}
         />
         <DangerButton
-          style={{ marginRight: 10, height: 35, width: "inherit" }}
+          disabled={inProgress}
+          style={{
+            height: 32,
+            width: "inherit",
+            paddingLeft: 10,
+            paddingRight: 10,
+            borderRadius: 6,
+          }}
           label={"Delete"}
-          onClick={() => {}}
+          onClick={async (e: any) => {
+            e.stopPropagation();
+            setInProgress(true);
+            await sendFriendRequest({ to: userId, sendRequest: false });
+            await updateFriendshipIfExists(uuid, userId, {
+              requested: 0,
+              areFriends: 0,
+              remoteRequested: 0,
+            });
+            setFriendshipValue({
+              userId: userId,
+              friendshipValue: {
+                requested: false,
+                areFriends: false,
+                remoteRequested: false,
+              },
+            });
+            setInProgress(false);
+          }}
         />
       </div>
     );
@@ -569,7 +606,7 @@ function FriendRequestListItem({
         backgroundColor: theme.custom.colors.nav,
         borderBottom: isLast
           ? undefined
-          : `solid 1pt ${theme.custom.colors.border}`,
+          : `solid 1pt ${theme.custom.colors.border1}`,
         ...isFirstLastListItemStyle(isFirst, isLast, 12),
       }}
     >

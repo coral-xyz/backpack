@@ -178,10 +178,11 @@ function UserListItem({
 
   const onDecline = async (ev: MouseEvent<HTMLDivElement>) => {
     ev.stopPropagation();
-    await sendFriendRequest({ to: user.id, sendRequest: true });
+    await sendFriendRequest({ to: user.id, sendRequest: false });
     await updateFriendshipIfExists(uuid, user.id, {
       requested: 0,
       areFriends: 0,
+      remoteRequested: 0,
     });
 
     setFriendshipValue({
@@ -189,6 +190,7 @@ function UserListItem({
       friendshipValue: {
         requested: false,
         areFriends: false,
+        remoteRequested: false,
       },
     });
     setMembers?.((members) =>

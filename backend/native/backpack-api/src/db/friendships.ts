@@ -568,6 +568,8 @@ export async function setFriendship({
       ],
     });
     await deleteFriendRequest({ from, to });
+    // Delete friend request from other user to this user as well
+    await deleteFriendRequest({ from: to, to: from });
     return;
   }
 
