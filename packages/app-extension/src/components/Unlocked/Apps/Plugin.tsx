@@ -145,17 +145,21 @@ function PluginControl({ closePlugin }: any) {
     >
       <div
         style={{
-          width: "87px",
+          //          width: "87px",
+          width: "60px",
           height: "32px",
           borderRadius: "18.5px",
           display: "flex",
           background: "#fff",
         }}
       >
+        {/*
         <Button
           disableRipple
           onClick={() => {}}
-          style={{
+          sx={{
+						borderTopLeftRadius: '18.5px',
+						borderBottomLeftRadius: '18.5px',
             flex: 1,
             height: "32px",
             padding: 0,
@@ -183,10 +187,12 @@ function PluginControl({ closePlugin }: any) {
             }}
           />
         </div>
+				*/}
         <Button
           disableRipple
           onClick={() => closePlugin()}
-          style={{
+          sx={{
+            borderRadius: "18.5px",
             flex: 1,
             height: "32px",
             padding: 0,
