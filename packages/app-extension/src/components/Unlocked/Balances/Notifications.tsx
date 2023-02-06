@@ -15,11 +15,12 @@ import {
   friendship,
   unreadCount,
   useRecentNotifications,
+  useUpdateFriendships,
   useUser,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import { Badge , IconButton, List, ListItem, Typography } from "@mui/material";
+import { Badge, IconButton, List, ListItem, Typography } from "@mui/material";
 import { useRecoilState } from "recoil";
 
 import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
@@ -488,9 +489,11 @@ function NotificationListItem({
 }
 
 function AcceptRejectRequest({ userId }: { userId: string }) {
-  const [friendshipValue, setFriendshipValue] =
-    useRecoilState<Friendship | null>(friendship({ userId }));
+  const [friendshipValue, _] = useRecoilState<Friendship | null>(
+    friendship({ userId })
+  );
   const { uuid } = useUser();
+  const setFriendshipValue = useUpdateFriendships();
 
   if (friendshipValue?.remoteRequested) {
     return (
@@ -505,12 +508,13 @@ function AcceptRejectRequest({ userId }: { userId: string }) {
               requested: 0,
               areFriends: 1,
             });
-
-            setFriendshipValue((x: any) => ({
-              ...x,
-              requested: false,
-              areFriends: true,
-            }));
+            setFriendshipValue({
+              userId: userId,
+              friendshipValue: {
+                requested: false,
+                areFriends: true,
+              },
+            });
           }}
         />
         <DangerButton

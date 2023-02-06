@@ -56,11 +56,11 @@ export function walletAddressDisplay(
   )}`;
 }
 
-export function usernameDisplay(username: string, maxLength = 8) {
+export function usernameDisplay(username: string, maxLength = 10) {
   if (username.length <= maxLength) {
     return username;
   }
-  return username.slice(0, maxLength - 3) + "...";
+  return username.slice(0, maxLength - 2) + "..";
 }
 
 /**

@@ -6,7 +6,11 @@ import {
   unFriend,
 } from "@coral-xyz/common";
 import { toast } from "@coral-xyz/react-common";
-import { friendship, useDecodedSearchParams } from "@coral-xyz/recoil";
+import {
+  friendship,
+  useDecodedSearchParams,
+  useUpdateFriendships,
+} from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { Fade } from "@mui/material";
@@ -20,8 +24,10 @@ export const MessageOptions = () => {
   const { props }: any = useDecodedSearchParams();
   const userId = props.userId;
   const remoteUsername = props.username;
-  const [friendshipValue, setFriendshipValue] =
-    useRecoilState<Friendship | null>(friendship({ userId }));
+  const [friendshipValue, _] = useRecoilState<Friendship | null>(
+    friendship({ userId })
+  );
+  const setFriendshipValue = useUpdateFriendships();
   const theme = useCustomTheme();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -36,10 +42,12 @@ export const MessageOptions = () => {
 
   const send = async (sendRequest: boolean) => {
     await sendFriendRequest({ to: userId, sendRequest });
-    setFriendshipValue((x: any) => ({
-      ...x,
-      requested: sendRequest,
-    }));
+    setFriendshipValue({
+      userId: userId,
+      friendshipValue: {
+        requested: sendRequest,
+      },
+    });
     handleClose();
   };
 
@@ -68,10 +76,12 @@ export const MessageOptions = () => {
             onClick={async () => {
               if (friendshipValue?.areFriends) {
                 await unFriend({ to: userId });
-                setFriendshipValue((x: any) => ({
-                  ...x,
-                  areFriends: false,
-                }));
+                setFriendshipValue({
+                  userId: userId,
+                  friendshipValue: {
+                    areFriends: false,
+                  },
+                });
                 toast.success(
                   "Contact removed",
                   `We've removed @${remoteUsername} from your contacts.`
@@ -106,11 +116,13 @@ export const MessageOptions = () => {
             disabled={friendshipValue?.spam}
             onClick={async () => {
               const updatedValue = !friendshipValue?.blocked;
-              setFriendshipValue((x: any) => ({
-                ...x,
-                blocked: updatedValue,
-                requested: updatedValue ? false : x.requested,
-              }));
+              setFriendshipValue({
+                userId: userId,
+                friendshipValue: {
+                  blocked: updatedValue,
+                  requested: updatedValue ? false : friendshipValue.requested,
+                },
+              });
               await fetch(`${BACKEND_API_URL}/friends/block`, {
                 method: "POST",
                 headers: {
@@ -139,10 +151,12 @@ export const MessageOptions = () => {
                 },
                 body: JSON.stringify({ to: userId, spam: updatedValue }),
               });
-              setFriendshipValue((x: any) => ({
-                ...x,
-                spam: updatedValue,
-              }));
+              setFriendshipValue({
+                userId: userId,
+                friendshipValue: {
+                  spam: updatedValue,
+                },
+              });
               handleClose();
             }}
           >

@@ -1,6 +1,7 @@
 import type { CSSProperties, MouseEvent } from "react";
 import type { RemoteUserData } from "@coral-xyz/common";
 import {
+  fetchFriendship,
   NAV_COMPONENT_MESSAGE_PROFILE,
   sendFriendRequest,
   unFriend,
@@ -13,7 +14,12 @@ import {
   LocalImage,
   SignalingManager,
 } from "@coral-xyz/react-common";
-import { friendship, useNavigation, useUser } from "@coral-xyz/recoil";
+import {
+  friendship,
+  useNavigation,
+  useUpdateFriendships,
+  useUser,
+} from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { List, ListItem } from "@mui/material";
 import { useRecoilCallback } from "recoil";
@@ -361,21 +367,3 @@ function UserIcon({ image }: any) {
     />
   );
 }
-
-export const useUpdateFriendships = () =>
-  useRecoilCallback(
-    ({ set, snapshot }: any) =>
-      async ({
-        friendshipValue,
-        userId,
-      }: {
-        friendshipValue: any;
-        userId: string;
-      }) => {
-        const currentFriendship = snapshot.getLoadable(friendship({ userId }));
-        set(friendship({ userId }), {
-          ...(currentFriendship.valueMaybe() || {}),
-          ...friendshipValue,
-        });
-      }
-  );
