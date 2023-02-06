@@ -922,7 +922,7 @@ class UserKeyring {
   ) {
     const blockchainKeyring = this.blockchains.get(blockchain);
     const keystoneKeyring = blockchainKeyring!.keystoneKeyring!;
-    await keystoneKeyring.keystoneImport(ur);
+    await keystoneKeyring.keystoneImport(ur, pubkey);
     if (pubkey) {
       const accounts = keystoneKeyring.getAccounts();
       const i = accounts.findIndex(e => e.publicKey === pubkey);

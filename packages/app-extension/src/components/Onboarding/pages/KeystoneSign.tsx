@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
+import { SolanaKeystoneKeyring } from '@coral-xyz/blockchain-solana';
 import type { Blockchain, DerivationPath, UR } from "@coral-xyz/common";
 import { HardwareWalletIcon, PrimaryButton } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
+import { AnimatedQRCode, URType,useAnimatedQRScanner } from '@keystonehq/animated-qr';
 import { Box } from "@mui/material";
 
 import { Header, HeaderIcon, SubtextParagraph } from "../../common";
-import { SolanaKeystoneKeyring } from '@coral-xyz/blockchain-solana';
-import { AnimatedQRCode, useAnimatedQRScanner, URType } from '@keystonehq/animated-qr';
 
 export function KeystoneSign({
   blockchain,

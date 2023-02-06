@@ -24,7 +24,12 @@ import { KeystoneSign } from './KeystoneSign';
 
 export enum HardwareType {
   Keystone = "keystone",
-  USB = "usb",
+  Ledger = "ledger",
+}
+
+export interface HardwareBlockchainKeyringInit extends BlockchainKeyringInit {
+  hardwareType: HardwareType;
+  ur?: UR;
 }
 
 // We are using a hook here to generate the steps for the hardware onboard
@@ -64,14 +69,14 @@ export function useHardwareOnboardSteps({
     nextStep();
   }, []);
 
-  const SignMessage = hardwareType === HardwareType.USB ? HardwareSign : KeystoneSign;
+  const SignMessage = hardwareType === HardwareType.Ledger ? HardwareSign : KeystoneSign;
 
   //
   // Flow for onboarding a hardware wallet.
   //
   const steps = [
     <ConnectHardwareWelcome onNext={onWelcomeNext} />,
-    hardwareType === HardwareType.USB ? (
+    hardwareType === HardwareType.Ledger ? (
       <ConnectHardwareSearching
         blockchain={blockchain}
         onNext={(transport) => {
@@ -183,6 +188,8 @@ export function useHardwareOnboardSteps({
               onComplete({
                 ...walletDescriptor,
                 signature,
+                hardwareType,
+                ur,
               });
               if (successComponent) {
                 nextStep();

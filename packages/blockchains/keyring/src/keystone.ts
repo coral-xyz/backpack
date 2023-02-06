@@ -1,4 +1,4 @@
-import { ImportedDerivationPath } from './types';
+import type { ImportedDerivationPath } from './types';
 
 export class KeystoneKeyringBase {
   private keys: ImportedDerivationPath[] = []
@@ -15,5 +15,13 @@ export class KeystoneKeyringBase {
     this.keys = this.keys.filter(
       (dp) => dp.publicKey !== publicKey
     );
+  }
+
+  public addPublicKey(key: ImportedDerivationPath) {
+    this.keys.push(key);
+  }
+
+  public publicKeys() {
+    return this.keys.map(e => e.publicKey);
   }
 }

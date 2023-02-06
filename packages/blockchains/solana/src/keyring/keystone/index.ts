@@ -20,4 +20,8 @@ export class KeystoneKeyring extends BaseKeyring {
     }
     return this.interaction;
   };
+
+  getXFP() {
+    return this.xfp;
+  }
 }

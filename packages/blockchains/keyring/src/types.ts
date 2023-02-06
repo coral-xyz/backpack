@@ -7,6 +7,7 @@ import type {
   WalletDescriptor,
 } from "@coral-xyz/common";
 
+import type { KeystoneKeyringBase } from './keystone';
 import type { LedgerKeyringBase } from "./ledger";
 
 export type {
@@ -91,10 +92,10 @@ export interface KeystoneKeyringFactory {
   fromJson(obj: KeystoneKeyringJson): KeystoneKeyring;
 }
 
-export interface KeystoneKeyring extends Keyring {
+export interface KeystoneKeyring extends KeystoneKeyringBase {
   signTransaction(tx: Buffer, address: string): Promise<string>;
   signMessage(tx: Buffer, address: string): Promise<string>;
-  keystoneImport(ur: UR): Promise<void>;
+  keystoneImport(ur: UR, pubKey?: string): Promise<void>;
   toJson(): KeystoneKeyringJson;
   getAccounts(): ImportedDerivationPath[];
   onPlay(fn: (ur: UR) => Promise<void>): void;
