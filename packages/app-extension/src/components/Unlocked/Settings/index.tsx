@@ -26,7 +26,7 @@ import {
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import { Typography } from "@mui/material";
 
-import { useNavStack } from "../../common/Layout/NavStack";
+import { useNavigation } from "../../common/Layout/NavStack";
 import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
 import { NotificationButton } from "../Balances/Notifications";
 
@@ -47,11 +47,11 @@ export function SettingsButton() {
 }
 
 export function SettingsMenu() {
-  const { setTitle } = useNavStack();
+  const nav = useNavigation();
 
   useEffect(() => {
-    setTitle(<UserAccountsMenuButton />);
-  }, [setTitle]);
+    nav.setOptions({ headerTitle: <UserAccountsMenuButton /> });
+  }, [nav.setOptions]);
 
   return (
     <Suspense fallback={<div></div>}>
@@ -71,7 +71,7 @@ function _SettingsContent() {
 
 function SettingsList() {
   const theme = useCustomTheme();
-  const nav = useNavStack();
+  const nav = useNavigation();
   const background = useBackgroundClient();
   const featureGates = useFeatureGates();
 

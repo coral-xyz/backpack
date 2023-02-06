@@ -11,12 +11,12 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import { LockClock } from "@mui/icons-material";
 import { Typography } from "@mui/material";
 
-import { useNavStack } from "../../../common/Layout/NavStack";
+import { useNavigation } from "../../../common/Layout/NavStack";
 
 import { Checkmark } from "./Solana/ConnectionSwitch";
 
 export function PreferencesAutoLock() {
-  const nav = useNavStack();
+  const nav = useNavigation();
   const theme = useCustomTheme();
   const settings = useAutoLockSettings();
   const background = useBackgroundClient();
@@ -26,7 +26,7 @@ export function PreferencesAutoLock() {
   const [option, setOption] = useState(settings.option);
 
   useEffect(() => {
-    nav.setTitle("Auto-lock timer");
+    nav.setOptions({ headerTitle: "Auto-lock timer" });
   }, []);
 
   const onCancel = () => {

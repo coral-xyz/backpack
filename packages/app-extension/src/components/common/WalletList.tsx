@@ -15,7 +15,6 @@ import {
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Add, ExpandMore, MoreHoriz } from "@mui/icons-material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import ErrorIcon from "@mui/icons-material/Error";
 import InfoIcon from "@mui/icons-material/Info";
 import { Box, Button, Grid, Tooltip, Typography } from "@mui/material";
 
@@ -31,7 +30,7 @@ import { useDrawerContext, WithMiniDrawer } from "../common/Layout/Drawer";
 import {
   NavStackEphemeral,
   NavStackScreen,
-  useNavStack,
+  useNavigation,
 } from "../common/Layout/NavStack";
 import {
   AddConnectPreview,
@@ -255,7 +254,7 @@ function WalletNavStack({
 }
 
 export function AllWalletsList({ filter }: { filter?: (w: any) => boolean }) {
-  const { setTitle, setNavButtonRight } = useNavStack();
+  const nav = useNavigation();
   const activeWallet = useActiveWallet();
   const wallets = useAllWallets().filter(filter ? filter : () => true);
   const activeWallets = wallets.filter((w) => !w.isCold);
@@ -271,10 +270,12 @@ export function AllWalletsList({ filter }: { filter?: (w: any) => boolean }) {
   }));
 
   useEffect(() => {
-    setNavButtonRight(<WalletSettingsButton />);
-    setTitle("Wallets");
+    nav.setOptions({
+      headerTitle: "Wallets",
+      headerRight: <WalletSettingsButton />,
+    });
     return () => {
-      setNavButtonRight(null);
+      nav.setOptions({ headerRight: null });
     };
   }, []);
 
@@ -289,7 +290,7 @@ export function AllWalletsList({ filter }: { filter?: (w: any) => boolean }) {
 
 function WalletSettingsButton() {
   const theme = useCustomTheme();
-  const { push } = useNavStack();
+  const { push } = useNavigation();
   return (
     <Button
       onClick={() => {
@@ -313,9 +314,9 @@ function WalletSettingsButton() {
 }
 
 export function WalletListBlockchainSelector() {
-  const nav = useNavStack();
+  const nav = useNavigation();
   useEffect(() => {
-    nav.setTitle("Blockchains");
+    nav.setOptions({ headerTitle: "Blockchains" });
   }, [nav]);
 
   const onClick = (blockchain: Blockchain) => {
@@ -636,7 +637,7 @@ export function WalletListItem({
   inverted?: boolean;
 }) {
   const theme = useCustomTheme();
-  const nav = useNavStack();
+  const nav = useNavigation();
   const { publicKey, name, blockchain, type } = wallet;
   return (
     <ListItem
@@ -722,13 +723,26 @@ export function WalletListItem({
               justifyContent: "center",
             }}
           >
-            <CopyButton
-              inverted={inverted}
-              isEditWallets={false}
-              onClick={() => {
-                navigator.clipboard.writeText(publicKey);
-              }}
-            />
+            {type === "dehydrated" ? (
+              <RecoverButton
+                inverted={inverted}
+                onClick={() => {
+                  nav.push("add-connect-wallet", {
+                    blockchain: wallet.blockchain,
+                    publicKey: wallet.publicKey,
+                    isRecovery: true,
+                  });
+                }}
+              />
+            ) : (
+              <CopyButton
+                inverted={inverted}
+                isEditWallets={false}
+                onClick={() => {
+                  navigator.clipboard.writeText(publicKey);
+                }}
+              />
+            )}
           </div>
           <div
             style={{
@@ -770,9 +784,7 @@ function CopyButton({
       disableRipple
       variant="contained"
       sx={{
-        width: "60px",
-        height: "32px",
-        padding: 0,
+        padding: "4px 12px",
         textTransform: "none",
         color: inverted
           ? theme.custom.colorsInverted.fontColor
@@ -807,6 +819,44 @@ function CopyButton({
   );
 }
 
+function RecoverButton({
+  onClick,
+  inverted,
+}: {
+  onClick: () => void;
+  inverted?: boolean;
+}) {
+  const theme = useCustomTheme();
+  return (
+    <Button
+      disableElevation
+      disableRipple
+      variant="contained"
+      sx={{
+        padding: "4px 12px",
+        textTransform: "none",
+        color: inverted
+          ? theme.custom.colorsInverted.fontColor
+          : theme.custom.colors.fontColor,
+        backgroundColor: inverted
+          ? theme.custom.colorsInverted.bg2
+          : theme.custom.colors.bg2,
+        "&:hover": {
+          backgroundColor: inverted
+            ? `${theme.custom.colorsInverted.walletCopyButtonHover} !important`
+            : `${theme.custom.colors.walletCopyButtonHover} !important`,
+        },
+      }}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick();
+      }}
+    >
+      Recover
+    </Button>
+  );
+}
+
 export function StackedWalletAddress({
   publicKey,
   name,
@@ -827,9 +877,10 @@ export function StackedWalletAddress({
         style={{
           fontSize: "16px",
           fontWeight: isSelected ? 600 : 500,
+          color: type === "dehydrated" ? theme.custom.colors.negative : "",
         }}
       >
-        {name}
+        {type === "dehydrated" ? "Import error" : name}
       </Typography>
       <div
         style={{
@@ -873,25 +924,15 @@ export function StackedWalletAddress({
 }
 
 function WalletTypeIcon({ type, fill }: { type: string; fill?: string }) {
-  const theme = useCustomTheme();
   switch (type) {
     case "imported":
       return <ImportedIcon fill={fill} />;
     case "hardware":
       return <HardwareIcon fill={fill} />;
-    case "dehydrated":
-      return (
-        <ErrorIcon
-          style={{
-            color: theme.custom.colors.dangerButton,
-            height: "24px",
-            width: "24px",
-            padding: "4px",
-          }}
-        />
-      );
-    default:
+    case "mnemonic":
       return <MnemonicIcon fill={fill} />;
+    default:
+      return null;
   }
 }
 

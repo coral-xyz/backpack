@@ -53,7 +53,6 @@ export function AvatarHeader() {
               title,
             }}
             navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
-            onClose={() => setOpenDrawer(false)}
           >
             <NavStackScreen
               key={"update"}

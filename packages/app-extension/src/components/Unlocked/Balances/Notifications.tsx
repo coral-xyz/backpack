@@ -28,7 +28,7 @@ import { useBreakpoints } from "../../common/Layout/hooks";
 import {
   NavStackEphemeral,
   NavStackScreen,
-  useNavStack,
+  useNavigation,
 } from "../../common/Layout/NavStack";
 import { NotificationIconWithBadge } from "../../common/NotificationIconWithBadge";
 import { ContactRequests, Contacts } from "../Messages/Contacts";
@@ -585,7 +585,7 @@ function FriendRequestListItem({
   title: string;
 }) {
   const { isXs } = useBreakpoints();
-  const nav = isXs ? useNavStack() : undefined;
+  const nav = isXs ? useNavigation() : undefined;
   const user = useUserMetadata({
     remoteUserId: parseJson(notification.body).from,
   });

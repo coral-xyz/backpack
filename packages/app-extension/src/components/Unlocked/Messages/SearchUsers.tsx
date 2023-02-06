@@ -6,7 +6,7 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import SearchIcon from "@mui/icons-material/Search";
 import { Typography } from "@mui/material";
 
-import { useNavStack } from "../../common/Layout/NavStack";
+import { useNavigation } from "../../common/Layout/NavStack";
 
 // import { Requests } from "./Requests";
 import { useStyles } from "./styles";
@@ -18,6 +18,7 @@ export const SearchUsers = ({
   allChats: EnrichedInboxDb[];
   requests: { received: RemoteUserData[]; sent: RemoteUserData[] };
 }) => {
+  const nav = useNavigation();
   const classes = useStyles();
   const [searchFilter, setSearchFilter] = useState("");
   const friends = allChats.filter((x: any) => x.areFriends === 1);
