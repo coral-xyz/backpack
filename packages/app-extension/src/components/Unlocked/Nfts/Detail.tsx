@@ -133,7 +133,14 @@ export function NftsDetail({
       }}
     >
       <Image nft={nft} />
-      <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "15px",
+          marginTop: "16px",
+        }}
+      >
         {whitelistedChatCollectionId && (
           <PrimaryButton
             disabled={chatJoined || joiningChat}
