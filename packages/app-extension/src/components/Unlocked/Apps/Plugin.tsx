@@ -192,8 +192,7 @@ function PluginControl({ closePlugin }: any) {
           disableRipple
           onClick={() => closePlugin()}
           sx={{
-            borderTopRightRadius: "18.5px",
-            borderBottomRightRadius: "18.5px",
+            borderRadius: "18.5px",
             flex: 1,
             height: "32px",
             padding: 0,
