@@ -14,7 +14,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import { CustomAutoComplete, MessageInput } from "./messageInput/MessageInput";
 import { MessageInputProvider } from "./messageInput/MessageInputProvider";
-import { Attatchment } from "./Attatchment";
+import { Attachment } from "./Attachment";
 import { useChatContext } from "./ChatContext";
 import { EmojiPickerComponent } from "./EmojiPicker";
 import { GifPicker } from "./GifPicker";
@@ -384,7 +384,7 @@ export const SendMessage = ({
                 height: "28px",
               }}
             />
-            <Attatchment
+            <Attachment
               onMediaSelect={onMediaSelect}
               buttonStyle={{
                 height: "28px",
