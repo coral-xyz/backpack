@@ -80,10 +80,10 @@ export const updateCursor = async ({
 
 export const updateNotificationSeen = async ({
   uuid,
-  notificationId,
+  notificationIds,
 }: {
   uuid: string;
-  notificationId: number;
+  notificationIds: number[];
 }) => {
   return chain("mutation")({
     update_auth_notifications: [
@@ -91,7 +91,7 @@ export const updateNotificationSeen = async ({
         _set: {
           viewed: true,
         },
-        where: { id: { _eq: notificationId }, uuid: { _eq: uuid } },
+        where: { id: { _in: notificationIds }, uuid: { _eq: uuid } },
       },
       { affected_rows: true },
     ],

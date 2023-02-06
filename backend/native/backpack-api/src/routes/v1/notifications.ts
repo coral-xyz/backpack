@@ -46,10 +46,10 @@ router.get("/unreadCount", extractUserId, async (req, res) => {
 
 router.post("/seen", extractUserId, async (req, res) => {
   const uuid = req.id || "";
-  const notificationId = req.body.notificationId || "";
+  const notificationIds = req.body.notificationIds || "";
 
   await updateNotificationSeen({
-    notificationId,
+    notificationIds,
     uuid,
   });
   res.json({});

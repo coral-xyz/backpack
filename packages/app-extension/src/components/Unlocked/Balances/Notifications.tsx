@@ -229,6 +229,16 @@ export function Notifications() {
         }),
       });
     }
+    fetch(`${BACKEND_API_URL}/notifications/seen`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        notificationIds: notifications
+          .filter((x) => !x.viewed)
+          .map(({ id }) => id),
+      }),
+    });
+
     setUnreadCount(0);
   }, [notifications, setUnreadCount]);
 
@@ -482,7 +492,21 @@ function NotificationListItem({
             </Typography>
           </div>
         </div>
-        <div className={classes.time}>{getTimeStr(notification.timestamp)}</div>
+        <div>
+          <div className={classes.time}>
+            {getTimeStr(notification.timestamp)}
+          </div>
+          <div style={{ display: "flex", flexDirection: "row-reverse" }}>
+            {!notification.viewed && (
+              <Badge
+                style={{ fontSize: 30, marginTop: 15 }}
+                variant={"dot"}
+                color={"primary"}
+                badgeContent={unreadCount}
+              ></Badge>
+            )}
+          </div>
+        </div>
       </div>
     </ListItem>
   );
@@ -589,6 +613,9 @@ function FriendRequestListItem({
   const user = useUserMetadata({
     remoteUserId: parseJson(notification.body).from,
   });
+  const friendshipValue = useFriendship({
+    userId: parseJson(notification.body).from,
+  });
   const classes = useStyles();
   const theme = useCustomTheme();
 
@@ -647,20 +674,15 @@ function FriendRequestListItem({
             <AcceptRejectRequest userId={parseJson(notification.body).from} />
           </div>
         </div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-end",
-          }}
-        >
-          <Badge
-            variant={"dot"}
-            badgeContent={unreadCount}
-            classes={{ badge: classes.badge }}
-          >
-            {" "}
-          </Badge>
+        <div>
+          {friendshipValue?.remoteRequested && !friendshipValue?.areFriends && (
+            <Badge
+              style={{ marginTop: 15, fontSize: 30 }}
+              variant={"dot"}
+              color={"primary"}
+              badgeContent={unreadCount}
+            ></Badge>
+          )}
         </div>
       </div>
     </ListItem>
