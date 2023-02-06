@@ -40,6 +40,9 @@ const useStyles = styles((theme) => ({
     fontSize: "14px",
     lineHeight: "24px",
   },
+  customBadge: {
+    backgroundColor: "#E33E3F",
+  },
   allWalletsLabel: {
     fontWeight: 500,
     fontSize: "12px",
@@ -499,6 +502,7 @@ function NotificationListItem({
           <div style={{ display: "flex", flexDirection: "row-reverse" }}>
             {!notification.viewed && (
               <Badge
+                classes={{ badge: classes.customBadge }}
                 style={{ fontSize: 30, marginTop: 15 }}
                 variant={"dot"}
                 color={"primary"}
@@ -677,6 +681,7 @@ function FriendRequestListItem({
         <div>
           {friendshipValue?.remoteRequested && !friendshipValue?.areFriends && (
             <Badge
+              classes={{ badge: classes.customBadge }}
               style={{ marginTop: 15, fontSize: 30 }}
               variant={"dot"}
               color={"primary"}
