@@ -1,12 +1,16 @@
 #!/bin/bash
 
-# one_week_ago=$(date -v-1w +%Y-%m-%d)
-# two_weeks_ago=$(date -v-2w +%Y-%m-%d)
-
 # -d doesn't work on OSX, just on GNU-based tooling
 # yesterday=$(date -d '1 day ago' +%Y-%m-%d)
-one_week_ago=$(date -d '1 weeks ago' +%Y-%m-%d)
-two_weeks_ago=$(date -d '2 weeks ago' +%Y-%m-%d)
+if [[ "$(uname)" == "Darwin" ]]; then
+  one_week_ago=$(date -v-1w +%Y-%m-%d)
+  two_weeks_ago=$(date -v-2w +%Y-%m-%d)
+else
+  one_week_ago=$(date -d '1 weeks ago' +%Y-%m-%d)
+  two_weeks_ago=$(date -d '2 weeks ago' +%Y-%m-%d)
+fi
+
+echo $one_week_ago
 
 before=$one_week_ago
 after=$two_weeks_ago
