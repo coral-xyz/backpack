@@ -1,6 +1,7 @@
 import {
   BACKPACK_CONFIG_XNFT_PROXY,
   Blockchain,
+  DEFAULT_PUBKEY_STR,
   fetchXnfts,
   SIMULATOR_PORT,
   XNFT_PROGRAM_ID,
@@ -183,9 +184,9 @@ export const plugins = selectorFamily<
           activeWallets: get(activePublicKeys),
           connectionUrls: get(connectionUrls),
           install: {
-            publicKey: PublicKey.default.toString(),
+            publicKey: DEFAULT_PUBKEY_STR,
             account: {
-              xnft: PublicKey.default.toString(),
+              xnft: DEFAULT_PUBKEY_STR,
             },
           },
         } as typeof plugins[0];
