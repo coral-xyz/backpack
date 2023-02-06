@@ -445,6 +445,10 @@ function useNavBar() {
     fontSize: "18px",
   } as React.CSSProperties;
 
+  if (pathname === "/messages/chat" || pathname === "/messages/groupchat") {
+    navStyle.background = theme.custom.colors.chatFadeGradientStart;
+  }
+
   if (isRoot) {
     navButtonRight = isXs ? <SettingsButton /> : undefined;
     navButtonLeft = (
