@@ -68,6 +68,7 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
       style: {
         opacity: 0.5,
       },
+      allowOnclickPropagation: true,
     },
     MediaAccess: {
       label: "Cam/Mic/Display access",
@@ -102,6 +103,7 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
       style: {
         opacity: 0.5,
       },
+      allowOnclickPropagation: true,
     },
     PushNotificationAccess: {
       label: "Push notifications",
@@ -149,6 +151,7 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
       style: {
         opacity: 0.5,
       },
+      allowOnclickPropagation: true,
     },
   };
 
