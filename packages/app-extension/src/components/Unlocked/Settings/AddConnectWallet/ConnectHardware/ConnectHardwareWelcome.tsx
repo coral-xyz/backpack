@@ -35,7 +35,7 @@ export function ConnectHardwareWelcome({
           flexDirection: "column",
         }}
       >
-        <PrimaryButton label="USB" onClick={() => onNext(HardwareType.USB)} />
+        <PrimaryButton label="Ledger" onClick={() => onNext(HardwareType.Ledger)} />
         <PrimaryButton
           label="Keystone"
           sx={{ mt: "10px" }}
