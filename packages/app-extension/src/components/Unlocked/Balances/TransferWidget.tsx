@@ -142,16 +142,16 @@ function SendButton({
   const theme = useCustomTheme();
   return (
     <TransferButton
-      label={"Send"}
-      labelComponent={
-        <ArrowUpward
-          style={{
-            color: theme.custom.colors.fontColor,
-            display: "flex",
-            marginLeft: "auto",
-            marginRight: "auto",
-          }}
-        />
+    label={"Review"}
+    labelComponent={
+      <ArrowUpward
+        style={{
+          color: theme.custom.colors.fontColor,
+          display: "flex",
+          marginLeft: "auto",
+          marginRight: "auto",
+        }}
+      />
       }
       routes={
         blockchain && address
