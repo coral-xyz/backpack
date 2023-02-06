@@ -132,17 +132,29 @@ router.post("/request", extractUserId, async (req, res) => {
   }
   const sendRequest: boolean = req.body.sendRequest;
 
-  await setFriendship({ from: uuid, to, sendRequest });
+  const areFriends = await setFriendship({ from: uuid, to, sendRequest });
   if (sendRequest) {
-    await Redis.getInstance().send(
-      JSON.stringify({
-        type: "friend_request",
-        payload: {
-          from: uuid,
-          to,
-        },
-      })
-    );
+    if (areFriends) {
+      await Redis.getInstance().send(
+        JSON.stringify({
+          type: "friend_request_accept",
+          payload: {
+            from: uuid,
+            to,
+          },
+        })
+      );
+    } else {
+      await Redis.getInstance().send(
+        JSON.stringify({
+          type: "friend_request",
+          payload: {
+            from: uuid,
+            to,
+          },
+        })
+      );
+    }
   }
   res.json({});
 });

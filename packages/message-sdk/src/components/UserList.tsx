@@ -357,7 +357,7 @@ function UserIcon({ image }: any) {
     <LocalImage
       src={image}
       className={classes.iconCircular}
-      style={{ width: 40, height: 40 }}
+      style={{ width: 32, height: 32 }}
     />
   );
 }

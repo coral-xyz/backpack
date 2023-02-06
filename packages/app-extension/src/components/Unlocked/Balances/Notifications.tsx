@@ -1,17 +1,25 @@
 import { Suspense, useEffect, useState } from "react";
-import type { EnrichedNotification } from "@coral-xyz/common";
-import { BACKEND_API_URL } from "@coral-xyz/common";
+import type { EnrichedNotification, Friendship } from "@coral-xyz/common";
+import { BACKEND_API_URL, sendFriendRequest } from "@coral-xyz/common";
+import { updateFriendshipIfExists } from "@coral-xyz/db";
 import {
+  DangerButton,
   EmptyState,
   isFirstLastListItemStyle,
   Loading,
   ProxyImage,
+  SuccessButton,
   useUserMetadata,
 } from "@coral-xyz/react-common";
-import { unreadCount, useRecentNotifications } from "@coral-xyz/recoil";
+import {
+  friendship,
+  unreadCount,
+  useRecentNotifications,
+  useUser,
+} from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import { IconButton, List, ListItem, Typography } from "@mui/material";
+import { Badge , IconButton, List, ListItem, Typography } from "@mui/material";
 import { useRecoilState } from "recoil";
 
 import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
@@ -407,6 +415,19 @@ function NotificationListItem({
   if (notification.xnft_id === "friend_requests") {
     return (
       <FriendRequestListItem
+        title={"Friend request"}
+        notification={notification}
+        isFirst={isFirst}
+        isLast={isLast}
+        onOpenDrawer={onOpenDrawer}
+      />
+    );
+  }
+
+  if (notification.xnft_id === "friend_requests_accept") {
+    return (
+      <FriendRequestListItem
+        title={"Friend Request Accepted"}
         notification={notification}
         isFirst={isFirst}
         isLast={isLast}
@@ -466,6 +487,43 @@ function NotificationListItem({
   );
 }
 
+function AcceptRejectRequest({ userId }: { userId: string }) {
+  const [friendshipValue, setFriendshipValue] =
+    useRecoilState<Friendship | null>(friendship({ userId }));
+  const { uuid } = useUser();
+
+  if (friendshipValue?.remoteRequested) {
+    return (
+      <div style={{ display: "flex", marginTop: 5 }}>
+        <SuccessButton
+          label={"Confirm"}
+          style={{ marginRight: 10, height: 35, width: "inherit" }}
+          onClick={async (e: any) => {
+            e.stopPropagation();
+            await sendFriendRequest({ to: userId, sendRequest: true });
+            await updateFriendshipIfExists(uuid, userId, {
+              requested: 0,
+              areFriends: 1,
+            });
+
+            setFriendshipValue((x: any) => ({
+              ...x,
+              requested: false,
+              areFriends: true,
+            }));
+          }}
+        />
+        <DangerButton
+          style={{ marginRight: 10, height: 35, width: "inherit" }}
+          label={"Delete"}
+          onClick={() => {}}
+        />
+      </div>
+    );
+  }
+  return <div></div>;
+}
+
 function parseJson(body: string) {
   try {
     return JSON.parse(body);
@@ -479,11 +537,13 @@ function FriendRequestListItem({
   isFirst,
   isLast,
   onOpenDrawer,
+  title,
 }: {
   notification: EnrichedNotification;
   isFirst: boolean;
   isLast: boolean;
   onOpenDrawer?: () => void;
+  title: string;
 }) {
   const { isXs } = useBreakpoints();
   const nav = isXs ? useNavStack() : undefined;
@@ -504,7 +564,6 @@ function FriendRequestListItem({
         paddingTop: "10px",
         paddingBottom: "10px",
         display: "flex",
-        height: "68px",
         backgroundColor: theme.custom.colors.nav,
         borderBottom: isLast
           ? undefined
@@ -530,9 +589,23 @@ function FriendRequestListItem({
           >
             <NotificationListItemIcon image={user?.image} />
           </div>
-          <div>
-            <Typography className={classes.txSig}>Contact request</Typography>
+          <div style={{ width: "100%" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
+              <div>
+                <Typography className={classes.txSig}>{title}</Typography>
+              </div>
+              <div className={classes.time}>
+                {getTimeStr(notification.timestamp)}
+              </div>
+            </div>
             <Typography className={classes.txBody}>@{user.username}</Typography>
+            <AcceptRejectRequest userId={parseJson(notification.body).from} />
           </div>
         </div>
         <div
@@ -541,10 +614,14 @@ function FriendRequestListItem({
             flexDirection: "column",
             alignItems: "flex-end",
           }}
-          className={classes.time}
         >
-          {getTimeStr(notification.timestamp)}
-          <span>View</span>
+          <Badge
+            variant={"dot"}
+            badgeContent={unreadCount}
+            classes={{ badge: classes.badge }}
+          >
+            {" "}
+          </Badge>
         </div>
       </div>
     </ListItem>
