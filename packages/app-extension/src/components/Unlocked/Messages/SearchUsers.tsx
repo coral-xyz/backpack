@@ -18,7 +18,6 @@ export const SearchUsers = ({
   allChats: EnrichedInboxDb[];
   requests: { received: RemoteUserData[]; sent: RemoteUserData[] };
 }) => {
-  const nav = useNavigation();
   const classes = useStyles();
   const [searchFilter, setSearchFilter] = useState("");
   const friends = allChats.filter((x: any) => x.areFriends === 1);
@@ -114,7 +113,7 @@ const RequestHeader = ({
   requests: { received: RemoteUserData[]; sent: RemoteUserData[] };
 }) => {
   const theme = useCustomTheme();
-  const nav = useNavStack();
+  const nav = useNavigation();
   return (
     <Typography
       sx={{ cursor: "pointer" }}
