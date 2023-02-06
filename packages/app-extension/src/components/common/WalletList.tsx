@@ -658,6 +658,8 @@ export function WalletListItem({
                 ? theme.custom.colorsInverted.secondary
                 : theme.custom.colors.secondary
             }`
+          : type === "dehydrated"
+          ? `solid 2px ${theme.custom.colors.borderRedMed}`
           : "none",
       }}
       button={type !== "dehydrated"}

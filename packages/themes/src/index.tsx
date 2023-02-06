@@ -18,7 +18,6 @@ const FONT_COLOR_3 = "#A1A1AA";
 const BRAND_COLOR = "#FFFFFF";
 const BUTTON_FONT_COLOR = FONT_COLOR;
 const BORDER_COLOR = "#393C43";
-const BORDER_COLOR_1 = "#52525B";
 const POSITIVE_COLOR = "#35A63A";
 const NEGATIVE_COLOR = "#E95050";
 const SCROLLBAR_THUMB_COLOR = "rgb(153 164 180)";
@@ -52,6 +51,12 @@ const DARK_UNREAD_BACKGROUND = "rgba(99, 96, 255, 0.1)";
 const DANGER_COLOR = "#DC2626";
 const DANGER_DARK_COLOR = "#DC2626";
 
+// Migration to colours from Figma design system
+export const LIGHT_RED_BORDER_LIGHT = "#FFEDEB";
+export const LIGHT_RED_BORDER_MED = "#FFDCD9";
+export const DARK_RED_BORDER_LIGHT = "rgba(241,50,54,0.4)";
+export const DARK_RED_BORDER_MED = "rgba(241,50,54,0.4)";
+
 type CustomColors = {
   smallTextColor: string;
   brandColor: string;
@@ -84,6 +89,8 @@ type CustomColors = {
   borderColor: string;
   borderFull: string;
   borderButton: string;
+  borderRedLight: string;
+  borderRedMed: string;
   copyTooltipColor: string;
   copyTooltipTextColor: string;
   tableBorder: string;
@@ -213,6 +220,8 @@ const DARK_COLORS: CustomColors = {
   border1: BACKGROUND_COLOR_2,
   border: BACKGROUND_COLOR_1, // Don't use this.
   borderColor: BORDER_COLOR,
+  borderRedLight: DARK_RED_BORDER_LIGHT,
+  borderRedMed: DARK_RED_BORDER_MED,
   textInputBackground: BACKGROUND_COLOR_1,
   textInputBorderFull: `solid 2pt ${BACKGROUND_COLOR_1}`,
   textInputBorderFocussed: `solid 2pt ${BACKGROUND_COLOR_1}`,
@@ -297,6 +306,8 @@ const LIGHT_COLORS: CustomColors = {
   borderColor: LIGHT_BORDER_COLOR_1,
   borderFull: `solid 2px ${LIGHT_BORDER_COLOR_1}`,
   borderButton: `solid 2px ${LIGHT_BORDER_COLOR_1}`,
+  borderRedLight: LIGHT_RED_BORDER_LIGHT,
+  borderRedMed: LIGHT_RED_BORDER_MED,
   copyTooltipColor: LIGHT_BRAND_COLOR,
   copyTooltipTextColor: LIGHT_BACKGROUND_COLOR_1,
   tableBorder: LIGHT_BORDER_COLOR,
