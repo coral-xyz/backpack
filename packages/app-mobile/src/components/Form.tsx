@@ -202,10 +202,12 @@ export const InputFieldMaxLabel = ({
   amount,
   onSetAmount,
   decimals,
+  label = "Max:",
 }: {
   amount: BigNumber | null;
   onSetAmount: (amount: BigNumber) => void;
   decimals: number;
+  label?: string;
 }) => {
   const theme = useTheme();
   return (
@@ -219,7 +221,7 @@ export const InputFieldMaxLabel = ({
           { color: theme.custom.colors.secondary },
         ]}
       >
-        Max:{" "}
+        {label}{" "}
       </Text>
       <Text
         style={[

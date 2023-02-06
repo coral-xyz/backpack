@@ -15,6 +15,21 @@ import { useTheme } from "@hooks/index";
 const HorizontalSpacer = () => <View style={{ width: 16 }} />;
 const ENABLE_ONRAMP = false;
 
+const getRouteFromAction = (
+  action: NavTokenAction
+): "DepositList" | "SendSelectTokenModal" | "SwapModal" => {
+  switch (action) {
+    case NavTokenAction.Receive:
+      return "DepositList";
+    case NavTokenAction.Send:
+      return "SendSelectTokenModal";
+    case NavTokenAction.Swap:
+      return "SwapModal";
+    default:
+      return "DepositList";
+  }
+};
+
 function SwapProvider({ children, blockchain, tokenAddress }) {
   return children;
 }
@@ -38,8 +53,10 @@ export function TransferWidget({
     blockchain !== Blockchain.ETHEREUM &&
     enabledBlockchains.includes(Blockchain.SOLANA);
 
-  const onPress = (route: NavTokenAction, options: NavTokenOptions) =>
+  const onPress = (action: NavTokenAction, options: NavTokenOptions) => {
+    const route = getRouteFromAction(action);
     onPressOption(route, options);
+  };
 
   return (
     <View
@@ -58,7 +75,7 @@ export function TransferWidget({
       <ReceiveButton onPress={onPress} blockchain={blockchain} />
       <HorizontalSpacer />
       <SendButton onPress={onPress} blockchain={blockchain} token={token} />
-      {renderSwap && (
+      {renderSwap ? (
         <>
           <HorizontalSpacer />
           <SwapButton
@@ -67,7 +84,7 @@ export function TransferWidget({
             address={address}
           />
         </>
-      )}
+      ) : null}
     </View>
   );
 }
