@@ -234,7 +234,7 @@ export const MessageLine = (props) => {
         className={classes.messageRow}
         style={{
           marginTop: sameUserMessage ? 0 : 20,
-          paddingLeft: sameUserMessage ? 40 : 0,
+          paddingLeft: sameUserMessage ? 32 : 0,
         }}
       >
         {sameUserMessage ? (
