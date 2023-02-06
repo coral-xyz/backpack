@@ -316,7 +316,7 @@ function WalletSettingsButton() {
 export function WalletListBlockchainSelector() {
   const nav = useNavigation();
   useEffect(() => {
-    nav.setOptions({ headerTitle: "Blockchains" });
+    nav.setOptions({ headerTitle: "Select a network" });
   }, [nav]);
 
   const onClick = (blockchain: Blockchain) => {
