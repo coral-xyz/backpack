@@ -39,6 +39,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
         onUnlock();
       }
     } catch (err) {
+      console.error(err);
       setError(true);
     }
   };
@@ -147,10 +148,8 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
 }
 
 export function BackpackHeader({
-  alphaStyle,
   disableUsername,
 }: {
-  alphaStyle?: React.CSSProperties;
   disableUsername?: boolean;
 }) {
   const theme = useCustomTheme();

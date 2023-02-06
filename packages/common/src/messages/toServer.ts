@@ -64,6 +64,8 @@ export interface RemoteUserData {
   requested: boolean;
   remoteRequested: boolean;
   username: string;
+  searchedSolPubKey?: string; // Returns a public key if it is searched for
+  searchedEthPubKey?: string;
 }
 
 export interface CollectionChatData {

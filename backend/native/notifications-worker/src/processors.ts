@@ -232,6 +232,31 @@ export const processFriendRequest = async ({
   );
 };
 
+export const processFriendRequestAccept = async ({
+  from,
+  to,
+}: {
+  from: string;
+  to: string;
+}) => {
+  const userMetadata = await getUsersFromIds([from]);
+  await insertNotification("friend_requests_accept", to, {
+    title: "Friend request Accepted",
+    body: JSON.stringify({
+      from,
+    }),
+  });
+  await notify(
+    to,
+    `Friend request Accepted`,
+    `${
+      userMetadata.find((x) => x.id === from)?.username
+    } accepted your friend request`,
+    `/popup.html#/notifications?title="Notifications"&props=%7B%7D&nav=tab`,
+    `${AVATAR_BASE_URL}/${userMetadata.find((x) => x.id === from)?.username}`
+  );
+};
+
 const getUserHref = (remoteUserId?: string, username?: string) => {
   if (!remoteUserId || !username) {
     return undefined;

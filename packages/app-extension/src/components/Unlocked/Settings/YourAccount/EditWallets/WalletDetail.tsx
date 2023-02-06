@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useRecoilValue } from "recoil";
+import type { Blockchain } from "@coral-xyz/common";
 import {
-  Blockchain,
   UI_RPC_METHOD_KEY_IS_COLD_UPDATE,
+  UI_RPC_METHOD_KEYNAME_READ,
+  walletAddressDisplay,
 } from "@coral-xyz/common";
-import { UI_RPC_METHOD_KEYNAME_READ } from "@coral-xyz/common";
+import { SecondaryButton, WarningIcon } from "@coral-xyz/react-common";
 import {
   isKeyCold,
   useBackgroundClient,
@@ -13,8 +14,10 @@ import {
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ContentCopy } from "@mui/icons-material";
 import { Typography } from "@mui/material";
+import { useRecoilValue } from "recoil";
 
-import { useNavStack } from "../../../../common/Layout/NavStack";
+import { HeaderIcon } from "../../../../common";
+import { useNavigation } from "../../../../common/Layout/NavStack";
 import { SettingsList } from "../../../../common/Settings/List";
 import { WithCopyTooltip } from "../../../../common/WithCopyTooltip";
 import { ModeSwitch } from "../../Preferences";
@@ -25,7 +28,7 @@ export const WalletDetail: React.FC<{
   name: string;
   type: string;
 }> = ({ blockchain, publicKey, name, type }) => {
-  const nav = useNavStack();
+  const nav = useNavigation();
   const theme = useCustomTheme();
   const background = useBackgroundClient();
   const [tooltipOpen, setTooltipOpen] = useState(false);
@@ -43,10 +46,10 @@ export const WalletDetail: React.FC<{
         });
       } catch {
         // No wallet name, might be dehydrated
-        return;
+        keyname = walletAddressDisplay(publicKey);
       }
       setWalletName(keyname);
-      nav.setTitle(keyname);
+      nav.setOptions({ headerTitle: keyname });
     })();
   }, []);
 
@@ -135,10 +138,10 @@ export const WalletDetail: React.FC<{
       detail: (
         <ModeSwitch
           enabled={!isCold}
-          onSwitch={async (enabled) => {
+          onSwitch={async () => {
             await background.request({
               method: UI_RPC_METHOD_KEY_IS_COLD_UPDATE,
-              params: [publicKey, enabled],
+              params: [publicKey, !isCold],
             });
           }}
         />
@@ -148,16 +151,49 @@ export const WalletDetail: React.FC<{
 
   return (
     <div>
+      {type === "dehydrated" && (
+        <div
+          style={{
+            marginLeft: "16px",
+            marginRight: "16px",
+            marginBottom: "32px",
+          }}
+        >
+          <HeaderIcon icon={<WarningIcon />} />
+          <Typography
+            style={{
+              color: theme.custom.colors.fontColor,
+              fontSize: "20px",
+              fontWeight: 500,
+              textAlign: "center",
+              marginLeft: "28px",
+              marginRight: "28px",
+              marginBottom: "16px",
+            }}
+          >
+            Some more steps are needed to recover this wallet
+          </Typography>
+          <SecondaryButton
+            label="Recover"
+            onClick={() => {
+              nav.push("add-connect-wallet", {
+                blockchain,
+                publicKey,
+                isRecovery: true,
+              });
+            }}
+          />
+        </div>
+      )}
       <WithCopyTooltip tooltipOpen={tooltipOpen}>
         <div>
           <SettingsList menuItems={menuItems} />
         </div>
       </WithCopyTooltip>
-      {type !== "dehyrdrated" && <SettingsList menuItems={_isCold} />}
+      {type !== "dehydrated" && <SettingsList menuItems={_isCold} />}
       {type !== "hardware" && type !== "dehydrated" && (
         <SettingsList menuItems={secrets} />
       )}
-      {type === "dehydrated" && <SettingsList menuItems={recover} />}
       {!isLastRecoverable && <SettingsList menuItems={removeWallet} />}
     </div>
   );

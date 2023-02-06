@@ -13,6 +13,7 @@ import {
 import { NAV_COMPONENT_MESSAGE_GROUP_CHAT } from "@coral-xyz/common/src/constants";
 import {
   isFirstLastListItemStyle,
+  LocalImage,
   useUsersMetadata,
 } from "@coral-xyz/react-common";
 import { useDecodedSearchParams } from "@coral-xyz/recoil";
@@ -53,10 +54,10 @@ export const MessageList = ({
           <RequestsChatItem
             requestCount={requestCount}
             isFirst={true}
-            isLast={activeChats.length === 0}
+            isLast={activeChats?.length === 0}
           />
         )}
-        {activeChats.map((activeChat, index) => (
+        {activeChats?.map((activeChat, index) => (
           <ChatListItem
             toRoot={toRoot}
             type={activeChat.chatType}
@@ -86,7 +87,7 @@ export const MessageList = ({
                 : activeChat.chatProps.lastMessageTimestamp || ""
             }
             isFirst={requestCount === 0 && index === 0}
-            isLast={index === activeChats.length - 1}
+            isLast={index === activeChats?.length - 1}
             isUnread={
               activeChat.chatType === "individual"
                 ? activeChat.chatProps.unread
@@ -128,7 +129,7 @@ export function ChatListItem({
   const classes = useStyles();
   const theme = useCustomTheme();
   const { props }: any = useDecodedSearchParams();
-  const parts = parseMessage(message);
+  const parts = parseMessage(message || "");
   const pathname = useLocation().pathname;
   const users: any = useUsersMetadata({
     remoteUserIds: parts.filter((x) => x.type === "tag").map((x) => x.value),
@@ -249,6 +250,7 @@ export function ChatListItem({
               <div
                 className={classes.userTextSmall}
                 style={{
+                  wordBreak: "break-all",
                   fontWeight: 500,
                   color: isUnread
                     ? theme.custom.colors.fontColor
@@ -379,5 +381,11 @@ export function RequestsChatItem({
 
 function UserIcon({ image }: any) {
   const classes = useStyles();
-  return <img src={`${image}?size=25`} className={classes.iconCircularBig} />;
+  return (
+    <LocalImage
+      style={{ width: 40, height: 40 }}
+      src={image}
+      className={classes.iconCircularBig}
+    />
+  );
 }

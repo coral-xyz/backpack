@@ -101,6 +101,15 @@ export const EmptyState: React.FC<{
               label={buttonText}
               style={{
                 marginTop: "40px",
+                ...(window.matchMedia("(max-width: 650px)").matches
+                  ? {}
+                  : {
+                      display: "block",
+                      marginLeft: "auto",
+                      marginRight: "auto",
+                      width: "max-content",
+                      padding: "0 24px",
+                    }),
               }}
             />
           )}

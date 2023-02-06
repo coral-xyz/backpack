@@ -39,7 +39,6 @@ export function InboxInner() {
   const groupCollections = useGroupCollections({ uuid });
   const [searchResults, setSearchResults] = useState<RemoteUserData[]>([]);
   const [searchFilter, setSearchFilter] = useState("");
-  const [refreshing, setRefreshing] = useState(true);
 
   const getDefaultChats = () => {
     return groupCollections.filter((x) => x.name && x.image) || [];
@@ -73,14 +72,14 @@ export function InboxInner() {
     refreshGroupsAndFriendships(uuid);
   }, [uuid]);
 
-  const debouncedInit = () => {
+  const debouncedInit = (prefix: string) => {
     clearTimeout(debouncedTimer);
     debouncedTimer = setTimeout(() => {
-      handleContactSearch();
+      handleContactSearch(prefix);
     }, 250);
   };
 
-  const handleContactSearch = async () => {
+  const handleContactSearch = async (searchFilter: string) => {
     if (searchFilter.length > 1) {
       const response = await ParentCommunicationManager.getInstance().fetch(
         `${BACKEND_API_URL}/users?usernamePrefix=${searchFilter}`
@@ -104,12 +103,12 @@ export function InboxInner() {
       <SearchBox
         onChange={async (prefix: string) => {
           setSearchFilter(prefix);
-          debouncedInit();
+          debouncedInit(prefix);
         }}
       />
-      {(!allChats || (refreshing && !allChats.length)) && <MessagesSkeleton />}
+      {(!allChats || !allChats.length) && <MessagesSkeleton />}
       {allChats &&
-        (allChats.length || !refreshing) &&
+        allChats.length &&
         (allChats.filter((x) =>
           (x.chatType === "individual"
             ? x.chatProps.remoteUsername || ""
@@ -123,12 +122,24 @@ export function InboxInner() {
             )}
             <MessageList
               requestCount={searchFilter.length < 3 ? requestCount : 0}
-              activeChats={allChats.filter((x) =>
-                (x.chatType === "individual"
-                  ? x.chatProps.remoteUsername
-                  : x.chatProps.name
-                )?.includes(searchFilter)
-              )}
+              activeChats={allChats.filter((x) => {
+                const displayName =
+                  x.chatType === "individual"
+                    ? x.chatProps.remoteUsername
+                    : x.chatProps.name;
+                if (displayName?.includes(searchFilter)) {
+                  return true;
+                }
+                if (
+                  x.chatType === "individual" &&
+                  x.chatProps.public_keys
+                    ?.map((x) => x.public_key)
+                    ?.includes(searchFilter)
+                ) {
+                  return true;
+                }
+                return false;
+              })}
             />
           </>
         )}
@@ -142,7 +153,7 @@ export function InboxInner() {
         </div>
       )}
       {allChats &&
-        (allChats.length || !refreshing) &&
+        allChats.length &&
         searchFilter.length < 3 &&
         requestCount === 0 &&
         allChats.length === 0 && (

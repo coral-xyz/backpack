@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { type CSSProperties, useEffect, useState } from "react";
 import {
   AVATAR_BASE_URL,
   BACKEND_API_URL,
@@ -14,8 +14,6 @@ import {
   WHITELISTED_CHAT_COLLECTIONS,
 } from "@coral-xyz/common";
 import {
-  List,
-  ListItem,
   NegativeButton,
   PrimaryButton,
   ProxyImage,
@@ -23,6 +21,7 @@ import {
   TextInput,
 } from "@coral-xyz/react-common";
 import {
+  appStoreMetaTags,
   collectibleXnft,
   newAvatarAtom,
   nftById,
@@ -37,9 +36,9 @@ import {
   useUser,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { CallMade, Whatshot } from "@mui/icons-material";
+import { Whatshot } from "@mui/icons-material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import { IconButton, Popover, Typography } from "@mui/material";
+import { Button, IconButton, Typography } from "@mui/material";
 import { PublicKey } from "@solana/web3.js";
 import { BigNumber } from "ethers";
 import { useRecoilValueLoadable, useSetRecoilState } from "recoil";
@@ -54,6 +53,7 @@ import {
   NavStackEphemeral,
   NavStackScreen,
 } from "../../common/Layout/NavStack";
+import PopoverMenu from "../../common/PopoverMenu";
 import { SendEthereumConfirmationCard } from "../Balances/TokensWidget/Ethereum";
 import {
   Error as ErrorConfirmation,
@@ -73,6 +73,8 @@ export function NftsDetail({
   connectionUrl: string;
   nftId: string;
 }) {
+  const theme = useCustomTheme();
+  const background = useBackgroundClient();
   const { contents, state } = useRecoilValueLoadable(
     nftById({ publicKey, connectionUrl, nftId })
   );
@@ -90,7 +92,6 @@ export function NftsDetail({
   const [chatJoined, setChatJoined] = useState(false);
   const [joiningChat, setJoiningChat] = useState(false);
   let whitelistedChatCollectionId = whitelistedChatCollection?.collectionId;
-  const background = useBackgroundClient();
 
   if (whitelistedChatCollection) {
     Object.keys(whitelistedChatCollection.attributeMapping || {}).forEach(
@@ -132,39 +133,59 @@ export function NftsDetail({
       }}
     >
       <Image nft={nft} />
-      <Description nft={nft} />
-      <SendButton nft={nft} />
-      {xnft && <OpenButton xnft={xnft} />}
-      {whitelistedChatCollectionId && (
-        <SecondaryButton
-          style={{ marginTop: 12 }}
-          disabled={chatJoined || joiningChat}
-          label={joiningChat ? "Joining" : chatJoined ? "Joined" : "Join chat"}
-          onClick={async () => {
-            setJoiningChat(true);
-            await fetch(`${BACKEND_API_URL}/nft/bulk`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                publicKey: publicKey,
-                nfts: [
-                  {
-                    collectionId: whitelistedChatCollection?.collectionId,
-                    nftId: nft?.mint,
-                    centralizedGroup: whitelistedChatCollection?.id,
-                  },
-                ],
-              }),
-            });
-            setJoiningChat(false);
-            background.request({
-              method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
-              params: [TAB_MESSAGES],
-            });
-            setChatJoined(true);
-          }}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "15px",
+          marginTop: "16px",
+        }}
+      >
+        {whitelistedChatCollectionId && (
+          <PrimaryButton
+            disabled={chatJoined || joiningChat}
+            label={
+              joiningChat ? "Joining" : chatJoined ? "Joined" : "Join chat"
+            }
+            onClick={async () => {
+              setJoiningChat(true);
+              await fetch(`${BACKEND_API_URL}/nft/bulk`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  publicKey: publicKey,
+                  nfts: [
+                    {
+                      collectionId: whitelistedChatCollection?.collectionId,
+                      nftId: nft?.mint,
+                      centralizedGroup: whitelistedChatCollection?.id,
+                    },
+                  ],
+                }),
+              });
+              setJoiningChat(false);
+              background.request({
+                method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+                params: [TAB_MESSAGES],
+              });
+              setChatJoined(true);
+            }}
+          />
+        )}
+        <SendButton
+          style={
+            whitelistedChatCollectionId
+              ? {
+                  backgroundColor: theme.custom.colors.secondaryButton,
+                  color: theme.custom.colors.secondaryButtonTextColor,
+                }
+              : undefined
+          }
+          nft={nft}
         />
-      )}
+      </div>
+      {xnft && <ApplicationButton xnft={xnft} />}
+      <Description nft={nft} />
       {nft.attributes && nft.attributes.length > 0 && <Attributes nft={nft} />}
     </div>
   );
@@ -193,6 +214,88 @@ function Image({ nft }: { nft: any }) {
         removeOnError={true}
       />
     </div>
+  );
+}
+
+function ApplicationButton({ xnft }: { xnft: string }) {
+  const theme = useCustomTheme();
+  const openPlugin = useOpenPlugin();
+  const { contents, state } = useRecoilValueLoadable(appStoreMetaTags(xnft));
+
+  const data = (state === "hasValue" && contents) || null;
+
+  const handleClick = () => {
+    openPlugin(xnft);
+  };
+
+  return (
+    data && (
+      <div
+        style={{
+          marginTop: "20px",
+          position: "relative",
+        }}
+      >
+        <Typography
+          style={{
+            color: theme.custom.colors.secondary,
+            fontWeight: 500,
+            fontSize: "16px",
+            lineHeight: "24px",
+            marginBottom: "4px",
+          }}
+        >
+          Application
+        </Typography>
+        <div
+          style={{
+            position: "relative",
+            width: "100%",
+            borderRadius: "12px",
+            background: theme.custom.colors.nav,
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            padding: "12px",
+          }}
+        >
+          <img src={data.image} height={64} width={64} />
+          <div
+            style={{
+              flexGrow: 1,
+              whiteSpace: "nowrap",
+              overflowX: "hidden",
+            }}
+          >
+            <Typography sx={{ color: theme.custom.colors.fontColor }}>
+              {data.name}
+            </Typography>
+            <Typography
+              sx={{
+                color: theme.custom.colors.fontColor3,
+                fontSize: "14px",
+                lineHeight: "20px",
+                overflowX: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {data.description}
+            </Typography>
+          </div>
+          <Button
+            disableRipple
+            sx={{
+              color: theme.custom.colors.fontColor,
+              background: theme.custom.colors.bg2,
+              borderRadius: "12px",
+            }}
+            onClick={handleClick}
+          >
+            Open
+          </Button>
+        </div>
+      </div>
+    )
   );
 }
 
@@ -229,20 +332,14 @@ function Description({ nft }: { nft: any }) {
   );
 }
 
-function SendButton({ nft }: { nft: any }) {
+function SendButton({ nft, style }: { nft: any; style?: CSSProperties }) {
   const [openDrawer, setOpenDrawer] = useState(false);
   const send = () => {
     setOpenDrawer(true);
   };
   return (
     <>
-      <PrimaryButton
-        style={{
-          marginTop: "24px",
-        }}
-        onClick={() => send()}
-        label={"Send"}
-      />
+      <PrimaryButton style={style} onClick={() => send()} label={"Send"} />
       <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
         <div style={{ height: "100%" }}>
           <NavStackEphemeral
@@ -259,22 +356,6 @@ function SendButton({ nft }: { nft: any }) {
           </NavStackEphemeral>
         </div>
       </WithDrawer>
-    </>
-  );
-}
-
-function OpenButton({ xnft }: { xnft: string }) {
-  const openPlugin = useOpenPlugin();
-  const handleClick = () => {
-    openPlugin(xnft);
-  };
-  return (
-    <>
-      <SecondaryButton
-        style={{ marginTop: "12px" }}
-        label="Open"
-        onClick={handleClick}
-      />
     </>
   );
 }
@@ -553,83 +634,32 @@ export function NftOptionsButton() {
           }}
         />
       </IconButton>
-      <Popover
+      <PopoverMenu.Root
         open={Boolean(anchorEl)}
         anchorEl={anchorEl}
         onClose={onClose}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right",
-        }}
-        PaperProps={{
-          style: {
-            background: theme.custom.colors.nav,
-          },
-        }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
       >
-        <div
-          style={{
-            padding: "4px",
-          }}
-        >
-          <List
-            style={{
-              margin: 0,
+        <PopoverMenu.Group>
+          <PopoverMenu.Item
+            onClick={() => {
+              const url = explorerNftUrl(explorer, nft, connectionUrl);
+              window.open(url, "_blank");
             }}
           >
-            <ListItem
-              style={{
-                width: "100%",
-                height: "30px",
-              }}
-              isFirst={true}
-              isLast={isEthereum}
-              onClick={() => {
-                const url = explorerNftUrl(explorer, nft, connectionUrl);
-                window.open(url, "_blank");
-              }}
-            >
-              <Typography
-                style={{
-                  fontSize: "14px",
-                }}
-              >
-                View on Explorer
-              </Typography>
-              <CallMade
-                style={{
-                  color: theme.custom.colors.secondary,
-                }}
-              />
-            </ListItem>
-            <ListItem
-              style={{ width: "100%", height: "30px" }}
-              onClick={onSetPfp}
-            >
-              <Typography style={{ fontSize: "14px" }}>Set as PFP</Typography>
-            </ListItem>
-            {!isEthereum && (
-              <ListItem
-                style={{
-                  width: "100%",
-                  height: "30px",
-                }}
-                isLast={true}
-                onClick={() => onBurn()}
-              >
-                <Typography
-                  style={{
-                    fontSize: "14px",
-                    color: theme.custom.colors.negative,
-                  }}
-                >
-                  Burn Token
-                </Typography>
-              </ListItem>
-            )}
-          </List>
-        </div>
-      </Popover>
+            View on Explorer
+          </PopoverMenu.Item>
+          <PopoverMenu.Item onClick={onSetPfp}>Set as PFP</PopoverMenu.Item>
+        </PopoverMenu.Group>
+        <PopoverMenu.Group>
+          <PopoverMenu.Item
+            sx={{ color: `${theme.custom.colors.negative} !important` }}
+            onClick={onBurn}
+          >
+            Burn Token
+          </PopoverMenu.Item>
+        </PopoverMenu.Group>
+      </PopoverMenu.Root>
       <ApproveTransactionDrawer
         openDrawer={openDrawer}
         setOpenDrawer={setOpenDrawer}

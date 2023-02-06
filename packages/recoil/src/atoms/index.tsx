@@ -14,4 +14,5 @@ export * from "./prices";
 export * from "./recent-transactions";
 export * from "./solana";
 export * from "./transaction-request";
+export * from "./unreadCount";
 export * from "./wallet";

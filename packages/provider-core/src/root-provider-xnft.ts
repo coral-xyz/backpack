@@ -121,6 +121,13 @@ export class ProviderRootXnftInjection extends PrivateEventEmitter {
       );
     }
 
+    if (this.#cachedNotifications[PLUGIN_NOTIFICATION_UPDATE_METADATA]) {
+      iframeEl.contentWindow?.postMessage(
+        this.#cachedNotifications[PLUGIN_NOTIFICATION_UPDATE_METADATA],
+        "*"
+      );
+    }
+
     this.#requestManager.addChildIframe({
       element: iframeEl,
       url,

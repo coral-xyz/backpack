@@ -1,6 +1,5 @@
 import {
   AllWalletsList,
-  WalletList as _WalletList,
   WalletListBlockchainSelector,
 } from "../../../components/common/WalletList";
 import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
@@ -10,7 +9,7 @@ import {
 } from "../../common/Layout/NavStack";
 import { Logout, ResetWarning } from "../../Locked/Reset/ResetWarning";
 import { ResetWelcome } from "../../Locked/Reset/ResetWelcome";
-import { Contacts } from "../Messages/Contacts";
+import { ContactRequests, Contacts } from "../Messages/Contacts";
 import { Requests } from "../Messages/Requests";
 
 import { ImportSecretKey } from "./AddConnectWallet/ImportSecretKey";
@@ -199,7 +198,14 @@ export function SettingsNavStackDrawer({
             name={"contacts"}
             component={(props: any) => <Contacts {...props} />}
           />
-
+          <NavStackScreen
+            name={"contact-requests"}
+            component={(props: any) => <ContactRequests {...props} />}
+          />
+          <NavStackScreen
+            name={"contact-requests-sent"}
+            component={(props: any) => <ContactRequests {...props} />}
+          />
           <NavStackScreen
             name={"requests"}
             component={(props: any) => <Requests {...props} />}

@@ -1,0 +1,25 @@
+table:
+  name: notification_cursor
+  schema: auth
+insert_permissions:
+  - role: auth_worker
+    permission:
+      check: {}
+      columns:
+        - uuid
+        - last_read_notificaiton
+select_permissions:
+  - role: auth_worker
+    permission:
+      columns:
+        - last_read_notificaiton
+        - uuid
+      filter: {}
+update_permissions:
+  - role: auth_worker
+    permission:
+      columns:
+        - last_read_notificaiton
+        - uuid
+      filter: {}
+      check: null

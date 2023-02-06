@@ -7,6 +7,8 @@ import type {
   KeyringInit,
   KeyringType,
   Preferences,
+  SignedWalletDescriptor,
+  WalletDescriptor,
   XnftPreference,
 } from "@coral-xyz/common";
 import {
@@ -15,12 +17,13 @@ import {
   Blockchain,
   DEFAULT_DARK_MODE,
   defaultPreferences,
-  DerivationPath,
   deserializeTransaction,
   EthereumConnectionUrl,
   EthereumExplorer,
+  getAccountRecoveryPaths,
   getAddMessage,
-  LOAD_PUBLIC_KEY_AMOUNT,
+  getCreateMessage,
+  getRecoveryPaths,
   NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED,
   NOTIFICATION_AGGREGATE_WALLETS_UPDATED,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
@@ -88,11 +91,6 @@ import * as store from "./store";
 import { getWalletDataForUser, setUser, setWalletDataForUser } from "./store";
 
 const { base58: bs58 } = ethers.utils;
-
-export const DERIVATION_PATHS = [
-  DerivationPath.Bip44,
-  DerivationPath.Bip44Change,
-];
 
 export function start(
   events: EventEmitter,
@@ -480,13 +478,11 @@ export class Backend {
    */
   async signMessageForPublicKey(
     blockchain: Blockchain,
-    msg: string,
     publicKey: string,
-    keyringInit?: {
-      derivationPath: DerivationPath;
-      accountIndex: number;
-      mnemonic?: string;
-    }
+    msg: string,
+    keyringInit?:
+      | Parameters<BlockchainKeyring["initFromMnemonic"]>
+      | Parameters<BlockchainKeyring["initFromLedger"]>
   ) {
     if (
       !keyringInit &&
@@ -498,37 +494,23 @@ export class Backend {
     }
 
     let blockchainKeyring: BlockchainKeyring;
-
     // If keyring init parameters were provided then init the keyring
     if (keyringInit) {
       // Create an empty keyring to init
       blockchainKeyring = keyringForBlockchain(blockchain);
-      if (keyringInit.mnemonic) {
-        // Using a mnemonic
-        blockchainKeyring.initFromMnemonic(
-          keyringInit.mnemonic,
-          keyringInit.derivationPath,
-          [keyringInit.accountIndex]
-        );
+      if (keyringInit.length === 2) {
+        blockchainKeyring.initFromMnemonic(keyringInit[0], keyringInit[1]);
       } else {
         // Using a ledger
-        blockchainKeyring.initFromLedger([
-          {
-            path: keyringInit.derivationPath,
-            account: keyringInit.accountIndex,
-            publicKey,
-          },
-        ]);
+        blockchainKeyring.initFromLedger(keyringInit[0]);
       }
     } else {
       blockchainKeyring =
         this.keyringStore.activeUserKeyring.keyringForBlockchain(blockchain);
     }
 
-    // Check if the keyring was initialised properly or if the existing stored
-    // keyring has the correct public key
     if (!blockchainKeyring.hasPublicKey(publicKey)) {
-      throw new Error("invalid public key or keyring init");
+      throw new Error("could not find public key for signing");
     }
 
     if (blockchain === Blockchain.SOLANA) {
@@ -832,8 +814,13 @@ export class Backend {
    * Add a new wallet to the keyring using the next derived wallet for the mnemonic.
    * @param blockchain - Blockchain to add the wallet for
    */
-  async keyringDeriveWallet(blockchain: Blockchain): Promise<string> {
-    const [publicKey, name] = await this.keyringStore.deriveNextKey(blockchain);
+  async keyringDeriveWallet(
+    blockchain: Blockchain,
+    retries = 0
+  ): Promise<string> {
+    const { publicKey, name } = await this.keyringStore.deriveNextKey(
+      blockchain
+    );
 
     try {
       await this.userAccountPublicKeyCreate(blockchain, publicKey);
@@ -843,6 +830,11 @@ export class Backend {
       // the next account index gets incremented. This is the correct behaviour
       // because it should allow for sensible retries on conflicts.
       await this.keyringKeyDelete(blockchain, publicKey);
+      if (retries < 10) {
+        // Key conflict with already exist account, retry
+        // Last key will be skipped because the wallet index will have incremented
+        return await this.keyringDeriveWallet(blockchain, retries);
+      }
       throw error;
     }
 
@@ -850,7 +842,7 @@ export class Backend {
       name: NOTIFICATION_KEYRING_DERIVED_WALLET,
       data: {
         blockchain,
-        publicKey: publicKey.toString(),
+        publicKey,
         name,
       },
     });
@@ -957,13 +949,7 @@ export class Backend {
     // Remove the public key from the Backpack API
     await this.userAccountPublicKeyDelete(blockchain, publicKey);
 
-    try {
-      await this.keyringStore.keyDelete(blockchain, publicKey);
-    } catch (error) {
-      // Add the public key back, i.e. revert the delete from above
-      await this.userAccountPublicKeyCreate(blockchain, publicKey);
-      throw error;
-    }
+    await this.keyringStore.keyDelete(blockchain, publicKey);
 
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_KEY_DELETE,
@@ -1117,17 +1103,11 @@ export class Backend {
 
   async ledgerImport(
     blockchain: Blockchain,
-    derivationPath: string,
-    account: number,
-    publicKey: string,
-    signature?: string
+    signedWalletDescriptor: SignedWalletDescriptor
   ) {
-    await this.keyringStore.ledgerImport(
-      blockchain,
-      derivationPath,
-      account,
-      publicKey
-    );
+    const { signature, ...walletDescriptor } = signedWalletDescriptor;
+    const { publicKey } = walletDescriptor;
+    await this.keyringStore.ledgerImport(blockchain, walletDescriptor);
     try {
       await this.userAccountPublicKeyCreate(blockchain, publicKey, signature);
     } catch (error) {
@@ -1149,69 +1129,6 @@ export class Backend {
     return this.keyringStore.createMnemonic(strength);
   }
 
-  async mnemonicSync(
-    serverPublicKeys: Array<{ blockchain: Blockchain; publicKey: string }>
-  ) {
-    const blockchains = [...new Set(serverPublicKeys.map((x) => x.blockchain))];
-    for (const blockchain of blockchains) {
-      for (const derivationPath of DERIVATION_PATHS) {
-        const publicKeys = await this.previewPubkeys(
-          blockchain,
-          this.keyringStore.activeUserKeyring.exportMnemonic(),
-          derivationPath,
-          LOAD_PUBLIC_KEY_AMOUNT
-        );
-        const searchPublicKeys = serverPublicKeys
-          .filter((b) => b.blockchain === blockchain)
-          .map((p) => p.publicKey);
-
-        for (const searchPublicKey of searchPublicKeys) {
-          const accountIndex = publicKeys.findIndex(
-            (p: string) => p === searchPublicKey
-          );
-          if (accountIndex !== -1) {
-            let blockchainKeyring: BlockchainKeyring | undefined = undefined;
-            try {
-              blockchainKeyring =
-                this.keyringStore.activeUserKeyring.keyringForBlockchain(
-                  blockchain
-                );
-            } catch {
-              // Pass
-            }
-            if (blockchainKeyring) {
-              if (blockchainKeyring.derivationPath() !== derivationPath) {
-                // We can't sync anything that is on a different path than the
-                // one that is in use for the blockchain keyring, keyring does
-                // not support multiple derivation paths
-                continue;
-              }
-              const [publicKey, name] =
-                await this.keyringStore.activeUserKeyring
-                  .keyringForBlockchain(blockchain)
-                  .importAccountIndex(accountIndex);
-              this.events.emit(BACKEND_EVENT, {
-                name: NOTIFICATION_KEYRING_DERIVED_WALLET,
-                data: {
-                  blockchain,
-                  publicKey: publicKey.toString(),
-                  name,
-                },
-              });
-            } else {
-              // Create blockchain keyring
-              await this.blockchainKeyringsAdd(
-                blockchain,
-                derivationPath,
-                accountIndex
-              );
-            }
-          }
-        }
-      }
-    }
-  }
-
   keyringTypeRead(): KeyringType {
     return this.keyringStore.activeUserKeyring.hasMnemonic()
       ? "mnemonic"
@@ -1221,14 +1138,12 @@ export class Backend {
   async previewPubkeys(
     blockchain: Blockchain,
     mnemonic: string,
-    derivationPath: DerivationPath,
-    numberOfAccounts: number
+    derivationPaths: Array<string>
   ) {
     return this.keyringStore.previewPubkeys(
       blockchain,
       mnemonic,
-      derivationPath,
-      numberOfAccounts
+      derivationPaths
     );
   }
 
@@ -1245,10 +1160,11 @@ export class Backend {
       // Signature should only be undefined for non hardware wallets
       signature = await this.signMessageForPublicKey(
         blockchain,
-        bs58.encode(Buffer.from(getAddMessage(publicKey), "utf-8")),
-        publicKey
+        publicKey,
+        bs58.encode(Buffer.from(getAddMessage(publicKey), "utf-8"))
       );
     }
+
     const response = await fetch(`${BACKEND_API_URL}/users/publicKeys`, {
       method: "POST",
       body: JSON.stringify({
@@ -1417,6 +1333,70 @@ export class Backend {
     return json;
   }
 
+  /**
+   * Find a `SignedWalletDescriptor` that can be used to create a new account.
+   * This requires that the sub wallets on the account index are not used by a
+   * existing user account. This is checked by querying the Backpack API.
+   */
+  async findSignedWalletDescriptor(
+    blockchain: Blockchain,
+    accountIndex = 0,
+    create = false,
+    mnemonic?: string
+  ): Promise<SignedWalletDescriptor> {
+    // If mnemonic is not passed as an argument, use the keyring store stored mnemonic.
+    // Wallet must be unlocked.
+    if (!mnemonic)
+      mnemonic = this.keyringStore.activeUserKeyring.exportMnemonic();
+    const recoveryPaths = getAccountRecoveryPaths(blockchain, accountIndex);
+    const publicKeys = await this.previewPubkeys(
+      blockchain,
+      mnemonic,
+      recoveryPaths
+    );
+    const response = await fetch(`${BACKEND_API_URL}/publicKeys`, {
+      method: "POST",
+      body: JSON.stringify(
+        publicKeys.map((publicKey) => ({
+          blockchain,
+          publicKey,
+        }))
+      ),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const json = await response.json();
+    if (json.length === 0) {
+      // No users for any of the passed public keys, good to go
+      // Take the root for the public key path
+      const publicKey = publicKeys[0];
+      const derivationPath = recoveryPaths[0];
+      // TODO remove this, signing different messages is just extra friction
+      const message = create
+        ? getCreateMessage(publicKey)
+        : getAddMessage(publicKey);
+      return {
+        publicKey,
+        derivationPath,
+        signature: await this.signMessageForPublicKey(
+          blockchain,
+          publicKey,
+          bs58.encode(Buffer.from(message, "utf-8")),
+          [mnemonic, [derivationPath]]
+        ),
+      };
+    } else {
+      // Iterate on account index
+      return this.findSignedWalletDescriptor(
+        blockchain,
+        accountIndex + 1,
+        create,
+        mnemonic
+      );
+    }
+  }
+
   ///////////////////////////////////////////////////////////////////////////////
   // Preferences.
   ///////////////////////////////////////////////////////////////////////////////
@@ -1541,25 +1521,18 @@ export class Backend {
    */
   async blockchainKeyringsAdd(
     blockchain: Blockchain,
-    derivationPath: DerivationPath,
-    accountIndex: number,
-    publicKey?: string,
-    signature?: string
+    signedWalletDescriptor: SignedWalletDescriptor
   ): Promise<string> {
-    const newPublicKey = await this.keyringStore.blockchainKeyringAdd(
+    await this.keyringStore.blockchainKeyringAdd(
       blockchain,
-      derivationPath,
-      accountIndex,
-      publicKey
+      signedWalletDescriptor as WalletDescriptor
     );
+
+    const { signature, publicKey } = signedWalletDescriptor;
 
     // Add the new public key to the API
     try {
-      await this.userAccountPublicKeyCreate(
-        blockchain,
-        newPublicKey,
-        signature
-      );
+      await this.userAccountPublicKeyCreate(blockchain, publicKey, signature);
     } catch (error) {
       // Roll back the added blockchain keyring
       await this.keyringStore.blockchainKeyringRemove(blockchain);
@@ -1572,12 +1545,12 @@ export class Backend {
       name: NOTIFICATION_BLOCKCHAIN_KEYRING_CREATED,
       data: {
         blockchain,
-        activeWallet: newPublicKey,
+        activeWallet: publicKey,
         publicKeyData,
       },
     });
 
-    return newPublicKey;
+    return publicKey;
   }
 
   /**

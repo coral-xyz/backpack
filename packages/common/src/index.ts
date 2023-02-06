@@ -56,6 +56,13 @@ export function walletAddressDisplay(
   )}`;
 }
 
+export function usernameDisplay(username: string, maxLength = 10) {
+  if (username.length <= maxLength) {
+    return username;
+  }
+  return username.slice(0, maxLength - 2) + "..";
+}
+
 /**
  * Message to be signed for authenticating a user.
  */

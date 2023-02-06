@@ -81,6 +81,7 @@ select_permissions:
   - role: auth_worker
     permission:
       columns:
+        - created_at
         - id
         - username
       filter: {}

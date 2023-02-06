@@ -48,8 +48,9 @@ export const MediaContent = ({
               style={{
                 color: theme.custom.colors.icon,
                 cursor: "pointer",
-                alignSelf: "flex-end",
-                marginTop: 10,
+                position: "absolute",
+                top: 10,
+                right: 10,
               }}
               onClick={() => setModalOpen(false)}
             />
@@ -66,7 +67,6 @@ export const MediaContent = ({
             ) : (
               <img
                 style={{
-                  background: "white",
                   borderRadius: 5,
                   objectFit: "contain",
                   maxHeight: "85vh",
@@ -77,8 +77,9 @@ export const MediaContent = ({
             )}
             <a
               style={{
-                alignSelf: "flex-end",
-                marginBottom: 10,
+                position: "absolute",
+                right: 10,
+                bottom: 10,
               }}
               href={mediaLink}
               download="AwesomeImage.png"
@@ -91,7 +92,7 @@ export const MediaContent = ({
           </>
         </Modal>
       )}
-      <div style={{ marginTop: 3 }}>
+      <div style={{ marginTop: 3, width: 1 }}>
         {mediaKind === "video" ? (
           <div style={{ display: "flex" }}>
             <div style={{ position: "relative" }}>

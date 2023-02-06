@@ -45,7 +45,7 @@ import { BigNumber, ethers } from "ethers";
 
 import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
-import { useNavStack } from "../../../common/Layout/NavStack";
+import { useNavigation as useNavigationEphemeral } from "../../../common/Layout/NavStack";
 import { TokenAmountHeader } from "../../../common/TokenAmountHeader";
 import { TokenInputField } from "../../../common/TokenInput";
 
@@ -176,7 +176,7 @@ export function Send({
   token: TokenData;
 }) {
   const classes = useStyles() as any;
-  const { title, setTitle } = useNavStack();
+  const nav = useNavigationEphemeral();
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -185,10 +185,10 @@ export function Send({
   const [feeOffset, setFeeOffset] = useState(BigNumber.from(0));
 
   useEffect(() => {
-    const prev = title;
-    setTitle(`Send ${token.ticker}`);
+    const prev = nav.title;
+    nav.setOptions({ headerTitle: `Send ${token.ticker}` });
     return () => {
-      setTitle(prev);
+      nav.setOptions({ headerTitle: prev });
     };
   }, []);
 

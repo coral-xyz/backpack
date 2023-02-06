@@ -1,5 +1,5 @@
 import React from "react";
-import { NAV_COMPONENT_MESSAGE_PROFILE, parseMessage } from "@coral-xyz/common";
+import { NAV_COMPONENT_MESSAGE_CHAT, parseMessage } from "@coral-xyz/common";
 import { useNavigation } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Skeleton } from "@mui/material";
@@ -29,10 +29,11 @@ export function ParsedMessage({ message }) {
               <div
                 onClick={() => {
                   push({
-                    title: handle,
-                    componentId: NAV_COMPONENT_MESSAGE_PROFILE,
+                    title: `@${user.username}`,
+                    componentId: NAV_COMPONENT_MESSAGE_CHAT,
                     componentProps: {
                       userId: user.uuid,
+                      username: user.username,
                     },
                   });
                 }}

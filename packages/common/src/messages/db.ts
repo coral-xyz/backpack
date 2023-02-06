@@ -1,3 +1,5 @@
+import type { Blockchain } from "../types";
+
 export interface InboxDb {
   id: string;
   last_message?: string;
@@ -9,6 +11,10 @@ export interface InboxDb {
   last_message_client_uuid: string;
   user1_last_read_message_id: boolean;
   user2_last_read_message_id: boolean;
+  public_keys: {
+    blockchain: Blockchain;
+    public_key: string;
+  }[];
 }
 
 export interface EnrichedInboxDb extends InboxDb {

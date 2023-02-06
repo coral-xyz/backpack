@@ -5,7 +5,7 @@ import {
   NAV_COMPONENT_MESSAGE_PROFILE,
   NEW_COLORS,
 } from "@coral-xyz/common";
-import { refreshIndividualChatsFor } from "@coral-xyz/react-common";
+import { LocalImage, refreshIndividualChatsFor } from "@coral-xyz/react-common";
 import {
   blockchainTokenData,
   SOL_LOGO_URI,
@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme: any) =>
       width: "100%",
       textAlign: "left",
       fontSize: "14px",
-      color: theme.custom.colors.fontColor2,
+      color: theme.custom.colors.fontColor,
     },
     messageContent: {
       padding: 0,
@@ -66,10 +66,11 @@ const useStyles = makeStyles((theme: any) =>
       minWidth: 63,
       display: "flex",
       flexDirection: "row-reverse",
+      opacity: 0.5,
     },
     avatar: {
-      width: 40,
-      height: 40,
+      width: 32,
+      height: 32,
       cursor: "pointer",
       borderRadius: "50%",
     },
@@ -232,8 +233,8 @@ export const MessageLine = (props) => {
       <div
         className={classes.messageRow}
         style={{
-          marginTop: sameUserMessage ? 0 : 25,
-          paddingLeft: sameUserMessage ? 40 : 0,
+          marginTop: sameUserMessage ? 0 : 20,
+          paddingLeft: sameUserMessage ? 32 : 0,
         }}
       >
         {sameUserMessage ? (
@@ -316,16 +317,30 @@ export const MessageLine = (props) => {
           </div>
         ) : (
           <>
-            {photoURL ? (
-              <img
-                onClick={() => openProfilePage({ uuid: props.uuid })}
-                alt={displayName}
-                className={classes.avatar}
-                src={`${photoURL}?size=25`}
-              ></img>
-            ) : (
-              <Skeleton variant="circular" width={40} height={40} />
-            )}
+            <div
+              style={{
+                width: 32,
+              }}
+            >
+              {photoURL ? (
+                <LocalImage
+                  onClick={() => openProfilePage({ uuid: props.uuid })}
+                  alt={displayName}
+                  className={classes.avatar}
+                  style={{ width: 32, height: 32 }}
+                  src={photoURL}
+                ></LocalImage>
+              ) : (
+                <Skeleton
+                  variant="circular"
+                  width={32}
+                  height={32}
+                  style={{
+                    minWidth: 32,
+                  }}
+                />
+              )}
+            </div>
             <div className={`${classes.messageLine} ${classes.hoverParent}`}>
               <div style={{ width: "calc(100% - 80px)" }}>
                 <div
@@ -333,6 +348,7 @@ export const MessageLine = (props) => {
                   className={classes.displayName}
                   style={{
                     display: "inline-flex",
+                    paddingBottom: "4px",
                     color:
                       props.colorIndex || props.colorIndex === 0
                         ? NEW_COLORS[props.colorIndex || 0][
@@ -346,8 +362,8 @@ export const MessageLine = (props) => {
                     `@${displayName}`
                   ) : (
                     <Skeleton
-                      width={30}
-                      height={20}
+                      width={50}
+                      height={16}
                       style={{ marginTop: "0px" }}
                     />
                   )}
@@ -725,11 +741,13 @@ export function ChatMessages() {
       {chats.map((chat, index) => {
         return (
           <MessageLine
+            key={chat.client_generated_uuid}
             received={chat.received}
             sameUserMessage={
+              chats[index]?.uuid &&
               index > 0 &&
               index < chats.length &&
-              chats[index]?.username === chats[index - 1]?.username
+              chats[index]?.uuid === chats[index - 1]?.uuid
             }
             parent_message_author_username={chat.parent_message_author_username}
             parent_message_text={chat.parent_message_text}
@@ -738,7 +756,6 @@ export function ChatMessages() {
             color={chat.color || theme.custom.colors.fontColor2}
             colorIndex={chat.colorIndex}
             timestamp={chat.created_at}
-            key={chat.client_generated_uuid}
             message={chat.message}
             messageKind={chat.message_kind}
             image={chat.image}

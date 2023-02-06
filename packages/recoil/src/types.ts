@@ -32,11 +32,6 @@ export type WalletPublicKeys = {
   };
 };
 
-export type ServerPublicKey = {
-  blockchain: Blockchain;
-  publicKey: string;
-};
-
 export interface TokenNativeData {
   name: string;
   decimals: number;

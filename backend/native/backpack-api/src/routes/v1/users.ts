@@ -1,6 +1,7 @@
-import type { Blockchain, RemoteUserData } from "@coral-xyz/common";
+import type { RemoteUserData } from "@coral-xyz/common";
 import {
   AVATAR_BASE_URL,
+  Blockchain,
   getAddMessage,
   getCreateMessage,
 } from "@coral-xyz/common";
@@ -17,6 +18,7 @@ import {
   createUserPublicKey,
   deleteUserPublicKey,
   getUser,
+  getUserByPublicKeyAndChain,
   getUserByUsername,
   getUsers,
   getUsersByPrefix,
@@ -24,6 +26,7 @@ import {
   updateUserAvatar,
 } from "../../db/users";
 import { getOrcreateXnftSecret } from "../../db/xnftSecrets";
+import { validatePulicKey } from "../../validation/publicKey";
 import { validateSignature } from "../../validation/signature";
 import {
   BlockchainPublicKey,
@@ -39,7 +42,21 @@ router.get("/", extractUserId, async (req, res) => {
   // @ts-ignore
   const uuid = req.id as string;
 
-  const users = await getUsersByPrefix({ usernamePrefix, uuid });
+  const isSolPublicKey = validatePulicKey(usernamePrefix, "solana");
+  const isEthPublicKey = validatePulicKey(usernamePrefix, "ethereum");
+
+  let users;
+  if (isSolPublicKey) {
+    users = await getUserByPublicKeyAndChain(usernamePrefix, Blockchain.SOLANA);
+  } else if (isEthPublicKey) {
+    users = await getUserByPublicKeyAndChain(
+      usernamePrefix,
+      Blockchain.ETHEREUM
+    );
+  } else {
+    users = await getUsersByPrefix({ usernamePrefix, uuid });
+  }
+
   const friendships: {
     id: string;
     areFriends: boolean;
@@ -62,6 +79,8 @@ router.get("/", extractUserId, async (req, res) => {
         requested: friendship?.requested || false,
         remoteRequested: friendship?.remoteRequested || false,
         areFriends: friendship?.areFriends || false,
+        searchedSolPubKey: isSolPublicKey ? usernamePrefix : undefined,
+        searchedEthPubKey: isEthPublicKey ? usernamePrefix : undefined,
       };
     });
 

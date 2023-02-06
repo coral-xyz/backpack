@@ -30,6 +30,9 @@ export const CHAT_ASSETS_CLOUDFRONT_URL =
   "https://d3lfr9vwfn0ejn.cloudfront.net";
 
 export const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
+
 export const NOTIFICATIONS_QUEUE = "NOTIFICATIONS";
 
 export const HELIUS_API_KEY = process.env.HELIUS_API_KEY || "";
+
+export const DROPZONE_XNFT_SECRET = process.env.DROPZONE_XNFT_SECRET || "";

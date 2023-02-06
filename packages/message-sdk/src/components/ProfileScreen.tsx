@@ -6,15 +6,14 @@ import {
 } from "@coral-xyz/common";
 import {
   Loading,
+  LocalImage,
   MessageBubbleIcon,
-  MessageIcon,
   PrimaryButton,
   useUsersMetadata,
 } from "@coral-xyz/react-common";
-import { useNavigation, useUser } from "@coral-xyz/recoil";
+import { useNavigation } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
-import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import LockIcon from "@mui/icons-material/Lock";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import { IconButton } from "@mui/material";
@@ -24,7 +23,6 @@ import { ParentCommunicationManager } from "../ParentCommunicationManager";
 import { useStyles } from "./styles";
 
 export const ProfileScreen = ({ userId }: { userId: string }) => {
-  const { uuid } = useUser();
   const [friendship, setFriendship] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
   const [user, setUser] = useState<{
@@ -84,9 +82,10 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
       <div style={{ flex: 1 }}>
         <div className={classes.horizontalCenter}>
           <div className={classes.topImageOuter}>
-            <img
+            <LocalImage
               className={classes.topImage}
               src={userMetadata[userId]?.image}
+              style={{ width: 150, height: 150 }}
             />
           </div>
         </div>

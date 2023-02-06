@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 
-import { useNavStack } from "../../../../common/Layout/NavStack";
+import { useNavigation } from "../../../../common/Layout/NavStack";
 import { SettingsList } from "../../../../common/Settings/List";
 
 export const PreferencesEthereum = () => {
-  const nav = useNavStack();
+  const nav = useNavigation();
   const ethereumMenuItems = {
     "RPC Connection": {
       onClick: () => nav.push("preferences-ethereum-rpc-connection"),
@@ -12,7 +12,7 @@ export const PreferencesEthereum = () => {
   };
 
   useEffect(() => {
-    nav.setTitle("Ethereum");
+    nav.setOptions({ headerTitle: "Ethereum" });
   }, [nav]);
 
   return <SettingsList menuItems={ethereumMenuItems} />;

@@ -3,6 +3,7 @@ import type { Blockchain, BlockchainKeyringJson } from "@coral-xyz/common";
 import type { SecretPayload } from "../keyring/crypto";
 import * as crypto from "../keyring/crypto";
 
+import { migrate_0_2_0_2408 } from "./migrations/migrate_0_2_0_2408";
 import { LocalStorageDb } from "./db";
 
 const KEY_KEYRING_STORE = "keyring-store";
@@ -42,6 +43,8 @@ export async function getKeyringStore(
   if (json.usernames) {
     return json;
   }
+
+  migrate_0_2_0_2408(json);
 
   //
   // Migrate user from single username -> multi username account management.

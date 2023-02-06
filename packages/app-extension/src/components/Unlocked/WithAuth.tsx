@@ -1,21 +1,16 @@
 import { useEffect, useState } from "react";
-import type { Blockchain, BlockchainKeyringInit } from "@coral-xyz/common";
+import type { Blockchain, SignedWalletDescriptor } from "@coral-xyz/common";
 import {
   getAuthMessage,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
   UI_RPC_METHOD_USER_JWT_UPDATE,
 } from "@coral-xyz/common";
-import { Loading } from "@coral-xyz/react-common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { ethers } from "ethers";
 
 import { useAuthentication } from "../../hooks/useAuthentication";
 import { WithDrawer } from "../common/Layout/Drawer";
 import { HardwareOnboard } from "../Onboarding/pages/HardwareOnboard";
-
-import { WithSyncAccount } from "./WithSyncAccount";
-
-const { base58 } = ethers.utils;
 
 export function WithAuth({ children }: { children: React.ReactElement }) {
   const { authenticate, checkAuthentication, getAuthSigner } =
@@ -31,7 +26,6 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
     userId: string;
   } | null>(null);
   const [authSignature, setAuthSignature] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
   const [openDrawer, setOpenDrawer] = useState(false);
   const [serverAccountState, setServerAccountState] = useState<{
     isAuthenticated: boolean;
@@ -90,7 +84,9 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
             method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
             params: [
               authData.blockchain,
-              base58.encode(Buffer.from(authData.message, "utf-8")),
+              ethers.utils.base58.encode(
+                Buffer.from(authData.message, "utf-8")
+              ),
               authData.publicKey,
             ],
           });
@@ -125,9 +121,6 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
 
   return (
     <>
-      {serverAccountState && (
-        <WithSyncAccount serverPublicKeys={serverAccountState.publicKeys} />
-      )}
       {children}
       {authData && (
         <WithDrawer
@@ -145,8 +138,8 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
             searchPublicKey={authData!.publicKey}
             signMessage={authData!.message}
             signText="Sign the message to authenticate with Backpack."
-            onComplete={(keyringInit: BlockchainKeyringInit) => {
-              setAuthSignature(keyringInit.signature);
+            onComplete={(signedWalletDescriptor: SignedWalletDescriptor) => {
+              setAuthSignature(signedWalletDescriptor.signature);
             }}
           />
         </WithDrawer>

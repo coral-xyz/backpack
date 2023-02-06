@@ -188,7 +188,7 @@ export const getAllFriendships = async ({
   };
 };
 
-export const getRequests = async ({
+export const getReceivedRequests = async ({
   uuid,
 }: {
   uuid: string;
@@ -233,12 +233,65 @@ export const getRequests = async ({
   });
 
   const blockedOrFriends: { [userId: string]: boolean } = {};
-  response.auth_friendships.map((x) => {
+  response.auth_friendships.forEach((x) => {
     blockedOrFriends[x.user1 || ""] = true;
     blockedOrFriends[x.user2 || ""] = true;
   });
   return response.auth_friend_requests
     .map((x) => x.from)
+    .filter((userId) => !blockedOrFriends[userId]);
+};
+
+export const getSentRequests = async ({
+  uuid,
+}: {
+  uuid: string;
+}): Promise<string[]> => {
+  const response = await chain("query")({
+    auth_friend_requests: [
+      {
+        where: {
+          from: { _eq: uuid },
+        },
+      },
+      {
+        to: true,
+      },
+    ],
+    auth_friendships: [
+      {
+        where: {
+          _or: [
+            {
+              user1: { _eq: uuid },
+              _or: [
+                { are_friends: { _eq: true } },
+                { user1_blocked_user2: { _eq: true } },
+              ],
+            },
+            {
+              user2: { _eq: uuid },
+              _or: [
+                { are_friends: { _eq: true } },
+                { user2_blocked_user1: { _eq: true } },
+              ],
+            },
+          ],
+        },
+      },
+      {
+        user1: true,
+        user2: true,
+      },
+    ],
+  });
+  const blockedOrFriends: { [userId: string]: boolean } = {};
+  response.auth_friendships.forEach((x) => {
+    blockedOrFriends[x.user1 || ""] = true;
+    blockedOrFriends[x.user2 || ""] = true;
+  });
+  return response.auth_friend_requests
+    .map((r) => r.to)
     .filter((userId) => !blockedOrFriends[userId]);
 };
 
@@ -515,6 +568,8 @@ export async function setFriendship({
       ],
     });
     await deleteFriendRequest({ from, to });
+    // Delete friend request from other user to this user as well
+    await deleteFriendRequest({ from: to, to: from });
     return;
   }
 
@@ -569,7 +624,7 @@ export async function setFriendship({
         },
       ],
     });
-    console.log("above main mutation");
+
     // @ts-ignore
     await chain("mutation")({
       insert_auth_friendships_one: [
@@ -589,8 +644,8 @@ export async function setFriendship({
         { id: true },
       ],
     });
+    return true;
   } else {
-    console.log("elseee");
     await chain("mutation")({
       insert_auth_friend_requests_one: [
         {
