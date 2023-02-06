@@ -142,7 +142,7 @@ function SendButton({
   const theme = useCustomTheme();
   return (
     <TransferButton
-      label={"Send"}
+      label={"Review"}
       labelComponent={
         <ArrowUpward
           style={{
