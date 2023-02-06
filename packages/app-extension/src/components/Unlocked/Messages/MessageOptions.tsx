@@ -1,5 +1,4 @@
 import { useState } from "react";
-import type { Friendship } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
   sendFriendRequest,
@@ -7,14 +6,13 @@ import {
 } from "@coral-xyz/common";
 import { toast } from "@coral-xyz/react-common";
 import {
-  friendship,
   useDecodedSearchParams,
+  useFriendship,
   useUpdateFriendships,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { Fade } from "@mui/material";
-import { useRecoilState } from "recoil";
 
 import PopoverMenu from "../../common/PopoverMenu";
 
@@ -24,9 +22,7 @@ export const MessageOptions = () => {
   const { props }: any = useDecodedSearchParams();
   const userId = props.userId;
   const remoteUsername = props.username;
-  const [friendshipValue, _] = useRecoilState<Friendship | null>(
-    friendship({ userId })
-  );
+  const friendshipValue = useFriendship({ userId });
   const setFriendshipValue = useUpdateFriendships();
   const theme = useCustomTheme();
 

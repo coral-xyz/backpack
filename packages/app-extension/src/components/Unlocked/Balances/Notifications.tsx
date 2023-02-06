@@ -1,5 +1,5 @@
 import { Suspense, useEffect, useState } from "react";
-import type { EnrichedNotification, Friendship } from "@coral-xyz/common";
+import type { EnrichedNotification } from "@coral-xyz/common";
 import { BACKEND_API_URL, sendFriendRequest } from "@coral-xyz/common";
 import { updateFriendshipIfExists } from "@coral-xyz/db";
 import {
@@ -12,8 +12,8 @@ import {
   useUserMetadata,
 } from "@coral-xyz/react-common";
 import {
-  friendship,
   unreadCount,
+  useFriendship,
   useRecentNotifications,
   useUpdateFriendships,
   useUser,
@@ -489,9 +489,7 @@ function NotificationListItem({
 }
 
 function AcceptRejectRequest({ userId }: { userId: string }) {
-  const [friendshipValue, _] = useRecoilState<Friendship | null>(
-    friendship({ userId })
-  );
+  const friendshipValue = useFriendship({ userId });
   const { uuid } = useUser();
   const setFriendshipValue = useUpdateFriendships();
 

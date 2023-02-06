@@ -1,7 +1,5 @@
 import { ChatRoom } from "@coral-xyz/chat-sdk";
-import type { Friendship } from "@coral-xyz/common";
-import { friendship, useUpdateFriendships } from "@coral-xyz/recoil";
-import { useRecoilState } from "recoil";
+import { useFriendship, useUpdateFriendships } from "@coral-xyz/recoil";
 
 export const ChatScreen = ({
   userId,
@@ -14,9 +12,7 @@ export const ChatScreen = ({
   uuid: string;
   username: string;
 }) => {
-  const [friendshipValue, _] = useRecoilState<Friendship | null>(
-    friendship({ userId })
-  );
+  const friendshipValue = useFriendship({ userId });
   const setFriendshipValue = useUpdateFriendships();
 
   if (!friendshipValue || !friendshipValue.id) {
