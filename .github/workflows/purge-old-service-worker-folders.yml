@@ -24,4 +24,4 @@ jobs:
         shell: bash
         run: |
            chmod +x ./check-for-old-folders.sh
-           ./check-for-old-folders.sh
+           bash check-for-old-folders.sh
