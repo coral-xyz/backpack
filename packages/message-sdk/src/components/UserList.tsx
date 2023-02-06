@@ -1,6 +1,7 @@
 import type { CSSProperties, MouseEvent } from "react";
 import type { RemoteUserData } from "@coral-xyz/common";
 import {
+  fetchFriendship,
   NAV_COMPONENT_MESSAGE_PROFILE,
   sendFriendRequest,
   unFriend,
@@ -13,7 +14,12 @@ import {
   LocalImage,
   SignalingManager,
 } from "@coral-xyz/react-common";
-import { friendship, useNavigation, useUser } from "@coral-xyz/recoil";
+import {
+  friendship,
+  useNavigation,
+  useUpdateFriendships,
+  useUser,
+} from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { List, ListItem } from "@mui/material";
 import { useRecoilCallback } from "recoil";
@@ -172,10 +178,11 @@ function UserListItem({
 
   const onDecline = async (ev: MouseEvent<HTMLDivElement>) => {
     ev.stopPropagation();
-    await sendFriendRequest({ to: user.id, sendRequest: true });
+    await sendFriendRequest({ to: user.id, sendRequest: false });
     await updateFriendshipIfExists(uuid, user.id, {
       requested: 0,
       areFriends: 0,
+      remoteRequested: 0,
     });
 
     setFriendshipValue({
@@ -183,6 +190,7 @@ function UserListItem({
       friendshipValue: {
         requested: false,
         areFriends: false,
+        remoteRequested: false,
       },
     });
     setMembers?.((members) =>
@@ -357,25 +365,7 @@ function UserIcon({ image }: any) {
     <LocalImage
       src={image}
       className={classes.iconCircular}
-      style={{ width: 40, height: 40 }}
+      style={{ width: 32, height: 32 }}
     />
   );
 }
-
-export const useUpdateFriendships = () =>
-  useRecoilCallback(
-    ({ set, snapshot }: any) =>
-      async ({
-        friendshipValue,
-        userId,
-      }: {
-        friendshipValue: any;
-        userId: string;
-      }) => {
-        const currentFriendship = snapshot.getLoadable(friendship({ userId }));
-        set(friendship({ userId }), {
-          ...(currentFriendship.valueMaybe() || {}),
-          ...friendshipValue,
-        });
-      }
-  );

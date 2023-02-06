@@ -25,3 +25,13 @@ export const unFriend = async ({ to }: { to: string }) => {
     body: JSON.stringify({ to }),
   });
 };
+
+export const fetchFriendship = async ({ userId }: { userId: string }) => {
+  const res = await fetch(`${BACKEND_API_URL}/inbox`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ to: userId }),
+  });
+  const json = await res.json();
+  return json;
+};

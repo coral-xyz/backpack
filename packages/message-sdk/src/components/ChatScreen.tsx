@@ -1,7 +1,5 @@
 import { ChatRoom } from "@coral-xyz/chat-sdk";
-import type { Friendship } from "@coral-xyz/common";
-import { friendship } from "@coral-xyz/recoil";
-import { useRecoilState } from "recoil";
+import { useFriendship, useUpdateFriendships } from "@coral-xyz/recoil";
 
 export const ChatScreen = ({
   userId,
@@ -14,8 +12,8 @@ export const ChatScreen = ({
   uuid: string;
   username: string;
 }) => {
-  const [friendshipValue, setFriendshipValue] =
-    useRecoilState<Friendship | null>(friendship({ userId }));
+  const friendshipValue = useFriendship({ userId });
+  const setFriendshipValue = useUpdateFriendships();
 
   if (!friendshipValue || !friendshipValue.id) {
     console.error(`Friendship not found with user ${userId} or jwt not found`);
@@ -41,22 +39,28 @@ export const ChatScreen = ({
         remoteRequested={friendshipValue.remoteRequested}
         spam={friendshipValue.spam}
         setRequested={(updatedValue: boolean) =>
-          setFriendshipValue((x: any) => ({
-            ...x,
-            requested: updatedValue,
-          }))
+          setFriendshipValue({
+            userId: userId,
+            friendshipValue: {
+              requested: updatedValue,
+            },
+          })
         }
         setSpam={(updatedValue: boolean) =>
-          setFriendshipValue((x: any) => ({
-            ...x,
-            spam: updatedValue,
-          }))
+          setFriendshipValue({
+            userId: userId,
+            friendshipValue: {
+              spam: updatedValue,
+            },
+          })
         }
         setBlocked={(updatedValue: boolean) =>
-          setFriendshipValue((x: any) => ({
-            ...x,
-            blocked: updatedValue,
-          }))
+          setFriendshipValue({
+            userId: userId,
+            friendshipValue: {
+              blocked: updatedValue,
+            },
+          })
         }
         isDarkMode={isDarkMode}
       />
