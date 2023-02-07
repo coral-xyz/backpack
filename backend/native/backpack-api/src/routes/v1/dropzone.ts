@@ -1,10 +1,13 @@
 import { emptyWallet } from "@cardinal/common";
+import { metadataAddress } from "@coral-xyz/common";
 import type { order_by } from "@coral-xyz/zeus";
 import { Chain } from "@coral-xyz/zeus";
 import type { PublicKeyString } from "@metaplex-foundation/js";
+import { Metadata } from "@metaplex-foundation/mpl-token-metadata";
 import { MerkleDistributorSDK, utils } from "@saberhq/merkle-distributor";
 import { SignerWallet, SolanaProvider } from "@saberhq/solana-contrib";
 import { u64 } from "@saberhq/token-utils";
+import { MintLayout } from "@solana/spl-token";
 import { Connection, PublicKey } from "@solana/web3.js";
 import { encode } from "bs58";
 import cors from "cors";
@@ -346,7 +349,7 @@ router.get(
       const { dropzone_distributors_by_pk } = await chain("query")({
         dropzone_distributors_by_pk: [
           { id: req.params.distributor },
-          { id: true, data: [{ path: "$" }, true] },
+          { id: true, data: [{ path: "$" }, true], mint: true },
         ],
       });
       if (!dropzone_distributors_by_pk) {
@@ -361,6 +364,7 @@ router.get(
       const query = dropzone_distributors_by_pk as {
         id: string;
         data: DropzoneData;
+        mint: string;
       };
 
       const provider = createProvider(new PublicKey(req.params.claimant));
@@ -405,8 +409,47 @@ router.get(
       tx.recentBlockhash = blockhash;
       tx.lastValidBlockHeight = lastValidBlockHeight;
 
+      const [info, meta] = await Promise.all([
+        (async () => {
+          const info = await provider.connection.getAccountInfo(
+            new PublicKey(query.mint)
+          );
+          if (info?.data) {
+            return MintLayout.decode(info.data);
+          }
+        })(),
+        (async () => {
+          const metadata = await metadataAddress(new PublicKey(query.mint));
+          const metadataInfo = await provider.connection.getAccountInfo(
+            metadata
+          );
+          if (metadataInfo?.data) {
+            return Metadata.deserialize(metadataInfo.data);
+          }
+        })(),
+      ]);
+
       res.json({
         msg: encode(tx.serialize({ requireAllSignatures: false })),
+        // TODO: fetch and build mint data in xNFT, use string for amount
+        drop: {
+          mint: {
+            address: query.mint,
+            decimals: info?.decimals,
+            data: meta?.[0]?.data
+              ? Object.entries(meta[0].data).reduce((acc, [k, v]) => {
+                  // eslint-disable-next-line no-control-regex
+                  acc[k] = typeof v === "string" ? v.replace(/\u0000/g, "") : v;
+                  return acc;
+                }, {} as Record<string, any>)
+              : undefined,
+          },
+          amount: amount.toString(10),
+          uiAmount: info?.decimals
+            ? // potentially unsafe if number is too large, see above TODO
+              amount.toNumber() / 10 ** info?.decimals
+            : undefined,
+        },
       });
     } catch (err) {
       next(err);
