@@ -235,6 +235,7 @@ export const MessageLine = (props) => {
         style={{
           marginTop: sameUserMessage ? 0 : 20,
           paddingLeft: sameUserMessage ? 32 : 0,
+          paddingBlock: 8,
         }}
       >
         {sameUserMessage ? (
