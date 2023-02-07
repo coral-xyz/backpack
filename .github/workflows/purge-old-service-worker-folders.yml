@@ -10,9 +10,11 @@ on:
       beforeDate:
         description: "Before Date (YYYY-MM-DD)"
         type: string
+        default: "2023-02-03"
       afterDate:
         description: "After Date (YYYY-MM-DD)"
         type: string
+        default: "2023-01-14"
   schedule:
     - cron: '0 0 * * 0' # Run at midnight on sundays
   push:
