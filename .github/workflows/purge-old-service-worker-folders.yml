@@ -9,11 +9,9 @@ on:
     inputs:
       beforeDate:
         description: "YYYY-MM-DD"
-        default: "{{ format('YYYY-MM-DD', 'now') }}"
         type: string
       afterDate:
         description: "YYYY-MM-DD"
-        default: $(date -d '1 weeks ago' +'%Y-%m-%d')
         type: string
   schedule:
     - cron: '0 0 * * 0' # Run at midnight on sundays
