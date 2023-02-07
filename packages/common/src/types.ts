@@ -190,6 +190,8 @@ type EthereumData = {
 // Sender is the trusted descriptor of the sender of a message into
 // the service worker. This is provided as part of the API from the
 // chrome.runtime APIs.
+//
+// See https://developer.chrome.com/docs/extensions/reference/runtime/#type-MessageSender
 export type Sender = {
   id: string; // This is the extension id, if applicable.
   url: string;
