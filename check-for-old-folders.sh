@@ -22,6 +22,8 @@ commits=$(
    --grep="deploy:" | sed 's/deploy: //g' | cut -c1-8
  )
 
+echo $commits
+
 # Split the commits into an array, iterate through and delete older folders
 IFS=$'\n' read -rd '' -a commits <<< "$commits"
 for short_sha in "${commits[@]}"; do
