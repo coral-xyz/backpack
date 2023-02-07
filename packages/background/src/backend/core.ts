@@ -1611,6 +1611,19 @@ export class Backend {
     if (!nav) {
       throw new Error("nav not found");
     }
+
+    if (tab === TAB_XNFT) {
+      const pk = url.split("/")[1];
+      const resp = await fetch(
+        `https://app-store-api.backpack.workers.dev/api/curation/whitelist/check?address=${pk}`
+      );
+      const { whitelisted } = await resp.json();
+
+      if (!whitelisted) {
+        throw new Error("opening an xnft that is not whitelisted");
+      }
+    }
+
     const targetTab = tab ?? nav.activeTab;
 
     nav.data[targetTab] = nav.data[targetTab] ?? { id: targetTab, urls: [] };
