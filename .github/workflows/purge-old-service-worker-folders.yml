@@ -30,5 +30,6 @@ jobs:
       - run: git config --global user.email "github-actions[bot]@users.noreply.github.com" && git config --global user.name "github-actions"
       - uses: actions/checkout@v3
       - run: git log --pretty=format:"%s" --after="$after" --before="$before"
+      - run: git log --pretty=format:"%s" --after="$after" --before="$before" --grep="deploy:" | cut -c8-16
       - run: bash ./check-for-old-folders.sh ${{ inputs.beforeDate }} ${{ inputs.afterDate }}
         shell: bash
