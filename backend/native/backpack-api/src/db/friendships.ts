@@ -568,6 +568,8 @@ export async function setFriendship({
       ],
     });
     await deleteFriendRequest({ from, to });
+    // Delete friend request from other user to this user as well
+    await deleteFriendRequest({ from: to, to: from });
     return;
   }
 
@@ -622,7 +624,7 @@ export async function setFriendship({
         },
       ],
     });
-    console.log("above main mutation");
+
     // @ts-ignore
     await chain("mutation")({
       insert_auth_friendships_one: [
@@ -642,8 +644,8 @@ export async function setFriendship({
         { id: true },
       ],
     });
+    return true;
   } else {
-    console.log("elseee");
     await chain("mutation")({
       insert_auth_friend_requests_one: [
         {

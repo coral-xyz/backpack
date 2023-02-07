@@ -2261,6 +2261,7 @@ export type ValueTypes = {
     title?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
     uuid?: boolean | `@${string}`;
+    viewed?: boolean | `@${string}`;
     xnft_id?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
@@ -2352,6 +2353,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    viewed?:
+      | ValueTypes["Boolean_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     xnft_id?:
       | ValueTypes["String_comparison_exp"]
       | undefined
@@ -2377,6 +2383,7 @@ export type ValueTypes = {
     title?: string | undefined | null | Variable<any, string>;
     username?: string | undefined | null | Variable<any, string>;
     uuid?: string | undefined | null | Variable<any, string>;
+    viewed?: boolean | undefined | null | Variable<any, string>;
     xnft_id?: string | undefined | null | Variable<any, string>;
   };
   /** aggregate max on columns */
@@ -2442,6 +2449,7 @@ export type ValueTypes = {
       | null
       | Variable<any, string>;
     uuid?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    viewed?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     xnft_id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
   };
   /** primary key columns input for table: auth.notifications */
@@ -2458,6 +2466,7 @@ export type ValueTypes = {
     title?: string | undefined | null | Variable<any, string>;
     username?: string | undefined | null | Variable<any, string>;
     uuid?: string | undefined | null | Variable<any, string>;
+    viewed?: boolean | undefined | null | Variable<any, string>;
     xnft_id?: string | undefined | null | Variable<any, string>;
   };
   /** aggregate stddev on columns */
@@ -2501,6 +2510,7 @@ export type ValueTypes = {
     title?: string | undefined | null | Variable<any, string>;
     username?: string | undefined | null | Variable<any, string>;
     uuid?: string | undefined | null | Variable<any, string>;
+    viewed?: boolean | undefined | null | Variable<any, string>;
     xnft_id?: string | undefined | null | Variable<any, string>;
   };
   /** aggregate sum on columns */
@@ -8762,6 +8772,7 @@ export type ResolverInputTypes = {
     title?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
     uuid?: boolean | `@${string}`;
+    viewed?: boolean | `@${string}`;
     xnft_id?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
@@ -8821,6 +8832,7 @@ export type ResolverInputTypes = {
     title?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     username?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     uuid?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
+    viewed?: ResolverInputTypes["Boolean_comparison_exp"] | undefined | null;
     xnft_id?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
   };
   /** unique or primary key constraints on table "auth.notifications" */
@@ -8838,6 +8850,7 @@ export type ResolverInputTypes = {
     title?: string | undefined | null;
     username?: string | undefined | null;
     uuid?: string | undefined | null;
+    viewed?: boolean | undefined | null;
     xnft_id?: string | undefined | null;
   };
   /** aggregate max on columns */
@@ -8892,6 +8905,7 @@ export type ResolverInputTypes = {
     title?: ResolverInputTypes["order_by"] | undefined | null;
     username?: ResolverInputTypes["order_by"] | undefined | null;
     uuid?: ResolverInputTypes["order_by"] | undefined | null;
+    viewed?: ResolverInputTypes["order_by"] | undefined | null;
     xnft_id?: ResolverInputTypes["order_by"] | undefined | null;
   };
   /** primary key columns input for table: auth.notifications */
@@ -8908,6 +8922,7 @@ export type ResolverInputTypes = {
     title?: string | undefined | null;
     username?: string | undefined | null;
     uuid?: string | undefined | null;
+    viewed?: boolean | undefined | null;
     xnft_id?: string | undefined | null;
   };
   /** aggregate stddev on columns */
@@ -8941,6 +8956,7 @@ export type ResolverInputTypes = {
     title?: string | undefined | null;
     username?: string | undefined | null;
     uuid?: string | undefined | null;
+    viewed?: boolean | undefined | null;
     xnft_id?: string | undefined | null;
   };
   /** aggregate sum on columns */
@@ -13571,6 +13587,7 @@ export type ModelTypes = {
     title: string;
     username: string;
     uuid: string;
+    viewed?: boolean | undefined;
     xnft_id: string;
   };
   /** aggregated selection of "auth.notifications" */
@@ -13610,6 +13627,7 @@ export type ModelTypes = {
     title?: ModelTypes["String_comparison_exp"] | undefined;
     username?: ModelTypes["String_comparison_exp"] | undefined;
     uuid?: ModelTypes["String_comparison_exp"] | undefined;
+    viewed?: ModelTypes["Boolean_comparison_exp"] | undefined;
     xnft_id?: ModelTypes["String_comparison_exp"] | undefined;
   };
   ["auth_notifications_constraint"]: auth_notifications_constraint;
@@ -13626,6 +13644,7 @@ export type ModelTypes = {
     title?: string | undefined;
     username?: string | undefined;
     uuid?: string | undefined;
+    viewed?: boolean | undefined;
     xnft_id?: string | undefined;
   };
   /** aggregate max on columns */
@@ -13672,6 +13691,7 @@ export type ModelTypes = {
     title?: ModelTypes["order_by"] | undefined;
     username?: ModelTypes["order_by"] | undefined;
     uuid?: ModelTypes["order_by"] | undefined;
+    viewed?: ModelTypes["order_by"] | undefined;
     xnft_id?: ModelTypes["order_by"] | undefined;
   };
   /** primary key columns input for table: auth.notifications */
@@ -13687,6 +13707,7 @@ export type ModelTypes = {
     title?: string | undefined;
     username?: string | undefined;
     uuid?: string | undefined;
+    viewed?: boolean | undefined;
     xnft_id?: string | undefined;
   };
   /** aggregate stddev on columns */
@@ -13717,6 +13738,7 @@ export type ModelTypes = {
     title?: string | undefined;
     username?: string | undefined;
     uuid?: string | undefined;
+    viewed?: boolean | undefined;
     xnft_id?: string | undefined;
   };
   /** aggregate sum on columns */
@@ -16049,6 +16071,7 @@ export type GraphQLTypes = {
     title: string;
     username: string;
     uuid: string;
+    viewed?: boolean | undefined;
     xnft_id: string;
   };
   /** aggregated selection of "auth.notifications" */
@@ -16093,6 +16116,7 @@ export type GraphQLTypes = {
     title?: GraphQLTypes["String_comparison_exp"] | undefined;
     username?: GraphQLTypes["String_comparison_exp"] | undefined;
     uuid?: GraphQLTypes["String_comparison_exp"] | undefined;
+    viewed?: GraphQLTypes["Boolean_comparison_exp"] | undefined;
     xnft_id?: GraphQLTypes["String_comparison_exp"] | undefined;
   };
   /** unique or primary key constraints on table "auth.notifications" */
@@ -16110,6 +16134,7 @@ export type GraphQLTypes = {
     title?: string | undefined;
     username?: string | undefined;
     uuid?: string | undefined;
+    viewed?: boolean | undefined;
     xnft_id?: string | undefined;
   };
   /** aggregate max on columns */
@@ -16159,6 +16184,7 @@ export type GraphQLTypes = {
     title?: GraphQLTypes["order_by"] | undefined;
     username?: GraphQLTypes["order_by"] | undefined;
     uuid?: GraphQLTypes["order_by"] | undefined;
+    viewed?: GraphQLTypes["order_by"] | undefined;
     xnft_id?: GraphQLTypes["order_by"] | undefined;
   };
   /** primary key columns input for table: auth.notifications */
@@ -16175,6 +16201,7 @@ export type GraphQLTypes = {
     title?: string | undefined;
     username?: string | undefined;
     uuid?: string | undefined;
+    viewed?: boolean | undefined;
     xnft_id?: string | undefined;
   };
   /** aggregate stddev on columns */
@@ -16208,6 +16235,7 @@ export type GraphQLTypes = {
     title?: string | undefined;
     username?: string | undefined;
     uuid?: string | undefined;
+    viewed?: boolean | undefined;
     xnft_id?: string | undefined;
   };
   /** aggregate sum on columns */
@@ -18028,6 +18056,7 @@ export const enum auth_notifications_select_column {
   title = "title",
   username = "username",
   uuid = "uuid",
+  viewed = "viewed",
   xnft_id = "xnft_id",
 }
 /** update columns of table "auth.notifications" */
@@ -18038,6 +18067,7 @@ export const enum auth_notifications_update_column {
   title = "title",
   username = "username",
   uuid = "uuid",
+  viewed = "viewed",
   xnft_id = "xnft_id",
 }
 /** unique or primary key constraints on table "auth.public_keys" */

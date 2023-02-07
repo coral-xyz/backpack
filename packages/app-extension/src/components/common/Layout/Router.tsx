@@ -189,12 +189,13 @@ function MessageNativeInner() {
   const { isXs } = useBreakpoints();
 
   if (hash.startsWith("/messages/requests")) {
-    return <NavScreen component={<RequestsScreen />} />;
+    return <NavScreen noMotion={true} component={<RequestsScreen />} />;
   }
 
   if (hash.startsWith("/messages/chat")) {
     return (
       <NavScreen
+        noMotion={true}
         component={
           <ChatScreen
             isDarkMode={isDarkMode}
@@ -209,19 +210,27 @@ function MessageNativeInner() {
 
   if (hash.startsWith("/messages/groupchat")) {
     return (
-      <NavScreen component={<NftChat collectionId={props.id} {...props} />} />
+      <NavScreen
+        noMotion={true}
+        component={<NftChat collectionId={props.id} {...props} />}
+      />
     );
   }
 
   if (hash.startsWith("/messages/profile")) {
-    return <NavScreen component={<ProfileScreen userId={props.userId} />} />;
+    return (
+      <NavScreen
+        noMotion={true}
+        component={<ProfileScreen userId={props.userId} />}
+      />
+    );
   }
 
   if (!isXs) {
     return <></>;
   }
 
-  return <NavScreen component={<Inbox />} />;
+  return <NavScreen noMotion={true} component={<Inbox />} />;
 }
 
 function FullChatPage() {
@@ -359,6 +368,7 @@ function TokenPage() {
 function NavScreen({
   component,
   noScrollbars,
+  noMotion,
 }: {
   noScrollbars?: boolean;
   component: React.ReactNode;
@@ -367,6 +377,7 @@ function NavScreen({
     remoteUuid?: string;
     room?: string;
   };
+  noMotion?: boolean;
 }) {
   const { title, isRoot, pop } = useNavigation();
 
@@ -386,34 +397,78 @@ function NavScreen({
     <NavBackButton onClick={() => pop()} />
   );
 
+  if (noMotion) {
+    return (
+      <NavScreenInner
+        title={title}
+        image={image}
+        onClick={onClick}
+        notchViewComponent={notchViewComponent}
+        navButtonLeft={_navButtonLeft}
+        navButtonRight={navButtonRight}
+        navbarStyle={style}
+        noScrollbars={noScrollbars}
+        isVerified={isVerified}
+        component={component}
+      />
+    );
+  }
   return (
     <WithMotionWrapper>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          position: "absolute",
-          left: 0,
-          right: 0,
-          top: 0,
-          bottom: 0,
-        }}
-      >
-        <WithNav
-          title={title}
-          image={image}
-          onClick={onClick}
-          notchViewComponent={notchViewComponent}
-          navButtonLeft={_navButtonLeft}
-          navButtonRight={navButtonRight}
-          navbarStyle={style}
-          noScrollbars={noScrollbars}
-          isVerified={isVerified}
-        >
-          {component}
-        </WithNav>
-      </div>
+      <NavScreenInner
+        title={title}
+        image={image}
+        onClick={onClick}
+        notchViewComponent={notchViewComponent}
+        navButtonLeft={_navButtonLeft}
+        navButtonRight={navButtonRight}
+        navbarStyle={style}
+        noScrollbars={noScrollbars}
+        isVerified={isVerified}
+        component={component}
+      />
     </WithMotionWrapper>
+  );
+}
+
+function NavScreenInner({
+  title,
+  image,
+  onClick,
+  notchViewComponent,
+  navButtonLeft,
+  navButtonRight,
+  navbarStyle,
+  noScrollbars,
+  isVerified,
+  component,
+}: any) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        position: "absolute",
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+      }}
+    >
+      <WithNav
+        title={title}
+        image={image}
+        onClick={onClick}
+        notchViewComponent={notchViewComponent}
+        navButtonLeft={navButtonLeft}
+        navButtonRight={navButtonRight}
+        navbarStyle={navbarStyle}
+        noScrollbars={noScrollbars}
+        isVerified={isVerified}
+      >
+        {component}
+      </WithNav>
+    </div>
   );
 }
 
@@ -444,6 +499,10 @@ function useNavBar() {
   let navStyle = {
     fontSize: "18px",
   } as React.CSSProperties;
+
+  if (pathname === "/messages/chat" || pathname === "/messages/groupchat") {
+    navStyle.background = theme.custom.colors.chatFadeGradientStart;
+  }
 
   if (isRoot) {
     navButtonRight = isXs ? <SettingsButton /> : undefined;

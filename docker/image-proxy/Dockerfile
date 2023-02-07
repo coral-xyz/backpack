@@ -1,4 +1,4 @@
-FROM darthsim/imgproxy:latest
+FROM darthsim/imgproxy:latest@sha256:fa901ef16bd2a1311ca0f08245db9c48052ec0bd66e3cd0ed1e1b7a24b5c866a
 ENV IMGPROXY_DOWNLOAD_TIMEOUT=20
 ENV IMGPROXY_MAX_ANIMATION_FRAMES=100
 CMD ["imgproxy"]

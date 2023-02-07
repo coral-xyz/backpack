@@ -14,7 +14,7 @@ import { ListItemIcon, Typography } from "@mui/material";
 import { useRecoilValue } from "recoil";
 
 import { TextField } from "../../../common";
-import { useNavStack } from "../../../common/Layout/NavStack";
+import { useNavigation } from "../../../common/Layout/NavStack";
 import {
   BalancesTable,
   BalancesTableContent,
@@ -119,7 +119,7 @@ export function Ramp({
 }) {
   const wallets = useAllWalletsDisplayed();
   const [searchFilter, setSearchFilter] = useState("");
-  const { push } = useNavStack();
+  const { push } = useNavigation();
   const classes = useStyles();
 
   // If prop one is undefined, both must be undefined.

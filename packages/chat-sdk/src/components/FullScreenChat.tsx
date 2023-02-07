@@ -195,7 +195,7 @@ export const FullScreenChat = ({
         style={{
           position: "absolute",
           bottom: 70,
-          width: "100%",
+          right: 0,
           transition: "opacity 0.1s",
           opacity: jumpToBottom ? 1 : 0,
         }}

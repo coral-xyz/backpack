@@ -31,7 +31,7 @@ import { useRecoilValue } from "recoil";
 import { updateRemotePreference } from "../../../../api/preferences";
 import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
-import { useNavStack } from "../../../common/Layout/NavStack";
+import { useNavigation as useNavigationEphemeral } from "../../../common/Layout/NavStack";
 import { SettingsList } from "../../../common/Settings/List";
 import { Error } from "../../Balances/TokensWidget/Send";
 import { SwitchToggle } from "../Preferences";
@@ -44,7 +44,7 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
     xnftPreferenceAtom(xnft.install.account.xnft.toString())
   );
 
-  const nav = useNavStack();
+  const nav = useNavigationEphemeral();
   const background = useBackgroundClient();
   const { username } = useUser();
 
@@ -54,7 +54,9 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
     xnft.install.publicKey === "11111111111111111111111111111111";
 
   useEffect(() => {
-    nav.setTitle(xnft.title);
+    nav.setOptions({
+      headerTitle: xnft.title,
+    });
   }, []);
 
   const menuItems = {
