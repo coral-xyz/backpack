@@ -34,10 +34,11 @@ module.exports = (program) => {
 
       await Promise.all(
         filePaths.map(async (file) => {
-          if (file === xnftPath) {
-            file = file.replace(manifestFilename, "xnft.json");
-          }
-          zip.file(path.relative(basePath, file), await readFile(file));
+          const dest =
+            file !== xnftPath
+              ? file
+              : file.replace(manifestFilename, "xnft.json");
+          zip.file(path.relative(basePath, dest), await readFile(file));
         })
       );
 
