@@ -1612,7 +1612,16 @@ export class Backend {
       throw new Error("nav not found");
     }
 
-    if (tab === TAB_XNFT) {
+    const targetTab = tab ?? nav.activeTab;
+
+    // AUDIT NOTE:
+    // This is a temporary measure for the duration of the private beta in order to control
+    // the xNFTs that can be opened from within Backpack AND externally using the injected provider's
+    // `openXnft` function.
+    //
+    // The whitelist is controlled internally and exposed through the xNFT library's worker API to check
+    // the address of the xNFT attempting to be opened by the user.
+    if (targetTab === TAB_XNFT) {
       const pk = url.split("/")[1];
       const resp = await fetch(
         `https://app-store-api.backpack.workers.dev/api/curation/whitelist/check?address=${pk}`
@@ -1623,8 +1632,6 @@ export class Backend {
         throw new Error("opening an xnft that is not whitelisted");
       }
     }
-
-    const targetTab = tab ?? nav.activeTab;
 
     nav.data[targetTab] = nav.data[targetTab] ?? { id: targetTab, urls: [] };
 
