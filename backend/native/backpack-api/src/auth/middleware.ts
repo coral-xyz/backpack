@@ -130,13 +130,7 @@ export const optionallyExtractUserId = (allowQueryString: boolean) => {
 
     if (jwt) {
       try {
-        const payloadRes = await validateJwt(jwt);
-        if (payloadRes.payload.sub) {
-          // Extend cookie or set it if not set
-          setJWTCookie(req, res, payloadRes.payload.sub);
-          // Set id on request
-          req.id = payloadRes.payload.sub;
-        }
+        await validateJwt(jwt);
       } catch {
         clearCookie(res, "jwt");
       }
