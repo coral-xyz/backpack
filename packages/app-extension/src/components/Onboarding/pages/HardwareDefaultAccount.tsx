@@ -1,14 +1,23 @@
-// This component gets the first wallet from a hardware wallet using the
-// default derivation path.
+// Find an unused account index and return the root derivation path
+// This is the same logic that is contained in the backend function
+// findWalletDescriptor done via a frontend component because the background
+// script can't communicate with a hardware device.
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { WalletDescriptor } from "@coral-xyz/common";
-import { Blockchain, getIndexedPath } from "@coral-xyz/common";
+import {
+  Blockchain,
+  getAccountRecoveryPaths,
+  UI_RPC_METHOD_FIND_SERVER_PUBLIC_KEY_CONFLICTS,
+} from "@coral-xyz/common";
 import { Loading } from "@coral-xyz/react-common";
+import { useBackgroundClient } from "@coral-xyz/recoil";
 import Ethereum from "@ledgerhq/hw-app-eth";
 import Solana from "@ledgerhq/hw-app-solana";
 import type Transport from "@ledgerhq/hw-transport";
 import { ethers } from "ethers";
+
+const { base58 } = ethers.utils;
 
 export const HardwareDefaultAccount = ({
   blockchain,
@@ -21,21 +30,43 @@ export const HardwareDefaultAccount = ({
   onNext: (walletDescriptor: WalletDescriptor) => void;
   onError?: (error: Error) => void;
 }) => {
+  const background = useBackgroundClient();
+  const [ledgerWallet, setLedgerWallet] = useState<Ethereum | Solana | null>(
+    null
+  );
+  const [accountIndex, setAccountIndex] = useState(0);
+
   useEffect(() => {
     (async () => {
-      const ledger = {
+      const ledgerWallet = {
         [Blockchain.SOLANA]: new Solana(transport),
         [Blockchain.ETHEREUM]: new Ethereum(transport),
       }[blockchain];
+      setLedgerWallet(ledgerWallet);
+    })();
+  }, [blockchain]);
 
-      // The default path for newly created wallets
-      const derivationPath = getIndexedPath(blockchain).toString();
-      // Get the public key for the default path from the hardware wallet
-      let ledgerAddress;
+  useEffect(() => {
+    (async () => {
+      if (ledgerWallet === null) return;
+
+      const recoveryPaths = getAccountRecoveryPaths(blockchain, accountIndex);
+
+      let publicKeys: Array<string>;
       try {
-        ledgerAddress = (
-          await ledger.getAddress(derivationPath.replace("m/", ""))
-        ).address;
+        // Get the public keys for all of the recovery paths for the current account index
+        publicKeys = await Promise.all(
+          recoveryPaths.map(async (path) => {
+            const ledgerAddress = (
+              await ledgerWallet.getAddress(path.replace("m/", ""))
+            ).address;
+            if (blockchain === Blockchain.SOLANA) {
+              return base58.encode(ledgerAddress as Buffer);
+            } else {
+              return ledgerAddress.toString();
+            }
+          })
+        );
       } catch (error) {
         if (onError) {
           console.debug("hardware default account transport error", error);
@@ -46,17 +77,31 @@ export const HardwareDefaultAccount = ({
         }
       }
 
-      const publicKey =
-        blockchain === Blockchain.SOLANA
-          ? ethers.utils.base58.encode(ledgerAddress as Buffer)
-          : ledgerAddress.toString();
-
-      onNext({
-        derivationPath,
-        publicKey,
+      const users = await background.request({
+        method: UI_RPC_METHOD_FIND_SERVER_PUBLIC_KEY_CONFLICTS,
+        params: [
+          publicKeys.map((publicKey) => ({
+            publicKey,
+            blockchain,
+          })),
+        ],
       });
+
+      if (users.length === 0) {
+        // No users for any of the passed public keys, good to go
+        // Take the root for the public key path
+        const publicKey = publicKeys[0];
+        const derivationPath = recoveryPaths[0];
+        onNext({
+          derivationPath,
+          publicKey,
+        });
+      } else {
+        // Iterate account index and query again in the case of a conflict
+        setAccountIndex(accountIndex + 1);
+      }
     })();
-  }, [blockchain]);
+  }, [ledgerWallet, accountIndex]);
 
   return <Loading />;
 };

@@ -12,6 +12,7 @@ import { ResetWelcome } from "../../Locked/Reset/ResetWelcome";
 import { ContactRequests, Contacts } from "../Messages/Contacts";
 import { Requests } from "../Messages/Requests";
 
+import { ImportMenu } from "./AddConnectWallet/ImportMenu";
 import { ImportSecretKey } from "./AddConnectWallet/ImportSecretKey";
 import { PreferencesAutoLock } from "./Preferences/AutoLock";
 import { PreferencesEthereum } from "./Preferences/Ethereum";
@@ -65,6 +66,10 @@ export function SettingsNavStackDrawer({
           <NavStackScreen
             name={"add-connect-wallet"}
             component={(props: any) => <AddConnectWalletMenu {...props} />}
+          />
+          <NavStackScreen
+            name={"import-wallet"}
+            component={(props: any) => <ImportMenu {...props} />}
           />
           <NavStackScreen
             name={"import-secret-key"}

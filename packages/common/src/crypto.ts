@@ -138,7 +138,7 @@ export const derivationPathsToIndexes = (
   const accountIndex = Math.max(
     ...pathArrays
       // Account index should be the element at index 2, this is not true for
-      //  deprecated sollet paths but they are 0 anyway
+      // deprecated sollet paths but they are 0 anyway
       .map((p: Array<number>) => (p[2] ? p[2] : 0))
       .map((i: number) => (i >= HARDENING ? i - HARDENING : i))
   );

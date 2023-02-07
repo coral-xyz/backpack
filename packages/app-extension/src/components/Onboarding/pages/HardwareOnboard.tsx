@@ -15,6 +15,7 @@ import { ConnectHardwareSearching } from "../../Unlocked/Settings/AddConnectWall
 import { ConnectHardwareWelcome } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareWelcome";
 
 import { HardwareDefaultAccount } from "./HardwareDefaultAccount";
+import { HardwareDeriveWallet } from "./HardwareDeriveWallet";
 import { HardwareSearch } from "./HardwareSearch";
 import { HardwareSign } from "./HardwareSign";
 
@@ -33,7 +34,7 @@ export function useHardwareOnboardSteps({
   prevStep,
 }: {
   blockchain: Blockchain;
-  action: "create" | "search" | "import";
+  action: "create" | "derive" | "search" | "import";
   searchPublicKey?: string;
   signMessage: string | ((publicKey: string) => string);
   signText: string;
@@ -62,14 +63,14 @@ export function useHardwareOnboardSteps({
     />,
     //
     // Use a component to get a wallet to proceed with. The create flow uses a
-    // component that gets a default account, the search flow searches a
-    // hardware wallet for a given public key, and the import flow allows the
-    // user to select a wallet.
+    // component that gets a default wallet on an unused account index, the search
+    // flow searches a hardware wallet for a given public key, and the import flow
+    // allows the user to select a wallet.
     //
     {
-      // The "create" flow uses a component that selects the first found public
-      // key. This step automatically proceeds to the next step and and there is
-      // no user input required.
+      // The "create" flow uses a component that finds an unused account index for
+      // creating a new account. This step automatically proceeds to the next step
+      // and and there is no user input required.
       create: (
         <HardwareDefaultAccount
           blockchain={blockchain}
@@ -84,8 +85,23 @@ export function useHardwareOnboardSteps({
           }}
         />
       ),
+      derive: (
+        // Derive the next wallet that an account should use.
+        <HardwareDeriveWallet
+          blockchain={blockchain}
+          transport={transport!}
+          onNext={(walletDescriptor: WalletDescriptor) => {
+            setWalletDescriptor(walletDescriptor);
+            nextStep();
+          }}
+          onError={() => {
+            setTransportError(true);
+            prevStep();
+          }}
+        />
+      ),
       // The search flow searches the wallet for a given public key to proceed
-      // with
+      // with.
       search: (
         <HardwareSearch
           blockchain={blockchain!}
@@ -103,7 +119,7 @@ export function useHardwareOnboardSteps({
         />
       ),
       // The import flow displays a table and allows the user to select a public
-      // key to proceed with
+      // key to proceed with.
       import: (
         <ImportAccounts
           blockchain={blockchain}

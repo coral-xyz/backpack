@@ -172,23 +172,28 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
     super.deletePublicKey(publicKey);
   }
 
-  public deriveNextKey(): {
-    publicKey: string;
-    derivationPath: string;
-  } {
+  public nextDerivationPath(offset = 1) {
     this.ensureIndices();
-    // Move to the next wallet index for the derivation
-    this.walletIndex! += 1;
     const derivationPath = getIndexedPath(
-      Blockchain.SOLANA,
+      Blockchain.ETHEREUM,
       this.accountIndex,
-      this.walletIndex
+      this.walletIndex! + offset
     );
     if (this.derivationPaths.includes(derivationPath)) {
       // This key is already included for some reason, try again with
       // incremented walletIndex
-      return this.deriveNextKey();
+      return this.nextDerivationPath(offset + 1);
     }
+    return { derivationPath, offset };
+  }
+
+  public deriveNextKey(): {
+    publicKey: string;
+    derivationPath: string;
+  } {
+    const { derivationPath, offset } = this.nextDerivationPath();
+    // Save the offset to the wallet index
+    this.walletIndex! += offset;
     const publicKey = this.addDerivationPath(derivationPath);
     return {
       publicKey,
@@ -232,11 +237,11 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
 
 export class SolanaLedgerKeyringFactory {
   public init(walletDescriptors: Array<WalletDescriptor>): LedgerKeyring {
-    return new SolanaLedgerKeyring(walletDescriptors);
+    return new SolanaLedgerKeyring(walletDescriptors, Blockchain.SOLANA);
   }
 
   public fromJson(obj: LedgerKeyringJson): LedgerKeyring {
-    return new SolanaLedgerKeyring(obj.walletDescriptors);
+    return new SolanaLedgerKeyring(obj.walletDescriptors, Blockchain.SOLANA);
   }
 }
 

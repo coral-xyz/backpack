@@ -11,6 +11,7 @@ import {
   legacyLedgerLiveIndexed,
   legacySolletIndexed,
   LOAD_PUBLIC_KEY_AMOUNT,
+  UI_RPC_METHOD_FIND_SERVER_PUBLIC_KEY_CONFLICTS,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
 } from "@coral-xyz/common";
@@ -31,7 +32,6 @@ import * as anchor from "@project-serum/anchor";
 import { Connection as SolanaConnection, PublicKey } from "@solana/web3.js";
 import { BigNumber, ethers } from "ethers";
 
-import { useConflictQuery } from "../../../hooks/useConflictQuery";
 import {
   Checkbox,
   Header,
@@ -59,7 +59,6 @@ export function ImportAccounts({
   allowMultiple?: boolean;
 }) {
   const background = useBackgroundClient();
-  const checkPublicKeyConflicts = useConflictQuery();
   const theme = useCustomTheme();
 
   // Loaded balances for each public key
@@ -186,13 +185,21 @@ export function ImportAccounts({
     (async () => {
       if (walletDescriptors.length === 0) return;
       try {
-        const response = await checkPublicKeyConflicts(
-          walletDescriptors.map((a) => ({
-            blockchain,
-            publicKey: a.publicKey,
-          }))
+        const response = await background.request({
+          method: UI_RPC_METHOD_FIND_SERVER_PUBLIC_KEY_CONFLICTS,
+          params: [
+            walletDescriptors.map((w) => ({
+              publicKey: w.publicKey,
+              blockchain,
+            })),
+          ],
+        });
+        setConflictingPublicKeys(
+          response.map(
+            (r: { user_id: string; public_key: string; blockchain: string }) =>
+              r.public_key
+          )
         );
-        setConflictingPublicKeys(response.map((r: any) => r.public_key));
       } catch {
         // If the query failed assume all are valid
       }

@@ -36,7 +36,8 @@ import {
   UI_RPC_METHOD_ETHEREUM_SIGN_AND_SEND_TRANSACTION,
   UI_RPC_METHOD_ETHEREUM_SIGN_MESSAGE,
   UI_RPC_METHOD_ETHEREUM_SIGN_TRANSACTION,
-  UI_RPC_METHOD_FIND_SIGNED_WALLET_DESCRIPTOR,
+  UI_RPC_METHOD_FIND_SERVER_PUBLIC_KEY_CONFLICTS,
+  UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
   UI_RPC_METHOD_GET_FEATURE_GATES,
   UI_RPC_METHOD_GET_XNFT_PREFERENCES,
   UI_RPC_METHOD_KEY_IS_COLD_UPDATE,
@@ -50,6 +51,7 @@ import {
   UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
   UI_RPC_METHOD_KEYRING_KEY_DELETE,
+  UI_RPC_METHOD_KEYRING_READ_NEXT_DERIVATION_PATH,
   UI_RPC_METHOD_KEYRING_RESET,
   UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD,
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
@@ -186,6 +188,9 @@ async function handle<T = any>(
       return handleKeyringStoreKeepAlive(ctx);
     case UI_RPC_METHOD_KEYRING_DERIVE_WALLET:
       return await handleKeyringDeriveWallet(ctx, params[0]);
+    case UI_RPC_METHOD_KEYRING_READ_NEXT_DERIVATION_PATH:
+      // @ts-ignore
+      return await handleKeyringReadNextDerivationPath(ctx, ...params);
     case UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY:
       return await handleKeyringImportSecretKey(
         ctx,
@@ -349,9 +354,12 @@ async function handle<T = any>(
     case UI_RPC_METHOD_USER_ACCOUNT_READ:
       // @ts-ignore
       return await handleUserAccountRead(ctx, ...params);
-    case UI_RPC_METHOD_FIND_SIGNED_WALLET_DESCRIPTOR:
+    case UI_RPC_METHOD_FIND_SERVER_PUBLIC_KEY_CONFLICTS:
       // @ts-ignore
-      return await handleFindSignedWalletDescriptor(ctx, ...params);
+      return await handleFindServerPublicKeyConflicts(ctx, ...params);
+    case UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR:
+      // @ts-ignore
+      return await handleFindWalletDescriptor(ctx, ...params);
     //
     // Password.
     //
@@ -515,6 +523,14 @@ async function handleKeyringStoreReadAllPubkeys(
   return [resp];
 }
 
+async function handleKeyringReadNextDerivationPath(
+  ctx: Context<Backend>,
+  ...args: Parameters<Backend["keyringReadNextDerivationPath"]>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.keyringReadNextDerivationPath(...args);
+  return [resp];
+}
+
 async function handleKeyringDeriveWallet(
   ctx: Context<Backend>,
   blockchain: Blockchain
@@ -636,11 +652,19 @@ async function handleUserAccountRead(
   return [resp];
 }
 
-async function handleFindSignedWalletDescriptor(
+async function handleFindServerPublicKeyConflicts(
   ctx: Context<Backend>,
-  ...args: Parameters<Backend["findSignedWalletDescriptor"]>
+  ...args: Parameters<Backend["findServerPublicKeyConflicts"]>
 ): Promise<RpcResponse<string>> {
-  const resp = await ctx.backend.findSignedWalletDescriptor(...args);
+  const resp = await ctx.backend.findServerPublicKeyConflicts(...args);
+  return [resp];
+}
+
+async function handleFindWalletDescriptor(
+  ctx: Context<Backend>,
+  ...args: Parameters<Backend["findWalletDescriptor"]>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.findWalletDescriptor(...args);
   return [resp];
 }
 

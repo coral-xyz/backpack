@@ -106,8 +106,10 @@ export const UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD =
   "ui-rpc-method-blockchain-keyrings-add";
 export const UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ =
   "ui-rpc-method-blockchain-keyrings-read";
-export const UI_RPC_METHOD_FIND_SIGNED_WALLET_DESCRIPTOR =
-  "ui-rpc-method-find-signed-public-key-path";
+export const UI_RPC_METHOD_FIND_SERVER_PUBLIC_KEY_CONFLICTS =
+  "ui-rpc-method-find-server-public-key-conflicts";
+export const UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR =
+  "ui-rpc-method-find-wallet-descriptor";
 export const UI_RPC_METHOD_KEY_IS_COLD_UPDATE =
   "ui-rpc-method-key-is-cold-update";
 export const UI_RPC_METHOD_KEYNAME_READ = "ui-rpc-method-keyname-read";
@@ -118,6 +120,8 @@ export const UI_RPC_METHOD_KEYRING_AUTO_LOCK_SETTINGS_READ =
   "ui-rpc-method-auto-lock-settings-read";
 export const UI_RPC_METHOD_KEYRING_AUTO_LOCK_SETTINGS_UPDATE =
   "ui-rpc-method-auto-lock-settings-update";
+export const UI_RPC_METHOD_KEYRING_READ_NEXT_DERIVATION_PATH =
+  "ui-rpc-method-keyring-read-next-derivation-path";
 export const UI_RPC_METHOD_KEYRING_DERIVE_WALLET =
   "ui-rpc-method-keyring-derive";
 export const UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC =

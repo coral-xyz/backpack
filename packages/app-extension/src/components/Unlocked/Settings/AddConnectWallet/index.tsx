@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import {
+  getAddMessage,
   openAddUserAccount,
   openConnectHardware,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
-  UI_RPC_METHOD_FIND_SIGNED_WALLET_DESCRIPTOR,
+  UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
+  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
 } from "@coral-xyz/common";
 import {
   CheckIcon,
@@ -20,13 +22,13 @@ import {
   useAvatarUrl,
   useBackgroundClient,
   useKeyringType,
-  useTab,
   useUser,
   useWalletName,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { AddCircle, ArrowCircleDown } from "@mui/icons-material";
 import { Box, Grid, Typography } from "@mui/material";
+import { ethers } from "ethers";
 
 import { Header, SubtextParagraph } from "../../../common";
 import { ActionCard } from "../../../common/Layout/ActionCard";
@@ -36,6 +38,8 @@ import {
 } from "../../../common/Layout/Drawer";
 import { useNavigation } from "../../../common/Layout/NavStack";
 import { WalletListItem } from "../YourAccount/EditWallets";
+
+const { base58 } = ethers.utils;
 
 export function AddConnectPreview() {
   const nav = useNavigation();
@@ -210,15 +214,25 @@ export function AddWalletMenu({
     setLockCreateButton(true);
     let newPublicKey;
     if (!keyringExists) {
-      const signedWalletDescriptor = await background.request({
-        method: UI_RPC_METHOD_FIND_SIGNED_WALLET_DESCRIPTOR,
+      const walletDescriptor = await background.request({
+        method: UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
         params: [blockchain, 0],
+      });
+      const signature = await background.request({
+        method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
+        params: [
+          blockchain,
+          walletDescriptor.publicKey,
+          base58.encode(
+            Buffer.from(getAddMessage(walletDescriptor.publicKey), "utf-8")
+          ),
+        ],
       });
       await background.request({
         method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
-        params: [blockchain, signedWalletDescriptor],
+        params: [blockchain, { ...walletDescriptor, signature }],
       });
-      newPublicKey = signedWalletDescriptor.publicKey;
+      newPublicKey = walletDescriptor.publicKey;
       // Keyring now exists, toggle to other options
       setKeyringExists(true);
     } else {
@@ -259,23 +273,8 @@ export function AddWalletMenu({
                       }}
                     />
                   }
-                  text="Create a new wallet"
+                  text="Create a new wallet using seed phrase"
                   onClick={createNew}
-                />
-              </Grid>
-            )}
-            {keyringExists && (
-              <Grid item xs={6}>
-                <ActionCard
-                  icon={
-                    <ArrowCircleDown
-                      style={{
-                        color: theme.custom.colors.icon,
-                      }}
-                    />
-                  }
-                  text="Import a private key"
-                  onClick={() => nav.push("import-secret-key", { blockchain })}
                 />
               </Grid>
             )}
@@ -291,11 +290,26 @@ export function AddWalletMenu({
                       }}
                     />
                   }
-                  text="Import from hardware wallet"
+                  text="Create a new wallet using hardware"
                   onClick={() => {
-                    openConnectHardware(blockchain, !keyringExists);
+                    openConnectHardware(blockchain, "create");
                     window.close();
                   }}
+                />
+              </Grid>
+            )}
+            {keyringExists && (
+              <Grid item xs={6}>
+                <ActionCard
+                  icon={
+                    <ArrowCircleDown
+                      style={{
+                        color: theme.custom.colors.icon,
+                      }}
+                    />
+                  }
+                  text="Advanced import"
+                  onClick={() => nav.push("import-wallet", { blockchain })}
                 />
               </Grid>
             )}
@@ -391,7 +405,7 @@ export function RecoverWalletMenu({
                 }
                 text="Recover using hardware wallet"
                 onClick={() => {
-                  openConnectHardware(blockchain, !keyringExists, publicKey);
+                  openConnectHardware(blockchain, "search", publicKey);
                   window.close();
                 }}
               />
@@ -430,8 +444,6 @@ export const ConfirmCreateWallet: React.FC<{
 }> = ({ blockchain, publicKey, onClose, isLoading = false }) => {
   const theme = useCustomTheme();
   const walletName = useWalletName(publicKey);
-  const background = useBackgroundClient();
-  const tab = useTab();
 
   return (
     <div

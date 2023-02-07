@@ -36,6 +36,7 @@ import {
   AddConnectPreview,
   AddConnectWalletMenu,
 } from "../Unlocked/Settings/AddConnectWallet";
+import { ImportMenu } from "../Unlocked/Settings/AddConnectWallet/ImportMenu";
 import { ImportSecretKey } from "../Unlocked/Settings/AddConnectWallet/ImportSecretKey";
 import { RemoveWallet } from "../Unlocked/Settings/YourAccount/EditWallets/RemoveWallet";
 import { RenameWallet } from "../Unlocked/Settings/YourAccount/EditWallets/RenameWallet";
@@ -236,6 +237,10 @@ function WalletNavStack({
       <NavStackScreen
         name={"edit-wallets-blockchain-selector"}
         component={(props: any) => <WalletListBlockchainSelector {...props} />}
+      />
+      <NavStackScreen
+        name={"import-wallet"}
+        component={(props: any) => <ImportMenu {...props} />}
       />
       <NavStackScreen
         name={"import-secret-key"}

@@ -158,23 +158,39 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
     this.walletIndex = walletIndex;
   }
 
-  deriveNextKey(): {
-    publicKey: string;
-    derivationPath: string;
-  } {
+  public deletePublicKey(publicKey: string) {
+    const index = this.wallets.findIndex((w) => w.address === publicKey);
+    if (index < 0) {
+      return;
+    }
+    this.derivationPaths = this.derivationPaths
+      .slice(0, index)
+      .concat(this.derivationPaths.slice(index + 1));
+    super.deletePublicKey(publicKey);
+  }
+
+  public nextDerivationPath(offset = 1) {
     this.ensureIndices();
-    // Move to the next wallet index for the derivation
-    this.walletIndex! += 1;
     const derivationPath = getIndexedPath(
       Blockchain.ETHEREUM,
       this.accountIndex,
-      this.walletIndex
+      this.walletIndex! + offset
     );
     if (this.derivationPaths.includes(derivationPath)) {
       // This key is already included for some reason, try again with
       // incremented walletIndex
-      return this.deriveNextKey();
+      return this.nextDerivationPath(offset + 1);
     }
+    return { derivationPath, offset };
+  }
+
+  deriveNextKey(): {
+    publicKey: string;
+    derivationPath: string;
+  } {
+    const { derivationPath, offset } = this.nextDerivationPath();
+    // Save the offset to the wallet index
+    this.walletIndex! += offset;
     const publicKey = this.addDerivationPath(derivationPath);
     return {
       publicKey,
@@ -218,11 +234,14 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
 
 export class EthereumLedgerKeyringFactory {
   public init(walletDescriptors: Array<WalletDescriptor>): LedgerKeyring {
-    return new EthereumLedgerKeyring(walletDescriptors);
+    return new EthereumLedgerKeyring(walletDescriptors, Blockchain.ETHEREUM);
   }
 
   public fromJson(obj: LedgerKeyringJson): LedgerKeyring {
-    return new EthereumLedgerKeyring(obj.walletDescriptors);
+    return new EthereumLedgerKeyring(
+      obj.walletDescriptors,
+      Blockchain.ETHEREUM
+    );
   }
 }
 

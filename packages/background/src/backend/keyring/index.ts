@@ -443,6 +443,18 @@ export class KeyringStore {
     });
   }
 
+  public async nextDerivationPath(
+    blockchain: Blockchain,
+    keyring: "hd" | "ledger"
+  ): Promise<string> {
+    return await this.withUnlock(async () => {
+      return await this.activeUserKeyring.nextDerivationPath(
+        blockchain,
+        keyring
+      );
+    });
+  }
+
   // Derive the next key for the given blockchain.
   public async deriveNextKey(
     blockchain: Blockchain
@@ -777,6 +789,18 @@ class UserKeyring {
     await keyring.activeWalletUpdate(newActivePublicKey);
 
     this.activeBlockchain = blockchain;
+  }
+
+  public nextDerivationPath(
+    blockchain: Blockchain,
+    keyring: "hd" | "ledger"
+  ): string {
+    let blockchainKeyring = this.blockchains.get(blockchain);
+    if (!blockchainKeyring) {
+      throw new Error("blockchain keyring not initialised");
+    } else {
+      return blockchainKeyring.nextDerivationPath(keyring);
+    }
   }
 
   /**
