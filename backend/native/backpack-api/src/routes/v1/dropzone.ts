@@ -14,7 +14,12 @@ import cors from "cors";
 import type { NextFunction, Request, Response } from "express";
 import express from "express";
 
-import { DROPZONE_XNFT_SECRET, HASURA_URL, JWT } from "../../config";
+import {
+  DROPZONE_PERMITTED_AUTHORITIES,
+  DROPZONE_XNFT_SECRET,
+  HASURA_URL,
+  JWT,
+} from "../../config";
 
 const router = express.Router();
 router.use(cors({ origin: "*" }));
@@ -27,6 +32,13 @@ type DropzoneData = Record<PublicKeyString, [number, number, string]>;
  */
 router.post("/drops", async (req, res, next) => {
   try {
+    if (
+      DROPZONE_PERMITTED_AUTHORITIES.length > 0 &&
+      !DROPZONE_PERMITTED_AUTHORITIES.includes(req.body.creator)
+    ) {
+      throw new Error("Unauthorized");
+    }
+
     const usernames = Object.keys(req.body.balances);
 
     const { auth_users } = await chain("query")({
