@@ -63,13 +63,11 @@ export function usernameDisplay(username: string, maxLength = 10) {
   return username.slice(0, maxLength - 2) + "..";
 }
 
-export const walletNameDisplay = (walletName: string, numDigits = 6) => {
-  if (walletName.length > 15) {
-    return `${walletName.slice(0, numDigits)}...${walletName.slice(
-      walletName.length - numDigits
-    )}`;
+export const walletNameDisplay = (walletName: string, maxLength = 10) => {
+  if (walletName.length <= maxLength) {
+    return walletName;
   }
-  return walletName;
+  return walletName.slice(0, maxLength - 2) + "..";
 };
 
 /**
