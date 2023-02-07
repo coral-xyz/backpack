@@ -37,3 +37,7 @@ export const NOTIFICATIONS_QUEUE = "NOTIFICATIONS";
 export const HELIUS_API_KEY = process.env.HELIUS_API_KEY || "";
 
 export const DROPZONE_XNFT_SECRET = process.env.DROPZONE_XNFT_SECRET || "";
+export const DROPZONE_PERMITTED_AUTHORITIES =
+  process.env.NODE_ENV === "production"
+    ? ["DoCHcPut2WAuVEpqukF6CKh5NSnF4muJaif8zh4qfubu"]
+    : [];
