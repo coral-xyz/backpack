@@ -11,7 +11,9 @@ else
 fi
 
 before=${1:-$one_week_ago}
-after=${1:-$two_weeks_ago}
+after=${2:-$two_weeks_ago}
+
+echo "checking for old scripts before:$before after:$after"
 
 # Iterate through all the commits and find the ones that have the deploy: message
 # The commits on this branch are different than master, which is why we're doing this!
