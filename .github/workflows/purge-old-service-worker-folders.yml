@@ -9,7 +9,7 @@ on:
     inputs:
       beforeDate:
         description: "YYYY-MM-DD"
-        default: $(date -d '3 days ago' +'%Y-%m-%d')
+        default: "{{ format('YYYY-MM-DD', 'now') }}"
         type: string
       afterDate:
         description: "YYYY-MM-DD"
