@@ -8,10 +8,10 @@ on:
   workflow_dispatch:
     inputs:
       beforeDate:
-        description: "YYYY-MM-DD"
+        description: "Before Date (YYYY-MM-DD)"
         type: string
       afterDate:
-        description: "YYYY-MM-DD"
+        description: "After Date (YYYY-MM-DD)"
         type: string
   schedule:
     - cron: '0 0 * * 0' # Run at midnight on sundays
