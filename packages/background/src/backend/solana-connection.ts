@@ -101,6 +101,7 @@ export const RECENT_BLOCKHASH_REFRESH_INTERVAL = 10 * 1000;
 
 // TODO: remove for public beta launch
 export const LOAD_XNFT_WHITELIST_INTERVAL = 5 * 60 * 1000;
+const WHITELIST_EXPIRY = LOAD_XNFT_WHITELIST_INTERVAL + 5000;
 
 // Time until cached values expire. This is arbitrary.
 const CACHE_EXPIRY = 15000;
@@ -278,16 +279,23 @@ export class SolanaConnectionBackend {
     );
 
     // TODO: remove for public beta launch
-    this.pollIntervals.push(
-      setInterval(async () => {
+    this.pollIntervals.push(async () => {
+      const whitelist = await this.fetchXnftWhitelist();
+      const key = JSON.stringify({
+        url: this.url,
+        method: "getXnftWhitelist",
+      });
+      this.cache.set(key, { ts: Date.now(), value: whitelist });
+
+      return setInterval(async () => {
         const whitelist = await this.fetchXnftWhitelist();
         const key = JSON.stringify({
           url: this.url,
           method: "getXnftWhitelist",
         });
         this.cache.set(key, { ts: Date.now(), value: whitelist });
-      }, LOAD_XNFT_WHITELIST_INTERVAL)
-    );
+      }, LOAD_XNFT_WHITELIST_INTERVAL);
+    });
   }
 
   private intoCustomSplTokenAccountsKey(
@@ -417,7 +425,7 @@ export class SolanaConnectionBackend {
   async getXnftWhitelist(): Promise<string[]> {
     const key = JSON.stringify({ url: this.url, method: "getXnftWhitelist" });
     const value = this.cache.get(key);
-    if (value && value.ts + CACHE_EXPIRY > Date.now()) {
+    if (value && value.ts + WHITELIST_EXPIRY > Date.now()) {
       return value.value as string[];
     }
     const whitelist = await this.fetchXnftWhitelist();
