@@ -3,6 +3,7 @@ import {
   Blockchain,
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
   walletAddressDisplay,
+  walletNameDisplay,
 } from "@coral-xyz/common";
 import { List, ListItem } from "@coral-xyz/react-common";
 import {
@@ -18,7 +19,6 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import InfoIcon from "@mui/icons-material/Info";
 import { Box, Button, Grid, Tooltip, Typography } from "@mui/material";
 
-import { truncateName } from "../../utils/util";
 import {
   EthereumIconOnboarding as EthereumIcon,
   HardwareIcon,
@@ -116,7 +116,7 @@ function WalletButton({
       }}
     >
       <Button disableRipple className={classes.addressButton} onClick={onClick}>
-        {truncateName(wallet.name, 20)}
+        {walletNameDisplay(wallet.name)}
         <ExpandMore
           style={{
             width: "18px",
@@ -883,7 +883,7 @@ export function StackedWalletAddress({
           color: type === "dehydrated" ? theme.custom.colors.negative : "",
         }}
       >
-        {type === "dehydrated" ? "Import error" : truncateName(name, 20)}
+        {type === "dehydrated" ? "Import error" : walletNameDisplay(name)}
       </Typography>
       <div
         style={{

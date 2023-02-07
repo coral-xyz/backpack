@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Blockchain } from "@coral-xyz/common";
+import { Blockchain, walletNameDisplay } from "@coral-xyz/common";
 import { SecondaryButton } from "@coral-xyz/react-common";
 import {
   useAllWalletsDisplayed,
@@ -11,7 +11,6 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import QrCodeIcon from "@mui/icons-material/QrCode";
 import { IconButton, Modal, Typography } from "@mui/material";
 
-import { truncateName } from "../../../../utils/util";
 import { TextField, walletAddressDisplay } from "../../../common";
 import { CloseButton, useDrawerContext } from "../../../common/Layout/Drawer";
 import { WithCopyTooltip } from "../../../common/WithCopyTooltip";
@@ -418,7 +417,7 @@ export function _Deposit({
             color: theme.custom.colors.fontColor,
           }}
         >
-          {truncateName(name, 20)}
+          {walletNameDisplay(name)}
         </Typography>
         <div
           style={{
