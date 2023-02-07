@@ -21,7 +21,15 @@ export class KeystoneKeyringBase {
     this.keys.push(key);
   }
 
+  public setPublicKeys(keys: ImportedDerivationPath[]) {
+    this.keys = [...keys]
+  }
+
   public publicKeys() {
     return this.keys.map(e => e.publicKey);
+  }
+
+  public getAccounts() {
+    return this.keys;
   }
 }

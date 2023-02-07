@@ -2,13 +2,13 @@ import type { Blockchain, SignedWalletDescriptor } from "@coral-xyz/common";
 import {
   getAddMessage,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
-UI_RPC_METHOD_KEYSTONE_IMPORT ,
+  UI_RPC_METHOD_KEYSTONE_IMPORT ,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
   UI_RPC_METHOD_LEDGER_IMPORT,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 
-import type { HardwareBlockchainKeyringInit} from "../../../../Onboarding/pages/HardwareOnboard";
+import type { HardwareBlockchainKeyringInit } from "../../../../Onboarding/pages/HardwareOnboard";
 import { HardwareOnboard,HardwareType } from "../../../../Onboarding/pages/HardwareOnboard";
 
 import { ConnectHardwareSuccess } from "./ConnectHardwareSuccess";

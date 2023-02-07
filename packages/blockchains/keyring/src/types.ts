@@ -87,7 +87,7 @@ export interface KeystoneKeyring extends Keyring {
 //
 
 export interface KeystoneKeyringFactory {
-  fromAccounts(accounts: Array<ImportedDerivationPath>): KeystoneKeyring;
+  fromAccounts(accounts: Array<ImportedDerivationPath>, xfp: string): KeystoneKeyring;
   fromUR(ur: UR): Promise<KeystoneKeyring>;
   fromJson(obj: KeystoneKeyringJson): KeystoneKeyring;
 }
@@ -98,6 +98,8 @@ export interface KeystoneKeyring extends KeystoneKeyringBase {
   keystoneImport(ur: UR, pubKey?: string): Promise<void>;
   toJson(): KeystoneKeyringJson;
   getAccounts(): ImportedDerivationPath[];
+  getCachedAccounts(): ImportedDerivationPath[];
   onPlay(fn: (ur: UR) => Promise<void>): void;
   onRead(fn: () => Promise<UR>): void;
+  getXFP(): string;
 }

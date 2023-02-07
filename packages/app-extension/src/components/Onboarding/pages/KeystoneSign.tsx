@@ -1,19 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
 import { SolanaKeystoneKeyring } from '@coral-xyz/blockchain-solana';
 import type { Blockchain, DerivationPath, UR } from "@coral-xyz/common";
-import { HardwareWalletIcon, PrimaryButton } from "@coral-xyz/react-common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
+import { HardwareWalletIcon } from "@coral-xyz/react-common";
 import { AnimatedQRCode, URType,useAnimatedQRScanner } from '@keystonehq/animated-qr';
 import { Box } from "@mui/material";
 
 import { Header, HeaderIcon, SubtextParagraph } from "../../common";
 
 export function KeystoneSign({
-  blockchain,
   message,
   publicKey,
-  derivationPath,
-  accountIndex,
   ur,
   onNext,
 }: {
@@ -25,15 +21,16 @@ export function KeystoneSign({
   ur: UR;
   onNext: (signature: string) => void;
 }) {
-  const background = useBackgroundClient();
-  const [signature, setSignature] = useState<string | null>(null);
   const [msgPlayUR, setMsgPlayUR] = useState<UR>();
+  const [xfp, setXFP] = useState<string>('');
   const { AnimatedQRScanner } = useAnimatedQRScanner({});
 
-  let readQRResolve: (ur: UR) => void, readQRReject;
+  // TODO: reject
+  let readQRResolve: (ur: UR, xfp: string) => void, readQRReject;
 
   const signMsg = async () => {
     const keyring = await SolanaKeystoneKeyring.fromUR(ur);
+    setXFP(keyring.getXFP());
     keyring.onPlay(async e => {
       setMsgPlayUR(e);
     });
@@ -46,8 +43,7 @@ export function KeystoneSign({
   }
 
   const handleScan = useCallback(ur => {
-    console.log(ur);
-    readQRResolve(ur);
+    readQRResolve(ur, xfp);
   }, [])
 
   useEffect(() => {
@@ -90,15 +86,7 @@ export function KeystoneSign({
           display: "flex",
           justifyContent: "space-between",
         }}
-      >
-        <PrimaryButton
-          label="Next"
-          onClick={() => {
-            onNext(signature!);
-          }}
-          disabled={!signature}
-        />
-      </Box>
+      ></Box>
     </Box>
   );
 }
