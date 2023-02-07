@@ -49,7 +49,7 @@ router.post("/bulk", extractUserId, async (req, res) => {
         validateOwnership(
           nft.nftId,
           nft.collectionId,
-          nft.centralizedGroup,
+          nft.centralizedGroup || nft.collectionId,
           publicKey
         )
     )
