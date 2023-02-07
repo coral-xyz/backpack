@@ -100,7 +100,7 @@ jobs:
           publish_dir: packages/background/build
           github_token: ${{ secrets.GITHUB_TOKEN }}
           destination_dir: "background-scripts/${{ env.short_sha }}"
-          commit_message: "deploy: ${{ env.short_sha }}"
+          full_commit_message: "deploy: ${{ env.short_sha }}"
 
       - name: (Github Pages) Deploy ledger injection
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
