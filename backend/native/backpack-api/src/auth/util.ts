@@ -33,7 +33,7 @@ export const setJWTCookie = async (
     .setIssuedAt()
     .sign(secret);
 
-  await setCookieOnResponse(req, res, "jwt", jwt);
+  setCookieOnResponse(req, res, "jwt", jwt);
 
   return jwt;
 };
