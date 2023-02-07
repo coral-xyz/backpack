@@ -1,4 +1,3 @@
-import type { KeyringType } from "@coral-xyz/common";
 import { toTitleCase } from "@coral-xyz/common";
 import { HardwareWalletIcon, PrimaryButton } from "@coral-xyz/react-common";
 import { Box } from "@mui/material";
@@ -9,8 +8,8 @@ export const KeyringTypeSelector = ({
   action,
   onNext,
 }: {
-  action: "create" | "import" | "recover" | string;
-  onNext: (keyringType: KeyringType) => void;
+  action: "create" | "import" | "recover";
+  onNext: (type: "mnemonic" | "hardware") => void;
 }) => {
   return (
     <div
@@ -62,7 +61,7 @@ export const KeyringTypeSelector = ({
             onClick={() => onNext("mnemonic")}
           />
         </Box>
-        <SubtextParagraph onClick={() => onNext("ledger")}>
+        <SubtextParagraph onClick={() => onNext("hardware")}>
           {action === "recover"
             ? "Recover using a hardware wallet"
             : "I have a hardware wallet"}

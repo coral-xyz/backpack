@@ -28,7 +28,6 @@ export enum HardwareType {
 }
 
 export interface HardwareBlockchainKeyringInit extends BlockchainKeyringInit {
-  hardwareType: HardwareType;
   ur?: UR;
 }
 
@@ -67,9 +66,11 @@ export function useHardwareOnboardSteps({
   const onWelcomeNext = useCallback((type: HardwareType) => {
     setHardwareType(type);
     nextStep();
-  }, []);
+  }, [nextStep]);
 
   const SignMessage = hardwareType === HardwareType.Ledger ? HardwareSign : KeystoneSign;
+
+  const accountAction = hardwareType === HardwareType.Keystone ? 'import' : action;
 
   //
   // Flow for onboarding a hardware wallet.
@@ -170,7 +171,7 @@ export function useHardwareOnboardSteps({
           }}
         />
       ),
-    }[action],
+    }[accountAction],
     ...(walletDescriptor
       ? [
           // Sign the found wallet descriptor for API submit
@@ -184,11 +185,12 @@ export function useHardwareOnboardSteps({
             }
             text={signText}
             ur={ur}
-            onNext={(signature: string) => {
+            onNext={(signature: string, xfp?: string) => {
               onComplete({
                 ...walletDescriptor,
                 signature,
-                hardwareType,
+                keyringType: hardwareType,
+                xfp,
                 ur,
               });
               if (successComponent) {

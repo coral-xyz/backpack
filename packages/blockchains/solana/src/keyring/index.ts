@@ -1,4 +1,4 @@
-import {
+import type {
   HdKeyring,
   HdKeyringFactory,
   HdKeyringJson,
@@ -6,20 +6,24 @@ import {
   KeyringFactory,
   KeyringJson,
   KeystoneKeyring,
-  KeystoneKeyringBase,
   KeystoneKeyringFactory,
   LedgerKeyring,
-  LedgerKeyringJson,
+  LedgerKeyringJson
 } from "@coral-xyz/blockchain-keyring";
-import { LedgerKeyringBase } from "@coral-xyz/blockchain-keyring";
+import {
+  KeystoneKeyringBase,
+  LedgerKeyringBase
+} from "@coral-xyz/blockchain-keyring";
+import type {
+  KeystoneKeyringJson,
+  UR
+} from "@coral-xyz/common";
 import type { WalletDescriptor } from "@coral-xyz/common";
 import {
   Blockchain,
   getIndexedPath,
-  KeystoneKeyringJson,
   LEDGER_METHOD_SOLANA_SIGN_MESSAGE,
-  LEDGER_METHOD_SOLANA_SIGN_TRANSACTION,
-  UR,
+  LEDGER_METHOD_SOLANA_SIGN_TRANSACTION
   nextIndicesFromPaths,
 } from "@coral-xyz/common";
 import { Keypair, PublicKey, Transaction } from "@solana/web3.js";
@@ -28,6 +32,7 @@ import { ethers } from "ethers";
 import nacl from "tweetnacl";
 
 import { deriveSolanaKeypair } from "../util";
+
 import { KeystoneKeyring as KeystoneKeyringOrigin } from './keystone';
 
 const { base58 } = ethers.utils;
@@ -288,54 +293,6 @@ export class SolanaLedgerKeyring
       ],
     });
   }
-}
-
-export class SolanaKeystoneKeyringFactory implements KeystoneKeyringFactory {
-  public fromAccounts(accounts: Array<ImportedDerivationPath>): KeystoneKeyring {
-    return new SolanaKeystoneKeyring();
-  }
-
-  public fromUR(ur: UR): KeystoneKeyring {
-    return SolanaKeystoneKeyring.fromUR(ur);
-  }
-
-  public fromJson(obj: KeystoneKeyringJson): KeystoneKeyring {
-    return new SolanaKeystoneKeyring();
-  }
-}
-
-export class SolanaKeystoneKeyring extends KeystoneKeyringBase implements KeystoneKeyring {
-  private keyring: KeystoneKeyringOrigin;
-
-  public async signTransaction(tx: Buffer, address: string): Promise<string> {
-    return '';
-  }
-
-  public async signMessage(msg: Buffer, address: string): Promise<string> {
-    return '';
-  }
-
-  public async keystoneImport(ur: UR) {
-    this.keyring = new KeystoneKeyringOrigin();
-    this.keyring.getInteraction().onRead(() => ur);
-    await this.keyring.readKeyring();
-  }
-
-  public static fromUR(ur: UR) {
-    return new SolanaKeystoneKeyring();
-  }
-
-  public publicKeys() {
-    return this.keyring.getAccounts().map(e => e.pubKey);
-  }
-
-  public getAccounts(): ImportedDerivationPath[] {
-    return this.keyring.getAccounts().map(e => ({
-      path: e.hdPath,
-      account: e.index,
-      publicKey: e.pubKey,
-    }));
-  }
 
   public toJson() {
     return {
@@ -361,11 +318,11 @@ export class SolanaKeystoneKeyringFactory implements KeystoneKeyringFactory {
 export class SolanaKeystoneKeyring extends KeystoneKeyringBase implements KeystoneKeyring {
   private keyring: KeystoneKeyringOrigin;
 
-  constructor({ accounts }: { accounts?: ImportedDerivationPath[] }) {
+  constructor({ accounts, xfp }: { accounts?: ImportedDerivationPath[], xfp?: string }) {
     super()
     this.keyring = new KeystoneKeyringOrigin();
-    if (accounts) {
-      this.setAccounts(accounts);
+    if (accounts && xfp) {
+      this.setAccounts(accounts, xfp);
     }
   }
 
@@ -390,7 +347,7 @@ export class SolanaKeystoneKeyring extends KeystoneKeyringBase implements Keysto
     this.keyring.getInteraction().onRead(() => ur);
     await this.keyring.readKeyring();
     if (pubKey) {
-      const accounts = this.getAccounts();
+      const accounts = this.getCachedAccounts();
       const i = accounts.findIndex(e => e.publicKey === pubKey)
       this.addPublicKey(accounts[i])
     }
@@ -402,10 +359,9 @@ export class SolanaKeystoneKeyring extends KeystoneKeyringBase implements Keysto
     return inst;
   }
 
-  public setAccounts(accounts: ImportedDerivationPath[]) {
-    // TODO: xfp has not stored.
+  public setAccounts(accounts: ImportedDerivationPath[], xfp: string) {
     this.keyring.syncKeyringData({
-      xfp: 'TODO',
+      xfp,
       keys: accounts.map(e => ({
         hdPath: e.path,
         index: e.account,
@@ -413,15 +369,19 @@ export class SolanaKeystoneKeyring extends KeystoneKeyringBase implements Keysto
       })),
       device: 'Backpack'
     });
-    accounts.forEach(this.addPublicKey);
+    this.setPublicKeys(accounts);
   }
 
-  public getAccounts(): ImportedDerivationPath[] {
+  public getCachedAccounts(): ImportedDerivationPath[] {
     return this.keyring.getAccounts().map(e => ({
       path: e.hdPath,
       account: e.index,
       publicKey: e.pubKey,
     }));
+  }
+
+  public getXFP(): string {
+    return this.keyring.getXFP();
   }
 
   public toJson() {

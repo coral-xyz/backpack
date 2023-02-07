@@ -1229,11 +1229,10 @@ export class Backend {
     blockchain: Blockchain,
     ur: UR,
   ) {
-    const accounts = await this.keyringStore.keystoneImport(
+    return await this.keyringStore.keystoneImport(
       blockchain,
       ur
     );
-    return accounts;
   }
 
   validateMnemonic(mnemonic: string): boolean {
@@ -1718,11 +1717,15 @@ export class Backend {
    */
   async blockchainKeyringsAdd(
     blockchain: Blockchain,
-    signedWalletDescriptor: SignedWalletDescriptor
+    signedWalletDescriptor: SignedWalletDescriptor,
+    xfp?: string,
+    keyringType?: KeyringType
   ): Promise<string> {
     await this.keyringStore.blockchainKeyringAdd(
       blockchain,
-      signedWalletDescriptor as WalletDescriptor
+      signedWalletDescriptor as WalletDescriptor,
+      xfp,
+      keyringType
     );
 
     const { signature, publicKey } = signedWalletDescriptor;

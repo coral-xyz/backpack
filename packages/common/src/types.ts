@@ -118,6 +118,8 @@ export type SignedWalletDescriptor = {
 export type ServerPublicKey = {
   blockchain: Blockchain;
   publicKey: string;
+  xfp?: string;
+  keyringType?: KeyringType
   primary?: boolean;
 };
 
@@ -199,7 +201,8 @@ export type UR = {
 };
 
 export type KeystoneKeyringJson = {
-  accounts: ImportedDerivationPath[]
+  accounts: ImportedDerivationPath[];
+  xfp: string;
 }
 
 // Legacy types. Don't use these.

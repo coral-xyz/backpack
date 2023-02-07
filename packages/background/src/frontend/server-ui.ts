@@ -1,16 +1,16 @@
 // All RPC request handlers for requests that can be sent from the trusted
 // extension UI to the background script.
 
-import {
+import type {
   AutolockSettingsOption,
   Blockchain,
   Context,
   EventEmitter,
   FEATURE_GATES_MAP,
+  KeyringType,
   Preferences,
   RpcRequest,
   RpcResponse,
-  UI_RPC_METHOD_KEYSTONE_UR_DECODE,
   UR,
   SignedWalletDescriptor,
   XnftPreference,
@@ -68,8 +68,9 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_STATE,
   UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
   UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
-  UI_RPC_METHOD_LEDGER_IMPORT,
   UI_RPC_METHOD_KEYSTONE_IMPORT,
+  UI_RPC_METHOD_KEYSTONE_UR_DECODE,
+  UI_RPC_METHOD_LEDGER_IMPORT,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
   UI_RPC_METHOD_NAVIGATION_CURRENT_URL_UPDATE,
   UI_RPC_METHOD_NAVIGATION_POP,
