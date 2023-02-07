@@ -233,7 +233,7 @@ export const MessageLine = (props) => {
       <div
         className={classes.messageRow}
         style={{
-          marginTop: sameUserMessage ? 0 : 20,
+          marginTop: sameUserMessage ? 0 : 16,
           paddingLeft: sameUserMessage ? 32 : 0,
         }}
       >
@@ -319,6 +319,7 @@ export const MessageLine = (props) => {
           <>
             <div
               style={{
+                paddingTop: 8,
                 width: 32,
               }}
             >
@@ -329,7 +330,7 @@ export const MessageLine = (props) => {
                   className={classes.avatar}
                   style={{ width: 32, height: 32 }}
                   src={photoURL}
-                ></LocalImage>
+                />
               ) : (
                 <Skeleton
                   variant="circular"
