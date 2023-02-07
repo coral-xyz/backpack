@@ -203,6 +203,24 @@ router.get("/userById", extractUserId, async (req: Request, res: Response) => {
 });
 
 /**
+ * Returns the user that is associated with the JWT in the cookie or query string.
+ */
+router.get(
+  "/me",
+  optionallyExtractUserId(true),
+  async (req: Request, res: Response) => {
+    if (req.id) {
+      try {
+        return res.json(await getUser(req.id));
+      } catch {
+        // User not found
+      }
+    }
+    return res.status(404).json({ msg: "User not found" });
+  }
+);
+
+/**
  * Get an existing user. Checks authenticated status if a JWT cookie is passed
  * with the request.
  */
@@ -243,24 +261,6 @@ router.get(
       ...user,
       isAuthenticated,
     });
-  }
-);
-
-/**
- * Returns the user that is associated with the JWT in the cookie or query string.
- */
-router.get(
-  "/me",
-  optionallyExtractUserId(true),
-  async (req: Request, res: Response) => {
-    if (req.id) {
-      try {
-        return res.json(await getUser(req.id));
-      } catch {
-        // User not found
-      }
-    }
-    return res.status(404).json({ msg: "User not found" });
   }
 );
 
