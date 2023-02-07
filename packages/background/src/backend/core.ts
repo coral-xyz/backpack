@@ -1623,9 +1623,19 @@ export class Backend {
     // the address of the xNFT attempting to be opened by the user.
     if (targetTab === TAB_XNFT) {
       const pk = url.split("/")[1];
-      const whitelist = await this.solanaConnectionBackend.getXnftWhitelist();
-      if (!whitelist.includes(pk)) {
-        throw new Error("opening an xnft that is not whitelisted");
+      const cachedWhitelist =
+        await this.solanaConnectionBackend.getXnftWhitelist();
+
+      if (!cachedWhitelist.includes(pk)) {
+        // Secondary lazy check to ensure there wasn't a whitelist update in-between cache updates
+        const resp = await fetch(
+          `https://app-store-api.backpack.workers.dev/api/curation/whitelist/check?address=${pk}`
+        );
+        const { whitelisted } = await resp.json();
+
+        if (!whitelisted) {
+          throw new Error("opening an xnft that is not whitelisted");
+        }
       }
     }
 
