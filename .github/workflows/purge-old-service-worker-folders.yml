@@ -16,7 +16,7 @@ on:
         type: string
         default: "2023-01-14"
   schedule:
-    - cron: '0 0 * * 0' # Run at midnight on sundays
+    - cron: 0 0 * * * # Run every day at midnight (12am)
   push:
     branches:
       - master
@@ -31,9 +31,6 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 100
-      - run: git log
-      - run: git log --pretty=format:"%s" --after="2023-01-14" --before="2023-02-03"
-      - run: git log --pretty=format:"%s" --after="2023-01-14" --before="2023-02-03" --grep="deploy:" | cut -c8-16
+          fetch-depth: 200
       - run: bash ./check-for-old-folders.sh ${{ inputs.beforeDate }} ${{ inputs.afterDate }}
         shell: bash
