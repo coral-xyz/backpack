@@ -23,8 +23,8 @@ jobs:
       ##########################################################################
 
       - uses: actions/checkout@v3
-      - run: echo "${{ env.commit_sha }}" | cut -c1-8
-      - run: echo "${{ env.commit_sha }}" | cut -c1-9
+      - run: echo "${{github.event.pull_request.head.sha}}" | cut -c1-8
+      - run: echo "${{github.event.pull_request.head.sha}}" | cut -c1-9
 
       - uses: actions/setup-node@v3
         with:
