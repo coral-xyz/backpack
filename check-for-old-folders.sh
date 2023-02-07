@@ -10,10 +10,8 @@ else
   two_weeks_ago=$(date -d '2 weeks ago' +%Y-%m-%d)
 fi
 
-echo $one_week_ago
-
-before=$one_week_ago
-after=$two_weeks_ago
+before=${1:-$(one_week_ago)}
+after=${1:-$(two_weeks_ago)}
 
 # Iterate through all the commits and find the ones that have the deploy: message
 # The commits on this branch are different than master, which is why we're doing this!

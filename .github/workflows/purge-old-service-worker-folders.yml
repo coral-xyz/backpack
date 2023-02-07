@@ -6,6 +6,15 @@
 name: Purge old service worker folders from gh-pages
 on:
   workflow_dispatch:
+    inputs:
+      beforeDate:
+        description: "YYYY-MM-DD"
+        default: $(date -d '3 days ago' +'%Y-%m-%d')
+        type: string
+      afterDate:
+        description: "YYYY-MM-DD"
+        default: $(date -d '1 weeks ago' +'%Y-%m-%d')
+        type: string
   schedule:
     - cron: '0 0 * * 0' # Run at midnight on sundays
   push:
@@ -24,4 +33,4 @@ jobs:
         shell: bash
         run: |
            chmod +x ./check-for-old-folders.sh
-           bash check-for-old-folders.sh
+           bash check-for-old-folders.sh ${{ inputs.beforeDate }} ${{ inputs.afterDate }}
