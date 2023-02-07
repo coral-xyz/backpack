@@ -1623,12 +1623,8 @@ export class Backend {
     // the address of the xNFT attempting to be opened by the user.
     if (targetTab === TAB_XNFT) {
       const pk = url.split("/")[1];
-      const resp = await fetch(
-        `https://app-store-api.backpack.workers.dev/api/curation/whitelist/check?address=${pk}`
-      );
-      const { whitelisted } = await resp.json();
-
-      if (!whitelisted) {
+      const whitelist = await this.solanaConnectionBackend.getXnftWhitelist();
+      if (!whitelist.includes(pk)) {
         throw new Error("opening an xnft that is not whitelisted");
       }
     }
