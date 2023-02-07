@@ -29,6 +29,4 @@ jobs:
       - uses: actions/checkout@v3
       - name: run bash check-for-old-folders.sh
         shell: bash
-        run: |
-           chmod +x ./check-for-old-folders.sh
-           bash check-for-old-folders.sh ${{ inputs.beforeDate }} ${{ inputs.afterDate }}
+        run: bash check-for-old-folders.sh ${{ inputs.beforeDate }} ${{ inputs.afterDate }}
