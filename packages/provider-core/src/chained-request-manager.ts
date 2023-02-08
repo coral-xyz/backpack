@@ -9,6 +9,8 @@ import type {
 } from "@coral-xyz/common";
 import { getLogger, PluginServer } from "@coral-xyz/common";
 
+import { isValidEventOrigin } from ".";
+
 const logger = getLogger("common/request-manager");
 
 export class ChainedRequestManager {
@@ -41,6 +43,8 @@ export class ChainedRequestManager {
   }
 
   private _handleRpcChildRequestAndParentResponse = (event: Event) => {
+    if (!isValidEventOrigin(event)) return;
+
     this._handleRpcParentResponse(event);
     this._handleRpcChildRequest(event);
   };

@@ -20,6 +20,7 @@ import EventEmitter from "eventemitter3";
 
 import * as cmn from "./common/ethereum";
 import { RequestManager } from "./request-manager";
+import { isValidEventOrigin } from ".";
 
 const logger = getLogger("provider-ethereum-injection");
 
@@ -330,6 +331,7 @@ export class ProviderEthereumInjection extends EventEmitter {
    *  Handle notifications from Backpack.
    */
   _handleNotification = (event: Event) => {
+    if (!isValidEventOrigin(event)) return;
     if (event.data.type !== CHANNEL_ETHEREUM_NOTIFICATION) return;
     logger.debug("notification", event);
 
