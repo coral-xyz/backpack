@@ -18,6 +18,7 @@ import {
 } from "@coral-xyz/react-common";
 import {
   useActiveWallet,
+  useDarkMode,
   useJupiterOutputMints,
   useSplTokenRegistry,
   useSwapContext,
@@ -218,6 +219,7 @@ export function Swap({ blockchain }: { blockchain: Blockchain }) {
 }
 
 function _Swap() {
+  const isDark = useDarkMode();
   const classes = useStyles();
   const { swapToFromMints } = useSwapContext();
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -239,7 +241,12 @@ function _Swap() {
 
   return (
     <>
-      <form onSubmit={onSubmit} className={classes.container} noValidate>
+      <form
+        onSubmit={onSubmit}
+        className={classes.container}
+        style={isDark ? { background: "#1D1D20" } : {}}
+        noValidate
+      >
         <div className={classes.topHalf}>
           <SwapTokensButton
             onClick={onSwapButtonClick}
