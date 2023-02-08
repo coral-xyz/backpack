@@ -420,9 +420,9 @@ export function ImportAccounts({
             marginTop: "24px",
           }}
         >
-          <Header text={`Import account${allowMultiple ? "s" : ""}`} />
+          <Header text={`Import wallet${allowMultiple ? "s" : ""}`} />
           <SubtextParagraph>
-            Select which account{allowMultiple ? "s" : ""} you'd like to import.
+            Select which wallet{allowMultiple ? "s" : ""} you'd like to import.
           </SubtextParagraph>
         </Box>
         <div style={{ margin: "16px" }}>
@@ -535,7 +535,7 @@ export function ImportAccounts({
         }}
       >
         <PrimaryButton
-          label={`Import Account${allowMultiple ? "s" : ""}`}
+          label={`Import Wallet${allowMultiple ? "s" : ""}`}
           onClick={() => onNext(checkedWalletDescriptors)}
           disabled={walletDescriptors.length === 0}
         />

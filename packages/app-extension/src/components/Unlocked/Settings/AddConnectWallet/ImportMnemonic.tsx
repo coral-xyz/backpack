@@ -1,40 +1,36 @@
 import { useEffect, useState } from "react";
 import type {
-  Blockchain} from "@coral-xyz/common";
-import {
-  UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
-  walletAddressDisplay,
+  Blockchain,
+  SignedWalletDescriptor,
+  WalletDescriptor,
 } from "@coral-xyz/common";
-import { PrimaryButton, TextInput } from "@coral-xyz/react-common";
-import type { WalletPublicKeys } from "@coral-xyz/recoil";
-import { useBackgroundClient, useWalletPublicKeys } from "@coral-xyz/recoil";
+import { getCreateMessage } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { Box } from "@mui/material";
-import { Keypair } from "@solana/web3.js";
-import * as bs58 from "bs58";
-import { ethers } from "ethers";
+import { Box, Grid } from "@mui/material";
 
-import { Header, SubtextParagraph } from "../../../common";
-import {
-  useDrawerContext,
-  WithMiniDrawer,
-} from "../../../common/Layout/Drawer";
+import { useSignMessageForWallet } from "../../../../hooks/useSignMessageForWallet";
+import { useSteps } from "../../../../hooks/useSteps";
+import { Header } from "../../../common";
+import { ImportAccounts } from "../../../common/Account/ImportAccounts";
+import { MnemonicInput } from "../../../common/Account/MnemonicInput";
+import { ActionCard } from "../../../common/Layout/ActionCard";
 import { useNavigation } from "../../../common/Layout/NavStack";
 
-import { ConfirmCreateWallet } from ".";
-
 export function ImportMnemonic({ blockchain }: { blockchain: Blockchain }) {
-  const background = useBackgroundClient();
-  const existingPublicKeys = useWalletPublicKeys();
   const nav = useNavigation();
   const theme = useCustomTheme();
-  const [name, setName] = useState("");
-  const [secretKey, setSecretKey] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [openDrawer, setOpenDrawer] = useState(false);
-  const [newPublicKey, setNewPublicKey] = useState("");
-  const [loading, setLoading] = useState(false);
-  const { close: closeParentDrawer } = useDrawerContext();
+  const { step, nextStep, prevStep } = useSteps();
+
+  // Whether the user is inputting another mnemonic or using the one on the keyring
+  const [inputMnemonic, setInputMnemonic] = useState(false);
+  const [mnemonic, setMnemonic] = useState("");
+  const [signedWalletDescriptors, setSignedWalletDescriptors] = useState<
+    Array<SignedWalletDescriptor>
+  >([]);
+
+  const signMessageForWallet = useSignMessageForWallet(mnemonic);
+
+  const action = "create";
 
   useEffect(() => {
     const prevTitle = nav.title;
@@ -44,5 +40,85 @@ export function ImportMnemonic({ blockchain }: { blockchain: Blockchain }) {
     };
   }, [theme]);
 
-  return <></>;
+  const steps = [
+    <SetInputMnemonic
+      onNext={(inputMnemonic) => {
+        setInputMnemonic(inputMnemonic);
+        nextStep();
+      }}
+    />,
+    // Show the seed phrase if we are creating based on a mnemonic
+    ...(inputMnemonic
+      ? [
+          <MnemonicInput
+            readOnly={action === "create"}
+            buttonLabel={action === "create" ? "Next" : "Import"}
+            onNext={(mnemonic) => {
+              setMnemonic(mnemonic);
+              nextStep();
+            }}
+          />,
+        ]
+      : []),
+    <ImportAccounts
+      blockchain={blockchain!}
+      mnemonic={mnemonic!}
+      onNext={async (walletDescriptors: Array<WalletDescriptor>) => {
+        const signedWalletDescriptors = await Promise.all(
+          walletDescriptors.map(async (w) => ({
+            ...w,
+            signature: await signMessageForWallet(
+              w,
+              getCreateMessage(w.publicKey)
+            ),
+          }))
+        );
+        setSignedWalletDescriptors(signedWalletDescriptors);
+        nextStep();
+      }}
+    />,
+  ];
+
+  return steps[step];
+}
+
+export function SetInputMnemonic({
+  onNext,
+}: {
+  onNext: (mnemonicInput: boolean) => void;
+}) {
+  return (
+    <>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+        }}
+      >
+        <Box sx={{ margin: "24px" }}>
+          <Header text="Import using a secret recovery phrase" />
+        </Box>
+
+        <Box sx={{ margin: "0 16px" }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <ActionCard
+                text="Your secret recovery phrase"
+                subtext="Use the secret recovery phrase from your Backpack account."
+                onClick={() => onNext(false)}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <ActionCard
+                text="Other secret recovery phrase"
+                subtext="Enter a new secret recovery phrase for a one time import."
+                onClick={() => onNext(true)}
+              />
+            </Grid>
+          </Grid>
+        </Box>
+      </div>
+    </>
+  );
 }

@@ -44,7 +44,7 @@ export function ImportMenu({ blockchain }: { blockchain: Blockchain }) {
         }}
       >
         <Box sx={{ margin: "24px" }}>
-          <Header text="Import a wallet" />
+          <Header text="Advanced import" />
           <SubtextParagraph>
             Import a wallet and associate it with your Backpack account.
           </SubtextParagraph>
@@ -54,14 +54,14 @@ export function ImportMenu({ blockchain }: { blockchain: Blockchain }) {
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <ActionCard
-                text="Secret recovery phrase"
+                text="Import from secret recovery phrase"
                 subtext="Select from a list of wallets found using a secret recovery phrase."
                 onClick={() => nav.push("import-from-mnemonic", { blockchain })}
               />
             </Grid>
             <Grid item xs={12}>
               <ActionCard
-                text="Hardware wallet"
+                text="Import from hardware wallet"
                 subtext="Select from a list of wallets found using your hardware wallet."
                 onClick={() => {
                   openConnectHardware(blockchain, "import");
@@ -72,7 +72,7 @@ export function ImportMenu({ blockchain }: { blockchain: Blockchain }) {
             {keyringExists && (
               <Grid item xs={12}>
                 <ActionCard
-                  text="Secret key"
+                  text="Import from secret key"
                   subtext="Import a wallet using a secret key."
                   onClick={() =>
                     nav.push("import-from-secret-key", { blockchain })
