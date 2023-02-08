@@ -39,7 +39,7 @@ router.get("/nftMetadata", async (req, res) => {
         method: "POST",
         body: JSON.stringify({
           mintAccounts: [mint],
-          includeOffChain: true,
+          includeOffChain: false,
         }),
       }
     );
