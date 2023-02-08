@@ -98,6 +98,7 @@ export const getTransactionTitle = (transaction: HeliusParsedTransaction) => {
   switch (transaction.type) {
     case TransactionType.BURN:
       return "Burned";
+
     case TransactionType.TRANSFER:
       // send/receive NFT's are returned as TransactionType.TRANSFER
       const nftName =
@@ -112,6 +113,14 @@ export const getTransactionTitle = (transaction: HeliusParsedTransaction) => {
 
     case TransactionType.SWAP:
       return "Token Swap";
+
+    case TransactionType.NFT_MINT: {
+      const nftName =
+        transaction?.metadata?.onChainData?.data?.name ||
+        transaction?.metadata?.offChainData?.name;
+      return `Minted: ${nftName}`;
+    }
+
     default:
       let title = "App Interaction";
 
@@ -121,11 +130,10 @@ export const getTransactionTitle = (transaction: HeliusParsedTransaction) => {
       const nonTransferNftName =
         transaction?.metadata?.onChainData?.data?.name ||
         transaction?.metadata?.offChainData?.name;
+
       if (isNFTTransaction(transaction) && nonTransferNftName) {
         return nonTransferNftName;
       }
-
-      if (transaction?.type?.includes("MINT")) return "Minted";
 
       // txn has a transactionError
       if (transaction?.transactionError) {
@@ -149,6 +157,7 @@ export const getTransactionDetailTitle = (
   switch (transaction.type) {
     case TransactionType.BURN:
       return "Burned";
+
     case TransactionType.TRANSFER:
       if (isUserTxnSender(transaction)) return "Sent";
       else if (isUserTxnSender(transaction) === false) return "Received";
@@ -156,6 +165,7 @@ export const getTransactionDetailTitle = (
 
     case TransactionType.SWAP:
       return "Swap";
+
     case TransactionType.NFT_SALE:
       return transaction?.events?.nft?.seller === publicKey ? "Sold" : "Bought";
 
@@ -164,10 +174,12 @@ export const getTransactionDetailTitle = (
 
     case TransactionType.NFT_CANCEL_LISTING:
       return "Listed Canceled";
+
+    case TransactionType.NFT_MINT:
+      return "Minted NFT";
+
     default:
       let title = "App Interaction";
-
-      if (transaction?.type?.includes("MINT")) return "Minted";
 
       if (transaction?.transactionError) {
         title = "Failed";
@@ -203,6 +215,7 @@ export const getTransactionCaption = (
         transaction?.source !== TransactionType.UNKNOWN
         ? getSourceOrTypeFormatted(transaction?.source)
         : "";
+
     case TransactionType.SWAP:
       // fallback to truncated mint address if token metadata was not found
       return `${
@@ -215,6 +228,7 @@ export const getTransactionCaption = (
 
     case TransactionType.NFT_LISTING:
       return `Listed on ${getSourceOrTypeFormatted(transaction.source)}`;
+
     case TransactionType.NFT_SALE:
       return `${
         transaction?.events?.nft?.buyer === activeWallet.publicKey
@@ -223,8 +237,16 @@ export const getTransactionCaption = (
       } on ${getSourceOrTypeFormatted(transaction.source)}`;
 
     case TransactionType.NFT_CANCEL_LISTING:
-      return `
-        Canceled listing on ${getSourceOrTypeFormatted(transaction.source)}`;
+      return `Canceled listing on ${getSourceOrTypeFormatted(
+        transaction.source
+      )}`;
+
+    // case TransactionType.BURN:
+    //   return transaction?.
+    case TransactionType.NFT_MINT:
+      return getTruncatedAddress(
+        transaction?.metadata?.onChainData?.collection?.key
+      );
 
     default:
       if (transaction?.source === Source.CARDINAL_RENT) return "Rent Paid";
@@ -238,7 +260,7 @@ export const getTransactionCaption = (
       //   transaction?.source !== TransactionType.UNKNOWN
       // )
       //   return getSourceOrTypeFormatted(transaction.source);
-      return "";
+      return getTruncatedAddress(transaction?.instructions[0].programId);
   }
 };
 

@@ -1,4 +1,4 @@
-import { Blockchain } from "@coral-xyz/common";
+import { Blockchain, XNFT_GG_LINK } from "@coral-xyz/common";
 import { EmptyState, ProxyImage } from "@coral-xyz/react-common";
 import {
   filteredPlugins,
@@ -124,8 +124,13 @@ function PluginGrid() {
         icon={(props: any) => <BlockIcon {...props} />}
         title={"No xNFTs"}
         subtitle={"Get started with your first xNFT"}
+<<<<<<< HEAD
         buttonText={"Browse the xNFT Library"}
         onClick={() => window.open("https://xnft.gg")}
+=======
+        buttonText={"Browse xNFTs"}
+        onClick={() => window.open(XNFT_GG_LINK)}
+>>>>>>> bc0fafe8 (various polish updates)
         header={
           !_isAggregateWallets && (
             <_BalancesTableHead

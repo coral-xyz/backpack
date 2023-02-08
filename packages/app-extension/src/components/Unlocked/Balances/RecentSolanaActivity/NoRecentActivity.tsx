@@ -1,3 +1,4 @@
+import { XNFT_GG_LINK } from "@coral-xyz/common";
 import { EmptyState } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Bolt } from "@mui/icons-material";
@@ -16,7 +17,7 @@ export function NoRecentActivityLabel({ minimize }: { minimize: boolean }) {
         icon={(props: any) => <Bolt {...props} />}
         title={"No Recent Activity"}
         subtitle={"Get started by adding your first xNFT"}
-        onClick={() => window.open("https://xnft.gg")}
+        onClick={() => window.open(XNFT_GG_LINK)}
         buttonText={"Browse the xNFT Library"}
         contentStyle={{
           color: minimize ? theme.custom.colors.secondary : "inherit",

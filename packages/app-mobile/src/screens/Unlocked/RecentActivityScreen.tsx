@@ -13,7 +13,12 @@ import {
 
 import * as Linking from "expo-linking";
 
-import { Blockchain, explorerUrl, RecentTransaction } from "@coral-xyz/common";
+import {
+  Blockchain,
+  explorerUrl,
+  RecentTransaction,
+  XNFT_GG_LINK,
+} from "@coral-xyz/common";
 import {
   useActiveWallet,
   useBlockchainConnectionUrl,
@@ -289,7 +294,7 @@ function NoRecentActivityEmptyState({
         subtitle="Get started by adding your first xNFT"
         buttonText="Browse the xNFT Library"
         onPress={() => {
-          Linking.openURL("https://xnft.gg");
+          Linking.openURL(XNFT_GG_LINK);
         }}
       />
     </View>

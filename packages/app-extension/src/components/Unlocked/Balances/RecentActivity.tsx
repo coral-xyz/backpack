@@ -10,6 +10,8 @@ import {
   useBlockchainConnectionUrl,
   useBlockchainExplorer,
   useBlockchainLogo,
+  useRecentEthereumTransactions,
+  useRecentSolanaTransactions,
   useRecentTransactions,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
@@ -111,7 +113,7 @@ export function RecentActivityButton() {
         <div style={{ height: "100%" }}>
           <NavStackEphemeral
             initialRoute={{ name: "root" }}
-            options={() => ({ title: "Recent Activity" })}
+            options={() => ({ title: "Transactions" })}
             navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
           >
             <NavStackScreen
@@ -128,16 +130,28 @@ export function RecentActivityButton() {
 export function RecentActivity() {
   const activeWallet = useActiveWallet();
 
-  const recentTransactions = useRecentTransactions(
-    activeWallet.blockchain,
-    activeWallet.publicKey
-  );
-  const mergedTransactions =
+  const recentTransactions =
     activeWallet.blockchain === Blockchain.SOLANA
-      ? [...recentTransactions].sort((a, b) => b.timestamp - a.timestamp)
-      : [...recentTransactions].sort(
-          (a, b) => b.date.getTime() - a.date.getTime()
-        );
+      ? useRecentSolanaTransactions({
+          address: activeWallet.publicKey,
+        })
+      : useRecentEthereumTransactions({
+          address: activeWallet.publicKey,
+        });
+
+  // Used since Solana transactions have a timestamp and Ethereum transactions have a date.
+  const extractTime = (tx: any) => {
+    if (tx?.timestamp) {
+      return tx.timestamp;
+    } else if (tx?.date) {
+      return tx.date.getTime();
+    }
+    return 0;
+  };
+
+  const mergedTransactions = [...recentTransactions].sort((a, b) =>
+    extractTime(a) > extractTime(b) ? -1 : 1
+  );
 
   return (
     <Suspense fallback={<RecentActivityLoading />}>

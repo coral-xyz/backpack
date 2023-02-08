@@ -14,6 +14,8 @@ import {
   ArrowDownwardRounded,
   ArrowRightAltRounded,
   CallMade,
+  CancelTwoTone,
+  CheckCircleTwoTone,
   Image,
   SendRounded,
   WhatshotRounded,
@@ -22,7 +24,6 @@ import { Card, List } from "@mui/material";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { Source, TransactionType } from "helius-sdk/dist/types";
 
-import { TransactionFail, TransactionSuccess } from "../../../common/Icon";
 import { WithDrawer } from "../../../common/Layout/Drawer";
 import { NavBackButton } from "../../../common/Layout/Nav";
 import {
@@ -144,6 +145,7 @@ export function TransactionDetail({
   transaction: HeliusParsedTransaction;
   setTransactionDetail: Dispatch<SetStateAction<null>>;
 }) {
+  const theme = useCustomTheme();
   const classes = useStyles();
   const activeWallet = useActiveWallet();
   const navigate = useNavigate();
@@ -154,7 +156,9 @@ export function TransactionDetail({
 
   return (
     <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-      <div style={{ height: "100%" }}>
+      <div
+        style={{ height: "100%", background: theme.custom.colors.background }}
+      >
         <NavStackEphemeral
           initialRoute={{ name: "transactionDetails" }}
           options={() => {
@@ -223,7 +227,10 @@ function DetailCardHeader(
 ): JSX.Element {
   const classes = useStyles();
   const theme = useCustomTheme();
-  if (transaction?.transactionError) return TransactionFail();
+  if (transaction?.transactionError)
+    return (
+      <CancelTwoTone sx={{ height: 100, width: 100 }} htmlColor="#F13236" />
+    );
 
   if (transaction.type === TransactionType.SWAP) {
     return (
@@ -258,7 +265,8 @@ function DetailCardHeader(
             {transaction?.tokenTransfers[0]?.tokenAmount.toFixed(5) +
               " " +
               tokenData[0]?.symbol ||
-              getTruncatedAddress(transaction?.tokenTransfers?.[0]?.mint)}
+              getTruncatedAddress(transaction?.tokenTransfers?.[0]?.mint) ||
+              "UNKWN"}
           </div>
         </div>
 
@@ -292,7 +300,8 @@ function DetailCardHeader(
             {transaction?.tokenTransfers[1]?.tokenAmount.toFixed(5) +
               " " +
               tokenData[1]?.symbol ||
-              getTruncatedAddress(transaction?.tokenTransfers?.[0]?.mint)}
+              getTruncatedAddress(transaction?.tokenTransfers?.[0]?.mint) ||
+              "UNKWN"}
           </div>
         </div>
       </div>
@@ -367,7 +376,7 @@ function DetailCardHeader(
       tokenData[0]?.logoURI ||
       transaction?.metadata?.onChaindata?.data?.uri ||
       transaction?.metadata?.offChainData?.image;
-    const transferAmount =
+    const transferSymbol =
       tokenData[0]?.symbol ||
       transaction?.metadata?.onChaindata?.data?.symbol ||
       transaction?.metadata?.offChainData?.symbol;
@@ -380,11 +389,11 @@ function DetailCardHeader(
               ? "- " +
                 transaction?.tokenTransfers?.[0]?.tokenAmount +
                 " " +
-                (transferAmount && transferAmount)
+                (transferSymbol && transferSymbol)
               : "+ " +
                 transaction?.tokenTransfers?.[0]?.tokenAmount +
                 " " +
-                (transferAmount && transferAmount)}
+                (transferSymbol && transferSymbol)}
           </div>
         </>
       );
@@ -436,7 +445,9 @@ function DetailCardHeader(
       />
     );
 
-  return TransactionSuccess();
+  return (
+    <CheckCircleTwoTone sx={{ height: 100, width: 100 }} htmlColor="#35A63A" />
+  );
 }
 
 function DetailTable(
@@ -502,7 +513,8 @@ function DetailTable(
                 {transaction?.tokenTransfers[0]?.tokenAmount.toFixed(5) +
                   " " +
                   tokenData[0]?.symbol ||
-                  getTruncatedAddress(transaction?.tokenTransfers?.[0]?.mint)}
+                  getTruncatedAddress(transaction?.tokenTransfers?.[0]?.mint) ||
+                  "UKNWN"}
               </div>
             </div>
           </div>
@@ -514,7 +526,8 @@ function DetailTable(
                 {transaction?.tokenTransfers[1]?.tokenAmount.toFixed(5) +
                   " " +
                   tokenData[1]?.symbol ||
-                  getTruncatedAddress(transaction?.tokenTransfers?.[0]?.mint)}
+                  getTruncatedAddress(transaction?.tokenTransfers?.[0]?.mint) ||
+                  "UNKWN"}
               </div>
             </div>
           </div>
