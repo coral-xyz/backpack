@@ -11,7 +11,7 @@ import { Box, Grid } from "@mui/material";
 import { useSignMessageForWallet } from "../../../../hooks/useSignMessageForWallet";
 import { useSteps } from "../../../../hooks/useSteps";
 import { Header } from "../../../common";
-import { ImportAccounts } from "../../../common/Account/ImportAccounts";
+import { ImportWallets } from "../../../common/Account/ImportWallets";
 import { MnemonicInput } from "../../../common/Account/MnemonicInput";
 import { ActionCard } from "../../../common/Layout/ActionCard";
 import { useNavigation } from "../../../common/Layout/NavStack";
@@ -60,7 +60,7 @@ export function ImportMnemonic({ blockchain }: { blockchain: Blockchain }) {
           />,
         ]
       : []),
-    <ImportAccounts
+    <ImportWallets
       blockchain={blockchain!}
       mnemonic={mnemonic!}
       onNext={async (walletDescriptors: Array<WalletDescriptor>) => {

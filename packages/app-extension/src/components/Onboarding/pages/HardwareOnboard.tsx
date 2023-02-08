@@ -8,7 +8,7 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import type Transport from "@ledgerhq/hw-transport";
 
 import { useSteps } from "../../../hooks/useSteps";
-import { ImportAccounts } from "../../common/Account/ImportAccounts";
+import { ImportWallets } from "../../common/Account/ImportWallets";
 import { CloseButton } from "../../common/Layout/Drawer";
 import { NavBackButton, WithNav } from "../../common/Layout/Nav";
 import { ConnectHardwareSearching } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareSearching";
@@ -121,7 +121,7 @@ export function useHardwareOnboardSteps({
       // The import flow displays a table and allows the user to select a public
       // key to proceed with.
       import: (
-        <ImportAccounts
+        <ImportWallets
           blockchain={blockchain}
           transport={transport}
           allowMultiple={false}

@@ -43,7 +43,7 @@ const { base58: bs58 } = ethers.utils;
 
 const DISPLAY_PUBKEY_AMOUNT = 5;
 
-export function ImportAccounts({
+export function ImportWallets({
   blockchain,
   mnemonic,
   transport,
@@ -324,7 +324,7 @@ export function ImportAccounts({
   };
 
   //
-  // Load accounts for the given mnemonic. This is passed to the ImportAccounts
+  // Load accounts for the given mnemonic. This is passed to the ImportWallets
   // component and called whenever the derivation path is changed with the selector.
   //
   const loadMnemonicPublicKeys = async (

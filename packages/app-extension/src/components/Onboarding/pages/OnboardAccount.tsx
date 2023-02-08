@@ -17,7 +17,7 @@ import { ethers } from "ethers";
 import { useSignMessageForWallet } from "../../../hooks/useSignMessageForWallet";
 import { useSteps } from "../../../hooks/useSteps";
 import { CreatePassword } from "../../common/Account/CreatePassword";
-import { ImportAccounts } from "../../common/Account/ImportAccounts";
+import { ImportWallets } from "../../common/Account/ImportWallets";
 import { MnemonicInput } from "../../common/Account/MnemonicInput";
 import { WithContaineredDrawer } from "../../common/Layout/Drawer";
 import { NavBackButton, WithNav } from "../../common/Layout/Nav";
@@ -234,7 +234,7 @@ export const OnboardAccount = ({
             onClose={() => setOpenDrawer(false)}
           />
         ) : (
-          <ImportAccounts
+          <ImportWallets
             blockchain={blockchain!}
             mnemonic={mnemonic!}
             allowMultiple={false}
