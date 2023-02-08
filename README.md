@@ -87,7 +87,7 @@ _If you run into issues with builds try running `yarn clean` and then start agai
 <details>
   <summary>Seeing `WebSocket connection to 'wss://localhost:9997/ws' failed` error messages in your console?</summary>
 
-You need to install a SSL certificate for localhost as the one provided by [webpack-dev-server is considered invalid](https://github.com/webpack/webpack-dev-server/issues/2957).
+You need to install a SSL certificate for localhost as the one provided by [webpack-dev-server is considered invalid](https://github.com/webpack/webpack-dev-server/issues/2957). This step is optional as `react-refresh` will still function without it, but it's a good idea to try and fix this error because otherwise your browser will be making a lot of failed requests and `webpack-dev-server` might not be functioning to its full capabilities.
 
 A relatively simple way of doing this is using [mkcert](https://github.com/FiloSottile/mkcert)
 
