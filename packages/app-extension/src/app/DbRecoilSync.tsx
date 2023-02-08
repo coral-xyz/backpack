@@ -91,7 +91,7 @@ export const DbRecoilSync = () => {
   };
 
   useEffect(() => {
-    sync(uuid);
+    setTimeout(() => sync(uuid), 1000);
   }, [uuid]);
 
   useEffect(() => {
