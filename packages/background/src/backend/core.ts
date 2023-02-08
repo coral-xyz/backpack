@@ -1229,10 +1229,7 @@ export class Backend {
     blockchain: Blockchain,
     ur: UR,
   ) {
-    return await this.keyringStore.keystoneImport(
-      blockchain,
-      ur
-    );
+    return await this.keyringStore.keystoneURDecode(blockchain, ur);
   }
 
   validateMnemonic(mnemonic: string): boolean {
