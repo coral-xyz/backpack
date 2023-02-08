@@ -139,11 +139,15 @@ const useStyles = styles((theme) => ({
 }));
 
 export function TransactionDetail({
+  metadata,
   transaction,
+  setMetadata,
   setTransactionDetail,
 }: {
+  metadata: any;
   transaction: HeliusParsedTransaction;
-  setTransactionDetail: Dispatch<SetStateAction<null>>;
+  setMetadata: Dispatch<SetStateAction<any>>;
+  setTransactionDetail: Dispatch<SetStateAction<any>>;
 }) {
   const theme = useCustomTheme();
   const classes = useStyles();
@@ -173,6 +177,7 @@ export function TransactionDetail({
             <NavBackButton
               onClick={() => {
                 setTransactionDetail(null);
+                setMetadata(null);
                 setOpenDrawer(false);
               }}
             />
@@ -190,7 +195,11 @@ export function TransactionDetail({
                     paddingBottom: "10px",
                   }}
                 >
-                  {DetailCardHeader(transaction, tokenData)}
+                  <DetailCardHeader
+                    transaction={transaction}
+                    tokenData={tokenData}
+                    metadata={metadata}
+                  />
                 </div>
 
                 {/* TODO - Default to check/error */}
@@ -209,7 +218,7 @@ export function TransactionDetail({
                     />
                   )}
 
-                {DetailTable(transaction, tokenData)}
+                <DetailTable transaction={transaction} tokenData={tokenData} />
               </Card>
             )}
           />
@@ -221,10 +230,15 @@ export function TransactionDetail({
 
 // similar to RecentActivityListItemIcon in ListItem.tsx. Controls graphic displayed in
 // top-half of detail card. May be best to further abstract to icon Object map (like in RecentSolanaActivity/Icons.tsx)
-function DetailCardHeader(
-  transaction: HeliusParsedTransaction,
-  tokenData: (TokenInfo | undefined)[]
-): JSX.Element {
+function DetailCardHeader({
+  transaction,
+  tokenData,
+  metadata,
+}: {
+  transaction: HeliusParsedTransaction;
+  tokenData: (TokenInfo | undefined)[];
+  metadata?: any;
+}) {
   const classes = useStyles();
   const theme = useCustomTheme();
   if (transaction?.transactionError)
@@ -310,11 +324,12 @@ function DetailCardHeader(
 
   // if NFT url available, display it. Check on-chain data first
   const nftImage =
-    transaction?.metadata?.onChaindata?.data?.uri ||
-    transaction?.metadata?.offChainData?.image;
+    metadata?.onChaindata?.data?.uri || metadata?.offChainData?.image;
+
   const nftPrice = transaction?.events?.nft?.amount
     ? transaction?.events?.nft?.amount / 10 ** 9
     : null;
+
   if (isNFTTransaction(transaction) && nftImage) {
     return (
       <>
@@ -374,12 +389,14 @@ function DetailCardHeader(
     // other SPL token Transfer. Check tokenRegistry first, then Helius metadata
     const transferIcon =
       tokenData[0]?.logoURI ||
-      transaction?.metadata?.onChaindata?.data?.uri ||
-      transaction?.metadata?.offChainData?.image;
+      metadata?.onChaindata?.data?.uri ||
+      metadata?.offChainData?.image;
+
     const transferSymbol =
       tokenData[0]?.symbol ||
-      transaction?.metadata?.onChaindata?.data?.symbol ||
-      transaction?.metadata?.offChainData?.symbol;
+      metadata?.onChaindata?.data?.symbol ||
+      metadata?.offChainData?.symbol;
+
     if (transferIcon) {
       return (
         <>
@@ -434,7 +451,10 @@ function DetailCardHeader(
     );
   }
 
-  if (transaction?.type === TransactionType.BURN)
+  if (
+    transaction?.type === TransactionType.BURN ||
+    transaction?.type === TransactionType.BURN
+  )
     return (
       <WhatshotRounded
         style={{
@@ -450,14 +470,20 @@ function DetailCardHeader(
   );
 }
 
-function DetailTable(
-  transaction: HeliusParsedTransaction,
-  tokenData: (TokenInfo | undefined)[]
-): JSX.Element {
+function DetailTable({
+  transaction,
+  tokenData,
+}: {
+  transaction: HeliusParsedTransaction;
+  tokenData: (TokenInfo | undefined)[];
+}) {
   const classes = useStyles();
   const theme = useCustomTheme();
   const explorer = useBlockchainExplorer(Blockchain.SOLANA);
   const connectionUrl = useBlockchainConnectionUrl(Blockchain.SOLANA);
+
+  console.log(transaction);
+  console.log(tokenData);
 
   return (
     <List className={classes.detailList}>
@@ -480,7 +506,8 @@ function DetailTable(
 
               <div className={classes.cellValue}>
                 {getTruncatedAddress(
-                  transaction?.tokenTransfers?.[0]?.toUserAccount
+                  transaction?.tokenTransfers?.[0]?.toUserAccount ||
+                    transaction?.nativeTransfers?.[0]?.toUserAccount
                 )}
               </div>
             </div>

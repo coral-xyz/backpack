@@ -27,6 +27,8 @@ export function _RecentSolanaActivityList({
 }) {
   const theme = useCustomTheme();
   const [transactionDetail, setTransactionDetail] = useState(null);
+  const [metadata, setMetadata] = useState(null);
+
   // Load transactions if not passed in as a prop
   const transactions = _transactions
     ? _transactions
@@ -36,18 +38,17 @@ export function _RecentSolanaActivityList({
         contractAddresses: contractAddresses!,
       });
 
-  if (!style) {
-    style = {};
-  }
-
   if (transactionDetail) {
     return (
       <TransactionDetail
+        metadata={metadata}
         transaction={transactionDetail}
+        setMetadata={setMetadata}
         setTransactionDetail={setTransactionDetail}
       />
     );
   }
+
   const txnsGroupedByDate = groupTxnsByDate(transactions);
 
   return transactions?.length > 0 ? (
@@ -82,17 +83,16 @@ export function _RecentSolanaActivityList({
                 ...style,
               }}
             >
-              {group.map((tx: HeliusParsedTransaction, idx: number) => {
-                return (
-                  <SolanaTransactionListItem
-                    key={idx}
-                    transaction={tx}
-                    isFirst={idx === 0}
-                    isLast={idx === group.length - 1}
-                    setTransactionDetail={setTransactionDetail}
-                  />
-                );
-              })}
+              {group.map((tx: HeliusParsedTransaction, idx: number) => (
+                <SolanaTransactionListItem
+                  key={idx}
+                  transaction={tx}
+                  isFirst={idx === 0}
+                  isLast={idx === group.length - 1}
+                  setMetadata={setMetadata}
+                  setTransactionDetail={setTransactionDetail}
+                />
+              ))}
             </List>
           </Fragment>
         );

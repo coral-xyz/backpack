@@ -38,5 +38,4 @@ export type HeliusParsedTransaction = {
   tokenTransfers: Array<TokenTransfer>;
   transactionError: string | null;
   type: string;
-  metadata?: any;
 };

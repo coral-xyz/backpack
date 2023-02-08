@@ -1,8 +1,10 @@
 import { isFirstLastListItemStyle } from "@coral-xyz/react-common";
+import { metadataForRecentSolanaTransaction } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { ListItem, Typography } from "@mui/material";
+import { ListItem, Skeleton, Typography } from "@mui/material";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { Source, TransactionType } from "helius-sdk/dist/types";
+import { useRecoilValueLoadable } from "recoil";
 
 import {
   getTokenData,
@@ -60,14 +62,20 @@ export function SolanaTransactionListItem({
   transaction,
   isFirst,
   isLast,
+  setMetadata,
   setTransactionDetail,
 }: any) {
   const classes = useStyles();
   const theme = useCustomTheme();
+  const { contents, state } = useRecoilValueLoadable(
+    metadataForRecentSolanaTransaction({ transaction })
+  );
 
   const tokenData = getTokenData(transaction);
+  const metadata = (state === "hasValue" && contents) || undefined;
 
   const onClick = () => {
+    setMetadata(metadata);
     setTransactionDetail(transaction);
   };
 
@@ -101,20 +109,28 @@ export function SolanaTransactionListItem({
       >
         <div style={{ flex: 1, display: "flex" }}>
           <div className={classes.lineDataWrapper}>
-            {RecentActivityListItemIcon(transaction, tokenData)}
+            <RecentActivityListItemIcon
+              loading={state === "loading"}
+              transaction={transaction}
+              tokenData={tokenData}
+              metadata={metadata}
+            />
           </div>
           <div>
             <Typography className={classes.title}>
-              {getTransactionTitle(transaction)}
+              {getTransactionTitle(transaction, metadata)}
             </Typography>
             <Typography className={classes.caption}>
-              {getTransactionCaption(transaction, tokenData)}
+              {getTransactionCaption(transaction, tokenData, metadata)}
             </Typography>
           </div>
         </div>
         <div className={classes.lineDataWrapper}>
-          {RecentActivityListItemData(transaction, tokenData)}
-          <div></div>
+          <RecentActivityListItemData
+            transaction={transaction}
+            tokenData={tokenData}
+            metadata={metadata}
+          />
         </div>
       </div>
     </ListItem>
@@ -126,10 +142,28 @@ export function SolanaTransactionListItem({
 // To add a new ruleset for helius parsed TXN type or source
 // 1.) add desired icon to ListItemIcons in "./Icons";
 // 2.) map txn to icon below
-function RecentActivityListItemIcon(
-  transaction: HeliusParsedTransaction,
-  tokenData: (TokenInfo | undefined)[]
-): JSX.Element {
+function RecentActivityListItemIcon({
+  loading,
+  transaction,
+  tokenData,
+  metadata,
+}: {
+  loading: boolean;
+  transaction: HeliusParsedTransaction;
+  tokenData: (TokenInfo | undefined)[];
+  metadata?: any;
+}) {
+  if (loading) {
+    return (
+      <Skeleton
+        sx={{ mr: "15px" }}
+        variant="rounded"
+        height="44px"
+        width="44px"
+      />
+    );
+  }
+
   if (transaction?.transactionError) return ListItemIcons["ERROR"]();
 
   if (transaction.type === TransactionType.SWAP) {
@@ -141,8 +175,7 @@ function RecentActivityListItemIcon(
 
   // if NFT url available, display it. Check on-chain data first
   const nftImage =
-    transaction?.metadata?.onChaindata?.data?.uri ||
-    transaction?.metadata?.offChainData?.image;
+    metadata?.onChaindata?.data?.uri || metadata?.offChainData?.image;
   if (isNFTTransaction(transaction) && nftImage) {
     return ListItemIcons["NFT"](nftImage);
   }
@@ -155,8 +188,8 @@ function RecentActivityListItemIcon(
     // other SPL token Transfer. Check tokenRegistry first, then Helius metadata
     const transferIcon =
       tokenData[0]?.logoURI ||
-      transaction?.metadata?.onChaindata?.data?.uri ||
-      transaction?.metadata?.offChainData?.image;
+      metadata?.onChaindata?.data?.uri ||
+      metadata?.offChainData?.image;
     if (transferIcon)
       return ListItemIcons[TransactionType.TRANSFER](transferIcon);
 
@@ -169,17 +202,25 @@ function RecentActivityListItemIcon(
     return ListItemIcons["RECEIVED"]();
   }
 
-  if (transaction?.type === TransactionType.BURN)
+  if (
+    transaction?.type === TransactionType.BURN ||
+    transaction?.type === TransactionType.BURN_NFT
+  )
     return ListItemIcons[TransactionType.BURN]();
 
   return ListItemIcons["DEFAULT"]();
 }
 
 // Controls data displayed on right side of 'Transactions' list
-function RecentActivityListItemData(
-  transaction: HeliusParsedTransaction,
-  tokenData: (TokenInfo | undefined)[]
-): JSX.Element {
+function RecentActivityListItemData({
+  transaction,
+  tokenData,
+  metadata,
+}: {
+  transaction: HeliusParsedTransaction;
+  tokenData: (TokenInfo | undefined)[];
+  metadata?: any;
+}) {
   const classes = useStyles();
 
   // FAILURE
@@ -208,7 +249,10 @@ function RecentActivityListItemData(
     );
   }
   // BURN
-  if (transaction?.type === TransactionType.BURN) {
+  if (
+    transaction?.type === TransactionType.BURN ||
+    transaction?.type === TransactionType.BURN_NFT
+  ) {
     return (
       <div className={classes.textSecondary}>
         {transaction?.tokenTransfers[0]?.tokenAmount}
@@ -243,8 +287,8 @@ function RecentActivityListItemData(
           ) +
             " " +
             (tokenData[0]?.symbol ||
-              transaction?.metadata?.onChaindata?.data?.symbol ||
-              transaction?.metadata?.offChainData?.symbol ||
+              metadata?.onChaindata?.data?.symbol ||
+              metadata?.offChainData?.symbol ||
               "")}
         </div>
       );
@@ -267,8 +311,8 @@ function RecentActivityListItemData(
           ) +
             " " +
             (tokenData[0]?.symbol ||
-              transaction?.metadata?.onChaindata?.data?.symbol ||
-              transaction?.metadata?.offChainData?.symbol ||
+              metadata?.onChaindata?.data?.symbol ||
+              metadata?.offChainData?.symbol ||
               "")}
         </div>
       );

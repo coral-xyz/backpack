@@ -94,16 +94,19 @@ export const isUserTxnSender = (transaction: HeliusParsedTransaction) => {
   return null;
 };
 
-export const getTransactionTitle = (transaction: HeliusParsedTransaction) => {
+export const getTransactionTitle = (
+  transaction: HeliusParsedTransaction,
+  metadata?: any
+) => {
   switch (transaction.type) {
     case TransactionType.BURN:
+    case TransactionType.BURN_NFT:
       return "Burned";
 
     case TransactionType.TRANSFER:
       // send/receive NFT's are returned as TransactionType.TRANSFER
       const nftName =
-        transaction?.metadata?.onChainData?.data?.name ||
-        transaction?.metadata?.offChainData?.name;
+        metadata?.onChainData?.data?.name || metadata?.offChainData?.name;
       if (isNFTTransaction(transaction) && nftName) {
         return nftName;
       }
@@ -116,8 +119,7 @@ export const getTransactionTitle = (transaction: HeliusParsedTransaction) => {
 
     case TransactionType.NFT_MINT: {
       const nftName =
-        transaction?.metadata?.onChainData?.data?.name ||
-        transaction?.metadata?.offChainData?.name;
+        metadata?.onChainData?.data?.name || metadata?.offChainData?.name;
       return `Minted: ${nftName}`;
     }
 
@@ -128,8 +130,7 @@ export const getTransactionTitle = (transaction: HeliusParsedTransaction) => {
       // if transaction is of type NFT and was not caught above under 'TRANSFER' case
       // TODO: test this case to see if it is necessary
       const nonTransferNftName =
-        transaction?.metadata?.onChainData?.data?.name ||
-        transaction?.metadata?.offChainData?.name;
+        metadata?.onChainData?.data?.name || metadata?.offChainData?.name;
 
       if (isNFTTransaction(transaction) && nonTransferNftName) {
         return nonTransferNftName;
@@ -156,6 +157,7 @@ export const getTransactionDetailTitle = (
 ) => {
   switch (transaction.type) {
     case TransactionType.BURN:
+    case TransactionType.BURN_NFT:
       return "Burned";
 
     case TransactionType.TRANSFER:
@@ -192,7 +194,8 @@ export const getTransactionDetailTitle = (
 // used to display txn caption in list view
 export const getTransactionCaption = (
   transaction: HeliusParsedTransaction,
-  tokenData: (TokenInfo | undefined)[]
+  tokenData: (TokenInfo | undefined)[],
+  metadata?: any
 ): string => {
   const activeWallet = useActiveWallet();
 
@@ -244,9 +247,7 @@ export const getTransactionCaption = (
     // case TransactionType.BURN:
     //   return transaction?.
     case TransactionType.NFT_MINT:
-      return getTruncatedAddress(
-        transaction?.metadata?.onChainData?.collection?.key
-      );
+      return getTruncatedAddress(metadata?.onChainData?.collection?.key);
 
     default:
       if (transaction?.source === Source.CARDINAL_RENT) return "Rent Paid";

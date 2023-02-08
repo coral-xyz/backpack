@@ -4,9 +4,9 @@ import { atomFamily, selectorFamily } from "recoil";
 
 import { ethersContext } from "./ethereum/provider";
 import {
+  fetchNftMetadata,
   fetchRecentSolanaTransactionDetails,
-  fetchNFTMetaData,
-} from "./solana/recent-transaction-details";
+} from "./solana/recent-transactions";
 
 /**
  * Retrieve recent Ethereum transactions using alchemy_getAssetTransfers.
@@ -128,31 +128,37 @@ export const recentSolanaTransactions = atomFamily<
           const heliusTransactionDetails =
             await fetchRecentSolanaTransactionDetails(address);
 
-          return await Promise.all(
-            heliusTransactionDetails?.map(async (t) => {
-              // if transaction has a NFT mint address, query for additional metadata
-              // fallback to first token in tokenTransfers if nft event not present
-              const nftMint =
-                t?.events?.nft?.nfts[0]?.mint || t?.tokenTransfers[0]?.mint;
-              if (nftMint) {
-                const nftMetadata = await fetchNFTMetaData(nftMint);
-                return {
-                  blockchain: Blockchain.SOLANA,
-                  ...t,
-                  metadata: nftMetadata,
-                };
-              }
-
-              return {
-                blockchain: Blockchain.SOLANA,
-                ...t,
-              };
-            })
-          );
+          return heliusTransactionDetails?.map((t: any) => ({
+            blockchain: Blockchain.SOLANA,
+            ...t,
+          }));
         } catch (err) {
           console.error(err);
           return [];
         }
       },
   }),
+});
+
+export const metadataForRecentSolanaTransaction = selectorFamily<
+  any,
+  { transaction: any }
+>({
+  key: "metadataForRecentSolanaTransaction",
+  get:
+    ({ transaction }) =>
+    async () => {
+      try {
+        const mint =
+          transaction?.events?.nft?.nfts[0]?.mint ||
+          transaction?.tokenTransfers[0]?.mint;
+        if (!mint) {
+          return undefined;
+        }
+        return await fetchNftMetadata(mint);
+      } catch (err) {
+        console.error(err);
+        return undefined;
+      }
+    },
 });
