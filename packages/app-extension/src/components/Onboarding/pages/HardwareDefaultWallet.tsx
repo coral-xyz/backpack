@@ -19,7 +19,7 @@ import { ethers } from "ethers";
 
 const { base58 } = ethers.utils;
 
-export const HardwareDefaultAccount = ({
+export const HardwareDefaultWallet = ({
   blockchain,
   transport,
   onNext,

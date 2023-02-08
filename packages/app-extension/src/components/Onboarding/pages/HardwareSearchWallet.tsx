@@ -19,7 +19,7 @@ import { Header, SubtextParagraph } from "../../common";
 
 const { base58: bs58 } = ethers.utils;
 
-export const HardwareSearch = ({
+export const HardwareSearchWallet = ({
   blockchain,
   transport,
   publicKey,

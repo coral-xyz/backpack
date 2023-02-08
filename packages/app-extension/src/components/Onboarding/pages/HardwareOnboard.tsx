@@ -14,9 +14,9 @@ import { NavBackButton, WithNav } from "../../common/Layout/Nav";
 import { ConnectHardwareSearching } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareSearching";
 import { ConnectHardwareWelcome } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareWelcome";
 
-import { HardwareDefaultAccount } from "./HardwareDefaultAccount";
+import { HardwareDefaultWallet } from "./HardwareDefaultWallet";
 import { HardwareDeriveWallet } from "./HardwareDeriveWallet";
-import { HardwareSearch } from "./HardwareSearch";
+import { HardwareSearchWallet } from "./HardwareSearchWallet";
 import { HardwareSign } from "./HardwareSign";
 
 // We are using a hook here to generate the steps for the hardware onboard
@@ -72,7 +72,7 @@ export function useHardwareOnboardSteps({
       // creating a new account. This step automatically proceeds to the next step
       // and and there is no user input required.
       create: (
-        <HardwareDefaultAccount
+        <HardwareDefaultWallet
           blockchain={blockchain}
           transport={transport!}
           onNext={(walletDescriptor: WalletDescriptor) => {
@@ -103,7 +103,7 @@ export function useHardwareOnboardSteps({
       // The search flow searches the wallet for a given public key to proceed
       // with.
       search: (
-        <HardwareSearch
+        <HardwareSearchWallet
           blockchain={blockchain!}
           transport={transport!}
           publicKey={searchPublicKey!}
