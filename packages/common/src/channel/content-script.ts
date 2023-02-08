@@ -36,17 +36,7 @@ export class ChannelContentScript {
   }
 
   // Forwards all messages from the background script to the client.
-  public static proxyReverse(reqChannel: string, respChannel?: string) {
-    if (respChannel) {
-      window.addEventListener("message", (event) => {
-        if (event.data.type !== respChannel) return;
-
-        BrowserRuntimeCommon.sendMessageToAnywhere({
-          channel: respChannel,
-          data: event.data.detail,
-        });
-      });
-    }
+  public static proxyReverse(reqChannel: string) {
     BrowserRuntimeCommon.addEventListenerFromAnywhere(
       (message: any, sender: Sender, sendResponse: any) => {
         if (!isMobile()) {

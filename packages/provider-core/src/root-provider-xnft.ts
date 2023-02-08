@@ -1,5 +1,7 @@
 import type { Event } from "@coral-xyz/common";
 import {
+  BACKPACK_CONFIG_EXTENSION_KEY,
+  BACKPACK_CONFIG_VERSION,
   Blockchain,
   CHANNEL_PLUGIN_NOTIFICATION,
   CHANNEL_SOLANA_CONNECTION_INJECTED_REQUEST,
@@ -31,6 +33,7 @@ import type {
 import { PrivateEventEmitter } from "./common/PrivateEventEmitter";
 import type { ChainedRequestManager } from "./chained-request-manager";
 import { RequestManager } from "./request-manager";
+import { isValidEventOrigin } from ".";
 
 const logger = getLogger("provider-xnft-injection");
 
@@ -155,6 +158,7 @@ export class ProviderRootXnftInjection extends PrivateEventEmitter {
   // Notifications from the extension UI -> plugin.
   //
   async #handleNotifications(event: Event) {
+    if (!isValidEventOrigin(event)) return;
     if (event.data.type !== CHANNEL_PLUGIN_NOTIFICATION) return;
 
     // Send RPC message to all child iframes
