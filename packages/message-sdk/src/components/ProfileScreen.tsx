@@ -13,7 +13,11 @@ import {
   PrimaryButton,
   useUsersMetadata,
 } from "@coral-xyz/react-common";
-import { useNavigation } from "@coral-xyz/recoil";
+import {
+  useNavigation,
+  useUpdateFriendships,
+  useUser,
+} from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import LockIcon from "@mui/icons-material/Lock";
@@ -37,7 +41,11 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
   const classes = useStyles();
   const theme = useCustomTheme();
   const userMetadata = useUsersMetadata({ remoteUserIds: [userId] });
+
+  const { uuid } = useUser();
   const { push } = useNavigation();
+
+  const setFriendshipValue = useUpdateFriendships();
 
   async function getChatRoom() {
     const res = await ParentCommunicationManager.getInstance().fetch(
@@ -64,6 +72,13 @@ export const ProfileScreen = ({ userId }: { userId: string }) => {
     await unFriend({ to: userId });
     await updateFriendshipIfExists(uuid, userId, {
       areFriends: 0,
+    });
+    setFriendshipValue({
+      userId: userId,
+      friendshipValue: {
+        requested: false,
+        areFriends: false,
+      },
     });
     setFriendship(false);
   };
