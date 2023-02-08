@@ -3,11 +3,10 @@ import { getLogger } from "@coral-xyz/common";
 
 import type { Backend } from "../backend/core";
 import { SUCCESS_RESPONSE } from "../backend/core";
-import type { Config, Handle } from "../types";
 
 const logger = getLogger("server-injected-solana");
 
-export class RequestManager {
+export class UiActionRequestManager {
   static _requestId = 0;
   static _responseResolvers: any = {};
 
@@ -23,16 +22,16 @@ export class RequestManager {
     popupFn: (reqId: number) => Promise<chrome.windows.Window>
   ): Promise<T> {
     return new Promise(async (resolve, reject) => {
-      const requestId = RequestManager.nextRequestId();
+      const requestId = UiActionRequestManager.nextRequestId();
       const window = await popupFn(requestId);
-      RequestManager.addResponseResolver(
+      UiActionRequestManager.addResponseResolver(
         requestId,
         (input: any) => resolve({ ...input, window }),
         reject
       );
       chrome.windows.onRemoved.addListener((windowId) => {
         if (windowId === window.id) {
-          RequestManager.removeResponseResolver(requestId);
+          UiActionRequestManager.removeResponseResolver(requestId);
           resolve({
             // @ts-ignore
             id: requestId,
@@ -48,14 +47,14 @@ export class RequestManager {
 
   // Resolve a response initiated via `requestUiAction`.
   public static resolveResponse(id: number, result: any, error: any) {
-    const resolver = RequestManager.getResponseResolver(id);
+    const resolver = UiActionRequestManager.getResponseResolver(id);
     if (!resolver) {
       throw new Error(`unable to find response resolver for: ${id}`);
     }
 
     const [resolve, _reject] = resolver;
 
-    RequestManager.removeResponseResolver(id);
+    UiActionRequestManager.removeResponseResolver(id);
 
     resolve({
       id,
@@ -70,22 +69,22 @@ export class RequestManager {
     resolve: Function,
     reject: Function
   ): number {
-    RequestManager._responseResolvers[requestId] = [resolve, reject];
+    UiActionRequestManager._responseResolvers[requestId] = [resolve, reject];
     return requestId;
   }
 
   private static nextRequestId(): number {
-    const r = RequestManager._requestId;
-    RequestManager._requestId += 1;
+    const r = UiActionRequestManager._requestId;
+    UiActionRequestManager._requestId += 1;
     return r;
   }
 
   private static getResponseResolver(requestId: number): [Function, Function] {
-    return RequestManager._responseResolvers[requestId];
+    return UiActionRequestManager._responseResolvers[requestId];
   }
 
   private static removeResponseResolver(requestId: number) {
-    delete RequestManager._responseResolvers[requestId];
+    delete UiActionRequestManager._responseResolvers[requestId];
   }
 }
 
@@ -95,6 +94,6 @@ export async function handlePopupUiResponse(
 ): Promise<string> {
   const { id, result, error } = msg;
   logger.debug("handle popup ui response", msg);
-  RequestManager.resolveResponse(id, result, error);
+  UiActionRequestManager.resolveResponse(id, result, error);
   return SUCCESS_RESPONSE;
 }

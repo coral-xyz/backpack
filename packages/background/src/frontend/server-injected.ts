@@ -58,7 +58,7 @@ import type { SendOptions } from "@solana/web3.js";
 import type { Backend } from "../backend/core";
 import type { Config, Handle } from "../types";
 
-import { handlePopupUiResponse, RequestManager } from "./common";
+import { handlePopupUiResponse, UiActionRequestManager } from "./common";
 
 const logger = getLogger("server-injected");
 
@@ -245,25 +245,29 @@ async function handleConnect(
   if (keyringStoreState === "locked") {
     if (await ctx.backend.isApprovedOrigin(origin)) {
       logger.debug("origin approved but need to unlock");
-      resp = await RequestManager.requestUiAction((requestId: number) => {
-        return openLockedPopupWindow(
-          origin,
-          getTabTitle(ctx),
-          requestId,
-          blockchain
-        );
-      });
+      resp = await UiActionRequestManager.requestUiAction(
+        (requestId: number) => {
+          return openLockedPopupWindow(
+            origin,
+            getTabTitle(ctx),
+            requestId,
+            blockchain
+          );
+        }
+      );
       didApprove = !resp.windowClosed && resp.result;
     } else {
       logger.debug("origin not apporved and needs to unlock");
-      resp = await RequestManager.requestUiAction((requestId: number) => {
-        return openLockedApprovalPopupWindow(
-          origin,
-          getTabTitle(ctx),
-          requestId,
-          blockchain
-        );
-      });
+      resp = await UiActionRequestManager.requestUiAction(
+        (requestId: number) => {
+          return openLockedApprovalPopupWindow(
+            origin,
+            getTabTitle(ctx),
+            requestId,
+            blockchain
+          );
+        }
+      );
       didApprove = !resp.windowClosed && resp.result.didApprove;
     }
   } else {
@@ -273,14 +277,16 @@ async function handleConnect(
     } else {
       // Origin is not approved and wallet may or may not be locked
       logger.debug("requesting approval for origin");
-      resp = await RequestManager.requestUiAction((requestId: number) => {
-        return openApprovalPopupWindow(
-          origin,
-          getTabTitle(ctx),
-          requestId,
-          blockchain
-        );
-      });
+      resp = await UiActionRequestManager.requestUiAction(
+        (requestId: number) => {
+          return openApprovalPopupWindow(
+            origin,
+            getTabTitle(ctx),
+            requestId,
+            blockchain
+          );
+        }
+      );
       didApprove = !resp.windowClosed && resp.result.didApprove;
     }
   }
@@ -360,16 +366,18 @@ async function handleSolanaSignAndSendTx(
     throw new Error("origin is undefined");
   }
   // Get user approval.
-  const uiResp = await RequestManager.requestUiAction((requestId: number) => {
-    return openApproveTransactionPopupWindow(
-      ctx.sender.origin!,
-      getTabTitle(ctx),
-      requestId,
-      tx,
-      walletAddress,
-      Blockchain.SOLANA
-    );
-  });
+  const uiResp = await UiActionRequestManager.requestUiAction(
+    (requestId: number) => {
+      return openApproveTransactionPopupWindow(
+        ctx.sender.origin!,
+        getTabTitle(ctx),
+        requestId,
+        tx,
+        walletAddress,
+        Blockchain.SOLANA
+      );
+    }
+  );
 
   if (uiResp.error) {
     logger.debug("require ui action error", uiResp);
@@ -411,16 +419,18 @@ async function handleSolanaSignTx(
   if (ctx.sender.origin === undefined) {
     throw new Error("origin is undefined");
   }
-  const uiResp = await RequestManager.requestUiAction((requestId: number) => {
-    return openApproveTransactionPopupWindow(
-      ctx.sender.origin!,
-      getTabTitle(ctx),
-      requestId,
-      tx,
-      walletAddress,
-      Blockchain.SOLANA
-    );
-  });
+  const uiResp = await UiActionRequestManager.requestUiAction(
+    (requestId: number) => {
+      return openApproveTransactionPopupWindow(
+        ctx.sender.origin!,
+        getTabTitle(ctx),
+        requestId,
+        tx,
+        walletAddress,
+        Blockchain.SOLANA
+      );
+    }
+  );
 
   if (uiResp.error) {
     logger.debug("require ui action error", uiResp);
@@ -462,16 +472,18 @@ async function handleSolanaSignAllTxs(
   if (ctx.sender.origin === undefined) {
     throw new Error("origin is undefined");
   }
-  const uiResp = await RequestManager.requestUiAction((requestId: number) => {
-    return openApproveAllTransactionsPopupWindow(
-      ctx.sender.origin!,
-      getTabTitle(ctx),
-      requestId,
-      txs,
-      walletAddress,
-      Blockchain.SOLANA
-    );
-  });
+  const uiResp = await UiActionRequestManager.requestUiAction(
+    (requestId: number) => {
+      return openApproveAllTransactionsPopupWindow(
+        ctx.sender.origin!,
+        getTabTitle(ctx),
+        requestId,
+        txs,
+        walletAddress,
+        Blockchain.SOLANA
+      );
+    }
+  );
 
   if (uiResp.error) {
     logger.debug("require ui action error", uiResp);
@@ -513,16 +525,18 @@ async function handleSolanaSignMessage(
   if (ctx.sender.origin === undefined) {
     throw new Error("origin is undefined");
   }
-  const uiResp = await RequestManager.requestUiAction((requestId: number) => {
-    return openApproveMessagePopupWindow(
-      ctx.sender.origin!,
-      getTabTitle(ctx),
-      requestId,
-      msg,
-      walletAddress,
-      Blockchain.SOLANA
-    );
-  });
+  const uiResp = await UiActionRequestManager.requestUiAction(
+    (requestId: number) => {
+      return openApproveMessagePopupWindow(
+        ctx.sender.origin!,
+        getTabTitle(ctx),
+        requestId,
+        msg,
+        walletAddress,
+        Blockchain.SOLANA
+      );
+    }
+  );
 
   if (uiResp.error) {
     logger.debug("require ui action error", uiResp);
@@ -580,16 +594,18 @@ async function handleEthereumSignAndSendTx(
     throw new Error("origin is undefined");
   }
   // Get user approval.
-  const uiResp = await RequestManager.requestUiAction((requestId: number) => {
-    return openApproveTransactionPopupWindow(
-      ctx.sender.origin!,
-      getTabTitle(ctx),
-      requestId,
-      tx,
-      walletAddress,
-      Blockchain.ETHEREUM
-    );
-  });
+  const uiResp = await UiActionRequestManager.requestUiAction(
+    (requestId: number) => {
+      return openApproveTransactionPopupWindow(
+        ctx.sender.origin!,
+        getTabTitle(ctx),
+        requestId,
+        tx,
+        walletAddress,
+        Blockchain.ETHEREUM
+      );
+    }
+  );
 
   if (uiResp.error) {
     logger.debug("require ui action error", uiResp);
@@ -632,16 +648,18 @@ async function handleEthereumSignTx(
   if (ctx.sender.origin === undefined) {
     throw new Error("origin is undefined");
   }
-  const uiResp = await RequestManager.requestUiAction((requestId: number) => {
-    return openApproveTransactionPopupWindow(
-      ctx.sender.origin!,
-      getTabTitle(ctx),
-      requestId,
-      tx,
-      walletAddress,
-      Blockchain.ETHEREUM
-    );
-  });
+  const uiResp = await UiActionRequestManager.requestUiAction(
+    (requestId: number) => {
+      return openApproveTransactionPopupWindow(
+        ctx.sender.origin!,
+        getTabTitle(ctx),
+        requestId,
+        tx,
+        walletAddress,
+        Blockchain.ETHEREUM
+      );
+    }
+  );
 
   if (uiResp.error) {
     logger.debug("require ui action error", uiResp);
@@ -682,16 +700,18 @@ async function handleEthereumSignMessage(
   if (ctx.sender.origin === undefined) {
     throw new Error("origin is undefined");
   }
-  const uiResp = await RequestManager.requestUiAction((requestId: number) => {
-    return openApproveMessagePopupWindow(
-      ctx.sender.origin!,
-      getTabTitle(ctx),
-      requestId,
-      msg,
-      walletAddress,
-      Blockchain.ETHEREUM
-    );
-  });
+  const uiResp = await UiActionRequestManager.requestUiAction(
+    (requestId: number) => {
+      return openApproveMessagePopupWindow(
+        ctx.sender.origin!,
+        getTabTitle(ctx),
+        requestId,
+        msg,
+        walletAddress,
+        Blockchain.ETHEREUM
+      );
+    }
+  );
 
   if (uiResp.error) {
     logger.debug("require ui action error", uiResp);
