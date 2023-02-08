@@ -138,7 +138,7 @@ const EXPANDED_HTML = "options.html";
 export async function openLockedPopupWindow(
   origin: string,
   title: string,
-  requestId: number,
+  requestId: string,
   blockchain: Blockchain
 ): Promise<chrome.windows.Window> {
   const encodedTitle = encodeURIComponent(title);
@@ -149,7 +149,7 @@ export async function openLockedPopupWindow(
 export function openLockedApprovalPopupWindow(
   origin: string,
   title: string,
-  requestId: number,
+  requestId: string,
   blockchain: Blockchain
 ): Promise<chrome.windows.Window> {
   const encodedTitle = encodeURIComponent(title);
@@ -160,7 +160,7 @@ export function openLockedApprovalPopupWindow(
 export async function openApprovalPopupWindow(
   origin: string,
   title: string,
-  requestId: number,
+  requestId: string,
   blockchain: Blockchain
 ): Promise<chrome.windows.Window> {
   const encodedTitle = encodeURIComponent(title);
@@ -171,7 +171,7 @@ export async function openApprovalPopupWindow(
 export async function openApproveTransactionPopupWindow(
   origin: string,
   title: string,
-  requestId: number,
+  requestId: string,
   tx: string,
   walletAddress: string,
   blockchain: Blockchain
@@ -184,7 +184,7 @@ export async function openApproveTransactionPopupWindow(
 export async function openApproveAllTransactionsPopupWindow(
   origin: string,
   title: string,
-  requestId: number,
+  requestId: string,
   txs: Array<string>,
   walletAddress: string,
   blockchain: Blockchain
@@ -198,7 +198,7 @@ export async function openApproveAllTransactionsPopupWindow(
 export async function openApproveMessagePopupWindow(
   origin: string,
   title: string,
-  requestId: number,
+  requestId: string,
   message: string,
   walletAddress: string,
   blockchain: Blockchain

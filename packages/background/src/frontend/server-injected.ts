@@ -246,7 +246,7 @@ async function handleConnect(
     if (await ctx.backend.isApprovedOrigin(origin)) {
       logger.debug("origin approved but need to unlock");
       resp = await UiActionRequestManager.requestUiAction(
-        (requestId: number) => {
+        (requestId: string) => {
           return openLockedPopupWindow(
             origin,
             getTabTitle(ctx),
@@ -259,7 +259,7 @@ async function handleConnect(
     } else {
       logger.debug("origin not apporved and needs to unlock");
       resp = await UiActionRequestManager.requestUiAction(
-        (requestId: number) => {
+        (requestId: string) => {
           return openLockedApprovalPopupWindow(
             origin,
             getTabTitle(ctx),
@@ -278,7 +278,7 @@ async function handleConnect(
       // Origin is not approved and wallet may or may not be locked
       logger.debug("requesting approval for origin");
       resp = await UiActionRequestManager.requestUiAction(
-        (requestId: number) => {
+        (requestId: string) => {
           return openApprovalPopupWindow(
             origin,
             getTabTitle(ctx),
@@ -367,7 +367,7 @@ async function handleSolanaSignAndSendTx(
   }
   // Get user approval.
   const uiResp = await UiActionRequestManager.requestUiAction(
-    (requestId: number) => {
+    (requestId: string) => {
       return openApproveTransactionPopupWindow(
         ctx.sender.origin!,
         getTabTitle(ctx),
@@ -420,7 +420,7 @@ async function handleSolanaSignTx(
     throw new Error("origin is undefined");
   }
   const uiResp = await UiActionRequestManager.requestUiAction(
-    (requestId: number) => {
+    (requestId: string) => {
       return openApproveTransactionPopupWindow(
         ctx.sender.origin!,
         getTabTitle(ctx),
@@ -473,7 +473,7 @@ async function handleSolanaSignAllTxs(
     throw new Error("origin is undefined");
   }
   const uiResp = await UiActionRequestManager.requestUiAction(
-    (requestId: number) => {
+    (requestId: string) => {
       return openApproveAllTransactionsPopupWindow(
         ctx.sender.origin!,
         getTabTitle(ctx),
@@ -526,7 +526,7 @@ async function handleSolanaSignMessage(
     throw new Error("origin is undefined");
   }
   const uiResp = await UiActionRequestManager.requestUiAction(
-    (requestId: number) => {
+    (requestId: string) => {
       return openApproveMessagePopupWindow(
         ctx.sender.origin!,
         getTabTitle(ctx),
@@ -595,7 +595,7 @@ async function handleEthereumSignAndSendTx(
   }
   // Get user approval.
   const uiResp = await UiActionRequestManager.requestUiAction(
-    (requestId: number) => {
+    (requestId: string) => {
       return openApproveTransactionPopupWindow(
         ctx.sender.origin!,
         getTabTitle(ctx),
@@ -649,7 +649,7 @@ async function handleEthereumSignTx(
     throw new Error("origin is undefined");
   }
   const uiResp = await UiActionRequestManager.requestUiAction(
-    (requestId: number) => {
+    (requestId: string) => {
       return openApproveTransactionPopupWindow(
         ctx.sender.origin!,
         getTabTitle(ctx),
@@ -701,7 +701,7 @@ async function handleEthereumSignMessage(
     throw new Error("origin is undefined");
   }
   const uiResp = await UiActionRequestManager.requestUiAction(
-    (requestId: number) => {
+    (requestId: string) => {
       return openApproveMessagePopupWindow(
         ctx.sender.origin!,
         getTabTitle(ctx),
