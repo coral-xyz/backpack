@@ -119,12 +119,13 @@ export function useHardwareOnboardSteps({
         />
       ),
       // The import flow displays a table and allows the user to select a public
-      // key to proceed with.
+      // key to proceed with. This component works with either a mnemonic or a
+      // hardware wallet.
       import: (
         <ImportWallets
           blockchain={blockchain}
           transport={transport}
-          allowMultiple={false}
+          allowMultiple={false} // Only allow a single wallet to be selected
           onNext={(walletDescriptors: Array<WalletDescriptor>) => {
             setWalletDescriptor(walletDescriptors[0]);
             nextStep();
@@ -138,6 +139,7 @@ export function useHardwareOnboardSteps({
     }[action],
     ...(walletDescriptor
       ? [
+          // Sign the found wallet descriptor for API submit
           <HardwareSign
             blockchain={blockchain}
             walletDescriptor={walletDescriptor}
@@ -161,6 +163,7 @@ export function useHardwareOnboardSteps({
       : []),
   ];
 
+  // Optional component displayed on success of hardware onboarding
   if (successComponent) {
     steps.push(successComponent);
   }
@@ -179,7 +182,7 @@ export function HardwareOnboard({
   onClose,
 }: {
   blockchain: Blockchain;
-  action: "create" | "search" | "import";
+  action: "create" | "derive" | "search" | "import";
   searchPublicKey?: string;
   signMessage: string | ((publicKey: string) => string);
   signText: string;
