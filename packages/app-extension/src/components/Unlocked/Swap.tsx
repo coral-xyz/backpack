@@ -18,6 +18,7 @@ import {
 } from "@coral-xyz/react-common";
 import {
   useActiveWallet,
+  useDarkMode,
   useJupiterOutputMints,
   useSplTokenRegistry,
   useSwapContext,
@@ -218,6 +219,7 @@ export function Swap({ blockchain }: { blockchain: Blockchain }) {
 }
 
 function _Swap() {
+  const isDark = useDarkMode();
   const classes = useStyles();
   const { swapToFromMints } = useSwapContext();
   const [openDrawer, setOpenDrawer] = useState(false);

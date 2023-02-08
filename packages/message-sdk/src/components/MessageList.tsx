@@ -45,7 +45,7 @@ export const MessageList = ({
       <List
         style={{
           paddingTop: 0,
-          paddingBottom: 0,
+          paddingBottom: 16,
           borderRadius: "14px",
           border: `${theme.custom.colors.borderFull}`,
         }}
