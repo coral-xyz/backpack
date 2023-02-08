@@ -290,16 +290,7 @@ export function AddWalletMenu({
               <Grid item xs={12}>
                 <ActionCard
                   text="Secret recovery phrase"
-                  textAdornment={
-                    <Typography
-                      style={{
-                        fontSize: "14px",
-                        color: theme.custom.colors.fontColor3,
-                      }}
-                    >
-                      Create a new wallet using your secret recovery phrase.
-                    </Typography>
-                  }
+                  subtext="Create a new wallet using your secret recovery phrase."
                   onClick={createNew}
                 />
               </Grid>
@@ -308,16 +299,7 @@ export function AddWalletMenu({
               <Grid item xs={12}>
                 <ActionCard
                   text="Hardware wallet"
-                  textAdornment={
-                    <Typography
-                      style={{
-                        fontSize: "14px",
-                        color: theme.custom.colors.fontColor3,
-                      }}
-                    >
-                      Create a new wallet using a hardware wallet.
-                    </Typography>
-                  }
+                  subtext="Create a new wallet using a hardware wallet."
                   onClick={() => {
                     openConnectHardware(
                       blockchain,
@@ -335,17 +317,7 @@ export function AddWalletMenu({
               <Grid item xs={12}>
                 <ActionCard
                   text="Advanced import"
-                  textAdornment={
-                    <Typography
-                      style={{
-                        fontSize: "14px",
-                        color: theme.custom.colors.fontColor3,
-                      }}
-                    >
-                      Import existing wallets using a seed phrase, hardware
-                      wallet, or private key.
-                    </Typography>
-                  }
+                  subtext="Import existing wallets using a seed phrase, hardware wallet, or private key."
                   onClick={() => nav.push("import-wallet", { blockchain })}
                 />
               </Grid>
