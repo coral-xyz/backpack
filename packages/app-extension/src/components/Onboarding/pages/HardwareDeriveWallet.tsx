@@ -43,7 +43,7 @@ export const HardwareDeriveWallet = ({
     (async () => {
       if (ledgerWallet === null) return;
 
-      const nextDerivationPath = await background.request({
+      const { derivationPath } = await background.request({
         method: UI_RPC_METHOD_KEYRING_READ_NEXT_DERIVATION_PATH,
         params: [blockchain, "ledger"],
       });
@@ -51,7 +51,7 @@ export const HardwareDeriveWallet = ({
       let publicKey: string;
       try {
         const ledgerAddress = (
-          await ledgerWallet.getAddress(nextDerivationPath.replace("m/", ""))
+          await ledgerWallet.getAddress(derivationPath.replace("m/", ""))
         ).address;
         publicKey =
           blockchain === Blockchain.SOLANA
@@ -71,7 +71,7 @@ export const HardwareDeriveWallet = ({
       // path if unusable
 
       onNext({
-        derivationPath: nextDerivationPath,
+        derivationPath,
         publicKey,
       });
     })();
