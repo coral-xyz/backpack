@@ -241,12 +241,7 @@ function _Swap() {
 
   return (
     <>
-      <form
-        onSubmit={onSubmit}
-        className={classes.container}
-        style={isDark ? { background: "#1D1D20" } : {}}
-        noValidate
-      >
+      <form onSubmit={onSubmit} className={classes.container} noValidate>
         <div className={classes.topHalf}>
           <SwapTokensButton
             onClick={onSwapButtonClick}
