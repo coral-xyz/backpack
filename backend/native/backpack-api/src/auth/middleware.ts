@@ -9,7 +9,7 @@ import {
   validatePublicKeyOwnership,
 } from "../db/nft";
 
-import { clearCookie, setJWTCookie, validateJwt } from "./util";
+import { clearCookie, validateJwt } from "./util";
 
 export const ensureHasPubkeyAccess = async (
   req: Request,
@@ -83,8 +83,6 @@ export const extractUserId = async (
       });
       const payloadRes = await validateJwt(jwt);
       if (payloadRes.payload.sub) {
-        // Extend cookie
-        setJWTCookie(req, res, payloadRes.payload.sub);
         // Set id on request
         req.id = payloadRes.payload.sub;
         next();
@@ -132,8 +130,6 @@ export const optionallyExtractUserId = (allowQueryString: boolean) => {
       try {
         const payloadRes = await validateJwt(jwt);
         if (payloadRes.payload.sub) {
-          // Extend cookie or set it if not set
-          setJWTCookie(req, res, payloadRes.payload.sub);
           // Set id on request
           req.id = payloadRes.payload.sub;
         }
