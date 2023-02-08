@@ -110,7 +110,9 @@ router.post("/drops", async (req, res, next) => {
     tx.recentBlockhash = blockhash;
     tx.lastValidBlockHeight = lastValidBlockHeight;
 
-    new SignerWallet(pendingDistributor.tx.signers[0]).signTransaction(tx);
+    await new SignerWallet(pendingDistributor.tx.signers[0]).signTransaction(
+      tx
+    );
 
     // Can't seem to use zeus here because of JSONB field, explanation below
     // https://gist.github.com/wentokay/fc0f6891bab6404ad0bcea7761696dd7
