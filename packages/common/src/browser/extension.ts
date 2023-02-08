@@ -69,9 +69,9 @@ export class BrowserRuntimeExtension {
 
               if (updatedTab) {
                 //
-                // If we are override a previous popup with a new url, then
+                // If we are overriding a previous popup with a new url, then
                 // reject all previous ui action requests--e.g., for tx
-                // signing--so that those requests can properly resolve with
+                // signing--so that those promises can properly resolve with
                 // the right state.
                 //
                 UiActionRequestManager.cancelAllRequests();
