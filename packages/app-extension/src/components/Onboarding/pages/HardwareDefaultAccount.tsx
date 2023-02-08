@@ -46,6 +46,7 @@ export const HardwareDefaultAccount = ({
     })();
   }, [blockchain]);
 
+  // This is effectively the same as UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR
   useEffect(() => {
     (async () => {
       if (ledgerWallet === null) return;
@@ -69,7 +70,7 @@ export const HardwareDefaultAccount = ({
         );
       } catch (error) {
         if (onError) {
-          console.debug("hardware default account transport error", error);
+          console.debug("hardware default wallet transport error", error);
           onError(error as Error);
           return;
         } else {
