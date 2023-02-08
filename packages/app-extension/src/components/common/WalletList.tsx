@@ -37,6 +37,7 @@ import {
   AddConnectWalletMenu,
 } from "../Unlocked/Settings/AddConnectWallet";
 import { ImportMenu } from "../Unlocked/Settings/AddConnectWallet/ImportMenu";
+import { ImportMnemonic } from "../Unlocked/Settings/AddConnectWallet/ImportMnemonic";
 import { ImportSecretKey } from "../Unlocked/Settings/AddConnectWallet/ImportSecretKey";
 import { RemoveWallet } from "../Unlocked/Settings/YourAccount/EditWallets/RemoveWallet";
 import { RenameWallet } from "../Unlocked/Settings/YourAccount/EditWallets/RenameWallet";
@@ -243,7 +244,11 @@ function WalletNavStack({
         component={(props: any) => <ImportMenu {...props} />}
       />
       <NavStackScreen
-        name={"import-secret-key"}
+        name={"import-from-mnemonic"}
+        component={(props: any) => <ImportMnemonic {...props} />}
+      />
+      <NavStackScreen
+        name={"import-from-secret-key"}
         component={(props: any) => <ImportSecretKey {...props} />}
       />
       <NavStackScreen

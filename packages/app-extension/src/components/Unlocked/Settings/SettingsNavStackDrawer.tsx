@@ -13,6 +13,7 @@ import { ContactRequests, Contacts } from "../Messages/Contacts";
 import { Requests } from "../Messages/Requests";
 
 import { ImportMenu } from "./AddConnectWallet/ImportMenu";
+import { ImportMnemonic } from "./AddConnectWallet/ImportMnemonic";
 import { ImportSecretKey } from "./AddConnectWallet/ImportSecretKey";
 import { PreferencesAutoLock } from "./Preferences/AutoLock";
 import { PreferencesEthereum } from "./Preferences/Ethereum";
@@ -72,7 +73,11 @@ export function SettingsNavStackDrawer({
             component={(props: any) => <ImportMenu {...props} />}
           />
           <NavStackScreen
-            name={"import-secret-key"}
+            name={"import-from-mnemonic"}
+            component={(props: any) => <ImportMnemonic {...props} />}
+          />
+          <NavStackScreen
+            name={"import-from-secret-key"}
             component={(props: any) => <ImportSecretKey {...props} />}
           />
           <NavStackScreen

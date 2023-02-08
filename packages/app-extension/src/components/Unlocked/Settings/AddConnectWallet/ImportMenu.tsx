@@ -34,8 +34,6 @@ export function ImportMenu({ blockchain }: { blockchain: Blockchain }) {
     })();
   }, [blockchain]);
 
-  const createNew = () => {};
-
   return (
     <>
       <div
@@ -57,8 +55,8 @@ export function ImportMenu({ blockchain }: { blockchain: Blockchain }) {
             <Grid item xs={12}>
               <ActionCard
                 text="Secret recovery phrase"
-                subtext="Select from a list of wallets found using your secret recovery phrase."
-                onClick={createNew}
+                subtext="Select from a list of wallets found using a secret recovery phrase."
+                onClick={() => nav.push("import-from-mnemonic", { blockchain })}
               />
             </Grid>
             <Grid item xs={12}>
@@ -71,13 +69,17 @@ export function ImportMenu({ blockchain }: { blockchain: Blockchain }) {
                 }}
               />
             </Grid>
-            <Grid item xs={12}>
-              <ActionCard
-                text="Secret key"
-                subtext="Import a wallet using a secret key."
-                onClick={() => nav.push("import-secret-key", { blockchain })}
-              />
-            </Grid>
+            {keyringExists && (
+              <Grid item xs={12}>
+                <ActionCard
+                  text="Secret key"
+                  subtext="Import a wallet using a secret key."
+                  onClick={() =>
+                    nav.push("import-from-secret-key", { blockchain })
+                  }
+                />
+              </Grid>
+            )}
           </Grid>
         </Box>
       </div>

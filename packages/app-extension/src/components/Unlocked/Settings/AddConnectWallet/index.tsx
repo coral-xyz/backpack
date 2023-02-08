@@ -392,7 +392,7 @@ export function RecoverWalletMenu({
                   }
                   text="Recover using private key"
                   onClick={() =>
-                    nav.push("import-secret-key", {
+                    nav.push("import-from-secret-key", {
                       blockchain,
                       publicKey,
                     })
