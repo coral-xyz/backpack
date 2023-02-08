@@ -1,10 +1,21 @@
-import type { Blockchain, FeeConfig } from "@coral-xyz/common";
+import { useEffect } from "react";
+import type {
+  Blockchain,
+  FeeConfig} from "@coral-xyz/common";
+import {
+  TOKEN_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
+} from "@coral-xyz/common";
 import { EmptyState, Loading } from "@coral-xyz/react-common";
-import { useTransactionData, useWalletBlockchain } from "@coral-xyz/recoil";
+import {
+  blockchainBalancesSorted,
+  useLoader,
+  useTransactionData,
+  useWalletBlockchain,
+} from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Block as BlockIcon } from "@mui/icons-material";
 import { Typography } from "@mui/material";
-import { BigNumber, ethers } from "ethers";
+import { BigNumber, ethers, FixedNumber } from "ethers";
 
 import { TransactionData } from "../../common/TransactionData";
 import { WithApproval } from "../../Unlocked/Approvals";
@@ -69,10 +80,41 @@ export function ApproveTransaction({
   const transactionData = useTransactionData(blockchain as Blockchain, tx);
   const { loading, balanceChanges, transaction, solanaFeeConfig } =
     transactionData;
+  const [_tokenAccounts, , isLoading] = useLoader(
+    blockchainBalancesSorted({
+      publicKey: wallet,
+      blockchain: blockchain as Blockchain,
+    }),
+    [],
+    [wallet]
+  );
+
+  // console.log(blockchain);
+
+  // console.log(_tokenAccounts);
+
+  useEffect(() => {
+    if (!_tokenAccounts || isLoading || !balanceChanges) return;
+
+    _tokenAccounts.forEach(({ ticker, nativeBalance }) => {
+      if (balanceChanges[ticker]) {
+        if (
+          balanceChanges[ticker].nativeChange.toNumber() >=
+          0.3 * nativeBalance.toNumber()
+        ) {
+          console.log(ticker, "DANGER");
+        } else {
+          console.log(ticker, "no danger");
+        }
+      }
+    });
+  }, [_tokenAccounts, isLoading, balanceChanges]);
 
   if (loading) {
     return <Loading />;
   }
+
+  // console.log(balanceChanges);
 
   const menuItems = balanceChanges
     ? Object.fromEntries(
