@@ -41,11 +41,36 @@ export const HardwareDeriveWallet = ({
 
   useEffect(() => {
     (async () => {
+      if (ledgerWallet === null) return;
+
       const nextDerivationPath = await background.request({
         method: UI_RPC_METHOD_KEYRING_READ_NEXT_DERIVATION_PATH,
         params: [blockchain, "ledger"],
       });
-      console.log(nextDerivationPath);
+
+      let publicKey: string;
+      try {
+        const ledgerAddress = (
+          await ledgerWallet.getAddress(nextDerivationPath.replace("m/", ""))
+        ).address;
+        publicKey =
+          blockchain === Blockchain.SOLANA
+            ? base58.encode(ledgerAddress)
+            : ledgerAddress.toString();
+      } catch (error) {
+        if (onError) {
+          console.debug("hardware derive wallet transport error", error);
+          onError(error as Error);
+          return;
+        } else {
+          throw error;
+        }
+      }
+
+      onNext({
+        derivationPath: nextDerivationPath,
+        publicKey,
+      });
     })();
   }, [ledgerWallet]);
 
