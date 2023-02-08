@@ -53,21 +53,19 @@ export const HardwareDefaultAccount = ({
 
       const recoveryPaths = getAccountRecoveryPaths(blockchain, accountIndex);
 
-      let publicKeys: Array<string>;
+      let publicKeys: Array<string> = [];
       try {
         // Get the public keys for all of the recovery paths for the current account index
-        publicKeys = await Promise.all(
-          recoveryPaths.map(async (path) => {
-            const ledgerAddress = (
-              await ledgerWallet.getAddress(path.replace("m/", ""))
-            ).address;
-            if (blockchain === Blockchain.SOLANA) {
-              return base58.encode(ledgerAddress as Buffer);
-            } else {
-              return ledgerAddress.toString();
-            }
-          })
-        );
+        for (const path of recoveryPaths) {
+          const ledgerAddress = (
+            await ledgerWallet.getAddress(path.replace("m/", ""))
+          ).address;
+          const publicKey =
+            blockchain === Blockchain.SOLANA
+              ? base58.encode(ledgerAddress as Buffer)
+              : ledgerAddress.toString();
+          publicKeys.push(publicKey);
+        }
       } catch (error) {
         if (onError) {
           console.debug("hardware default wallet transport error", error);
