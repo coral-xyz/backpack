@@ -132,6 +132,9 @@ export const getAccountRecoveryPaths = (
 export const derivationPathsToIndexes = (
   derivationPaths: Array<string>
 ): { accountIndex: number; walletIndex: number } => {
+  if (derivationPaths.length === 0) {
+    return { accountIndex: 0, walletIndex: 0 };
+  }
   const pathArrays = derivationPaths.map((x) =>
     BIPPath.fromString(x).toPathArray()
   );
