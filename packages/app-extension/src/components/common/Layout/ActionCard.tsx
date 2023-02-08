@@ -8,7 +8,7 @@ export function ActionCard({
   onClick,
   disabled = false,
 }: {
-  icon: any;
+  icon?: any;
   text: string;
   textAdornment?: React.ReactNode;
   onClick: () => void;
@@ -42,7 +42,7 @@ export function ActionCard({
         }}
       >
         <CardContent style={{ padding: 0 }}>
-          <Box sx={{ mb: 1, display: "flex" }}>{icon}</Box>
+          {icon && <Box sx={{ mb: 1, display: "flex" }}>{icon}</Box>}
           <Box
             style={{
               fontWeight: 500,
