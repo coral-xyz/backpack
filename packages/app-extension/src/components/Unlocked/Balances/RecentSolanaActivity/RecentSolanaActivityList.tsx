@@ -1,13 +1,6 @@
 import { Fragment, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
-<<<<<<< HEAD
 import { useRecentTransactions } from "@coral-xyz/recoil";
-=======
-import {
-  useActiveWallet,
-  useRecentSolanaTransactions,
-} from "@coral-xyz/recoil";
->>>>>>> bf8f909f (fix incorrect tokenData bug, refactor into function)
 import { useCustomTheme } from "@coral-xyz/themes";
 import { List } from "@mui/material";
 
@@ -37,7 +30,11 @@ export function _RecentSolanaActivityList({
   // Load transactions if not passed in as a prop
   const transactions = _transactions
     ? _transactions
-    : useRecentTransactions(blockchain!, address!, contractAddresses!);
+    : useRecentTransactions({
+        blockchain: blockchain!,
+        address: address!,
+        contractAddresses: contractAddresses!,
+      });
 
   if (!style) {
     style = {};

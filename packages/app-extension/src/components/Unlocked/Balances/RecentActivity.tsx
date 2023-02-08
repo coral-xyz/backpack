@@ -1,5 +1,5 @@
 import { Suspense, useState } from "react";
-import { Blockchain, explorerUrl } from "@coral-xyz/common";
+import { Blockchain, explorerUrl, XNFT_GG_LINK } from "@coral-xyz/common";
 import {
   EmptyState,
   isFirstLastListItemStyle,
@@ -384,7 +384,7 @@ function NoRecentActivityLabel({ minimize }: { minimize: boolean }) {
         subtitle={
           "Your transactions and app activity will show up here when you start using Backpack!"
         }
-        onClick={() => window.open("https://xnft.gg")}
+        onClick={() => window.open(XNFT_GG_LINK)}
         contentStyle={{
           color: minimize ? theme.custom.colors.secondary : "inherit",
         }}
