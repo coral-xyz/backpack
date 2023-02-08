@@ -67,6 +67,9 @@ export const HardwareDeriveWallet = ({
         }
       }
 
+      // TODO check for conflicts using Backpack API and move to next derivation
+      // path if unusable
+
       onNext({
         derivationPath: nextDerivationPath,
         publicKey,
