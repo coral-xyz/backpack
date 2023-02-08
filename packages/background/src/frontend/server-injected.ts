@@ -50,15 +50,15 @@ import {
   SOLANA_RPC_METHOD_SIGN_TX,
   SOLANA_RPC_METHOD_SIMULATE,
   TAB_XNFT,
+  UiActionRequestManager,
   withContext,
   withContextPort,
 } from "@coral-xyz/common";
 import type { SendOptions } from "@solana/web3.js";
 
 import type { Backend } from "../backend/core";
+import { SUCCESS_RESPONSE } from "../backend/core";
 import type { Config, Handle } from "../types";
-
-import { handlePopupUiResponse, UiActionRequestManager } from "./common";
 
 const logger = getLogger("server-injected");
 
@@ -330,10 +330,6 @@ async function handleConnect(
   }
 
   throw new Error("user did not approve");
-}
-
-function getTabTitle(ctx) {
-  return ctx.sender.tab?.title ?? `Xnft from ${ctx.sender.origin}`;
 }
 
 async function handleDisconnect(
@@ -739,4 +735,18 @@ async function handleEthereumSignMessage(
   }
 
   throw new Error("user denied ethereum message signature");
+}
+
+async function handlePopupUiResponse(
+  ctx: Context<Backend>,
+  msg: RpcResponse
+): Promise<string> {
+  const { id, result, error } = msg;
+  logger.debug("handle popup ui response", msg);
+  UiActionRequestManager.resolveResponse(id, result, error);
+  return SUCCESS_RESPONSE;
+}
+
+function getTabTitle(ctx) {
+  return ctx.sender.tab?.title ?? `Xnft from ${ctx.sender.origin}`;
 }

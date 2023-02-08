@@ -1,11 +1,4 @@
-import type { Context, RpcResponse } from "@coral-xyz/common";
-import { getLogger } from "@coral-xyz/common";
 import { v1 } from "uuid";
-
-import type { Backend } from "../backend/core";
-import { SUCCESS_RESPONSE } from "../backend/core";
-
-const logger = getLogger("server-injected-solana");
 
 export class UiActionRequestManager {
   static _requestId = 0;
@@ -58,7 +51,7 @@ export class UiActionRequestManager {
     });
   }
 
-  public cancelAllRequests() {
+  public static cancelAllRequests() {
     UiActionRequestManager._routines.forEach(({ requestId, cancelRoutine }) => {
       cancelRoutine();
       UiActionRequestManager.removeResponseResolver(requestId);
@@ -79,6 +72,8 @@ export class UiActionRequestManager {
         id: requestId,
         result: undefined,
         error: undefined,
+        // Treat a cancel the same as a closed window, i.e., an effective
+        // rejection.
         windowClosed: true,
         window,
       });
@@ -118,14 +113,4 @@ export class UiActionRequestManager {
       (r) => r.requestId !== requestId
     );
   }
-}
-
-export async function handlePopupUiResponse(
-  ctx: Context<Backend>,
-  msg: RpcResponse
-): Promise<string> {
-  const { id, result, error } = msg;
-  logger.debug("handle popup ui response", msg);
-  UiActionRequestManager.resolveResponse(id, result, error);
-  return SUCCESS_RESPONSE;
 }

@@ -14,6 +14,7 @@ import {
 import type { Blockchain } from "../types";
 
 import { BrowserRuntimeCommon } from "./common";
+import { UiActionRequestManager } from "./uiActionRequestManager";
 
 //
 // Browser apis that can be used on extension only.
@@ -67,6 +68,14 @@ export class BrowserRuntimeExtension {
               const updatedTab = await chrome.tabs.update(tab.id!, { url });
 
               if (updatedTab) {
+                //
+                // If we are override a previous popup with a new url, then
+                // reject all previous ui action requests--e.g., for tx
+                // signing--so that those requests can properly resolve with
+                // the right state.
+                //
+                UiActionRequestManager.cancelAllRequests();
+
                 const popupWindow = await chrome?.windows.update(
                   updatedTab.windowId,
                   { focused: true }
