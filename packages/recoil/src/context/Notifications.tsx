@@ -386,6 +386,11 @@ export function NotificationsProvider(props: any) {
               (key) => key.publicKey !== deletedPublicKey
             ),
           ],
+          keystonePublicKeys: [
+            ...publicKeys[blockchain].keystonePublicKeys.filter(
+              (key) => key.publicKey !== deletedPublicKey
+            ),
+          ],
         };
 
         const activePublicKeys = [...current.activePublicKeys].filter(

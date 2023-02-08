@@ -139,7 +139,14 @@ export const allWalletsPerBlockchain = selectorFamily<
           keyring.ledgerPublicKeys.map((k: any) => ({
             ...k,
             blockchain,
-            type: "hardware",
+            type: "ledger",
+          }))
+        )
+        .concat(
+          keyring.keystonePublicKeys.map((k: any) => ({
+            ...k,
+            blockchain,
+            type: "keystone",
           }))
         );
     },
@@ -159,7 +166,7 @@ export const activeWallet = selector<{
     //
     // Get all the pubkeys for the active blockchain.
     //
-    const { ledgerPublicKeys, importedPublicKeys, hdPublicKeys } =
+    const { ledgerPublicKeys, keystonePublicKeys, importedPublicKeys, hdPublicKeys } =
       data.publicKeys[data.activeBlockchain];
 
     //
@@ -167,7 +174,8 @@ export const activeWallet = selector<{
     //
     const wallet = hdPublicKeys
       .map((k) => ({ ...k, type: "derived" }))
-      .concat(ledgerPublicKeys.map((k) => ({ ...k, type: "hardware" })))
+      .concat(ledgerPublicKeys.map((k) => ({ ...k, type: "ledger" })))
+      .concat(keystonePublicKeys.map((k) => ({ ...k, type: "keystone" })))
       .concat(importedPublicKeys.map((k) => ({ ...k, type: "imported" })))
       .find((pk) => data.activePublicKeys.indexOf(pk.publicKey) >= 0);
 

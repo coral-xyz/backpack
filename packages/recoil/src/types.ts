@@ -30,6 +30,7 @@ export type WalletPublicKeys = {
     hdPublicKeys: Array<PublicKeyMetadata>;
     importedPublicKeys: Array<PublicKeyMetadata>;
     ledgerPublicKeys: Array<PublicKeyMetadata>;
+    keystonePublicKeys: Array<PublicKeyMetadata>;
   };
 };
 
