@@ -98,6 +98,11 @@ const logger = getLogger("solana-connection-backend");
 
 export const LOAD_SPL_TOKENS_REFRESH_INTERVAL = 10 * 1000;
 export const RECENT_BLOCKHASH_REFRESH_INTERVAL = 10 * 1000;
+
+// TODO: remove for public beta launch
+export const LOAD_XNFT_WHITELIST_INTERVAL = 5 * 60 * 1000;
+const WHITELIST_EXPIRY = LOAD_XNFT_WHITELIST_INTERVAL + 5000;
+
 // Time until cached values expire. This is arbitrary.
 const CACHE_EXPIRY = 15000;
 const NFT_CACHE_EXPIRY = 15 * 60000;
@@ -272,6 +277,25 @@ export class SolanaConnectionBackend {
         });
       }, RECENT_BLOCKHASH_REFRESH_INTERVAL)
     );
+
+    // TODO: remove for public beta launch
+    this.pollIntervals.push(async () => {
+      const whitelist = await this.fetchXnftWhitelist();
+      const key = JSON.stringify({
+        url: this.url,
+        method: "getXnftWhitelist",
+      });
+      this.cache.set(key, { ts: Date.now(), value: whitelist });
+
+      return setInterval(async () => {
+        const whitelist = await this.fetchXnftWhitelist();
+        const key = JSON.stringify({
+          url: this.url,
+          method: "getXnftWhitelist",
+        });
+        this.cache.set(key, { ts: Date.now(), value: whitelist });
+      }, LOAD_XNFT_WHITELIST_INTERVAL);
+    });
   }
 
   private intoCustomSplTokenAccountsKey(
@@ -336,6 +360,15 @@ export class SolanaConnectionBackend {
     };
   }
 
+  // TODO: remove for public beta launch
+  private async fetchXnftWhitelist(): Promise<string[]> {
+    const resp = await fetch(
+      "https://app-store-api.backpack.workers.dev/api/curation/whitelist"
+    );
+    const { whitelist } = await resp.json();
+    return whitelist;
+  }
+
   //////////////////////////////////////////////////////////////////////////////
   // Custom endpoints.
   //////////////////////////////////////////////////////////////////////////////
@@ -386,6 +419,21 @@ export class SolanaConnectionBackend {
       value: resp,
     });
     return resp;
+  }
+
+  // TODO: remove for public beta launch
+  async getXnftWhitelist(): Promise<string[]> {
+    const key = JSON.stringify({ url: this.url, method: "getXnftWhitelist" });
+    const value = this.cache.get(key);
+    if (value && value.ts + WHITELIST_EXPIRY > Date.now()) {
+      return value.value as string[];
+    }
+    const whitelist = await this.fetchXnftWhitelist();
+    this.cache.set(key, {
+      ts: Date.now(),
+      value: whitelist,
+    });
+    return whitelist;
   }
 
   //////////////////////////////////////////////////////////////////////////////

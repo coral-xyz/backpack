@@ -3,9 +3,11 @@
 // the background script.
 //
 
+import { isMobile } from "@coral-xyz/common-public";
+
 import { BrowserRuntimeCommon, BrowserRuntimeExtension } from "../browser";
 import { POST_MESSAGE_ORIGIN } from "../constants";
-import type { RpcResponse } from "../types";
+import type { RpcResponse, Sender } from "../types";
 
 // Channel is a class that establishes communication channel from a
 // content/injected script to a background script.
@@ -46,7 +48,18 @@ export class ChannelContentScript {
       });
     }
     BrowserRuntimeCommon.addEventListenerFromAnywhere(
-      (message: any, _sender: any, sendResponse: any) => {
+      (message: any, sender: Sender, sendResponse: any) => {
+        if (!isMobile()) {
+          //
+          // Message must come from this extension's context.
+          //
+          if (chrome && chrome?.runtime?.id) {
+            if (sender.id !== chrome.runtime.id) {
+              return;
+            }
+          }
+        }
+
         if (message.channel === reqChannel) {
           sendResponse({ result: "success" });
           window.postMessage(
@@ -92,11 +105,22 @@ export class ChannelServer {
   constructor(private name: string) {}
 
   public handler(
-    handlerFn: (message: any, sender: any) => Promise<RpcResponse>
+    handlerFn: (message: any, sender: Sender) => Promise<RpcResponse>
   ) {
     BrowserRuntimeCommon.addEventListenerFromAnywhere(
       // @ts-ignore
-      (msg: any, sender: any, sendResponse: any) => {
+      (msg: any, sender: Sender, sendResponse: any) => {
+        if (!isMobile()) {
+          //
+          // Message must come from this extension's context.
+          //
+          if (chrome && chrome?.runtime?.id) {
+            if (sender.id !== chrome.runtime.id) {
+              return;
+            }
+          }
+        }
+
         if (msg.channel === this.name) {
           const id = msg.data.id;
           handlerFn(msg, sender)

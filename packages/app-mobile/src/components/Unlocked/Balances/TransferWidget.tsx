@@ -1,9 +1,9 @@
 import { Pressable, Text, View } from "react-native";
 
 import { Token, NavTokenAction, NavTokenOptions } from "@@types/types";
-import { Blockchain /* STRIPE_ENABLED */ } from "@coral-xyz/common";
+import { Blockchain } from "@coral-xyz/common";
 import {
-  // SwapProvider, // TODO(peter): broken
+  SwapProvider, // TODO(peter): broken
   enabledBlockchains as enabledBlockchainsAtom,
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -29,10 +29,6 @@ const getRouteFromAction = (
       return "DepositList";
   }
 };
-
-function SwapProvider({ children, blockchain, tokenAddress }) {
-  return children;
-}
 
 export function TransferWidget({
   blockchain,
@@ -146,7 +142,7 @@ function SwapButton({
   onPress: (route: NavTokenAction, options: NavTokenOptions) => void;
 }) {
   return (
-    <SwapProvider blockchain={Blockchain.SOLANA} tokenAddress={address}>
+    <SwapProvider tokenAddress={address}>
       <TransferButton
         label="Swap"
         icon="compare-arrows"

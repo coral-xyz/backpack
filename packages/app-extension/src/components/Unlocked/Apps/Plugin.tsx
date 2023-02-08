@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import type { Plugin } from "@coral-xyz/common";
+import { DEFAULT_PUBKEY_STR } from "@coral-xyz/common";
 import { Loading, MoreIcon, PowerIcon } from "@coral-xyz/react-common";
 import {
   transactionRequest,
@@ -83,7 +84,7 @@ export function LoadPlugin({
     openPlugin,
   });
 
-  if (xnftAddress === "11111111111111111111111111111111") {
+  if (xnftAddress === DEFAULT_PUBKEY_STR) {
     return <Simulator plugin={plugin} deepXnftPath={deepXnftPath} />;
   }
   return <PluginDisplay plugin={plugin} deepXnftPath={deepXnftPath} />;

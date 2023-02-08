@@ -156,6 +156,9 @@ async function handle<T = any>(
     method !== SOLANA_RPC_METHOD_CONNECT
   ) {
     const origin = ctx.sender.origin;
+    if (origin === undefined) {
+      return [undefined, "origin is undefined"];
+    }
     const isApproved = await ctx.backend.isApprovedOrigin(origin);
     if (
       !isApproved &&
@@ -218,6 +221,10 @@ async function handleConnect(
 ): Promise<RpcResponse<string>> {
   const origin = ctx.sender.origin;
 
+  if (!origin) {
+    throw new Error("origin is undefined");
+  }
+
   if (locks.has(origin)) {
     throw new Error(`already handling a request from ${origin}`);
   }
@@ -240,7 +247,7 @@ async function handleConnect(
       logger.debug("origin approved but need to unlock");
       resp = await RequestManager.requestUiAction((requestId: number) => {
         return openLockedPopupWindow(
-          ctx.sender.origin,
+          origin,
           getTabTitle(ctx),
           requestId,
           blockchain
@@ -251,7 +258,7 @@ async function handleConnect(
       logger.debug("origin not apporved and needs to unlock");
       resp = await RequestManager.requestUiAction((requestId: number) => {
         return openLockedApprovalPopupWindow(
-          ctx.sender.origin,
+          origin,
           getTabTitle(ctx),
           requestId,
           blockchain
@@ -268,7 +275,7 @@ async function handleConnect(
       logger.debug("requesting approval for origin");
       resp = await RequestManager.requestUiAction((requestId: number) => {
         return openApprovalPopupWindow(
-          ctx.sender.origin,
+          origin,
           getTabTitle(ctx),
           requestId,
           blockchain
@@ -327,6 +334,9 @@ async function handleDisconnect(
   ctx: Context<Backend>,
   blockchain: Blockchain
 ): Promise<RpcResponse<string>> {
+  if (!ctx.sender.origin) {
+    throw new Error("origin is undefined");
+  }
   const resp = await ctx.backend.disconnect(ctx.sender.origin);
   if (blockchain === Blockchain.SOLANA) {
     ctx.events.emit(BACKEND_EVENT, {
@@ -346,10 +356,13 @@ async function handleSolanaSignAndSendTx(
   walletAddress: string,
   options?: SendOptions
 ): Promise<RpcResponse<string>> {
+  if (ctx.sender.origin === undefined) {
+    throw new Error("origin is undefined");
+  }
   // Get user approval.
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
     return openApproveTransactionPopupWindow(
-      ctx.sender.origin,
+      ctx.sender.origin!,
       getTabTitle(ctx),
       requestId,
       tx,
@@ -395,9 +408,12 @@ async function handleSolanaSignTx(
   tx: string,
   walletAddress: string
 ): Promise<RpcResponse<string>> {
+  if (ctx.sender.origin === undefined) {
+    throw new Error("origin is undefined");
+  }
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
     return openApproveTransactionPopupWindow(
-      ctx.sender.origin,
+      ctx.sender.origin!,
       getTabTitle(ctx),
       requestId,
       tx,
@@ -443,9 +459,12 @@ async function handleSolanaSignAllTxs(
   txs: Array<string>,
   walletAddress: string
 ): Promise<RpcResponse<Array<string>>> {
+  if (ctx.sender.origin === undefined) {
+    throw new Error("origin is undefined");
+  }
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
     return openApproveAllTransactionsPopupWindow(
-      ctx.sender.origin,
+      ctx.sender.origin!,
       getTabTitle(ctx),
       requestId,
       txs,
@@ -491,9 +510,12 @@ async function handleSolanaSignMessage(
   msg: string,
   walletAddress: string
 ): Promise<RpcResponse<string>> {
+  if (ctx.sender.origin === undefined) {
+    throw new Error("origin is undefined");
+  }
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
     return openApproveMessagePopupWindow(
-      ctx.sender.origin,
+      ctx.sender.origin!,
       getTabTitle(ctx),
       requestId,
       msg,
@@ -554,10 +576,13 @@ async function handleEthereumSignAndSendTx(
   tx: string,
   walletAddress: string
 ): Promise<RpcResponse<string>> {
+  if (ctx.sender.origin === undefined) {
+    throw new Error("origin is undefined");
+  }
   // Get user approval.
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
     return openApproveTransactionPopupWindow(
-      ctx.sender.origin,
+      ctx.sender.origin!,
       getTabTitle(ctx),
       requestId,
       tx,
@@ -604,9 +629,12 @@ async function handleEthereumSignTx(
   tx: string,
   walletAddress: string
 ): Promise<RpcResponse<string>> {
+  if (ctx.sender.origin === undefined) {
+    throw new Error("origin is undefined");
+  }
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
     return openApproveTransactionPopupWindow(
-      ctx.sender.origin,
+      ctx.sender.origin!,
       getTabTitle(ctx),
       requestId,
       tx,
@@ -651,9 +679,12 @@ async function handleEthereumSignMessage(
   msg: string,
   walletAddress: string
 ): Promise<RpcResponse<string>> {
+  if (ctx.sender.origin === undefined) {
+    throw new Error("origin is undefined");
+  }
   const uiResp = await RequestManager.requestUiAction((requestId: number) => {
     return openApproveMessagePopupWindow(
-      ctx.sender.origin,
+      ctx.sender.origin!,
       getTabTitle(ctx),
       requestId,
       msg,

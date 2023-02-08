@@ -621,8 +621,16 @@ export const WHITELISTED_CHAT_COLLECTIONS: {
       "https://bafybeiecuemcqxzuv4ti4sgffjlwvrqedr7golppwrbbu2u5yttglath3m.ipfs.nftstorage.link/0.png",
     collectionId: "ajM4QBHtZBBRcMqqq9gawdHK28GXcb2yeRs6WBnqhay",
   },
+  {
+    id: "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj",
+    name: "Mad Lads WL",
+    image: "https://mad-lads-web.vercel.app/mad_lads_logo.svg",
+    collectionId: "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj",
+  },
 ];
 
 // Load a fixed amount of public keys for various actions, e.g. import list,
 // searching mnemonics
 export const LOAD_PUBLIC_KEY_AMOUNT = 20;
+
+export const DEFAULT_PUBKEY_STR = "11111111111111111111111111111111";
