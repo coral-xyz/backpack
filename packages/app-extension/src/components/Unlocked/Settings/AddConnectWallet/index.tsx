@@ -8,6 +8,7 @@ import {
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
   UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
+  UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
 } from "@coral-xyz/common";
 import {
@@ -199,6 +200,27 @@ export function AddWalletMenu({
   // spammed or double clicked, which is undesireable as it creates more wallets
   // than the user expects.
   const [lockCreateButton, setLockCreateButton] = useState(false);
+  // If the keyring or if we don't have any public keys of the type we are
+  // adding then additional logic is required to select the account index of
+  // the first derivation path added
+  const [hasHdPublicKeys, setHasHdPublicKeys] = useState(false);
+  const [hasLedgerPublicKeys, setHasLedgerPublicKeys] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const publicKeys = await background.request({
+        method: UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
+        params: [],
+      });
+      const blockchainPublicKeys = publicKeys[blockchain];
+      if (blockchainPublicKeys) {
+        setHasHdPublicKeys(blockchainPublicKeys.hdPublicKeys.length > 0);
+        setHasLedgerPublicKeys(
+          blockchainPublicKeys.ledgerPublicKeys.length > 0
+        );
+      }
+    })();
+  }, [blockchain]);
 
   const createNew = async () => {
     // Mnemonic based keyring. This is the simple case because we don't
@@ -213,7 +235,8 @@ export function AddWalletMenu({
     setLoading(true);
     setLockCreateButton(true);
     let newPublicKey;
-    if (!keyringExists) {
+    if (!keyringExists || !hasHdPublicKeys) {
+      // No keyring or no existing mnemonic public keys so can't derive next
       const walletDescriptor = await background.request({
         method: UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
         params: [blockchain, 0],
@@ -264,51 +287,65 @@ export function AddWalletMenu({
         <Box sx={{ margin: "0 16px" }}>
           <Grid container spacing={2}>
             {keyringType === "mnemonic" && (
-              <Grid item xs={6}>
+              <Grid item xs={12}>
                 <ActionCard
-                  icon={
-                    <AddCircle
+                  text="Secret recovery phrase"
+                  textAdornment={
+                    <Typography
                       style={{
-                        color: theme.custom.colors.icon,
+                        fontSize: "14px",
+                        color: theme.custom.colors.fontColor3,
                       }}
-                    />
+                    >
+                      Create a new wallet using your secret recovery phrase.
+                    </Typography>
                   }
-                  text="Create a new wallet using seed phrase"
                   onClick={createNew}
                 />
               </Grid>
             )}
             {(keyringType === "ledger" || keyringExists) && (
-              <Grid item xs={6}>
+              <Grid item xs={12}>
                 <ActionCard
-                  icon={
-                    <HardwareWalletIcon
-                      fill={theme.custom.colors.icon}
+                  text="Hardware wallet"
+                  textAdornment={
+                    <Typography
                       style={{
-                        width: "24px",
-                        height: "24px",
+                        fontSize: "14px",
+                        color: theme.custom.colors.fontColor3,
                       }}
-                    />
+                    >
+                      Create a new wallet using a hardware wallet.
+                    </Typography>
                   }
-                  text="Create a new wallet using hardware"
                   onClick={() => {
-                    openConnectHardware(blockchain, "create");
+                    openConnectHardware(
+                      blockchain,
+                      // `create` gets a default account index for derivations
+                      // where no wallets are used, `derive` just gets the next
+                      // wallet in line given the existing derivation paths
+                      keyringExists && hasLedgerPublicKeys ? "derive" : "create"
+                    );
                     window.close();
                   }}
                 />
               </Grid>
             )}
             {keyringExists && (
-              <Grid item xs={6}>
+              <Grid item xs={12}>
                 <ActionCard
-                  icon={
-                    <ArrowCircleDown
-                      style={{
-                        color: theme.custom.colors.icon,
-                      }}
-                    />
-                  }
                   text="Advanced import"
+                  textAdornment={
+                    <Typography
+                      style={{
+                        fontSize: "14px",
+                        color: theme.custom.colors.fontColor3,
+                      }}
+                    >
+                      Import existing wallets using a seed phrase, hardware
+                      wallet, or private key.
+                    </Typography>
+                  }
                   onClick={() => nav.push("import-wallet", { blockchain })}
                 />
               </Grid>
@@ -386,7 +423,6 @@ export function RecoverWalletMenu({
                     nav.push("import-secret-key", {
                       blockchain,
                       publicKey,
-                      keyringExists,
                     })
                   }
                 />
