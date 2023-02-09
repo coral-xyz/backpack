@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { type CSSProperties, useContext, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 
 import { WithMotion } from "../../../plugin/Component";
@@ -45,8 +45,15 @@ function NavStackInner({
   navScreens: any;
   options: NavStackOptions;
 }) {
-  let { isRoot, activeRoute, pop, navButtonRight, navButtonLeft, title } =
-    useNavigation();
+  let {
+    isRoot,
+    activeRoute,
+    pop,
+    navButtonRight,
+    navButtonLeft,
+    navStyle,
+    title,
+  } = useNavigation();
   const _navButtonLeft =
     navButtonLeft && isRoot ? (
       navButtonLeft
@@ -70,6 +77,7 @@ function NavStackInner({
           title={title}
           navButtonLeft={_navButtonLeft}
           navButtonRight={navButtonRight}
+          navbarStyle={navStyle}
         >
           {activeScreen.props.component({ ...(activeRoute.props ?? {}) })}
         </WithNav>
@@ -90,6 +98,7 @@ function NavStackProvider({
     useState<any>(navButtonRight);
   const [navButtonLeftOverride, setNavButtonLeftOverride] =
     useState<any>(navButtonLeft);
+  const [navStyleOverride, setNavStyleOverride] = useState<CSSProperties>({});
 
   const push = (route: string, props: any) => {
     setStack([...stack, { name: route, props, navAction: "push" }]);
@@ -105,10 +114,12 @@ function NavStackProvider({
     headerLeft,
     headerTitle,
     headerRight,
+    style,
   }: {
     headerLeft?: React.ReactElement | null;
     headerTitle?: string | React.ReactElement;
     headerRight?: React.ReactElement | null;
+    style?: CSSProperties;
   }) => {
     if (headerLeft !== undefined) {
       setNavButtonLeftOverride(headerLeft);
@@ -118,6 +129,9 @@ function NavStackProvider({
     }
     if (headerRight !== undefined) {
       setNavButtonRightOverride(headerRight);
+    }
+    if (style !== undefined) {
+      setNavStyleOverride(style);
     }
   };
 
@@ -131,6 +145,7 @@ function NavStackProvider({
         title: titleOverride,
         navButtonRight: navButtonRightOverride,
         navButtonLeft: navButtonLeftOverride,
+        navStyle: navStyleOverride,
         setOptions,
       }}
     >
@@ -159,14 +174,17 @@ type NavStackContext = {
   title: string;
   navButtonRight: any;
   navButtonLeft: any;
+  navStyle: CSSProperties;
   setOptions: ({
     headerLeft,
     headerTitle,
     headerRight,
+    style,
   }: {
     headerLeft?: React.ReactElement | null;
     headerTitle?: string | React.ReactElement;
     headerRight?: React.ReactElement | null;
+    style?: CSSProperties;
   }) => void;
 };
 
