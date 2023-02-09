@@ -323,8 +323,8 @@ function DetailCardHeader({
   }
 
   // if NFT url available, display it. Check on-chain data first
-  const nftImage =
-    metadata?.onChaindata?.data?.uri || metadata?.offChainData?.image;
+  const nftImage = undefined;
+  // FIXME: metadata?.onChainMetadata?.metadata?.data?.uri || metadata?.offChainData?.image;
 
   const nftPrice = transaction?.events?.nft?.amount
     ? transaction?.events?.nft?.amount / 10 ** 9
@@ -387,15 +387,14 @@ function DetailCardHeader({
       );
     }
     // other SPL token Transfer. Check tokenRegistry first, then Helius metadata
-    const transferIcon =
-      tokenData[0]?.logoURI ||
-      metadata?.onChaindata?.data?.uri ||
-      metadata?.offChainData?.image;
+    const transferIcon = undefined;
+    //   FIXME: tokenData[0]?.logoURI ||
+    //   metadata?.onChaindata?.data?.uri ||
+    //   metadata?.offChainData?.image;
 
     const transferSymbol =
-      tokenData[0]?.symbol ||
-      metadata?.onChaindata?.data?.symbol ||
-      metadata?.offChainData?.symbol;
+      tokenData[0]?.symbol || metadata?.onChainMetadata?.metadata?.data?.symbol;
+    // FIXME: || metadata?.offChainData?.symbol;
 
     if (transferIcon) {
       return (
@@ -481,9 +480,6 @@ function DetailTable({
   const theme = useCustomTheme();
   const explorer = useBlockchainExplorer(Blockchain.SOLANA);
   const connectionUrl = useBlockchainConnectionUrl(Blockchain.SOLANA);
-
-  console.log(transaction);
-  console.log(tokenData);
 
   return (
     <List className={classes.detailList}>

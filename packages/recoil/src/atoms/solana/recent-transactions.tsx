@@ -35,6 +35,7 @@ export async function fetchRecentSolanaTransactionDetails(
     const json = await response.json();
     return json.transactions;
   } catch (e) {
+    console.error(e);
     return [];
   }
 }
@@ -48,6 +49,6 @@ export async function fetchNftMetadata(mintID: string): Promise<any> {
     return json.metadata;
   } catch (err) {
     console.error(err);
-    return;
+    return undefined;
   }
 }
