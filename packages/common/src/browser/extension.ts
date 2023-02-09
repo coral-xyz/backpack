@@ -47,11 +47,12 @@ export class BrowserRuntimeExtension {
     });
   }
 
-  public static async openWindow(options: chrome.windows.CreateData) {
+  static async _openWindow(options: chrome.windows.CreateData) {
     //
-    // Reject all previous ui action requests--e.g., for tx
-    // signing--so that those promises can properly resolve with
-    // the right state.
+    // Whenever a new window is opened, we reject all outstanding ui action
+    // requests--e.g., for tx signing--as a way to deal with stale state so
+    // that those promises can properly resolve with the right state,
+    // i.e. user denied the request.
     //
     UiActionRequestManager.cancelAllRequests();
 
@@ -230,7 +231,7 @@ export async function openPopupWindow(
 
   return new Promise((resolve) => {
     BrowserRuntimeExtension.getLastFocusedWindow().then((window: any) => {
-      BrowserRuntimeExtension.openWindow({
+      BrowserRuntimeExtension._openWindow({
         url: `${url}`,
         type: "popup",
         width: EXTENSION_WIDTH,
