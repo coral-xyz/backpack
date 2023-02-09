@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { RichMentionsInput } from "react-rich-mentions";
 import {
   getHashedName,
   getNameAccountKey,
@@ -9,10 +10,13 @@ import {
   ETH_NATIVE_MINT,
   explorerUrl,
   NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
+  NAV_COMPONENT_MESSAGE_CHAT,
+  NAV_COMPONENT_MESSAGE_PROFILE,
   SOL_NATIVE_MINT,
   toTitleCase,
   walletAddressDisplay,
 } from "@coral-xyz/common";
+import { createEmptyFriendship } from "@coral-xyz/db";
 import {
   CheckIcon,
   CrossIcon,
@@ -21,6 +25,7 @@ import {
   MaxLabel,
   PrimaryButton,
   SecondaryButton,
+  SignalingManager,
   TextFieldLabel,
   TextInput,
   UserIcon,
@@ -35,15 +40,18 @@ import {
   useBlockchainExplorer,
   useBlockchainTokenAccount,
   useEthereumCtx,
+  useFriendship,
   useLoader,
   useNavigation,
+  useUser,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { Typography } from "@mui/material";
+import { TextField, Typography } from "@mui/material";
 import { TldParser } from "@onsol/tldparser";
 import type { Connection } from "@solana/web3.js";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { BigNumber, ethers } from "ethers";
+import { v4 as uuidv4 } from "uuid";
 
 import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
@@ -181,9 +189,11 @@ export function Send({
     address: string;
     username: string;
     image: string;
+    uuid: string;
   };
 }) {
   const classes = useStyles() as any;
+  const { uuid } = useUser();
   const nav = useNavigationEphemeral();
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
@@ -191,6 +201,10 @@ export function Send({
   const [address, setAddress] = useState(to?.address || "");
   const [amount, setAmount] = useState<BigNumber | undefined>(undefined);
   const [feeOffset, setFeeOffset] = useState(BigNumber.from(0));
+  const [message, setMessage] = useState("");
+  const friendship = useFriendship({ userId: to?.uuid || "" });
+  const theme = useCustomTheme();
+  const { push } = useNavigation();
 
   useEffect(() => {
     const prev = nav.title;
@@ -257,7 +271,7 @@ export function Send({
     sendButton = (
       <PrimaryButton
         disabled={isSendDisabled}
-        label="Send"
+        label="Review"
         type="submit"
         data-testid="Send"
       />
@@ -343,12 +357,62 @@ export function Send({
         </div>
       </div>
       <div className={classes.buttonContainer}>
+        {to && to.uuid && (
+          <TextField
+            className={classes.input}
+            placeholder={""}
+            style={{
+              outline: "0px solid transparent",
+              color: theme.custom.colors.fontColor,
+              fontSize: "15px",
+            }}
+            onChange={(e) => setMessage(e.target.value)}
+            value={message}
+          />
+        )}
         {sendButton}
         <ApproveTransactionDrawer
           openDrawer={openDrawer}
           setOpenDrawer={setOpenDrawer}
         >
           <SendConfirmComponent
+            onComplete={(txSig) => {
+              if (to?.uuid && to?.uuid !== uuid && friendship?.id) {
+                const client_generated_uuid = uuidv4();
+                createEmptyFriendship(uuid, to?.uuid, {
+                  last_message_sender: uuid,
+                  last_message_timestamp: new Date().toISOString(),
+                  last_message: message,
+                  last_message_client_uuid: client_generated_uuid,
+                });
+
+                SignalingManager.getInstance().send({
+                  type: "CHAT_MESSAGES",
+                  payload: {
+                    room: friendship?.id,
+                    type: "individual",
+                    messages: [
+                      {
+                        client_generated_uuid: client_generated_uuid,
+                        message,
+                        message_kind: "text",
+                        // message_kind: "transaction",
+                        // message_metadata: {
+                        //   final_tx_signature: txSig,
+                        // },
+                      },
+                    ],
+                  },
+                });
+                push({
+                  title: `@${to?.username}`,
+                  componentId: NAV_COMPONENT_MESSAGE_CHAT,
+                  componentProps: {
+                    userId: to?.uuid,
+                  },
+                });
+              }
+            }}
             token={token}
             destinationAddress={destinationAddress}
             destinationUser={
