@@ -395,11 +395,10 @@ export function Send({
                       {
                         client_generated_uuid: client_generated_uuid,
                         message,
-                        message_kind: "text",
-                        // message_kind: "transaction",
-                        // message_metadata: {
-                        //   final_tx_signature: txSig,
-                        // },
+                        message_kind: "transaction",
+                        message_metadata: {
+                          final_tx_signature: txSig,
+                        },
                       },
                     ],
                   },
