@@ -155,7 +155,7 @@ function QueryLocked() {
   logger.debug("query locked");
   const background = useBackgroundResponder();
   const url = new URL(window.location.href);
-  const requestId = parseInt(url.searchParams.get("requestId")!);
+  const requestId = url.searchParams.get("requestId")!;
   const keyringStoreState = useKeyringStoreState();
   const isLocked = keyringStoreState === KeyringStoreStateEnum.Locked;
 
@@ -188,7 +188,7 @@ function QueryApproval() {
   const url = new URL(window.location.href);
   const origin = url.searchParams.get("origin");
   const title = url.searchParams.get("title");
-  const requestId = parseInt(url.searchParams.get("requestId")!);
+  const requestId = url.searchParams.get("requestId")!;
   const blockchain = url.searchParams.get("blockchain")! as Blockchain;
   const approvedOrigins = useApprovedOrigins();
   const found = approvedOrigins.find((ao) => ao === origin);
@@ -223,7 +223,7 @@ function QueryApproveTransaction() {
   const url = new URL(window.location.href);
   const origin = url.searchParams.get("origin");
   const title = url.searchParams.get("title");
-  const requestId = parseInt(url.searchParams.get("requestId")!);
+  const requestId = url.searchParams.get("requestId")!;
   const tx = url.searchParams.get("tx");
   const wallet = url.searchParams.get("wallet")!;
   const blockchain = url.searchParams.get("blockchain")! as Blockchain;
@@ -291,7 +291,7 @@ function QueryApproveAllTransactions() {
   const url = new URL(window.location.href);
   const origin = url.searchParams.get("origin")!;
   const title = url.searchParams.get("title")!;
-  const requestId = parseInt(url.searchParams.get("requestId")!);
+  const requestId = url.searchParams.get("requestId")!;
   const txs = JSON.parse(url.searchParams.get("txs")!);
   const wallet = url.searchParams.get("wallet")!;
   const blockchain = url.searchParams.get("blockchain")! as Blockchain;
@@ -331,7 +331,7 @@ function QueryApproveMessage() {
   const origin = url.searchParams.get("origin");
   const title = url.searchParams.get("title");
   const message = url.searchParams.get("message");
-  const requestId = parseInt(url.searchParams.get("requestId")!);
+  const requestId = url.searchParams.get("requestId")!;
   const wallet = url.searchParams.get("wallet")!;
   const blockchain = url.searchParams.get("blockchain")! as Blockchain;
   const _isKeyCold = useRecoilValue(isKeyCold(wallet));
