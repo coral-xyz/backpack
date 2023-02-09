@@ -114,7 +114,6 @@ export class Plugin {
       CHANNEL_PLUGIN_RPC_REQUEST,
       CHANNEL_PLUGIN_RPC_RESPONSE
     );
-    this._rpcServer.handler(this._handleRpc.bind(this));
 
     //
     // Effectively take a lock that's held until the setup is complete.
@@ -191,7 +190,13 @@ export class Plugin {
   //
   public setActiveIframe(iframe: HTMLIFrameElement, xnftUrl: string) {
     this._iframeActive = iframe;
-    this._rpcServer.setWindow(iframe.contentWindow, xnftUrl);
+    // this._rpcServer.handler(this._handleRpc.bind(this));
+
+    this._rpcServer.setWindow(
+      iframe.contentWindow,
+      xnftUrl,
+      this._handleRpc.bind(this)
+    );
     this.pushConnectNotification();
   }
 
@@ -205,7 +210,7 @@ export class Plugin {
     this.iframeRoot = undefined;
     // Don't need to remove the active iframe because we've removed the root.
     this._iframeActive = undefined;
-    this._rpcServer.setWindow(undefined, "");
+    this._rpcServer.destroyWindow();
     this._nextRenderId = undefined;
     this._pendingBridgeRequests = undefined;
     this._didFinishSetupResolver = undefined;
