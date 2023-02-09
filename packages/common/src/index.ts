@@ -1,7 +1,7 @@
 import type { RpcRequest } from "@coral-xyz/common-public";
 import type { PublicKey } from "@solana/web3.js";
 
-import type { Context, EventEmitter, RpcResponse,Sender } from "./types";
+import type { Context, EventEmitter, RpcResponse, Sender } from "./types";
 
 export * from "./api";
 export * from "./browser";
@@ -57,6 +57,9 @@ export function walletAddressDisplay(
 }
 
 export function usernameDisplay(username: string, maxLength = 10) {
+  if (!username) {
+    return "";
+  }
   if (username.length <= maxLength) {
     return username;
   }
