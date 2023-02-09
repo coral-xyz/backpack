@@ -824,6 +824,8 @@ export function SwapSelectToken({
   customFilter: (token: Token) => boolean;
   input: boolean;
 }) {
+  const isDark = useDarkMode();
+  const theme = useCustomTheme();
   const nav = useNavigation();
   const { fromMint, inputTokenAccounts } = useSwapContext();
   const tokenAccounts = !input
@@ -843,7 +845,12 @@ export function SwapSelectToken({
   };
 
   useEffect(() => {
-    nav.setOptions({ headerTitle: "Select Token" });
+    nav.setOptions({
+      headerTitle: "Select Token",
+      style: isDark
+        ? { background: theme.custom.colors.background }
+        : undefined,
+    });
   }, [nav]);
 
   return (
