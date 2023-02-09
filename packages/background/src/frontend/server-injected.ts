@@ -382,7 +382,12 @@ async function handleSolanaSignAndSendTx(
   }
 
   let resp: RpcResponse<string>;
-  const { didApprove, transaction } = uiResp.result;
+  const { didApprove, transaction } = uiResp.result
+    ? uiResp.result
+    : {
+        didApprove: false,
+        transaction: undefined,
+      };
 
   try {
     // Only sign if the user clicked approve.
@@ -404,7 +409,8 @@ async function handleSolanaSignAndSendTx(
   if (resp) {
     return resp;
   }
-  return [resp];
+
+  throw new Error("user denied transaction signature");
 }
 
 async function handleSolanaSignTx(
