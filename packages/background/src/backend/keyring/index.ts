@@ -325,7 +325,6 @@ export class KeyringStore {
       // Read the mnemonic from the store
       return await this.withUnlock(async () => {
         mnemonic = this.activeUserKeyring.exportMnemonic();
-        console.log(mnemonic);
         return factory.init(mnemonic, derivationPaths).publicKeys();
       });
     } else {

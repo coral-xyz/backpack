@@ -13,7 +13,6 @@ export const useSignMessageForWallet = (mnemonic?: string | true) => {
     walletDescriptor: WalletDescriptor,
     message: string
   ) => {
-    console.log(message);
     const blockchain = getBlockchainFromPath(walletDescriptor.derivationPath);
     return await background.request({
       method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,

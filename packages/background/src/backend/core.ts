@@ -508,7 +508,6 @@ export class Backend {
             : keyringInit[0];
         blockchainKeyring.initFromMnemonic(mnemonic, keyringInit[1]);
       } else {
-        // console.log('b')
         // Using a ledger
         blockchainKeyring.initFromLedger(keyringInit[0]);
       }
