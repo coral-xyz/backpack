@@ -41,65 +41,63 @@ export const MessageList = ({
   const theme = useCustomTheme();
 
   return (
-    <>
-      <List
-        style={{
-          paddingTop: 0,
-          paddingBottom: 16,
-          borderRadius: "14px",
-          border: `${theme.custom.colors.borderFull}`,
-        }}
-      >
-        {requestCount > 0 && (
-          <RequestsChatItem
-            requestCount={requestCount}
-            isFirst={true}
-            isLast={activeChats?.length === 0}
-          />
-        )}
-        {activeChats?.map((activeChat, index) => (
-          <ChatListItem
-            toRoot={toRoot}
-            type={activeChat.chatType}
-            image={
-              activeChat.chatType === "individual"
-                ? activeChat.chatProps.remoteUserImage!
-                : activeChat.chatProps.image!
-            }
-            name={
-              activeChat.chatType === "individual"
-                ? activeChat.chatProps.remoteUsername!
-                : activeChat.chatProps.name!
-            }
-            id={
-              activeChat.chatType === "individual"
-                ? activeChat.chatProps.remoteUserId
-                : activeChat.chatProps.collectionId
-            }
-            message={
-              activeChat.chatType === "individual"
-                ? activeChat.chatProps.last_message!
-                : activeChat.chatProps.lastMessage!
-            }
-            timestamp={
-              activeChat.chatType === "individual"
-                ? activeChat.chatProps.last_message_timestamp || ""
-                : activeChat.chatProps.lastMessageTimestamp || ""
-            }
-            isFirst={requestCount === 0 && index === 0}
-            isLast={index === activeChats?.length - 1}
-            isUnread={
-              activeChat.chatType === "individual"
-                ? activeChat.chatProps.unread
-                  ? true
-                  : false
-                : activeChat.chatProps.lastMessageUuid !==
-                  activeChat.chatProps.lastReadMessage
-            }
-          />
-        ))}
-      </List>
-    </>
+    <List
+      style={{
+        paddingTop: 0,
+        paddingBottom: 0,
+        borderRadius: "14px",
+        border: `${theme.custom.colors.borderFull}`,
+      }}
+    >
+      {requestCount > 0 && (
+        <RequestsChatItem
+          requestCount={requestCount}
+          isFirst={true}
+          isLast={activeChats?.length === 0}
+        />
+      )}
+      {activeChats?.map((activeChat, index) => (
+        <ChatListItem
+          toRoot={toRoot}
+          type={activeChat.chatType}
+          image={
+            activeChat.chatType === "individual"
+              ? activeChat.chatProps.remoteUserImage!
+              : activeChat.chatProps.image!
+          }
+          name={
+            activeChat.chatType === "individual"
+              ? activeChat.chatProps.remoteUsername!
+              : activeChat.chatProps.name!
+          }
+          id={
+            activeChat.chatType === "individual"
+              ? activeChat.chatProps.remoteUserId
+              : activeChat.chatProps.collectionId
+          }
+          message={
+            activeChat.chatType === "individual"
+              ? activeChat.chatProps.last_message!
+              : activeChat.chatProps.lastMessage!
+          }
+          timestamp={
+            activeChat.chatType === "individual"
+              ? activeChat.chatProps.last_message_timestamp || ""
+              : activeChat.chatProps.lastMessageTimestamp || ""
+          }
+          isFirst={requestCount === 0 && index === 0}
+          isLast={index === activeChats?.length - 1}
+          isUnread={
+            activeChat.chatType === "individual"
+              ? activeChat.chatProps.unread
+                ? true
+                : false
+              : activeChat.chatProps.lastMessageUuid !==
+                activeChat.chatProps.lastReadMessage
+          }
+        />
+      ))}
+    </List>
   );
 };
 
