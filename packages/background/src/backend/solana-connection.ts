@@ -98,6 +98,7 @@ const logger = getLogger("solana-connection-backend");
 
 export const LOAD_SPL_TOKENS_REFRESH_INTERVAL = 10 * 1000;
 export const RECENT_BLOCKHASH_REFRESH_INTERVAL = 10 * 1000;
+
 // Time until cached values expire. This is arbitrary.
 const CACHE_EXPIRY = 15000;
 const NFT_CACHE_EXPIRY = 15 * 60000;

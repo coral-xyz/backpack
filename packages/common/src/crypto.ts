@@ -183,11 +183,7 @@ export const getRecoveryPaths = (blockchain: Blockchain) => {
   // Legacy imported accounts (m/44/501'/0' and m/44/501'/0'/{0...n})
   paths = paths.concat(legacyBip44ChangeRecoveryPaths(blockchain));
 
-  if (blockchain === Blockchain.SOLANA) {
-    paths = paths.concat(
-      [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map(legacySolletIndexed)
-    );
-  } else if (blockchain === Blockchain.ETHEREUM) {
+  if (blockchain === Blockchain.ETHEREUM) {
     paths = paths.concat(
       [...Array(LOAD_PUBLIC_KEY_AMOUNT).keys()].map(ethereumIndexed)
     );

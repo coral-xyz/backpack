@@ -21,6 +21,7 @@ export function SettingsList({
       button?: boolean;
       icon?: React.ReactNode;
       label?: string;
+      allowOnclickPropagation?: boolean;
     };
   };
   className?: string;
@@ -52,6 +53,7 @@ export function SettingsList({
           classes={val.classes}
           detail={val.detail ?? <PushDetail />}
           borderColor={borderColor}
+          allowOnclickPropagation={val.allowOnclickPropagation}
         >
           {val.icon && val.icon()}
           <Typography style={{ fontWeight: 500, ...textStyle }}>

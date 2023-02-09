@@ -1,7 +1,7 @@
 import type { RpcRequest } from "@coral-xyz/common-public";
 import type { PublicKey } from "@solana/web3.js";
 
-import type { Context, EventEmitter, RpcResponse } from "./types";
+import type { Context, EventEmitter, RpcResponse, Sender } from "./types";
 
 export * from "./api";
 export * from "./browser";
@@ -27,8 +27,8 @@ export function withContext<Backend>(
   backend: Backend,
   events: EventEmitter,
   handler: (ctx: Context<Backend>, req: RpcRequest) => Promise<RpcResponse>
-): ({ data }: { data: RpcRequest }, sender: any) => Promise<RpcResponse> {
-  return async ({ data }: { data: RpcRequest }, sender: any) => {
+): ({ data }: { data: RpcRequest }, sender: Sender) => Promise<RpcResponse> {
+  return async ({ data }: { data: RpcRequest }, sender: Sender) => {
     const ctx = { backend, events, sender };
     return await handler(ctx, data);
   };
@@ -38,9 +38,9 @@ export function withContextPort<Backend>(
   backend: Backend,
   events: EventEmitter,
   handler: (ctx: Context<Backend>, req: RpcRequest) => Promise<RpcResponse>
-): (data: RpcRequest) => Promise<RpcResponse> {
-  return async (data: RpcRequest) => {
-    const ctx = { backend, events, sender: undefined };
+): (data: RpcRequest, sender: Sender) => Promise<RpcResponse> {
+  return async (data: RpcRequest, sender: Sender) => {
+    const ctx = { backend, events, sender };
     return await handler(ctx, data);
   };
 }
@@ -56,11 +56,14 @@ export function walletAddressDisplay(
   )}`;
 }
 
-export function usernameDisplay(username: string, maxLength = 8) {
+export function usernameDisplay(username: string, maxLength = 10) {
+  if (!username) {
+    return "";
+  }
   if (username.length <= maxLength) {
     return username;
   }
-  return username.slice(0, maxLength - 3) + "...";
+  return username.slice(0, maxLength - 2) + "..";
 }
 
 /**

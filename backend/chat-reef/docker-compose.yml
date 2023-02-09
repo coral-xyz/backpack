@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   postgres:
-    image: postgres:14-alpine
+    image: postgres:14-alpine@sha256:a0f7890719c3c42b9f78f1ad98b2cd45aa2ee3472da12f9d2d3bfbc07f421146
     restart: unless-stopped
     ports:
       - 4447:5432
@@ -20,7 +20,7 @@ services:
       POSTGRES_USER: user
 
   hasura:
-    image: hasura/graphql-engine:v2.16.0.cli-migrations-v3
+    image: hasura/graphql-engine:v2.16.0.cli-migrations-v3@sha256:f03990c5fd113164116db1608ff020bb45a9782c3c34d58c7631e1427007eaa0
     ports:
       - 8113:8080
     depends_on:

@@ -22,8 +22,7 @@ export async function getKeyname(publicKey: string): Promise<string> {
   const names = await LocalStorageDb.get(key());
   const name = names[publicKey];
   if (!name) {
-    console.error(`unable to find name for key: ${publicKey.toString()}`);
-    return "";
+    throw Error(`unable to find name for key: ${publicKey.toString()}`);
   }
   return name;
 }

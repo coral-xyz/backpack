@@ -45,7 +45,7 @@ export const MessageList = ({
       <List
         style={{
           paddingTop: 0,
-          paddingBottom: 0,
+          paddingBottom: 16,
           borderRadius: "14px",
           border: `${theme.custom.colors.borderFull}`,
         }}
@@ -250,6 +250,7 @@ export function ChatListItem({
               <div
                 className={classes.userTextSmall}
                 style={{
+                  wordBreak: "break-all",
                   fontWeight: 500,
                   color: isUnread
                     ? theme.custom.colors.fontColor

@@ -59,6 +59,7 @@ const useStyles = makeStyles((theme: any) => ({
   errorMsg: {
     color: "red",
     marginBottom: "12px",
+    textAlign: "center",
   },
 }));
 

@@ -18,7 +18,7 @@ import {
   useDrawerContext,
   WithMiniDrawer,
 } from "../../../common/Layout/Drawer";
-import { useNavStack } from "../../../common/Layout/NavStack";
+import { useNavigation } from "../../../common/Layout/NavStack";
 
 import { ConfirmCreateWallet } from ".";
 
@@ -31,7 +31,7 @@ export function ImportSecretKey({
 }) {
   const background = useBackgroundClient();
   const existingPublicKeys = useWalletPublicKeys();
-  const nav = useNavStack();
+  const nav = useNavigation();
   const theme = useCustomTheme();
   const [name, setName] = useState("");
   const [secretKey, setSecretKey] = useState("");
@@ -43,9 +43,9 @@ export function ImportSecretKey({
 
   useEffect(() => {
     const prevTitle = nav.title;
-    nav.setTitle("");
+    nav.setOptions({ headerTitle: "" });
     return () => {
-      nav.setTitle(prevTitle);
+      nav.setOptions({ headerTitle: prevTitle });
     };
   }, [theme]);
 

@@ -277,6 +277,7 @@ export const AllTypesProps: Record<string, any> = {
     title: "String_comparison_exp",
     username: "String_comparison_exp",
     uuid: "String_comparison_exp",
+    viewed: "Boolean_comparison_exp",
     xnft_id: "String_comparison_exp",
   },
   auth_notifications_constraint: "enum" as const,
@@ -297,6 +298,7 @@ export const AllTypesProps: Record<string, any> = {
     title: "order_by",
     username: "order_by",
     uuid: "order_by",
+    viewed: "order_by",
     xnft_id: "order_by",
   },
   auth_notifications_pk_columns_input: {},
@@ -1649,6 +1651,7 @@ export const ReturnTypes: Record<string, any> = {
     title: "String",
     username: "String",
     uuid: "String",
+    viewed: "Boolean",
     xnft_id: "String",
   },
   auth_notifications_aggregate: {

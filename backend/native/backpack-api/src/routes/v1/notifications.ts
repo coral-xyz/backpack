@@ -7,6 +7,7 @@ import {
   getSubscriptions,
   getUnreadCount,
   updateCursor,
+  updateNotificationSeen,
 } from "../../db/notifications";
 import { insertSubscription } from "../../db/preference";
 const router = express.Router();
@@ -41,6 +42,17 @@ router.get("/unreadCount", extractUserId, async (req, res) => {
   res.json({
     unreadCount,
   });
+});
+
+router.post("/seen", extractUserId, async (req, res) => {
+  const uuid = req.id || "";
+  const notificationIds = req.body.notificationIds || "";
+
+  await updateNotificationSeen({
+    notificationIds,
+    uuid,
+  });
+  res.json({});
 });
 
 router.put("/cursor", extractUserId, async (req, res) => {

@@ -61,6 +61,7 @@ export const ReplyContainer = ({
             fontWeight: 400,
             paddingLeft: 12,
             lineHeight: 1.4,
+            fontSize: 14,
           }}
         >
           <ParsedMessage message={text} />

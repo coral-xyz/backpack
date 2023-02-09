@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import {
   Blockchain,
   confirmTransaction,
+  DEFAULT_PUBKEY_STR,
   explorerUrl,
   getLogger,
   Solana,
@@ -31,7 +32,7 @@ import { useRecoilValue } from "recoil";
 import { updateRemotePreference } from "../../../../api/preferences";
 import { ApproveTransactionDrawer } from "../../../common/ApproveTransactionDrawer";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
-import { useNavStack } from "../../../common/Layout/NavStack";
+import { useNavigation as useNavigationEphemeral } from "../../../common/Layout/NavStack";
 import { SettingsList } from "../../../common/Settings/List";
 import { Error } from "../../Balances/TokensWidget/Send";
 import { SwitchToggle } from "../Preferences";
@@ -44,17 +45,18 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
     xnftPreferenceAtom(xnft.install.account.xnft.toString())
   );
 
-  const nav = useNavStack();
+  const nav = useNavigationEphemeral();
   const background = useBackgroundClient();
   const { username } = useUser();
 
   // Using the raw string here instead of PublicKey.default.toString() because
   // typescript sucks and is throwing inexplicable errors.
-  const isDisabled =
-    xnft.install.publicKey === "11111111111111111111111111111111";
+  const isDisabled = xnft.install.publicKey === DEFAULT_PUBKEY_STR;
 
   useEffect(() => {
-    nav.setTitle(xnft.title);
+    nav.setOptions({
+      headerTitle: xnft.title,
+    });
   }, []);
 
   const menuItems = {
@@ -66,6 +68,7 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
       style: {
         opacity: 0.5,
       },
+      allowOnclickPropagation: true,
     },
     MediaAccess: {
       label: "Cam/Mic/Display access",
@@ -100,6 +103,7 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
       style: {
         opacity: 0.5,
       },
+      allowOnclickPropagation: true,
     },
     PushNotificationAccess: {
       label: "Push notifications",
@@ -147,6 +151,7 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
       style: {
         opacity: 0.5,
       },
+      allowOnclickPropagation: true,
     },
   };
 

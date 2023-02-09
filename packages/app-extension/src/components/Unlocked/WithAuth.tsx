@@ -84,10 +84,10 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
             method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
             params: [
               authData.blockchain,
+              authData.publicKey,
               ethers.utils.base58.encode(
                 Buffer.from(authData.message, "utf-8")
               ),
-              authData.publicKey,
             ],
           });
           setAuthSignature(signature);
