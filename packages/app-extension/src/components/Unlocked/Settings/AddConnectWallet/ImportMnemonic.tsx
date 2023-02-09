@@ -146,7 +146,7 @@ export function ImportMnemonic({
         const walletDescriptor = walletDescriptors[0];
         const message = getAddMessage(walletDescriptor.publicKey);
         const signature = await signMessageForWallet(walletDescriptor, message);
-        onComplete({
+        await onComplete({
           ...walletDescriptor,
           signature,
         });
