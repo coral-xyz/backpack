@@ -204,10 +204,12 @@ enum SwapState {
 }
 
 export function Swap({ blockchain }: { blockchain: Blockchain }) {
+  const isDark = useDarkMode();
   const nav = useNavigation();
   useEffect(() => {
     nav.setOptions({
       headerTitle: "Swap",
+      style: isDark ? { background: "#1D1D20" } : undefined,
     });
   }, [nav]);
 
@@ -241,7 +243,12 @@ function _Swap() {
 
   return (
     <>
-      <form onSubmit={onSubmit} className={classes.container} noValidate>
+      <form
+        onSubmit={onSubmit}
+        className={classes.container}
+        style={isDark ? { background: "#1D1D20" } : undefined}
+        noValidate
+      >
         <div className={classes.topHalf}>
           <SwapTokensButton
             onClick={onSwapButtonClick}
