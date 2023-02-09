@@ -1,6 +1,10 @@
 import { Suspense, useEffect, useState } from "react";
-import type { EnrichedNotification } from "@coral-xyz/common";
-import { BACKEND_API_URL, sendFriendRequest } from "@coral-xyz/common";
+import type {
+  EnrichedNotification} from "@coral-xyz/common";
+import {
+  BACKEND_API_URL,
+  sendFriendRequest,
+ XNFT_GG_LINK } from "@coral-xyz/common";
 import { updateFriendshipIfExists } from "@coral-xyz/db";
 import {
   DangerButton,
@@ -719,7 +723,7 @@ function NoNotificationsLabel({ minimize }: { minimize: boolean }) {
         title={"No Notifications"}
         subtitle={"You don't have any notifications yet."}
         buttonText={"Browse the xNFT Library"}
-        onClick={() => window.open("https://xnft.gg")}
+        onClick={() => window.open(XNFT_GG_LINK)}
         innerStyle={{
           marginBottom: minimize !== true ? "64px" : 0, // Tab height offset.
         }}
