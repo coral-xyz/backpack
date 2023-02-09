@@ -48,34 +48,29 @@ export class BrowserRuntimeExtension {
   }
 
   public static async openWindow(options: chrome.windows.CreateData) {
+    //
+    // Reject all previous ui action requests--e.g., for tx
+    // signing--so that those promises can properly resolve with
+    // the right state.
+    //
+    UiActionRequestManager.cancelAllRequests();
+
     return new Promise(async (resolve, reject) => {
       // try to reuse existing popup window
       try {
         const popupWindowId: number | undefined =
           await BrowserRuntimeCommon.getLocalStorage("popupWindowId");
-
         if (popupWindowId) {
           const popupWindow = await chrome?.windows.get(popupWindowId);
-
           if (popupWindow) {
             const tabs = await chrome.tabs.query({ windowId: popupWindowId });
-
             if (tabs.length === 1) {
               const tab = tabs[0];
               const url: string = Array.isArray(options.url)
                 ? options.url[0]!
                 : options.url!;
               const updatedTab = await chrome.tabs.update(tab.id!, { url });
-
               if (updatedTab) {
-                //
-                // If we are overriding a previous popup with a new url, then
-                // reject all previous ui action requests--e.g., for tx
-                // signing--so that those promises can properly resolve with
-                // the right state.
-                //
-                UiActionRequestManager.cancelAllRequests();
-
                 const popupWindow = await chrome?.windows.update(
                   updatedTab.windowId,
                   { focused: true }

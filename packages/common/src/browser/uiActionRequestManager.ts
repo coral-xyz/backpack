@@ -26,7 +26,7 @@ export class UiActionRequestManager {
       UiActionRequestManager.addResponseResolver(
         window,
         requestId,
-        (input: any) => resolve({ ...input, window }),
+        resolve,
         reject
       );
     });
@@ -51,10 +51,9 @@ export class UiActionRequestManager {
     });
   }
 
-  public static cancelAllRequests() {
-    UiActionRequestManager._routines.forEach(({ requestId, cancelRoutine }) => {
+  public static async cancelAllRequests() {
+    UiActionRequestManager._routines.forEach(({ cancelRoutine }) => {
       cancelRoutine();
-      UiActionRequestManager.removeResponseResolver(requestId);
     });
   }
 
@@ -64,7 +63,10 @@ export class UiActionRequestManager {
     resolve: Function,
     reject: Function
   ): string {
-    UiActionRequestManager._responseResolvers[requestId] = [resolve, reject];
+    UiActionRequestManager._responseResolvers[requestId] = [
+      (input: any) => resolve({ ...input, window }),
+      reject,
+    ];
     const cancelRoutine = () => {
       UiActionRequestManager.removeResponseResolver(requestId);
       resolve({
