@@ -190,7 +190,6 @@ export function AddWalletMenu({
   const nav = useNavigation();
   const background = useBackgroundClient();
   const hasMnemonic = useKeyringHasMnemonic();
-  const theme = useCustomTheme();
   const [newPublicKey, setNewPublicKey] = useState("");
   const [openDrawer, setOpenDrawer] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -249,6 +248,7 @@ export function AddWalletMenu({
           base58.encode(
             Buffer.from(getAddMessage(walletDescriptor.publicKey), "utf-8")
           ),
+          [true, [walletDescriptor.derivationPath]],
         ],
       });
       await background.request({
