@@ -27,7 +27,9 @@ const Config = {
 
 if (process.env.APP_ENV === "production") {
   // const commitHash = getLastCommitHash();
-  Config.webviewUrl = `https://coral-xyz.github.io/backpack/background-scripts/${DEFAULT_HASH}/service-worker-loader.html`;
+  Config.webviewUrl =
+    "https://coral-xyz.github.io/backpack/background-scripts/da03ddad/service-worker-loader.html";
+  // Config.webviewUrl = `https://coral-xyz.github.io/backpack/background-scripts/${DEFAULT_HASH}/service-worker-loader.html`;
 }
 
 export default {
