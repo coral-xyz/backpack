@@ -94,7 +94,7 @@ function SwapButton({
 }) {
   const theme = useCustomTheme();
   // Aggregate view swapper can just default to the current (global) active key.
-  publicKey = publicKey ?? useActiveSolanaWallet().publicKey;
+  publicKey = publicKey ?? useActiveSolanaWallet()?.publicKey;
 
   return (
     <SwapProvider tokenAddress={address}>

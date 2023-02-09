@@ -15,13 +15,14 @@ on:
           - ios
           - web
       profile:
-        description: EAS build profile (development/production)
+        description: EAS build profile (development/production/preview)
         type: choice
         required: true
         default: development
         options:
           - development
           - production
+          - preview
       app_env:
         description: APP_ENV (development/production)
         type: choice
@@ -34,7 +35,7 @@ on:
 jobs:
   mobile:
     name: Build App
-    timeout-minutes: 60
+    timeout-minutes: 70
     runs-on: ubuntu-latest
     # To use Remote Caching, uncomment the next lines and follow the steps below.
     env:

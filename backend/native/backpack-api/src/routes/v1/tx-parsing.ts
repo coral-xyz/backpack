@@ -34,11 +34,12 @@ router.get("/nftMetadata", async (req, res) => {
   try {
     const mint = req.query.mint;
     const metadataResponse = await fetch(
-      `${HELIUS_API_URL}/tokens/metadata?api-key=${HELIUS_API_KEY}`,
+      `${HELIUS_API_URL}/token-metadata?api-key=${HELIUS_API_KEY}`,
       {
         method: "POST",
         body: JSON.stringify({
           mintAccounts: [mint],
+          includeOffChain: false,
         }),
       }
     );
