@@ -66,7 +66,7 @@ export function SendSolanaConfirmationCard({
     image: string;
   };
   amount: BigNumber;
-  onComplete?: () => void;
+  onComplete?: (txSig?: any) => void;
 }) {
   const [txSignature, setTxSignature] = useState<string | null>(null);
   const solanaCtx = useSolanaCtx();
@@ -173,7 +173,7 @@ export function SendSolanaConfirmationCard({
           : solanaCtx.commitment
       );
       setCardType("complete");
-      if (onComplete) onComplete();
+      if (onComplete) onComplete(txSig);
     } catch (err: any) {
       logger.error("unable to confirm", err);
       setError(err.toString());

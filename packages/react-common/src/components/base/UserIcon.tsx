@@ -14,5 +14,11 @@ export const useStyles = styles((theme) => ({
 
 export function UserIcon({ image, size, marginRight }: any) {
   const classes = useStyles({ size: size || 44, marginRight });
-  return <LocalImage src={image} className={classes.iconCircular} />;
+  return (
+    <LocalImage
+      style={{ width: size || 44, height: size || 44 }}
+      src={image}
+      className={classes.iconCircular}
+    />
+  );
 }
