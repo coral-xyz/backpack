@@ -131,13 +131,13 @@ export function RecentActivity() {
   const activeWallet = useActiveWallet();
 
   const recentTransactions =
-    activeWallet.blockchain === Blockchain.SOLANA
+    (activeWallet.blockchain === Blockchain.SOLANA
       ? useRecentSolanaTransactions({
           address: activeWallet.publicKey,
         })
       : useRecentEthereumTransactions({
           address: activeWallet.publicKey,
-        });
+        })) ?? [];
 
   // Used since Solana transactions have a timestamp and Ethereum transactions have a date.
   const extractTime = (tx: any) => {
