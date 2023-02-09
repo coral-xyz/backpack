@@ -238,8 +238,11 @@ export class BlockchainKeyring {
     msg: string,
     walletAddress: string
   ): Promise<string> {
+    console.log(msg);
     const keyring = this.getKeyring(walletAddress);
     const msgBuffer = Buffer.from(bs58.decode(msg));
+    console.log(walletAddress);
+    console.log(keyring);
     return keyring.signMessage(msgBuffer, walletAddress);
   }
 

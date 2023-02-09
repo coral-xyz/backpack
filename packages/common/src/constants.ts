@@ -122,6 +122,8 @@ export const UI_RPC_METHOD_KEYRING_AUTO_LOCK_SETTINGS_UPDATE =
   "ui-rpc-method-auto-lock-settings-update";
 export const UI_RPC_METHOD_KEYRING_READ_NEXT_DERIVATION_PATH =
   "ui-rpc-method-keyring-read-next-derivation-path";
+export const UI_RPC_METHOD_KEYRING_IMPORT_WALLET =
+  "ui-rpc-method-keyring-import-wallet";
 export const UI_RPC_METHOD_KEYRING_DERIVE_WALLET =
   "ui-rpc-method-keyring-derive";
 export const UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC =
@@ -130,6 +132,8 @@ export const UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY =
   "ui-rpc-method-export-secret-key";
 export const UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY =
   "ui-rpc-method-keyring-import-wallet";
+export const UI_RPC_METHOD_KEYRING_HAS_MNEMONIC =
+  "ui-rpc-method-keyring-has-mnemonic";
 export const UI_RPC_METHOD_KEYRING_KEY_DELETE = "ui-rpc-method-keyring-delete";
 export const UI_RPC_METHOD_KEYRING_RESET = "ui-rpc-method-keyring-reset";
 export const UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD =
@@ -150,8 +154,6 @@ export const UI_RPC_METHOD_KEYRING_STORE_STATE =
   "ui-rpc-method-keyring-store-state";
 export const UI_RPC_METHOD_KEYRING_STORE_UNLOCK =
   "ui-rpc-method-keyring-store-unlock";
-export const UI_RPC_METHOD_KEYRING_TYPE_READ =
-  "ui-rpc-method-keyring-type-read";
 export const UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC =
   "ui-rpc-method-validate-mnemonic";
 export const UI_RPC_METHOD_LEDGER_CONNECT = "ui-rpc-method-ledger-connect";
@@ -284,6 +286,8 @@ export const NOTIFICATION_KEYNAME_UPDATE = "notification-keyname-update";
 export const NOTIFICATION_KEYRING_ACTIVE_BLOCKCHAIN_UPDATED =
   "notification-keyring-active-blockchain-updated";
 export const NOTIFICATION_KEYRING_CREATED = "notification-keyring-created";
+export const NOTIFICATION_KEYRING_IMPORTED_WALLET =
+  "notification-keyring-imported-wallet";
 export const NOTIFICATION_KEYRING_DERIVED_WALLET =
   "notification-keyring-derived-wallet";
 export const NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY =

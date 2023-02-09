@@ -52,8 +52,8 @@ export function ImportWallets({
   allowMultiple = true,
 }: {
   blockchain: Blockchain;
-  mnemonic?: string;
-  transport?: Transport | null;
+  mnemonic?: string | true;
+  transport?: Transport;
   onNext: (walletDescriptor: Array<WalletDescriptor>) => void;
   onError?: (error: Error) => void;
   allowMultiple?: boolean;
@@ -172,7 +172,7 @@ export function ImportWallets({
             .flat()
             .map((a: any) => a.publicKey)
         );
-      } catch {
+      } catch (error) {
         // Keyring store locked, either onboarding or left open
       }
     })();
@@ -215,6 +215,8 @@ export function ImportWallets({
     setCheckedWalletDescriptors([]);
 
     let loaderFn;
+    // `mnemonic` can be true here if we aren't passing the mnemonic then it
+    // can be taken from the unlocked keyring on the backend
     if (mnemonic) {
       // Loading accounts from a mnemonic
       loaderFn = (derivationPaths: Array<string>) =>
@@ -224,7 +226,7 @@ export function ImportWallets({
       loaderFn = (derivationPaths: Array<string>) =>
         loadLedgerPublicKeys(transport, derivationPaths);
     } else {
-      return;
+      throw new Error("no public key loader found");
     }
 
     loaderFn(derivationPaths)
@@ -328,7 +330,7 @@ export function ImportWallets({
   // component and called whenever the derivation path is changed with the selector.
   //
   const loadMnemonicPublicKeys = async (
-    mnemonic: string,
+    mnemonic: string | true,
     derivationPaths: Array<string>
   ) => {
     return await background.request({

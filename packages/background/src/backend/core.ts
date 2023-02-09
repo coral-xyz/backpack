@@ -5,7 +5,6 @@ import type {
   EventEmitter,
   FEATURE_GATES_MAP,
   KeyringInit,
-  KeyringType,
   Preferences,
   ServerPublicKey,
   SignedWalletDescriptor,
@@ -40,6 +39,7 @@ import {
   NOTIFICATION_KEYNAME_UPDATE,
   NOTIFICATION_KEYRING_DERIVED_WALLET,
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
+  NOTIFICATION_KEYRING_IMPORTED_WALLET,
   NOTIFICATION_KEYRING_KEY_DELETE,
   NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED,
   NOTIFICATION_KEYRING_STORE_CREATED,
@@ -498,8 +498,17 @@ export class Backend {
       // Create an empty keyring to init
       blockchainKeyring = keyringForBlockchain(blockchain);
       if (keyringInit.length === 2) {
-        blockchainKeyring.initFromMnemonic(keyringInit[0], keyringInit[1]);
+        // If mnemonic wasn't actually passed retrieve it from the store. This
+        // is to avoid having to pass the mnemonic to the client to make this
+        // call
+        const mnemonic =
+          // @ts-ignore to allow passing true
+          keyringInit[0] === true
+            ? this.keyringStore.activeUserKeyring.exportMnemonic()
+            : keyringInit[0];
+        blockchainKeyring.initFromMnemonic(mnemonic, keyringInit[1]);
       } else {
+        // console.log('b')
         // Using a ledger
         blockchainKeyring.initFromLedger(keyringInit[0]);
       }
@@ -814,6 +823,50 @@ export class Backend {
     keyring: "hd" | "ledger"
   ): Promise<string> {
     return this.keyringStore.nextDerivationPath(blockchain, keyring);
+  }
+
+  /**
+   * Add a new wallet to the keyring using the next derived wallet for the mnemonic.
+   * @param blockchain - Blockchain to add the wallet for
+   */
+  async keyringImportWallet(
+    blockchain: Blockchain,
+    signedWalletDescriptor: SignedWalletDescriptor
+  ): Promise<string> {
+    const { publicKey, name } = await this.keyringStore.addDerivationPath(
+      blockchain,
+      signedWalletDescriptor.derivationPath
+    );
+
+    try {
+      await this.userAccountPublicKeyCreate(
+        blockchain,
+        publicKey,
+        signedWalletDescriptor.signature
+      );
+    } catch (error) {
+      // Something went wrong persisting to server, roll back changes to the
+      // keyring. This is not a complete rollback of state changes, because
+      // the next account index gets incremented. This is the correct behaviour
+      // because it should allow for sensible retries on conflicts.
+      await this.keyringKeyDelete(blockchain, publicKey);
+      throw error;
+    }
+
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_KEYRING_IMPORTED_WALLET,
+      data: {
+        blockchain,
+        publicKey,
+        name,
+      },
+    });
+
+    // Set the active wallet to the newly added public key
+    await this.activeWalletUpdate(publicKey, blockchain);
+
+    // Return the newly added public key
+    return publicKey.toString();
   }
 
   /**

@@ -49,7 +49,9 @@ import {
   UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
   UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC,
   UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY,
+  UI_RPC_METHOD_KEYRING_HAS_MNEMONIC,
   UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
+  UI_RPC_METHOD_KEYRING_IMPORT_WALLET,
   UI_RPC_METHOD_KEYRING_KEY_DELETE,
   UI_RPC_METHOD_KEYRING_READ_NEXT_DERIVATION_PATH,
   UI_RPC_METHOD_KEYRING_RESET,
@@ -62,7 +64,6 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
   UI_RPC_METHOD_KEYRING_STORE_STATE,
   UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-  UI_RPC_METHOD_KEYRING_TYPE_READ,
   UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
   UI_RPC_METHOD_LEDGER_IMPORT,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
@@ -191,6 +192,9 @@ async function handle<T = any>(
     case UI_RPC_METHOD_KEYRING_READ_NEXT_DERIVATION_PATH:
       // @ts-ignore
       return await handleKeyringReadNextDerivationPath(ctx, ...params);
+    case UI_RPC_METHOD_KEYRING_IMPORT_WALLET:
+      // @ts-ignore
+      return await handleKeyringImportWallet(ctx, ...params);
     case UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY:
       return await handleKeyringImportSecretKey(
         ctx,
@@ -200,6 +204,8 @@ async function handle<T = any>(
       );
     case UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY:
       return handleKeyringExportSecretKey(ctx, params[0], params[1]);
+    case UI_RPC_METHOD_KEYRING_HAS_MNEMONIC:
+      return await handleKeyringHasMnemonic(ctx);
     case UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC:
       return await handleValidateMnemonic(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC:
@@ -214,8 +220,6 @@ async function handle<T = any>(
       );
     case UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE:
       return await handleMnemonicCreate(ctx, params[0]);
-    case UI_RPC_METHOD_KEYRING_TYPE_READ:
-      return await handleKeyringTypeRead(ctx);
     case UI_RPC_METHOD_PREVIEW_PUBKEYS:
       return await handlePreviewPubkeys(
         ctx,
@@ -531,6 +535,14 @@ async function handleKeyringReadNextDerivationPath(
   return [resp];
 }
 
+async function handleKeyringImportWallet(
+  ctx: Context<Backend>,
+  ...args: Parameters<Backend["keyringImportWallet"]>
+): Promise<RpcResponse<string>> {
+  const resp = await ctx.backend.keyringImportWallet(...args);
+  return [resp];
+}
+
 async function handleKeyringDeriveWallet(
   ctx: Context<Backend>,
   blockchain: Blockchain
@@ -700,6 +712,11 @@ function handleKeyringExportSecretKey(
   return [resp];
 }
 
+function handleKeyringHasMnemonic(ctx: Context<Backend>): RpcResponse<string> {
+  const resp = ctx.backend.keyringHasMnemonic();
+  return [resp];
+}
+
 function handleValidateMnemonic(
   ctx: Context<Backend>,
   mnemonic: string
@@ -745,11 +762,6 @@ async function handleMnemonicCreate(
   strength = 256
 ): Promise<RpcResponse<string>> {
   const resp = await ctx.backend.mnemonicCreate(strength);
-  return [resp];
-}
-
-async function handleKeyringTypeRead(ctx: Context<Backend>) {
-  const resp = ctx.backend.keyringTypeRead();
   return [resp];
 }
 

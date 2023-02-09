@@ -27,7 +27,7 @@ import {
   useWalletName,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { AddCircle, ArrowCircleDown } from "@mui/icons-material";
+import { ArrowCircleDown } from "@mui/icons-material";
 import { Box, Grid, Typography } from "@mui/material";
 import { ethers } from "ethers";
 

@@ -315,13 +315,22 @@ export class KeyringStore {
 
   // Preview public keys for a given mnemonic and derivation path without
   // importing the mnemonic.
-  public previewPubkeys(
+  public async previewPubkeys(
     blockchain: Blockchain,
-    mnemonic: string,
+    mnemonic: string | true,
     derivationPaths: Array<string>
-  ): string[] {
+  ): Promise<string[]> {
     const factory = hdFactoryForBlockchain(blockchain);
-    return factory.init(mnemonic, derivationPaths).publicKeys();
+    if (mnemonic === true) {
+      // Read the mnemonic from the store
+      return await this.withUnlock(async () => {
+        mnemonic = this.activeUserKeyring.exportMnemonic();
+        console.log(mnemonic);
+        return factory.init(mnemonic, derivationPaths).publicKeys();
+      });
+    } else {
+      return factory.init(mnemonic, derivationPaths).publicKeys();
+    }
   }
 
   public reset() {
@@ -448,9 +457,18 @@ export class KeyringStore {
     keyring: "hd" | "ledger"
   ): Promise<string> {
     return await this.withUnlock(async () => {
-      return await this.activeUserKeyring.nextDerivationPath(
+      return this.activeUserKeyring.nextDerivationPath(blockchain, keyring);
+    });
+  }
+
+  public async addDerivationPath(
+    blockchain: Blockchain,
+    derivationPath: string
+  ): Promise<{ publicKey: string; name: string }> {
+    return await this.withUnlock(async () => {
+      return this.activeUserKeyring.addDerivationPath(
         blockchain,
-        keyring
+        derivationPath
       );
     });
   }
@@ -803,6 +821,18 @@ class UserKeyring {
     }
   }
 
+  public addDerivationPath(
+    blockchain: Blockchain,
+    derivationPath: string
+  ): Promise<{ publicKey: string; name: string }> {
+    let blockchainKeyring = this.blockchains.get(blockchain);
+    if (!blockchainKeyring) {
+      throw new Error("blockchain keyring not initialised");
+    } else {
+      return blockchainKeyring.addDerivationPath(derivationPath);
+    }
+  }
+
   /**
    * Get the next derived key for the mnemonic.
    */
@@ -823,7 +853,7 @@ class UserKeyring {
   }
 
   public exportMnemonic(): string {
-    if (!this.mnemonic) throw new Error("keyring uses a hardware wallet");
+    if (!this.mnemonic) throw new Error("keyring does not have a mnemonic");
     return this.mnemonic;
   }
 
