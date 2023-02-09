@@ -192,6 +192,14 @@ export const AllTypesProps: Record<string, any> = {
       object: "secure_transfer_transactions_insert_input",
       on_conflict: "secure_transfer_transactions_on_conflict",
     },
+    insert_simple_transactions: {
+      objects: "simple_transactions_insert_input",
+      on_conflict: "simple_transactions_on_conflict",
+    },
+    insert_simple_transactions_one: {
+      object: "simple_transactions_insert_input",
+      on_conflict: "simple_transactions_on_conflict",
+    },
     update_chat_media_messages: {
       _inc: "chat_media_messages_inc_input",
       _set: "chat_media_messages_set_input",
@@ -218,6 +226,19 @@ export const AllTypesProps: Record<string, any> = {
     update_secure_transfer_transactions_many: {
       updates: "secure_transfer_transactions_updates",
     },
+    update_simple_transactions: {
+      _inc: "simple_transactions_inc_input",
+      _set: "simple_transactions_set_input",
+      where: "simple_transactions_bool_exp",
+    },
+    update_simple_transactions_by_pk: {
+      _inc: "simple_transactions_inc_input",
+      _set: "simple_transactions_set_input",
+      pk_columns: "simple_transactions_pk_columns_input",
+    },
+    update_simple_transactions_many: {
+      updates: "simple_transactions_updates",
+    },
   },
   order_by: "enum" as const,
   query_root: {
@@ -239,6 +260,12 @@ export const AllTypesProps: Record<string, any> = {
       where: "secure_transfer_transactions_bool_exp",
     },
     secure_transfer_transactions_by_pk: {},
+    simple_transactions: {
+      distinct_on: "simple_transactions_select_column",
+      order_by: "simple_transactions_order_by",
+      where: "simple_transactions_bool_exp",
+    },
+    simple_transactions_by_pk: {},
   },
   secure_transfer_transactions_aggregate_order_by: {
     avg: "secure_transfer_transactions_avg_order_by",
@@ -366,6 +393,41 @@ export const AllTypesProps: Record<string, any> = {
     id: "order_by",
     message_id: "order_by",
   },
+  simple_transactions_bool_exp: {
+    _and: "simple_transactions_bool_exp",
+    _not: "simple_transactions_bool_exp",
+    _or: "simple_transactions_bool_exp",
+    client_generated_uuid: "String_comparison_exp",
+    id: "Int_comparison_exp",
+    txn_signature: "String_comparison_exp",
+  },
+  simple_transactions_constraint: "enum" as const,
+  simple_transactions_inc_input: {},
+  simple_transactions_insert_input: {},
+  simple_transactions_on_conflict: {
+    constraint: "simple_transactions_constraint",
+    update_columns: "simple_transactions_update_column",
+    where: "simple_transactions_bool_exp",
+  },
+  simple_transactions_order_by: {
+    client_generated_uuid: "order_by",
+    id: "order_by",
+    txn_signature: "order_by",
+  },
+  simple_transactions_pk_columns_input: {},
+  simple_transactions_select_column: "enum" as const,
+  simple_transactions_set_input: {},
+  simple_transactions_stream_cursor_input: {
+    initial_value: "simple_transactions_stream_cursor_value_input",
+    ordering: "cursor_ordering",
+  },
+  simple_transactions_stream_cursor_value_input: {},
+  simple_transactions_update_column: "enum" as const,
+  simple_transactions_updates: {
+    _inc: "simple_transactions_inc_input",
+    _set: "simple_transactions_set_input",
+    where: "simple_transactions_bool_exp",
+  },
   subscription_root: {
     chat_media_messages: {
       distinct_on: "chat_media_messages_select_column",
@@ -396,6 +458,16 @@ export const AllTypesProps: Record<string, any> = {
     secure_transfer_transactions_stream: {
       cursor: "secure_transfer_transactions_stream_cursor_input",
       where: "secure_transfer_transactions_bool_exp",
+    },
+    simple_transactions: {
+      distinct_on: "simple_transactions_select_column",
+      order_by: "simple_transactions_order_by",
+      where: "simple_transactions_bool_exp",
+    },
+    simple_transactions_by_pk: {},
+    simple_transactions_stream: {
+      cursor: "simple_transactions_stream_cursor_input",
+      where: "simple_transactions_bool_exp",
     },
   },
   timestamptz: `scalar.timestamptz` as const,
@@ -453,6 +525,8 @@ export const ReturnTypes: Record<string, any> = {
     insert_secure_transfer_transactions:
       "secure_transfer_transactions_mutation_response",
     insert_secure_transfer_transactions_one: "secure_transfer_transactions",
+    insert_simple_transactions: "simple_transactions_mutation_response",
+    insert_simple_transactions_one: "simple_transactions",
     update_chat_media_messages: "chat_media_messages_mutation_response",
     update_chat_media_messages_by_pk: "chat_media_messages",
     update_chat_media_messages_many: "chat_media_messages_mutation_response",
@@ -461,6 +535,9 @@ export const ReturnTypes: Record<string, any> = {
     update_secure_transfer_transactions_by_pk: "secure_transfer_transactions",
     update_secure_transfer_transactions_many:
       "secure_transfer_transactions_mutation_response",
+    update_simple_transactions: "simple_transactions_mutation_response",
+    update_simple_transactions_by_pk: "simple_transactions",
+    update_simple_transactions_many: "simple_transactions_mutation_response",
   },
   query_root: {
     chat_media_messages: "chat_media_messages",
@@ -469,6 +546,8 @@ export const ReturnTypes: Record<string, any> = {
     chats_by_pk: "chats",
     secure_transfer_transactions: "secure_transfer_transactions",
     secure_transfer_transactions_by_pk: "secure_transfer_transactions",
+    simple_transactions: "simple_transactions",
+    simple_transactions_by_pk: "simple_transactions",
   },
   secure_transfer_transactions: {
     chat: "chats",
@@ -487,6 +566,15 @@ export const ReturnTypes: Record<string, any> = {
     affected_rows: "Int",
     returning: "secure_transfer_transactions",
   },
+  simple_transactions: {
+    client_generated_uuid: "String",
+    id: "Int",
+    txn_signature: "String",
+  },
+  simple_transactions_mutation_response: {
+    affected_rows: "Int",
+    returning: "simple_transactions",
+  },
   subscription_root: {
     chat_media_messages: "chat_media_messages",
     chat_media_messages_by_pk: "chat_media_messages",
@@ -497,6 +585,9 @@ export const ReturnTypes: Record<string, any> = {
     secure_transfer_transactions: "secure_transfer_transactions",
     secure_transfer_transactions_by_pk: "secure_transfer_transactions",
     secure_transfer_transactions_stream: "secure_transfer_transactions",
+    simple_transactions: "simple_transactions",
+    simple_transactions_by_pk: "simple_transactions",
+    simple_transactions_stream: "simple_transactions",
   },
   timestamptz: `scalar.timestamptz` as const,
 };
