@@ -1,4 +1,4 @@
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useMemo } from "react";
 import {
   BACKPACK_FEATURE_POP_MODE,
   BACKPACK_FEATURE_XNFT,
@@ -49,8 +49,10 @@ export function SettingsButton() {
 export function SettingsMenu() {
   const nav = useNavigation();
 
+  const headerTitle = useMemo(() => <UserAccountsMenuButton />, []);
+
   useEffect(() => {
-    nav.setOptions({ headerTitle: <UserAccountsMenuButton /> });
+    nav.setOptions({ headerTitle });
   }, [nav.setOptions]);
 
   return (
