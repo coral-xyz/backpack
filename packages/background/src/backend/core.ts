@@ -1135,10 +1135,8 @@ export class Backend {
     return this.keyringStore.createMnemonic(strength);
   }
 
-  keyringTypeRead(): KeyringType {
-    return this.keyringStore.activeUserKeyring.hasMnemonic()
-      ? "mnemonic"
-      : "ledger";
+  keyringHasMnemonic(): boolean {
+    return this.keyringStore.activeUserKeyring.hasMnemonic();
   }
 
   async previewPubkeys(

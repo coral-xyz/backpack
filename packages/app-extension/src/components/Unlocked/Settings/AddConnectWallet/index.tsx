@@ -22,7 +22,7 @@ import {
 import {
   useAvatarUrl,
   useBackgroundClient,
-  useKeyringType,
+  useKeyringHasMnemonic,
   useUser,
   useWalletName,
 } from "@coral-xyz/recoil";
@@ -189,7 +189,7 @@ export function AddWalletMenu({
 }) {
   const nav = useNavigation();
   const background = useBackgroundClient();
-  const keyringType = useKeyringType();
+  const hasMnemonic = useKeyringHasMnemonic();
   const theme = useCustomTheme();
   const [newPublicKey, setNewPublicKey] = useState("");
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -286,7 +286,10 @@ export function AddWalletMenu({
         </Box>
         <Box sx={{ margin: "0 16px" }}>
           <Grid container spacing={2}>
-            {keyringType === "mnemonic" && (
+            {hasMnemonic && (
+              // TODO user should be guided through mnemonic creation flow if
+              // they don't have a mnemonic
+              // https://github.com/coral-xyz/backpack/issues/1464
               <Grid item xs={12}>
                 <ActionCard
                   text="Secret recovery phrase"
@@ -295,33 +298,33 @@ export function AddWalletMenu({
                 />
               </Grid>
             )}
-            {(keyringType === "ledger" || keyringExists) && (
-              <Grid item xs={12}>
-                <ActionCard
-                  text="Hardware wallet"
-                  subtext="Create a new wallet using a hardware wallet."
-                  onClick={() => {
-                    openConnectHardware(
-                      blockchain,
-                      // `create` gets a default account index for derivations
-                      // where no wallets are used, `derive` just gets the next
-                      // wallet in line given the existing derivation paths
-                      keyringExists && hasLedgerPublicKeys ? "derive" : "create"
-                    );
-                    window.close();
-                  }}
-                />
-              </Grid>
-            )}
-            {keyringExists && (
-              <Grid item xs={12}>
-                <ActionCard
-                  text="Advanced import"
-                  subtext="Import existing wallets using a seed phrase, hardware wallet, or private key."
-                  onClick={() => nav.push("import-wallet", { blockchain })}
-                />
-              </Grid>
-            )}
+            <Grid item xs={12}>
+              <ActionCard
+                text="Hardware wallet"
+                subtext="Create a new wallet using a hardware wallet."
+                onClick={() => {
+                  openConnectHardware(
+                    blockchain,
+                    // `create` gets a default account index for derivations
+                    // where no wallets are used, `derive` just gets the next
+                    // wallet in line given the existing derivation paths
+                    keyringExists && hasLedgerPublicKeys ? "derive" : "create"
+                  );
+                  window.close();
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <ActionCard
+                text="Advanced import"
+                subtext={
+                  keyringExists
+                    ? "Import wallets using a secret recovery phrase, hardware wallet, or private key."
+                    : "Import wallets using a secret recovery phrase or hardware wallet."
+                }
+                onClick={() => nav.push("import-wallet", { blockchain })}
+              />
+            </Grid>
           </Grid>
         </Box>
       </div>

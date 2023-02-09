@@ -10,7 +10,7 @@ import {
 } from "@coral-xyz/common";
 import {
   useBackgroundClient,
-  useKeyringType,
+  useKeyringHasMnemonic,
   useWalletName,
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -33,7 +33,7 @@ export function AddConnectWalletScreen({ route }) {
   const { blockchain } = route.params;
   const navigation = useNavigation();
   const background = useBackgroundClient();
-  const keyringType = useKeyringType();
+  const hasMnemonic = useKeyringHasMnemonic();
   const theme = useTheme();
   const [newPublicKey, setNewPublicKey] = useState(null);
 
@@ -68,7 +68,7 @@ export function AddConnectWalletScreen({ route }) {
           justifyContent: "space-between",
         }}
       >
-        {keyringType === "mnemonic" && (
+        {hasMnemonic ? (
           <View style={{ flex: 1, marginRight: 12 }}>
             <ActionCard
               icon={
@@ -95,7 +95,7 @@ export function AddConnectWalletScreen({ route }) {
               }}
             />
           </View>
-        )}
+        ) : null}
         <View style={{ flex: 1 }}>
           <ActionCard
             icon={

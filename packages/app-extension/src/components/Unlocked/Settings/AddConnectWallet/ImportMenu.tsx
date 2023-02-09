@@ -70,6 +70,8 @@ export function ImportMenu({ blockchain }: { blockchain: Blockchain }) {
               />
             </Grid>
             {keyringExists && (
+              // TODO allow creating a keyring from just a private key
+              // https://github.com/coral-xyz/backpack/issues/2164
               <Grid item xs={12}>
                 <ActionCard
                   text="Import from secret key"

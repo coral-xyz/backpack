@@ -1,18 +1,18 @@
 import { useEffect } from "react";
-import { useKeyringType } from "@coral-xyz/recoil";
+import { useKeyringHasMnemonic } from "@coral-xyz/recoil";
 
 import { useNavigation } from "../../../common/Layout/NavStack";
 import { SettingsList } from "../../../common/Settings/List";
 
 export function YourAccount() {
   const nav = useNavigation();
-  const keyringType = useKeyringType();
+  const hasMnemonic = useKeyringHasMnemonic();
 
   const menuItems = {
     "Change Password": {
       onClick: () => nav.push("change-password"),
     },
-    ...(keyringType === "mnemonic"
+    ...(hasMnemonic
       ? {
           "Show Secret Recovery Phrase": {
             onClick: () => nav.push("show-secret-phrase-warning"),

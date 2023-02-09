@@ -124,7 +124,7 @@ export function useHardwareOnboardSteps({
       import: (
         <ImportWallets
           blockchain={blockchain}
-          transport={transport}
+          transport={transport!}
           allowMultiple={false} // Only allow a single wallet to be selected
           onNext={(walletDescriptors: Array<WalletDescriptor>) => {
             setWalletDescriptor(walletDescriptors[0]);
