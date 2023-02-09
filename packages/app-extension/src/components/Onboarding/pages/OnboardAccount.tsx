@@ -100,7 +100,7 @@ export const OnboardAccount = ({
       } else if (action === "create") {
         const walletDescriptor = await background.request({
           method: UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
-          params: [blockchain, 0, "mnemonic", mnemonic],
+          params: [blockchain, 0, mnemonic],
         });
         const signature = await background.request({
           method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
@@ -110,7 +110,7 @@ export const OnboardAccount = ({
             base58.encode(
               Buffer.from(getCreateMessage(walletDescriptor.publicKey), "utf-8")
             ),
-            [mnemonic, walletDescriptor.derivationPaths],
+            [mnemonic, [walletDescriptor.derivationPath]],
           ],
         });
         setSignedWalletDescriptors([
