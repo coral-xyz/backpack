@@ -105,8 +105,7 @@ export const getTransactionTitle = (
 
     case TransactionType.TRANSFER:
       // send/receive NFT's are returned as TransactionType.TRANSFER
-      const nftName =
-        metadata?.onChainData?.data?.name || metadata?.offChainData?.name;
+      const nftName = metadata?.onChainMetadata?.metadata?.data?.name; // FIXME: || metadata?.offChainData?.name;
       if (isNFTTransaction(transaction) && nftName) {
         return nftName;
       }
@@ -118,8 +117,7 @@ export const getTransactionTitle = (
       return "Token Swap";
 
     case TransactionType.NFT_MINT: {
-      const nftName =
-        metadata?.onChainData?.data?.name || metadata?.offChainData?.name;
+      const nftName = metadata?.onChainMetadata?.metadata?.data?.name; // FIXME: || metadata?.offChainData?.name;
       return `Minted: ${nftName}`;
     }
 
@@ -130,7 +128,8 @@ export const getTransactionTitle = (
       // if transaction is of type NFT and was not caught above under 'TRANSFER' case
       // TODO: test this case to see if it is necessary
       const nonTransferNftName =
-        metadata?.onChainData?.data?.name || metadata?.offChainData?.name;
+        metadata?.onChainMetadata?.metadata?.data?.name;
+      // FIXME: || metadata?.offChainData?.name;
 
       if (isNFTTransaction(transaction) && nonTransferNftName) {
         return nonTransferNftName;
@@ -247,7 +246,9 @@ export const getTransactionCaption = (
     // case TransactionType.BURN:
     //   return transaction?.
     case TransactionType.NFT_MINT:
-      return getTruncatedAddress(metadata?.onChainData?.collection?.key);
+      return getTruncatedAddress(
+        metadata?.onChainMetadata?.metadata?.collection?.key
+      );
 
     default:
       if (transaction?.source === Source.CARDINAL_RENT) return "Rent Paid";

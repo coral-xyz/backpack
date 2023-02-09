@@ -174,8 +174,9 @@ function RecentActivityListItemIcon({
   }
 
   // if NFT url available, display it. Check on-chain data first
-  const nftImage =
-    metadata?.onChaindata?.data?.uri || metadata?.offChainData?.image;
+  const nftImage = undefined;
+  // TODO: metadata?.onChaindata?.data?.uri || metadata?.offChainData?.image;
+
   if (isNFTTransaction(transaction) && nftImage) {
     return ListItemIcons["NFT"](nftImage);
   }
@@ -185,11 +186,13 @@ function RecentActivityListItemIcon({
     if (transaction.source === Source.SYSTEM_PROGRAM) {
       return ListItemIcons["SOL"]();
     }
+
     // other SPL token Transfer. Check tokenRegistry first, then Helius metadata
-    const transferIcon =
-      tokenData[0]?.logoURI ||
-      metadata?.onChaindata?.data?.uri ||
-      metadata?.offChainData?.image;
+    const transferIcon = undefined;
+    // FIXME: tokenData[0]?.logoURI ||
+    // metadata?.onChaindata?.data?.uri ||
+    // metadata?.offChainData?.image;
+
     if (transferIcon)
       return ListItemIcons[TransactionType.TRANSFER](transferIcon);
 
@@ -287,7 +290,7 @@ function RecentActivityListItemData({
           ) +
             " " +
             (tokenData[0]?.symbol ||
-              metadata?.onChaindata?.data?.symbol ||
+              metadata?.onChainMetadata?.metadata?.data?.symbol ||
               metadata?.offChainData?.symbol ||
               "")}
         </div>
@@ -311,7 +314,7 @@ function RecentActivityListItemData({
           ) +
             " " +
             (tokenData[0]?.symbol ||
-              metadata?.onChaindata?.data?.symbol ||
+              metadata?.onChainMetadata?.metadata?.data?.symbol ||
               metadata?.offChainData?.symbol ||
               "")}
         </div>
