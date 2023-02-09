@@ -190,7 +190,6 @@ export class Plugin {
   //
   public setActiveIframe(iframe: HTMLIFrameElement, xnftUrl: string) {
     this._iframeActive = iframe;
-    // this._rpcServer.handler(this._handleRpc.bind(this));
 
     this._rpcServer.setWindow(
       iframe.contentWindow,
