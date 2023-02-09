@@ -1,13 +1,15 @@
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import Autosizer from "react-virtualized-auto-sizer";
 import { VariableSizeList } from "react-window";
-import type { Blockchain,   CollectionChatData,NftCollection } from "@coral-xyz/common";
+import type {
+  Blockchain,
+  CollectionChatData,
+  NftCollection,
+} from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
   NAV_COMPONENT_NFT_COLLECTION,
   NAV_COMPONENT_NFT_DETAIL,
-  SolanaTokenAccountWithKey,
-  TokenMetadata,
 } from "@coral-xyz/common";
 import { NAV_COMPONENT_NFT_CHAT } from "@coral-xyz/common/dist/esm/constants";
 import { Loading } from "@coral-xyz/react-common";
@@ -344,6 +346,7 @@ function NftCollectionCard({
       nftId: collectionDisplayNftId,
     })
   );
+
   const collectionsChatMetadata = useGroupCollections({ uuid });
 
   const init = async () => {
@@ -373,6 +376,7 @@ function NftCollectionCard({
   if (!collectionDisplayNft) {
     return null;
   }
+
   const onClick = () => {
     if (collection.metadataCollectionId === ONE_COLLECTION_ID) {
       push({
@@ -426,8 +430,8 @@ function NftCollectionCard({
       onClick={onClick}
       nft={collectionDisplayNft}
       subtitle={{
-        name: collectionDisplayNft.collectionName,
         length: collection.itemIds.length,
+        name: collectionDisplayNft.collectionName,
       }}
     />
   );
