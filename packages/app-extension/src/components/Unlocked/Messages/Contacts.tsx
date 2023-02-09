@@ -58,6 +58,17 @@ export const ContactRequests = ({
   const nav = useNavigation();
   const classes = useStyles();
   const theme = useCustomTheme();
+  const [localSentRequests, setLocalSentRequests] = useState<RemoteUserData[]>(
+    []
+  );
+  const [localReceivedRequests, setLocalReceivedRequests] = useState<
+    RemoteUserData[]
+  >([]);
+
+  useEffect(() => {
+    setLocalReceivedRequests(requests.received);
+    setLocalSentRequests(requests.sent);
+  }, [requests]);
 
   useEffect(() => {
     nav.setOptions({ headerTitle: `Requests ${isSent ? "Sent" : "Received"}` });
@@ -95,7 +106,10 @@ export const ContactRequests = ({
             Sent ({requests.sent.length})
           </Typography>
         )}
-        <UserList users={isSent ? requests.sent : requests.received} />
+        <UserList
+          setMembers={isSent ? setLocalSentRequests : setLocalReceivedRequests}
+          users={isSent ? localSentRequests : localReceivedRequests}
+        />
       </div>
     </div>
   );
