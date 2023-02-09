@@ -18,6 +18,7 @@ import {
 } from "@coral-xyz/react-common";
 import {
   useActiveWallet,
+  useDarkMode,
   useJupiterOutputMints,
   useSplTokenRegistry,
   useSwapContext,
@@ -203,10 +204,12 @@ enum SwapState {
 }
 
 export function Swap({ blockchain }: { blockchain: Blockchain }) {
+  const isDark = useDarkMode();
   const nav = useNavigation();
   useEffect(() => {
     nav.setOptions({
       headerTitle: "Swap",
+      style: isDark ? { background: "#1D1D20" } : undefined,
     });
   }, [nav]);
 
@@ -218,6 +221,7 @@ export function Swap({ blockchain }: { blockchain: Blockchain }) {
 }
 
 function _Swap() {
+  const isDark = useDarkMode();
   const classes = useStyles();
   const { swapToFromMints } = useSwapContext();
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -239,7 +243,12 @@ function _Swap() {
 
   return (
     <>
-      <form onSubmit={onSubmit} className={classes.container} noValidate>
+      <form
+        onSubmit={onSubmit}
+        className={classes.container}
+        style={isDark ? { background: "#1D1D20" } : undefined}
+        noValidate
+      >
         <div className={classes.topHalf}>
           <SwapTokensButton
             onClick={onSwapButtonClick}
@@ -815,6 +824,8 @@ export function SwapSelectToken({
   customFilter: (token: Token) => boolean;
   input: boolean;
 }) {
+  const isDark = useDarkMode();
+  const theme = useCustomTheme();
   const nav = useNavigation();
   const { fromMint, inputTokenAccounts } = useSwapContext();
   const tokenAccounts = !input
@@ -834,7 +845,12 @@ export function SwapSelectToken({
   };
 
   useEffect(() => {
-    nav.setOptions({ headerTitle: "Select Token" });
+    nav.setOptions({
+      headerTitle: "Select Token",
+      style: isDark
+        ? { background: theme.custom.colors.background }
+        : undefined,
+    });
   }, [nav]);
 
   return (

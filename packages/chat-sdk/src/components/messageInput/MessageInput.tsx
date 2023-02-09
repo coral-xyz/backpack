@@ -24,6 +24,7 @@ export function MessageInput({ setEmojiMenuOpen }: { setEmojiMenuOpen: any }) {
   return (
     <div style={{ width: "100%", padding: 10 }}>
       <RichMentionsInput
+        id="message-input"
         onKeyDown={(event) => {
           if (event.key === "Enter" && activeSearch) {
             event.stopPropagation();

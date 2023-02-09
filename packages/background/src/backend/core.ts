@@ -105,6 +105,9 @@ export class Backend {
   private ethereumConnectionBackend: EthereumConnectionBackend;
   private events: EventEmitter;
 
+  // TODO: remove once beta is over.
+  private xnftWhitelist: Promise<Array<string>>;
+
   constructor(
     events: EventEmitter,
     solanaB: SolanaConnectionBackend,
@@ -114,6 +117,20 @@ export class Backend {
     this.solanaConnectionBackend = solanaB;
     this.ethereumConnectionBackend = ethereumB;
     this.events = events;
+
+    // TODO: remove once beta is over.
+    this.xnftWhitelist = new Promise(async (resolve, reject) => {
+      try {
+        const resp = await fetch(
+          "https://app-store-api.backpack.workers.dev/api/curation/whitelist"
+        );
+        const { whitelist } = await resp.json();
+        resolve(whitelist);
+      } catch (err) {
+        console.error(err);
+        reject(err);
+      }
+    });
   }
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -1667,17 +1684,16 @@ export class Backend {
 
     const targetTab = tab ?? nav.activeTab;
 
-    // AUDIT NOTE:
-    // This is a temporary measure for the duration of the private beta in order to control
-    // the xNFTs that can be opened from within Backpack AND externally using the injected provider's
-    // `openXnft` function.
+    // This is a temporary measure for the duration of the private beta in order
+    // to control the xNFTs that can be opened from within Backpack AND
+    // externally using the injected provider's `openXnft` function.
     //
-    // The whitelist is controlled internally and exposed through the xNFT library's worker API to check
-    // the address of the xNFT attempting to be opened by the user.
+    // The whitelist is controlled internally and exposed through the xNFT
+    // library's worker API to check the address of the xNFT attempting to be
+    // opened by the user.
     if (targetTab === TAB_XNFT) {
       const pk = url.split("/")[1];
-      const cachedWhitelist =
-        await this.solanaConnectionBackend.getXnftWhitelist();
+      const cachedWhitelist = await this.xnftWhitelist;
 
       if (!cachedWhitelist.includes(pk)) {
         // Secondary lazy check to ensure there wasn't a whitelist update in-between cache updates

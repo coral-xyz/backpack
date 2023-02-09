@@ -240,11 +240,11 @@ export const MessageLine = (props) => {
         {sameUserMessage ? (
           <div
             className={`${classes.messageContainer} ${classes.hoverParent}`}
-            style={{ display: "flex" }}
+            style={{ display: "flex", paddingTop: "4px" }}
           >
             <div>
               {props.parent_message_author_uuid && (
-                <div style={{}}>
+                <div>
                   <ReplyContainer
                     marginBottom={2}
                     padding={0}
@@ -442,6 +442,7 @@ export const MessageLine = (props) => {
                             parent_username: `@${props.username}`,
                             parent_message_author_uuid: props.userId,
                           });
+                          document.getElementById("message-input")?.focus();
                         }}
                       >
                         <ReplyIcon fill={theme.custom.colors.icon} />
