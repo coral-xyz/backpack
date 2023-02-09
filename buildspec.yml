@@ -9,4 +9,5 @@ phases:
       - mv docker/backpack-api/Dockerfile .
 artifacts:
   files:
-    - /*/**
+    - '**/*'
+
