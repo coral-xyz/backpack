@@ -6,7 +6,7 @@ phases:
       nodejs: 16
   build:
     commands:
-      - mv docker/backpack-api/fly.toml .
+      - mv docker/backpack-api/Dockerfile .
 artifacts:
   files:
     - /*/**
