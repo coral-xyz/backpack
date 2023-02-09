@@ -24,13 +24,21 @@ export class PluginServer {
   public handler(handlerFn: (event: Event) => Promise<RpcResponse>) {
     return window.addEventListener("message", async (event: Event) => {
       const url = new URL(this.url);
+      const SIMULATOR_HOST = "localhost:9933";
+
+      if (url.host === SIMULATOR_HOST && !this.window) {
+        // Nothing is running in the simulator
+        return;
+      }
+
       if (
         // TODO: hardcode allowed origin(s)
-        (!url.origin.startsWith("http://localhost:9933") &&
+        (url.host !== SIMULATOR_HOST &&
           (event.origin !== url.origin || event.data.href !== url.href)) ||
         event.data.type !== this.requestChannel
       ) {
-        throw new Error("Unknown Origin or channel");
+        // Unknown Origin or channel
+        return;
       }
 
       const id = event.data.detail.id;
@@ -49,7 +57,7 @@ export class PluginServer {
         if (!this.window) {
           throw new Error("post message window not found");
         }
-        this.window.postMessage(msg, "*");
+        this.window.postMessage(msg, event.origin);
       }
     });
   }
