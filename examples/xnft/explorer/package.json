@@ -2,9 +2,9 @@
   "name": "@coral-xyz/xnft-explorer",
   "version": "0.1.0",
   "scripts": {
-    "build": "xnft build",
-    "start": "xnft start",
-    "dev": "xnft dev"
+    "build": "xnft legacy build",
+    "start": "xnft legacy start",
+    "dev": "xnft legacy dev"
   },
   "devDependencies": {},
   "dependencies": {

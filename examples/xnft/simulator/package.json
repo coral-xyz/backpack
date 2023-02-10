@@ -2,12 +2,11 @@
   "name": "@coral-xyz/example-plugin-simulator",
   "version": "0.1.0",
   "scripts": {
-    "build": "xnft build",
-    "start": "xnft watch",
-    "dev": "xnft dev"
+    "build": "xnft legacy build",
+    "start": "xnft legacy watch",
+    "dev": "xnft legacy dev"
   },
   "devDependencies": {
-    "@coral-xyz/xnft-cli": "*",
     "local-web-server": "^5.2.0"
   },
   "dependencies": {

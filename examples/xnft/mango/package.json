@@ -2,12 +2,10 @@
   "name": "@coral-xyz/example-plugin-mango",
   "version": "0.1.0",
   "scripts": {
-    "build": "xnft build",
-    "start": "xnft watch"
+    "build": "xnft legacy build",
+    "start": "xnft legacy watch"
   },
-  "devDependencies": {
-    "@coral-xyz/xnft-cli": "*"
-  },
+  "devDependencies": {},
   "dependencies": {
     "react-xnft": "*",
     "@blockworks-foundation/mango-client": "^3.4.4",

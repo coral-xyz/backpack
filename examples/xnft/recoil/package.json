@@ -2,13 +2,11 @@
   "name": "@coral-xyz/example-plugin-recoil",
   "version": "0.1.0",
   "scripts": {
-    "build": "xnft build",
-    "dev": "xnft dev -e true",
-    "start": "xnft watch"
+    "build": "xnft legacy build",
+    "dev": "xnft legacy dev -e true",
+    "start": "xnft legacy watch"
   },
-  "devDependencies": {
-    "@coral-xyz/xnft-cli": "*"
-  },
+  "devDependencies": {},
   "dependencies": {
     "react": "^17.0.2",
     "react-xnft": "*",

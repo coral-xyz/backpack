@@ -2,9 +2,9 @@
   "name": "@coral-xyz/example-xnft-iframe",
   "version": "0.1.0",
   "scripts": {
-    "build": "xnft build",
-    "start": "xnft watch",
-    "dev": "xnft dev"
+    "build": "xnft legacy build",
+    "start": "xnft legacy watch",
+    "dev": "xnft legacy dev"
   },
   "devDependencies": {
     "@parcel/config-default": "^2.7.0"
