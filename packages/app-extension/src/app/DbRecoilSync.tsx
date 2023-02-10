@@ -145,7 +145,7 @@ export const AuthedDbRecoilSync = ({ uuid }: { uuid: string }) => {
           });
       }
     };
-  }, []);
+  }, [uuid]);
 
   return <></>;
 };

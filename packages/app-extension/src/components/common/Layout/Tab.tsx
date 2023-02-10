@@ -20,10 +20,10 @@ import {
   MessageBubbleUnreadIcon,
 } from "@coral-xyz/react-common";
 import {
+  useAuthenticatedUser,
   useBackgroundClient,
   useFeatureGates,
   useTab,
-  useUser,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
@@ -130,21 +130,23 @@ export function WithTabs(props: any) {
 function TabBar() {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const { uuid } = useUser();
+  const authenticatedUser = useAuthenticatedUser();
   const tab = useTab();
   const background = useBackgroundClient();
   const featureGates = useFeatureGates();
-  const messagesUnread = useUnreadGlobal(uuid);
+  const messagesUnread = useUnreadGlobal(
+    authenticatedUser ? authenticatedUser.uuid : null
+  );
   const { isXs } = useBreakpoints();
 
-  const onTabClick = (tabValue: string) => {
+  const onTabClick = async (tabValue: string) => {
     if (tabValue === tab) {
-      background.request({
+      await background.request({
         method: UI_RPC_METHOD_NAVIGATION_TO_ROOT,
         params: [],
       });
     } else {
-      background.request({
+      await background.request({
         method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
         params: [tabValue],
       });
