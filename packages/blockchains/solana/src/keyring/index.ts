@@ -19,10 +19,12 @@ import {
 } from "@coral-xyz/common";
 import { Keypair, PublicKey } from "@solana/web3.js";
 import { mnemonicToSeedSync, validateMnemonic } from "bip39";
-import * as bs58 from "bs58";
+import { ethers } from "ethers";
 import nacl from "tweetnacl";
 
 import { deriveSolanaKeypair } from "../util";
+
+const { base58 } = ethers.utils;
 
 export class SolanaKeyringFactory implements KeyringFactory {
   public init(secretKeys: Array<string>): SolanaKeyring {
@@ -60,7 +62,7 @@ class SolanaKeyring implements Keyring {
     if (!kp) {
       throw new Error(`unable to find ${address.toString()}`);
     }
-    return bs58.encode(nacl.sign.detached(new Uint8Array(tx), kp.secretKey));
+    return base58.encode(nacl.sign.detached(new Uint8Array(tx), kp.secretKey));
   }
 
   public async signMessage(tx: Buffer, address: string): Promise<string> {
@@ -76,7 +78,7 @@ class SolanaKeyring implements Keyring {
     if (!kp) {
       return null;
     }
-    return bs58.encode(kp.secretKey);
+    return base58.encode(kp.secretKey);
   }
 
   public importSecretKey(secretKey: string): string {
@@ -259,7 +261,7 @@ export class SolanaLedgerKeyring
     return await this.request({
       method: LEDGER_METHOD_SOLANA_SIGN_TRANSACTION,
       params: [
-        bs58.encode(tx),
+        base58.encode(tx),
         walletDescriptor.derivationPath.replace("m/", ""),
       ],
     });
@@ -275,7 +277,7 @@ export class SolanaLedgerKeyring
     return await this.request({
       method: LEDGER_METHOD_SOLANA_SIGN_MESSAGE,
       params: [
-        bs58.encode(msg),
+        base58.encode(msg),
         walletDescriptor.derivationPath.replace("m/", ""),
       ],
     });

@@ -13,6 +13,9 @@ import {
 } from "@coral-xyz/blockchain-solana";
 import { Blockchain } from "@coral-xyz/common";
 import { mnemonicToSeedSync } from "bip39";
+import { ethers } from "ethers";
+
+const { base58 } = ethers.utils;
 
 export function hdFactoryForBlockchain(blockchain: Blockchain) {
   return {
@@ -47,7 +50,9 @@ export function mnemonicPathToPrivateKey(
   if (blockchain === Blockchain.ETHEREUM) {
     return deriveEthereumPrivateKey(seed, derivationPath);
   } else if (blockchain === Blockchain.SOLANA) {
-    return deriveSolanaPrivateKey(seed, derivationPath);
+    return Buffer.from(deriveSolanaPrivateKey(seed, derivationPath)).toString(
+      "hex"
+    );
   }
   throw new Error("invalid blockchain");
 }

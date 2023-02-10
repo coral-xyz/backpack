@@ -23,6 +23,5 @@ export function deriveSolanaPrivateKey(
   } else {
     derivedSeed = derivePath(derivationPath, seed.toString("hex")).key;
   }
-  const secret = nacl.sign.keyPair.fromSeed(derivedSeed).secretKey;
-  return secret;
+  return nacl.sign.keyPair.fromSeed(derivedSeed).secretKey;
 }

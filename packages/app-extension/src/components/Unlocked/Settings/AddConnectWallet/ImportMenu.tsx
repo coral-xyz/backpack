@@ -28,6 +28,11 @@ export function ImportMenu({ blockchain }: { blockchain: Blockchain }) {
   const user = useUser();
   const [keyringExists, setKeyringExists] = useState(false);
 
+  // Can only init a new blockchain keyring if there is a mnemonic
+  const allowOwnPhrase = hasMnemonic;
+  // Can only do imports via secret key if there is no existing mnemonic on the keyring
+  const allowOtherPhrase = keyringExists;
+
   useEffect(() => {
     const prevTitle = navigation.title;
     navigation.setOptions({ headerTitle: "" });
@@ -47,19 +52,28 @@ export function ImportMenu({ blockchain }: { blockchain: Blockchain }) {
   }, [blockchain]);
 
   const importMenu = {
-    ...(keyringExists || hasMnemonic
-      ? // The blockchain keyring must exist or there must be a mnemonic
-        // to allow imports from secret recovery phrases. If there is no
-        // mnemonic and the keyring does not exist a secret recovery phrase
-        // import can only done via a private key, and you can't currently
-        // init a blockchain keyring using a private key based wallet.
-        {
-          "Secret recovery phrase": {
+    ...(allowOwnPhrase
+      ? {
+          "My secret recovery phrase": {
             onClick: () =>
               navigation.push("import-from-mnemonic", {
                 blockchain,
                 keyringExists,
-                hasMnemonic,
+                inputMnemonic: false,
+              }),
+            icon: (props: any) => <MnemonicIcon {...props} />,
+            detailIcon: <PushDetail />,
+          },
+        }
+      : {}),
+    ...(allowOtherPhrase
+      ? {
+          "Other secret recovery phrase": {
+            onClick: () =>
+              navigation.push("import-from-mnemonic", {
+                blockchain,
+                keyringExists,
+                inputMnemonic: true,
               }),
             icon: (props: any) => <MnemonicIcon {...props} />,
             detailIcon: <PushDetail />,

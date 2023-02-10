@@ -14,14 +14,13 @@ import {
 import { PrimaryButton, TextInput } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { Box, Grid } from "@mui/material";
+import { Box } from "@mui/material";
 
 import { useSignMessageForWallet } from "../../../../hooks/useSignMessageForWallet";
 import { useSteps } from "../../../../hooks/useSteps";
 import { Header } from "../../../common";
 import { ImportWallets } from "../../../common/Account/ImportWallets";
 import { MnemonicInput } from "../../../common/Account/MnemonicInput";
-import { ActionCard } from "../../../common/Layout/ActionCard";
 import {
   useDrawerContext,
   WithMiniDrawer,
@@ -33,11 +32,11 @@ import { ConfirmCreateWallet } from "./";
 export function ImportMnemonic({
   blockchain,
   keyringExists,
-  hasMnemonic,
+  inputMnemonic,
 }: {
   blockchain: Blockchain;
   keyringExists: boolean;
-  hasMnemonic: boolean;
+  inputMnemonic: boolean;
 }) {
   const nav = useNavigation();
   const theme = useCustomTheme();
@@ -45,17 +44,7 @@ export function ImportMnemonic({
   const { step, nextStep } = useSteps();
   const { close: closeParentDrawer } = useDrawerContext();
 
-  // Can only init a new blockchain keyring if there is a mnemonic
-  const allowOwnPhrase = hasMnemonic;
-  // Can only do imports via secret key if there is no existing mnemonic on the keyring
-  const allowOtherPhrase = keyringExists;
-
   const [openDrawer, setOpenDrawer] = useState(false);
-  // Whether the user is inputting another mnemonic or using the one on the keyring
-  // If other phrases are possible, then this is `true` by default, if own phrase
-  // is also possible the SetInputMnemonic component will override with the
-  // users choice
-  const [inputMnemonic, setInputMnemonic] = useState(allowOtherPhrase);
   const [mnemonic, setMnemonic] = useState<string | true>(true);
   const [publicKey, setPublicKey] = useState<string | null>(null);
   const [name, setName] = useState<string | null>(null);
@@ -106,17 +95,6 @@ export function ImportMnemonic({
   };
 
   const steps = [
-    ...(allowOwnPhrase && allowOtherPhrase
-      ? // Only show the the own/other phrase option if they are actually options
-        [
-          <SetInputMnemonic
-            onNext={(inputMnemonic) => {
-              setInputMnemonic(inputMnemonic);
-              nextStep();
-            }}
-          />,
-        ]
-      : []),
     // Show the seed phrase if we are creating based on a mnemonic
     ...(inputMnemonic
       ? [
@@ -176,47 +154,6 @@ export function ImportMnemonic({
           }}
         />
       </WithMiniDrawer>
-    </>
-  );
-}
-
-export function SetInputMnemonic({
-  onNext,
-}: {
-  onNext: (mnemonicInput: boolean) => void;
-}) {
-  return (
-    <>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          height: "100%",
-        }}
-      >
-        <Box sx={{ margin: "24px" }}>
-          <Header text="Import using a secret recovery phrase" />
-        </Box>
-
-        <Box sx={{ margin: "0 16px" }}>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <ActionCard
-                text="Your secret recovery phrase"
-                subtext="Use the secret recovery phrase from your Backpack account."
-                onClick={() => onNext(false)}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <ActionCard
-                text="Other secret recovery phrase"
-                subtext="Enter a new secret recovery phrase for a one time import."
-                onClick={() => onNext(true)}
-              />
-            </Grid>
-          </Grid>
-        </Box>
-      </div>
     </>
   );
 }
