@@ -290,6 +290,7 @@ export function _BalancesTableHead({
         borderRadius: 0,
         padding: 0,
         backgroundColor: theme.custom.colors.nav,
+        display: "none",
       }}
     >
       <CardHeader

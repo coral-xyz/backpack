@@ -105,12 +105,14 @@ export function WithTabs(props: any) {
   return (
     <div
       style={{
+        //        flex: 1,
         display: "flex",
         flexDirection: isXs ? "column" : "row-reverse",
+        //        position: !isXs ? "absolute" : undefined,
         position: "absolute",
         left: 0,
         right: 0,
-        top: 0,
+        top: 4,
         bottom: 0,
       }}
     >

@@ -169,9 +169,7 @@ function WalletXnftGrid({
     [wallet]
   );
 
-  return !isLoading && plugins.length === 0 ? (
-    <></>
-  ) : (
+  return !isLoading && plugins.length === 0 ? null : (
     <div
       style={{
         marginLeft: "12px",
@@ -213,9 +211,10 @@ function _WalletXnftGrid({
   return (
     <>
       <BalancesTableHead wallet={wallet} />
-      {showContent ? <div
-        style={{
-            paddingTop: "8px",
+      {showContent ? (
+        <div
+          style={{
+            paddingTop: "18px",
             paddingBottom: "18px",
             paddingLeft: "10px",
             paddingRight: "10px",
@@ -224,8 +223,8 @@ function _WalletXnftGrid({
             borderBottomRightRadius: "10px",
           }}
         >
-        <Grid container>
-          {isLoading
+          <Grid container>
+            {isLoading
               ? Array.from(Array(iconsPerRow).keys()).map((_, idx) => {
                   return (
                     <Grid
@@ -240,7 +239,7 @@ function _WalletXnftGrid({
                     </Grid>
                   );
                 })
-              : plugins.map((p: any, idx: number) => {
+              : plugins.map((p: any, idx) => {
                   return (
                     <Grid
                       item
@@ -254,8 +253,9 @@ function _WalletXnftGrid({
                     </Grid>
                   );
                 })}
-        </Grid>
-      </div> : null}
+          </Grid>
+        </div>
+      ) : null}
     </>
   );
 }

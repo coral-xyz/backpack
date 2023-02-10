@@ -10,7 +10,11 @@ import { styles } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
 
 import { Button } from "../../../../plugin/Component";
-import { CloseButton, WithDrawer } from "../../../common/Layout/Drawer";
+import {
+  CloseButton,
+  WithDrawer,
+  WithNotchDrawer,
+} from "../../../common/Layout/Drawer";
 import {
   NavStackEphemeral,
   NavStackScreen,
@@ -168,23 +172,21 @@ export function WithHeaderButton({
           <Typography className={classes.headerButtonLabel}>{label}</Typography>
         )}
       </Button>
-      <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
-        <div style={{ height: "100%" }}>
-          <NavStackEphemeral
-            initialRoute={initialRoute}
-            options={(args) => routeOptions(routes, args)}
-            navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
-          >
-            {routes.map((r: any) => (
-              <NavStackScreen
-                key={r.name}
-                name={r.name}
-                component={r.component}
-              />
-            ))}
-          </NavStackEphemeral>
-        </div>
-      </WithDrawer>
+      <WithNotchDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
+        <NavStackEphemeral
+          initialRoute={initialRoute}
+          options={(args) => routeOptions(routes, args)}
+          navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
+        >
+          {routes.map((r: any) => (
+            <NavStackScreen
+              key={r.name}
+              name={r.name}
+              component={r.component}
+            />
+          ))}
+        </NavStackEphemeral>
+      </WithNotchDrawer>
     </>
   );
 }

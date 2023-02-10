@@ -35,12 +35,17 @@ import {
   SolanaIconOnboarding as SolanaIcon,
 } from "../common/Icon";
 import { ActionCard } from "../common/Layout/ActionCard";
-import { useDrawerContext, WithMiniDrawer } from "../common/Layout/Drawer";
+import {
+  useDrawerContext,
+  WithDrawer,
+  WithMiniDrawer,
+} from "../common/Layout/Drawer";
 import {
   NavStackEphemeral,
   NavStackScreen,
   useNavigation,
 } from "../common/Layout/NavStack";
+import { WithNotchCutout } from "../common/Layout/Notch";
 import {
   AddConnectPreview,
   AddConnectWalletMenu,
@@ -60,28 +65,13 @@ import {
 import { Scrollbar } from "./Layout/Scrollbar";
 import { WithCopyTooltip } from "./WithCopyTooltip";
 
-const useStyles = styles((theme) => ({
-  addressButton: {
-    padding: 0,
-    color: theme.custom.colors.secondary,
-    textTransform: "none",
-    fontWeight: 500,
-    lineHeight: "24px",
-    fontSize: "14px",
-    "&:hover": {
-      backgroundColor: "transparent",
-      "& svg": {
-        visibility: "visible",
-      },
-    },
-  },
-}));
-
 export function WalletDrawerButton({
   wallet,
+  useNotch,
   style,
 }: {
   wallet: { name: string; publicKey: string };
+  useNotch?: boolean;
   style?: React.CSSProperties;
 }) {
   const { setOpen } = useWalletDrawerContext();
@@ -93,6 +83,7 @@ export function WalletDrawerButton({
         setOpen(true);
       }}
       style={style}
+      useNotch={useNotch}
     />
   );
 }
@@ -100,13 +91,14 @@ export function WalletDrawerButton({
 function WalletButton({
   wallet,
   onClick,
+  useNotch,
   style,
 }: {
   wallet: { name: string; publicKey: string };
   onClick: (e: any) => void;
+  useNotch?: boolean;
   style?: React.CSSProperties;
 }) {
-  const classes = useStyles();
   const theme = useCustomTheme();
   const [tooltipOpen, setTooltipOpen] = useState(false);
 
@@ -122,28 +114,54 @@ function WalletButton({
         flex: 1,
         display: "flex",
         justifyContent: "space-between",
-        marginLeft: "8px",
         ...style,
       }}
     >
-      <Button disableRipple className={classes.addressButton} onClick={onClick}>
+      <Button
+        disableRipple
+        onClick={onClick}
+        sx={{
+          padding: 0,
+          color: useNotch
+            ? theme.custom.colorsInverted.fontColor
+            : theme.custom.colors.fontColor,
+          textTransform: "none",
+          fontWeight: 500,
+          lineHeight: "24px",
+          fontSize: "14px",
+          "&:hover": {
+            backgroundColor: "transparent",
+            "& svg": {
+              visibility: "visible",
+            },
+          },
+        }}
+      >
         {wallet.name}
-        <ExpandMore
-          style={{
-            width: "18px",
-            color: theme.custom.colors.icon,
-          }}
-        />
       </Button>
       <WithCopyTooltip tooltipOpen={tooltipOpen}>
         <Button
           disableRipple
-          style={{
+          sx={{
             display: "flex",
             padding: 0,
             minWidth: "16px",
+            color: useNotch
+              ? theme.custom.colorsInverted.secondary
+              : theme.custom.colors.secondary,
+
+            textTransform: "none",
+            fontWeight: 500,
+            lineHeight: "24px",
+            fontSize: "14px",
+            "&:hover": {
+              background: "transparent",
+              backgroundColor: "transparent",
+              "& svg": {
+                visibility: "visible",
+              },
+            },
           }}
-          className={classes.addressButton}
           onClick={async (e) => {
             e.stopPropagation();
             await onCopy();
@@ -173,35 +191,28 @@ export function WalletDrawerNavStack({
     name: string;
   }) => boolean;
 }) {
-  const theme = useCustomTheme();
   return (
-    <WithMiniDrawer
+    <WithDrawer
+      paperStyles={{
+        paddingTop: 4,
+        clipPath: "url(#notch)",
+        background: "transparent",
+      }}
       openDrawer={openDrawer}
-      setOpenDrawer={setOpenDrawer}
-      paperProps={{
-        sx: {
-          height: "90%",
-          background: theme.custom.colors.backgroundBackdrop,
-        },
-      }}
-      backdropProps={{
-        style: {
-          opacity: 0.8,
-          background: "#18181b",
-        },
-      }}
+      setOpenDrawer={setOpenDrawer as any}
     >
-      <div
-        style={{
-          height: "100%",
-          background: theme.custom.colors.backgroundBackdrop,
-        }}
-      >
-        <Scrollbar>
-          <WalletNavStack filter={filter} />
-        </Scrollbar>
-      </div>
-    </WithMiniDrawer>
+      <WithNotchCutout>
+        <div
+          style={{
+            height: "100%",
+          }}
+        >
+          <Scrollbar>
+            <WalletNavStack filter={filter} />
+          </Scrollbar>
+        </div>
+      </WithNotchCutout>
+    </WithDrawer>
   );
 }
 

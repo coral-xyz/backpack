@@ -2,6 +2,7 @@ import React, { type CSSProperties, useContext, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 
 import { WithMotion } from "../../../plugin/Component";
+import { WithNotchCutout } from "../../common/Layout/Notch";
 
 import { NavBackButton, WithNav } from "./Nav";
 

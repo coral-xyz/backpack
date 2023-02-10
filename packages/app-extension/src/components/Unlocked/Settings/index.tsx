@@ -26,7 +26,6 @@ import { AvatarPopoverButton } from "./AvatarPopover";
 export function SettingsButton() {
   return (
     <div style={{ display: "flex" }}>
-      <RecentActivityButton />
       <NotificationButton />
       <div style={{ width: "16px" }} />
       <AvatarPopoverButton />

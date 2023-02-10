@@ -1,5 +1,6 @@
 import { useBootstrapFast } from "@coral-xyz/recoil";
 
+import { NotchBackground,WithNotchCutout } from "../common/Layout/Notch";
 import { Router } from "../common/Layout/Router";
 import { WithTabs } from "../common/Layout/Tab";
 import { WalletDrawerProvider } from "../common/WalletList";
@@ -13,23 +14,25 @@ import { WithVersion } from "./WithVersion";
 //
 export function Unlocked() {
   useBootstrapFast();
-
   return (
     <WithVersion>
       <WalletDrawerProvider>
-        <WithTabs>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              height: "100%",
-            }}
-          >
-            <Router />
-            <ApproveTransactionRequest />
-            <PrimaryPubkeySelector />
-          </div>
-        </WithTabs>
+        <NotchBackground />
+        <WithNotchCutout>
+          <WithTabs>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+              }}
+            >
+              <Router />
+              <ApproveTransactionRequest />
+              <PrimaryPubkeySelector />
+            </div>
+          </WithTabs>
+        </WithNotchCutout>
       </WalletDrawerProvider>
     </WithVersion>
   );

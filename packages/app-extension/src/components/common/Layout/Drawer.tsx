@@ -68,6 +68,31 @@ const useStyles = styles((theme) => ({
   },
 }));
 
+export function WithNotchDrawer(props: any) {
+  const p = {
+    ...props,
+    backdropStyles: {
+      clipPath: "url(#notch)",
+    },
+    paperStyles: {
+      clipPath: "url(#notch)",
+      top: "4px",
+    },
+  };
+  return (
+    <WithDrawer {...p}>
+      <div
+        style={{
+          height: "100%",
+          clipPath: "url(#notch)",
+        }}
+      >
+        {props.children}
+      </div>
+    </WithDrawer>
+  );
+}
+
 export function WithDrawer(
   props: PropsWithChildren<{
     backdropStyles?: CSSProperties;
