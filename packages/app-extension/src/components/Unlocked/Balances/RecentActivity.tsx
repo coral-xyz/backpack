@@ -269,7 +269,6 @@ export function _RecentActivityList({
             isLast={idx === transactions.length - 1}
           />
         ))}
-        )
       </List>
     </div>
   ) : (
