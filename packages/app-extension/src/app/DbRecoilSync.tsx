@@ -9,23 +9,31 @@ import {
   requestCount,
   roomChats,
   unreadCount,
-  useUser,
+  useAuthenticatedUser,
 } from "@coral-xyz/recoil";
-import { useRecoilCallback, useRecoilState } from "recoil";
+import { useRecoilCallback, useSetRecoilState } from "recoil";
 
+// Wrapper compoennt to ensure syncing only happens when there is an
+// authenticated user
 export const DbRecoilSync = () => {
-  const { uuid } = useUser();
-  const [_friendshipValue, setFriendshipsValue] = useRecoilState(
-    friendships({ uuid })
-  );
-  const [_requestCountValue, setRequestCountValue] = useRecoilState(
-    requestCount({ uuid })
-  );
-  const [_groupCollectionsValue, setGroupCollectionsValue] = useRecoilState(
+  const authenticatedUser = useAuthenticatedUser();
+
+  if (authenticatedUser) {
+    return <AuthedDbRecoilSync uuid={authenticatedUser.uuid} />;
+  } else {
+    return <></>;
+  }
+};
+
+export const AuthedDbRecoilSync = ({ uuid }: { uuid: string }) => {
+  const updateChats = useUpdateChats();
+
+  const setFriendshipsValue = useSetRecoilState(friendships({ uuid }));
+  const setRequestCountValue = useSetRecoilState(requestCount({ uuid }));
+  const setGroupCollectionsValue = useSetRecoilState(
     groupCollections({ uuid })
   );
-  const [_unreadCount, setUnreadCount] = useRecoilState(unreadCount);
-  const updateChats = useUpdateChats();
+  const setUnreadCount = useSetRecoilState(unreadCount);
 
   const updateUnread = async () => {
     const response = await fetch(
@@ -91,7 +99,9 @@ export const DbRecoilSync = () => {
   };
 
   useEffect(() => {
-    sync(uuid);
+    (async () => {
+      await sync(uuid);
+    })();
   }, [uuid]);
 
   useEffect(() => {

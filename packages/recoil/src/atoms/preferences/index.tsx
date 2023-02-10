@@ -114,6 +114,17 @@ export const user = atom<{ username: string; uuid: string; jwt: string }>({
   }),
 });
 
+// This is the actively authenticated user. Note there is a delay between
+// switching a user on the client and the authenticated user being updated
+// because it requires a HTTP request to ensure authentication.
+export const authenticatedUser = atom<{
+  username: string;
+  uuid: string;
+} | null>({
+  key: "authenticatedUser",
+  default: null,
+});
+
 export const xnftJwt = atomFamily({
   key: "xnftJwt",
   default: selectorFamily({

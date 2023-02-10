@@ -349,6 +349,8 @@ export const NOTIFICATION_SOLANA_EXPLORER_UPDATED =
   "notification-solana-explorer-updated";
 export const NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE =
   "notification-solana-spl-tokens-did-update";
+export const NOTIFICATION_USER_ACCOUNT_AUTHENTICATED =
+  "notification-user-account-authenticated";
 export const NOTIFICATION_USER_ACCOUNT_PUBLIC_KEYS_UPDATED =
   "notification-user-account-public-keys-updated";
 export const NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_CREATED =
