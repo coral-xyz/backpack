@@ -58,7 +58,7 @@ router.post("/seen", extractUserId, async (req, res) => {
 router.put("/cursor", extractUserId, async (req, res) => {
   const uuid = req.id || "";
   const lastNotificationId = req.body.lastNotificationId;
-  const unreadCount = await updateCursor({ uuid, lastNotificationId });
+  await updateCursor({ uuid, lastNotificationId });
   res.json({});
 });
 

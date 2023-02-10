@@ -1,4 +1,5 @@
 import express from "express";
+
 import { xnftMiddleware } from "../auth/middleware";
 import { sendNotifications } from "../controllers/notifications";
 import { Errors } from "../errors";
