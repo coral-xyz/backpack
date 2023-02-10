@@ -28,7 +28,7 @@ export const addNfts = async (
       },
       { affected_rows: true },
     ],
-  }).catch((e) => {});
+  }).catch(() => {});
 };
 
 export const validateCentralizedGroupOwnership = async (
