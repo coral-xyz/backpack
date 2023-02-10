@@ -168,6 +168,7 @@ export function TransactionDetail({
           options={() => {
             return {
               title: getTransactionDetailTitle(
+                activeWallet,
                 transaction,
                 activeWallet?.publicKey
               ),
@@ -204,7 +205,7 @@ export function TransactionDetail({
 
                 {/* TODO - Default to check/error */}
 
-                {/* TODO - add other functionality for this CTA button. Will need to 
+                {/* TODO - add other functionality for this CTA button. Will need to
                 create mappings for 'verified' sites to determine correct URL*/}
                 {transaction?.type === TransactionType.NFT_SALE &&
                   transaction?.events?.nft?.buyer ===
@@ -241,6 +242,7 @@ function DetailCardHeader({
 }) {
   const classes = useStyles();
   const theme = useCustomTheme();
+  const activeWallet = useActiveWallet();
   if (transaction?.transactionError)
     return (
       <CancelTwoTone sx={{ height: 100, width: 100 }} htmlColor="#F13236" />
@@ -341,7 +343,7 @@ function DetailCardHeader({
             paddingTop: "16px",
           }}
         >
-          {getTransactionTitle(transaction)}
+          {getTransactionTitle(activeWallet, transaction)}
         </div>
         {nftPrice && (
           <div style={{ display: "flex", alignItems: "center" }}>
@@ -375,7 +377,7 @@ function DetailCardHeader({
         <>
           <img className={classes.tokenLogo} src={SOL_LOGO_URI} />
           <div className={classes.transferAmount}>
-            {isUserTxnSender(transaction)
+            {isUserTxnSender(transaction, activeWallet)
               ? "- " +
                 transaction?.nativeTransfers?.[0]?.amount / 10 ** 9 +
                 " SOL"
@@ -401,7 +403,7 @@ function DetailCardHeader({
         <>
           <img className={classes.tokenLogo} src={transferIcon} />
           <div className={classes.transferAmount}>
-            {isUserTxnSender(transaction)
+            {isUserTxnSender(transaction, activeWallet)
               ? "- " +
                 transaction?.tokenTransfers?.[0]?.tokenAmount +
                 " " +
@@ -429,7 +431,7 @@ function DetailCardHeader({
       );
     }
     // default
-    if (isUserTxnSender(transaction))
+    if (isUserTxnSender(transaction, activeWallet))
       return (
         <SendRounded
           style={{
@@ -480,6 +482,7 @@ function DetailTable({
   const theme = useCustomTheme();
   const explorer = useBlockchainExplorer(Blockchain.SOLANA);
   const connectionUrl = useBlockchainConnectionUrl(Blockchain.SOLANA);
+  const activeWallet = useActiveWallet();
 
   return (
     <List className={classes.detailList}>
@@ -495,7 +498,7 @@ function DetailTable({
 
       {(transaction?.type === TransactionType.UNKNOWN ||
         transaction.type === TransactionType.TRANSFER) &&
-        isUserTxnSender(transaction) && (
+        isUserTxnSender(transaction, activeWallet) && (
           <div className={classes.middleRow}>
             <div className={classes.cell}>
               <div className={classes.label}>To</div>
@@ -511,7 +514,7 @@ function DetailTable({
         )}
       {(transaction?.type === TransactionType.UNKNOWN ||
         transaction.type === TransactionType.TRANSFER) &&
-        isUserTxnSender(transaction) === false && (
+        isUserTxnSender(transaction, activeWallet) === false && (
           <div className={classes.middleRow}>
             <div className={classes.cell}>
               <div className={classes.label}>From</div>
@@ -556,7 +559,7 @@ function DetailTable({
           </div>
         </>
       )}
-      {/* ALL txn types have  first row (Date) rest of data 
+      {/* ALL txn types have  first row (Date) rest of data
       rows below (Network Fee, Status, Signature)*/}
       <div className={classes.middleRow}>
         <div className={classes.cell}>

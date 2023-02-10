@@ -75,9 +75,10 @@ export const getTruncatedAddress = (address: string): string => {
   return `${address?.slice(0, 5)}...${address?.slice(address?.length - 5)}`;
 };
 
-export const isUserTxnSender = (transaction: HeliusParsedTransaction) => {
-  const activeWallet = useActiveWallet();
-
+export const isUserTxnSender = (
+  transaction: HeliusParsedTransaction,
+  activeWallet: any
+) => {
   if (
     transaction?.tokenTransfers[0]?.fromUserAccount ===
       activeWallet.publicKey ||
@@ -94,33 +95,33 @@ export const isUserTxnSender = (transaction: HeliusParsedTransaction) => {
   return null;
 };
 
-export const getTransactionTitle = (
+export function getTransactionTitle(
+  activeWallet: any,
   transaction: HeliusParsedTransaction,
   metadata?: any
-) => {
+): string {
   switch (transaction.type) {
     case TransactionType.BURN:
     case TransactionType.BURN_NFT:
       return "Burned";
-
     case TransactionType.TRANSFER:
       // send/receive NFT's are returned as TransactionType.TRANSFER
       const nftName = metadata?.onChainMetadata?.metadata?.data?.name; // FIXME: || metadata?.offChainData?.name;
       if (isNFTTransaction(transaction) && nftName) {
         return nftName;
+      } else if (isUserTxnSender(transaction, activeWallet)) {
+        return "Sent";
+      } else if (isUserTxnSender(transaction, activeWallet) === false) {
+        return "Received";
+      } else {
+        return "App Interaction";
       }
-      if (isUserTxnSender(transaction)) return "Sent";
-      else if (isUserTxnSender(transaction) === false) return "Received";
-      return "App Interaction";
-
     case TransactionType.SWAP:
       return "Token Swap";
-
     case TransactionType.NFT_MINT: {
       const nftName = metadata?.onChainMetadata?.metadata?.data?.name; // FIXME: || metadata?.offChainData?.name;
       return `Minted: ${nftName}`;
     }
-
     default:
       let title = "App Interaction";
 
@@ -148,9 +149,10 @@ export const getTransactionTitle = (
 
       return title;
   }
-};
+}
 
 export const getTransactionDetailTitle = (
+  activeWallet: any,
   transaction: HeliusParsedTransaction,
   publicKey: string
 ) => {
@@ -160,8 +162,9 @@ export const getTransactionDetailTitle = (
       return "Burned";
 
     case TransactionType.TRANSFER:
-      if (isUserTxnSender(transaction)) return "Sent";
-      else if (isUserTxnSender(transaction) === false) return "Received";
+      if (isUserTxnSender(transaction, activeWallet)) return "Sent";
+      else if (isUserTxnSender(transaction, activeWallet) === false)
+        return "Received";
       return "App Interaction";
 
     case TransactionType.SWAP:
@@ -192,21 +195,20 @@ export const getTransactionDetailTitle = (
 
 // used to display txn caption in list view
 export const getTransactionCaption = (
+  activeWallet: any,
   transaction: HeliusParsedTransaction,
   tokenData: (TokenInfo | undefined)[],
   metadata?: any
 ): string => {
-  const activeWallet = useActiveWallet();
-
   switch (transaction.type) {
     // case TransactionType.UNKNOWN:
     case TransactionType.TRANSFER:
-      if (isUserTxnSender(transaction)) {
+      if (isUserTxnSender(transaction, activeWallet)) {
         return `To: ${getTruncatedAddress(
           transaction?.tokenTransfers[0]?.toUserAccount ||
             transaction?.nativeTransfers[0]?.toUserAccount
         )}`;
-      } else if (isUserTxnSender(transaction) === false) {
+      } else if (isUserTxnSender(transaction, activeWallet) === false) {
         return `From: ${getTruncatedAddress(
           transaction?.tokenTransfers[0]?.fromUserAccount ||
             transaction?.nativeTransfers[0]?.fromUserAccount

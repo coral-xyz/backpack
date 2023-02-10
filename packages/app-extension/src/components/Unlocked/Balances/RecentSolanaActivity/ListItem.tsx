@@ -1,5 +1,9 @@
+import { useMemo } from "react";
 import { isFirstLastListItemStyle } from "@coral-xyz/react-common";
-import { metadataForRecentSolanaTransaction } from "@coral-xyz/recoil";
+import {
+  metadataForRecentSolanaTransaction,
+  useActiveWallet,
+} from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ListItem, Skeleton, Typography } from "@mui/material";
 import type { TokenInfo } from "@solana/spl-token-registry";
@@ -70,7 +74,7 @@ export function SolanaTransactionListItem({
   const { contents, state } = useRecoilValueLoadable(
     metadataForRecentSolanaTransaction({ transaction })
   );
-
+  const activeWallet = useActiveWallet();
   const tokenData = getTokenData(transaction);
   const metadata = (state === "hasValue" && contents) || undefined;
 
@@ -78,6 +82,12 @@ export function SolanaTransactionListItem({
     setMetadata(metadata);
     setTransactionDetail(transaction);
   };
+
+  const transactionTitle = getTransactionTitle(
+    activeWallet,
+    transaction,
+    metadata
+  );
 
   return (
     <ListItem
@@ -118,10 +128,15 @@ export function SolanaTransactionListItem({
           </div>
           <div>
             <Typography className={classes.title}>
-              {getTransactionTitle(transaction, metadata)}
+              {transactionTitle}
             </Typography>
             <Typography className={classes.caption}>
-              {getTransactionCaption(transaction, tokenData, metadata)}
+              {getTransactionCaption(
+                activeWallet,
+                transaction,
+                tokenData,
+                metadata
+              )}
             </Typography>
           </div>
         </div>
@@ -153,6 +168,7 @@ function RecentActivityListItemIcon({
   tokenData: (TokenInfo | undefined)[];
   metadata?: any;
 }) {
+  const activeWallet = useActiveWallet();
   if (loading) {
     return (
       <Skeleton
@@ -203,7 +219,8 @@ function RecentActivityListItemIcon({
       return <ListItemIcons.NFT_DEFAULT />;
     }
     // default
-    if (isUserTxnSender(transaction)) return <ListItemIcons.SENT />;
+    if (isUserTxnSender(transaction, activeWallet))
+      return <ListItemIcons.SENT />;
     return <ListItemIcons.RECEIVED />;
   }
 
@@ -226,6 +243,7 @@ function RecentActivityListItemData({
   tokenData: (TokenInfo | undefined)[];
   metadata?: any;
 }) {
+  const activeWallet = useActiveWallet();
   const classes = useStyles();
 
   // FAILURE
@@ -275,7 +293,7 @@ function RecentActivityListItemData({
     // || transaction.type === TransactionType.UNKNOWN
   ) {
     // USER === SENDER
-    if (isUserTxnSender(transaction)) {
+    if (isUserTxnSender(transaction, activeWallet)) {
       // SOL Transfer
       if (transaction.source === Source.SYSTEM_PROGRAM) {
         return (
@@ -299,7 +317,7 @@ function RecentActivityListItemData({
       );
 
       // USER === RECEIVER
-    } else if (isUserTxnSender(transaction) === false) {
+    } else if (isUserTxnSender(transaction, activeWallet) === false) {
       // SOL Transfer
       if (transaction.source === Source.SYSTEM_PROGRAM) {
         return (
