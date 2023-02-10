@@ -148,14 +148,15 @@ export class Plugin {
     this.iframeRoot.setAttribute(
       "allow",
       preference?.mediaPermissions
-        ? "camera;microphone;display-capture;fullscreen"
-        : "fullscreen"
+        ? "camera;microphone;display-capture;fullscreen;clipboard-write *"
+        : "fullscreen;clipboard-write *"
     );
     this.iframeRoot.setAttribute("fetchpriority", "low");
     this.iframeRoot.src = url.toString();
     this.iframeRoot.sandbox.add("allow-same-origin");
     this.iframeRoot.sandbox.add("allow-scripts");
     this.iframeRoot.sandbox.add("allow-forms");
+
     this.iframeRoot.onload = () => this.handleRootIframeOnLoad();
   }
 
