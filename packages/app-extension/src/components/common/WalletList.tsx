@@ -4,7 +4,13 @@ import {
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
   walletAddressDisplay,
 } from "@coral-xyz/common";
-import { List, ListItem } from "@coral-xyz/react-common";
+import {
+  HardwareIcon,
+  ImportedIcon,
+  List,
+  ListItem,
+  MnemonicIcon,
+} from "@coral-xyz/react-common";
 import {
   useActiveWallet,
   useAllWallets,
@@ -20,9 +26,6 @@ import { Box, Button, Grid, Tooltip, Typography } from "@mui/material";
 
 import {
   EthereumIconOnboarding as EthereumIcon,
-  HardwareIcon,
-  ImportedIcon,
-  MnemonicIcon,
   SolanaIconOnboarding as SolanaIcon,
 } from "../common/Icon";
 import { ActionCard } from "../common/Layout/ActionCard";
@@ -36,6 +39,7 @@ import {
   AddConnectPreview,
   AddConnectWalletMenu,
 } from "../Unlocked/Settings/AddConnectWallet";
+import { CreateMenu } from "../Unlocked/Settings/AddConnectWallet/CreateMenu";
 import { ImportMenu } from "../Unlocked/Settings/AddConnectWallet/ImportMenu";
 import { ImportMnemonic } from "../Unlocked/Settings/AddConnectWallet/ImportMnemonic";
 import { ImportSecretKey } from "../Unlocked/Settings/AddConnectWallet/ImportSecretKey";
@@ -238,6 +242,10 @@ function WalletNavStack({
       <NavStackScreen
         name={"edit-wallets-blockchain-selector"}
         component={(props: any) => <WalletListBlockchainSelector {...props} />}
+      />
+      <NavStackScreen
+        name={"create-wallet"}
+        component={(props: any) => <CreateMenu {...props} />}
       />
       <NavStackScreen
         name={"import-wallet"}
@@ -936,13 +944,14 @@ export function StackedWalletAddress({
 }
 
 function WalletTypeIcon({ type, fill }: { type: string; fill?: string }) {
+  const style = { padding: "3px" };
   switch (type) {
     case "imported":
-      return <ImportedIcon fill={fill} />;
+      return <ImportedIcon fill={fill} style={style} />;
     case "hardware":
-      return <HardwareIcon fill={fill} />;
+      return <HardwareIcon fill={fill} style={style} />;
     case "derived":
-      return <MnemonicIcon fill={fill} />;
+      return <MnemonicIcon fill={fill} style={style} />;
     default:
       return null;
   }

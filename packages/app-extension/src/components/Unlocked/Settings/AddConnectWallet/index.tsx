@@ -1,46 +1,37 @@
 import { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import {
-  getAddMessage,
   openAddUserAccount,
   openConnectHardware,
-  UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
-  UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
-  UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
-  UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
-  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
 } from "@coral-xyz/common";
 import {
   CheckIcon,
-  HardwareWalletIcon,
+  HardwareIcon,
+  ImportedIcon,
   Loading,
+  PlusCircleIcon,
   PrimaryButton,
   ProxyImage,
+  PushDetail,
   SecondaryButton,
 } from "@coral-xyz/react-common";
 import {
   useAvatarUrl,
   useBackgroundClient,
-  useKeyringHasMnemonic,
   useUser,
   useWalletName,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ArrowCircleDown } from "@mui/icons-material";
 import { Box, Grid, Typography } from "@mui/material";
-import { ethers } from "ethers";
 
 import { Header, SubtextParagraph } from "../../../common";
 import { ActionCard } from "../../../common/Layout/ActionCard";
-import {
-  useDrawerContext,
-  WithMiniDrawer,
-} from "../../../common/Layout/Drawer";
+import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { useNavigation } from "../../../common/Layout/NavStack";
+import { SettingsList } from "../../../common/Settings/List";
 import { WalletListItem } from "../YourAccount/EditWallets";
-
-const { base58 } = ethers.utils;
 
 export function AddConnectPreview() {
   const nav = useNavigation();
@@ -137,8 +128,6 @@ export function AddConnectWalletMenu({
   publicKey?: string;
 }) {
   const nav = useNavigation();
-  const background = useBackgroundClient();
-  const [keyringExists, setKeyringExists] = useState(false);
 
   useEffect(() => {
     const prevTitle = nav.title;
@@ -147,6 +136,62 @@ export function AddConnectWalletMenu({
       nav.setOptions({ headerTitle: prevTitle });
     };
   }, [nav.setOptions]);
+
+  // If a public key prop exists then attempting to recover an existing wallet
+  if (publicKey) {
+    return <RecoverWalletMenu blockchain={blockchain} publicKey={publicKey} />;
+  } else {
+    return <AddWalletMenu blockchain={blockchain} />;
+  }
+}
+
+export function AddWalletMenu({ blockchain }: { blockchain: Blockchain }) {
+  const navigation = useNavigation();
+  const user = useUser();
+
+  const createOrImportMenu = {
+    "Create a new wallet": {
+      onClick: () => navigation.push("create-wallet", { blockchain }),
+      icon: (props: any) => <PlusCircleIcon {...props} />,
+      detailIcon: <PushDetail />,
+    },
+    "Import an existing wallet": {
+      onClick: () => navigation.push("import-wallet", { blockchain }),
+      icon: (props: any) => <ImportedIcon {...props} />,
+      detailIcon: <PushDetail />,
+    },
+  };
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+      }}
+    >
+      <Box sx={{ margin: "24px" }}>
+        <Header text="Create or import a wallet" />
+        <SubtextParagraph>
+          Add a new wallet for @{user.username} on Backpack.
+        </SubtextParagraph>
+      </Box>
+      <SettingsList menuItems={createOrImportMenu} />
+    </div>
+  );
+}
+
+export function RecoverWalletMenu({
+  blockchain,
+  publicKey,
+}: {
+  blockchain: Blockchain;
+  publicKey: string;
+}) {
+  const nav = useNavigation();
+  const theme = useCustomTheme();
+  const background = useBackgroundClient();
+  const [keyringExists, setKeyringExists] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -158,292 +203,63 @@ export function AddConnectWalletMenu({
     })();
   }, [blockchain]);
 
-  // If a public key prop exists then attempting to recover an existing wallet
-  if (publicKey) {
-    return (
-      <RecoverWalletMenu
-        blockchain={blockchain}
-        publicKey={publicKey}
-        keyringExists={keyringExists}
-      />
-    );
-  } else {
-    return (
-      <AddWalletMenu
-        blockchain={blockchain}
-        keyringExists={keyringExists}
-        setKeyringExists={setKeyringExists}
-      />
-    );
-  }
-}
-
-export function AddWalletMenu({
-  blockchain,
-  keyringExists,
-  setKeyringExists,
-}: {
-  blockchain: Blockchain;
-  keyringExists: boolean;
-  setKeyringExists: (exists: boolean) => void;
-}) {
-  const nav = useNavigation();
-  const background = useBackgroundClient();
-  const hasMnemonic = useKeyringHasMnemonic();
-  const [newPublicKey, setNewPublicKey] = useState("");
-  const [openDrawer, setOpenDrawer] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const { close: closeParentDrawer } = useDrawerContext();
-
-  // Lock to ensure that the create new wallet button cannot be accidentally
-  // spammed or double clicked, which is undesireable as it creates more wallets
-  // than the user expects.
-  const [lockCreateButton, setLockCreateButton] = useState(false);
-  // If the keyring or if we don't have any public keys of the type we are
-  // adding then additional logic is required to select the account index of
-  // the first derivation path added
-  const [hasHdPublicKeys, setHasHdPublicKeys] = useState(false);
-  const [hasLedgerPublicKeys, setHasLedgerPublicKeys] = useState(false);
-
-  useEffect(() => {
-    (async () => {
-      const publicKeys = await background.request({
-        method: UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
-        params: [],
-      });
-      const blockchainPublicKeys = publicKeys[blockchain];
-      if (blockchainPublicKeys) {
-        setHasHdPublicKeys(blockchainPublicKeys.hdPublicKeys.length > 0);
-        setHasLedgerPublicKeys(
-          blockchainPublicKeys.ledgerPublicKeys.length > 0
-        );
-      }
-    })();
-  }, [blockchain]);
-
-  const createNew = async () => {
-    // Mnemonic based keyring. This is the simple case because we don't
-    // need to prompt for the user to open their Ledger app to get the
-    // required public key. We also don't need a signature to prove
-    // ownership of the public key because that can't be done
-    // transparently by the backend.
-    if (lockCreateButton) {
-      return;
-    }
-    setOpenDrawer(true);
-    setLoading(true);
-    setLockCreateButton(true);
-    let newPublicKey;
-    if (!keyringExists || !hasHdPublicKeys) {
-      // No keyring or no existing mnemonic public keys so can't derive next
-      const walletDescriptor = await background.request({
-        method: UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
-        params: [blockchain, 0],
-      });
-      const signature = await background.request({
-        method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-        params: [
-          blockchain,
-          walletDescriptor.publicKey,
-          base58.encode(
-            Buffer.from(getAddMessage(walletDescriptor.publicKey), "utf-8")
-          ),
-          [true, [walletDescriptor.derivationPath]],
-        ],
-      });
-      await background.request({
-        method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
-        params: [blockchain, { ...walletDescriptor, signature }],
-      });
-      newPublicKey = walletDescriptor.publicKey;
-      // Keyring now exists, toggle to other options
-      setKeyringExists(true);
-    } else {
-      newPublicKey = await background.request({
-        method: UI_RPC_METHOD_KEYRING_DERIVE_WALLET,
-        params: [blockchain],
-      });
-    }
-    setNewPublicKey(newPublicKey);
-    setLoading(false);
-    setLockCreateButton(false);
-  };
-
   return (
-    <>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          height: "100%",
-        }}
-      >
-        <Box sx={{ margin: "24px" }}>
-          <Header text="Add or connect a wallet" />
-          <SubtextParagraph>
-            Add a new wallet associated with your Backpack account.
-          </SubtextParagraph>
-        </Box>
-        <Box sx={{ margin: "0 16px" }}>
-          <Grid container spacing={2}>
-            {hasMnemonic && (
-              // TODO user should be guided through mnemonic creation flow if
-              // they don't have a mnemonic
-              // https://github.com/coral-xyz/backpack/issues/1464
-              <Grid item xs={12}>
-                <ActionCard
-                  text="Secret recovery phrase"
-                  subtext="Create a new wallet using your secret recovery phrase."
-                  onClick={createNew}
-                />
-              </Grid>
-            )}
-            <Grid item xs={12}>
-              <ActionCard
-                text="Hardware wallet"
-                subtext="Create a new wallet using a hardware wallet."
-                onClick={() => {
-                  openConnectHardware(
-                    blockchain,
-                    // `create` gets a default account index for derivations
-                    // where no wallets are used, `derive` just gets the next
-                    // wallet in line given the existing derivation paths
-                    keyringExists && hasLedgerPublicKeys ? "derive" : "create"
-                  );
-                  window.close();
-                }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <ActionCard
-                text="Advanced import"
-                subtext={
-                  keyringExists
-                    ? "Import wallets using a secret recovery phrase, hardware wallet, or private key."
-                    : "Import wallets using a secret recovery phrase or hardware wallet."
-                }
-                onClick={() => nav.push("import-wallet", { blockchain })}
-              />
-            </Grid>
-          </Grid>
-        </Box>
-      </div>
-      <WithMiniDrawer
-        openDrawer={openDrawer}
-        setOpenDrawer={setOpenDrawer}
-        backdropProps={{
-          style: {
-            opacity: 0.8,
-            background: "#18181b",
-          },
-        }}
-      >
-        <ConfirmCreateWallet
-          blockchain={blockchain}
-          publicKey={newPublicKey}
-          onClose={() => {
-            setOpenDrawer(false);
-            closeParentDrawer();
-          }}
-          isLoading={loading}
-        />
-      </WithMiniDrawer>
-    </>
-  );
-}
-
-export function RecoverWalletMenu({
-  blockchain,
-  keyringExists,
-  publicKey,
-}: {
-  blockchain: Blockchain;
-  keyringExists: boolean;
-  publicKey: string;
-}) {
-  const nav = useNavigation();
-  const theme = useCustomTheme();
-  const [openDrawer, setOpenDrawer] = useState(false);
-  const { close: closeParentDrawer } = useDrawerContext();
-
-  return (
-    <>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          height: "100%",
-        }}
-      >
-        <Box sx={{ margin: "24px" }}>
-          <Header text="Recover a wallet" />
-          <SubtextParagraph>
-            Recover a wallet associated with your Backpack account.
-          </SubtextParagraph>
-        </Box>
-        <Box sx={{ margin: "0 16px" }}>
-          <Grid container spacing={2}>
-            {keyringExists && (
-              <Grid item xs={6}>
-                <ActionCard
-                  icon={
-                    <ArrowCircleDown
-                      style={{
-                        color: theme.custom.colors.icon,
-                      }}
-                    />
-                  }
-                  text="Recover using private key"
-                  onClick={() =>
-                    nav.push("import-from-secret-key", {
-                      blockchain,
-                      publicKey,
-                    })
-                  }
-                />
-              </Grid>
-            )}
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+      }}
+    >
+      <Box sx={{ margin: "24px" }}>
+        <Header text="Recover a wallet" />
+        <SubtextParagraph>
+          Recover a wallet associated with your Backpack account.
+        </SubtextParagraph>
+      </Box>
+      <Box sx={{ margin: "0 16px" }}>
+        <Grid container spacing={2}>
+          {keyringExists && (
             <Grid item xs={6}>
               <ActionCard
                 icon={
-                  <HardwareWalletIcon
-                    fill={theme.custom.colors.icon}
+                  <ArrowCircleDown
                     style={{
-                      width: "24px",
-                      height: "24px",
+                      color: theme.custom.colors.icon,
                     }}
                   />
                 }
-                text="Recover using hardware wallet"
-                onClick={() => {
-                  openConnectHardware(blockchain, "search", publicKey);
-                  window.close();
-                }}
+                text="Recover using private key"
+                onClick={() =>
+                  nav.push("import-from-secret-key", {
+                    blockchain,
+                    publicKey,
+                  })
+                }
               />
             </Grid>
+          )}
+          <Grid item xs={6}>
+            <ActionCard
+              icon={
+                <HardwareIcon
+                  fill={theme.custom.colors.icon}
+                  style={{
+                    width: "24px",
+                    height: "24px",
+                  }}
+                />
+              }
+              text="Recover using hardware wallet"
+              onClick={() => {
+                openConnectHardware(blockchain, "search", publicKey);
+                window.close();
+              }}
+            />
           </Grid>
-        </Box>
-      </div>
-      <WithMiniDrawer
-        openDrawer={openDrawer}
-        setOpenDrawer={setOpenDrawer}
-        backdropProps={{
-          style: {
-            opacity: 0.8,
-            background: "#18181b",
-          },
-        }}
-      >
-        <ConfirmCreateWallet
-          blockchain={blockchain}
-          publicKey={publicKey}
-          onClose={() => {
-            setOpenDrawer(false);
-            closeParentDrawer();
-          }}
-        />
-      </WithMiniDrawer>
-    </>
+        </Grid>
+      </Box>
+    </div>
   );
 }
 
