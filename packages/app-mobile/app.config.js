@@ -1,6 +1,4 @@
-const { execSync } = require("child_process");
-const DEFAULT_HASH = "3603ba14";
-
+// const { execSync } = require("child_process");
 // function getLastCommitHash() {
 //   if (process.env.EAS_BUILD_GIT_COMMIT_HASH) {
 //     return process.env.EAS_BUILD_GIT_COMMIT_HASH.substring(0, 7);
@@ -20,17 +18,6 @@ const DEFAULT_HASH = "3603ba14";
 
 const projectID = "55bf074d-0473-4e61-9d9d-ecf570704635";
 const packageName = "peterpme.coral.backpack";
-
-const Config = {
-  webviewUrl: "http://localhost:9333",
-};
-
-if (process.env.APP_ENV === "production") {
-  // const commitHash = getLastCommitHash();
-  Config.webviewUrl =
-    "https://coral-xyz.github.io/backpack/background-scripts/da03ddad/service-worker-loader.html";
-  // Config.webviewUrl = `https://coral-xyz.github.io/backpack/background-scripts/${DEFAULT_HASH}/service-worker-loader.html`;
-}
 
 export default {
   name: "Backpack",
@@ -70,7 +57,9 @@ export default {
     favicon: "./assets/favicon.png",
   },
   extra: {
-    webviewUrl: Config.webviewUrl,
+    localWebViewUrl: "http://localhost:9333",
+    remoteWebViewUrl:
+      "https://coral-xyz.github.io/backpack/background-scripts/85fa0c25/service-worker-loader.html",
     eas: {
       projectId: projectID,
     },
