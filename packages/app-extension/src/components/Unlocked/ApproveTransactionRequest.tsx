@@ -553,7 +553,6 @@ function SignMessageRequest({
             backgroundColor: theme.custom.colors.nav,
             padding: "8px",
             borderRadius: "8px",
-            wordBreak: "break-all",
             color: theme.custom.colors.fontColor,
             border: theme.custom.colors.borderFull,
           }}
