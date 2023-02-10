@@ -468,9 +468,9 @@ function _WalletList({
         ) : (
           <WalletList
             wallets={activeWallets}
-            clickWallet={(wallet) => {
+            clickWallet={async (wallet) => {
               if (wallet.type !== "dehydrated") {
-                onChange(wallet);
+                await onChange(wallet);
                 close();
               }
             }}
@@ -547,9 +547,9 @@ function _WalletList({
           <WalletList
             inverted={true}
             wallets={coldWallets}
-            clickWallet={(wallet) => {
+            clickWallet={async (wallet) => {
               if (wallet.type !== "dehydrated") {
-                onChange(wallet);
+                await onChange(wallet);
                 close();
               }
             }}
