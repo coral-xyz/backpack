@@ -1,3 +1,6 @@
+import * as dotenv from "dotenv";
+dotenv.config();
+
 export const PORT = process.env.PORT || 8082;
 
 export const CHAT_HASURA_URL =
