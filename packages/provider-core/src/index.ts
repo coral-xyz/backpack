@@ -22,7 +22,7 @@ export { ProviderRootXnftInjection } from "./root-provider-xnft";
 //
 export function isValidEventOrigin(event: Event): boolean {
   // From same window.
-  if (event.origin === window.origin) {
+  if (event.origin === window.location.origin) {
     return true;
   }
 
