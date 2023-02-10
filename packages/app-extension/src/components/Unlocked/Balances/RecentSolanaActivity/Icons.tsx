@@ -10,7 +10,13 @@ import {
 
 // TODO: move reused styles into classes
 export const ListItemIcons = {
-  SWAP: (tokenLogoOne?: string, tokenLogoTwo?: string) => {
+  SWAP: ({
+    tokenLogoOne,
+    tokenLogoTwo,
+  }: {
+    tokenLogoOne?: string;
+    tokenLogoTwo?: string;
+  }) => {
     return (
       <div style={{ display: "flex", alignItems: "center" }}>
         <img
@@ -37,7 +43,7 @@ export const ListItemIcons = {
       </div>
     );
   },
-  TRANSFER: (tokenLogo?: string) => {
+  TRANSFER: ({ tokenLogo }: { tokenLogo?: string }) => {
     return (
       <img
         style={{
@@ -63,7 +69,7 @@ export const ListItemIcons = {
       />
     );
   },
-  NFT: (nftUrl?: string) => {
+  NFT: ({ nftUrl }: { nftUrl?: string }) => {
     return (
       <img
         style={{

@@ -131,13 +131,13 @@ export function RecentActivity() {
   const activeWallet = useActiveWallet();
 
   const recentTransactions =
-    activeWallet.blockchain === Blockchain.SOLANA
+    (activeWallet.blockchain === Blockchain.SOLANA
       ? useRecentSolanaTransactions({
           address: activeWallet.publicKey,
         })
       : useRecentEthereumTransactions({
           address: activeWallet.publicKey,
-        });
+        })) ?? [];
 
   // Used since Solana transactions have a timestamp and Ethereum transactions have a date.
   const extractTime = (tx: any) => {
@@ -286,7 +286,6 @@ function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
   const onClick = () => {
     window.open(explorerUrl(explorer!, transaction.signature, connectionUrl!));
   };
-
   return (
     <ListItem
       button
@@ -337,7 +336,7 @@ function RecentActivityListItem({ transaction, isFirst, isLast }: any) {
               {transaction.signature.slice(transaction.signature.length - 5)}
             </Typography>
             <Typography className={classes.txDate}>
-              {transaction.date.toLocaleDateString()}
+              {new Date(transaction.timestamp * 1000).toLocaleDateString()}
             </Typography>
           </div>
         </div>

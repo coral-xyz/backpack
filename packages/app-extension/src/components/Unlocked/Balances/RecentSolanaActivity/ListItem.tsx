@@ -164,51 +164,56 @@ function RecentActivityListItemIcon({
     );
   }
 
-  if (transaction?.transactionError) return ListItemIcons["ERROR"]();
+  if (transaction?.transactionError) return <ListItemIcons.ERROR />;
 
   if (transaction.type === TransactionType.SWAP) {
-    return ListItemIcons[TransactionType.SWAP](
-      tokenData[0]?.logoURI,
-      tokenData[1]?.logoURI
+    return (
+      <ListItemIcons.SWAP
+        tokenLogoOne={tokenData[0]?.logoURI}
+        tokenLogoTwo={tokenData[1]?.logoURI}
+      />
     );
   }
 
   // if NFT url available, display it. Check on-chain data first
-  const nftImage =
-    metadata?.onChaindata?.data?.uri || metadata?.offChainData?.image;
+  const nftImage = undefined;
+  // TODO: metadata?.onChaindata?.data?.uri || metadata?.offChainData?.image;
+
   if (isNFTTransaction(transaction) && nftImage) {
-    return ListItemIcons["NFT"](nftImage);
+    return <ListItemIcons.NFT nftUrl={nftImage} />;
   }
 
   if (transaction.type === TransactionType.TRANSFER) {
     //SOL transfer
     if (transaction.source === Source.SYSTEM_PROGRAM) {
-      return ListItemIcons["SOL"]();
+      return <ListItemIcons.SOL />;
     }
+
     // other SPL token Transfer. Check tokenRegistry first, then Helius metadata
-    const transferIcon =
-      tokenData[0]?.logoURI ||
-      metadata?.onChaindata?.data?.uri ||
-      metadata?.offChainData?.image;
+    const transferIcon = undefined;
+    // FIXME: tokenData[0]?.logoURI ||
+    // metadata?.onChaindata?.data?.uri ||
+    // metadata?.offChainData?.image;
+
     if (transferIcon)
-      return ListItemIcons[TransactionType.TRANSFER](transferIcon);
+      return <ListItemIcons.TRANSFER tokenLogo={transferIcon} />;
 
     // if it is an NFT transfer and no NFT image was found above, show default Icon
     if (transaction?.tokenTransfers?.[0]?.tokenStandard === "NonFungible") {
-      return ListItemIcons["NFT_DEFAULT"]();
+      return <ListItemIcons.NFT_DEFAULT />;
     }
     // default
-    if (isUserTxnSender(transaction)) return ListItemIcons["SENT"]();
-    return ListItemIcons["RECEIVED"]();
+    if (isUserTxnSender(transaction)) return <ListItemIcons.SENT />;
+    return <ListItemIcons.RECEIVED />;
   }
 
   if (
     transaction?.type === TransactionType.BURN ||
     transaction?.type === TransactionType.BURN_NFT
   )
-    return ListItemIcons[TransactionType.BURN]();
+    return <ListItemIcons.BURN />;
 
-  return ListItemIcons["DEFAULT"]();
+  return <ListItemIcons.DEFAULT />;
 }
 
 // Controls data displayed on right side of 'Transactions' list
@@ -287,7 +292,7 @@ function RecentActivityListItemData({
           ) +
             " " +
             (tokenData[0]?.symbol ||
-              metadata?.onChaindata?.data?.symbol ||
+              metadata?.onChainMetadata?.metadata?.data?.symbol ||
               metadata?.offChainData?.symbol ||
               "")}
         </div>
@@ -311,7 +316,7 @@ function RecentActivityListItemData({
           ) +
             " " +
             (tokenData[0]?.symbol ||
-              metadata?.onChaindata?.data?.symbol ||
+              metadata?.onChainMetadata?.metadata?.data?.symbol ||
               metadata?.offChainData?.symbol ||
               "")}
         </div>
