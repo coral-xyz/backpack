@@ -23,6 +23,7 @@ import { Add, ExpandMore, MoreHoriz } from "@mui/icons-material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import InfoIcon from "@mui/icons-material/Info";
 import { Box, Button, Grid, Tooltip, Typography } from "@mui/material";
+import type { SxProps, Theme } from "@mui/material/styles";
 
 import {
   EthereumIconOnboarding as EthereumIcon,
@@ -104,10 +105,10 @@ function WalletButton({
   const theme = useCustomTheme();
   const [tooltipOpen, setTooltipOpen] = useState(false);
 
-  const onCopy = () => {
+  const onCopy = async () => {
     setTooltipOpen(true);
     setTimeout(() => setTooltipOpen(false), 1000);
-    navigator.clipboard.writeText(wallet.publicKey.toString());
+    await navigator.clipboard.writeText(wallet.publicKey.toString());
   };
 
   return (
@@ -138,9 +139,9 @@ function WalletButton({
             minWidth: "16px",
           }}
           className={classes.addressButton}
-          onClick={(e) => {
+          onClick={async (e) => {
             e.stopPropagation();
-            onCopy();
+            await onCopy();
           }}
         >
           <ContentCopyIcon
@@ -757,9 +758,8 @@ export function WalletListItem({
             ) : (
               <CopyButton
                 inverted={inverted}
-                isEditWallets={false}
-                onClick={() => {
-                  navigator.clipboard.writeText(publicKey);
+                onClick={async () => {
+                  await navigator.clipboard.writeText(publicKey);
                 }}
               />
             )}
@@ -771,9 +771,8 @@ export function WalletListItem({
               justifyContent: "center",
             }}
           >
-            <CopyButton
+            <EditWalletsButton
               inverted={inverted}
-              isEditWallets={true}
               onClick={() => {
                 nav.push("edit-wallets-wallet-detail", {
                   ...wallet,
@@ -787,16 +786,17 @@ export function WalletListItem({
   );
 }
 
-function CopyButton({
+function WalletListButtonBase({
   onClick,
-  isEditWallets,
   inverted,
+  sx,
+  children,
 }: {
-  onClick: () => void;
-  isEditWallets: boolean;
+  onClick: (e: any) => void;
   inverted?: boolean;
+  sx?: SxProps<Theme>;
+  children: React.ReactElement;
 }) {
-  const [isCopying, setIsCopying] = useState(false);
   const theme = useCustomTheme();
   return (
     <Button
@@ -812,30 +812,69 @@ function CopyButton({
         backgroundColor: inverted
           ? theme.custom.colorsInverted.bg2
           : theme.custom.colors.bg2,
-
         "&:hover": {
           backgroundColor: inverted
             ? `${theme.custom.colorsInverted.walletCopyButtonHover} !important`
             : `${theme.custom.colors.walletCopyButtonHover} !important`,
         },
+        ...sx,
       }}
-      onClick={(e) => {
+      onClick={onClick}
+    >
+      {children}
+    </Button>
+  );
+}
+
+function CopyButton({
+  onClick,
+  inverted,
+}: {
+  onClick: () => void;
+  inverted?: boolean;
+}) {
+  const [isCopying, setIsCopying] = useState(false);
+  return (
+    <WalletListButtonBase
+      onClick={(e: any) => {
         e.stopPropagation();
         setIsCopying(true);
         setTimeout(() => setIsCopying(false), 1000);
         onClick();
       }}
+      inverted={inverted}
     >
-      {isEditWallets ? (
-        <MoreHoriz
-          style={{
-            color: theme.custom.colors.icon,
-          }}
-        />
-      ) : (
-        <>{isCopying ? "Copied!" : "Copy"}</>
-      )}
-    </Button>
+      <>{isCopying ? "Copied!" : "Copy"}</>
+    </WalletListButtonBase>
+  );
+}
+
+function EditWalletsButton({
+  onClick,
+  inverted,
+}: {
+  onClick: () => void;
+  inverted?: boolean;
+}) {
+  const theme = useCustomTheme();
+  return (
+    <WalletListButtonBase
+      onClick={(e: any) => {
+        e.stopPropagation();
+        onClick();
+      }}
+      inverted={inverted}
+      sx={{
+        padding: "4px",
+        minWidth: "32px",
+      }}
+    >
+      <MoreHoriz
+        style={{
+          color: theme.custom.colors.icon,
+        }}
+      />
+    </WalletListButtonBase>
   );
 }
 
@@ -846,34 +885,16 @@ function RecoverButton({
   onClick: () => void;
   inverted?: boolean;
 }) {
-  const theme = useCustomTheme();
   return (
-    <Button
-      disableElevation
-      disableRipple
-      variant="contained"
-      sx={{
-        padding: "4px 12px",
-        textTransform: "none",
-        color: inverted
-          ? theme.custom.colorsInverted.fontColor
-          : theme.custom.colors.fontColor,
-        backgroundColor: inverted
-          ? theme.custom.colorsInverted.bg2
-          : theme.custom.colors.bg2,
-        "&:hover": {
-          backgroundColor: inverted
-            ? `${theme.custom.colorsInverted.walletCopyButtonHover} !important`
-            : `${theme.custom.colors.walletCopyButtonHover} !important`,
-        },
-      }}
-      onClick={(e) => {
+    <WalletListButtonBase
+      onClick={(e: any) => {
         e.stopPropagation();
         onClick();
       }}
+      inverted={inverted}
     >
-      Recover
-    </Button>
+      <>Recover</>
+    </WalletListButtonBase>
   );
 }
 
