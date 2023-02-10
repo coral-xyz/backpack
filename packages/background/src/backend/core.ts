@@ -53,6 +53,7 @@ import {
   NOTIFICATION_SOLANA_COMMITMENT_UPDATED,
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
+  NOTIFICATION_USER_ACCOUNT_AUTHENTICATED,
   NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_CREATED,
   NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_DELETED,
   NOTIFICATION_USER_ACCOUNT_PUBLIC_KEYS_UPDATED,
@@ -523,10 +524,10 @@ export class Backend {
           keyringInit[0] === true
             ? this.keyringStore.activeUserKeyring.exportMnemonic()
             : keyringInit[0];
-        blockchainKeyring.initFromMnemonic(mnemonic, keyringInit[1]);
+        await blockchainKeyring.initFromMnemonic(mnemonic, keyringInit[1]);
       } else {
         // Using a ledger
-        blockchainKeyring.initFromLedger(keyringInit[0]);
+        await blockchainKeyring.initFromLedger(keyringInit[0]);
       }
     } else {
       blockchainKeyring =
@@ -1168,8 +1169,8 @@ export class Backend {
     return SUCCESS_RESPONSE;
   }
 
-  keyringReset(): string {
-    this.keyringStore.reset();
+  async keyringReset(): Promise<string> {
+    await this.keyringStore.reset();
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_STORE_RESET,
     });
@@ -1324,7 +1325,7 @@ export class Backend {
    */
   async userAccountLogout(uuid: string): Promise<string> {
     // Clear the jwt cookie if it exists. Don't block.
-    fetch(`${BACKEND_API_URL}/authenticate`, {
+    await fetch(`${BACKEND_API_URL}/authenticate`, {
       method: "DELETE",
     });
 
@@ -1333,7 +1334,7 @@ export class Backend {
     //
     const data = await store.getUserData();
     if (data.users.length === 1) {
-      this.keyringReset();
+      await this.keyringReset();
       return SUCCESS_RESPONSE;
     }
 
@@ -1397,6 +1398,17 @@ export class Backend {
     }
 
     const json = await response.json();
+
+    if (json.isAuthenticated) {
+      this.events.emit(BACKEND_EVENT, {
+        name: NOTIFICATION_USER_ACCOUNT_AUTHENTICATED,
+        data: {
+          username: json.username,
+          uuid: json.id,
+        },
+      });
+    }
+
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_USER_ACCOUNT_PUBLIC_KEYS_UPDATED,
       data: {
