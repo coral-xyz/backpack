@@ -11,7 +11,6 @@ import {
   NAV_COMPONENT_NFT_COLLECTION,
   NAV_COMPONENT_NFT_DETAIL,
 } from "@coral-xyz/common";
-import { NAV_COMPONENT_NFT_CHAT } from "@coral-xyz/common/dist/esm/constants";
 import { Loading } from "@coral-xyz/react-common";
 import {
   nftById,
@@ -36,7 +35,6 @@ type AllWalletCollections = Array<{
 }>;
 type CollapsedCollections = boolean[];
 
-const ONE_COLLECTION_ID = "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj";
 type Row = {
   height: number;
   key: string;
@@ -367,9 +365,6 @@ function NftCollectionCard({
   };
 
   useEffect(() => {
-    if (collection.metadataCollectionId !== ONE_COLLECTION_ID) {
-      return;
-    }
     init();
   }, [collection.metadataCollectionId]);
 
@@ -378,19 +373,6 @@ function NftCollectionCard({
   }
 
   const onClick = () => {
-    if (collection.metadataCollectionId === ONE_COLLECTION_ID) {
-      push({
-        title: "ONE Holders Chat",
-        componentId: NAV_COMPONENT_NFT_CHAT,
-        componentProps: {
-          collectionId: collection.metadataCollectionId,
-          //@ts-ignore
-          nftMint: collectionDisplayNft?.mint,
-          title: "ONE Holders Chat",
-        },
-      });
-      return;
-    }
     if (collection.itemIds.length === 1) {
       if (!collectionDisplayNft.name || !collectionDisplayNft.id) {
         throw new Error("invalid NFT data");
