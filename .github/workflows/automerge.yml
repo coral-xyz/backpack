@@ -1,11 +1,9 @@
 name: Automerge
 
 on:
-#  workflow_dispatch:
-#  schedule:
-#    - cron: '0 0 * * *'
-  push:
-    branches: ["master"]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
 
 env:
   MY_REPO: https://coral-xyz:${{secrets.GITHUB_TOKEN}}@github.com/coral-xyz/backpack.git
