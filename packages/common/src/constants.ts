@@ -131,7 +131,7 @@ export const UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC =
 export const UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY =
   "ui-rpc-method-export-secret-key";
 export const UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY =
-  "ui-rpc-method-keyring-import-wallet";
+  "ui-rpc-method-keyring-import-secret-key";
 export const UI_RPC_METHOD_KEYRING_HAS_MNEMONIC =
   "ui-rpc-method-keyring-has-mnemonic";
 export const UI_RPC_METHOD_KEYRING_KEY_DELETE = "ui-rpc-method-keyring-delete";

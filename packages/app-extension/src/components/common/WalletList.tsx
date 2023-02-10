@@ -6,10 +6,10 @@ import {
 } from "@coral-xyz/common";
 import {
   HardwareIcon,
-  ImportedIcon,
   List,
   ListItem,
   MnemonicIcon,
+  SecretKeyIcon,
 } from "@coral-xyz/react-common";
 import {
   useActiveWallet,
@@ -944,10 +944,10 @@ export function StackedWalletAddress({
 }
 
 function WalletTypeIcon({ type, fill }: { type: string; fill?: string }) {
-  const style = { padding: "3px" };
+  const style = { padding: "5px" };
   switch (type) {
     case "imported":
-      return <ImportedIcon fill={fill} style={style} />;
+      return <SecretKeyIcon fill={fill} style={style} />;
     case "hardware":
       return <HardwareIcon fill={fill} style={style} />;
     case "derived":

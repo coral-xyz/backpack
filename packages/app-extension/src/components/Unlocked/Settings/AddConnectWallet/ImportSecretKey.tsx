@@ -80,12 +80,11 @@ export function ImportSecretKey({
 
     if (privateKey) {
       try {
-        setNewPublicKey(
-          await background.request({
-            method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
-            params: [blockchain, privateKey, name],
-          })
-        );
+        const newPublicKey = await background.request({
+          method: UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY,
+          params: [blockchain, privateKey, name],
+        });
+        setNewPublicKey(newPublicKey);
         setOpenDrawer(true);
       } catch (error) {
         setError("Wallet address is used by another Backpack account.");
@@ -138,9 +137,9 @@ export function ImportSecretKey({
               setValue={(e) => {
                 setSecretKey(e.target.value);
               }}
-              onKeyDown={(e) => {
+              onKeyDown={async (e) => {
                 if (e.key === "Enter") {
-                  save(e);
+                  await save(e);
                 }
               }}
               rows={4}
