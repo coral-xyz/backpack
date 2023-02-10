@@ -55,10 +55,26 @@ export function SettingsList({
           borderColor={borderColor}
           allowOnclickPropagation={val.allowOnclickPropagation}
         >
-          {val.icon && val.icon()}
-          <Typography style={{ fontWeight: 500, ...textStyle }}>
-            {val.label ?? key}
-          </Typography>
+          <div
+            style={{
+              display: "flex",
+              flex: 1,
+            }}
+          >
+            {val.icon &&
+              val.icon({
+                style: {
+                  color: theme.custom.colors.icon,
+                  height: "24px",
+                  width: "24px",
+                  marginRight: "8px",
+                },
+                fill: theme.custom.colors.icon,
+              })}
+            <Typography style={{ fontWeight: 500, ...textStyle }}>
+              {val.label ?? key}
+            </Typography>
+          </div>
         </ListItem>
       ))}
     </List>

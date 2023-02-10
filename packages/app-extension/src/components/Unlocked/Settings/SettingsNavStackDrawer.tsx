@@ -12,6 +12,9 @@ import { ResetWelcome } from "../../Locked/Reset/ResetWelcome";
 import { ContactRequests, Contacts } from "../Messages/Contacts";
 import { Requests } from "../Messages/Requests";
 
+import { CreateMenu } from "./AddConnectWallet/CreateMenu";
+import { ImportMenu } from "./AddConnectWallet/ImportMenu";
+import { ImportMnemonic } from "./AddConnectWallet/ImportMnemonic";
 import { ImportSecretKey } from "./AddConnectWallet/ImportSecretKey";
 import { PreferencesAutoLock } from "./Preferences/AutoLock";
 import { PreferencesEthereum } from "./Preferences/Ethereum";
@@ -67,7 +70,19 @@ export function SettingsNavStackDrawer({
             component={(props: any) => <AddConnectWalletMenu {...props} />}
           />
           <NavStackScreen
-            name={"import-secret-key"}
+            name={"create-wallet"}
+            component={(props: any) => <CreateMenu {...props} />}
+          />
+          <NavStackScreen
+            name={"import-wallet"}
+            component={(props: any) => <ImportMenu {...props} />}
+          />
+          <NavStackScreen
+            name={"import-from-mnemonic"}
+            component={(props: any) => <ImportMnemonic {...props} />}
+          />
+          <NavStackScreen
+            name={"import-from-secret-key"}
             component={(props: any) => <ImportSecretKey {...props} />}
           />
           <NavStackScreen

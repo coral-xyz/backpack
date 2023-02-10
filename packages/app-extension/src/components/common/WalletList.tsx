@@ -4,7 +4,13 @@ import {
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
   walletAddressDisplay,
 } from "@coral-xyz/common";
-import { List, ListItem } from "@coral-xyz/react-common";
+import {
+  HardwareIcon,
+  List,
+  ListItem,
+  MnemonicIcon,
+  SecretKeyIcon,
+} from "@coral-xyz/react-common";
 import {
   useActiveWallet,
   useAllWallets,
@@ -20,9 +26,6 @@ import { Box, Button, Grid, Tooltip, Typography } from "@mui/material";
 
 import {
   EthereumIconOnboarding as EthereumIcon,
-  HardwareIcon,
-  ImportedIcon,
-  MnemonicIcon,
   SolanaIconOnboarding as SolanaIcon,
 } from "../common/Icon";
 import { ActionCard } from "../common/Layout/ActionCard";
@@ -36,6 +39,9 @@ import {
   AddConnectPreview,
   AddConnectWalletMenu,
 } from "../Unlocked/Settings/AddConnectWallet";
+import { CreateMenu } from "../Unlocked/Settings/AddConnectWallet/CreateMenu";
+import { ImportMenu } from "../Unlocked/Settings/AddConnectWallet/ImportMenu";
+import { ImportMnemonic } from "../Unlocked/Settings/AddConnectWallet/ImportMnemonic";
 import { ImportSecretKey } from "../Unlocked/Settings/AddConnectWallet/ImportSecretKey";
 import { RemoveWallet } from "../Unlocked/Settings/YourAccount/EditWallets/RemoveWallet";
 import { RenameWallet } from "../Unlocked/Settings/YourAccount/EditWallets/RenameWallet";
@@ -238,7 +244,19 @@ function WalletNavStack({
         component={(props: any) => <WalletListBlockchainSelector {...props} />}
       />
       <NavStackScreen
-        name={"import-secret-key"}
+        name={"create-wallet"}
+        component={(props: any) => <CreateMenu {...props} />}
+      />
+      <NavStackScreen
+        name={"import-wallet"}
+        component={(props: any) => <ImportMenu {...props} />}
+      />
+      <NavStackScreen
+        name={"import-from-mnemonic"}
+        component={(props: any) => <ImportMnemonic {...props} />}
+      />
+      <NavStackScreen
+        name={"import-from-secret-key"}
         component={(props: any) => <ImportSecretKey {...props} />}
       />
       <NavStackScreen
@@ -450,9 +468,9 @@ function _WalletList({
         ) : (
           <WalletList
             wallets={activeWallets}
-            clickWallet={(wallet) => {
+            clickWallet={async (wallet) => {
               if (wallet.type !== "dehydrated") {
-                onChange(wallet);
+                await onChange(wallet);
                 close();
               }
             }}
@@ -529,9 +547,9 @@ function _WalletList({
           <WalletList
             inverted={true}
             wallets={coldWallets}
-            clickWallet={(wallet) => {
+            clickWallet={async (wallet) => {
               if (wallet.type !== "dehydrated") {
-                onChange(wallet);
+                await onChange(wallet);
                 close();
               }
             }}
@@ -926,13 +944,14 @@ export function StackedWalletAddress({
 }
 
 function WalletTypeIcon({ type, fill }: { type: string; fill?: string }) {
+  const style = { padding: "5px" };
   switch (type) {
     case "imported":
-      return <ImportedIcon fill={fill} />;
+      return <SecretKeyIcon fill={fill} style={style} />;
     case "hardware":
-      return <HardwareIcon fill={fill} />;
+      return <HardwareIcon fill={fill} style={style} />;
     case "derived":
-      return <MnemonicIcon fill={fill} />;
+      return <MnemonicIcon fill={fill} style={style} />;
     default:
       return null;
   }

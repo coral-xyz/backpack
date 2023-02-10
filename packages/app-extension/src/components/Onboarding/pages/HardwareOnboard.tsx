@@ -8,14 +8,15 @@ import { useCustomTheme } from "@coral-xyz/themes";
 import type Transport from "@ledgerhq/hw-transport";
 
 import { useSteps } from "../../../hooks/useSteps";
-import { ImportAccounts } from "../../common/Account/ImportAccounts";
+import { ImportWallets } from "../../common/Account/ImportWallets";
 import { CloseButton } from "../../common/Layout/Drawer";
 import { NavBackButton, WithNav } from "../../common/Layout/Nav";
 import { ConnectHardwareSearching } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareSearching";
 import { ConnectHardwareWelcome } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareWelcome";
 
-import { HardwareDefaultAccount } from "./HardwareDefaultAccount";
-import { HardwareSearch } from "./HardwareSearch";
+import { HardwareDefaultWallet } from "./HardwareDefaultWallet";
+import { HardwareDeriveWallet } from "./HardwareDeriveWallet";
+import { HardwareSearchWallet } from "./HardwareSearchWallet";
 import { HardwareSign } from "./HardwareSign";
 
 // We are using a hook here to generate the steps for the hardware onboard
@@ -33,7 +34,7 @@ export function useHardwareOnboardSteps({
   prevStep,
 }: {
   blockchain: Blockchain;
-  action: "create" | "search" | "import";
+  action: "create" | "derive" | "search" | "import";
   searchPublicKey?: string;
   signMessage: string | ((publicKey: string) => string);
   signText: string;
@@ -62,16 +63,31 @@ export function useHardwareOnboardSteps({
     />,
     //
     // Use a component to get a wallet to proceed with. The create flow uses a
-    // component that gets a default account, the search flow searches a
-    // hardware wallet for a given public key, and the import flow allows the
-    // user to select a wallet.
+    // component that gets a default wallet on an unused account index, the search
+    // flow searches a hardware wallet for a given public key, and the import flow
+    // allows the user to select a wallet.
     //
     {
-      // The "create" flow uses a component that selects the first found public
-      // key. This step automatically proceeds to the next step and and there is
-      // no user input required.
+      // The "create" flow uses a component that finds an unused account index for
+      // creating a new account. This step automatically proceeds to the next step
+      // and and there is no user input required.
       create: (
-        <HardwareDefaultAccount
+        <HardwareDefaultWallet
+          blockchain={blockchain}
+          transport={transport!}
+          onNext={(walletDescriptor: WalletDescriptor) => {
+            setWalletDescriptor(walletDescriptor);
+            nextStep();
+          }}
+          onError={() => {
+            setTransportError(true);
+            prevStep();
+          }}
+        />
+      ),
+      derive: (
+        // Derive the next wallet that an account should use.
+        <HardwareDeriveWallet
           blockchain={blockchain}
           transport={transport!}
           onNext={(walletDescriptor: WalletDescriptor) => {
@@ -85,9 +101,9 @@ export function useHardwareOnboardSteps({
         />
       ),
       // The search flow searches the wallet for a given public key to proceed
-      // with
+      // with.
       search: (
-        <HardwareSearch
+        <HardwareSearchWallet
           blockchain={blockchain!}
           transport={transport!}
           publicKey={searchPublicKey!}
@@ -103,12 +119,13 @@ export function useHardwareOnboardSteps({
         />
       ),
       // The import flow displays a table and allows the user to select a public
-      // key to proceed with
+      // key to proceed with. This component works with either a mnemonic or a
+      // hardware wallet.
       import: (
-        <ImportAccounts
+        <ImportWallets
           blockchain={blockchain}
-          transport={transport}
-          allowMultiple={false}
+          transport={transport!}
+          allowMultiple={false} // Only allow a single wallet to be selected
           onNext={(walletDescriptors: Array<WalletDescriptor>) => {
             setWalletDescriptor(walletDescriptors[0]);
             nextStep();
@@ -122,6 +139,7 @@ export function useHardwareOnboardSteps({
     }[action],
     ...(walletDescriptor
       ? [
+          // Sign the found wallet descriptor for API submit
           <HardwareSign
             blockchain={blockchain}
             walletDescriptor={walletDescriptor}
@@ -145,6 +163,7 @@ export function useHardwareOnboardSteps({
       : []),
   ];
 
+  // Optional component displayed on success of hardware onboarding
   if (successComponent) {
     steps.push(successComponent);
   }
@@ -163,7 +182,7 @@ export function HardwareOnboard({
   onClose,
 }: {
   blockchain: Blockchain;
-  action: "create" | "search" | "import";
+  action: "create" | "derive" | "search" | "import";
   searchPublicKey?: string;
   signMessage: string | ((publicKey: string) => string);
   signText: string;

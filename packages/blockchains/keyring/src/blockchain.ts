@@ -118,6 +118,14 @@ export class BlockchainKeyring {
     return this.hdKeyring!.mnemonic;
   }
 
+  public nextDerivationPath(keyring: "hd" | "ledger") {
+    if (keyring === "hd") {
+      return this.hdKeyring!.nextDerivationPath();
+    } else {
+      return this.ledgerKeyring!.nextDerivationPath();
+    }
+  }
+
   public async deriveNextKey(): Promise<{
     publicKey: string;
     derivationPath: string;

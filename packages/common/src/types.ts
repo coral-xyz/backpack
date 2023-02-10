@@ -112,6 +112,11 @@ export type ServerPublicKey = {
   publicKey: string;
 };
 
+export type NamedPublicKey = {
+  blockchain: Blockchain;
+  name: string;
+};
+
 export interface XnftPreference {
   disabled: boolean;
   mediaPermissions: boolean;

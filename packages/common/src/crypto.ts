@@ -132,13 +132,16 @@ export const getAccountRecoveryPaths = (
 export const derivationPathsToIndexes = (
   derivationPaths: Array<string>
 ): { accountIndex: number; walletIndex: number } => {
+  if (derivationPaths.length === 0) {
+    return { accountIndex: 0, walletIndex: 0 };
+  }
   const pathArrays = derivationPaths.map((x) =>
     BIPPath.fromString(x).toPathArray()
   );
   const accountIndex = Math.max(
     ...pathArrays
       // Account index should be the element at index 2, this is not true for
-      //  deprecated sollet paths but they are 0 anyway
+      // deprecated sollet paths but they are 0 anyway
       .map((p: Array<number>) => (p[2] ? p[2] : 0))
       .map((i: number) => (i >= HARDENING ? i - HARDENING : i))
   );

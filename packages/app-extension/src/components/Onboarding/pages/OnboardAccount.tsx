@@ -8,14 +8,16 @@ import type {
 import {
   getBlockchainFromPath,
   getCreateMessage,
-  UI_RPC_METHOD_FIND_SIGNED_WALLET_DESCRIPTOR,
+  UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
+  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
+import { ethers } from "ethers";
 
 import { useSignMessageForWallet } from "../../../hooks/useSignMessageForWallet";
 import { useSteps } from "../../../hooks/useSteps";
 import { CreatePassword } from "../../common/Account/CreatePassword";
-import { ImportAccounts } from "../../common/Account/ImportAccounts";
+import { ImportWallets } from "../../common/Account/ImportWallets";
 import { MnemonicInput } from "../../common/Account/MnemonicInput";
 import { WithContaineredDrawer } from "../../common/Layout/Drawer";
 import { NavBackButton, WithNav } from "../../common/Layout/Nav";
@@ -29,6 +31,8 @@ import { InviteCodeForm } from "./InviteCodeForm";
 import { KeyringTypeSelector } from "./KeyringTypeSelector";
 import { NotificationsPermission } from "./NotificationsPermission";
 import { UsernameForm } from "./UsernameForm";
+
+const { base58 } = ethers.utils;
 
 export const OnboardAccount = ({
   onWaiting,
@@ -94,13 +98,27 @@ export const OnboardAccount = ({
         setBlockchain(blockchain);
         setOpenDrawer(true);
       } else if (action === "create") {
-        const signedWalletDescriptor = await background.request({
-          method: UI_RPC_METHOD_FIND_SIGNED_WALLET_DESCRIPTOR,
-          params: [blockchain, 0, true, mnemonic],
+        const walletDescriptor = await background.request({
+          method: UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
+          params: [blockchain, 0, mnemonic],
+        });
+        const signature = await background.request({
+          method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
+          params: [
+            blockchain,
+            walletDescriptor.publicKey,
+            base58.encode(
+              Buffer.from(getCreateMessage(walletDescriptor.publicKey), "utf-8")
+            ),
+            [mnemonic, [walletDescriptor.derivationPath]],
+          ],
         });
         setSignedWalletDescriptors([
           ...signedWalletDescriptors,
-          signedWalletDescriptor,
+          {
+            ...walletDescriptor,
+            signature,
+          },
         ]);
       }
     }
@@ -216,7 +234,7 @@ export const OnboardAccount = ({
             onClose={() => setOpenDrawer(false)}
           />
         ) : (
-          <ImportAccounts
+          <ImportWallets
             blockchain={blockchain!}
             mnemonic={mnemonic!}
             allowMultiple={false}

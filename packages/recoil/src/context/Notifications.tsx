@@ -28,6 +28,7 @@ import {
   NOTIFICATION_KEYNAME_UPDATE,
   NOTIFICATION_KEYRING_DERIVED_WALLET,
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
+  NOTIFICATION_KEYRING_IMPORTED_WALLET,
   NOTIFICATION_KEYRING_KEY_DELETE,
   NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED,
   NOTIFICATION_KEYRING_STORE_CREATED,
@@ -246,6 +247,9 @@ export function NotificationsProvider(props: any) {
         case NOTIFICATION_KEYNAME_UPDATE:
           handleKeynameUpdate(notif);
           break;
+        case NOTIFICATION_KEYRING_IMPORTED_WALLET:
+          handleKeyringImportedWallet(notif);
+          break;
         case NOTIFICATION_KEYRING_DERIVED_WALLET:
           handleKeyringDerivedWallet(notif);
           break;
@@ -404,6 +408,50 @@ export function NotificationsProvider(props: any) {
           }
         }
         return next;
+      });
+    };
+
+    //
+    // TODO: the following three functions are almost the same, refactor into one
+    //
+
+    const handleKeyringImportedWallet = (notif: Notification) => {
+      const { blockchain, publicKey, name } = notif.data;
+      setWalletData((current: any) => {
+        const publicKeys = { ...current.publicKeys };
+
+        // Importing a new wallet can result in the initialisation of this
+        // keyring so no guarantee the keyrings exist
+        publicKeys[blockchain] = {
+          hdPublicKeys: [
+            ...(publicKeys[blockchain]
+              ? publicKeys[blockchain].hdPublicKeys
+              : []),
+            // Add newly derived key
+            {
+              publicKey,
+              name,
+            },
+          ],
+          importedPublicKeys: [
+            ...(publicKeys[blockchain]
+              ? publicKeys[blockchain].importedPublicKeys
+              : []),
+          ],
+          ledgerPublicKeys: [
+            ...(publicKeys[blockchain]
+              ? publicKeys[blockchain].ledgerPublicKeys
+              : []),
+          ],
+        };
+
+        const activePublicKeys = [...current.activePublicKeys, publicKey];
+
+        return {
+          ...current,
+          activePublicKeys,
+          publicKeys,
+        };
       });
     };
 

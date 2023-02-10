@@ -268,12 +268,12 @@ export function openAddUserAccount() {
 
 export function openConnectHardware(
   blockchain: Blockchain,
-  createKeyring = false,
+  action: "create" | "derive" | "import" | "search",
   publicKey?: string
 ) {
-  const url = `${EXPANDED_HTML}?${QUERY_CONNECT_HARDWARE}&blockchain=${blockchain}${
-    createKeyring ? `&create=true` : ``
-  }${publicKey ? "&publicKey=" + publicKey : ""}`;
+  const url = `${EXPANDED_HTML}?${QUERY_CONNECT_HARDWARE}&blockchain=${blockchain}&action=${action}${
+    publicKey ? "&publicKey=" + publicKey : ""
+  }`;
   BrowserRuntimeExtension.openTab({
     url: chrome.runtime.getURL(url),
   });

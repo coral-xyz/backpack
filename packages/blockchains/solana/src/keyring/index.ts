@@ -19,10 +19,12 @@ import {
 } from "@coral-xyz/common";
 import { Keypair, PublicKey } from "@solana/web3.js";
 import { mnemonicToSeedSync, validateMnemonic } from "bip39";
-import * as bs58 from "bs58";
+import { ethers } from "ethers";
 import nacl from "tweetnacl";
 
 import { deriveSolanaKeypair } from "../util";
+
+const { base58 } = ethers.utils;
 
 export class SolanaKeyringFactory implements KeyringFactory {
   public init(secretKeys: Array<string>): SolanaKeyring {
@@ -60,7 +62,7 @@ class SolanaKeyring implements Keyring {
     if (!kp) {
       throw new Error(`unable to find ${address.toString()}`);
     }
-    return bs58.encode(nacl.sign.detached(new Uint8Array(tx), kp.secretKey));
+    return base58.encode(nacl.sign.detached(new Uint8Array(tx), kp.secretKey));
   }
 
   public async signMessage(tx: Buffer, address: string): Promise<string> {
@@ -76,7 +78,7 @@ class SolanaKeyring implements Keyring {
     if (!kp) {
       return null;
     }
-    return bs58.encode(kp.secretKey);
+    return base58.encode(kp.secretKey);
   }
 
   public importSecretKey(secretKey: string): string {
@@ -172,23 +174,28 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
     super.deletePublicKey(publicKey);
   }
 
-  public deriveNextKey(): {
-    publicKey: string;
-    derivationPath: string;
-  } {
+  public nextDerivationPath(offset = 1) {
     this.ensureIndices();
-    // Move to the next wallet index for the derivation
-    this.walletIndex! += 1;
     const derivationPath = getIndexedPath(
-      Blockchain.SOLANA,
+      Blockchain.ETHEREUM,
       this.accountIndex,
-      this.walletIndex
+      this.walletIndex! + offset
     );
     if (this.derivationPaths.includes(derivationPath)) {
       // This key is already included for some reason, try again with
       // incremented walletIndex
-      return this.deriveNextKey();
+      return this.nextDerivationPath(offset + 1);
     }
+    return { derivationPath, offset };
+  }
+
+  public deriveNextKey(): {
+    publicKey: string;
+    derivationPath: string;
+  } {
+    const { derivationPath, offset } = this.nextDerivationPath();
+    // Save the offset to the wallet index
+    this.walletIndex! += offset;
     const publicKey = this.addDerivationPath(derivationPath);
     return {
       publicKey,
@@ -232,11 +239,11 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
 
 export class SolanaLedgerKeyringFactory {
   public init(walletDescriptors: Array<WalletDescriptor>): LedgerKeyring {
-    return new SolanaLedgerKeyring(walletDescriptors);
+    return new SolanaLedgerKeyring(walletDescriptors, Blockchain.SOLANA);
   }
 
   public fromJson(obj: LedgerKeyringJson): LedgerKeyring {
-    return new SolanaLedgerKeyring(obj.walletDescriptors);
+    return new SolanaLedgerKeyring(obj.walletDescriptors, Blockchain.SOLANA);
   }
 }
 
@@ -254,7 +261,7 @@ export class SolanaLedgerKeyring
     return await this.request({
       method: LEDGER_METHOD_SOLANA_SIGN_TRANSACTION,
       params: [
-        bs58.encode(tx),
+        base58.encode(tx),
         walletDescriptor.derivationPath.replace("m/", ""),
       ],
     });
@@ -270,7 +277,7 @@ export class SolanaLedgerKeyring
     return await this.request({
       method: LEDGER_METHOD_SOLANA_SIGN_MESSAGE,
       params: [
-        bs58.encode(msg),
+        base58.encode(msg),
         walletDescriptor.derivationPath.replace("m/", ""),
       ],
     });
