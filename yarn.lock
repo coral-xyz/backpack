@@ -2351,7 +2351,7 @@
     bn.js "^5.1.2"
     buffer-layout "^1.2.0"
 
-"@coral-xyz/xnft-cli@*", "@coral-xyz/xnft-cli@^0.0.1":
+"@coral-xyz/xnft-cli@*":
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/@coral-xyz/xnft-cli/-/xnft-cli-0.0.1.tgz#dfda912320d433743ffa75f0c6146e75c8580c7d"
   integrity sha512-l54B9Ja/lm3fLp8MasH6ap7TnGiIwIVbyVTbEBohRRpPnG7i4S5E/8lVseB3G9RsbJMQq4wK7mj2SA6892n6kg==
@@ -21620,18 +21620,6 @@ react-window@^1.8.8:
   dependencies:
     "@babel/runtime" "^7.0.0"
     memoize-one ">=3.1.1 <6"
-
-react-xnft@latest:
-  version "0.2.0-latest.543"
-  resolved "https://registry.yarnpkg.com/react-xnft/-/react-xnft-0.2.0-latest.543.tgz#14ab1121e4aa6f3d21ccbed464745867851ec817"
-  integrity sha512-RSPsYVboWyxZsZeEKiEUrnZkK4gQmz33zt+pG0ZseYzVWdfRAt0RkRx9RwCg/h7mSWCRBR6t1SP7n11pv6jRvw==
-  dependencies:
-    "@coral-xyz/common-public" "*"
-    "@coral-xyz/themes" "*"
-    "@solana/web3.js" "^1.63.1"
-    eventemitter3 "^4.0.7"
-    react "^17.0.0"
-    react-reconciler "^0.26.0"
 
 react@18.1.0:
   version "18.1.0"

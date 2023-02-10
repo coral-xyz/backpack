@@ -13,8 +13,8 @@ program.version(pkg.version);
 
 native(program.command("native"));
 
-legacy(program);
+legacy(program.command("legacy"));
 
-bundle(program.command("new"));
+bundle(program);
 
 program.parse();

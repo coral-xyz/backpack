@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "Display user's PsyFinance vault balances",
   "scripts": {
-    "build": "xnft build",
-    "start": "xnft watch"
+    "build": "xnft legacy build",
+    "start": "xnft legacy watch"
   },
   "license": "MIT",
   "dependencies": {
@@ -17,7 +17,5 @@
   "browserslist": [
     "last 2 chrome versions"
   ],
-  "devDependencies": {
-    "@coral-xyz/xnft-cli": "*"
-  }
+  "devDependencies": {}
 }

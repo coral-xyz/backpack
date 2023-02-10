@@ -2,12 +2,10 @@
   "name": "@coral-xyz/example-plugin-table-anchor",
   "version": "0.1.0",
   "scripts": {
-    "build": "xnft build",
-    "start": "xnft watch"
+    "build": "xnft legacy build",
+    "start": "xnft legacy watch"
   },
-  "devDependencies": {
-    "@coral-xyz/xnft-cli": "*"
-  },
+  "devDependencies": {},
   "dependencies": {
     "react-xnft": "*",
     "@project-serum/anchor": "^0.23.0",
