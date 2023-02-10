@@ -17,6 +17,7 @@ phases:
   build:
     commands:
       - mv docker/backend-ws/Dockerfile .
+      - cd backend/native/backend-ws
       - touch .env
       - printf "AUTH_JWT=%s\n" "$AUTH_JWT" >> .env
       - printf "AUTH_JWT_PRIVATE_KEY=%s\n" "$AUTH_JWT_PRIVATE_KEY" >> .env
@@ -25,6 +26,7 @@ phases:
       - printf "CHAT_HASURA_URL=%s\n" "CHAT_HASURA_URL" >> .env
       - printf "REDIS_URL=%s\n" "$REDIS_URL" >> .env
       - printf "CHAT_JWT=%s\n" "$CHAT_JWT" >> .env
+      - cd ../../..
 artifacts:
   files:
     - '**/*'

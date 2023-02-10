@@ -22,6 +22,7 @@ phases:
   build:
     commands:
       - mv docker/backpack-api/Dockerfile .
+      - cd backend/native/backpack-api
       - touch .env
       - printf "AUTH_JWT=%s\n" "$AUTH_JWT" >> .env
       - printf "AUTH_JWT_PRIVATE_KEY=%s\n" "$AUTH_JWT_PRIVATE_KEY" >> .env
@@ -35,6 +36,7 @@ phases:
       - printf "HELIUS_API_KEY=%s\n" "$HELIUS_API_KEY" >> .env
       - printf "VAPID_PRIVATE_KEY=%s\n" "$VAPID_PRIVATE_KEY" >> .env
       - printf "VAPID_PUBLIC_KEY=%s\n" "$VAPID_PUBLIC_KEY" >> .env
+      - cd ../../..
 artifacts:
   files:
     - '**/*'
