@@ -93,7 +93,7 @@ export function ImportMenu({ blockchain }: { blockchain: Blockchain }) {
       ? // TODO allow creating a keyring from just a private key
         // https://github.com/coral-xyz/backpack/issues/2164
         {
-          "Secret key": {
+          "Private key": {
             onClick: () =>
               navigation.push("import-from-secret-key", { blockchain }),
             icon: (props: any) => <SecretKeyIcon {...props} />,

@@ -23,11 +23,9 @@ import {
   useWalletName,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { ArrowCircleDown } from "@mui/icons-material";
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
 import { Header, SubtextParagraph } from "../../../common";
-import { ActionCard } from "../../../common/Layout/ActionCard";
 import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { useNavigation } from "../../../common/Layout/NavStack";
 import { SettingsList } from "../../../common/Settings/List";
@@ -189,7 +187,6 @@ export function RecoverWalletMenu({
   publicKey: string;
 }) {
   const nav = useNavigation();
-  const theme = useCustomTheme();
   const background = useBackgroundClient();
   const [keyringExists, setKeyringExists] = useState(false);
 
@@ -203,6 +200,30 @@ export function RecoverWalletMenu({
     })();
   }, [blockchain]);
 
+  const recoverMenu = {
+    "Hardware wallet": {
+      onClick: () => {
+        openConnectHardware(blockchain, "search", publicKey);
+        window.close();
+      },
+      icon: (props: any) => <HardwareIcon {...props} />,
+      detailIcon: <PushDetail />,
+    },
+    ...(keyringExists
+      ? {
+          "Private key": {
+            onClick: () =>
+              nav.push("import-from-secret-key", {
+                blockchain,
+                publicKey,
+              }),
+            icon: (props: any) => <PlusCircleIcon {...props} />,
+            detailIcon: <PushDetail />,
+          },
+        }
+      : {}),
+  };
+
   return (
     <div
       style={{
@@ -214,51 +235,10 @@ export function RecoverWalletMenu({
       <Box sx={{ margin: "24px" }}>
         <Header text="Recover a wallet" />
         <SubtextParagraph>
-          Recover a wallet associated with your Backpack account.
+          Recover a wallet using one of the following:
         </SubtextParagraph>
       </Box>
-      <Box sx={{ margin: "0 16px" }}>
-        <Grid container spacing={2}>
-          {keyringExists && (
-            <Grid item xs={6}>
-              <ActionCard
-                icon={
-                  <ArrowCircleDown
-                    style={{
-                      color: theme.custom.colors.icon,
-                    }}
-                  />
-                }
-                text="Recover using private key"
-                onClick={() =>
-                  nav.push("import-from-secret-key", {
-                    blockchain,
-                    publicKey,
-                  })
-                }
-              />
-            </Grid>
-          )}
-          <Grid item xs={6}>
-            <ActionCard
-              icon={
-                <HardwareIcon
-                  fill={theme.custom.colors.icon}
-                  style={{
-                    width: "24px",
-                    height: "24px",
-                  }}
-                />
-              }
-              text="Recover using hardware wallet"
-              onClick={() => {
-                openConnectHardware(blockchain, "search", publicKey);
-                window.close();
-              }}
-            />
-          </Grid>
-        </Grid>
-      </Box>
+      <SettingsList menuItems={recoverMenu} />
     </div>
   );
 }

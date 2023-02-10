@@ -13,9 +13,6 @@ import {
 } from "@coral-xyz/blockchain-solana";
 import { Blockchain } from "@coral-xyz/common";
 import { mnemonicToSeedSync } from "bip39";
-import { ethers } from "ethers";
-
-const { base58 } = ethers.utils;
 
 export function hdFactoryForBlockchain(blockchain: Blockchain) {
   return {
