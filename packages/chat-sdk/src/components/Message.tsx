@@ -38,6 +38,7 @@ import { ReplyIcon } from "./Icons";
 import { MediaContent } from "./MediaContent";
 import { ParsedMessage } from "./ParsedMessage";
 import { ReplyContainer } from "./ReplyContainer";
+import { SimpleTransaction } from "./SimpleTransaction";
 // use @giphy/js-fetch-api to fetch gifs, instantiate with your api key
 const gf = new GiphyFetch("SjZwwCn1e394TKKjrMJWb2qQRNcqW8ro");
 
@@ -277,6 +278,10 @@ export const MessageLine = (props) => {
                         remoteUsername={props.username}
                         finalTxId={props.metadata.final_txn_signature}
                       />
+                    </>
+                  ) : props.messageKind === "simple-transaction" ? (
+                    <>
+                      <SimpleTransaction />
                     </>
                   ) : props.messageKind === "media" ? (
                     <div>
