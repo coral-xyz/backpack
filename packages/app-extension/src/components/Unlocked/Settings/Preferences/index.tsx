@@ -146,7 +146,7 @@ export function Preferences() {
             style={{
               width: "12px",
               height: "12px",
-              marginRight: "10px",
+              marginRight: "8px",
             }}
           />
         );
@@ -162,7 +162,7 @@ export function Preferences() {
             style={{
               width: "12px",
               height: "12px",
-              marginRight: "10px",
+              marginRight: "8px",
             }}
           />
         );
