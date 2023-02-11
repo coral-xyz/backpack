@@ -61,7 +61,6 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
   const isDark = useDarkMode();
   const classes = useStyles(isDark)();
   const { props, title }: any = useDecodedSearchParams();
-  const { publicKey } = useActiveSolanaWallet();
   const [members, setMembers] = useState<RemoteUserData[]>([]);
   const [searchFilter, setSearchFilter] = useState("");
   const [offset, setOffset] = useState(0);
@@ -86,7 +85,7 @@ export const ChatDrawer = ({ setOpenDrawer }: { setOpenDrawer: any }) => {
         pathname === "/messages/groupchat" ? props.id : props.collectionId
       }&mint=${
         props.nftMint
-      }&publicKey=${publicKey}&type=collection&limit=${LIMIT}&offset=${offset}&prefix=${prefix}`
+      }&type=collection&limit=${LIMIT}&offset=${offset}&prefix=${prefix}`
     );
     const json = await response.json();
     setMembers(json.members);
