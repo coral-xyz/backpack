@@ -59,6 +59,7 @@ export function SettingsList({
             style={{
               display: "flex",
               flex: 1,
+              alignItems: "center",
             }}
           >
             {val.icon &&
