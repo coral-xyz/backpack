@@ -647,7 +647,7 @@ export const ResolveFromPath = (
       }
     }
   };
-  //@ts-ignore
+  // @ts-ignore
   const ResolveReturnType = (mappedParts: Part[]) => {
     if (mappedParts.length === 0) {
       return "not";
@@ -1441,6 +1441,40 @@ export type ValueTypes = {
       },
       ValueTypes["secure_transfer_transactions"]
     ];
+    simple_transactions?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["simple_transactions_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["simple_transactions_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["simple_transactions_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["simple_transactions"]
+    ];
     type?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
     uuid?: boolean | `@${string}`;
@@ -1508,6 +1542,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    simple_transactions?:
+      | ValueTypes["simple_transactions_bool_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     type?:
       | ValueTypes["String_comparison_exp"]
       | undefined
@@ -1550,6 +1589,11 @@ export type ValueTypes = {
     room?: string | undefined | null | Variable<any, string>;
     secure_transfer_transactions?:
       | ValueTypes["secure_transfer_transactions_arr_rel_insert_input"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    simple_transactions?:
+      | ValueTypes["simple_transactions_arr_rel_insert_input"]
       | undefined
       | null
       | Variable<any, string>;
@@ -1619,6 +1663,11 @@ export type ValueTypes = {
     room?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
     secure_transfer_transactions_aggregate?:
       | ValueTypes["secure_transfer_transactions_aggregate_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    simple_transactions_aggregate?:
+      | ValueTypes["simple_transactions_aggregate_order_by"]
       | undefined
       | null
       | Variable<any, string>;
@@ -2569,6 +2618,76 @@ export type ValueTypes = {
     txn_signature?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
+  /** order by aggregate values of table "simple_transactions" */
+  ["simple_transactions_aggregate_order_by"]: {
+    avg?:
+      | ValueTypes["simple_transactions_avg_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    count?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    max?:
+      | ValueTypes["simple_transactions_max_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    min?:
+      | ValueTypes["simple_transactions_min_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev?:
+      | ValueTypes["simple_transactions_stddev_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev_pop?:
+      | ValueTypes["simple_transactions_stddev_pop_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    stddev_samp?:
+      | ValueTypes["simple_transactions_stddev_samp_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    sum?:
+      | ValueTypes["simple_transactions_sum_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    var_pop?:
+      | ValueTypes["simple_transactions_var_pop_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    var_samp?:
+      | ValueTypes["simple_transactions_var_samp_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    variance?:
+      | ValueTypes["simple_transactions_variance_order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** input type for inserting array relation for remote table "simple_transactions" */
+  ["simple_transactions_arr_rel_insert_input"]: {
+    data:
+      | Array<ValueTypes["simple_transactions_insert_input"]>
+      | Variable<any, string>;
+    /** upsert condition */
+    on_conflict?:
+      | ValueTypes["simple_transactions_on_conflict"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by avg() on columns of table "simple_transactions" */
+  ["simple_transactions_avg_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
   /** Boolean expression to filter rows from the table "simple_transactions". All fields are combined with a logical 'AND'. */
   ["simple_transactions_bool_exp"]: {
     _and?:
@@ -2613,6 +2732,34 @@ export type ValueTypes = {
     client_generated_uuid?: string | undefined | null | Variable<any, string>;
     id?: number | undefined | null | Variable<any, string>;
     txn_signature?: string | undefined | null | Variable<any, string>;
+  };
+  /** order by max() on columns of table "simple_transactions" */
+  ["simple_transactions_max_order_by"]: {
+    client_generated_uuid?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    txn_signature?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** order by min() on columns of table "simple_transactions" */
+  ["simple_transactions_min_order_by"]: {
+    client_generated_uuid?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    txn_signature?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
   };
   /** response of any mutation on the table "simple_transactions" */
   ["simple_transactions_mutation_response"]: AliasType<{
@@ -2662,6 +2809,18 @@ export type ValueTypes = {
     id?: number | undefined | null | Variable<any, string>;
     txn_signature?: string | undefined | null | Variable<any, string>;
   };
+  /** order by stddev() on columns of table "simple_transactions" */
+  ["simple_transactions_stddev_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** order by stddev_pop() on columns of table "simple_transactions" */
+  ["simple_transactions_stddev_pop_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** order by stddev_samp() on columns of table "simple_transactions" */
+  ["simple_transactions_stddev_samp_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
   /** Streaming cursor of the table "simple_transactions" */
   ["simple_transactions_stream_cursor_input"]: {
     /** Stream column input with initial value */
@@ -2681,6 +2840,10 @@ export type ValueTypes = {
     id?: number | undefined | null | Variable<any, string>;
     txn_signature?: string | undefined | null | Variable<any, string>;
   };
+  /** order by sum() on columns of table "simple_transactions" */
+  ["simple_transactions_sum_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
   /** update columns of table "simple_transactions" */
   ["simple_transactions_update_column"]: simple_transactions_update_column;
   ["simple_transactions_updates"]: {
@@ -2697,6 +2860,18 @@ export type ValueTypes = {
       | null
       | Variable<any, string>;
     where: ValueTypes["simple_transactions_bool_exp"] | Variable<any, string>;
+  };
+  /** order by var_pop() on columns of table "simple_transactions" */
+  ["simple_transactions_var_pop_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** order by var_samp() on columns of table "simple_transactions" */
+  ["simple_transactions_var_samp_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+  };
+  /** order by variance() on columns of table "simple_transactions" */
+  ["simple_transactions_variance_order_by"]: {
+    id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
   };
   ["subscription_root"]: AliasType<{
     chat_media_messages?: [
@@ -3297,6 +3472,32 @@ export type ResolverInputTypes = {
       },
       ResolverInputTypes["secure_transfer_transactions"]
     ];
+    simple_transactions?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["simple_transactions_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["simple_transactions_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["simple_transactions_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["simple_transactions"]
+    ];
     type?: boolean | `@${string}`;
     username?: boolean | `@${string}`;
     uuid?: boolean | `@${string}`;
@@ -3334,6 +3535,10 @@ export type ResolverInputTypes = {
       | ResolverInputTypes["secure_transfer_transactions_bool_exp"]
       | undefined
       | null;
+    simple_transactions?:
+      | ResolverInputTypes["simple_transactions_bool_exp"]
+      | undefined
+      | null;
     type?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     username?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
     uuid?: ResolverInputTypes["String_comparison_exp"] | undefined | null;
@@ -3355,6 +3560,10 @@ export type ResolverInputTypes = {
     room?: string | undefined | null;
     secure_transfer_transactions?:
       | ResolverInputTypes["secure_transfer_transactions_arr_rel_insert_input"]
+      | undefined
+      | null;
+    simple_transactions?:
+      | ResolverInputTypes["simple_transactions_arr_rel_insert_input"]
       | undefined
       | null;
     type?: string | undefined | null;
@@ -3399,6 +3608,10 @@ export type ResolverInputTypes = {
     room?: ResolverInputTypes["order_by"] | undefined | null;
     secure_transfer_transactions_aggregate?:
       | ResolverInputTypes["secure_transfer_transactions_aggregate_order_by"]
+      | undefined
+      | null;
+    simple_transactions_aggregate?:
+      | ResolverInputTypes["simple_transactions_aggregate_order_by"]
       | undefined
       | null;
     type?: ResolverInputTypes["order_by"] | undefined | null;
@@ -4061,6 +4274,63 @@ export type ResolverInputTypes = {
     txn_signature?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
+  /** order by aggregate values of table "simple_transactions" */
+  ["simple_transactions_aggregate_order_by"]: {
+    avg?:
+      | ResolverInputTypes["simple_transactions_avg_order_by"]
+      | undefined
+      | null;
+    count?: ResolverInputTypes["order_by"] | undefined | null;
+    max?:
+      | ResolverInputTypes["simple_transactions_max_order_by"]
+      | undefined
+      | null;
+    min?:
+      | ResolverInputTypes["simple_transactions_min_order_by"]
+      | undefined
+      | null;
+    stddev?:
+      | ResolverInputTypes["simple_transactions_stddev_order_by"]
+      | undefined
+      | null;
+    stddev_pop?:
+      | ResolverInputTypes["simple_transactions_stddev_pop_order_by"]
+      | undefined
+      | null;
+    stddev_samp?:
+      | ResolverInputTypes["simple_transactions_stddev_samp_order_by"]
+      | undefined
+      | null;
+    sum?:
+      | ResolverInputTypes["simple_transactions_sum_order_by"]
+      | undefined
+      | null;
+    var_pop?:
+      | ResolverInputTypes["simple_transactions_var_pop_order_by"]
+      | undefined
+      | null;
+    var_samp?:
+      | ResolverInputTypes["simple_transactions_var_samp_order_by"]
+      | undefined
+      | null;
+    variance?:
+      | ResolverInputTypes["simple_transactions_variance_order_by"]
+      | undefined
+      | null;
+  };
+  /** input type for inserting array relation for remote table "simple_transactions" */
+  ["simple_transactions_arr_rel_insert_input"]: {
+    data: Array<ResolverInputTypes["simple_transactions_insert_input"]>;
+    /** upsert condition */
+    on_conflict?:
+      | ResolverInputTypes["simple_transactions_on_conflict"]
+      | undefined
+      | null;
+  };
+  /** order by avg() on columns of table "simple_transactions" */
+  ["simple_transactions_avg_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
   /** Boolean expression to filter rows from the table "simple_transactions". All fields are combined with a logical 'AND'. */
   ["simple_transactions_bool_exp"]: {
     _and?:
@@ -4096,6 +4366,18 @@ export type ResolverInputTypes = {
     client_generated_uuid?: string | undefined | null;
     id?: number | undefined | null;
     txn_signature?: string | undefined | null;
+  };
+  /** order by max() on columns of table "simple_transactions" */
+  ["simple_transactions_max_order_by"]: {
+    client_generated_uuid?: ResolverInputTypes["order_by"] | undefined | null;
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    txn_signature?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by min() on columns of table "simple_transactions" */
+  ["simple_transactions_min_order_by"]: {
+    client_generated_uuid?: ResolverInputTypes["order_by"] | undefined | null;
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+    txn_signature?: ResolverInputTypes["order_by"] | undefined | null;
   };
   /** response of any mutation on the table "simple_transactions" */
   ["simple_transactions_mutation_response"]: AliasType<{
@@ -4134,6 +4416,18 @@ export type ResolverInputTypes = {
     id?: number | undefined | null;
     txn_signature?: string | undefined | null;
   };
+  /** order by stddev() on columns of table "simple_transactions" */
+  ["simple_transactions_stddev_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by stddev_pop() on columns of table "simple_transactions" */
+  ["simple_transactions_stddev_pop_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by stddev_samp() on columns of table "simple_transactions" */
+  ["simple_transactions_stddev_samp_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
   /** Streaming cursor of the table "simple_transactions" */
   ["simple_transactions_stream_cursor_input"]: {
     /** Stream column input with initial value */
@@ -4146,6 +4440,10 @@ export type ResolverInputTypes = {
     client_generated_uuid?: string | undefined | null;
     id?: number | undefined | null;
     txn_signature?: string | undefined | null;
+  };
+  /** order by sum() on columns of table "simple_transactions" */
+  ["simple_transactions_sum_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
   };
   /** update columns of table "simple_transactions" */
   ["simple_transactions_update_column"]: simple_transactions_update_column;
@@ -4161,6 +4459,18 @@ export type ResolverInputTypes = {
       | undefined
       | null;
     where: ResolverInputTypes["simple_transactions_bool_exp"];
+  };
+  /** order by var_pop() on columns of table "simple_transactions" */
+  ["simple_transactions_var_pop_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by var_samp() on columns of table "simple_transactions" */
+  ["simple_transactions_var_samp_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
+  };
+  /** order by variance() on columns of table "simple_transactions" */
+  ["simple_transactions_variance_order_by"]: {
+    id?: ResolverInputTypes["order_by"] | undefined | null;
   };
   ["subscription_root"]: AliasType<{
     chat_media_messages?: [
@@ -4575,6 +4885,8 @@ export type ModelTypes = {
     secure_transfer_transactions: Array<
       ModelTypes["secure_transfer_transactions"]
     >;
+    /** An array relationship */
+    simple_transactions: Array<ModelTypes["simple_transactions"]>;
     type: string;
     username?: string | undefined;
     uuid?: string | undefined;
@@ -4599,6 +4911,9 @@ export type ModelTypes = {
     secure_transfer_transactions?:
       | ModelTypes["secure_transfer_transactions_bool_exp"]
       | undefined;
+    simple_transactions?:
+      | ModelTypes["simple_transactions_bool_exp"]
+      | undefined;
     type?: ModelTypes["String_comparison_exp"] | undefined;
     username?: ModelTypes["String_comparison_exp"] | undefined;
     uuid?: ModelTypes["String_comparison_exp"] | undefined;
@@ -4618,6 +4933,9 @@ export type ModelTypes = {
     room?: string | undefined;
     secure_transfer_transactions?:
       | ModelTypes["secure_transfer_transactions_arr_rel_insert_input"]
+      | undefined;
+    simple_transactions?:
+      | ModelTypes["simple_transactions_arr_rel_insert_input"]
       | undefined;
     type?: string | undefined;
     username?: string | undefined;
@@ -4656,6 +4974,9 @@ export type ModelTypes = {
     room?: ModelTypes["order_by"] | undefined;
     secure_transfer_transactions_aggregate?:
       | ModelTypes["secure_transfer_transactions_aggregate_order_by"]
+      | undefined;
+    simple_transactions_aggregate?:
+      | ModelTypes["simple_transactions_aggregate_order_by"]
       | undefined;
     type?: ModelTypes["order_by"] | undefined;
     username?: ModelTypes["order_by"] | undefined;
@@ -4772,7 +5093,7 @@ export type ModelTypes = {
     secure_transfer_transactions_by_pk?:
       | ModelTypes["secure_transfer_transactions"]
       | undefined;
-    /** fetch data from the table: "simple_transactions" */
+    /** An array relationship */
     simple_transactions: Array<ModelTypes["simple_transactions"]>;
     /** fetch data from the table: "simple_transactions" using primary key columns */
     simple_transactions_by_pk?: ModelTypes["simple_transactions"] | undefined;
@@ -5016,6 +5337,34 @@ export type ModelTypes = {
     id: number;
     txn_signature: string;
   };
+  /** order by aggregate values of table "simple_transactions" */
+  ["simple_transactions_aggregate_order_by"]: {
+    avg?: ModelTypes["simple_transactions_avg_order_by"] | undefined;
+    count?: ModelTypes["order_by"] | undefined;
+    max?: ModelTypes["simple_transactions_max_order_by"] | undefined;
+    min?: ModelTypes["simple_transactions_min_order_by"] | undefined;
+    stddev?: ModelTypes["simple_transactions_stddev_order_by"] | undefined;
+    stddev_pop?:
+      | ModelTypes["simple_transactions_stddev_pop_order_by"]
+      | undefined;
+    stddev_samp?:
+      | ModelTypes["simple_transactions_stddev_samp_order_by"]
+      | undefined;
+    sum?: ModelTypes["simple_transactions_sum_order_by"] | undefined;
+    var_pop?: ModelTypes["simple_transactions_var_pop_order_by"] | undefined;
+    var_samp?: ModelTypes["simple_transactions_var_samp_order_by"] | undefined;
+    variance?: ModelTypes["simple_transactions_variance_order_by"] | undefined;
+  };
+  /** input type for inserting array relation for remote table "simple_transactions" */
+  ["simple_transactions_arr_rel_insert_input"]: {
+    data: Array<ModelTypes["simple_transactions_insert_input"]>;
+    /** upsert condition */
+    on_conflict?: ModelTypes["simple_transactions_on_conflict"] | undefined;
+  };
+  /** order by avg() on columns of table "simple_transactions" */
+  ["simple_transactions_avg_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
   /** Boolean expression to filter rows from the table "simple_transactions". All fields are combined with a logical 'AND'. */
   ["simple_transactions_bool_exp"]: {
     _and?: Array<ModelTypes["simple_transactions_bool_exp"]> | undefined;
@@ -5035,6 +5384,18 @@ export type ModelTypes = {
     client_generated_uuid?: string | undefined;
     id?: number | undefined;
     txn_signature?: string | undefined;
+  };
+  /** order by max() on columns of table "simple_transactions" */
+  ["simple_transactions_max_order_by"]: {
+    client_generated_uuid?: ModelTypes["order_by"] | undefined;
+    id?: ModelTypes["order_by"] | undefined;
+    txn_signature?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by min() on columns of table "simple_transactions" */
+  ["simple_transactions_min_order_by"]: {
+    client_generated_uuid?: ModelTypes["order_by"] | undefined;
+    id?: ModelTypes["order_by"] | undefined;
+    txn_signature?: ModelTypes["order_by"] | undefined;
   };
   /** response of any mutation on the table "simple_transactions" */
   ["simple_transactions_mutation_response"]: {
@@ -5066,6 +5427,18 @@ export type ModelTypes = {
     id?: number | undefined;
     txn_signature?: string | undefined;
   };
+  /** order by stddev() on columns of table "simple_transactions" */
+  ["simple_transactions_stddev_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by stddev_pop() on columns of table "simple_transactions" */
+  ["simple_transactions_stddev_pop_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by stddev_samp() on columns of table "simple_transactions" */
+  ["simple_transactions_stddev_samp_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
   /** Streaming cursor of the table "simple_transactions" */
   ["simple_transactions_stream_cursor_input"]: {
     /** Stream column input with initial value */
@@ -5079,6 +5452,10 @@ export type ModelTypes = {
     id?: number | undefined;
     txn_signature?: string | undefined;
   };
+  /** order by sum() on columns of table "simple_transactions" */
+  ["simple_transactions_sum_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
   ["simple_transactions_update_column"]: simple_transactions_update_column;
   ["simple_transactions_updates"]: {
     /** increments the numeric columns with given value of the filtered values */
@@ -5086,6 +5463,18 @@ export type ModelTypes = {
     /** sets the columns of the filtered rows to the given values */
     _set?: ModelTypes["simple_transactions_set_input"] | undefined;
     where: ModelTypes["simple_transactions_bool_exp"];
+  };
+  /** order by var_pop() on columns of table "simple_transactions" */
+  ["simple_transactions_var_pop_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by var_samp() on columns of table "simple_transactions" */
+  ["simple_transactions_var_samp_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
+  };
+  /** order by variance() on columns of table "simple_transactions" */
+  ["simple_transactions_variance_order_by"]: {
+    id?: ModelTypes["order_by"] | undefined;
   };
   ["subscription_root"]: {
     /** An array relationship */
@@ -5112,7 +5501,7 @@ export type ModelTypes = {
     secure_transfer_transactions_stream: Array<
       ModelTypes["secure_transfer_transactions"]
     >;
-    /** fetch data from the table: "simple_transactions" */
+    /** An array relationship */
     simple_transactions: Array<ModelTypes["simple_transactions"]>;
     /** fetch data from the table: "simple_transactions" using primary key columns */
     simple_transactions_by_pk?: ModelTypes["simple_transactions"] | undefined;
@@ -5364,6 +5753,8 @@ export type GraphQLTypes = {
     secure_transfer_transactions: Array<
       GraphQLTypes["secure_transfer_transactions"]
     >;
+    /** An array relationship */
+    simple_transactions: Array<GraphQLTypes["simple_transactions"]>;
     type: string;
     username?: string | undefined;
     uuid?: string | undefined;
@@ -5388,6 +5779,9 @@ export type GraphQLTypes = {
     secure_transfer_transactions?:
       | GraphQLTypes["secure_transfer_transactions_bool_exp"]
       | undefined;
+    simple_transactions?:
+      | GraphQLTypes["simple_transactions_bool_exp"]
+      | undefined;
     type?: GraphQLTypes["String_comparison_exp"] | undefined;
     username?: GraphQLTypes["String_comparison_exp"] | undefined;
     uuid?: GraphQLTypes["String_comparison_exp"] | undefined;
@@ -5408,6 +5802,9 @@ export type GraphQLTypes = {
     room?: string | undefined;
     secure_transfer_transactions?:
       | GraphQLTypes["secure_transfer_transactions_arr_rel_insert_input"]
+      | undefined;
+    simple_transactions?:
+      | GraphQLTypes["simple_transactions_arr_rel_insert_input"]
       | undefined;
     type?: string | undefined;
     username?: string | undefined;
@@ -5447,6 +5844,9 @@ export type GraphQLTypes = {
     room?: GraphQLTypes["order_by"] | undefined;
     secure_transfer_transactions_aggregate?:
       | GraphQLTypes["secure_transfer_transactions_aggregate_order_by"]
+      | undefined;
+    simple_transactions_aggregate?:
+      | GraphQLTypes["simple_transactions_aggregate_order_by"]
       | undefined;
     type?: GraphQLTypes["order_by"] | undefined;
     username?: GraphQLTypes["order_by"] | undefined;
@@ -5569,7 +5969,7 @@ export type GraphQLTypes = {
     secure_transfer_transactions_by_pk?:
       | GraphQLTypes["secure_transfer_transactions"]
       | undefined;
-    /** fetch data from the table: "simple_transactions" */
+    /** An array relationship */
     simple_transactions: Array<GraphQLTypes["simple_transactions"]>;
     /** fetch data from the table: "simple_transactions" using primary key columns */
     simple_transactions_by_pk?: GraphQLTypes["simple_transactions"] | undefined;
@@ -5819,6 +6219,38 @@ export type GraphQLTypes = {
     id: number;
     txn_signature: string;
   };
+  /** order by aggregate values of table "simple_transactions" */
+  ["simple_transactions_aggregate_order_by"]: {
+    avg?: GraphQLTypes["simple_transactions_avg_order_by"] | undefined;
+    count?: GraphQLTypes["order_by"] | undefined;
+    max?: GraphQLTypes["simple_transactions_max_order_by"] | undefined;
+    min?: GraphQLTypes["simple_transactions_min_order_by"] | undefined;
+    stddev?: GraphQLTypes["simple_transactions_stddev_order_by"] | undefined;
+    stddev_pop?:
+      | GraphQLTypes["simple_transactions_stddev_pop_order_by"]
+      | undefined;
+    stddev_samp?:
+      | GraphQLTypes["simple_transactions_stddev_samp_order_by"]
+      | undefined;
+    sum?: GraphQLTypes["simple_transactions_sum_order_by"] | undefined;
+    var_pop?: GraphQLTypes["simple_transactions_var_pop_order_by"] | undefined;
+    var_samp?:
+      | GraphQLTypes["simple_transactions_var_samp_order_by"]
+      | undefined;
+    variance?:
+      | GraphQLTypes["simple_transactions_variance_order_by"]
+      | undefined;
+  };
+  /** input type for inserting array relation for remote table "simple_transactions" */
+  ["simple_transactions_arr_rel_insert_input"]: {
+    data: Array<GraphQLTypes["simple_transactions_insert_input"]>;
+    /** upsert condition */
+    on_conflict?: GraphQLTypes["simple_transactions_on_conflict"] | undefined;
+  };
+  /** order by avg() on columns of table "simple_transactions" */
+  ["simple_transactions_avg_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
   /** Boolean expression to filter rows from the table "simple_transactions". All fields are combined with a logical 'AND'. */
   ["simple_transactions_bool_exp"]: {
     _and?: Array<GraphQLTypes["simple_transactions_bool_exp"]> | undefined;
@@ -5839,6 +6271,18 @@ export type GraphQLTypes = {
     client_generated_uuid?: string | undefined;
     id?: number | undefined;
     txn_signature?: string | undefined;
+  };
+  /** order by max() on columns of table "simple_transactions" */
+  ["simple_transactions_max_order_by"]: {
+    client_generated_uuid?: GraphQLTypes["order_by"] | undefined;
+    id?: GraphQLTypes["order_by"] | undefined;
+    txn_signature?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by min() on columns of table "simple_transactions" */
+  ["simple_transactions_min_order_by"]: {
+    client_generated_uuid?: GraphQLTypes["order_by"] | undefined;
+    id?: GraphQLTypes["order_by"] | undefined;
+    txn_signature?: GraphQLTypes["order_by"] | undefined;
   };
   /** response of any mutation on the table "simple_transactions" */
   ["simple_transactions_mutation_response"]: {
@@ -5872,6 +6316,18 @@ export type GraphQLTypes = {
     id?: number | undefined;
     txn_signature?: string | undefined;
   };
+  /** order by stddev() on columns of table "simple_transactions" */
+  ["simple_transactions_stddev_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by stddev_pop() on columns of table "simple_transactions" */
+  ["simple_transactions_stddev_pop_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by stddev_samp() on columns of table "simple_transactions" */
+  ["simple_transactions_stddev_samp_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
   /** Streaming cursor of the table "simple_transactions" */
   ["simple_transactions_stream_cursor_input"]: {
     /** Stream column input with initial value */
@@ -5885,6 +6341,10 @@ export type GraphQLTypes = {
     id?: number | undefined;
     txn_signature?: string | undefined;
   };
+  /** order by sum() on columns of table "simple_transactions" */
+  ["simple_transactions_sum_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
   /** update columns of table "simple_transactions" */
   ["simple_transactions_update_column"]: simple_transactions_update_column;
   ["simple_transactions_updates"]: {
@@ -5893,6 +6353,18 @@ export type GraphQLTypes = {
     /** sets the columns of the filtered rows to the given values */
     _set?: GraphQLTypes["simple_transactions_set_input"] | undefined;
     where: GraphQLTypes["simple_transactions_bool_exp"];
+  };
+  /** order by var_pop() on columns of table "simple_transactions" */
+  ["simple_transactions_var_pop_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by var_samp() on columns of table "simple_transactions" */
+  ["simple_transactions_var_samp_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
+  };
+  /** order by variance() on columns of table "simple_transactions" */
+  ["simple_transactions_variance_order_by"]: {
+    id?: GraphQLTypes["order_by"] | undefined;
   };
   ["subscription_root"]: {
     __typename: "subscription_root";
@@ -5920,7 +6392,7 @@ export type GraphQLTypes = {
     secure_transfer_transactions_stream: Array<
       GraphQLTypes["secure_transfer_transactions"]
     >;
-    /** fetch data from the table: "simple_transactions" */
+    /** An array relationship */
     simple_transactions: Array<GraphQLTypes["simple_transactions"]>;
     /** fetch data from the table: "simple_transactions" using primary key columns */
     simple_transactions_by_pk?: GraphQLTypes["simple_transactions"] | undefined;
@@ -6107,19 +6579,31 @@ type ZEUS_VARIABLES = {
   ["secure_transfer_transactions_var_pop_order_by"]: ValueTypes["secure_transfer_transactions_var_pop_order_by"];
   ["secure_transfer_transactions_var_samp_order_by"]: ValueTypes["secure_transfer_transactions_var_samp_order_by"];
   ["secure_transfer_transactions_variance_order_by"]: ValueTypes["secure_transfer_transactions_variance_order_by"];
+  ["simple_transactions_aggregate_order_by"]: ValueTypes["simple_transactions_aggregate_order_by"];
+  ["simple_transactions_arr_rel_insert_input"]: ValueTypes["simple_transactions_arr_rel_insert_input"];
+  ["simple_transactions_avg_order_by"]: ValueTypes["simple_transactions_avg_order_by"];
   ["simple_transactions_bool_exp"]: ValueTypes["simple_transactions_bool_exp"];
   ["simple_transactions_constraint"]: ValueTypes["simple_transactions_constraint"];
   ["simple_transactions_inc_input"]: ValueTypes["simple_transactions_inc_input"];
   ["simple_transactions_insert_input"]: ValueTypes["simple_transactions_insert_input"];
+  ["simple_transactions_max_order_by"]: ValueTypes["simple_transactions_max_order_by"];
+  ["simple_transactions_min_order_by"]: ValueTypes["simple_transactions_min_order_by"];
   ["simple_transactions_on_conflict"]: ValueTypes["simple_transactions_on_conflict"];
   ["simple_transactions_order_by"]: ValueTypes["simple_transactions_order_by"];
   ["simple_transactions_pk_columns_input"]: ValueTypes["simple_transactions_pk_columns_input"];
   ["simple_transactions_select_column"]: ValueTypes["simple_transactions_select_column"];
   ["simple_transactions_set_input"]: ValueTypes["simple_transactions_set_input"];
+  ["simple_transactions_stddev_order_by"]: ValueTypes["simple_transactions_stddev_order_by"];
+  ["simple_transactions_stddev_pop_order_by"]: ValueTypes["simple_transactions_stddev_pop_order_by"];
+  ["simple_transactions_stddev_samp_order_by"]: ValueTypes["simple_transactions_stddev_samp_order_by"];
   ["simple_transactions_stream_cursor_input"]: ValueTypes["simple_transactions_stream_cursor_input"];
   ["simple_transactions_stream_cursor_value_input"]: ValueTypes["simple_transactions_stream_cursor_value_input"];
+  ["simple_transactions_sum_order_by"]: ValueTypes["simple_transactions_sum_order_by"];
   ["simple_transactions_update_column"]: ValueTypes["simple_transactions_update_column"];
   ["simple_transactions_updates"]: ValueTypes["simple_transactions_updates"];
+  ["simple_transactions_var_pop_order_by"]: ValueTypes["simple_transactions_var_pop_order_by"];
+  ["simple_transactions_var_samp_order_by"]: ValueTypes["simple_transactions_var_samp_order_by"];
+  ["simple_transactions_variance_order_by"]: ValueTypes["simple_transactions_variance_order_by"];
   ["timestamptz"]: ValueTypes["timestamptz"];
   ["timestamptz_comparison_exp"]: ValueTypes["timestamptz_comparison_exp"];
 };

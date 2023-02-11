@@ -108,6 +108,11 @@ export const AllTypesProps: Record<string, any> = {
       order_by: "secure_transfer_transactions_order_by",
       where: "secure_transfer_transactions_bool_exp",
     },
+    simple_transactions: {
+      distinct_on: "simple_transactions_select_column",
+      order_by: "simple_transactions_order_by",
+      where: "simple_transactions_bool_exp",
+    },
   },
   chats_bool_exp: {
     _and: "chats_bool_exp",
@@ -122,6 +127,7 @@ export const AllTypesProps: Record<string, any> = {
     parent_client_generated_uuid: "String_comparison_exp",
     room: "String_comparison_exp",
     secure_transfer_transactions: "secure_transfer_transactions_bool_exp",
+    simple_transactions: "simple_transactions_bool_exp",
     type: "String_comparison_exp",
     username: "String_comparison_exp",
     uuid: "String_comparison_exp",
@@ -132,6 +138,7 @@ export const AllTypesProps: Record<string, any> = {
     created_at: "timestamptz",
     secure_transfer_transactions:
       "secure_transfer_transactions_arr_rel_insert_input",
+    simple_transactions: "simple_transactions_arr_rel_insert_input",
   },
   chats_obj_rel_insert_input: {
     data: "chats_insert_input",
@@ -153,6 +160,7 @@ export const AllTypesProps: Record<string, any> = {
     room: "order_by",
     secure_transfer_transactions_aggregate:
       "secure_transfer_transactions_aggregate_order_by",
+    simple_transactions_aggregate: "simple_transactions_aggregate_order_by",
     type: "order_by",
     username: "order_by",
     uuid: "order_by",
@@ -393,6 +401,26 @@ export const AllTypesProps: Record<string, any> = {
     id: "order_by",
     message_id: "order_by",
   },
+  simple_transactions_aggregate_order_by: {
+    avg: "simple_transactions_avg_order_by",
+    count: "order_by",
+    max: "simple_transactions_max_order_by",
+    min: "simple_transactions_min_order_by",
+    stddev: "simple_transactions_stddev_order_by",
+    stddev_pop: "simple_transactions_stddev_pop_order_by",
+    stddev_samp: "simple_transactions_stddev_samp_order_by",
+    sum: "simple_transactions_sum_order_by",
+    var_pop: "simple_transactions_var_pop_order_by",
+    var_samp: "simple_transactions_var_samp_order_by",
+    variance: "simple_transactions_variance_order_by",
+  },
+  simple_transactions_arr_rel_insert_input: {
+    data: "simple_transactions_insert_input",
+    on_conflict: "simple_transactions_on_conflict",
+  },
+  simple_transactions_avg_order_by: {
+    id: "order_by",
+  },
   simple_transactions_bool_exp: {
     _and: "simple_transactions_bool_exp",
     _not: "simple_transactions_bool_exp",
@@ -404,6 +432,16 @@ export const AllTypesProps: Record<string, any> = {
   simple_transactions_constraint: "enum" as const,
   simple_transactions_inc_input: {},
   simple_transactions_insert_input: {},
+  simple_transactions_max_order_by: {
+    client_generated_uuid: "order_by",
+    id: "order_by",
+    txn_signature: "order_by",
+  },
+  simple_transactions_min_order_by: {
+    client_generated_uuid: "order_by",
+    id: "order_by",
+    txn_signature: "order_by",
+  },
   simple_transactions_on_conflict: {
     constraint: "simple_transactions_constraint",
     update_columns: "simple_transactions_update_column",
@@ -417,16 +455,37 @@ export const AllTypesProps: Record<string, any> = {
   simple_transactions_pk_columns_input: {},
   simple_transactions_select_column: "enum" as const,
   simple_transactions_set_input: {},
+  simple_transactions_stddev_order_by: {
+    id: "order_by",
+  },
+  simple_transactions_stddev_pop_order_by: {
+    id: "order_by",
+  },
+  simple_transactions_stddev_samp_order_by: {
+    id: "order_by",
+  },
   simple_transactions_stream_cursor_input: {
     initial_value: "simple_transactions_stream_cursor_value_input",
     ordering: "cursor_ordering",
   },
   simple_transactions_stream_cursor_value_input: {},
+  simple_transactions_sum_order_by: {
+    id: "order_by",
+  },
   simple_transactions_update_column: "enum" as const,
   simple_transactions_updates: {
     _inc: "simple_transactions_inc_input",
     _set: "simple_transactions_set_input",
     where: "simple_transactions_bool_exp",
+  },
+  simple_transactions_var_pop_order_by: {
+    id: "order_by",
+  },
+  simple_transactions_var_samp_order_by: {
+    id: "order_by",
+  },
+  simple_transactions_variance_order_by: {
+    id: "order_by",
   },
   subscription_root: {
     chat_media_messages: {
@@ -509,6 +568,7 @@ export const ReturnTypes: Record<string, any> = {
     parent_client_generated_uuid: "String",
     room: "String",
     secure_transfer_transactions: "secure_transfer_transactions",
+    simple_transactions: "simple_transactions",
     type: "String",
     username: "String",
     uuid: "String",
