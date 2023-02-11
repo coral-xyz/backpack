@@ -20,8 +20,9 @@ import { SettingsList } from "../../../common/Settings/List";
 export function XnftSettings() {
   const nav = useNavigation();
   // TODO: Aggregate view.
-  const { publicKey } = useActiveSolanaWallet();
+  const activeSolanaWallet = useActiveSolanaWallet();
   const connectionUrl = useSolanaConnectionUrl();
+  const publicKey = activeSolanaWallet?.publicKey;
   const { contents, state } = useRecoilValueLoadable(
     filteredPlugins({ publicKey, connectionUrl })
   );
@@ -45,7 +46,7 @@ export function XnftSettings() {
     );
   }
 
-  const xnfts = contents;
+  const xnfts = contents || [];
   const settingsMenu = {} as any;
   xnfts.forEach((xnft: any) => {
     const pubkeyStr = xnft.install.publicKey.toString();

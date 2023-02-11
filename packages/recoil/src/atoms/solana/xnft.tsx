@@ -140,6 +140,9 @@ export const xnfts = atomFamily<
         const _activeWallets = get(activePublicKeys);
         const _connectionUrls = get(connectionUrls);
         const provider = get(anchorContext).provider;
+        if (!publicKey) {
+          return [];
+        }
         const xnfts = await fetchXnfts(provider, new PublicKey(publicKey));
         return xnfts.map((xnft) => {
           return {
