@@ -4,6 +4,7 @@ import type {
   SubscriptionType,
 } from "@coral-xyz/common";
 import express from "express";
+import { z } from "zod";
 
 import { ensureHasRoomAccess, extractUserId } from "../../auth/middleware";
 import {
@@ -15,11 +16,27 @@ import {
   updateLastReadGroup,
   updateLastReadIndividual,
 } from "../../db/friendships";
-
+import { bodyValidator } from "../../validation/reqValidationMiddleware";
 const router = express.Router();
 
 router.post(
   "/lastRead",
+  bodyValidator(
+    z.object({
+      body: z.object({
+        client_generated_uuid: z.string().uuid(),
+      }),
+      id: z.string().uuid(),
+      query: z.object({
+        room: z.string(),
+        type: z.enum(["collection", "individual"]),
+      }),
+      roomMetadata: z.object({
+        user1: z.string(),
+        user2: z.string(),
+      }),
+    })
+  ),
   extractUserId,
   ensureHasRoomAccess,
   async (req, res) => {
@@ -48,48 +65,83 @@ router.post(
   }
 );
 
-router.put("/message", extractUserId, ensureHasRoomAccess, async (req, res) => {
-  //TODO: make this secure, there is a path to cancel but the UI shows the txn as redeemed.
-  const room = req.query.room;
-  const messageId = req.body.messageId;
-  const state = req.body.state;
-  const txn = req.body.txn;
-  if (state !== "cancelled" && state !== "redeemed") {
-    return res.status(411).json({ msg: "Incorrect state" });
+router.put(
+  "/message",
+  bodyValidator(
+    z.object({
+      body: z.object({
+        messageId: z.number(),
+        state: z.string(),
+        txn: z.string(),
+      }),
+      query: z.object({
+        room: z.string(),
+      }),
+    })
+  ),
+  extractUserId,
+  ensureHasRoomAccess,
+  async (req, res) => {
+    //TODO: make this secure, there is a path to cancel but the UI shows the txn as redeemed.
+    const room = req.query.room;
+    const messageId = req.body.messageId;
+    const state = req.body.state;
+    const txn = req.body.txn;
+    if (state !== "cancelled" && state !== "redeemed") {
+      return res.status(411).json({ msg: "Incorrect state" });
+    }
+    await updateSecureTransfer(messageId, room, state, txn);
+    res.json({});
   }
-  await updateSecureTransfer(messageId, room, state, txn);
-  res.json({});
-});
+);
 
-router.get("/", extractUserId, ensureHasRoomAccess, async (req, res) => {
-  // @ts-ignore
-  const room: string = req.query.room;
-  // @ts-ignore
-  const type: SubscriptionType = req.query.type;
-  const timestampBefore = req.query.timestampBefore
-    ? // @ts-ignore
-      new Date(parseInt(req.query.timestampBefore))
-    : new Date();
-  const timestampAfter = req.query.timestampAfter
-    ? // @ts-ignore
-      new Date(parseInt(req.query.timestampAfter))
-    : new Date(0);
-  const limit = req.query.limit ? parseInt(req.query.limit) : 10;
-  // @ts-ignore
-  const clientGeneratedUuid: string | undefined = req.query.clientGeneratedUuid;
+router.get(
+  "/",
+  bodyValidator(
+    z.object({
+      query: z.object({
+        room: z.string(),
+        type: z.enum(["collection", "individual"]),
+        timestampBefore: z.string().optional(),
+        timestampAfter: z.string().optional(),
+        limit: z.string().optional(),
+        clientGeneratedUuid: z.string().uuid().optional(),
+      }),
+    })
+  ),
+  extractUserId,
+  ensureHasRoomAccess,
+  async (req, res) => {
+    // @ts-ignore
+    const room: string = req.query.room;
+    // @ts-ignore
+    const type: SubscriptionType = req.query.type;
+    const timestampBefore = req.query.timestampBefore
+      ? // @ts-ignore
+        new Date(parseInt(req.query.timestampBefore))
+      : new Date();
+    const timestampAfter = req.query.timestampAfter
+      ? // @ts-ignore
+        new Date(parseInt(req.query.timestampAfter))
+      : new Date(0);
+    const limit = req.query.limit ? parseInt(req.query.limit) : 10;
+    // @ts-ignore
+    const clientGeneratedUuid: string | undefined =
+      req.query.clientGeneratedUuid;
 
-  // @ts-ignore
-  const chats = await getChats({
-    room,
-    type,
-    timestampBefore,
-    timestampAfter,
-    limit,
-    clientGeneratedUuid,
-  });
-  const enrichedChats = await enrichMessages(chats, room, type);
-  res.json({ chats: enrichedChats });
-});
+    // @ts-ignore
+    const chats = await getChats({
+      room,
+      type,
+      timestampBefore,
+      timestampAfter,
+      limit,
+      clientGeneratedUuid,
+    });
+    const enrichedChats = await enrichMessages(chats, room, type);
+    res.json({ chats: enrichedChats });
+  }
+);
 
 export const enrichMessages = async (
   messages: Message[],

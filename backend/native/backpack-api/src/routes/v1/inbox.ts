@@ -1,6 +1,7 @@
 import type { EnrichedInboxDb, InboxDb } from "@coral-xyz/common";
 import { AVATAR_BASE_URL } from "@coral-xyz/common";
 import express from "express";
+import { z } from "zod";
 
 import { extractUserId } from "../../auth/middleware";
 import {
@@ -9,76 +10,115 @@ import {
   getOrCreateFriendship,
 } from "../../db/friendships";
 import { getUsers } from "../../db/users";
+import { bodyValidator } from "../../validation/reqValidationMiddleware";
 
 const router = express.Router();
 
-router.post("/", extractUserId, async (req, res) => {
-  // @ts-ignore
-  const from: string = req.id;
-  // @ts-ignore
-  const to: string = req.body.to;
-  if (!from || !to) {
-    return res.status(411).json({ msg: "incorrect input" });
+router.post(
+  "/",
+  bodyValidator(
+    z.object({
+      body: z.object({
+        to: z.string(),
+      }),
+      id: z.string(),
+    })
+  ),
+  extractUserId,
+  async (req, res) => {
+    // @ts-ignore
+    const from: string = req.id;
+    // @ts-ignore
+    const to: string = req.body.to;
+    if (!from || !to) {
+      return res.status(411).json({ msg: "incorrect input" });
+    }
+    const friendship = await getOrCreateFriendship({ from, to });
+
+    res.json({
+      id: from,
+      friendshipId: friendship.id,
+      areFriends: friendship.are_friends,
+      requested: friendship.requested,
+      remoteRequested: friendship.remote_requested,
+      spam: friendship.spam,
+      blocked: friendship.blocked,
+    });
   }
-  const friendship = await getOrCreateFriendship({ from, to });
+);
 
-  res.json({
-    id: from,
-    friendshipId: friendship.id,
-    areFriends: friendship.are_friends,
-    requested: friendship.requested,
-    remoteRequested: friendship.remote_requested,
-    spam: friendship.spam,
-    blocked: friendship.blocked,
-  });
-});
-
-router.get("/", extractUserId, async (req, res) => {
-  //@ts-ignore
-  const uuid: string = req.id;
-  //@ts-ignore
-  const limit: number = req.query.limit || 50;
-  //@ts-ignore
-  const offset: number = req.query.limit || 0;
-  const areConnected: boolean =
-    req.query.areConnected === "true" ? true : false;
-  const { friendships, requestCount } = await getFriendships({
-    uuid,
-    limit,
-    offset,
-    areConnected,
-  });
-  const enrichedFriendships = await enrichFriendships(friendships, uuid);
-  res.json({ chats: enrichedFriendships, requestCount });
-});
-
-router.get("/all", extractUserId, async (req, res) => {
-  //@ts-ignore
-  const uuid: string = req.id;
-  //@ts-ignore
-  const limit: number = req.query.limit || 50;
-  //@ts-ignore
-  const offset: number = req.query.limit || 0;
-  //@ts-ignore
-  const userSpecifiedId: string = req.query.uuid;
-
-  if (uuid !== userSpecifiedId) {
-    return res.json({ chats: [] });
+router.get(
+  "/",
+  bodyValidator(
+    z.object({
+      query: z.object({
+        limit: z.number().optional(),
+        areConnected: z.string(),
+      }),
+      id: z.string(),
+    })
+  ),
+  extractUserId,
+  async (req, res) => {
+    //@ts-ignore
+    const uuid: string = req.id;
+    //@ts-ignore
+    const limit: number = req.query.limit || 50;
+    //@ts-ignore
+    const offset: number = req.query.limit || 0;
+    const areConnected: boolean =
+      req.query.areConnected === "true" ? true : false;
+    const { friendships, requestCount } = await getFriendships({
+      uuid,
+      limit,
+      offset,
+      areConnected,
+    });
+    const enrichedFriendships = await enrichFriendships(friendships, uuid);
+    res.json({ chats: enrichedFriendships, requestCount });
   }
+);
 
-  const { friendships, friendRequests } = await getAllFriendships({
-    uuid,
-    limit,
-    offset,
-  });
+router.get(
+  "/all",
+  bodyValidator(
+    z.object({
+      query: z.object({
+        limit: z.number().optional(),
+        uuid: z.string().uuid(),
+      }),
+      id: z.string().uuid(),
+    })
+  ),
+  extractUserId,
+  async (req, res) => {
+    //@ts-ignore
+    const uuid: string = req.id;
+    //@ts-ignore
+    const limit: number = req.query.limit || 50;
+    //@ts-ignore
+    const offset: number = req.query.limit || 0;
+    //@ts-ignore
+    const userSpecifiedId: string = req.query.uuid;
 
-  const enrichedFriendships = await enrichFriendships(
-    friendships,
-    friendRequests,
-    uuid
-  );
-  res.json({ chats: enrichedFriendships });
-});
+    if (uuid !== userSpecifiedId) {
+      return res.json({ chats: [] });
+    }
+
+    const { friendships, friendRequests } = await getAllFriendships({
+      uuid,
+      limit,
+      offset,
+    });
+
+    const enrichedFriendships = await enrichFriendships(
+      friendships,
+      friendRequests,
+      uuid
+    );
+    res.json({ chats: enrichedFriendships });
+  }
+);
 
 export async function enrichFriendships(
   friendships: InboxDb[],
