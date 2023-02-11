@@ -254,6 +254,11 @@ export const TextInput = ({
           startAdornment,
           endAdornment,
         }}
+        SelectProps={{
+          MenuProps: {
+            style: { zIndex: 1501 },
+          },
+        }}
         select={select}
       >
         {children}

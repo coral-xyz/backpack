@@ -1,1 +1,1 @@
-export const SERVER_URL = "wss://backend-ws.xnfts.dev";
+export const SERVER_URL = "wss://backend-ws2.xnfts.dev";

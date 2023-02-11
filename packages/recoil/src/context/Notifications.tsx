@@ -28,6 +28,7 @@ import {
   NOTIFICATION_KEYNAME_UPDATE,
   NOTIFICATION_KEYRING_DERIVED_WALLET,
   NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY,
+  NOTIFICATION_KEYRING_IMPORTED_WALLET,
   NOTIFICATION_KEYRING_KEY_DELETE,
   NOTIFICATION_KEYRING_STORE_ACTIVE_USER_UPDATED,
   NOTIFICATION_KEYRING_STORE_CREATED,
@@ -42,6 +43,7 @@ import {
   NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED,
   NOTIFICATION_SOLANA_EXPLORER_UPDATED,
   NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE,
+  NOTIFICATION_USER_ACCOUNT_AUTHENTICATED,
   NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_DELETED,
   NOTIFICATION_USER_ACCOUNT_PUBLIC_KEYS_UPDATED,
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
@@ -96,6 +98,7 @@ export function NotificationsProvider(props: any) {
   };
   const setKeyringStoreState = useSetRecoilState(atoms.keyringStoreState);
   const setActiveUser = useSetRecoilState(atoms.user);
+  const setAuthenticatedUser = useSetRecoilState(atoms.authenticatedUser);
   const resetAllUsers = useResetRecoilState(atoms.allUsers);
 
   // Preferences.
@@ -221,7 +224,7 @@ export function NotificationsProvider(props: any) {
     //
     // Notification dispatch.
     //
-    const notificationsHandler = (notif: Notification) => {
+    const notificationsHandler = async (notif: Notification) => {
       logger.debug(`received notification ${notif.name}`, notif);
 
       switch (notif.name) {
@@ -232,19 +235,22 @@ export function NotificationsProvider(props: any) {
           handleKeyringStoreCreated(notif);
           break;
         case NOTIFICATION_KEYRING_STORE_LOCKED:
-          handleKeyringStoreLocked(notif);
+          handleKeyringStoreLocked();
           break;
         case NOTIFICATION_KEYRING_STORE_UNLOCKED:
-          handleKeyringStoreUnlocked(notif);
+          handleKeyringStoreUnlocked();
           break;
         case NOTIFICATION_KEYRING_STORE_RESET:
-          handleReset(notif);
+          handleReset();
           break;
         case NOTIFICATION_KEYRING_KEY_DELETE:
           handleKeyringKeyDelete(notif);
           break;
         case NOTIFICATION_KEYNAME_UPDATE:
           handleKeynameUpdate(notif);
+          break;
+        case NOTIFICATION_KEYRING_IMPORTED_WALLET:
+          handleKeyringImportedWallet(notif);
           break;
         case NOTIFICATION_KEYRING_DERIVED_WALLET:
           handleKeyringDerivedWallet(notif);
@@ -280,7 +286,7 @@ export function NotificationsProvider(props: any) {
           handleSolanaCommitmentUpdated(notif);
           break;
         case NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE:
-          handleSolanaSplTokensDidUpdate(notif);
+          await handleSolanaSplTokensDidUpdate(notif);
           break;
         case NOTIFICATION_SOLANA_CONNECTION_URL_UPDATED:
           handleSolanaConnectionUrlUpdated(notif);
@@ -298,7 +304,7 @@ export function NotificationsProvider(props: any) {
           handleEthereumChainIdUpdated(notif);
           break;
         case NOTIFICATION_ETHEREUM_TOKENS_DID_UPDATE:
-          handleEthereumTokensDidUpdate(notif);
+          await handleEthereumTokensDidUpdate(notif);
           break;
         case NOTIFICATION_ETHEREUM_FEE_DATA_DID_UPDATE:
           handleEthereumFeeDataDidUpdate(notif);
@@ -319,10 +325,13 @@ export function NotificationsProvider(props: any) {
           handleActiveUserUpdated(notif);
           break;
         case NOTIFICATION_KEYRING_STORE_REMOVED_USER:
-          handleRemovedUser(notif);
+          handleRemovedUser();
           break;
         case NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED:
           handleActiveBlockchainUpdated(notif);
+          break;
+        case NOTIFICATION_USER_ACCOUNT_AUTHENTICATED:
+          handleUserAccountAuthenticated(notif);
           break;
         case NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_DELETED:
           handleUserAccountPublicKeyDeleted(notif);
@@ -346,11 +355,12 @@ export function NotificationsProvider(props: any) {
       setKeyringStoreState(KeyringStoreStateEnum.Unlocked);
     };
 
-    const handleKeyringStoreLocked = (_notif: Notification) => {
+    const handleKeyringStoreLocked = () => {
       setKeyringStoreState(KeyringStoreStateEnum.Locked);
+      setAuthenticatedUser(null);
     };
 
-    const handleKeyringStoreUnlocked = (_notif: Notification) => {
+    const handleKeyringStoreUnlocked = () => {
       setKeyringStoreState(KeyringStoreStateEnum.Unlocked);
     };
 
@@ -404,6 +414,50 @@ export function NotificationsProvider(props: any) {
           }
         }
         return next;
+      });
+    };
+
+    //
+    // TODO: the following three functions are almost the same, refactor into one
+    //
+
+    const handleKeyringImportedWallet = (notif: Notification) => {
+      const { blockchain, publicKey, name } = notif.data;
+      setWalletData((current: any) => {
+        const publicKeys = { ...current.publicKeys };
+
+        // Importing a new wallet can result in the initialisation of this
+        // keyring so no guarantee the keyrings exist
+        publicKeys[blockchain] = {
+          hdPublicKeys: [
+            ...(publicKeys[blockchain]
+              ? publicKeys[blockchain].hdPublicKeys
+              : []),
+            // Add newly derived key
+            {
+              publicKey,
+              name,
+            },
+          ],
+          importedPublicKeys: [
+            ...(publicKeys[blockchain]
+              ? publicKeys[blockchain].importedPublicKeys
+              : []),
+          ],
+          ledgerPublicKeys: [
+            ...(publicKeys[blockchain]
+              ? publicKeys[blockchain].ledgerPublicKeys
+              : []),
+          ],
+        };
+
+        const activePublicKeys = [...current.activePublicKeys, publicKey];
+
+        return {
+          ...current,
+          activePublicKeys,
+          publicKeys,
+        };
       });
     };
 
@@ -495,7 +549,7 @@ export function NotificationsProvider(props: any) {
       setActivePublicKeys(notif.data.activeWallets);
     };
 
-    const handleReset = (_notif: Notification) => {
+    const handleReset = () => {
       setKeyringStoreState(KeyringStoreStateEnum.NeedsOnboarding);
     };
 
@@ -542,8 +596,8 @@ export function NotificationsProvider(props: any) {
       });
     };
 
-    const handleSolanaSplTokensDidUpdate = (notif: Notification) => {
-      updateAllSplTokenAccounts({
+    const handleSolanaSplTokensDidUpdate = async (notif: Notification) => {
+      await updateAllSplTokenAccounts({
         ...notif.data,
         customSplTokenAccounts:
           BackgroundSolanaConnection.customSplTokenAccountsFromJson(
@@ -554,6 +608,13 @@ export function NotificationsProvider(props: any) {
 
     const handleActiveBlockchainUpdated = (notif: Notification) => {
       setActiveBlockchain(notif.data.newBlockchain);
+    };
+
+    const handleUserAccountAuthenticated = (notif: Notification) => {
+      setAuthenticatedUser({
+        username: notif.data.username,
+        uuid: notif.data.uuid,
+      });
     };
 
     const handleUserAccountPublicKeyDeleted = (notif: Notification) => {
@@ -579,9 +640,9 @@ export function NotificationsProvider(props: any) {
       setActivePublicKeys(notif.data.activeWallets);
     };
 
-    const handleEthereumTokensDidUpdate = (notif: Notification) => {
+    const handleEthereumTokensDidUpdate = async (notif: Notification) => {
       const { connectionUrl, activeWallet, balances } = notif.data;
-      updateEthereumBalances({
+      await updateEthereumBalances({
         connectionUrl,
         publicKey: activeWallet,
         balances,
@@ -626,11 +687,13 @@ export function NotificationsProvider(props: any) {
       setXnftPreferences(notif.data.xnftPreferences);
       setWalletData(notif.data.walletData);
       setActiveUser(notif.data.user);
+      // Clear authenticated user
+      setAuthenticatedUser(null);
       resetAllUsers();
-      //      resetNftCollections();
+      // resetNftCollections();
     };
 
-    const handleRemovedUser = (notif: Notification) => {
+    const handleRemovedUser = () => {
       resetAllUsers();
     };
 

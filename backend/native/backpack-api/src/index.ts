@@ -41,6 +41,7 @@ app.use("/referrals", referralsRouter);
 app.use("/s3", s3Router);
 app.use("/tx-parsing", txParsingRouter);
 app.use("/users", usersRouter);
+app.get("/healthcheck", (req, res) => res.json({}));
 
 // @ts-ignore
 app.use((err: any, _req: Request, res: Response, next: NextFunction) => {

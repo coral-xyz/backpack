@@ -4,7 +4,13 @@ import {
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
   walletAddressDisplay,
 } from "@coral-xyz/common";
-import { List, ListItem } from "@coral-xyz/react-common";
+import {
+  HardwareIcon,
+  List,
+  ListItem,
+  MnemonicIcon,
+  SecretKeyIcon,
+} from "@coral-xyz/react-common";
 import {
   useActiveWallet,
   useAllWallets,
@@ -17,12 +23,10 @@ import { Add, ExpandMore, MoreHoriz } from "@mui/icons-material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import InfoIcon from "@mui/icons-material/Info";
 import { Box, Button, Grid, Tooltip, Typography } from "@mui/material";
+import type { SxProps, Theme } from "@mui/material/styles";
 
 import {
   EthereumIconOnboarding as EthereumIcon,
-  HardwareIcon,
-  ImportedIcon,
-  MnemonicIcon,
   SolanaIconOnboarding as SolanaIcon,
 } from "../common/Icon";
 import { ActionCard } from "../common/Layout/ActionCard";
@@ -36,6 +40,9 @@ import {
   AddConnectPreview,
   AddConnectWalletMenu,
 } from "../Unlocked/Settings/AddConnectWallet";
+import { CreateMenu } from "../Unlocked/Settings/AddConnectWallet/CreateMenu";
+import { ImportMenu } from "../Unlocked/Settings/AddConnectWallet/ImportMenu";
+import { ImportMnemonic } from "../Unlocked/Settings/AddConnectWallet/ImportMnemonic";
 import { ImportSecretKey } from "../Unlocked/Settings/AddConnectWallet/ImportSecretKey";
 import { RemoveWallet } from "../Unlocked/Settings/YourAccount/EditWallets/RemoveWallet";
 import { RenameWallet } from "../Unlocked/Settings/YourAccount/EditWallets/RenameWallet";
@@ -98,10 +105,10 @@ function WalletButton({
   const theme = useCustomTheme();
   const [tooltipOpen, setTooltipOpen] = useState(false);
 
-  const onCopy = () => {
+  const onCopy = async () => {
     setTooltipOpen(true);
     setTimeout(() => setTooltipOpen(false), 1000);
-    navigator.clipboard.writeText(wallet.publicKey.toString());
+    await navigator.clipboard.writeText(wallet.publicKey.toString());
   };
 
   return (
@@ -132,9 +139,9 @@ function WalletButton({
             minWidth: "16px",
           }}
           className={classes.addressButton}
-          onClick={(e) => {
+          onClick={async (e) => {
             e.stopPropagation();
-            onCopy();
+            await onCopy();
           }}
         >
           <ContentCopyIcon
@@ -238,7 +245,19 @@ function WalletNavStack({
         component={(props: any) => <WalletListBlockchainSelector {...props} />}
       />
       <NavStackScreen
-        name={"import-secret-key"}
+        name={"create-wallet"}
+        component={(props: any) => <CreateMenu {...props} />}
+      />
+      <NavStackScreen
+        name={"import-wallet"}
+        component={(props: any) => <ImportMenu {...props} />}
+      />
+      <NavStackScreen
+        name={"import-from-mnemonic"}
+        component={(props: any) => <ImportMnemonic {...props} />}
+      />
+      <NavStackScreen
+        name={"import-from-secret-key"}
         component={(props: any) => <ImportSecretKey {...props} />}
       />
       <NavStackScreen
@@ -450,9 +469,9 @@ function _WalletList({
         ) : (
           <WalletList
             wallets={activeWallets}
-            clickWallet={(wallet) => {
+            clickWallet={async (wallet) => {
               if (wallet.type !== "dehydrated") {
-                onChange(wallet);
+                await onChange(wallet);
                 close();
               }
             }}
@@ -529,9 +548,9 @@ function _WalletList({
           <WalletList
             inverted={true}
             wallets={coldWallets}
-            clickWallet={(wallet) => {
+            clickWallet={async (wallet) => {
               if (wallet.type !== "dehydrated") {
-                onChange(wallet);
+                await onChange(wallet);
                 close();
               }
             }}
@@ -739,9 +758,8 @@ export function WalletListItem({
             ) : (
               <CopyButton
                 inverted={inverted}
-                isEditWallets={false}
-                onClick={() => {
-                  navigator.clipboard.writeText(publicKey);
+                onClick={async () => {
+                  await navigator.clipboard.writeText(publicKey);
                 }}
               />
             )}
@@ -753,9 +771,8 @@ export function WalletListItem({
               justifyContent: "center",
             }}
           >
-            <CopyButton
+            <EditWalletsButton
               inverted={inverted}
-              isEditWallets={true}
               onClick={() => {
                 nav.push("edit-wallets-wallet-detail", {
                   ...wallet,
@@ -769,16 +786,17 @@ export function WalletListItem({
   );
 }
 
-function CopyButton({
+function WalletListButtonBase({
   onClick,
-  isEditWallets,
   inverted,
+  sx,
+  children,
 }: {
-  onClick: () => void;
-  isEditWallets: boolean;
+  onClick: (e: any) => void;
   inverted?: boolean;
+  sx?: SxProps<Theme>;
+  children: React.ReactElement;
 }) {
-  const [isCopying, setIsCopying] = useState(false);
   const theme = useCustomTheme();
   return (
     <Button
@@ -794,30 +812,69 @@ function CopyButton({
         backgroundColor: inverted
           ? theme.custom.colorsInverted.bg2
           : theme.custom.colors.bg2,
-
         "&:hover": {
           backgroundColor: inverted
             ? `${theme.custom.colorsInverted.walletCopyButtonHover} !important`
             : `${theme.custom.colors.walletCopyButtonHover} !important`,
         },
+        ...sx,
       }}
-      onClick={(e) => {
+      onClick={onClick}
+    >
+      {children}
+    </Button>
+  );
+}
+
+function CopyButton({
+  onClick,
+  inverted,
+}: {
+  onClick: () => void;
+  inverted?: boolean;
+}) {
+  const [isCopying, setIsCopying] = useState(false);
+  return (
+    <WalletListButtonBase
+      onClick={(e: any) => {
         e.stopPropagation();
         setIsCopying(true);
         setTimeout(() => setIsCopying(false), 1000);
         onClick();
       }}
+      inverted={inverted}
     >
-      {isEditWallets ? (
-        <MoreHoriz
-          style={{
-            color: theme.custom.colors.icon,
-          }}
-        />
-      ) : (
-        <>{isCopying ? "Copied!" : "Copy"}</>
-      )}
-    </Button>
+      <>{isCopying ? "Copied!" : "Copy"}</>
+    </WalletListButtonBase>
+  );
+}
+
+function EditWalletsButton({
+  onClick,
+  inverted,
+}: {
+  onClick: () => void;
+  inverted?: boolean;
+}) {
+  const theme = useCustomTheme();
+  return (
+    <WalletListButtonBase
+      onClick={(e: any) => {
+        e.stopPropagation();
+        onClick();
+      }}
+      inverted={inverted}
+      sx={{
+        padding: "4px",
+        minWidth: "32px",
+      }}
+    >
+      <MoreHoriz
+        style={{
+          color: theme.custom.colors.icon,
+        }}
+      />
+    </WalletListButtonBase>
   );
 }
 
@@ -828,34 +885,16 @@ function RecoverButton({
   onClick: () => void;
   inverted?: boolean;
 }) {
-  const theme = useCustomTheme();
   return (
-    <Button
-      disableElevation
-      disableRipple
-      variant="contained"
-      sx={{
-        padding: "4px 12px",
-        textTransform: "none",
-        color: inverted
-          ? theme.custom.colorsInverted.fontColor
-          : theme.custom.colors.fontColor,
-        backgroundColor: inverted
-          ? theme.custom.colorsInverted.bg2
-          : theme.custom.colors.bg2,
-        "&:hover": {
-          backgroundColor: inverted
-            ? `${theme.custom.colorsInverted.walletCopyButtonHover} !important`
-            : `${theme.custom.colors.walletCopyButtonHover} !important`,
-        },
-      }}
-      onClick={(e) => {
+    <WalletListButtonBase
+      onClick={(e: any) => {
         e.stopPropagation();
         onClick();
       }}
+      inverted={inverted}
     >
-      Recover
-    </Button>
+      <>Recover</>
+    </WalletListButtonBase>
   );
 }
 
@@ -926,13 +965,14 @@ export function StackedWalletAddress({
 }
 
 function WalletTypeIcon({ type, fill }: { type: string; fill?: string }) {
+  const style = { padding: "5px" };
   switch (type) {
     case "imported":
-      return <ImportedIcon fill={fill} />;
+      return <SecretKeyIcon fill={fill} style={style} />;
     case "hardware":
-      return <HardwareIcon fill={fill} />;
+      return <HardwareIcon fill={fill} style={style} />;
     case "derived":
-      return <MnemonicIcon fill={fill} />;
+      return <MnemonicIcon fill={fill} style={style} />;
     default:
       return null;
   }

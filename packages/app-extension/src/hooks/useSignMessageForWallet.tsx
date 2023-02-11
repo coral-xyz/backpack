@@ -6,7 +6,7 @@ import {
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { ethers } from "ethers";
 
-export const useSignMessageForWallet = (mnemonic?: string) => {
+export const useSignMessageForWallet = (mnemonic?: string | true) => {
   const background = useBackgroundClient();
 
   const signMessageForWallet = async (

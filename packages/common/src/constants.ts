@@ -106,8 +106,10 @@ export const UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD =
   "ui-rpc-method-blockchain-keyrings-add";
 export const UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ =
   "ui-rpc-method-blockchain-keyrings-read";
-export const UI_RPC_METHOD_FIND_SIGNED_WALLET_DESCRIPTOR =
-  "ui-rpc-method-find-signed-public-key-path";
+export const UI_RPC_METHOD_FIND_SERVER_PUBLIC_KEY_CONFLICTS =
+  "ui-rpc-method-find-server-public-key-conflicts";
+export const UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR =
+  "ui-rpc-method-find-wallet-descriptor";
 export const UI_RPC_METHOD_KEY_IS_COLD_UPDATE =
   "ui-rpc-method-key-is-cold-update";
 export const UI_RPC_METHOD_KEYNAME_READ = "ui-rpc-method-keyname-read";
@@ -118,6 +120,10 @@ export const UI_RPC_METHOD_KEYRING_AUTO_LOCK_SETTINGS_READ =
   "ui-rpc-method-auto-lock-settings-read";
 export const UI_RPC_METHOD_KEYRING_AUTO_LOCK_SETTINGS_UPDATE =
   "ui-rpc-method-auto-lock-settings-update";
+export const UI_RPC_METHOD_KEYRING_READ_NEXT_DERIVATION_PATH =
+  "ui-rpc-method-keyring-read-next-derivation-path";
+export const UI_RPC_METHOD_KEYRING_IMPORT_WALLET =
+  "ui-rpc-method-keyring-import-wallet";
 export const UI_RPC_METHOD_KEYRING_DERIVE_WALLET =
   "ui-rpc-method-keyring-derive";
 export const UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC =
@@ -125,7 +131,9 @@ export const UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC =
 export const UI_RPC_METHOD_KEYRING_EXPORT_SECRET_KEY =
   "ui-rpc-method-export-secret-key";
 export const UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY =
-  "ui-rpc-method-keyring-import-wallet";
+  "ui-rpc-method-keyring-import-secret-key";
+export const UI_RPC_METHOD_KEYRING_HAS_MNEMONIC =
+  "ui-rpc-method-keyring-has-mnemonic";
 export const UI_RPC_METHOD_KEYRING_KEY_DELETE = "ui-rpc-method-keyring-delete";
 export const UI_RPC_METHOD_KEYRING_RESET = "ui-rpc-method-keyring-reset";
 export const UI_RPC_METHOD_KEYRING_STORE_CHECK_PASSWORD =
@@ -146,8 +154,6 @@ export const UI_RPC_METHOD_KEYRING_STORE_STATE =
   "ui-rpc-method-keyring-store-state";
 export const UI_RPC_METHOD_KEYRING_STORE_UNLOCK =
   "ui-rpc-method-keyring-store-unlock";
-export const UI_RPC_METHOD_KEYRING_TYPE_READ =
-  "ui-rpc-method-keyring-type-read";
 export const UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC =
   "ui-rpc-method-validate-mnemonic";
 export const UI_RPC_METHOD_LEDGER_CONNECT = "ui-rpc-method-ledger-connect";
@@ -280,6 +286,8 @@ export const NOTIFICATION_KEYNAME_UPDATE = "notification-keyname-update";
 export const NOTIFICATION_KEYRING_ACTIVE_BLOCKCHAIN_UPDATED =
   "notification-keyring-active-blockchain-updated";
 export const NOTIFICATION_KEYRING_CREATED = "notification-keyring-created";
+export const NOTIFICATION_KEYRING_IMPORTED_WALLET =
+  "notification-keyring-imported-wallet";
 export const NOTIFICATION_KEYRING_DERIVED_WALLET =
   "notification-keyring-derived-wallet";
 export const NOTIFICATION_KEYRING_IMPORTED_SECRET_KEY =
@@ -341,6 +349,8 @@ export const NOTIFICATION_SOLANA_EXPLORER_UPDATED =
   "notification-solana-explorer-updated";
 export const NOTIFICATION_SOLANA_SPL_TOKENS_DID_UPDATE =
   "notification-solana-spl-tokens-did-update";
+export const NOTIFICATION_USER_ACCOUNT_AUTHENTICATED =
+  "notification-user-account-authenticated";
 export const NOTIFICATION_USER_ACCOUNT_PUBLIC_KEYS_UPDATED =
   "notification-user-account-public-keys-updated";
 export const NOTIFICATION_USER_ACCOUNT_PUBLIC_KEY_CREATED =
@@ -563,8 +573,8 @@ export const ALCHEMY_ETHEREUM_MAINNET_API_KEY =
   "DlJr6QuBC2EaE-L60-iqQQGq9hi9-XSZ";
 
 export const AVATAR_BASE_URL = "https://swr.xnfts.dev/avatars";
-export const BACKEND_API_URL = "https://backpack-api.xnfts.dev";
-export const REALTIME_API_URL = "https://backend-ws.xnfts.dev";
+export const BACKEND_API_URL = "https://backpack-api2.xnfts.dev";
+export const REALTIME_API_URL = "https://backend-ws2.xnfts.dev";
 export const MESSAGING_COMMUNICATION_PUSH = "MESSAGING_COMMUNICATION_PUSH";
 export const MESSAGING_COMMUNICATION_FETCH = "MESSAGING_COMMUNICATION_FETCH";
 export const MESSAGING_COMMUNICATION_FETCH_RESPONSE =

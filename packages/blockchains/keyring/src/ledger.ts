@@ -1,6 +1,8 @@
-import type { WalletDescriptor } from "@coral-xyz/common";
+import type { Blockchain, WalletDescriptor } from "@coral-xyz/common";
 import {
+  derivationPathsToIndexes,
   generateUniqueId,
+  getIndexedPath,
   LEDGER_INJECTED_CHANNEL_REQUEST,
   LEDGER_INJECTED_CHANNEL_RESPONSE,
 } from "@coral-xyz/common";
@@ -9,9 +11,14 @@ import type { LedgerKeyringJson } from "./types";
 
 export class LedgerKeyringBase {
   protected walletDescriptors: Array<WalletDescriptor>;
+  protected blockchain: Blockchain;
 
-  constructor(walletDescriptors: Array<WalletDescriptor>) {
+  constructor(
+    walletDescriptors: Array<WalletDescriptor>,
+    blockchain: Blockchain
+  ) {
     this.walletDescriptors = walletDescriptors;
+    this.blockchain = blockchain;
   }
 
   public deletePublicKey(publicKey: string) {
@@ -40,6 +47,23 @@ export class LedgerKeyringBase {
 
   importSecretKey(): string {
     throw new Error("ledger keyring cannot import secret keys");
+  }
+
+  public nextDerivationPath(offset = 1) {
+    const derivationPaths = this.walletDescriptors.map((w) => w.derivationPath);
+    const { accountIndex, walletIndex } =
+      derivationPathsToIndexes(derivationPaths);
+    const derivationPath = getIndexedPath(
+      this.blockchain,
+      accountIndex,
+      walletIndex! + offset
+    );
+    if (derivationPaths.includes(derivationPath)) {
+      // This key is already included for some reason, try again with
+      // incremented walletIndex
+      return this.nextDerivationPath(offset + 1);
+    }
+    return { derivationPath, offset };
   }
 
   public toString(): string {

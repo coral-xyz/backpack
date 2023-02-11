@@ -267,7 +267,7 @@ function OnboardingUsernameScreen({
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={18}
+      keyboardVerticalOffset={78}
     >
       <OnboardingScreen title="Claim your username">
         <View style={{ flex: 1 }}>

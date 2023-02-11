@@ -7,7 +7,7 @@ import type {
   RpcRequest,
   RpcResponse,
 } from "@coral-xyz/common";
-import { getLogger, PluginServer } from "@coral-xyz/common";
+import { getLogger } from "@coral-xyz/common";
 
 import { isValidEventOrigin } from ".";
 

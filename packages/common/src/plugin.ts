@@ -114,7 +114,6 @@ export class Plugin {
       CHANNEL_PLUGIN_RPC_REQUEST,
       CHANNEL_PLUGIN_RPC_RESPONSE
     );
-    this._rpcServer.handler(this._handleRpc.bind(this));
 
     //
     // Effectively take a lock that's held until the setup is complete.
@@ -149,14 +148,15 @@ export class Plugin {
     this.iframeRoot.setAttribute(
       "allow",
       preference?.mediaPermissions
-        ? "camera;microphone;display-capture;fullscreen"
-        : "fullscreen"
+        ? "camera;microphone;display-capture;fullscreen;clipboard-write *"
+        : "fullscreen;clipboard-write *"
     );
     this.iframeRoot.setAttribute("fetchpriority", "low");
     this.iframeRoot.src = url.toString();
     this.iframeRoot.sandbox.add("allow-same-origin");
     this.iframeRoot.sandbox.add("allow-scripts");
     this.iframeRoot.sandbox.add("allow-forms");
+
     this.iframeRoot.onload = () => this.handleRootIframeOnLoad();
   }
 
@@ -191,7 +191,12 @@ export class Plugin {
   //
   public setActiveIframe(iframe: HTMLIFrameElement, xnftUrl: string) {
     this._iframeActive = iframe;
-    this._rpcServer.setWindow(iframe.contentWindow, xnftUrl);
+
+    this._rpcServer.setWindow(
+      iframe.contentWindow,
+      xnftUrl,
+      this._handleRpc.bind(this)
+    );
     this.pushConnectNotification();
   }
 
@@ -205,7 +210,7 @@ export class Plugin {
     this.iframeRoot = undefined;
     // Don't need to remove the active iframe because we've removed the root.
     this._iframeActive = undefined;
-    this._rpcServer.setWindow(undefined, "");
+    this._rpcServer.destroyWindow();
     this._nextRenderId = undefined;
     this._pendingBridgeRequests = undefined;
     this._didFinishSetupResolver = undefined;

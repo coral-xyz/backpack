@@ -30,14 +30,12 @@ export function ConnectHardwareSearching({
   useEffect(() => {
     // @ts-ignore
     const connectListener = navigator.hid.addEventListener("connect", () => {
-      console.log("refreshing connect");
       setNavigatorStateChange((prev) => prev + 1);
     });
     // @ts-ignore
     const disconnectListener = navigator.hid.addEventListener(
       "disconnect",
       async () => {
-        console.log("refreshing disconnect");
         setNavigatorStateChange((prev) => prev + 1);
       }
     );

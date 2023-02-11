@@ -8,6 +8,14 @@ export function deriveSolanaKeypair(
   seed: Buffer,
   derivationPath: string
 ): Keypair {
+  const secret = deriveSolanaPrivateKey(seed, derivationPath);
+  return Keypair.fromSecretKey(secret);
+}
+
+export function deriveSolanaPrivateKey(
+  seed: Buffer,
+  derivationPath: string
+): Uint8Array {
   let derivedSeed: Buffer;
   if (derivationPath.startsWith("501'")) {
     // Sollet deprecated path
@@ -15,6 +23,5 @@ export function deriveSolanaKeypair(
   } else {
     derivedSeed = derivePath(derivationPath, seed.toString("hex")).key;
   }
-  const secret = nacl.sign.keyPair.fromSeed(derivedSeed).secretKey;
-  return Keypair.fromSecretKey(secret);
+  return nacl.sign.keyPair.fromSeed(derivedSeed).secretKey;
 }

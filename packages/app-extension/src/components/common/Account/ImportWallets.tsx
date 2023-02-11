@@ -11,6 +11,7 @@ import {
   legacyLedgerLiveIndexed,
   legacySolletIndexed,
   LOAD_PUBLIC_KEY_AMOUNT,
+  UI_RPC_METHOD_FIND_SERVER_PUBLIC_KEY_CONFLICTS,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
   UI_RPC_METHOD_PREVIEW_PUBKEYS,
 } from "@coral-xyz/common";
@@ -31,7 +32,6 @@ import * as anchor from "@project-serum/anchor";
 import { Connection as SolanaConnection, PublicKey } from "@solana/web3.js";
 import { BigNumber, ethers } from "ethers";
 
-import { useConflictQuery } from "../../../hooks/useConflictQuery";
 import {
   Checkbox,
   Header,
@@ -43,7 +43,7 @@ const { base58: bs58 } = ethers.utils;
 
 const DISPLAY_PUBKEY_AMOUNT = 5;
 
-export function ImportAccounts({
+export function ImportWallets({
   blockchain,
   mnemonic,
   transport,
@@ -52,14 +52,13 @@ export function ImportAccounts({
   allowMultiple = true,
 }: {
   blockchain: Blockchain;
-  mnemonic?: string;
-  transport?: Transport | null;
+  mnemonic?: string | true;
+  transport?: Transport;
   onNext: (walletDescriptor: Array<WalletDescriptor>) => void;
   onError?: (error: Error) => void;
   allowMultiple?: boolean;
 }) {
   const background = useBackgroundClient();
-  const checkPublicKeyConflicts = useConflictQuery();
   const theme = useCustomTheme();
 
   // Loaded balances for each public key
@@ -173,7 +172,7 @@ export function ImportAccounts({
             .flat()
             .map((a: any) => a.publicKey)
         );
-      } catch {
+      } catch (error) {
         // Keyring store locked, either onboarding or left open
       }
     })();
@@ -186,13 +185,21 @@ export function ImportAccounts({
     (async () => {
       if (walletDescriptors.length === 0) return;
       try {
-        const response = await checkPublicKeyConflicts(
-          walletDescriptors.map((a) => ({
-            blockchain,
-            publicKey: a.publicKey,
-          }))
+        const response = await background.request({
+          method: UI_RPC_METHOD_FIND_SERVER_PUBLIC_KEY_CONFLICTS,
+          params: [
+            walletDescriptors.map((w) => ({
+              publicKey: w.publicKey,
+              blockchain,
+            })),
+          ],
+        });
+        setConflictingPublicKeys(
+          response.map(
+            (r: { user_id: string; public_key: string; blockchain: string }) =>
+              r.public_key
+          )
         );
-        setConflictingPublicKeys(response.map((r: any) => r.public_key));
       } catch {
         // If the query failed assume all are valid
       }
@@ -208,6 +215,8 @@ export function ImportAccounts({
     setCheckedWalletDescriptors([]);
 
     let loaderFn;
+    // `mnemonic` can be true here if we aren't passing the mnemonic then it
+    // can be taken from the unlocked keyring on the backend
     if (mnemonic) {
       // Loading accounts from a mnemonic
       loaderFn = (derivationPaths: Array<string>) =>
@@ -217,7 +226,7 @@ export function ImportAccounts({
       loaderFn = (derivationPaths: Array<string>) =>
         loadLedgerPublicKeys(transport, derivationPaths);
     } else {
-      return;
+      throw new Error("no public key loader found");
     }
 
     loaderFn(derivationPaths)
@@ -317,11 +326,11 @@ export function ImportAccounts({
   };
 
   //
-  // Load accounts for the given mnemonic. This is passed to the ImportAccounts
+  // Load accounts for the given mnemonic. This is passed to the ImportWallets
   // component and called whenever the derivation path is changed with the selector.
   //
   const loadMnemonicPublicKeys = async (
-    mnemonic: string,
+    mnemonic: string | true,
     derivationPaths: Array<string>
   ) => {
     return await background.request({
@@ -413,9 +422,9 @@ export function ImportAccounts({
             marginTop: "24px",
           }}
         >
-          <Header text={`Import account${allowMultiple ? "s" : ""}`} />
+          <Header text={`Import wallet${allowMultiple ? "s" : ""}`} />
           <SubtextParagraph>
-            Select which account{allowMultiple ? "s" : ""} you'd like to import.
+            Select which wallet{allowMultiple ? "s" : ""} you'd like to import.
           </SubtextParagraph>
         </Box>
         <div style={{ margin: "16px" }}>
@@ -528,7 +537,7 @@ export function ImportAccounts({
         }}
       >
         <PrimaryButton
-          label={`Import Account${allowMultiple ? "s" : ""}`}
+          label={`Import Wallet${allowMultiple ? "s" : ""}`}
           onClick={() => onNext(checkedWalletDescriptors)}
           disabled={walletDescriptors.length === 0}
         />

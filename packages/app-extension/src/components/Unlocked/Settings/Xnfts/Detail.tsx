@@ -7,6 +7,7 @@ import {
   getLogger,
   Solana,
   UI_RPC_METHOD_SET_XNFT_PREFERENCES,
+  XNFT_GG_LINK,
 } from "@coral-xyz/common";
 import {
   CheckIcon,
@@ -197,7 +198,7 @@ export const XnftDetail: React.FC<{ xnft: any }> = ({ xnft }) => {
           }}
           onClick={() =>
             window.open(
-              `https://xnft.gg/app/${xnft.install.account.xnft.toString()}`
+              `${XNFT_GG_LINK}/app/${xnft.install.account.xnft.toString()}`
             )
           }
         >
