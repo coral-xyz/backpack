@@ -1,5 +1,9 @@
 version: "3.8"
 
+# This is a development config. It is not used in production.
+# The images do not include SHA256 digests to maximize compatibility
+# with local development environments by supporting every achitecture.
+
 services:
   postgres:
     image: postgres:15.0-alpine
