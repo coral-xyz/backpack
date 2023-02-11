@@ -16,6 +16,13 @@ array_relationships:
         table:
           name: secure_transfer_transactions
           schema: public
+  - name: simple_transactions
+    using:
+      foreign_key_constraint_on:
+        column: client_generated_uuid
+        table:
+          name: simple_transactions
+          schema: public
 insert_permissions:
   - role: chat
     permission:
