@@ -1,12 +1,7 @@
 import React, { Suspense, useEffect, useState } from "react";
-import {
-  BlankApp,
-  WithSuspense,
-} from "@coral-xyz/app-extension/src/app/Router";
 import { Blockchain } from "@coral-xyz/common";
 import {
   SOL_LOGO_URI,
-  useLoader,
   useSolanaCtx,
   useTokenMetadata,
   useUser,
