@@ -1,17 +1,30 @@
 import { Suspense, useEffect, useState } from "react";
 import type { EnrichedNotification } from "@coral-xyz/common";
-import { BACKEND_API_URL } from "@coral-xyz/common";
 import {
+  BACKEND_API_URL,
+  sendFriendRequest,
+  XNFT_GG_LINK,
+} from "@coral-xyz/common";
+import { updateFriendshipIfExists } from "@coral-xyz/db";
+import {
+  DangerButton,
   EmptyState,
   isFirstLastListItemStyle,
   Loading,
   ProxyImage,
+  SuccessButton,
   useUserMetadata,
 } from "@coral-xyz/react-common";
-import { unreadCount, useRecentNotifications } from "@coral-xyz/recoil";
+import {
+  unreadCount,
+  useFriendship,
+  useRecentNotifications,
+  useUpdateFriendships,
+  useUser,
+} from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import { IconButton, List, ListItem, Typography } from "@mui/material";
+import { Badge, IconButton, List, ListItem, Typography } from "@mui/material";
 import { useRecoilState } from "recoil";
 
 import { CloseButton, WithDrawer } from "../../common/Layout/Drawer";
@@ -19,7 +32,7 @@ import { useBreakpoints } from "../../common/Layout/hooks";
 import {
   NavStackEphemeral,
   NavStackScreen,
-  useNavStack,
+  useNavigation,
 } from "../../common/Layout/NavStack";
 import { NotificationIconWithBadge } from "../../common/NotificationIconWithBadge";
 import { ContactRequests, Contacts } from "../Messages/Contacts";
@@ -30,6 +43,9 @@ const useStyles = styles((theme) => ({
     fontWeight: 500,
     fontSize: "14px",
     lineHeight: "24px",
+  },
+  customBadge: {
+    backgroundColor: "#E33E3F",
   },
   allWalletsLabel: {
     fontWeight: 500,
@@ -220,6 +236,16 @@ export function Notifications() {
         }),
       });
     }
+    fetch(`${BACKEND_API_URL}/notifications/seen`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        notificationIds: notifications
+          .filter((x) => !x.viewed)
+          .map(({ id }) => id),
+      }),
+    });
+
     setUnreadCount(0);
   }, [notifications, setUnreadCount]);
 
@@ -407,6 +433,19 @@ function NotificationListItem({
   if (notification.xnft_id === "friend_requests") {
     return (
       <FriendRequestListItem
+        title={"Friend request"}
+        notification={notification}
+        isFirst={isFirst}
+        isLast={isLast}
+        onOpenDrawer={onOpenDrawer}
+      />
+    );
+  }
+
+  if (notification.xnft_id === "friend_requests_accept") {
+    return (
+      <FriendRequestListItem
+        title={"Friend Request Accepted"}
         notification={notification}
         isFirst={isFirst}
         isLast={isLast}
@@ -460,10 +499,100 @@ function NotificationListItem({
             </Typography>
           </div>
         </div>
-        <div className={classes.time}>{getTimeStr(notification.timestamp)}</div>
+        <div>
+          <div className={classes.time}>
+            {getTimeStr(notification.timestamp)}
+          </div>
+          <div style={{ display: "flex", flexDirection: "row-reverse" }}>
+            {!notification.viewed && (
+              <Badge
+                classes={{ badge: classes.customBadge }}
+                style={{ fontSize: 30, marginTop: 15 }}
+                variant={"dot"}
+                color={"primary"}
+                badgeContent={unreadCount}
+              ></Badge>
+            )}
+          </div>
+        </div>
       </div>
     </ListItem>
   );
+}
+
+function AcceptRejectRequest({ userId }: { userId: string }) {
+  const friendshipValue = useFriendship({ userId });
+  const { uuid } = useUser();
+  const setFriendshipValue = useUpdateFriendships();
+  const [inProgress, setInProgress] = useState(false);
+
+  if (friendshipValue?.remoteRequested && !friendshipValue?.areFriends) {
+    return (
+      <div style={{ display: "flex", marginTop: 5 }}>
+        <SuccessButton
+          disabled={inProgress}
+          label={"Confirm"}
+          style={{
+            marginRight: 8,
+            height: 32,
+            width: "inherit",
+            paddingLeft: 10,
+            paddingRight: 10,
+            borderRadius: 6,
+          }}
+          onClick={async (e: any) => {
+            e.stopPropagation();
+            setInProgress(true);
+            await sendFriendRequest({ to: userId, sendRequest: true });
+            await updateFriendshipIfExists(uuid, userId, {
+              requested: 0,
+              areFriends: 1,
+            });
+            setFriendshipValue({
+              userId: userId,
+              friendshipValue: {
+                requested: false,
+                areFriends: true,
+                remoteRequested: false,
+              },
+            });
+            setInProgress(false);
+          }}
+        />
+        <DangerButton
+          disabled={inProgress}
+          style={{
+            height: 32,
+            width: "inherit",
+            paddingLeft: 10,
+            paddingRight: 10,
+            borderRadius: 6,
+          }}
+          label={"Delete"}
+          onClick={async (e: any) => {
+            e.stopPropagation();
+            setInProgress(true);
+            await sendFriendRequest({ to: userId, sendRequest: false });
+            await updateFriendshipIfExists(uuid, userId, {
+              requested: 0,
+              areFriends: 0,
+              remoteRequested: 0,
+            });
+            setFriendshipValue({
+              userId: userId,
+              friendshipValue: {
+                requested: false,
+                areFriends: false,
+                remoteRequested: false,
+              },
+            });
+            setInProgress(false);
+          }}
+        />
+      </div>
+    );
+  }
+  return <div></div>;
 }
 
 function parseJson(body: string) {
@@ -479,16 +608,21 @@ function FriendRequestListItem({
   isFirst,
   isLast,
   onOpenDrawer,
+  title,
 }: {
   notification: EnrichedNotification;
   isFirst: boolean;
   isLast: boolean;
   onOpenDrawer?: () => void;
+  title: string;
 }) {
   const { isXs } = useBreakpoints();
-  const nav = isXs ? useNavStack() : undefined;
+  const nav = isXs ? useNavigation() : undefined;
   const user = useUserMetadata({
     remoteUserId: parseJson(notification.body).from,
+  });
+  const friendshipValue = useFriendship({
+    userId: parseJson(notification.body).from,
   });
   const classes = useStyles();
   const theme = useCustomTheme();
@@ -504,11 +638,10 @@ function FriendRequestListItem({
         paddingTop: "10px",
         paddingBottom: "10px",
         display: "flex",
-        height: "68px",
         backgroundColor: theme.custom.colors.nav,
         borderBottom: isLast
           ? undefined
-          : `solid 1pt ${theme.custom.colors.border}`,
+          : `solid 1pt ${theme.custom.colors.border1}`,
         ...isFirstLastListItemStyle(isFirst, isLast, 12),
       }}
     >
@@ -530,21 +663,35 @@ function FriendRequestListItem({
           >
             <NotificationListItemIcon image={user?.image} />
           </div>
-          <div>
-            <Typography className={classes.txSig}>Contact request</Typography>
+          <div style={{ width: "100%" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
+              <div>
+                <Typography className={classes.txSig}>{title}</Typography>
+              </div>
+              <div className={classes.time}>
+                {getTimeStr(notification.timestamp)}
+              </div>
+            </div>
             <Typography className={classes.txBody}>@{user.username}</Typography>
+            <AcceptRejectRequest userId={parseJson(notification.body).from} />
           </div>
         </div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-end",
-          }}
-          className={classes.time}
-        >
-          {getTimeStr(notification.timestamp)}
-          <span>View</span>
+        <div>
+          {friendshipValue?.remoteRequested && !friendshipValue?.areFriends && (
+            <Badge
+              classes={{ badge: classes.customBadge }}
+              style={{ marginTop: 15, fontSize: 30 }}
+              variant={"dot"}
+              color={"primary"}
+              badgeContent={unreadCount}
+            ></Badge>
+          )}
         </div>
       </div>
     </ListItem>
@@ -576,7 +723,7 @@ function NoNotificationsLabel({ minimize }: { minimize: boolean }) {
         title={"No Notifications"}
         subtitle={"You don't have any notifications yet."}
         buttonText={"Browse the xNFT Library"}
-        onClick={() => window.open("https://xnft.gg")}
+        onClick={() => window.open(XNFT_GG_LINK)}
         innerStyle={{
           marginBottom: minimize !== true ? "64px" : 0, // Tab height offset.
         }}

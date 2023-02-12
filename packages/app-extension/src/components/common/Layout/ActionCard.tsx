@@ -1,16 +1,18 @@
 import { useCustomTheme } from "@coral-xyz/themes";
-import { Box, Button, Card, CardContent } from "@mui/material";
+import { Box, Button, Card, CardContent, Typography } from "@mui/material";
 
 export function ActionCard({
   icon,
   text,
   textAdornment,
+  subtext,
   onClick,
   disabled = false,
 }: {
-  icon: any;
+  icon?: any;
   text: string;
   textAdornment?: React.ReactNode;
+  subtext?: string;
   onClick: () => void;
   disabled?: boolean;
 }) {
@@ -42,7 +44,7 @@ export function ActionCard({
         }}
       >
         <CardContent style={{ padding: 0 }}>
-          <Box sx={{ mb: 1, display: "flex" }}>{icon}</Box>
+          {icon && <Box sx={{ mb: 1, display: "flex" }}>{icon}</Box>}
           <Box
             style={{
               fontWeight: 500,
@@ -53,6 +55,16 @@ export function ActionCard({
           >
             {text}
             {textAdornment}
+            {subtext ? (
+              <Typography
+                style={{
+                  fontSize: "14px",
+                  color: theme.custom.colors.fontColor3,
+                }}
+              >
+                {subtext}
+              </Typography>
+            ) : null}
           </Box>
         </CardContent>
       </Card>

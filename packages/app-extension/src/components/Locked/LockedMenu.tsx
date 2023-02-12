@@ -3,7 +3,7 @@ import {
   DISCORD_INVITE_LINK,
   TWITTER_LINK,
 } from "@coral-xyz/common";
-import { DiscordIcon , List, ListItem } from "@coral-xyz/react-common";
+import { DiscordIcon, List, ListItem } from "@coral-xyz/react-common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import AccountCircleIcon from "@mui/icons-material/AccountCircleOutlined";
 import CallMadeIcon from "@mui/icons-material/CallMade";
@@ -18,7 +18,7 @@ import { NAV_BAR_HEIGHT } from "../common/Layout/Nav";
 import {
   NavStackEphemeral,
   NavStackScreen,
-  useNavStack,
+  useNavigation,
 } from "../common/Layout/NavStack";
 
 import { ResetWarning } from "./Reset/ResetWarning";
@@ -82,7 +82,7 @@ export function LockedMenu({ menuOpen, setMenuOpen }: any) {
 
 export function LockedMenuList() {
   const theme = useCustomTheme();
-  const nav = useNavStack();
+  const nav = useNavigation();
   const classes = useStyles();
 
   const options = [

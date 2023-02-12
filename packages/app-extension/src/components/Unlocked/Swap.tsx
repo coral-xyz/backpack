@@ -18,6 +18,7 @@ import {
 } from "@coral-xyz/react-common";
 import {
   useActiveWallet,
+  useDarkMode,
   useJupiterOutputMints,
   useSplTokenRegistry,
   useSwapContext,
@@ -32,7 +33,7 @@ import { TextField } from "../common";
 import { ApproveTransactionDrawer } from "../common/ApproveTransactionDrawer";
 import { BottomCard } from "../common/Layout/BottomCard";
 import { useDrawerContext } from "../common/Layout/Drawer";
-import { useNavStack } from "../common/Layout/NavStack";
+import { useNavigation } from "../common/Layout/NavStack";
 import { TokenAmountHeader } from "../common/TokenAmountHeader";
 import { TokenInputField } from "../common/TokenInput";
 import type { Token } from "../common/TokenTable";
@@ -203,9 +204,13 @@ enum SwapState {
 }
 
 export function Swap({ blockchain }: { blockchain: Blockchain }) {
-  const nav = useNavStack();
+  const isDark = useDarkMode();
+  const nav = useNavigation();
   useEffect(() => {
-    nav.setTitle("Swap");
+    nav.setOptions({
+      headerTitle: "Swap",
+      style: isDark ? { background: "#1D1D20" } : undefined,
+    });
   }, [nav]);
 
   if (blockchain && blockchain !== Blockchain.SOLANA) {
@@ -216,6 +221,7 @@ export function Swap({ blockchain }: { blockchain: Blockchain }) {
 }
 
 function _Swap() {
+  const isDark = useDarkMode();
   const classes = useStyles();
   const { swapToFromMints } = useSwapContext();
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -237,7 +243,12 @@ function _Swap() {
 
   return (
     <>
-      <form onSubmit={onSubmit} className={classes.container} noValidate>
+      <form
+        onSubmit={onSubmit}
+        className={classes.container}
+        style={isDark ? { background: "#1D1D20" } : undefined}
+        noValidate
+      >
         <div className={classes.topHalf}>
           <SwapTokensButton
             onClick={onSwapButtonClick}
@@ -771,7 +782,7 @@ function TokenSelectorButton({
   input: boolean;
 }) {
   const classes = useStyles();
-  const nav = useNavStack();
+  const nav = useNavigation();
   const tokenRegistry = useSplTokenRegistry();
   const tokenInfo = tokenRegistry.get(selectedMint); // TODO handle null case
   const symbol = tokenInfo ? tokenInfo.symbol : "-";
@@ -813,7 +824,9 @@ export function SwapSelectToken({
   customFilter: (token: Token) => boolean;
   input: boolean;
 }) {
-  const nav = useNavStack();
+  const isDark = useDarkMode();
+  const theme = useCustomTheme();
+  const nav = useNavigation();
   const { fromMint, inputTokenAccounts } = useSwapContext();
   const tokenAccounts = !input
     ? useJupiterOutputMints(fromMint)
@@ -832,7 +845,12 @@ export function SwapSelectToken({
   };
 
   useEffect(() => {
-    nav.setTitle("Select Token");
+    nav.setOptions({
+      headerTitle: "Select Token",
+      style: isDark
+        ? { background: theme.custom.colors.background }
+        : undefined,
+    });
   }, [nav]);
 
   return (

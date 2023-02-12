@@ -1,10 +1,16 @@
-import { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Blockchain,
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
   walletAddressDisplay,
 } from "@coral-xyz/common";
-import { List, ListItem } from "@coral-xyz/react-common";
+import {
+  HardwareIcon,
+  List,
+  ListItem,
+  MnemonicIcon,
+  SecretKeyIcon,
+} from "@coral-xyz/react-common";
 import {
   useActiveWallet,
   useAllWallets,
@@ -15,15 +21,12 @@ import {
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Add, ExpandMore, MoreHoriz } from "@mui/icons-material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import ErrorIcon from "@mui/icons-material/Error";
 import InfoIcon from "@mui/icons-material/Info";
 import { Box, Button, Grid, Tooltip, Typography } from "@mui/material";
+import type { SxProps, Theme } from "@mui/material/styles";
 
 import {
   EthereumIconOnboarding as EthereumIcon,
-  HardwareIcon,
-  ImportedIcon,
-  MnemonicIcon,
   SolanaIconOnboarding as SolanaIcon,
 } from "../common/Icon";
 import { ActionCard } from "../common/Layout/ActionCard";
@@ -31,12 +34,15 @@ import { useDrawerContext, WithMiniDrawer } from "../common/Layout/Drawer";
 import {
   NavStackEphemeral,
   NavStackScreen,
-  useNavStack,
+  useNavigation,
 } from "../common/Layout/NavStack";
 import {
   AddConnectPreview,
   AddConnectWalletMenu,
 } from "../Unlocked/Settings/AddConnectWallet";
+import { CreateMenu } from "../Unlocked/Settings/AddConnectWallet/CreateMenu";
+import { ImportMenu } from "../Unlocked/Settings/AddConnectWallet/ImportMenu";
+import { ImportMnemonic } from "../Unlocked/Settings/AddConnectWallet/ImportMnemonic";
 import { ImportSecretKey } from "../Unlocked/Settings/AddConnectWallet/ImportSecretKey";
 import { RemoveWallet } from "../Unlocked/Settings/YourAccount/EditWallets/RemoveWallet";
 import { RenameWallet } from "../Unlocked/Settings/YourAccount/EditWallets/RenameWallet";
@@ -73,23 +79,16 @@ export function WalletDrawerButton({
   wallet: { name: string; publicKey: string };
   style?: React.CSSProperties;
 }) {
-  const [openDrawer, setOpenDrawer] = useState(false);
-
+  const { setOpen } = useWalletDrawerContext();
   return (
-    <>
-      <WalletButton
-        wallet={wallet}
-        onClick={(e: any) => {
-          e.stopPropagation();
-          setOpenDrawer(true);
-        }}
-        style={style}
-      />
-      <WalletDrawerNavStack
-        openDrawer={openDrawer}
-        setOpenDrawer={setOpenDrawer}
-      />
-    </>
+    <WalletButton
+      wallet={wallet}
+      onClick={(e: any) => {
+        e.stopPropagation();
+        setOpen(true);
+      }}
+      style={style}
+    />
   );
 }
 
@@ -106,10 +105,10 @@ function WalletButton({
   const theme = useCustomTheme();
   const [tooltipOpen, setTooltipOpen] = useState(false);
 
-  const onCopy = () => {
+  const onCopy = async () => {
     setTooltipOpen(true);
     setTimeout(() => setTooltipOpen(false), 1000);
-    navigator.clipboard.writeText(wallet.publicKey.toString());
+    await navigator.clipboard.writeText(wallet.publicKey.toString());
   };
 
   return (
@@ -140,9 +139,9 @@ function WalletButton({
             minWidth: "16px",
           }}
           className={classes.addressButton}
-          onClick={(e) => {
+          onClick={async (e) => {
             e.stopPropagation();
-            onCopy();
+            await onCopy();
           }}
         >
           <ContentCopyIcon
@@ -246,7 +245,19 @@ function WalletNavStack({
         component={(props: any) => <WalletListBlockchainSelector {...props} />}
       />
       <NavStackScreen
-        name={"import-secret-key"}
+        name={"create-wallet"}
+        component={(props: any) => <CreateMenu {...props} />}
+      />
+      <NavStackScreen
+        name={"import-wallet"}
+        component={(props: any) => <ImportMenu {...props} />}
+      />
+      <NavStackScreen
+        name={"import-from-mnemonic"}
+        component={(props: any) => <ImportMnemonic {...props} />}
+      />
+      <NavStackScreen
+        name={"import-from-secret-key"}
         component={(props: any) => <ImportSecretKey {...props} />}
       />
       <NavStackScreen
@@ -262,7 +273,7 @@ function WalletNavStack({
 }
 
 export function AllWalletsList({ filter }: { filter?: (w: any) => boolean }) {
-  const { setTitle, setNavButtonRight } = useNavStack();
+  const nav = useNavigation();
   const activeWallet = useActiveWallet();
   const wallets = useAllWallets().filter(filter ? filter : () => true);
   const activeWallets = wallets.filter((w) => !w.isCold);
@@ -278,10 +289,12 @@ export function AllWalletsList({ filter }: { filter?: (w: any) => boolean }) {
   }));
 
   useEffect(() => {
-    setNavButtonRight(<WalletSettingsButton />);
-    setTitle("Wallets");
+    nav.setOptions({
+      headerTitle: "Wallets",
+      headerRight: <WalletSettingsButton />,
+    });
     return () => {
-      setNavButtonRight(null);
+      nav.setOptions({ headerRight: null });
     };
   }, []);
 
@@ -296,7 +309,7 @@ export function AllWalletsList({ filter }: { filter?: (w: any) => boolean }) {
 
 function WalletSettingsButton() {
   const theme = useCustomTheme();
-  const { push } = useNavStack();
+  const { push } = useNavigation();
   return (
     <Button
       onClick={() => {
@@ -320,9 +333,9 @@ function WalletSettingsButton() {
 }
 
 export function WalletListBlockchainSelector() {
-  const nav = useNavStack();
+  const nav = useNavigation();
   useEffect(() => {
-    nav.setTitle("Blockchains");
+    nav.setOptions({ headerTitle: "Select a network" });
   }, [nav]);
 
   const onClick = (blockchain: Blockchain) => {
@@ -456,9 +469,9 @@ function _WalletList({
         ) : (
           <WalletList
             wallets={activeWallets}
-            clickWallet={(wallet) => {
+            clickWallet={async (wallet) => {
               if (wallet.type !== "dehydrated") {
-                onChange(wallet);
+                await onChange(wallet);
                 close();
               }
             }}
@@ -531,23 +544,13 @@ function _WalletList({
                 />
               </Tooltip>
             </div>
-            <Typography
-              style={{
-                fontWeight: 500,
-                color: theme.custom.colorsInverted.secondary,
-                fontSize: "14px",
-                lineHeight: "20px",
-              }}
-            >
-              Disable app signing in wallet info
-            </Typography>
           </div>
           <WalletList
             inverted={true}
             wallets={coldWallets}
-            clickWallet={(wallet) => {
+            clickWallet={async (wallet) => {
               if (wallet.type !== "dehydrated") {
-                onChange(wallet);
+                await onChange(wallet);
                 close();
               }
             }}
@@ -653,8 +656,8 @@ export function WalletListItem({
   inverted?: boolean;
 }) {
   const theme = useCustomTheme();
-  const nav = useNavStack();
-  const { publicKey, name, blockchain, type, isCold } = wallet;
+  const nav = useNavigation();
+  const { publicKey, name, blockchain, type } = wallet;
   return (
     <ListItem
       inverted={inverted}
@@ -674,6 +677,8 @@ export function WalletListItem({
                 ? theme.custom.colorsInverted.secondary
                 : theme.custom.colors.secondary
             }`
+          : type === "dehydrated"
+          ? `solid 2px ${theme.custom.colors.borderRedMed}`
           : "none",
       }}
       button={type !== "dehydrated"}
@@ -721,7 +726,6 @@ export function WalletListItem({
               name={name}
               publicKey={publicKey}
               type={type}
-              isCold={isCold}
               isSelected={isSelected}
               inverted={inverted}
             />
@@ -740,13 +744,25 @@ export function WalletListItem({
               justifyContent: "center",
             }}
           >
-            <CopyButton
-              inverted={inverted}
-              isEditWallets={false}
-              onClick={() => {
-                navigator.clipboard.writeText(publicKey);
-              }}
-            />
+            {type === "dehydrated" ? (
+              <RecoverButton
+                inverted={inverted}
+                onClick={() => {
+                  nav.push("add-connect-wallet", {
+                    blockchain: wallet.blockchain,
+                    publicKey: wallet.publicKey,
+                    isRecovery: true,
+                  });
+                }}
+              />
+            ) : (
+              <CopyButton
+                inverted={inverted}
+                onClick={async () => {
+                  await navigator.clipboard.writeText(publicKey);
+                }}
+              />
+            )}
           </div>
           <div
             style={{
@@ -755,9 +771,8 @@ export function WalletListItem({
               justifyContent: "center",
             }}
           >
-            <CopyButton
+            <EditWalletsButton
               inverted={inverted}
-              isEditWallets={true}
               onClick={() => {
                 nav.push("edit-wallets-wallet-detail", {
                   ...wallet,
@@ -771,16 +786,17 @@ export function WalletListItem({
   );
 }
 
-function CopyButton({
+function WalletListButtonBase({
   onClick,
-  isEditWallets,
   inverted,
+  sx,
+  children,
 }: {
-  onClick: () => void;
-  isEditWallets: boolean;
+  onClick: (e: any) => void;
   inverted?: boolean;
+  sx?: SxProps<Theme>;
+  children: React.ReactElement;
 }) {
-  const [isCopying, setIsCopying] = useState(false);
   const theme = useCustomTheme();
   return (
     <Button
@@ -788,9 +804,7 @@ function CopyButton({
       disableRipple
       variant="contained"
       sx={{
-        width: "60px",
-        height: "32px",
-        padding: 0,
+        padding: "4px 12px",
         textTransform: "none",
         color: inverted
           ? theme.custom.colorsInverted.fontColor
@@ -798,30 +812,89 @@ function CopyButton({
         backgroundColor: inverted
           ? theme.custom.colorsInverted.bg2
           : theme.custom.colors.bg2,
-
         "&:hover": {
           backgroundColor: inverted
             ? `${theme.custom.colorsInverted.walletCopyButtonHover} !important`
             : `${theme.custom.colors.walletCopyButtonHover} !important`,
         },
+        ...sx,
       }}
-      onClick={(e) => {
+      onClick={onClick}
+    >
+      {children}
+    </Button>
+  );
+}
+
+function CopyButton({
+  onClick,
+  inverted,
+}: {
+  onClick: () => void;
+  inverted?: boolean;
+}) {
+  const [isCopying, setIsCopying] = useState(false);
+  return (
+    <WalletListButtonBase
+      onClick={(e: any) => {
         e.stopPropagation();
         setIsCopying(true);
         setTimeout(() => setIsCopying(false), 1000);
         onClick();
       }}
+      inverted={inverted}
     >
-      {isEditWallets ? (
-        <MoreHoriz
-          style={{
-            color: theme.custom.colors.icon,
-          }}
-        />
-      ) : (
-        <>{isCopying ? "Copied!" : "Copy"}</>
-      )}
-    </Button>
+      <>{isCopying ? "Copied!" : "Copy"}</>
+    </WalletListButtonBase>
+  );
+}
+
+function EditWalletsButton({
+  onClick,
+  inverted,
+}: {
+  onClick: () => void;
+  inverted?: boolean;
+}) {
+  const theme = useCustomTheme();
+  return (
+    <WalletListButtonBase
+      onClick={(e: any) => {
+        e.stopPropagation();
+        onClick();
+      }}
+      inverted={inverted}
+      sx={{
+        padding: "4px",
+        minWidth: "32px",
+      }}
+    >
+      <MoreHoriz
+        style={{
+          color: theme.custom.colors.icon,
+        }}
+      />
+    </WalletListButtonBase>
+  );
+}
+
+function RecoverButton({
+  onClick,
+  inverted,
+}: {
+  onClick: () => void;
+  inverted?: boolean;
+}) {
+  return (
+    <WalletListButtonBase
+      onClick={(e: any) => {
+        e.stopPropagation();
+        onClick();
+      }}
+      inverted={inverted}
+    >
+      <>Recover</>
+    </WalletListButtonBase>
   );
 }
 
@@ -829,14 +902,12 @@ export function StackedWalletAddress({
   publicKey,
   name,
   type,
-  isCold,
   isSelected = false,
   inverted,
 }: {
   publicKey: string;
   name: string;
   type: string;
-  isCold?: boolean;
   isSelected?: boolean;
   inverted?: boolean;
 }) {
@@ -847,9 +918,10 @@ export function StackedWalletAddress({
         style={{
           fontSize: "16px",
           fontWeight: isSelected ? 600 : 500,
+          color: type === "dehydrated" ? theme.custom.colors.negative : "",
         }}
       >
-        {name}
+        {type === "dehydrated" ? "Import error" : name}
       </Typography>
       <div
         style={{
@@ -893,25 +965,16 @@ export function StackedWalletAddress({
 }
 
 function WalletTypeIcon({ type, fill }: { type: string; fill?: string }) {
-  const theme = useCustomTheme();
+  const style = { padding: "5px" };
   switch (type) {
     case "imported":
-      return <ImportedIcon fill={fill} />;
+      return <SecretKeyIcon fill={fill} style={style} />;
     case "hardware":
-      return <HardwareIcon fill={fill} />;
-    case "dehydrated":
-      return (
-        <ErrorIcon
-          style={{
-            color: theme.custom.colors.dangerButton,
-            height: "24px",
-            width: "24px",
-            padding: "4px",
-          }}
-        />
-      );
+      return <HardwareIcon fill={fill} style={style} />;
+    case "derived":
+      return <MnemonicIcon fill={fill} style={style} />;
     default:
-      return <MnemonicIcon fill={fill} />;
+      return null;
   }
 }
 
@@ -954,4 +1017,38 @@ function NetworkIcon({
 }) {
   const blockchainLogo = useBlockchainLogo(blockchain);
   return <img src={blockchainLogo} style={style} />;
+}
+
+type WalletDrawerContext = {
+  open: boolean;
+  setOpen: any;
+};
+
+const _WalletDrawerContext = React.createContext<WalletDrawerContext | null>(
+  null
+);
+
+export function WalletDrawerProvider({ children }: any) {
+  const [open, setOpen] = useState(false);
+  return (
+    <_WalletDrawerContext.Provider
+      value={{
+        open,
+        setOpen,
+      }}
+    >
+      <>
+        {children}
+        <WalletDrawerNavStack openDrawer={open} setOpenDrawer={setOpen} />
+      </>
+    </_WalletDrawerContext.Provider>
+  );
+}
+
+export function useWalletDrawerContext(): WalletDrawerContext {
+  const ctx = useContext(_WalletDrawerContext);
+  if (ctx === null) {
+    throw new Error("Context not available");
+  }
+  return ctx;
 }
