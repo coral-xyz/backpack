@@ -285,7 +285,7 @@ export class KeyringStore {
 
   public async tryUnlock(password: string, uuid: string) {
     return this.withLock(async () => {
-      const json = await store.getKeyringStore(password);
+      const json = await store.getKeyringStore(uuid, password);
       await this.fromJson(json);
       this.activeUserUuid = uuid;
       this.password = password;
@@ -300,7 +300,7 @@ export class KeyringStore {
    */
   public async checkPassword(password: string) {
     try {
-      await store.getKeyringStore(password);
+      await store.getKeyringStore_NO_MIGRATION(password);
       return true;
     } catch (err) {
       return false;

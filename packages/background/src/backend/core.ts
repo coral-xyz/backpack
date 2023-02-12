@@ -659,15 +659,7 @@ export class Backend {
     return await this.keyringStore.checkPassword(password);
   }
 
-  async keyringStoreUnlock(
-    password: string,
-    uuid: string,
-    username?: string
-  ): Promise<string> {
-    if (!username) {
-      throw new Error("invariant violation: username not found");
-    }
-
+  async keyringStoreUnlock(password: string, uuid: string): Promise<string> {
     await this.keyringStore.tryUnlock(password, uuid);
 
     const blockchainActiveWallets = await this.blockchainActiveWallets();

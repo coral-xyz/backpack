@@ -169,12 +169,7 @@ async function handle<T = any>(
         ...params
       );
     case UI_RPC_METHOD_KEYRING_STORE_UNLOCK:
-      return await handleKeyringStoreUnlock(
-        ctx,
-        params[0],
-        params[1],
-        params[2]
-      );
+      return await handleKeyringStoreUnlock(ctx, params[0], params[1]);
     case UI_RPC_METHOD_KEYRING_STORE_LOCK:
       return await handleKeyringStoreLock(ctx);
     case UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS:
