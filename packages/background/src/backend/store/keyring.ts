@@ -43,7 +43,7 @@ export async function getKeyringStore(
   const json = JSON.parse(plaintext);
 
   const lastMigration = await getMigration();
-  if (lastMigration !== undefined || lastMigration?.state !== "end") {
+  if (lastMigration !== undefined && lastMigration?.state !== "end") {
     throw new Error("migration failed, please re-install Backpack");
   }
 
