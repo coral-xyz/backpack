@@ -36,7 +36,7 @@ export async function runMigrationsIfNeeded(
   // If a migration step terminated early, then we're in a corrupt state, so
   // exit with an error.
   //
-  if (lastMigration !== undefined && lastMigration?.state !== "end") {
+  if (lastMigration !== undefined && lastMigration?.state === "start") {
     throw new Error("migration failed, please re-install Backpack");
   }
 
@@ -57,7 +57,11 @@ export async function runMigrationsIfNeeded(
   //
   // Set the last migration as finalized.
   //
-  if ((await getMigration())?.state !== "finalized") {
+  const finalMigration = await getMigration();
+  if (
+    finalMigration?.build !== LATEST_MIGRATION_BUILD ||
+    finalMigration?.state !== "finalized"
+  ) {
     await setMigration({
       build: LATEST_MIGRATION_BUILD, // Represents the latest build.
       state: "finalized",
