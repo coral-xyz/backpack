@@ -1,7 +1,7 @@
 import type { Commitment } from "@solana/web3.js";
 
 export type Context<Backend> = {
-  sender: any;
+  sender: Sender;
   backend: Backend;
   events: EventEmitter;
 };
@@ -112,6 +112,11 @@ export type ServerPublicKey = {
   publicKey: string;
 };
 
+export type NamedPublicKey = {
+  blockchain: Blockchain;
+  name: string;
+};
+
 export interface XnftPreference {
   disabled: boolean;
   mediaPermissions: boolean;
@@ -186,4 +191,42 @@ type EthereumData = {
   explorer: string;
   connectionUrl: string;
   chainId: string;
+};
+
+// Sender is the trusted descriptor of the sender of a message into
+// the service worker. This is provided as part of the API from the
+// chrome.runtime APIs.
+//
+// See https://developer.chrome.com/docs/extensions/reference/runtime/#type-MessageSender
+export type Sender = {
+  id: string; // This is the extension id, if applicable.
+  url: string;
+
+  origin?: string;
+
+  documentId?: string;
+  documentLifeCycle?: string;
+  frameId?: number;
+  tab?: {
+    active: boolean;
+    audible: boolean;
+    autoDiscardable: boolean;
+    favIconUrl: string;
+    groupId: number;
+    height: number;
+    highlighted: boolean;
+    id: number;
+    incognito: boolean;
+    index: number;
+    mutedInfo: {
+      muted: boolean;
+    };
+    pinned: boolean;
+    selected: boolean;
+    status: string;
+    title: string;
+    url: string;
+    width: number;
+    windowId: number;
+  };
 };

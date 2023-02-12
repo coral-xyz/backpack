@@ -233,18 +233,18 @@ export const MessageLine = (props) => {
       <div
         className={classes.messageRow}
         style={{
-          marginTop: sameUserMessage ? 0 : 20,
-          paddingLeft: sameUserMessage ? 40 : 0,
+          marginTop: sameUserMessage ? 0 : 16,
+          paddingLeft: sameUserMessage ? 32 : 0,
         }}
       >
         {sameUserMessage ? (
           <div
             className={`${classes.messageContainer} ${classes.hoverParent}`}
-            style={{ display: "flex" }}
+            style={{ display: "flex", paddingTop: "4px" }}
           >
             <div>
               {props.parent_message_author_uuid && (
-                <div style={{}}>
+                <div>
                   <ReplyContainer
                     marginBottom={2}
                     padding={0}
@@ -319,6 +319,7 @@ export const MessageLine = (props) => {
           <>
             <div
               style={{
+                paddingTop: 8,
                 width: 32,
               }}
             >
@@ -329,7 +330,7 @@ export const MessageLine = (props) => {
                   className={classes.avatar}
                   style={{ width: 32, height: 32 }}
                   src={photoURL}
-                ></LocalImage>
+                />
               ) : (
                 <Skeleton
                   variant="circular"
@@ -441,6 +442,7 @@ export const MessageLine = (props) => {
                             parent_username: `@${props.username}`,
                             parent_message_author_uuid: props.userId,
                           });
+                          document.getElementById("message-input")?.focus();
                         }}
                       >
                         <ReplyIcon fill={theme.custom.colors.icon} />

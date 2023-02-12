@@ -55,7 +55,12 @@ export class RecoilSync {
     });
     for (let i = 0; i < sortedUsersMetadata?.length; i++) {
       await this.storeImageInLocalStorage(sortedUsersMetadata[i]?.image);
+      await this.sleep(60);
     }
+  }
+
+  async sleep(timer) {
+    await new Promise((resolve) => setTimeout(resolve, timer * 1000));
   }
 
   async storeImageInLocalStorage(url: string) {
