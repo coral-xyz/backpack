@@ -221,6 +221,7 @@ export function Send({
   const classes = useStyles() as any;
   const { uuid } = useUser();
   const nav = useNavigationEphemeral();
+  const navOuter = useNavigation();
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -360,7 +361,8 @@ export function Send({
                 to?.uuid &&
                 to?.uuid !== uuid &&
                 friendship?.id &&
-                to?.uuid !== uuid
+                to?.uuid !== uuid &&
+                blockchain === Blockchain.SOLANA
               ) {
                 const client_generated_uuid = uuidv4();
                 createEmptyFriendship(uuid, to?.uuid, {
@@ -387,19 +389,20 @@ export function Send({
                     ],
                   },
                 });
-                await background.request({
-                  method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
-                  params: [TAB_MESSAGES],
-                });
-                push({
-                  title: `@${to?.username}`,
-                  componentId: NAV_COMPONENT_MESSAGE_CHAT,
-                  componentProps: {
-                    userId: to?.uuid,
-                    id: to?.uuid,
-                    username: to?.username,
-                  },
-                });
+                // await navOuter.toRoot();
+                // await background.request({
+                //   method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+                //   params: [TAB_MESSAGES],
+                // });
+                // push({
+                //   title: `@${to?.username}`,
+                //   componentId: NAV_COMPONENT_MESSAGE_CHAT,
+                //   componentProps: {
+                //     userId: to?.uuid,
+                //     id: to?.uuid,
+                //     username: to?.username,
+                //   },
+                // });
               }
             }}
             token={token}
@@ -504,6 +507,7 @@ function SendV2({
   to,
   message,
   setMessage,
+  blockchain,
 }: any) {
   const classes = useStyles();
   const theme = useCustomTheme();
@@ -681,27 +685,30 @@ function SendV2({
       </div>
       <div>
         <div className={classes.inputContainer}>
-          {to && to.uuid && to.uuid !== uuid && (
-            <TextField
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: 6,
-                  border: "2px solid rgba(255, 255, 255, 0.1);",
+          {to &&
+            to.uuid &&
+            to.uuid !== uuid &&
+            blockchain === Blockchain.SOLANA && (
+              <TextField
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: 6,
+                    border: "2px solid rgba(255, 255, 255, 0.1);",
+                    color: theme.custom.colors.fontColor,
+                  },
+                }}
+                fullWidth
+                className={classes.input}
+                placeholder={"Add a message (Optional)"}
+                style={{
+                  outline: "0px solid transparent",
                   color: theme.custom.colors.fontColor,
-                },
-              }}
-              fullWidth
-              className={classes.input}
-              placeholder={"Add a message (Optional)"}
-              style={{
-                outline: "0px solid transparent",
-                color: theme.custom.colors.fontColor,
-                fontSize: "15px",
-              }}
-              onChange={(e) => setMessage(e.target.value)}
-              value={message}
-            />
-          )}
+                  fontSize: "15px",
+                }}
+                onChange={(e) => setMessage(e.target.value)}
+                value={message}
+              />
+            )}
         </div>
         <div className={classes.buttonContainer}>{sendButton}</div>
       </div>

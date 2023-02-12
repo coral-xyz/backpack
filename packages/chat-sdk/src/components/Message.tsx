@@ -285,7 +285,7 @@ export const MessageLine = (props) => {
                         remoteUserId={props.uuid}
                         message={message}
                         remoteUsername={props.username}
-                        txnSignature={props.metadata.final_tx_signature}
+                        txnSignature={props.metadata?.final_tx_signature}
                       />
                     </>
                   ) : props.messageKind === "media" ? (
@@ -427,7 +427,7 @@ export const MessageLine = (props) => {
                               remoteUserId={props.uuid}
                               message={message}
                               remoteUsername={props.username}
-                              txnSignature={props.metadata.final_tx_signature}
+                              txnSignature={props.metadata?.final_tx_signature}
                             />
                           </>
                         ) : props.messageKind === "media" ? (

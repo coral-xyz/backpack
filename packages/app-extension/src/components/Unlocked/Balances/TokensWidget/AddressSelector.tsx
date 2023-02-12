@@ -493,7 +493,11 @@ function AddressListItems({
           </div>
           <div>
             <div className={classes.userText}>{user.username}</div>
-            <div className={classes.address}>Multiple addresses</div>
+            <div className={classes.address}>
+              {addresses.length === 0
+                ? `No addresses on the ${blockchain} blockchain`
+                : "Multiple addresses"}
+            </div>
           </div>
         </div>
       </AccordionSummary>
