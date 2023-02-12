@@ -43,8 +43,7 @@ export async function runMigrationsIfNeeded(
   //
   // Execute all migrations, if needed.
   //
-  const needs510Migration = (await getWalletData_DEPRECATED()) !== undefined;
-  if (needs510Migration) {
+  if ((await getWalletData_DEPRECATED()) !== undefined) {
     await runMigration(510, async () => {
       await migrate_0_2_0_510(uuid, password);
     });
