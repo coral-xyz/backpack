@@ -13,6 +13,12 @@ const logger = getLogger("background/migrations");
  * we make no guarantee that the migration itself succeeds. If it does not,
  * we will detect it and throw an error, in which case it's expected for the
  * user to reonboard.
+ *
+ * Steps to add a new migration:
+ *
+ *   - update the LATEST_MIGRATION_BUILD number
+ *   - append a new `runMigration` function in the block of code below,
+ *     with the migration build number dependent on the previous one.
  */
 export async function runMigrationsIfNeeded(
   json: KeyringStoreJson,
@@ -46,7 +52,15 @@ export async function runMigrationsIfNeeded(
   //
   // Execute all migrations, if needed.
   //
-  if ((await getWalletData_DEPRECATED()) !== undefined) {
+  // Note that the conditional for the first migration is unique because
+  // there was not previously a migration storage field. And so we hack together
+  // the condition with fields we know to be true. All other migrations
+  // are simply dependent on the last migration being the previous one.
+  //
+  if (
+    lastMigration === undefined &&
+    (await getWalletData_DEPRECATED()) !== undefined
+  ) {
     await runMigration(510, async () => {
       await migrate_0_2_0_510(uuid, password);
     });
@@ -62,6 +76,7 @@ export async function runMigrationsIfNeeded(
   //
   const finalMigration = await getMigration();
   if (
+    finalMigration === undefined ||
     finalMigration?.build !== LATEST_MIGRATION_BUILD ||
     finalMigration?.state !== "finalized"
   ) {
