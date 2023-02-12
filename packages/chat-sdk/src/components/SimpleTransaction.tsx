@@ -58,33 +58,37 @@ export const SimpleTransaction = ({
 
   const init = async () => {
     setLoading(true);
-    const parsedTxn = await solanaCtx.connection.getParsedTransactions([
-      txnSignature,
-    ]);
-    const transferIx = parsedTxn[0]?.transaction.message.instructions.find(
-      (ix) => {
-        return (
-          //@ts-ignore
-          ix?.parsed?.type === "transferChecked" ||
-          //@ts-ignore
-          ix?.parsed?.type === "transfer"
-        );
+    try {
+      const parsedTxn = await solanaCtx.connection.getParsedTransactions([
+        txnSignature,
+      ]);
+      const transferIx = parsedTxn[0]?.transaction.message.instructions.find(
+        (ix) => {
+          return (
+            //@ts-ignore
+            ix?.parsed?.type === "transferChecked" ||
+            //@ts-ignore
+            ix?.parsed?.type === "transfer"
+          );
+        }
+      );
+      if (!transferIx) {
+        return;
       }
-    );
-    if (!transferIx) {
-      return;
-    }
-    //@ts-ignore
-    if (transferIx.parsed.info.mint) {
       //@ts-ignore
-      setTokenAddress(transferIx.parsed.info.mint);
-      //@ts-ignore
-      setAmount(transferIx.parsed.info.tokenAmount.uiAmount);
-    } else {
-      // @ts-ignore
-      setAmount(transferIx?.parsed?.info?.lamports / LAMPORTS_PER_SOL);
+      if (transferIx.parsed.info.mint) {
+        //@ts-ignore
+        setTokenAddress(transferIx.parsed.info.mint);
+        //@ts-ignore
+        setAmount(transferIx.parsed.info.tokenAmount.uiAmount);
+      } else {
+        // @ts-ignore
+        setAmount(transferIx?.parsed?.info?.lamports / LAMPORTS_PER_SOL);
+      }
+      setLoading(false);
+    } catch (e) {
+      console.error(e);
     }
-    setLoading(false);
   };
 
   useEffect(() => {
