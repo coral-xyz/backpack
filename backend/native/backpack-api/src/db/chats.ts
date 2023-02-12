@@ -78,7 +78,7 @@ export const getChats = async ({
             media_link: true,
           },
         ],
-        chat_simple_transactions: [
+        simple_transactions: [
           {
             limit: 1,
           },
@@ -127,8 +127,7 @@ export const getChats = async ({
             }
           : chat.message_kind === "transaction"
           ? {
-              final_tx_signature:
-                chat.chat_simple_transactions[0]?.txn_signature,
+              final_tx_signature: chat.simple_transactions[0]?.txn_signature,
             }
           : undefined,
     });
