@@ -5,16 +5,17 @@ import {
   getNameAccountKey,
   NameRegistryState,
 } from "@bonfida/spl-name-service";
-import {
-  Blockchain,
+import {   Blockchain,
   ETH_NATIVE_MINT,
   explorerUrl,
   NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
   NAV_COMPONENT_MESSAGE_CHAT,
   NAV_COMPONENT_MESSAGE_PROFILE,
   SOL_NATIVE_MINT,
+TAB_MESSAGES ,
   toDisplayBalance,
   toTitleCase,
+  UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
   walletAddressDisplay,
 } from "@coral-xyz/common";
 import { createEmptyFriendship } from "@coral-xyz/db";
@@ -37,10 +38,12 @@ import {
   blockchainTokenData,
   useActiveWallet,
   useAnchorContext,
+  useBackgroundClient,
   useBlockchainActiveWallet,
   useBlockchainConnectionUrl,
   useBlockchainExplorer,
   useBlockchainTokenAccount,
+  useDarkMode,
   useEthereumCtx,
   useFriendship,
   useLoader,
@@ -209,9 +212,9 @@ export function Send({
   token: TokenData;
   to?: {
     address: string;
-    username: string;
-    image: string;
-    uuid: string;
+    username?: string;
+    image?: string;
+    uuid?: string;
   };
 }) {
   const classes = useStyles() as any;
@@ -227,6 +230,7 @@ export function Send({
   const friendship = useFriendship({ userId: to?.uuid || "" });
   const theme = useCustomTheme();
   const { push } = useNavigation();
+  const background = useBackgroundClient();
 
   useEffect(() => {
     const prev = nav.title;
@@ -350,8 +354,13 @@ export function Send({
           setOpenDrawer={setOpenDrawer}
         >
           <SendConfirmComponent
-            onComplete={(txSig) => {
-              if (to?.uuid && to?.uuid !== uuid && friendship?.id) {
+            onComplete={async (txSig) => {
+              if (
+                to?.uuid &&
+                to?.uuid !== uuid &&
+                friendship?.id &&
+                to?.uuid !== uuid
+              ) {
                 const client_generated_uuid = uuidv4();
                 createEmptyFriendship(uuid, to?.uuid, {
                   last_message_sender: uuid,
@@ -377,11 +386,17 @@ export function Send({
                     ],
                   },
                 });
+                await background.request({
+                  method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
+                  params: [TAB_MESSAGES],
+                });
                 push({
                   title: `@${to?.username}`,
                   componentId: NAV_COMPONENT_MESSAGE_CHAT,
                   componentProps: {
                     userId: to?.uuid,
+                    id: to?.uuid,
+                    username: to?.username,
                   },
                 });
               }
@@ -389,7 +404,7 @@ export function Send({
             token={token}
             destinationAddress={destinationAddress}
             destinationUser={
-              to
+              to?.uuid && to?.username && to?.image
                 ? {
                     username: to.username,
                     image: to.image,
@@ -429,12 +444,7 @@ function SendV1({
           <div style={{ margin: "0 12px" }}>
             <TextInput
               placeholder={`${toTitleCase(blockchain)} address`}
-              value={
-                // to
-                //     ? `${to.username} (${walletAddressDisplay(to.address)})`
-                //     :
-                address
-              }
+              value={address}
               setValue={(e) => {
                 setAddress(e.target.value.trim());
               }}
@@ -486,15 +496,10 @@ function SendV1({
 }
 
 function SendV2({
-  blockchain,
-  isErrorAddress,
   token,
   maxAmount,
   setAmount,
-  amount,
-  isAmountError,
   sendButton,
-  setAddress,
   to,
   message,
   setMessage,
@@ -503,6 +508,7 @@ function SendV2({
   const theme = useCustomTheme();
   const { uuid } = useUser();
   const editableRef = useRef<any>();
+  const isDarkMode = useDarkMode();
 
   const cursorToEnd = () => {
     //@ts-ignore
@@ -530,21 +536,26 @@ function SendV2({
             <div className={classes.topImageOuter}>
               <LocalImage
                 className={classes.topImage}
-                src={to?.image}
+                src={
+                  to?.image ||
+                  `https://avatars.backpack.workers.dev/${to?.address}`
+                }
                 style={{ width: 130, height: 130 }}
               />
             </div>
           </div>
           <div className={classes.horizontalCenter}>
-            <div
-              style={{
-                color: theme.custom.colors.fontColor,
-                fontSize: 20,
-                fontWeight: 500,
-              }}
-            >
-              {`${to.username}`}
-            </div>
+            {to.username && (
+              <div
+                style={{
+                  color: theme.custom.colors.fontColor,
+                  fontSize: 20,
+                  fontWeight: 500,
+                }}
+              >
+                {`${to.username}`}
+              </div>
+            )}
           </div>
           <div className={classes.horizontalCenter}>
             <div
@@ -575,7 +586,14 @@ function SendV2({
                 marginRight: 5,
               }}
             />
-            <div style={{ fontWeight: 600, fontSize: 48, display: "flex" }}>
+            <div
+              style={{
+                fontWeight: 600,
+                fontSize: 48,
+                display: "flex",
+                color: theme.custom.colors.fontColor,
+              }}
+            >
               <div
                 onKeyDown={() => {
                   cursorToEnd();
@@ -586,17 +604,25 @@ function SendV2({
                 ref={editableRef}
                 style={{ marginRight: 5 }}
                 onInput={(e) => {
+                  const decimalIndex =
+                    e.currentTarget.textContent?.indexOf(".");
                   //@ts-ignore
                   if (
                     !e.currentTarget.textContent ||
-                    isNaN(parseFloat(e.currentTarget.textContent))
+                    //@ts-ignore
+                    (isNaN(e.currentTarget.textContent) &&
+                      decimalIndex !== e.currentTarget.textContent.length - 1)
                   ) {
                     e.currentTarget.innerHTML = "0";
                     setAmount(ethers.utils.parseUnits("0", token.decimals));
                   } else {
                     const amount = e.currentTarget.textContent;
-                    e.currentTarget.innerHTML = parseFloat(amount).toString();
                     const decimalIndex = amount.indexOf(".");
+                    if (decimalIndex === -1) {
+                      e.currentTarget.innerHTML = parseFloat(amount).toString();
+                    } else {
+                      e.currentTarget.innerHTML = amount.toString();
+                    }
                     // Restrict the input field to the same amount of decimals as the token
                     const truncatedAmount =
                       decimalIndex >= 0
@@ -607,7 +633,12 @@ function SendV2({
                           )
                         : amount;
                     setAmount(
-                      ethers.utils.parseUnits(truncatedAmount, token.decimals)
+                      ethers.utils.parseUnits(
+                        amount.endsWith(".")
+                          ? truncatedAmount + "0"
+                          : truncatedAmount,
+                        token.decimals
+                      )
                     );
                   }
                   cursorToEnd();
@@ -628,7 +659,9 @@ function SendV2({
                 display: "inline-flex",
                 color: theme.custom.colors.fontColor,
                 cursor: "pointer",
-                background: theme.custom.colors.bg3,
+                background: isDarkMode
+                  ? theme.custom.colors.bg2
+                  : theme.custom.colors.bg3,
                 padding: "4px 12px",
                 borderRadius: 8,
               }}
@@ -643,32 +676,6 @@ function SendV2({
               Max
             </div>
           </div>
-          {/*<TextFieldLabel*/}
-          {/*    leftLabel={"Amount"}*/}
-          {/*    rightLabel={`${token.displayBalance} ${token.ticker}`}*/}
-          {/*    rightLabelComponent={*/}
-          {/*      <MaxLabel*/}
-          {/*          amount={maxAmount}*/}
-          {/*          onSetAmount={setAmount}*/}
-          {/*          decimals={token.decimals}*/}
-          {/*      />*/}
-          {/*    }*/}
-          {/*    style={{ marginLeft: "24px", marginRight: "24px" }}*/}
-          {/*/>*/}
-          {/*<div style={{ margin: "0 12px" }}>*/}
-          {/*  <TokenInputField*/}
-          {/*      type="number"*/}
-          {/*      placeholder="0"*/}
-          {/*      rootClass={classes.textRoot}*/}
-          {/*      decimals={token.decimals}*/}
-          {/*      value={amount}*/}
-          {/*      setValue={setAmount}*/}
-          {/*      isError={isAmountError}*/}
-          {/*      inputProps={{*/}
-          {/*        name: "amount",*/}
-          {/*      }}*/}
-          {/*  />*/}
-          {/*</div>*/}
         </div>
       </div>
       <div>
@@ -679,6 +686,7 @@ function SendV2({
                 "& .MuiOutlinedInput-root": {
                   borderRadius: 6,
                   border: "2px solid rgba(255, 255, 255, 0.1);",
+                  color: theme.custom.colors.fontColor,
                 },
               }}
               fullWidth

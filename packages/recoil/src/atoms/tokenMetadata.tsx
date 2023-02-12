@@ -35,8 +35,13 @@ export const solanaTokenMetadata = selectorFamily<
     ({ mintAddress }) =>
     async ({ get }) => {
       const url = `https://nft-data.backpack.workers.dev/metaplex-nft/${mintAddress}/metadata`;
-      const response = await fetch(url);
-      const json = await response.json();
-      return json;
+      try {
+        const response = await fetch(url);
+        const json = await response.json();
+        return json;
+      } catch (e) {
+        console.error(e);
+      }
+      return { name: "" };
     },
 });
