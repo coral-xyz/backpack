@@ -61,14 +61,12 @@ export const SimpleTransaction = ({
     const parsedTxn = await solanaCtx.connection.getParsedTransactions([
       txnSignature,
     ]);
-    console.error(message);
-    console.error(parsedTxn[0]);
-    const transferIx = parsedTxn[0].transaction.message.instructions.find(
+    const transferIx = parsedTxn[0]?.transaction.message.instructions.find(
       (ix) => {
-        console.error("ix");
-        console.error(ix);
         return (
+          //@ts-ignore
           ix?.parsed?.type === "transferChecked" ||
+          //@ts-ignore
           ix?.parsed?.type === "transfer"
         );
       }
@@ -76,6 +74,7 @@ export const SimpleTransaction = ({
     if (!transferIx) {
       return;
     }
+    //@ts-ignore
     if (transferIx.parsed.info.mint) {
       //@ts-ignore
       setTokenAddress(transferIx.parsed.info.mint);
@@ -246,6 +245,7 @@ function ParsedTransaction({ tokenAddress, amount, message }) {
               marginRight: 5,
             }}
           />{" "}
+          {/* @ts-ignore */}
           <div>{tokenData?.ticker} on SOLANA</div>
         </div>
       </div>
