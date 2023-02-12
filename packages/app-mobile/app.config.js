@@ -1,33 +1,23 @@
-const { execSync } = require("child_process");
-
-function getLastCommitHash() {
-  if (process.env.EAS_BUILD_GIT_COMMIT_HASH) {
-    return process.env.EAS_BUILD_GIT_COMMIT_HASH.substring(0, 7);
-  }
-
-  if (process.env.COMMIT_HASH) {
-    return process.env.COMMIT_HASH.trim().substring(0, 7);
-  }
-
-  try {
-    const output = execSync("git rev-parse HEAD").toString();
-    return output.substring(0, 7);
-  } catch (_) {
-    return "6ed26f6"; // falls back to a recent commit hash until we have a better solution
-  }
-}
+// const { execSync } = require("child_process");
+// function getLastCommitHash() {
+//   if (process.env.EAS_BUILD_GIT_COMMIT_HASH) {
+//     return process.env.EAS_BUILD_GIT_COMMIT_HASH.substring(0, 7);
+//   }
+//
+//   if (process.env.COMMIT_HASH) {
+//     return process.env.COMMIT_HASH.trim().substring(0, 7);
+//   }
+//
+//   try {
+//     const output = execSync("git rev-parse HEAD").toString();
+//     return output.substring(0, 7);
+//   } catch (_) {
+//     return DEFAULT_HASH
+//   }
+// }
 
 const projectID = "55bf074d-0473-4e61-9d9d-ecf570704635";
 const packageName = "peterpme.coral.backpack";
-
-const Config = {
-  webviewUrl: "http://localhost:9333",
-};
-
-if (process.env.APP_ENV === "production") {
-  const commitHash = getLastCommitHash();
-  Config.webviewUrl = `https://coral-xyz.github.io/backpack/background-scripts/${commitHash}/service-worker-loader.html`;
-}
 
 export default {
   name: "Backpack",
@@ -67,7 +57,9 @@ export default {
     favicon: "./assets/favicon.png",
   },
   extra: {
-    webviewUrl: Config.webviewUrl,
+    localWebViewUrl: "http://localhost:9333",
+    remoteWebViewUrl:
+      "https://coral-xyz.github.io/backpack/background-scripts/85fa0c25/service-worker-loader.html",
     eas: {
       projectId: projectID,
     },

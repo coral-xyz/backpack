@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, Pressable } from "react-native";
 
 import ExpoCheckBox from "expo-checkbox";
 
@@ -12,10 +12,14 @@ export const BaseCheckBoxLabel: React.FC<{
 }> = ({ label, value, onPress }) => {
   const theme = useTheme();
   return (
-    <View style={styles.row}>
+    <Pressable
+      disabled={!label}
+      style={styles.row}
+      onPress={() => onPress(!value)}
+    >
       <ExpoCheckBox
         value={value}
-        onValueChange={onPress}
+        onValueChange={label ? () => {} : onPress}
         color={theme.custom.colors.fontColor}
       />
       {label ? (
@@ -30,7 +34,7 @@ export const BaseCheckBoxLabel: React.FC<{
           {label}
         </Text>
       ) : null}
-    </View>
+    </Pressable>
   );
 };
 

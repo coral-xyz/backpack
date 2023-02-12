@@ -1,9 +1,8 @@
-import type { Blockchain } from "@coral-xyz/common";
-
 import { Suspense, useCallback, useEffect, useRef } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 
 import Constants from "expo-constants";
+import * as Device from "expo-device";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 
@@ -204,6 +203,10 @@ function BackgroundHiddenWebView(): JSX.Element {
     (state: any) => state.setInjectJavaScript
   );
   const ref = useRef(null);
+  const { localWebViewUrl, remoteWebViewUrl } =
+    Constants?.expoConfig?.extra || {};
+
+  const webViewUrl = Device.isDevice ? remoteWebViewUrl : localWebViewUrl;
 
   return (
     <View style={{ display: "none" }}>
@@ -212,7 +215,9 @@ function BackgroundHiddenWebView(): JSX.Element {
         cacheMode="LOAD_CACHE_ELSE_NETWORK"
         cacheEnabled
         limitsNavigationsToAppBoundDomains
-        source={{ uri: Constants?.expoConfig?.extra?.webviewUrl }}
+        source={{
+          uri: webViewUrl,
+        }}
         onMessage={(event) => {
           const msg = JSON.parse(event.nativeEvent.data);
           maybeParseLog(msg);
