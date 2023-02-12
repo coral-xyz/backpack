@@ -668,7 +668,9 @@ async function handleFindServerPublicKeyConflicts(
   ctx: Context<Backend>,
   ...args: Parameters<Backend["findServerPublicKeyConflicts"]>
 ): Promise<RpcResponse<string>> {
+  logger.debug("handleFindServerPublicKeyConflicts:pre");
   const resp = await ctx.backend.findServerPublicKeyConflicts(...args);
+  logger.debug("handleFindServerPublicKeyConflicts:resp", resp);
   return [resp];
 }
 
@@ -676,7 +678,9 @@ async function handleFindWalletDescriptor(
   ctx: Context<Backend>,
   ...args: Parameters<Backend["findWalletDescriptor"]>
 ): Promise<RpcResponse<string>> {
+  logger.debug("handleFindWalletDescriptor:pre");
   const resp = await ctx.backend.findWalletDescriptor(...args);
+  logger.debug("handleFindWalletDescriptor:post", resp);
   return [resp];
 }
 

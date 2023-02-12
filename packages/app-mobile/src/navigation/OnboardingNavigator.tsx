@@ -1,4 +1,9 @@
-import type { Blockchain, BlockchainKeyringInit } from "@coral-xyz/common";
+import type {
+  Blockchain,
+  BlockchainKeyringInit,
+  SignedWalletDescriptor,
+  WalletDescriptor,
+} from "@coral-xyz/common";
 import type { StackScreenProps } from "@react-navigation/stack";
 
 import { useEffect, useState } from "react";
@@ -16,6 +21,7 @@ import * as Linking from "expo-linking";
 import {
   BACKEND_API_URL,
   BACKPACK_FEATURE_XNFT,
+  getCreateMessage,
   DerivationPath,
   DISCORD_INVITE_LINK,
   toTitleCase,
@@ -23,14 +29,16 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
   UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
-  UI_RPC_METHOD_PREVIEW_PUBKEYS,
+  UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
   UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
+  getBlockchainFromPath,
   XNFT_GG_LINK,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { createStackNavigator } from "@react-navigation/stack";
-import { encode } from "bs58";
+import { Buffer } from "buffer";
+import { ethers } from "ethers";
 import { useForm } from "react-hook-form";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { v4 as uuidv4 } from "uuid";
@@ -71,6 +79,30 @@ import {
 } from "@components/index";
 import { useTheme } from "@hooks/useTheme";
 import { OnboardingProvider, useOnboardingData } from "@lib/OnboardingProvider";
+
+const { base58 } = ethers.utils;
+
+export const useSignMessageForWallet = (mnemonic?: string | true) => {
+  const background = useBackgroundClient();
+
+  const signMessageForWallet = async (
+    walletDescriptor: WalletDescriptor,
+    message: string
+  ) => {
+    const blockchain = getBlockchainFromPath(walletDescriptor.derivationPath);
+    return await background.request({
+      method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
+      params: [
+        blockchain,
+        walletDescriptor.publicKey,
+        ethers.utils.base58.encode(Buffer.from(message, "utf-8")),
+        [mnemonic, [walletDescriptor.derivationPath]],
+      ],
+    });
+  };
+
+  return signMessageForWallet;
+};
 
 function maybeRender(
   condition: boolean,
@@ -438,21 +470,36 @@ function OnboardingBlockchainSelectScreen({
   const {
     mnemonic,
     action,
-    inviteCode,
     keyringType,
     blockchainKeyrings,
     blockchainOptions,
+    signedWalletDescriptors,
   } = onboardingData;
 
-  const selectedBlockchains = blockchainKeyrings.map((b) => b.blockchain);
+  const selectedBlockchains = [
+    ...new Set(
+      signedWalletDescriptors.map((s) =>
+        getBlockchainFromPath(s.derivationPath)
+      )
+    ),
+  ];
+
+  // useEffect(() => {
+  //   // Reset blockchain keyrings on certain changes that invalidate the addresses
+  //   // and signatures that they might contain
+  //   // e.g. user has navigated backward through the onboarding flow
+  //   setOnboardingData({
+  //     signedWalletDescriptors: [],
+  //   });
+  // }, [action, keyringType, mnemonic, setOnboardingData]);
 
   const handleBlockchainClick = async (blockchain: Blockchain) => {
     if (selectedBlockchains.includes(blockchain)) {
       // Blockchain is being deselected
       setOnboardingData({
         blockchain: null,
-        blockchainKeyrings: blockchainKeyrings.filter(
-          (b) => b.blockchain !== blockchain
+        signedWalletDescriptors: signedWalletDescriptors.filter(
+          (s) => getBlockchainFromPath(s.derivationPath) !== blockchain
         ),
       });
     } else {
@@ -464,60 +511,36 @@ function OnboardingBlockchainSelectScreen({
         setOnboardingData({ blockchain });
         // setOpenDrawer(true);
       } else if (action === "create") {
-        // We are creating a new wallet, generate the signature using a default
-        // derivation path and account index
-        signForWallet(blockchain, DerivationPath.Default, 0);
+        const walletDescriptor = await background.request({
+          method: UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
+          params: [blockchain, 0, mnemonic],
+        });
+
+        const params = [
+          blockchain,
+          walletDescriptor.publicKey,
+          base58.encode(
+            Buffer.from(getCreateMessage(walletDescriptor.publicKey), "utf-8")
+          ),
+          [mnemonic, [walletDescriptor.derivationPath]],
+        ];
+
+        const signature = await background.request({
+          method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
+          params,
+        });
+
+        setOnboardingData({
+          signedWalletDescriptors: [
+            ...signedWalletDescriptors,
+            {
+              ...walletDescriptor,
+              signature,
+            },
+          ],
+        });
       }
     }
-  };
-
-  const signForWallet = async (
-    blockchain: Blockchain,
-    derivationPath: DerivationPath,
-    accountIndex: number,
-    publicKey?: string
-  ) => {
-    if (!publicKey) {
-      // No publicKey given, this is a create action, so preview the public keys
-      // and grab the one at the index
-      const publicKeys = await background.request({
-        method: UI_RPC_METHOD_PREVIEW_PUBKEYS,
-        params: [blockchain, mnemonic, derivationPath, accountIndex + 1],
-      });
-
-      publicKey = publicKeys[accountIndex];
-    }
-
-    const signature = await background.request({
-      method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-      params: [
-        blockchain,
-        // Sign the invite code, or an empty string if no invite code
-        // TODO setup a nonce based system
-        encode(Buffer.from(inviteCode ? inviteCode : "", "utf-8")),
-        publicKey!,
-        {
-          derivationPath,
-          accountIndex,
-          mnemonic,
-        },
-      ],
-    });
-
-    addBlockchainKeyring({
-      blockchain: blockchain!,
-      derivationPath,
-      accountIndex,
-      publicKey: publicKey!,
-      signature,
-    });
-  };
-
-  // Add the initialisation parameters for a blockchain keyring to state
-  const addBlockchainKeyring = (blockchainKeyring: BlockchainKeyringInit) => {
-    setOnboardingData({
-      blockchainKeyrings: [...blockchainKeyrings, blockchainKeyring],
-    });
   };
 
   function Network({
@@ -533,7 +556,7 @@ function OnboardingBlockchainSelectScreen({
     selected: boolean;
     onSelect: (b: Blockchain) => void;
   }) {
-    function getIcon(id) {
+    function getIcon(id: string): JSX.Element | null {
       switch (id) {
         case "ethereum":
           return <EthereumIcon width={24} height={24} />;
