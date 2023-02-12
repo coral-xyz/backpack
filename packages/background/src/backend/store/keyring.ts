@@ -42,6 +42,12 @@ export async function getKeyringStore(
   const plaintext = await crypto.decrypt(ciphertextPayload, password);
   const json = JSON.parse(plaintext);
 
+  await runMigrationsIfNeeded(keyringStoreJson);
+
+  return json;
+}
+
+async function runMigrationsIfNeeded(json: KeyringStoreJson) {
   const lastMigration = await getMigration();
   if (lastMigration !== undefined && lastMigration?.state !== "end") {
     throw new Error("migration failed, please re-install Backpack");
@@ -69,8 +75,6 @@ export async function getKeyringStore(
       state: "end",
     });
   }
-
-  return json;
 }
 
 export async function setKeyringStore(
