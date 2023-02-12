@@ -279,9 +279,13 @@ export const MessageLine = (props) => {
                         finalTxId={props.metadata.final_txn_signature}
                       />
                     </>
-                  ) : props.messageKind === "simple-transaction" ? (
+                  ) : props.messageKind === "transaction" ? (
                     <>
-                      <SimpleTransaction />
+                      <SimpleTransaction
+                        message={message}
+                        remoteUsername={props.username}
+                        txnSignature={props.metadata.final_tx_signature}
+                      />
                     </>
                   ) : props.messageKind === "media" ? (
                     <div>
@@ -414,6 +418,14 @@ export const MessageLine = (props) => {
                               currentState={props.metadata.current_state}
                               remoteUsername={props.username}
                               finalTxId={props.metadata.final_txn_signature}
+                            />
+                          </>
+                        ) : props.messageKind === "transaction" ? (
+                          <>
+                            <SimpleTransaction
+                              message={message}
+                              remoteUsername={props.username}
+                              txnSignature={props.metadata.final_tx_signature}
                             />
                           </>
                         ) : props.messageKind === "media" ? (
