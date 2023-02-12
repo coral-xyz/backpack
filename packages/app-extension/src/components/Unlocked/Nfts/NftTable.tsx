@@ -403,11 +403,6 @@ function NftCollectionCard({
 
   return (
     <GridCard
-      showNotificationBubble={collectionsChatMetadata?.find(
-        (x: CollectionChatData) =>
-          x.collectionId === collection.metadataCollectionId &&
-          x.lastMessageUuid !== x.lastReadMessage
-      )}
       metadataCollectionId={false}
       onClick={onClick}
       nft={collectionDisplayNft}
