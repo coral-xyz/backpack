@@ -12,12 +12,14 @@ import {
   legacySolletIndexed,
 } from "@coral-xyz/common";
 
+import { getKeyringStore_NO_MIGRATION, setKeyringStore } from "../keyring";
 
 export async function migrate_0_2_0_2408(userInfo: {
   uuid: string;
   password: string;
 }) {
   const { password } = userInfo;
+
   //
   // Get the current keyring store.
   //
