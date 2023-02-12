@@ -25,6 +25,19 @@ export async function runMigrationsIfNeeded(
   uuid: string,
   password: string
 ) {
+  try {
+    await _runMigrationsIfNeeded(json, uuid, password);
+  } catch (err) {
+    // Note: the UI currently assumes this string format.
+    throw new Error(`migration failed: ${err.toString()}`);
+  }
+}
+
+async function _runMigrationsIfNeeded(
+  json: KeyringStoreJson,
+  uuid: string,
+  password: string
+) {
   const LATEST_MIGRATION_BUILD = 2408; // Update this everytime a migration is added.
   const lastMigration = await getMigration();
 
