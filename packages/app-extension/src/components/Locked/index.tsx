@@ -34,6 +34,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
   const _onUnlock = async (e: any) => {
     e.preventDefault();
     try {
+      console.log("ARMANI HERE USER", user);
       await background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
         params: [password, user.uuid],

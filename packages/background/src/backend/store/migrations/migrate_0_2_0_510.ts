@@ -13,6 +13,7 @@ import {
   setWalletData_DEPRECATED,
   setWalletDataForUser,
 } from "../preferences";
+import { getUserData, setUserData } from "../usernames";
 
 const logger = getLogger("migrations/0_2_0_510");
 
@@ -27,6 +28,7 @@ export async function migrate_0_2_0_510(userInfo: {
   password: string;
 }) {
   const username = await migrateWalletData_0_2_0_510(userInfo);
+  await migrateUserData_0_2_0_510(userInfo, username);
   await migrateKeyringStore_0_2_0_510(userInfo, username);
 }
 
@@ -57,8 +59,6 @@ async function migrateWalletData_0_2_0_510(userInfo: {
     userInfo.uuid = json.id;
   }
 
-  console.log("ARMANI HERE", userInfo);
-
   // Write the username specific data.
   await setWalletDataForUser(userInfo.uuid, {
     ...defaultPreferences(),
@@ -69,6 +69,36 @@ async function migrateWalletData_0_2_0_510(userInfo: {
   await setWalletData_DEPRECATED(undefined);
 
   return username;
+}
+
+// Migration:
+//
+// - creates the UserData storage field.
+async function migrateUserData_0_2_0_510(
+  userInfo: { uuid: string; password: string },
+  username: string
+) {
+  let invariantViolation = false;
+  try {
+    await getUserData();
+    invariantViolation = true;
+  } catch {
+    // expect err
+  }
+
+  if (invariantViolation) {
+    throw new Error("getUserdata had unexpected data");
+  }
+
+  const activeUser = {
+    username,
+    uuid: userInfo.uuid,
+    jwt: "",
+  };
+  await setUserData({
+    activeUser,
+    users: [activeUser],
+  });
 }
 
 // Migration:
