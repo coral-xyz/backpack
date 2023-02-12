@@ -1,15 +1,17 @@
 import { getLogger } from "@coral-xyz/common";
+
+import * as crypto from "../../keyring/crypto";
+import type {
+  KeyringStoreJson} from "../keyring";
 import {
-  setKeyringStore,
   getKeyringCiphertext,
-  KeyringStoreJson,
+  setKeyringStore,
 } from "../keyring";
 import {
-  setWalletDataForUser,
   getWalletData_DEPRECATED,
   setWalletData_DEPRECATED,
+  setWalletDataForUser,
 } from "../preferences";
-import * as crypto from "../../keyring/crypto";
 
 const logger = getLogger("migrations/0_2_0_510");
 
@@ -80,7 +82,6 @@ export async function migrateKeyringStore_0_2_0_510(
   const { mnemonic, blockchains, lastUsedTs } = oldJson;
 
   const newJson: KeyringStoreJson = {
-    activeUserUuid: uuid,
     users: Object.fromEntries([
       [
         uuid,

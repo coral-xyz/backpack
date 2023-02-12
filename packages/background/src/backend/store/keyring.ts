@@ -3,8 +3,10 @@ import type { Blockchain, BlockchainKeyringJson } from "@coral-xyz/common";
 import type { SecretPayload } from "../keyring/crypto";
 import * as crypto from "../keyring/crypto";
 
+import { migrate_0_2_0_510 } from "./migrations/migrate_0_2_0_510";
 import { migrate_0_2_0_2408 } from "./migrations/migrate_0_2_0_2408";
 import { LocalStorageDb } from "./db";
+import { getMigration, setMigration } from "./migrations";
 
 const KEY_KEYRING_STORE = "keyring-store";
 
@@ -39,6 +41,34 @@ export async function getKeyringStore(
   }
   const plaintext = await crypto.decrypt(ciphertextPayload, password);
   const json = JSON.parse(plaintext);
+
+  const lastMigration = await getMigration();
+  if (lastMigration !== undefined || lastMigration?.state !== "end") {
+    throw new Error("migration failed, please re-install Backpack");
+  }
+
+  if ((await getMigration()) === undefined) {
+    await setMigration({
+      build: 510,
+      state: "start",
+    });
+    await migrate_0_2_0_510(username, uuid, password, jwt);
+    await setMigration({
+      build: 510,
+      state: "end",
+    });
+  }
+  if ((await getMigration())?.build === 510) {
+    await setMigration({
+      build: 2408,
+      state: "start",
+    });
+    await migrate_0_2_0_2408(json);
+    await setMigration({
+      build: 2408,
+      state: "end",
+    });
+  }
 
   return json;
 }
