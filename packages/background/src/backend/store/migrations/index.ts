@@ -63,7 +63,7 @@ export async function runMigrationsIfNeeded(
     finalMigration?.state !== "finalized"
   ) {
     await setMigration({
-      build: LATEST_MIGRATION_BUILD, // Represents the latest build.
+      build: LATEST_MIGRATION_BUILD,
       state: "finalized",
     });
   }
