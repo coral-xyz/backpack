@@ -28,6 +28,12 @@ export async function runMigrationsIfNeeded(
   const LATEST_MIGRATION_BUILD = 2408; // Update this everytime a migration is added.
   const lastMigration = await getMigration();
 
+  logger.debug("starting migrations...");
+  if (BACKPACK_CONFIG_VERSION === "development") {
+    const migrationLog = await getMigrationLog();
+    logger.debug("migration log:", migrationLog);
+  }
+
   //
   // If we've already migrated to the latest build, then exit.
   //
@@ -86,12 +92,11 @@ export async function runMigrationsIfNeeded(
     });
   }
 
-  logger.debug("migration success");
-
   if (BACKPACK_CONFIG_VERSION === "development") {
     const migrationLog = await getMigrationLog();
     logger.debug("migration log:", migrationLog);
   }
+  logger.debug("migration success");
 }
 
 async function runMigration(build: number, fn: () => Promise<void>) {
