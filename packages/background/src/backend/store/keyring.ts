@@ -30,12 +30,17 @@ export type UserKeyringJson = {
 };
 
 // The keyring store should only ever be accessed through this method.
-export async function getKeyringStore(
-  uuid: string,
-  password: string
-): Promise<KeyringStoreJson> {
-  await runMigrationsIfNeeded(uuid, password);
-  const json = await getKeyringStore_NO_MIGRATION(password);
+//
+// Note: this method reserves the right to mutate `userInfo`. This is required
+//       for example, for the 510 migration, where a UUID doesn't exist and
+//       so the migration needs to get and fetch it--and set it on the
+//       `userInfo` object for use elsewhere.
+export async function getKeyringStore(userInfo: {
+  uuid: string;
+  password: string;
+}): Promise<KeyringStoreJson> {
+  await runMigrationsIfNeeded(userInfo);
+  const json = await getKeyringStore_NO_MIGRATION(userInfo.password);
   return json;
 }
 
