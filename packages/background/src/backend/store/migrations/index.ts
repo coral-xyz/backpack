@@ -1,4 +1,4 @@
-import { getLogger } from "@coral-xyz/common";
+import { BACKPACK_CONFIG_VERSION,getLogger } from "@coral-xyz/common";
 
 import { LocalStorageDb } from "../db";
 import type { KeyringStoreJson } from "../keyring";
@@ -66,6 +66,11 @@ export async function runMigrationsIfNeeded(
       build: LATEST_MIGRATION_BUILD,
       state: "finalized",
     });
+  }
+
+  if (BACKPACK_CONFIG_VERSION === "development") {
+    const migrationLog = await getMigrationLog();
+    logger.debug("migration log:", migrationLog);
   }
 }
 
