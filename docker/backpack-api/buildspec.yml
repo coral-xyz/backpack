@@ -1,0 +1,42 @@
+version: 0.2
+
+env:
+  secrets-manager:
+    AUTH_JWT: "arn:aws:secretsmanager:us-west-1:129146957775:secret:prod-tiT12m:AUTH_JWT"
+    AUTH_JWT_PRIVATE_KEY: "arn:aws:secretsmanager:us-west-1:129146957775:secret:prod-tiT12m:AUTH_JWT_PRIVATE_KEY"
+    AUTH_JWT_PUBLIC_KEY: "arn:aws:secretsmanager:us-west-1:129146957775:secret:prod-tiT12m:AUTH_JWT_PUBLIC_KEY"
+    AWS_S3_KEY_ID: "arn:aws:secretsmanager:us-west-1:129146957775:secret:prod-tiT12m:AWS_S3_KEY_ID"
+    AWS_S3_KEY_SECRET: "arn:aws:secretsmanager:us-west-1:129146957775:secret:prod-tiT12m:AWS_S3_KEY_SECRET"
+    HASURA_URL: "arn:aws:secretsmanager:us-west-1:129146957775:secret:prod-tiT12m:HASURA_URL"
+    REDIS_URL: "arn:aws:secretsmanager:us-west-1:129146957775:secret:prod-tiT12m:REDIS_URL"
+    CHAT_HASURA_URL: "arn:aws:secretsmanager:us-west-1:129146957775:secret:prod-tiT12m:CHAT_HASURA_URL"
+    CHAT_JWT: "arn:aws:secretsmanager:us-west-1:129146957775:secret:prod-tiT12m:CHAT_JWT"
+    HELIUS_API_KEY: "arn:aws:secretsmanager:us-west-1:129146957775:secret:prod-tiT12m:HELIUS_API_KEY"
+    VAPID_PRIVATE_KEY: "arn:aws:secretsmanager:us-west-1:129146957775:secret:prod-tiT12m:VAPID_PRIVATE_KEY"
+    VAPID_PUBLIC_KEY: "arn:aws:secretsmanager:us-west-1:129146957775:secret:prod-tiT12m:VAPID_PUBLIC_KEY"
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 16
+  build:
+    commands:
+      - mv docker/backpack-api/Dockerfile .
+      - cd backend/native/backpack-api
+      - touch .env
+      - printf "AUTH_JWT=%s\n" "$AUTH_JWT" >> .env
+      - printf "AUTH_JWT_PRIVATE_KEY=%s\n" "$AUTH_JWT_PRIVATE_KEY" >> .env
+      - printf "AUTH_JWT_PUBLIC_KEY=%s\n" "$AUTH_JWT_PUBLIC_KEY" >> .env
+      - printf "AWS_S3_KEY_ID=%s\n" "$AWS_S3_KEY_ID" >> .env
+      - printf "AWS_S3_KEY_SECRET=%s\n" "$AWS_S3_KEY_SECRET" >> .env
+      - printf "HASURA_URL=%s\n" "$HASURA_URL" >> .env
+      - printf "CHAT_HASURA_URL=%s\n" "$CHAT_HASURA_URL" >> .env
+      - printf "REDIS_URL=%s\n" "$REDIS_URL" >> .env
+      - printf "CHAT_JWT=%s\n" "$CHAT_JWT" >> .env
+      - printf "HELIUS_API_KEY=%s\n" "$HELIUS_API_KEY" >> .env
+      - printf "VAPID_PRIVATE_KEY=%s\n" "$VAPID_PRIVATE_KEY" >> .env
+      - printf "VAPID_PUBLIC_KEY=%s\n" "$VAPID_PUBLIC_KEY" >> .env
+      - cd ../../..
+artifacts:
+  files:
+    - '**/*'

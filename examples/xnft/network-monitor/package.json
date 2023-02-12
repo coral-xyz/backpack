@@ -4,20 +4,19 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "xnft build",
-    "start": "xnft watch",
-    "dev": "xnft dev"
+    "build": "xnft legacy build",
+    "start": "xnft legacy watch",
+    "dev": "xnft legacy dev"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@coral-xyz/xnft-cli": "^0.0.1",
     "@parcel/config-default": "^2.7.0",
     "prettier": "^2.7.1"
   },
   "dependencies": {
     "react": "^17.0.2",
-    "react-xnft": "latest",
+    "react-xnft": "*",
     "swr": "^1.3.0"
   }
 }

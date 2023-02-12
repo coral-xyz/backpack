@@ -1,8 +1,12 @@
 version: "3.8"
 
+# This is a development config. It is not used in production.
+# The images do not include SHA256 digests to maximize compatibility
+# with local development environments by supporting every achitecture.
+
 services:
   postgres:
-    image: postgres:14-alpine
+    image: postgres:15.0-alpine
     restart: unless-stopped
     ports:
       - 4446:5432
@@ -20,7 +24,7 @@ services:
       POSTGRES_USER: user
 
   hasura:
-    image: hasura/graphql-engine:v2.16.0.cli-migrations-v3
+    image: hasura/graphql-engine:v2.18.0.cli-migrations-v3
     ports:
       - 8112:8080
     depends_on:

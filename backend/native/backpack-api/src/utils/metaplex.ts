@@ -1,19 +1,19 @@
 import { Metaplex } from "@metaplex-foundation/js";
-import { clusterApiUrl, Connection, PublicKey } from "@solana/web3.js";
+import { Connection, PublicKey } from "@solana/web3.js";
 
 const connection = new Connection("https://swr.xnfts.dev/rpc-proxy");
 const metaplex = new Metaplex(connection);
 
 export const validateOwnership = async (
   mint: string,
-  collection: string,
-  centralizedGroup: string,
-  owner: string
+  collection: string
+  // centralizedGroup: string,
+  // owner: string
 ) => {
   try {
     //TODO: make use of centralizedGroup group here
     // to do attribute wide auth
-    const nft = await metaplex
+    const nft = metaplex
       .nfts()
       .findByMint({ mintAddress: new PublicKey(mint) });
     await nft.run();

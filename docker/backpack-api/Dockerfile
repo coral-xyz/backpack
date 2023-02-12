@@ -1,4 +1,4 @@
-FROM node:18.1.0
+FROM node:18.1.0@sha256:82f9e078898dce32c7bf3232049715f1b8fbf0d62d5f3091bca20fcaede50bf0
 WORKDIR /base
 COPY ["package.json", "./package.json"]
 COPY ["turbo.json", "./turbo.json"]
@@ -19,4 +19,6 @@ RUN cd /base/backend/native/backpack-api && yarn run build
 
 EXPOSE 8080
 
-CMD ["node", "/base/backend/native/backpack-api/dist/index.js"]
+WORKDIR /base/backend/native/backpack-api
+
+CMD ["node", "./dist/index.js"]

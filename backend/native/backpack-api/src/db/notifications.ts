@@ -26,6 +26,7 @@ export const getNotifications = async (
         title: true,
         body: true,
         xnft_id: true,
+        viewed: true,
       },
     ],
   });
@@ -73,6 +74,26 @@ export const updateCursor = async ({
       {
         uuid: true,
       },
+    ],
+  });
+};
+
+export const updateNotificationSeen = async ({
+  uuid,
+  notificationIds,
+}: {
+  uuid: string;
+  notificationIds: number[];
+}) => {
+  return chain("mutation")({
+    update_auth_notifications: [
+      {
+        _set: {
+          viewed: true,
+        },
+        where: { id: { _in: notificationIds }, uuid: { _eq: uuid } },
+      },
+      { affected_rows: true },
     ],
   });
 };

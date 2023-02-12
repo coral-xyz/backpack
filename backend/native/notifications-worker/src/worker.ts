@@ -1,6 +1,7 @@
 import {
   processFannedOutMessage,
   processFriendRequest,
+  processFriendRequestAccept,
   processMessage,
 } from "./processors";
 import { Redis } from "./Redis";
@@ -33,6 +34,9 @@ const processResponse = async (response: string) => {
         break;
       case "friend_request":
         await processFriendRequest(payload);
+        break;
+      case "friend_request_accept":
+        await processFriendRequestAccept(payload);
         break;
       case "fanned-out-group-message":
         await processFannedOutMessage(payload);

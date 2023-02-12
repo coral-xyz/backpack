@@ -14,6 +14,7 @@ const port = PORT || 3000;
 const server = http.createServer(app);
 
 const wss = new WebSocketServer({ server });
+app.get("/healthcheck", (req, res) => res.json({}));
 app.get("/cookie", (req, res) => {
   const cookie = req.headers.cookie || "";
   if (cookie) {
