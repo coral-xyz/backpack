@@ -1,7 +1,7 @@
 import type { KeyringType } from "@coral-xyz/common";
 import {
+  UI_RPC_METHOD_KEYRING_HAS_MNEMONIC,
   UI_RPC_METHOD_KEYRING_STORE_STATE,
-  UI_RPC_METHOD_KEYRING_TYPE_READ,
 } from "@coral-xyz/common";
 import { atom, selector } from "recoil";
 
@@ -35,18 +35,18 @@ export const keyringStoreState = atom<KeyringStoreState | null>({
 });
 
 /**
- * Type of keyring, i.e. ledger of mnemonic based
+ * Whether the users keyring has a mnemonic configured.
  */
-export const keyringType = atom<KeyringType | null>({
-  key: "keyringType",
+export const keyringHasMnemonic = atom<boolean>({
+  key: "keyringHasMnemonic",
   default: selector({
-    key: "keyringTypeDefault",
+    key: "keyringHasMnemonicDefault",
     get: ({ get }) => {
       // Dependent on changes to the user
       get(user);
       const background = get(backgroundClient);
       return background.request({
-        method: UI_RPC_METHOD_KEYRING_TYPE_READ,
+        method: UI_RPC_METHOD_KEYRING_HAS_MNEMONIC,
         params: [],
       });
     },

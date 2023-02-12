@@ -52,6 +52,10 @@ export function useUser() {
   return useRecoilValue(atoms.user);
 }
 
+export function useAuthenticatedUser() {
+  return useRecoilValue(atoms.authenticatedUser);
+}
+
 export function useXnftJwt(xnftAddress: string) {
   return useRecoilValue(xnftJwt({ xnftAddress }));
 }

@@ -17,6 +17,7 @@ import * as cmn from "./common/ethereum";
 import { PrivateEventEmitter } from "./common/PrivateEventEmitter";
 import type { ChainedRequestManager } from "./chained-request-manager";
 import { RequestManager } from "./request-manager";
+import { isValidEventOrigin } from ".";
 
 const logger = getLogger("provider-xnft-injection");
 
@@ -103,6 +104,7 @@ export class ProviderEthereumXnftInjection extends PrivateEventEmitter {
   }
 
   async #handleNotifications(event: Event) {
+    if (!isValidEventOrigin(event)) return;
     if (event.data.type !== CHANNEL_PLUGIN_NOTIFICATION) return;
 
     logger.debug("handle notification", event);

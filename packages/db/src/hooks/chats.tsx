@@ -1,8 +1,5 @@
 import { useEffect } from "react";
-import type {
-  EnrichedMessageWithMetadata,
-  SubscriptionType,
-} from "@coral-xyz/common";
+import type { SubscriptionType } from "@coral-xyz/common";
 import { useLiveQuery } from "dexie-react-hooks";
 
 import { refreshUsers } from "../api/users";
@@ -10,12 +7,13 @@ import { getDb } from "../db";
 
 import { useUsers } from "./users";
 
-export const useUnreadGlobal = (uuid: string) => {
+export const useUnreadGlobal = (uuid: string | null) => {
   const count = useLiveQuery(async () => {
+    if (!uuid) return 0;
     return getDb(uuid)
       .inbox.where({ unread: 1, blocked: 0, interacted: 1 })
       .count();
-  });
+  }, [uuid]);
 
   return (count || 0) > 0 ? true : false;
 };

@@ -1,11 +1,12 @@
 import type { RecentTransaction } from "@coral-xyz/common";
 import { Blockchain, ETH_NATIVE_MINT } from "@coral-xyz/common";
-import { PublicKey } from "@solana/web3.js";
 import { atomFamily, selectorFamily } from "recoil";
 
 import { ethersContext } from "./ethereum/provider";
-import { fetchRecentSolanaTransactions } from "./solana/recent-transactions";
-import { anchorContext } from "./solana/wallet";
+import {
+  fetchNftMetadata,
+  fetchRecentSolanaTransactionDetails,
+} from "./solana/recent-transactions";
 
 /**
  * Retrieve recent Ethereum transactions using alchemy_getAssetTransfers.
@@ -108,10 +109,10 @@ export const recentEthereumTransactions = atomFamily<
 });
 
 /**
- * Retrieve recent Solana transactions.
+ * Retrieve recent Solana transactions using Helius API.
  */
 export const recentSolanaTransactions = atomFamily<
-  Array<RecentTransaction>,
+  Array<any>,
   {
     address: string;
   }
@@ -121,18 +122,43 @@ export const recentSolanaTransactions = atomFamily<
     key: "recentSolanaTransactionsDefault",
     get:
       ({ address }: { address: string }) =>
-      async ({ get }: any) => {
-        const { connection } = get(anchorContext);
-        const recent = await fetchRecentSolanaTransactions(
-          connection,
-          new PublicKey(address)
-        );
-        return recent.map((t) => ({
-          blockchain: Blockchain.SOLANA,
-          date: new Date(t.blockTime! * 1000),
-          signature: t.transaction.signatures[0],
-          didError: t.meta && t.meta.err ? true : false,
-        }));
+      async () => {
+        try {
+          // get parsed transactions from Helius
+          const heliusTransactionDetails =
+            await fetchRecentSolanaTransactionDetails(address);
+
+          return heliusTransactionDetails?.map((t: any) => ({
+            blockchain: Blockchain.SOLANA,
+            ...t,
+          }));
+        } catch (err) {
+          console.error(err);
+          return [];
+        }
       },
   }),
+});
+
+export const metadataForRecentSolanaTransaction = selectorFamily<
+  any,
+  { transaction: any }
+>({
+  key: "metadataForRecentSolanaTransaction",
+  get:
+    ({ transaction }) =>
+    async () => {
+      try {
+        const mint =
+          transaction?.events?.nft?.nfts[0]?.mint ||
+          transaction?.tokenTransfers[0]?.mint;
+        if (!mint) {
+          return undefined;
+        }
+        return await fetchNftMetadata(mint);
+      } catch (err) {
+        console.error(err);
+        return undefined;
+      }
+    },
 });

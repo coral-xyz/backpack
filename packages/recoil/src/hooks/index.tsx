@@ -16,5 +16,6 @@ export * from "./useRecentNotifications";
 export * from "./useTotalBalance";
 export * from "./useTransactionData";
 export * from "./useUnreadCount";
+export * from "./useUpdateFriendship";
 export * from "./useXnftPreferences";
 export * from "./wallet";

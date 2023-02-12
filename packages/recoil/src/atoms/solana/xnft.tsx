@@ -1,21 +1,19 @@
 import {
   BACKPACK_CONFIG_XNFT_PROXY,
   Blockchain,
+  DEFAULT_PUBKEY_STR,
   fetchXnfts,
   SIMULATOR_PORT,
   XNFT_PROGRAM_ID,
 } from "@coral-xyz/common";
 import { externalResourceUri } from "@coral-xyz/common-public";
 import { PublicKey } from "@solana/web3.js";
-import { atom, atomFamily, selector, selectorFamily } from "recoil";
+import * as cheerio from "cheerio";
+import { atomFamily, selectorFamily } from "recoil";
 
 import { isDeveloperMode } from "../preferences";
 import { connectionUrls } from "../preferences/connection-urls";
-import {
-  activePublicKeys,
-  allWalletsDisplayed,
-  solanaPublicKey,
-} from "../wallet";
+import { activePublicKeys } from "../wallet";
 
 import { anchorContext } from "./wallet";
 
@@ -60,6 +58,28 @@ export function xnftUrl(url: string) {
   const uri = externalResourceUri(url);
   return uri;
 }
+
+export const appStoreMetaTags = selectorFamily<
+  { name?: string; description?: string; image?: string },
+  string
+>({
+  key: "appStoreMetaTags",
+  get: (xnft) => async () => {
+    const res = await fetch(`https://test.xnft.gg/app/${xnft}`);
+    const html = await res.text();
+
+    const $ = cheerio.load(html);
+    const name = $('meta[name="title"]').attr("content")?.split(" - ")[0];
+    const description = $('meta[name="description"]').attr("content");
+    const image = $('meta[property="og:image"]').attr("content");
+
+    return {
+      name,
+      description,
+      image,
+    };
+  },
+});
 
 export const collectibleXnft = selectorFamily<
   string | undefined,
@@ -120,6 +140,9 @@ export const xnfts = atomFamily<
         const _activeWallets = get(activePublicKeys);
         const _connectionUrls = get(connectionUrls);
         const provider = get(anchorContext).provider;
+        if (!publicKey) {
+          return [];
+        }
         const xnfts = await fetchXnfts(provider, new PublicKey(publicKey));
         return xnfts.map((xnft) => {
           return {
@@ -164,9 +187,9 @@ export const plugins = selectorFamily<
           activeWallets: get(activePublicKeys),
           connectionUrls: get(connectionUrls),
           install: {
-            publicKey: PublicKey.default.toString(),
+            publicKey: DEFAULT_PUBKEY_STR,
             account: {
-              xnft: PublicKey.default.toString(),
+              xnft: DEFAULT_PUBKEY_STR,
             },
           },
         } as typeof plugins[0];
