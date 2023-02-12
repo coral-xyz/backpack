@@ -121,7 +121,7 @@ export const postChat = (
   const simpleTransferMutation =
     message_kind === "transaction"
       ? {
-          chat_simple_transactions: {
+          simple_transactions: {
             data: [
               {
                 txn_signature: messageMetadata?.final_tx_signature || "",
