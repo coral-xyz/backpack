@@ -12,7 +12,17 @@ import {
   legacySolletIndexed,
 } from "@coral-xyz/common";
 
-export async function migrate_0_2_0_2408(json: any) {
+import { getKeyringStore_NO_MIGRATION,setKeyringStore } from "../keyring";
+
+export async function migrate_0_2_0_2408(password: string) {
+  //
+  // Get the current keyring store.
+  //
+  const json = await getKeyringStore_NO_MIGRATION(password);
+
+  //
+  // Update it to the new format.
+  //
   for (const [user, userData] of Object.entries(json.users)) {
     for (const [blockchain, blockchainKeyring] of Object.entries(
       // @ts-ignore
@@ -76,4 +86,9 @@ export async function migrate_0_2_0_2408(json: any) {
       }
     }
   }
+
+  //
+  // Save the new format.
+  //
+  await setKeyringStore(json, password);
 }
