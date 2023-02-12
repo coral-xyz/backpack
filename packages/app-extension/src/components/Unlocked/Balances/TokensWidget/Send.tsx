@@ -5,14 +5,15 @@ import {
   getNameAccountKey,
   NameRegistryState,
 } from "@bonfida/spl-name-service";
-import {   Blockchain,
+import {
+  Blockchain,
   ETH_NATIVE_MINT,
   explorerUrl,
   NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
   NAV_COMPONENT_MESSAGE_CHAT,
   NAV_COMPONENT_MESSAGE_PROFILE,
   SOL_NATIVE_MINT,
-TAB_MESSAGES ,
+  TAB_MESSAGES,
   toDisplayBalance,
   toTitleCase,
   UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
@@ -372,7 +373,7 @@ export function Send({
                 SignalingManager.getInstance().send({
                   type: "CHAT_MESSAGES",
                   payload: {
-                    room: friendship?.id,
+                    room: friendship?.id?.toString(),
                     type: "individual",
                     messages: [
                       {
