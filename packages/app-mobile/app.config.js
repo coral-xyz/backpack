@@ -43,6 +43,13 @@ export default {
     supportsTablet: true,
     bundleIdentifier: packageName,
     infoPlist: {
+      NSAllowsArbitraryLoads: true,
+      NSExceptionDomains: {
+        localhost: {
+          NSExceptionAllowsInsecureHTTPLoads: true,
+          NSIncludesSubdomains: true,
+        },
+      },
       WKAppBoundDomains: [
         "coral-xyz.github.io",
         "ngrok.io",

@@ -1444,11 +1444,11 @@ export class Backend {
         },
       });
 
-      logger.debug("findServerPublicKeyConflicts:response", response);
+      logger.debug("findServerPublicKeyConflicts:response");
 
       return await response.json();
     } catch (error) {
-      logger.debug("findServerPublicKeyConflicts:error", error);
+      logger.debug("findServerPublicKeyConflicts:error", error.toString());
       return [];
     }
   }
@@ -1466,25 +1466,17 @@ export class Backend {
     accountIndex = 0,
     mnemonic?: string
   ): Promise<WalletDescriptor> {
-    logger.debug("findWalletDescriptor");
-    logger.debug("findWalletDescriptor:blockchain", blockchain);
-    logger.debug("findWalletDescriptor:accountIndex", accountIndex);
-    logger.debug("findWalletDescriptor:menmonic", mnemonic);
     // If mnemonic is not passed as an argument, use the keyring store stored mnemonic.
     // Wallet must be unlocked.
     if (!mnemonic)
       mnemonic = this.keyringStore.activeUserKeyring.exportMnemonic();
 
-    logger.debug("findWalletDescriptor:menmonic2", mnemonic);
     const recoveryPaths = getAccountRecoveryPaths(blockchain, accountIndex);
-    logger.debug("findWalletDescriptor:recoveryPaths", recoveryPaths);
     const publicKeys = await this.previewPubkeys(
       blockchain,
       mnemonic!,
       recoveryPaths
     );
-
-    logger.debug("findWalletDescriptor:publicKeys", publicKeys);
 
     const users = await this.findServerPublicKeyConflicts(
       publicKeys.map((publicKey) => ({

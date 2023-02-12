@@ -160,6 +160,104 @@ function OnboardingScreen({
   );
 }
 
+async function fetchData() {
+  const serverPublicKeys = [
+    {
+      blockchain: "solana",
+      publicKey: "97kxuTnGKKMJhQnP776dAZgw2ex5WoVGSxUV2bNhyJxN",
+    },
+    {
+      blockchain: "solana",
+      publicKey: "BTTZXqkLAE4DgX4Gc79wNdb8sfLjL7PuXXNwRu8zLDs7",
+    },
+    {
+      blockchain: "solana",
+      publicKey: "BCzM2sCVC9UyfYcXosoi9UcxdA4hJmi3M12XMRVXxRiY",
+    },
+    {
+      blockchain: "solana",
+      publicKey: "Byb4wMUj21L1HxZ6GtWY2iGuTcNR3YCgmrESYEKAoabB",
+    },
+    {
+      blockchain: "solana",
+      publicKey: "XPrbf99WEyUcsKUSMpPvHZ83RAPzZoNrWcuw7T8Amsb",
+    },
+    {
+      blockchain: "solana",
+      publicKey: "EY5HgodAvKrptxWDYDnwLWZCY5MCCk5gYBJ9nKNRqNs8",
+    },
+    {
+      blockchain: "solana",
+      publicKey: "Awjg8sLErdBdfMDgyeENzxXhqUZpVR9DuMSX9AzXv5hY",
+    },
+    {
+      blockchain: "solana",
+      publicKey: "B6WixQi8rpsq7q735htDe7XiLWZjMxJSb23NojSVn7Su",
+    },
+    {
+      blockchain: "solana",
+      publicKey: "FJ6brCyFXvLzqaiatYfectpZHYjdJxAtHgzFbZYpTSVZ",
+    },
+    {
+      blockchain: "solana",
+      publicKey: "48P77U2ZayrKuc7jrh2AUCcgkTmApoBjd8DFPwiwBdNH",
+    },
+    {
+      blockchain: "solana",
+      publicKey: "8zoLkXAaX3sFofJCH3ZEX6v4Xix6VgsqsBk1sfGzJraz",
+    },
+    {
+      blockchain: "solana",
+      publicKey: "HYkJQKtZeJauUsF2SZktMeTuozLTKYHmPFwVQkEqxMnh",
+    },
+    {
+      blockchain: "solana",
+      publicKey: "JAVM2GtG18FiJg3JidthNenv8KKiK91fUVyLw4ayspkp",
+    },
+    {
+      blockchain: "solana",
+      publicKey: "6Mv4dzBzRh7rQpU4iCs7PU2MHNd6NgYduuFRwyeSEW2b",
+    },
+    {
+      blockchain: "solana",
+      publicKey: "GUp61Vmiat29y7uBs89raavUynyfBooV93stJVHH2DEp",
+    },
+    {
+      blockchain: "solana",
+      publicKey: "8TzxSGP7WUZrapSxkkLnHwnaMuKr1QE5SSuaeNxGyzah",
+    },
+    {
+      blockchain: "solana",
+      publicKey: "6S3CMhRUzDYsfKG5xKFxXYZ2eN2SEucuvuTrxucfRMKM",
+    },
+    {
+      blockchain: "solana",
+      publicKey: "3Fd2UTkuskAtvLz6BfB2yWydkUPevimYpunvxGWAVMxr",
+    },
+    {
+      blockchain: "solana",
+      publicKey: "9LQUVJuoSnHJyLu98WP5DARBJkk6cMxJimegWqHaBfzc",
+    },
+    {
+      blockchain: "solana",
+      publicKey: "CW9jdSEC5k62p9Vn2TEpgfoSNxyRLud5GU2aXqeWrHiP",
+    },
+  ];
+
+  console.log("FETCH_DATA_PRE");
+  const url = "https://backpack-api.xnfts.dev/publicKeys";
+  const response = await fetch(url, {
+    method: "POST",
+    body: JSON.stringify(serverPublicKeys),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((r) => r.json());
+  console.log("FETCH_DATA_PRE");
+
+  console.log("response", response);
+}
+
 // https://github.com/gorhom/react-native-bottom-sheet
 function OnboardingCreateOrImportWalletScreen({
   navigation,
@@ -201,6 +299,7 @@ function OnboardingCreateOrImportWalletScreen({
             onPress={() => {
               setOnboardingData({ action: "create" });
               navigation.push("OnboardingUsername");
+              fetchData();
             }}
           />
           <Margin top={8}>
@@ -269,6 +368,7 @@ function OnboardingKeyringTypeSelectorScreen({
           onPress={() => {
             setOnboardingData({ keyringType: "mnemonic" });
             navigation.push("MnemonicInput");
+            fetchData();
           }}
         />
         <Box style={{ paddingVertical: 8 }}>
@@ -413,7 +513,7 @@ function OnboardingMnemonicInputScreen({
   //
   // Generate a random mnemonic and populate state.
   //
-  const generateRandom = () => {
+  const gnerateRandom = () => {
     background
       .request({
         method: UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
