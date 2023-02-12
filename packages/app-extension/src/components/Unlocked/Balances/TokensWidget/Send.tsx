@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { RichMentionsInput } from "react-rich-mentions";
 import {
   getHashedName,
@@ -13,6 +13,7 @@ import {
   NAV_COMPONENT_MESSAGE_CHAT,
   NAV_COMPONENT_MESSAGE_PROFILE,
   SOL_NATIVE_MINT,
+  toDisplayBalance,
   toTitleCase,
   walletAddressDisplay,
 } from "@coral-xyz/common";
@@ -22,6 +23,7 @@ import {
   CrossIcon,
   DangerButton,
   Loading,
+  LocalImage,
   MaxLabel,
   PrimaryButton,
   SecondaryButton,
@@ -64,6 +66,21 @@ import { SendSolanaConfirmationCard } from "./Solana";
 import { WithHeaderButton } from "./Token";
 
 const useStyles = styles((theme) => ({
+  topImage: {
+    width: 130,
+  },
+  topImageOuter: {
+    width: 130,
+    height: 130,
+    border: `solid 3px ${theme.custom.colors.avatarIconBackground}`,
+    borderRadius: "50%",
+    display: "inline-block",
+    overflow: "hidden",
+  },
+  horizontalCenter: {
+    display: "flex",
+    justifyContent: "center",
+  },
   container: {
     display: "flex",
     flexDirection: "column",
@@ -72,6 +89,11 @@ const useStyles = styles((theme) => ({
   topHalf: {
     paddingTop: "24px",
     flex: 1,
+  },
+  inputContainer: {
+    paddingLeft: "12px",
+    paddingRight: "12px",
+    marginBottom: -8,
   },
   buttonContainer: {
     display: "flex",
@@ -292,85 +314,37 @@ export function Send({
       }}
       noValidate
     >
-      <div className={classes.topHalf}>
-        <div style={{ marginBottom: "40px" }}>
-          <TextFieldLabel
-            leftLabel={"Send to"}
-            rightLabel={""}
-            style={{ marginLeft: "24px", marginRight: "24px" }}
-          />
-          <div style={{ margin: "0 12px" }}>
-            <TextInput
-              placeholder={`${toTitleCase(blockchain)} address`}
-              value={
-                to
-                  ? `${to.username} (${walletAddressDisplay(to.address)})`
-                  : address
-              }
-              setValue={(e) => {
-                if (to) {
-                  // to address is forced via props
-                  return;
-                }
-                setAddress(e.target.value.trim());
-              }}
-              error={isErrorAddress}
-              inputProps={{
-                name: "to",
-                spellCheck: "false",
-                readOnly: to ? true : false,
-              }}
-              startAdornment={
-                to?.image ? <UserIcon size={32} image={to?.image} /> : <></>
-              }
-              margin="none"
-            />
-          </div>
-        </div>
-        <div>
-          <TextFieldLabel
-            leftLabel={"Amount"}
-            rightLabel={`${token.displayBalance} ${token.ticker}`}
-            rightLabelComponent={
-              <MaxLabel
-                amount={maxAmount}
-                onSetAmount={setAmount}
-                decimals={token.decimals}
-              />
-            }
-            style={{ marginLeft: "24px", marginRight: "24px" }}
-          />
-          <div style={{ margin: "0 12px" }}>
-            <TokenInputField
-              type="number"
-              placeholder="0"
-              rootClass={classes.textRoot}
-              decimals={token.decimals}
-              value={amount}
-              setValue={setAmount}
-              isError={isAmountError}
-              inputProps={{
-                name: "amount",
-              }}
-            />
-          </div>
-        </div>
-      </div>
-      <div className={classes.buttonContainer}>
-        {to && to.uuid && (
-          <TextField
-            className={classes.input}
-            placeholder={""}
-            style={{
-              outline: "0px solid transparent",
-              color: theme.custom.colors.fontColor,
-              fontSize: "15px",
-            }}
-            onChange={(e) => setMessage(e.target.value)}
-            value={message}
+      <>
+        {!to && (
+          <SendV1
+            address={address}
+            sendButton={sendButton}
+            amount={amount}
+            token={token}
+            blockchain={blockchain}
+            isAmountError={isAmountError}
+            isErrorAddress={isAmountError}
+            maxAmount={maxAmount}
+            setAddress={setAddress}
+            setAmount={setAmount}
           />
         )}
-        {sendButton}
+        {to && (
+          <SendV2
+            to={to}
+            message={message}
+            setMessage={setMessage}
+            sendButton={sendButton}
+            amount={amount}
+            token={token}
+            blockchain={blockchain}
+            isAmountError={isAmountError}
+            isErrorAddress={isAmountError}
+            maxAmount={maxAmount}
+            setAddress={setAddress}
+            setAmount={setAmount}
+          />
+        )}
         <ApproveTransactionDrawer
           openDrawer={openDrawer}
           setOpenDrawer={setOpenDrawer}
@@ -425,8 +399,304 @@ export function Send({
             amount={amount!}
           />
         </ApproveTransactionDrawer>
-      </div>
+      </>
     </form>
+  );
+}
+
+function SendV1({
+  blockchain,
+  address,
+  isErrorAddress,
+  token,
+  maxAmount,
+  setAmount,
+  amount,
+  isAmountError,
+  sendButton,
+  setAddress,
+}: any) {
+  const classes = useStyles();
+  return (
+    <>
+      <div className={classes.topHalf}>
+        <div style={{ marginBottom: "40px" }}>
+          <TextFieldLabel
+            leftLabel={"Send to"}
+            rightLabel={""}
+            style={{ marginLeft: "24px", marginRight: "24px" }}
+          />
+          <div style={{ margin: "0 12px" }}>
+            <TextInput
+              placeholder={`${toTitleCase(blockchain)} address`}
+              value={
+                // to
+                //     ? `${to.username} (${walletAddressDisplay(to.address)})`
+                //     :
+                address
+              }
+              setValue={(e) => {
+                setAddress(e.target.value.trim());
+              }}
+              error={isErrorAddress}
+              inputProps={{
+                name: "to",
+                spellCheck: "false",
+                // readOnly: to ? true : false,
+              }}
+              // startAdornment={
+              //   to?.image ? <UserIcon size={32} image={to?.image} /> : <></>
+              // }
+              margin="none"
+            />
+          </div>
+        </div>
+        <div>
+          <TextFieldLabel
+            leftLabel={"Amount"}
+            rightLabel={`${token.displayBalance} ${token.ticker}`}
+            rightLabelComponent={
+              <MaxLabel
+                amount={maxAmount}
+                onSetAmount={setAmount}
+                decimals={token.decimals}
+              />
+            }
+            style={{ marginLeft: "24px", marginRight: "24px" }}
+          />
+          <div style={{ margin: "0 12px" }}>
+            <TokenInputField
+              type="number"
+              placeholder="0"
+              rootClass={classes.textRoot}
+              decimals={token.decimals}
+              value={amount}
+              setValue={setAmount}
+              isError={isAmountError}
+              inputProps={{
+                name: "amount",
+              }}
+            />
+          </div>
+        </div>
+      </div>
+      <div className={classes.buttonContainer}>{sendButton}</div>
+    </>
+  );
+}
+
+function SendV2({
+  blockchain,
+  isErrorAddress,
+  token,
+  maxAmount,
+  setAmount,
+  amount,
+  isAmountError,
+  sendButton,
+  setAddress,
+  to,
+  message,
+  setMessage,
+}: any) {
+  const classes = useStyles();
+  const theme = useCustomTheme();
+  const { uuid } = useUser();
+  const editableRef = useRef<any>();
+
+  const cursorToEnd = () => {
+    //@ts-ignore
+    editableRef.current.focus();
+    //@ts-ignore
+    document.execCommand("selectAll", false, null);
+    //@ts-ignore
+    document.getSelection().collapseToEnd();
+  };
+
+  useEffect(() => {
+    if (editableRef.current) {
+      cursorToEnd();
+    }
+  }, [editableRef]);
+
+  return (
+    <>
+      <div className={classes.topHalf}>
+        <div style={{ marginBottom: "10px" }}>
+          <div
+            className={classes.horizontalCenter}
+            style={{ marginBottom: 10 }}
+          >
+            <div className={classes.topImageOuter}>
+              <LocalImage
+                className={classes.topImage}
+                src={to?.image}
+                style={{ width: 130, height: 130 }}
+              />
+            </div>
+          </div>
+          <div className={classes.horizontalCenter}>
+            <div
+              style={{
+                color: theme.custom.colors.fontColor,
+                fontSize: 20,
+                fontWeight: 500,
+              }}
+            >
+              {`${to.username}`}
+            </div>
+          </div>
+          <div className={classes.horizontalCenter}>
+            <div
+              style={{
+                color: theme.custom.colors.fontColor,
+                fontSize: 18,
+                fontWeight: 500,
+              }}
+            >
+              ({walletAddressDisplay(to.address)})
+            </div>
+          </div>
+        </div>
+        <div>
+          <div
+            onKeyDown={() => {
+              cursorToEnd();
+            }}
+            style={{ display: "flex", justifyContent: "center" }}
+          >
+            <img
+              src={token.logo}
+              style={{
+                width: 44,
+                height: 44,
+                borderRadius: "50%",
+                marginTop: 14,
+                marginRight: 5,
+              }}
+            />
+            <div style={{ fontWeight: 600, fontSize: 48, display: "flex" }}>
+              <div
+                onKeyDown={() => {
+                  cursorToEnd();
+                }}
+                onSelect={() => {
+                  cursorToEnd();
+                }}
+                ref={editableRef}
+                style={{ marginRight: 5 }}
+                onInput={(e) => {
+                  //@ts-ignore
+                  if (
+                    !e.currentTarget.textContent ||
+                    isNaN(e.currentTarget.textContent)
+                  ) {
+                    e.currentTarget.innerHTML = "0";
+                    setAmount(ethers.utils.parseUnits("0", token.decimals));
+                  } else {
+                    const amount = e.currentTarget.textContent;
+                    e.currentTarget.innerHTML = parseFloat(amount).toString();
+                    const decimalIndex = amount.indexOf(".");
+                    // Restrict the input field to the same amount of decimals as the token
+                    const truncatedAmount =
+                      decimalIndex >= 0
+                        ? amount.substring(0, decimalIndex) +
+                          amount.substring(
+                            decimalIndex,
+                            decimalIndex + token.decimals + 1
+                          )
+                        : amount;
+                    setAmount(
+                      ethers.utils.parseUnits(truncatedAmount, token.decimals)
+                    );
+                  }
+                  cursorToEnd();
+                }}
+                contentEditable={true}
+              >
+                0
+              </div>{" "}
+              <div style={{ marginLeft: 3, outline: "0px solid transparent" }}>
+                {" "}
+                {token.ticker}
+              </div>
+            </div>
+          </div>
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <div
+              style={{
+                display: "inline-flex",
+                color: theme.custom.colors.fontColor,
+                cursor: "pointer",
+                background: theme.custom.colors.bg3,
+                padding: "4px 12px",
+                borderRadius: 8,
+              }}
+              onClick={() => {
+                editableRef.current.innerHTML = toDisplayBalance(
+                  maxAmount,
+                  token.decimals
+                );
+                setAmount(maxAmount);
+              }}
+            >
+              Max
+            </div>
+          </div>
+          {/*<TextFieldLabel*/}
+          {/*    leftLabel={"Amount"}*/}
+          {/*    rightLabel={`${token.displayBalance} ${token.ticker}`}*/}
+          {/*    rightLabelComponent={*/}
+          {/*      <MaxLabel*/}
+          {/*          amount={maxAmount}*/}
+          {/*          onSetAmount={setAmount}*/}
+          {/*          decimals={token.decimals}*/}
+          {/*      />*/}
+          {/*    }*/}
+          {/*    style={{ marginLeft: "24px", marginRight: "24px" }}*/}
+          {/*/>*/}
+          {/*<div style={{ margin: "0 12px" }}>*/}
+          {/*  <TokenInputField*/}
+          {/*      type="number"*/}
+          {/*      placeholder="0"*/}
+          {/*      rootClass={classes.textRoot}*/}
+          {/*      decimals={token.decimals}*/}
+          {/*      value={amount}*/}
+          {/*      setValue={setAmount}*/}
+          {/*      isError={isAmountError}*/}
+          {/*      inputProps={{*/}
+          {/*        name: "amount",*/}
+          {/*      }}*/}
+          {/*  />*/}
+          {/*</div>*/}
+        </div>
+      </div>
+      <div>
+        <div className={classes.inputContainer}>
+          {to && to.uuid && to.uuid !== uuid && (
+            <TextField
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 6,
+                  border: "2px solid rgba(255, 255, 255, 0.1);",
+                },
+              }}
+              fullWidth
+              className={classes.input}
+              placeholder={"Add a message (Optional)"}
+              style={{
+                outline: "0px solid transparent",
+                color: theme.custom.colors.fontColor,
+                fontSize: "15px",
+              }}
+              onChange={(e) => setMessage(e.target.value)}
+              value={message}
+            />
+          )}
+        </div>
+        <div className={classes.buttonContainer}>{sendButton}</div>
+      </div>
+    </>
   );
 }
 

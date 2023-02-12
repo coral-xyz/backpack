@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import type {
-  RemoteUserData} from "@coral-xyz/common";
+import type { RemoteUserData } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
   Blockchain,
@@ -126,6 +125,12 @@ export const AddressSelectorLoader = ({
   // publicKey should only be undefined if the user is in single-wallet mode
   // (rather than aggregate mode).
   const publicKeyStr = publicKey ?? useActiveWallet().publicKey;
+  console.error("it is 2 ");
+  console.error({
+    publicKey: publicKeyStr,
+    blockchain,
+    tokenAddress: address,
+  });
   const [token] = useLoader(
     blockchainTokenData({
       publicKey: publicKeyStr,
@@ -457,9 +462,10 @@ function AddressListItems({
             margin: "auto",
           },
           "&.MuiAccordionSummary-root": {
+            background: theme.custom.colors.background,
             padding: 0,
           },
-          backgroundColor: theme.custom.colors.nav,
+          background: theme.custom.colors.background,
           borderBottom: isLast
             ? undefined
             : `solid 1pt ${theme.custom.colors.border}`,
@@ -479,6 +485,7 @@ function AddressListItems({
           style={{
             width: "100%",
             display: "flex",
+            background: theme.custom.colors.background,
           }}
         >
           <div
