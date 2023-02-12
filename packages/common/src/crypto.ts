@@ -132,8 +132,6 @@ export const getAccountRecoveryPaths = (
 export const derivationPathsToIndices = (
   derivationPaths: Array<string>
 ): { accountIndex: number; walletIndex: number | undefined } => {
-  console.log("derivation paths", derivationPaths);
-
   if (derivationPaths.length === 0) {
     return { accountIndex: 0, walletIndex: 0 };
   }
@@ -141,9 +139,13 @@ export const derivationPathsToIndices = (
     BIPPath.fromString(x).toPathArray()
   );
 
+  function isDefined<T>(argument: T | undefined): argument is T {
+    return argument !== undefined;
+  }
+
   const accountIndices = pathArrays
     .map((p: Array<number> | undefined) => (p ? p[2] : undefined))
-    .filter((p) => p !== undefined);
+    .filter(isDefined);
 
   if (accountIndices.length == 0) {
     return { accountIndex: 0, walletIndex: undefined };
@@ -154,8 +156,9 @@ export const derivationPathsToIndices = (
   );
 
   const pathsForMaxAccountIndex = pathArrays.filter(
-    (p) => p[2] === accountIndex
+    (p) => p[2] === Math.max(...accountIndices) // Maintain hardening to filter
   );
+
   if (pathsForMaxAccountIndex.length === 0) {
     return { accountIndex, walletIndex: 0 };
   }
