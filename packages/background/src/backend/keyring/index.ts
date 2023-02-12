@@ -175,7 +175,7 @@ export class KeyringStore {
     await this.persist(true);
 
     // Automatically lock the store when idle.
-    await this.tryUnlock(password, uuid);
+    await this.tryUnlock({ password, uuid });
   }
 
   public async usernameKeyringCreate(
@@ -283,9 +283,8 @@ export class KeyringStore {
     });
   }
 
-  public async tryUnlock(password: string, uuid: string) {
+  public async tryUnlock(userInfo: { password: string; uuid: string }) {
     return this.withLock(async () => {
-      const userInfo = { uuid, password };
       const json = await store.getKeyringStore(userInfo);
       await this.fromJson(json);
 
@@ -293,7 +292,7 @@ export class KeyringStore {
       // This will only happen in the event that the given uuid is empty.
       this.activeUserUuid = userInfo.uuid;
 
-      this.password = password;
+      this.password = userInfo.password;
       // Automatically lock the store when idle.
       // this.autoLockStart();
       this.autoLockCountdown.start();
