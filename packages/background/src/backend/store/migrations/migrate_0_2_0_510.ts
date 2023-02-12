@@ -1,5 +1,5 @@
 import type { Blockchain } from "@coral-xyz/common";
-import { defaultPreferences,getLogger } from "@coral-xyz/common";
+import { defaultPreferences, getLogger } from "@coral-xyz/common";
 
 import * as crypto from "../../keyring/crypto";
 import type { KeyringStoreJson } from "../keyring";
@@ -48,7 +48,6 @@ async function migrateWalletData_0_2_0_510(uuid: string): Promise<string> {
   });
 
   // Clear the old data.
-  // @ts-ignore
   await setWalletData_DEPRECATED(undefined);
 
   return username;
