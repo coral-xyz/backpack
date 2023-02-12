@@ -42,7 +42,7 @@ router.get("/", extractUserId, async (req, res) => {
   // @ts-ignore
   const uuid = req.id as string;
   // @ts-ignore
-  const limit: number = req.query.limit;
+  const limit: number = req.query.limit ? parseInt(req.query.limit) : 20;
 
   const isSolPublicKey = validatePulicKey(usernamePrefix, "solana");
   const isEthPublicKey = validatePulicKey(usernamePrefix, "ethereum");
