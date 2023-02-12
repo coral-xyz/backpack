@@ -175,7 +175,7 @@ export type AutolockSettings = {
 };
 
 // Legacy types. Don't use these.
-type DeprecatedWalletDataDoNotUse = {
+export type DeprecatedWalletDataDoNotUse = {
   username?: string;
   autoLockSecs?: number; // Used in releases <=0.4.0
 };
