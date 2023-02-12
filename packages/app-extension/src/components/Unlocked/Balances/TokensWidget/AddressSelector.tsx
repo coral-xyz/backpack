@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme: any) =>
       flex: 1,
     },
     title: {
-      fontColor: theme.custom.colors.fontColor,
+      color: theme.custom.colors.fontColor,
     },
     userText: {
       fontSize: 16,
@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme: any) =>
     address: {
       fontWeight: 500,
       fontSize: 14,
-      color: "#99A4B4",
+      color: theme.custom.colors.fontColor2,
     },
     buttonContainer: {
       display: "flex",
@@ -125,12 +125,6 @@ export const AddressSelectorLoader = ({
   // publicKey should only be undefined if the user is in single-wallet mode
   // (rather than aggregate mode).
   const publicKeyStr = publicKey ?? useActiveWallet().publicKey;
-  console.error("it is 2 ");
-  console.error({
-    publicKey: publicKeyStr,
-    blockchain,
-    tokenAddress: address,
-  });
   const [token] = useLoader(
     blockchainTokenData({
       publicKey: publicKeyStr,
@@ -457,15 +451,15 @@ function AddressListItems({
   return (
     <Accordion
       sx={{
+        backgroundColor: theme.custom.colors.nav,
         root: {
           "&$expanded": {
             margin: "auto",
           },
           "&.MuiAccordionSummary-root": {
-            background: theme.custom.colors.background,
+            backgroundColor: theme.custom.colors.nav,
             padding: 0,
           },
-          background: theme.custom.colors.background,
           borderBottom: isLast
             ? undefined
             : `solid 1pt ${theme.custom.colors.border}`,
@@ -485,7 +479,7 @@ function AddressListItems({
           style={{
             width: "100%",
             display: "flex",
-            background: theme.custom.colors.background,
+            background: theme.custom.colors.nav,
           }}
         >
           <div
@@ -506,7 +500,12 @@ function AddressListItems({
       {addresses.map((address, index) => (
         <AccordionDetails
           sx={{
+            color: theme.custom.colors.fontColor,
             cursor: "pointer",
+            borderTop:
+              index === 0
+                ? `solid 1pt ${theme.custom.colors.border1}`
+                : undefined,
             borderBottom:
               index === addresses.length - 1
                 ? undefined
@@ -514,7 +513,7 @@ function AddressListItems({
             ...isFirstLastListItemStyle(
               index === 0,
               index === addresses.length - 1,
-              12
+              0
             ),
           }}
           onClick={() => {
@@ -565,7 +564,6 @@ const SearchAddress = ({
     );
     const json = await response.json();
     setLoading(false);
-    console.log(json.users);
     setSearchResults(
       json.users.sort((a: any, b: any) =>
         a.username.length < b.username.length ? -1 : 1
@@ -592,13 +590,23 @@ const SearchAddress = ({
         placeholder={`Enter address`}
         value={inputContent}
         setValue={(e) => setInputContent(e.target.value.trim())}
-        error={isErrorAddress}
+        // error={isErrorAddress}
         inputProps={{
           name: "to",
           spellCheck: "false",
         }}
         margin="none"
       />
+      {!isErrorAddress && inputContent && (
+        <div style={{ color: "#52D24C", marginTop: 5, marginLeft: 2 }}>
+          This is a valid {blockchain} address
+        </div>
+      )}
+      {isErrorAddress && inputContent && inputContent.length > 15 && (
+        <div style={{ color: "#FF6269", marginTop: 5, marginLeft: 2 }}>
+          This is not a valid {blockchain} address
+        </div>
+      )}
       {searchResults.length !== 0 && (
         <div style={{ marginTop: 10 }}>
           {" "}
@@ -607,9 +615,7 @@ const SearchAddress = ({
               username: user.username,
               image: user.image,
               uuid: user.id,
-              addresses: user.public_keys?.map((x: any) => x.public_key) || [
-                "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnA",
-              ],
+              addresses: user.public_keys?.map((x: any) => x.public_key),
             }))}
           />
         </div>

@@ -9,6 +9,7 @@ import {
   useLoader,
   useSolanaCtx,
   useTokenMetadata,
+  useUser,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
@@ -27,6 +28,7 @@ const useStyles = makeStyles((theme: any) =>
     sendOuter: {
       background: theme.custom.colors.invertedPrimary,
       borderRadius: 16,
+      marginTop: 4,
       padding: "12px 16px",
       color: theme.custom.colors.background,
       maxWidth: 250,
@@ -45,16 +47,19 @@ export const SimpleTransaction = ({
   txnSignature,
   remoteUsername,
   message,
+  remoteUserId,
 }: {
   txnSignature: string;
   remoteUsername: string;
   message: string;
+  remoteUserId: string;
 }) => {
   const [loading, setLoading] = useState(true);
   const classes = useStyles();
   const solanaCtx = useSolanaCtx();
   const [amount, setAmount] = useState(0);
   const [tokenAddress, setTokenAddress] = useState("");
+  const { uuid } = useUser();
 
   const init = async () => {
     setLoading(true);
@@ -96,7 +101,9 @@ export const SimpleTransaction = ({
       <div>
         <div style={{ marginBottom: 5, marginTop: 5 }}>
           {" "}
-          You sent @{remoteUsername}{" "}
+          {remoteUserId === uuid
+            ? "You Received"
+            : `You sent @${remoteUsername}`}
         </div>
         {!loading && (
           <>
