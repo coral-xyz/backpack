@@ -1,12 +1,9 @@
-import { getLogger } from "@coral-xyz/common";
+import type { Blockchain } from "@coral-xyz/common";
+import { defaultPreferences,getLogger } from "@coral-xyz/common";
 
 import * as crypto from "../../keyring/crypto";
-import type {
-  KeyringStoreJson} from "../keyring";
-import {
-  getKeyringCiphertext,
-  setKeyringStore,
-} from "../keyring";
+import type { KeyringStoreJson } from "../keyring";
+import { getKeyringCiphertext, setKeyringStore } from "../keyring";
 import {
   getWalletData_DEPRECATED,
   setWalletData_DEPRECATED,
@@ -21,12 +18,8 @@ const logger = getLogger("migrations/0_2_0_510");
 // idempotent.
 //
 // In the event of failure, the user must re-onboard.
-export async function migrate_0_2_0_510(
-  uuid: string,
-  username: string,
-  password: string
-) {
-  await migrateWalletData_0_2_0_510(uuid, username);
+export async function migrate_0_2_0_510(uuid: string, password: string) {
+  const username = await migrateWalletData_0_2_0_510(uuid);
   await migrateKeyringStore_0_2_0_510(uuid, username, password);
 }
 
@@ -34,26 +27,31 @@ export async function migrate_0_2_0_510(
 //
 //  - moves the wallet data object to a user specfic location.
 //  - clears out the old global wallet data object.
-async function migrateWalletData_0_2_0_510(uuid: string, username: string) {
+async function migrateWalletData_0_2_0_510(uuid: string): Promise<string> {
   const walletData = await getWalletData_DEPRECATED();
 
   if (!walletData) {
     logger.error("wallet data not found on disk");
-    return;
+    throw new Error("wallet data not found");
   }
 
-  // @ts-ignore
-  if (walletData.username !== username) {
-    logger.error("unexpected username");
-    return;
+  const username = walletData.username;
+  if (!username) {
+    logger.error("wallet username not found on disk");
+    throw new Error("wallet data not found");
   }
 
   // Write the username specific data.
-  await setWalletDataForUser(uuid, walletData);
+  await setWalletDataForUser(uuid, {
+    ...defaultPreferences(),
+    ...walletData,
+  });
 
   // Clear the old data.
   // @ts-ignore
   await setWalletData_DEPRECATED(undefined);
+
+  return username;
 }
 
 // Migration:
@@ -89,6 +87,7 @@ export async function migrateKeyringStore_0_2_0_510(
           uuid,
           username,
           mnemonic,
+          activeBlockchain: Object.keys(blockchains)[0] as Blockchain,
           blockchains,
         },
       ],

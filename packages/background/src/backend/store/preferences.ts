@@ -1,4 +1,7 @@
-import type { Preferences } from "@coral-xyz/common";
+import type {
+  DeprecatedWalletDataDoNotUse,
+  Preferences,
+} from "@coral-xyz/common";
 
 import { LocalStorageDb } from "./db";
 
@@ -16,7 +19,7 @@ export async function setWalletDataForUser(uuid: string, data?: Preferences) {
   await LocalStorageDb.set(key(uuid), data);
 }
 
-export async function getWalletData_DEPRECATED(): Promise<WalletData> {
+export async function getWalletData_DEPRECATED(): Promise<DeprecatedWalletDataDoNotUse> {
   const data = await LocalStorageDb.get(STORE_KEY_WALLET_DATA);
   if (data === undefined) {
     throw new Error("wallet data is undefined");
@@ -24,7 +27,9 @@ export async function getWalletData_DEPRECATED(): Promise<WalletData> {
   return data;
 }
 
-export async function setWalletData_DEPRECATED(data: WalletData) {
+export async function setWalletData_DEPRECATED(
+  data: undefined | DeprecatedWalletDataDoNotUse
+) {
   await LocalStorageDb.set(STORE_KEY_WALLET_DATA, data);
 }
 
