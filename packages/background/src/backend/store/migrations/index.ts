@@ -1,4 +1,4 @@
-import { BACKPACK_CONFIG_VERSION,getLogger } from "@coral-xyz/common";
+import { BACKPACK_CONFIG_VERSION, getLogger } from "@coral-xyz/common";
 
 import { LocalStorageDb } from "../db";
 import type { KeyringStoreJson } from "../keyring";
@@ -29,6 +29,7 @@ export async function runMigrationsIfNeeded(
     lastMigration?.state === "finalized" &&
     lastMigration?.build === LATEST_MIGRATION_BUILD
   ) {
+    logger.debug("already migrated, early exit");
     return;
   }
 
@@ -39,6 +40,8 @@ export async function runMigrationsIfNeeded(
   if (lastMigration !== undefined && lastMigration?.state === "start") {
     throw new Error("migration failed, please re-install Backpack");
   }
+
+  logger.debug("running all migrations");
 
   //
   // Execute all migrations, if needed.
@@ -67,6 +70,8 @@ export async function runMigrationsIfNeeded(
       state: "finalized",
     });
   }
+
+  logger.debug("migration success");
 
   if (BACKPACK_CONFIG_VERSION === "development") {
     const migrationLog = await getMigrationLog();
