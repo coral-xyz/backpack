@@ -6,7 +6,7 @@ import { useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Typography } from "@mui/material";
 
-import { useNavStack } from "../../common/Layout/NavStack";
+import { useNavigation } from "../../common/Layout/NavStack";
 
 import { SearchUsers } from "./SearchUsers";
 import { useStyles } from "./styles";
@@ -24,7 +24,7 @@ async function getRequests(): Promise<{
 }
 
 export const Contacts = () => {
-  const nav = useNavStack();
+  const nav = useNavigation();
   const { uuid } = useUser();
   const allChats = useContacts(uuid);
   const [requests, setRequests] = useState<
@@ -36,7 +36,7 @@ export const Contacts = () => {
   }, []);
 
   useEffect(() => {
-    nav.setTitle("Contacts");
+    nav.setOptions({ headerTitle: "Contacts" });
   }, [nav]);
 
   return (
@@ -55,12 +55,23 @@ export const ContactRequests = ({
   isSent?: boolean;
   requests: { received: RemoteUserData[]; sent: RemoteUserData[] };
 }) => {
-  const nav = useNavStack();
+  const nav = useNavigation();
   const classes = useStyles();
   const theme = useCustomTheme();
+  const [localSentRequests, setLocalSentRequests] = useState<RemoteUserData[]>(
+    []
+  );
+  const [localReceivedRequests, setLocalReceivedRequests] = useState<
+    RemoteUserData[]
+  >([]);
 
   useEffect(() => {
-    nav.setTitle(`Requests ${isSent ? "Sent" : "Received"}`);
+    setLocalReceivedRequests(requests.received);
+    setLocalSentRequests(requests.sent);
+  }, [requests]);
+
+  useEffect(() => {
+    nav.setOptions({ headerTitle: `Requests ${isSent ? "Sent" : "Received"}` });
   }, [nav]);
 
   return (
@@ -95,7 +106,10 @@ export const ContactRequests = ({
             Sent ({requests.sent.length})
           </Typography>
         )}
-        <UserList users={isSent ? requests.sent : requests.received} />
+        <UserList
+          setMembers={isSent ? setLocalSentRequests : setLocalReceivedRequests}
+          users={isSent ? localSentRequests : localReceivedRequests}
+        />
       </div>
     </div>
   );

@@ -8,7 +8,7 @@ import { useBackgroundClient, useIpfsGateway } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Check } from "@mui/icons-material";
 
-import { useNavStack } from "../../../../common/Layout/NavStack";
+import { useNavigation } from "../../../../common/Layout/NavStack";
 import { SettingsList } from "../../../../common/Settings/List";
 
 interface MenuItems {
@@ -24,7 +24,7 @@ interface MenuItems {
 }
 import { setIPFSGateway } from "@coral-xyz/app-extension/src/redirects/ipfsBuilder";
 export function PreferencesIpfsGateway() {
-  const nav = useNavStack();
+  const nav = useNavigation();
   const background = useBackgroundClient();
 
   const currentIpfsGatewayUrl = useIpfsGateway();
@@ -44,7 +44,7 @@ export function PreferencesIpfsGateway() {
   };
 
   useEffect(() => {
-    nav.setTitle("IPFS Gateway");
+    nav.setOptions({ headerTitle: "IPFS Gateway" });
   }, [nav]);
 
   const menuItems = DEFAULT_IPFS_GATEWAYS.reduce((acc, gateway) => {

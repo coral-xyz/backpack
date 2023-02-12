@@ -1,32 +1,24 @@
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useMemo } from "react";
 import {
-  BACKPACK_FEATURE_POP_MODE,
   BACKPACK_FEATURE_XNFT,
   MESSAGES_ENABLED,
   NOTIFICATIONS_ENABLED,
-  openPopupWindow,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
 } from "@coral-xyz/common";
 import {
   ContactsIcon,
   GridIcon,
-  LaunchDetail,
   List,
   ListItem,
   PushDetail,
 } from "@coral-xyz/react-common";
 import { useBackgroundClient, useFeatureGates } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import {
-  AccountCircleOutlined,
-  Lock,
-  Settings,
-  Tab as WindowIcon,
-} from "@mui/icons-material";
+import { AccountCircleOutlined, Lock, Settings } from "@mui/icons-material";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import { Typography } from "@mui/material";
 
-import { useNavStack } from "../../common/Layout/NavStack";
+import { useNavigation } from "../../common/Layout/NavStack";
 import { RecentActivityButton } from "../../Unlocked/Balances/RecentActivity";
 import { NotificationButton } from "../Balances/Notifications";
 
@@ -47,11 +39,13 @@ export function SettingsButton() {
 }
 
 export function SettingsMenu() {
-  const { setTitle } = useNavStack();
+  const nav = useNavigation();
+
+  const headerTitle = useMemo(() => <UserAccountsMenuButton />, []);
 
   useEffect(() => {
-    setTitle(<UserAccountsMenuButton />);
-  }, [setTitle]);
+    nav.setOptions({ headerTitle });
+  }, [nav.setOptions]);
 
   return (
     <Suspense fallback={<div></div>}>
@@ -71,7 +65,7 @@ function _SettingsContent() {
 
 function SettingsList() {
   const theme = useCustomTheme();
-  const nav = useNavStack();
+  const nav = useNavigation();
   const background = useBackgroundClient();
   const featureGates = useFeatureGates();
 

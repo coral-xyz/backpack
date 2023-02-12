@@ -22,11 +22,11 @@ import {
   hasActiveSubscription,
   unregisterNotificationServiceWorker,
 } from "../../../../permissions/utils";
-import { useNavStack } from "../../../common/Layout/NavStack";
+import { useNavigation } from "../../../common/Layout/NavStack";
 import { SettingsList } from "../../../common/Settings/List";
 
 export function Preferences() {
-  const nav = useNavStack();
+  const nav = useNavigation();
   const background = useBackgroundClient();
   const isDarkMode = useDarkMode();
   const isDeveloperMode = useDeveloperMode();
@@ -89,7 +89,7 @@ export function Preferences() {
     "Trusted Sites": {
       onClick: () => nav.push("preferences-trusted-sites"),
     },
-    "Domain Content Resolver": {
+    "Domain Website Resolver": {
       onClick: () => nav.push("preferences-domain-content-resolver"),
     },
   };
@@ -149,7 +149,7 @@ export function Preferences() {
             style={{
               width: "12px",
               height: "12px",
-              marginRight: "10px",
+              marginRight: "8px",
             }}
           />
         );
@@ -165,7 +165,7 @@ export function Preferences() {
             style={{
               width: "12px",
               height: "12px",
-              marginRight: "10px",
+              marginRight: "8px",
             }}
           />
         );
@@ -174,7 +174,7 @@ export function Preferences() {
   };
 
   useEffect(() => {
-    nav.setTitle("Preferences");
+    nav.setOptions({ headerTitle: "Preferences" });
   }, []);
 
   return (

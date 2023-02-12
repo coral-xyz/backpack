@@ -5,7 +5,7 @@ import { InputListItem, Inputs, PrimaryButton } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { styles } from "@coral-xyz/themes";
 
-import { useNavStack } from "../../../../common/Layout/NavStack";
+import { useNavigation } from "../../../../common/Layout/NavStack";
 
 const useStyles = styles((theme) => ({
   textFieldRoot: {
@@ -30,7 +30,7 @@ const useStyles = styles((theme) => ({
 }));
 
 export function PreferencesCustomIpfsGateway() {
-  const nav = useNavStack();
+  const nav = useNavigation();
   const background = useBackgroundClient();
 
   const [gatewayUrl, setGatewayUrl] = useState("");
@@ -51,9 +51,9 @@ export function PreferencesCustomIpfsGateway() {
 
   useEffect(() => {
     const title = nav.title;
-    nav.setTitle("Change IPFS Gateway");
+    nav.setOptions({ headerTitle: "Change IPFS Gateway" });
     return () => {
-      nav.setTitle(title);
+      nav.setOptions({ headerTitle: title });
     };
   }, []);
 

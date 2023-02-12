@@ -1,15 +1,16 @@
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import Autosizer from "react-virtualized-auto-sizer";
 import { VariableSizeList } from "react-window";
-import type { Blockchain,   CollectionChatData,NftCollection } from "@coral-xyz/common";
+import type {
+  Blockchain,
+  CollectionChatData,
+  NftCollection,
+} from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
   NAV_COMPONENT_NFT_COLLECTION,
   NAV_COMPONENT_NFT_DETAIL,
-  SolanaTokenAccountWithKey,
-  TokenMetadata,
 } from "@coral-xyz/common";
-import { NAV_COMPONENT_NFT_CHAT } from "@coral-xyz/common/dist/esm/constants";
 import { Loading } from "@coral-xyz/react-common";
 import {
   nftById,
@@ -34,7 +35,6 @@ type AllWalletCollections = Array<{
 }>;
 type CollapsedCollections = boolean[];
 
-const ONE_COLLECTION_ID = "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj";
 type Row = {
   height: number;
   key: string;
@@ -344,6 +344,7 @@ function NftCollectionCard({
       nftId: collectionDisplayNftId,
     })
   );
+
   const collectionsChatMetadata = useGroupCollections({ uuid });
 
   const init = async () => {
@@ -364,29 +365,14 @@ function NftCollectionCard({
   };
 
   useEffect(() => {
-    if (collection.metadataCollectionId !== ONE_COLLECTION_ID) {
-      return;
-    }
     init();
   }, [collection.metadataCollectionId]);
 
   if (!collectionDisplayNft) {
     return null;
   }
+
   const onClick = () => {
-    if (collection.metadataCollectionId === ONE_COLLECTION_ID) {
-      push({
-        title: "ONE Holders Chat",
-        componentId: NAV_COMPONENT_NFT_CHAT,
-        componentProps: {
-          collectionId: collection.metadataCollectionId,
-          //@ts-ignore
-          nftMint: collectionDisplayNft?.mint,
-          title: "ONE Holders Chat",
-        },
-      });
-      return;
-    }
     if (collection.itemIds.length === 1) {
       if (!collectionDisplayNft.name || !collectionDisplayNft.id) {
         throw new Error("invalid NFT data");
@@ -426,8 +412,8 @@ function NftCollectionCard({
       onClick={onClick}
       nft={collectionDisplayNft}
       subtitle={{
-        name: collectionDisplayNft.collectionName,
         length: collection.itemIds.length,
+        name: collectionDisplayNft.collectionName,
       }}
     />
   );

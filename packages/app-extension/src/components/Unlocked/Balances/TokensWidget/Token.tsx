@@ -173,7 +173,6 @@ export function WithHeaderButton({
             initialRoute={initialRoute}
             options={(args) => routeOptions(routes, args)}
             navButtonLeft={<CloseButton onClick={() => setOpenDrawer(false)} />}
-            onClose={() => setOpenDrawer(false)}
           >
             {routes.map((r: any) => (
               <NavStackScreen

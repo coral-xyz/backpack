@@ -1,10 +1,17 @@
+import type { MouseEvent } from "react";
 import { UNKNOWN_NFT_ICON_SRC } from "@coral-xyz/common";
 import { NAV_COMPONENT_NFT_CHAT } from "@coral-xyz/common/dist/esm/constants";
 import { MessageBubbleUnreadIcon, ProxyImage } from "@coral-xyz/react-common";
-import { useNavigation } from "@coral-xyz/recoil";
+import {
+  collectibleXnft,
+  useNavigation,
+  useOpenPlugin,
+} from "@coral-xyz/recoil";
 import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
 import CircleIcon from "@mui/icons-material/Circle";
-import { Button, Typography } from "@mui/material";
+import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
+import { Button, IconButton, Typography } from "@mui/material";
+import { useRecoilValueLoadable } from "recoil";
 
 const useStyles = styles(() => ({
   button: {
@@ -24,6 +31,24 @@ export function GridCard({
   const classes = useStyles();
   const theme = useCustomTheme();
   const { push } = useNavigation();
+  const openPlugin = useOpenPlugin();
+
+  const { contents, state } = subtitle
+    ? useRecoilValueLoadable(
+        collectibleXnft(
+          nft ? { collection: nft.metadataCollectionId, mint: nft.mint } : null
+        )
+      )
+    : { contents: undefined, state: "hasValue" };
+
+  const xnft = (state === "hasValue" && contents) || null;
+
+  const onClickAction = (e: MouseEvent) => {
+    e.stopPropagation();
+    if (xnft) {
+      openPlugin(xnft);
+    }
+  };
 
   if (!nft) {
     return null;
@@ -109,48 +134,80 @@ export function GridCard({
         {subtitle && (
           <div
             style={{
-              backgroundColor: theme.custom.colors.nav,
+              width: "100%",
               position: "absolute",
               left: 0,
               bottom: 8,
               zIndex: 2,
-              height: "24px",
-              borderRadius: "12px",
-              padding: "0 8px",
-              margin: "0 5%",
               display: "flex",
-              justifyContent: "center",
-              flexDirection: "column",
-              maxWidth: "90%",
+              justifyContent: "space-between",
+              padding: "0 5px",
+              gap: "6px",
             }}
           >
-            <Typography
-              component="div"
+            <div
               style={{
+                backgroundColor: theme.custom.colors.nav,
+                height: "24px",
+                borderRadius: "12px",
+                padding: "0 8px",
                 display: "flex",
-                justifyContent: "space-between",
-                fontSize: "12px",
-                color: theme.custom.colors.fontColor,
+                alignItems: "center",
+                overflow: "hidden",
+                whiteSpace: "nowrap",
               }}
             >
-              <div
+              <Typography
+                component="div"
                 style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  fontSize: "12px",
+                  color: theme.custom.colors.fontColor,
                   textOverflow: "ellipsis",
                   overflow: "hidden",
                   whiteSpace: "nowrap",
                 }}
               >
-                {subtitle.name}
-              </div>
-              <span
-                style={{
-                  marginLeft: "8px",
-                  color: theme.custom.colors.secondary,
+                <div
+                  style={{
+                    textOverflow: "ellipsis",
+                    overflow: "hidden",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {subtitle.name}
+                </div>
+                <span
+                  style={{
+                    marginLeft: "8px",
+                    color: theme.custom.colors.secondary,
+                  }}
+                >
+                  {subtitle.length}
+                </span>
+              </Typography>
+            </div>
+            {xnft && (
+              <IconButton
+                disableRipple
+                onClick={onClickAction}
+                sx={{
+                  background: theme.custom.colors.nav,
+                  display: "flex",
+                  alignItems: "center",
+                  borderRadius: "15px",
+                  padding: "4px",
                 }}
               >
-                {subtitle.length}
-              </span>
-            </Typography>
+                <RocketLaunchIcon
+                  sx={{
+                    fontSize: "16px",
+                    color: theme.custom.colors.icon,
+                  }}
+                />
+              </IconButton>
+            )}
           </div>
         )}
       </Button>
