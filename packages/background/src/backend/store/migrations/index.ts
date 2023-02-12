@@ -151,5 +151,5 @@ async function pushMigrationLog(m: Migration) {
     log = [];
   }
   log.push(m);
-  await LocalStorageDb.set(STORE_MIGRATION_LOG_KEY, m);
+  await LocalStorageDb.set(STORE_MIGRATION_LOG_KEY, log);
 }
