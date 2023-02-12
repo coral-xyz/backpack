@@ -1,5 +1,9 @@
 import type { Blockchain } from "@coral-xyz/common";
-import { defaultPreferences, getLogger } from "@coral-xyz/common";
+import {
+  BACKEND_API_URL,
+  defaultPreferences,
+  getLogger,
+} from "@coral-xyz/common";
 
 import * as crypto from "../../keyring/crypto";
 import type { KeyringStoreJson } from "../keyring";
@@ -18,16 +22,22 @@ const logger = getLogger("migrations/0_2_0_510");
 // idempotent.
 //
 // In the event of failure, the user must re-onboard.
-export async function migrate_0_2_0_510(uuid: string, password: string) {
-  const username = await migrateWalletData_0_2_0_510(uuid);
-  await migrateKeyringStore_0_2_0_510(uuid, username, password);
+export async function migrate_0_2_0_510(userInfo: {
+  uuid: string;
+  password: string;
+}) {
+  const username = await migrateWalletData_0_2_0_510(userInfo);
+  await migrateKeyringStore_0_2_0_510(userInfo, username);
 }
 
 // Migration:
 //
 //  - moves the wallet data object to a user specfic location.
 //  - clears out the old global wallet data object.
-async function migrateWalletData_0_2_0_510(uuid: string): Promise<string> {
+async function migrateWalletData_0_2_0_510(userInfo: {
+  uuid: string;
+  password: string;
+}): Promise<string> {
   const walletData = await getWalletData_DEPRECATED();
 
   if (!walletData) {
@@ -41,8 +51,16 @@ async function migrateWalletData_0_2_0_510(uuid: string): Promise<string> {
     throw new Error("wallet data not found");
   }
 
+  if (!userInfo.uuid) {
+    const resp = await fetch(`${BACKEND_API_URL}/users/${username}`);
+    const json = await resp.json();
+    userInfo.uuid = json.id;
+  }
+
+  console.log("ARMANI HERE", userInfo);
+
   // Write the username specific data.
-  await setWalletDataForUser(uuid, {
+  await setWalletDataForUser(userInfo.uuid, {
     ...defaultPreferences(),
     ...walletData,
   });
@@ -58,10 +76,13 @@ async function migrateWalletData_0_2_0_510(uuid: string): Promise<string> {
 //   - moves the keyring store from the older single user format to the new
 //     multi user format.
 export async function migrateKeyringStore_0_2_0_510(
-  uuid: string,
-  username: string,
-  password: string
+  userInfo: {
+    uuid: string;
+    password: string;
+  },
+  username: string
 ) {
+  const { uuid, password } = userInfo;
   const ciphertextPayload = await getKeyringCiphertext();
   if (ciphertextPayload === undefined || ciphertextPayload === null) {
     logger.error("keyring store not found on disk");

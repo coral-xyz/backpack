@@ -285,9 +285,14 @@ export class KeyringStore {
 
   public async tryUnlock(password: string, uuid: string) {
     return this.withLock(async () => {
-      const json = await store.getKeyringStore(uuid, password);
+      const userInfo = { uuid, password };
+      const json = await store.getKeyringStore(userInfo);
       await this.fromJson(json);
-      this.activeUserUuid = uuid;
+
+      // Must use this object, because the uuid may have been set during migration.
+      // This will only happen in the event that the given uuid is empty.
+      this.activeUserUuid = userInfo.uuid;
+
       this.password = password;
       // Automatically lock the store when idle.
       // this.autoLockStart();
