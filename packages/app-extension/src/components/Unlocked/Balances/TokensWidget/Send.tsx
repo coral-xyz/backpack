@@ -589,7 +589,7 @@ function SendV2({
                   //@ts-ignore
                   if (
                     !e.currentTarget.textContent ||
-                    isNaN(e.currentTarget.textContent)
+                    isNaN(parseFloat(e.currentTarget.textContent))
                   ) {
                     e.currentTarget.innerHTML = "0";
                     setAmount(ethers.utils.parseUnits("0", token.decimals));
