@@ -34,10 +34,8 @@ export async function getKeyringStore(
   uuid: string,
   password: string
 ): Promise<KeyringStoreJson> {
+  await runMigrationsIfNeeded(uuid, password);
   const json = await getKeyringStore_NO_MIGRATION(password);
-
-  await runMigrationsIfNeeded(json, uuid, password);
-
   return json;
 }
 

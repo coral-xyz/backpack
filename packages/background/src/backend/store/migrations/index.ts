@@ -20,24 +20,16 @@ const logger = getLogger("background/migrations");
  *   - append a new `runMigration` function in the block of code below,
  *     with the migration build number dependent on the previous one.
  */
-export async function runMigrationsIfNeeded(
-  json: KeyringStoreJson,
-  uuid: string,
-  password: string
-) {
+export async function runMigrationsIfNeeded(uuid: string, password: string) {
   try {
-    await _runMigrationsIfNeeded(json, uuid, password);
+    await _runMigrationsIfNeeded(uuid, password);
   } catch (err) {
     // Note: the UI currently assumes this string format.
     throw new Error(`migration failed: ${err.toString()}`);
   }
 }
 
-async function _runMigrationsIfNeeded(
-  json: KeyringStoreJson,
-  uuid: string,
-  password: string
-) {
+async function _runMigrationsIfNeeded(uuid: string, password: string) {
   const LATEST_MIGRATION_BUILD = 2408; // Update this everytime a migration is added.
   const lastMigration = await getMigration();
 
@@ -86,7 +78,7 @@ async function _runMigrationsIfNeeded(
   }
   if ((await getMigration())?.build === 510) {
     await runMigration(2408, async () => {
-      await migrate_0_2_0_2408(json);
+      await migrate_0_2_0_2408(password);
     });
   }
 
