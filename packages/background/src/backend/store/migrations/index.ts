@@ -1,4 +1,84 @@
+import { getLogger } from "@coral-xyz/common";
+
 import { LocalStorageDb } from "../db";
+import type { KeyringStoreJson } from "../keyring";
+import { migrate_0_2_0_510 } from "../migrations/migrate_0_2_0_510";
+import { migrate_0_2_0_2408 } from "../migrations/migrate_0_2_0_2408";
+import { getWalletData_DEPRECATED } from "../preferences";
+
+const logger = getLogger("background/migrations");
+
+/**
+ * Entrypoint to migrations. This function itself is idempotent. However,
+ * we make no guarantee that the migration itself succeeds. If it does not,
+ * we will detect it and throw an error, in which case it's expected for the
+ * user to reonboard.
+ */
+export async function runMigrationsIfNeeded(
+  json: KeyringStoreJson,
+  uuid: string,
+  password: string
+) {
+  const LATEST_MIGRATION_BUILD = 2408; // Update this everytime a migration is added.
+  const lastMigration = await getMigration();
+
+  //
+  // If we've already migrated to the latest build, then exit.
+  //
+  if (
+    lastMigration?.state === "finalized" &&
+    lastMigration?.build === LATEST_MIGRATION_BUILD
+  ) {
+    return;
+  }
+
+  //
+  // If a migration step terminated early, then we're in a corrupt state, so
+  // exit with an error.
+  //
+  if (lastMigration !== undefined && lastMigration?.state !== "end") {
+    throw new Error("migration failed, please re-install Backpack");
+  }
+
+  //
+  // Execute all migrations, if needed.
+  //
+  const needs510Migration = (await getWalletData_DEPRECATED()) !== undefined;
+  if (needs510Migration) {
+    await runMigration(510, async () => {
+      await migrate_0_2_0_510(uuid, password);
+    });
+  }
+  if ((await getMigration())?.build === 510) {
+    await runMigration(2408, async () => {
+      await migrate_0_2_0_2408(json);
+    });
+  }
+
+  //
+  // Set the last migration as finalized.
+  //
+  if ((await getMigration())?.state !== "finalized") {
+    await setMigration({
+      build: LATEST_MIGRATION_BUILD, // Represents the latest build.
+      state: "finalized",
+    });
+  }
+}
+
+async function runMigration(build: number, fn: () => Promise<void>) {
+  logger.debug(`running migration ${build}`);
+  await setMigration({
+    build,
+    state: "start",
+  });
+  await fn();
+  await setMigration({
+    build,
+    state: "end",
+  });
+  logger.debug(`migration ${build} was a success`);
+}
 
 /**
  * Migrations are setup with two pieces of data.
@@ -13,17 +93,17 @@ import { LocalStorageDb } from "../db";
 const STORE_MIGRATION_KEY = "last-migration";
 const STORE_MIGRATION_LOG_KEY = "migration-log";
 
-export type Migration = {
+type Migration = {
   build: number;
   state: "start" | "end" | "finalized";
 };
 
-export async function getMigration(): Promise<Migration | undefined> {
+async function getMigration(): Promise<Migration | undefined> {
   const data = await LocalStorageDb.get(STORE_MIGRATION_KEY);
   return data;
 }
 
-export async function setMigration(m: Migration) {
+async function setMigration(m: Migration) {
   await LocalStorageDb.set(STORE_MIGRATION_KEY, m);
   await pushMigrationLog(m);
 }
