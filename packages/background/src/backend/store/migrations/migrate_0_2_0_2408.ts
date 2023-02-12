@@ -6,13 +6,13 @@
 
 import type { Blockchain } from "@coral-xyz/common";
 import {
-  derivationPathsToIndexes,
+  derivationPathsToIndices,
   legacyBip44ChangeIndexed,
   legacyBip44Indexed,
   legacySolletIndexed,
 } from "@coral-xyz/common";
 
-import { getKeyringStore_NO_MIGRATION,setKeyringStore } from "../keyring";
+import { getKeyringStore_NO_MIGRATION, setKeyringStore } from "../keyring";
 
 export async function migrate_0_2_0_2408(password: string) {
   //
@@ -44,7 +44,7 @@ export async function migrate_0_2_0_2408(password: string) {
           }
         });
         const { accountIndex, walletIndex } =
-          derivationPathsToIndexes(derivationPaths);
+          derivationPathsToIndices(derivationPaths);
         json.users[user].blockchains[blockchain].hdKeyring = {
           mnemonic: hdKeyring.mnemonic,
           seed: hdKeyring.seed,

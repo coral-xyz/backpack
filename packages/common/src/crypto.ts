@@ -129,24 +129,39 @@ export const getAccountRecoveryPaths = (
 //
 // Get a sensible account and wallet index from a list of derivation paths.
 //
-export const derivationPathsToIndexes = (
+export const derivationPathsToIndices = (
   derivationPaths: Array<string>
-): { accountIndex: number; walletIndex: number } => {
+): { accountIndex: number; walletIndex: number | undefined } => {
+  console.log("derivation paths", derivationPaths);
+
   if (derivationPaths.length === 0) {
     return { accountIndex: 0, walletIndex: 0 };
   }
   const pathArrays = derivationPaths.map((x) =>
     BIPPath.fromString(x).toPathArray()
   );
+
+  const accountIndices = pathArrays
+    .map((p: Array<number> | undefined) => (p ? p[2] : undefined))
+    .filter((p) => p !== undefined);
+
+  if (accountIndices.length == 0) {
+    return { accountIndex: 0, walletIndex: undefined };
+  }
+
   const accountIndex = Math.max(
-    ...pathArrays
-      // Account index should be the element at index 2, this is not true for
-      // deprecated sollet paths but they are 0 anyway
-      .map((p: Array<number>) => (p[2] ? p[2] : 0))
-      .map((i: number) => (i >= HARDENING ? i - HARDENING : i))
+    ...accountIndices.map((i: number) => (i >= HARDENING ? i - HARDENING : i))
   );
+
+  const pathsForMaxAccountIndex = pathArrays.filter(
+    (p) => p[2] === accountIndex
+  );
+  if (pathsForMaxAccountIndex.length === 0) {
+    return { accountIndex, walletIndex: 0 };
+  }
+
   const walletIndex = Math.max(
-    ...pathArrays
+    ...pathsForMaxAccountIndex
       // Account index should be the element at index 2, this is not true for
       // deprecated sollet paths but they are 0 anyway
       .map((p: Array<number>) => (p[4] ? p[4] + 1 : 0))

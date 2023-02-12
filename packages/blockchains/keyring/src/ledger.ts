@@ -1,6 +1,6 @@
 import type { Blockchain, WalletDescriptor } from "@coral-xyz/common";
 import {
-  derivationPathsToIndexes,
+  derivationPathsToIndices,
   generateUniqueId,
   getIndexedPath,
   LEDGER_INJECTED_CHANNEL_REQUEST,
@@ -52,7 +52,7 @@ export class LedgerKeyringBase {
   public nextDerivationPath(offset = 1) {
     const derivationPaths = this.walletDescriptors.map((w) => w.derivationPath);
     const { accountIndex, walletIndex } =
-      derivationPathsToIndexes(derivationPaths);
+      derivationPathsToIndices(derivationPaths);
     const derivationPath = getIndexedPath(
       this.blockchain,
       accountIndex,

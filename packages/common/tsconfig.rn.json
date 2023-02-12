@@ -3,6 +3,6 @@
   "compilerOptions": {
     "outDir": "dist/rn/",
     "rootDir": "./src",
-    "types": ["chrome", "firefox-webext-browser"]
+    "types": ["chrome", "firefox-webext-browser", "jest"]
   }
 }

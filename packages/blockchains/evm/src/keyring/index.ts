@@ -12,7 +12,7 @@ import { LedgerKeyringBase } from "@coral-xyz/blockchain-keyring";
 import type { WalletDescriptor } from "@coral-xyz/common";
 import {
   Blockchain,
-  derivationPathsToIndexes,
+  derivationPathsToIndices,
   getIndexedPath,
   LEDGER_METHOD_ETHEREUM_SIGN_MESSAGE,
   LEDGER_METHOD_ETHEREUM_SIGN_TRANSACTION,
@@ -212,7 +212,7 @@ export class EthereumHdKeyring extends EthereumKeyring implements HdKeyring {
     // If account index and wallet index don't exist, make a best guess based
     // on the existing derivation paths for the keyring
     if (this.accountIndex === undefined || this.walletIndex === undefined) {
-      const { accountIndex, walletIndex } = derivationPathsToIndexes(
+      const { accountIndex, walletIndex } = derivationPathsToIndices(
         this.derivationPaths
       );
       if (!this.accountIndex) this.accountIndex = accountIndex;
