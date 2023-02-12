@@ -8,6 +8,7 @@ import {
 import type { Request, Response } from "express";
 import express from "express";
 import jwt from "jsonwebtoken";
+import { z } from "zod";
 
 import { extractUserId, optionallyExtractUserId } from "../../auth/middleware";
 import { clearCookie, setJWTCookie } from "../../auth/util";
@@ -26,7 +27,9 @@ import {
   updateUserAvatar,
 } from "../../db/users";
 import { getOrcreateXnftSecret } from "../../db/xnftSecrets";
+import { zodErrorToString } from "../../util";
 import { validatePulicKey } from "../../validation/publicKey";
+import { bodyValidator } from "../../validation/reqValidationMiddleware";
 import { validateSignature } from "../../validation/signature";
 import {
   BlockchainPublicKey,
@@ -36,68 +39,95 @@ import {
 
 const router = express.Router();
 
-router.get("/", extractUserId, async (req, res) => {
-  // @ts-ignore
-  const usernamePrefix: string = req.query.usernamePrefix;
-  // @ts-ignore
-  const uuid = req.id as string;
+router.get(
+  "/",
+  bodyValidator(
+    z.object({
+      query: z.object({
+        usernamePrefix: z.string(),
+      }),
+      id: z.string().uuid(),
+    })
+  ),
+  extractUserId,
+  async (req, res) => {
+    // @ts-ignore
+    const usernamePrefix: string = req.query.usernamePrefix;
+    // @ts-ignore
+    const uuid = req.id as string;
 
-  const isSolPublicKey = validatePulicKey(usernamePrefix, "solana");
-  const isEthPublicKey = validatePulicKey(usernamePrefix, "ethereum");
+    const isSolPublicKey = validatePulicKey(usernamePrefix, "solana");
+    const isEthPublicKey = validatePulicKey(usernamePrefix, "ethereum");
 
-  let users;
-  if (isSolPublicKey) {
-    users = await getUserByPublicKeyAndChain(usernamePrefix, Blockchain.SOLANA);
-  } else if (isEthPublicKey) {
-    users = await getUserByPublicKeyAndChain(
-      usernamePrefix,
-      Blockchain.ETHEREUM
+    let users;
+    if (isSolPublicKey) {
+      users = await getUserByPublicKeyAndChain(
+        usernamePrefix,
+        Blockchain.SOLANA
+      );
+    } else if (isEthPublicKey) {
+      users = await getUserByPublicKeyAndChain(
+        usernamePrefix,
+        Blockchain.ETHEREUM
+      );
+    } else {
+      users = await getUsersByPrefix({ usernamePrefix, uuid });
+    }
+
+    const friendships: {
+      id: string;
+      areFriends: boolean;
+      requested: boolean;
+      remoteRequested: boolean;
+    }[] = await getFriendshipStatus(
+      users.map((x) => x.id as string),
+      uuid
     );
-  } else {
-    users = await getUsersByPrefix({ usernamePrefix, uuid });
-  }
 
-  const friendships: {
-    id: string;
-    areFriends: boolean;
-    requested: boolean;
-    remoteRequested: boolean;
-  }[] = await getFriendshipStatus(
-    users.map((x) => x.id as string),
-    uuid
-  );
+    const usersWithFriendshipMetadata: RemoteUserData[] = users
+      .filter((x) => x.id !== uuid)
+      .map(({ id, username }) => {
+        const friendship = friendships.find((x) => x.id === id);
 
-  const usersWithFriendshipMetadata: RemoteUserData[] = users
-    .filter((x) => x.id !== uuid)
-    .map(({ id, username }) => {
-      const friendship = friendships.find((x) => x.id === id);
+        return {
+          id,
+          username,
+          image: `${AVATAR_BASE_URL}/${username}`,
+          requested: friendship?.requested || false,
+          remoteRequested: friendship?.remoteRequested || false,
+          areFriends: friendship?.areFriends || false,
+          searchedSolPubKey: isSolPublicKey ? usernamePrefix : undefined,
+          searchedEthPubKey: isEthPublicKey ? usernamePrefix : undefined,
+        };
+      });
 
-      return {
-        id,
-        username,
-        image: `${AVATAR_BASE_URL}/${username}`,
-        requested: friendship?.requested || false,
-        remoteRequested: friendship?.remoteRequested || false,
-        areFriends: friendship?.areFriends || false,
-        searchedSolPubKey: isSolPublicKey ? usernamePrefix : undefined,
-        searchedEthPubKey: isEthPublicKey ? usernamePrefix : undefined,
-      };
+    res.json({
+      users: usersWithFriendshipMetadata,
     });
+  }
+);
 
-  res.json({
-    users: usersWithFriendshipMetadata,
-  });
-});
-
-router.get("/jwt/xnft", extractUserId, async (req, res) => {
-  // @ts-ignore
-  const uuid = req.id as string;
-  // @ts-ignore
-  const xnftAddress: string = req.query.xnftAddress;
-  const secret = await getOrcreateXnftSecret(xnftAddress);
-  const signedJwt = await jwt.sign({ uuid: uuid }, secret);
-  return res.json({ jwt: signedJwt });
-});
+router.get(
+  "/jwt/xnft",
+  bodyValidator(
+    z.object({
+      query: z.object({
+        xnftAddress: z.string(),
+      }),
+      id: z.string().uuid(),
+    })
+  ),
+  extractUserId,
+  async (req, res) => {
+    // @ts-ignore
+    const uuid = req.id as string;
+    // @ts-ignore
+    const xnftAddress: string = req.query.xnftAddress;
+    const secret = await getOrcreateXnftSecret(xnftAddress);
+    const signedJwt = await jwt.sign({ uuid: uuid }, secret);
+    return res.json({ jwt: signedJwt });
+  }
+);
 
 /**
  * Create a new user.
@@ -195,12 +225,23 @@ router.post("/", async (req, res) => {
 /**
  * Fetches User detail by id
  */
-router.get("/userById", extractUserId, async (req: Request, res: Response) => {
-  //@ts-ignore
-  const remoteUserId: string = req.query.remoteUserId;
-  const user = await getUser(remoteUserId);
-  return res.json({ user });
-});
+router.get(
+  "/userById",
+  bodyValidator(
+    z.object({
+      query: z.object({
+        remoteUserId: z.string(),
+      }),
+    })
+  ),
+  extractUserId,
+  async (req: Request, res: Response) => {
+    //@ts-ignore
+    const remoteUserId: string = req.query.remoteUserId;
+    const user = await getUser(remoteUserId);
+    return res.json({ user });
+  }
+);
 
 /**
  * Returns the user that is associated with the JWT in the cookie or query string.
@@ -226,6 +267,14 @@ router.get(
  */
 router.get(
   "/:username",
+  bodyValidator(
+    z.object({
+      params: z.object({
+        username: z.string(),
+      }),
+      id: z.string().uuid(),
+    })
+  ),
   optionallyExtractUserId(false),
   async (req: Request, res: Response) => {
     const username = req.params.username;
@@ -334,24 +383,46 @@ router.post(
 /**
  * Update avatar of the currently authenticated user.
  */
-router.post("/avatar", extractUserId, async (req: Request, res: Response) => {
-  await updateUserAvatar({
-    userId: req.id!,
-    avatar: req.body.avatar,
-  });
+router.post(
+  "/avatar",
+  bodyValidator(
+    z.object({
+      id: z.string().uuid(),
+      body: z.object({
+        avatar: z.string(),
+      }),
+    })
+  ),
+  extractUserId,
+  async (req: Request, res: Response) => {
+    await updateUserAvatar({
+      userId: req.id!,
+      avatar: req.body.avatar,
+    });
 
-  return res.status(201).end();
-});
+    return res.status(201).end();
+  }
+);
 
-router.post("/metadata", async (req: Request, res: Response) => {
-  const users = await getUsers(req.body.uuids);
-  return res.json({
-    users: (users || []).map((user) => ({
-      uuid: user.id,
-      username: user.username,
-      image: `${AVATAR_BASE_URL}/${user.username}`,
-    })),
-  });
-});
+router.post(
+  "/metadata",
+  bodyValidator(
+    z.object({
+      body: z.object({
+        uuids: z.string().uuid().array(),
+      }),
+    })
+  ),
+  async (req: Request, res: Response) => {
+    const users = await getUsers(req.body.uuids);
+    return res.json({
+      users: (users || []).map((user) => ({
+        uuid: user.id,
+        username: user.username,
+        image: `${AVATAR_BASE_URL}/${user.username}`,
+      })),
+    });
+  }
+);
 
 export default router;
