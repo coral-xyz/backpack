@@ -238,7 +238,7 @@ export function NotificationsProvider(props: any) {
           handleKeyringStoreLocked();
           break;
         case NOTIFICATION_KEYRING_STORE_UNLOCKED:
-          handleKeyringStoreUnlocked();
+          handleKeyringStoreUnlocked(notif);
           break;
         case NOTIFICATION_KEYRING_STORE_RESET:
           handleReset();
@@ -360,7 +360,12 @@ export function NotificationsProvider(props: any) {
       setAuthenticatedUser(null);
     };
 
-    const handleKeyringStoreUnlocked = () => {
+    const handleKeyringStoreUnlocked = (notif: Notification) => {
+      // Set the active user with the active user from the notification. This
+      // is required because the recoil state can be read on the unlock screen
+      // and may be updated by migrations that occur on an unlock attempt. The
+      // recoil state won't be updated by migrations.
+      setActiveUser(notif.data.activeUser);
       setKeyringStoreState(KeyringStoreStateEnum.Unlocked);
     };
 

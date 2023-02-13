@@ -646,6 +646,7 @@ export const ResolveFromPath = (
       }
     }
   };
+  //@ts-ignore
   const ResolveReturnType = (mappedParts: Part[]) => {
     if (mappedParts.length === 0) {
       return "not";
