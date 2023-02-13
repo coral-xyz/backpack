@@ -2,6 +2,7 @@ import type { Blockchain, WalletDescriptor } from "@coral-xyz/common";
 import {
   generateUniqueId,
   getIndexedPath,
+  isValidEventOrigin,
   LEDGER_INJECTED_CHANNEL_REQUEST,
   LEDGER_INJECTED_CHANNEL_RESPONSE,
   nextIndicesFromPaths,
@@ -133,6 +134,9 @@ const responseResolvers: {
 // Handle receiving postMessages
 self.addEventListener("message", (msg) => {
   try {
+    if (!isValidEventOrigin(msg)) {
+      return;
+    }
     if (msg.data.type !== LEDGER_INJECTED_CHANNEL_RESPONSE) {
       return;
     }
