@@ -22497,11 +22497,6 @@ reduce-flatten@^2.0.0:
   resolved "https://registry.yarnpkg.com/reduce-flatten/-/reduce-flatten-2.0.0.tgz#734fd84e65f375d7ca4465c69798c25c9d10ae27"
   integrity sha512-EJ4UNY/U1t2P/2k6oqotuX2Cc3T6nxJwsM0N0asT7dhrtH1ltUxDn4NalSYmPE2rCkVpcf/X6R0wDwcFpzhd4w==
 
-reequest@^0.0.1-security:
-  version "0.0.1-security"
-  resolved "https://registry.yarnpkg.com/reequest/-/reequest-0.0.1-security.tgz#f0c8aa4bbbe254cd1a0f4a9065d090e2bce374e9"
-  integrity sha512-ubtZ6U4rxkOJVHO9sc0Umjc35fYxUOR81cB46OtuthqSt/2jRtzexaJTO5UE6R/2vWYathnmVT8exTiD3ySejA==
-
 regenerate-unicode-properties@^10.1.0:
   version "10.1.0"
   resolved "https://registry.yarnpkg.com/regenerate-unicode-properties/-/regenerate-unicode-properties-10.1.0.tgz#7c3192cab6dd24e21cb4461e5ddd7dd24fa8374c"

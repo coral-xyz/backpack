@@ -101,9 +101,8 @@ export class Plugin {
     //
     // Provide connection for the plugin.
     //
-
     const xnftAddressB32 = base32Encode(
-      base58.decode(new PublicKey(xnftAddress).to()),
+      base58.decode(new PublicKey(xnftAddress).toBase58()),
       "RFC4648",
       { padding: false }
     );
