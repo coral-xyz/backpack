@@ -89,7 +89,7 @@ export function LockedScreen(): JSX.Element {
     try {
       await background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-        params: [password, user.uuid, user.username],
+        params: [password, user.uuid],
       });
     } catch (error: any) {
       setError("password", { message: error });
@@ -100,7 +100,7 @@ export function LockedScreen(): JSX.Element {
   //   async function f() {
   //     await background.request({
   //       method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-  //       params: ["backpack", user.uuid, user.username],
+  //       params: ["backpack", user.uuid],
   //     });
   //   }
   //

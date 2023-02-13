@@ -1,5 +1,3 @@
-import * as dotenv from "dotenv";
-dotenv.config();
 import type { NextFunction, Request, Response } from "express";
 import express from "express";
 import { ZodError } from "zod";

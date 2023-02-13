@@ -12,10 +12,10 @@ import { LedgerKeyringBase } from "@coral-xyz/blockchain-keyring";
 import type { WalletDescriptor } from "@coral-xyz/common";
 import {
   Blockchain,
-  derivationPathsToIndexes,
   getIndexedPath,
   LEDGER_METHOD_SOLANA_SIGN_MESSAGE,
   LEDGER_METHOD_SOLANA_SIGN_TRANSACTION,
+  nextIndicesFromPaths,
 } from "@coral-xyz/common";
 import { Keypair, PublicKey } from "@solana/web3.js";
 import { mnemonicToSeedSync, validateMnemonic } from "bip39";
@@ -218,7 +218,7 @@ class SolanaHdKeyring extends SolanaKeyring implements HdKeyring {
     // If account index and wallet index don't exist, make a best guess based
     // on the existing derivation paths for the keyring
     if (this.accountIndex === undefined || this.walletIndex === undefined) {
-      const { accountIndex, walletIndex } = derivationPathsToIndexes(
+      const { accountIndex, walletIndex } = nextIndicesFromPaths(
         this.derivationPaths
       );
       if (!this.accountIndex) this.accountIndex = accountIndex;

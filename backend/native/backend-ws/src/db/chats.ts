@@ -117,12 +117,27 @@ export const postChat = (
           },
         }
       : {};
+
+  const simpleTransferMutation =
+    message_kind === "transaction"
+      ? {
+          simple_transactions: {
+            data: [
+              {
+                txn_signature: messageMetadata?.final_tx_signature || "",
+              },
+            ],
+          },
+        }
+      : {};
+
   chain("mutation")({
     insert_chats_one: [
       {
         object: {
           ...secureTransferMutation,
           ...mediaMessageMutation,
+          ...simpleTransferMutation,
           username: "",
           room,
           message: message,

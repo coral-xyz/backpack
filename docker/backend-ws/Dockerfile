@@ -38,4 +38,6 @@ RUN cd /base/backend/native/backend-ws && yarn run build
 
 EXPOSE 8080
 
-CMD ["node", "/base/backend/native/backend-ws/dist/index.js"]
+WORKDIR /base/backend/native/backend-ws
+
+CMD ["node", "dist/index.js"]

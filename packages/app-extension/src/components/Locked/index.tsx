@@ -2,6 +2,7 @@ import { useState } from "react";
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
 import {
   Backpack,
+  EmptyState,
   PrimaryButton,
   ProxyImage,
   RedBackpack,
@@ -9,8 +10,10 @@ import {
 } from "@coral-xyz/react-common";
 import { useAvatarUrl, useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Error, Visibility, VisibilityOff } from "@mui/icons-material";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
+
+import { WithDrawer } from "../common/Layout/Drawer";
 
 import { LockedMenu } from "./LockedMenu";
 
@@ -22,6 +25,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
   const user = useUser();
   const avatarUrl = useAvatarUrl(120, user.username);
 
+  const [migrationFailed, setMigrationFailed] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -32,14 +36,19 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
     try {
       await background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-        params: [password, user.uuid, user.username],
+        params: [password, user.uuid],
       });
 
       if (onUnlock) {
-        onUnlock();
+        await onUnlock();
       }
     } catch (err) {
       console.error(err);
+      // @ts-ignore
+      if (err.toString().includes("migration failed:")) {
+        setMigrationFailed(true);
+        return;
+      }
       setError(true);
     }
   };
@@ -143,7 +152,26 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
           </Box>
         </Box>
       </Box>
+      <WithDrawer openDrawer={migrationFailed} setOpenDrawer={() => {}}>
+        <MigrationFailed />
+      </WithDrawer>
     </Box>
+  );
+}
+
+function MigrationFailed() {
+  return (
+    <div
+      style={{
+        height: "100%",
+      }}
+    >
+      <EmptyState
+        icon={(props: any) => <Error {...props} />}
+        title={"Migration Failed"}
+        subtitle={"Please reinstall Backpack"}
+      />
+    </div>
   );
 }
 

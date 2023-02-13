@@ -13,6 +13,7 @@ export * from "./useFriendship";
 export * from "./useLoader";
 export * from "./usePriceData";
 export * from "./useRecentNotifications";
+export * from "./useTokenMetadata";
 export * from "./useTotalBalance";
 export * from "./useTransactionData";
 export * from "./useUnreadCount";

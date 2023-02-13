@@ -43,7 +43,11 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
       // These set state calls should be batched
       if (result) {
         const { isAuthenticated, publicKeys } = result;
-        setServerAccountState({ isAuthenticated, publicKeys });
+        setServerAccountState({
+          // If user.jwt is empty we should authenticate again
+          isAuthenticated: isAuthenticated && user.jwt !== "",
+          publicKeys,
+        });
       }
     })();
     // Rerun authentication on user changes

@@ -2,7 +2,6 @@ import type { FEATURE_GATES_MAP } from "@coral-xyz/common";
 import {
   buildFullFeatureGatesMap,
   UI_RPC_METHOD_GET_FEATURE_GATES,
-  UI_RPC_METHOD_PREFERENCES_READ,
 } from "@coral-xyz/common";
 import { atom, selector } from "recoil";
 
