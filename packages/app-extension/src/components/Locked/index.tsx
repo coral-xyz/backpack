@@ -40,7 +40,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
       });
 
       if (onUnlock) {
-        onUnlock();
+        await onUnlock();
       }
     } catch (err) {
       console.error(err);

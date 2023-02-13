@@ -666,11 +666,9 @@ export class Backend {
     //       when a uuid doesn't yet exist on the client.
     //
     const userInfo = { password, uuid };
-
     await this.keyringStore.tryUnlock(userInfo);
-
+    const activeUser = (await store.getUserData()).activeUser;
     const blockchainActiveWallets = await this.blockchainActiveWallets();
-
     const ethereumConnectionUrl = await this.ethereumConnectionUrlRead(
       userInfo.uuid
     );
@@ -683,6 +681,7 @@ export class Backend {
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_STORE_UNLOCKED,
       data: {
+        activeUser,
         blockchainActiveWallets,
         ethereumConnectionUrl,
         ethereumChainId,

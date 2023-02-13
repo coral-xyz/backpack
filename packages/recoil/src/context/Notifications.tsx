@@ -238,7 +238,7 @@ export function NotificationsProvider(props: any) {
           handleKeyringStoreLocked();
           break;
         case NOTIFICATION_KEYRING_STORE_UNLOCKED:
-          handleKeyringStoreUnlocked();
+          handleKeyringStoreUnlocked(notif);
           break;
         case NOTIFICATION_KEYRING_STORE_RESET:
           handleReset();
@@ -360,7 +360,8 @@ export function NotificationsProvider(props: any) {
       setAuthenticatedUser(null);
     };
 
-    const handleKeyringStoreUnlocked = () => {
+    const handleKeyringStoreUnlocked = (notif: Notification) => {
+      setActiveUser(notif.data.activeUser);
       setKeyringStoreState(KeyringStoreStateEnum.Unlocked);
     };
 
