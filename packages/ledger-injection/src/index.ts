@@ -1,5 +1,6 @@
 import {
   getLogger,
+  isValidEventOrigin,
   LEDGER_INJECTED_CHANNEL_REQUEST,
   LEDGER_INJECTED_CHANNEL_RESPONSE,
   LEDGER_METHOD_ETHEREUM_SIGN_EIP712_MESSAGE,
@@ -38,6 +39,9 @@ class LedgerInjection {
 
   start() {
     window.addEventListener("message", async (event) => {
+      if (!isValidEventOrigin(event)) {
+        return;
+      }
       if (event.data.type !== LEDGER_INJECTED_CHANNEL_REQUEST) {
         return;
       }
