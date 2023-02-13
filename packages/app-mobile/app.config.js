@@ -43,7 +43,18 @@ export default {
     supportsTablet: true,
     bundleIdentifier: packageName,
     infoPlist: {
-      WKAppBoundDomains: ["coral-xyz.github.io", "ngrok.io"],
+      NSAllowsArbitraryLoads: true,
+      NSExceptionDomains: {
+        localhost: {
+          NSExceptionAllowsInsecureHTTPLoads: true,
+          NSIncludesSubdomains: true,
+        },
+      },
+      WKAppBoundDomains: [
+        "coral-xyz.github.io",
+        "ngrok.io",
+        "backpack-api.xnfts.dev",
+      ],
     },
   },
   android: {

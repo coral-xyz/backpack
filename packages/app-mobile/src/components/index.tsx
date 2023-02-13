@@ -433,7 +433,7 @@ export function Margin({
   right?: number | string;
   horizontal?: number | string;
   vertical?: number | string;
-  children: JSX.Element[] | JSX.Element;
+  children: any;
 }): JSX.Element {
   const style = {};
   if (bottom) {

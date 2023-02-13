@@ -168,7 +168,7 @@ function maybeParseLog({
     switch (channel) {
       case "mobile-logs": {
         const [name, ...rest] = data;
-        const color = name.includes("ERROR") ? "red" : "yellow";
+        const color = name.includes("ERROR") ? "red" : "brown";
         console.group(`${channel}:${name}`);
         console.log("%c" + `${channel}:` + name, `color: ${color}`);
         console.log(rest);
@@ -207,11 +207,14 @@ function BackgroundHiddenWebView(): JSX.Element {
     Constants?.expoConfig?.extra || {};
 
   const webViewUrl = Device.isDevice ? remoteWebViewUrl : localWebViewUrl;
+  console.log("webviewUrl", webViewUrl);
 
   return (
     <View style={{ display: "none" }}>
       <WebView
         ref={ref}
+        // useWebView2
+        // originWhitelist={["*"]}
         cacheMode="LOAD_CACHE_ELSE_NETWORK"
         cacheEnabled
         limitsNavigationsToAppBoundDomains
