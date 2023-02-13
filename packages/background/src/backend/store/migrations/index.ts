@@ -1,7 +1,6 @@
 import { BACKPACK_CONFIG_VERSION, getLogger } from "@coral-xyz/common";
 
 import { LocalStorageDb } from "../db";
-import type { KeyringStoreJson } from "../keyring";
 import { migrate_0_2_0_510 } from "../migrations/migrate_0_2_0_510";
 import { migrate_0_2_0_2408 } from "../migrations/migrate_0_2_0_2408";
 import { getWalletData_DEPRECATED } from "../preferences";
@@ -20,16 +19,22 @@ const logger = getLogger("background/migrations");
  *   - append a new `runMigration` function in the block of code below,
  *     with the migration build number dependent on the previous one.
  */
-export async function runMigrationsIfNeeded(uuid: string, password: string) {
+export async function runMigrationsIfNeeded(userInfo: {
+  uuid: string;
+  password: string;
+}) {
   try {
-    await _runMigrationsIfNeeded(uuid, password);
+    await _runMigrationsIfNeeded(userInfo);
   } catch (err) {
     // Note: the UI currently assumes this string format.
     throw new Error(`migration failed: ${err.toString()}`);
   }
 }
 
-async function _runMigrationsIfNeeded(uuid: string, password: string) {
+async function _runMigrationsIfNeeded(userInfo: {
+  uuid: string;
+  password: string;
+}) {
   const LATEST_MIGRATION_BUILD = 2408; // Update this everytime a migration is added.
   const lastMigration = await getMigration();
 
@@ -73,12 +78,12 @@ async function _runMigrationsIfNeeded(uuid: string, password: string) {
     (await getWalletData_DEPRECATED()) !== undefined
   ) {
     await runMigration(510, async () => {
-      await migrate_0_2_0_510(uuid, password);
+      await migrate_0_2_0_510(userInfo);
     });
   }
   if ((await getMigration())?.build === 510) {
     await runMigration(2408, async () => {
-      await migrate_0_2_0_2408(password);
+      await migrate_0_2_0_2408(userInfo);
     });
   }
 

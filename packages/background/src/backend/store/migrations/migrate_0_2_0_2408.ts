@@ -14,7 +14,12 @@ import {
 
 import { getKeyringStore_NO_MIGRATION, setKeyringStore } from "../keyring";
 
-export async function migrate_0_2_0_2408(password: string) {
+export async function migrate_0_2_0_2408(userInfo: {
+  uuid: string;
+  password: string;
+}) {
+  const { password } = userInfo;
+
   //
   // Get the current keyring store.
   //
@@ -37,7 +42,7 @@ export async function migrate_0_2_0_2408(password: string) {
         const derivationPaths = hdKeyring.accountIndices.map((i: number) => {
           if (hdKeyring.derivationPath === "bip44") {
             return legacyBip44Indexed(blockchain as Blockchain, i);
-          } else if (hdKeyring.derivationPath === "bip44change") {
+          } else if (hdKeyring.derivationPath === "bip44-change") {
             return legacyBip44ChangeIndexed(blockchain as Blockchain, i);
           } else {
             return legacySolletIndexed(i);
@@ -66,7 +71,7 @@ export async function migrate_0_2_0_2408(password: string) {
                 blockchain as Blockchain,
                 d.account
               );
-            } else if (d.path === "bip44change") {
+            } else if (d.path === "bip44-change") {
               derivationPath = legacyBip44ChangeIndexed(
                 blockchain as Blockchain,
                 d.account
