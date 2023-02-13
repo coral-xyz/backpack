@@ -1,9 +1,4 @@
-import type {
-  Blockchain,
-  BlockchainKeyringInit,
-  SignedWalletDescriptor,
-  WalletDescriptor,
-} from "@coral-xyz/common";
+import type { Blockchain, WalletDescriptor } from "@coral-xyz/common";
 import type { StackScreenProps } from "@react-navigation/stack";
 
 import { useEffect, useState } from "react";
@@ -22,7 +17,8 @@ import {
   BACKEND_API_URL,
   BACKPACK_FEATURE_XNFT,
   getCreateMessage,
-  DerivationPath,
+  getAuthMessage,
+  getBlockchainFromPath,
   DISCORD_INVITE_LINK,
   toTitleCase,
   TWITTER_LINK,
@@ -32,7 +28,7 @@ import {
   UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
   UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
-  getBlockchainFromPath,
+  UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   XNFT_GG_LINK,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
@@ -77,10 +73,68 @@ import {
   SubtextParagraph,
   WelcomeLogoHeader,
 } from "@components/index";
+import { useAuthentication } from "@hooks/useAuthentication";
 import { useTheme } from "@hooks/useTheme";
 import { OnboardingProvider, useOnboardingData } from "@lib/OnboardingProvider";
 
 const { base58 } = ethers.utils;
+
+function Cell({ children, style }: any): JSX.Element {
+  return (
+    <View style={[{ alignSelf: "flex-start", marginBottom: 12 }, style]}>
+      {children}
+    </View>
+  );
+}
+
+function Network({
+  id,
+  label,
+  enabled,
+  selected,
+  onSelect,
+}: {
+  id: Blockchain;
+  label: string;
+  enabled: boolean;
+  selected: boolean;
+  onSelect: (b: Blockchain) => void;
+}) {
+  function getIcon(id: string): JSX.Element | null {
+    switch (id) {
+      case "ethereum":
+        return <EthereumIcon width={24} height={24} />;
+      case "solana":
+        return <SolanaIcon width={24} height={24} />;
+      case "polygon":
+        return <PolygonIcon width={24} height={24} />;
+      case "bsc":
+        return <BscIcon width={24} height={24} />;
+      case "cosmos":
+        return <CosmosIcon width={24} height={24} />;
+      case "valanache":
+        return <AvalancheIcon width={24} height={24} />;
+      default:
+        return null;
+    }
+  }
+
+  return (
+    <View style={{ flex: 1, margin: 6 }}>
+      <ActionCard
+        text={label}
+        disabled={!enabled}
+        icon={getIcon(id)}
+        textAdornment={selected ? <CheckBadge /> : ""}
+        onPress={() => {
+          if (enabled) {
+            onSelect(id);
+          }
+        }}
+      />
+    </View>
+  );
+}
 
 export const useSignMessageForWallet = (mnemonic?: string | true) => {
   const background = useBackgroundClient();
@@ -139,7 +193,7 @@ function OnboardingScreen({
 }: {
   title: string;
   subtitle?: string;
-  children?: JSX.Element[] | JSX.Element;
+  children?: any;
 }) {
   const insets = useSafeAreaInsets();
   return (
@@ -160,106 +214,6 @@ function OnboardingScreen({
   );
 }
 
-async function fetchData() {
-  const serverPublicKeys = [
-    {
-      blockchain: "solana",
-      publicKey: "97kxuTnGKKMJhQnP776dAZgw2ex5WoVGSxUV2bNhyJxN",
-    },
-    {
-      blockchain: "solana",
-      publicKey: "BTTZXqkLAE4DgX4Gc79wNdb8sfLjL7PuXXNwRu8zLDs7",
-    },
-    {
-      blockchain: "solana",
-      publicKey: "BCzM2sCVC9UyfYcXosoi9UcxdA4hJmi3M12XMRVXxRiY",
-    },
-    {
-      blockchain: "solana",
-      publicKey: "Byb4wMUj21L1HxZ6GtWY2iGuTcNR3YCgmrESYEKAoabB",
-    },
-    {
-      blockchain: "solana",
-      publicKey: "XPrbf99WEyUcsKUSMpPvHZ83RAPzZoNrWcuw7T8Amsb",
-    },
-    {
-      blockchain: "solana",
-      publicKey: "EY5HgodAvKrptxWDYDnwLWZCY5MCCk5gYBJ9nKNRqNs8",
-    },
-    {
-      blockchain: "solana",
-      publicKey: "Awjg8sLErdBdfMDgyeENzxXhqUZpVR9DuMSX9AzXv5hY",
-    },
-    {
-      blockchain: "solana",
-      publicKey: "B6WixQi8rpsq7q735htDe7XiLWZjMxJSb23NojSVn7Su",
-    },
-    {
-      blockchain: "solana",
-      publicKey: "FJ6brCyFXvLzqaiatYfectpZHYjdJxAtHgzFbZYpTSVZ",
-    },
-    {
-      blockchain: "solana",
-      publicKey: "48P77U2ZayrKuc7jrh2AUCcgkTmApoBjd8DFPwiwBdNH",
-    },
-    {
-      blockchain: "solana",
-      publicKey: "8zoLkXAaX3sFofJCH3ZEX6v4Xix6VgsqsBk1sfGzJraz",
-    },
-    {
-      blockchain: "solana",
-      publicKey: "HYkJQKtZeJauUsF2SZktMeTuozLTKYHmPFwVQkEqxMnh",
-    },
-    {
-      blockchain: "solana",
-      publicKey: "JAVM2GtG18FiJg3JidthNenv8KKiK91fUVyLw4ayspkp",
-    },
-    {
-      blockchain: "solana",
-      publicKey: "6Mv4dzBzRh7rQpU4iCs7PU2MHNd6NgYduuFRwyeSEW2b",
-    },
-    {
-      blockchain: "solana",
-      publicKey: "GUp61Vmiat29y7uBs89raavUynyfBooV93stJVHH2DEp",
-    },
-    {
-      blockchain: "solana",
-      publicKey: "8TzxSGP7WUZrapSxkkLnHwnaMuKr1QE5SSuaeNxGyzah",
-    },
-    {
-      blockchain: "solana",
-      publicKey: "6S3CMhRUzDYsfKG5xKFxXYZ2eN2SEucuvuTrxucfRMKM",
-    },
-    {
-      blockchain: "solana",
-      publicKey: "3Fd2UTkuskAtvLz6BfB2yWydkUPevimYpunvxGWAVMxr",
-    },
-    {
-      blockchain: "solana",
-      publicKey: "9LQUVJuoSnHJyLu98WP5DARBJkk6cMxJimegWqHaBfzc",
-    },
-    {
-      blockchain: "solana",
-      publicKey: "CW9jdSEC5k62p9Vn2TEpgfoSNxyRLud5GU2aXqeWrHiP",
-    },
-  ];
-
-  console.log("BB FETCH_DATA_PRE");
-  const url = "https://backpack-api.xnfts.dev/publicKeys";
-  console.log("BB secure context", window.isSecureContext);
-  const response = await fetch(url, {
-    method: "POST",
-    body: JSON.stringify(serverPublicKeys),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  }).then((r) => r.json());
-  console.log("BB FETCH_DATA_POST");
-
-  console.log("BB response", response);
-}
-
-// https://github.com/gorhom/react-native-bottom-sheet
 function OnboardingCreateOrImportWalletScreen({
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "CreateOrImportWallet">) {
@@ -300,7 +254,6 @@ function OnboardingCreateOrImportWalletScreen({
             onPress={() => {
               setOnboardingData({ action: "create" });
               navigation.push("OnboardingUsername");
-              fetchData();
             }}
           />
           <Margin top={8}>
@@ -369,7 +322,6 @@ function OnboardingKeyringTypeSelectorScreen({
           onPress={() => {
             setOnboardingData({ keyringType: "mnemonic" });
             navigation.push("MnemonicInput");
-            fetchData();
           }}
         />
         <Box style={{ paddingVertical: 8 }}>
@@ -561,8 +513,6 @@ function OnboardingMnemonicInputScreen({
   );
 }
 
-// params.blockchain (string)
-// TODO(peter) isRecovery flow
 function OnboardingBlockchainSelectScreen({
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "SelectBlockchain">) {
@@ -572,7 +522,6 @@ function OnboardingBlockchainSelectScreen({
     mnemonic,
     action,
     keyringType,
-    blockchainKeyrings,
     blockchainOptions,
     signedWalletDescriptors,
   } = onboardingData;
@@ -644,67 +593,6 @@ function OnboardingBlockchainSelectScreen({
     }
   };
 
-  function Network({
-    id,
-    label,
-    enabled,
-    selected,
-    onSelect,
-  }: {
-    id: Blockchain;
-    label: string;
-    enabled: boolean;
-    selected: boolean;
-    onSelect: (b: Blockchain) => void;
-  }) {
-    function getIcon(id: string): JSX.Element | null {
-      switch (id) {
-        case "ethereum":
-          return <EthereumIcon width={24} height={24} />;
-        case "solana":
-          return <SolanaIcon width={24} height={24} />;
-        case "polygon":
-          return <PolygonIcon width={24} height={24} />;
-        case "bsc":
-          return <BscIcon width={24} height={24} />;
-        case "cosmos":
-          return <CosmosIcon width={24} height={24} />;
-        case "valanache":
-          return <AvalancheIcon width={24} height={24} />;
-        default:
-          return null;
-      }
-    }
-
-    return (
-      <View style={{ flex: 1, margin: 6 }}>
-        <ActionCard
-          text={label}
-          disabled={!enabled}
-          icon={getIcon(id)}
-          textAdornment={selected ? <CheckBadge /> : ""}
-          onPress={() => {
-            if (enabled) {
-              onSelect(id);
-            }
-          }}
-        />
-      </View>
-    );
-  }
-
-  function renderItem({ item }) {
-    return (
-      <Network
-        id={item.id}
-        selected={selectedBlockchains.includes(item.id)}
-        enabled={item.enabled}
-        label={item.label}
-        onSelect={(b: Blockchain) => handleBlockchainClick(b)}
-      />
-    );
-  }
-
   return (
     <OnboardingScreen
       title="Which network would you like Backpack to use?"
@@ -713,7 +601,17 @@ function OnboardingBlockchainSelectScreen({
       <FlatList
         numColumns={2}
         data={blockchainOptions}
-        renderItem={renderItem}
+        renderItem={({ item }) => {
+          return (
+            <Network
+              id={item.id}
+              selected={selectedBlockchains.includes(item.id)}
+              enabled={item.enabled}
+              label={item.label}
+              onSelect={handleBlockchainClick}
+            />
+          );
+        }}
         keyExtractor={(item) => item.id}
         extraData={selectedBlockchains}
         scrollEnabled={false}
@@ -723,7 +621,6 @@ function OnboardingBlockchainSelectScreen({
         disabled={selectedBlockchains.length === 0}
         label="Next"
         onPress={() => {
-          setOnboardingData({ blockchainKeyrings });
           navigation.push("CreatePassword");
         }}
       />
@@ -737,7 +634,6 @@ type CreatePasswordFormData = {
   agreedToTerms: boolean;
 };
 
-// TODO(peter) KeyboardAvoidingView
 function OnboardingCreatePasswordScreen({
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "CreatePassword">) {
@@ -755,54 +651,60 @@ function OnboardingCreatePasswordScreen({
 
   // TODO(peter) some fk'd up shit is happening here where the hook claims to be invalid when it's not
   return (
-    <OnboardingScreen
-      title="Create a password"
-      subtitle="It should be at least 8 characters. You'll need this to unlock Backpack."
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={78}
     >
-      <View style={{ flex: 1, justifyContent: "flex-start" }}>
-        <Margin bottom={12}>
+      <OnboardingScreen
+        title="Create a password"
+        subtitle="It should be at least 8 characters. You'll need this to unlock Backpack."
+      >
+        <View style={{ flex: 1, justifyContent: "flex-start" }}>
+          <Margin bottom={12}>
+            <PasswordInput
+              name="password"
+              placeholder="Password"
+              control={control}
+              rules={{
+                required: "You must specify a password",
+                minLength: {
+                  value: 8,
+                  message: "Password must be at least 8 characters",
+                },
+              }}
+            />
+            <ErrorMessage for={errors.password} />
+          </Margin>
           <PasswordInput
-            name="password"
-            placeholder="Password"
+            name="passwordConfirmation"
+            placeholder="Confirm Password"
             control={control}
             rules={{
-              required: "You must specify a password",
-              minLength: {
-                value: 8,
-                message: "Password must be at least 8 characters",
+              validate: (val: string) => {
+                if (val !== watch("password")) {
+                  return "Passwords do not match";
+                }
               },
             }}
           />
-          <ErrorMessage for={errors.password} />
-        </Margin>
-        <PasswordInput
-          name="passwordConfirmation"
-          placeholder="Confirm Password"
-          control={control}
-          rules={{
-            validate: (val: string) => {
-              if (val !== watch("password")) {
-                return "Passwords do not match";
-              }
-            },
-          }}
+          <ErrorMessage for={errors.passwordConfirmation} />
+        </View>
+        <View style={{ marginBottom: 24 }}>
+          <CheckBox
+            name="agreedToTerms"
+            control={control}
+            label="I agree to the terms of service"
+          />
+          <ErrorMessage for={errors.agreedToTerms} />
+        </View>
+        <PrimaryButton
+          // disabled={!isValid}
+          label="Next (TODO fix isValid)"
+          onPress={handleSubmit(onSubmit)}
         />
-        <ErrorMessage for={errors.passwordConfirmation} />
-      </View>
-      <View style={{ marginBottom: 24 }}>
-        <CheckBox
-          name="agreedToTerms"
-          control={control}
-          label="I agree to the terms of service"
-        />
-        <ErrorMessage for={errors.agreedToTerms} />
-      </View>
-      <PrimaryButton
-        // disabled={!isValid}
-        label="Next (TODO fix isValid)"
-        onPress={handleSubmit(onSubmit)}
-      />
-    </OnboardingScreen>
+      </OnboardingScreen>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -835,44 +737,72 @@ function OnboardingImportAccountsScreen({
 
 function OnboardingFinishedScreen() {
   const background = useBackgroundClient();
+  const { authenticate } = useAuthentication();
   const { onboardingData } = useOnboardingData();
+  const [isValid, setIsValid] = useState(false);
+
   const {
     password,
     mnemonic,
-    blockchainKeyrings,
     username,
     inviteCode,
-    waitlistId,
     isAddingAccount,
     userId,
+    signedWalletDescriptors,
   } = onboardingData;
-
-  const [isValid, setIsValid] = useState(false);
 
   const keyringInit = {
     mnemonic,
-    blockchainKeyrings,
+    signedWalletDescriptors,
   };
 
   useEffect(() => {
     (async () => {
-      const { id } = await createUser();
-      createStore(id);
+      // This is a mitigation to ensure the keyring store doesn't lock before
+      // creating the user on the server.
+      //
+      // Would be better (though probably not a priority atm) to ensure atomicity.
+      // E.g. we could generate the UUID here on the client, create the keyring store,
+      // and only then create the user on the server. If the server fails, then
+      // rollback on the client.
+      //
+      // An improvement for the future!
+      if (isAddingAccount) {
+        await background.request({
+          method: UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
+          params: [],
+        });
+      }
+      const { id, jwt } = await createUser();
+      createStore(id, jwt);
     })();
   }, []);
 
   //
   // Create the user in the backend
   //
-  async function createUser(): Promise<{ id: string }> {
+  async function createUser(): Promise<{ id: string; jwt: string }> {
     // If userId is provided, then we are onboarding via the recover flow.
     if (userId) {
-      return { id: userId };
+      // Authenticate the user that the recovery has a JWT.
+      // Take the first keyring init to fetch the JWT, it doesn't matter which
+      // we use if there are multiple.
+      const { derivationPath, publicKey, signature } =
+        keyringInit.signedWalletDescriptors[0];
+      const authData = {
+        blockchain: getBlockchainFromPath(derivationPath),
+        publicKey,
+        signature,
+        message: getAuthMessage(userId),
+      };
+      const { jwt } = await authenticate(authData!);
+      return { id: userId, jwt };
     }
+
     // If userId is not provided and an invite code is not provided, then
     // this is dev mode.
     if (!inviteCode) {
-      return { id: uuidv4() };
+      return { id: uuidv4(), jwt: "" };
     }
 
     //
@@ -882,8 +812,8 @@ function OnboardingFinishedScreen() {
       username,
       inviteCode,
       waitlistId: getWaitlistId?.(),
-      blockchainPublicKeys: keyringInit.blockchainKeyrings.map((b) => ({
-        blockchain: b.blockchain,
+      blockchainPublicKeys: keyringInit.signedWalletDescriptors.map((b) => ({
+        blockchain: getBlockchainFromPath(b.derivationPath),
         publicKey: b.publicKey,
         signature: b.signature,
       })),
@@ -901,8 +831,10 @@ function OnboardingFinishedScreen() {
       if (!res.ok) {
         throw new Error(await res.json());
       }
+
       return await res.json();
     } catch (err) {
+      console.error("OnboardingNavigator:createUser::error", err);
       throw new Error("error creating account");
     }
   }
@@ -910,40 +842,31 @@ function OnboardingFinishedScreen() {
   //
   // Create the local store for the wallets
   //
-  async function createStore(uuid: string) {
+  async function createStore(uuid: string, jwt: string) {
     try {
-      //
-      // If usernames are disabled, use a default one for developing.
-      //
       if (isAddingAccount) {
+        // Add a new account if needed, this will also create the new keyring
+        // store
         await background.request({
           method: UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
-          params: [username, keyringInit, uuid],
+          params: [username, keyringInit, uuid, jwt],
         });
       } else {
+        // Add a new keyring store under the new account
         await background.request({
           method: UI_RPC_METHOD_KEYRING_STORE_CREATE,
-          params: [username, password, keyringInit, uuid],
+          params: [username, password, keyringInit, uuid, jwt],
         });
       }
-
       setIsValid(true);
     } catch (err) {
-      console.log("account setup error", err);
+      console.error("OnboardingNavigator:createStore::error", err);
       // if (
       //   confirm("There was an issue setting up your account. Please try again.")
       // ) {
-      //   // window.location.reload();
+      // window.location.reload();
       // }
     }
-  }
-
-  function Cell({ children, style }: any): JSX.Element {
-    return (
-      <View style={[{ alignSelf: "flex-start", marginBottom: 12 }, style]}>
-        {children}
-      </View>
-    );
   }
 
   return !isValid ? (

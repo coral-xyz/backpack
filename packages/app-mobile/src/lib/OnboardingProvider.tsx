@@ -51,13 +51,14 @@ export type OnboardingData = {
   username: string | null;
   action: string | null; // TODO consider this default of 'welcome' maybe
   keyringType: KeyringType | null;
-  blockchainKeyrings: any[]; // TODO remove i think
   blockchain: Blockchain | null;
   password: string | null;
   mnemonic: string | undefined;
   blockchainOptions: BlockchainSelectOption[];
   waitlistId: string | undefined;
   signedWalletDescriptors: SignedWalletDescriptor[];
+  userId?: string;
+  isAddingAccount?: boolean;
 };
 
 const defaults = {
@@ -66,7 +67,6 @@ const defaults = {
   username: null,
   action: null,
   keyringType: null,
-  blockchainKeyrings: [],
   blockchain: null,
   password: null,
   mnemonic: undefined,

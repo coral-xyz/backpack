@@ -213,6 +213,8 @@ function BackgroundHiddenWebView(): JSX.Element {
     <View style={{ display: "none" }}>
       <WebView
         ref={ref}
+        // useWebView2
+        // originWhitelist={["*"]}
         cacheMode="LOAD_CACHE_ELSE_NETWORK"
         cacheEnabled
         limitsNavigationsToAppBoundDomains
