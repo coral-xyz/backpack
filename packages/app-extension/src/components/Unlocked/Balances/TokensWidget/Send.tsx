@@ -364,31 +364,31 @@ export function Send({
                 to?.uuid !== uuid &&
                 blockchain === Blockchain.SOLANA
               ) {
-                const client_generated_uuid = uuidv4();
-                createEmptyFriendship(uuid, to?.uuid, {
-                  last_message_sender: uuid,
-                  last_message_timestamp: new Date().toISOString(),
-                  last_message: message,
-                  last_message_client_uuid: client_generated_uuid,
-                });
-
-                SignalingManager.getInstance().send({
-                  type: "CHAT_MESSAGES",
-                  payload: {
-                    room: friendship?.id?.toString(),
-                    type: "individual",
-                    messages: [
-                      {
-                        client_generated_uuid: client_generated_uuid,
-                        message,
-                        message_kind: "transaction",
-                        message_metadata: {
-                          final_tx_signature: txSig,
-                        },
-                      },
-                    ],
-                  },
-                });
+                // const client_generated_uuid = uuidv4();
+                // createEmptyFriendship(uuid, to?.uuid, {
+                //   last_message_sender: uuid,
+                //   last_message_timestamp: new Date().toISOString(),
+                //   last_message: message,
+                //   last_message_client_uuid: client_generated_uuid,
+                // });
+                //
+                // SignalingManager.getInstance().send({
+                //   type: "CHAT_MESSAGES",
+                //   payload: {
+                //     room: friendship?.id?.toString(),
+                //     type: "individual",
+                //     messages: [
+                //       {
+                //         client_generated_uuid: client_generated_uuid,
+                //         message,
+                //         message_kind: "transaction",
+                //         message_metadata: {
+                //           final_tx_signature: txSig,
+                //         },
+                //       },
+                //     ],
+                //   },
+                // });
                 // await navOuter.toRoot();
                 // await background.request({
                 //   method: UI_RPC_METHOD_NAVIGATION_ACTIVE_TAB_UPDATE,
