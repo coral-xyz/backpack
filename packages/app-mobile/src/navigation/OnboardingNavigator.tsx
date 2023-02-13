@@ -244,9 +244,9 @@ async function fetchData() {
     },
   ];
 
-  console.log("FETCH_DATA_PRE");
+  console.log("BB FETCH_DATA_PRE");
   const url = "https://backpack-api.xnfts.dev/publicKeys";
-  console.log("secure context", window.isSecureContext);
+  console.log("BB secure context", window.isSecureContext);
   const response = await fetch(url, {
     method: "POST",
     body: JSON.stringify(serverPublicKeys),
@@ -254,9 +254,9 @@ async function fetchData() {
       "Content-Type": "application/json",
     },
   }).then((r) => r.json());
-  console.log("FETCH_DATA_PRE");
+  console.log("BB FETCH_DATA_POST");
 
-  console.log("response", response);
+  console.log("BB response", response);
 }
 
 // https://github.com/gorhom/react-native-bottom-sheet

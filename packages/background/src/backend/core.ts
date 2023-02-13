@@ -22,6 +22,7 @@ import {
   EthereumExplorer,
   getAccountRecoveryPaths,
   getAddMessage,
+  getLogger,
   NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED,
   NOTIFICATION_AGGREGATE_WALLETS_UPDATED,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
@@ -89,6 +90,8 @@ import type { SolanaConnectionBackend } from "./solana-connection";
 import type { Nav, User } from "./store";
 import * as store from "./store";
 import { getWalletDataForUser, setUser, setWalletDataForUser } from "./store";
+
+const logger = getLogger("core.ts");
 
 const { base58: bs58 } = ethers.utils;
 
@@ -1427,14 +1430,124 @@ export class Backend {
   async findServerPublicKeyConflicts(
     serverPublicKeys: Array<ServerPublicKey>
   ): Promise<Array<string>> {
-    const response = await fetch(`${BACKEND_API_URL}/publicKeys`, {
-      method: "POST",
-      body: JSON.stringify(serverPublicKeys),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    return await response.json();
+    logger.debug("findServerPublicKeyConflicts");
+    logger.debug(
+      "findServerPublicKeyConflicts:serverPublicKeys",
+      serverPublicKeys
+    );
+
+    try {
+      const res = await fetch(
+        "https://api.coingecko.com/api/v3/simple/price?ids=solana,bitcoin,ethereum,helium,frax-share,filecoin&vs_currencies=usd"
+      ).then((r) => r.json());
+      logger.debug("findServerPublicKeyConflicts:coingecko:res", res);
+    } catch (error) {
+      logger.debug(
+        "findServerPublicKeyConflicts:coingecko:error",
+        error.toString
+      );
+    }
+
+    try {
+      const pks = [
+        {
+          blockchain: "solana",
+          publicKey: "97kxuTnGKKMJhQnP776dAZgw2ex5WoVGSxUV2bNhyJxN",
+        },
+        {
+          blockchain: "solana",
+          publicKey: "BTTZXqkLAE4DgX4Gc79wNdb8sfLjL7PuXXNwRu8zLDs7",
+        },
+        {
+          blockchain: "solana",
+          publicKey: "BCzM2sCVC9UyfYcXosoi9UcxdA4hJmi3M12XMRVXxRiY",
+        },
+        {
+          blockchain: "solana",
+          publicKey: "Byb4wMUj21L1HxZ6GtWY2iGuTcNR3YCgmrESYEKAoabB",
+        },
+        {
+          blockchain: "solana",
+          publicKey: "XPrbf99WEyUcsKUSMpPvHZ83RAPzZoNrWcuw7T8Amsb",
+        },
+        {
+          blockchain: "solana",
+          publicKey: "EY5HgodAvKrptxWDYDnwLWZCY5MCCk5gYBJ9nKNRqNs8",
+        },
+        {
+          blockchain: "solana",
+          publicKey: "Awjg8sLErdBdfMDgyeENzxXhqUZpVR9DuMSX9AzXv5hY",
+        },
+        {
+          blockchain: "solana",
+          publicKey: "B6WixQi8rpsq7q735htDe7XiLWZjMxJSb23NojSVn7Su",
+        },
+        {
+          blockchain: "solana",
+          publicKey: "FJ6brCyFXvLzqaiatYfectpZHYjdJxAtHgzFbZYpTSVZ",
+        },
+        {
+          blockchain: "solana",
+          publicKey: "48P77U2ZayrKuc7jrh2AUCcgkTmApoBjd8DFPwiwBdNH",
+        },
+        {
+          blockchain: "solana",
+          publicKey: "8zoLkXAaX3sFofJCH3ZEX6v4Xix6VgsqsBk1sfGzJraz",
+        },
+        {
+          blockchain: "solana",
+          publicKey: "HYkJQKtZeJauUsF2SZktMeTuozLTKYHmPFwVQkEqxMnh",
+        },
+        {
+          blockchain: "solana",
+          publicKey: "JAVM2GtG18FiJg3JidthNenv8KKiK91fUVyLw4ayspkp",
+        },
+        {
+          blockchain: "solana",
+          publicKey: "6Mv4dzBzRh7rQpU4iCs7PU2MHNd6NgYduuFRwyeSEW2b",
+        },
+        {
+          blockchain: "solana",
+          publicKey: "GUp61Vmiat29y7uBs89raavUynyfBooV93stJVHH2DEp",
+        },
+        {
+          blockchain: "solana",
+          publicKey: "8TzxSGP7WUZrapSxkkLnHwnaMuKr1QE5SSuaeNxGyzah",
+        },
+        {
+          blockchain: "solana",
+          publicKey: "6S3CMhRUzDYsfKG5xKFxXYZ2eN2SEucuvuTrxucfRMKM",
+        },
+        {
+          blockchain: "solana",
+          publicKey: "3Fd2UTkuskAtvLz6BfB2yWydkUPevimYpunvxGWAVMxr",
+        },
+        {
+          blockchain: "solana",
+          publicKey: "9LQUVJuoSnHJyLu98WP5DARBJkk6cMxJimegWqHaBfzc",
+        },
+        {
+          blockchain: "solana",
+          publicKey: "CW9jdSEC5k62p9Vn2TEpgfoSNxyRLud5GU2aXqeWrHiP",
+        },
+      ];
+
+      const response = await fetch(`${BACKEND_API_URL}/publicKeys`, {
+        method: "POST",
+        body: JSON.stringify(pks),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      logger.debug("findServerPublicKeyConflicts:response", response);
+      return [];
+
+      // return await response.json();
+    } catch (err) {
+      logger.debug("findServerPublicKeyConflicts:error", err.toString());
+      return [];
+    }
   }
 
   /**
