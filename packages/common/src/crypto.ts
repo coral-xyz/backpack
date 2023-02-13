@@ -90,8 +90,7 @@ export const getIndexedPath = (
     accountIndex + HARDENING,
     0 + HARDENING,
   ];
-  // If walletIndex is 0, this is the same as legacyBip44ChangeIndexed
-  if (walletIndex > 0) path.push(walletIndex - 1 + HARDENING);
+  if (walletIndex >= 0) path.push(walletIndex + HARDENING);
   return new BIPPath.fromPathArray(path).toString();
 };
 
@@ -131,7 +130,7 @@ export const getAccountRecoveryPaths = (
 //
 export const derivationPathsToIndices = (
   derivationPaths: Array<string>
-): { accountIndex: number; walletIndex: number | undefined } => {
+): { accountIndex: number; walletIndex: number } => {
   if (derivationPaths.length === 0) {
     return { accountIndex: 0, walletIndex: 0 };
   }
@@ -148,7 +147,7 @@ export const derivationPathsToIndices = (
     .filter(isDefined);
 
   if (accountIndices.length == 0) {
-    return { accountIndex: 0, walletIndex: undefined };
+    return { accountIndex: 0, walletIndex: -1 };
   }
 
   const accountIndex = Math.max(
@@ -159,17 +158,14 @@ export const derivationPathsToIndices = (
     (p) => p[2] === Math.max(...accountIndices) // Maintain hardening to filter
   );
 
-  if (pathsForMaxAccountIndex.length === 0) {
-    return { accountIndex, walletIndex: 0 };
-  }
-
   const walletIndex = Math.max(
     ...pathsForMaxAccountIndex
       // Account index should be the element at index 2, this is not true for
       // deprecated sollet paths but they are 0 anyway
-      .map((p: Array<number>) => (p[4] ? p[4] + 1 : 0))
+      .map((p: Array<number>) => (p[4] ? p[4] : 0))
       .map((i: number) => (i >= HARDENING ? i - HARDENING : i))
   );
+
   return { accountIndex, walletIndex };
 };
 
