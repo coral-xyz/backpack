@@ -49,7 +49,7 @@ import {
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
 } from "@coral-xyz/common";
 import type { Commitment } from "@solana/web3.js";
-import { useResetRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState, useResetRecoilState, useSetRecoilState } from "recoil";
 
 import * as atoms from "../atoms";
 import { allPlugins } from "../hooks";
@@ -103,7 +103,9 @@ export function NotificationsProvider(props: any) {
 
   // Preferences.
   const setPreferences = useSetRecoilState(atoms.preferences);
-  const setFeatureGates = useSetRecoilState(atoms.featureGates);
+  // useRecoilState is required here because setFeatureGates requires the current
+  // state of featureGates atom to update
+  const [featureGates, setFeatureGates] = useRecoilState(atoms.featureGates);
 
   const setAutoLockSettings = (autoLockSettings: AutolockSettings) => {
     setPreferences((current) => {
@@ -136,12 +138,6 @@ export function NotificationsProvider(props: any) {
         aggregateWallets,
       };
     });
-  };
-  const handleSetFeatureGates = (featureGates: FEATURE_GATES_MAP) => {
-    setFeatureGates((current) => ({
-      ...current,
-      ...featureGates,
-    }));
   };
   const setApprovedOrigins = (approvedOrigins: string[]) => {
     setPreferences((current) => {
@@ -316,7 +312,7 @@ export function NotificationsProvider(props: any) {
           handleBlockchainKeyringDeleted(notif);
           break;
         case NOTIFICATION_FEATURE_GATES_UPDATED:
-          handleSetFeatureGates(notif.data.gates);
+          handleSetFeatureGates(notif);
           break;
         case NOTIFICATION_KEYRING_STORE_USERNAME_ACCOUNT_CREATED:
           handleUsernameAccountCreated(notif);
@@ -675,6 +671,13 @@ export function NotificationsProvider(props: any) {
 
     const handleBlockchainKeyringDeleted = (notif: Notification) => {
       setWalletData(notif.data.publicKeyData);
+    };
+
+    const handleSetFeatureGates = (notif: Notification) => {
+      setFeatureGates((current) => ({
+        ...current,
+        ...featureGates,
+      }));
     };
 
     const handleUsernameAccountCreated = (notif: Notification) => {
