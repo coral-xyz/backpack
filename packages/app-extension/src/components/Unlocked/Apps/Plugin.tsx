@@ -12,7 +12,6 @@ import {
   useNavigationSegue,
   useOpenPlugin,
   usePlugins,
-  xnftPreference as xnftPreferenceAtom,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Button, CircularProgress, Divider } from "@mui/material";
@@ -106,20 +105,14 @@ export function PluginDisplay({
   plugin?: Plugin;
   deepXnftPath: string;
 }) {
-  const closePlugin = useClosePlugin();
-  const xnftPreference = useRecoilValue(
-    xnftPreferenceAtom(plugin?.xnftInstallAddress?.toString())
-  );
-
   return (
     <>
-      <PluginControl plugin={plugin} closePlugin={closePlugin} />
+      <PluginControl plugin={plugin} />
       <Suspense fallback={<Loading />}>
         {plugin && (
           <PluginRenderer
             key={plugin?.iframeRootUrl}
             plugin={plugin}
-            xnftPreference={xnftPreference}
             deepXnftPath={deepXnftPath}
           />
         )}
@@ -128,7 +121,8 @@ export function PluginDisplay({
   );
 }
 
-export function PluginControl({ plugin, closePlugin }: any) {
+export function PluginControl({ plugin }: { plugin: any | null }) {
+  const closePlugin = useClosePlugin();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
