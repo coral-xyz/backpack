@@ -275,7 +275,7 @@ export async function fetchSplMetadataUri(
           const uri = t.account.data.uri;
           try {
             const resp = await fetch(
-              `https://swr.xnfts.dev/web/${externalResourceUri(uri)}`
+              `${externalResourceUri(uri, { cached: true })}`
             );
             resolve(await resp.json());
           } catch (err) {

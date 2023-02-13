@@ -1,0 +1,8 @@
+name = "xnft-gateway"
+main = "src/index.ts"
+compatibility_date = "2022-12-05"
+node_compat = true
+
+services = [
+  { binding = "nftData", service = "nft-data" }
+]

@@ -1,6 +1,9 @@
 import type { Event, XnftMetadata } from "@coral-xyz/common-public";
-import { getLogger } from "@coral-xyz/common-public";
-import type { ConfirmOptions, PublicKey, SendOptions } from "@solana/web3.js";
+import { externalResourceUri, getLogger } from "@coral-xyz/common-public";
+import type { ConfirmOptions, SendOptions } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
+import base32Encode from "base32-encode";
+import base58 from "bs58";
 
 import { openPopupWindow } from "./browser/extension";
 import type { BackgroundClient } from "./channel/app-ui";
@@ -82,15 +85,17 @@ export class Plugin {
 
   readonly iframeRootUrl: string;
   readonly iconUrl: string;
+  readonly splashUrls: { [key: string]: string };
   readonly title: string;
   readonly xnftAddress: PublicKey;
   readonly xnftInstallAddress: PublicKey;
 
   constructor(
-    xnftAddress: PublicKey,
-    xnftInstallAddress: PublicKey,
+    xnftAddress: PublicKey | string,
+    xnftInstallAddress: PublicKey | string,
     url: string,
     iconUrl: string,
+    splashUrls: { [key: string]: string },
     title: string,
     activeWallets: { [blockchain: string]: string },
     connectionUrls: { [blockchain: string]: string | null }
@@ -98,13 +103,29 @@ export class Plugin {
     //
     // Provide connection for the plugin.
     //
+
     this._activeWallets = activeWallets;
     this._connectionUrls = connectionUrls;
     this.title = title;
-    this.iframeRootUrl = url;
     this.iconUrl = iconUrl;
-    this.xnftAddress = xnftAddress;
-    this.xnftInstallAddress = xnftInstallAddress;
+    this.splashUrls = splashUrls;
+    this.xnftAddress = new PublicKey(xnftAddress);
+    this.xnftInstallAddress = new PublicKey(xnftInstallAddress);
+
+    const xnftAddressB32 = base32Encode(
+      base58.decode(this.xnftAddress.toBase58()),
+      "RFC4648",
+      { padding: false }
+    );
+
+    const iframeRootUrl =
+      url.startsWith("ar://") || url.startsWith("ipfs://")
+        ? //  || this.xnftAddress.toBase58() ===
+          //   "CkqWjTWzRMAtYN3CSs8Gp4K9H891htmaN1ysNXqcULc8"
+          `https://${xnftAddressB32}.gateway.xnfts.dev`
+        : externalResourceUri(url);
+
+    this.iframeRootUrl = iframeRootUrl;
 
     //
     // RPC Server channel from plugin -> extension-ui.
