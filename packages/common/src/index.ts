@@ -102,9 +102,11 @@ export function getAddMessage(publicKey: string) {
 // or the parent chrome extension (an xNFT).
 //
 export function isValidEventOrigin(event: Event): boolean {
-  // From same window.
-  if (event.origin === window.location.origin) {
-    return true;
+  // From same window. Note: window not defined in the service worker context.
+  if (typeof window !== "undefined") {
+    if (event.origin === window.location.origin) {
+      return true;
+    }
   }
 
   // From the extension.
