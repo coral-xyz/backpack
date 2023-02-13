@@ -41,6 +41,8 @@ router.get("/", extractUserId, async (req, res) => {
   const usernamePrefix: string = req.query.usernamePrefix;
   // @ts-ignore
   const uuid = req.id as string;
+  // @ts-ignore
+  const limit: number = req.query.limit ? parseInt(req.query.limit) : 20;
 
   const isSolPublicKey = validatePulicKey(usernamePrefix, "solana");
   const isEthPublicKey = validatePulicKey(usernamePrefix, "ethereum");
@@ -54,7 +56,7 @@ router.get("/", extractUserId, async (req, res) => {
       Blockchain.ETHEREUM
     );
   } else {
-    users = await getUsersByPrefix({ usernamePrefix, uuid });
+    users = await getUsersByPrefix({ usernamePrefix, uuid, limit });
   }
 
   const friendships: {
@@ -67,10 +69,13 @@ router.get("/", extractUserId, async (req, res) => {
     uuid
   );
 
+  const metadatas = await getUsers(users.map((x) => x.id));
   const usersWithFriendshipMetadata: RemoteUserData[] = users
     .filter((x) => x.id !== uuid)
     .map(({ id, username }) => {
       const friendship = friendships.find((x) => x.id === id);
+      const public_keys = (metadatas.find((x) => x.id === id)?.public_keys ||
+        []) as { blockchain: string; publicKey: string }[];
 
       return {
         id,
@@ -81,6 +86,7 @@ router.get("/", extractUserId, async (req, res) => {
         areFriends: friendship?.areFriends || false,
         searchedSolPubKey: isSolPublicKey ? usernamePrefix : undefined,
         searchedEthPubKey: isEthPublicKey ? usernamePrefix : undefined,
+        public_keys,
       };
     });
 

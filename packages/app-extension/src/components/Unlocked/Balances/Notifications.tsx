@@ -1,10 +1,10 @@
 import { Suspense, useEffect, useState } from "react";
-import type {
-  EnrichedNotification} from "@coral-xyz/common";
+import type { EnrichedNotification } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
   sendFriendRequest,
- XNFT_GG_LINK } from "@coral-xyz/common";
+  XNFT_GG_LINK,
+} from "@coral-xyz/common";
 import { updateFriendshipIfExists } from "@coral-xyz/db";
 import {
   DangerButton,
@@ -205,17 +205,24 @@ const getGroupedNotifications = (notifications: EnrichedNotification[]) => {
 };
 
 export function Notifications() {
+  const nav = useNavigation();
   const { isXs } = useBreakpoints();
   const [openDrawer, setOpenDrawer] = isXs
     ? [false, () => {}]
     : useState(false);
 
-  const [_unreadCount, setUnreadCount] = useRecoilState(unreadCount);
+  const [, setUnreadCount] = useRecoilState(unreadCount);
 
   const notifications: EnrichedNotification[] = useRecentNotifications({
     limit: 50,
     offset: 0,
   });
+
+  useEffect(() => {
+    nav.setOptions({
+      headerTitle: "Notifications",
+    });
+  }, []);
 
   useEffect(() => {
     const sortedNotifications = notifications

@@ -180,9 +180,11 @@ export const createUser = async (
 export async function getUsersByPrefix({
   usernamePrefix,
   uuid,
+  limit,
 }: {
   usernamePrefix: string;
   uuid: string;
+  limit?: number;
 }): Promise<{ username: string; id: string }[]> {
   const response = await chain("query")({
     auth_users: [
@@ -191,6 +193,7 @@ export async function getUsersByPrefix({
           username: { _like: `${usernamePrefix}%` },
           id: { _neq: uuid },
         },
+        limit: limit || 25,
       },
       {
         id: true,

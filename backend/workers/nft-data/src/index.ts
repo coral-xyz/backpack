@@ -10,6 +10,41 @@ import { IDL, XNFT_PROGRAM_ID } from "./xnft";
 
 const app = new Hono();
 
+app.get("/xnft/:address", async (c) => {
+  const { address } = c.req.param();
+  const xnftClient = new Program<Xnft>(IDL, XNFT_PROGRAM_ID, {
+    connection: new Connection("https://rpc-proxy.backpack.workers.dev/", {
+      fetch: (request, init) => {
+        return c.env.solanaRpc.fetch(new Request(request, init));
+      },
+    }),
+  });
+
+  const decodedAccount = await xnftClient.account.xnft.fetch(address);
+
+  console.log(decodedAccount);
+  const metadataUri = decodedAccount?.uri;
+
+  console.log(externalResourceUri(metadataUri));
+
+  const jsonMetadata = await (
+    await fetch(externalResourceUri(metadataUri))
+  ).json();
+
+  const response = new Response(
+    JSON.stringify({
+      metadata: jsonMetadata,
+      xnftAccount: decodedAccount,
+    })
+  );
+  response.headers.set("Content-Type", "application/json");
+  response.headers.set(
+    "Cache-Control",
+    `max-age=${60 * 60}, s-maxage=${60 * 60}, stale-while-revalidate=${60 * 60}`
+  );
+  return response;
+});
+
 app.get("/metaplex-nft/:mintAddress/image", async (c) => {
   try {
     const { mintAddress } = c.req.param();
@@ -53,42 +88,8 @@ app.get("/metaplex-nft/:mintAddress/image", async (c) => {
   }
 });
 
-app.get("/xnft/:address", async (c) => {
-  const { address } = c.req.param();
-  const xnftClient = new Program<Xnft>(IDL, XNFT_PROGRAM_ID, {
-    connection: new Connection("https://rpc-proxy.backpack.workers.dev/", {
-      fetch: (request, init) => {
-        return c.env.solanaRpc.fetch(new Request(request, init));
-      },
-    }),
-  });
 
-  const decodedAccount = await xnftClient.account.xnft.fetch(address);
-
-  console.log(decodedAccount);
-  const metadataUri = decodedAccount?.uri;
-
-  console.log(externalResourceUri(metadataUri));
-
-  const jsonMetadata = await (
-    await fetch(externalResourceUri(metadataUri))
-  ).json();
-
-  const response = new Response(
-    JSON.stringify({
-      metadata: jsonMetadata,
-      xnftAccount: decodedAccount,
-    })
-  );
-  response.headers.set("Content-Type", "application/json");
-  response.headers.set(
-    "Cache-Control",
-    `max-age=${60 * 60}, s-maxage=${60 * 60}, stale-while-revalidate=${60 * 60}`
-  );
-  return response;
-});
-
-app.get("/metaplex-nft/:mintAddress", async (c) => {
+app.get("/metaplex-nft/:mintAddress/metadata", async (c) => {
   try {
     const { mintAddress } = c.req.param();
     const nftMetadata = await solanaNftMetadata(mintAddress, c);

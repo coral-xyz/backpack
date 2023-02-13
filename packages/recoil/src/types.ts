@@ -50,6 +50,10 @@ export interface TokenData extends TokenNativeData {
   priceData: any;
 }
 
+export interface TokenMetadata {
+  name: string;
+}
+
 export type TokenDisplay = {
   name: string;
   ticker: string;

@@ -659,27 +659,29 @@ export class Backend {
     return await this.keyringStore.checkPassword(password);
   }
 
-  async keyringStoreUnlock(
-    password: string,
-    uuid: string,
-    username?: string
-  ): Promise<string> {
-    if (!username) {
-      throw new Error("invariant violation: username not found");
-    }
-
-    await this.keyringStore.tryUnlock(password, uuid);
-
+  async keyringStoreUnlock(password: string, uuid: string): Promise<string> {
+    //
+    // Note: we package the userInfo into an object so that it can be mutated
+    //       by downstream functions. This is required, e.g., for migrating
+    //       when a uuid doesn't yet exist on the client.
+    //
+    const userInfo = { password, uuid };
+    await this.keyringStore.tryUnlock(userInfo);
+    const activeUser = (await store.getUserData()).activeUser;
     const blockchainActiveWallets = await this.blockchainActiveWallets();
-
-    const ethereumConnectionUrl = await this.ethereumConnectionUrlRead(uuid);
+    const ethereumConnectionUrl = await this.ethereumConnectionUrlRead(
+      userInfo.uuid
+    );
     const ethereumChainId = await this.ethereumChainIdRead();
-    const solanaConnectionUrl = await this.solanaConnectionUrlRead(uuid);
-    const solanaCommitment = await this.solanaCommitmentRead(uuid);
+    const solanaConnectionUrl = await this.solanaConnectionUrlRead(
+      userInfo.uuid
+    );
+    const solanaCommitment = await this.solanaCommitmentRead(userInfo.uuid);
 
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_STORE_UNLOCKED,
       data: {
+        activeUser,
         blockchainActiveWallets,
         ethereumConnectionUrl,
         ethereumChainId,
