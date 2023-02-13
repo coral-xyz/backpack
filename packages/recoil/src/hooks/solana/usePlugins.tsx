@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import {
+  externalResourceUri,
   fetchXnft,
   TAB_SET,
   TAB_XNFT,
@@ -18,7 +19,6 @@ import {
 } from "recoil";
 
 import * as atoms from "../../atoms";
-import { xnftUrl } from "../../atoms/solana/xnft";
 import { useConnectionUrls } from "../preferences";
 import {
   useActivePublicKeys,
@@ -97,9 +97,7 @@ export function usePluginUrl(address?: string) {
       if (address) {
         try {
           const xnft = await fetchXnft(provider, new PublicKey(address));
-          setUrl(
-            xnftUrl(xnft.metadataBlob.xnft.manifest.entrypoints.default.web)
-          );
+          setUrl(xnft.metadataBlob.xnft.manifest.entrypoints.default.web);
         } catch (error) {
           console.error(error);
         }
@@ -141,7 +139,7 @@ export function useFreshPlugin(address?: string): {
         const plugin = new Plugin(
           new PublicKey(address),
           xnft.xnftAccount.publicKey,
-          xnftUrl(xnft.metadataBlob.xnft.manifest.entrypoints.default.web),
+          xnft.metadataBlob.xnft.manifest.entrypoints.default.web,
           xnft.metadataBlob.image,
           xnft.metadataBlob.name,
           activePublicKeys,

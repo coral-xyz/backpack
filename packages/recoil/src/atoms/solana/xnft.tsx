@@ -54,11 +54,6 @@ function pluginURL(pluginName: string) {
   ].join("");
 }
 
-export function xnftUrl(url: string) {
-  const uri = externalResourceUri(url);
-  return uri;
-}
-
 export const appStoreMetaTags = selectorFamily<
   { name?: string; description?: string; image?: string },
   string
@@ -147,9 +142,7 @@ export const xnfts = atomFamily<
         return xnfts.map((xnft) => {
           return {
             ...xnft,
-            url: xnftUrl(
-              xnft.metadataBlob.xnft.manifest.entrypoints.default.web
-            ),
+            url: xnft.metadataBlob.xnft.manifest.entrypoints.default.web,
             iconUrl: externalResourceUri(xnft.metadataBlob.image),
             activeWallet: _activeWallets[Blockchain.SOLANA],
             activeWallets: _activeWallets,

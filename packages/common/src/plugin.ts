@@ -1,6 +1,9 @@
 import type { Event, XnftMetadata } from "@coral-xyz/common-public";
-import { getLogger } from "@coral-xyz/common-public";
-import type { ConfirmOptions, PublicKey, SendOptions } from "@solana/web3.js";
+import { externalResourceUri, getLogger } from "@coral-xyz/common-public";
+import type { ConfirmOptions, SendOptions } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
+import base32Encode from "base32-encode";
+import base58 from "bs58";
 
 import { openPopupWindow } from "./browser/extension";
 import type { BackgroundClient } from "./channel/app-ui";
@@ -98,10 +101,24 @@ export class Plugin {
     //
     // Provide connection for the plugin.
     //
+
+    const xnftAddressB32 = base32Encode(
+      base58.decode(new PublicKey(xnftAddress).to()),
+      "RFC4648",
+      { padding: false }
+    );
+
+    const iframeRootUrl =
+      url.startsWith("ar://") ||
+      url.startsWith("ipfs://") ||
+      xnftAddress.toBase58() === "CkqWjTWzRMAtYN3CSs8Gp4K9H891htmaN1ysNXqcULc8"
+        ? `https://${xnftAddressB32}.gateway.xnfts.dev`
+        : externalResourceUri(url);
+
     this._activeWallets = activeWallets;
     this._connectionUrls = connectionUrls;
     this.title = title;
-    this.iframeRootUrl = url;
+    this.iframeRootUrl = iframeRootUrl;
     this.iconUrl = iconUrl;
     this.xnftAddress = xnftAddress;
     this.xnftInstallAddress = xnftInstallAddress;
