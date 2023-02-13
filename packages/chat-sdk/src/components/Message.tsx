@@ -284,7 +284,6 @@ export const MessageLine = (props) => {
                       <SimpleTransaction
                         remoteUserId={props.uuid}
                         message={message}
-                        remoteUsername={props.username}
                         txnSignature={props.metadata?.final_tx_signature}
                       />
                     </>
@@ -426,7 +425,6 @@ export const MessageLine = (props) => {
                             <SimpleTransaction
                               remoteUserId={props.uuid}
                               message={message}
-                              remoteUsername={props.username}
                               txnSignature={props.metadata?.final_tx_signature}
                             />
                           </>
