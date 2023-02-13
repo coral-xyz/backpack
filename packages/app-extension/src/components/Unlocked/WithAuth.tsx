@@ -140,7 +140,9 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
   }, [authData, authSignature]);
 
   /**
-   * Sign all transparently signable add messages with the required public keys.
+   * Remove any hardware wallets that are on the client but not the server
+   * because we can't transparently sign. For mnemmonic based wallets
+   * transparently sign and add them to the server.
    */
   useEffect(() => {
     (async () => {
@@ -154,7 +156,6 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
         );
         return !existsServer;
       });
-
       for (const danglingPublicKey of danglingPublicKeys) {
         if (danglingPublicKey.hardware) {
           // Remove hardware public keys if they are not on the server
