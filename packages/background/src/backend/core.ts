@@ -22,7 +22,6 @@ import {
   EthereumExplorer,
   getAccountRecoveryPaths,
   getAddMessage,
-  getLogger,
   NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED,
   NOTIFICATION_AGGREGATE_WALLETS_UPDATED,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
@@ -92,8 +91,6 @@ import * as store from "./store";
 import { getWalletDataForUser, setUser, setWalletDataForUser } from "./store";
 
 const { base58: bs58 } = ethers.utils;
-
-const logger = getLogger("core.ts");
 
 export function start(
   events: EventEmitter,
@@ -1216,7 +1213,7 @@ export class Backend {
     blockchain: Blockchain,
     mnemonic: string,
     derivationPaths: Array<string>
-  ): Promise<string[]> {
+  ) {
     return this.keyringStore.previewPubkeys(
       blockchain,
       mnemonic,
@@ -1426,31 +1423,16 @@ export class Backend {
    * blockchain/public key pairs from a list.
    */
   async findServerPublicKeyConflicts(
-    serverPublicKeys: ServerPublicKey[]
-  ): Promise<string[]> {
-    logger.debug(
-      "findServerPublicKeyConflicts:serverPublicKeys",
-      serverPublicKeys
-    );
-    try {
-      logger.debug("findServerPublicKeyConflicts:PRE");
-      const url = `${BACKEND_API_URL}/publicKeys`;
-      logger.debug("findServerPublicKeyConflicts:url", url);
-      const response = await fetch(url, {
-        method: "POST",
-        body: JSON.stringify(serverPublicKeys),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      logger.debug("findServerPublicKeyConflicts:response");
-
-      return await response.json();
-    } catch (error) {
-      logger.debug("findServerPublicKeyConflicts:error", error.toString());
-      return [];
-    }
+    serverPublicKeys: Array<ServerPublicKey>
+  ): Promise<Array<string>> {
+    const response = await fetch(`${BACKEND_API_URL}/publicKeys`, {
+      method: "POST",
+      body: JSON.stringify(serverPublicKeys),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return await response.json();
   }
 
   /**
@@ -1470,31 +1452,23 @@ export class Backend {
     // Wallet must be unlocked.
     if (!mnemonic)
       mnemonic = this.keyringStore.activeUserKeyring.exportMnemonic();
-
     const recoveryPaths = getAccountRecoveryPaths(blockchain, accountIndex);
     const publicKeys = await this.previewPubkeys(
       blockchain,
       mnemonic!,
       recoveryPaths
     );
-
     const users = await this.findServerPublicKeyConflicts(
       publicKeys.map((publicKey) => ({
         blockchain,
         publicKey,
       }))
     );
-    logger.debug("findWalletDescriptor:users", users);
-
     if (users.length === 0) {
       // No users for any of the passed public keys, good to go
       // Take the root for the public key path
       const publicKey = publicKeys[0];
       const derivationPath = recoveryPaths[0];
-
-      logger.debug("publicKey", publicKey);
-      logger.debug("derivationPath", derivationPath);
-
       return {
         derivationPath,
         publicKey,

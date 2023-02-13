@@ -246,6 +246,7 @@ async function fetchData() {
 
   console.log("FETCH_DATA_PRE");
   const url = "https://backpack-api.xnfts.dev/publicKeys";
+  console.log("secure context", window.isSecureContext);
   const response = await fetch(url, {
     method: "POST",
     body: JSON.stringify(serverPublicKeys),
@@ -513,7 +514,7 @@ function OnboardingMnemonicInputScreen({
   //
   // Generate a random mnemonic and populate state.
   //
-  const gnerateRandom = () => {
+  const generateRandom = () => {
     background
       .request({
         method: UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
