@@ -1532,6 +1532,8 @@ export class Backend {
         },
       ];
 
+      const url = `${BACKEND_API_URL}/publicKeys`;
+      logger.debug("findServerPublicKeyConflicts:url", url);
       const response = await fetch(`${BACKEND_API_URL}/publicKeys`, {
         method: "POST",
         body: JSON.stringify(pks),
