@@ -1,4 +1,4 @@
-import { getIndexedPath,nextIndicesFromPaths } from "./crypto";
+import { getIndexedPath, nextIndicesFromPaths } from "./crypto";
 import { Blockchain } from "./types";
 
 test("gets correct account index for m/44'/501'", () => {
@@ -23,6 +23,22 @@ test("gets correct wallet index for max account index", () => {
     accountIndex: 3,
     walletIndex: 11,
   });
+});
+
+test("gets correct next path from an array of paths", () => {
+  const paths = [
+    "m/44'/501'/2'/0'",
+    "m/44'/501'/0'/0'",
+    "m/44'/501'/0'/0'/9'",
+    "m/44'/501'/3'/0'/10'",
+    "m/44'/501'/1'/0'/5'",
+  ];
+
+  const { accountIndex, walletIndex } = nextIndicesFromPaths(paths);
+
+  expect(getIndexedPath(Blockchain.SOLANA, accountIndex, walletIndex)).toEqual(
+    "m/44'/501'/3'/0'/11'"
+  );
 });
 
 test("gets correct next path after m/44'/501'", () => {
