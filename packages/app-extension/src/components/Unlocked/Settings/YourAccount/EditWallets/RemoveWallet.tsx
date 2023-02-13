@@ -30,7 +30,8 @@ export const RemoveWallet: React.FC<{
   const background = useBackgroundClient();
   const [showSuccess, setShowSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showDropzoneConfirmation, setShowDropzoneConfirmation] =
+    useState(false);
 
   useEffect(() => {
     nav.setOptions({ headerTitle: "Remove Wallet" });
@@ -39,7 +40,7 @@ export const RemoveWallet: React.FC<{
   const onRemove = useCallback(async () => {
     setLoading(true);
 
-    if (BACKPACK_FEATURE_REFERRAL_FEES && !showConfirmation) {
+    if (BACKPACK_FEATURE_REFERRAL_FEES && !showDropzoneConfirmation) {
       try {
         const response = await fetch(
           `${BACKEND_API_URL}/dropzone/claims/${publicKey}`
@@ -47,7 +48,7 @@ export const RemoveWallet: React.FC<{
         const json = await response.json();
         if (json.unclaimed.length > 0) {
           setLoading(false);
-          setShowConfirmation(true);
+          setShowDropzoneConfirmation(true);
           return;
         }
       } catch (err) {
@@ -68,7 +69,7 @@ export const RemoveWallet: React.FC<{
     }
     setLoading(false);
     setShowSuccess(true);
-  }, [showConfirmation]);
+  }, [showDropzoneConfirmation]);
 
   return (
     <>
@@ -100,7 +101,7 @@ export const RemoveWallet: React.FC<{
               color: theme.custom.colors.fontColor,
             }}
           >
-            {showConfirmation
+            {showDropzoneConfirmation
               ? "You might have unclaimed Dropzone drops"
               : `Are you sure you want to remove ${walletAddressDisplay(
                   publicKey
@@ -116,7 +117,7 @@ export const RemoveWallet: React.FC<{
               marginTop: "8px",
             }}
           >
-            {showConfirmation ? (
+            {showDropzoneConfirmation ? (
               "You can check by opening the Dropzone xNFT. Are you sure you want to go ahead?"
             ) : type === "derived" ? (
               <>
