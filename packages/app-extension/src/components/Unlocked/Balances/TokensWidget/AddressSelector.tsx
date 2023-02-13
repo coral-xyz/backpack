@@ -242,7 +242,8 @@ const Contacts = ({
                   .filter(
                     (x) =>
                       x.blockchain === blockchain &&
-                      x.public_key.includes(searchFilter)
+                      (x.public_key.includes(searchFilter) ||
+                        c.remoteUsername.includes(searchFilter))
                   )
                   .map((x) => x.public_key),
                 image: c.remoteUserImage,
@@ -563,16 +564,20 @@ const SearchAddress = ({
 
   const fetchUserDetails = async (address: string) => {
     setLoading(true);
-    const response = await ParentCommunicationManager.getInstance().fetch(
-      `${BACKEND_API_URL}/users?usernamePrefix=${address}&limit=5`
-    );
-    const json = await response.json();
-    setLoading(false);
-    setSearchResults(
-      json.users.sort((a: any, b: any) =>
-        a.username.length < b.username.length ? -1 : 1
-      ) || []
-    );
+    try {
+      const response = await ParentCommunicationManager.getInstance().fetch(
+        `${BACKEND_API_URL}/users?usernamePrefix=${address}&limit=5`
+      );
+      const json = await response.json();
+      setLoading(false);
+      setSearchResults(
+        json.users.sort((a: any, b: any) =>
+          a.username.length < b.username.length ? -1 : 1
+        ) || []
+      );
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const debouncedFetchUserDetails = (prefix: string) => {
