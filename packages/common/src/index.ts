@@ -1,6 +1,12 @@
 import type { RpcRequest } from "@coral-xyz/common-public";
 import type { PublicKey } from "@solana/web3.js";
 
+import type { Event } from ".";
+import { LEDGER_IFRAME_URL } from "./constants";
+import {
+  BACKPACK_CONFIG_EXTENSION_KEY,
+  BACKPACK_CONFIG_VERSION,
+} from "./generated-config";
 import type { Context, EventEmitter, RpcResponse, Sender } from "./types";
 
 export * from "./api";
@@ -85,4 +91,42 @@ export function getCreateMessage(publicKey: string) {
  */
 export function getAddMessage(publicKey: string) {
   return `Backpack add ${publicKey}`;
+}
+
+//
+// Returns true if the event can be used by an injected provider, i.e.,
+// it's from a trusted source.
+//
+// This is used by both xNFTs and normal websites, so we allow
+// events to come from either the window's origin (a website)
+// or the parent chrome extension (an xNFT).
+//
+export function isValidEventOrigin(event: Event): boolean {
+  // From same window.
+  if (event.origin === window.location.origin) {
+    return true;
+  }
+
+  // From the extension.
+  const url = new URL(event.origin);
+  if (url.host === BACKPACK_CONFIG_EXTENSION_KEY) {
+    return true;
+  }
+
+  // From trusted ledger API.
+  const ledgerUrl = new URL(LEDGER_IFRAME_URL);
+  if (url.host === ledgerUrl.host) {
+    return true;
+  }
+
+  // Development mode. Note: production is a production build, but still
+  // in development.
+  if (
+    BACKPACK_CONFIG_VERSION === "development" ||
+    BACKPACK_CONFIG_VERSION !== "production"
+  ) {
+    return true;
+  }
+
+  return false;
 }
