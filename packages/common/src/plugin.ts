@@ -119,11 +119,10 @@ export class Plugin {
     );
 
     const iframeRootUrl =
-      url.startsWith("ar://") ||
-      url.startsWith("ipfs://") ||
-      this.xnftAddress.toBase58() ===
-        "CkqWjTWzRMAtYN3CSs8Gp4K9H891htmaN1ysNXqcULc8"
-        ? `https://${xnftAddressB32}.gateway.xnfts.dev`
+      url.startsWith("ar://") || url.startsWith("ipfs://")
+        ? //  || this.xnftAddress.toBase58() ===
+          //   "CkqWjTWzRMAtYN3CSs8Gp4K9H891htmaN1ysNXqcULc8"
+          `https://${xnftAddressB32}.gateway.xnfts.dev`
         : externalResourceUri(url);
 
     this.iframeRootUrl = iframeRootUrl;
