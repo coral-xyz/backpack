@@ -25,7 +25,7 @@ const bodyParser = require("body-parser");
 // eslint-disable-next-line
 const cookieParser = require("cookie-parser");
 
-app.use(cors({ origin: "*" }));
+app.use(cors());
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.json({ type: "application/json" }));
