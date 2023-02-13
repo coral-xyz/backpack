@@ -1,10 +1,10 @@
-import { derivationPathsToIndices, getIndexedPath } from "./crypto";
+import { getIndexedPath,nextIndicesFromPaths } from "./crypto";
 import { Blockchain } from "./types";
 
 test("gets correct account index for m/44'/501'", () => {
   const paths = ["m/44'/501'"];
 
-  expect(derivationPathsToIndices(paths)).toStrictEqual({
+  expect(nextIndicesFromPaths(paths)).toStrictEqual({
     accountIndex: 0,
     walletIndex: -1,
   });
@@ -19,48 +19,48 @@ test("gets correct wallet index for max account index", () => {
     "m/44'/501'/1'/0'/5'",
   ];
 
-  expect(derivationPathsToIndices(paths)).toStrictEqual({
+  expect(nextIndicesFromPaths(paths)).toStrictEqual({
     accountIndex: 3,
-    walletIndex: 10,
+    walletIndex: 11,
   });
 });
 
 test("gets correct next path after m/44'/501'", () => {
   const path = "m/44'/501'";
 
-  const { accountIndex, walletIndex } = derivationPathsToIndices([path]);
+  const { accountIndex, walletIndex } = nextIndicesFromPaths([path]);
 
-  expect(
-    getIndexedPath(Blockchain.SOLANA, accountIndex, walletIndex + 1)
-  ).toEqual("m/44'/501'/0'/0'");
+  expect(getIndexedPath(Blockchain.SOLANA, accountIndex, walletIndex)).toEqual(
+    "m/44'/501'/0'/0'"
+  );
 });
 
 test("gets correct next path after m/44'/501'/0'/0'", () => {
   const path = "m/44'/501'/0'/0'";
 
-  const { accountIndex, walletIndex } = derivationPathsToIndices([path]);
+  const { accountIndex, walletIndex } = nextIndicesFromPaths([path]);
 
-  expect(
-    getIndexedPath(Blockchain.SOLANA, accountIndex, walletIndex + 1)
-  ).toEqual("m/44'/501'/0'/0'/0'");
+  expect(getIndexedPath(Blockchain.SOLANA, accountIndex, walletIndex)).toEqual(
+    "m/44'/501'/0'/0'/0'"
+  );
 });
 
 test("gets correct next path after m/44'/501'/0'/0'/0'", () => {
   const path = "m/44'/501'/0'/0'/0'";
 
-  const { accountIndex, walletIndex } = derivationPathsToIndices([path]);
+  const { accountIndex, walletIndex } = nextIndicesFromPaths([path]);
 
-  expect(
-    getIndexedPath(Blockchain.SOLANA, accountIndex, walletIndex + 1)
-  ).toEqual("m/44'/501'/0'/0'/1'");
+  expect(getIndexedPath(Blockchain.SOLANA, accountIndex, walletIndex)).toEqual(
+    "m/44'/501'/0'/0'/1'"
+  );
 });
 
 test("gets correct next path after m/44'/501'/9'/0'/2'", () => {
   const path = "m/44'/501'/9'/0'/2'";
 
-  const { accountIndex, walletIndex } = derivationPathsToIndices([path]);
+  const { accountIndex, walletIndex } = nextIndicesFromPaths([path]);
 
-  expect(
-    getIndexedPath(Blockchain.SOLANA, accountIndex, walletIndex + 1)
-  ).toEqual("m/44'/501'/9'/0'/3'");
+  expect(getIndexedPath(Blockchain.SOLANA, accountIndex, walletIndex)).toEqual(
+    "m/44'/501'/9'/0'/3'"
+  );
 });

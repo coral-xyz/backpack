@@ -128,7 +128,7 @@ export const getAccountRecoveryPaths = (
 //
 // Get a sensible account and wallet index from a list of derivation paths.
 //
-export const derivationPathsToIndices = (
+export const nextIndicesFromPaths = (
   derivationPaths: Array<string>
 ): { accountIndex: number; walletIndex: number } => {
   if (derivationPaths.length === 0) {
@@ -146,6 +146,7 @@ export const derivationPathsToIndices = (
     .map((p: Array<number> | undefined) => (p ? p[2] : undefined))
     .filter(isDefined);
 
+  // If there is no account indices we likely have `m/44/501'`
   if (accountIndices.length == 0) {
     return { accountIndex: 0, walletIndex: -1 };
   }
@@ -158,13 +159,19 @@ export const derivationPathsToIndices = (
     (p) => p[2] === Math.max(...accountIndices) // Maintain hardening to filter
   );
 
-  const walletIndex = Math.max(
-    ...pathsForMaxAccountIndex
-      // Account index should be the element at index 2, this is not true for
-      // deprecated sollet paths but they are 0 anyway
-      .map((p: Array<number>) => (p[4] ? p[4] : 0))
-      .map((i: number) => (i >= HARDENING ? i - HARDENING : i))
-  );
+  const walletIndices = pathsForMaxAccountIndex
+    .map((p: Array<number> | undefined) => (p ? p[4] : undefined))
+    .filter(isDefined);
+
+  // If there are no wallet indices we likely have `m/44/501'/0'/0'`
+  if (walletIndices.length === 0) {
+    return { accountIndex: 0, walletIndex: 0 };
+  }
+
+  const walletIndex =
+    Math.max(
+      ...walletIndices.map((i: number) => (i >= HARDENING ? i - HARDENING : i))
+    ) + 1; // Increment by 1 to get the next wallet index that should be used
 
   return { accountIndex, walletIndex };
 };
