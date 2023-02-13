@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import type { Plugin } from "@coral-xyz/common";
 import { DEFAULT_PUBKEY_STR } from "@coral-xyz/common";
 import { Loading, MoreIcon, PowerIcon } from "@coral-xyz/react-common";
@@ -6,6 +6,7 @@ import {
   transactionRequest,
   useActiveSolanaWallet,
   useBackgroundClient,
+  useClosePlugin,
   useConnectionBackgroundClient,
   useFreshPlugin,
   useNavigationSegue,
@@ -14,21 +15,18 @@ import {
   xnftPreference as xnftPreferenceAtom,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import { Button, Divider } from "@mui/material";
+import { Button, CircularProgress, Divider } from "@mui/material";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 
-import { PluginRenderer } from "../../../plugin/Renderer";
-
+import { PluginRenderer } from "./Renderer";
 import { Simulator } from "./Simulator";
 
 export function PluginApp({
   xnftAddress,
   deepXnftPath,
-  closePlugin,
 }: {
   xnftAddress: string | undefined;
   deepXnftPath: string;
-  closePlugin: () => void;
 }) {
   const theme = useCustomTheme();
   return (
@@ -38,10 +36,7 @@ export function PluginApp({
         backgroundColor: theme.custom.colors.background,
       }}
     >
-      <PluginControl closePlugin={closePlugin} />
-      <Suspense fallback={<Loading />}>
-        <LoadPlugin xnftAddress={xnftAddress} deepXnftPath={deepXnftPath} />
-      </Suspense>
+      <LoadPlugin xnftAddress={xnftAddress} deepXnftPath={deepXnftPath} />
     </div>
   );
 }
@@ -111,26 +106,37 @@ export function PluginDisplay({
   plugin?: Plugin;
   deepXnftPath: string;
 }) {
+  const closePlugin = useClosePlugin();
   const xnftPreference = useRecoilValue(
     xnftPreferenceAtom(plugin?.xnftInstallAddress?.toString())
   );
 
-  if (!plugin) {
-    return null;
-  }
-
-  // TODO: splash loading page.
   return (
-    <PluginRenderer
-      key={plugin.iframeRootUrl}
-      plugin={plugin}
-      xnftPreference={xnftPreference}
-      deepXnftPath={deepXnftPath}
-    />
+    <>
+      <PluginControl plugin={plugin} closePlugin={closePlugin} />
+      <Suspense fallback={<Loading />}>
+        {plugin && (
+          <PluginRenderer
+            key={plugin?.iframeRootUrl}
+            plugin={plugin}
+            xnftPreference={xnftPreference}
+            deepXnftPath={deepXnftPath}
+          />
+        )}
+      </Suspense>
+    </>
   );
 }
 
-function PluginControl({ closePlugin }: any) {
+export function PluginControl({ plugin, closePlugin }: any) {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    plugin?.didFinishSetup!.then(() => {
+      setIsLoading(false);
+    });
+  });
+
   return (
     <div
       style={{
@@ -193,6 +199,7 @@ function PluginControl({ closePlugin }: any) {
           disableRipple
           onClick={() => closePlugin()}
           sx={{
+            position: "relative",
             borderRadius: "18.5px",
             flex: 1,
             height: "32px",
@@ -200,10 +207,23 @@ function PluginControl({ closePlugin }: any) {
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
+            alignItems: "center",
             minWidth: "41.67px",
           }}
         >
-          <PowerIcon fill={"#000000"} />
+          {isLoading ? (
+            <div
+              style={{ position: "relative", height: "20px", width: "20px" }}
+            >
+              <Loading
+                size="small"
+                color="secondary"
+                style={{ display: "block" }}
+              />
+            </div>
+          ) : (
+            <PowerIcon fill={"#000000"} />
+          )}
         </Button>
       </div>
     </div>

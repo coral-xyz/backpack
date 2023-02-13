@@ -69,9 +69,34 @@ export function PluginRenderer({
     <div ref={ref} style={{ height: "100vh", overflow: "hidden" }}>
       {!loaded && (
         <div style={{ height: "100vh" }}>
-          <Loading />
+          <SplashScreen splashUrls={plugin.splashUrls ?? {}} /> :
         </div>
       )}
     </div>
+  );
+}
+
+function SplashScreen({
+  splashUrls,
+}: {
+  splashUrls: { [key: string]: string };
+}) {
+  const sizes = ["lg", "md", "sm"];
+
+  const size = sizes.find((size) => splashUrls[size]);
+
+  if (!size) {
+    return <Loading />;
+  }
+
+  return (
+    <div
+      style={{
+        height: "100%",
+        width: "100%",
+        backgroundImage: `url(${splashUrls[size]})`,
+        backgroundPosition: "cover",
+      }}
+    />
   );
 }

@@ -177,9 +177,10 @@ export const plugins = selectorFamily<
         const simulator = {
           url: SIMULATOR_URL,
           iconUrl: "assets/simulator.png",
-          splashUrls: {
-            lg: "assets/simulator.png",
-          },
+          splashUrls: {},
+          // splashUrls: {
+          //   lg: "assets/one/distressed-background.png",
+          // },
           title: "Simulator",
           activeWallets: get(activePublicKeys),
           connectionUrls: get(connectionUrls),

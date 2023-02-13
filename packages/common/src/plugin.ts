@@ -85,6 +85,7 @@ export class Plugin {
 
   readonly iframeRootUrl: string;
   readonly iconUrl: string;
+  readonly splashUrls: { [key: string]: string };
   readonly title: string;
   readonly xnftAddress: PublicKey;
   readonly xnftInstallAddress: PublicKey;
@@ -94,6 +95,7 @@ export class Plugin {
     xnftInstallAddress: PublicKey | string,
     url: string,
     iconUrl: string,
+    splashUrls: { [key: string]: string },
     title: string,
     activeWallets: { [blockchain: string]: string },
     connectionUrls: { [blockchain: string]: string | null }
@@ -106,6 +108,7 @@ export class Plugin {
     this._connectionUrls = connectionUrls;
     this.title = title;
     this.iconUrl = iconUrl;
+    this.splashUrls = splashUrls;
     this.xnftAddress = new PublicKey(xnftAddress);
     this.xnftInstallAddress = new PublicKey(xnftInstallAddress);
 

@@ -139,6 +139,7 @@ export function useFreshPlugin(address?: string): {
           xnft!.xnftAccount.publicKey,
           xnft!.metadataBlob.xnft.manifest.entrypoints.default.web,
           xnft!.metadataBlob.image,
+          xnft!.metadataBlob.xnft.manifest.splash ?? {},
           xnft!.metadataBlob.name,
           activePublicKeys,
           connectionUrls
@@ -175,6 +176,7 @@ export function getPlugin(p: any): Plugin {
       p.install.publicKey,
       p.url,
       p.iconUrl,
+      p.splashUrls ?? {},
       p.title,
       p.activeWallets,
       p.connectionUrls
