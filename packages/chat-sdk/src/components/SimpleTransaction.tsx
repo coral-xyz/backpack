@@ -13,6 +13,8 @@ import { Skeleton } from "@mui/material";
 import { createStyles, makeStyles } from "@mui/styles";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 
+import { useChatContext } from "./ChatContext";
+
 const useStyles = makeStyles((theme: any) =>
   createStyles({
     smallBtn: {
@@ -40,15 +42,14 @@ const useStyles = makeStyles((theme: any) =>
 
 export const SimpleTransaction = ({
   txnSignature,
-  remoteUsername,
   message,
   remoteUserId,
 }: {
   txnSignature: string;
-  remoteUsername: string;
   message: string;
   remoteUserId: string;
 }) => {
+  const { remoteUsername } = useChatContext();
   const [loading, setLoading] = useState(true);
   const classes = useStyles();
   const solanaCtx = useSolanaCtx();
@@ -100,7 +101,7 @@ export const SimpleTransaction = ({
       <div>
         <div style={{ marginBottom: 5, marginTop: 5 }}>
           {" "}
-          {remoteUserId === uuid
+          {remoteUserId !== uuid
             ? "You Received"
             : `You sent @${remoteUsername}`}
         </div>
