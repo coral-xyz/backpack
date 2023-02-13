@@ -25,7 +25,6 @@ import {
   useBackgroundClient,
   useConnectionBackgroundClient,
   useNavigationSegue,
-  useUpdateSearchParams,
 } from "../";
 
 import {
@@ -84,7 +83,6 @@ export function useOpenPlugin(): (xnftAddress: string) => void {
 }
 
 export function usePluginUrl(address?: string) {
-  const { provider } = useAnchorContext();
   const [url, setUrl] = useState<string | null>(null);
   const [cached] = useState<Plugin | undefined>(
     PLUGIN_CACHE.get(address ?? "")

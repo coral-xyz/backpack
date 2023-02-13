@@ -143,6 +143,7 @@ export const xnfts = atomFamily<
           return {
             ...xnft,
             url: xnft.metadataBlob.xnft.manifest.entrypoints.default.web,
+            splashUrls: xnft.metadataBlob.xnft.manifest.splash ?? {},
             iconUrl: externalResourceUri(xnft.metadataBlob.image),
             activeWallet: _activeWallets[Blockchain.SOLANA],
             activeWallets: _activeWallets,
@@ -176,6 +177,9 @@ export const plugins = selectorFamily<
         const simulator = {
           url: SIMULATOR_URL,
           iconUrl: "assets/simulator.png",
+          splashUrls: {
+            lg: "assets/simulator.png",
+          },
           title: "Simulator",
           activeWallets: get(activePublicKeys),
           connectionUrls: get(connectionUrls),
