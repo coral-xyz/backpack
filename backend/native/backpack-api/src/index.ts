@@ -1,3 +1,4 @@
+import cors from "cors";
 import type { NextFunction, Request, Response } from "express";
 import express from "express";
 import { ZodError } from "zod";
@@ -24,6 +25,7 @@ const bodyParser = require("body-parser");
 // eslint-disable-next-line
 const cookieParser = require("cookie-parser");
 
+app.use(cors({ origin: "*" }));
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.json({ type: "application/json" }));
