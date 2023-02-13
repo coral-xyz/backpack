@@ -12,6 +12,7 @@ const app = new Hono();
 
 app.get("/xnft/:address", async (c) => {
   const { address } = c.req.param();
+  console.log(address);
   const xnftClient = new Program<Xnft>(IDL, XNFT_PROGRAM_ID, {
     connection: new Connection("https://rpc-proxy.backpack.workers.dev/", {
       fetch: (request, init) => {
@@ -19,24 +20,20 @@ app.get("/xnft/:address", async (c) => {
       },
     }),
   });
-
   const decodedAccount = await xnftClient.account.xnft.fetch(address);
 
-  console.log(decodedAccount);
-  const metadataUri = decodedAccount?.uri;
+  const masterMint = decodedAccount.masterMint;
 
-  console.log(externalResourceUri(metadataUri));
-
-  const jsonMetadata = await (
-    await fetch(externalResourceUri(metadataUri))
-  ).json();
+  const metadata = await solanaNftMetadata(masterMint.toBase58(), c);
 
   const response = new Response(
     JSON.stringify({
-      metadata: jsonMetadata,
+      metadataAccount: metadata?.metadataAccount,
+      metadata: metadata?.externalMetadata,
       xnftAccount: decodedAccount,
     })
   );
+
   response.headers.set("Content-Type", "application/json");
   response.headers.set(
     "Cache-Control",
@@ -87,7 +84,6 @@ app.get("/metaplex-nft/:mintAddress/image", async (c) => {
     return c.status(500);
   }
 });
-
 
 app.get("/metaplex-nft/:mintAddress/metadata", async (c) => {
   try {

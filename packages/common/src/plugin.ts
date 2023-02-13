@@ -90,8 +90,8 @@ export class Plugin {
   readonly xnftInstallAddress: PublicKey;
 
   constructor(
-    xnftAddress: PublicKey,
-    xnftInstallAddress: PublicKey,
+    xnftAddress: PublicKey | string,
+    xnftInstallAddress: PublicKey | string,
     url: string,
     iconUrl: string,
     title: string,
@@ -101,8 +101,16 @@ export class Plugin {
     //
     // Provide connection for the plugin.
     //
+
+    this._activeWallets = activeWallets;
+    this._connectionUrls = connectionUrls;
+    this.title = title;
+    this.iconUrl = iconUrl;
+    this.xnftAddress = new PublicKey(xnftAddress);
+    this.xnftInstallAddress = new PublicKey(xnftInstallAddress);
+
     const xnftAddressB32 = base32Encode(
-      base58.decode(new PublicKey(xnftAddress).toBase58()),
+      base58.decode(this.xnftAddress.toBase58()),
       "RFC4648",
       { padding: false }
     );
@@ -110,17 +118,12 @@ export class Plugin {
     const iframeRootUrl =
       url.startsWith("ar://") ||
       url.startsWith("ipfs://") ||
-      xnftAddress.toBase58() === "CkqWjTWzRMAtYN3CSs8Gp4K9H891htmaN1ysNXqcULc8"
+      this.xnftAddress.toBase58() ===
+        "CkqWjTWzRMAtYN3CSs8Gp4K9H891htmaN1ysNXqcULc8"
         ? `https://${xnftAddressB32}.gateway.xnfts.dev`
         : externalResourceUri(url);
 
-    this._activeWallets = activeWallets;
-    this._connectionUrls = connectionUrls;
-    this.title = title;
     this.iframeRootUrl = iframeRootUrl;
-    this.iconUrl = iconUrl;
-    this.xnftAddress = xnftAddress;
-    this.xnftInstallAddress = xnftInstallAddress;
 
     //
     // RPC Server channel from plugin -> extension-ui.
