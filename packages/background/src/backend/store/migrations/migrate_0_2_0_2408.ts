@@ -6,10 +6,10 @@
 
 import type { Blockchain } from "@coral-xyz/common";
 import {
-  derivationPathsToIndexes,
   legacyBip44ChangeIndexed,
   legacyBip44Indexed,
   legacySolletIndexed,
+  nextIndicesFromPaths,
 } from "@coral-xyz/common";
 
 import { getKeyringStore_NO_MIGRATION, setKeyringStore } from "../keyring";
@@ -49,7 +49,7 @@ export async function migrate_0_2_0_2408(userInfo: {
           }
         });
         const { accountIndex, walletIndex } =
-          derivationPathsToIndexes(derivationPaths);
+          nextIndicesFromPaths(derivationPaths);
         json.users[user].blockchains[blockchain].hdKeyring = {
           mnemonic: hdKeyring.mnemonic,
           seed: hdKeyring.seed,
