@@ -102,13 +102,13 @@ const styles = StyleSheet.create({
   totalChangeText: {
     fontSize: 12,
     lineHeight: 24,
-    paddingVeritcal: 12,
+    paddingVertical: 12,
   },
   percentChangeText: {
     fontSize: 12,
     lineHeight: 24,
     borderRadius: 28,
     paddingHorizontal: 8,
-    paddingVeritcal: 2,
+    paddingVertical: 2,
   },
 });
