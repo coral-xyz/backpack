@@ -1487,16 +1487,18 @@ export class Backend {
    * blockchain/public key pairs from a list.
    */
   async findServerPublicKeyConflicts(
-    serverPublicKeys: Array<ServerPublicKey>
-  ): Promise<Array<string>> {
-    const response = await fetch(`${BACKEND_API_URL}/publicKeys`, {
+    serverPublicKeys: ServerPublicKey[]
+  ): Promise<string[]> {
+    const url = `${BACKEND_API_URL}/publicKeys`;
+    const response = await fetch(url, {
       method: "POST",
       body: JSON.stringify(serverPublicKeys),
       headers: {
         "Content-Type": "application/json",
       },
-    });
-    return await response.json();
+    }).then((r) => r.json());
+
+    return response;
   }
 
   /**
