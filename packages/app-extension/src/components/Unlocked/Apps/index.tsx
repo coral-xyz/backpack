@@ -206,6 +206,7 @@ function _WalletXnftGrid({
   const onClickPlugin = (p: any) => {
     openPlugin(p.install.account.xnft.toString());
   };
+  const iconsPerRow = isXs ? 4 : 6;
   return (
     <>
       <BalancesTableHead wallet={wallet} />
@@ -223,14 +224,14 @@ function _WalletXnftGrid({
         >
           <Grid container>
             {isLoading
-              ? Array.from(Array(4).keys()).map((_, idx) => {
+              ? Array.from(Array(iconsPerRow).keys()).map((_, idx) => {
                   return (
                     <Grid
                       item
                       key={idx}
-                      xs={3}
+                      xs={isXs ? 3 : 2}
                       style={{
-                        marginTop: idx >= 4 ? "24px" : 0,
+                        marginTop: idx >= iconsPerRow ? "24px" : 0,
                       }}
                     >
                       <SkeletonAppIcon />
@@ -244,7 +245,7 @@ function _WalletXnftGrid({
                       key={p.url}
                       xs={isXs ? 3 : 2}
                       style={{
-                        marginTop: idx >= (isXs ? 4 : 6) ? "24px" : 0,
+                        marginTop: idx >= iconsPerRow ? "24px" : 0,
                       }}
                     >
                       <PluginIcon plugin={p} onClick={() => onClickPlugin(p)} />
