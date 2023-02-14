@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { RichMentionsInput } from "react-rich-mentions";
 import {
   getHashedName,
@@ -64,18 +64,20 @@ import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { useNavigation as useNavigationEphemeral } from "../../../common/Layout/NavStack";
 import { TokenAmountHeader } from "../../../common/TokenAmountHeader";
 import { TokenInputField } from "../../../common/TokenInput";
+import { WithCopyTooltip } from "../../../common/WithCopyTooltip";
 
 import { SendEthereumConfirmationCard } from "./Ethereum";
 import { SendSolanaConfirmationCard } from "./Solana";
 import { WithHeaderButton } from "./Token";
+import { TokenBadge } from "./TokenBadge";
 
 const useStyles = styles((theme) => ({
   topImage: {
-    width: 130,
+    width: 120,
   },
   topImageOuter: {
-    width: 130,
-    height: 130,
+    width: 120,
+    height: 120,
     border: `solid 3px ${theme.custom.colors.avatarIconBackground}`,
     borderRadius: "50%",
     display: "inline-block",
@@ -94,10 +96,14 @@ const useStyles = styles((theme) => ({
     paddingTop: "24px",
     flex: 1,
   },
+  topHalfV2: {
+    paddingTop: "3px",
+    flex: 1,
+  },
   inputContainer: {
     paddingLeft: "12px",
     paddingRight: "12px",
-    marginBottom: -8,
+    marginBottom: -10,
   },
   buttonContainer: {
     display: "flex",
@@ -514,6 +520,7 @@ function SendV2({
   const { uuid } = useUser();
   const editableRef = useRef<any>();
   const isDarkMode = useDarkMode();
+  const [tooltipOpen, setTooltipOpen] = useState(false);
 
   const cursorToEnd = () => {
     //@ts-ignore
@@ -532,7 +539,7 @@ function SendV2({
 
   return (
     <>
-      <div className={classes.topHalf}>
+      <div className={classes.topHalfV2}>
         <div style={{ marginBottom: "10px" }}>
           <div
             className={classes.horizontalCenter}
@@ -545,7 +552,7 @@ function SendV2({
                   to?.image ||
                   `https://avatars.backpack.workers.dev/${to?.address}`
                 }
-                style={{ width: 130, height: 130 }}
+                style={{ width: 120, height: 120 }}
               />
             </div>
           </div>
@@ -562,16 +569,21 @@ function SendV2({
               </div>
             )}
           </div>
-          <div className={classes.horizontalCenter}>
-            <div
-              style={{
-                color: theme.custom.colors.fontColor,
-                fontSize: 18,
-                fontWeight: 500,
-              }}
-            >
-              ({walletAddressDisplay(to.address)})
-            </div>
+          <div className={classes.horizontalCenter} style={{ marginTop: 4 }}>
+            <WithCopyTooltip tooltipOpen={tooltipOpen}>
+              <div>
+                <TokenBadge
+                  fontSize={13}
+                  overwriteBackground={theme.custom.colors.bg2}
+                  onClick={async () => {
+                    setTooltipOpen(true);
+                    setTimeout(() => setTooltipOpen(false), 1000);
+                    await navigator.clipboard.writeText(to.address);
+                  }}
+                  label={walletAddressDisplay(to.address)}
+                />
+              </div>
+            </WithCopyTooltip>
           </div>
         </div>
         <div>
@@ -581,21 +593,13 @@ function SendV2({
             }}
             style={{ display: "flex", justifyContent: "center" }}
           >
-            <img
-              src={token.logo}
-              style={{
-                width: 44,
-                height: 44,
-                borderRadius: "50%",
-                marginTop: 14,
-                marginRight: 5,
-              }}
-            />
             <div
               style={{
                 fontWeight: 600,
                 fontSize: 48,
+                height: 50,
                 display: "flex",
+                marginBottom: 5,
                 color: theme.custom.colors.fontColor,
               }}
             >
@@ -652,21 +656,39 @@ function SendV2({
               >
                 0
               </div>{" "}
-              <div style={{ marginLeft: 3, outline: "0px solid transparent" }}>
-                {" "}
-                {token.ticker}
-              </div>
             </div>
           </div>
-          <div style={{ display: "flex", justifyContent: "center" }}>
+          <div
+            style={{ display: "flex", justifyContent: "center", marginTop: 15 }}
+          >
+            <img
+              src={token.logo}
+              style={{
+                height: 35,
+                borderRadius: "50%",
+                marginRight: 5,
+              }}
+            />
+            <div
+              style={{
+                color: theme.custom.colors.smallTextColor,
+                fontSize: 24,
+              }}
+            >
+              {token.ticker}
+            </div>
+          </div>
+          <div
+            style={{ display: "flex", justifyContent: "center", marginTop: 10 }}
+          >
             <div
               style={{
                 display: "inline-flex",
                 color: theme.custom.colors.fontColor,
                 cursor: "pointer",
-                background: isDarkMode
-                  ? theme.custom.colors.bg2
-                  : theme.custom.colors.bg3,
+                border: `2px solid ${
+                  isDarkMode ? theme.custom.colors.bg2 : theme.custom.colors.bg3
+                }`,
                 padding: "4px 12px",
                 borderRadius: 8,
               }}
@@ -678,38 +700,25 @@ function SendV2({
                 setAmount(maxAmount);
               }}
             >
-              Max
+              Max: {toDisplayBalance(maxAmount, token.decimals)} {token.ticker}
             </div>
           </div>
         </div>
       </div>
       <div>
-        <div className={classes.inputContainer}>
-          {to &&
-            to.uuid &&
-            to.uuid !== uuid &&
-            blockchain === Blockchain.SOLANA && (
-              <TextField
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    borderRadius: 6,
-                    border: "2px solid rgba(255, 255, 255, 0.1);",
-                    color: theme.custom.colors.fontColor,
-                  },
-                }}
-                fullWidth
-                className={classes.input}
-                placeholder={"Add a message (Optional)"}
-                style={{
-                  outline: "0px solid transparent",
-                  color: theme.custom.colors.fontColor,
-                  fontSize: "15px",
-                }}
-                onChange={(e) => setMessage(e.target.value)}
-                value={message}
-              />
-            )}
-        </div>
+        {/*<div className={classes.inputContainer}>*/}
+        {/*  {to &&*/}
+        {/*    to.uuid &&*/}
+        {/*    to.uuid !== uuid &&*/}
+        {/*    blockchain === Blockchain.SOLANA && (*/}
+        {/*      <TextInput*/}
+        {/*        className={classes.input}*/}
+        {/*        placeholder={"Add a message (Optional)"}*/}
+        {/*        setValue={(e: any) => setMessage(e.target.value)}*/}
+        {/*        value={message}*/}
+        {/*      />*/}
+        {/*    )}*/}
+        {/*</div>*/}
         <div className={classes.buttonContainer}>{sendButton}</div>
       </div>
     </>
