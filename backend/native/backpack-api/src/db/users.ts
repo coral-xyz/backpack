@@ -28,11 +28,18 @@ export const getUsers = async (
       {
         id: true,
         username: true,
-        public_keys: [{}, { blockchain: true, public_key: true }],
+        public_keys: [
+          {},
+          {
+            blockchain: true,
+            id: true,
+            user_active_publickey_mappings: [{}, { user_id: true }],
+          },
+        ],
       },
     ],
   });
-  return response.auth_users;
+  return transformUsers(response.auth_users);
 };
 
 /**
@@ -86,7 +93,14 @@ export const getUserByUsername = async (username: string) => {
       {
         id: true,
         username: true,
-        public_keys: [{}, { blockchain: true, public_key: true }],
+        public_keys: [
+          {},
+          {
+            blockchain: true,
+            id: true,
+            user_active_publickey_mappings: [{}, { user_id: true }],
+          },
+        ],
       },
     ],
   });
@@ -108,7 +122,14 @@ export const getUser = async (id: string) => {
       {
         id: true,
         username: true,
-        public_keys: [{}, { blockchain: true, public_key: true }],
+        public_keys: [
+          {},
+          {
+            blockchain: true,
+            id: true,
+            user_active_publickey_mappings: [{}, { user_id: true }],
+          },
+        ],
       },
     ],
   });
@@ -118,13 +139,30 @@ export const getUser = async (id: string) => {
   return transformUser(response.auth_users_by_pk);
 };
 
+const transformUsers = (
+  users: {
+    id: unknown;
+    username: unknown;
+    public_keys: Array<{
+      blockchain: string;
+      public_key: string;
+      user_active_publickey_mappings?: { user_id: string }[];
+    }>;
+  }[]
+) => {
+  return users.map((x) => transformUser(x));
+};
 /**
  * Utility method to format a user for responses from a raw user object.
  */
 const transformUser = (user: {
   id: unknown;
   username: unknown;
-  public_keys: Array<{ blockchain: string; public_key: string }>;
+  public_keys: Array<{
+    blockchain: string;
+    public_key: string;
+    user_active_publickey_mappings?: { user_id: string }[];
+  }>;
 }) => {
   return {
     id: user.id,
@@ -133,6 +171,7 @@ const transformUser = (user: {
     publicKeys: user.public_keys.map((k) => ({
       blockchain: k.blockchain as Blockchain,
       publicKey: k.public_key,
+      active: k.user_active_publickey_mappings?.length || 0 >= 1 ? true : false,
     })),
     image: `${AVATAR_BASE_URL}/${user.username}`,
   };
@@ -147,7 +186,11 @@ export const createUser = async (
   inviteCode?: string,
   waitlistId?: string | null,
   referrerId?: string
-) => {
+): Promise<{
+  id: string;
+  username: string;
+  public_keys: { blockchain: "solana" | "ethereum"; id: number }[];
+}> => {
   const response = await chain("mutation")({
     insert_auth_users_one: [
       {
@@ -167,10 +210,19 @@ export const createUser = async (
       {
         id: true,
         username: true,
+        public_keys: [
+          {},
+          {
+            blockchain: true,
+            id: true,
+            user_active_publickey_mappings: [{}, { user_id: true }],
+          },
+        ],
       },
     ],
   });
 
+  // @ts-ignore
   return response.insert_auth_users_one;
 };
 
@@ -311,6 +363,12 @@ export const getUserByPublicKeyAndChain = async (
           public_keys: {
             blockchain: { _eq: blockchain },
             public_key: { _eq: publicKey },
+            user_active_publickey_mappings: {
+              blockchain: { _eq: blockchain },
+              public_key: {
+                public_key: { _eq: publicKey },
+              },
+            },
           },
         },
       },

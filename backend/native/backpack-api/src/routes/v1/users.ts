@@ -9,10 +9,15 @@ import type { Request, Response } from "express";
 import express from "express";
 import jwt from "jsonwebtoken";
 
-import { extractUserId, optionallyExtractUserId } from "../../auth/middleware";
+import {
+  ensureHasPubkeyAccessBody,
+  extractUserId,
+  optionallyExtractUserId,
+} from "../../auth/middleware";
 import { clearCookie, setJWTCookie } from "../../auth/util";
 import { REFERRER_COOKIE_NAME } from "../../config";
 import { getFriendshipStatus } from "../../db/friendships";
+import { getPublicKeyDetails, updatePublicKey } from "../../db/publicKey";
 import {
   createUser,
   createUserPublicKey,
@@ -26,6 +31,7 @@ import {
   updateUserAvatar,
 } from "../../db/users";
 import { getOrcreateXnftSecret } from "../../db/xnftSecrets";
+import { logger } from "../../logger";
 import { validatePulicKey } from "../../validation/publicKey";
 import { validateSignature } from "../../validation/signature";
 import {
@@ -166,6 +172,14 @@ router.post("/", async (req, res) => {
     referrerId
   );
 
+  user?.public_keys.map(async ({ blockchain, id }) => {
+    //TODO: make a bulk, single call here
+    await updatePublicKey({
+      userId: user.id,
+      blockchain,
+      publicKeyId: id,
+    });
+  });
   let jwt: string;
   if (user) {
     jwt = await setJWTCookie(req, res, user.id as string);
@@ -359,5 +373,25 @@ router.post("/metadata", async (req: Request, res: Response) => {
     })),
   });
 });
+
+router.post(
+  "/activePubkey",
+  extractUserId,
+  ensureHasPubkeyAccessBody,
+  async (req: Request, res: Response) => {
+    const publicKey: string = req.body.publicKey;
+    const userId: string = req.id!;
+
+    //TODO: optimise this to a single call
+    const publicKeyDetails = await getPublicKeyDetails({ publicKey });
+    if (!publicKeyDetails.id) {
+      logger.log(
+        `Public key not found in the DB ${publicKey}, user trying ${userId}`
+      );
+    }
+
+    return res.json({});
+  }
+);
 
 export default router;
