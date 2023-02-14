@@ -15,6 +15,7 @@ import { Button, Grid, Skeleton, Typography } from "@mui/material";
 import { getSvgPath } from "figma-squircle";
 import { useRecoilValue, waitForAll } from "recoil";
 
+import { useBreakpoints } from "../../common/Layout/hooks";
 import {
   _BalancesTableHead,
   BalancesTableHead,
@@ -199,6 +200,7 @@ function _WalletXnftGrid({
   plugins: Array<any>;
 }) {
   const theme = useCustomTheme();
+  const { isXs } = useBreakpoints();
   const openPlugin = useOpenPlugin();
   const { showContent } = useBalancesContext();
   const onClickPlugin = (p: any) => {
@@ -240,9 +242,9 @@ function _WalletXnftGrid({
                     <Grid
                       item
                       key={p.url}
-                      xs={3}
+                      xs={isXs ? 3 : 2}
                       style={{
-                        marginTop: idx >= 4 ? "24px" : 0,
+                        marginTop: idx >= (isXs ? 4 : 6) ? "24px" : 0,
                       }}
                     >
                       <PluginIcon plugin={p} onClick={() => onClickPlugin(p)} />
