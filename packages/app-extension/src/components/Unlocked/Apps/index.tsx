@@ -15,6 +15,7 @@ import { Button, Grid, Skeleton, Typography } from "@mui/material";
 import { getSvgPath } from "figma-squircle";
 import { useRecoilValue, waitForAll } from "recoil";
 
+import { useBreakpoints } from "../../common/Layout/hooks";
 import {
   _BalancesTableHead,
   BalancesTableHead,
@@ -199,11 +200,13 @@ function _WalletXnftGrid({
   plugins: Array<any>;
 }) {
   const theme = useCustomTheme();
+  const { isXs } = useBreakpoints();
   const openPlugin = useOpenPlugin();
   const { showContent } = useBalancesContext();
   const onClickPlugin = (p: any) => {
     openPlugin(p.install.account.xnft.toString());
   };
+  const iconsPerRow = isXs ? 4 : 6;
   return (
     <>
       <BalancesTableHead wallet={wallet} />
@@ -221,14 +224,14 @@ function _WalletXnftGrid({
         >
           <Grid container>
             {isLoading
-              ? Array.from(Array(4).keys()).map((_, idx) => {
+              ? Array.from(Array(iconsPerRow).keys()).map((_, idx) => {
                   return (
                     <Grid
                       item
                       key={idx}
-                      xs={3}
+                      xs={isXs ? 3 : 2}
                       style={{
-                        marginTop: idx >= 4 ? "24px" : 0,
+                        marginTop: idx >= iconsPerRow ? "24px" : 0,
                       }}
                     >
                       <SkeletonAppIcon />
@@ -240,9 +243,9 @@ function _WalletXnftGrid({
                     <Grid
                       item
                       key={p.url}
-                      xs={3}
+                      xs={isXs ? 3 : 2}
                       style={{
-                        marginTop: idx >= 4 ? "24px" : 0,
+                        marginTop: idx >= iconsPerRow ? "24px" : 0,
                       }}
                     >
                       <PluginIcon plugin={p} onClick={() => onClickPlugin(p)} />

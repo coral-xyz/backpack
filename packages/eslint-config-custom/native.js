@@ -54,6 +54,27 @@ module.exports = {
     },
   ],
   rules: {
+    "no-restricted-properties": [
+      "error",
+      {
+        object: "window",
+        property: "open",
+      },
+      {
+        object: "window",
+        property: "location",
+      },
+      {
+        object: "BrowserRuntimeExtension",
+        property: "closeActiveTab",
+      },
+    ],
+    "no-restricted-globals": [
+      "error", // eslint error and not a restricted global
+      "confirm",
+      "alert",
+      "location",
+    ],
     "react/forbid-elements": [
       "error",
       {

@@ -23,7 +23,6 @@ export const recentNotifications = selectorFamily<
           (x, index) => xnftIds.indexOf(x) === index
         );
         const xnftMetadata = await fetchXnftsFromPubkey(
-          provider,
           uniqueXnftIds.filter(
             (x) => x !== "friend_requests" && x !== "friend_requests_accept"
           )

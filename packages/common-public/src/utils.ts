@@ -65,17 +65,24 @@ export function isServiceWorker(): boolean {
  * TODO: replace host with host of caching layer for thumbnail generation, caching,
  * SVG sanitization, etc.
  */
-export function externalResourceUri(uri: string): string {
+export function externalResourceUri(
+  uri: string,
+  options: { cached?: boolean } = {}
+): string {
   if (uri) {
     uri = uri.replace(/\0/g, "");
   }
   if (uri && uri.startsWith("ipfs://")) {
-    return uri.replace("ipfs://", "https://ipfs.io/ipfs/");
+    return uri.replace("ipfs://", "https://cloudflare-ipfs.com/ipfs/");
+    // return uri.replace("ipfs://", "https://ipfs.io/ipfs/");
   }
   if (uri && uri.startsWith("ar://")) {
     return uri.replace("ar://", "https://arweave.net/");
   }
-  return uri;
+  if (options.cached) {
+    return `https://swr.xnfts.dev/1hr/${uri}`;
+  }
+  return `${uri}`;
 }
 
 export function proxyImageUrl(url: string): string {

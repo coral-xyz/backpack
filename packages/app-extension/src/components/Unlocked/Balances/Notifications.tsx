@@ -205,8 +205,8 @@ const getGroupedNotifications = (notifications: EnrichedNotification[]) => {
 };
 
 export function Notifications() {
-  const nav = useNavigation();
   const { isXs } = useBreakpoints();
+  const nav = isXs ? useNavigation() : null;
   const [openDrawer, setOpenDrawer] = isXs
     ? [false, () => {}]
     : useState(false);
@@ -219,9 +219,11 @@ export function Notifications() {
   });
 
   useEffect(() => {
-    nav.setOptions({
-      headerTitle: "Notifications",
-    });
+    if (isXs) {
+      nav!.setOptions({
+        headerTitle: "Notifications",
+      });
+    }
   }, []);
 
   useEffect(() => {

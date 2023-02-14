@@ -10,7 +10,9 @@ import {
   useDarkMode,
   useUser,
   useXnftJwt,
+  xnftPreference as xnftPreferenceAtom,
 } from "@coral-xyz/recoil";
+import { useRecoilValue } from "recoil";
 
 const buildNumber = BACKPACK_FEATURE_FORCE_LATEST_VERSION
   ? parseInt(BACKPACK_CONFIG_GITHUB_RUN_NUMBER)
@@ -18,11 +20,9 @@ const buildNumber = BACKPACK_FEATURE_FORCE_LATEST_VERSION
 
 export function PluginRenderer({
   plugin,
-  xnftPreference,
   deepXnftPath,
 }: {
   plugin: Plugin;
-  xnftPreference: XnftPreference | null;
   deepXnftPath: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -30,6 +30,9 @@ export function PluginRenderer({
   const { username, uuid } = useUser();
   const isDarkMode = useDarkMode();
   const avatarUrl = useAvatarUrl(100);
+  const xnftPreference = useRecoilValue(
+    xnftPreferenceAtom(plugin?.xnftInstallAddress?.toString())
+  );
   const jwt = useXnftJwt(plugin.xnftAddress.toString());
   useEffect(() => {
     if (plugin && ref && ref.current) {
@@ -69,9 +72,34 @@ export function PluginRenderer({
     <div ref={ref} style={{ height: "100vh", overflow: "hidden" }}>
       {!loaded && (
         <div style={{ height: "100vh" }}>
-          <Loading />
+          <SplashScreen splashUrls={plugin.splashUrls ?? {}} /> :
         </div>
       )}
     </div>
+  );
+}
+
+function SplashScreen({
+  splashUrls,
+}: {
+  splashUrls: { [key: string]: string };
+}) {
+  const sizes = ["lg", "md", "sm"];
+
+  const size = sizes.find((size) => splashUrls[size]);
+
+  if (!size) {
+    return <Loading />;
+  }
+
+  return (
+    <div
+      style={{
+        height: "100%",
+        width: "100%",
+        backgroundImage: `url(${splashUrls[size]})`,
+        backgroundPosition: "cover",
+      }}
+    />
   );
 }

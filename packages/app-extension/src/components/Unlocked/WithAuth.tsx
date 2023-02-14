@@ -2,10 +2,18 @@ import { useEffect, useState } from "react";
 import type { Blockchain, SignedWalletDescriptor } from "@coral-xyz/common";
 import {
   getAuthMessage,
+  UI_RPC_METHOD_KEYRING_KEY_DELETE,
+  UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_SYNC,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
+  UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_CREATE,
   UI_RPC_METHOD_USER_JWT_UPDATE,
 } from "@coral-xyz/common";
-import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
+import {
+  useBackgroundClient,
+  useDehydratedWallets,
+  useKeyringHasMnemonic,
+  useUser,
+} from "@coral-xyz/recoil";
 import { ethers } from "ethers";
 
 import { useAuthentication } from "../../hooks/useAuthentication";
@@ -13,10 +21,11 @@ import { WithDrawer } from "../common/Layout/Drawer";
 import { HardwareOnboard } from "../Onboarding/pages/HardwareOnboard";
 
 export function WithAuth({ children }: { children: React.ReactElement }) {
-  const { authenticate, checkAuthentication, getAuthSigner } =
+  const { authenticate, checkAuthentication, getAuthSigner, getSigners } =
     useAuthentication();
   const background = useBackgroundClient();
   const user = useUser();
+  const dehydratedWallets = useDehydratedWallets();
 
   const [authData, setAuthData] = useState<{
     publicKey: string;
@@ -31,6 +40,17 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
     isAuthenticated: boolean;
     publicKeys: Array<{ blockchain: Blockchain; publicKey: string }>;
   } | null>(null);
+  const [clientPublicKeys, setClientPublicKeys] = useState<
+    Array<{ blockchain: Blockchain; publicKey: string; hardware: boolean }>
+  >([]);
+  const hasMnemonic = useKeyringHasMnemonic();
+  const [syncAttempted, setSyncAttempted] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      setClientPublicKeys(await getSigners());
+    })();
+  }, []);
 
   /**
    * Check authentication status and take required actions to authenticate if
@@ -122,6 +142,75 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
       }
     })();
   }, [authData, authSignature]);
+
+  /**
+   * Remove any hardware wallets that are on the client but not the server
+   * because we can't transparently sign. For mnemmonic based wallets
+   * transparently sign and add them to the server.
+   */
+  useEffect(() => {
+    (async () => {
+      if (!serverAccountState) return;
+      // Public key/signature pairs that are required to sync the state of the
+      // server public key data with the client data.
+      const danglingPublicKeys = clientPublicKeys.filter((c) => {
+        // Filter to client public keys that don't exist on the server
+        const existsServer = serverAccountState.publicKeys.find(
+          (s) => s.blockchain === c.blockchain && s.publicKey === c.publicKey
+        );
+        return !existsServer;
+      });
+      for (const danglingPublicKey of danglingPublicKeys) {
+        if (danglingPublicKey.hardware) {
+          // Remove hardware public keys if they are not on the server
+          // They can be added again through settings to capture the
+          // signature
+          try {
+            await background.request({
+              method: UI_RPC_METHOD_KEYRING_KEY_DELETE,
+              params: [
+                danglingPublicKey.blockchain,
+                danglingPublicKey.publicKey,
+              ],
+            });
+          } catch {
+            // If the delete fails for some reason, don't error out because
+            // the wallet will not be accessible
+          }
+        } else {
+          // Sync all transparently signable public keys by adding them
+          // to the server
+          await background.request({
+            method: UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_CREATE,
+            params: [danglingPublicKey.blockchain, danglingPublicKey.publicKey],
+          });
+        }
+      }
+    })();
+  }, [clientPublicKeys, serverAccountState]);
+
+  //
+  // Attempt to find any dehydrated wallets on the mnemonic if a mnemonic is in use.
+  //
+  useEffect(() => {
+    (async () => {
+      try {
+        if (hasMnemonic && dehydratedWallets.length > 0 && !syncAttempted) {
+          // We need to only do this once, the dehydrated wallets array will change
+          // if we find wallets and successfully load them and we don't want to
+          // trigger this function for smaller and smaller dehydratedWallets arrays
+          setSyncAttempted(true);
+          // Do the sync
+          await background.request({
+            method: UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_SYNC,
+            params: [dehydratedWallets],
+          });
+        }
+      } catch (error) {
+        console.log("sync error", error);
+      }
+    })();
+  }, [hasMnemonic, dehydratedWallets, syncAttempted]);
 
   return (
     <>

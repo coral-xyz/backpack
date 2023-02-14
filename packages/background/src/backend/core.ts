@@ -22,6 +22,7 @@ import {
   EthereumExplorer,
   getAccountRecoveryPaths,
   getAddMessage,
+  getRecoveryPaths,
   NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED,
   NOTIFICATION_AGGREGATE_WALLETS_UPDATED,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
@@ -1207,6 +1208,67 @@ export class Backend {
     return this.keyringStore.createMnemonic(strength);
   }
 
+  async mnemonicSync(
+    serverPublicKeys: Array<{ blockchain: Blockchain; publicKey: string }>
+  ) {
+    const blockchains = [...new Set(serverPublicKeys.map((x) => x.blockchain))];
+    for (const blockchain of blockchains) {
+      const recoveryPaths = getRecoveryPaths(blockchain);
+      const publicKeys = await this.previewPubkeys(
+        blockchain,
+        this.keyringStore.activeUserKeyring.exportMnemonic(),
+        recoveryPaths
+      );
+      const searchPublicKeys = serverPublicKeys
+        .filter((b) => b.blockchain === blockchain)
+        .map((p) => p.publicKey);
+      for (const searchPublicKey of searchPublicKeys) {
+        const index = publicKeys.findIndex(
+          (p: string) => p === searchPublicKey
+        );
+        if (index !== -1) {
+          // There is a match among the recovery paths
+          let blockchainKeyring: BlockchainKeyring | undefined = undefined;
+          // Check if the blockchain keyring already exists
+          try {
+            blockchainKeyring =
+              this.keyringStore.activeUserKeyring.keyringForBlockchain(
+                blockchain
+              );
+          } catch {
+            // Doesn't exist, we can create it
+          }
+          if (blockchainKeyring) {
+            // Exists, just add the missing derivation path
+            const { publicKey, name } =
+              await this.keyringStore.activeUserKeyring
+                .keyringForBlockchain(blockchain)
+                .addDerivationPath(recoveryPaths[index]);
+            this.events.emit(BACKEND_EVENT, {
+              name: NOTIFICATION_KEYRING_DERIVED_WALLET,
+              data: {
+                blockchain,
+                publicKey,
+                name,
+              },
+            });
+          } else {
+            // Create blockchain keyring
+            const walletDescriptor = {
+              blockchain,
+              publicKey: publicKeys[index],
+              derivationPath: recoveryPaths[index],
+            };
+            await this.blockchainKeyringsAdd(blockchain, {
+              ...walletDescriptor,
+              signature: "",
+            });
+          }
+        }
+      }
+    }
+  }
+
   keyringHasMnemonic(): boolean {
     return this.keyringStore.activeUserKeyring.hasMnemonic();
   }
@@ -1425,16 +1487,18 @@ export class Backend {
    * blockchain/public key pairs from a list.
    */
   async findServerPublicKeyConflicts(
-    serverPublicKeys: Array<ServerPublicKey>
-  ): Promise<Array<string>> {
-    const response = await fetch(`${BACKEND_API_URL}/publicKeys`, {
+    serverPublicKeys: ServerPublicKey[]
+  ): Promise<string[]> {
+    const url = `${BACKEND_API_URL}/publicKeys`;
+    const response = await fetch(url, {
       method: "POST",
       body: JSON.stringify(serverPublicKeys),
       headers: {
         "Content-Type": "application/json",
       },
-    });
-    return await response.json();
+    }).then((r) => r.json());
+
+    return response;
   }
 
   /**
