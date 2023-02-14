@@ -210,43 +210,37 @@ function BackgroundHiddenWebView(): JSX.Element {
   console.log("webviewUrl", webViewUrl);
 
   return (
-    <>
-      <Text style={{ fontSize: 18, backgroundColor: "white" }}>
-        {webViewUrl}
-      </Text>
-      <View style={{ display: "none" }}>
-        <WebView
-          ref={ref}
-          useWebView2
-          originWhitelist={[
-            "*",
-            "https://*",
-            "https://backpack-api.xnfts.dev/*",
-          ]}
-          // cacheMode="LOAD_CACHE_ELSE_NETWORK"
-          // cacheEnabled
-          limitsNavigationsToAppBoundDomains
-          source={{
-            uri: webViewUrl,
-          }}
-          onMessage={(event) => {
-            const msg = JSON.parse(event.nativeEvent.data);
-            maybeParseLog(msg);
-            if (msg.type === BACKGROUND_SERVICE_WORKER_READY) {
-              // @ts-expect-error
-              setInjectJavaScript(ref.current?.injectJavaScript);
-            } else {
-              WEB_VIEW_EVENTS.emit("message", msg);
-            }
-          }}
-        />
-      </View>
-    </>
+    <View style={styles.webview}>
+      <WebView
+        ref={ref}
+        // useWebView2
+        // originWhitelist={["*", "https://*", "https://backpack-api.xnfts.dev/*"]}
+        // cacheMode="LOAD_CACHE_ELSE_NETWORK"
+        // cacheEnabled
+        limitsNavigationsToAppBoundDomains
+        source={{
+          uri: webViewUrl,
+        }}
+        onMessage={(event) => {
+          const msg = JSON.parse(event.nativeEvent.data);
+          maybeParseLog(msg);
+          if (msg.type === BACKGROUND_SERVICE_WORKER_READY) {
+            // @ts-expect-error
+            setInjectJavaScript(ref.current?.injectJavaScript);
+          } else {
+            WEB_VIEW_EVENTS.emit("message", msg);
+          }
+        }}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  webview: {
+    display: "none",
   },
 });
