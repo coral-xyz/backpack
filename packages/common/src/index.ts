@@ -109,16 +109,20 @@ export function isValidEventOrigin(event: Event): boolean {
     }
   }
 
-  // From the extension.
-  const url = new URL(event.origin);
-  if (url.host === BACKPACK_CONFIG_EXTENSION_KEY) {
-    return true;
-  }
+  try {
+    // From the extension.
+    const url = new URL(event.origin);
+    if (url.host === BACKPACK_CONFIG_EXTENSION_KEY) {
+      return true;
+    }
 
-  // From trusted ledger API.
-  const ledgerUrl = new URL(LEDGER_IFRAME_URL);
-  if (url.host === ledgerUrl.host) {
-    return true;
+    // From trusted ledger API.
+    const ledgerUrl = new URL(LEDGER_IFRAME_URL);
+    if (url.host === ledgerUrl.host) {
+      return true;
+    }
+  } catch (err) {
+    return false;
   }
 
   // Development mode. Note: production is a production build, but still
