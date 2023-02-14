@@ -12,6 +12,18 @@
     "production": {
       "extends": "monorepo"
     },
+    "simulator": {
+      "extends": "monorepo",
+      "channel": "simulator",
+      "distribution": "internal",
+      "env": {
+        "APP_ENV": "production"
+      },
+      "ios": {
+        "simulator": true,
+        "resourceClass": "m1-medium"
+      }
+    },
     "preview": {
       "extends": "monorepo",
       "channel": "preview",
