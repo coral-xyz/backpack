@@ -16,6 +16,7 @@ export class ChannelContentScript {
   // Forwards all messages from the client to the background script.
   public static proxy(reqChannel: string, respChannel: string) {
     window.addEventListener("message", (event) => {
+      console.log("ARMANI CHANNEL CONTENT SCRIPT HERE", event);
       if (!isValidEventOrigin(event)) {
         return;
       }
