@@ -687,7 +687,9 @@ function SendV2({
                 color: theme.custom.colors.fontColor,
                 cursor: "pointer",
                 border: `2px solid ${
-                  isDarkMode ? theme.custom.colors.bg2 : theme.custom.colors.bg3
+                  isDarkMode
+                    ? theme.custom.colors.bg2
+                    : theme.custom.colors.border1
                 }`,
                 padding: "4px 12px",
                 borderRadius: 8,

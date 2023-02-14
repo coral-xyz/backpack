@@ -482,6 +482,9 @@ function AddressListItems({
       elevation={0}
     >
       <AccordionSummary
+        sx={{
+          backgroundColor: theme.custom.colors.nav,
+        }}
         expandIcon={<></>}
         aria-controls="panel1a-content"
         id="panel1a-header"
@@ -542,7 +545,7 @@ function AddressListItems({
       >
         <div style={{ display: "flex", flexWrap: "wrap" }}>
           {addresses?.map((address) => (
-            <div style={{ padding: "8px 4px" }}>
+            <div style={{ padding: "2px 4px" }}>
               <TokenBadge
                 onClick={() => {
                   push("send", {
