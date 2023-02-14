@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import {
+  BACKEND_API_URL,
   UI_RPC_METHOD_KEY_IS_COLD_UPDATE,
   UI_RPC_METHOD_KEYNAME_READ,
   walletAddressDisplay,
@@ -13,7 +14,7 @@ import {
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ContentCopy } from "@mui/icons-material";
-import { Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import { useRecoilValue } from "recoil";
 
 import { HeaderIcon } from "../../../../common";
@@ -27,6 +28,7 @@ export const WalletDetail: React.FC<{
   publicKey: string;
   name: string;
   type: string;
+  isActive: boolean;
 }> = ({ blockchain, publicKey, name, type }) => {
   const nav = useNavigation();
   const theme = useCustomTheme();
@@ -149,6 +151,23 @@ export const WalletDetail: React.FC<{
     },
   };
 
+  const primaryAccountToggle = {
+    "Primary account": {
+      onClick: async () => {
+        await fetch(`${BACKEND_API_URL}/users/activePubkey`, {
+          method: "POST",
+          body: JSON.stringify({
+            publicKey: publicKey,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+      },
+      detail: <Button>Set</Button>,
+    },
+  };
+
   return (
     <div>
       {type === "dehydrated" && (
@@ -191,6 +210,7 @@ export const WalletDetail: React.FC<{
         </div>
       </WithCopyTooltip>
       {type !== "dehydrated" && <SettingsList menuItems={_isCold} />}
+      <SettingsList menuItems={primaryAccountToggle} />
       {type !== "hardware" && type !== "dehydrated" && (
         <SettingsList menuItems={secrets} />
       )}

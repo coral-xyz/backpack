@@ -12,15 +12,16 @@ export const getPublicKeyDetails = async ({
   publicKey,
 }: {
   publicKey: string;
-}): Promise<{ id: number }> => {
+}): Promise<{ id: number; blockchain: "solana" | "ethereum" }> => {
   const publicKeyDetails = await chain("query")({
     auth_public_keys: [
       {
         where: { public_key: { _eq: publicKey } },
+        limit: 1,
       },
       {
         id: true,
-        limit: 1,
+        blockchain: true,
       },
     ],
   });

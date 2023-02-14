@@ -390,6 +390,12 @@ router.post(
       );
     }
 
+    await updatePublicKey({
+      userId: userId,
+      blockchain: publicKeyDetails.blockchain,
+      publicKeyId: publicKeyDetails.id,
+    });
+
     return res.json({});
   }
 );

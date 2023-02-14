@@ -33,6 +33,7 @@ export const getUsers = async (
           {
             blockchain: true,
             id: true,
+            public_key: true,
             user_active_publickey_mappings: [{}, { user_id: true }],
           },
         ],
@@ -59,6 +60,7 @@ export const getUsersByPublicKeys = async (
           // for different blockchains (particularly EVM)
           public_key: { _in: blockchainPublicKeys.map((b) => b.publicKey) },
         },
+        limit: 100,
       },
       {
         user_id: true,
@@ -98,6 +100,7 @@ export const getUserByUsername = async (username: string) => {
           {
             blockchain: true,
             id: true,
+            public_key: true,
             user_active_publickey_mappings: [{}, { user_id: true }],
           },
         ],
@@ -127,6 +130,7 @@ export const getUser = async (id: string) => {
           {
             blockchain: true,
             id: true,
+            public_key: true,
             user_active_publickey_mappings: [{}, { user_id: true }],
           },
         ],
@@ -215,6 +219,7 @@ export const createUser = async (
           {
             blockchain: true,
             id: true,
+            public_key: true,
             user_active_publickey_mappings: [{}, { user_id: true }],
           },
         ],
