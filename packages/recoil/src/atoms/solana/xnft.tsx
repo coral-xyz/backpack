@@ -11,7 +11,7 @@ import { PublicKey } from "@solana/web3.js";
 import * as cheerio from "cheerio";
 import { atomFamily, selectorFamily } from "recoil";
 
-import { isDeveloperMode } from "../preferences";
+import { authenticatedUser, isDeveloperMode } from "../preferences";
 import { connectionUrls } from "../preferences/connection-urls";
 import { activePublicKeys } from "../wallet";
 
@@ -124,13 +124,7 @@ export const xnfts = atomFamily<
   default: selectorFamily({
     key: "xnftsDefault",
     get:
-      ({
-        connectionUrl,
-        publicKey,
-      }: {
-        connectionUrl: string;
-        publicKey: string;
-      }) =>
+      ({ publicKey }: { connectionUrl: string; publicKey: string }) =>
       async ({ get }) => {
         const _activeWallets = get(activePublicKeys);
         const _connectionUrls = get(connectionUrls);
@@ -138,7 +132,13 @@ export const xnfts = atomFamily<
         if (!publicKey) {
           return [];
         }
-        const xnfts = await fetchXnfts(provider, new PublicKey(publicKey));
+        const dropzonePublicKey =
+          get(authenticatedUser)?.dropzonePublicKeys?.solana;
+        const xnfts = await fetchXnfts(
+          provider,
+          new PublicKey(publicKey),
+          publicKey === dropzonePublicKey
+        );
         return xnfts.map((xnft) => {
           return {
             ...xnft,

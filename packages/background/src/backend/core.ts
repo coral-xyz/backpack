@@ -1469,6 +1469,7 @@ export class Backend {
         data: {
           username: json.username,
           uuid: json.id,
+          dropzonePublicKeys: json.dropzonePublicKeys,
         },
       });
     }

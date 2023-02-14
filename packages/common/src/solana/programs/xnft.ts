@@ -1,12 +1,8 @@
 import { externalResourceUri } from "@coral-xyz/common-public";
-import { Metadata } from "@metaplex-foundation/mpl-token-metadata";
 import type { Provider } from "@project-serum/anchor";
 import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
-
-import { BACKEND_API_URL } from "../../constants";
-import { BACKPACK_FEATURE_REFERRAL_FEES } from "../../generated-config";
 
 export const XNFT_PROGRAM_ID = new PublicKey(
   "xnft5aaToUM4UFETUQfj7NUDUBdvYHTVhNFThEYTm55"
@@ -14,34 +10,19 @@ export const XNFT_PROGRAM_ID = new PublicKey(
 
 export async function fetchXnfts(
   provider: Provider,
-  wallet: PublicKey
+  wallet: PublicKey,
+  isDropzoneWallet: boolean
 ): Promise<Array<{ publicKey: PublicKey; medtadata: any; metadataBlob: any }>> {
   const client = xnftClient(provider);
 
-  const [xnftInstalls, isDropzoneWallet] = await Promise.all([
-    // Fetch all xnfts installed by this user.
-    client.account.install.all([
-      {
-        memcmp: {
-          offset: 8, // Discriminator
-          bytes: wallet.toString(),
-        },
+  // Fetch all xnfts installed by this user.
+  const xnftInstalls = await client.account.install.all([
+    {
+      memcmp: {
+        offset: 8, // Discriminator
+        bytes: wallet.toString(),
       },
-    ]),
-    // Check if this wallet is the dropzone wallet.
-    (async function isDropzoneWallet() {
-      if (!BACKPACK_FEATURE_REFERRAL_FEES) return false;
-      try {
-        const response = await fetch(`${BACKEND_API_URL}/users/me`);
-        const { publicKeys } = await response.json();
-        const dropzonePublicKeyString = publicKeys.find(
-          (k) => k.blockchain === "solana"
-        )?.publicKey;
-        return dropzonePublicKeyString === wallet.toString();
-      } catch (err) {
-        return false;
-      }
-    })(),
+    },
   ]);
 
   // HACK to get ONE xNFT installed for everyone

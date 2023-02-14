@@ -126,14 +126,26 @@ const transformUser = (user: {
   username: unknown;
   public_keys: Array<{ blockchain: string; public_key: string }>;
 }) => {
+  const publicKeys = user.public_keys.map((k) => ({
+    blockchain: k.blockchain as Blockchain,
+    publicKey: k.public_key,
+  }));
+
+  // Assumes the first public key is a dropzone wallet for each blockchain
+  const dropzonePublicKeys = publicKeys
+    // Filter to only include xNFT-compatible blockchains
+    .filter((k) => k.blockchain === "solana")
+    .reduce((acc, curr) => {
+      acc[curr.blockchain] ||= curr.publicKey;
+      return acc;
+    }, {} as Record<string, string>);
+
   return {
     id: user.id,
     username: user.username,
     // Camelcase public keys for response
-    publicKeys: user.public_keys.map((k) => ({
-      blockchain: k.blockchain as Blockchain,
-      publicKey: k.public_key,
-    })),
+    publicKeys,
+    dropzonePublicKeys,
     image: `${AVATAR_BASE_URL}/${user.username}`,
   };
 };
