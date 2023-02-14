@@ -1,5 +1,6 @@
 import {
   BACKPACK_CONFIG_XNFT_PROXY,
+  BACKPACK_FEATURE_REFERRAL_FEES,
   Blockchain,
   DEFAULT_PUBKEY_STR,
   fetchXnfts,
@@ -137,7 +138,7 @@ export const xnfts = atomFamily<
         const xnfts = await fetchXnfts(
           provider,
           new PublicKey(publicKey),
-          publicKey === dropzonePublicKey
+          BACKPACK_FEATURE_REFERRAL_FEES && publicKey === dropzonePublicKey
         );
         return xnfts.map((xnft) => {
           return {
