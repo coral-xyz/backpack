@@ -2,7 +2,6 @@ import { Blockchain } from "@coral-xyz/common";
 import { selectorFamily } from "recoil";
 
 import type { TokenMetadata } from "../types";
-import { TokenData } from "../types";
 
 export const tokenMetadata = selectorFamily<
   TokenMetadata | null,

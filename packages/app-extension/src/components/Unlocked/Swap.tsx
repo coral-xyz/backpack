@@ -19,7 +19,7 @@ import {
 import {
   useActiveWallet,
   useDarkMode,
-  useJupiterOutputMints,
+  useJupiterOutputTokenMetadata,
   useSplTokenRegistry,
   useSwapContext,
 } from "@coral-xyz/recoil";
@@ -431,7 +431,7 @@ const ConfirmSwapButton = () => {
     isLoadingRoutes,
     isLoadingTransactions,
   } = useSwapContext();
-  const tokenAccounts = useJupiterOutputMints(fromMint);
+  const tokenAccounts = useJupiterOutputTokenMetadata(fromMint);
 
   // Parameters aren't all entered or the swap data is loading
   const isIncomplete =
@@ -829,7 +829,7 @@ export function SwapSelectToken({
   const nav = useNavigation();
   const { fromMint, inputTokenAccounts } = useSwapContext();
   const tokenAccounts = !input
-    ? useJupiterOutputMints(fromMint)
+    ? useJupiterOutputTokenMetadata(fromMint)
     : inputTokenAccounts.filter((token: Token) => {
         if (token.mint && token.mint === SOL_NATIVE_MINT) {
           return true;

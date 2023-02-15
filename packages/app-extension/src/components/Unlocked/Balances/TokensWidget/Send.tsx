@@ -34,7 +34,7 @@ import {
   TextInput,
   UserIcon,
 } from "@coral-xyz/react-common";
-import type { TokenData } from "@coral-xyz/recoil";
+import type { TokenDataWithPrice } from "@coral-xyz/recoil";
 import {
   blockchainTokenData,
   useActiveWallet,
@@ -210,7 +210,7 @@ export function Send({
   to,
 }: {
   blockchain: Blockchain;
-  token: TokenData;
+  token: TokenDataWithPrice;
   to?: {
     address: string;
     username?: string;
