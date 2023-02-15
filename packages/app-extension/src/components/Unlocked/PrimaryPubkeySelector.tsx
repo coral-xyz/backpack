@@ -1,20 +1,4 @@
 import * as React from "react";
-import Box from "@mui/material/Box";
-import Modal from "@mui/material/Modal";
-import Typography from "@mui/material/Typography";
-
-const style = {
-  position: "absolute" as const,
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
-
 import { useState } from "react";
 import {
   BACKEND_API_URL,
@@ -29,6 +13,9 @@ import {
   usePrimaryWallets,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
+import Box from "@mui/material/Box";
+import Modal from "@mui/material/Modal";
+import Typography from "@mui/material/Typography";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 
 import { WithDrawer } from "../common/Layout/Drawer";
@@ -71,7 +58,7 @@ export const PrimaryPubkeySelector = () => {
       paperStyles={{
         borderTopLeftRadius: "12px",
         borderTopRightRadius: "12px",
-        height: "50%",
+        height: "75%",
       }}
       openDrawer={needsMigration.length !== 0}
       setOpenDrawer={() => {}}
@@ -182,28 +169,30 @@ function MigrationInputs({
       <div style={{ marginTop: 10, marginBottom: 10 }}>
         Chose primary {blockchain} address
       </div>
-      {wallets.map((wallet) => (
-        <TokenBadge
-          style={{ marginRight: 5 }}
-          overwriteBackground={
-            selectedAddresses === wallet.publicKey
-              ? theme.custom.colors.invertedPrimary
-              : theme.custom.colors.bg2
-          }
-          overwriteColor={
-            selectedAddresses === wallet.publicKey
-              ? theme.custom.colors.background
-              : ""
-          }
-          onClick={async () => {
-            setSelectedSolAddresses((x: any) => ({
-              ...x,
-              [blockchain]: wallet.publicKey,
-            }));
-          }}
-          label={walletAddressDisplay(wallet.publicKey)}
-        />
-      ))}
+      {wallets
+        .filter((x) => x.blockchain === blockchain)
+        .map((wallet) => (
+          <TokenBadge
+            style={{ marginRight: 5 }}
+            overwriteBackground={
+              selectedAddresses === wallet.publicKey
+                ? theme.custom.colors.invertedPrimary
+                : theme.custom.colors.bg2
+            }
+            overwriteColor={
+              selectedAddresses === wallet.publicKey
+                ? theme.custom.colors.background
+                : ""
+            }
+            onClick={async () => {
+              setSelectedSolAddresses((x: any) => ({
+                ...x,
+                [blockchain]: wallet.publicKey,
+              }));
+            }}
+            label={walletAddressDisplay(wallet.publicKey)}
+          />
+        ))}
     </div>
   );
 }

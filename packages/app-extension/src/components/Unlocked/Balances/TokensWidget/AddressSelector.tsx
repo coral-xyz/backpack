@@ -160,6 +160,7 @@ export const AddressSelector = ({
   const [inputContent, setInputContent] = useState("");
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
+  const [searchResults, setSearchResults] = useState<RemoteUserData[]>([]);
   const { push } = useNavigation();
   const { isValidAddress } = useIsValidAddress(
     blockchain,
@@ -183,6 +184,8 @@ export const AddressSelector = ({
       <div className={classes.container}>
         <div className={classes.topHalf}>
           <SearchAddress
+            searchResults={searchResults}
+            setSearchResults={setSearchResults}
             inputContent={inputContent}
             setInputContent={setInputContent}
             blockchain={blockchain}
@@ -194,7 +197,11 @@ export const AddressSelector = ({
             />
           )}
           <Contacts searchFilter={inputContent} blockchain={blockchain} />
-          <NotSelected searchFilter={inputContent} blockchain={blockchain} />
+          <NotSelected
+            searchResults={searchResults}
+            searchFilter={inputContent}
+            blockchain={blockchain}
+          />
         </div>
         <div className={classes.buttonContainer}>
           <PrimaryButton
@@ -221,9 +228,11 @@ export const AddressSelector = ({
 function NotSelected({
   blockchain,
   searchFilter,
+  searchResults,
 }: {
   blockchain: Blockchain;
   searchFilter: string;
+  searchResults: any[];
 }) {
   const { uuid } = useUser();
   const contacts = useContacts(uuid);
@@ -239,15 +248,24 @@ function NotSelected({
       return false;
     })
     .filter((x) => (x.public_keys?.[0] ? false : true));
+  const allResults = [
+    ...filteredContacts,
+    ...searchResults
+      .filter((x) => !x.public_keys?.[0])
+      .map((x) => ({
+        remoteUsername: x.username,
+        remoteUserImage: x.image,
+      })),
+  ];
 
-  if (!filteredContacts.length) {
+  if (!allResults.length) {
     return <></>;
   }
 
   return (
-    <div>
+    <div style={{ padding: 10 }}>
       <div style={{ color: theme.custom.colors.fontColor, marginBottom: 8 }}>
-        Contacts who haven't yet set a primary address
+        Users who haven't yet set a primary address
       </div>
       <ListItem
         button
@@ -266,9 +284,10 @@ function NotSelected({
       >
         <div style={{ paddingTop: 15 }}>
           <MembersList
-            count={filteredContacts.length}
-            members={filteredContacts.map((x) => ({
+            count={allResults.length}
+            members={allResults.map((x) => ({
               image: x.remoteUserImage,
+              username: x.remoteUsername,
             }))}
           />
         </div>
@@ -282,10 +301,27 @@ function MembersList({
   members,
 }: {
   count: number;
-  members: { image: string }[];
+  members: { image: string; username: string }[];
 }) {
   const theme = useCustomTheme();
-  const countText = count >= 1000 ? `${(count / 1000).toFixed(1)}k` : count;
+  const MEMBER_TRHESHOLD = 3;
+  const classes = useStyles();
+  const renderMembersStr = () => {
+    if (members.length <= MEMBER_TRHESHOLD) {
+      return members.map(
+        (member, index) =>
+          member.username + `${index === members.length - 1 ? "" : ", "}`
+      );
+    } else {
+      return `${members
+        .slice(0, 3)
+        .map(
+          (member, index) =>
+            member.username + `${index === members.length - 1 ? "" : ", "}`
+        )} + ${members.length - 3}`;
+    }
+  };
+
   return (
     <div
       style={{
@@ -295,7 +331,7 @@ function MembersList({
         paddingBottom: 20,
       }}
     >
-      {members.map((member, idx) => (
+      {members.slice(0, 3).map((member, idx) => (
         <img
           key={idx}
           src={member.image}
@@ -303,13 +339,21 @@ function MembersList({
             border: `solid 2px ${theme.custom.colors.nav}`,
             borderRadius: "50%",
             height: 30,
+            width: 30,
             ...(idx > 0 ? { marginLeft: "-12px" } : {}),
           }}
         />
       ))}
       <div
-        style={{ color: theme.custom.colors.smallTextColor, paddingLeft: 10 }}
-      ></div>
+        style={{
+          color: theme.custom.colors.smallTextColor,
+          paddingLeft: 10,
+          textOverflow: "ellipsis",
+        }}
+        className={classes.userText}
+      >
+        {renderMembersStr()}
+      </div>
     </div>
   );
 }
@@ -325,15 +369,17 @@ const Contacts = ({
   const { uuid } = useUser();
   const contacts = useContacts(uuid);
 
-  const filteredContacts = contacts.filter((x) => {
-    if (x.remoteUsername.includes(searchFilter)) {
-      return true;
-    }
-    if (x.public_keys.find((x) => x.publicKey.includes(searchFilter))) {
-      return true;
-    }
-    return false;
-  });
+  const filteredContacts = contacts
+    .filter((x) => {
+      if (x.remoteUsername.includes(searchFilter)) {
+        return true;
+      }
+      if (x.public_keys.find((x) => x.publicKey.includes(searchFilter))) {
+        return true;
+      }
+      return false;
+    })
+    .filter((x) => (x.public_keys?.[0] ? true : false));
 
   return (
     <div>
@@ -535,16 +581,19 @@ const SearchAddress = ({
   inputContent,
   setInputContent,
   blockchain,
+  searchResults,
+  setSearchResults,
 }: {
   inputContent: string;
   setInputContent: any;
   blockchain: Blockchain;
+  searchResults: any[];
+  setSearchResults: any;
 }) => {
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
   const [loading, setLoading] = useState(false);
   const theme = useCustomTheme();
-  const [searchResults, setSearchResults] = useState<RemoteUserData[]>([]);
 
   const { isErrorAddress } = useIsValidAddress(
     blockchain,
@@ -557,7 +606,7 @@ const SearchAddress = ({
     setLoading(true);
     try {
       const response = await ParentCommunicationManager.getInstance().fetch(
-        `${BACKEND_API_URL}/users?usernamePrefix=${address}&limit=5`
+        `${BACKEND_API_URL}/users?usernamePrefix=${address}&limit=6`
       );
       const json = await response.json();
       setLoading(false);
