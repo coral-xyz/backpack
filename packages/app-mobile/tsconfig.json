@@ -10,18 +10,7 @@
       "~components/*": ["src/components/*"],
       "~hooks/*": ["src/hooks/*"],
       "~lib/*": ["src/lib/*"],
-      "~screens/*": ["src/screens/*"],
-
-      "@coral-xyz/background": ["../background"],
-      "@coral-xyz/common": ["../common"],
-      "@coral-xyz/recoil": ["../recoil"],
-      "@coral-xyz/themes": ["../themes"]
+      "~screens/*": ["src/screens/*"]
     }
-  },
-  "references": [
-    { "path": "../background" },
-    { "path": "../common" },
-    { "path": "../recoil" },
-    { "path": "../themes" }
-  ]
+  }
 }

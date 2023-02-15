@@ -22,26 +22,26 @@ const BLOCKCHAIN_OPTIONS: BlockchainSelectOption[] = [
     label: "Solana",
     enabled: true,
   },
-  // {
-  //   id: "polygon",
-  //   label: "Polygon",
-  //   enabled: false,
-  // },
-  // {
-  //   id: "bsc",
-  //   label: "BSC",
-  //   enabled: false,
-  // },
-  // {
-  //   id: "avalanche",
-  //   label: "Avalanche",
-  //   enabled: false,
-  // },
-  // {
-  //   id: "cosmos",
-  //   label: "Cosmos",
-  //   enabled: false,
-  // },
+  {
+    id: "polygon",
+    label: "Polygon",
+    enabled: false,
+  },
+  {
+    id: "bsc",
+    label: "BSC",
+    enabled: false,
+  },
+  {
+    id: "avalanche",
+    label: "Avalanche",
+    enabled: false,
+  },
+  {
+    id: "cosmos",
+    label: "Cosmos",
+    enabled: false,
+  },
 ];
 
 export type OnboardingAction = "import" | "create" | "recover"; // TODO(peter) move to OnboardingProvider
@@ -64,7 +64,7 @@ export type OnboardingData = {
 const defaults = {
   complete: false,
   inviteCode: undefined,
-  username: null,
+  username: "testing__",
   action: null,
   keyringType: null,
   blockchain: null,
