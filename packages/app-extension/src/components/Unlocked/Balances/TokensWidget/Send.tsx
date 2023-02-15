@@ -73,11 +73,11 @@ import { TokenBadge } from "./TokenBadge";
 
 const useStyles = styles((theme) => ({
   topImage: {
-    width: 120,
+    width: 80,
   },
   topImageOuter: {
-    width: 120,
-    height: 120,
+    width: 80,
+    height: 80,
     border: `solid 3px ${theme.custom.colors.avatarIconBackground}`,
     borderRadius: "50%",
     display: "inline-block",
@@ -97,7 +97,7 @@ const useStyles = styles((theme) => ({
     flex: 1,
   },
   topHalfV2: {
-    paddingTop: "3px",
+    paddingTop: "30px",
     flex: 1,
   },
   inputContainer: {
@@ -552,7 +552,7 @@ function SendV2({
                   to?.image ||
                   `https://avatars.backpack.workers.dev/${to?.address}`
                 }
-                style={{ width: 120, height: 120 }}
+                style={{ width: 80, height: 80 }}
               />
             </div>
           </div>
@@ -561,11 +561,11 @@ function SendV2({
               <div
                 style={{
                   color: theme.custom.colors.fontColor,
-                  fontSize: 20,
+                  fontSize: 16,
                   fontWeight: 500,
                 }}
               >
-                {`${to.username}`}
+                @{`${to.username}`}
               </div>
             )}
           </div>
@@ -659,7 +659,7 @@ function SendV2({
             </div>
           </div>
           <div
-            style={{ display: "flex", justifyContent: "center", marginTop: 15 }}
+            style={{ display: "flex", justifyContent: "center", marginTop: 25 }}
           >
             <img
               src={token.logo}
@@ -686,6 +686,7 @@ function SendV2({
                 display: "inline-flex",
                 color: theme.custom.colors.fontColor,
                 cursor: "pointer",
+                fontSize: 14,
                 border: `2px solid ${
                   isDarkMode
                     ? theme.custom.colors.bg2
@@ -693,6 +694,8 @@ function SendV2({
                 }`,
                 padding: "4px 12px",
                 borderRadius: 8,
+                marginTop: 5,
+                background: theme.custom.colors.bg3,
               }}
               onClick={() => {
                 editableRef.current.innerHTML = toDisplayBalance(
