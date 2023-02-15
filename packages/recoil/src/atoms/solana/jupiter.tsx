@@ -10,7 +10,7 @@ import { selector, selectorFamily } from "recoil";
 import type { TokenDataWithBalance } from "../../types";
 import { blockchainBalancesSorted } from "../balance";
 
-import { SOL_LOGO_URI, splTokenRegistry } from "./token-registry";
+import { splTokenRegistry } from "./token-registry";
 
 export const JUPITER_BASE_URL = BACKPACK_FEATURE_REFERRAL_FEES
   ? "https://jupiter.xnfts.dev/v4/"
@@ -83,7 +83,10 @@ export const jupiterInputTokens = selectorFamily({
       // Filter all Jupiter's input mints to only those that the wallet holds a
       // balance for, and always display native SOL.
       return walletTokens.filter(
-        (t: any) => inputMints.includes(t.mint) || t.mint === SOL_NATIVE_MINT
+        (token: TokenDataWithBalance) =>
+          (inputMints.includes(token.mint!) ||
+            token.mint === SOL_NATIVE_MINT) &&
+          !token.nativeBalance.isZero()
       ) as Array<TokenDataWithBalance>;
     },
 });
@@ -108,8 +111,18 @@ export const jupiterOutputTokens = selectorFamily({
           (tokenList.find((t: TokenInfo) => t.address === mint) ||
             tokenRegistry.get(mint)) ??
           ({} as TokenInfo);
-        const { name, symbol, decimals, logoURI } = tokenMetadata;
-        return { name, ticker: symbol, decimals, logo: logoURI, mint };
+        return {
+          // Rewrite the name for Wrapped SOL because auto wrap/unwrap is set in
+          // the API call, so it'll automatically unwrap wSOL.
+          name:
+            tokenMetadata.name === "Wrapped SOL"
+              ? "Solana"
+              : tokenMetadata.name,
+          ticker: tokenMetadata.symbol,
+          decimals: tokenMetadata.decimals,
+          logo: tokenMetadata.logoURI,
+          mint: tokenMetadata.address,
+        };
       });
 
       if (inputMint === SOL_NATIVE_MINT) {

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import {
   Blockchain,
-  ETH_NATIVE_MINT,
   SOL_NATIVE_MINT,
   toDisplayBalance,
   WSOL_MINT,
@@ -16,7 +15,7 @@ import {
   SecondaryButton,
   TextFieldLabel,
 } from "@coral-xyz/react-common";
-import type { TokenData } from "@coral-xyz/recoil";
+import type { TokenData, TokenDataWithPrice } from "@coral-xyz/recoil";
 import {
   useActiveWallet,
   useDarkMode,
@@ -359,7 +358,7 @@ function InputTextField() {
           <MaxLabel
             amount={availableForSwap}
             onSetAmount={setFromAmount}
-            decimals={fromToken.decimals}
+            decimals={fromToken!.decimals}
           />
         }
       />
@@ -370,7 +369,7 @@ function InputTextField() {
         rootClass={classes.fromFieldRoot}
         value={fromAmount}
         setValue={setFromAmount}
-        decimals={fromToken.decimals}
+        decimals={fromToken!.decimals}
         isError={exceedsBalance}
       />
     </>
@@ -605,9 +604,9 @@ function SwapReceiveAmount() {
   return (
     <TokenAmountHeader
       token={{
-        logo: toToken.logo,
-        ticker: toToken.ticker,
-        decimals: toToken.decimals,
+        logo: toToken!.logo,
+        ticker: toToken!.ticker,
+        decimals: toToken!.decimals,
       }}
       amount={toAmount!}
     />
@@ -689,7 +688,9 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
         youPay: `${toDisplayBalance(fromAmount, fromToken.decimals)} ${
           fromToken.ticker
         }`,
-        rate: `1 ${fromToken.ticker} = ${rate} ${toToken.ticker}`,
+        rate: `1 ${fromToken.ticker} = ${rate.substring(0, 10)} ${
+          toToken.ticker
+        }`,
         priceImpact: `${
           priceImpactPct === 0
             ? 0
@@ -768,14 +769,18 @@ function SwapTokensButton({
 function InputTokenSelectorButton() {
   const { fromToken, setFromMint } = useSwapContext();
   return (
-    <TokenSelectorButton token={fromToken} input={true} setMint={setFromMint} />
+    <TokenSelectorButton
+      token={fromToken!}
+      input={true}
+      setMint={setFromMint}
+    />
   );
 }
 
 function OutputTokensSelectorButton() {
   const { toToken, setToMint } = useSwapContext();
   return (
-    <TokenSelectorButton token={toToken} setMint={setToMint} input={false} />
+    <TokenSelectorButton token={toToken!} setMint={setToMint} input={false} />
   );
 }
 
@@ -785,7 +790,7 @@ function TokenSelectorButton({
   input,
 }: {
   token: TokenData;
-  setMint: any;
+  setMint: (mint: string) => void;
   input: boolean;
 }) {
   const classes = useStyles();
@@ -796,19 +801,24 @@ function TokenSelectorButton({
       <XnftButton
         onClick={() =>
           nav.push("select-token", {
+            // @ts-ignore
             setMint: (...args: any) => setMint(...args),
             input,
           })
         }
         style={{
           backgroundColor: "transparent",
+          width: "auto",
+          justifyContent: "right",
         }}
       >
-        <img
-          className={classes.tokenLogo}
-          src={token && token.logo}
-          onError={(event) => (event.currentTarget.style.display = "none")}
-        />
+        {token && (
+          <img
+            className={classes.tokenLogo}
+            src={token.logo}
+            onError={(event) => (event.currentTarget.style.display = "none")}
+          />
+        )}
         <Typography className={classes.tokenSelectorButtonLabel}>
           {token && token.ticker}
         </Typography>
@@ -830,18 +840,11 @@ export function SwapSelectToken({
   const isDark = useDarkMode();
   const theme = useCustomTheme();
   const nav = useNavigation();
-  const { fromMint, inputTokenAccounts } = useSwapContext();
-  const tokenAccounts = !input
-    ? useJupiterOutputTokens(fromMint)
-    : inputTokenAccounts.filter((token: Token) => {
-        if (token.mint && token.mint === SOL_NATIVE_MINT) {
-          return true;
-        }
-        if (token.address && token.address === ETH_NATIVE_MINT) {
-          return true;
-        }
-        return !token.nativeBalance.isZero();
-      });
+  const { fromTokens, toTokens } = useSwapContext();
+  const tokenAccounts = (
+    !input ? toTokens : fromTokens
+  ) as Array<TokenDataWithPrice>;
+
   const onClickRow = (_blockchain: Blockchain, token: Token) => {
     setMint(token.mint!);
     nav.pop();
