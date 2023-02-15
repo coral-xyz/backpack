@@ -3,14 +3,14 @@ import { StyleSheet, Text, View } from "react-native";
 import { BigNumber } from "ethers";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { InputField, InputFieldMaxLabel } from "@components/Form";
+import { InputField, InputFieldMaxLabel } from "~components/Form";
 import {
   StyledTokenTextInput,
   Debug,
   Margin,
   PrimaryButton,
   Screen,
-} from "@components/index";
+} from "~components/index";
 
 export function SwapTokenScreen({ navigation, route }) {
   const handleSwap = () => {};

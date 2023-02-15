@@ -30,8 +30,8 @@ import {
 import { MaterialIcons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { EmptyState, Screen } from "@components/index";
-import { useBlockchainLogo, useTheme } from "@hooks/index";
+import { EmptyState, Screen } from "~components/index";
+import { useBlockchainLogo, useTheme } from "~hooks/index";
 
 export function RecentActivityScreen() {
   const insets = useSafeAreaInsets();

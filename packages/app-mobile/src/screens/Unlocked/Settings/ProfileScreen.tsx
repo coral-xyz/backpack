@@ -5,17 +5,17 @@ import { SectionList, View } from "react-native";
 
 import { toTitleCase } from "@coral-xyz/common";
 import { useActiveWallets, useWalletPublicKeys } from "@coral-xyz/recoil";
-import { WalletListItem } from "@screens/Unlocked/EditWalletsScreen";
-import { SettingsList } from "@screens/Unlocked/Settings/components/SettingsList";
+import { WalletListItem } from "~screens/Unlocked/EditWalletsScreen";
+import { SettingsList } from "~screens/Unlocked/Settings/components/SettingsList";
 
-import { ExpandCollapseIcon } from "@components/Icon";
+import { ExpandCollapseIcon } from "~components/Icon";
 import {
   AddConnectWalletButton,
   Avatar,
   Margin,
   RoundedContainerGroup,
   Screen,
-} from "@components/index";
+} from "~components/index";
 
 type Wallet = {
   name: string;

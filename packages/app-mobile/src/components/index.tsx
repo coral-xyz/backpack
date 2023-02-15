@@ -20,8 +20,8 @@ import { useAvatarUrl } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { SvgUri } from "react-native-svg";
 
-import { ContentCopyIcon, RedBackpack } from "@components/Icon";
-import { useTheme } from "@hooks/index";
+import { ContentCopyIcon, RedBackpack } from "~components/Icon";
+import { useTheme } from "~hooks/index";
 
 export { ActionCard } from "./ActionCard";
 export { MnemonicInputFields } from "./MnemonicInputFields";

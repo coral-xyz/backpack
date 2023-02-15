@@ -7,10 +7,10 @@ import {
   Screen,
   SecondaryButton,
   SubtextParagraph,
-} from "@components";
+} from "~components";
 import { KeyringStoreStateEnum, useKeyringStoreState } from "@coral-xyz/recoil";
 
-import { QuestionIcon } from "@components/Icon";
+import { QuestionIcon } from "~components/Icon";
 
 export function ForgotPasswordScreen({ navigation }) {
   const keyringStoreState = useKeyringStoreState();

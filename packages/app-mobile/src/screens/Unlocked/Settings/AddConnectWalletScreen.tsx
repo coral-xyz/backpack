@@ -16,9 +16,9 @@ import {
 import { MaterialIcons } from "@expo/vector-icons";
 import { BottomSheetModal, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
 import { useNavigation } from "@react-navigation/native";
-import { WalletListItem } from "@screens/Unlocked/EditWalletsScreen";
+import { WalletListItem } from "~screens/Unlocked/EditWalletsScreen";
 
-import { CheckIcon } from "@components/Icon";
+import { CheckIcon } from "~components/Icon";
 import {
   ActionCard,
   Header,
@@ -26,8 +26,8 @@ import {
   Screen,
   SubtextParagraph,
   RoundedContainerGroup,
-} from "@components/index";
-import { useTheme } from "@hooks/index";
+} from "~components/index";
+import { useTheme } from "~hooks/index";
 
 export function AddConnectWalletScreen({ route }) {
   const { blockchain } = route.params;

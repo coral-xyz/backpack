@@ -11,9 +11,9 @@ import {
 import { useBackgroundClient, useFeatureGates } from "@coral-xyz/recoil";
 import { useNavigation } from "@react-navigation/native";
 
-import { DiscordIcon } from "@components/Icon";
-import { Margin, RoundedContainerGroup } from "@components/index";
-import { useTheme } from "@hooks/index";
+import { DiscordIcon } from "~components/Icon";
+import { Margin, RoundedContainerGroup } from "~components/index";
+import { useTheme } from "~hooks/index";
 
 import {
   IconLaunchDetail,

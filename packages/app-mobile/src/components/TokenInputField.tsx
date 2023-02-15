@@ -5,7 +5,7 @@ import type { TextInputProps } from "react-native";
 
 import { ethers } from "ethers";
 
-import { StyledTextInput } from "@components/index";
+import { StyledTextInput } from "~components/index";
 
 export function StyledTokenTextInput({
   decimals,

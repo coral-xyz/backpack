@@ -4,7 +4,7 @@ import ExpoCheckBox from "expo-checkbox";
 
 import { Controller } from "react-hook-form";
 
-import { useTheme } from "@hooks/index";
+import { useTheme } from "~hooks/index";
 
 export const BaseCheckBoxLabel: React.FC<{
   label: string;
