@@ -16,16 +16,21 @@ import {
   SecondaryButton,
   TextFieldLabel,
 } from "@coral-xyz/react-common";
+import type { TokenData } from "@coral-xyz/recoil";
 import {
   useActiveWallet,
   useDarkMode,
   useJupiterOutputTokens,
-  useSplTokenRegistry,
   useSwapContext,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ExpandMore, SwapVert } from "@mui/icons-material";
-import { IconButton, InputAdornment, Typography } from "@mui/material";
+import {
+  IconButton,
+  InputAdornment,
+  Skeleton,
+  Typography,
+} from "@mui/material";
 import { ethers, FixedNumber } from "ethers";
 
 import { Button as XnftButton } from "../../plugin/Component";
@@ -223,9 +228,11 @@ export function Swap({ blockchain }: { blockchain: Blockchain }) {
 function _Swap() {
   const isDark = useDarkMode();
   const classes = useStyles();
-  const { swapToFromMints } = useSwapContext();
+  const { swapToFromMints, fromToken } = useSwapContext();
   const [openDrawer, setOpenDrawer] = useState(false);
   const { close } = useDrawerContext();
+
+  const isLoading = !fromToken;
 
   const onSwapButtonClick = () => {
     swapToFromMints();
@@ -258,22 +265,30 @@ function _Swap() {
               left: "24px",
             }}
           />
-          <InputTextField />
+          {isLoading ? (
+            <Skeleton height={80} style={{ borderRadius: "12px" }} />
+          ) : (
+            <InputTextField />
+          )}
         </div>
         <div className={classes.bottomHalfWrapper}>
           <div className={classes.bottomHalf}>
-            <div>
-              <OutputTextField />
-              <div
-                style={{
-                  marginTop: "24px",
-                  marginLeft: "8px",
-                  marginRight: "8px",
-                }}
-              >
-                <SwapInfo />
+            {isLoading ? (
+              <Skeleton height={80} style={{ borderRadius: "12px" }} />
+            ) : (
+              <div>
+                <OutputTextField />
+                <div
+                  style={{
+                    marginTop: "24px",
+                    marginLeft: "8px",
+                    marginRight: "8px",
+                  }}
+                >
+                  <SwapInfo />
+                </div>
               </div>
-            </div>
+            )}
             <ConfirmSwapButton />
           </div>
         </div>
@@ -588,8 +603,8 @@ function SwapReceiveAmount() {
   return (
     <TokenAmountHeader
       token={{
-        logo: toToken.logoURI,
-        ticker: toToken.symbol,
+        logo: toToken.logo,
+        ticker: toToken.ticker,
         decimals: toToken.decimals,
       }}
       amount={toAmount!}
@@ -654,6 +669,10 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     return x;
   };
 
+  console.log(decimalDifference);
+  console.log(fromAmount);
+  console.log(toAmountWithFees);
+
   const rate = fromAmount.gt(Zero)
     ? ethers.utils.commify(
         scale(
@@ -670,9 +689,9 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
       {...{
         compact,
         youPay: `${toDisplayBalance(fromAmount, fromToken.decimals)} ${
-          fromToken.symbol
+          fromToken.ticker
         }`,
-        rate: `1 ${fromToken.symbol} = ${rate} ${toToken.symbol}`,
+        rate: `1 ${fromToken.ticker} = ${rate} ${toToken.ticker}`,
         priceImpact: `${
           priceImpactPct === 0
             ? 0
@@ -749,42 +768,30 @@ function SwapTokensButton({
 }
 
 function InputTokenSelectorButton() {
-  const { fromMint, setFromMint } = useSwapContext();
+  const { fromToken, setFromMint } = useSwapContext();
   return (
-    <TokenSelectorButton
-      selectedMint={fromMint}
-      input={true}
-      setMint={setFromMint}
-    />
+    <TokenSelectorButton token={fromToken} input={true} setMint={setFromMint} />
   );
 }
 
 function OutputTokensSelectorButton() {
-  const { toMint, setToMint } = useSwapContext();
+  const { toToken, setToMint } = useSwapContext();
   return (
-    <TokenSelectorButton
-      selectedMint={toMint}
-      setMint={setToMint}
-      input={false}
-    />
+    <TokenSelectorButton token={toToken} setMint={setToMint} input={false} />
   );
 }
 
 function TokenSelectorButton({
-  selectedMint,
+  token,
   setMint,
   input,
 }: {
-  selectedMint: any;
+  token: TokenData;
   setMint: any;
   input: boolean;
 }) {
   const classes = useStyles();
   const nav = useNavigation();
-  const tokenRegistry = useSplTokenRegistry();
-  const tokenInfo = tokenRegistry.get(selectedMint); // TODO handle null case
-  const symbol = tokenInfo ? tokenInfo.symbol : "-";
-  const logoUri = tokenInfo ? tokenInfo.logoURI : "-";
 
   return (
     <InputAdornment position="end">
@@ -801,11 +808,11 @@ function TokenSelectorButton({
       >
         <img
           className={classes.tokenLogo}
-          src={logoUri}
+          src={token && token.logo}
           onError={(event) => (event.currentTarget.style.display = "none")}
         />
         <Typography className={classes.tokenSelectorButtonLabel}>
-          {symbol}
+          {token && token.ticker}
         </Typography>
         <ExpandMore className={classes.expandMore} />
       </XnftButton>

@@ -105,19 +105,11 @@ export const jupiterOutputTokens = selectorFamily({
       // Lookup
       const swapTokens = routeMap[routeMapMint].map((mint: string) => {
         const tokenMetadata =
-          (tokenList.find((t) => t.address === mint) ||
+          (tokenList.find((t: TokenInfo) => t.address === mint) ||
             tokenRegistry.get(mint)) ??
           ({} as TokenInfo);
-        const { name, symbol, logoURI } = tokenMetadata;
-        return { name, ticker: symbol, logo: logoURI, mint };
-      });
-
-      // Add native SOL
-      swapTokens.push({
-        name: "Solana",
-        ticker: "SOL",
-        logo: SOL_LOGO_URI,
-        mint: SOL_NATIVE_MINT,
+        const { name, symbol, decimals, logoURI } = tokenMetadata;
+        return { name, ticker: symbol, decimals, logo: logoURI, mint };
       });
 
       if (inputMint === SOL_NATIVE_MINT) {
@@ -129,6 +121,7 @@ export const jupiterOutputTokens = selectorFamily({
           name: wrappedSol.name,
           ticker: wrappedSol.symbol,
           logo: wrappedSol.logoURI,
+          decimals: wrappedSol.decimals,
           mint: WSOL_MINT,
         });
       }

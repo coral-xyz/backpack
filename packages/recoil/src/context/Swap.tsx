@@ -144,9 +144,7 @@ export function SwapProvider({
   // If not a Jupiter swap then no price impact
   const priceImpactPct = isJupiterSwap ? route && route.priceImpactPct : 0;
 
-  //
   // On changes to the swap parameters, fetch the swap routes from Jupiter.
-  //
   const pollIdRef: { current: NodeJS.Timeout | null } = useRef(null);
 
   const fromToken = inputTokenAccounts.find((t) => t.mint === fromMint);
