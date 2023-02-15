@@ -3,14 +3,13 @@ import type { StackScreenProps } from "@react-navigation/stack";
 
 import { useEffect, useState } from "react";
 import {
-  Alert,
   FlatList,
   StyleSheet,
   View,
   Platform,
-  Text,
   KeyboardAvoidingView,
-  ScrollView,
+  Pressable,
+  Text,
 } from "react-native";
 
 import * as Linking from "expo-linking";
@@ -45,6 +44,10 @@ import {
   BottomSheetHelpModal,
   HelpModalMenuButton,
 } from "@components/BottomSheetHelpModal";
+import {
+  BaseCheckBoxLabel,
+  ControlledCheckBoxLabel,
+} from "@components/CheckBox";
 import { ErrorMessage } from "@components/ErrorMessage";
 import {
   AvalancheIcon,
@@ -61,9 +64,7 @@ import {
 import { StyledTextInput } from "@components/StyledTextInput";
 import {
   ActionCard,
-  BaseCheckBoxLabel,
   Box,
-  CheckBox,
   FullScreenLoading,
   Header,
   Margin,
@@ -487,21 +488,32 @@ function OnboardingMnemonicInputScreen({
         onChange={readOnly ? undefined : setMnemonicWords}
       />
       {maybeRender(!readOnly, () => (
-        <StyledText>
-          Use a {mnemonicWords.length === 12 ? "24" : "12"}-word recovery
-          mnemonic
-        </StyledText>
+        <Pressable
+          style={{ alignSelf: "center", marginBottom: 18 }}
+          onPress={() => {
+            setMnemonicWords([
+              ...Array(mnemonicWords.length === 12 ? 24 : 12).fill(""),
+            ]);
+          }}
+        >
+          <Text style={{ fontSize: 18 }}>
+            Use a {mnemonicWords.length === 12 ? "24" : "12"}-word recovery
+            mnemonic
+          </Text>
+        </Pressable>
       ))}
       {maybeRender(readOnly, () => (
-        <Margin bottom={12}>
-          <BaseCheckBoxLabel
-            label="I saved my secret recovery phrase"
-            value={checked}
-            onPress={() => {
-              setChecked(!checked);
-            }}
-          />
-        </Margin>
+        <View style={{ alignSelf: "center" }}>
+          <Margin bottom={18}>
+            <BaseCheckBoxLabel
+              label="I saved my secret recovery phrase"
+              value={checked}
+              onPress={() => {
+                setChecked(!checked);
+              }}
+            />
+          </Margin>
+        </View>
       ))}
       {maybeRender(Boolean(error), () => (
         <ErrorMessage for={{ message: error }} />
@@ -518,11 +530,9 @@ function OnboardingMnemonicInputScreen({
 function OnboardingBlockchainSelectScreen({
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "SelectBlockchain">) {
-  const [data, setData] = useState({});
   const background = useBackgroundClient();
   const { onboardingData, setOnboardingData } = useOnboardingData();
   const {
-    blockchain,
     mnemonic,
     action,
     keyringType,
@@ -538,17 +548,7 @@ function OnboardingBlockchainSelectScreen({
     ),
   ];
 
-  // useEffect(() => {
-  //   // Reset blockchain keyrings on certain changes that invalidate the addresses
-  //   // and signatures that they might contain
-  //   // e.g. user has navigated backward through the onboarding flow
-  //   setOnboardingData({
-  //     signedWalletDescriptors: [],
-  //   });
-  // }, [action, keyringType, mnemonic, setOnboardingData]);
-
   const handleBlockchainClick = async (blockchain: Blockchain) => {
-    setData({ step: "start", selectedBlockchains, blockchain });
     if (selectedBlockchains.includes(blockchain)) {
       // Blockchain is being deselected
       setOnboardingData({
@@ -558,22 +558,17 @@ function OnboardingBlockchainSelectScreen({
         ),
       });
     } else {
-      setData({ step: "else", keyringType, action });
       // Blockchain is being selected
       if (keyringType === "ledger" || action === "import") {
         // If wallet is a ledger, step through the ledger onboarding flow
         // OR if action is an import then open the drawer with the import accounts
         // component
         setOnboardingData({ blockchain });
-        // setOpenDrawer(true);
       } else if (action === "create") {
-        setData({ step: "action create", action });
         const walletDescriptor = await background.request({
           method: UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
           params: [blockchain, 0, mnemonic],
         });
-
-        setData({ step: "walletDescriptor complete" });
 
         const params = [
           blockchain,
@@ -584,14 +579,10 @@ function OnboardingBlockchainSelectScreen({
           [mnemonic, [walletDescriptor.derivationPath]],
         ];
 
-        setData({ step: "collect params", params });
-
         const signature = await background.request({
           method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
           params,
         });
-
-        setData({ step: "after signature request", signature });
 
         setOnboardingData({
           signedWalletDescriptors: [
@@ -630,16 +621,6 @@ function OnboardingBlockchainSelectScreen({
           );
         }}
       />
-      <ScrollView>
-        <Text>{JSON.stringify(data, null, 2)}</Text>
-        <Text>
-          {JSON.stringify(
-            { keyringType, blockchain, mnemonic, signedWalletDescriptors },
-            null,
-            2
-          )}
-        </Text>
-      </ScrollView>
       <PrimaryButton
         disabled={selectedBlockchains.length === 0}
         label="Next"
@@ -713,7 +694,7 @@ function OnboardingCreatePasswordScreen({
           <ErrorMessage for={errors.passwordConfirmation} />
         </View>
         <View style={{ marginBottom: 24 }}>
-          <CheckBox
+          <ControlledCheckBoxLabel
             name="agreedToTerms"
             control={control}
             label="I agree to the terms of service"
@@ -721,8 +702,8 @@ function OnboardingCreatePasswordScreen({
           <ErrorMessage for={errors.agreedToTerms} />
         </View>
         <PrimaryButton
-          // disabled={!isValid}
-          label="Next (TODO fix isValid)"
+          disabled={!isValid}
+          label="Next"
           onPress={handleSubmit(onSubmit)}
         />
       </OnboardingScreen>
