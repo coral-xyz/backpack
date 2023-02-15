@@ -1,9 +1,10 @@
+import type { MutableRefObject } from 'react';
 import type { Blockchain, SignedWalletDescriptor, UR } from "@coral-xyz/common";
 import {
   getAddMessage,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
-  UI_RPC_METHOD_KEYSTONE_IMPORT ,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
+  UI_RPC_METHOD_KEYSTONE_IMPORT ,
   UI_RPC_METHOD_LEDGER_IMPORT,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
@@ -13,11 +14,14 @@ import { HardwareOnboard,HardwareType } from "../../../../Onboarding/pages/Hardw
 import { ConnectHardwareSuccess } from "./ConnectHardwareSuccess";
 
 export function ConnectHardware({
+  containerRef,
   blockchain,
   action,
+  createKeyring,
   publicKey,
   onComplete,
 }: {
+  containerRef: MutableRefObject<any>;
   blockchain: Blockchain;
   action: "create" | "import" | "search";
   createKeyring: boolean;
@@ -38,7 +42,7 @@ export function ConnectHardware({
     const keyringExists = blockchainKeyrings.includes(blockchain);
     let method = UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD; // Create the keyring
     let params: any[] = [blockchain, signedWalletDescriptor];
-    if (!keyringExists && !createKeyring) {
+    if (keyringExists && !createKeyring) {
       if (hardwareType === HardwareType.Keystone) {
         method = UI_RPC_METHOD_KEYSTONE_IMPORT;
         params = [
@@ -59,6 +63,7 @@ export function ConnectHardware({
 
   return (
     <HardwareOnboard
+      containerRef={containerRef}
       blockchain={blockchain}
       action={action}
       signMessage={getAddMessage}

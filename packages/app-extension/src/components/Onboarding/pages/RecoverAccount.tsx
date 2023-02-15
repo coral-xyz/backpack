@@ -1,3 +1,4 @@
+import type { MutableRefObject } from "react";
 import type {
   KeyringType,
   ServerPublicKey,
@@ -20,11 +21,13 @@ import { MnemonicSearch } from "./MnemonicSearch";
 import { RecoverAccountUsernameForm } from "./RecoverAccountUsernameForm";
 
 export const RecoverAccount = ({
+  containerRef,
   onClose,
   navProps,
   isAddingAccount,
   isOnboarded,
 }: {
+  containerRef: MutableRefObject<any>;
   onClose: () => void;
   navProps: any;
   isAddingAccount?: boolean;
@@ -43,6 +46,7 @@ export const RecoverAccount = ({
   const authMessage = userId ? getAuthMessage(userId) : "";
   const signMessageForWallet = useSignMessageForWallet(mnemonic);
   const hardwareOnboardSteps = useHardwareOnboardSteps({
+    containerRef,
     blockchain:
       serverPublicKeys.length > 0
         ? serverPublicKeys[0].blockchain!

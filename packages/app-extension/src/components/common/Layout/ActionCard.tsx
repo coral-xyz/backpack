@@ -8,6 +8,7 @@ export function ActionCard({
   subtext,
   onClick,
   disabled = false,
+  direction = 'column',
 }: {
   icon?: any;
   text: string;
@@ -15,6 +16,7 @@ export function ActionCard({
   subtext?: string;
   onClick: () => void;
   disabled?: boolean;
+  direction?: 'row' | 'column'
 }) {
   const theme = useCustomTheme();
   return (
@@ -43,8 +45,8 @@ export function ActionCard({
           width: "100%",
         }}
       >
-        <CardContent style={{ padding: 0 }}>
-          {icon ? <Box sx={{ mb: 1, display: "flex" }}>{icon}</Box> : null}
+        <CardContent style={{ padding: 0, display: "flex", flexDirection: direction, alignItems: "center" }}>
+          {icon ? <Box sx={{ mb: direction === "column" ? 1 : 0, display: "flex", marginRight: direction === "row" ? "12px" : 0 }}>{icon}</Box> : null}
           <Box
             style={{
               fontWeight: 500,

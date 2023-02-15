@@ -23,7 +23,7 @@ import {
   Blockchain,
   getIndexedPath,
   LEDGER_METHOD_SOLANA_SIGN_MESSAGE,
-  LEDGER_METHOD_SOLANA_SIGN_TRANSACTION
+  LEDGER_METHOD_SOLANA_SIGN_TRANSACTION,
   nextIndicesFromPaths,
 } from "@coral-xyz/common";
 import { Keypair, PublicKey, Transaction } from "@solana/web3.js";

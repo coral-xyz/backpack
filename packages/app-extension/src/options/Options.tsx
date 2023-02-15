@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { MemoryRouter } from "react-router-dom";
 import {
   Blockchain,
@@ -65,12 +66,14 @@ function Router() {
     | "search";
   const createKeyring = params.get("create") === "true";
   const publicKey = params.get("publicKey") || undefined;
+  const containerRef = useRef();
 
   switch (query) {
     case QUERY_CONNECT_HARDWARE:
       return (
-        <OptionsContainer>
+        <OptionsContainer innerRef={containerRef}>
           <ConnectHardware
+            containerRef={containerRef}
             blockchain={blockchain as Blockchain}
             action={action}
             createKeyring={createKeyring}

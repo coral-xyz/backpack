@@ -1,3 +1,4 @@
+import type { MutableRefObject} from "react";
 import { useEffect, useState } from "react";
 import type {
   KeyringType,
@@ -41,7 +42,7 @@ export const OnboardAccount = ({
 }: {
   onWaiting: () => void;
   onRecover: () => void;
-  containerRef: any;
+  containerRef: MutableRefObject<any>;
   navProps: any;
   isAddingAccount?: boolean;
   isOnboarded?: boolean;
@@ -172,6 +173,7 @@ export const OnboardAccount = ({
       >
         {keyringType === "ledger" || keyringType === "keystone" ? (
           <HardwareOnboard
+            containerRef={containerRef}
             blockchain={blockchain!}
             // @ts-expect-error not assignable to type string ...
             action={action}

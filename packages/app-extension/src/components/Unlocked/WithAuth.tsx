@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type {
   Blockchain,
   ServerPublicKey,
@@ -31,6 +31,7 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
   const background = useBackgroundClient();
   const user = useUser();
   const dehydratedWallets = useDehydratedWallets();
+  const containerRef = useRef(document.body);
 
   const [authData, setAuthData] = useState<{
     publicKey: string;
@@ -224,6 +225,7 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
           }}
         >
         <HardwareOnboard
+          containerRef={containerRef}
           blockchain={authData!.blockchain}
           action="search"
           searchPublicKey={authData!.publicKey}
