@@ -136,7 +136,7 @@ export function useFreshPlugin(address?: string): {
         const xnft = await fetchXnft(new PublicKey(address));
         const plugin = new Plugin(
           new PublicKey(address),
-          xnft!.xnftAccount.publicKey,
+          xnft!.xnftAccount.masterMetadata,
           xnft!.metadataBlob.xnft.manifest.entrypoints.default.web,
           xnft!.metadataBlob.image,
           xnft!.metadataBlob.xnft.manifest.splash ?? {},
