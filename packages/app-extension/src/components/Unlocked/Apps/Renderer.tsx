@@ -26,7 +26,6 @@ export function PluginRenderer({
   deepXnftPath: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [loaded, setLoaded] = useState(false);
   const { username, uuid } = useUser();
   const isDarkMode = useDarkMode();
   const avatarUrl = useAvatarUrl(100);
@@ -46,8 +45,11 @@ export function PluginRenderer({
           jwt,
           version: buildNumber,
         });
-        plugin.iframeRoot!.style.display = "";
-        setLoaded(true);
+
+        // timeout hides iframe loading flicker.
+        setTimeout(() => {
+          plugin.iframeRoot!.style.display = "";
+        }, 200);
       });
       plugin.iframeRoot!.style.display = "none";
       ref.current.appendChild(plugin.iframeRoot!);
@@ -85,7 +87,6 @@ export function PluginRenderer({
         backgroundImage: size ? `url(${splashUrls[size]})` : "none",
         backgroundSize: "cover",
         backgroundPosition: "center",
-        pointerEvents: "none",
       }}
     ></div>
   );
