@@ -403,7 +403,9 @@ function OutputTextField() {
         rootClass={classes.receiveFieldRoot}
         type={"number"}
         value={
-          toAmount ? ethers.utils.formatUnits(toAmount, toToken.decimals) : ""
+          toAmount && toToken
+            ? ethers.utils.formatUnits(toAmount, toToken.decimals)
+            : ""
         }
         disabled={true}
         inputProps={{
@@ -642,7 +644,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     );
   }
 
-  if (!fromAmount || !toAmount) {
+  if (!fromAmount || !toAmount || !fromToken || !toToken) {
     return (
       <SwapInfoRows
         {...{
@@ -668,10 +670,6 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     }
     return x;
   };
-
-  console.log(decimalDifference);
-  console.log(fromAmount);
-  console.log(toAmountWithFees);
 
   const rate = fromAmount.gt(Zero)
     ? ethers.utils.commify(
