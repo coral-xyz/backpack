@@ -10,15 +10,15 @@ import {
   toTitleCase,
 } from "@coral-xyz/common";
 import { createStackNavigator } from "@react-navigation/stack";
-import { RecentActivityList } from "@screens/Unlocked/RecentActivityScreen";
+import { RecentActivityList } from "~screens/Unlocked/RecentActivityScreen";
 
-import { TransferWidget } from "@components/Unlocked/Balances/TransferWidget";
-import { Margin, Screen, TokenAmountHeader } from "@components/index";
+import { TransferWidget } from "~components/Unlocked/Balances/TransferWidget";
+import { Margin, Screen, TokenAmountHeader } from "~components/index";
 import {
   useBlockchainTokenData,
   useBlockchainActiveWallet,
   useActiveEthereumWallet,
-} from "@hooks/recoil";
+} from "~hooks/recoil";
 
 import { BalanceSummaryWidget } from "./components/BalanceSummaryWidget";
 import { TokenTables, UsdBalanceAndPercentChange } from "./components/Balances";

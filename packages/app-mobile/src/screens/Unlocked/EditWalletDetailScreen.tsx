@@ -3,11 +3,11 @@ import { Alert } from "react-native";
 
 import * as Clipboard from "expo-clipboard";
 
-import { Margin, Screen } from "@components";
+import { Margin, Screen } from "~components/index";
 import { UI_RPC_METHOD_KEYNAME_READ } from "@coral-xyz/common";
 import { useBackgroundClient, useWalletPublicKeys } from "@coral-xyz/recoil";
-import { SettingsList } from "@screens/Unlocked/Settings/components/SettingsMenuList";
-import { IconCopyContent } from "@screens/Unlocked/Settings/components/SettingsRow";
+import { SettingsList } from "~screens/Unlocked/Settings/components/SettingsMenuList";
+import { IconCopyContent } from "~screens/Unlocked/Settings/components/SettingsRow";
 
 export function EditWalletDetailScreen({ navigation, route }): JSX.Element {
   const { blockchain, name, publicKey, type } = route.params;

@@ -81,7 +81,7 @@ module.exports = {
         forbid: [
           { element: "div", message: "Use <View> from react-native" },
           { element: "span", message: "Use <Text> from react-native" },
-          { element: "button", message: "Use @components/PrimaryButton" },
+          { element: "button", message: "Use ~components/PrimaryButton" },
         ],
       },
     ],

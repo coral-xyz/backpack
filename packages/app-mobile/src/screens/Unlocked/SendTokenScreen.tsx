@@ -1,4 +1,4 @@
-import type { UnlockedNavigatorStackParamList } from "@navigation/UnlockedNavigator";
+import type { UnlockedNavigatorStackParamList } from "~navigation/UnlockedNavigator";
 import type { StackScreenProps } from "@react-navigation/stack";
 
 import { useCallback, useEffect, useState } from "react";
@@ -21,18 +21,18 @@ import {
 import { useAnchorContext, useEthereumCtx } from "@coral-xyz/recoil";
 import { BigNumber } from "ethers";
 
-import { SendEthereumConfirmationCard } from "@components/BottomDrawerEthereumConfirmation";
-import { SendSolanaConfirmationCard } from "@components/BottomDrawerSolanaConfirmation";
-import { BottomSheetModal } from "@components/BottomSheetModal";
-import { InputField, InputFieldMaxLabel } from "@components/Form";
+import { SendEthereumConfirmationCard } from "~components/BottomDrawerEthereumConfirmation";
+import { SendSolanaConfirmationCard } from "~components/BottomDrawerSolanaConfirmation";
+import { BottomSheetModal } from "~components/BottomSheetModal";
+import { InputField, InputFieldMaxLabel } from "~components/Form";
 import {
   DangerButton,
   PrimaryButton,
   Screen,
   StyledTextInput,
   StyledTokenTextInput,
-} from "@components/index";
-import { useIsValidAddress } from "@hooks/index";
+} from "~components/index";
+import { useIsValidAddress } from "~hooks/index";
 
 import { SearchableTokenTables } from "./components/Balances";
 

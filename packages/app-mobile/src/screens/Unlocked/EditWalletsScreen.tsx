@@ -9,11 +9,11 @@ import {
   RoundedContainerGroup,
   Screen,
   WalletAddressLabel,
-} from "@components";
+} from "~components/index";
 import { toTitleCase } from "@coral-xyz/common";
 import { useWalletPublicKeys } from "@coral-xyz/recoil";
-import { useTheme } from "@hooks";
-import { IconPushDetail } from "@screens/Unlocked/Settings/components/SettingsRow"; // TODO(peter) move this icon to icons
+import { useTheme } from "~hooks/useTheme";
+import { IconPushDetail } from "~screens/Unlocked/Settings/components/SettingsRow"; // TODO(peter) move this icon to icons
 
 function buildSectionList(blockchainKeyrings: any) {
   return Object.entries(blockchainKeyrings).map(([blockchain, keyring]) => ({

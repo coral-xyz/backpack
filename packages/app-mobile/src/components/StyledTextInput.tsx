@@ -1,7 +1,7 @@
 import type { TextInputProps } from "react-native";
 import { StyleSheet, TextInput as RNTextInput } from "react-native";
 
-import { useTheme } from "@hooks";
+import { useTheme } from "~hooks/useTheme";
 
 export function StyledTextInput({
   style,

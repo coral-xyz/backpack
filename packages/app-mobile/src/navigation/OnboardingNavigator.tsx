@@ -43,12 +43,12 @@ import { v4 as uuidv4 } from "uuid";
 import {
   BottomSheetHelpModal,
   HelpModalMenuButton,
-} from "@components/BottomSheetHelpModal";
+} from "~components/BottomSheetHelpModal";
 import {
   BaseCheckBoxLabel,
   ControlledCheckBoxLabel,
-} from "@components/CheckBox";
-import { ErrorMessage } from "@components/ErrorMessage";
+} from "~components/CheckBox";
+import { ErrorMessage } from "~components/ErrorMessage";
 import {
   AvalancheIcon,
   BscIcon,
@@ -60,8 +60,8 @@ import {
   SolanaIcon,
   TwitterIcon,
   WidgetIcon,
-} from "@components/Icon";
-import { StyledTextInput } from "@components/StyledTextInput";
+} from "~components/Icon";
+import { StyledTextInput } from "~components/StyledTextInput";
 import {
   ActionCard,
   Box,
@@ -75,10 +75,10 @@ import {
   StyledText,
   SubtextParagraph,
   WelcomeLogoHeader,
-} from "@components/index";
-import { useAuthentication } from "@hooks/useAuthentication";
-import { useTheme } from "@hooks/useTheme";
-import { OnboardingProvider, useOnboardingData } from "@lib/OnboardingProvider";
+} from "~components/index";
+import { useAuthentication } from "~hooks/useAuthentication";
+import { useTheme } from "~hooks/useTheme";
+import { OnboardingProvider, useOnboardingData } from "~lib/OnboardingProvider";
 
 const { base58 } = ethers.utils;
 

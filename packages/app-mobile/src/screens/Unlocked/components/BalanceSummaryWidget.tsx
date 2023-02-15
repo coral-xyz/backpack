@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
 
-import { Margin } from "@components";
+import { Margin } from "~components/index";
 import { formatUSD } from "@coral-xyz/common";
-import { useTheme } from "@hooks";
+import { useTheme } from "~hooks/useTheme";
 
-import { useTotalBalance } from "@hooks/recoil";
+import { useTotalBalance } from "~hooks/recoil";
 
 function TextTotalChange({
   totalChange,

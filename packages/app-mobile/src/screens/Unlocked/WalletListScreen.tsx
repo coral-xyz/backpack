@@ -19,7 +19,7 @@ import {
 } from "@coral-xyz/recoil";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { HardwareIcon, ImportedIcon, MnemonicIcon } from "@components/Icon";
+import { HardwareIcon, ImportedIcon, MnemonicIcon } from "~components/Icon";
 import {
   CopyButtonIcon,
   ListRowSeparator,
@@ -27,8 +27,8 @@ import {
   RoundedContainerGroup,
   Row,
   Screen,
-} from "@components/index";
-import { useBlockchainLogo, useTheme } from "@hooks/index";
+} from "~components/index";
+import { useBlockchainLogo, useTheme } from "~hooks/index";
 
 type Wallet = {
   publicKey: string;

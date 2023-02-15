@@ -5,7 +5,7 @@ import { FlatList, Pressable, StyleSheet } from "react-native";
 
 import * as Linking from "expo-linking";
 
-import { Margin, RoundedContainerGroup } from "@components";
+import { Margin, RoundedContainerGroup } from "~components/index";
 import {
   BACKPACK_LINK,
   DISCORD_INVITE_LINK,
@@ -16,10 +16,10 @@ import { BottomSheetBackdrop, BottomSheetModal } from "@gorhom/bottom-sheet";
 import {
   IconLaunchDetail,
   SettingsRow,
-} from "@screens/Unlocked/Settings/components/SettingsRow";
+} from "~screens/Unlocked/Settings/components/SettingsRow";
 
-import { DiscordIcon, TwitterIcon } from "@components/Icon";
-import { useTheme } from "@hooks/useTheme";
+import { DiscordIcon, TwitterIcon } from "~components/Icon";
+import { useTheme } from "~hooks/useTheme";
 
 export function HelpModalMenuButton({
   onPress,
