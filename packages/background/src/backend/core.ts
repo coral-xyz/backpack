@@ -5,12 +5,13 @@ import type {
   EventEmitter,
   FEATURE_GATES_MAP,
   KeyringInit,
+  KeyringType,
   Preferences,
   ServerPublicKey,
   SignedWalletDescriptor,
+  UR,
   WalletDescriptor,
   XnftPreference,
-  UR,
 } from "@coral-xyz/common";
 import {
   BACKEND_API_URL,

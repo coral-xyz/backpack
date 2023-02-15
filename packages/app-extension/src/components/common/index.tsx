@@ -1,3 +1,4 @@
+import type { ReactChild } from 'react';
 import { walletAddressDisplay } from "@coral-xyz/common";
 import type { CustomTheme } from "@coral-xyz/themes";
 import { HOVER_OPACITY, styles, useCustomTheme } from "@coral-xyz/themes";
@@ -174,7 +175,7 @@ export function Header({
   text,
   style = {},
 }: {
-  text: string;
+  text: React.ReactNode;
   style?: React.CSSProperties;
 }) {
   const classes = useStyles();

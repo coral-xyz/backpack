@@ -51,6 +51,7 @@ export function ImportWallets({
   onNext,
   onError,
   allowMultiple = true,
+  ur
 }: {
   blockchain: Blockchain;
   mnemonic?: string | true;
@@ -58,6 +59,7 @@ export function ImportWallets({
   onNext: (walletDescriptor: Array<WalletDescriptor>) => void;
   onError?: (error: Error) => void;
   allowMultiple?: boolean;
+  ur?: UR
 }) {
   const background = useBackgroundClient();
   const theme = useCustomTheme();
@@ -561,7 +563,7 @@ export function ImportWallets({
         <PrimaryButton
           label={`Import Wallet${allowMultiple ? "s" : ""}`}
           onClick={() => onNext(checkedWalletDescriptors)}
-          disabled={walletDescriptors.length === 0}
+          disabled={checkedWalletDescriptors.length === 0}
         />
       </Box>
     </Box>

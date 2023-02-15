@@ -1,3 +1,4 @@
+import type { MutableRefObject} from "react";
 import { useCallback, useState } from "react";
 import type {
   Blockchain,
@@ -13,6 +14,7 @@ import { ImportWallets } from "../../common/Account/ImportWallets";
 import { CloseButton } from "../../common/Layout/Drawer";
 import { NavBackButton, WithNav } from "../../common/Layout/Nav";
 import { ConnectHardwareKeystone } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareKeystone";
+import { ConnectHardwareKeystoneTutorial } from '../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareKeystoneTutorial';
 import { ConnectHardwareSearching } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareSearching";
 import { ConnectHardwareWelcome } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareWelcome";
 
@@ -31,6 +33,7 @@ export enum HardwareType {
 // component to allow these steps to be used in the middle of the RecoverAccount
 // component steps
 export function useHardwareOnboardSteps({
+  containerRef,
   blockchain,
   action,
   searchPublicKey,
@@ -41,6 +44,7 @@ export function useHardwareOnboardSteps({
   nextStep,
   prevStep,
 }: {
+  containerRef: MutableRefObject<any>;
   blockchain: Blockchain;
   action: "create" | "derive" | "search" | "import";
   searchPublicKey?: string;
@@ -72,24 +76,29 @@ export function useHardwareOnboardSteps({
   // Flow for onboarding a hardware wallet.
   //
   const steps = [
-    <ConnectHardwareWelcome onNext={onWelcomeNext} />,
-    hardwareType === HardwareType.Ledger ? (
-      <ConnectHardwareSearching
-        blockchain={blockchain}
-        onNext={(transport) => {
-          setTransport(transport);
-          nextStep();
-        }}
-        isConnectFailure={!!transportError}
-      />
-    ) : (
-      <ConnectHardwareKeystone
-        blockchain={blockchain}
-        onNext={(ur: UR) => {
-          setUR(ur);
-          nextStep();
-        }}
-      />
+    <ConnectHardwareWelcome containerRef={containerRef} onNext={onWelcomeNext} />,
+    ...(hardwareType === HardwareType.Ledger ? 
+      [
+        <ConnectHardwareSearching
+          blockchain={blockchain}
+          onNext={(transport) => {
+            setTransport(transport);
+            nextStep();
+          }}
+          isConnectFailure={!!transportError}
+        />
+      ]
+     : 
+      [
+        <ConnectHardwareKeystoneTutorial onNext={nextStep} />,
+        <ConnectHardwareKeystone
+          blockchain={blockchain}
+          onNext={(ur: UR) => {
+            setUR(ur);
+            nextStep();
+          }}
+        />
+      ]
     ),
     //
     // Use a component to get a wallet to proceed with. The create flow uses a
@@ -208,6 +217,7 @@ export function useHardwareOnboardSteps({
 }
 
 export function HardwareOnboard({
+  containerRef,
   blockchain,
   action,
   searchPublicKey,
@@ -217,6 +227,7 @@ export function HardwareOnboard({
   onComplete,
   onClose,
 }: {
+  containerRef: MutableRefObject<any>;
   blockchain: Blockchain;
   action: "create" | "derive" | "search" | "import";
   searchPublicKey?: string;
@@ -229,6 +240,7 @@ export function HardwareOnboard({
   const theme = useCustomTheme();
   const { step, nextStep, prevStep } = useSteps();
   const steps = useHardwareOnboardSteps({
+    containerRef,
     blockchain,
     action,
     searchPublicKey,
