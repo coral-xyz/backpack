@@ -26,11 +26,16 @@ app.get("/xnft/:address", async (c) => {
 
   const metadata = await solanaNftMetadata(masterMint.toBase58(), c);
 
+  const xnftJson = await (
+    await fetch(externalResourceUri(decodedAccount.uri))
+  ).json();
+
   const response = new Response(
     JSON.stringify({
       metadataAccount: metadata?.metadataAccount,
       metadata: metadata?.externalMetadata,
       xnftAccount: decodedAccount,
+      xnft: xnftJson,
     })
   );
 

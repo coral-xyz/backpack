@@ -27,6 +27,22 @@ export const ensureHasPubkeyAccess = async (
   res.status(403).json({ msg: "You dont have access to this public key" });
 };
 
+export const ensureHasPubkeyAccessBody = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const hasAccess = await validatePublicKeyOwnership(
+    req.id!,
+    req.body.publicKey as string
+  );
+  if (hasAccess) {
+    next();
+    return;
+  }
+  res.status(403).json({ msg: "You dont have access to this public key" });
+};
+
 export const ensureHasRoomAccess = async (
   req: Request,
   res: Response,

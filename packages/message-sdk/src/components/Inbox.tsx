@@ -138,7 +138,7 @@ export function InboxInner() {
                   if (
                     x.chatType === "individual" &&
                     x.chatProps.public_keys
-                      ?.map((x) => x.public_key)
+                      ?.map((x) => x.publicKey)
                       ?.includes(searchFilter)
                   ) {
                     return true;

@@ -4,4 +4,5 @@ export const FEATURE_GATES = {
   MESSAGES_ENABLED: true,
   MESSAGE_IFRAME_ENABLED: false,
   OFFLINE_IMAGES: true,
+  PRIMARY_PUBKEY_ENABLED: true,
 };

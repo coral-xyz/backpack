@@ -26,7 +26,6 @@ export function PluginRenderer({
   deepXnftPath: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [loaded, setLoaded] = useState(false);
   const { username, uuid } = useUser();
   const isDarkMode = useDarkMode();
   const avatarUrl = useAvatarUrl(100);
@@ -46,8 +45,11 @@ export function PluginRenderer({
           jwt,
           version: buildNumber,
         });
-        plugin.iframeRoot!.style.display = "";
-        setLoaded(true);
+
+        // timeout hides iframe loading flicker.
+        setTimeout(() => {
+          plugin.iframeRoot!.style.display = "";
+        }, 200);
       });
       plugin.iframeRoot!.style.display = "none";
       ref.current.appendChild(plugin.iframeRoot!);
@@ -68,38 +70,24 @@ export function PluginRenderer({
     });
   }, [username, isDarkMode, avatarUrl]);
 
-  return (
-    <div ref={ref} style={{ height: "100vh", overflow: "hidden" }}>
-      {!loaded && (
-        <div style={{ height: "100vh" }}>
-          <SplashScreen splashUrls={plugin.splashUrls ?? {}} /> :
-        </div>
-      )}
-    </div>
-  );
-}
-
-function SplashScreen({
-  splashUrls,
-}: {
-  splashUrls: { [key: string]: string };
-}) {
   const sizes = ["lg", "md", "sm"];
-
+  const splashUrls = plugin.splashUrls ?? {};
   const size = sizes.find((size) => splashUrls[size]);
-
-  if (!size) {
-    return <Loading />;
-  }
 
   return (
     <div
+      ref={ref}
       style={{
-        height: "100%",
-        width: "100%",
-        backgroundImage: `url(${splashUrls[size]})`,
-        backgroundPosition: "cover",
+        position: "absolute",
+        overflow: "hidden",
+        top: "0px",
+        left: "0px",
+        bottom: "0px",
+        right: "0px",
+        backgroundImage: size ? `url(${splashUrls[size]})` : "none",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
       }}
-    />
+    ></div>
   );
 }

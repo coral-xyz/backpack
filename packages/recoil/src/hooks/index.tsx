@@ -12,6 +12,7 @@ export * from "./useFeatureGates";
 export * from "./useFriendship";
 export * from "./useLoader";
 export * from "./usePriceData";
+export * from "./usePrimaryWallets";
 export * from "./useRecentNotifications";
 export * from "./useTokenMetadata";
 export * from "./useTotalBalance";

@@ -15,15 +15,15 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { useRecoilValueLoadable } from "recoil";
 
-import { ExpandCollapseIcon } from "@components/Icon";
+import { ExpandCollapseIcon } from "~components/Icon";
 import {
   ListRowSeparator,
   Margin,
   ProxyImage,
   Row,
   StyledTextInput,
-} from "@components/index";
-import { useTheme } from "@hooks/index";
+} from "~components/index";
+import { useTheme } from "~hooks/useTheme";
 
 import { TableHeader } from "./index";
 

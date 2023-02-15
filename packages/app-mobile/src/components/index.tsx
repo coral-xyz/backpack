@@ -20,11 +20,10 @@ import { useAvatarUrl } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { SvgUri } from "react-native-svg";
 
-import { ContentCopyIcon, RedBackpack } from "@components/Icon";
-import { useTheme } from "@hooks/index";
+import { ContentCopyIcon, RedBackpack } from "~components/Icon";
+import { useTheme } from "~hooks/useTheme";
 
 export { ActionCard } from "./ActionCard";
-export { BaseCheckBoxLabel, CheckBox } from "./CheckBox";
 export { MnemonicInputFields } from "./MnemonicInputFields";
 export { NavHeader } from "./NavHeader";
 export { NFTCard } from "./NFTCard";

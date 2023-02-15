@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { RichMentionsInput } from "react-rich-mentions";
 import {
   getHashedName,
@@ -64,18 +64,20 @@ import { useDrawerContext } from "../../../common/Layout/Drawer";
 import { useNavigation as useNavigationEphemeral } from "../../../common/Layout/NavStack";
 import { TokenAmountHeader } from "../../../common/TokenAmountHeader";
 import { TokenInputField } from "../../../common/TokenInput";
+import { WithCopyTooltip } from "../../../common/WithCopyTooltip";
 
 import { SendEthereumConfirmationCard } from "./Ethereum";
 import { SendSolanaConfirmationCard } from "./Solana";
 import { WithHeaderButton } from "./Token";
+import { TokenBadge } from "./TokenBadge";
 
 const useStyles = styles((theme) => ({
   topImage: {
-    width: 130,
+    width: 80,
   },
   topImageOuter: {
-    width: 130,
-    height: 130,
+    width: 80,
+    height: 80,
     border: `solid 3px ${theme.custom.colors.avatarIconBackground}`,
     borderRadius: "50%",
     display: "inline-block",
@@ -97,13 +99,13 @@ const useStyles = styles((theme) => ({
   inputContainer: {
     paddingLeft: "12px",
     paddingRight: "12px",
-    marginBottom: -8,
+    marginBottom: -10,
   },
   buttonContainer: {
     display: "flex",
     paddingLeft: "12px",
     paddingRight: "12px",
-    paddingBottom: "24px",
+    paddingBottom: "16px",
     paddingTop: "25px",
     justifyContent: "space-between",
   },
@@ -512,32 +514,20 @@ function SendV2({
   const classes = useStyles();
   const theme = useCustomTheme();
   const { uuid } = useUser();
-  const editableRef = useRef<any>();
   const isDarkMode = useDarkMode();
-
-  const cursorToEnd = () => {
-    //@ts-ignore
-    editableRef.current.focus();
-    //@ts-ignore
-    document.execCommand("selectAll", false, null);
-    //@ts-ignore
-    document.getSelection().collapseToEnd();
-  };
-
-  useEffect(() => {
-    if (editableRef.current) {
-      cursorToEnd();
-    }
-  }, [editableRef]);
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+  const [_amount, _setAmount] = useState<string>("");
 
   return (
     <>
-      <div className={classes.topHalf}>
-        <div style={{ marginBottom: "10px" }}>
-          <div
-            className={classes.horizontalCenter}
-            style={{ marginBottom: 10 }}
-          >
+      <div
+        style={{
+          paddingTop: "40px",
+          flex: 1,
+        }}
+      >
+        <div>
+          <div className={classes.horizontalCenter} style={{ marginBottom: 6 }}>
             <div className={classes.topImageOuter}>
               <LocalImage
                 className={classes.topImage}
@@ -545,7 +535,7 @@ function SendV2({
                   to?.image ||
                   `https://avatars.backpack.workers.dev/${to?.address}`
                 }
-                style={{ width: 130, height: 130 }}
+                style={{ width: 80, height: 80 }}
               />
             </div>
           </div>
@@ -554,162 +544,117 @@ function SendV2({
               <div
                 style={{
                   color: theme.custom.colors.fontColor,
-                  fontSize: 20,
+                  fontSize: 16,
                   fontWeight: 500,
                 }}
               >
-                {`${to.username}`}
+                @{`${to.username}`}
               </div>
             )}
           </div>
-          <div className={classes.horizontalCenter}>
-            <div
-              style={{
-                color: theme.custom.colors.fontColor,
-                fontSize: 18,
-                fontWeight: 500,
-              }}
-            >
-              ({walletAddressDisplay(to.address)})
-            </div>
+          <div className={classes.horizontalCenter} style={{ marginTop: 4 }}>
+            <WithCopyTooltip tooltipOpen={tooltipOpen}>
+              <div>
+                <TokenBadge
+                  fontSize={13}
+                  overwriteBackground={theme.custom.colors.bg2}
+                  onClick={async () => {
+                    setTooltipOpen(true);
+                    setTimeout(() => setTooltipOpen(false), 1000);
+                    await navigator.clipboard.writeText(to.address);
+                  }}
+                  label={walletAddressDisplay(to?.address)}
+                />
+              </div>
+            </WithCopyTooltip>
           </div>
         </div>
         <div>
-          <div
-            onKeyDown={() => {
-              cursorToEnd();
+          <input
+            placeholder="0"
+            autoFocus
+            type="text"
+            style={{
+              marginTop: "40px",
+              outline: "none",
+              background: "transparent",
+              border: "none",
+              fontWeight: 600,
+              fontSize: 48,
+              height: 50,
+              color: theme.custom.colors.fontColor,
+              textAlign: "center",
+              width: "100%",
+              // @ts-ignore
+              fontFamily: theme.typography.fontFamily,
             }}
-            style={{ display: "flex", justifyContent: "center" }}
+            value={_amount}
+            onChange={(e: any) => {
+              try {
+                const num =
+                  e.target.value !== "" ? parseFloat(e.target.value) : 0.0;
+                if (num >= 0) {
+                  _setAmount(e.target.value);
+                  setAmount(
+                    ethers.utils.parseUnits(num.toString(), token.decimals)
+                  );
+                }
+              } catch (err) {
+                // Do nothing.
+              }
+            }}
+          />
+          <div
+            style={{ display: "flex", justifyContent: "center", marginTop: 20 }}
           >
             <img
               src={token.logo}
               style={{
-                width: 44,
-                height: 44,
+                height: 35,
                 borderRadius: "50%",
-                marginTop: 14,
                 marginRight: 5,
               }}
             />
             <div
               style={{
-                fontWeight: 600,
-                fontSize: 48,
-                display: "flex",
-                color: theme.custom.colors.fontColor,
+                color: theme.custom.colors.smallTextColor,
+                fontSize: 24,
               }}
             >
-              <div
-                onKeyDown={() => {
-                  cursorToEnd();
-                }}
-                onSelect={() => {
-                  cursorToEnd();
-                }}
-                ref={editableRef}
-                style={{ marginRight: 5 }}
-                onInput={(e) => {
-                  const decimalIndex =
-                    e.currentTarget.textContent?.indexOf(".");
-                  //@ts-ignore
-                  if (
-                    !e.currentTarget.textContent ||
-                    //@ts-ignore
-                    (isNaN(e.currentTarget.textContent) &&
-                      decimalIndex !== e.currentTarget.textContent.length - 1)
-                  ) {
-                    e.currentTarget.innerHTML = "0";
-                    setAmount(ethers.utils.parseUnits("0", token.decimals));
-                  } else {
-                    const amount = e.currentTarget.textContent;
-                    const decimalIndex = amount.indexOf(".");
-                    if (decimalIndex === -1) {
-                      e.currentTarget.innerHTML = parseFloat(amount).toString();
-                    } else {
-                      e.currentTarget.innerHTML = amount.toString();
-                    }
-                    // Restrict the input field to the same amount of decimals as the token
-                    const truncatedAmount =
-                      decimalIndex >= 0
-                        ? amount.substring(0, decimalIndex) +
-                          amount.substring(
-                            decimalIndex,
-                            decimalIndex + token.decimals + 1
-                          )
-                        : amount;
-                    setAmount(
-                      ethers.utils.parseUnits(
-                        amount.endsWith(".")
-                          ? truncatedAmount + "0"
-                          : truncatedAmount,
-                        token.decimals
-                      )
-                    );
-                  }
-                  cursorToEnd();
-                }}
-                contentEditable={true}
-              >
-                0
-              </div>{" "}
-              <div style={{ marginLeft: 3, outline: "0px solid transparent" }}>
-                {" "}
-                {token.ticker}
-              </div>
+              {token.ticker}
             </div>
           </div>
-          <div style={{ display: "flex", justifyContent: "center" }}>
+          <div
+            style={{ display: "flex", justifyContent: "center", marginTop: 20 }}
+          >
             <div
               style={{
                 display: "inline-flex",
                 color: theme.custom.colors.fontColor,
                 cursor: "pointer",
-                background: isDarkMode
-                  ? theme.custom.colors.bg2
-                  : theme.custom.colors.bg3,
+                fontSize: 14,
+                border: `2px solid ${
+                  isDarkMode
+                    ? theme.custom.colors.bg2
+                    : theme.custom.colors.border1
+                }`,
                 padding: "4px 12px",
                 borderRadius: 8,
+                marginTop: 5,
+                background: theme.custom.colors.bg3,
               }}
               onClick={() => {
-                editableRef.current.innerHTML = toDisplayBalance(
-                  maxAmount,
-                  token.decimals
-                );
+                const a = toDisplayBalance(maxAmount, token.decimals);
+                _setAmount(a);
                 setAmount(maxAmount);
               }}
             >
-              Max
+              Max: {toDisplayBalance(maxAmount, token.decimals)} {token.ticker}
             </div>
           </div>
         </div>
       </div>
       <div>
-        <div className={classes.inputContainer}>
-          {to &&
-            to.uuid &&
-            to.uuid !== uuid &&
-            blockchain === Blockchain.SOLANA && (
-              <TextField
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    borderRadius: 6,
-                    border: "2px solid rgba(255, 255, 255, 0.1);",
-                    color: theme.custom.colors.fontColor,
-                  },
-                }}
-                fullWidth
-                className={classes.input}
-                placeholder={"Add a message (Optional)"}
-                style={{
-                  outline: "0px solid transparent",
-                  color: theme.custom.colors.fontColor,
-                  fontSize: "15px",
-                }}
-                onChange={(e) => setMessage(e.target.value)}
-                value={message}
-              />
-            )}
-        </div>
         <div className={classes.buttonContainer}>{sendButton}</div>
       </div>
     </>

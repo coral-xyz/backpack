@@ -1,6 +1,6 @@
-import { Screen } from "@components";
+import { Screen } from "~components/index";
 import { useKeyringHasMnemonic } from "@coral-xyz/recoil";
-import { SettingsList } from "@screens/Unlocked/Settings/components/SettingsMenuList";
+import { SettingsList } from "~screens/Unlocked/Settings/components/SettingsMenuList";
 
 export function YourAccountScreen({ navigation }) {
   const hasMnemonic = useKeyringHasMnemonic();

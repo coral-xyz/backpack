@@ -179,13 +179,17 @@ export default {
         ? request.clone().json()
         : Promise.resolve(null);
 
-    return swr(
+    const swrResponse = await swr(
       request,
       ctx,
       executeRequest(ctx, env),
       shouldCache(ctx, env, body),
       toCacheKey(ctx, env, body)
     );
+
+    const response = new Response(swrResponse.body, swrResponse);
+    response.headers.set("Access-Control-Allow-Origin", `*`);
+    return response;
   },
 };
 

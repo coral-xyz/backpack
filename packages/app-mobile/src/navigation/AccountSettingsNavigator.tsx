@@ -4,7 +4,7 @@ import type { Commitment } from "@solana/web3.js";
 import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
 
-import { Screen } from "@components";
+import { Screen } from "~components/index";
 import {
   EthereumConnectionUrl,
   SolanaCluster,
@@ -23,40 +23,40 @@ import {
   useSolanaConnectionUrl,
   useSolanaExplorer,
 } from "@coral-xyz/recoil";
-import { useTheme } from "@hooks";
+import { useTheme } from "~hooks/useTheme";
 import { createStackNavigator } from "@react-navigation/stack";
-import { ImportPrivateKeyScreen } from "@screens/ImportPrivateKeyScreen";
+import { ImportPrivateKeyScreen } from "~screens/ImportPrivateKeyScreen";
 import {
   LogoutWarningScreen,
   ResetWarningScreen,
-} from "@screens/ResetWarningScreen";
-import { EditWalletDetailScreen } from "@screens/Unlocked/EditWalletDetailScreen";
-import { EditWalletsScreen } from "@screens/Unlocked/EditWalletsScreen";
-import { ForgotPasswordScreen } from "@screens/Unlocked/ForgotPasswordScreen";
-import { RenameWalletScreen } from "@screens/Unlocked/RenameWalletScreen";
-import { AddConnectWalletScreen } from "@screens/Unlocked/Settings/AddConnectWalletScreen";
-import { ChangePasswordScreen } from "@screens/Unlocked/Settings/ChangePasswordScreen";
-import { PreferencesScreen } from "@screens/Unlocked/Settings/PreferencesScreen";
-import { PreferencesTrustedSitesScreen } from "@screens/Unlocked/Settings/PreferencesTrustedSitesScreen";
-import { ProfileScreen } from "@screens/Unlocked/Settings/ProfileScreen";
-import { SettingsList } from "@screens/Unlocked/Settings/components/SettingsMenuList";
+} from "~screens/ResetWarningScreen";
+import { EditWalletDetailScreen } from "~screens/Unlocked/EditWalletDetailScreen";
+import { EditWalletsScreen } from "~screens/Unlocked/EditWalletsScreen";
+import { ForgotPasswordScreen } from "~screens/Unlocked/ForgotPasswordScreen";
+import { RenameWalletScreen } from "~screens/Unlocked/RenameWalletScreen";
+import { AddConnectWalletScreen } from "~screens/Unlocked/Settings/AddConnectWalletScreen";
+import { ChangePasswordScreen } from "~screens/Unlocked/Settings/ChangePasswordScreen";
+import { PreferencesScreen } from "~screens/Unlocked/Settings/PreferencesScreen";
+import { PreferencesTrustedSitesScreen } from "~screens/Unlocked/Settings/PreferencesTrustedSitesScreen";
+import { ProfileScreen } from "~screens/Unlocked/Settings/ProfileScreen";
+import { SettingsList } from "~screens/Unlocked/Settings/components/SettingsMenuList";
 import {
   IconPushDetail,
   SettingsRow,
-} from "@screens/Unlocked/Settings/components/SettingsRow";
+} from "~screens/Unlocked/Settings/components/SettingsRow";
 import {
   ShowPrivateKeyScreen,
   ShowPrivateKeyWarningScreen,
-} from "@screens/Unlocked/ShowPrivateKeyScreen";
+} from "~screens/Unlocked/ShowPrivateKeyScreen";
 import {
   ShowRecoveryPhraseScreen,
   ShowRecoveryPhraseWarningScreen,
-} from "@screens/Unlocked/ShowRecoveryPhraseScreen";
-import { YourAccountScreen } from "@screens/Unlocked/YourAccountScreen";
+} from "~screens/Unlocked/ShowRecoveryPhraseScreen";
+import { YourAccountScreen } from "~screens/Unlocked/YourAccountScreen";
 import { ethers } from "ethers";
 
-import { IconCheckmark } from "@components/Icon";
-import { AccountDropdownHeader } from "@components/UserAccountsMenu";
+import { IconCheckmark } from "~components/Icon";
+import { AccountDropdownHeader } from "~components/UserAccountsMenu";
 const { hexlify } = ethers.utils;
 
 const Stack = createStackNavigator();

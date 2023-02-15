@@ -1,0 +1,32 @@
+table:
+  name: user_active_publickey_mapping
+  schema: auth
+object_relationships:
+  - name: public_key
+    using:
+      foreign_key_constraint_on: public_key_id
+insert_permissions:
+  - role: auth_worker
+    permission:
+      check: {}
+      columns:
+        - blockchain
+        - public_key_id
+        - user_id
+select_permissions:
+  - role: auth_worker
+    permission:
+      columns:
+        - public_key_id
+        - blockchain
+        - user_id
+      filter: {}
+update_permissions:
+  - role: auth_worker
+    permission:
+      columns:
+        - public_key_id
+        - blockchain
+        - user_id
+      filter: {}
+      check: null

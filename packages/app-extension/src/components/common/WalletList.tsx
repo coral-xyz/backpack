@@ -12,18 +12,23 @@ import {
   SecretKeyIcon,
 } from "@coral-xyz/react-common";
 import {
+  serverPublicKeys,
   useActiveWallet,
   useAllWallets,
   useBackgroundClient,
   useBlockchainLogo,
   useDehydratedWallets,
+  usePrimaryWallets,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Add, ExpandMore, MoreHoriz } from "@mui/icons-material";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import DownloadIcon from "@mui/icons-material/Download";
 import InfoIcon from "@mui/icons-material/Info";
 import { Box, Button, Grid, Tooltip, Typography } from "@mui/material";
 import type { SxProps, Theme } from "@mui/material/styles";
+import { useRecoilValue } from "recoil";
 
 import {
   EthereumIconOnboarding as EthereumIcon,
@@ -407,47 +412,6 @@ function _WalletList({
           flex: 1,
         }}
       >
-        <div style={{ display: "flex", marginBottom: "8px" }}>
-          <Typography
-            style={{
-              fontWeight: 500,
-              color: theme.custom.colors.fontColor,
-              fontSize: "14px",
-              lineHeight: "20px",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-            }}
-          >
-            Active
-          </Typography>
-          <Tooltip
-            placement="right"
-            arrow
-            title={"Backpack Active Wallets can sign for apps."}
-            componentsProps={{
-              tooltip: {
-                sx: {
-                  width: "250px",
-                  fontSize: "14px",
-                  bgcolor: theme.custom.colors.copyTooltipColor,
-                  color: theme.custom.colors.copyTooltipTextColor,
-                  "& .MuiTooltip-arrow": {
-                    color: theme.custom.colors.copyTooltipColor,
-                  },
-                },
-              },
-            }}
-          >
-            <InfoIcon
-              style={{
-                color: theme.custom.colors.secondary,
-                width: "16px",
-                marginLeft: "5px",
-              }}
-            />
-          </Tooltip>
-        </div>
         {activeWallets.length === 0 ? (
           <div
             style={{
@@ -515,12 +479,12 @@ function _WalletList({
                   justifyContent: "center",
                 }}
               >
-                Cold
+                Disabled app signing
               </Typography>
               <Tooltip
                 placement="right"
                 arrow
-                title={"Backpack Cold Wallets can't sign for apps."}
+                title={"These wallets can't sign for apps."}
                 componentsProps={{
                   tooltip: {
                     sx: {
@@ -655,6 +619,10 @@ export function WalletListItem({
   }) => void;
   inverted?: boolean;
 }) {
+  const primaryWallets = usePrimaryWallets();
+  const isPrimary = primaryWallets.find((x) => x.publicKey === wallet.publicKey)
+    ? true
+    : false;
   const theme = useCustomTheme();
   const nav = useNavigation();
   const { publicKey, name, blockchain, type } = wallet;
@@ -679,6 +647,8 @@ export function WalletListItem({
             }`
           : type === "dehydrated"
           ? `solid 2px ${theme.custom.colors.borderRedMed}`
+          : isPrimary
+          ? `solid 2px linear-gradient(129.99deg, #3EECB8 0%, #A372FE 50%, #FE7D4A 100%), linear-gradient(0deg, #FFFFFF, #FFFFFF)`
           : "none",
       }}
       button={type !== "dehydrated"}
@@ -728,6 +698,7 @@ export function WalletListItem({
               type={type}
               isSelected={isSelected}
               inverted={inverted}
+              isPrimary={isPrimary}
             />
           </div>
         </div>
@@ -904,25 +875,46 @@ export function StackedWalletAddress({
   type,
   isSelected = false,
   inverted,
+  isPrimary,
 }: {
   publicKey: string;
   name: string;
   type: string;
   isSelected?: boolean;
   inverted?: boolean;
+  isPrimary?: boolean;
 }) {
   const theme = useCustomTheme();
   return (
     <div>
-      <Typography
-        style={{
-          fontSize: "16px",
-          fontWeight: isSelected ? 600 : 500,
-          color: type === "dehydrated" ? theme.custom.colors.negative : "",
-        }}
-      >
-        {type === "dehydrated" ? "Import error" : name}
-      </Typography>
+      <div style={{ display: "flex" }}>
+        <Typography
+          style={{
+            fontSize: "16px",
+            fontWeight: isSelected ? 600 : 500,
+            color: type === "dehydrated" ? theme.custom.colors.negative : "",
+          }}
+        >
+          {type === "dehydrated" ? "Not recovered" : name}
+        </Typography>
+        {type !== "dehydrated" && isPrimary && (
+          <Typography
+            style={{
+              marginLeft: "4px",
+              fontSize: "14px",
+              fontWeight: 500,
+              color: inverted
+                ? theme.custom.colorsInverted.secondary
+                : theme.custom.colors.secondary,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}
+          >
+            (primary)
+          </Typography>
+        )}
+      </div>
       <div
         style={{
           display: "flex",

@@ -7,13 +7,13 @@ import {
   Screen,
   StyledTextInput,
   SubtextParagraph,
-} from "@components";
+} from "~components/index";
 import { UI_RPC_METHOD_KEYRING_IMPORT_SECRET_KEY } from "@coral-xyz/common";
 import { useBackgroundClient, useWalletPublicKeys } from "@coral-xyz/recoil";
 import { Controller, useForm } from "react-hook-form";
 
-import { InputField } from "@components/Form";
-import { validateSecretKey } from "@lib/validateSecretKey";
+import { InputField } from "~components/Form";
+import { validateSecretKey } from "~lib/validateSecretKey";
 
 type PrivateKeyInput = {
   name: string;
