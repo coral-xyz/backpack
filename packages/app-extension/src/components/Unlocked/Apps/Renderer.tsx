@@ -68,38 +68,25 @@ export function PluginRenderer({
     });
   }, [username, isDarkMode, avatarUrl]);
 
-  return (
-    <div ref={ref} style={{ height: "100vh", overflow: "hidden" }}>
-      {!loaded && (
-        <div style={{ height: "100vh" }}>
-          <SplashScreen splashUrls={plugin.splashUrls ?? {}} /> :
-        </div>
-      )}
-    </div>
-  );
-}
-
-function SplashScreen({
-  splashUrls,
-}: {
-  splashUrls: { [key: string]: string };
-}) {
   const sizes = ["lg", "md", "sm"];
-
+  const splashUrls = plugin.splashUrls ?? {};
   const size = sizes.find((size) => splashUrls[size]);
-
-  if (!size) {
-    return <Loading />;
-  }
 
   return (
     <div
+      ref={ref}
       style={{
-        height: "100%",
-        width: "100%",
-        backgroundImage: `url(${splashUrls[size]})`,
+        position: "absolute",
+        overflow: "hidden",
+        top: "0px",
+        left: "0px",
+        bottom: "0px",
+        right: "0px",
+        backgroundImage: size ? `url(${splashUrls[size]})` : "none",
         backgroundSize: "cover",
+        backgroundPosition: "center",
+        pointerEvents: "none",
       }}
-    />
+    ></div>
   );
 }
