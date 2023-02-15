@@ -6,6 +6,7 @@ import {
   Platform,
   StyleSheet,
   View,
+  Keyboard,
 } from "react-native";
 
 import { deleteItemAsync } from "expo-secure-store";
@@ -141,6 +142,7 @@ export function LockedScreen(): JSX.Element {
         >
           <HelpModalMenuButton
             onPress={() => {
+              Keyboard.dismiss();
               setIsModalVisible((last) => !last);
             }}
           />
