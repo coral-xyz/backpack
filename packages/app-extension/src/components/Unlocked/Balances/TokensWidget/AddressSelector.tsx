@@ -231,7 +231,7 @@ const Contacts = ({
     if (x.remoteUsername.includes(searchFilter)) {
       return true;
     }
-    if (x.public_keys.find((x) => x.public_key.includes(searchFilter))) {
+    if (x.public_keys.find((x) => x.publicKey.includes(searchFilter))) {
       return true;
     }
     return false;
@@ -252,10 +252,10 @@ const Contacts = ({
                   .filter(
                     (x) =>
                       x.blockchain === blockchain &&
-                      (x.public_key.includes(searchFilter) ||
+                      (x.publicKey.includes(searchFilter) ||
                         c.remoteUsername.includes(searchFilter))
                   )
-                  .map((x) => x.public_key),
+                  .map((x) => x.publicKey),
                 image: c.remoteUserImage,
                 uuid: c.remoteUserId,
               }))}
@@ -658,7 +658,7 @@ const SearchAddress = ({
               username: user.username,
               image: user.image,
               uuid: user.id,
-              addresses: user.public_keys?.map((x: any) => x.public_key),
+              addresses: user.public_keys?.map((x: any) => x.publicKey),
             }))}
           />
         </div>

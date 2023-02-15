@@ -580,7 +580,7 @@ function SendV2({
                     setTimeout(() => setTooltipOpen(false), 1000);
                     await navigator.clipboard.writeText(to.address);
                   }}
-                  label={walletAddressDisplay(to.address)}
+                  label={walletAddressDisplay(to?.address)}
                 />
               </div>
             </WithCopyTooltip>

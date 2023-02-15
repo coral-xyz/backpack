@@ -4,6 +4,8 @@ import { Chain } from "@coral-xyz/zeus";
 
 import { HASURA_URL, JWT } from "../config";
 
+import { updatePublicKey } from "./publicKey";
+
 const chain = Chain(HASURA_URL, {
   headers: {
     Authorization: `Bearer ${JWT}`,
@@ -16,8 +18,7 @@ export const getUsers = async (
   {
     username: unknown;
     id: unknown;
-    avatar_nft: unknown;
-    public_keys: unknown[];
+    publicKeys: unknown[];
   }[]
 > => {
   const response = await chain("query")({
@@ -40,7 +41,7 @@ export const getUsers = async (
       },
     ],
   });
-  return transformUsers(response.auth_users);
+  return transformUsers(response.auth_users, true);
 };
 
 /**
@@ -152,31 +153,43 @@ const transformUsers = (
       public_key: string;
       user_active_publickey_mappings?: { user_id: string }[];
     }>;
-  }[]
+  }[],
+  onlyActiveKeys?: boolean
 ) => {
-  return users.map((x) => transformUser(x));
+  return users.map((x) => transformUser(x, onlyActiveKeys));
 };
 /**
  * Utility method to format a user for responses from a raw user object.
  */
-const transformUser = (user: {
-  id: unknown;
-  username: unknown;
-  public_keys: Array<{
-    blockchain: string;
-    public_key: string;
-    user_active_publickey_mappings?: { user_id: string }[];
-  }>;
-}) => {
+const transformUser = (
+  user: {
+    id: unknown;
+    username: unknown;
+    public_keys: Array<{
+      blockchain: string;
+      public_key: string;
+      user_active_publickey_mappings?: { user_id: string }[];
+    }>;
+  },
+  onlyActiveKeys?: boolean
+) => {
   return {
     id: user.id,
     username: user.username,
     // Camelcase public keys for response
-    publicKeys: user.public_keys.map((k) => ({
-      blockchain: k.blockchain as Blockchain,
-      publicKey: k.public_key,
-      active: k.user_active_publickey_mappings?.length || 0 >= 1 ? true : false,
-    })),
+    publicKeys: user.public_keys
+      .map((k) => ({
+        blockchain: k.blockchain as Blockchain,
+        publicKey: k.public_key,
+        primary:
+          k.user_active_publickey_mappings?.length || 0 >= 1 ? true : false,
+      }))
+      .filter((x) => {
+        if (onlyActiveKeys && !x.primary) {
+          return false;
+        }
+        return true;
+      }),
     image: `${AVATAR_BASE_URL}/${user.username}`,
   };
 };
@@ -319,6 +332,16 @@ export async function createUserPublicKey({
       },
     ],
   });
+
+  const publicKeyId = response.insert_auth_public_keys_one?.id;
+  if (publicKeyId) {
+    await updatePublicKey({
+      userId: userId,
+      blockchain: blockchain,
+      publicKeyId,
+      onlyInsert: true,
+    });
+  }
 
   return response.insert_auth_public_keys_one;
 }

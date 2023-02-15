@@ -80,7 +80,7 @@ router.get("/", extractUserId, async (req, res) => {
     .filter((x) => x.id !== uuid)
     .map(({ id, username }) => {
       const friendship = friendships.find((x) => x.id === id);
-      const public_keys = (metadatas.find((x) => x.id === id)?.public_keys ||
+      const public_keys = (metadatas.find((x) => x.id === id)?.publicKeys ||
         []) as { blockchain: string; publicKey: string }[];
 
       return {

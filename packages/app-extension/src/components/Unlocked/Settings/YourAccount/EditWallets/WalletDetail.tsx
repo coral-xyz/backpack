@@ -6,16 +6,21 @@ import {
   UI_RPC_METHOD_KEYNAME_READ,
   walletAddressDisplay,
 } from "@coral-xyz/common";
-import { SecondaryButton, WarningIcon } from "@coral-xyz/react-common";
 import {
-  isKeyCold,
-  useBackgroundClient,
+  PrimaryButton,
+  SecondaryButton,
+  toast,
+  WarningIcon,
+} from "@coral-xyz/react-common";
+import {   isKeyCold,
+serverPublicKeys,  useBackgroundClient,
+usePrimaryWallets ,
   useWalletPublicKeys,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ContentCopy } from "@mui/icons-material";
 import { Button, Typography } from "@mui/material";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 
 import { HeaderIcon } from "../../../../common";
 import { useNavigation } from "../../../../common/Layout/NavStack";
@@ -37,6 +42,8 @@ export const WalletDetail: React.FC<{
   const [walletName, setWalletName] = useState(name);
   const publicKeyData = useWalletPublicKeys();
   const isCold = useRecoilValue(isKeyCold(publicKey));
+  const primaryWallets = usePrimaryWallets();
+  const setServerPublicKeys = useSetRecoilState(serverPublicKeys);
 
   useEffect(() => {
     (async () => {
@@ -116,13 +123,16 @@ export const WalletDetail: React.FC<{
 
   const removeWallet = {
     "Remove Wallet": {
-      onClick: () =>
-        nav.push("edit-wallets-remove", {
-          blockchain,
-          publicKey,
-          name,
-          type,
-        }),
+      onClick: () => {
+        if (!isPrimary) {
+          nav.push("edit-wallets-remove", {
+            blockchain,
+            publicKey,
+            name,
+            type,
+          });
+        }
+      },
       style: {
         color: theme.custom.colors.negative,
       },
@@ -150,23 +160,9 @@ export const WalletDetail: React.FC<{
       ),
     },
   };
-
-  const primaryAccountToggle = {
-    "Primary account": {
-      onClick: async () => {
-        await fetch(`${BACKEND_API_URL}/users/activePubkey`, {
-          method: "POST",
-          body: JSON.stringify({
-            publicKey: publicKey,
-          }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-      },
-      detail: <Button>Set</Button>,
-    },
-  };
+  const isPrimary = primaryWallets.find((x) => x.publicKey === publicKey)
+    ? true
+    : false;
 
   return (
     <div>
@@ -210,11 +206,49 @@ export const WalletDetail: React.FC<{
         </div>
       </WithCopyTooltip>
       {type !== "dehydrated" && <SettingsList menuItems={_isCold} />}
-      <SettingsList menuItems={primaryAccountToggle} />
       {type !== "hardware" && type !== "dehydrated" && (
         <SettingsList menuItems={secrets} />
       )}
       {!isLastRecoverable && <SettingsList menuItems={removeWallet} />}
+      <div>
+        <PrimaryButton
+          fullWidth
+          style={{ margin: "16px" }}
+          label={isPrimary ? "Set as primary" : "Set as primary"}
+          disabled={isPrimary}
+          onClick={async () => {
+            await fetch(`${BACKEND_API_URL}/users/activePubkey`, {
+              method: "POST",
+              body: JSON.stringify({
+                publicKey: publicKey,
+              }),
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+            setServerPublicKeys((current) =>
+              current.map((c) => {
+                if (c.blockchain !== blockchain) {
+                  return c;
+                }
+                if (c.primary && c.publicKey !== publicKey) {
+                  return {
+                    ...c,
+                    primary: false,
+                  };
+                }
+                if (c.publicKey === publicKey) {
+                  return {
+                    ...c,
+                    primary: true,
+                  };
+                }
+                return c;
+              })
+            );
+          }}
+        />
+      </div>
     </div>
   );
 };

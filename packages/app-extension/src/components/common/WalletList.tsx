@@ -12,11 +12,13 @@ import {
   SecretKeyIcon,
 } from "@coral-xyz/react-common";
 import {
+  serverPublicKeys,
   useActiveWallet,
   useAllWallets,
   useBackgroundClient,
   useBlockchainLogo,
   useDehydratedWallets,
+  usePrimaryWallets,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Add, ExpandMore, MoreHoriz } from "@mui/icons-material";
@@ -24,6 +26,7 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import InfoIcon from "@mui/icons-material/Info";
 import { Box, Button, Grid, Tooltip, Typography } from "@mui/material";
 import type { SxProps, Theme } from "@mui/material/styles";
+import { useRecoilValue } from "recoil";
 
 import {
   EthereumIconOnboarding as EthereumIcon,
@@ -655,6 +658,10 @@ export function WalletListItem({
   }) => void;
   inverted?: boolean;
 }) {
+  const primaryWallets = usePrimaryWallets();
+  const isPrimary = primaryWallets.find((x) => x.publicKey === wallet.publicKey)
+    ? true
+    : false;
   const theme = useCustomTheme();
   const nav = useNavigation();
   const { publicKey, name, blockchain, type } = wallet;
@@ -679,6 +686,8 @@ export function WalletListItem({
             }`
           : type === "dehydrated"
           ? `solid 2px ${theme.custom.colors.borderRedMed}`
+          : isPrimary
+          ? `solid 2px linear-gradient(129.99deg, #3EECB8 0%, #A372FE 50%, #FE7D4A 100%), linear-gradient(0deg, #FFFFFF, #FFFFFF)`
           : "none",
       }}
       button={type !== "dehydrated"}
@@ -728,6 +737,7 @@ export function WalletListItem({
               type={type}
               isSelected={isSelected}
               inverted={inverted}
+              isPrimary={isPrimary}
             />
           </div>
         </div>
@@ -904,12 +914,14 @@ export function StackedWalletAddress({
   type,
   isSelected = false,
   inverted,
+  isPrimary,
 }: {
   publicKey: string;
   name: string;
   type: string;
   isSelected?: boolean;
   inverted?: boolean;
+  isPrimary?: boolean;
 }) {
   const theme = useCustomTheme();
   return (
@@ -956,7 +968,7 @@ export function StackedWalletAddress({
               fontSize: "14px",
             }}
           >
-            {walletAddressDisplay(publicKey)}
+            {walletAddressDisplay(publicKey)} {isPrimary && "(Primary)"}
           </Typography>
         </div>
       </div>

@@ -28,6 +28,7 @@ export const getPublicKeyDetails = async ({
 
   return {
     id: publicKeyDetails.auth_public_keys[0]?.id,
+    blockchain: publicKeyDetails.auth_public_keys[0]?.blockchain,
   };
 };
 
@@ -35,10 +36,12 @@ export const updatePublicKey = async ({
   userId,
   blockchain,
   publicKeyId,
+  onlyInsert,
 }: {
   userId: string;
   blockchain: "solana" | "ethereum";
   publicKeyId: number;
+  onlyInsert?: boolean;
 }) => {
   await chain("mutation")({
     insert_auth_user_active_publickey_mapping_one: [
@@ -50,7 +53,7 @@ export const updatePublicKey = async ({
         },
         on_conflict: {
           //@ts-ignore
-          update_columns: ["public_key_id"],
+          update_columns: [onlyInsert ? "blockchain" : "public_key_id"],
           //@ts-ignore
           constraint: "user_active_publickey_mapping_pkey",
         },
