@@ -17,7 +17,11 @@ import {
 import { clearCookie, setJWTCookie } from "../../auth/util";
 import { REFERRER_COOKIE_NAME } from "../../config";
 import { getFriendshipStatus } from "../../db/friendships";
-import { getPublicKeyDetails, updatePublicKey } from "../../db/publicKey";
+import {
+  getPrimaryPubkey,
+  getPublicKeyDetails,
+  updatePublicKey,
+} from "../../db/publicKey";
 import {
   createUser,
   createUserPublicKey,
@@ -292,6 +296,15 @@ router.delete(
   extractUserId,
   async (req: Request, res: Response) => {
     const { blockchain, publicKey } = BlockchainPublicKey.parse(req.body);
+    // TODO: bulkify this.
+    const primaryPubkey = await getPrimaryPubkey({
+      blockchain:
+        blockchain === "solana" ? Blockchain.SOLANA : Blockchain.ETHEREUM,
+      userId: req.id!,
+    });
+    if (primaryPubkey.publicKey === publicKey) {
+      return res.status(411).json({ msg: "You can't delete your primary key" });
+    }
     await deleteUserPublicKey({
       userId: req.id!,
       blockchain: blockchain as Blockchain,

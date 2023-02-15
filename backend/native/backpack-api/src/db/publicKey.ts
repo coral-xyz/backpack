@@ -1,3 +1,4 @@
+import type { Blockchain } from "@coral-xyz/common";
 import { Chain } from "@coral-xyz/zeus";
 
 import { HASURA_URL, JWT } from "../config";
@@ -61,4 +62,31 @@ export const updatePublicKey = async ({
       { user_id: true },
     ],
   });
+};
+
+export const getPrimaryPubkey = async ({
+  blockchain,
+  userId,
+}: {
+  blockchain: Blockchain;
+  userId: string;
+}) => {
+  const publicKeyDetails = await chain("query")({
+    auth_user_active_publickey_mapping_by_pk: [
+      {
+        user_id: userId,
+        blockchain,
+      },
+      {
+        public_key: {
+          public_key: true,
+        },
+      },
+    ],
+  });
+  return {
+    publicKey:
+      publicKeyDetails.auth_user_active_publickey_mapping_by_pk?.public_key ||
+      "",
+  };
 };
