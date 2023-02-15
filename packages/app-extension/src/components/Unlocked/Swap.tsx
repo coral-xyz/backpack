@@ -19,7 +19,7 @@ import {
 import {
   useActiveWallet,
   useDarkMode,
-  useJupiterOutputTokenMetadata,
+  useJupiterOutputTokens,
   useSplTokenRegistry,
   useSwapContext,
 } from "@coral-xyz/recoil";
@@ -331,7 +331,7 @@ function InputTextField() {
   const {
     fromAmount,
     setFromAmount,
-    fromMintInfo,
+    fromToken,
     availableForSwap,
     exceedsBalance,
   } = useSwapContext();
@@ -344,7 +344,7 @@ function InputTextField() {
           <MaxLabel
             amount={availableForSwap}
             onSetAmount={setFromAmount}
-            decimals={fromMintInfo.decimals}
+            decimals={fromToken.decimals}
           />
         }
       />
@@ -355,7 +355,7 @@ function InputTextField() {
         rootClass={classes.fromFieldRoot}
         value={fromAmount}
         setValue={setFromAmount}
-        decimals={fromMintInfo.decimals}
+        decimals={fromToken.decimals}
         isError={exceedsBalance}
       />
     </>
@@ -365,7 +365,7 @@ function InputTextField() {
 function OutputTextField() {
   const classes = useStyles();
   const theme = useCustomTheme();
-  const { toAmount, toMintInfo, isLoadingRoutes } = useSwapContext();
+  const { toAmount, toToken, isLoadingRoutes } = useSwapContext();
   return (
     <>
       <TextFieldLabel leftLabel={"Receiving"} />
@@ -384,13 +384,11 @@ function OutputTextField() {
             />
           )
         }
-        endAdornment={<OutputTokenSelectorButton />}
+        endAdornment={<OutputTokensSelectorButton />}
         rootClass={classes.receiveFieldRoot}
         type={"number"}
         value={
-          toAmount
-            ? ethers.utils.formatUnits(toAmount, toMintInfo.decimals)
-            : ""
+          toAmount ? ethers.utils.formatUnits(toAmount, toToken.decimals) : ""
         }
         disabled={true}
         inputProps={{
@@ -431,7 +429,7 @@ const ConfirmSwapButton = () => {
     isLoadingRoutes,
     isLoadingTransactions,
   } = useSwapContext();
-  const tokenAccounts = useJupiterOutputTokenMetadata(fromMint);
+  const tokenAccounts = useJupiterOutputTokens(fromMint);
 
   // Parameters aren't all entered or the swap data is loading
   const isIncomplete =
@@ -586,13 +584,13 @@ function SwapError({ onRetry, onCancel }: any) {
 }
 
 function SwapReceiveAmount() {
-  const { toAmount, toMintInfo } = useSwapContext();
+  const { toAmount, toToken } = useSwapContext();
   return (
     <TokenAmountHeader
       token={{
-        logo: toMintInfo.logoURI,
-        ticker: toMintInfo.symbol,
-        decimals: toMintInfo.decimals,
+        logo: toToken.logoURI,
+        ticker: toToken.symbol,
+        decimals: toToken.decimals,
       }}
       amount={toAmount!}
     />
@@ -603,8 +601,8 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
   const {
     fromAmount,
     toAmount,
-    fromMintInfo,
-    toMintInfo,
+    fromToken,
+    toToken,
     priceImpactPct,
     isLoadingRoutes,
     isLoadingTransactions,
@@ -643,7 +641,7 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     );
   }
 
-  const decimalDifference = fromMintInfo.decimals - toMintInfo.decimals;
+  const decimalDifference = fromToken.decimals - toToken.decimals;
   const toAmountWithFees = toAmount.sub(swapFee);
 
   // Scale a FixedNumber up or down by a number of decimals
@@ -671,10 +669,10 @@ function SwapInfo({ compact = true }: { compact?: boolean }) {
     <SwapInfoRows
       {...{
         compact,
-        youPay: `${toDisplayBalance(fromAmount, fromMintInfo.decimals)} ${
-          fromMintInfo.symbol
+        youPay: `${toDisplayBalance(fromAmount, fromToken.decimals)} ${
+          fromToken.symbol
         }`,
-        rate: `1 ${fromMintInfo.symbol} = ${rate} ${toMintInfo.symbol}`,
+        rate: `1 ${fromToken.symbol} = ${rate} ${toToken.symbol}`,
         priceImpact: `${
           priceImpactPct === 0
             ? 0
@@ -761,7 +759,7 @@ function InputTokenSelectorButton() {
   );
 }
 
-function OutputTokenSelectorButton() {
+function OutputTokensSelectorButton() {
   const { toMint, setToMint } = useSwapContext();
   return (
     <TokenSelectorButton
@@ -829,7 +827,7 @@ export function SwapSelectToken({
   const nav = useNavigation();
   const { fromMint, inputTokenAccounts } = useSwapContext();
   const tokenAccounts = !input
-    ? useJupiterOutputTokenMetadata(fromMint)
+    ? useJupiterOutputTokens(fromMint)
     : inputTokenAccounts.filter((token: Token) => {
         if (token.mint && token.mint === SOL_NATIVE_MINT) {
           return true;

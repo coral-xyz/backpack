@@ -2,10 +2,10 @@ import { useRecoilValue } from "recoil";
 
 import * as atoms from "../../atoms";
 
-export function useJupiterInputMints(publicKey: string): Array<any> {
-  return useRecoilValue(atoms.jupiterInputMints({ publicKey }));
+export function useJupiterInputTokens(publicKey: string): Array<any> {
+  return useRecoilValue(atoms.jupiterInputTokens({ publicKey }));
 }
 
-export function useJupiterOutputMints(inputMint: string): Array<any> {
-  return useRecoilValue(atoms.jupiterOutputMints({ inputMint }));
+export function useJupiterOutputTokens(inputMint: string): Array<any> {
+  return useRecoilValue(atoms.jupiterOutputTokens({ inputMint }));
 }

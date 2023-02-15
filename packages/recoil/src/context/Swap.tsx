@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import {
-  associatedTokenAddress,
   BACKPACK_FEATURE_REFERRAL_FEES,
   Blockchain,
   confirmTransaction,
@@ -12,13 +11,13 @@ import {
   USDC_MINT,
   WSOL_MINT,
 } from "@coral-xyz/common";
-import { PublicKey, Transaction } from "@solana/web3.js";
+import { Transaction } from "@solana/web3.js";
 import * as bs58 from "bs58";
 import { BigNumber, ethers } from "ethers";
 
 import { blockchainTokenData } from "../atoms/balance";
-import { JUPITER_BASE_URL, jupiterInputMints } from "../atoms/solana/jupiter";
-import { useLoader, useSolanaCtx, useSplTokenRegistry } from "../hooks";
+import { JUPITER_BASE_URL, jupiterInputTokens } from "../atoms/solana/jupiter";
+import { useJupiterOutputTokens, useLoader, useSolanaCtx } from "../hooks";
 
 const { Zero } = ethers.constants;
 const DEFAULT_DEBOUNCE_DELAY = 400;
@@ -38,18 +37,16 @@ type JupiterRoute = {
 };
 
 type SwapContext = {
-  fromAmount: BigNumber | undefined;
-  setFromAmount: (a: BigNumber | undefined) => void;
-  toAmount: BigNumber | undefined;
   fromMint: string;
   setFromMint: (mint: string) => void;
   toMint: string;
   setToMint: (mint: string) => void;
   swapToFromMints: any;
-  fromToken: string;
-  fromMintInfo: any;
-  toToken: string;
-  toMintInfo: any;
+  fromToken: any;
+  toToken: any;
+  fromAmount: BigNumber | undefined;
+  setFromAmount: (a: BigNumber | undefined) => void;
+  toAmount: BigNumber | undefined;
   slippage: number;
   setSlippage: (s: number) => void;
   executeSwap: () => Promise<any>;
@@ -87,15 +84,13 @@ export function SwapProvider({
   tokenAddress?: string;
   children: React.ReactNode;
 }) {
-  const tokenRegistry = useSplTokenRegistry();
   const blockchain = Blockchain.SOLANA; // Solana only at the moment.
   const solanaCtx = useSolanaCtx();
   const { backgroundClient, connection, walletPublicKey } = solanaCtx;
   const [inputTokenAccounts] = useLoader(
-    jupiterInputMints({ publicKey: walletPublicKey.toString() }),
+    jupiterInputTokens({ publicKey: walletPublicKey.toString() }),
     []
   );
-
   const [token] = tokenAddress
     ? useLoader(
         blockchainTokenData({
@@ -134,17 +129,6 @@ export function SwapProvider({
   // Error states
   const [isJupiterError, setIsJupiterError] = useState(false);
 
-  const fromToken = associatedTokenAddress(
-    new PublicKey(fromMint),
-    walletPublicKey
-  );
-  const toToken = associatedTokenAddress(
-    new PublicKey(toMint),
-    walletPublicKey
-  );
-  const fromMintInfo = tokenRegistry.get(fromMint)!;
-  const toMintInfo = tokenRegistry.get(toMint)!;
-
   // Is just a wrap and not a Jupiter swap
   const isWrap = fromMint === SOL_NATIVE_MINT && toMint === WSOL_MINT;
   // Is just an unwrap and not a Jupiter swap
@@ -165,10 +149,12 @@ export function SwapProvider({
   //
   const pollIdRef: { current: NodeJS.Timeout | null } = useRef(null);
 
-  const swapFromToken = inputTokenAccounts.find((t) => t.mint === fromMint);
+  const fromToken = inputTokenAccounts.find((t) => t.mint === fromMint);
+  const outputTokens = useJupiterOutputTokens(fromMint);
+  const toToken = outputTokens.find((t) => t.mint === toMint);
 
-  let availableForSwap = swapFromToken
-    ? BigNumber.from(swapFromToken.nativeBalance)
+  let availableForSwap = fromToken
+    ? BigNumber.from(fromToken.nativeBalance)
     : Zero;
 
   // If from mint is native SOL, remove the transaction fee and rent exemption
@@ -205,26 +191,28 @@ export function SwapProvider({
   const debouncedFromAmount = useDebounce(fromAmount);
 
   useEffect(() => {
-    const loadRoutes = async () => {
-      if (
-        fromAmount &&
-        fromAmount.gt(Zero) &&
-        isJupiterSwap &&
-        fromMint !== toMint
-      ) {
-        setRoutes(await fetchRoutes());
-        // Success, clear existing polling and setup next
-        stopRoutePolling();
-        const pollId = setTimeout(loadRoutes, ROUTE_POLL_INTERVAL);
-        pollIdRef.current = pollId;
-      } else {
-        setRoutes([]);
-      }
-      setIsLoadingRoutes(false);
-    };
-    setIsLoadingRoutes(true);
-    setIsLoadingTransactions(true);
-    loadRoutes();
+    (async () => {
+      const loadRoutes = async () => {
+        if (
+          fromAmount &&
+          fromAmount.gt(Zero) &&
+          isJupiterSwap &&
+          fromMint !== toMint
+        ) {
+          setRoutes(await fetchRoutes());
+          // Success, clear existing polling and setup next
+          stopRoutePolling();
+          const pollId = setTimeout(loadRoutes, ROUTE_POLL_INTERVAL);
+          pollIdRef.current = pollId;
+        } else {
+          setRoutes([]);
+        }
+        setIsLoadingRoutes(false);
+      };
+      setIsLoadingRoutes(true);
+      setIsLoadingTransactions(true);
+      await loadRoutes();
+    })();
     // Cleanup
     return stopRoutePolling;
   }, [fromMint, debouncedFromAmount, toMint, isJupiterSwap]);
@@ -415,18 +403,16 @@ export function SwapProvider({
   return (
     <_SwapContext.Provider
       value={{
-        fromAmount,
-        setFromAmount,
-        toAmount,
         toMint,
         setToMint,
         fromMint,
+        fromToken,
+        toToken,
         setFromMint,
+        fromAmount,
+        setFromAmount,
+        toAmount,
         swapToFromMints,
-        fromToken: fromToken.toString(),
-        fromMintInfo,
-        toToken: toToken.toString(),
-        toMintInfo,
         slippage,
         setSlippage,
         executeSwap,
