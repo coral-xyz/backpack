@@ -27,6 +27,7 @@ import {
   useUser,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
+import BlockIcon from "@mui/icons-material/Block";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SearchIcon from "@mui/icons-material/Search";
 import {
@@ -159,6 +160,7 @@ export const AddressSelector = ({
   const [inputContent, setInputContent] = useState("");
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
+  const [searchResults, setSearchResults] = useState<RemoteUserData[]>([]);
   const { push } = useNavigation();
   const { isValidAddress } = useIsValidAddress(
     blockchain,
@@ -182,6 +184,8 @@ export const AddressSelector = ({
       <div className={classes.container}>
         <div className={classes.topHalf}>
           <SearchAddress
+            searchResults={searchResults}
+            setSearchResults={setSearchResults}
             inputContent={inputContent}
             setInputContent={setInputContent}
             blockchain={blockchain}
@@ -193,6 +197,11 @@ export const AddressSelector = ({
             />
           )}
           <Contacts searchFilter={inputContent} blockchain={blockchain} />
+          <NotSelected
+            searchResults={searchResults}
+            searchFilter={inputContent}
+            blockchain={blockchain}
+          />
         </div>
         <div className={classes.buttonContainer}>
           <PrimaryButton
@@ -216,6 +225,139 @@ export const AddressSelector = ({
   );
 };
 
+function NotSelected({
+  blockchain,
+  searchFilter,
+  searchResults,
+}: {
+  blockchain: Blockchain;
+  searchFilter: string;
+  searchResults: any[];
+}) {
+  const { uuid } = useUser();
+  const contacts = useContacts(uuid);
+  const theme = useCustomTheme();
+  const filteredContacts = contacts
+    .filter((x) => {
+      if (x.remoteUsername.includes(searchFilter)) {
+        return true;
+      }
+      if (x.public_keys.find((x) => x.publicKey.includes(searchFilter))) {
+        return true;
+      }
+      return false;
+    })
+    .filter((x) => (x.public_keys?.[0] ? false : true));
+  const allResults = [
+    ...filteredContacts,
+    ...searchResults
+      .filter((x) => !x.public_keys?.[0])
+      .map((x) => ({
+        remoteUsername: x.username,
+        remoteUserImage: x.image,
+      })),
+  ];
+
+  if (!allResults.length) {
+    return <></>;
+  }
+
+  return (
+    <div style={{ padding: 10 }}>
+      <div style={{ color: theme.custom.colors.fontColor, marginBottom: 8 }}>
+        Users who haven't yet set a primary address
+      </div>
+      <ListItem
+        button
+        disableRipple
+        onClick={() => {}}
+        style={{
+          paddingLeft: "12px",
+          paddingRight: "12px",
+          paddingTop: "8px",
+          paddingBottom: "8px",
+          display: "flex",
+          height: "48px",
+          backgroundColor: theme.custom.colors.nav,
+          ...isFirstLastListItemStyle(true, true, 12),
+        }}
+      >
+        <div style={{ paddingTop: 15 }}>
+          <MembersList
+            count={allResults.length}
+            members={allResults.map((x) => ({
+              image: x.remoteUserImage,
+              username: x.remoteUsername,
+            }))}
+          />
+        </div>
+      </ListItem>
+    </div>
+  );
+}
+
+function MembersList({
+  count,
+  members,
+}: {
+  count: number;
+  members: { image: string; username: string }[];
+}) {
+  const theme = useCustomTheme();
+  const MEMBER_TRHESHOLD = 3;
+  const classes = useStyles();
+  const renderMembersStr = () => {
+    if (members.length <= MEMBER_TRHESHOLD) {
+      return members.map(
+        (member, index) =>
+          member.username + `${index === members.length - 1 ? "" : ", "}`
+      );
+    } else {
+      return `${members
+        .slice(0, 3)
+        .map(
+          (member, index) =>
+            member.username + `${index === members.length - 1 ? "" : ", "}`
+        )} + ${members.length - 3}`;
+    }
+  };
+
+  return (
+    <div
+      style={{
+        justifyContent: "center",
+        display: "flex",
+        alignItems: "center",
+        paddingBottom: 20,
+      }}
+    >
+      {members.slice(0, 3).map((member, idx) => (
+        <img
+          key={idx}
+          src={member.image}
+          style={{
+            border: `solid 2px ${theme.custom.colors.nav}`,
+            borderRadius: "50%",
+            height: 30,
+            width: 30,
+            ...(idx > 0 ? { marginLeft: "-12px" } : {}),
+          }}
+        />
+      ))}
+      <div
+        style={{
+          color: theme.custom.colors.smallTextColor,
+          paddingLeft: 10,
+          textOverflow: "ellipsis",
+        }}
+        className={classes.userText}
+      >
+        {renderMembersStr()}
+      </div>
+    </div>
+  );
+}
+
 const Contacts = ({
   blockchain,
   searchFilter,
@@ -227,15 +369,17 @@ const Contacts = ({
   const { uuid } = useUser();
   const contacts = useContacts(uuid);
 
-  const filteredContacts = contacts.filter((x) => {
-    if (x.remoteUsername.includes(searchFilter)) {
-      return true;
-    }
-    if (x.public_keys.find((x) => x.publicKey.includes(searchFilter))) {
-      return true;
-    }
-    return false;
-  });
+  const filteredContacts = contacts
+    .filter((x) => {
+      if (x.remoteUsername.includes(searchFilter)) {
+        return true;
+      }
+      if (x.public_keys.find((x) => x.publicKey.includes(searchFilter))) {
+        return true;
+      }
+      return false;
+    })
+    .filter((x) => (x.public_keys?.[0] ? true : false));
 
   return (
     <div>
@@ -332,9 +476,10 @@ function AddressList({
         border: `${theme.custom.colors.borderFull}`,
       }}
     >
-      {wallets.map((wallet, index) => (
-        <>
-          {wallet.addresses?.length === 1 ? (
+      {wallets
+        .filter((wallet) => wallet.addresses?.[0])
+        .map((wallet, index) => (
+          <>
             <AddressListItem
               key={wallet.username}
               isFirst={index === 0}
@@ -346,21 +491,8 @@ function AddressList({
               }}
               address={wallet.addresses?.[0]}
             />
-          ) : (
-            <AddressListItems
-              key={wallet.username}
-              isFirst={index === 0}
-              isLast={index === wallets.length - 1}
-              user={{
-                username: wallet.username,
-                image: wallet.image,
-                uuid: wallet.uuid,
-              }}
-              addresses={wallet.addresses}
-            />
-          )}
-        </>
-      ))}
+          </>
+        ))}
     </List>
   );
 }
@@ -376,7 +508,7 @@ const AddressListItem = ({
     image: string;
     uuid: string;
   };
-  address: string;
+  address?: string;
   isFirst: boolean;
   isLast: boolean;
 }) => {
@@ -390,6 +522,9 @@ const AddressListItem = ({
       button
       disableRipple
       onClick={() => {
+        if (!address) {
+          return;
+        }
         push("send", {
           blockchain,
           token,
@@ -430,8 +565,11 @@ const AddressListItem = ({
         >
           <UserIcon size={32} image={user.image} />
         </div>
-        <div>
+        <div style={{ display: "flex" }}>
           <div className={classes.userText}>{user.username}</div>
+          {!address && (
+            <BlockIcon style={{ color: "#E33E3F", marginLeft: 10 }} />
+          )}
           {/*<div className={classes.address}>{walletAddressDisplay(address)}</div>*/}
         </div>
       </div>
@@ -439,150 +577,23 @@ const AddressListItem = ({
   );
 };
 
-function AddressListItems({
-  user,
-  addresses,
-  isFirst,
-  isLast,
-}: {
-  user: {
-    username: string;
-    image: string;
-    uuid: string;
-  };
-  addresses: string[];
-  isFirst: boolean;
-  isLast: boolean;
-}) {
-  const theme = useCustomTheme();
-  const classes = useStyles();
-  const { push } = useNavigation();
-  const { blockchain, token } = useAddressSelectorContext();
-
-  return (
-    <Accordion
-      sx={{
-        backgroundColor: theme.custom.colors.nav,
-        root: {
-          "&$expanded": {
-            margin: "auto",
-          },
-          "&.MuiAccordionSummary-root": {
-            backgroundColor: theme.custom.colors.nav,
-            padding: 0,
-          },
-          borderBottom: isLast
-            ? undefined
-            : `solid 1pt ${theme.custom.colors.border}`,
-          ...isFirstLastListItemStyle(isFirst, isLast, 12),
-        },
-        expanded: {},
-      }}
-      disableGutters={true}
-      elevation={0}
-    >
-      <AccordionSummary
-        sx={{
-          backgroundColor: theme.custom.colors.nav,
-        }}
-        expandIcon={<></>}
-        aria-controls="panel1a-content"
-        id="panel1a-header"
-        className={classes.hoverParent}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            width: "100%",
-          }}
-        >
-          <div
-            style={{
-              width: "100%",
-              display: "flex",
-              background: theme.custom.colors.nav,
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-              }}
-            >
-              <UserIcon size={32} image={user.image} />
-            </div>
-            <div style={{ display: "flex" }}>
-              <div className={classes.userText}>{user.username}</div>
-              <div
-                style={{ marginLeft: 30 }}
-                className={`${classes.hoverChild} ${classes.userText}`}
-              >
-                {addresses?.length} addresses
-              </div>
-              {/*<div className={classes.address}>*/}
-              {/*  {addresses.length === 0*/}
-              {/*    ? `No addresses on the ${blockchain} blockchain`*/}
-              {/*    : "Multiple addresses"}*/}
-              {/*</div>*/}
-            </div>
-          </div>
-          <div>
-            <div className={classes.hoverChild}>
-              <ExpandMoreIcon
-                style={{ color: theme.custom.colors.fontColor }}
-              ></ExpandMoreIcon>
-            </div>
-          </div>
-        </div>
-      </AccordionSummary>
-      <AccordionDetails
-        sx={{
-          color: theme.custom.colors.fontColor,
-          cursor: "pointer",
-        }}
-      >
-        <div style={{ display: "flex", flexWrap: "wrap" }}>
-          {addresses?.map((address) => (
-            <div style={{ padding: "2px 4px" }}>
-              <TokenBadge
-                onClick={() => {
-                  push("send", {
-                    blockchain,
-                    token,
-                    to: {
-                      address: address,
-                      username: user.username,
-                      image: user.image,
-                      uuid: user.uuid,
-                    },
-                  });
-                }}
-                label={walletAddressDisplay(address)}
-              />
-            </div>
-          ))}
-        </div>
-      </AccordionDetails>
-    </Accordion>
-  );
-}
-
 const SearchAddress = ({
   inputContent,
   setInputContent,
   blockchain,
+  searchResults,
+  setSearchResults,
 }: {
   inputContent: string;
   setInputContent: any;
   blockchain: Blockchain;
+  searchResults: any[];
+  setSearchResults: any;
 }) => {
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
   const [loading, setLoading] = useState(false);
   const theme = useCustomTheme();
-  const [searchResults, setSearchResults] = useState<RemoteUserData[]>([]);
 
   const { isErrorAddress } = useIsValidAddress(
     blockchain,
@@ -595,7 +606,7 @@ const SearchAddress = ({
     setLoading(true);
     try {
       const response = await ParentCommunicationManager.getInstance().fetch(
-        `${BACKEND_API_URL}/users?usernamePrefix=${address}&limit=5`
+        `${BACKEND_API_URL}/users?usernamePrefix=${address}&limit=6`
       );
       const json = await response.json();
       setLoading(false);

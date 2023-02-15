@@ -22,7 +22,9 @@ import {
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Add, ExpandMore, MoreHoriz } from "@mui/icons-material";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import DownloadIcon from "@mui/icons-material/Download";
 import InfoIcon from "@mui/icons-material/Info";
 import { Box, Button, Grid, Tooltip, Typography } from "@mui/material";
 import type { SxProps, Theme } from "@mui/material/styles";
@@ -934,6 +936,11 @@ export function StackedWalletAddress({
         }}
       >
         {type === "dehydrated" ? "Import error" : name}
+        {isPrimary && (
+          <CheckCircleIcon
+            style={{ color: "green", fontSize: 16, marginLeft: 3 }}
+          />
+        )}
       </Typography>
       <div
         style={{
@@ -968,7 +975,7 @@ export function StackedWalletAddress({
               fontSize: "14px",
             }}
           >
-            {walletAddressDisplay(publicKey)} {isPrimary && "(Primary)"}
+            {walletAddressDisplay(publicKey)}
           </Typography>
         </div>
       </div>
