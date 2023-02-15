@@ -96,10 +96,6 @@ const useStyles = styles((theme) => ({
     paddingTop: "24px",
     flex: 1,
   },
-  topHalfV2: {
-    paddingTop: "30px",
-    flex: 1,
-  },
   inputContainer: {
     paddingLeft: "12px",
     paddingRight: "12px",
@@ -109,7 +105,7 @@ const useStyles = styles((theme) => ({
     display: "flex",
     paddingLeft: "12px",
     paddingRight: "12px",
-    paddingBottom: "24px",
+    paddingBottom: "16px",
     paddingTop: "25px",
     justifyContent: "space-between",
   },
@@ -518,33 +514,20 @@ function SendV2({
   const classes = useStyles();
   const theme = useCustomTheme();
   const { uuid } = useUser();
-  const editableRef = useRef<any>();
   const isDarkMode = useDarkMode();
   const [tooltipOpen, setTooltipOpen] = useState(false);
-
-  const cursorToEnd = () => {
-    //@ts-ignore
-    editableRef.current.focus();
-    //@ts-ignore
-    document.execCommand("selectAll", false, null);
-    //@ts-ignore
-    document.getSelection().collapseToEnd();
-  };
-
-  useEffect(() => {
-    if (editableRef.current) {
-      cursorToEnd();
-    }
-  }, [editableRef]);
+  const [_amount, _setAmount] = useState<number | null>(null);
 
   return (
     <>
-      <div className={classes.topHalfV2}>
-        <div style={{ marginBottom: "10px" }}>
-          <div
-            className={classes.horizontalCenter}
-            style={{ marginBottom: 10 }}
-          >
+      <div
+        style={{
+          paddingTop: "40px",
+          flex: 1,
+        }}
+      >
+        <div>
+          <div className={classes.horizontalCenter} style={{ marginBottom: 6 }}>
             <div className={classes.topImageOuter}>
               <LocalImage
                 className={classes.topImage}
@@ -587,79 +570,42 @@ function SendV2({
           </div>
         </div>
         <div>
-          <div
-            onKeyDown={() => {
-              cursorToEnd();
+          <input
+            placeholder="0"
+            autoFocus
+            type="text"
+            style={{
+              marginTop: "40px",
+              outline: "none",
+              background: "transparent",
+              border: "none",
+              fontWeight: 600,
+              fontSize: 48,
+              height: 50,
+              color: theme.custom.colors.fontColor,
+              textAlign: "center",
+              width: "100%",
+              // @ts-ignore
+              fontFamily: theme.typography.fontFamily,
             }}
-            style={{ display: "flex", justifyContent: "center" }}
-          >
-            <div
-              style={{
-                fontWeight: 600,
-                fontSize: 48,
-                height: 50,
-                display: "flex",
-                marginBottom: 5,
-                color: theme.custom.colors.fontColor,
-              }}
-            >
-              <div
-                onKeyDown={() => {
-                  cursorToEnd();
-                }}
-                onSelect={() => {
-                  cursorToEnd();
-                }}
-                ref={editableRef}
-                style={{ marginRight: 5 }}
-                onInput={(e) => {
-                  const decimalIndex =
-                    e.currentTarget.textContent?.indexOf(".");
-                  //@ts-ignore
-                  if (
-                    !e.currentTarget.textContent ||
-                    //@ts-ignore
-                    (isNaN(e.currentTarget.textContent) &&
-                      decimalIndex !== e.currentTarget.textContent.length - 1)
-                  ) {
-                    e.currentTarget.innerHTML = "0";
-                    setAmount(ethers.utils.parseUnits("0", token.decimals));
-                  } else {
-                    const amount = e.currentTarget.textContent;
-                    const decimalIndex = amount.indexOf(".");
-                    if (decimalIndex === -1) {
-                      e.currentTarget.innerHTML = parseFloat(amount).toString();
-                    } else {
-                      e.currentTarget.innerHTML = amount.toString();
-                    }
-                    // Restrict the input field to the same amount of decimals as the token
-                    const truncatedAmount =
-                      decimalIndex >= 0
-                        ? amount.substring(0, decimalIndex) +
-                          amount.substring(
-                            decimalIndex,
-                            decimalIndex + token.decimals + 1
-                          )
-                        : amount;
-                    setAmount(
-                      ethers.utils.parseUnits(
-                        amount.endsWith(".")
-                          ? truncatedAmount + "0"
-                          : truncatedAmount,
-                        token.decimals
-                      )
-                    );
-                  }
-                  cursorToEnd();
-                }}
-                contentEditable={true}
-              >
-                0
-              </div>{" "}
-            </div>
-          </div>
+            value={_amount ?? ""}
+            onChange={(e: any) => {
+              try {
+                const num =
+                  e.target.value !== "" ? parseFloat(e.target.value) : 0.0;
+                if (num >= 0) {
+                  _setAmount(e.target.value);
+                  setAmount(
+                    ethers.utils.parseUnits(num.toString(), token.decimals)
+                  );
+                }
+              } catch (err) {
+                // Do nothing.
+              }
+            }}
+          />
           <div
-            style={{ display: "flex", justifyContent: "center", marginTop: 25 }}
+            style={{ display: "flex", justifyContent: "center", marginTop: 20 }}
           >
             <img
               src={token.logo}
@@ -679,7 +625,7 @@ function SendV2({
             </div>
           </div>
           <div
-            style={{ display: "flex", justifyContent: "center", marginTop: 10 }}
+            style={{ display: "flex", justifyContent: "center", marginTop: 20 }}
           >
             <div
               style={{
@@ -698,10 +644,7 @@ function SendV2({
                 background: theme.custom.colors.bg3,
               }}
               onClick={() => {
-                editableRef.current.innerHTML = toDisplayBalance(
-                  maxAmount,
-                  token.decimals
-                );
+                _setAmount(maxAmount);
                 setAmount(maxAmount);
               }}
             >
@@ -711,19 +654,6 @@ function SendV2({
         </div>
       </div>
       <div>
-        {/*<div className={classes.inputContainer}>*/}
-        {/*  {to &&*/}
-        {/*    to.uuid &&*/}
-        {/*    to.uuid !== uuid &&*/}
-        {/*    blockchain === Blockchain.SOLANA && (*/}
-        {/*      <TextInput*/}
-        {/*        className={classes.input}*/}
-        {/*        placeholder={"Add a message (Optional)"}*/}
-        {/*        setValue={(e: any) => setMessage(e.target.value)}*/}
-        {/*        value={message}*/}
-        {/*      />*/}
-        {/*    )}*/}
-        {/*</div>*/}
         <div className={classes.buttonContainer}>{sendButton}</div>
       </div>
     </>

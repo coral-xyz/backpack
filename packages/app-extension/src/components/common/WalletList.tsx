@@ -412,47 +412,6 @@ function _WalletList({
           flex: 1,
         }}
       >
-        <div style={{ display: "flex", marginBottom: "8px" }}>
-          <Typography
-            style={{
-              fontWeight: 500,
-              color: theme.custom.colors.fontColor,
-              fontSize: "14px",
-              lineHeight: "20px",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-            }}
-          >
-            Active
-          </Typography>
-          <Tooltip
-            placement="right"
-            arrow
-            title={"Backpack Active Wallets can sign for apps."}
-            componentsProps={{
-              tooltip: {
-                sx: {
-                  width: "250px",
-                  fontSize: "14px",
-                  bgcolor: theme.custom.colors.copyTooltipColor,
-                  color: theme.custom.colors.copyTooltipTextColor,
-                  "& .MuiTooltip-arrow": {
-                    color: theme.custom.colors.copyTooltipColor,
-                  },
-                },
-              },
-            }}
-          >
-            <InfoIcon
-              style={{
-                color: theme.custom.colors.secondary,
-                width: "16px",
-                marginLeft: "5px",
-              }}
-            />
-          </Tooltip>
-        </div>
         {activeWallets.length === 0 ? (
           <div
             style={{
@@ -520,12 +479,12 @@ function _WalletList({
                   justifyContent: "center",
                 }}
               >
-                Cold
+                Disabled app signing
               </Typography>
               <Tooltip
                 placement="right"
                 arrow
-                title={"Backpack Cold Wallets can't sign for apps."}
+                title={"These wallets can't sign for apps."}
                 componentsProps={{
                   tooltip: {
                     sx: {
