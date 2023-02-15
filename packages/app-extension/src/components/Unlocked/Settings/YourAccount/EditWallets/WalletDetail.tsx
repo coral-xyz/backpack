@@ -12,9 +12,11 @@ import {
   toast,
   WarningIcon,
 } from "@coral-xyz/react-common";
-import {   isKeyCold,
-serverPublicKeys,  useBackgroundClient,
-usePrimaryWallets ,
+import {
+  isKeyCold,
+  serverPublicKeys,
+  useBackgroundClient,
+  usePrimaryWallets,
   useWalletPublicKeys,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
@@ -210,11 +212,14 @@ export const WalletDetail: React.FC<{
         <SettingsList menuItems={secrets} />
       )}
       {!isLastRecoverable && <SettingsList menuItems={removeWallet} />}
-      <div>
+      <div
+        style={{
+          padding: "16px",
+        }}
+      >
         <PrimaryButton
           fullWidth
-          style={{ margin: "16px" }}
-          label={isPrimary ? "Set as primary" : "Set as primary"}
+          label={isPrimary ? "This is your primary wallet" : "Set as primary"}
           disabled={isPrimary}
           onClick={async () => {
             await fetch(`${BACKEND_API_URL}/users/activePubkey`, {

@@ -79,16 +79,19 @@ export const PrimaryPubkeySelector = () => {
             variant="h6"
             component="h2"
           >
-            Select primary addresses
+            Select primary address
           </Typography>
           <Typography
-            style={{ color: theme.custom.colors.smallTextColor }}
+            style={{
+              marginTop: "8px",
+              color: theme.custom.colors.smallTextColor,
+            }}
             id="modal-modal-title"
             variant="subtitle1"
             component="h2"
           >
-            When others send you crypto or NFTs, they'll see at least one
-            address publicly associated with your username.
+            When others send you crypto, they'll see at least one address
+            publicly associated with your username.
           </Typography>
           {needsMigration.map((b) => (
             <MigrationInputs

@@ -928,20 +928,34 @@ export function StackedWalletAddress({
   const theme = useCustomTheme();
   return (
     <div>
-      <Typography
-        style={{
-          fontSize: "16px",
-          fontWeight: isSelected ? 600 : 500,
-          color: type === "dehydrated" ? theme.custom.colors.negative : "",
-        }}
-      >
-        {type === "dehydrated" ? "Import error" : name}
+      <div style={{ display: "flex" }}>
+        <Typography
+          style={{
+            fontSize: "16px",
+            fontWeight: isSelected ? 600 : 500,
+            color: type === "dehydrated" ? theme.custom.colors.negative : "",
+          }}
+        >
+          {type === "dehydrated" ? "Not recovered" : name}
+        </Typography>
         {isPrimary && (
-          <CheckCircleIcon
-            style={{ color: "green", fontSize: 16, marginLeft: 3 }}
-          />
+          <Typography
+            style={{
+              marginLeft: "4px",
+              fontSize: "14px",
+              fontWeight: 500,
+              color: inverted
+                ? theme.custom.colorsInverted.secondary
+                : theme.custom.colors.secondary,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}
+          >
+            (primary)
+          </Typography>
         )}
-      </Typography>
+      </div>
       <div
         style={{
           display: "flex",
