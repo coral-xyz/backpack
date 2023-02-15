@@ -142,14 +142,14 @@ export const xnfts = atomFamily<
         return xnfts.map((xnft) => {
           return {
             ...xnft,
-            url: xnft.metadataBlob.xnft.manifest.entrypoints.default.web,
-            splashUrls: xnft.metadataBlob.xnft.manifest.splash ?? {},
-            iconUrl: externalResourceUri(xnft.metadataBlob.image),
+            url: xnft.xnft.xnft.manifest.entrypoints.default.web,
+            splashUrls: xnft.xnft.xnft.manifest.splash ?? {},
+            iconUrl: externalResourceUri(xnft.metadata.image),
             activeWallet: _activeWallets[Blockchain.SOLANA],
             activeWallets: _activeWallets,
             connectionUrl: _connectionUrls[Blockchain.SOLANA],
             connectionUrls: _connectionUrls,
-            title: xnft.metadataBlob.name,
+            title: xnft.metadata.name,
           };
         });
       },

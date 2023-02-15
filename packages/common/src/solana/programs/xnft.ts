@@ -15,7 +15,16 @@ export const XNFT_PROGRAM_ID = new PublicKey(
 export async function fetchXnfts(
   provider: Provider,
   wallet: PublicKey
-): Promise<Array<{ publicKey: PublicKey; medtadata: any; metadataBlob: any }>> {
+): Promise<
+  Array<{
+    xnftAccount: any;
+    xnft: any;
+    metadataPublicKey: any;
+    metadataAccount: any;
+    metadata: any;
+    install: any;
+  }>
+> {
   const client = xnftClient(provider);
 
   const [xnftInstalls, isDropzoneWallet] = await Promise.all([
@@ -140,17 +149,18 @@ export async function fetchXnftsFromPubkey(
   return accounts.map(({ xnftId, metadata }) => {
     return {
       xnftId,
-      image: externalResourceUri(metadata?.metadataBlob?.image),
-      title: metadata?.metadataBlob?.name,
+      image: externalResourceUri(metadata?.metadata?.image),
+      title: metadata?.metadata?.name,
     };
   });
 }
 
 export async function fetchXnft(xnft: PublicKey | string): Promise<{
   xnftAccount: any;
+  xnft: any;
   metadataPublicKey: any;
+  metadataAccount: any;
   metadata: any;
-  metadataBlob: any;
 } | null> {
   const xnftMetadata: any | null = await fetch(
     `https://swr.xnfts.dev/nft-data/xnft/${new PublicKey(xnft).toBase58()}`
@@ -167,9 +177,10 @@ export async function fetchXnft(xnft: PublicKey | string): Promise<{
 
   return {
     metadataPublicKey: xnftMetadata.masterMetadata,
-    metadata: xnftMetadata.metadataAccount,
-    metadataBlob: xnftMetadata.metadata,
+    metadataAccount: xnftMetadata.metadataAccount,
+    metadata: xnftMetadata.metadata,
     xnftAccount: xnftMetadata.xnftAccount,
+    xnft: xnftMetadata.xnft,
   };
 }
 
