@@ -79,6 +79,10 @@ export const WalletDetail: React.FC<{
       .flat()
       .filter((n) => n.publicKey !== publicKey).length === 0;
 
+  const isPrimary = primaryWallets.find((x) => x.publicKey === publicKey)
+    ? true
+    : false;
+
   const menuItems = {
     "Wallet Address": {
       onClick: () => copyAddress(),
@@ -112,17 +116,6 @@ export const WalletDetail: React.FC<{
     },
   };
 
-  const recover = {
-    Recover: {
-      onClick: () =>
-        nav.push("add-connect-wallet", {
-          blockchain,
-          publicKey,
-          isRecovery: true,
-        }),
-    },
-  };
-
   const removeWallet = {
     "Remove Wallet": {
       onClick: () => {
@@ -137,6 +130,7 @@ export const WalletDetail: React.FC<{
       },
       style: {
         color: theme.custom.colors.negative,
+        opacity: isPrimary ? 0.6 : 1,
       },
     },
   };
@@ -162,9 +156,6 @@ export const WalletDetail: React.FC<{
       ),
     },
   };
-  const isPrimary = primaryWallets.find((x) => x.publicKey === publicKey)
-    ? true
-    : false;
 
   return (
     <div>

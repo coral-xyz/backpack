@@ -938,7 +938,7 @@ export function StackedWalletAddress({
         >
           {type === "dehydrated" ? "Not recovered" : name}
         </Typography>
-        {isPrimary && (
+        {type !== "dehydrated" && isPrimary && (
           <Typography
             style={{
               marginLeft: "4px",
