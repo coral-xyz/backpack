@@ -131,12 +131,12 @@ export class BackgroundSolanaConnection extends Connection {
   }
 
   async customSplMetadataUri(
-    nftTokens: Array<SolanaTokenAccountWithKeyString>,
-    nftTokenMetadata: Array<TokenMetadataString | null>
+    tokens: Array<SolanaTokenAccountWithKeyString>,
+    tokenMetadata: Array<TokenMetadataString | null>
   ): Promise<Array<[string, SplNftMetadataString]>> {
     return await this._backgroundClient.request({
       method: SOLANA_CONNECTION_RPC_CUSTOM_SPL_METADATA_URI,
-      params: [nftTokens, nftTokenMetadata],
+      params: [tokens, tokenMetadata],
     });
   }
 

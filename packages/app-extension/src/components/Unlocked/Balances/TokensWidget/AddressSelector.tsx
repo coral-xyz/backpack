@@ -6,14 +6,14 @@ import {
   walletAddressDisplay,
 } from "@coral-xyz/common";
 import { useContacts } from "@coral-xyz/db";
-import { ParentCommunicationManager, UserList } from "@coral-xyz/message-sdk";
+import { ParentCommunicationManager } from "@coral-xyz/message-sdk";
 import {
   isFirstLastListItemStyle,
   PrimaryButton,
   TextInput,
   UserIcon,
 } from "@coral-xyz/react-common";
-import type { TokenData } from "@coral-xyz/recoil";
+import type { TokenDataWithPrice } from "@coral-xyz/recoil";
 import {
   blockchainTokenData,
   useActiveEthereumWallet,
@@ -94,14 +94,14 @@ const useStyles = makeStyles((theme: any) =>
 
 type AddressSelectorContext = {
   blockchain: Blockchain;
-  token: TokenData;
+  token: TokenDataWithPrice;
 };
 
 const AddressSelectorContext =
   React.createContext<AddressSelectorContext | null>(null);
 export function AddressSelectorProvider(props: {
   blockchain: Blockchain;
-  token: TokenData;
+  token: TokenDataWithPrice;
   children: any;
 }) {
   return (
@@ -153,7 +153,7 @@ export const AddressSelector = ({
   token,
 }: {
   blockchain: Blockchain;
-  token: TokenData;
+  token: TokenDataWithPrice;
 }) => {
   const classes = useStyles();
   const nav = useNavigationEphemeral();
