@@ -98,7 +98,7 @@ function SplashScreen({
         height: "100%",
         width: "100%",
         backgroundImage: `url(${splashUrls[size]})`,
-        backgroundPosition: "cover",
+        backgroundSize: "cover",
       }}
     />
   );
