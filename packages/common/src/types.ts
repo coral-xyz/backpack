@@ -110,6 +110,7 @@ export type SignedWalletDescriptor = {
 export type ServerPublicKey = {
   blockchain: Blockchain;
   publicKey: string;
+  primary?: boolean;
 };
 
 export type NamedPublicKey = {

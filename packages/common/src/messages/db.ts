@@ -13,7 +13,7 @@ export interface InboxDb {
   user2_last_read_message_id: boolean;
   public_keys: {
     blockchain: Blockchain;
-    public_key: string;
+    publicKey: string;
   }[];
 }
 

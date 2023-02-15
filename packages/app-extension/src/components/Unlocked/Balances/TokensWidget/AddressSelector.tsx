@@ -28,6 +28,7 @@ import {
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import SearchIcon from "@mui/icons-material/Search";
 import {
   Accordion,
   AccordionDetails,
@@ -35,6 +36,7 @@ import {
   List,
   ListItem,
 } from "@mui/material";
+import InputAdornment from "@mui/material/InputAdornment";
 import { createStyles, makeStyles } from "@mui/styles";
 
 import {
@@ -42,13 +44,21 @@ import {
   useNavigation as useNavigationEphemeral,
 } from "../../../common/Layout/NavStack";
 
-import { Send, useIsValidAddress } from "./Send";
-import search = chrome.bookmarks.search;
+import { useIsValidAddress } from "./Send";
+import { TokenBadge } from "./TokenBadge";
 
 let debouncedTimer = 0;
 
 const useStyles = makeStyles((theme: any) =>
   createStyles({
+    hoverParent: {
+      "&:hover $hoverChild, & .Mui-focused $hoverChild": {
+        visibility: "visible",
+      },
+    },
+    hoverChild: {
+      visibility: "hidden",
+    },
     container: {
       display: "flex",
       flexDirection: "column",
@@ -221,7 +231,7 @@ const Contacts = ({
     if (x.remoteUsername.includes(searchFilter)) {
       return true;
     }
-    if (x.public_keys.find((x) => x.public_key.includes(searchFilter))) {
+    if (x.public_keys.find((x) => x.publicKey.includes(searchFilter))) {
       return true;
     }
     return false;
@@ -242,10 +252,10 @@ const Contacts = ({
                   .filter(
                     (x) =>
                       x.blockchain === blockchain &&
-                      (x.public_key.includes(searchFilter) ||
+                      (x.publicKey.includes(searchFilter) ||
                         c.remoteUsername.includes(searchFilter))
                   )
-                  .map((x) => x.public_key),
+                  .map((x) => x.publicKey),
                 image: c.remoteUserImage,
                 uuid: c.remoteUserId,
               }))}
@@ -324,7 +334,7 @@ function AddressList({
     >
       {wallets.map((wallet, index) => (
         <>
-          {wallet.addresses.length === 1 ? (
+          {wallet.addresses?.length === 1 ? (
             <AddressListItem
               key={wallet.username}
               isFirst={index === 0}
@@ -334,7 +344,7 @@ function AddressList({
                 image: wallet.image,
                 uuid: wallet.uuid,
               }}
-              address={wallet.addresses[0]}
+              address={wallet.addresses?.[0]}
             />
           ) : (
             <AddressListItems
@@ -397,7 +407,7 @@ const AddressListItem = ({
         paddingTop: "8px",
         paddingBottom: "8px",
         display: "flex",
-        height: "68px",
+        height: "48px",
         backgroundColor: theme.custom.colors.nav,
         borderBottom: isLast
           ? undefined
@@ -418,11 +428,11 @@ const AddressListItem = ({
             justifyContent: "center",
           }}
         >
-          <UserIcon image={user.image} />
+          <UserIcon size={32} image={user.image} />
         </div>
         <div>
           <div className={classes.userText}>{user.username}</div>
-          <div className={classes.address}>{walletAddressDisplay(address)}</div>
+          {/*<div className={classes.address}>{walletAddressDisplay(address)}</div>*/}
         </div>
       </div>
     </ListItem>
@@ -472,71 +482,89 @@ function AddressListItems({
       elevation={0}
     >
       <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
+        sx={{
+          backgroundColor: theme.custom.colors.nav,
+        }}
+        expandIcon={<></>}
         aria-controls="panel1a-content"
         id="panel1a-header"
+        className={classes.hoverParent}
       >
         <div
           style={{
-            width: "100%",
             display: "flex",
-            background: theme.custom.colors.nav,
+            justifyContent: "space-between",
+            width: "100%",
           }}
         >
           <div
             style={{
+              width: "100%",
               display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
+              background: theme.custom.colors.nav,
             }}
           >
-            <UserIcon image={user.image} />
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            >
+              <UserIcon size={32} image={user.image} />
+            </div>
+            <div style={{ display: "flex" }}>
+              <div className={classes.userText}>{user.username}</div>
+              <div
+                style={{ marginLeft: 30 }}
+                className={`${classes.hoverChild} ${classes.userText}`}
+              >
+                {addresses?.length} addresses
+              </div>
+              {/*<div className={classes.address}>*/}
+              {/*  {addresses.length === 0*/}
+              {/*    ? `No addresses on the ${blockchain} blockchain`*/}
+              {/*    : "Multiple addresses"}*/}
+              {/*</div>*/}
+            </div>
           </div>
           <div>
-            <div className={classes.userText}>{user.username}</div>
-            <div className={classes.address}>
-              {addresses.length === 0
-                ? `No addresses on the ${blockchain} blockchain`
-                : "Multiple addresses"}
+            <div className={classes.hoverChild}>
+              <ExpandMoreIcon
+                style={{ color: theme.custom.colors.fontColor }}
+              ></ExpandMoreIcon>
             </div>
           </div>
         </div>
       </AccordionSummary>
-      {addresses.map((address, index) => (
-        <AccordionDetails
-          sx={{
-            color: theme.custom.colors.fontColor,
-            cursor: "pointer",
-            borderTop:
-              index === 0
-                ? `solid 1pt ${theme.custom.colors.border1}`
-                : undefined,
-            borderBottom:
-              index === addresses.length - 1
-                ? undefined
-                : `solid 1pt ${theme.custom.colors.border1}`,
-            ...isFirstLastListItemStyle(
-              index === 0,
-              index === addresses.length - 1,
-              0
-            ),
-          }}
-          onClick={() => {
-            push("send", {
-              blockchain,
-              token,
-              to: {
-                address: address,
-                username: user.username,
-                image: user.image,
-                uuid: user.uuid,
-              },
-            });
-          }}
-        >
-          {walletAddressDisplay(address)}
-        </AccordionDetails>
-      ))}
+      <AccordionDetails
+        sx={{
+          color: theme.custom.colors.fontColor,
+          cursor: "pointer",
+        }}
+      >
+        <div style={{ display: "flex", flexWrap: "wrap" }}>
+          {addresses?.map((address) => (
+            <div style={{ padding: "2px 4px" }}>
+              <TokenBadge
+                onClick={() => {
+                  push("send", {
+                    blockchain,
+                    token,
+                    to: {
+                      address: address,
+                      username: user.username,
+                      image: user.image,
+                      uuid: user.uuid,
+                    },
+                  });
+                }}
+                label={walletAddressDisplay(address)}
+              />
+            </div>
+          ))}
+        </div>
+      </AccordionDetails>
     </Accordion>
   );
 }
@@ -553,6 +581,7 @@ const SearchAddress = ({
   const { provider: solanaProvider } = useAnchorContext();
   const ethereumCtx = useEthereumCtx();
   const [loading, setLoading] = useState(false);
+  const theme = useCustomTheme();
   const [searchResults, setSearchResults] = useState<RemoteUserData[]>([]);
 
   const { isErrorAddress } = useIsValidAddress(
@@ -596,7 +625,12 @@ const SearchAddress = ({
   return (
     <div style={{ margin: "0 12px" }}>
       <TextInput
-        placeholder={`Enter address`}
+        placeholder={`Search by name or address`}
+        startAdornment={
+          <InputAdornment position="start">
+            <SearchIcon style={{ color: theme.custom.colors.icon }} />
+          </InputAdornment>
+        }
         value={inputContent}
         setValue={(e) => setInputContent(e.target.value.trim())}
         // error={isErrorAddress}
@@ -624,7 +658,7 @@ const SearchAddress = ({
               username: user.username,
               image: user.image,
               uuid: user.id,
-              addresses: user.public_keys?.map((x: any) => x.public_key),
+              addresses: user.public_keys?.map((x: any) => x.publicKey),
             }))}
           />
         </div>

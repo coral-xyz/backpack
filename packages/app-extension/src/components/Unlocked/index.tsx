@@ -5,6 +5,7 @@ import { WithTabs } from "../common/Layout/Tab";
 import { WalletDrawerProvider } from "../common/WalletList";
 
 import { ApproveTransactionRequest } from "./ApproveTransactionRequest";
+import { PrimaryPubkeySelector } from "./PrimaryPubkeySelector";
 import { WithVersion } from "./WithVersion";
 
 //
@@ -26,6 +27,7 @@ export function Unlocked() {
           >
             <Router />
             <ApproveTransactionRequest />
+            <PrimaryPubkeySelector />
           </div>
         </WalletDrawerProvider>
       </WithTabs>
