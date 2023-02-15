@@ -3,14 +3,13 @@ import type { StackScreenProps } from "@react-navigation/stack";
 
 import { useEffect, useState } from "react";
 import {
-  Alert,
   FlatList,
   StyleSheet,
   View,
   Platform,
-  Text,
   KeyboardAvoidingView,
-  ScrollView,
+  Pressable,
+  Text,
 } from "react-native";
 
 import * as Linking from "expo-linking";
@@ -489,21 +488,32 @@ function OnboardingMnemonicInputScreen({
         onChange={readOnly ? undefined : setMnemonicWords}
       />
       {maybeRender(!readOnly, () => (
-        <StyledText>
-          Use a {mnemonicWords.length === 12 ? "24" : "12"}-word recovery
-          mnemonic
-        </StyledText>
+        <Pressable
+          style={{ alignSelf: "center", marginBottom: 18 }}
+          onPress={() => {
+            setMnemonicWords([
+              ...Array(mnemonicWords.length === 12 ? 24 : 12).fill(""),
+            ]);
+          }}
+        >
+          <Text style={{ fontSize: 18 }}>
+            Use a {mnemonicWords.length === 12 ? "24" : "12"}-word recovery
+            mnemonic
+          </Text>
+        </Pressable>
       ))}
       {maybeRender(readOnly, () => (
-        <Margin bottom={18}>
-          <BaseCheckBoxLabel
-            label="I saved my secret recovery phrase"
-            value={checked}
-            onPress={() => {
-              setChecked(!checked);
-            }}
-          />
-        </Margin>
+        <View style={{ alignSelf: "center" }}>
+          <Margin bottom={18}>
+            <BaseCheckBoxLabel
+              label="I saved my secret recovery phrase"
+              value={checked}
+              onPress={() => {
+                setChecked(!checked);
+              }}
+            />
+          </Margin>
+        </View>
       ))}
       {maybeRender(Boolean(error), () => (
         <ErrorMessage for={{ message: error }} />
