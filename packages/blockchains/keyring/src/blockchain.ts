@@ -116,20 +116,20 @@ export class BlockchainKeyring {
   }
 
   public async initFromKeystone(
-    accounts: Array<ImportedDerivationPath>,
+    accounts: Array<WalletDescriptor>,
     xfp: string
   ): Promise<Array<[string, string]>> {
     this.keystoneKeyring = this.keystoneKeyringFactory.fromAccounts(accounts, xfp);
     // Empty imported and ledger keyring
-    this.ledgerKeyring = this.ledgerKeyringFactory.fromAccounts([]);
+    this.ledgerKeyring = this.ledgerKeyringFactory.init([]);
     this.importedKeyring = this.keyringFactory.init([]);
     this.activeWallet = this.ledgerKeyring.publicKeys()[0];
     this.deletedWallets = [];
 
     // Persist a given name for this wallet.
     const newAccounts: Array<[string, string]> = [];
-    for (const [index, walletDescriptor] of walletDescriptors.entries()) {
-      const name = DefaultKeyname.defaultLedger(index + 1);
+    for (const [index, walletDescriptor] of accounts.entries()) {
+      const name = DefaultKeyname.defaultKeystone(index + 1);
       await store.setKeyname(walletDescriptor.publicKey, name);
       await store.setIsCold(walletDescriptor.publicKey, true);
       newAccounts.push([walletDescriptor.publicKey, name]);

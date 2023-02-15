@@ -16,9 +16,9 @@ import {
 } from "@coral-xyz/blockchain-keyring";
 import type {
   KeystoneKeyringJson,
-  UR
+  UR,
+  WalletDescriptor
 } from "@coral-xyz/common";
-import type { WalletDescriptor } from "@coral-xyz/common";
 import {
   Blockchain,
   getIndexedPath,
@@ -293,16 +293,10 @@ export class SolanaLedgerKeyring
       ],
     });
   }
-
-  public toJson() {
-    return {
-      accounts: this.getAccounts(),
-    };
-  }
 }
 
 export class SolanaKeystoneKeyringFactory implements KeystoneKeyringFactory {
-  public fromAccounts(accounts: Array<ImportedDerivationPath>): KeystoneKeyring {
+  public fromAccounts(accounts: Array<WalletDescriptor>): KeystoneKeyring {
     return new SolanaKeystoneKeyring({accounts});
   }
 
@@ -318,7 +312,7 @@ export class SolanaKeystoneKeyringFactory implements KeystoneKeyringFactory {
 export class SolanaKeystoneKeyring extends KeystoneKeyringBase implements KeystoneKeyring {
   private keyring: KeystoneKeyringOrigin;
 
-  constructor({ accounts, xfp }: { accounts?: ImportedDerivationPath[], xfp?: string }) {
+  constructor({ accounts, xfp }: { accounts?: WalletDescriptor[], xfp?: string }) {
     super()
     this.keyring = new KeystoneKeyringOrigin();
     if (accounts && xfp) {
@@ -359,12 +353,12 @@ export class SolanaKeystoneKeyring extends KeystoneKeyringBase implements Keysto
     return inst;
   }
 
-  public setAccounts(accounts: ImportedDerivationPath[], xfp: string) {
+  public setAccounts(accounts: WalletDescriptor[], xfp: string) {
     this.keyring.syncKeyringData({
       xfp,
-      keys: accounts.map(e => ({
-        hdPath: e.path,
-        index: e.account,
+      keys: accounts.filter(e => e.xfp === xfp).map(e => ({
+        hdPath: e.derivationPath,
+        index: -1,
         pubKey: e.publicKey
       })),
       device: 'Backpack'
@@ -372,11 +366,13 @@ export class SolanaKeystoneKeyring extends KeystoneKeyringBase implements Keysto
     this.setPublicKeys(accounts);
   }
 
-  public getCachedAccounts(): ImportedDerivationPath[] {
+  public getCachedAccounts(): WalletDescriptor[] {
+    const xfp = this.keyring.getXFP();
     return this.keyring.getAccounts().map(e => ({
-      path: e.hdPath,
-      account: e.index,
+      derivationPath: e.hdPath,
+      index: e.index,
       publicKey: e.pubKey,
+      xfp,
     }));
   }
 

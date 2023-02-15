@@ -6,13 +6,11 @@ import type { BlockchainKeyring } from "@coral-xyz/blockchain-keyring";
 import { SolanaKeystoneKeyring } from '@coral-xyz/blockchain-solana';
 import type {
   AutolockSettingsOption,
-  Blockchain,
   EventEmitter,
   KeyringInit,
   KeyringType,
   UR,
-  WalletDescriptor,
-} from "@coral-xyz/common";
+  WalletDescriptor} from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
   BACKEND_EVENT,
@@ -513,18 +511,6 @@ export class KeyringStore {
 
   public async keystoneImport(
     blockchain: Blockchain,
-    ur: {type: string, cbor: string}
-  ) {
-    return await this.withUnlockAndPersist(async () => {
-      return await this.activeUserKeyring.keystoneImport(
-        blockchain,
-        ur
-      );
-    });
-  }
-
-  public async keystoneImport(
-    blockchain: Blockchain,
     ur: {type: string, cbor: string},
     pubkey?: string
   ) {
@@ -932,20 +918,6 @@ class UserKeyring {
 
   public async keystoneImport(
     blockchain: Blockchain,
-    ur: UR
-  ) {
-    const blockchainKeyring = this.blockchains.get(blockchain);
-    const keystoneKeyring = blockchainKeyring!.keystoneKeyring!;
-    await keystoneKeyring.keystoneImport(ur);
-    await Promise.all(keystoneKeyring.getAccounts().map(async (e) => {
-      const name = DefaultKeyname.defaultKeystone(e.account);
-      await store.setKeyname(e.publicKey, name);
-      await store.setIsCold(e.publicKey, true);
-    }));
-  }
-
-  public async keystoneImport(
-    blockchain: Blockchain,
     ur: UR,
     pubkey?: string
   ) {
@@ -957,7 +929,7 @@ class UserKeyring {
       const i = accounts.findIndex(e => e.publicKey === pubkey);
       if (i > -1) {
         const account = accounts[i];
-        const name = DefaultKeyname.defaultKeystone(account.account);
+        const name = DefaultKeyname.defaultKeystone(account.index!);
         await store.setKeyname(account.publicKey, name);
         await store.setIsCold(account.publicKey, false);
       }

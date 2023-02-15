@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { WalletDescriptor } from "@coral-xyz/common";
+import type { UR,WalletDescriptor } from "@coral-xyz/common";
 import {
   Blockchain,
   DEFAULT_SOLANA_CLUSTER,
@@ -13,7 +13,8 @@ import {
   LOAD_PUBLIC_KEY_AMOUNT,
   UI_RPC_METHOD_FIND_SERVER_PUBLIC_KEY_CONFLICTS,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
-  UI_RPC_METHOD_PREVIEW_PUBKEYS,
+  UI_RPC_METHOD_KEYSTONE_UR_DECODE,
+  UI_RPC_METHOD_PREVIEW_PUBKEYS
 } from "@coral-xyz/common";
 import { Loading, PrimaryButton, TextInput } from "@coral-xyz/react-common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
@@ -225,19 +226,17 @@ export function ImportWallets({
       // Loading accounts from a Ledger
       loaderFn = (derivationPaths: Array<string>) =>
         loadLedgerPublicKeys(transport, derivationPaths);
+    } else if (ur) {
+      loaderFn = () => 
+        loadKeystonePublicKeys(ur);
     } else {
       throw new Error("no public key loader found");
     }
 
     loaderFn(derivationPaths)
-      .then(async (publicKeys: string[]) => {
-        setWalletDescriptors(
-          derivationPaths.map((derivationPath, i) => ({
-            publicKey: publicKeys[i],
-            derivationPath,
-          }))
-        );
-        const balances = await loadBalances(publicKeys);
+      .then(async (publicKeys: WalletDescriptor[]) => {
+        setWalletDescriptors(publicKeys);
+        const balances = await loadBalances(publicKeys.map(e => e.publicKey));
         setBalances(
           Object.fromEntries(
             balances
@@ -333,10 +332,14 @@ export function ImportWallets({
     mnemonic: string | true,
     derivationPaths: Array<string>
   ) => {
-    return await background.request({
+    const publicKeys = await background.request({
       method: UI_RPC_METHOD_PREVIEW_PUBKEYS,
       params: [blockchain, mnemonic, derivationPaths],
     });
+    return derivationPaths.map((derivationPath, i) => ({
+      publicKey: publicKeys[i],
+      derivationPath,
+    }));
   };
 
   //
@@ -345,8 +348,8 @@ export function ImportWallets({
   const loadLedgerPublicKeys = async (
     transport: Transport,
     derivationPaths: Array<string>
-  ): Promise<string[]> => {
-    const publicKeys = [];
+  ): Promise<WalletDescriptor[]> => {
+    const publicKeys: (Buffer|string)[] = [];
     setLedgerLocked(true);
     const ledger = {
       [Blockchain.SOLANA]: new Solana(transport),
@@ -358,10 +361,29 @@ export function ImportWallets({
         (await ledger.getAddress(derivationPath.replace("m/", ""))).address
       );
     }
+
     setLedgerLocked(false);
-    return publicKeys.map((p) =>
-      blockchain === Blockchain.SOLANA ? bs58.encode(p) : p.toString()
-    );
+    return derivationPaths.map((derivationPath, i) => {
+      const p = publicKeys[i];
+      return {
+        publicKey: blockchain === Blockchain.SOLANA ? bs58.encode(p) : p.toString(),
+        derivationPath,
+      }
+    });
+  };
+
+  //
+  // Load accounts for a Keystone.
+  //
+  const loadKeystonePublicKeys = async (ur: UR) => {
+    const { accounts }: {accounts: WalletDescriptor[]} = await background.request({
+      method: UI_RPC_METHOD_KEYSTONE_UR_DECODE,
+      params: [
+        blockchain,
+        ur,
+      ]
+    });
+    return accounts;
   };
 
   //
@@ -427,7 +449,7 @@ export function ImportWallets({
             Select which wallet{allowMultiple ? "s" : ""} you'd like to import.
           </SubtextParagraph>
         </Box>
-        <div style={{ margin: "16px" }}>
+        {!ur && <div style={{ margin: "16px" }}>
           <TextInput
             placeholder="Derivation Path"
             value={derivationPathLabel}
@@ -441,7 +463,7 @@ export function ImportWallets({
               </MenuItem>
             ))}
           </TextInput>
-        </div>
+        </div>}
         {Object.keys(balances).length > 0 ? (
           <>
             <List

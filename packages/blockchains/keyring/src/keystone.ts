@@ -1,7 +1,7 @@
-import type { ImportedDerivationPath } from './types';
+import type { WalletDescriptor } from '@coral-xyz/common';
 
 export class KeystoneKeyringBase {
-  private keys: ImportedDerivationPath[] = []
+  private keys: WalletDescriptor[] = []
 
   exportSecretKey(): string | null {
     throw new Error("Keystone keyring cannot export secret keys");
@@ -17,11 +17,11 @@ export class KeystoneKeyringBase {
     );
   }
 
-  public addPublicKey(key: ImportedDerivationPath) {
+  public addPublicKey(key: WalletDescriptor) {
     this.keys.push(key);
   }
 
-  public setPublicKeys(keys: ImportedDerivationPath[]) {
+  public setPublicKeys(keys: WalletDescriptor[]) {
     this.keys = [...keys]
   }
 

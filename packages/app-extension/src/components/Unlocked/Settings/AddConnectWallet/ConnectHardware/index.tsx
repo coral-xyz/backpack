@@ -1,4 +1,4 @@
-import type { Blockchain, SignedWalletDescriptor } from "@coral-xyz/common";
+import type { Blockchain, SignedWalletDescriptor, UR } from "@coral-xyz/common";
 import {
   getAddMessage,
   UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD,
@@ -8,7 +8,6 @@ import {
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 
-import type { HardwareBlockchainKeyringInit } from "../../../../Onboarding/pages/HardwareOnboard";
 import { HardwareOnboard,HardwareType } from "../../../../Onboarding/pages/HardwareOnboard";
 
 import { ConnectHardwareSuccess } from "./ConnectHardwareSuccess";
@@ -28,7 +27,9 @@ export function ConnectHardware({
   const background = useBackgroundClient();
 
   const handleHardwareOnboardComplete = async (
-    signedWalletDescriptor: SignedWalletDescriptor
+    signedWalletDescriptor: SignedWalletDescriptor,
+    hardwareType: HardwareType,
+    ur?: UR
   ) => {
     const blockchainKeyrings = await background.request({
       method: UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_READ,
@@ -36,15 +37,15 @@ export function ConnectHardware({
     });
     const keyringExists = blockchainKeyrings.includes(blockchain);
     let method = UI_RPC_METHOD_BLOCKCHAIN_KEYRINGS_ADD; // Create the keyring
-    let params = [blockchain, signedWalletDescriptor];
+    let params: any[] = [blockchain, signedWalletDescriptor];
     if (!keyringExists && !createKeyring) {
-      if (keyringInit.hardwareType === HardwareType.Keystone) {
+      if (hardwareType === HardwareType.Keystone) {
         method = UI_RPC_METHOD_KEYSTONE_IMPORT;
         params = [
-          keyringInit.blockchain,
-          keyringInit.ur,
-          keyringInit.publicKey,
-          keyringInit.signature,
+          blockchain,
+          ur,
+          signedWalletDescriptor.publicKey,
+          signedWalletDescriptor.signature,
         ];
       } else {
         method = UI_RPC_METHOD_LEDGER_IMPORT;

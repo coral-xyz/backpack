@@ -107,6 +107,8 @@ export type KeyringInit = {
 export type WalletDescriptor = {
   derivationPath: string;
   publicKey: string;
+  index?: number;
+  xfp?: string;
 };
 
 // Path to a public key including a signature from the public key
@@ -201,7 +203,7 @@ export type UR = {
 };
 
 export type KeystoneKeyringJson = {
-  accounts: ImportedDerivationPath[];
+  accounts: WalletDescriptor[];
   xfp: string;
 }
 

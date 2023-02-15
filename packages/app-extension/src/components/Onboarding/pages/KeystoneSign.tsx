@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { SolanaKeystoneKeyring } from '@coral-xyz/blockchain-solana';
-import type { Blockchain, DerivationPath, UR } from "@coral-xyz/common";
+import type { Blockchain, UR, WalletDescriptor } from "@coral-xyz/common";
 import { HardwareWalletIcon } from "@coral-xyz/react-common";
 import { AnimatedQRCode, URType,useAnimatedQRScanner } from '@keystonehq/animated-qr';
 import { Box } from "@mui/material";
@@ -8,16 +8,14 @@ import { Box } from "@mui/material";
 import { Header, HeaderIcon, SubtextParagraph } from "../../common";
 
 export function KeystoneSign({
+  walletDescriptor,
   message,
-  publicKey,
   ur,
   onNext,
 }: {
   blockchain: Blockchain;
+  walletDescriptor: WalletDescriptor;
   message: string;
-  publicKey: string;
-  derivationPath: DerivationPath;
-  accountIndex: number;
   ur: UR;
   onNext: (signature: string) => void;
 }) {
@@ -38,16 +36,16 @@ export function KeystoneSign({
       readQRResolve = resolve;
       readQRReject = reject;
     }));
-    const sig = await keyring.signMessage(Buffer.from(message), publicKey);
+    const sig = await keyring.signMessage(Buffer.from(message), walletDescriptor.publicKey);
     onNext(sig);
-  }
+  };
 
   const handleScan = useCallback(ur => {
     readQRResolve(ur, xfp);
-  }, [])
+  }, []);
 
   useEffect(() => {
-    signMsg()
+    signMsg();
   }, [ur]);
 
   return (
