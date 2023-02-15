@@ -91,7 +91,7 @@ jobs:
         run: echo "commit_sha=${{ github.sha }}" >> $GITHUB_ENV
 
       - name: "set env.short_sha"
-        run: echo "short_sha=`echo "${{ env.commit_sha }}" | cut -c1-8`" >> $GITHUB_ENV
+        run: echo "short_sha=`echo "${{ env.commit_sha }}" | cut -c1-7`" >> $GITHUB_ENV
 
       - name: (Github Pages) Deploy background-service-worker.html
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
@@ -100,7 +100,6 @@ jobs:
           publish_dir: packages/background/build
           github_token: ${{ secrets.GITHUB_TOKEN }}
           destination_dir: "background-scripts/${{ env.short_sha }}"
-          full_commit_message: "${{ env.short_sha }} ${{ github.event.pull_request.head.sha }}"
 
       - name: (Github Pages) Deploy ledger injection
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
