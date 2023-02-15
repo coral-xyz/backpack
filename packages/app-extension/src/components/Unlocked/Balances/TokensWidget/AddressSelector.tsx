@@ -194,6 +194,7 @@ export const AddressSelector = ({
             />
           )}
           <Contacts searchFilter={inputContent} blockchain={blockchain} />
+          <NotSelected searchFilter={inputContent} blockchain={blockchain} />
         </div>
         <div className={classes.buttonContainer}>
           <PrimaryButton
@@ -216,6 +217,102 @@ export const AddressSelector = ({
     </AddressSelectorProvider>
   );
 };
+
+function NotSelected({
+  blockchain,
+  searchFilter,
+}: {
+  blockchain: Blockchain;
+  searchFilter: string;
+}) {
+  const { uuid } = useUser();
+  const contacts = useContacts(uuid);
+  const theme = useCustomTheme();
+  const filteredContacts = contacts
+    .filter((x) => {
+      if (x.remoteUsername.includes(searchFilter)) {
+        return true;
+      }
+      if (x.public_keys.find((x) => x.publicKey.includes(searchFilter))) {
+        return true;
+      }
+      return false;
+    })
+    .filter((x) => (x.public_keys?.[0] ? false : true));
+
+  if (!filteredContacts.length) {
+    return <></>;
+  }
+
+  return (
+    <div>
+      <div style={{ color: theme.custom.colors.fontColor, marginBottom: 8 }}>
+        Contacts who haven't yet set a primary address
+      </div>
+      <ListItem
+        button
+        disableRipple
+        onClick={() => {}}
+        style={{
+          paddingLeft: "12px",
+          paddingRight: "12px",
+          paddingTop: "8px",
+          paddingBottom: "8px",
+          display: "flex",
+          height: "48px",
+          backgroundColor: theme.custom.colors.nav,
+          ...isFirstLastListItemStyle(true, true, 12),
+        }}
+      >
+        <div style={{ paddingTop: 15 }}>
+          <MembersList
+            count={filteredContacts.length}
+            members={filteredContacts.map((x) => ({
+              image: x.remoteUserImage,
+            }))}
+          />
+        </div>
+      </ListItem>
+    </div>
+  );
+}
+
+function MembersList({
+  count,
+  members,
+}: {
+  count: number;
+  members: { image: string }[];
+}) {
+  const theme = useCustomTheme();
+  const countText = count >= 1000 ? `${(count / 1000).toFixed(1)}k` : count;
+  return (
+    <div
+      style={{
+        justifyContent: "center",
+        display: "flex",
+        alignItems: "center",
+        paddingBottom: 20,
+      }}
+    >
+      {members.map((member, idx) => (
+        <img
+          key={idx}
+          src={member.image}
+          style={{
+            border: `solid 2px ${theme.custom.colors.nav}`,
+            borderRadius: "50%",
+            height: 30,
+            ...(idx > 0 ? { marginLeft: "-12px" } : {}),
+          }}
+        />
+      ))}
+      <div
+        style={{ color: theme.custom.colors.smallTextColor, paddingLeft: 10 }}
+      ></div>
+    </div>
+  );
+}
 
 const Contacts = ({
   blockchain,
@@ -333,21 +430,23 @@ function AddressList({
         border: `${theme.custom.colors.borderFull}`,
       }}
     >
-      {wallets.map((wallet, index) => (
-        <>
-          <AddressListItem
-            key={wallet.username}
-            isFirst={index === 0}
-            isLast={index === wallets.length - 1}
-            user={{
-              username: wallet.username,
-              image: wallet.image,
-              uuid: wallet.uuid,
-            }}
-            address={wallet.addresses?.[0]}
-          />
-        </>
-      ))}
+      {wallets
+        .filter((wallet) => wallet.addresses?.[0])
+        .map((wallet, index) => (
+          <>
+            <AddressListItem
+              key={wallet.username}
+              isFirst={index === 0}
+              isLast={index === wallets.length - 1}
+              user={{
+                username: wallet.username,
+                image: wallet.image,
+                uuid: wallet.uuid,
+              }}
+              address={wallet.addresses?.[0]}
+            />
+          </>
+        ))}
     </List>
   );
 }
