@@ -1,4 +1,4 @@
-import { Chain } from "@coral-xyz/zeus";
+import { Chain, order_by } from "@coral-xyz/zeus";
 
 import { HASURA_URL, JWT } from "../config";
 
@@ -19,6 +19,8 @@ export const getNotifications = async (
         where: { uuid: { _eq: uuid } },
         limit,
         offset,
+        //@ts-ignore
+        order_by: [{ id: "desc" }],
       },
       {
         id: true,
