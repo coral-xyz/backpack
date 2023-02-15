@@ -30,7 +30,7 @@ import {
   TabIconMessages,
 } from "~components/Icon";
 import { NavHeader } from "~components/index";
-import { useTheme } from "~hooks/index";
+import { useTheme } from "~hooks/useTheme";
 
 export type UnlockedNavigatorStackParamList = {
   Tabs: undefined;

@@ -12,11 +12,11 @@ import {
   SecondaryButton,
   StyledTextInput,
   SubtextParagraph,
-} from "~components";
+} from "~components/index";
 import { UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useTheme } from "~hooks";
+import { useTheme } from "~hooks/useTheme";
 
 import { EyeIcon, WarningIcon } from "~components/Icon";
 

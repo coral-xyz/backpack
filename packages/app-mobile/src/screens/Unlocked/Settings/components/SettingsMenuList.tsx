@@ -1,7 +1,7 @@
 import type { StyleProp, TextStyle, ViewStyle } from "react-native";
 import { StyleSheet, Text, View } from "react-native";
 
-import { useTheme } from "~hooks";
+import { useTheme } from "~hooks/useTheme";
 
 import { RoundedContainerGroup } from "~components/index";
 

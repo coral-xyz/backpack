@@ -7,7 +7,7 @@ import {
   Screen,
   SecondaryButton,
   SubtextParagraph,
-} from "~components";
+} from "~components/index";
 import { KeyringStoreStateEnum, useKeyringStoreState } from "@coral-xyz/recoil";
 
 import { QuestionIcon } from "~components/Icon";

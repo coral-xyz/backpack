@@ -23,7 +23,7 @@ import {
   Row,
   StyledTextInput,
 } from "~components/index";
-import { useTheme } from "~hooks/index";
+import { useTheme } from "~hooks/useTheme";
 
 import { TableHeader } from "./index";
 

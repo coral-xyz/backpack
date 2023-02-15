@@ -10,7 +10,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useRecoilValueLoadable } from "recoil";
 
 import { Margin } from "~components/index";
-import { useTheme } from "~hooks/index";
+import { useTheme } from "~hooks/useTheme";
 
 const HorizontalSpacer = () => <View style={{ width: 16 }} />;
 const ENABLE_ONRAMP = false;

@@ -5,7 +5,7 @@ import { FlatList, Pressable, StyleSheet } from "react-native";
 
 import * as Linking from "expo-linking";
 
-import { Margin, RoundedContainerGroup } from "~components";
+import { Margin, RoundedContainerGroup } from "~components/index";
 import {
   BACKPACK_LINK,
   DISCORD_INVITE_LINK,

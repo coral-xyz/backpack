@@ -1,4 +1,4 @@
-import { Screen } from "~components";
+import { Screen } from "~components/index";
 import { useKeyringHasMnemonic } from "@coral-xyz/recoil";
 import { SettingsList } from "~screens/Unlocked/Settings/components/SettingsMenuList";
 

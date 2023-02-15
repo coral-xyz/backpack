@@ -4,7 +4,7 @@ import type { Commitment } from "@solana/web3.js";
 import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
 
-import { Screen } from "~components";
+import { Screen } from "~components/index";
 import {
   EthereumConnectionUrl,
   SolanaCluster,
@@ -23,7 +23,7 @@ import {
   useSolanaConnectionUrl,
   useSolanaExplorer,
 } from "@coral-xyz/recoil";
-import { useTheme } from "~hooks";
+import { useTheme } from "~hooks/useTheme";
 import { createStackNavigator } from "@react-navigation/stack";
 import { ImportPrivateKeyScreen } from "~screens/ImportPrivateKeyScreen";
 import {

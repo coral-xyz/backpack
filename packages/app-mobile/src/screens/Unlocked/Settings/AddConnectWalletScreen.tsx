@@ -27,7 +27,7 @@ import {
   SubtextParagraph,
   RoundedContainerGroup,
 } from "~components/index";
-import { useTheme } from "~hooks/index";
+import { useTheme } from "~hooks/useTheme";
 
 export function AddConnectWalletScreen({ route }) {
   const { blockchain } = route.params;

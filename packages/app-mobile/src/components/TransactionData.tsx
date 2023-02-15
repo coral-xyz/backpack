@@ -7,7 +7,7 @@ import { ethers } from "ethers";
 
 import { IconCloseModal } from "~components/Icon";
 import { PrimaryButton, SecondaryButton } from "~components/index";
-import { useTheme } from "~hooks/index";
+import { useTheme } from "~hooks/useTheme";
 
 type TransactionMode = "normal" | "fast" | "degen" | "custom";
 

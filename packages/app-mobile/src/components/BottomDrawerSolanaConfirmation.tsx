@@ -28,7 +28,7 @@ import {
   Container,
 } from "~components/BottomDrawerCards";
 import { Margin, PrimaryButton, TokenAmountHeader } from "~components/index";
-import { useTheme } from "~hooks/index";
+import { useTheme } from "~hooks/useTheme";
 
 type Step = "confirm" | "sending" | "complete" | "error";
 

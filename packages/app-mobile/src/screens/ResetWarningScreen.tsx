@@ -8,7 +8,7 @@ import {
   SecondaryButton,
   SubtextParagraph,
   TwoButtonFooter,
-} from "~components";
+} from "~components/index";
 import {
   UI_RPC_METHOD_KEYRING_RESET,
   UI_RPC_METHOD_USER_ACCOUNT_LOGOUT,

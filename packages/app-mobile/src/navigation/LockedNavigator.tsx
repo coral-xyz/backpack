@@ -30,7 +30,7 @@ import {
   Screen,
   WelcomeLogoHeader,
 } from "~components/index";
-import { useTheme } from "~hooks/index";
+import { useTheme } from "~hooks/useTheme";
 
 const maybeResetApp = () => {
   Alert.alert(

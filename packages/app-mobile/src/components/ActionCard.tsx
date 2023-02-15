@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { useTheme } from "~hooks";
+import { useTheme } from "~hooks/useTheme";
 
 export function ActionCard({
   icon,

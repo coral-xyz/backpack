@@ -11,7 +11,7 @@ import { SettingsRow } from "~screens/Unlocked/Settings/components/SettingsRow";
 
 import { ExpandCollapseIcon, IconCheckmark } from "~components/Icon";
 import { Avatar, Margin, RoundedContainerGroup } from "~components/index";
-import { useTheme } from "~hooks/index";
+import { useTheme } from "~hooks/useTheme";
 
 export function AccountDropdownHeader(): JSX.Element {
   const theme = useTheme();
