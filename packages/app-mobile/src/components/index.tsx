@@ -24,7 +24,6 @@ import { ContentCopyIcon, RedBackpack } from "@components/Icon";
 import { useTheme } from "@hooks/index";
 
 export { ActionCard } from "./ActionCard";
-export { BaseCheckBoxLabel, CheckBox } from "./CheckBox";
 export { MnemonicInputFields } from "./MnemonicInputFields";
 export { NavHeader } from "./NavHeader";
 export { NFTCard } from "./NFTCard";
