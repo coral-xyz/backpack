@@ -24,7 +24,7 @@ export const validateOwnership = async (
       largestAccounts.value[0]?.address
     );
     return (
-      nft.getResult().collection.address.toString() === collection &&
+      nft.getResult().collection?.address.toString() === collection &&
       largestAccountInfo?.value?.data?.parsed?.info?.owner
     );
   } catch (e) {
