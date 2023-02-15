@@ -516,7 +516,7 @@ function SendV2({
   const { uuid } = useUser();
   const isDarkMode = useDarkMode();
   const [tooltipOpen, setTooltipOpen] = useState(false);
-  const [_amount, _setAmount] = useState<number | null>(null);
+  const [_amount, _setAmount] = useState<string>("");
 
   return (
     <>
@@ -588,7 +588,7 @@ function SendV2({
               // @ts-ignore
               fontFamily: theme.typography.fontFamily,
             }}
-            value={_amount ?? ""}
+            value={_amount}
             onChange={(e: any) => {
               try {
                 const num =
@@ -644,7 +644,8 @@ function SendV2({
                 background: theme.custom.colors.bg3,
               }}
               onClick={() => {
-                _setAmount(maxAmount);
+                const a = toDisplayBalance(maxAmount, token.decimals);
+                _setAmount(a);
                 setAmount(maxAmount);
               }}
             >
