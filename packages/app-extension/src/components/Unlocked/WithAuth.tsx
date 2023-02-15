@@ -46,12 +46,6 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
   const hasMnemonic = useKeyringHasMnemonic();
   const [syncAttempted, setSyncAttempted] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      setClientPublicKeys(await getSigners());
-    })();
-  }, []);
-
   /**
    * Check authentication status and take required actions to authenticate if
    * not authenticated.
@@ -59,6 +53,8 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
   useEffect(() => {
     (async () => {
       setAuthSignature(null);
+      setServerAccountState(null);
+      setClientPublicKeys(await getSigners());
       const result = await checkAuthentication(user.username, user.jwt);
       // These set state calls should be batched
       if (result) {
