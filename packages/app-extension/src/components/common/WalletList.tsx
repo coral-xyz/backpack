@@ -3,6 +3,7 @@ import {
   Blockchain,
   UI_RPC_METHOD_KEYRING_ACTIVE_WALLET_UPDATE,
   walletAddressDisplay,
+  walletNameDisplay,
 } from "@coral-xyz/common";
 import {
   HardwareIcon,
@@ -125,7 +126,7 @@ function WalletButton({
       }}
     >
       <Button disableRipple className={classes.addressButton} onClick={onClick}>
-        {wallet.name}
+        {walletNameDisplay(wallet.name)}
         <ExpandMore
           style={{
             width: "18px",
@@ -933,7 +934,7 @@ export function StackedWalletAddress({
           color: type === "dehydrated" ? theme.custom.colors.negative : "",
         }}
       >
-        {type === "dehydrated" ? "Import error" : name}
+        {type === "dehydrated" ? "Import error" : walletNameDisplay(name)}
       </Typography>
       <div
         style={{

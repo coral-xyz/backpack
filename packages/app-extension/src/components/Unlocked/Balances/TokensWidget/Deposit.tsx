@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Blockchain } from "@coral-xyz/common";
+import { Blockchain, walletNameDisplay } from "@coral-xyz/common";
 import { SecondaryButton } from "@coral-xyz/react-common";
 import {
   useAllWalletsDisplayed,
@@ -417,7 +417,7 @@ export function _Deposit({
             color: theme.custom.colors.fontColor,
           }}
         >
-          {name}
+          {walletNameDisplay(name)}
         </Typography>
         <div
           style={{
