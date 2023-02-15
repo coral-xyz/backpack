@@ -69,25 +69,7 @@ export interface LedgerKeyring extends LedgerKeyringBase {
 //
 
 export interface KeystoneKeyringFactory {
-  fromAccounts(accounts: Array<ImportedDerivationPath>): KeystoneKeyring;
-  fromUR(ur: UR): KeystoneKeyring;
-  fromJson(obj: KeystoneKeyringJson): KeystoneKeyring;
-}
-
-export interface KeystoneKeyring extends Keyring {
-  signTransaction(tx: Buffer, address: string): Promise<string>;
-  signMessage(tx: Buffer, address: string): Promise<string>;
-  keystoneImport(ur: UR): Promise<void>;
-  toJson(): KeystoneKeyringJson;
-  getAccounts(): ImportedDerivationPath[];
-}
-
-//
-// Keystone keyring types
-//
-
-export interface KeystoneKeyringFactory {
-  fromAccounts(accounts: Array<ImportedDerivationPath>, xfp: string): KeystoneKeyring;
+  fromAccounts(accounts: Array<WalletDescriptor>, xfp: string): KeystoneKeyring;
   fromUR(ur: UR): Promise<KeystoneKeyring>;
   fromJson(obj: KeystoneKeyringJson): KeystoneKeyring;
 }
@@ -97,8 +79,8 @@ export interface KeystoneKeyring extends KeystoneKeyringBase {
   signMessage(tx: Buffer, address: string): Promise<string>;
   keystoneImport(ur: UR, pubKey?: string): Promise<void>;
   toJson(): KeystoneKeyringJson;
-  getAccounts(): ImportedDerivationPath[];
-  getCachedAccounts(): ImportedDerivationPath[];
+  getAccounts(): WalletDescriptor[];
+  getCachedAccounts(): WalletDescriptor[];
   onPlay(fn: (ur: UR) => Promise<void>): void;
   onRead(fn: () => Promise<UR>): void;
   getXFP(): string;

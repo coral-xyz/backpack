@@ -2,8 +2,8 @@ import { useCallback, useState } from "react";
 import type {
   Blockchain,
   SignedWalletDescriptor,
-  WalletDescriptor,
   UR,
+  WalletDescriptor,
 } from "@coral-xyz/common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import type Transport from "@ledgerhq/hw-transport";
@@ -27,10 +27,6 @@ export enum HardwareType {
   Ledger = "ledger",
 }
 
-export interface HardwareBlockchainKeyringInit extends BlockchainKeyringInit {
-  ur?: UR;
-}
-
 // We are using a hook here to generate the steps for the hardware onboard
 // component to allow these steps to be used in the middle of the RecoverAccount
 // component steps
@@ -51,7 +47,7 @@ export function useHardwareOnboardSteps({
   signMessage: string | ((publicKey: string) => string);
   signText: string;
   successComponent?: React.ReactElement;
-  onComplete: (signedWalletDescriptor: SignedWalletDescriptor) => void;
+  onComplete: (signedWalletDescriptor: SignedWalletDescriptor, hardwareType: HardwareType, ur?: UR) => void;
   nextStep: () => void;
   prevStep: () => void;
 }) {
@@ -185,14 +181,15 @@ export function useHardwareOnboardSteps({
             }
             text={signText}
             ur={ur}
-            onNext={(signature: string, xfp?: string) => {
-              onComplete({
-                ...walletDescriptor,
-                signature,
-                keyringType: hardwareType,
-                xfp,
+            onNext={(signature: string) => {
+              onComplete(
+                {
+                  ...walletDescriptor,
+                  signature,
+                },
+                hardwareType,
                 ur,
-              });
+              );
               if (successComponent) {
                 nextStep();
               }
@@ -226,7 +223,7 @@ export function HardwareOnboard({
   signMessage: string | ((publicKey: string) => string);
   signText: string;
   successComponent?: React.ReactElement;
-  onComplete: (signedWalletDescriptor: SignedWalletDescriptor) => void;
+  onComplete: (signedWalletDescriptor: SignedWalletDescriptor, hardwareType: HardwareType, ur?: UR) => void;
   onClose?: () => void;
 }) {
   const theme = useCustomTheme();
