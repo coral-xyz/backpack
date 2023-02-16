@@ -203,48 +203,50 @@ export const WalletDetail: React.FC<{
         <SettingsList menuItems={secrets} />
       )}
       {!isLastRecoverable && <SettingsList menuItems={removeWallet} />}
-      <div
-        style={{
-          padding: "16px",
-        }}
-      >
-        <PrimaryButton
-          fullWidth
-          label={isPrimary ? "This is your primary wallet" : "Set as primary"}
-          disabled={isPrimary}
-          onClick={async () => {
-            await fetch(`${BACKEND_API_URL}/users/activePubkey`, {
-              method: "POST",
-              body: JSON.stringify({
-                publicKey: publicKey,
-              }),
-              headers: {
-                "Content-Type": "application/json",
-              },
-            });
-            setServerPublicKeys((current) =>
-              current.map((c) => {
-                if (c.blockchain !== blockchain) {
-                  return c;
-                }
-                if (c.primary && c.publicKey !== publicKey) {
-                  return {
-                    ...c,
-                    primary: false,
-                  };
-                }
-                if (c.publicKey === publicKey) {
-                  return {
-                    ...c,
-                    primary: true,
-                  };
-                }
-                return c;
-              })
-            );
+      {type !== "imported" && (
+        <div
+          style={{
+            padding: "16px",
           }}
-        />
-      </div>
+        >
+          <PrimaryButton
+            fullWidth
+            label={isPrimary ? "This is your primary wallet" : "Set as primary"}
+            disabled={isPrimary}
+            onClick={async () => {
+              await fetch(`${BACKEND_API_URL}/users/activePubkey`, {
+                method: "POST",
+                body: JSON.stringify({
+                  publicKey: publicKey,
+                }),
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              });
+              setServerPublicKeys((current) =>
+                current.map((c) => {
+                  if (c.blockchain !== blockchain) {
+                    return c;
+                  }
+                  if (c.primary && c.publicKey !== publicKey) {
+                    return {
+                      ...c,
+                      primary: false,
+                    };
+                  }
+                  if (c.publicKey === publicKey) {
+                    return {
+                      ...c,
+                      primary: true,
+                    };
+                  }
+                  return c;
+                })
+              );
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 };
