@@ -56,7 +56,6 @@ export const useAuthentication = () => {
       });
     } catch (error: any) {
       // Relock if authentication failed
-      console.log(error.toString());
       if (error.toString().includes("user not authenticated")) {
         // 403
         return null;
