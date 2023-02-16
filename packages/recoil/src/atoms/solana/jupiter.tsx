@@ -1,26 +1,23 @@
-import {
-  Blockchain,
-  SOL_NATIVE_MINT,
-  SWAP_FEES_ENABLED,
-  WSOL_MINT,
-} from "@coral-xyz/common";
+import { Blockchain, SOL_NATIVE_MINT, WSOL_MINT } from "@coral-xyz/common";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { selector, selectorFamily } from "recoil";
 
 import type { TokenDataWithBalance } from "../../types";
 import { blockchainBalancesSorted } from "../balance";
+import { featureGates } from "../feature-gates";
 
 import { splTokenRegistry } from "./token-registry";
 
-export const JUPITER_BASE_URL = SWAP_FEES_ENABLED
-  ? "https://jupiter.xnfts.dev/v4/"
-  : "https://quote-api.jup.ag/v4/";
+export const jupiterUrl = (useProxy: boolean) =>
+  useProxy ? "https://jupiter.xnfts.dev/v4/" : "https://quote-api.jup.ag/v4/";
 
 // Load the route map from the Jupiter API
 export const jupiterRouteMap = selector({
   key: "jupiterRouteMap",
-  get: async () => {
+  get: async ({ get }) => {
     try {
+      const JUPITER_BASE_URL = jupiterUrl(get(featureGates).SWAP_FEES_ENABLED);
+
       const response = await (
         await fetch(
           `${JUPITER_BASE_URL}indexed-route-map?onlyDirectRoutes=true`
