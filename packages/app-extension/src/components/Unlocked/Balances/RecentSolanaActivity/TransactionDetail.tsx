@@ -325,14 +325,13 @@ function DetailCardHeader({
   }
 
   // if NFT url available, display it. Check on-chain data first
-  const nftImage = undefined;
-  // FIXME: metadata?.onChainMetadata?.metadata?.data?.uri || metadata?.offChainData?.image;
+  const nftImage = undefined; // FIXME: metadata?.onChainMetadata?.metadata?.data?.uri;
 
   const nftPrice = transaction?.events?.nft?.amount
     ? transaction?.events?.nft?.amount / 10 ** 9
     : null;
 
-  if (isNFTTransaction(transaction) && nftImage) {
+  if (isNFTTransaction(transaction) && nftImage && nftImage !== "") {
     return (
       <>
         <img className={classes.nft} src={nftImage} />
@@ -389,16 +388,12 @@ function DetailCardHeader({
       );
     }
     // other SPL token Transfer. Check tokenRegistry first, then Helius metadata
-    const transferIcon = undefined;
-    //   FIXME: tokenData[0]?.logoURI ||
-    //   metadata?.onChaindata?.data?.uri ||
-    //   metadata?.offChainData?.image;
+    const transferIcon = tokenData[0]?.logoURI; // FIXME: || metadata?.onChainMetadata?.metadata?.data?.uri;
 
     const transferSymbol =
       tokenData[0]?.symbol || metadata?.onChainMetadata?.metadata?.data?.symbol;
-    // FIXME: || metadata?.offChainData?.symbol;
 
-    if (transferIcon) {
+    if (transferIcon && transferIcon !== "") {
       return (
         <>
           <img className={classes.tokenLogo} src={transferIcon} />

@@ -1,5 +1,5 @@
 import { SOL_NATIVE_MINT } from "@coral-xyz/common";
-import { useActiveWallet, useSplTokenRegistry } from "@coral-xyz/recoil";
+import { useSplTokenRegistry } from "@coral-xyz/recoil";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { NftEventTypes, Source, TransactionType } from "helius-sdk/dist/types";
 
@@ -106,7 +106,7 @@ export function getTransactionTitle(
       return "Burned";
     case TransactionType.TRANSFER:
       // send/receive NFT's are returned as TransactionType.TRANSFER
-      const nftName = metadata?.onChainMetadata?.metadata?.data?.name; // FIXME: || metadata?.offChainData?.name;
+      const nftName = metadata?.onChainMetadata?.metadata?.data?.name;
       if (isNFTTransaction(transaction) && nftName) {
         return nftName;
       } else if (isUserTxnSender(transaction, activeWallet)) {
@@ -119,7 +119,7 @@ export function getTransactionTitle(
     case TransactionType.SWAP:
       return "Token Swap";
     case TransactionType.NFT_MINT: {
-      const nftName = metadata?.onChainMetadata?.metadata?.data?.name; // FIXME: || metadata?.offChainData?.name;
+      const nftName = metadata?.onChainMetadata?.metadata?.data?.name;
       return `Minted: ${nftName}`;
     }
     default:
@@ -130,7 +130,6 @@ export function getTransactionTitle(
       // TODO: test this case to see if it is necessary
       const nonTransferNftName =
         metadata?.onChainMetadata?.metadata?.data?.name;
-      // FIXME: || metadata?.offChainData?.name;
 
       if (isNFTTransaction(transaction) && nonTransferNftName) {
         return nonTransferNftName;
