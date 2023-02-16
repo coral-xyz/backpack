@@ -2,8 +2,8 @@ export const redirect = async (urlString: string) => {
   const tab: chrome.tabs.Tab = await getCurrentTab();
 
   if (tab !== undefined && urlString !== undefined) {
-    chrome.tabs.update(tab.id || chrome.tabs.TAB_ID_NONE, {
-      url: `./redirect.html?domainUrl=${urlString}`,
+    await chrome.tabs.update(tab.id || chrome.tabs.TAB_ID_NONE, {
+      url: `./redirect.html?domain=${urlString}`,
     });
   }
 };

@@ -21,7 +21,7 @@ chrome.webNavigation.onBeforeNavigate.addListener(
 chrome.webNavigation.onBeforeNavigate.addListener(
   async (details) => {
     const domainUrl = new URL(details.url).searchParams.get("q");
-    if (domainUrl) await redirect(domainUrl);
+    if (domainUrl && domainUrl.indexOf(" ") < 0) await redirect(domainUrl);
   },
   {
     url: supportedDomains.flatMap((param) =>

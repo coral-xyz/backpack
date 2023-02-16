@@ -4,7 +4,7 @@ import * as dnsResolver from "./supportedNetworkDomains";
 
 async function main() {
   // Extract the domainUrl search parameter
-  const domain = new URL(window.location.href).searchParams.get("domainUrl");
+  const domain = new URL(window.location.href).searchParams.get("domain");
   if (!domain) {
     return;
   }
