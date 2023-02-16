@@ -212,7 +212,7 @@ export const WalletDetail: React.FC<{
           <PrimaryButton
             fullWidth
             label={isPrimary ? "This is your primary wallet" : "Set as primary"}
-            disabled={isPrimary}
+            disabled={isPrimary || type === "dehydrated"}
             onClick={async () => {
               await fetch(`${BACKEND_API_URL}/users/activePubkey`, {
                 method: "POST",
