@@ -1,5 +1,4 @@
-import { SOL_NATIVE_MINT } from "@coral-xyz/common";
-import { useSplTokenRegistry } from "@coral-xyz/recoil";
+import { WSOL_MINT } from "@coral-xyz/common";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { NftEventTypes, Source, TransactionType } from "helius-sdk/dist/types";
 
@@ -268,10 +267,9 @@ export const getTransactionCaption = (
 };
 
 export const getTokenData = (
+  registry: Map<string, TokenInfo>,
   transaction: HeliusParsedTransaction
 ): (TokenInfo | undefined)[] => {
-  const tokenRegistry = useSplTokenRegistry();
-
   let tokenData: (TokenInfo | undefined)[] = [];
 
   if (transaction.type === TransactionType.SWAP) {
@@ -280,26 +278,26 @@ export const getTokenData = (
     const isNativeOutput = transaction.events?.swap?.nativeOutput;
 
     const tokenInput = isNativeInput
-      ? SOL_NATIVE_MINT
+      ? WSOL_MINT
       : transaction.events?.swap?.tokenInputs?.[0]?.mint ||
         transaction.tokenTransfers?.[0]?.mint;
 
     const tokenOutput = isNativeOutput
-      ? SOL_NATIVE_MINT
+      ? WSOL_MINT
       : transaction.events?.swap?.tokenOutputs?.[0]?.mint ||
         transaction.tokenTransfers?.[1]?.mint;
 
-    if (tokenInput && tokenRegistry.get(tokenInput)) {
-      tokenData.push(tokenRegistry.get(tokenInput));
+    if (tokenInput && registry.get(tokenInput)) {
+      tokenData.push(registry.get(tokenInput));
     }
 
-    if (tokenOutput && tokenRegistry.get(tokenOutput)) {
-      tokenData.push(tokenRegistry.get(tokenOutput));
+    if (tokenOutput && registry.get(tokenOutput)) {
+      tokenData.push(registry.get(tokenOutput));
     }
   } else if (transaction.type === TransactionType.TRANSFER) {
     const transferredToken = transaction.tokenTransfers?.[0]?.mint;
-    if (transferredToken && tokenRegistry.get(transferredToken)) {
-      tokenData.push(tokenRegistry.get(transferredToken));
+    if (transferredToken && registry.get(transferredToken)) {
+      tokenData.push(registry.get(transferredToken));
     }
   }
 

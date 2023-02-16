@@ -14,6 +14,10 @@ export function useJupiterTokenList(): Array<TokenInfo> {
   return useRecoilValue(atoms.jupiterTokenList);
 }
 
+export function useJupiterTokenMap(): Map<string, TokenInfo> {
+  return useRecoilValue(atoms.jupiterTokenMap);
+}
+
 export function useJupiterOutputTokens(inputMint: string): Array<TokenData> {
   return useRecoilValue(atoms.jupiterOutputTokens({ inputMint }));
 }
