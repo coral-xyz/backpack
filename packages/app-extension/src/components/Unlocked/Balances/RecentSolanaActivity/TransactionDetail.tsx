@@ -286,7 +286,7 @@ function DetailCardHeader({
               " " +
               tokenData[0]?.symbol ||
               getTruncatedAddress(transaction?.tokenTransfers?.[0]?.mint) ||
-              "UNKWN"}
+              "UNK"}
           </div>
         </div>
 
@@ -321,7 +321,7 @@ function DetailCardHeader({
               " " +
               tokenData[1]?.symbol ||
               getTruncatedAddress(transaction?.tokenTransfers?.[0]?.mint) ||
-              "UNKWN"}
+              "UNK"}
           </div>
         </div>
       </div>
@@ -552,7 +552,7 @@ function DetailTable({
                   " " +
                   tokenData[1]?.symbol ||
                   getTruncatedAddress(transaction?.tokenTransfers?.[0]?.mint) ||
-                  "UNKWN"}
+                  "UNK"}
               </div>
             </div>
           </div>

@@ -2,7 +2,18 @@ import { WSOL_MINT } from "@coral-xyz/common";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { NftEventTypes, Source, TransactionType } from "helius-sdk/dist/types";
 
+import { UNKNOWN_ICON_SRC } from "../../../common/Icon";
+
 import type { HeliusParsedTransaction } from "./types";
+
+const unknownTokenInfo = (mint: string): TokenInfo => ({
+  address: mint,
+  chainId: 0,
+  decimals: 0,
+  logoURI: UNKNOWN_ICON_SRC,
+  name: "Unknown",
+  symbol: "UNK",
+});
 
 export const isNFTTransaction = (
   transaction: HeliusParsedTransaction
@@ -288,11 +299,13 @@ export const getTokenData = (
         transaction.tokenTransfers?.[1]?.mint;
 
     if (tokenInput && registry.get(tokenInput)) {
-      tokenData.push(registry.get(tokenInput));
+      tokenData.push(registry.get(tokenInput) ?? unknownTokenInfo(tokenInput));
     }
 
     if (tokenOutput && registry.get(tokenOutput)) {
-      tokenData.push(registry.get(tokenOutput));
+      tokenData.push(
+        registry.get(tokenOutput) ?? unknownTokenInfo(tokenOutput)
+      );
     }
   } else if (transaction.type === TransactionType.TRANSFER) {
     const transferredToken = transaction.tokenTransfers?.[0]?.mint;
