@@ -60,7 +60,7 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
     setServerPublicKeys(null);
     (async () => {
       setClientPublicKeys(await getSigners());
-      const result = await checkAuthentication(user.jwt);
+      const result = user.jwt ? await checkAuthentication(user.jwt) : null;
       // These set state calls should be batched
       if (result) {
         const { publicKeys } = result;
