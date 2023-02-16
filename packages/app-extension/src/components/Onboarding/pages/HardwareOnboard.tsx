@@ -14,6 +14,7 @@ import { ImportWallets } from "../../common/Account/ImportWallets";
 import { CloseButton } from "../../common/Layout/Drawer";
 import { NavBackButton, WithNav } from "../../common/Layout/Nav";
 import { ConnectHardwareKeystone } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareKeystone";
+import { ConnectHardwareKeystoneSign } from '../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareKeystoneSign';
 import { ConnectHardwareKeystoneTutorial } from '../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareKeystoneTutorial';
 import { ConnectHardwareSearching } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareSearching";
 import { ConnectHardwareWelcome } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareWelcome";
@@ -22,7 +23,6 @@ import { HardwareDefaultWallet } from "./HardwareDefaultWallet";
 import { HardwareDeriveWallet } from "./HardwareDeriveWallet";
 import { HardwareSearchWallet } from "./HardwareSearchWallet";
 import { HardwareSign } from "./HardwareSign";
-import { KeystoneSign } from './KeystoneSign';
 
 export enum HardwareType {
   Keystone = "keystone",
@@ -68,7 +68,7 @@ export function useHardwareOnboardSteps({
     nextStep();
   }, [nextStep]);
 
-  const SignMessage = hardwareType === HardwareType.Ledger ? HardwareSign : KeystoneSign;
+  const SignMessage = hardwareType === HardwareType.Ledger ? HardwareSign : ConnectHardwareKeystoneSign;
 
   const accountAction = hardwareType === HardwareType.Keystone ? 'import' : action;
 
@@ -92,6 +92,7 @@ export function useHardwareOnboardSteps({
       [
         <ConnectHardwareKeystoneTutorial onNext={nextStep} />,
         <ConnectHardwareKeystone
+          containerRef={containerRef}
           blockchain={blockchain}
           onNext={(ur: UR) => {
             setUR(ur);
@@ -181,6 +182,7 @@ export function useHardwareOnboardSteps({
       ? [
           // Sign the found wallet descriptor for API submit
           <SignMessage
+            containerRef={containerRef}
             blockchain={blockchain}
             walletDescriptor={walletDescriptor}
             message={

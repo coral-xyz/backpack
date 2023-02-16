@@ -1,10 +1,11 @@
 import type { MutableRefObject} from 'react';
 import { useState } from 'react';
+import { SecondaryButton } from '@coral-xyz/react-common';
 import { useCustomTheme } from '@coral-xyz/themes';
-import { Box, Button, Stack, SvgIcon } from "@mui/material";
+import { Box, Link, Stack, SvgIcon } from "@mui/material";
 
 import { Header, SubtextParagraph } from "../../../../common";
-import { KeystoneIcon, USBIcon } from '../../../../common/Icon';
+import { KeystoneIcon, KeystoneWithQRIcon, USBIcon } from '../../../../common/Icon';
 import { ActionCard } from '../../../../common/Layout/ActionCard';
 import { WithContaineredDrawer } from '../../../../common/Layout/Drawer';
 import { HardwareType } from "../../../../Onboarding/pages/HardwareOnboard";
@@ -41,7 +42,7 @@ export function ConnectHardwareWelcome({
             direction="row"
           />
           <ActionCard
-            icon={<KeystoneIcon />}
+            icon={<KeystoneWithQRIcon />}
             text="Keystone"
             textAdornment={
               <SvgIcon
@@ -74,23 +75,43 @@ export function ConnectHardwareWelcome({
       </Box>
       <WithContaineredDrawer
         containerRef={containerRef}
-        backdropStyles={{
-          background: "rgba(4, 10, 24, 0.4)",
-        }}
         openDrawer={isKeystoneIntroOpen}
         setOpenDrawer={setIsKeystoneIntroOpen}
+        paperStyles={{
+          background: "transparent",
+        }}
       >
-        <Box p={2} sx={{
+        <Box sx={{
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          background: "#fff",
           borderRadius: "12px",
+          background: theme.custom.colors.backgroundBackdrop,
+          padding: "34px 16px 16px",
         }}>
-          <KeystoneIcon />
-          <Box>Keystone is a top-notch hardware wallet for optimal security, user-friendly interface and extensive compatibility.</Box>
-          <Box>learn more</Box>
-          <Button onClick={() => setIsKeystoneIntroOpen(false)}>OK</Button>
+          <KeystoneIcon width='48' height='48' />
+          <Box
+            m="20px 0 12px"
+            textAlign="center"
+            fontSize="14px"
+            color={theme.custom.colors.fontColor}
+          >
+            Keystone is a top-notch hardware wallet for optimal security, user-friendly interface and extensive compatibility.
+          </Box>
+          <Link
+            href="https://keyst.one/"
+            target="_blank"
+            sx={{
+              color: theme.custom.colors.fontColor3,
+              textDecorationColor: theme.custom.colors.fontColor3,
+              marginBottom: "16px",
+              fontSize: "14px",
+            }}
+          >Learn more</Link>
+          <SecondaryButton
+            label='OK'
+            onClick={() => setIsKeystoneIntroOpen(false)}
+          />
         </Box>
       </WithContaineredDrawer>
     </Box>
