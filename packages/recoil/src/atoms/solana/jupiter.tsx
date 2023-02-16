@@ -1,7 +1,7 @@
 import {
-  BACKPACK_FEATURE_REFERRAL_FEES,
   Blockchain,
   SOL_NATIVE_MINT,
+  SWAP_FEES_ENABLED,
   WSOL_MINT,
 } from "@coral-xyz/common";
 import type { TokenInfo } from "@solana/spl-token-registry";
@@ -12,7 +12,7 @@ import { blockchainBalancesSorted } from "../balance";
 
 import { splTokenRegistry } from "./token-registry";
 
-export const JUPITER_BASE_URL = BACKPACK_FEATURE_REFERRAL_FEES
+export const JUPITER_BASE_URL = SWAP_FEES_ENABLED
   ? "https://jupiter.xnfts.dev/v4/"
   : "https://quote-api.jup.ag/v4/";
 

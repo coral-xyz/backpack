@@ -1,10 +1,10 @@
 import {
   BACKPACK_CONFIG_XNFT_PROXY,
-  BACKPACK_FEATURE_REFERRAL_FEES,
   Blockchain,
   DEFAULT_PUBKEY_STR,
   fetchXnfts,
   SIMULATOR_PORT,
+  SWAP_FEES_ENABLED,
   XNFT_PROGRAM_ID,
 } from "@coral-xyz/common";
 import { externalResourceUri } from "@coral-xyz/common-public";
@@ -135,7 +135,7 @@ export const xnfts = atomFamily<
           return [];
         }
         const isDropzoneWallet =
-          BACKPACK_FEATURE_REFERRAL_FEES &&
+          SWAP_FEES_ENABLED &&
           get(primaryWallets).some(
             (w) =>
               w.blockchain === Blockchain.SOLANA && w.publicKey === publicKey
