@@ -88,7 +88,7 @@ export function AddConnectPreview() {
           }}
         >
           This connection will be public, so if you'd prefer to create a
-          separate wallet, create a new account.
+          separate identity, create a new account.
         </Typography>
       </div>
       <div

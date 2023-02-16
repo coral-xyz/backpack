@@ -482,7 +482,7 @@ function _WalletList({
                 Disabled app signing
               </Typography>
               <Tooltip
-                placement="right"
+                placement="bottom"
                 arrow
                 title={"These wallets can't sign for apps."}
                 componentsProps={{

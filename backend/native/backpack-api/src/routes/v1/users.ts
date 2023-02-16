@@ -244,8 +244,7 @@ router.get("/:username", async (req: Request, res: Response) => {
     const user = await getUserByUsername(username);
     return res.json({
       id: user.id,
-      // Only expose primary public keys publicly for sending to username
-      publicKeys: user.publicKeys.filter((k) => k.primary),
+      publicKeys: user.publicKeys, // .filter((k) => k.primary),
     });
   } catch (error) {
     console.error(error);

@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { isFirstLastListItemStyle } from "@coral-xyz/react-common";
 import {
   metadataForRecentSolanaTransaction,
@@ -192,8 +191,7 @@ function RecentActivityListItemIcon({
   }
 
   // if NFT url available, display it. Check on-chain data first
-  const nftImage = undefined;
-  // TODO: metadata?.onChaindata?.data?.uri || metadata?.offChainData?.image;
+  const nftImage = undefined; // FIXME: metadata?.onChainMetadata?.metadata?.data?.uri;
 
   if (isNFTTransaction(transaction) && nftImage) {
     return <ListItemIcons.NFT nftUrl={nftImage} />;
@@ -206,21 +204,21 @@ function RecentActivityListItemIcon({
     }
 
     // other SPL token Transfer. Check tokenRegistry first, then Helius metadata
-    const transferIcon = undefined;
-    // FIXME: tokenData[0]?.logoURI ||
-    // metadata?.onChaindata?.data?.uri ||
-    // metadata?.offChainData?.image;
+    const transferIcon = tokenData[0]?.logoURI; // FIXME: metadata offchain image
 
-    if (transferIcon)
+    if (transferIcon) {
       return <ListItemIcons.TRANSFER tokenLogo={transferIcon} />;
+    }
 
     // if it is an NFT transfer and no NFT image was found above, show default Icon
     if (transaction?.tokenTransfers?.[0]?.tokenStandard === "NonFungible") {
       return <ListItemIcons.NFT_DEFAULT />;
     }
     // default
-    if (isUserTxnSender(transaction, activeWallet))
+    if (isUserTxnSender(transaction, activeWallet)) {
       return <ListItemIcons.SENT />;
+    }
+
     return <ListItemIcons.RECEIVED />;
   }
 
@@ -311,7 +309,6 @@ function RecentActivityListItemData({
             " " +
             (tokenData[0]?.symbol ||
               metadata?.onChainMetadata?.metadata?.data?.symbol ||
-              metadata?.offChainData?.symbol ||
               "")}
         </div>
       );
@@ -335,7 +332,6 @@ function RecentActivityListItemData({
             " " +
             (tokenData[0]?.symbol ||
               metadata?.onChainMetadata?.metadata?.data?.symbol ||
-              metadata?.offChainData?.symbol ||
               "")}
         </div>
       );

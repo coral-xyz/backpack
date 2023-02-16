@@ -1381,7 +1381,18 @@ export class Backend {
       },
     });
     if (response.status !== 200) throw new Error(`could not authenticate`);
-    return await response.json();
+
+    const json = await response.json();
+
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_USER_ACCOUNT_AUTHENTICATED,
+      data: {
+        username: json.username,
+        uuid: json.id,
+      },
+    });
+
+    return json;
   }
 
   /**
@@ -1465,15 +1476,13 @@ export class Backend {
 
     const json = await response.json();
 
-    if (json.isAuthenticated) {
-      this.events.emit(BACKEND_EVENT, {
-        name: NOTIFICATION_USER_ACCOUNT_AUTHENTICATED,
-        data: {
-          username: json.username,
-          uuid: json.id,
-        },
-      });
-    }
+    this.events.emit(BACKEND_EVENT, {
+      name: NOTIFICATION_USER_ACCOUNT_AUTHENTICATED,
+      data: {
+        username: json.username,
+        uuid: json.id,
+      },
+    });
 
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_USER_ACCOUNT_PUBLIC_KEYS_UPDATED,
