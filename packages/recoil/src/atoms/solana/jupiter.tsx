@@ -38,7 +38,7 @@ export const jupiterRouteMap = selector({
   },
 });
 
-export const jupiterTokenList = selector({
+export const jupiterTokenList = selector<TokenInfo[]>({
   key: "jupiterTokenList",
   get: async () => {
     try {
@@ -47,6 +47,18 @@ export const jupiterTokenList = selector({
       console.log("failed to load Jupiter token list", e);
       return {};
     }
+  },
+});
+
+export const jupiterTokenMap = selector<Map<string, TokenInfo>>({
+  key: "jupterTokenMap",
+  get: ({ get }) => {
+    const tokens = get(jupiterTokenList);
+    const m = new Map();
+    for (const t of tokens) {
+      m.set(t.address, t);
+    }
+    return m;
   },
 });
 
