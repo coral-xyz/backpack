@@ -3,18 +3,32 @@
 export const AllTypesProps: Record<string, any> = {
   Int_comparison_exp: {},
   String_comparison_exp: {},
+  barters: {
+    room_active_chat_mappings: {
+      distinct_on: "room_active_chat_mapping_select_column",
+      order_by: "room_active_chat_mapping_order_by",
+      where: "room_active_chat_mapping_bool_exp",
+    },
+  },
   barters_bool_exp: {
     _and: "barters_bool_exp",
     _not: "barters_bool_exp",
     _or: "barters_bool_exp",
     id: "Int_comparison_exp",
+    room_active_chat_mappings: "room_active_chat_mapping_bool_exp",
     state: "String_comparison_exp",
     user1_offers: "String_comparison_exp",
     user2_offers: "String_comparison_exp",
   },
   barters_constraint: "enum" as const,
   barters_inc_input: {},
-  barters_insert_input: {},
+  barters_insert_input: {
+    room_active_chat_mappings: "room_active_chat_mapping_arr_rel_insert_input",
+  },
+  barters_obj_rel_insert_input: {
+    data: "barters_insert_input",
+    on_conflict: "barters_on_conflict",
+  },
   barters_on_conflict: {
     constraint: "barters_constraint",
     update_columns: "barters_update_column",
@@ -22,6 +36,8 @@ export const AllTypesProps: Record<string, any> = {
   },
   barters_order_by: {
     id: "order_by",
+    room_active_chat_mappings_aggregate:
+      "room_active_chat_mapping_aggregate_order_by",
     state: "order_by",
     user1_offers: "order_by",
     user2_offers: "order_by",
@@ -366,38 +382,91 @@ export const AllTypesProps: Record<string, any> = {
     },
     simple_transactions_by_pk: {},
   },
+  room_active_chat_mapping_aggregate_order_by: {
+    avg: "room_active_chat_mapping_avg_order_by",
+    count: "order_by",
+    max: "room_active_chat_mapping_max_order_by",
+    min: "room_active_chat_mapping_min_order_by",
+    stddev: "room_active_chat_mapping_stddev_order_by",
+    stddev_pop: "room_active_chat_mapping_stddev_pop_order_by",
+    stddev_samp: "room_active_chat_mapping_stddev_samp_order_by",
+    sum: "room_active_chat_mapping_sum_order_by",
+    var_pop: "room_active_chat_mapping_var_pop_order_by",
+    var_samp: "room_active_chat_mapping_var_samp_order_by",
+    variance: "room_active_chat_mapping_variance_order_by",
+  },
+  room_active_chat_mapping_arr_rel_insert_input: {
+    data: "room_active_chat_mapping_insert_input",
+    on_conflict: "room_active_chat_mapping_on_conflict",
+  },
+  room_active_chat_mapping_avg_order_by: {
+    barter_id: "order_by",
+  },
   room_active_chat_mapping_bool_exp: {
     _and: "room_active_chat_mapping_bool_exp",
     _not: "room_active_chat_mapping_bool_exp",
     _or: "room_active_chat_mapping_bool_exp",
+    barter: "barters_bool_exp",
     barter_id: "Int_comparison_exp",
     room_id: "String_comparison_exp",
   },
   room_active_chat_mapping_constraint: "enum" as const,
   room_active_chat_mapping_inc_input: {},
-  room_active_chat_mapping_insert_input: {},
+  room_active_chat_mapping_insert_input: {
+    barter: "barters_obj_rel_insert_input",
+  },
+  room_active_chat_mapping_max_order_by: {
+    barter_id: "order_by",
+    room_id: "order_by",
+  },
+  room_active_chat_mapping_min_order_by: {
+    barter_id: "order_by",
+    room_id: "order_by",
+  },
   room_active_chat_mapping_on_conflict: {
     constraint: "room_active_chat_mapping_constraint",
     update_columns: "room_active_chat_mapping_update_column",
     where: "room_active_chat_mapping_bool_exp",
   },
   room_active_chat_mapping_order_by: {
+    barter: "barters_order_by",
     barter_id: "order_by",
     room_id: "order_by",
   },
   room_active_chat_mapping_pk_columns_input: {},
   room_active_chat_mapping_select_column: "enum" as const,
   room_active_chat_mapping_set_input: {},
+  room_active_chat_mapping_stddev_order_by: {
+    barter_id: "order_by",
+  },
+  room_active_chat_mapping_stddev_pop_order_by: {
+    barter_id: "order_by",
+  },
+  room_active_chat_mapping_stddev_samp_order_by: {
+    barter_id: "order_by",
+  },
   room_active_chat_mapping_stream_cursor_input: {
     initial_value: "room_active_chat_mapping_stream_cursor_value_input",
     ordering: "cursor_ordering",
   },
   room_active_chat_mapping_stream_cursor_value_input: {},
+  room_active_chat_mapping_sum_order_by: {
+    barter_id: "order_by",
+  },
   room_active_chat_mapping_update_column: "enum" as const,
   room_active_chat_mapping_updates: {
     _inc: "room_active_chat_mapping_inc_input",
     _set: "room_active_chat_mapping_set_input",
     where: "room_active_chat_mapping_bool_exp",
+  },
+  room_active_chat_mapping_var_pop_order_by: {
+    barter_id: "order_by",
+  },
+  room_active_chat_mapping_var_samp_order_by: {
+    barter_id: "order_by",
+  },
+  room_active_chat_mapping_variance_order_by: {
+    barter_id: "order_by",
   },
   secure_transfer_transactions_aggregate_order_by: {
     avg: "secure_transfer_transactions_avg_order_by",
@@ -693,6 +762,7 @@ export const ReturnTypes: Record<string, any> = {
   },
   barters: {
     id: "Int",
+    room_active_chat_mappings: "room_active_chat_mapping",
     state: "String",
     user1_offers: "String",
     user2_offers: "String",
@@ -781,6 +851,7 @@ export const ReturnTypes: Record<string, any> = {
     simple_transactions_by_pk: "simple_transactions",
   },
   room_active_chat_mapping: {
+    barter: "barters",
     barter_id: "Int",
     room_id: "String",
   },
