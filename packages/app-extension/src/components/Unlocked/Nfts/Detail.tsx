@@ -23,6 +23,7 @@ import {
 import {
   appStoreMetaTags,
   collectibleXnft,
+  isOneLive,
   newAvatarAtom,
   nftById,
   useAnchorContext,
@@ -41,7 +42,11 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { Button, IconButton, Typography } from "@mui/material";
 import { PublicKey } from "@solana/web3.js";
 import { BigNumber } from "ethers";
-import { useRecoilValueLoadable, useSetRecoilState } from "recoil";
+import {
+  useRecoilValue,
+  useRecoilValueLoadable,
+  useSetRecoilState,
+} from "recoil";
 
 import { ApproveTransactionDrawer } from "../../common/ApproveTransactionDrawer";
 import {
@@ -75,6 +80,22 @@ export function NftsDetail({
 }) {
   const theme = useCustomTheme();
   const background = useBackgroundClient();
+  const onLive = useRecoilValue(isOneLive);
+  const WHITELISTED_CHAT_COLLECTIONS_WITH_OVERRIDE =
+    onLive.wlCollection &&
+    onLive.wlCollection !== "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj"
+      ? [
+          ...WHITELISTED_CHAT_COLLECTIONS,
+          {
+            id: onLive.wlCollection,
+            name: "Mad Lads WL",
+            image: "https://mad-lads-web.vercel.app/mad_lads_logo.svg",
+            collectionId: onLive.wlCollection,
+            attributeMapping: {} as any,
+          },
+        ]
+      : WHITELISTED_CHAT_COLLECTIONS;
+
   const { contents, state } = useRecoilValueLoadable(
     nftById({ publicKey, connectionUrl, nftId })
   );
@@ -86,15 +107,17 @@ export function NftsDetail({
   );
   const xnft = (xnftState === "hasValue" && xnftContents) || null;
   //@ts-ignore
-  const whitelistedChatCollection = WHITELISTED_CHAT_COLLECTIONS.find(
-    (x) => x.collectionId === nft?.metadataCollectionId
-  );
+  const whitelistedChatCollection =
+    WHITELISTED_CHAT_COLLECTIONS_WITH_OVERRIDE.find(
+      (x) => x.collectionId === nft?.metadataCollectionId
+    );
   const [chatJoined, setChatJoined] = useState(false);
   const [joiningChat, setJoiningChat] = useState(false);
+
   let whitelistedChatCollectionId = whitelistedChatCollection?.collectionId;
 
   if (whitelistedChatCollection) {
-    Object.keys(whitelistedChatCollection.attributeMapping || {}).forEach(
+    Object.keys(whitelistedChatCollection?.attributeMapping || {}).forEach(
       (attrName) => {
         if (
           !nft?.attributes?.find(
