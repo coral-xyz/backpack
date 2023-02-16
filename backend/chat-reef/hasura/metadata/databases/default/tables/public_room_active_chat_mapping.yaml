@@ -1,0 +1,25 @@
+table:
+  name: room_active_chat_mapping
+  schema: public
+insert_permissions:
+  - role: chat
+    permission:
+      check: {}
+      columns:
+        - barter_id
+        - room_id
+select_permissions:
+  - role: chat
+    permission:
+      columns:
+        - barter_id
+        - room_id
+      filter: {}
+update_permissions:
+  - role: chat
+    permission:
+      columns:
+        - barter_id
+        - room_id
+      filter: {}
+      check: null
