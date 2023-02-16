@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { Plugin, XnftPreference } from "@coral-xyz/common";
 import {
   BACKPACK_CONFIG_GITHUB_RUN_NUMBER,
@@ -12,6 +12,7 @@ import {
   useXnftJwt,
   xnftPreference as xnftPreferenceAtom,
 } from "@coral-xyz/recoil";
+import { off } from "process";
 import { useRecoilValue } from "recoil";
 
 const buildNumber = BACKPACK_FEATURE_FORCE_LATEST_VERSION
@@ -27,6 +28,7 @@ export function PluginRenderer({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const { username, uuid } = useUser();
+  const [splash, setSplash] = useState<string | null>(null);
   const isDarkMode = useDarkMode();
   const avatarUrl = useAvatarUrl(100);
   const xnftPreference = useRecoilValue(
@@ -60,6 +62,23 @@ export function PluginRenderer({
     return () => {};
   }, [plugin, ref]);
 
+  useLayoutEffect(() => {
+    const resizeHandler = () => {
+      if (ref.current) {
+        const width = ref.current.clientWidth;
+        const height = ref.current.clientHeight;
+
+        setSplash(selectSplash(plugin?.splashUrls, width, height));
+      }
+    };
+    if (ref.current) {
+      window.addEventListener("resize", resizeHandler);
+      resizeHandler();
+    }
+    return () => {
+      window.removeEventListener("resize", resizeHandler);
+    };
+  }, [ref.current]);
   useEffect(() => {
     plugin.pushAppUiMetadata({
       isDarkMode,
@@ -69,10 +88,6 @@ export function PluginRenderer({
       version: buildNumber,
     });
   }, [username, isDarkMode, avatarUrl]);
-
-  const sizes = ["lg", "md", "sm"];
-  const splashUrls = plugin.splashUrls ?? {};
-  const size = sizes.find((size) => splashUrls[size]);
 
   return (
     <div
@@ -84,10 +99,75 @@ export function PluginRenderer({
         left: "0px",
         bottom: "0px",
         right: "0px",
-        backgroundImage: size ? `url(${splashUrls[size]})` : "none",
+        backgroundImage: splash ? `url(${splash})` : "none",
         backgroundSize: "cover",
-        backgroundPosition: "center",
+        backgroundPosition: "center center",
       }}
     ></div>
   );
+}
+
+function selectSplash(
+  splashUrls: { src: string; height: number; width: number }[] | undefined,
+  width: number,
+  height: number
+): string {
+  if (!Array.isArray(splashUrls)) {
+    splashUrls = [
+      { src: "assets/defaultSplash600.svg", height: 600, width: 600 },
+      { src: "assets/defaultSplash1000.svg", height: 1000, width: 1000 },
+      { src: "assets/defaultSplash2000.svg", height: 2000, width: 2000 },
+    ];
+  }
+
+  let bestFitHeight = 0;
+  let bestFitWidth = 0;
+
+  splashUrls.forEach((splash, i) => {
+    const currentBestHeight = splashUrls![bestFitHeight].height;
+    if (
+      height <= splash.height &&
+      (splash.height < currentBestHeight || height > currentBestHeight)
+    ) {
+      bestFitHeight = i;
+    }
+
+    const currentBestWidth = splashUrls![bestFitWidth].width;
+    if (
+      width <= splash.width &&
+      (splash.width < currentBestWidth || width > currentBestWidth)
+    ) {
+      bestFitWidth = i;
+    }
+  });
+
+  const heightSplash = splashUrls[bestFitHeight];
+  const widthSplash = splashUrls[bestFitWidth];
+
+  console.log(heightSplash, widthSplash, height, width);
+
+  // if both are valid options -> return smaller one
+  if (heightSplash.width > width && widthSplash.height > height) {
+    if (
+      heightSplash.height * heightSplash.width >
+      widthSplash.height * widthSplash.width
+    ) {
+      return widthSplash.src;
+    } else {
+      return heightSplash.src;
+    }
+  }
+
+  // only height valid
+  if (heightSplash.width > width) {
+    return heightSplash.src;
+  }
+
+  // only width valid
+  if (widthSplash.height > height) {
+    return widthSplash.src;
+  }
+
+  // if none are valid -> go for height.
+  return heightSplash.src;
 }
