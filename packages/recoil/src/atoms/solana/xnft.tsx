@@ -18,18 +18,7 @@ import { activePublicKeys } from "../wallet";
 
 import { anchorContext } from "./wallet";
 
-//
-// Private dev plugins.
-//
 export const SIMULATOR_URL = `http://localhost:${SIMULATOR_PORT}`;
-
-//
-// xnft-program-library
-//
-
-//
-// Cached bundle proxy.
-//
 
 export const appStoreMetaTags = selectorFamily<
   { name?: string; description?: string; image?: string },
