@@ -3,6 +3,43 @@
 export const AllTypesProps: Record<string, any> = {
   Int_comparison_exp: {},
   String_comparison_exp: {},
+  barters_bool_exp: {
+    _and: "barters_bool_exp",
+    _not: "barters_bool_exp",
+    _or: "barters_bool_exp",
+    id: "Int_comparison_exp",
+    state: "String_comparison_exp",
+    user1_offers: "String_comparison_exp",
+    user2_offers: "String_comparison_exp",
+  },
+  barters_constraint: "enum" as const,
+  barters_inc_input: {},
+  barters_insert_input: {},
+  barters_on_conflict: {
+    constraint: "barters_constraint",
+    update_columns: "barters_update_column",
+    where: "barters_bool_exp",
+  },
+  barters_order_by: {
+    id: "order_by",
+    state: "order_by",
+    user1_offers: "order_by",
+    user2_offers: "order_by",
+  },
+  barters_pk_columns_input: {},
+  barters_select_column: "enum" as const,
+  barters_set_input: {},
+  barters_stream_cursor_input: {
+    initial_value: "barters_stream_cursor_value_input",
+    ordering: "cursor_ordering",
+  },
+  barters_stream_cursor_value_input: {},
+  barters_update_column: "enum" as const,
+  barters_updates: {
+    _inc: "barters_inc_input",
+    _set: "barters_set_input",
+    where: "barters_bool_exp",
+  },
   chat_media_messages_aggregate_order_by: {
     avg: "chat_media_messages_avg_order_by",
     count: "order_by",
@@ -176,6 +213,14 @@ export const AllTypesProps: Record<string, any> = {
   chats_update_column: "enum" as const,
   cursor_ordering: "enum" as const,
   mutation_root: {
+    insert_barters: {
+      objects: "barters_insert_input",
+      on_conflict: "barters_on_conflict",
+    },
+    insert_barters_one: {
+      object: "barters_insert_input",
+      on_conflict: "barters_on_conflict",
+    },
     insert_chat_media_messages: {
       objects: "chat_media_messages_insert_input",
       on_conflict: "chat_media_messages_on_conflict",
@@ -191,6 +236,14 @@ export const AllTypesProps: Record<string, any> = {
     insert_chats_one: {
       object: "chats_insert_input",
       on_conflict: "chats_on_conflict",
+    },
+    insert_room_active_chat_mapping: {
+      objects: "room_active_chat_mapping_insert_input",
+      on_conflict: "room_active_chat_mapping_on_conflict",
+    },
+    insert_room_active_chat_mapping_one: {
+      object: "room_active_chat_mapping_insert_input",
+      on_conflict: "room_active_chat_mapping_on_conflict",
     },
     insert_secure_transfer_transactions: {
       objects: "secure_transfer_transactions_insert_input",
@@ -208,6 +261,19 @@ export const AllTypesProps: Record<string, any> = {
       object: "simple_transactions_insert_input",
       on_conflict: "simple_transactions_on_conflict",
     },
+    update_barters: {
+      _inc: "barters_inc_input",
+      _set: "barters_set_input",
+      where: "barters_bool_exp",
+    },
+    update_barters_by_pk: {
+      _inc: "barters_inc_input",
+      _set: "barters_set_input",
+      pk_columns: "barters_pk_columns_input",
+    },
+    update_barters_many: {
+      updates: "barters_updates",
+    },
     update_chat_media_messages: {
       _inc: "chat_media_messages_inc_input",
       _set: "chat_media_messages_set_input",
@@ -220,6 +286,19 @@ export const AllTypesProps: Record<string, any> = {
     },
     update_chat_media_messages_many: {
       updates: "chat_media_messages_updates",
+    },
+    update_room_active_chat_mapping: {
+      _inc: "room_active_chat_mapping_inc_input",
+      _set: "room_active_chat_mapping_set_input",
+      where: "room_active_chat_mapping_bool_exp",
+    },
+    update_room_active_chat_mapping_by_pk: {
+      _inc: "room_active_chat_mapping_inc_input",
+      _set: "room_active_chat_mapping_set_input",
+      pk_columns: "room_active_chat_mapping_pk_columns_input",
+    },
+    update_room_active_chat_mapping_many: {
+      updates: "room_active_chat_mapping_updates",
     },
     update_secure_transfer_transactions: {
       _inc: "secure_transfer_transactions_inc_input",
@@ -250,6 +329,12 @@ export const AllTypesProps: Record<string, any> = {
   },
   order_by: "enum" as const,
   query_root: {
+    barters: {
+      distinct_on: "barters_select_column",
+      order_by: "barters_order_by",
+      where: "barters_bool_exp",
+    },
+    barters_by_pk: {},
     chat_media_messages: {
       distinct_on: "chat_media_messages_select_column",
       order_by: "chat_media_messages_order_by",
@@ -262,6 +347,12 @@ export const AllTypesProps: Record<string, any> = {
       where: "chats_bool_exp",
     },
     chats_by_pk: {},
+    room_active_chat_mapping: {
+      distinct_on: "room_active_chat_mapping_select_column",
+      order_by: "room_active_chat_mapping_order_by",
+      where: "room_active_chat_mapping_bool_exp",
+    },
+    room_active_chat_mapping_by_pk: {},
     secure_transfer_transactions: {
       distinct_on: "secure_transfer_transactions_select_column",
       order_by: "secure_transfer_transactions_order_by",
@@ -274,6 +365,39 @@ export const AllTypesProps: Record<string, any> = {
       where: "simple_transactions_bool_exp",
     },
     simple_transactions_by_pk: {},
+  },
+  room_active_chat_mapping_bool_exp: {
+    _and: "room_active_chat_mapping_bool_exp",
+    _not: "room_active_chat_mapping_bool_exp",
+    _or: "room_active_chat_mapping_bool_exp",
+    barter_id: "Int_comparison_exp",
+    room_id: "String_comparison_exp",
+  },
+  room_active_chat_mapping_constraint: "enum" as const,
+  room_active_chat_mapping_inc_input: {},
+  room_active_chat_mapping_insert_input: {},
+  room_active_chat_mapping_on_conflict: {
+    constraint: "room_active_chat_mapping_constraint",
+    update_columns: "room_active_chat_mapping_update_column",
+    where: "room_active_chat_mapping_bool_exp",
+  },
+  room_active_chat_mapping_order_by: {
+    barter_id: "order_by",
+    room_id: "order_by",
+  },
+  room_active_chat_mapping_pk_columns_input: {},
+  room_active_chat_mapping_select_column: "enum" as const,
+  room_active_chat_mapping_set_input: {},
+  room_active_chat_mapping_stream_cursor_input: {
+    initial_value: "room_active_chat_mapping_stream_cursor_value_input",
+    ordering: "cursor_ordering",
+  },
+  room_active_chat_mapping_stream_cursor_value_input: {},
+  room_active_chat_mapping_update_column: "enum" as const,
+  room_active_chat_mapping_updates: {
+    _inc: "room_active_chat_mapping_inc_input",
+    _set: "room_active_chat_mapping_set_input",
+    where: "room_active_chat_mapping_bool_exp",
   },
   secure_transfer_transactions_aggregate_order_by: {
     avg: "secure_transfer_transactions_avg_order_by",
@@ -488,6 +612,16 @@ export const AllTypesProps: Record<string, any> = {
     id: "order_by",
   },
   subscription_root: {
+    barters: {
+      distinct_on: "barters_select_column",
+      order_by: "barters_order_by",
+      where: "barters_bool_exp",
+    },
+    barters_by_pk: {},
+    barters_stream: {
+      cursor: "barters_stream_cursor_input",
+      where: "barters_bool_exp",
+    },
     chat_media_messages: {
       distinct_on: "chat_media_messages_select_column",
       order_by: "chat_media_messages_order_by",
@@ -507,6 +641,16 @@ export const AllTypesProps: Record<string, any> = {
     chats_stream: {
       cursor: "chats_stream_cursor_input",
       where: "chats_bool_exp",
+    },
+    room_active_chat_mapping: {
+      distinct_on: "room_active_chat_mapping_select_column",
+      order_by: "room_active_chat_mapping_order_by",
+      where: "room_active_chat_mapping_bool_exp",
+    },
+    room_active_chat_mapping_by_pk: {},
+    room_active_chat_mapping_stream: {
+      cursor: "room_active_chat_mapping_stream_cursor_input",
+      where: "room_active_chat_mapping_bool_exp",
     },
     secure_transfer_transactions: {
       distinct_on: "secure_transfer_transactions_select_column",
@@ -547,6 +691,16 @@ export const ReturnTypes: Record<string, any> = {
     ttl: "Int",
     refresh: "Boolean",
   },
+  barters: {
+    id: "Int",
+    state: "String",
+    user1_offers: "String",
+    user2_offers: "String",
+  },
+  barters_mutation_response: {
+    affected_rows: "Int",
+    returning: "barters",
+  },
   chat_media_messages: {
     chat: "chats",
     id: "Int",
@@ -578,18 +732,31 @@ export const ReturnTypes: Record<string, any> = {
     returning: "chats",
   },
   mutation_root: {
+    insert_barters: "barters_mutation_response",
+    insert_barters_one: "barters",
     insert_chat_media_messages: "chat_media_messages_mutation_response",
     insert_chat_media_messages_one: "chat_media_messages",
     insert_chats: "chats_mutation_response",
     insert_chats_one: "chats",
+    insert_room_active_chat_mapping:
+      "room_active_chat_mapping_mutation_response",
+    insert_room_active_chat_mapping_one: "room_active_chat_mapping",
     insert_secure_transfer_transactions:
       "secure_transfer_transactions_mutation_response",
     insert_secure_transfer_transactions_one: "secure_transfer_transactions",
     insert_simple_transactions: "simple_transactions_mutation_response",
     insert_simple_transactions_one: "simple_transactions",
+    update_barters: "barters_mutation_response",
+    update_barters_by_pk: "barters",
+    update_barters_many: "barters_mutation_response",
     update_chat_media_messages: "chat_media_messages_mutation_response",
     update_chat_media_messages_by_pk: "chat_media_messages",
     update_chat_media_messages_many: "chat_media_messages_mutation_response",
+    update_room_active_chat_mapping:
+      "room_active_chat_mapping_mutation_response",
+    update_room_active_chat_mapping_by_pk: "room_active_chat_mapping",
+    update_room_active_chat_mapping_many:
+      "room_active_chat_mapping_mutation_response",
     update_secure_transfer_transactions:
       "secure_transfer_transactions_mutation_response",
     update_secure_transfer_transactions_by_pk: "secure_transfer_transactions",
@@ -600,14 +767,26 @@ export const ReturnTypes: Record<string, any> = {
     update_simple_transactions_many: "simple_transactions_mutation_response",
   },
   query_root: {
+    barters: "barters",
+    barters_by_pk: "barters",
     chat_media_messages: "chat_media_messages",
     chat_media_messages_by_pk: "chat_media_messages",
     chats: "chats",
     chats_by_pk: "chats",
+    room_active_chat_mapping: "room_active_chat_mapping",
+    room_active_chat_mapping_by_pk: "room_active_chat_mapping",
     secure_transfer_transactions: "secure_transfer_transactions",
     secure_transfer_transactions_by_pk: "secure_transfer_transactions",
     simple_transactions: "simple_transactions",
     simple_transactions_by_pk: "simple_transactions",
+  },
+  room_active_chat_mapping: {
+    barter_id: "Int",
+    room_id: "String",
+  },
+  room_active_chat_mapping_mutation_response: {
+    affected_rows: "Int",
+    returning: "room_active_chat_mapping",
   },
   secure_transfer_transactions: {
     chat: "chats",
@@ -636,12 +815,18 @@ export const ReturnTypes: Record<string, any> = {
     returning: "simple_transactions",
   },
   subscription_root: {
+    barters: "barters",
+    barters_by_pk: "barters",
+    barters_stream: "barters",
     chat_media_messages: "chat_media_messages",
     chat_media_messages_by_pk: "chat_media_messages",
     chat_media_messages_stream: "chat_media_messages",
     chats: "chats",
     chats_by_pk: "chats",
     chats_stream: "chats",
+    room_active_chat_mapping: "room_active_chat_mapping",
+    room_active_chat_mapping_by_pk: "room_active_chat_mapping",
+    room_active_chat_mapping_stream: "room_active_chat_mapping",
     secure_transfer_transactions: "secure_transfer_transactions",
     secure_transfer_transactions_by_pk: "secure_transfer_transactions",
     secure_transfer_transactions_stream: "secure_transfer_transactions",
