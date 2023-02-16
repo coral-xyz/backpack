@@ -9,16 +9,20 @@ import {
   requestCount,
   roomChats,
   unreadCount,
-  useUser,
+  useAuthenticatedUser,
 } from "@coral-xyz/recoil";
 import { useRecoilCallback, useSetRecoilState } from "recoil";
 
 // Wrapper compoennt to ensure syncing only happens when there is an
 // authenticated user
 export const DbRecoilSync = () => {
-  const { uuid } = useUser();
+  const authenticatedUser = useAuthenticatedUser();
 
-  return <AuthedDbRecoilSync uuid={uuid} />;
+  if (authenticatedUser) {
+    return <AuthedDbRecoilSync uuid={authenticatedUser.uuid} />;
+  } else {
+    return <></>;
+  }
 };
 
 export const AuthedDbRecoilSync = ({ uuid }: { uuid: string }) => {

@@ -47,7 +47,6 @@ export const useAuthentication = () => {
   ): Promise<{
     id: string;
     publicKeys: Array<{ blockchain: Blockchain; publicKey: string }>;
-    isAuthenticated: boolean;
   } | null> => {
     try {
       return await background.request({
