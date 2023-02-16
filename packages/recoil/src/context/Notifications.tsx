@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import type {
   AutolockSettings,
   Blockchain,
-  FEATURE_GATES_MAP,
   Notification,
 } from "@coral-xyz/common";
 import {
