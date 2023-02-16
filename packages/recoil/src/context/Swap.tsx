@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import {
-  BACKPACK_FEATURE_REFERRAL_FEES,
   Blockchain,
   confirmTransaction,
   generateUnwrapSolTx,
   generateWrapSolTx,
   NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
   SOL_NATIVE_MINT,
+  SWAP_FEES_ENABLED,
   UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
   USDC_MINT,
   WSOL_MINT,
@@ -17,7 +17,7 @@ import * as bs58 from "bs58";
 import { BigNumber, ethers } from "ethers";
 
 import { blockchainTokenData } from "../atoms/balance";
-import { JUPITER_BASE_URL, jupiterInputTokens } from "../atoms/solana/jupiter";
+import { JUPITER_BASE_URL,jupiterInputTokens } from "../atoms/solana/jupiter";
 import {
   useJupiterOutputTokens,
   useJupiterTokenList,
@@ -401,7 +401,7 @@ export function SwapProvider({
     try {
       const signature = await sendAndConfirmTransaction(transaction);
 
-      if (BACKPACK_FEATURE_REFERRAL_FEES) {
+      if (SWAP_FEES_ENABLED) {
         try {
           await fetch("https://jupiter.xnfts.dev/swap", {
             method: "POST",
