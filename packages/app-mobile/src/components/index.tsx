@@ -95,7 +95,7 @@ export function BaseButton({
   label: string;
   buttonStyle?: StyleProp<ViewStyle>;
   labelStyle?: StyleProp<TextStyle>;
-  onPress: () => void;
+  onPress?: () => void;
   disabled?: boolean;
   loading?: boolean;
   icon?: JSX.Element;
@@ -153,7 +153,7 @@ export function PrimaryButton({
   ...props
 }: {
   label: string;
-  onPress: () => void;
+  onPress?: () => void;
   disabled?: boolean;
   loading?: boolean;
 }) {
@@ -550,7 +550,7 @@ export function DummyScreen({ route }) {
   );
 }
 
-export function FullScreenLoading() {
+export function FullScreenLoading({ label }: { label?: string }): JSX.Element {
   const theme = useTheme();
   return (
     <View
@@ -562,6 +562,11 @@ export function FullScreenLoading() {
       }}
     >
       <ActivityIndicator size="large" color={theme.custom.colors.fontColor} />
+      {label ? (
+        <Text style={{ textAlign: "center", fontSize: 16, marginTop: 16 }}>
+          {label}
+        </Text>
+      ) : null}
     </View>
   );
 }

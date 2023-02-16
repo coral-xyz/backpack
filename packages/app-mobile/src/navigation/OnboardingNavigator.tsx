@@ -10,6 +10,9 @@ import {
   KeyboardAvoidingView,
   Pressable,
   Text,
+  DevSettings,
+  StyleProp,
+  ViewStyle,
 } from "react-native";
 
 import * as Linking from "expo-linking";
@@ -33,6 +36,7 @@ import {
   XNFT_GG_LINK,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
+import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import { Buffer } from "buffer";
 import { ethers } from "ethers";
@@ -75,6 +79,8 @@ import {
   StyledText,
   SubtextParagraph,
   WelcomeLogoHeader,
+  CopyButton,
+  EmptyState,
 } from "~components/index";
 import { useAuthentication } from "~hooks/useAuthentication";
 import { useTheme } from "~hooks/useTheme";
@@ -106,17 +112,17 @@ function Network({
   function getIcon(id: string): JSX.Element | null {
     switch (id) {
       case "ethereum":
-        return <EthereumIcon width={24} height={24} />;
+        return <EthereumIcon width={32} height={32} />;
       case "solana":
-        return <SolanaIcon width={24} height={24} />;
+        return <SolanaIcon width={32} height={32} />;
       case "polygon":
-        return <PolygonIcon width={24} height={24} />;
+        return <PolygonIcon width={32} height={32} />;
       case "bsc":
-        return <BscIcon width={24} height={24} />;
+        return <BscIcon width={32} height={32} />;
       case "cosmos":
-        return <CosmosIcon width={24} height={24} />;
-      case "valanache":
-        return <AvalancheIcon width={24} height={24} />;
+        return <CosmosIcon width={32} height={32} />;
+      case "avalanche":
+        return <AvalancheIcon width={32} height={32} />;
       default:
         return null;
     }
@@ -184,7 +190,7 @@ type OnboardingStackParamList = {
   SelectBlockchain: undefined;
   ImportAccounts: undefined;
   CreatePassword: undefined;
-  Finished: undefined;
+  OnboardingCreateAccountLoading: undefined;
 };
 
 const Stack = createStackNavigator<OnboardingStackParamList>();
@@ -193,10 +199,12 @@ function OnboardingScreen({
   title,
   subtitle,
   children,
+  style,
 }: {
   title: string;
   subtitle?: string;
   children?: any;
+  style?: StyleProp<ViewStyle>;
 }) {
   const insets = useSafeAreaInsets();
   return (
@@ -206,6 +214,7 @@ function OnboardingScreen({
         {
           paddingBottom: insets.bottom,
         },
+        style,
       ]}
     >
       <Margin bottom={24}>
@@ -483,46 +492,54 @@ function OnboardingMnemonicInputScreen({
 
   return (
     <OnboardingScreen title="Secret recovery phrase" subtitle={subtitle}>
-      <MnemonicInputFields
-        mnemonicWords={mnemonicWords}
-        onChange={readOnly ? undefined : setMnemonicWords}
-      />
-      {maybeRender(!readOnly, () => (
-        <Pressable
-          style={{ alignSelf: "center", marginBottom: 18 }}
-          onPress={() => {
-            setMnemonicWords([
-              ...Array(mnemonicWords.length === 12 ? 24 : 12).fill(""),
-            ]);
-          }}
-        >
-          <Text style={{ fontSize: 18 }}>
-            Use a {mnemonicWords.length === 12 ? "24" : "12"}-word recovery
-            mnemonic
-          </Text>
-        </Pressable>
-      ))}
-      {maybeRender(readOnly, () => (
-        <View style={{ alignSelf: "center" }}>
-          <Margin bottom={18}>
-            <BaseCheckBoxLabel
-              label="I saved my secret recovery phrase"
-              value={checked}
-              onPress={() => {
-                setChecked(!checked);
-              }}
-            />
-          </Margin>
-        </View>
-      ))}
-      {maybeRender(Boolean(error), () => (
-        <ErrorMessage for={{ message: error }} />
-      ))}
-      <PrimaryButton
-        disabled={!nextEnabled}
-        label={action === "create" ? "Next" : "Import"}
-        onPress={next}
-      />
+      <View>
+        <MnemonicInputFields
+          mnemonicWords={mnemonicWords}
+          onChange={readOnly ? undefined : setMnemonicWords}
+        />
+        <Margin top={12}>
+          <CopyButton text={mnemonicWords.join(", ")} />
+        </Margin>
+      </View>
+      <View style={{ flex: 1 }} />
+      <View>
+        {maybeRender(!readOnly, () => (
+          <Pressable
+            style={{ alignSelf: "center", marginBottom: 18 }}
+            onPress={() => {
+              setMnemonicWords([
+                ...Array(mnemonicWords.length === 12 ? 24 : 12).fill(""),
+              ]);
+            }}
+          >
+            <Text style={{ fontSize: 18 }}>
+              Use a {mnemonicWords.length === 12 ? "24" : "12"}-word recovery
+              mnemonic
+            </Text>
+          </Pressable>
+        ))}
+        {maybeRender(readOnly, () => (
+          <View style={{ alignSelf: "center" }}>
+            <Margin bottom={18}>
+              <BaseCheckBoxLabel
+                label="I saved my secret recovery phrase"
+                value={checked}
+                onPress={() => {
+                  setChecked(!checked);
+                }}
+              />
+            </Margin>
+          </View>
+        ))}
+        {maybeRender(Boolean(error), () => (
+          <ErrorMessage for={{ message: error }} />
+        ))}
+        <PrimaryButton
+          disabled={!nextEnabled}
+          label={action === "create" ? "Next" : "Import"}
+          onPress={next}
+        />
+      </View>
     </OnboardingScreen>
   );
 }
@@ -649,10 +666,9 @@ function OnboardingCreatePasswordScreen({
 
   const onSubmit = ({ password }: CreatePasswordFormData) => {
     setOnboardingData({ password, complete: true });
-    navigation.push("Finished");
+    navigation.push("OnboardingCreateAccountLoading");
   };
 
-  // TODO(peter) some fk'd up shit is happening here where the hook claims to be invalid when it's not
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -666,9 +682,11 @@ function OnboardingCreatePasswordScreen({
         <View style={{ flex: 1, justifyContent: "flex-start" }}>
           <Margin bottom={12}>
             <PasswordInput
+              autoFocus
               name="password"
               placeholder="Password"
               control={control}
+              returnKeyType="next"
               rules={{
                 required: "You must specify a password",
                 minLength: {
@@ -682,6 +700,7 @@ function OnboardingCreatePasswordScreen({
           <PasswordInput
             name="passwordConfirmation"
             placeholder="Confirm Password"
+            returnKeyType="done"
             control={control}
             rules={{
               validate: (val: string) => {
@@ -693,13 +712,16 @@ function OnboardingCreatePasswordScreen({
           />
           <ErrorMessage for={errors.passwordConfirmation} />
         </View>
-        <View style={{ marginBottom: 24 }}>
-          <ControlledCheckBoxLabel
-            name="agreedToTerms"
-            control={control}
-            label="I agree to the terms of service"
-          />
-          <ErrorMessage for={errors.agreedToTerms} />
+
+        <View style={{ alignSelf: "center" }}>
+          <Margin bottom={18}>
+            <ControlledCheckBoxLabel
+              name="agreedToTerms"
+              control={control}
+              label="I agree to the terms of service"
+            />
+            <ErrorMessage for={errors.agreedToTerms} />
+          </Margin>
         </View>
         <PrimaryButton
           disabled={!isValid}
@@ -738,11 +760,16 @@ function OnboardingImportAccountsScreen({
   );
 }
 
-function OnboardingFinishedScreen() {
+function OnboardingCreateAccountLoadingScreen({
+  navigation,
+}: StackScreenProps<
+  OnboardingStackParamList,
+  "OnboardingCreateAccountLoading"
+>): JSX.Element {
   const background = useBackgroundClient();
   const { authenticate } = useAuthentication();
   const { onboardingData } = useOnboardingData();
-  const [isValid, setIsValid] = useState(false);
+  const [error, setError] = useState(null);
 
   const {
     password,
@@ -777,7 +804,7 @@ function OnboardingFinishedScreen() {
         });
       }
       const { id, jwt } = await createUser();
-      createStore(id, jwt);
+      await createStore(id, jwt);
     })();
   }, []);
 
@@ -836,7 +863,8 @@ function OnboardingFinishedScreen() {
       }
 
       return await res.json();
-    } catch (err) {
+    } catch (err: any) {
+      setError(err);
       console.error("OnboardingNavigator:createUser::error", err);
       throw new Error("error creating account");
     }
@@ -861,27 +889,46 @@ function OnboardingFinishedScreen() {
           params: [username, password, keyringInit, uuid, jwt],
         });
       }
-      setIsValid(true);
-    } catch (err) {
+    } catch (err: any) {
+      setError(err);
       console.error("OnboardingNavigator:createStore::error", err);
-      // if (
-      //   confirm("There was an issue setting up your account. Please try again.")
-      // ) {
-      // window.location.reload();
-      // }
     }
   }
 
-  return !isValid ? (
-    <FullScreenLoading />
-  ) : (
+  if (error) {
+    return (
+      <EmptyState
+        icon={(props: any) => <MaterialIcons name="error" {...props} />}
+        title={error}
+        subtitle="Please get in touch ASAP or try again"
+        buttonText="Start Over"
+        onPress={() => {
+          DevSettings.reload();
+        }}
+      />
+    );
+  }
+
+  return <FullScreenLoading label="Creating your wallet..." />;
+}
+
+export function OnboardingCompleteWelcome({ onComplete }): JSX.Element {
+  const insets = useSafeAreaInsets();
+
+  return (
     <OnboardingScreen
       title="You've set up Backpack!"
       subtitle="Now get started exploring what your Backpack can do."
+      style={{
+        paddingTop: insets.top + 36,
+        paddingBottom: insets.bottom,
+      }}
     >
-      <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+      <View
+        style={{ flexDirection: "row", flexWrap: "wrap", columnGap: "12%" }}
+      >
         {BACKPACK_FEATURE_XNFT ? (
-          <Cell style={{ paddingRight: 6 }}>
+          <Cell style={{ width: "48%" }}>
             <ActionCard
               icon={<WidgetIcon />}
               text="Browse the xNFT library"
@@ -889,14 +936,14 @@ function OnboardingFinishedScreen() {
             />
           </Cell>
         ) : null}
-        <Cell style={{ paddingLeft: 6 }}>
+        <Cell style={{ width: "48%" }}>
           <ActionCard
             icon={<TwitterIcon />}
             text="Follow us on Twitter"
             onPress={() => Linking.openURL(TWITTER_LINK)}
           />
         </Cell>
-        <Cell>
+        <Cell style={{ width: "48%" }}>
           <ActionCard
             icon={<DiscordIcon />}
             text="Join the Discord community"
@@ -904,12 +951,23 @@ function OnboardingFinishedScreen() {
           />
         </Cell>
       </View>
-      <PrimaryButton disabled={false} label="Finish" onPress={console.log} />
+      <View style={{ flex: 1 }} />
+      <PrimaryButton
+        disabled={false}
+        label="Finish"
+        onPress={() => {
+          onComplete("finished");
+        }}
+      />
     </OnboardingScreen>
   );
 }
 
-export default function OnboardingNavigator(): JSX.Element {
+export function OnboardingNavigator({ onStart }): JSX.Element {
+  useEffect(() => {
+    onStart("onboarding");
+  }, [onStart]);
+
   const theme = useTheme();
   return (
     <OnboardingProvider>
@@ -954,7 +1012,13 @@ export default function OnboardingNavigator(): JSX.Element {
             name="CreatePassword"
             component={OnboardingCreatePasswordScreen}
           />
-          <Stack.Screen name="Finished" component={OnboardingFinishedScreen} />
+          <Stack.Screen
+            name="OnboardingCreateAccountLoading"
+            component={OnboardingCreateAccountLoadingScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
         </Stack.Group>
       </Stack.Navigator>
     </OnboardingProvider>

@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { KeyringStoreStateEnum, useKeyringStoreState } from "@coral-xyz/recoil";
 import {
   DarkTheme,
@@ -7,7 +9,10 @@ import {
 
 import { NotFoundScreen } from "../screens/NotFoundScreen";
 import { LockedScreen } from "./LockedNavigator";
-import OnboardingNavigator from "./OnboardingNavigator";
+import {
+  OnboardingCompleteWelcome,
+  OnboardingNavigator,
+} from "./OnboardingNavigator";
 import { UnlockedNavigator } from "./UnlockedNavigator";
 
 export function RootNavigation({
@@ -25,15 +30,18 @@ export function RootNavigation({
 }
 
 function RootNavigator(): JSX.Element {
+  const [status, setStatus] = useState(null);
   const keyringStoreState = useKeyringStoreState();
-  console.debug("keyringStoreState", keyringStoreState);
 
   switch (keyringStoreState) {
     case KeyringStoreStateEnum.NeedsOnboarding:
-      return <OnboardingNavigator />;
+      return <OnboardingNavigator onStart={setStatus} />;
     case KeyringStoreStateEnum.Locked:
       return <LockedScreen />;
     case KeyringStoreStateEnum.Unlocked:
+      if (status === "onboarding") {
+        return <OnboardingCompleteWelcome onComplete={setStatus} />;
+      }
       return <UnlockedNavigator />;
     default:
       return <NotFoundScreen />;

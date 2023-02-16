@@ -45,10 +45,11 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     borderRadius: 12,
+    minHeight: 120,
   },
   iconContainer: {
-    width: 24,
-    height: 24,
+    width: 32,
+    height: 32,
     marginBottom: 6,
   },
   text: {
