@@ -84,9 +84,7 @@ export const jupiterInputTokens = selectorFamily({
       // balance for, and always display native SOL.
       return walletTokens.filter(
         (token: TokenDataWithBalance) =>
-          (inputMints.includes(token.mint!) ||
-            token.mint === SOL_NATIVE_MINT) &&
-          !token.nativeBalance.isZero()
+          inputMints.includes(token.mint!) || token.mint === SOL_NATIVE_MINT
       ) as Array<TokenDataWithBalance>;
     },
 });

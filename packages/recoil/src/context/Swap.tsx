@@ -367,7 +367,13 @@ export function SwapProvider({
   // Switch the trade direction.
   //
   const swapToFromMints = () => {
-    setFromMintToMint([toMint, fromMint]);
+    if (fromMint === SOL_NATIVE_MINT) {
+      setFromMintToMint([toMint, WSOL_MINT]);
+    } else if (toMint === WSOL_MINT) {
+      setFromMintToMint([SOL_NATIVE_MINT, fromMint]);
+    } else {
+      setFromMintToMint([toMint, fromMint]);
+    }
     setFromAmount(toAmount ?? Zero);
   };
 
