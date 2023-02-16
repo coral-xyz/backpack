@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { View } from "react-native";
 
 import { KeyringStoreStateEnum, useKeyringStoreState } from "@coral-xyz/recoil";
 import {
@@ -32,6 +31,7 @@ export function RootNavigation({
 
 function RootNavigator(): JSX.Element {
   const [status, setStatus] = useState(null);
+  const keyringStoreState = useKeyringStoreState();
 
   switch (keyringStoreState) {
     case KeyringStoreStateEnum.NeedsOnboarding:
