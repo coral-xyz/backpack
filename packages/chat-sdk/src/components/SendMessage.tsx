@@ -15,6 +15,7 @@ import { v4 as uuidv4 } from "uuid";
 import { CustomAutoComplete, MessageInput } from "./messageInput/MessageInput";
 import { MessageInputProvider } from "./messageInput/MessageInputProvider";
 import { Attachment } from "./Attachment";
+import { Barter } from "./Barter";
 import { useChatContext } from "./ChatContext";
 import { EmojiPickerComponent } from "./EmojiPicker";
 import { GifPicker } from "./GifPicker";
@@ -102,11 +103,12 @@ export const SendMessage = ({
   const { uuid } = useUser();
   const [emojiPicker, setEmojiPicker] = useState(false);
   const [gifPicker, setGifPicker] = useState(false);
-  const [emojiMenuOpen, setEmojiMenuOpen] = useState(false);
+  const [pluginMenuOpen, setPluginMenuOpen] = useState(false);
 
   const theme = useCustomTheme();
   const activeSolanaWallet = useActiveSolanaWallet();
   const inputRef = useRef<any>(null);
+  const { openPlugin, setOpenPlugin } = useChatContext();
 
   const {
     remoteUserId,
@@ -345,19 +347,19 @@ export const SendMessage = ({
                 },
               }}
               onClick={() => {
-                setEmojiMenuOpen(!emojiMenuOpen);
+                setPluginMenuOpen(!pluginMenuOpen);
               }}
             >
-              {emojiMenuOpen ? (
+              {pluginMenuOpen ? (
                 <CloseIcon style={{ fontSize: 24 }} />
               ) : (
                 <AddIcon style={{ fontSize: 24 }} />
               )}
             </IconButton>
           </div>
-          <MessageInput setEmojiMenuOpen={setEmojiMenuOpen} />
+          <MessageInput setPluginMenuOpen={setPluginMenuOpen} />
         </div>
-        {emojiMenuOpen && (
+        {pluginMenuOpen && (
           <div style={{ display: "flex", marginLeft: 8, paddingBottom: 5 }}>
             <div
               style={{
@@ -366,6 +368,15 @@ export const SendMessage = ({
                 justifyContent: "center",
               }}
             ></div>
+            <EmojiPickerComponent
+              setEmojiPicker={setEmojiPicker}
+              emojiPicker={emojiPicker}
+              setGifPicker={setGifPicker}
+              inputRef={inputRef}
+              buttonStyle={{
+                height: "28px",
+              }}
+            />
             <EmojiPickerComponent
               setEmojiPicker={setEmojiPicker}
               emojiPicker={emojiPicker}
@@ -385,6 +396,13 @@ export const SendMessage = ({
               }}
             />
             <Attachment
+              onMediaSelect={onMediaSelect}
+              buttonStyle={{
+                height: "28px",
+              }}
+            />
+            <Barter
+              setOpenPlugin={setOpenPlugin}
               onMediaSelect={onMediaSelect}
               buttonStyle={{
                 height: "28px",

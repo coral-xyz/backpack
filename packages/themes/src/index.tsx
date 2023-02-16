@@ -126,6 +126,7 @@ type CustomColors = {
   unreadBackground: string;
   invertedPrimary: string;
   invertedSecondary: string;
+  invertedTertiary: string;
   avatarPopoverMenuBackground: string;
   listItemHover: string;
   walletCopyButtonHover: string;
@@ -265,6 +266,7 @@ const DARK_COLORS: CustomColors = {
   unreadBackground: LIGHT_UNREAD_BACKGROUND,
   invertedPrimary: "#FFFFFF",
   invertedSecondary: LIGHT_BACKGROUND_COLOR_0,
+  invertedTertiary: LIGHT_FONT_COLOR,
   avatarPopoverMenuBackground: BACKGROUND_COLOR_0,
   listItemHover: `rgba(39, 39, 42, ${HOVER_OPACITY})`,
   walletCopyButtonHover: "#18181c",
@@ -344,6 +346,7 @@ const LIGHT_COLORS: CustomColors = {
   unreadBackground: DARK_UNREAD_BACKGROUND,
   invertedPrimary: "#212121",
   invertedSecondary: "rgba(255, 255, 255, 0.1)",
+  invertedTertiary: LIGHT_FONT_COLOR,
   avatarPopoverMenuBackground: LIGHT_BACKGROUND_COLOR_1,
   listItemHover: "#F8F8F9",
   walletCopyButtonHover: "#d6d6d6",

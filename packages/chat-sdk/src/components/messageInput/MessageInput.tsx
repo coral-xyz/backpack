@@ -14,7 +14,11 @@ const useStyles = styles((themes) => ({
   },
 }));
 
-export function MessageInput({ setEmojiMenuOpen }: { setEmojiMenuOpen: any }) {
+export function MessageInput({
+  setPluginMenuOpen,
+}: {
+  setPluginMenuOpen: any;
+}) {
   const defaultValue = "";
   const classes = useStyles();
   const theme = useCustomTheme();
@@ -31,7 +35,7 @@ export function MessageInput({ setEmojiMenuOpen }: { setEmojiMenuOpen: any }) {
           }
         }}
         className={classes.input}
-        onClick={() => setEmojiMenuOpen(false)}
+        onClick={() => setPluginMenuOpen(false)}
         placeholder={
           type === "individual"
             ? `Message @${remoteUsername}`
