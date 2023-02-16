@@ -1,4 +1,4 @@
-import { WSOL_MINT } from "@coral-xyz/common";
+import { walletAddressDisplay, WSOL_MINT } from "@coral-xyz/common";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { NftEventTypes, Source, TransactionType } from "helius-sdk/dist/types";
 
@@ -79,10 +79,6 @@ export const getSourceOrTypeFormatted = (sourceOrType: string): string => {
     .split(" ")
     .map((word) => word.charAt(0) + word.slice(1).toLowerCase())
     .join(" ");
-};
-
-export const getTruncatedAddress = (address: string): string => {
-  return `${address?.slice(0, 5)}...${address?.slice(address?.length - 5)}`;
 };
 
 export const isUserTxnSender = (
@@ -213,12 +209,12 @@ export const getTransactionCaption = (
     // case TransactionType.UNKNOWN:
     case TransactionType.TRANSFER:
       if (isUserTxnSender(transaction, activeWallet)) {
-        return `To: ${getTruncatedAddress(
+        return `To: ${walletAddressDisplay(
           transaction?.tokenTransfers[0]?.toUserAccount ||
             transaction?.nativeTransfers[0]?.toUserAccount
         )}`;
       } else if (isUserTxnSender(transaction, activeWallet) === false) {
-        return `From: ${getTruncatedAddress(
+        return `From: ${walletAddressDisplay(
           transaction?.tokenTransfers[0]?.fromUserAccount ||
             transaction?.nativeTransfers[0]?.fromUserAccount
         )}`;
@@ -232,11 +228,11 @@ export const getTransactionCaption = (
     case TransactionType.SWAP:
       // fallback to truncated mint address if token metadata was not found
       return `${
-        tokenData?.[0]?.symbol ??
-        getTruncatedAddress(transaction?.tokenTransfers?.[0]?.mint)
+        tokenData?.[0]?.symbol ||
+        walletAddressDisplay(transaction?.tokenTransfers?.[0]?.mint)
       } -> ${
-        tokenData?.[1]?.symbol ??
-        getTruncatedAddress(transaction?.tokenTransfers?.[1]?.mint)
+        tokenData?.[1]?.symbol ||
+        walletAddressDisplay(transaction?.tokenTransfers?.[1]?.mint)
       }`;
 
     case TransactionType.NFT_LISTING:
@@ -257,7 +253,7 @@ export const getTransactionCaption = (
     // case TransactionType.BURN:
     //   return transaction?.
     case TransactionType.NFT_MINT:
-      return getTruncatedAddress(
+      return walletAddressDisplay(
         metadata?.onChainMetadata?.metadata?.collection?.key
       );
 
@@ -273,7 +269,7 @@ export const getTransactionCaption = (
       //   transaction?.source !== TransactionType.UNKNOWN
       // )
       //   return getSourceOrTypeFormatted(transaction.source);
-      return getTruncatedAddress(transaction?.instructions[0].programId);
+      return walletAddressDisplay(transaction?.instructions[0].programId);
   }
 };
 
