@@ -1,8 +1,15 @@
 import React, { useState } from "react";
 import type { Nft } from "@coral-xyz/common";
 import { Blockchain } from "@coral-xyz/common";
-import { ProxyImage } from "@coral-xyz/react-common";
-import { nftsByOwner, useActiveSolanaWallet } from "@coral-xyz/recoil";
+import { ProxyImage, TextInput } from "@coral-xyz/react-common";
+import type {
+  TokenDataWithPrice} from "@coral-xyz/recoil";
+import {
+  blockchainBalancesSorted,
+  nftsByOwner,
+  useActiveSolanaWallet,
+  useLoader,
+} from "@coral-xyz/recoil";
 import { styled, useCustomTheme } from "@coral-xyz/themes";
 import { useRecoilValueLoadable } from "recoil";
 
@@ -18,6 +25,7 @@ export function SelectPage({
   const { setSelectNft } = useBarterContext();
   const activeSolWallet = useActiveSolanaWallet();
   const [localSelection, setLocalSelection] = useState(currentSelection);
+
   const { contents, state } = useRecoilValueLoadable(
     nftsByOwner({
       publicKey: activeSolWallet.publicKey,
@@ -25,9 +33,18 @@ export function SelectPage({
     })
   );
 
+  const [tokenAccounts, , isLoading] = useLoader(
+    blockchainBalancesSorted({
+      publicKey: activeSolWallet.publicKey,
+      blockchain: Blockchain.SOLANA,
+    }),
+    [],
+    [activeSolWallet]
+  );
+
   const theme = useCustomTheme();
 
-  if (state === "loading" || state === "hasError") {
+  if (state === "loading" || state === "hasError" || isLoading) {
     return <></>;
   }
 
@@ -41,6 +58,9 @@ export function SelectPage({
       >
         Back
       </div>
+      {tokenAccounts.map((tokenAccount) => (
+        <TokenSelector tokenAccount={tokenAccount} />
+      ))}
       <div style={{ display: "flex" }}>
         <div style={{ flex: 1 }}>
           <div style={{ color: theme.custom.colors.background }}>
@@ -61,11 +81,28 @@ export function SelectPage({
               <RenderNFT
                 nft={nft}
                 selected={localSelection.includes(nft.mint)}
-                setLocalSelection={setLocalSelection}
               />
             </>
           ))}
         </div>
+      </div>
+    </div>
+  );
+}
+
+function TokenSelector({ tokenAccount }: { tokenAccount: TokenDataWithPrice }) {
+  const [selectedValue, setSelectedValue] = useState("0");
+  const theme = useCustomTheme();
+
+  return (
+    <div style={{ color: theme.custom.colors.background, display: "flex" }}>
+      You have {tokenAccount.displayBalance} {tokenAccount.ticker}{" "}
+      <div style={{ width: 100 }}>
+        {" "}
+        <TextInput
+          value={selectedValue}
+          setValue={(e) => setSelectedValue(e.target.value)}
+        />{" "}
       </div>
     </div>
   );

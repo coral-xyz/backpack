@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { blockchainBalancesSorted, useLoader } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 
 import { ScrollBarImpl } from "../ScrollbarImpl";
@@ -22,7 +23,18 @@ export const BarterUi = () => {
             }}
           >
             {!selectNft && <SwapPage />}
-            {selectNft && <SelectPage currentSelection={[]} />}
+            {selectNft && (
+              <SelectPage
+                currentSelection={[]}
+                remoteSelection={[
+                  {
+                    mint: "FGkdkaHiAR4cuVJDUgMKS7ypZaGSwUCcMCDGVtZTU51z",
+                    amount: 1,
+                    publicKey: "4m39tDyZcK9dgqYaBaX7PiTp1kjAKrMhNYmxDcVu3hNp",
+                  },
+                ]}
+              />
+            )}
           </div>
         </ScrollBarImpl>
       </div>
