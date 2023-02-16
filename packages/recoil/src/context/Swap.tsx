@@ -6,7 +6,6 @@ import {
   generateWrapSolTx,
   NATIVE_ACCOUNT_RENT_EXEMPTION_LAMPORTS,
   SOL_NATIVE_MINT,
-  SWAP_FEES_ENABLED,
   UI_RPC_METHOD_SOLANA_SIGN_AND_SEND_TRANSACTION,
   USDC_MINT,
   WSOL_MINT,
@@ -17,8 +16,9 @@ import * as bs58 from "bs58";
 import { BigNumber, ethers } from "ethers";
 
 import { blockchainTokenData } from "../atoms/balance";
-import { JUPITER_BASE_URL, jupiterInputTokens } from "../atoms/solana/jupiter";
+import { jupiterInputTokens, jupiterUrl } from "../atoms/solana/jupiter";
 import {
+  useFeatureGates,
   useJupiterOutputTokens,
   useJupiterTokenList,
   useLoader,
@@ -104,6 +104,8 @@ export function SwapProvider({
   const solanaCtx = useSolanaCtx();
   const { backgroundClient, connection, walletPublicKey } = solanaCtx;
   const jupiterTokenList = useJupiterTokenList();
+  const { SWAP_FEES_ENABLED } = useFeatureGates();
+  const JUPITER_BASE_URL = jupiterUrl(SWAP_FEES_ENABLED);
   const [fromTokens] = useLoader(
     jupiterInputTokens({ publicKey: walletPublicKey.toString() }),
     []

@@ -4,7 +4,6 @@ export const NOTIFICATIONS_ENABLED = "NOTIFICATIONS_ENABLED";
 export const MESSAGES_ENABLED = "MESSAGES_ENABLED";
 export const MESSAGE_IFRAME_ENABLED = "MESSAGE_IFRAME_ENABLED";
 export const OFFLINE_IMAGES = "OFFLINE_IMAGES";
-export const SWAP_FEES_ENABLED = "SWAP_FEES_ENABLED";
 
 // Used as a fallback if feature gates worker is offline
 export const DEFAULT_FEATURE_GATES = {
