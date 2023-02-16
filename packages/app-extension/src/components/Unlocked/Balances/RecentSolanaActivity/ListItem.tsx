@@ -193,7 +193,7 @@ function RecentActivityListItemIcon({
   // if NFT url available, display it. Check on-chain data first
   const nftImage = undefined; // FIXME: metadata?.onChainMetadata?.metadata?.data?.uri;
 
-  if (isNFTTransaction(transaction) && nftImage && nftImage !== "") {
+  if (isNFTTransaction(transaction) && nftImage) {
     return <ListItemIcons.NFT nftUrl={nftImage} />;
   }
 
@@ -206,7 +206,7 @@ function RecentActivityListItemIcon({
     // other SPL token Transfer. Check tokenRegistry first, then Helius metadata
     const transferIcon = tokenData[0]?.logoURI; // FIXME: metadata offchain image
 
-    if (transferIcon && transferIcon !== "") {
+    if (transferIcon) {
       return <ListItemIcons.TRANSFER tokenLogo={transferIcon} />;
     }
 

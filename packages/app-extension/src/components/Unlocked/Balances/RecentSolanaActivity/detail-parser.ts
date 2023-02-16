@@ -276,26 +276,27 @@ export const getTokenData = (
 
   if (transaction.type === TransactionType.SWAP) {
     // if token is isNativeInput/isNativeOutput, token swap is to/from SOL
-    let tokenInput, tokenOutput;
     const isNativeInput = transaction.events?.swap?.nativeInput;
     const isNativeOutput = transaction.events?.swap?.nativeOutput;
-    tokenInput = isNativeInput
+
+    const tokenInput = isNativeInput
       ? SOL_NATIVE_MINT
-      : transaction.events?.swap?.tokenInputs?.[0]?.mint;
-    tokenOutput = isNativeOutput
+      : transaction.events?.swap?.tokenInputs?.[0]?.mint ||
+        transaction.tokenTransfers?.[0]?.mint;
+
+    const tokenOutput = isNativeOutput
       ? SOL_NATIVE_MINT
-      : transaction.events?.swap?.tokenOutputs?.[0]?.mint;
+      : transaction.events?.swap?.tokenOutputs?.[0]?.mint ||
+        transaction.tokenTransfers?.[1]?.mint;
 
     if (tokenInput && tokenRegistry.get(tokenInput)) {
       tokenData.push(tokenRegistry.get(tokenInput));
     }
+
     if (tokenOutput && tokenRegistry.get(tokenOutput)) {
       tokenData.push(tokenRegistry.get(tokenOutput));
     }
-  }
-
-  // add appropriate token metadata
-  if (transaction.type === TransactionType.TRANSFER) {
+  } else if (transaction.type === TransactionType.TRANSFER) {
     const transferredToken = transaction.tokenTransfers?.[0]?.mint;
     if (transferredToken && tokenRegistry.get(transferredToken)) {
       tokenData.push(tokenRegistry.get(transferredToken));

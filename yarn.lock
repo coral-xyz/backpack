@@ -15258,10 +15258,10 @@ hash.js@1.1.7, hash.js@^1.0.0, hash.js@^1.0.3, hash.js@^1.1.7:
     inherits "^2.0.3"
     minimalistic-assert "^1.0.1"
 
-helius-sdk@^0.2.2:
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/helius-sdk/-/helius-sdk-0.2.2.tgz#6e9a6167719855dab4026c46e140f1dbe7142e65"
-  integrity sha512-lePa1goz2OhrXSTfqZ5laCNRLKwJTCq+ksu0c+JxxmQzEjK5N/Syx5YpSphVHJlvCTj85Ms6f0M/A8KFRWZ8fg==
+helius-sdk@^0.3.1:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/helius-sdk/-/helius-sdk-0.3.1.tgz#97a17e724690d03b1c03db9afc4d01d1f7a8de0f"
+  integrity sha512-nxGyqipZCHMeoBVEY86K4QtJAFLNWV75FfYceAEFeRiDPM4clVlxZeTWWuSEM7tFKtiWGwYeiutEfAunjQSZDA==
   dependencies:
     axios "^1.2.3"
 

@@ -331,7 +331,7 @@ function DetailCardHeader({
     ? transaction?.events?.nft?.amount / 10 ** 9
     : null;
 
-  if (isNFTTransaction(transaction) && nftImage && nftImage !== "") {
+  if (isNFTTransaction(transaction) && nftImage) {
     return (
       <>
         <img className={classes.nft} src={nftImage} />
@@ -393,7 +393,7 @@ function DetailCardHeader({
     const transferSymbol =
       tokenData[0]?.symbol || metadata?.onChainMetadata?.metadata?.data?.symbol;
 
-    if (transferIcon && transferIcon !== "") {
+    if (transferIcon) {
       return (
         <>
           <img className={classes.tokenLogo} src={transferIcon} />
