@@ -77,6 +77,9 @@ export function Nfts() {
                 />
               )
             }
+            style={{
+              height: !isONELive.isLive ? "100%" : undefined,
+            }}
           />
         </>
       ) : (

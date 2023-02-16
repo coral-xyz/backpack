@@ -95,7 +95,7 @@ export function usePluginUrl(address?: string) {
       if (address) {
         try {
           const xnft = await fetchXnft(new PublicKey(address));
-          setUrl(xnft!.metadataBlob.xnft.manifest.entrypoints.default.web);
+          setUrl(xnft!.xnft.manifest.entrypoints.default.web);
         } catch (error) {
           console.error(error);
         }
@@ -137,10 +137,10 @@ export function useFreshPlugin(address?: string): {
         const plugin = new Plugin(
           new PublicKey(address),
           xnft!.xnftAccount.masterMetadata,
-          xnft!.metadataBlob.xnft.manifest.entrypoints.default.web,
-          xnft!.metadataBlob.image,
-          xnft!.metadataBlob.xnft.manifest.splash ?? {},
-          xnft!.metadataBlob.name,
+          xnft!.xnft.xnft.manifest.entrypoints.default.web,
+          xnft!.metadata.image,
+          xnft!.xnft.xnft.manifest.splash ?? {},
+          xnft!.metadata.name,
           activePublicKeys,
           connectionUrls
         );

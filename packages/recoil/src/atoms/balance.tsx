@@ -1,7 +1,7 @@
 import { Blockchain } from "@coral-xyz/common";
 import { selector, selectorFamily } from "recoil";
 
-import type { TokenData, TokenNativeData } from "../types";
+import type { TokenDataWithBalance, TokenDataWithPrice } from "../types";
 
 import {
   ethereumTokenBalance,
@@ -19,7 +19,7 @@ import { allWalletsDisplayed } from "./wallet";
  * Return token balances sorted by usd notional balances.
  */
 export const blockchainBalancesSorted = selectorFamily<
-  Array<TokenData>,
+  Array<TokenDataWithPrice>,
   { publicKey: string; blockchain: Blockchain }
 >({
   key: "blockchainBalancesSorted",
@@ -49,7 +49,7 @@ export const blockchainBalancesSorted = selectorFamily<
  * Return native token balances (without their price information)
  */
 export const blockchainNativeBalances = selectorFamily<
-  Array<TokenNativeData>,
+  Array<TokenDataWithBalance>,
   { blockchain: Blockchain; publicKey: string }
 >({
   key: "blockchainNativeBalances",
@@ -78,7 +78,7 @@ export const blockchainNativeBalances = selectorFamily<
  * Returns token balances but not the price information for a given token address and blockchain.
  */
 export const blockchainTokenNativeData = selectorFamily<
-  TokenNativeData | null,
+  TokenDataWithBalance | null,
   { publicKey: string; tokenAddress: string; blockchain: Blockchain }
 >({
   key: "blockchainTokenNativeData",
@@ -102,7 +102,7 @@ export const blockchainTokenNativeData = selectorFamily<
  * Returns token balance and pricing data for a given token address and blockchain.
  */
 export const blockchainTokenData = selectorFamily<
-  TokenData | null,
+  TokenDataWithPrice | null,
   { publicKey: string; tokenAddress: string; blockchain: Blockchain }
 >({
   key: "blockchainTokenData",

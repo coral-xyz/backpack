@@ -2,7 +2,7 @@ import { Blockchain } from "@coral-xyz/common";
 import { useRecoilValue } from "recoil";
 
 import * as atoms from "../atoms";
-import type { TokenData } from "../types";
+import type { TokenDataWithPrice } from "../types";
 
 export function useEnabledBlockchains() {
   return useRecoilValue(atoms.enabledBlockchains);
@@ -96,7 +96,7 @@ export function useBlockchainTokenAccount({
   publicKey: string;
   blockchain: Blockchain;
   tokenAddress: string;
-}): TokenData | null {
+}): TokenDataWithPrice | null {
   return useRecoilValue(
     atoms.blockchainTokenData({ publicKey, blockchain, tokenAddress })
   );

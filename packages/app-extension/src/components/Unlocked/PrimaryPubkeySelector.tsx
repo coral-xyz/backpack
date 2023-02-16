@@ -1,8 +1,8 @@
-import * as React from "react";
 import { useState } from "react";
 import {
   BACKEND_API_URL,
   Blockchain,
+  toTitleCase,
   walletAddressDisplay,
 } from "@coral-xyz/common";
 import { PrimaryButton } from "@coral-xyz/react-common";
@@ -13,11 +13,10 @@ import {
   usePrimaryWallets,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
-import Box from "@mui/material/Box";
-import Modal from "@mui/material/Modal";
-import Typography from "@mui/material/Typography";
+import { Box } from "@mui/material";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 
+import { Header, SubtextParagraph } from "../common";
 import { WithDrawer } from "../common/Layout/Drawer";
 
 import { TokenBadge } from "./Balances/TokensWidget/TokenBadge";
@@ -27,13 +26,13 @@ export const PrimaryPubkeySelector = () => {
   const wallets = useRecoilValue(serverPublicKeys);
   const primaryWallets = usePrimaryWallets();
   const blockchains: Blockchain[] = [Blockchain.SOLANA, Blockchain.ETHEREUM];
-  const theme = useCustomTheme();
   const needsMigration: Blockchain[] = [];
   const [selectedAddresses, setSelectedSolAddresses] = useState({
     [Blockchain.ETHEREUM]: "",
     [Blockchain.SOLANA]: "",
   });
   const setServerPublicKeys = useSetRecoilState(serverPublicKeys);
+  const [migrationDone, setMigrationDone] = useState(false);
 
   blockchains.forEach((blockchain) => {
     const allBlockchainWallets = wallets.filter(
@@ -58,41 +57,31 @@ export const PrimaryPubkeySelector = () => {
       paperStyles={{
         borderTopLeftRadius: "12px",
         borderTopRightRadius: "12px",
-        height: "75%",
+        height: "80%",
       }}
-      openDrawer={needsMigration.length !== 0}
+      openDrawer={needsMigration.length > 0 && !migrationDone}
       setOpenDrawer={() => {}}
     >
       <div
         style={{
-          padding: 20,
           display: "flex",
           justifyContent: "space-between",
           flexDirection: "column",
           height: "100%",
         }}
       >
-        <div>
-          <Typography
-            style={{ color: theme.custom.colors.fontColor }}
-            id="modal-modal-title"
-            variant="h6"
-            component="h2"
-          >
-            Select primary address
-          </Typography>
-          <Typography
-            style={{
-              marginTop: "8px",
-              color: theme.custom.colors.smallTextColor,
-            }}
-            id="modal-modal-title"
-            variant="subtitle1"
-            component="h2"
-          >
+        <Box sx={{ margin: "24px" }}>
+          <Header
+            text={
+              needsMigration.length == 1
+                ? "Select a primary wallet"
+                : "Select primary wallets"
+            }
+          />
+          <SubtextParagraph>
             When others send you crypto, they'll see at least one address
             publicly associated with your username.
-          </Typography>
+          </SubtextParagraph>
           {needsMigration.map((b) => (
             <MigrationInputs
               selectedAddresses={selectedAddresses[b]}
@@ -101,9 +90,14 @@ export const PrimaryPubkeySelector = () => {
               blockchain={b}
             />
           ))}
-          <br />
-        </div>
-        <div>
+        </Box>
+        <Box
+          style={{
+            marginLeft: "16px",
+            marginRight: "16px",
+            marginBottom: "16px",
+          }}
+        >
           <PrimaryButton
             disabled={
               (needsMigration.find((x) => x === Blockchain.SOLANA) &&
@@ -111,10 +105,14 @@ export const PrimaryPubkeySelector = () => {
               (needsMigration.find((x) => x === Blockchain.ETHEREUM) &&
                 !selectedAddresses[Blockchain.ETHEREUM])
             }
-            label={"Set primary address"}
+            label={
+              needsMigration.length === 1
+                ? "Set primary wallet"
+                : "Set primary wallets"
+            }
             onClick={() => {
               needsMigration.forEach(async (blockchain) => {
-                await fetch(`${BACKEND_API_URL}/users/activePubkey`, {
+                fetch(`${BACKEND_API_URL}/users/activePubkey`, {
                   method: "POST",
                   body: JSON.stringify({
                     publicKey: selectedAddresses[blockchain],
@@ -147,9 +145,10 @@ export const PrimaryPubkeySelector = () => {
                   })
                 );
               });
+              setMigrationDone(true);
             }}
           />
-        </div>
+        </Box>
       </div>
     </WithDrawer>
   );
@@ -170,13 +169,18 @@ function MigrationInputs({
   return (
     <div style={{ color: theme.custom.colors.smallTextColor }}>
       <div style={{ marginTop: 10, marginBottom: 10 }}>
-        Chose primary {blockchain} address
+        Choose primary {toTitleCase(blockchain)} wallet:
       </div>
       {wallets
         .filter((x) => x.blockchain === blockchain)
         .map((wallet) => (
           <TokenBadge
-            style={{ marginRight: 5 }}
+            style={{
+              marginRight: 5,
+              marginBottom: 5,
+              fontSize: "14px",
+              width: "100px",
+            }}
             overwriteBackground={
               selectedAddresses === wallet.publicKey
                 ? theme.custom.colors.invertedPrimary

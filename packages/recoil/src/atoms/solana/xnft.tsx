@@ -1,5 +1,6 @@
 import {
   BACKPACK_CONFIG_XNFT_PROXY,
+  BACKPACK_FEATURE_REFERRAL_FEES,
   Blockchain,
   DEFAULT_PUBKEY_STR,
   fetchXnfts,
@@ -13,6 +14,7 @@ import { atomFamily, selectorFamily } from "recoil";
 
 import { isDeveloperMode } from "../preferences";
 import { connectionUrls } from "../preferences/connection-urls";
+import { primaryWallets } from "../primaryWallets";
 import { activePublicKeys } from "../wallet";
 
 import { anchorContext } from "./wallet";
@@ -124,13 +126,7 @@ export const xnfts = atomFamily<
   default: selectorFamily({
     key: "xnftsDefault",
     get:
-      ({
-        connectionUrl,
-        publicKey,
-      }: {
-        connectionUrl: string;
-        publicKey: string;
-      }) =>
+      ({ publicKey }: { connectionUrl: string; publicKey: string }) =>
       async ({ get }) => {
         const _activeWallets = get(activePublicKeys);
         const _connectionUrls = get(connectionUrls);
@@ -138,18 +134,28 @@ export const xnfts = atomFamily<
         if (!publicKey) {
           return [];
         }
-        const xnfts = await fetchXnfts(provider, new PublicKey(publicKey));
+        const isDropzoneWallet =
+          BACKPACK_FEATURE_REFERRAL_FEES &&
+          get(primaryWallets).some(
+            (w) =>
+              w.blockchain === Blockchain.SOLANA && w.publicKey === publicKey
+          );
+        const xnfts = await fetchXnfts(
+          provider,
+          new PublicKey(publicKey),
+          isDropzoneWallet
+        );
         return xnfts.map((xnft) => {
           return {
             ...xnft,
-            url: xnft.metadataBlob.xnft.manifest.entrypoints.default.web,
-            splashUrls: xnft.metadataBlob.xnft.manifest.splash ?? {},
-            iconUrl: externalResourceUri(xnft.metadataBlob.image),
+            url: xnft.xnft.xnft.manifest.entrypoints.default.web,
+            splashUrls: xnft.xnft.xnft.manifest.splash ?? {},
+            iconUrl: externalResourceUri(xnft.metadata.image),
             activeWallet: _activeWallets[Blockchain.SOLANA],
             activeWallets: _activeWallets,
             connectionUrl: _connectionUrls[Blockchain.SOLANA],
             connectionUrls: _connectionUrls,
-            title: xnft.metadataBlob.name,
+            title: xnft.metadata.name,
           };
         });
       },

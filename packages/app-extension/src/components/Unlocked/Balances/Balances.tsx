@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import { formatUSD, proxyImageUrl, toTitleCase } from "@coral-xyz/common";
 import { isAggregateWallets, useBlockchainLogo } from "@coral-xyz/recoil";

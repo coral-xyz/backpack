@@ -1,12 +1,8 @@
 import { externalResourceUri } from "@coral-xyz/common-public";
-import { Metadata } from "@metaplex-foundation/mpl-token-metadata";
 import type { Provider } from "@project-serum/anchor";
 import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
-
-import { BACKEND_API_URL } from "../../constants";
-import { BACKPACK_FEATURE_REFERRAL_FEES } from "../../generated-config";
 
 export const XNFT_PROGRAM_ID = new PublicKey(
   "xnft5aaToUM4UFETUQfj7NUDUBdvYHTVhNFThEYTm55"
@@ -14,34 +10,28 @@ export const XNFT_PROGRAM_ID = new PublicKey(
 
 export async function fetchXnfts(
   provider: Provider,
-  wallet: PublicKey
-): Promise<Array<{ publicKey: PublicKey; medtadata: any; metadataBlob: any }>> {
+  wallet: PublicKey,
+  isDropzoneWallet: boolean
+): Promise<
+  Array<{
+    xnftAccount: any;
+    xnft: any;
+    metadataPublicKey: any;
+    metadataAccount: any;
+    metadata: any;
+    install: any;
+  }>
+> {
   const client = xnftClient(provider);
 
-  const [xnftInstalls, isDropzoneWallet] = await Promise.all([
-    // Fetch all xnfts installed by this user.
-    client.account.install.all([
-      {
-        memcmp: {
-          offset: 8, // Discriminator
-          bytes: wallet.toString(),
-        },
+  // Fetch all xnfts installed by this user.
+  const xnftInstalls = await client.account.install.all([
+    {
+      memcmp: {
+        offset: 8, // Discriminator
+        bytes: wallet.toString(),
       },
-    ]),
-    // Check if this wallet is the dropzone wallet.
-    (async function isDropzoneWallet() {
-      if (!BACKPACK_FEATURE_REFERRAL_FEES) return false;
-      try {
-        const response = await fetch(`${BACKEND_API_URL}/users/me`);
-        const { publicKeys } = await response.json();
-        const dropzonePublicKeyString = publicKeys.find(
-          (k) => k.blockchain === "solana"
-        )?.publicKey;
-        return dropzonePublicKeyString === wallet.toString();
-      } catch (err) {
-        return false;
-      }
-    })(),
+    },
   ]);
 
   // HACK to get ONE xNFT installed for everyone
@@ -140,17 +130,18 @@ export async function fetchXnftsFromPubkey(
   return accounts.map(({ xnftId, metadata }) => {
     return {
       xnftId,
-      image: externalResourceUri(metadata?.metadataBlob?.image),
-      title: metadata?.metadataBlob?.name,
+      image: externalResourceUri(metadata?.metadata?.image),
+      title: metadata?.metadata?.name,
     };
   });
 }
 
 export async function fetchXnft(xnft: PublicKey | string): Promise<{
   xnftAccount: any;
+  xnft: any;
   metadataPublicKey: any;
+  metadataAccount: any;
   metadata: any;
-  metadataBlob: any;
 } | null> {
   const xnftMetadata: any | null = await fetch(
     `https://swr.xnfts.dev/nft-data/xnft/${new PublicKey(xnft).toBase58()}`
@@ -167,9 +158,10 @@ export async function fetchXnft(xnft: PublicKey | string): Promise<{
 
   return {
     metadataPublicKey: xnftMetadata.masterMetadata,
-    metadata: xnftMetadata.metadataAccount,
-    metadataBlob: xnftMetadata.metadata,
+    metadataAccount: xnftMetadata.metadataAccount,
+    metadata: xnftMetadata.metadata,
     xnftAccount: xnftMetadata.xnftAccount,
+    xnft: xnftMetadata.xnft,
   };
 }
 

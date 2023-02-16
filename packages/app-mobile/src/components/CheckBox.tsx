@@ -21,7 +21,7 @@ export const BaseCheckBoxLabel: React.FC<{
     >
       <ExpoCheckBox
         value={value}
-        onValueChange={label ? () => {} : onPress}
+        onValueChange={() => onPress(!value)}
         color={theme.custom.colors.fontColor}
       />
       {label ? (

@@ -1,11 +1,19 @@
+import type { TokenInfo } from "@solana/spl-token-registry";
 import { useRecoilValue } from "recoil";
 
 import * as atoms from "../../atoms";
+import type { TokenData, TokenDataWithBalance } from "../../types";
 
-export function useJupiterInputMints(publicKey: string): Array<any> {
-  return useRecoilValue(atoms.jupiterInputMints({ publicKey }));
+export function useJupiterInputTokens(
+  publicKey: string
+): Array<TokenDataWithBalance> {
+  return useRecoilValue(atoms.jupiterInputTokens({ publicKey }));
 }
 
-export function useJupiterOutputMints(inputMint: string): Array<any> {
-  return useRecoilValue(atoms.jupiterOutputMints({ inputMint }));
+export function useJupiterTokenList(): Array<TokenInfo> {
+  return useRecoilValue(atoms.jupiterTokenList);
+}
+
+export function useJupiterOutputTokens(inputMint: string): Array<TokenData> {
+  return useRecoilValue(atoms.jupiterOutputTokens({ inputMint }));
 }

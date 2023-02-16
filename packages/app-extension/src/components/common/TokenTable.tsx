@@ -23,7 +23,7 @@ import {
 
 export type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
 
-const useStyles = styles((theme) => ({
+const useStyles = styles(() => ({
   searchField: {
     marginLeft: "12px",
     marginRight: "12px",

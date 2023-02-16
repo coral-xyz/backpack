@@ -43,28 +43,30 @@ export const useAuthentication = () => {
    * Query the server and see if the user has a valid JWT..
    */
   const checkAuthentication = async (
-    username: string,
     jwt?: string
-  ): Promise<
-    | {
-        id: string;
-        publicKeys: Array<{ blockchain: Blockchain; publicKey: string }>;
-        isAuthenticated: boolean;
-      }
-    | undefined
-  > => {
+  ): Promise<{
+    id: string;
+    publicKeys: Array<{ blockchain: Blockchain; publicKey: string }>;
+    isAuthenticated: boolean;
+  } | null> => {
     try {
       return await background.request({
         method: UI_RPC_METHOD_USER_ACCOUNT_READ,
-        params: [username, jwt],
+        params: [jwt],
       });
-    } catch (error) {
+    } catch (error: any) {
       // Relock if authentication failed
-      console.error("error checking auth", error);
-      await background.request({
-        method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
-        params: [],
-      });
+      if (error.toString().includes("user not authenticated")) {
+        // 403
+        return null;
+      } else {
+        console.error("error checking auth", error);
+        await background.request({
+          method: UI_RPC_METHOD_KEYRING_STORE_LOCK,
+          params: [],
+        });
+        return null;
+      }
     }
   };
 
