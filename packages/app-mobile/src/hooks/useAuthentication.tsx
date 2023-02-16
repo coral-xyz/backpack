@@ -44,7 +44,6 @@ export const useAuthentication = () => {
    * Query the server and see if the user has a valid JWT..
    */
   const checkAuthentication = async (
-    username: string,
     jwt?: string
   ): Promise<
     | {
@@ -57,7 +56,7 @@ export const useAuthentication = () => {
     try {
       return await background.request({
         method: UI_RPC_METHOD_USER_ACCOUNT_READ,
-        params: [username, jwt],
+        params: [jwt],
       });
     } catch (error) {
       // Relock if authentication failed
