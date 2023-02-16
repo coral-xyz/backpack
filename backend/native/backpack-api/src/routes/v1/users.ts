@@ -12,7 +12,6 @@ import jwt from "jsonwebtoken";
 import {
   ensureHasPubkeyAccessBody,
   extractUserId,
-  optionallyExtractUserId,
 } from "../../auth/middleware";
 import { clearCookie, setJWTCookie } from "../../auth/util";
 import { REFERRER_COOKIE_NAME } from "../../config";
@@ -225,64 +224,34 @@ router.get("/userById", extractUserId, async (req: Request, res: Response) => {
 /**
  * Returns the user that is associated with the JWT in the cookie or query string.
  */
-router.get(
-  "/me",
-  optionallyExtractUserId(true),
-  async (req: Request, res: Response) => {
-    if (req.id) {
-      try {
-        return res.json(await getUser(req.id));
-      } catch {
-        // User not found
-      }
+router.get("/me", extractUserId, async (req: Request, res: Response) => {
+  if (req.id) {
+    try {
+      return res.json(await getUser(req.id));
+    } catch {
+      // User not found
     }
-    return res.status(404).json({ msg: "User not found" });
   }
-);
+  return res.status(404).json({ msg: "User not found" });
+});
 
 /**
- * Get an existing user. Checks authenticated status if a JWT cookie is passed
- * with the request.
+ * Returns the primary public keys of the user with `username`.
  */
-router.get(
-  "/:username",
-  optionallyExtractUserId(false),
-  async (req: Request, res: Response) => {
-    const username = req.params.username;
-
-    let user;
-
-    if (req.id) {
-      try {
-        const userFromId = await getUser(req.id);
-        if (userFromId && userFromId.username === username) {
-          // User is authenticated as username
-          user = userFromId;
-        }
-      } catch {
-        // User not found or username did not match
-      }
-    }
-
-    // Valid JWT, user is authenticated
-    const isAuthenticated = !!user;
-
-    // If no user id was found in the JWT, we are not authenticated but still
-    // try and get the user details by username
-    if (!user) {
-      try {
-        user = await getUserByUsername(username);
-      } catch {
-        return res.status(404).json({ msg: "User not found" });
-      }
-    }
-
+router.get("/:username", async (req: Request, res: Response) => {
+  const username = req.params.username;
+  try {
+    const user = await getUserByUsername(username);
     return res.json({
-      ...user,
-      isAuthenticated,
+      id: user.id,
+      // Only expose primary public keys publicly for sending to username
+      publicKeys: user.publicKeys.filter((k) => k.primary),
     });
+  } catch (error) {
+    console.error(error);
+    return res.status(404).json({ msg: "User not found" });
   }
-);
+});
 
 /**
  * Delete a public key/blockchain from the currently authenticated user.
@@ -374,6 +343,9 @@ router.post("/metadata", async (req: Request, res: Response) => {
   });
 });
 
+/**
+ * Update the public key for the authenticated user.
+ */
 router.post(
   "/activePubkey",
   extractUserId,

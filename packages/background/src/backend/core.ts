@@ -1445,16 +1445,18 @@ export class Backend {
   /**
    * Read a Backpack account from the Backpack API.
    */
-  async userAccountRead(username: string, jwt: string) {
+  async userAccountRead(jwt?: string) {
     const headers = {
       "Content-Type": "application/json",
       ...(jwt ? { Authorization: `Bearer ${jwt}` } : {}),
     };
-    const response = await fetch(`${BACKEND_API_URL}/users/${username}`, {
+    const response = await fetch(`${BACKEND_API_URL}/users/me`, {
       method: "GET",
       headers,
     });
-    if (response.status === 404) {
+    if (response.status === 403) {
+      throw new Error("user not authenticated");
+    } else if (response.status === 404) {
       // User does not exist on server, how to handle?
       throw new Error("user does not exist");
     } else if (response.status !== 200) {

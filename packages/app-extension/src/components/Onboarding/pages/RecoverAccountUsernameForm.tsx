@@ -22,6 +22,7 @@ export const RecoverAccountUsernameForm = ({
   const theme = useCustomTheme();
 
   useEffect(() => {
+    // Clear error on username changes
     setError("");
   }, [username]);
 

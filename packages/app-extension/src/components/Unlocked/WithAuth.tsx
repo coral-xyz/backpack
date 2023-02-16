@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
-import type { Blockchain, SignedWalletDescriptor } from "@coral-xyz/common";
+import type {
+  Blockchain,
+  ServerPublicKey,
+  SignedWalletDescriptor,
+} from "@coral-xyz/common";
 import {
+  BACKEND_API_URL,
   getAuthMessage,
   UI_RPC_METHOD_KEYRING_KEY_DELETE,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_SYNC,
@@ -36,10 +41,11 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
   } | null>(null);
   const [authSignature, setAuthSignature] = useState<string | null>(null);
   const [openDrawer, setOpenDrawer] = useState(false);
-  const [serverAccountState, setServerAccountState] = useState<{
-    isAuthenticated: boolean;
-    publicKeys: Array<{ blockchain: Blockchain; publicKey: string }>;
-  } | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [serverPublicKeys, setServerPublicKeys] = useState<Array<{
+    blockchain: Blockchain;
+    publicKey: string;
+  }> | null>(null);
   const [clientPublicKeys, setClientPublicKeys] = useState<
     Array<{ blockchain: Blockchain; publicKey: string; hardware: boolean }>
   >([]);
@@ -53,47 +59,42 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
   useEffect(() => {
     (async () => {
       setAuthSignature(null);
-      setServerAccountState(null);
+      setServerPublicKeys(null);
       setClientPublicKeys(await getSigners());
-      const result = await checkAuthentication(user.username, user.jwt);
+      const result = await checkAuthentication(user.jwt);
       // These set state calls should be batched
       if (result) {
-        const { isAuthenticated, publicKeys } = result;
-        setServerAccountState({
-          // If user.jwt is empty we should authenticate again
-          isAuthenticated: isAuthenticated && user.jwt !== "",
-          publicKeys,
-        });
+        const { publicKeys } = result;
+        setIsAuthenticated(true);
+        setServerPublicKeys(publicKeys);
+      } else {
+        // Not authenticated so couldn't get public keys, get the primary
+        // public keys from a public endpoint and use one of those to auth
+        const response = await fetch(
+          `${BACKEND_API_URL}/users/${user.username}`
+        );
+        const serverPublicKeys = (await response.json()).publicKeys;
+        setServerPublicKeys(serverPublicKeys);
+        setIsAuthenticated(false);
+        // Find a local signer that exists on the client and server and
+        // set the auth data
+        const signer = await getAuthSigner(
+          serverPublicKeys.map((p: ServerPublicKey) => p.publicKey)
+        );
+        if (authData) {
+          setAuthData({
+            ...signer,
+            message: getAuthMessage(user.uuid),
+            userId: user.uuid,
+          });
+        }
       }
     })();
     // Rerun authentication on user changes
   }, [user]);
 
   /**
-   * If the user is not authenticated, find a signer that exists on the client
-   * and the server and set the auth data.
-   */
-  useEffect(() => {
-    if (serverAccountState) {
-      if (!serverAccountState.isAuthenticated) {
-        (async () => {
-          const authData = await getAuthSigner(
-            serverAccountState.publicKeys.map((p) => p.publicKey)
-          );
-          if (authData) {
-            setAuthData({
-              ...authData,
-              message: getAuthMessage(user.uuid),
-              userId: user.uuid,
-            });
-          }
-        })();
-      }
-    }
-  }, [serverAccountState]);
-
-  /**
-   * When an auth signer is found, take the required action to get a signature.
+   * When data for authentication is set, take the required action to get a signature.
    */
   useEffect(() => {
     (async () => {
@@ -126,14 +127,19 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
   useEffect(() => {
     (async () => {
       if (authData && authSignature) {
-        const { id, jwt } = await authenticate({
+        const { id, jwt, publicKeys } = await authenticate({
           ...authData,
           signature: authSignature,
         });
+        // Update server public keys so we attempt to sync the non primary
+        // public keys (i.e. those that require authentication to see)
+        setServerPublicKeys(publicKeys);
+        // Store the JWT from the authentication forl ater
         await background.request({
           method: UI_RPC_METHOD_USER_JWT_UPDATE,
           params: [id, jwt],
         });
+        // Close the hardware sign drawer (if open)
         setOpenDrawer(false);
       }
     })();
@@ -146,12 +152,12 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
    */
   useEffect(() => {
     (async () => {
-      if (!serverAccountState) return;
+      if (!serverPublicKeys) return;
       // Public key/signature pairs that are required to sync the state of the
       // server public key data with the client data.
       const danglingPublicKeys = clientPublicKeys.filter((c) => {
         // Filter to client public keys that don't exist on the server
-        const existsServer = serverAccountState.publicKeys.find(
+        const existsServer = serverPublicKeys.find(
           (s) => s.blockchain === c.blockchain && s.publicKey === c.publicKey
         );
         return !existsServer;
@@ -183,7 +189,7 @@ export function WithAuth({ children }: { children: React.ReactElement }) {
         }
       }
     })();
-  }, [clientPublicKeys, serverAccountState]);
+  }, [clientPublicKeys, serverPublicKeys]);
 
   //
   // Attempt to find any dehydrated wallets on the mnemonic if a mnemonic is in use.
