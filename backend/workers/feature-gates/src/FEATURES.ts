@@ -5,4 +5,5 @@ export const FEATURE_GATES = {
   MESSAGE_IFRAME_ENABLED: false,
   OFFLINE_IMAGES: true,
   PRIMARY_PUBKEY_ENABLED: true,
-};
+  SWAP_FEES_ENABLED: false,
+} as const;
