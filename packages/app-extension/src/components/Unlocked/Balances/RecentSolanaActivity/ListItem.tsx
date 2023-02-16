@@ -101,7 +101,6 @@ export function SolanaTransactionListItem({
         paddingTop: "10px",
         paddingBottom: "10px",
         display: "flex",
-        height: "68px",
         backgroundColor: theme.custom.colors.nav,
         borderBottom: isLast
           ? undefined
