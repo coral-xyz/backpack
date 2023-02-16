@@ -1,7 +1,7 @@
 // function MnemonicInputFields from app-extension/.../common/Account/MnemonicInput.tsx
 import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
 
-import { useTheme } from "@hooks";
+import { useTheme } from "~hooks/useTheme";
 
 function Item({ item, index }) {
   const theme = useTheme();

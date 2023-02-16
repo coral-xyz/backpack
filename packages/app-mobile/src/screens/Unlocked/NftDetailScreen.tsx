@@ -30,8 +30,8 @@ import {
   SecondaryButton,
   StyledTextInput,
   Margin,
-} from "@components/index";
-import { useTheme } from "@hooks/index";
+} from "~components/index";
+import { useTheme } from "~hooks/useTheme";
 
 export function NftDetailScreen({ navigation, route }): JSX.Element | null {
   const { nftId, publicKey, connectionUrl } = route.params;

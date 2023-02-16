@@ -1,10 +1,11 @@
 import type { Blockchain, WalletDescriptor } from "@coral-xyz/common";
 import {
-  derivationPathsToIndexes,
   generateUniqueId,
   getIndexedPath,
+  isValidEventOrigin,
   LEDGER_INJECTED_CHANNEL_REQUEST,
   LEDGER_INJECTED_CHANNEL_RESPONSE,
+  nextIndicesFromPaths,
 } from "@coral-xyz/common";
 
 import type { LedgerKeyringJson } from "./types";
@@ -51,8 +52,7 @@ export class LedgerKeyringBase {
 
   public nextDerivationPath(offset = 1) {
     const derivationPaths = this.walletDescriptors.map((w) => w.derivationPath);
-    const { accountIndex, walletIndex } =
-      derivationPathsToIndexes(derivationPaths);
+    const { accountIndex, walletIndex } = nextIndicesFromPaths(derivationPaths);
     const derivationPath = getIndexedPath(
       this.blockchain,
       accountIndex,
@@ -134,6 +134,9 @@ const responseResolvers: {
 // Handle receiving postMessages
 self.addEventListener("message", (msg) => {
   try {
+    if (!isValidEventOrigin(msg)) {
+      return;
+    }
     if (msg.data.type !== LEDGER_INJECTED_CHANNEL_RESPONSE) {
       return;
     }

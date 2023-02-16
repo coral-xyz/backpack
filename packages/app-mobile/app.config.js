@@ -43,7 +43,18 @@ export default {
     supportsTablet: true,
     bundleIdentifier: packageName,
     infoPlist: {
-      WKAppBoundDomains: ["coral-xyz.github.io", "ngrok.io"],
+      NSAllowsArbitraryLoads: true,
+      NSExceptionDomains: {
+        localhost: {
+          NSExceptionAllowsInsecureHTTPLoads: true,
+          NSIncludesSubdomains: true,
+        },
+      },
+      WKAppBoundDomains: [
+        "coral-xyz.github.io",
+        "ngrok.io",
+        "backpack-api.xnfts.dev",
+      ],
     },
   },
   android: {
@@ -59,7 +70,7 @@ export default {
   extra: {
     localWebViewUrl: "http://localhost:9333",
     remoteWebViewUrl:
-      "https://coral-xyz.github.io/backpack/background-scripts/85fa0c25/service-worker-loader.html",
+      "https://coral-xyz.github.io/backpack/background-scripts/8f1f3d8/service-worker-loader.html",
     eas: {
       projectId: projectID,
     },

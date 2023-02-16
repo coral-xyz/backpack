@@ -1,0 +1,21 @@
+{
+  "name": "xnft-gateway",
+  "version": "0.0.0",
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20221111.1",
+    "typescript": "^4.9.3",
+    "wrangler": "2.1.9"
+  },
+  "private": true,
+  "scripts": {
+    "start": "wrangler dev",
+    "deploy": "wrangler publish"
+  },
+  "dependencies": {
+    "@project-serum/anchor": "^0.26.0",
+    "base32-decode": "^1.0.0",
+    "base32-encode": "^2.0.0",
+    "bs58": "^5.0.0",
+    "hono": "^2.5.8"
+  }
+}

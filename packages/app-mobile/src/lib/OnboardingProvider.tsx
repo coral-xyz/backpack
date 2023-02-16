@@ -1,5 +1,5 @@
 // TODO(peter) move all the RPC/onboarding function shit here & out of every individual screen (eventually)
-import type { BlockchainKeyringInit, KeyringType } from "@coral-xyz/common";
+import type { KeyringType, SignedWalletDescriptor } from "@coral-xyz/common";
 
 import { createContext, useContext, useState } from "react";
 
@@ -51,26 +51,28 @@ export type OnboardingData = {
   username: string | null;
   action: string | null; // TODO consider this default of 'welcome' maybe
   keyringType: KeyringType | null;
-  blockchainKeyrings: BlockchainKeyringInit[];
   blockchain: Blockchain | null;
   password: string | null;
   mnemonic: string | undefined;
   blockchainOptions: BlockchainSelectOption[];
   waitlistId: string | undefined;
+  signedWalletDescriptors: SignedWalletDescriptor[];
+  userId?: string;
+  isAddingAccount?: boolean;
 };
 
 const defaults = {
   complete: false,
   inviteCode: undefined,
-  username: null,
+  username: "testing__",
   action: null,
   keyringType: null,
-  blockchainKeyrings: [],
   blockchain: null,
   password: null,
   mnemonic: undefined,
   blockchainOptions: BLOCKCHAIN_OPTIONS,
   waitlistId: undefined,
+  signedWalletDescriptors: [],
 };
 
 const OnboardingContext = createContext<{

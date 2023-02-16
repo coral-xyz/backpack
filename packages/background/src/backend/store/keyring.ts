@@ -3,8 +3,8 @@ import type { Blockchain, BlockchainKeyringJson } from "@coral-xyz/common";
 import type { SecretPayload } from "../keyring/crypto";
 import * as crypto from "../keyring/crypto";
 
-import { migrate_0_2_0_2408 } from "./migrations/migrate_0_2_0_2408";
 import { LocalStorageDb } from "./db";
+import { runMigrationsIfNeeded } from "./migrations";
 
 const KEY_KEYRING_STORE = "keyring-store";
 
@@ -25,32 +25,32 @@ export type UserKeyringJson = {
   activeBlockchain: Blockchain;
   mnemonic?: string;
   blockchains: {
-    [key: string]: BlockchainKeyringJson;
+    [blockchain: string]: BlockchainKeyringJson;
   };
 };
 
 // The keyring store should only ever be accessed through this method.
-export async function getKeyringStore(
-  password: string
-): Promise<KeyringStoreJson> {
+//
+// Note: this method reserves the right to mutate `userInfo`. This is required
+//       for example, for the 510 migration, where a UUID doesn't exist and
+//       so the migration needs to get and fetch it--and set it on the
+//       `userInfo` object for use elsewhere.
+export async function getKeyringStore(userInfo: {
+  uuid: string;
+  password: string;
+}): Promise<KeyringStoreJson> {
+  await runMigrationsIfNeeded(userInfo);
+  const json = await getKeyringStore_NO_MIGRATION(userInfo.password);
+  return json;
+}
+
+export async function getKeyringStore_NO_MIGRATION(password: string) {
   const ciphertextPayload = await getKeyringCiphertext();
   if (ciphertextPayload === undefined || ciphertextPayload === null) {
     throw new Error("keyring store not found on disk");
   }
   const plaintext = await crypto.decrypt(ciphertextPayload, password);
   const json = JSON.parse(plaintext);
-
-  if (json.usernames) {
-    return json;
-  }
-
-  migrate_0_2_0_2408(json);
-
-  //
-  // Migrate user from single username -> multi username account management.
-  //
-  // TODO.
-
   return json;
 }
 
@@ -63,7 +63,8 @@ export async function setKeyringStore(
   await setKeyringCiphertext(ciphertext);
 }
 
-async function getKeyringCiphertext(): Promise<SecretPayload> {
+// Never call this externally. Only exported for migrations.
+export async function getKeyringCiphertext(): Promise<SecretPayload> {
   return await LocalStorageDb.get(KEY_KEYRING_STORE);
 }
 

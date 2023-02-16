@@ -112,7 +112,7 @@ export function InboxInner() {
       />
       {(!allChats || !allChats.length) && <MessagesSkeleton />}
       {allChats &&
-        allChats.length &&
+        allChats.length !== 0 &&
         (allChats.filter((x) =>
           (x.chatType === "individual"
             ? x.chatProps.remoteUsername || ""
@@ -138,7 +138,7 @@ export function InboxInner() {
                   if (
                     x.chatType === "individual" &&
                     x.chatProps.public_keys
-                      ?.map((x) => x.public_key)
+                      ?.map((x) => x.publicKey)
                       ?.includes(searchFilter)
                   ) {
                     return true;
@@ -159,7 +159,7 @@ export function InboxInner() {
         </div>
       )}
       {allChats &&
-        allChats.length &&
+        allChats.length !== 0 &&
         searchFilter.length < 3 &&
         requestCount === 0 &&
         allChats.length === 0 && (

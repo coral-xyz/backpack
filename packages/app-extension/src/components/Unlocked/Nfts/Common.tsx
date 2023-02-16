@@ -56,17 +56,6 @@ export function GridCard({
 
   return (
     <>
-      {showNotificationBubble && (
-        <CircleIcon
-          style={{
-            position: "absolute",
-            right: 0,
-            top: 0,
-            zIndex: 100,
-            color: "#E33E3F",
-          }}
-        />
-      )}
       <Button
         className={classes.button}
         onClick={onClick}

@@ -1,3 +1,5 @@
+import type { Blockchain } from "../types";
+
 import type { CHAT_MESSAGES, SUBSCRIBE, UNSUBSCRIBE } from "./fromServer";
 
 export type SubscriptionType = "collection" | "individual";
@@ -6,7 +8,12 @@ export type SubscriptionMessage = {
   room: string;
 };
 
-export type MessageKind = "gif" | "text" | "secure-transfer" | "media";
+export type MessageKind =
+  | "gif"
+  | "text"
+  | "secure-transfer"
+  | "media"
+  | "transaction";
 
 export type MessageMetadata =
   | {
@@ -19,6 +26,9 @@ export type MessageMetadata =
   | {
       media_kind: "image" | "video";
       media_link: string;
+    }
+  | {
+      final_tx_signature: string;
     };
 
 export type SendMessagePayload = {
@@ -66,6 +76,10 @@ export interface RemoteUserData {
   username: string;
   searchedSolPubKey?: string; // Returns a public key if it is searched for
   searchedEthPubKey?: string;
+  public_keys: {
+    blockchain: Blockchain;
+    public_key: string;
+  }[];
 }
 
 export interface CollectionChatData {

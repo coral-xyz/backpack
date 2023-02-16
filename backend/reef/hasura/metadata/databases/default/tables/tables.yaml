@@ -13,6 +13,7 @@
 - "!include auth_public_keys.yaml"
 - "!include auth_stripe_onramp.yaml"
 - "!include auth_twitter_users.yaml"
+- "!include auth_user_active_publickey_mapping.yaml"
 - "!include auth_user_nfts.yaml"
 - "!include auth_users.yaml"
 - "!include auth_waolist_tokens.yaml"

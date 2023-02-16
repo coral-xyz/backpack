@@ -8,6 +8,7 @@ import { isMobile } from "@coral-xyz/common-public";
 import { BrowserRuntimeCommon, BrowserRuntimeExtension } from "../browser";
 import { POST_MESSAGE_ORIGIN } from "../constants";
 import type { RpcResponse, Sender } from "../types";
+import { isValidEventOrigin } from "..";
 
 // Channel is a class that establishes communication channel from a
 // content/injected script to a background script.
@@ -15,6 +16,9 @@ export class ChannelContentScript {
   // Forwards all messages from the client to the background script.
   public static proxy(reqChannel: string, respChannel: string) {
     window.addEventListener("message", (event) => {
+      if (!isValidEventOrigin(event)) {
+        return;
+      }
       if (event.data.type !== reqChannel) return;
       // @ts-ignore
       BrowserRuntimeCommon.sendMessageToAnywhere(

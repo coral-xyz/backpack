@@ -14,12 +14,12 @@ import {
 import { NotificationsProvider } from "@coral-xyz/recoil";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import { useTheme } from "@hooks";
+import { useTheme } from "~hooks/useTheme";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 import { RecoilRoot, useRecoilCallback, useRecoilSnapshot } from "recoil";
 
-import { ErrorBoundary } from "@components/ErrorBoundary";
+import { ErrorBoundary } from "~components/ErrorBoundary";
 
 import { useLoadedAssets } from "./hooks/useLoadedAssets";
 import { RootNavigation } from "./navigation/RootNavigator";
@@ -168,7 +168,7 @@ function maybeParseLog({
     switch (channel) {
       case "mobile-logs": {
         const [name, ...rest] = data;
-        const color = name.includes("ERROR") ? "red" : "yellow";
+        const color = name.includes("ERROR") ? "red" : "brown";
         console.group(`${channel}:${name}`);
         console.log("%c" + `${channel}:` + name, `color: ${color}`);
         console.log(rest);
@@ -207,13 +207,16 @@ function BackgroundHiddenWebView(): JSX.Element {
     Constants?.expoConfig?.extra || {};
 
   const webViewUrl = Device.isDevice ? remoteWebViewUrl : localWebViewUrl;
+  console.log("webviewUrl", webViewUrl);
 
   return (
-    <View style={{ display: "none" }}>
+    <View style={styles.webview}>
       <WebView
         ref={ref}
-        cacheMode="LOAD_CACHE_ELSE_NETWORK"
-        cacheEnabled
+        // useWebView2
+        // originWhitelist={["*", "https://*", "https://backpack-api.xnfts.dev/*"]}
+        // cacheMode="LOAD_CACHE_ELSE_NETWORK"
+        // cacheEnabled
         limitsNavigationsToAppBoundDomains
         source={{
           uri: webViewUrl,
@@ -236,5 +239,8 @@ function BackgroundHiddenWebView(): JSX.Element {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  webview: {
+    display: "none",
   },
 });

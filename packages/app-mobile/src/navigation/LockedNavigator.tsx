@@ -6,6 +6,7 @@ import {
   Platform,
   StyleSheet,
   View,
+  Keyboard,
 } from "react-native";
 
 import { deleteItemAsync } from "expo-secure-store";
@@ -13,23 +14,23 @@ import { deleteItemAsync } from "expo-secure-store";
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
 import { useBackgroundClient, useUser } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
-import { IconPushDetail } from "@screens/Unlocked/Settings/components/SettingsRow";
+import { IconPushDetail } from "~screens/Unlocked/Settings/components/SettingsRow";
 import { useForm } from "react-hook-form";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import {
   BottomSheetHelpModal,
   HelpModalMenuButton,
-} from "@components/BottomSheetHelpModal";
-import { ErrorMessage } from "@components/ErrorMessage";
-import { PasswordInput } from "@components/PasswordInput";
+} from "~components/BottomSheetHelpModal";
+import { ErrorMessage } from "~components/ErrorMessage";
+import { PasswordInput } from "~components/PasswordInput";
 import {
   Margin,
   PrimaryButton,
   Screen,
   WelcomeLogoHeader,
-} from "@components/index";
-import { useTheme } from "@hooks/index";
+} from "~components/index";
+import { useTheme } from "~hooks/useTheme";
 
 const maybeResetApp = () => {
   Alert.alert(
@@ -89,7 +90,7 @@ export function LockedScreen(): JSX.Element {
     try {
       await background.request({
         method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-        params: [password, user.uuid, user.username],
+        params: [password, user.uuid],
       });
     } catch (error: any) {
       setError("password", { message: error });
@@ -100,7 +101,7 @@ export function LockedScreen(): JSX.Element {
   //   async function f() {
   //     await background.request({
   //       method: UI_RPC_METHOD_KEYRING_STORE_UNLOCK,
-  //       params: ["backpack", user.uuid, user.username],
+  //       params: ["backpack", user.uuid],
   //     });
   //   }
   //
@@ -141,6 +142,7 @@ export function LockedScreen(): JSX.Element {
         >
           <HelpModalMenuButton
             onPress={() => {
+              Keyboard.dismiss();
               setIsModalVisible((last) => !last);
             }}
           />

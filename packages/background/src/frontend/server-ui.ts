@@ -60,6 +60,7 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   UI_RPC_METHOD_KEYRING_STORE_LOCK,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
+  UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_SYNC,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEY_DATA,
   UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS,
   UI_RPC_METHOD_KEYRING_STORE_STATE,
@@ -171,12 +172,7 @@ async function handle<T = any>(
         ...params
       );
     case UI_RPC_METHOD_KEYRING_STORE_UNLOCK:
-      return await handleKeyringStoreUnlock(
-        ctx,
-        params[0],
-        params[1],
-        params[2]
-      );
+      return await handleKeyringStoreUnlock(ctx, params[0], params[1]);
     case UI_RPC_METHOD_KEYRING_STORE_LOCK:
       return await handleKeyringStoreLock(ctx);
     case UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS:
@@ -212,6 +208,8 @@ async function handle<T = any>(
       return await handleValidateMnemonic(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_EXPORT_MNEMONIC:
       return handleKeyringExportMnemonic(ctx, params[0]);
+    case UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_SYNC:
+      return await handleMnemonicSync(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_AUTO_LOCK_SETTINGS_READ:
       return await handleKeyringAutoLockSettingsRead(ctx, params[0]);
     case UI_RPC_METHOD_KEYRING_AUTO_LOCK_SETTINGS_UPDATE:
@@ -736,6 +734,14 @@ function handleKeyringExportMnemonic(
   password: string
 ): RpcResponse<string> {
   const resp = ctx.backend.keyringExportMnemonic(password);
+  return [resp];
+}
+
+async function handleMnemonicSync(
+  ctx: Context<Backend>,
+  serverPublicKeys: Array<{ blockchain: Blockchain; publicKey: string }>
+) {
+  const resp = await ctx.backend.mnemonicSync(serverPublicKeys);
   return [resp];
 }
 

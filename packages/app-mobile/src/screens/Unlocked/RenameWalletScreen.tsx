@@ -7,13 +7,13 @@ import {
   SecondaryButton,
   StyledTextInput,
   TwoButtonFooter,
-} from "@components";
+} from "~components/index";
 import {
   UI_RPC_METHOD_KEYNAME_UPDATE,
   walletAddressDisplay,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
-import { useTheme } from "@hooks";
+import { useTheme } from "~hooks/useTheme";
 
 export function RenameWalletScreen({ navigation, route }): JSX.Element {
   const background = useBackgroundClient();

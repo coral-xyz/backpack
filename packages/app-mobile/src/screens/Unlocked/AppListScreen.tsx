@@ -1,4 +1,4 @@
-import { RandomBackgroundScreen } from "@screens/Helpers/RandomBackgroundScreen";
+import { RandomBackgroundScreen } from "~screens/Helpers/RandomBackgroundScreen";
 
 // type Plugin = {
 //   title: string;

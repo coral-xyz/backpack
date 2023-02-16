@@ -54,11 +54,6 @@ function pluginURL(pluginName: string) {
   ].join("");
 }
 
-export function xnftUrl(url: string) {
-  const uri = externalResourceUri(url);
-  return uri;
-}
-
 export const appStoreMetaTags = selectorFamily<
   { name?: string; description?: string; image?: string },
   string
@@ -147,15 +142,14 @@ export const xnfts = atomFamily<
         return xnfts.map((xnft) => {
           return {
             ...xnft,
-            url: xnftUrl(
-              xnft.metadataBlob.xnft.manifest.entrypoints.default.web
-            ),
-            iconUrl: externalResourceUri(xnft.metadataBlob.image),
+            url: xnft.xnft.xnft.manifest.entrypoints.default.web,
+            splashUrls: xnft.xnft.xnft.manifest.splash ?? {},
+            iconUrl: externalResourceUri(xnft.metadata.image),
             activeWallet: _activeWallets[Blockchain.SOLANA],
             activeWallets: _activeWallets,
             connectionUrl: _connectionUrls[Blockchain.SOLANA],
             connectionUrls: _connectionUrls,
-            title: xnft.metadataBlob.name,
+            title: xnft.metadata.name,
           };
         });
       },
@@ -183,6 +177,10 @@ export const plugins = selectorFamily<
         const simulator = {
           url: SIMULATOR_URL,
           iconUrl: "assets/simulator.png",
+          splashUrls: {},
+          // splashUrls: {
+          //   lg: "assets/one/distressed-background.png",
+          // },
           title: "Simulator",
           activeWallets: get(activePublicKeys),
           connectionUrls: get(connectionUrls),

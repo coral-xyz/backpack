@@ -26,12 +26,12 @@
 - [Installing the Latest Release](#installing-the-latest-release)
 - [Developing Locally](#developing-locally)
   - [Pull the code](#pull-the-code)
-  - [Temporary preliminary steps](temporary-preliminary-steps)
-  - [Install dependencies](install-dependencies)
-  - [Build all packages for production](build-all-packages-for-production)
-  - [Start packages for development](start-packages-for-development)
-  - [Install the development version of the extension](install-the-development-version-of-the-extension)
-  - [Optionally install the built extension](optionally-install-the-built-extension)
+  - [Temporary preliminary steps](#temporary-preliminary-steps)
+  - [Install dependencies](#install-dependencies)
+  - [Build all packages for production](#build-all-packages-for-production)
+  - [Start packages for development](#start-everything-inside-packages-for-development)
+  - [Install the development version of the extension](#install-the-development-version-of-the-extension)
+  - [Optionally install the built extension](#optionally-install-the-built-extension)
 - [License](#license)
 
 ## Installing the Latest Release

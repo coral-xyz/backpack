@@ -339,8 +339,8 @@ function TabBar() {
           >
             <AvatarPopoverButton
               imgStyle={{
-                width: "40px",
-                height: "40px",
+                width: "38px",
+                height: "38px",
                 borderRadius: "20px",
               }}
               buttonStyle={{

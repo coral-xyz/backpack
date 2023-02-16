@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import {
+  BACKEND_API_URL,
+  BACKPACK_FEATURE_REFERRAL_FEES,
   UI_RPC_METHOD_KEYRING_KEY_DELETE,
   UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_DELETE,
   walletAddressDisplay,
@@ -28,13 +30,32 @@ export const RemoveWallet: React.FC<{
   const background = useBackgroundClient();
   const [showSuccess, setShowSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showDropzoneConfirmation, setShowDropzoneConfirmation] =
+    useState(false);
 
   useEffect(() => {
     nav.setOptions({ headerTitle: "Remove Wallet" });
   }, [nav]);
 
-  const onRemove = async () => {
+  const onRemove = useCallback(async () => {
     setLoading(true);
+
+    if (BACKPACK_FEATURE_REFERRAL_FEES && !showDropzoneConfirmation) {
+      try {
+        const response = await fetch(
+          `${BACKEND_API_URL}/dropzone/claims/${publicKey}`
+        );
+        const json = await response.json();
+        if (json.unclaimed.length > 0) {
+          setLoading(false);
+          setShowDropzoneConfirmation(true);
+          return;
+        }
+      } catch (err) {
+        // error loading keys
+      }
+    }
+
     if (type === "dehydrated") {
       await background.request({
         method: UI_RPC_METHOD_USER_ACCOUNT_PUBLIC_KEY_DELETE,
@@ -48,7 +69,7 @@ export const RemoveWallet: React.FC<{
     }
     setLoading(false);
     setShowSuccess(true);
-  };
+  }, [showDropzoneConfirmation]);
 
   return (
     <>
@@ -80,9 +101,11 @@ export const RemoveWallet: React.FC<{
               color: theme.custom.colors.fontColor,
             }}
           >
-            {`Are you sure you want to remove ${walletAddressDisplay(
-              publicKey
-            )}?`}
+            {showDropzoneConfirmation
+              ? "You might have unclaimed Dropzone drops"
+              : `Are you sure you want to remove ${walletAddressDisplay(
+                  publicKey
+                )}?`}
           </Typography>
           <Typography
             style={{
@@ -94,7 +117,9 @@ export const RemoveWallet: React.FC<{
               marginTop: "8px",
             }}
           >
-            {type === "derived" ? (
+            {showDropzoneConfirmation ? (
+              "You can check by opening the Dropzone xNFT. Are you sure you want to go ahead?"
+            ) : type === "derived" ? (
               <>
                 Removing from Backpack will not delete the wallet’s contents. It
                 will still be available by importing your secret recovery phrase

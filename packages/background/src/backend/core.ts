@@ -23,6 +23,7 @@ import {
   EthereumExplorer,
   getAccountRecoveryPaths,
   getAddMessage,
+  getRecoveryPaths,
   NOTIFICATION_ACTIVE_BLOCKCHAIN_UPDATED,
   NOTIFICATION_AGGREGATE_WALLETS_UPDATED,
   NOTIFICATION_APPROVED_ORIGINS_UPDATE,
@@ -661,27 +662,29 @@ export class Backend {
     return await this.keyringStore.checkPassword(password);
   }
 
-  async keyringStoreUnlock(
-    password: string,
-    uuid: string,
-    username?: string
-  ): Promise<string> {
-    if (!username) {
-      throw new Error("invariant violation: username not found");
-    }
-
-    await this.keyringStore.tryUnlock(password, uuid);
-
+  async keyringStoreUnlock(password: string, uuid: string): Promise<string> {
+    //
+    // Note: we package the userInfo into an object so that it can be mutated
+    //       by downstream functions. This is required, e.g., for migrating
+    //       when a uuid doesn't yet exist on the client.
+    //
+    const userInfo = { password, uuid };
+    await this.keyringStore.tryUnlock(userInfo);
+    const activeUser = (await store.getUserData()).activeUser;
     const blockchainActiveWallets = await this.blockchainActiveWallets();
-
-    const ethereumConnectionUrl = await this.ethereumConnectionUrlRead(uuid);
+    const ethereumConnectionUrl = await this.ethereumConnectionUrlRead(
+      userInfo.uuid
+    );
     const ethereumChainId = await this.ethereumChainIdRead();
-    const solanaConnectionUrl = await this.solanaConnectionUrlRead(uuid);
-    const solanaCommitment = await this.solanaCommitmentRead(uuid);
+    const solanaConnectionUrl = await this.solanaConnectionUrlRead(
+      userInfo.uuid
+    );
+    const solanaCommitment = await this.solanaCommitmentRead(userInfo.uuid);
 
     this.events.emit(BACKEND_EVENT, {
       name: NOTIFICATION_KEYRING_STORE_UNLOCKED,
       data: {
+        activeUser,
         blockchainActiveWallets,
         ethereumConnectionUrl,
         ethereumChainId,
@@ -1207,6 +1210,67 @@ export class Backend {
     return this.keyringStore.createMnemonic(strength);
   }
 
+  async mnemonicSync(
+    serverPublicKeys: Array<{ blockchain: Blockchain; publicKey: string }>
+  ) {
+    const blockchains = [...new Set(serverPublicKeys.map((x) => x.blockchain))];
+    for (const blockchain of blockchains) {
+      const recoveryPaths = getRecoveryPaths(blockchain);
+      const publicKeys = await this.previewPubkeys(
+        blockchain,
+        this.keyringStore.activeUserKeyring.exportMnemonic(),
+        recoveryPaths
+      );
+      const searchPublicKeys = serverPublicKeys
+        .filter((b) => b.blockchain === blockchain)
+        .map((p) => p.publicKey);
+      for (const searchPublicKey of searchPublicKeys) {
+        const index = publicKeys.findIndex(
+          (p: string) => p === searchPublicKey
+        );
+        if (index !== -1) {
+          // There is a match among the recovery paths
+          let blockchainKeyring: BlockchainKeyring | undefined = undefined;
+          // Check if the blockchain keyring already exists
+          try {
+            blockchainKeyring =
+              this.keyringStore.activeUserKeyring.keyringForBlockchain(
+                blockchain
+              );
+          } catch {
+            // Doesn't exist, we can create it
+          }
+          if (blockchainKeyring) {
+            // Exists, just add the missing derivation path
+            const { publicKey, name } =
+              await this.keyringStore.activeUserKeyring
+                .keyringForBlockchain(blockchain)
+                .addDerivationPath(recoveryPaths[index]);
+            this.events.emit(BACKEND_EVENT, {
+              name: NOTIFICATION_KEYRING_DERIVED_WALLET,
+              data: {
+                blockchain,
+                publicKey,
+                name,
+              },
+            });
+          } else {
+            // Create blockchain keyring
+            const walletDescriptor = {
+              blockchain,
+              publicKey: publicKeys[index],
+              derivationPath: recoveryPaths[index],
+            };
+            await this.blockchainKeyringsAdd(blockchain, {
+              ...walletDescriptor,
+              signature: "",
+            });
+          }
+        }
+      }
+    }
+  }
+
   keyringHasMnemonic(): boolean {
     return this.keyringStore.activeUserKeyring.hasMnemonic();
   }
@@ -1383,16 +1447,18 @@ export class Backend {
   /**
    * Read a Backpack account from the Backpack API.
    */
-  async userAccountRead(username: string, jwt: string) {
+  async userAccountRead(jwt?: string) {
     const headers = {
       "Content-Type": "application/json",
       ...(jwt ? { Authorization: `Bearer ${jwt}` } : {}),
     };
-    const response = await fetch(`${BACKEND_API_URL}/users/${username}`, {
+    const response = await fetch(`${BACKEND_API_URL}/users/me`, {
       method: "GET",
       headers,
     });
-    if (response.status === 404) {
+    if (response.status === 403) {
+      throw new Error("user not authenticated");
+    } else if (response.status === 404) {
       // User does not exist on server, how to handle?
       throw new Error("user does not exist");
     } else if (response.status !== 200) {
@@ -1425,16 +1491,18 @@ export class Backend {
    * blockchain/public key pairs from a list.
    */
   async findServerPublicKeyConflicts(
-    serverPublicKeys: Array<ServerPublicKey>
-  ): Promise<Array<string>> {
-    const response = await fetch(`${BACKEND_API_URL}/publicKeys`, {
+    serverPublicKeys: ServerPublicKey[]
+  ): Promise<string[]> {
+    const url = `${BACKEND_API_URL}/publicKeys`;
+    const response = await fetch(url, {
       method: "POST",
       body: JSON.stringify(serverPublicKeys),
       headers: {
         "Content-Type": "application/json",
       },
-    });
-    return await response.json();
+    }).then((r) => r.json());
+
+    return response;
   }
 
   /**

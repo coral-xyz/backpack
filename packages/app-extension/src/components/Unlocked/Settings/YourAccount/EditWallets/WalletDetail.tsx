@@ -1,20 +1,28 @@
 import React, { useEffect, useState } from "react";
 import type { Blockchain } from "@coral-xyz/common";
 import {
+  BACKEND_API_URL,
   UI_RPC_METHOD_KEY_IS_COLD_UPDATE,
   UI_RPC_METHOD_KEYNAME_READ,
   walletAddressDisplay,
 } from "@coral-xyz/common";
-import { SecondaryButton, WarningIcon } from "@coral-xyz/react-common";
+import {
+  PrimaryButton,
+  SecondaryButton,
+  toast,
+  WarningIcon,
+} from "@coral-xyz/react-common";
 import {
   isKeyCold,
+  serverPublicKeys,
   useBackgroundClient,
+  usePrimaryWallets,
   useWalletPublicKeys,
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { ContentCopy } from "@mui/icons-material";
-import { Typography } from "@mui/material";
-import { useRecoilValue } from "recoil";
+import { Button, Typography } from "@mui/material";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 
 import { HeaderIcon } from "../../../../common";
 import { useNavigation } from "../../../../common/Layout/NavStack";
@@ -27,6 +35,7 @@ export const WalletDetail: React.FC<{
   publicKey: string;
   name: string;
   type: string;
+  isActive: boolean;
 }> = ({ blockchain, publicKey, name, type }) => {
   const nav = useNavigation();
   const theme = useCustomTheme();
@@ -35,6 +44,8 @@ export const WalletDetail: React.FC<{
   const [walletName, setWalletName] = useState(name);
   const publicKeyData = useWalletPublicKeys();
   const isCold = useRecoilValue(isKeyCold(publicKey));
+  const primaryWallets = usePrimaryWallets();
+  const setServerPublicKeys = useSetRecoilState(serverPublicKeys);
 
   useEffect(() => {
     (async () => {
@@ -67,6 +78,10 @@ export const WalletDetail: React.FC<{
       .map((keyring) => [...keyring.hdPublicKeys, ...keyring.ledgerPublicKeys])
       .flat()
       .filter((n) => n.publicKey !== publicKey).length === 0;
+
+  const isPrimary = primaryWallets.find((x) => x.publicKey === publicKey)
+    ? true
+    : false;
 
   const menuItems = {
     "Wallet Address": {
@@ -101,28 +116,21 @@ export const WalletDetail: React.FC<{
     },
   };
 
-  const recover = {
-    Recover: {
-      onClick: () =>
-        nav.push("add-connect-wallet", {
-          blockchain,
-          publicKey,
-          isRecovery: true,
-        }),
-    },
-  };
-
   const removeWallet = {
     "Remove Wallet": {
-      onClick: () =>
-        nav.push("edit-wallets-remove", {
-          blockchain,
-          publicKey,
-          name,
-          type,
-        }),
+      onClick: () => {
+        if (!isPrimary) {
+          nav.push("edit-wallets-remove", {
+            blockchain,
+            publicKey,
+            name,
+            type,
+          });
+        }
+      },
       style: {
         color: theme.custom.colors.negative,
+        opacity: isPrimary ? 0.6 : 1,
       },
     },
   };
@@ -195,6 +203,48 @@ export const WalletDetail: React.FC<{
         <SettingsList menuItems={secrets} />
       )}
       {!isLastRecoverable && <SettingsList menuItems={removeWallet} />}
+      <div
+        style={{
+          padding: "16px",
+        }}
+      >
+        <PrimaryButton
+          fullWidth
+          label={isPrimary ? "This is your primary wallet" : "Set as primary"}
+          disabled={isPrimary}
+          onClick={async () => {
+            await fetch(`${BACKEND_API_URL}/users/activePubkey`, {
+              method: "POST",
+              body: JSON.stringify({
+                publicKey: publicKey,
+              }),
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+            setServerPublicKeys((current) =>
+              current.map((c) => {
+                if (c.blockchain !== blockchain) {
+                  return c;
+                }
+                if (c.primary && c.publicKey !== publicKey) {
+                  return {
+                    ...c,
+                    primary: false,
+                  };
+                }
+                if (c.publicKey === publicKey) {
+                  return {
+                    ...c,
+                    primary: true,
+                  };
+                }
+                return c;
+              })
+            );
+          }}
+        />
+      </div>
     </div>
   );
 };

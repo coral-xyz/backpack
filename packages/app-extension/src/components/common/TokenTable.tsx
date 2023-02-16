@@ -6,7 +6,6 @@ import { TextInput } from "@coral-xyz/react-common";
 import type { useBlockchainTokensSorted } from "@coral-xyz/recoil";
 import {
   blockchainBalancesSorted,
-  useActiveWallets,
   useAllWalletsDisplayed,
   useBlockchainConnectionUrl,
   useLoader,
@@ -24,7 +23,7 @@ import {
 
 export type Token = ReturnType<typeof useBlockchainTokensSorted>[number];
 
-const useStyles = styles((theme) => ({
+const useStyles = styles(() => ({
   searchField: {
     marginLeft: "12px",
     marginRight: "12px",

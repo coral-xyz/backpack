@@ -50,7 +50,7 @@ import {
   NOTIFICATION_XNFT_PREFERENCE_UPDATED,
 } from "@coral-xyz/common";
 import type { Commitment } from "@solana/web3.js";
-import { useResetRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState, useResetRecoilState, useSetRecoilState } from "recoil";
 
 import * as atoms from "../atoms";
 import { allPlugins } from "../hooks";
@@ -104,7 +104,9 @@ export function NotificationsProvider(props: any) {
 
   // Preferences.
   const setPreferences = useSetRecoilState(atoms.preferences);
-  const setFeatureGates = useSetRecoilState(atoms.featureGates);
+  // useRecoilState is required here because setFeatureGates requires the current
+  // state of featureGates atom to update
+  const [featureGates, setFeatureGates] = useRecoilState(atoms.featureGates);
 
   const setAutoLockSettings = (autoLockSettings: AutolockSettings) => {
     setPreferences((current) => {
@@ -147,12 +149,6 @@ export function NotificationsProvider(props: any) {
         aggregateWallets,
       };
     });
-  };
-  const handleSetFeatureGates = (featureGates: FEATURE_GATES_MAP) => {
-    setFeatureGates((current) => ({
-      ...current,
-      ...featureGates,
-    }));
   };
   const setApprovedOrigins = (approvedOrigins: string[]) => {
     setPreferences((current) => {
@@ -249,7 +245,7 @@ export function NotificationsProvider(props: any) {
           handleKeyringStoreLocked();
           break;
         case NOTIFICATION_KEYRING_STORE_UNLOCKED:
-          handleKeyringStoreUnlocked();
+          handleKeyringStoreUnlocked(notif);
           break;
         case NOTIFICATION_KEYRING_STORE_RESET:
           handleReset();
@@ -330,7 +326,7 @@ export function NotificationsProvider(props: any) {
           handleBlockchainKeyringDeleted(notif);
           break;
         case NOTIFICATION_FEATURE_GATES_UPDATED:
-          handleSetFeatureGates(notif.data.gates);
+          handleSetFeatureGates(notif);
           break;
         case NOTIFICATION_KEYRING_STORE_USERNAME_ACCOUNT_CREATED:
           handleUsernameAccountCreated(notif);
@@ -374,7 +370,12 @@ export function NotificationsProvider(props: any) {
       setAuthenticatedUser(null);
     };
 
-    const handleKeyringStoreUnlocked = () => {
+    const handleKeyringStoreUnlocked = (notif: Notification) => {
+      // Set the active user with the active user from the notification. This
+      // is required because the recoil state can be read on the unlock screen
+      // and may be updated by migrations that occur on an unlock attempt. The
+      // recoil state won't be updated by migrations.
+      setActiveUser(notif.data.activeUser);
       setKeyringStoreState(KeyringStoreStateEnum.Unlocked);
     };
 
@@ -688,6 +689,13 @@ export function NotificationsProvider(props: any) {
 
     const handleBlockchainKeyringDeleted = (notif: Notification) => {
       setWalletData(notif.data.publicKeyData);
+    };
+
+    const handleSetFeatureGates = (notif: Notification) => {
+      setFeatureGates((current) => ({
+        ...current,
+        ...featureGates,
+      }));
     };
 
     const handleUsernameAccountCreated = (notif: Notification) => {

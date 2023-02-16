@@ -2,12 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { Text, View, TextInput } from "react-native";
 
 import { useEthereumFeeData } from "@coral-xyz/recoil";
-import { SettingsList } from "@screens/Unlocked/Settings/components/SettingsMenuList";
+import { SettingsList } from "~screens/Unlocked/Settings/components/SettingsMenuList";
 import { ethers } from "ethers";
 
-import { IconCloseModal } from "@components/Icon";
-import { PrimaryButton, SecondaryButton } from "@components/index";
-import { useTheme } from "@hooks/index";
+import { IconCloseModal } from "~components/Icon";
+import { PrimaryButton, SecondaryButton } from "~components/index";
+import { useTheme } from "~hooks/useTheme";
 
 type TransactionMode = "normal" | "fast" | "degen" | "custom";
 

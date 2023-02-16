@@ -318,6 +318,11 @@ export const AllTypesProps: Record<string, any> = {
     where: "auth_notifications_bool_exp",
   },
   auth_public_keys: {
+    user_active_publickey_mappings: {
+      distinct_on: "auth_user_active_publickey_mapping_select_column",
+      order_by: "auth_user_active_publickey_mapping_order_by",
+      where: "auth_user_active_publickey_mapping_bool_exp",
+    },
     user_nfts: {
       distinct_on: "auth_user_nfts_select_column",
       order_by: "auth_user_nfts_order_by",
@@ -371,6 +376,8 @@ export const AllTypesProps: Record<string, any> = {
     id: "Int_comparison_exp",
     public_key: "String_comparison_exp",
     user: "auth_users_bool_exp",
+    user_active_publickey_mappings:
+      "auth_user_active_publickey_mapping_bool_exp",
     user_id: "uuid_comparison_exp",
     user_nfts: "auth_user_nfts_bool_exp",
     user_nfts_aggregate: "auth_user_nfts_aggregate_bool_exp",
@@ -378,6 +385,8 @@ export const AllTypesProps: Record<string, any> = {
   auth_public_keys_constraint: "enum" as const,
   auth_public_keys_insert_input: {
     user: "auth_users_obj_rel_insert_input",
+    user_active_publickey_mappings:
+      "auth_user_active_publickey_mapping_arr_rel_insert_input",
     user_id: "uuid",
     user_nfts: "auth_user_nfts_arr_rel_insert_input",
   },
@@ -410,6 +419,8 @@ export const AllTypesProps: Record<string, any> = {
     id: "order_by",
     public_key: "order_by",
     user: "auth_users_order_by",
+    user_active_publickey_mappings_aggregate:
+      "auth_user_active_publickey_mapping_aggregate_order_by",
     user_id: "order_by",
     user_nfts_aggregate: "auth_user_nfts_aggregate_order_by",
   },
@@ -482,6 +493,104 @@ export const AllTypesProps: Record<string, any> = {
     _inc: "auth_stripe_onramp_inc_input",
     _set: "auth_stripe_onramp_set_input",
     where: "auth_stripe_onramp_bool_exp",
+  },
+  auth_user_active_publickey_mapping_aggregate_order_by: {
+    avg: "auth_user_active_publickey_mapping_avg_order_by",
+    count: "order_by",
+    max: "auth_user_active_publickey_mapping_max_order_by",
+    min: "auth_user_active_publickey_mapping_min_order_by",
+    stddev: "auth_user_active_publickey_mapping_stddev_order_by",
+    stddev_pop: "auth_user_active_publickey_mapping_stddev_pop_order_by",
+    stddev_samp: "auth_user_active_publickey_mapping_stddev_samp_order_by",
+    sum: "auth_user_active_publickey_mapping_sum_order_by",
+    var_pop: "auth_user_active_publickey_mapping_var_pop_order_by",
+    var_samp: "auth_user_active_publickey_mapping_var_samp_order_by",
+    variance: "auth_user_active_publickey_mapping_variance_order_by",
+  },
+  auth_user_active_publickey_mapping_arr_rel_insert_input: {
+    data: "auth_user_active_publickey_mapping_insert_input",
+    on_conflict: "auth_user_active_publickey_mapping_on_conflict",
+  },
+  auth_user_active_publickey_mapping_avg_order_by: {
+    public_key_id: "order_by",
+  },
+  auth_user_active_publickey_mapping_bool_exp: {
+    _and: "auth_user_active_publickey_mapping_bool_exp",
+    _not: "auth_user_active_publickey_mapping_bool_exp",
+    _or: "auth_user_active_publickey_mapping_bool_exp",
+    blockchain: "String_comparison_exp",
+    public_key: "auth_public_keys_bool_exp",
+    public_key_id: "Int_comparison_exp",
+    user_id: "uuid_comparison_exp",
+  },
+  auth_user_active_publickey_mapping_constraint: "enum" as const,
+  auth_user_active_publickey_mapping_inc_input: {},
+  auth_user_active_publickey_mapping_insert_input: {
+    public_key: "auth_public_keys_obj_rel_insert_input",
+    user_id: "uuid",
+  },
+  auth_user_active_publickey_mapping_max_order_by: {
+    blockchain: "order_by",
+    public_key_id: "order_by",
+    user_id: "order_by",
+  },
+  auth_user_active_publickey_mapping_min_order_by: {
+    blockchain: "order_by",
+    public_key_id: "order_by",
+    user_id: "order_by",
+  },
+  auth_user_active_publickey_mapping_on_conflict: {
+    constraint: "auth_user_active_publickey_mapping_constraint",
+    update_columns: "auth_user_active_publickey_mapping_update_column",
+    where: "auth_user_active_publickey_mapping_bool_exp",
+  },
+  auth_user_active_publickey_mapping_order_by: {
+    blockchain: "order_by",
+    public_key: "auth_public_keys_order_by",
+    public_key_id: "order_by",
+    user_id: "order_by",
+  },
+  auth_user_active_publickey_mapping_pk_columns_input: {
+    user_id: "uuid",
+  },
+  auth_user_active_publickey_mapping_select_column: "enum" as const,
+  auth_user_active_publickey_mapping_set_input: {
+    user_id: "uuid",
+  },
+  auth_user_active_publickey_mapping_stddev_order_by: {
+    public_key_id: "order_by",
+  },
+  auth_user_active_publickey_mapping_stddev_pop_order_by: {
+    public_key_id: "order_by",
+  },
+  auth_user_active_publickey_mapping_stddev_samp_order_by: {
+    public_key_id: "order_by",
+  },
+  auth_user_active_publickey_mapping_stream_cursor_input: {
+    initial_value:
+      "auth_user_active_publickey_mapping_stream_cursor_value_input",
+    ordering: "cursor_ordering",
+  },
+  auth_user_active_publickey_mapping_stream_cursor_value_input: {
+    user_id: "uuid",
+  },
+  auth_user_active_publickey_mapping_sum_order_by: {
+    public_key_id: "order_by",
+  },
+  auth_user_active_publickey_mapping_update_column: "enum" as const,
+  auth_user_active_publickey_mapping_updates: {
+    _inc: "auth_user_active_publickey_mapping_inc_input",
+    _set: "auth_user_active_publickey_mapping_set_input",
+    where: "auth_user_active_publickey_mapping_bool_exp",
+  },
+  auth_user_active_publickey_mapping_var_pop_order_by: {
+    public_key_id: "order_by",
+  },
+  auth_user_active_publickey_mapping_var_samp_order_by: {
+    public_key_id: "order_by",
+  },
+  auth_user_active_publickey_mapping_variance_order_by: {
+    public_key_id: "order_by",
   },
   auth_user_nfts_aggregate_bool_exp: {
     count: "auth_user_nfts_aggregate_bool_exp_count",
@@ -968,6 +1077,14 @@ export const AllTypesProps: Record<string, any> = {
       object: "auth_stripe_onramp_insert_input",
       on_conflict: "auth_stripe_onramp_on_conflict",
     },
+    insert_auth_user_active_publickey_mapping: {
+      objects: "auth_user_active_publickey_mapping_insert_input",
+      on_conflict: "auth_user_active_publickey_mapping_on_conflict",
+    },
+    insert_auth_user_active_publickey_mapping_one: {
+      object: "auth_user_active_publickey_mapping_insert_input",
+      on_conflict: "auth_user_active_publickey_mapping_on_conflict",
+    },
     insert_auth_user_nfts: {
       objects: "auth_user_nfts_insert_input",
       on_conflict: "auth_user_nfts_on_conflict",
@@ -1097,6 +1214,19 @@ export const AllTypesProps: Record<string, any> = {
     update_auth_stripe_onramp_many: {
       updates: "auth_stripe_onramp_updates",
     },
+    update_auth_user_active_publickey_mapping: {
+      _inc: "auth_user_active_publickey_mapping_inc_input",
+      _set: "auth_user_active_publickey_mapping_set_input",
+      where: "auth_user_active_publickey_mapping_bool_exp",
+    },
+    update_auth_user_active_publickey_mapping_by_pk: {
+      _inc: "auth_user_active_publickey_mapping_inc_input",
+      _set: "auth_user_active_publickey_mapping_set_input",
+      pk_columns: "auth_user_active_publickey_mapping_pk_columns_input",
+    },
+    update_auth_user_active_publickey_mapping_many: {
+      updates: "auth_user_active_publickey_mapping_updates",
+    },
     update_auth_users: {
       _set: "auth_users_set_input",
       where: "auth_users_bool_exp",
@@ -1206,6 +1336,14 @@ export const AllTypesProps: Record<string, any> = {
       where: "auth_stripe_onramp_bool_exp",
     },
     auth_stripe_onramp_by_pk: {},
+    auth_user_active_publickey_mapping: {
+      distinct_on: "auth_user_active_publickey_mapping_select_column",
+      order_by: "auth_user_active_publickey_mapping_order_by",
+      where: "auth_user_active_publickey_mapping_bool_exp",
+    },
+    auth_user_active_publickey_mapping_by_pk: {
+      user_id: "uuid",
+    },
     auth_user_nfts: {
       distinct_on: "auth_user_nfts_select_column",
       order_by: "auth_user_nfts_order_by",
@@ -1381,6 +1519,18 @@ export const AllTypesProps: Record<string, any> = {
     auth_stripe_onramp_stream: {
       cursor: "auth_stripe_onramp_stream_cursor_input",
       where: "auth_stripe_onramp_bool_exp",
+    },
+    auth_user_active_publickey_mapping: {
+      distinct_on: "auth_user_active_publickey_mapping_select_column",
+      order_by: "auth_user_active_publickey_mapping_order_by",
+      where: "auth_user_active_publickey_mapping_bool_exp",
+    },
+    auth_user_active_publickey_mapping_by_pk: {
+      user_id: "uuid",
+    },
+    auth_user_active_publickey_mapping_stream: {
+      cursor: "auth_user_active_publickey_mapping_stream_cursor_input",
+      where: "auth_user_active_publickey_mapping_bool_exp",
     },
     auth_user_nfts: {
       distinct_on: "auth_user_nfts_select_column",
@@ -1725,6 +1875,7 @@ export const ReturnTypes: Record<string, any> = {
     id: "Int",
     public_key: "String",
     user: "auth_users",
+    user_active_publickey_mappings: "auth_user_active_publickey_mapping",
     user_id: "uuid",
     user_nfts: "auth_user_nfts",
     user_nfts_aggregate: "auth_user_nfts_aggregate",
@@ -1798,6 +1949,16 @@ export const ReturnTypes: Record<string, any> = {
   auth_stripe_onramp_mutation_response: {
     affected_rows: "Int",
     returning: "auth_stripe_onramp",
+  },
+  auth_user_active_publickey_mapping: {
+    blockchain: "String",
+    public_key: "auth_public_keys",
+    public_key_id: "Int",
+    user_id: "uuid",
+  },
+  auth_user_active_publickey_mapping_mutation_response: {
+    affected_rows: "Int",
+    returning: "auth_user_active_publickey_mapping",
   },
   auth_user_nfts: {
     blockchain: "String",
@@ -1984,6 +2145,10 @@ export const ReturnTypes: Record<string, any> = {
     insert_auth_public_keys_one: "auth_public_keys",
     insert_auth_stripe_onramp: "auth_stripe_onramp_mutation_response",
     insert_auth_stripe_onramp_one: "auth_stripe_onramp",
+    insert_auth_user_active_publickey_mapping:
+      "auth_user_active_publickey_mapping_mutation_response",
+    insert_auth_user_active_publickey_mapping_one:
+      "auth_user_active_publickey_mapping",
     insert_auth_user_nfts: "auth_user_nfts_mutation_response",
     insert_auth_user_nfts_one: "auth_user_nfts",
     insert_auth_users: "auth_users_mutation_response",
@@ -2022,6 +2187,12 @@ export const ReturnTypes: Record<string, any> = {
     update_auth_stripe_onramp: "auth_stripe_onramp_mutation_response",
     update_auth_stripe_onramp_by_pk: "auth_stripe_onramp",
     update_auth_stripe_onramp_many: "auth_stripe_onramp_mutation_response",
+    update_auth_user_active_publickey_mapping:
+      "auth_user_active_publickey_mapping_mutation_response",
+    update_auth_user_active_publickey_mapping_by_pk:
+      "auth_user_active_publickey_mapping",
+    update_auth_user_active_publickey_mapping_many:
+      "auth_user_active_publickey_mapping_mutation_response",
     update_auth_users: "auth_users_mutation_response",
     update_auth_users_by_pk: "auth_users",
     update_auth_users_many: "auth_users_mutation_response",
@@ -2055,6 +2226,9 @@ export const ReturnTypes: Record<string, any> = {
     auth_public_keys_by_pk: "auth_public_keys",
     auth_stripe_onramp: "auth_stripe_onramp",
     auth_stripe_onramp_by_pk: "auth_stripe_onramp",
+    auth_user_active_publickey_mapping: "auth_user_active_publickey_mapping",
+    auth_user_active_publickey_mapping_by_pk:
+      "auth_user_active_publickey_mapping",
     auth_user_nfts: "auth_user_nfts",
     auth_user_nfts_aggregate: "auth_user_nfts_aggregate",
     auth_user_nfts_by_pk: "auth_user_nfts",
@@ -2104,6 +2278,11 @@ export const ReturnTypes: Record<string, any> = {
     auth_stripe_onramp: "auth_stripe_onramp",
     auth_stripe_onramp_by_pk: "auth_stripe_onramp",
     auth_stripe_onramp_stream: "auth_stripe_onramp",
+    auth_user_active_publickey_mapping: "auth_user_active_publickey_mapping",
+    auth_user_active_publickey_mapping_by_pk:
+      "auth_user_active_publickey_mapping",
+    auth_user_active_publickey_mapping_stream:
+      "auth_user_active_publickey_mapping",
     auth_user_nfts: "auth_user_nfts",
     auth_user_nfts_aggregate: "auth_user_nfts_aggregate",
     auth_user_nfts_by_pk: "auth_user_nfts",

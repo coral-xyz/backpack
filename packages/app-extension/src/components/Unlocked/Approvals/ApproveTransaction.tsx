@@ -1,7 +1,7 @@
 import type { Blockchain, FeeConfig } from "@coral-xyz/common";
 import { EmptyState, Loading } from "@coral-xyz/react-common";
 import { useTransactionData, useWalletBlockchain } from "@coral-xyz/recoil";
-import { styles, useCustomTheme } from "@coral-xyz/themes";
+import { styles } from "@coral-xyz/themes";
 import { Block as BlockIcon } from "@mui/icons-material";
 import { Typography } from "@mui/material";
 import { BigNumber, ethers } from "ethers";

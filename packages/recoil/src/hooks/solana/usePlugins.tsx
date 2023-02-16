@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import {
+  externalResourceUri,
   fetchXnft,
   TAB_SET,
   TAB_XNFT,
@@ -18,14 +19,12 @@ import {
 } from "recoil";
 
 import * as atoms from "../../atoms";
-import { xnftUrl } from "../../atoms/solana/xnft";
 import { useConnectionUrls } from "../preferences";
 import {
   useActivePublicKeys,
   useBackgroundClient,
   useConnectionBackgroundClient,
   useNavigationSegue,
-  useUpdateSearchParams,
 } from "../";
 
 import {
@@ -84,7 +83,6 @@ export function useOpenPlugin(): (xnftAddress: string) => void {
 }
 
 export function usePluginUrl(address?: string) {
-  const { provider } = useAnchorContext();
   const [url, setUrl] = useState<string | null>(null);
   const [cached] = useState<Plugin | undefined>(
     PLUGIN_CACHE.get(address ?? "")
@@ -96,10 +94,8 @@ export function usePluginUrl(address?: string) {
     (async () => {
       if (address) {
         try {
-          const xnft = await fetchXnft(provider, new PublicKey(address));
-          setUrl(
-            xnftUrl(xnft.metadataBlob.xnft.manifest.entrypoints.default.web)
-          );
+          const xnft = await fetchXnft(new PublicKey(address));
+          setUrl(xnft!.xnft.manifest.entrypoints.default.web);
         } catch (error) {
           console.error(error);
         }
@@ -137,13 +133,14 @@ export function useFreshPlugin(address?: string): {
     }
     (async () => {
       try {
-        const xnft = await fetchXnft(provider, new PublicKey(address));
+        const xnft = await fetchXnft(new PublicKey(address));
         const plugin = new Plugin(
           new PublicKey(address),
-          xnft.xnftAccount.publicKey,
-          xnftUrl(xnft.metadataBlob.xnft.manifest.entrypoints.default.web),
-          xnft.metadataBlob.image,
-          xnft.metadataBlob.name,
+          xnft!.xnftAccount.masterMetadata,
+          xnft!.xnft.xnft.manifest.entrypoints.default.web,
+          xnft!.metadata.image,
+          xnft!.xnft.xnft.manifest.splash ?? {},
+          xnft!.metadata.name,
           activePublicKeys,
           connectionUrls
         );
@@ -179,6 +176,7 @@ export function getPlugin(p: any): Plugin {
       p.install.publicKey,
       p.url,
       p.iconUrl,
+      p.splashUrls ?? {},
       p.title,
       p.activeWallets,
       p.connectionUrls

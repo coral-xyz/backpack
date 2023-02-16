@@ -345,29 +345,6 @@ function NftCollectionCard({
     })
   );
 
-  const collectionsChatMetadata = useGroupCollections({ uuid });
-
-  const init = async () => {
-    await fetch(`${BACKEND_API_URL}/nft/bulk`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        publicKey: publicKey,
-        nfts: [
-          {
-            collectionId: collection.metadataCollectionId,
-            // @ts-ignore
-            nftId: collectionDisplayNft?.mint,
-          },
-        ],
-      }),
-    });
-  };
-
-  useEffect(() => {
-    init();
-  }, [collection.metadataCollectionId]);
-
   if (!collectionDisplayNft) {
     return null;
   }
@@ -403,11 +380,6 @@ function NftCollectionCard({
 
   return (
     <GridCard
-      showNotificationBubble={collectionsChatMetadata?.find(
-        (x: CollectionChatData) =>
-          x.collectionId === collection.metadataCollectionId &&
-          x.lastMessageUuid !== x.lastReadMessage
-      )}
       metadataCollectionId={false}
       onClick={onClick}
       nft={collectionDisplayNft}

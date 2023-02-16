@@ -146,6 +146,8 @@ export const UI_RPC_METHOD_KEYRING_STORE_LOCK =
   "ui-rpc-method-keyring-store-lock";
 export const UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE =
   "ui-rpc-method-keyring-mnemonic-create";
+export const UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_SYNC =
+  "ui-rpc-method-keyring-mnemonic-sync";
 export const UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEYS =
   "ui-rpc-method-keyring-read-all-pubkeys";
 export const UI_RPC_METHOD_KEYRING_STORE_READ_ALL_PUBKEY_DATA =
@@ -579,8 +581,8 @@ export const ALCHEMY_ETHEREUM_MAINNET_API_KEY =
   "DlJr6QuBC2EaE-L60-iqQQGq9hi9-XSZ";
 
 export const AVATAR_BASE_URL = "https://swr.xnfts.dev/avatars";
-export const BACKEND_API_URL = "https://backpack-api2.xnfts.dev";
-export const REALTIME_API_URL = "https://backend-ws2.xnfts.dev";
+export const BACKEND_API_URL = "https://backpack-api.xnfts.dev";
+export const REALTIME_API_URL = "https://backend-ws.xnfts.dev";
 export const MESSAGING_COMMUNICATION_PUSH = "MESSAGING_COMMUNICATION_PUSH";
 export const MESSAGING_COMMUNICATION_FETCH = "MESSAGING_COMMUNICATION_FETCH";
 export const MESSAGING_COMMUNICATION_FETCH_RESPONSE =

@@ -4,8 +4,8 @@ import { UNKNOWN_NFT_ICON_SRC } from "@coral-xyz/common";
 import { nftById } from "@coral-xyz/recoil";
 import { useRecoilValueLoadable } from "recoil";
 
-import { ProxyImage } from "@components/index";
-import { useTheme } from "@hooks/useTheme";
+import { ProxyImage } from "~components/index";
+import { useTheme } from "~hooks/useTheme";
 
 export function BaseCard({
   onPress,

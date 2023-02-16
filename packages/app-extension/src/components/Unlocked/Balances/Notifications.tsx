@@ -206,16 +206,25 @@ const getGroupedNotifications = (notifications: EnrichedNotification[]) => {
 
 export function Notifications() {
   const { isXs } = useBreakpoints();
+  const nav = isXs ? useNavigation() : null;
   const [openDrawer, setOpenDrawer] = isXs
     ? [false, () => {}]
     : useState(false);
 
-  const [_unreadCount, setUnreadCount] = useRecoilState(unreadCount);
+  const [, setUnreadCount] = useRecoilState(unreadCount);
 
   const notifications: EnrichedNotification[] = useRecentNotifications({
     limit: 50,
     offset: 0,
   });
+
+  useEffect(() => {
+    if (isXs) {
+      nav!.setOptions({
+        headerTitle: "Notifications",
+      });
+    }
+  }, []);
 
   useEffect(() => {
     const sortedNotifications = notifications

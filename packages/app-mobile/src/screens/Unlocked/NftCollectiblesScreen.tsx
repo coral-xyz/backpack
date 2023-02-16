@@ -30,13 +30,13 @@ import {
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
-import { WalletPickerButton } from "@screens/Unlocked/components/Balances";
-import { TableHeader } from "@screens/Unlocked/components/index";
+import { WalletPickerButton } from "~screens/Unlocked/components/Balances";
+import { TableHeader } from "~screens/Unlocked/components/index";
 import { useRecoilValue, useRecoilValueLoadable } from "recoil";
 
-import { NFTCard, BaseCard } from "@components/NFTCard";
-import { Screen, EmptyState, Margin, CopyButtonIcon } from "@components/index";
-import { useTheme } from "@hooks/useTheme";
+import { NFTCard, BaseCard } from "~components/NFTCard";
+import { Screen, EmptyState, Margin, CopyButtonIcon } from "~components/index";
+import { useTheme } from "~hooks/useTheme";
 
 import { NftDetailScreen, NftDetailSendScreen } from "./NftDetailScreen";
 

@@ -256,14 +256,12 @@ function splitOutNfts(
 }
 
 export async function fetchSplMetadataUri(
-  nftTokens: Array<SolanaTokenAccountWithKeyString>,
-  nftTokenMetadata: Array<TokenMetadataString | null>
+  tokens: Array<SolanaTokenAccountWithKeyString>,
+  tokenMetadata: Array<TokenMetadataString | null>
 ): Promise<Array<[string, SplNftMetadataString]>> {
-  //
-  // Fetch the URI for each NFT.
-  //
-  const nftMetaUriData = await Promise.all(
-    nftTokenMetadata.map(async (t) => {
+  // Fetch the URI for each token.
+  const tokenMetaUriData = await Promise.all(
+    tokenMetadata.map(async (t) => {
       if (t === null || !t.account.data.uri) {
         return null;
       }
@@ -275,7 +273,7 @@ export async function fetchSplMetadataUri(
           const uri = t.account.data.uri;
           try {
             const resp = await fetch(
-              `https://swr.xnfts.dev/web/${externalResourceUri(uri)}`
+              `${externalResourceUri(uri, { cached: true })}`
             );
             resolve(await resp.json());
           } catch (err) {
@@ -300,30 +298,24 @@ export async function fetchSplMetadataUri(
   //
   // Zip it all together.
   //
-  const splNftMetadata = nftTokens.reduce((acc, m, idx) => {
-    const tokenMetadata = nftTokenMetadata[idx];
-    if (!tokenMetadata) {
-      return acc;
-    }
-    if (!nftMetaUriData[idx]) {
+  const splMetadata = tokens.reduce((acc, m, idx) => {
+    const metadata = tokenMetadata[idx];
+    if (!metadata || !tokenMetaUriData[idx]) {
       return acc;
     }
     acc.push([
       m.key.toString(),
       {
         publicKey: m.key,
-        metadataAddress: tokenMetadata.publicKey,
-        metadata: tokenMetadata.account,
-        tokenMetaUriData: nftMetaUriData[idx],
+        metadataAddress: metadata.publicKey,
+        metadata: metadata.account,
+        tokenMetaUriData: tokenMetaUriData[idx],
       },
     ]);
     return acc;
   }, [] as Array<[string, SplNftMetadataString]>);
 
-  //
-  // Done.
-  //
-  return splNftMetadata;
+  return splMetadata;
 }
 
 export async function metadataAddress(mint: PublicKey): Promise<PublicKey> {
