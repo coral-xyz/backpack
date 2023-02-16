@@ -45,6 +45,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     borderRadius: 12,
+    minHeight: 120,
   },
   iconContainer: {
     width: 32,

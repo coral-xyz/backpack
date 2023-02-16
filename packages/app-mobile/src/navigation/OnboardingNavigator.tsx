@@ -10,6 +10,9 @@ import {
   KeyboardAvoidingView,
   Pressable,
   Text,
+  DevSettings,
+  StyleProp,
+  ViewStyle,
 } from "react-native";
 
 import * as Linking from "expo-linking";
@@ -33,6 +36,7 @@ import {
   XNFT_GG_LINK,
 } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
+import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import { Buffer } from "buffer";
 import { ethers } from "ethers";
@@ -76,6 +80,7 @@ import {
   SubtextParagraph,
   WelcomeLogoHeader,
   CopyButton,
+  EmptyState,
 } from "~components/index";
 import { useAuthentication } from "~hooks/useAuthentication";
 import { useTheme } from "~hooks/useTheme";
@@ -185,7 +190,7 @@ type OnboardingStackParamList = {
   SelectBlockchain: undefined;
   ImportAccounts: undefined;
   CreatePassword: undefined;
-  Finished: undefined;
+  OnboardingCreateAccountLoading: undefined;
 };
 
 const Stack = createStackNavigator<OnboardingStackParamList>();
@@ -194,10 +199,12 @@ function OnboardingScreen({
   title,
   subtitle,
   children,
+  style,
 }: {
   title: string;
   subtitle?: string;
   children?: any;
+  style?: StyleProp<ViewStyle>;
 }) {
   const insets = useSafeAreaInsets();
   return (
@@ -207,6 +214,7 @@ function OnboardingScreen({
         {
           paddingBottom: insets.bottom,
         },
+        style,
       ]}
     >
       <Margin bottom={24}>
@@ -658,10 +666,9 @@ function OnboardingCreatePasswordScreen({
 
   const onSubmit = ({ password }: CreatePasswordFormData) => {
     setOnboardingData({ password, complete: true });
-    navigation.push("Finished");
+    navigation.push("OnboardingCreateAccountLoading");
   };
 
-  // TODO(peter) some fk'd up shit is happening here where the hook claims to be invalid when it's not
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -695,7 +702,6 @@ function OnboardingCreatePasswordScreen({
             placeholder="Confirm Password"
             returnKeyType="done"
             control={control}
-            onSubmitEditing={handleSubmit(onSubmit)}
             rules={{
               validate: (val: string) => {
                 if (val !== watch("password")) {
@@ -754,11 +760,16 @@ function OnboardingImportAccountsScreen({
   );
 }
 
-function OnboardingFinishedScreen() {
+function OnboardingCreateAccountLoadingScreen({
+  navigation,
+}: StackScreenProps<
+  OnboardingStackParamList,
+  "OnboardingCreateAccountLoading"
+>): JSX.Element {
   const background = useBackgroundClient();
   const { authenticate } = useAuthentication();
   const { onboardingData } = useOnboardingData();
-  const [isValid, setIsValid] = useState(false);
+  const [error, setError] = useState(null);
 
   const {
     password,
@@ -793,7 +804,7 @@ function OnboardingFinishedScreen() {
         });
       }
       const { id, jwt } = await createUser();
-      createStore(id, jwt);
+      await createStore(id, jwt);
     })();
   }, []);
 
@@ -852,7 +863,8 @@ function OnboardingFinishedScreen() {
       }
 
       return await res.json();
-    } catch (err) {
+    } catch (err: any) {
+      setError(err);
       console.error("OnboardingNavigator:createUser::error", err);
       throw new Error("error creating account");
     }
@@ -877,27 +889,46 @@ function OnboardingFinishedScreen() {
           params: [username, password, keyringInit, uuid, jwt],
         });
       }
-      setIsValid(true);
-    } catch (err) {
+    } catch (err: any) {
+      setError(err);
       console.error("OnboardingNavigator:createStore::error", err);
-      // if (
-      //   confirm("There was an issue setting up your account. Please try again.")
-      // ) {
-      // window.location.reload();
-      // }
     }
   }
 
-  return !isValid ? (
-    <FullScreenLoading />
-  ) : (
+  if (error) {
+    return (
+      <EmptyState
+        icon={(props: any) => <MaterialIcons name="error" {...props} />}
+        title={error}
+        subtitle="Please get in touch ASAP or try again"
+        buttonText="Start Over"
+        onPress={() => {
+          DevSettings.reload();
+        }}
+      />
+    );
+  }
+
+  return <FullScreenLoading label="Creating your wallet..." />;
+}
+
+export function OnboardingCompleteWelcome({ onComplete }): JSX.Element {
+  const insets = useSafeAreaInsets();
+
+  return (
     <OnboardingScreen
       title="You've set up Backpack!"
       subtitle="Now get started exploring what your Backpack can do."
+      style={{
+        paddingTop: insets.top + 36,
+        paddingBottom: insets.bottom,
+      }}
     >
-      <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+      <View
+        style={{ flexDirection: "row", flexWrap: "wrap", columnGap: "12%" }}
+      >
         {BACKPACK_FEATURE_XNFT ? (
-          <Cell style={{ paddingRight: 6 }}>
+          <Cell style={{ width: "48%" }}>
             <ActionCard
               icon={<WidgetIcon />}
               text="Browse the xNFT library"
@@ -905,14 +936,14 @@ function OnboardingFinishedScreen() {
             />
           </Cell>
         ) : null}
-        <Cell style={{ paddingLeft: 6 }}>
+        <Cell style={{ width: "48%" }}>
           <ActionCard
             icon={<TwitterIcon />}
             text="Follow us on Twitter"
             onPress={() => Linking.openURL(TWITTER_LINK)}
           />
         </Cell>
-        <Cell>
+        <Cell style={{ width: "48%" }}>
           <ActionCard
             icon={<DiscordIcon />}
             text="Join the Discord community"
@@ -920,12 +951,23 @@ function OnboardingFinishedScreen() {
           />
         </Cell>
       </View>
-      <PrimaryButton disabled={false} label="Finish" onPress={console.log} />
+      <View style={{ flex: 1 }} />
+      <PrimaryButton
+        disabled={false}
+        label="Finish"
+        onPress={() => {
+          onComplete("finished");
+        }}
+      />
     </OnboardingScreen>
   );
 }
 
-export default function OnboardingNavigator(): JSX.Element {
+export function OnboardingNavigator({ onStart }): JSX.Element {
+  useEffect(() => {
+    onStart("onboarding");
+  }, [onStart]);
+
   const theme = useTheme();
   return (
     <OnboardingProvider>
@@ -970,7 +1012,13 @@ export default function OnboardingNavigator(): JSX.Element {
             name="CreatePassword"
             component={OnboardingCreatePasswordScreen}
           />
-          <Stack.Screen name="Finished" component={OnboardingFinishedScreen} />
+          <Stack.Screen
+            name="OnboardingCreateAccountLoading"
+            component={OnboardingCreateAccountLoadingScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
         </Stack.Group>
       </Stack.Navigator>
     </OnboardingProvider>
