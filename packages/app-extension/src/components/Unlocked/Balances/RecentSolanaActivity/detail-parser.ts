@@ -1,5 +1,5 @@
 import { SOL_NATIVE_MINT } from "@coral-xyz/common";
-import { useActiveWallet, useSplTokenRegistry } from "@coral-xyz/recoil";
+import { useSplTokenRegistry } from "@coral-xyz/recoil";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { NftEventTypes, Source, TransactionType } from "helius-sdk/dist/types";
 
@@ -106,7 +106,7 @@ export function getTransactionTitle(
       return "Burned";
     case TransactionType.TRANSFER:
       // send/receive NFT's are returned as TransactionType.TRANSFER
-      const nftName = metadata?.onChainMetadata?.metadata?.data?.name; // FIXME: || metadata?.offChainData?.name;
+      const nftName = metadata?.onChainMetadata?.metadata?.data?.name;
       if (isNFTTransaction(transaction) && nftName) {
         return nftName;
       } else if (isUserTxnSender(transaction, activeWallet)) {
@@ -119,7 +119,7 @@ export function getTransactionTitle(
     case TransactionType.SWAP:
       return "Token Swap";
     case TransactionType.NFT_MINT: {
-      const nftName = metadata?.onChainMetadata?.metadata?.data?.name; // FIXME: || metadata?.offChainData?.name;
+      const nftName = metadata?.onChainMetadata?.metadata?.data?.name;
       return `Minted: ${nftName}`;
     }
     default:
@@ -130,7 +130,6 @@ export function getTransactionTitle(
       // TODO: test this case to see if it is necessary
       const nonTransferNftName =
         metadata?.onChainMetadata?.metadata?.data?.name;
-      // FIXME: || metadata?.offChainData?.name;
 
       if (isNFTTransaction(transaction) && nonTransferNftName) {
         return nonTransferNftName;
@@ -277,26 +276,27 @@ export const getTokenData = (
 
   if (transaction.type === TransactionType.SWAP) {
     // if token is isNativeInput/isNativeOutput, token swap is to/from SOL
-    let tokenInput, tokenOutput;
     const isNativeInput = transaction.events?.swap?.nativeInput;
     const isNativeOutput = transaction.events?.swap?.nativeOutput;
-    tokenInput = isNativeInput
+
+    const tokenInput = isNativeInput
       ? SOL_NATIVE_MINT
-      : transaction.events?.swap?.tokenInputs?.[0]?.mint;
-    tokenOutput = isNativeOutput
+      : transaction.events?.swap?.tokenInputs?.[0]?.mint ||
+        transaction.tokenTransfers?.[0]?.mint;
+
+    const tokenOutput = isNativeOutput
       ? SOL_NATIVE_MINT
-      : transaction.events?.swap?.tokenOutputs?.[0]?.mint;
+      : transaction.events?.swap?.tokenOutputs?.[0]?.mint ||
+        transaction.tokenTransfers?.[1]?.mint;
 
     if (tokenInput && tokenRegistry.get(tokenInput)) {
       tokenData.push(tokenRegistry.get(tokenInput));
     }
+
     if (tokenOutput && tokenRegistry.get(tokenOutput)) {
       tokenData.push(tokenRegistry.get(tokenOutput));
     }
-  }
-
-  // add appropriate token metadata
-  if (transaction.type === TransactionType.TRANSFER) {
+  } else if (transaction.type === TransactionType.TRANSFER) {
     const transferredToken = transaction.tokenTransfers?.[0]?.mint;
     if (transferredToken && tokenRegistry.get(transferredToken)) {
       tokenData.push(tokenRegistry.get(transferredToken));
