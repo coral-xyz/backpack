@@ -1,6 +1,10 @@
 table:
   name: room_active_chat_mapping
   schema: public
+object_relationships:
+  - name: barter
+    using:
+      foreign_key_constraint_on: barter_id
 insert_permissions:
   - role: chat
     permission:

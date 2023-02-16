@@ -2,6 +2,7 @@ import { isFirstLastListItemStyle } from "@coral-xyz/react-common";
 import {
   metadataForRecentSolanaTransaction,
   useActiveWallet,
+  useJupiterTokenMap,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { ListItem, Skeleton, Typography } from "@mui/material";
@@ -70,11 +71,12 @@ export function SolanaTransactionListItem({
 }: any) {
   const classes = useStyles();
   const theme = useCustomTheme();
+  const registry = useJupiterTokenMap();
   const { contents, state } = useRecoilValueLoadable(
     metadataForRecentSolanaTransaction({ transaction })
   );
   const activeWallet = useActiveWallet();
-  const tokenData = getTokenData(transaction);
+  const tokenData = getTokenData(registry, transaction);
   const metadata = (state === "hasValue" && contents) || undefined;
 
   const onClick = () => {

@@ -8,6 +8,7 @@ import {
   useActiveWallet,
   useBlockchainConnectionUrl,
   useBlockchainExplorer,
+  useJupiterTokenMap,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import {
@@ -151,12 +152,15 @@ export function TransactionDetail({
 }) {
   const theme = useCustomTheme();
   const classes = useStyles();
+  const registry = useJupiterTokenMap();
   const activeWallet = useActiveWallet();
   const navigate = useNavigate();
   const [openDrawer, setOpenDrawer] = useState(true);
 
   // TODO - this is duplicated in ListItem.tsx, better to pass in setTransactionDetail state
-  const tokenData = getTokenData(transaction);
+  const tokenData = getTokenData(registry, transaction);
+  console.log(transaction);
+  console.log(tokenData);
 
   return (
     <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
