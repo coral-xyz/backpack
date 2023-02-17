@@ -2,6 +2,7 @@ import type { MutableRefObject } from "react";
 import { useCallback, useEffect, useState } from "react";
 import { SolanaKeystoneKeyring } from '@coral-xyz/blockchain-solana';
 import type { Blockchain, UR, WalletDescriptor } from "@coral-xyz/common";
+import { useCustomTheme } from '@coral-xyz/themes';
 import { Box } from '@mui/system';
 
 import { Header, SubtextParagraph } from '../../../../common';
@@ -54,7 +55,7 @@ export function ConnectHardwareKeystoneSign({
   return {
     [DisplayType.qrcode]: <KeystonePlayer
       header={
-        <CommonHeader />
+        <CommonHeader text='Sign the message and scan the QR code using your Keystone to import your account to Backpack' />
       }
       ur={msgPlayUR}
       setDisplay={setDisplay}
@@ -62,7 +63,7 @@ export function ConnectHardwareKeystoneSign({
     [DisplayType.scanner]: <KeystoneScanner
       containerRef={containerRef}
       header={
-        <CommonHeader />
+        <CommonHeader text='Scan the QR code displayed on your Keystone Device.' />
       }
       onScan={handleScan}
       setDisplay={setDisplay}
@@ -70,7 +71,9 @@ export function ConnectHardwareKeystoneSign({
   }[display];
 }
 
-function CommonHeader() {
+function CommonHeader({ text }: {text: string}) {
+  const theme = useCustomTheme();
+
   return (
     <Box textAlign="center">
       <Box
@@ -82,7 +85,7 @@ function CommonHeader() {
       >
         <CircleBackpackIcon />
         <Box mx={4}>
-          <ConnectIcon />
+          <ConnectIcon color={theme.custom.colors.fontColor} />
         </Box>
         <KeystoneIcon />
       </Box>
@@ -90,7 +93,7 @@ function CommonHeader() {
         margin: "24px 0 12px",
       }} />
       <SubtextParagraph>
-        Sign the message to add the wallet to your Backpack account.Scan the QR code via your Keystone Device. 
+        {text}
       </SubtextParagraph>
     </Box>
   );

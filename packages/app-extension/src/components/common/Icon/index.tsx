@@ -1025,7 +1025,7 @@ export function ConnectIcon(props: React.SVGAttributes<SVGElement>) {
   return (
     <svg width={props.width || "24"} height={props.height || "24"} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
       <path fillRule="evenodd" clipRule="evenodd" d="M17.32 8H15.88V6H17.32C20.5012 6 23.08 8.57884 23.08 11.76C23.08 14.9412 20.5012 17.52 17.32 17.52H15.88V15.52H17.32C19.3966 15.52 21.08 13.8366 21.08 11.76C21.08 9.68341 19.3966 8 17.32 8ZM6.76 15.52H8.2V17.52H6.76C3.57884 17.52 1 14.9412 1 11.76C1 8.57884 3.57884 6 6.76 6H8.2V8H6.76C4.68341 8 3 9.68341 3 11.76C3 13.8366 4.68341 15.52 6.76 15.52Z" fill="currentColor" />
-      <path d="M8.68018 11.26C8.40403 11.26 8.18018 11.4839 8.18018 11.76C8.18018 12.0362 8.40403 12.26 8.68018 12.26H15.4002C15.6763 12.26 15.9002 12.0362 15.9002 11.76C15.9002 11.4839 15.6763 11.26 15.4002 11.26H8.68018Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M8.68018 11.26C8.40403 11.26 8.18018 11.4839 8.18018 11.76C8.18018 12.0362 8.40403 12.26 8.68018 12.26H15.4002C15.6763 12.26 15.9002 12.0362 15.9002 11.76C15.9002 11.4839 15.6763 11.26 15.4002 11.26H8.68018Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
