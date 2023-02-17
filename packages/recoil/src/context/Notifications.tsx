@@ -614,6 +614,7 @@ export function NotificationsProvider(props: any) {
       setAuthenticatedUser({
         username: notif.data.username,
         uuid: notif.data.uuid,
+        jwt: notif.data.jwt,
       });
     };
 

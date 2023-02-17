@@ -14,26 +14,43 @@ import {
   roomChats,
   unreadCount,
   useAuthenticatedUser,
-  useUser,
 } from "@coral-xyz/recoil";
 import { useRecoilCallback, useSetRecoilState } from "recoil";
 
 // Wrapper compoennt to ensure syncing only happens when there is an
 // authenticated user
-export const DbRecoilSync = () => {
+export const AuthenticatedSync = () => {
   const authenticatedUser = useAuthenticatedUser();
 
   if (authenticatedUser) {
-    return <AuthedDbRecoilSync uuid={authenticatedUser.uuid} />;
-  } else {
-    return <></>;
+    return (
+      <>
+        <ChatSync uuid={authenticatedUser.uuid} jwt={authenticatedUser.jwt} />
+        <DbRecoilSync uuid={authenticatedUser.uuid} />
+      </>
+    );
   }
+
+  return null;
 };
 
-export const AuthedDbRecoilSync = ({ uuid }: { uuid: string }) => {
-  const updateChats = useUpdateChats();
+export const ChatSync = ({ uuid, jwt }: { uuid: string; jwt: string }) => {
+  useEffect(() => {
+    (async () => {
+      await Promise.all([
+        refreshGroupsAndFriendships(uuid).then(
+          async () => await BackgroundChatsSync.getInstance().updateUuid(uuid)
+        ),
+        SignalingManager.getInstance().updateUuid(uuid, jwt),
+      ]);
+    })();
+  }, [uuid, jwt]);
 
-  const { jwt } = useUser();
+  return null;
+};
+
+export const DbRecoilSync = ({ uuid }: { uuid: string }) => {
+  const updateChats = useUpdateChats();
 
   const setFriendshipsValue = useSetRecoilState(friendships({ uuid }));
   const setRequestCountValue = useSetRecoilState(requestCount({ uuid }));
@@ -41,13 +58,6 @@ export const AuthedDbRecoilSync = ({ uuid }: { uuid: string }) => {
     groupCollections({ uuid })
   );
   const setUnreadCount = useSetRecoilState(unreadCount);
-
-  useEffect(() => {
-    refreshGroupsAndFriendships(uuid).then(() => {
-      BackgroundChatsSync.getInstance().updateUuid(uuid);
-    });
-    SignalingManager.getInstance().updateUuid(uuid, jwt);
-  }, [uuid, jwt]);
 
   const updateUnread = async () => {
     const response = await fetch(
@@ -161,7 +171,7 @@ export const AuthedDbRecoilSync = ({ uuid }: { uuid: string }) => {
     };
   }, [uuid]);
 
-  return <></>;
+  return null;
 };
 
 export const useUpdateChats = () =>

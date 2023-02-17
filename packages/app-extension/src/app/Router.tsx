@@ -41,11 +41,10 @@ import {
   ApproveTransaction,
   Cold,
 } from "../components/Unlocked/Approvals/ApproveTransaction";
+import { AuthenticatedSync } from "../components/Unlocked/AuthenticatedSync";
 import { WithAuth } from "../components/Unlocked/WithAuth";
 import { refreshFeatureGates } from "../gates/FEATURES";
 import { sanitizeTransactionWithFeeConfig } from "../utils/solana";
-
-import { DbRecoilSync } from "./DbRecoilSync";
 
 import "./App.css";
 
@@ -61,7 +60,6 @@ export default function Router() {
           toastStyle={{ backgroundColor: theme.custom.colors.swapTokensButton }}
           theme={isDarkMode ? "dark" : "light"}
         />
-        <DbRecoilSync />
         <_Router />
       </>
     </WithSuspense>
@@ -400,7 +398,14 @@ function WithUnlock({ children }: { children: React.ReactElement }) {
     <AnimatePresence initial={false}>
       <WithLockMotion id={isLocked ? "locked" : "unlocked"}>
         <Suspense fallback={<div style={{ display: "none" }}></div>}>
-          {isLocked ? <Locked /> : <WithAuth>{children}</WithAuth>}
+          {isLocked ? (
+            <Locked />
+          ) : (
+            <>
+              <AuthenticatedSync />
+              <WithAuth>{children}</WithAuth>
+            </>
+          )}
         </Suspense>
       </WithLockMotion>
     </AnimatePresence>
