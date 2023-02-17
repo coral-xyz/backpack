@@ -442,6 +442,8 @@ function AddressList({
 }) {
   const theme = useCustomTheme();
 
+  const walletsWithPrimary = wallets.filter((w) => w.addresses?.[0]);
+
   return (
     <List
       style={{
@@ -451,23 +453,21 @@ function AddressList({
         border: `${theme.custom.colors.borderFull}`,
       }}
     >
-      {wallets
-        .filter((wallet) => wallet.addresses?.[0])
-        .map((wallet, index) => (
-          <>
-            <AddressListItem
-              key={wallet.username}
-              isFirst={index === 0}
-              isLast={index === wallets.length - 1}
-              user={{
-                username: wallet.username,
-                image: wallet.image,
-                uuid: wallet.uuid,
-              }}
-              address={wallet.addresses?.[0]}
-            />
-          </>
-        ))}
+      {walletsWithPrimary.map((wallet, index) => (
+        <>
+          <AddressListItem
+            key={wallet.username}
+            isFirst={index === 0}
+            isLast={index === walletsWithPrimary.length - 1}
+            user={{
+              username: wallet.username,
+              image: wallet.image,
+              uuid: wallet.uuid,
+            }}
+            address={wallet.addresses?.[0]}
+          />
+        </>
+      ))}
     </List>
   );
 }
@@ -545,7 +545,6 @@ const AddressListItem = ({
           {!address && (
             <BlockIcon style={{ color: "#E33E3F", marginLeft: 10 }} />
           )}
-          {/*<div className={classes.address}>{walletAddressDisplay(address)}</div>*/}
         </div>
       </div>
     </ListItem>
@@ -619,6 +618,7 @@ const SearchResults = ({ searchResults }: { searchResults: any[] }) => {
     <div style={{ margin: "0 12px" }}>
       {searchResults.length !== 0 && (
         <div style={{ marginTop: 10 }}>
+          <BubbleTopLabel text="Other people" />
           <AddressList
             wallets={searchResults.map((user) => ({
               username: user.username,
