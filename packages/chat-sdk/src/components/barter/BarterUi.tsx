@@ -27,11 +27,11 @@ export const BarterUi = () => {
               <SelectPage
                 currentSelection={[]}
                 remoteSelection={[
-                  {
-                    mint: "FGkdkaHiAR4cuVJDUgMKS7ypZaGSwUCcMCDGVtZTU51z",
-                    amount: 1,
-                    publicKey: "4m39tDyZcK9dgqYaBaX7PiTp1kjAKrMhNYmxDcVu3hNp",
-                  },
+                  // {
+                  //   mint: "FGkdkaHiAR4cuVJDUgMKS7ypZaGSwUCcMCDGVtZTU51z",
+                  //   amount: 1,
+                  //   publicKey: "4m39tDyZcK9dgqYaBaX7PiTp1kjAKrMhNYmxDcVu3hNp",
+                  // },
                 ]}
               />
             )}

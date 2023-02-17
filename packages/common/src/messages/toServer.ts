@@ -13,7 +13,8 @@ export type MessageKind =
   | "text"
   | "secure-transfer"
   | "media"
-  | "transaction";
+  | "transaction"
+  | "barter";
 
 export type MessageMetadata =
   | {
@@ -28,6 +29,8 @@ export type MessageMetadata =
       media_link: string;
     }
   | {
+    contract_address: string;
+  } | {
       final_tx_signature: string;
     };
 

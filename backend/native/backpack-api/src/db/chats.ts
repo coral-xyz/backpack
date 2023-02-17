@@ -135,35 +135,6 @@ export const getChats = async ({
   return chats;
 };
 
-export const getChatsFromParentGuids = async (
-  roomId: string,
-  type: SubscriptionType,
-  parentClientGeneratedGuids: string[]
-) => {
-  const response = await chain("query")({
-    chats: [
-      {
-        where: {
-          room: { _eq: roomId },
-          //@ts-ignore
-          type: { _eq: type },
-          client_generated_uuid: { _in: parentClientGeneratedGuids },
-        },
-      },
-      {
-        id: true,
-        uuid: true,
-        message: true,
-        client_generated_uuid: true,
-        created_at: true,
-        message_kind: true,
-        parent_client_generated_uuid: true,
-      },
-    ],
-  });
-  return response.chats || [];
-};
-
 export const updateSecureTransfer = async (
   messageId: number,
   room: string,

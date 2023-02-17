@@ -64,26 +64,26 @@ export function SelectPage({
       <div style={{ display: "flex" }}>
         <div style={{ flex: 1 }}>
           <div style={{ color: theme.custom.colors.background }}>
-            {contents?.map((nft) => (
-              <>
-                <RenderNFT
-                  nft={nft}
-                  selected={localSelection.includes(nft.mint)}
-                  setLocalSelection={setLocalSelection}
-                />
-              </>
-            ))}
+            {/*{contents?.map((nft) => (*/}
+            {/*  <>*/}
+            {/*    <RenderNFT*/}
+            {/*      nft={nft}*/}
+            {/*      selected={localSelection.includes(nft.mint)}*/}
+            {/*      setLocalSelection={setLocalSelection}*/}
+            {/*    />*/}
+            {/*  </>*/}
+            {/*))}*/}
           </div>
         </div>
         <div style={{ flex: 1 }}>
-          {contents?.map((nft) => (
-            <>
-              <RenderNFT
-                nft={nft}
-                selected={localSelection.includes(nft.mint)}
-              />
-            </>
-          ))}
+          {/*{contents?.map((nft) => (*/}
+          {/*  <>*/}
+          {/*    <RenderNFT*/}
+          {/*      nft={nft}*/}
+          {/*      selected={localSelection.includes(nft.mint)}*/}
+          {/*    />*/}
+          {/*  </>*/}
+          {/*))}*/}
         </div>
       </div>
     </div>

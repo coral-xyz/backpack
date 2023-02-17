@@ -25,4 +25,8 @@ export class Redis {
   async send(message: string) {
     await this.client.rPush(NOTIFICATIONS_QUEUE, message);
   }
+
+  async publish(room: string, message: any) {
+    await this.client.publish(room, JSON.stringify(message));
+  }
 }

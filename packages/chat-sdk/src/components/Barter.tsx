@@ -31,7 +31,7 @@ export const Barter = ({ buttonStyle }: any) => {
         }}
       >
         {" "}
-        <BarterIcon fill={theme.custom.colors.icon} />{" "}
+        {/*<BarterIcon fill={theme.custom.colors.icon} />{" "}*/}
       </IconButton>
     </div>
   );

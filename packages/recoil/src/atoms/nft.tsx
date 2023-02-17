@@ -126,6 +126,7 @@ export const nftsByIds = selectorFamily<
         const allNfts = get(
           waitForAll(
             nftIds.map((id) => {
+              //@ts-ignore
               return nftById({ publicKey, connectionUrl, nftId: id });
             })
           )
