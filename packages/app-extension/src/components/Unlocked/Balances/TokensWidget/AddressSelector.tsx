@@ -1,13 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import type { RemoteUserData } from "@coral-xyz/common";
-import {
-  BACKEND_API_URL,
-  Blockchain,
-  walletAddressDisplay,
-} from "@coral-xyz/common";
+import { BACKEND_API_URL, Blockchain } from "@coral-xyz/common";
 import { useContacts } from "@coral-xyz/db";
 import { ParentCommunicationManager } from "@coral-xyz/message-sdk";
 import {
+  DangerButton,
   isFirstLastListItemStyle,
   PrimaryButton,
   TextInput,
@@ -28,15 +25,8 @@ import {
 } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import BlockIcon from "@mui/icons-material/Block";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SearchIcon from "@mui/icons-material/Search";
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  List,
-  ListItem,
-} from "@mui/material";
+import { List, ListItem } from "@mui/material";
 import InputAdornment from "@mui/material/InputAdornment";
 import { createStyles, makeStyles } from "@mui/styles";
 
@@ -46,7 +36,6 @@ import {
 } from "../../../common/Layout/NavStack";
 
 import { useIsValidAddress } from "./Send";
-import { TokenBadge } from "./TokenBadge";
 
 let debouncedTimer = 0;
 
@@ -169,8 +158,6 @@ export const AddressSelector = ({
     ethereumCtx.provider
   );
 
-  const isSendDisabled = !isValidAddress;
-
   useEffect(() => {
     const prev = nav.title;
     nav.setOptions({ headerTitle: `Send ${token.ticker}` });
@@ -200,25 +187,28 @@ export const AddressSelector = ({
           <NotSelected
             searchResults={searchResults}
             searchFilter={inputContent}
-            blockchain={blockchain}
           />
         </div>
         <div className={classes.buttonContainer}>
-          <PrimaryButton
-            onClick={() => {
-              push("send", {
-                blockchain,
-                token,
-                to: {
-                  address: inputContent,
-                },
-              });
-            }}
-            disabled={isSendDisabled}
-            label="Next"
-            type="submit"
-            data-testid="Send"
-          />
+          {!isValidAddress && inputContent.length > 15 ? (
+            <DangerButton label="Invalid address" disabled={true} />
+          ) : (
+            <PrimaryButton
+              onClick={() => {
+                push("send", {
+                  blockchain,
+                  token,
+                  to: {
+                    address: inputContent,
+                  },
+                });
+              }}
+              disabled={!isValidAddress}
+              label="Next"
+              type="submit"
+              data-testid="Send"
+            />
+          )}
         </div>
       </div>
     </AddressSelectorProvider>
@@ -226,11 +216,9 @@ export const AddressSelector = ({
 };
 
 function NotSelected({
-  blockchain,
   searchFilter,
   searchResults,
 }: {
-  blockchain: Blockchain;
   searchFilter: string;
   searchResults: any[];
 }) {
@@ -651,19 +639,8 @@ const SearchAddress = ({
         }}
         margin="none"
       />
-      {!isErrorAddress && inputContent && (
-        <div style={{ color: "#52D24C", marginTop: 5, marginLeft: 2 }}>
-          This is a valid {blockchain} address
-        </div>
-      )}
-      {isErrorAddress && inputContent && inputContent.length > 15 && (
-        <div style={{ color: "#FF6269", marginTop: 5, marginLeft: 2 }}>
-          This is not a valid {blockchain} address
-        </div>
-      )}
       {searchResults.length !== 0 && (
         <div style={{ marginTop: 10 }}>
-          {" "}
           <AddressList
             wallets={searchResults.map((user) => ({
               username: user.username,
