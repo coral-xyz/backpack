@@ -228,7 +228,7 @@ export function Send({
   const ethereumCtx = useEthereumCtx();
   const [openDrawer, setOpenDrawer] = useState(false);
   const [address, setAddress] = useState(to?.address || "");
-  const [amount, setAmount] = useState<BigNumber | undefined>(undefined);
+  const [amount, setAmount] = useState<BigNumber | null>(null);
   const [feeOffset, setFeeOffset] = useState(BigNumber.from(0));
   const [message, setMessage] = useState("");
   const friendship = useFriendship({ userId: to?.uuid || "" });
@@ -281,7 +281,8 @@ export function Send({
   const amountSubFee = BigNumber.from(token!.nativeBalance).sub(feeOffset);
   const maxAmount = amountSubFee.gt(0) ? amountSubFee : BigNumber.from(0);
   const exceedsBalance = amount && amount.gt(maxAmount);
-  const isSendDisabled = !isValidAddress || amount === null || !!exceedsBalance;
+  const isSendDisabled =
+    !isValidAddress || amount === null || amount.eq(0) || !!exceedsBalance;
   const isAmountError = amount && exceedsBalance;
 
   // On click handler.
