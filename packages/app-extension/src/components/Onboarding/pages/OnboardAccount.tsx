@@ -1,4 +1,4 @@
-import type { MutableRefObject} from "react";
+import type { MutableRefObject } from "react";
 import { useEffect, useState } from "react";
 import type {
   KeyringType,
@@ -171,7 +171,7 @@ export const OnboardAccount = ({
           borderTopRightRadius: "12px",
         }}
       >
-        {keyringType === "ledger" || keyringType === "keystone" ? (
+        {keyringType !== "mnemonic" ? (
           <HardwareOnboard
             containerRef={containerRef}
             blockchain={blockchain!}

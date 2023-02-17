@@ -1,4 +1,4 @@
-import type { MutableRefObject} from "react";
+import type { MutableRefObject } from "react";
 import { useCallback, useState } from "react";
 import type {
   Blockchain,
@@ -14,8 +14,8 @@ import { ImportWallets } from "../../common/Account/ImportWallets";
 import { CloseButton } from "../../common/Layout/Drawer";
 import { NavBackButton, WithNav } from "../../common/Layout/Nav";
 import { ConnectHardwareKeystone } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareKeystone";
-import { ConnectHardwareKeystoneSign } from '../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareKeystoneSign';
-import { ConnectHardwareKeystoneTutorial } from '../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareKeystoneTutorial';
+import { ConnectHardwareKeystoneSign } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareKeystoneSign";
+import { ConnectHardwareKeystoneTutorial } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareKeystoneTutorial";
 import { ConnectHardwareSearching } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareSearching";
 import { ConnectHardwareWelcome } from "../../Unlocked/Settings/AddConnectWallet/ConnectHardware/ConnectHardwareWelcome";
 
@@ -51,7 +51,11 @@ export function useHardwareOnboardSteps({
   signMessage: string | ((publicKey: string) => string);
   signText: string;
   successComponent?: React.ReactElement;
-  onComplete: (signedWalletDescriptor: SignedWalletDescriptor, hardwareType: HardwareType, ur?: UR) => void;
+  onComplete: (
+    signedWalletDescriptor: SignedWalletDescriptor,
+    hardwareType: HardwareType,
+    ur?: UR
+  ) => void;
   nextStep: () => void;
   prevStep: () => void;
 }) {
@@ -62,45 +66,53 @@ export function useHardwareOnboardSteps({
   const [hardwareType, setHardwareType] = useState<HardwareType>(
     HardwareType.Keystone
   );
-  const [ur, setUR] = useState<UR>({ type: '', cbor: '' });
-  const onWelcomeNext = useCallback((type: HardwareType) => {
-    setHardwareType(type);
-    nextStep();
-  }, [nextStep]);
+  const [ur, setUR] = useState<UR>({ type: "", cbor: "" });
+  const onWelcomeNext = useCallback(
+    (type: HardwareType) => {
+      setHardwareType(type);
+      nextStep();
+    },
+    [nextStep]
+  );
 
-  const SignMessage = hardwareType === HardwareType.Ledger ? HardwareSign : ConnectHardwareKeystoneSign;
+  const SignMessage =
+    hardwareType === HardwareType.Ledger
+      ? HardwareSign
+      : ConnectHardwareKeystoneSign;
 
-  const accountAction = hardwareType === HardwareType.Keystone ? 'import' : action;
+  const accountAction =
+    hardwareType === HardwareType.Keystone ? "import" : action;
 
   //
   // Flow for onboarding a hardware wallet.
   //
   const steps = [
-    <ConnectHardwareWelcome containerRef={containerRef} onNext={onWelcomeNext} />,
-    ...(hardwareType === HardwareType.Ledger ? 
-      [
-        <ConnectHardwareSearching
-          blockchain={blockchain}
-          onNext={(transport) => {
-            setTransport(transport);
-            nextStep();
-          }}
-          isConnectFailure={!!transportError}
-        />
-      ]
-     : 
-      [
-        <ConnectHardwareKeystoneTutorial onNext={nextStep} />,
-        <ConnectHardwareKeystone
-          containerRef={containerRef}
-          blockchain={blockchain}
-          onNext={(ur: UR) => {
-            setUR(ur);
-            nextStep();
-          }}
-        />
-      ]
-    ),
+    <ConnectHardwareWelcome
+      containerRef={containerRef}
+      onNext={onWelcomeNext}
+    />,
+    ...(hardwareType === HardwareType.Ledger
+      ? [
+          <ConnectHardwareSearching
+            blockchain={blockchain}
+            onNext={(transport) => {
+              setTransport(transport);
+              nextStep();
+            }}
+            isConnectFailure={!!transportError}
+          />,
+        ]
+      : [
+          <ConnectHardwareKeystoneTutorial onNext={nextStep} />,
+          <ConnectHardwareKeystone
+            containerRef={containerRef}
+            blockchain={blockchain}
+            onNext={(ur: UR) => {
+              setUR(ur);
+              nextStep();
+            }}
+          />,
+        ]),
     //
     // Use a component to get a wallet to proceed with. The create flow uses a
     // component that gets a default wallet on an unused account index, the search
@@ -167,6 +179,7 @@ export function useHardwareOnboardSteps({
           transport={transport!}
           ur={ur}
           allowMultiple={false} // Only allow a single wallet to be selected
+          action={action}
           onNext={(walletDescriptors: Array<WalletDescriptor>) => {
             setWalletDescriptor(walletDescriptors[0]);
             nextStep();
@@ -199,7 +212,7 @@ export function useHardwareOnboardSteps({
                   signature,
                 },
                 hardwareType,
-                ur,
+                ur
               );
               if (successComponent) {
                 nextStep();
@@ -236,7 +249,11 @@ export function HardwareOnboard({
   signMessage: string | ((publicKey: string) => string);
   signText: string;
   successComponent?: React.ReactElement;
-  onComplete: (signedWalletDescriptor: SignedWalletDescriptor, hardwareType: HardwareType, ur?: UR) => void;
+  onComplete: (
+    signedWalletDescriptor: SignedWalletDescriptor,
+    hardwareType: HardwareType,
+    ur?: UR
+  ) => void;
   onClose?: () => void;
 }) {
   const theme = useCustomTheme();
