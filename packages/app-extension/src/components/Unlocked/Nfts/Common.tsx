@@ -33,13 +33,11 @@ export function GridCard({
   const { push } = useNavigation();
   const openPlugin = useOpenPlugin();
 
-  console.log(nft);
   const { contents, state } = useRecoilValueLoadable(
     collectibleXnft(
       nft ? { collection: nft.metadataCollectionId, mint: nft.mint } : null
     )
   );
-  console.log(contents, state);
 
   const xnft = (state === "hasValue" && contents) || null;
 
