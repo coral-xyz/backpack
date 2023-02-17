@@ -65,7 +65,7 @@ export function ConnectHardwareWelcome({
               >
                 <circle cx="10" cy="6" r="1" fill="currentColor" />
                 <rect x="9" y="9" width="2" height="7" rx="1" fill="currentColor" />
-                <rect x="1" y="1" width="18" height="18" rx="9" stroke="currentColor" stroke-width="2" />
+                <rect x="1" y="1" width="18" height="18" rx="9" stroke="currentColor" strokeWidth="2" />
               </SvgIcon>
             }
             onClick={() => onNext(HardwareType.Keystone)}

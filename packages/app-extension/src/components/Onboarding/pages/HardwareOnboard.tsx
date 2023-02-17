@@ -263,10 +263,10 @@ export function HardwareOnboard({
         ) : null
       }
       navbarStyle={{
-        backgroundColor: theme.custom.colors.nav,
+        backgroundColor: theme.custom.colors.backgroundBackdrop,
       }}
       navContentStyle={{
-        backgroundColor: theme.custom.colors.nav,
+        backgroundColor: theme.custom.colors.backgroundBackdrop,
         height: "400px",
       }}
     >
