@@ -53,7 +53,7 @@ const useStyles = styles((theme) => ({
   },
   textSecondary: {
     fontSize: "16px",
-    color: theme.custom.colors.secondary,
+    color: theme.custom.colors.negative,
     lineHeight: "24px",
     textAlign: "end",
   },
