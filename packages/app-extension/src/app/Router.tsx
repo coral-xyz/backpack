@@ -14,12 +14,7 @@ import {
   QUERY_LOCKED_APPROVAL,
   toTitleCase,
 } from "@coral-xyz/common";
-import {
-  BackgroundChatsSync,
-  EmptyState,
-  refreshGroupsAndFriendships,
-  SignalingManager,
-} from "@coral-xyz/react-common";
+import { EmptyState } from "@coral-xyz/react-common";
 import {
   isKeyCold,
   KeyringStoreStateEnum,
@@ -30,7 +25,6 @@ import {
   useDarkMode,
   useEnabledBlockchains,
   useKeyringStoreState,
-  useUser,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Block as BlockIcon } from "@mui/icons-material";
@@ -77,14 +71,6 @@ export default function Router() {
 function _Router() {
   const needsOnboarding =
     useKeyringStoreState() === KeyringStoreStateEnum.NeedsOnboarding;
-  const { uuid, jwt } = useUser();
-
-  useEffect(() => {
-    refreshGroupsAndFriendships(uuid).then(() => {
-      BackgroundChatsSync.getInstance().updateUuid(uuid);
-    });
-    SignalingManager.getInstance().updateUuid(uuid, jwt);
-  }, [uuid, jwt]);
 
   useEffect(() => {
     // if the user needs onboarding then open the expanded view
