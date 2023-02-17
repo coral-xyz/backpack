@@ -4,6 +4,7 @@ import { BACKEND_API_URL, Blockchain } from "@coral-xyz/common";
 import { useContacts } from "@coral-xyz/db";
 import { ParentCommunicationManager } from "@coral-xyz/message-sdk";
 import {
+  BubbleTopLabel,
   DangerButton,
   isFirstLastListItemStyle,
   PrimaryButton,
@@ -170,12 +171,10 @@ export const AddressSelector = ({
     <AddressSelectorProvider blockchain={blockchain} token={token}>
       <div className={classes.container}>
         <div className={classes.topHalf}>
-          <SearchAddress
-            searchResults={searchResults}
-            setSearchResults={setSearchResults}
+          <SearchInput
             inputContent={inputContent}
             setInputContent={setInputContent}
-            blockchain={blockchain}
+            setSearchResults={setSearchResults}
           />
           {!inputContent && (
             <YourAddresses
@@ -184,6 +183,7 @@ export const AddressSelector = ({
             />
           )}
           <Contacts searchFilter={inputContent} blockchain={blockchain} />
+          <SearchResults searchResults={searchResults} />
           <NotSelected
             searchResults={searchResults}
             searchFilter={inputContent}
@@ -252,9 +252,7 @@ function NotSelected({
 
   return (
     <div style={{ padding: 10 }}>
-      <div style={{ color: theme.custom.colors.fontColor, marginBottom: 8 }}>
-        Users who haven't yet set a primary address
-      </div>
+      <BubbleTopLabel text="Users without a primary wallet" />
       <ListItem
         button
         disableRipple
@@ -272,7 +270,6 @@ function NotSelected({
       >
         <div style={{ paddingTop: 15 }}>
           <MembersList
-            count={allResults.length}
             members={allResults.map((x) => ({
               image: x.remoteUserImage,
               username: x.remoteUsername,
@@ -285,17 +282,15 @@ function NotSelected({
 }
 
 function MembersList({
-  count,
   members,
 }: {
-  count: number;
   members: { image: string; username: string }[];
 }) {
   const theme = useCustomTheme();
-  const MEMBER_TRHESHOLD = 3;
+  const MEMBER_THRESHOLD = 3;
   const classes = useStyles();
   const renderMembersStr = () => {
-    if (members.length <= MEMBER_TRHESHOLD) {
+    if (members.length <= MEMBER_THRESHOLD) {
       return members.map(
         (member, index) =>
           member.username + `${index === members.length - 1 ? "" : ", "}`
@@ -353,7 +348,6 @@ const Contacts = ({
   blockchain: Blockchain;
   searchFilter: string;
 }) => {
-  const classes = useStyles();
   const { uuid } = useUser();
   const contacts = useContacts(uuid);
 
@@ -373,26 +367,22 @@ const Contacts = ({
     <div>
       {filteredContacts.length !== 0 && (
         <div style={{ margin: "12px 12px" }}>
-          <div className={classes.title} style={{ marginLeft: 2 }}>
-            Contacts
-          </div>
-          <div>
-            <AddressList
-              wallets={filteredContacts.map((c) => ({
-                username: c.remoteUsername,
-                addresses: c.public_keys
-                  .filter(
-                    (x) =>
-                      x.blockchain === blockchain &&
-                      (x.publicKey.includes(searchFilter) ||
-                        c.remoteUsername.includes(searchFilter))
-                  )
-                  .map((x) => x.publicKey),
-                image: c.remoteUserImage,
-                uuid: c.remoteUserId,
-              }))}
-            />
-          </div>
+          <BubbleTopLabel text="Contacts" />
+          <AddressList
+            wallets={filteredContacts.map((c) => ({
+              username: c.remoteUsername,
+              addresses: c.public_keys
+                .filter(
+                  (x) =>
+                    x.blockchain === blockchain &&
+                    (x.publicKey.includes(searchFilter) ||
+                      c.remoteUsername.includes(searchFilter))
+                )
+                .map((x) => x.publicKey),
+              image: c.remoteUserImage,
+              uuid: c.remoteUserId,
+            }))}
+          />
         </div>
       )}
     </div>
@@ -406,7 +396,6 @@ const YourAddresses = ({
   blockchain: Blockchain;
   searchFilter: string;
 }) => {
-  const classes = useStyles();
   const wallets = useAllWallets().filter((x) => x.blockchain === blockchain);
   const { uuid } = useUser();
   const avatarUrl = useAvatarUrl();
@@ -419,9 +408,7 @@ const YourAddresses = ({
 
   return (
     <div style={{ margin: "12px 12px" }}>
-      <div className={classes.title} style={{ marginLeft: 2 }}>
-        Your addresses
-      </div>
+      <BubbleTopLabel text="Your addresses" />
       <AddressList
         wallets={wallets
           .filter(
@@ -455,6 +442,8 @@ function AddressList({
 }) {
   const theme = useCustomTheme();
 
+  const walletsWithPrimary = wallets.filter((w) => w.addresses?.[0]);
+
   return (
     <List
       style={{
@@ -464,23 +453,21 @@ function AddressList({
         border: `${theme.custom.colors.borderFull}`,
       }}
     >
-      {wallets
-        .filter((wallet) => wallet.addresses?.[0])
-        .map((wallet, index) => (
-          <>
-            <AddressListItem
-              key={wallet.username}
-              isFirst={index === 0}
-              isLast={index === wallets.length - 1}
-              user={{
-                username: wallet.username,
-                image: wallet.image,
-                uuid: wallet.uuid,
-              }}
-              address={wallet.addresses?.[0]}
-            />
-          </>
-        ))}
+      {walletsWithPrimary.map((wallet, index) => (
+        <>
+          <AddressListItem
+            key={wallet.username}
+            isFirst={index === 0}
+            isLast={index === walletsWithPrimary.length - 1}
+            user={{
+              username: wallet.username,
+              image: wallet.image,
+              uuid: wallet.uuid,
+            }}
+            address={wallet.addresses?.[0]}
+          />
+        </>
+      ))}
     </List>
   );
 }
@@ -558,46 +545,29 @@ const AddressListItem = ({
           {!address && (
             <BlockIcon style={{ color: "#E33E3F", marginLeft: 10 }} />
           )}
-          {/*<div className={classes.address}>{walletAddressDisplay(address)}</div>*/}
         </div>
       </div>
     </ListItem>
   );
 };
 
-const SearchAddress = ({
+const SearchInput = ({
   inputContent,
   setInputContent,
-  blockchain,
-  searchResults,
   setSearchResults,
 }: {
   inputContent: string;
   setInputContent: any;
-  blockchain: Blockchain;
-  searchResults: any[];
   setSearchResults: any;
 }) => {
-  const { provider: solanaProvider } = useAnchorContext();
-  const ethereumCtx = useEthereumCtx();
-  const [loading, setLoading] = useState(false);
   const theme = useCustomTheme();
 
-  const { isErrorAddress } = useIsValidAddress(
-    blockchain,
-    inputContent,
-    solanaProvider.connection,
-    ethereumCtx.provider
-  );
-
   const fetchUserDetails = async (address: string) => {
-    setLoading(true);
     try {
       const response = await ParentCommunicationManager.getInstance().fetch(
         `${BACKEND_API_URL}/users?usernamePrefix=${address}&limit=6`
       );
       const json = await response.json();
-      setLoading(false);
       setSearchResults(
         json.users.sort((a: any, b: any) =>
           a.username.length < b.username.length ? -1 : 1
@@ -610,8 +580,8 @@ const SearchAddress = ({
 
   const debouncedFetchUserDetails = (prefix: string) => {
     clearTimeout(debouncedTimer);
-    debouncedTimer = setTimeout(() => {
-      fetchUserDetails(prefix);
+    debouncedTimer = setTimeout(async () => {
+      await fetchUserDetails(prefix);
     }, 250);
   };
 
@@ -639,8 +609,16 @@ const SearchAddress = ({
         }}
         margin="none"
       />
+    </div>
+  );
+};
+
+const SearchResults = ({ searchResults }: { searchResults: any[] }) => {
+  return (
+    <div style={{ margin: "0 12px" }}>
       {searchResults.length !== 0 && (
         <div style={{ marginTop: 10 }}>
+          <BubbleTopLabel text="Other people" />
           <AddressList
             wallets={searchResults.map((user) => ({
               username: user.username,
