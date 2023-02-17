@@ -2,7 +2,11 @@ import { useEffect } from "react";
 import type { EnrichedMessage, SubscriptionType } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import { RecoilSync } from "@coral-xyz/db";
-import { SignalingManager } from "@coral-xyz/react-common";
+import {
+  BackgroundChatsSync,
+  refreshGroupsAndFriendships,
+  SignalingManager,
+} from "@coral-xyz/react-common";
 import {
   friendships,
   groupCollections,
@@ -10,6 +14,7 @@ import {
   roomChats,
   unreadCount,
   useAuthenticatedUser,
+  useUser,
 } from "@coral-xyz/recoil";
 import { useRecoilCallback, useSetRecoilState } from "recoil";
 
@@ -28,12 +33,21 @@ export const DbRecoilSync = () => {
 export const AuthedDbRecoilSync = ({ uuid }: { uuid: string }) => {
   const updateChats = useUpdateChats();
 
+  const { jwt } = useUser();
+
   const setFriendshipsValue = useSetRecoilState(friendships({ uuid }));
   const setRequestCountValue = useSetRecoilState(requestCount({ uuid }));
   const setGroupCollectionsValue = useSetRecoilState(
     groupCollections({ uuid })
   );
   const setUnreadCount = useSetRecoilState(unreadCount);
+
+  useEffect(() => {
+    refreshGroupsAndFriendships(uuid).then(() => {
+      BackgroundChatsSync.getInstance().updateUuid(uuid);
+    });
+    SignalingManager.getInstance().updateUuid(uuid, jwt);
+  }, [uuid, jwt]);
 
   const updateUnread = async () => {
     const response = await fetch(
