@@ -36,7 +36,7 @@ export const SearchBox = ({
   return (
     <TextInput
       className={classes.searchField}
-      placeholder={placeholder ?? "Search for people"}
+      placeholder={placeholder ?? "Enter a username or address"}
       value={searchFilter}
       startAdornment={
         <InputAdornment position="start">

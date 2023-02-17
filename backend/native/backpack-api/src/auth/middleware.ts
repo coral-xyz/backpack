@@ -1,8 +1,8 @@
+import { validateRoom } from "@coral-xyz/backend-common";
 import { DEFAULT_GROUP_CHATS } from "@coral-xyz/common";
 import { WHITELISTED_CHAT_COLLECTIONS } from "@coral-xyz/common/src/constants";
 import type { NextFunction, Request, Response } from "express";
 
-import { validateRoom } from "@coral-xyz/backend-common";
 import {
   validateCentralizedGroupOwnership,
   validateCollectionOwnership,
@@ -119,6 +119,8 @@ export const extractUserId = async (
         await setJWTCookie(req, res, payloadRes.payload.sub);
         // Set id on request
         req.id = payloadRes.payload.sub;
+        // Set jwt  on request
+        req.jwt = jwt;
       }
     } catch {
       clearCookie(res, "jwt");

@@ -1389,6 +1389,7 @@ export class Backend {
       data: {
         username: json.username,
         uuid: json.id,
+        jwt: json.jwt,
       },
     });
 
@@ -1481,6 +1482,7 @@ export class Backend {
       data: {
         username: json.username,
         uuid: json.id,
+        jwt: json.jwt,
       },
     });
 

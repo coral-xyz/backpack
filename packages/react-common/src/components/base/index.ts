@@ -1,3 +1,4 @@
+export * from "./BubbleTopLabel";
 export * from "./DangerButton";
 export * from "./EmptyState";
 export * from "./Inputs";

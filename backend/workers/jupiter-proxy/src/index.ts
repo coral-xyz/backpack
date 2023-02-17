@@ -27,7 +27,7 @@ app.post("/swap", async (c) => {
     const json = (await c.req.json()) as any;
     const supabase = createClient(c.env.SUPABASE_URL, c.env.SUPABASE_KEY);
 
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from("swaps")
       .insert({ signature: json.signature, user_id: userId })
       .select();
@@ -101,7 +101,8 @@ app.use("/v4/swap", async (c) => {
   try {
     // Inject feeAccount (if it exists) for the output mint address
     // TODO: check if there can be multiple output mint addresses
-    const mint = body?.route.marketInfos?.[0]?.outputMint as MintAddress;
+    const mint = body?.route.marketInfos?.[body?.route.marketInfos.length - 1]
+      ?.outputMint as MintAddress;
     if (body && mint && ACCOUNTS[mint]) {
       body.feeAccount = ACCOUNTS[mint].address;
     }

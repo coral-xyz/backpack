@@ -55,6 +55,7 @@ export function walletAddressDisplay(
   publicKey: PublicKey | string,
   numDigits = 4
 ): string {
+  if (!publicKey) return "";
   const pubkeyStr: string =
     typeof publicKey === "string" ? publicKey : publicKey.toString();
   return `${pubkeyStr.slice(0, numDigits)}...${pubkeyStr.slice(

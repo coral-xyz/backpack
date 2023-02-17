@@ -14,12 +14,7 @@ import {
   QUERY_LOCKED_APPROVAL,
   toTitleCase,
 } from "@coral-xyz/common";
-import {
-  BackgroundChatsSync,
-  EmptyState,
-  refreshGroupsAndFriendships,
-  SignalingManager,
-} from "@coral-xyz/react-common";
+import { EmptyState } from "@coral-xyz/react-common";
 import {
   isKeyCold,
   KeyringStoreStateEnum,
@@ -30,7 +25,6 @@ import {
   useDarkMode,
   useEnabledBlockchains,
   useKeyringStoreState,
-  useUser,
 } from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { Block as BlockIcon } from "@mui/icons-material";
@@ -47,11 +41,10 @@ import {
   ApproveTransaction,
   Cold,
 } from "../components/Unlocked/Approvals/ApproveTransaction";
+import { AuthenticatedSync } from "../components/Unlocked/AuthenticatedSync";
 import { WithAuth } from "../components/Unlocked/WithAuth";
 import { refreshFeatureGates } from "../gates/FEATURES";
 import { sanitizeTransactionWithFeeConfig } from "../utils/solana";
-
-import { DbRecoilSync } from "./DbRecoilSync";
 
 import "./App.css";
 
@@ -67,7 +60,6 @@ export default function Router() {
           toastStyle={{ backgroundColor: theme.custom.colors.swapTokensButton }}
           theme={isDarkMode ? "dark" : "light"}
         />
-        <DbRecoilSync />
         <_Router />
       </>
     </WithSuspense>
@@ -77,14 +69,6 @@ export default function Router() {
 function _Router() {
   const needsOnboarding =
     useKeyringStoreState() === KeyringStoreStateEnum.NeedsOnboarding;
-  const { uuid, jwt } = useUser();
-
-  useEffect(() => {
-    refreshGroupsAndFriendships(uuid).then(() => {
-      BackgroundChatsSync.getInstance().updateUuid(uuid);
-    });
-    SignalingManager.getInstance().updateUuid(uuid, jwt);
-  }, [uuid, jwt]);
 
   useEffect(() => {
     // if the user needs onboarding then open the expanded view
@@ -414,7 +398,14 @@ function WithUnlock({ children }: { children: React.ReactElement }) {
     <AnimatePresence initial={false}>
       <WithLockMotion id={isLocked ? "locked" : "unlocked"}>
         <Suspense fallback={<div style={{ display: "none" }}></div>}>
-          {isLocked ? <Locked /> : <WithAuth>{children}</WithAuth>}
+          {isLocked ? (
+            <Locked />
+          ) : (
+            <>
+              <AuthenticatedSync />
+              <WithAuth>{children}</WithAuth>
+            </>
+          )}
         </Suspense>
       </WithLockMotion>
     </AnimatePresence>
