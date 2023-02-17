@@ -83,7 +83,7 @@ export function NftsDetail({
   const onLive = useRecoilValue(isOneLive);
   const WHITELISTED_CHAT_COLLECTIONS_WITH_OVERRIDE =
     onLive.wlCollection &&
-    onLive.wlCollection !== "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tG7vP6qczfj"
+    onLive.wlCollection !== "3PMczHyeW2ds7ZWDZbDSF3d21HBqG6yR4tGs7vP6qczfj"
       ? [
           ...WHITELISTED_CHAT_COLLECTIONS,
           {
@@ -207,7 +207,7 @@ export function NftsDetail({
           nft={nft}
         />
       </div>
-      {xnft && <ApplicationButton xnft={xnft} />}
+      {xnft && <ApplicationButton xnft={xnft} mintAddress={nft.mint} />}
       <Description nft={nft} />
       {nft.attributes && nft.attributes.length > 0 && <Attributes nft={nft} />}
     </div>
@@ -240,7 +240,13 @@ function Image({ nft }: { nft: any }) {
   );
 }
 
-function ApplicationButton({ xnft }: { xnft: string }) {
+function ApplicationButton({
+  xnft,
+  mintAddress,
+}: {
+  xnft: string;
+  mintAddress?: string;
+}) {
   const theme = useCustomTheme();
   const openPlugin = useOpenPlugin();
   const { contents, state } = useRecoilValueLoadable(appStoreMetaTags(xnft));
@@ -248,7 +254,7 @@ function ApplicationButton({ xnft }: { xnft: string }) {
   const data = (state === "hasValue" && contents) || null;
 
   const handleClick = () => {
-    openPlugin(xnft);
+    openPlugin(xnft + "/" + mintAddress);
   };
 
   return (

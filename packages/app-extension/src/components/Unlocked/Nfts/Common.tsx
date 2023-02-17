@@ -33,20 +33,20 @@ export function GridCard({
   const { push } = useNavigation();
   const openPlugin = useOpenPlugin();
 
-  const { contents, state } = subtitle
-    ? useRecoilValueLoadable(
-        collectibleXnft(
-          nft ? { collection: nft.metadataCollectionId, mint: nft.mint } : null
-        )
-      )
-    : { contents: undefined, state: "hasValue" };
+  console.log(nft);
+  const { contents, state } = useRecoilValueLoadable(
+    collectibleXnft(
+      nft ? { collection: nft.metadataCollectionId, mint: nft.mint } : null
+    )
+  );
+  console.log(contents, state);
 
   const xnft = (state === "hasValue" && contents) || null;
 
   const onClickAction = (e: MouseEvent) => {
     e.stopPropagation();
     if (xnft) {
-      openPlugin(xnft);
+      openPlugin(xnft + "/" + nft.mint);
     }
   };
 
@@ -120,85 +120,86 @@ export function GridCard({
             />
           </div>
         )}
-        {subtitle && (
+
+        <div
+          style={{
+            width: "100%",
+            position: "absolute",
+            left: 0,
+            bottom: 8,
+            zIndex: 2,
+            display: "flex",
+            justifyContent: "space-between",
+            padding: "0 5px",
+            gap: "6px",
+          }}
+        >
           <div
             style={{
-              width: "100%",
-              position: "absolute",
-              left: 0,
-              bottom: 8,
-              zIndex: 2,
+              backgroundColor: theme.custom.colors.nav,
+              height: "24px",
+              borderRadius: "12px",
+              padding: "0 8px",
               display: "flex",
-              justifyContent: "space-between",
-              padding: "0 5px",
-              gap: "6px",
+              alignItems: "center",
+              overflow: "hidden",
+              whiteSpace: "nowrap",
             }}
           >
-            <div
+            <Typography
+              component="div"
               style={{
-                backgroundColor: theme.custom.colors.nav,
-                height: "24px",
-                borderRadius: "12px",
-                padding: "0 8px",
                 display: "flex",
-                alignItems: "center",
+                justifyContent: "space-between",
+                fontSize: "12px",
+                color: theme.custom.colors.fontColor,
+                textOverflow: "ellipsis",
                 overflow: "hidden",
                 whiteSpace: "nowrap",
               }}
             >
-              <Typography
-                component="div"
+              <div
                 style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  fontSize: "12px",
-                  color: theme.custom.colors.fontColor,
                   textOverflow: "ellipsis",
                   overflow: "hidden",
                   whiteSpace: "nowrap",
                 }}
               >
-                <div
-                  style={{
-                    textOverflow: "ellipsis",
-                    overflow: "hidden",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {subtitle.name}
-                </div>
+                {subtitle?.name ?? nft.name}
+              </div>
+              {subtitle?.length > 0 && (
                 <span
                   style={{
                     marginLeft: "8px",
                     color: theme.custom.colors.secondary,
                   }}
                 >
-                  {subtitle.length}
+                  {subtitle?.length ?? ""}
                 </span>
-              </Typography>
-            </div>
-            {xnft && (
-              <IconButton
-                disableRipple
-                onClick={onClickAction}
-                sx={{
-                  background: theme.custom.colors.nav,
-                  display: "flex",
-                  alignItems: "center",
-                  borderRadius: "15px",
-                  padding: "4px",
-                }}
-              >
-                <RocketLaunchIcon
-                  sx={{
-                    fontSize: "16px",
-                    color: theme.custom.colors.icon,
-                  }}
-                />
-              </IconButton>
-            )}
+              )}
+            </Typography>
           </div>
-        )}
+          {xnft && (
+            <IconButton
+              disableRipple
+              onClick={onClickAction}
+              sx={{
+                background: theme.custom.colors.nav,
+                display: "flex",
+                alignItems: "center",
+                borderRadius: "15px",
+                padding: "4px",
+              }}
+            >
+              <RocketLaunchIcon
+                sx={{
+                  fontSize: "16px",
+                  color: theme.custom.colors.icon,
+                }}
+              />
+            </IconButton>
+          )}
+        </div>
       </Button>
     </>
   );
