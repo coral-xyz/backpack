@@ -4,6 +4,7 @@ import { BACKEND_API_URL, Blockchain } from "@coral-xyz/common";
 import { useContacts } from "@coral-xyz/db";
 import { ParentCommunicationManager } from "@coral-xyz/message-sdk";
 import {
+  BubbleTopLabel,
   DangerButton,
   isFirstLastListItemStyle,
   PrimaryButton,
@@ -175,7 +176,6 @@ export const AddressSelector = ({
             setSearchResults={setSearchResults}
             inputContent={inputContent}
             setInputContent={setInputContent}
-            blockchain={blockchain}
           />
           {!inputContent && (
             <YourAddresses
@@ -252,9 +252,7 @@ function NotSelected({
 
   return (
     <div style={{ padding: 10 }}>
-      <div style={{ color: theme.custom.colors.fontColor, marginBottom: 8 }}>
-        Users who haven't yet set a primary address
-      </div>
+      <BubbleTopLabel text="Users without a primary wallet" />
       <ListItem
         button
         disableRipple
@@ -272,7 +270,6 @@ function NotSelected({
       >
         <div style={{ paddingTop: 15 }}>
           <MembersList
-            count={allResults.length}
             members={allResults.map((x) => ({
               image: x.remoteUserImage,
               username: x.remoteUsername,
@@ -285,10 +282,8 @@ function NotSelected({
 }
 
 function MembersList({
-  count,
   members,
 }: {
-  count: number;
   members: { image: string; username: string }[];
 }) {
   const theme = useCustomTheme();
@@ -353,7 +348,6 @@ const Contacts = ({
   blockchain: Blockchain;
   searchFilter: string;
 }) => {
-  const classes = useStyles();
   const { uuid } = useUser();
   const contacts = useContacts(uuid);
 
@@ -373,26 +367,22 @@ const Contacts = ({
     <div>
       {filteredContacts.length !== 0 && (
         <div style={{ margin: "12px 12px" }}>
-          <div className={classes.title} style={{ marginLeft: 2 }}>
-            Contacts
-          </div>
-          <div>
-            <AddressList
-              wallets={filteredContacts.map((c) => ({
-                username: c.remoteUsername,
-                addresses: c.public_keys
-                  .filter(
-                    (x) =>
-                      x.blockchain === blockchain &&
-                      (x.publicKey.includes(searchFilter) ||
-                        c.remoteUsername.includes(searchFilter))
-                  )
-                  .map((x) => x.publicKey),
-                image: c.remoteUserImage,
-                uuid: c.remoteUserId,
-              }))}
-            />
-          </div>
+          <BubbleTopLabel text="Contacts" />
+          <AddressList
+            wallets={filteredContacts.map((c) => ({
+              username: c.remoteUsername,
+              addresses: c.public_keys
+                .filter(
+                  (x) =>
+                    x.blockchain === blockchain &&
+                    (x.publicKey.includes(searchFilter) ||
+                      c.remoteUsername.includes(searchFilter))
+                )
+                .map((x) => x.publicKey),
+              image: c.remoteUserImage,
+              uuid: c.remoteUserId,
+            }))}
+          />
         </div>
       )}
     </div>
@@ -406,7 +396,6 @@ const YourAddresses = ({
   blockchain: Blockchain;
   searchFilter: string;
 }) => {
-  const classes = useStyles();
   const wallets = useAllWallets().filter((x) => x.blockchain === blockchain);
   const { uuid } = useUser();
   const avatarUrl = useAvatarUrl();
@@ -419,9 +408,7 @@ const YourAddresses = ({
 
   return (
     <div style={{ margin: "12px 12px" }}>
-      <div className={classes.title} style={{ marginLeft: 2 }}>
-        Your addresses
-      </div>
+      <BubbleTopLabel text="Your addresses" />
       <AddressList
         wallets={wallets
           .filter(
@@ -568,36 +555,22 @@ const AddressListItem = ({
 const SearchAddress = ({
   inputContent,
   setInputContent,
-  blockchain,
   searchResults,
   setSearchResults,
 }: {
   inputContent: string;
   setInputContent: any;
-  blockchain: Blockchain;
   searchResults: any[];
   setSearchResults: any;
 }) => {
-  const { provider: solanaProvider } = useAnchorContext();
-  const ethereumCtx = useEthereumCtx();
-  const [loading, setLoading] = useState(false);
   const theme = useCustomTheme();
 
-  const { isErrorAddress } = useIsValidAddress(
-    blockchain,
-    inputContent,
-    solanaProvider.connection,
-    ethereumCtx.provider
-  );
-
   const fetchUserDetails = async (address: string) => {
-    setLoading(true);
     try {
       const response = await ParentCommunicationManager.getInstance().fetch(
         `${BACKEND_API_URL}/users?usernamePrefix=${address}&limit=6`
       );
       const json = await response.json();
-      setLoading(false);
       setSearchResults(
         json.users.sort((a: any, b: any) =>
           a.username.length < b.username.length ? -1 : 1
@@ -610,8 +583,8 @@ const SearchAddress = ({
 
   const debouncedFetchUserDetails = (prefix: string) => {
     clearTimeout(debouncedTimer);
-    debouncedTimer = setTimeout(() => {
-      fetchUserDetails(prefix);
+    debouncedTimer = setTimeout(async () => {
+      await fetchUserDetails(prefix);
     }, 250);
   };
 
