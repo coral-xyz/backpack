@@ -134,3 +134,10 @@ export const parseMessage = (
   }
   return parts;
 };
+
+export interface BarterOffers {
+  collectionId: string;
+  amount: number;
+  publicKey: string;
+}
+[];

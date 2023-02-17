@@ -5,6 +5,7 @@ import type {
   SubscriptionType,
 } from "./toServer";
 export const CHAT_MESSAGES = "CHAT_MESSAGES";
+export const UPDATE_ACTIVE_BARTER = "UPDATE_ACTIVE_BARTER";
 export const SUBSCRIBE = "SUBSCRIBE";
 export const UNSUBSCRIBE = "UNSUBSCRIBE";
 export const WS_READY = "WS_READY";
