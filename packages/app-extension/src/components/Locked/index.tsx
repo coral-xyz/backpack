@@ -168,8 +168,10 @@ function MigrationFailed() {
     >
       <EmptyState
         icon={(props: any) => <Error {...props} />}
-        title={"Migration Failed"}
-        subtitle={"Please reinstall Backpack"}
+        title={"Unable to migrate"}
+        subtitle={
+          "Thank you for participating in the Backpack Beta! We weren't able to migrate your account. Please reinstall Backpack to continue. Don't worry, this is normal."
+        }
       />
     </div>
   );
