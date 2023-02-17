@@ -119,6 +119,8 @@ export const extractUserId = async (
         await setJWTCookie(req, res, payloadRes.payload.sub);
         // Set id on request
         req.id = payloadRes.payload.sub;
+        // Set jwt  on request
+        req.jwt = jwt;
       }
     } catch {
       clearCookie(res, "jwt");

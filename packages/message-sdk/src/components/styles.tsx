@@ -19,12 +19,6 @@ export const useStyles = styles((theme) => ({
   icon: {
     background: theme.custom.colors.textBackground,
   },
-  topLabel: {
-    fontSize: 14,
-    color: theme.custom.colors.smallTextColor,
-    marginLeft: 4,
-    marginBottom: 4,
-  },
   iconInner: {
     background: theme.custom.colors.fontColor,
   },

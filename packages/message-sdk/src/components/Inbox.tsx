@@ -6,7 +6,10 @@ import type {
   RemoteUserData,
 } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
-import { EmptyState } from "@coral-xyz/react-common";
+import {
+  BubbleTopLabel,
+  EmptyState,
+} from "@coral-xyz/react-common";
 import {
   useFriendships,
   useGroupCollections,
@@ -115,7 +118,7 @@ export function InboxInner() {
           requestCount > 0) && (
           <>
             {searchFilter.length >= 3 && (
-              <div className={classes.topLabel}>Your contacts</div>
+              <BubbleTopLabel text="Your contacts" />
             )}
             <div style={{ paddingBottom: "16px" }}>
               <MessageList
@@ -143,13 +146,13 @@ export function InboxInner() {
           </>
         )}
       {searchFilter.length >= 3 && searchedUsersDistinct.length !== 0 && (
-        <div style={{ marginTop: 30 }}>
-          <div className={classes.topLabel}>Other people</div>
+        <>
+          <BubbleTopLabel text="Other people" />
           <UserList
             users={searchedUsersDistinct}
             setMembers={setSearchResults}
           />
-        </div>
+        </>
       )}
       {allChats &&
         allChats.length !== 0 &&
