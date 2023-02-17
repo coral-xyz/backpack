@@ -144,8 +144,6 @@ function selectSplash(
   const heightSplash = splashUrls[bestFitHeight];
   const widthSplash = splashUrls[bestFitWidth];
 
-  console.log(heightSplash, widthSplash, height, width);
-
   // if both are valid options -> return smaller one
   if (heightSplash.width > width && widthSplash.height > height) {
     if (
