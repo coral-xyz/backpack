@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { SearchBox } from "@coral-xyz/app-extension/src/components/Unlocked/Messages/SearchBox";
 import type {
   CollectionChatData,
@@ -9,7 +9,6 @@ import { BACKEND_API_URL } from "@coral-xyz/common";
 import {
   BubbleTopLabel,
   EmptyState,
-  refreshGroupsAndFriendships,
 } from "@coral-xyz/react-common";
 import {
   useFriendships,
@@ -26,7 +25,7 @@ import { MessagesSkeleton } from "./MessagesSkeleton";
 import { useStyles } from "./styles";
 import { UserList } from "./UserList";
 
-let debouncedTimer;
+let debouncedTimer: ReturnType<typeof setTimeout>;
 
 export function Inbox() {
   return <InboxInner />;
@@ -69,14 +68,10 @@ export function InboxInner() {
         .includes(result.username)
   );
 
-  useEffect(() => {
-    refreshGroupsAndFriendships(uuid);
-  }, [uuid]);
-
   const debouncedInit = (prefix: string) => {
     clearTimeout(debouncedTimer);
-    debouncedTimer = setTimeout(() => {
-      handleContactSearch(prefix);
+    debouncedTimer = setTimeout(async () => {
+      await handleContactSearch(prefix);
     }, 250);
   };
 

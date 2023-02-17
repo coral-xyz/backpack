@@ -2,7 +2,11 @@ import { useEffect } from "react";
 import type { EnrichedMessage, SubscriptionType } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
 import { RecoilSync } from "@coral-xyz/db";
-import { SignalingManager } from "@coral-xyz/react-common";
+import {
+  BackgroundChatsSync,
+  refreshGroupsAndFriendships,
+  SignalingManager,
+} from "@coral-xyz/react-common";
 import {
   friendships,
   groupCollections,
@@ -15,17 +19,37 @@ import { useRecoilCallback, useSetRecoilState } from "recoil";
 
 // Wrapper compoennt to ensure syncing only happens when there is an
 // authenticated user
-export const DbRecoilSync = () => {
+export const AuthenticatedSync = () => {
   const authenticatedUser = useAuthenticatedUser();
 
   if (authenticatedUser) {
-    return <AuthedDbRecoilSync uuid={authenticatedUser.uuid} />;
-  } else {
-    return <></>;
+    return (
+      <>
+        <ChatSync uuid={authenticatedUser.uuid} jwt={authenticatedUser.jwt} />
+        <DbRecoilSync uuid={authenticatedUser.uuid} />
+      </>
+    );
   }
+
+  return null;
 };
 
-export const AuthedDbRecoilSync = ({ uuid }: { uuid: string }) => {
+export const ChatSync = ({ uuid, jwt }: { uuid: string; jwt: string }) => {
+  useEffect(() => {
+    (async () => {
+      await Promise.all([
+        refreshGroupsAndFriendships(uuid).then(
+          async () => await BackgroundChatsSync.getInstance().updateUuid(uuid)
+        ),
+        SignalingManager.getInstance().updateUuid(uuid, jwt),
+      ]);
+    })();
+  }, [uuid, jwt]);
+
+  return null;
+};
+
+export const DbRecoilSync = ({ uuid }: { uuid: string }) => {
   const updateChats = useUpdateChats();
 
   const setFriendshipsValue = useSetRecoilState(friendships({ uuid }));
@@ -147,7 +171,7 @@ export const AuthedDbRecoilSync = ({ uuid }: { uuid: string }) => {
     };
   }, [uuid]);
 
-  return <></>;
+  return null;
 };
 
 export const useUpdateChats = () =>
