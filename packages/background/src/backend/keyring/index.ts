@@ -3,14 +3,15 @@ import {
   keyringForBlockchain,
 } from "@coral-xyz/blockchain-common";
 import type { BlockchainKeyring } from "@coral-xyz/blockchain-keyring";
-import { SolanaKeystoneKeyring } from '@coral-xyz/blockchain-solana';
+import { SolanaKeystoneKeyring } from "@coral-xyz/blockchain-solana";
 import type {
   AutolockSettingsOption,
   EventEmitter,
   KeyringInit,
   KeyringType,
   UR,
-  WalletDescriptor} from "@coral-xyz/common";
+  WalletDescriptor,
+} from "@coral-xyz/common";
 import {
   BACKEND_API_URL,
   BACKEND_EVENT,
@@ -20,8 +21,8 @@ import {
   getBlockchainFromPath,
   NOTIFICATION_KEYRING_STORE_LOCKED,
 } from "@coral-xyz/common";
-import type { KeyringStoreState} from "@coral-xyz/recoil";
-import { KeyringStoreStateEnum  } from "@coral-xyz/recoil";
+import type { KeyringStoreState } from "@coral-xyz/recoil";
+import { KeyringStoreStateEnum } from "@coral-xyz/recoil";
 import { generateMnemonic } from "bip39";
 
 import type { KeyringStoreJson, User, UserKeyringJson } from "../store";
@@ -511,7 +512,7 @@ export class KeyringStore {
 
   public async keystoneImport(
     blockchain: Blockchain,
-    ur: {type: string, cbor: string},
+    ur: { type: string; cbor: string },
     pubkey?: string
   ) {
     return await this.withUnlockAndPersist(async () => {
@@ -525,9 +526,12 @@ export class KeyringStore {
 
   public async keystoneURDecode(
     blockchain: Blockchain,
-    ur: {type: string, cbor: string},
+    ur: { type: string; cbor: string }
   ) {
-    const keyring = blockchain === Blockchain.SOLANA ? await SolanaKeystoneKeyring.fromUR(ur) : null;
+    const keyring =
+      blockchain === Blockchain.SOLANA
+        ? await SolanaKeystoneKeyring.fromUR(ur)
+        : null;
     return {
       accounts: keyring?.getCachedAccounts(),
       xfp: keyring?.getXFP(),
@@ -557,6 +561,7 @@ export class KeyringStore {
       hdPublicKeys: Array<string>;
       importedPublicKeys: Array<string>;
       ledgerPublicKeys: Array<string>;
+      keystonePublicKeys: Array<string>;
     };
   }> {
     return await this.withUnlock(async () => {
@@ -742,6 +747,7 @@ class UserKeyring {
       hdPublicKeys: Array<string>;
       importedPublicKeys: Array<string>;
       ledgerPublicKeys: Array<string>;
+      keystonePublicKeys: Array<string>;
     };
   }> {
     const entries = this.blockchainKeyrings().map((blockchain) => {
@@ -812,7 +818,7 @@ class UserKeyring {
       ]);
     } else {
       // Initialising using a hardware wallet
-      if (keyringType === 'keystone') {
+      if (keyringType === "keystone") {
         if (!xfp) {
           throw new Error(
             "initialising keyring with Keystone wallet requires xfp"
@@ -916,17 +922,13 @@ class UserKeyring {
     await store.setIsCold(walletDescriptor.publicKey, true);
   }
 
-  public async keystoneImport(
-    blockchain: Blockchain,
-    ur: UR,
-    pubkey?: string
-  ) {
+  public async keystoneImport(blockchain: Blockchain, ur: UR, pubkey?: string) {
     const blockchainKeyring = this.blockchains.get(blockchain);
     const keystoneKeyring = blockchainKeyring!.keystoneKeyring!;
     await keystoneKeyring.keystoneImport(ur, pubkey);
     if (pubkey) {
       const accounts = keystoneKeyring.getCachedAccounts();
-      const i = accounts.findIndex(e => e.publicKey === pubkey);
+      const i = accounts.findIndex((e) => e.publicKey === pubkey);
       if (i > -1) {
         const account = accounts[i];
         const name = DefaultKeyname.defaultKeystone(account.index!);

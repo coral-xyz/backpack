@@ -1,13 +1,21 @@
 import type { MutableRefObject } from "react";
 import { useCallback, useEffect, useState } from "react";
-import { SolanaKeystoneKeyring } from '@coral-xyz/blockchain-solana';
+import { SolanaKeystoneKeyring } from "@coral-xyz/blockchain-solana";
 import type { Blockchain, UR, WalletDescriptor } from "@coral-xyz/common";
-import { useCustomTheme } from '@coral-xyz/themes';
-import { Box } from '@mui/system';
+import { useCustomTheme } from "@coral-xyz/themes";
+import { Box } from "@mui/system";
 
-import { Header, SubtextParagraph } from '../../../../common';
-import { CircleBackpackIcon, ConnectIcon, KeystoneIcon } from '../../../../common/Icon';
-import { DisplayType, KeystonePlayer, KeystoneScanner } from '../../../../common/Keystone';
+import { Header, SubtextParagraph } from "../../../../common";
+import {
+  CircleBackpackIcon,
+  ConnectIcon,
+  KeystoneIcon,
+} from "../../../../common/Icon";
+import {
+  DisplayType,
+  KeystonePlayer,
+  KeystoneScanner,
+} from "../../../../common/Keystone";
 
 export function ConnectHardwareKeystoneSign({
   containerRef,
@@ -24,7 +32,7 @@ export function ConnectHardwareKeystoneSign({
   onNext: (signature: string) => void;
 }) {
   const [msgPlayUR, setMsgPlayUR] = useState<UR>();
-  const [xfp, setXFP] = useState<string>('');
+  const [xfp, setXFP] = useState<string>("");
   const [display, setDisplay] = useState(DisplayType.qrcode);
 
   // TODO: reject
@@ -33,18 +41,24 @@ export function ConnectHardwareKeystoneSign({
   const signMsg = async () => {
     const keyring = await SolanaKeystoneKeyring.fromUR(ur);
     setXFP(keyring.getXFP());
-    keyring.onPlay(async e => {
+    keyring.onPlay(async (e) => {
       setMsgPlayUR(e);
     });
-    keyring.onRead(() => new Promise((resolve, reject) => {
-      readQRResolve = resolve;
-      readQRReject = reject;
-    }));
-    const sig = await keyring.signMessage(Buffer.from(message), walletDescriptor.publicKey);
+    keyring.onRead(
+      () =>
+        new Promise((resolve, reject) => {
+          readQRResolve = resolve;
+          readQRReject = reject;
+        })
+    );
+    const sig = await keyring.signMessage(
+      Buffer.from(message),
+      walletDescriptor.publicKey
+    );
     onNext(sig);
   };
 
-  const handleScan = useCallback(ur => {
+  const handleScan = useCallback((ur) => {
     readQRResolve(ur, xfp);
   }, []);
 
@@ -53,25 +67,29 @@ export function ConnectHardwareKeystoneSign({
   }, [ur]);
 
   return {
-    [DisplayType.qrcode]: <KeystonePlayer
-      header={
-        <CommonHeader text='Sign the message and scan the QR code using your Keystone to import your account to Backpack' />
-      }
-      ur={msgPlayUR}
-      setDisplay={setDisplay}
-    />,
-    [DisplayType.scanner]: <KeystoneScanner
-      containerRef={containerRef}
-      header={
-        <CommonHeader text='Scan the QR code displayed on your Keystone Device.' />
-      }
-      onScan={handleScan}
-      setDisplay={setDisplay}
-    />,
+    [DisplayType.qrcode]: (
+      <KeystonePlayer
+        header={
+          <CommonHeader text="Scan the QR code below using your Keystone to import your account to Backpack" />
+        }
+        ur={msgPlayUR}
+        setDisplay={setDisplay}
+      />
+    ),
+    [DisplayType.scanner]: (
+      <KeystoneScanner
+        containerRef={containerRef}
+        header={
+          <CommonHeader text="Scan the QR code displayed on your Keystone Device." />
+        }
+        onScan={handleScan}
+        setDisplay={setDisplay}
+      />
+    ),
   }[display];
 }
 
-function CommonHeader({ text }: {text: string}) {
+function CommonHeader({ text }: { text: string }) {
   const theme = useCustomTheme();
 
   return (
@@ -89,12 +107,13 @@ function CommonHeader({ text }: {text: string}) {
         </Box>
         <KeystoneIcon />
       </Box>
-      <Header text="Sign the message" style={{
-        margin: "24px 0 12px",
-      }} />
-      <SubtextParagraph>
-        {text}
-      </SubtextParagraph>
+      <Header
+        text="Sign the message"
+        style={{
+          margin: "24px 0 12px",
+        }}
+      />
+      <SubtextParagraph style={{ fontSize: "14px" }}>{text}</SubtextParagraph>
     </Box>
   );
 }

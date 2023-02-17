@@ -454,6 +454,11 @@ export function NotificationsProvider(props: any) {
               ? publicKeys[blockchain].ledgerPublicKeys
               : []),
           ],
+          keystonePublicKeys: [
+            ...(publicKeys[blockchain]
+              ? publicKeys[blockchain].keystonePublicKeys
+              : []),
+          ],
         };
 
         const activePublicKeys = [...current.activePublicKeys, publicKey];
@@ -492,6 +497,11 @@ export function NotificationsProvider(props: any) {
           ledgerPublicKeys: [
             ...(publicKeys[blockchain]
               ? publicKeys[blockchain].ledgerPublicKeys
+              : []),
+          ],
+          keystonePublicKeys: [
+            ...(publicKeys[blockchain]
+              ? publicKeys[blockchain].keystonePublicKeys
               : []),
           ],
         };
@@ -533,6 +543,11 @@ export function NotificationsProvider(props: any) {
           ledgerPublicKeys: [
             ...(publicKeys[blockchain]
               ? publicKeys[blockchain].ledgerPublicKeys
+              : []),
+          ],
+          keystonePublicKeys: [
+            ...(publicKeys[blockchain]
+              ? publicKeys[blockchain].keystonePublicKeys
               : []),
           ],
         };

@@ -8,16 +8,16 @@ import type {
   KeystoneKeyring,
   KeystoneKeyringFactory,
   LedgerKeyring,
-  LedgerKeyringJson
+  LedgerKeyringJson,
 } from "@coral-xyz/blockchain-keyring";
 import {
   KeystoneKeyringBase,
-  LedgerKeyringBase
+  LedgerKeyringBase,
 } from "@coral-xyz/blockchain-keyring";
 import type {
   KeystoneKeyringJson,
   UR,
-  WalletDescriptor
+  WalletDescriptor,
 } from "@coral-xyz/common";
 import {
   Blockchain,
@@ -33,7 +33,7 @@ import nacl from "tweetnacl";
 
 import { deriveSolanaKeypair } from "../util";
 
-import { KeystoneKeyring as KeystoneKeyringOrigin } from './keystone';
+import { KeystoneKeyring as KeystoneKeyringOrigin } from "./keystone";
 
 const { base58 } = ethers.utils;
 
@@ -297,7 +297,7 @@ export class SolanaLedgerKeyring
 
 export class SolanaKeystoneKeyringFactory implements KeystoneKeyringFactory {
   public fromAccounts(accounts: Array<WalletDescriptor>): KeystoneKeyring {
-    return new SolanaKeystoneKeyring({accounts});
+    return new SolanaKeystoneKeyring({ accounts });
   }
 
   public async fromUR(ur: UR): Promise<KeystoneKeyring> {
@@ -309,11 +309,20 @@ export class SolanaKeystoneKeyringFactory implements KeystoneKeyringFactory {
   }
 }
 
-export class SolanaKeystoneKeyring extends KeystoneKeyringBase implements KeystoneKeyring {
+export class SolanaKeystoneKeyring
+  extends KeystoneKeyringBase
+  implements KeystoneKeyring
+{
   private keyring: KeystoneKeyringOrigin;
 
-  constructor({ accounts, xfp }: { accounts?: WalletDescriptor[], xfp?: string }) {
-    super()
+  constructor({
+    accounts,
+    xfp,
+  }: {
+    accounts?: WalletDescriptor[];
+    xfp?: string;
+  }) {
+    super();
     this.keyring = new KeystoneKeyringOrigin();
     if (accounts && xfp) {
       this.setAccounts(accounts, xfp);
@@ -329,12 +338,15 @@ export class SolanaKeystoneKeyring extends KeystoneKeyringBase implements Keysto
   }
 
   public async signTransaction(tx: Buffer, address: string): Promise<string> {
-    const signedTx = await this.keyring.signTransaction(address, Transaction.from(tx));
-    return signedTx.signature ? Buffer.from(signedTx.signature).toString('hex') : '';
+    const signedTx = await this.keyring.signTransaction(
+      address,
+      Transaction.from(tx)
+    );
+    return signedTx.signature ? base58.encode(signedTx.signature) : "";
   }
 
   public async signMessage(msg: Buffer, address: string): Promise<string> {
-    return Buffer.from(await this.keyring.signMessage(address, msg)).toString('hex');
+    return base58.encode(await this.keyring.signMessage(address, msg));
   }
 
   public async keystoneImport(ur: UR, pubKey?: string) {
@@ -342,8 +354,8 @@ export class SolanaKeystoneKeyring extends KeystoneKeyringBase implements Keysto
     await this.keyring.readKeyring();
     if (pubKey) {
       const accounts = this.getCachedAccounts();
-      const i = accounts.findIndex(e => e.publicKey === pubKey)
-      this.addPublicKey(accounts[i])
+      const i = accounts.findIndex((e) => e.publicKey === pubKey);
+      this.addPublicKey(accounts[i]);
     }
   }
 
@@ -356,19 +368,21 @@ export class SolanaKeystoneKeyring extends KeystoneKeyringBase implements Keysto
   public setAccounts(accounts: WalletDescriptor[], xfp: string) {
     this.keyring.syncKeyringData({
       xfp,
-      keys: accounts.filter(e => e.xfp === xfp).map(e => ({
-        hdPath: e.derivationPath,
-        index: -1,
-        pubKey: e.publicKey
-      })),
-      device: 'Backpack'
+      keys: accounts
+        .filter((e) => e.xfp === xfp)
+        .map((e) => ({
+          hdPath: e.derivationPath,
+          index: -1,
+          pubKey: e.publicKey,
+        })),
+      device: "Backpack",
     });
     this.setPublicKeys(accounts);
   }
 
   public getCachedAccounts(): WalletDescriptor[] {
     const xfp = this.keyring.getXFP();
-    return this.keyring.getAccounts().map(e => ({
+    return this.keyring.getAccounts().map((e) => ({
       derivationPath: e.hdPath,
       index: e.index,
       publicKey: e.pubKey,
