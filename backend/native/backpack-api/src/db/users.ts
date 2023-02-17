@@ -144,6 +144,23 @@ export const getUser = async (id: string) => {
   return transformUser(response.auth_users_by_pk);
 };
 
+export const getReferrer = async (userId: string) => {
+  const { auth_users_by_pk } = await chain("query")({
+    auth_users_by_pk: [
+      {
+        id: userId,
+      },
+      {
+        referrer: {
+          id: true,
+          username: true,
+        },
+      },
+    ],
+  });
+  return auth_users_by_pk?.referrer;
+};
+
 const transformUsers = (
   users: {
     id: unknown;
