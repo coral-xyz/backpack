@@ -171,11 +171,10 @@ export const AddressSelector = ({
     <AddressSelectorProvider blockchain={blockchain} token={token}>
       <div className={classes.container}>
         <div className={classes.topHalf}>
-          <SearchAddress
-            searchResults={searchResults}
-            setSearchResults={setSearchResults}
+          <SearchInput
             inputContent={inputContent}
             setInputContent={setInputContent}
+            setSearchResults={setSearchResults}
           />
           {!inputContent && (
             <YourAddresses
@@ -184,6 +183,7 @@ export const AddressSelector = ({
             />
           )}
           <Contacts searchFilter={inputContent} blockchain={blockchain} />
+          <SearchResults searchResults={searchResults} />
           <NotSelected
             searchResults={searchResults}
             searchFilter={inputContent}
@@ -287,10 +287,10 @@ function MembersList({
   members: { image: string; username: string }[];
 }) {
   const theme = useCustomTheme();
-  const MEMBER_TRHESHOLD = 3;
+  const MEMBER_THRESHOLD = 3;
   const classes = useStyles();
   const renderMembersStr = () => {
-    if (members.length <= MEMBER_TRHESHOLD) {
+    if (members.length <= MEMBER_THRESHOLD) {
       return members.map(
         (member, index) =>
           member.username + `${index === members.length - 1 ? "" : ", "}`
@@ -552,15 +552,13 @@ const AddressListItem = ({
   );
 };
 
-const SearchAddress = ({
+const SearchInput = ({
   inputContent,
   setInputContent,
-  searchResults,
   setSearchResults,
 }: {
   inputContent: string;
   setInputContent: any;
-  searchResults: any[];
   setSearchResults: any;
 }) => {
   const theme = useCustomTheme();
@@ -612,6 +610,13 @@ const SearchAddress = ({
         }}
         margin="none"
       />
+    </div>
+  );
+};
+
+const SearchResults = ({ searchResults }: { searchResults: any[] }) => {
+  return (
+    <div style={{ margin: "0 12px" }}>
       {searchResults.length !== 0 && (
         <div style={{ marginTop: 10 }}>
           <AddressList
