@@ -624,7 +624,7 @@ const SearchAddress = ({
   return (
     <div style={{ margin: "0 12px" }}>
       <TextInput
-        placeholder={`Search by name or address`}
+        placeholder={`Enter a username or address`}
         startAdornment={
           <InputAdornment position="start">
             <SearchIcon style={{ color: theme.custom.colors.icon }} />
