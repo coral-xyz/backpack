@@ -1,7 +1,11 @@
 import type { Dispatch, SetStateAction } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Blockchain, explorerUrl } from "@coral-xyz/common";
+import {
+  Blockchain,
+  explorerUrl,
+  walletAddressDisplay,
+} from "@coral-xyz/common";
 import { PrimaryButton } from "@coral-xyz/react-common";
 import {
   SOL_LOGO_URI,
@@ -25,6 +29,7 @@ import { Card, List } from "@mui/material";
 import type { TokenInfo } from "@solana/spl-token-registry";
 import { Source, TransactionType } from "helius-sdk/dist/types";
 
+import { UNKNOWN_ICON_SRC } from "../../../common/Icon";
 import { WithDrawer } from "../../../common/Layout/Drawer";
 import { NavBackButton } from "../../../common/Layout/Nav";
 import {
@@ -37,7 +42,6 @@ import {
   getTokenData,
   getTransactionDetailTitle,
   getTransactionTitle,
-  getTruncatedAddress,
   isNFTTransaction,
   isUserTxnSender,
 } from "./detail-parser";
@@ -159,8 +163,6 @@ export function TransactionDetail({
 
   // TODO - this is duplicated in ListItem.tsx, better to pass in setTransactionDetail state
   const tokenData = getTokenData(registry, transaction);
-  console.log(transaction);
-  console.log(tokenData);
 
   return (
     <WithDrawer openDrawer={openDrawer} setOpenDrawer={setOpenDrawer}>
@@ -271,7 +273,7 @@ function DetailCardHeader({
         >
           <img
             className={classes.tokenLogo}
-            src={tokenData[0] && tokenData[0]?.logoURI}
+            src={(tokenData[0] && tokenData[0]?.logoURI) || UNKNOWN_ICON_SRC}
           />
 
           <div
@@ -280,13 +282,13 @@ function DetailCardHeader({
               lineHeight: "24px",
               color: theme.custom.colors.fontColor,
               marginTop: "5px",
+              textAlign: "center",
             }}
           >
             {transaction?.tokenTransfers[0]?.tokenAmount.toFixed(5) +
               " " +
-              tokenData[0]?.symbol ||
-              getTruncatedAddress(transaction?.tokenTransfers?.[0]?.mint) ||
-              "UNK"}
+              (tokenData[0]?.symbol ||
+                walletAddressDisplay(transaction?.tokenTransfers?.[0]?.mint))}
           </div>
         </div>
 
@@ -307,7 +309,7 @@ function DetailCardHeader({
         >
           <img
             className={classes.tokenLogo}
-            src={tokenData[1] && tokenData[1]?.logoURI}
+            src={(tokenData[1] && tokenData[1]?.logoURI) || UNKNOWN_ICON_SRC}
           />
           <div
             style={{
@@ -315,13 +317,13 @@ function DetailCardHeader({
               lineHeight: "24px",
               color: theme.custom.colors.fontColor,
               marginTop: "5px",
+              textAlign: "center",
             }}
           >
             {transaction?.tokenTransfers[1]?.tokenAmount.toFixed(5) +
               " " +
-              tokenData[1]?.symbol ||
-              getTruncatedAddress(transaction?.tokenTransfers?.[0]?.mint) ||
-              "UNK"}
+              (tokenData[1]?.symbol ||
+                walletAddressDisplay(transaction?.tokenTransfers?.[0]?.mint))}
           </div>
         </div>
       </div>
@@ -392,7 +394,7 @@ function DetailCardHeader({
       );
     }
     // other SPL token Transfer. Check tokenRegistry first, then Helius metadata
-    const transferIcon = tokenData[0]?.logoURI; // FIXME: || metadata?.onChainMetadata?.metadata?.data?.uri;
+    const transferIcon = tokenData[0]?.logoURI || UNKNOWN_ICON_SRC; // FIXME: || metadata?.onChainMetadata?.metadata?.data?.uri;
 
     const transferSymbol =
       tokenData[0]?.symbol || metadata?.onChainMetadata?.metadata?.data?.symbol;
@@ -503,7 +505,7 @@ function DetailTable({
               <div className={classes.label}>To</div>
 
               <div className={classes.cellValue}>
-                {getTruncatedAddress(
+                {walletAddressDisplay(
                   transaction?.tokenTransfers?.[0]?.toUserAccount ||
                     transaction?.nativeTransfers?.[0]?.toUserAccount
                 )}
@@ -519,7 +521,7 @@ function DetailTable({
               <div className={classes.label}>From</div>
 
               <div className={classes.cellValue}>
-                {getTruncatedAddress(
+                {walletAddressDisplay(
                   transaction?.tokenTransfers?.[0]?.fromUserAccount ||
                     transaction?.nativeTransfers?.[0]?.fromUserAccount
                 )}
@@ -537,9 +539,10 @@ function DetailTable({
               <div className={classes.cellValue}>
                 {transaction?.tokenTransfers[0]?.tokenAmount.toFixed(5) +
                   " " +
-                  tokenData[0]?.symbol ||
-                  getTruncatedAddress(transaction?.tokenTransfers?.[0]?.mint) ||
-                  "UKNWN"}
+                  (tokenData[0]?.symbol ||
+                    walletAddressDisplay(
+                      transaction?.tokenTransfers?.[0]?.mint
+                    ))}
               </div>
             </div>
           </div>
@@ -550,9 +553,10 @@ function DetailTable({
               <div className={classes.confirmedStatus}>
                 {transaction?.tokenTransfers[1]?.tokenAmount.toFixed(5) +
                   " " +
-                  tokenData[1]?.symbol ||
-                  getTruncatedAddress(transaction?.tokenTransfers?.[0]?.mint) ||
-                  "UNK"}
+                  (tokenData[1]?.symbol ||
+                    walletAddressDisplay(
+                      transaction?.tokenTransfers?.[0]?.mint
+                    ))}
               </div>
             </div>
           </div>
@@ -592,7 +596,7 @@ function DetailTable({
           <div className={classes.label}>Signature</div>
 
           <div className={classes.cellValue}>
-            {getTruncatedAddress(transaction?.signature)}
+            {walletAddressDisplay(transaction?.signature)}
             <CallMade
               style={{
                 color: theme.custom.colors.icon,

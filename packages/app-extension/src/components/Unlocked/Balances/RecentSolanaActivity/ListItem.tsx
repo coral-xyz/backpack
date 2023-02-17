@@ -1,3 +1,4 @@
+import { walletAddressDisplay } from "@coral-xyz/common";
 import { isFirstLastListItemStyle } from "@coral-xyz/react-common";
 import {
   metadataForRecentSolanaTransaction,
@@ -10,11 +11,12 @@ import type { TokenInfo } from "@solana/spl-token-registry";
 import { Source, TransactionType } from "helius-sdk/dist/types";
 import { useRecoilValueLoadable } from "recoil";
 
+import { UNKNOWN_ICON_SRC } from "../../../common/Icon";
+
 import {
   getTokenData,
   getTransactionCaption,
   getTransactionTitle,
-  getTruncatedAddress,
   isNFTTransaction,
   isUserTxnSender,
 } from "./detail-parser";
@@ -90,6 +92,13 @@ export function SolanaTransactionListItem({
     metadata
   );
 
+  const transactionCaption = getTransactionCaption(
+    activeWallet,
+    transaction,
+    tokenData,
+    metadata
+  );
+
   return (
     <ListItem
       button
@@ -123,7 +132,6 @@ export function SolanaTransactionListItem({
               loading={state === "loading"}
               transaction={transaction}
               tokenData={tokenData}
-              metadata={metadata}
             />
           </div>
           <div>
@@ -131,12 +139,7 @@ export function SolanaTransactionListItem({
               {transactionTitle}
             </Typography>
             <Typography className={classes.caption}>
-              {getTransactionCaption(
-                activeWallet,
-                transaction,
-                tokenData,
-                metadata
-              )}
+              {transactionCaption}
             </Typography>
           </div>
         </div>
@@ -161,12 +164,10 @@ function RecentActivityListItemIcon({
   loading,
   transaction,
   tokenData,
-  metadata,
 }: {
   loading: boolean;
   transaction: HeliusParsedTransaction;
   tokenData: (TokenInfo | undefined)[];
-  metadata?: any;
 }) {
   const activeWallet = useActiveWallet();
   if (loading) {
@@ -185,8 +186,8 @@ function RecentActivityListItemIcon({
   if (transaction.type === TransactionType.SWAP) {
     return (
       <ListItemIcons.SWAP
-        tokenLogoOne={tokenData[0]?.logoURI}
-        tokenLogoTwo={tokenData[1]?.logoURI}
+        tokenLogoOne={tokenData[0]?.logoURI || UNKNOWN_ICON_SRC}
+        tokenLogoTwo={tokenData[1]?.logoURI || UNKNOWN_ICON_SRC}
       />
     );
   }
@@ -257,15 +258,15 @@ function RecentActivityListItemData({
           {"+ " +
             transaction?.tokenTransfers?.[1]?.tokenAmount.toFixed(5) +
             " " +
-            tokenData[1]?.symbol ||
-            getTruncatedAddress(transaction?.tokenTransfers?.[1]?.mint)}
+            (tokenData[1]?.symbol ||
+              walletAddressDisplay(transaction?.tokenTransfers?.[1]?.mint))}
         </div>
         <div className={classes.textSecondary}>
           {"- " +
             transaction?.tokenTransfers[0]?.tokenAmount.toFixed(5) +
             " " +
-            tokenData[0]?.symbol ||
-            getTruncatedAddress(transaction?.tokenTransfers?.[0]?.mint)}
+            (tokenData[0]?.symbol ||
+              walletAddressDisplay(transaction?.tokenTransfers?.[0]?.mint))}
         </div>
       </>
     );
