@@ -604,7 +604,6 @@ export const ResolveFromPath = (
   returns: ReturnTypesType,
   ops: Operations
 ) => {
-  //@ts-ignore
   const ResolvePropsType = (mappedParts: Part[]) => {
     const oKey = ops[mappedParts[0].v];
     const propsP1 = oKey ? props[oKey] : props[mappedParts[0].v];
@@ -647,7 +646,6 @@ export const ResolveFromPath = (
       }
     }
   };
-  //@ts-ignore
   const ResolveReturnType = (mappedParts: Part[]) => {
     if (mappedParts.length === 0) {
       return "not";
@@ -2319,6 +2317,19 @@ export type ValueTypes = {
   ["cursor_ordering"]: cursor_ordering;
   /** mutation root */
   ["mutation_root"]: AliasType<{
+    delete_room_active_chat_mapping?: [
+      {
+        /** filter the rows which have to be deleted */
+        where:
+          | ValueTypes["room_active_chat_mapping_bool_exp"]
+          | Variable<any, string>;
+      },
+      ValueTypes["room_active_chat_mapping_mutation_response"]
+    ];
+    delete_room_active_chat_mapping_by_pk?: [
+      { room_id: string | Variable<any, string> },
+      ValueTypes["room_active_chat_mapping"]
+    ];
     insert_barters?: [
       {
         /** the rows to be inserted */
@@ -5452,6 +5463,17 @@ export type ResolverInputTypes = {
   ["cursor_ordering"]: cursor_ordering;
   /** mutation root */
   ["mutation_root"]: AliasType<{
+    delete_room_active_chat_mapping?: [
+      {
+        /** filter the rows which have to be deleted */
+        where: ResolverInputTypes["room_active_chat_mapping_bool_exp"];
+      },
+      ResolverInputTypes["room_active_chat_mapping_mutation_response"]
+    ];
+    delete_room_active_chat_mapping_by_pk?: [
+      { room_id: string },
+      ResolverInputTypes["room_active_chat_mapping"]
+    ];
     insert_barters?: [
       {
         /** the rows to be inserted */
@@ -7656,6 +7678,14 @@ export type ModelTypes = {
   ["cursor_ordering"]: cursor_ordering;
   /** mutation root */
   ["mutation_root"]: {
+    /** delete data from the table: "room_active_chat_mapping" */
+    delete_room_active_chat_mapping?:
+      | ModelTypes["room_active_chat_mapping_mutation_response"]
+      | undefined;
+    /** delete single row from the table: "room_active_chat_mapping" */
+    delete_room_active_chat_mapping_by_pk?:
+      | ModelTypes["room_active_chat_mapping"]
+      | undefined;
     /** insert data into the table: "barters" */
     insert_barters?: ModelTypes["barters_mutation_response"] | undefined;
     /** insert a single row into the table: "barters" */
@@ -9054,6 +9084,14 @@ export type GraphQLTypes = {
   /** mutation root */
   ["mutation_root"]: {
     __typename: "mutation_root";
+    /** delete data from the table: "room_active_chat_mapping" */
+    delete_room_active_chat_mapping?:
+      | GraphQLTypes["room_active_chat_mapping_mutation_response"]
+      | undefined;
+    /** delete single row from the table: "room_active_chat_mapping" */
+    delete_room_active_chat_mapping_by_pk?:
+      | GraphQLTypes["room_active_chat_mapping"]
+      | undefined;
     /** insert data into the table: "barters" */
     insert_barters?: GraphQLTypes["barters_mutation_response"] | undefined;
     /** insert a single row into the table: "barters" */

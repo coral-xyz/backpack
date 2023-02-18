@@ -331,6 +331,10 @@ export const AllTypesProps: Record<string, any> = {
   chats_update_column: "enum" as const,
   cursor_ordering: "enum" as const,
   mutation_root: {
+    delete_room_active_chat_mapping: {
+      where: "room_active_chat_mapping_bool_exp",
+    },
+    delete_room_active_chat_mapping_by_pk: {},
     insert_barters: {
       objects: "barters_insert_input",
       on_conflict: "barters_on_conflict",
@@ -950,6 +954,9 @@ export const ReturnTypes: Record<string, any> = {
     returning: "chats",
   },
   mutation_root: {
+    delete_room_active_chat_mapping:
+      "room_active_chat_mapping_mutation_response",
+    delete_room_active_chat_mapping_by_pk: "room_active_chat_mapping",
     insert_barters: "barters_mutation_response",
     insert_barters_one: "barters",
     insert_chat_barter_metadata: "chat_barter_metadata_mutation_response",
