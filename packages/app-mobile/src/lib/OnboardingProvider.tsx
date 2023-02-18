@@ -44,12 +44,11 @@ const BLOCKCHAIN_OPTIONS: BlockchainSelectOption[] = [
   },
 ];
 
-export type OnboardingAction = "import" | "create" | "recover";
 export type OnboardingData = {
   complete: boolean;
   inviteCode: string | undefined;
   username: string | null;
-  action: OnboardingAction;
+  action: string;
   keyringType: KeyringType | null;
   blockchain: Blockchain | null;
   password: string | null;

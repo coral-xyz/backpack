@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { createContext, useContext, useState } from "react";
 import type { KeyringType, SignedWalletDescriptor } from "@coral-xyz/common";
 import {
@@ -50,12 +49,11 @@ const BLOCKCHAIN_OPTIONS: BlockchainSelectOption[] = [
   },
 ];
 
-export type OnboardingAction = "import" | "create" | "recover";
 export type OnboardingData = {
   complete: boolean;
   inviteCode: string | undefined;
   username: string | null;
-  action: OnboardingAction;
+  action: "create" | "import" | "recover" | string;
   keyringType: KeyringType | null;
   blockchain: Blockchain | null;
   password: string | null;
@@ -86,7 +84,7 @@ const defaultState = {
 type IOnboardingContext = {
   onboardingData: OnboardingData;
   setOnboardingData: (data: Partial<OnboardingData>) => void;
-  handleSelectBlockchain: (data: any, cb: any) => Promise<void>;
+  handleSelectBlockchain: (data: any) => Promise<void>;
 };
 
 const OnboardingContext = createContext<IOnboardingContext>({
@@ -116,10 +114,11 @@ function OnboardingProvider({ children, ...props }: { children: any }) {
     }));
   };
 
-  const handleSelectBlockchain = async (
-    { blockchain, background }: any,
-    cb: any
-  ) => {
+  const handleSelectBlockchain = async ({
+    blockchain,
+    background,
+    onSelectImport,
+  }: any) => {
     const {
       selectedBlockchains,
       signedWalletDescriptors,
@@ -143,7 +142,7 @@ function OnboardingProvider({ children, ...props }: { children: any }) {
         // OR if action is an import then open the drawer with the import accounts
         // component
         setOnboardingData({ blockchain });
-        cb();
+        onSelectImport();
       } else if (action === "create") {
         const walletDescriptor = await background.request({
           method: UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,

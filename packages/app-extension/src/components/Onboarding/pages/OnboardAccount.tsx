@@ -46,7 +46,6 @@ export const OnboardAccount = ({
   const [openDrawer, setOpenDrawer] = useState(false);
   const { onboardingData, setOnboardingData, handleSelectBlockchain } =
     useOnboarding();
-  console.log("onboardingData", onboardingData);
   const {
     inviteCode,
     username,
@@ -112,12 +111,14 @@ export const OnboardAccount = ({
     <BlockchainSelector
       selectedBlockchains={selectedBlockchains}
       onClick={async (blockchain) => {
-        await handleSelectBlockchain(
-          { blockchain, selectedBlockchains, background },
-          () => {
+        await handleSelectBlockchain({
+          blockchain,
+          selectedBlockchains,
+          background,
+          onSelectImport: () => {
             setOpenDrawer(true);
-          }
-        );
+          },
+        });
       }}
       onNext={nextStep}
     />,
@@ -172,7 +173,7 @@ export const OnboardAccount = ({
           <HardwareOnboard
             blockchain={blockchain!}
             // @ts-ignore
-            action={action!}
+            action={action}
             signMessage={(publicKey: string) => getCreateMessage(publicKey)}
             signText={`Sign the message to authenticate with Backpack.`}
             onClose={() => setOpenDrawer(false)}
