@@ -1,4 +1,10 @@
-import { createContext, useContext, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
 import type { KeyringType, SignedWalletDescriptor } from "@coral-xyz/common";
 import {
   Blockchain,
@@ -84,7 +90,7 @@ const defaultState = {
 type SelectBlockchainType = {
   blockchain: Blockchain;
   background: any;
-  onSelectImport: () => void;
+  onSelectImport?: () => void;
 };
 
 type IOnboardingContext = {
@@ -102,7 +108,7 @@ const OnboardingContext = createContext<IOnboardingContext>({
 export function OnboardingProvider({ children, ...props }: { children: any }) {
   const [data, setData] = useState<OnboardingData>(defaultState);
 
-  const setOnboardingData = (data: Partial<OnboardingData>) => {
+  const setOnboardingData = useCallback((data: Partial<OnboardingData>) => {
     return setData((oldData) => ({
       ...oldData,
       ...data,
@@ -116,77 +122,87 @@ export function OnboardingProvider({ children, ...props }: { children: any }) {
           ]
         : oldData.selectedBlockchains,
     }));
-  };
+  }, []);
 
-  const handleSelectBlockchain = async ({
-    blockchain,
-    background,
-    onSelectImport,
-  }: SelectBlockchainType) => {
-    const {
-      selectedBlockchains,
-      signedWalletDescriptors,
-      mnemonic,
-      keyringType,
-      action,
-    } = data;
+  const handleSelectBlockchain = useCallback(
+    async ({
+      blockchain,
+      background,
+      onSelectImport,
+    }: SelectBlockchainType) => {
+      const {
+        selectedBlockchains,
+        signedWalletDescriptors,
+        mnemonic,
+        keyringType,
+        action,
+      } = data;
 
-    if (selectedBlockchains.includes(blockchain)) {
-      // Blockchain is being deselected
-      setOnboardingData({
-        blockchain: null,
-        signedWalletDescriptors: signedWalletDescriptors.filter(
-          (s) => getBlockchainFromPath(s.derivationPath) !== blockchain
-        ),
-      });
-    } else {
-      // Blockchain is being selected
-      if (keyringType === "ledger" || action === "import") {
-        // If wallet is a ledger, step through the ledger onboarding flow
-        // OR if action is an import then open the drawer with the import accounts
-        // component
-        setOnboardingData({ blockchain });
-        onSelectImport();
-      } else if (action === "create") {
-        const walletDescriptor = await background.request({
-          method: UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
-          params: [blockchain, 0, mnemonic],
-        });
-
-        const signature = await background.request({
-          method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-          params: [
-            blockchain,
-            walletDescriptor.publicKey,
-            base58.encode(
-              Buffer.from(getCreateMessage(walletDescriptor.publicKey), "utf-8")
-            ),
-            [mnemonic, [walletDescriptor.derivationPath]],
-          ],
-        });
-
+      if (selectedBlockchains.includes(blockchain)) {
+        // Blockchain is being deselected
         setOnboardingData({
-          signedWalletDescriptors: [
-            ...signedWalletDescriptors,
-            {
-              ...walletDescriptor,
-              signature,
-            },
-          ],
+          blockchain: null,
+          signedWalletDescriptors: signedWalletDescriptors.filter(
+            (s) => getBlockchainFromPath(s.derivationPath) !== blockchain
+          ),
         });
+      } else {
+        // Blockchain is being selected
+        if (keyringType === "ledger" || action === "import") {
+          // If wallet is a ledger, step through the ledger onboarding flow
+          // OR if action is an import then open the drawer with the import accounts
+          // component
+          setOnboardingData({ blockchain });
+          if (onSelectImport) {
+            onSelectImport();
+          }
+        } else if (action === "create") {
+          const walletDescriptor = await background.request({
+            method: UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
+            params: [blockchain, 0, mnemonic],
+          });
+
+          const signature = await background.request({
+            method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
+            params: [
+              blockchain,
+              walletDescriptor.publicKey,
+              base58.encode(
+                Buffer.from(
+                  getCreateMessage(walletDescriptor.publicKey),
+                  "utf-8"
+                )
+              ),
+              [mnemonic, [walletDescriptor.derivationPath]],
+            ],
+          });
+
+          setOnboardingData({
+            signedWalletDescriptors: [
+              ...signedWalletDescriptors,
+              {
+                ...walletDescriptor,
+                signature,
+              },
+            ],
+          });
+        }
       }
-    }
-  };
+    },
+    []
+  );
+
+  const contextValue = useMemo(
+    () => ({
+      onboardingData: data,
+      setOnboardingData,
+      handleSelectBlockchain,
+    }),
+    [data, setOnboardingData, handleSelectBlockchain]
+  );
 
   return (
-    <OnboardingContext.Provider
-      {...props}
-      value={{
-        onboardingData: data,
-        setOnboardingData,
-        handleSelectBlockchain,
-      }}
-    >
+    <OnboardingContext.Provider {...props} value={contextValue}>
       {children}
     </OnboardingContext.Provider>
   );

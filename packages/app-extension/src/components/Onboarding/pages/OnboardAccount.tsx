@@ -57,6 +57,7 @@ export const OnboardAccount = ({
     selectedBlockchains,
   } = onboardingData;
   const signMessageForWallet = useSignMessageForWallet(mnemonic);
+  console.log("onboardingData", onboardingData);
 
   useEffect(() => {
     // Reset blockchain keyrings on certain changes that invalidate the addresses
@@ -112,7 +113,6 @@ export const OnboardAccount = ({
       onClick={async (blockchain) => {
         await handleSelectBlockchain({
           blockchain,
-          selectedBlockchains,
           background,
           onSelectImport: () => {
             setOpenDrawer(true);
