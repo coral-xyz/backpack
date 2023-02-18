@@ -18,6 +18,7 @@ import { NAV_BAR_HEIGHT } from "../common/Layout/Nav";
 import WaitingRoom from "../common/WaitingRoom";
 
 import { OnboardAccount } from "./pages/OnboardAccount";
+import { OnboardingProvider } from "./pages/OnboardingProvider";
 import { RecoverAccount } from "./pages/RecoverAccount";
 
 export const Onboarding = ({
@@ -61,11 +62,13 @@ export const Onboarding = ({
   return (
     <OptionsContainer innerRef={containerRef}>
       {action === "onboard" && (
-        <OnboardAccount
-          onRecover={() => setAction("recover")}
-          onWaiting={() => setAction("waiting")}
-          {...defaultProps}
-        />
+        <OnboardingProvider>
+          <OnboardAccount
+            onRecover={() => setAction("recover")}
+            onWaiting={() => setAction("waiting")}
+            {...defaultProps}
+          />
+        </OnboardingProvider>
       )}
       {action === "waiting" && <WaitingRoom />}
       {action === "recover" && (

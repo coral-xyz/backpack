@@ -1,7 +1,15 @@
-// TODO(peter) move all the RPC/onboarding function shit here & out of every individual screen (eventually)
+// @ts-nocheck
 import { createContext, useContext, useState } from "react";
 import type { KeyringType, SignedWalletDescriptor } from "@coral-xyz/common";
-import { Blockchain } from "@coral-xyz/common";
+import {
+  Blockchain,
+  getBlockchainFromPath,
+  getCreateMessage,
+  UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
+  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
+} from "@coral-xyz/common";
+import { ethers } from "ethers";
+const { base58 } = ethers.utils;
 
 type BlockchainSelectOption = {
   id: string;
@@ -57,6 +65,7 @@ export type OnboardingData = {
   signedWalletDescriptors: SignedWalletDescriptor[];
   userId?: string;
   isAddingAccount?: boolean;
+  selectedBlockchains: Blockchain[];
 };
 
 const defaults = {
@@ -71,27 +80,81 @@ const defaults = {
   blockchainOptions: BLOCKCHAIN_OPTIONS,
   waitlistId: undefined,
   signedWalletDescriptors: [],
+  selectedBlockchains: [],
 };
 
-const OnboardingContext = createContext<{
-  onboardingData: OnboardingData;
-  setOnboardingData: (data: Partial<OnboardingData>) => void;
-}>({
-  // @ts-ignore
-  onboardingData: defaults,
-  setOnboardingData: (_data: Partial<OnboardingData>) => {},
-});
+const OnboardingContext = createContext();
 
-function OnboardingProvider({ children, ...props }: { children: JSX.Element }) {
-  // @ts-ignore
+function OnboardingProvider({ children, ...props }: { children: any }) {
   const [data, setData] = useState<OnboardingData>(defaults);
-  const setOnboardingData = (data: Partial<OnboardingData>) =>
-    setData((oldData) => ({ ...oldData, ...data }));
+
+  const setOnboardingData = (data: Partial<OnboardingData>) => {
+    return setData((oldData) => ({
+      ...oldData,
+      ...data,
+    }));
+  };
+
+  const handleSelectBlockchain = async (
+    { blockchain, selectedBlockchains, background }: any,
+    cb
+  ) => {
+    const { signedWalletDescriptors, mnemonic, keyringType, action } = data;
+    if (selectedBlockchains.includes(blockchain)) {
+      // Blockchain is being deselected
+      setOnboardingData({
+        blockchain: null,
+        signedWalletDescriptors: signedWalletDescriptors.filter(
+          (s) => getBlockchainFromPath(s.derivationPath) !== blockchain
+        ),
+      });
+    } else {
+      // Blockchain is being selected
+      if (keyringType === "ledger" || action === "import") {
+        // If wallet is a ledger, step through the ledger onboarding flow
+        // OR if action is an import then open the drawer with the import accounts
+        // component
+        setOnboardingData({ blockchain });
+        cb();
+      } else if (action === "create") {
+        const walletDescriptor = await background.request({
+          method: UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
+          params: [blockchain, 0, mnemonic],
+        });
+
+        const signature = await background.request({
+          method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
+          params: [
+            blockchain,
+            walletDescriptor.publicKey,
+            base58.encode(
+              Buffer.from(getCreateMessage(walletDescriptor.publicKey), "utf-8")
+            ),
+            [mnemonic, [walletDescriptor.derivationPath]],
+          ],
+        });
+
+        setOnboardingData({
+          signedWalletDescriptors: [
+            ...signedWalletDescriptors,
+            {
+              ...walletDescriptor,
+              signature,
+            },
+          ],
+        });
+      }
+    }
+  };
 
   return (
     <OnboardingContext.Provider
-      value={{ onboardingData: data, setOnboardingData }}
       {...props}
+      value={{
+        onboardingData: data,
+        setOnboardingData,
+        handleSelectBlockchain,
+      }}
     >
       {children}
     </OnboardingContext.Provider>

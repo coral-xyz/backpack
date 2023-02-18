@@ -781,6 +781,8 @@ function OnboardingCreateAccountLoadingScreen({
     signedWalletDescriptors,
   } = onboardingData;
 
+  console.log("inviteCode", inviteCode);
+
   const keyringInit = {
     mnemonic,
     signedWalletDescriptors,
