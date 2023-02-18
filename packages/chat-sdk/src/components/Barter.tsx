@@ -9,6 +9,7 @@ export const useStyles = styles((theme) => ({}));
 export const Barter = ({ buttonStyle }: any) => {
   const theme = useCustomTheme();
   const { setOpenPlugin } = useChatContext();
+
   return (
     <div
       style={{
@@ -31,7 +32,7 @@ export const Barter = ({ buttonStyle }: any) => {
         }}
       >
         {" "}
-        {/*<BarterIcon fill={theme.custom.colors.icon} />{" "}*/}
+        <BarterIcon fill={theme.custom.colors.icon} />{" "}
       </IconButton>
     </div>
   );

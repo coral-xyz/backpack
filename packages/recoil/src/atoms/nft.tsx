@@ -115,19 +115,36 @@ export const nftsByOwner = selectorFamily<
 export const nftsByIds = selectorFamily<
   { nfts: Array<Nft> },
   {
-    nftIds: string[];
+    nftIds: { nftId: string; publicKey: string }[];
+    blockchain: Blockchain;
   }
 >({
-  key: "nftsByOwner",
+  key: "nftsByIds",
   get:
-    ({ nftIds }: { nftIds: string[] }) =>
+    ({
+      nftIds,
+      blockchain,
+    }: {
+      nftIds: { nftId: string; publicKey: string }[];
+      blockchain: Blockchain;
+    }) =>
     async ({ get }: any) => {
+      const connectionUrl =
+        blockchain === Blockchain.ETHEREUM
+          ? get(ethereumConnectionUrl)
+          : get(solanaConnectionUrl);
+
       try {
         const allNfts = get(
           waitForAll(
-            nftIds.map((id) => {
-              //@ts-ignore
-              return nftById({ publicKey, connectionUrl, nftId: id });
+            nftIds.map(({ nftId, publicKey }) => {
+              if (blockchain === Blockchain.SOLANA) {
+                return get(solanaNftById({ publicKey, connectionUrl, nftId }));
+              } else {
+                return get(
+                  ethereumNftById({ publicKey, connectionUrl, nftId })
+                );
+              }
             })
           )
         );

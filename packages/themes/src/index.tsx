@@ -266,7 +266,7 @@ const DARK_COLORS: CustomColors = {
   unreadBackground: LIGHT_UNREAD_BACKGROUND,
   invertedPrimary: "#FFFFFF",
   invertedSecondary: LIGHT_BACKGROUND_COLOR_0,
-  invertedTertiary: LIGHT_FONT_COLOR,
+  invertedTertiary: "white",
   avatarPopoverMenuBackground: BACKGROUND_COLOR_0,
   listItemHover: `rgba(39, 39, 42, ${HOVER_OPACITY})`,
   walletCopyButtonHover: "#18181c",

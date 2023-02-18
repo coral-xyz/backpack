@@ -401,13 +401,15 @@ export const SendMessage = ({
                 height: "28px",
               }}
             />
-            <Barter
-              setOpenPlugin={setOpenPlugin}
-              onMediaSelect={onMediaSelect}
-              buttonStyle={{
-                height: "28px",
-              }}
-            />
+            {type === "individual" && (
+              <Barter
+                setOpenPlugin={setOpenPlugin}
+                onMediaSelect={onMediaSelect}
+                buttonStyle={{
+                  height: "28px",
+                }}
+              />
+            )}
             {activeSolanaWallet?.publicKey && (
               <SecureTransfer
                 buttonStyle={{

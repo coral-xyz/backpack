@@ -1,22 +1,22 @@
 import React, { useContext } from "react";
-import type {
-  EnrichedMessage,
-  EnrichedMessageWithMetadata,
-  SubscriptionType,
-  UserMetadata,
-} from "@coral-xyz/common";
 
 type BarterContext = {
   setSelectNft: any;
+  room: string;
 };
 
 export const _BarterContext = React.createContext<BarterContext | null>(null);
 
-export function BarterProvider(props: { setSelectNft: any; children: any }) {
+export function BarterProvider(props: {
+  room: string;
+  setSelectNft: any;
+  children: any;
+}) {
   return (
     <_BarterContext.Provider
       value={{
         setSelectNft: props.setSelectNft,
+        room: props.room,
       }}
     >
       {props.children}

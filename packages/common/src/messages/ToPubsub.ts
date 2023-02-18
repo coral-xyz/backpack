@@ -1,4 +1,8 @@
-import type { CHAT_MESSAGES, MessageWithMetadata , UPDATE_ACTIVE_BARTER } from "./fromServer";
+import type {
+  CHAT_MESSAGES,
+  MessageWithMetadata,
+  UPDATE_ACTIVE_BARTER,
+} from "./fromServer";
 import type { BarterOffers } from "./index";
 
 export type ToPubsub =
@@ -9,8 +13,8 @@ export type ToPubsub =
   | {
       type: typeof UPDATE_ACTIVE_BARTER;
       payload: {
-        uuid: string;
         barterId: number;
-        updatedOffer: BarterOffers;
+        localOffers?: BarterOffers;
+        remoteOffers?: BarterOffers;
       };
     };

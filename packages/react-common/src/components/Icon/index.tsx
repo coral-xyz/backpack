@@ -579,7 +579,13 @@ export function MessageBubbleUnreadIcon({ fill = "#99A4B4", ...props }) {
   );
 }
 
-export function BarterIcon({ fill = "#99A4B4", props }) {
+export function BarterIcon({
+  fill = "#99A4B4",
+  props,
+}: {
+  fill?: string;
+  props?: {};
+}) {
   return (
     <svg
       width="20"

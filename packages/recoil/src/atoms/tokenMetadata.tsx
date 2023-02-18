@@ -33,7 +33,7 @@ export const solanaTokenMetadata = selectorFamily<
   get:
     ({ mintAddress }) =>
     async ({ get }) => {
-      const url = `https://swr.backpack.workers.dev/nft-data/metaplex-nft/${mintAddress}/metadata`;
+      const url = `https://swr.xnfts.dev/nft-data/metaplex-nft/${mintAddress}/metadata`;
       try {
         const response = await fetch(url);
         const json = await response.json();

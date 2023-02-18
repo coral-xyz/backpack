@@ -7,6 +7,7 @@ export type SubscriptionMessage = {
   type: SubscriptionType;
   room: string;
 };
+export type BarterState = "in_progress" | "cancelled" | "executed";
 
 export type MessageKind =
   | "gif"
@@ -22,16 +23,18 @@ export type MessageMetadata =
       counter: string;
       escrow: string;
       final_txn_signature?: string;
-      current_state: "pending" | "cancelled" | "redeemed";
+      current_state: "pending" | ".cancelled" | "redeemed";
     }
   | {
       media_kind: "image" | "video";
       media_link: string;
     }
   | {
-    contract_address: string;
-  } | {
+      contract_address: string;
+    }
+  | {
       final_tx_signature: string;
+      state: BarterState;
     };
 
 export type SendMessagePayload = {

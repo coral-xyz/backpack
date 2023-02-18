@@ -71,7 +71,7 @@ export const ChatRoom = ({
   const [messageRef, setMessageRef] = useState(null);
   const [jumpToBottom, setShowJumpToBottom] = useState(false);
   const [localUnreadCount, setLocalUnreadCount] = useState(0);
-  const [openPlugin, setOpenPlugin] = useState<MessagePlugins>("barter");
+  const [openPlugin, setOpenPlugin] = useState<MessagePlugins>("");
 
   useEffect(() => {
     if (roomId) {
