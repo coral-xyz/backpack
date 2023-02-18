@@ -85,28 +85,14 @@ export const extractUserId = async (
   res: Response,
   next: NextFunction
 ) => {
-  const {
-    headers: { cookie },
-  } = req;
-
   let jwt = "";
 
   // Header takes precedence
   const authHeader = req.headers["authorization"];
   if (authHeader && authHeader.split(" ")[0] === "Bearer") {
     jwt = authHeader.split(" ")[1];
-  } else if (cookie) {
-    // Extract JWT from cookie
-    try {
-      cookie.split(";").forEach((item) => {
-        const cookie = item.trim().split("=");
-        if (cookie[0] === "jwt") {
-          jwt = cookie[1];
-        }
-      });
-    } catch {
-      // Pass
-    }
+  } else if (req.cookies.jwt) {
+    jwt = req.cookies.jwt;
   } else if (req.query.jwt) {
     jwt = req.query.jwt as string;
   }

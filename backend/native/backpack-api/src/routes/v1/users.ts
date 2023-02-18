@@ -13,7 +13,7 @@ import {
   ensureHasPubkeyAccessBody,
   extractUserId,
 } from "../../auth/middleware";
-import { clearCookie, setJWTCookie } from "../../auth/util";
+import { clearCookie, setJWTCookie, validateJwt } from "../../auth/util";
 import { REFERRER_COOKIE_NAME } from "../../config";
 import { getFriendshipStatus } from "../../db/friendships";
 import { getPublicKeyDetails, updatePublicKey } from "../../db/publicKey";
@@ -21,6 +21,7 @@ import {
   createUser,
   createUserPublicKey,
   deleteUserPublicKey,
+  getReferrer,
   getUser,
   getUserByPublicKeyAndChain,
   getUserByUsername,
@@ -150,8 +151,19 @@ router.post("/", async (req, res) => {
 
   const referrerId = await (async () => {
     try {
-      if (req.cookies.referrer) {
-        return (await getUser(req.cookies.referrer))?.id as string;
+      if (req.cookies[REFERRER_COOKIE_NAME]) {
+        // Store the referrer if the cookie is valid
+        return (await getUser(req.cookies[REFERRER_COOKIE_NAME]))?.id as string;
+      } else {
+        // Pass on the referrer of the current user
+        const jwt = req.cookies.jwt;
+        if (jwt) {
+          const { payload } = await validateJwt(jwt);
+          if (payload.sub) {
+            const referrer = await getReferrer(payload.sub);
+            if (referrer) return referrer.id as string;
+          }
+        }
       }
     } catch (err) {
       // TODO: log this failed referral
