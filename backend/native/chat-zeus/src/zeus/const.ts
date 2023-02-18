@@ -3,25 +3,51 @@
 export const AllTypesProps: Record<string, any> = {
   Int_comparison_exp: {},
   String_comparison_exp: {},
+  barters: {
+    chat_barter_metadata: {
+      distinct_on: "chat_barter_metadata_select_column",
+      order_by: "chat_barter_metadata_order_by",
+      where: "chat_barter_metadata_bool_exp",
+    },
+    room_active_chat_mappings: {
+      distinct_on: "room_active_chat_mapping_select_column",
+      order_by: "room_active_chat_mapping_order_by",
+      where: "room_active_chat_mapping_bool_exp",
+    },
+  },
   barters_bool_exp: {
     _and: "barters_bool_exp",
     _not: "barters_bool_exp",
     _or: "barters_bool_exp",
+    chat_barter_metadata: "chat_barter_metadata_bool_exp",
     id: "Int_comparison_exp",
+    on_chain_state: "String_comparison_exp",
+    room_active_chat_mappings: "room_active_chat_mapping_bool_exp",
     state: "String_comparison_exp",
     user1_offers: "String_comparison_exp",
     user2_offers: "String_comparison_exp",
   },
   barters_constraint: "enum" as const,
   barters_inc_input: {},
-  barters_insert_input: {},
+  barters_insert_input: {
+    chat_barter_metadata: "chat_barter_metadata_arr_rel_insert_input",
+    room_active_chat_mappings: "room_active_chat_mapping_arr_rel_insert_input",
+  },
+  barters_obj_rel_insert_input: {
+    data: "barters_insert_input",
+    on_conflict: "barters_on_conflict",
+  },
   barters_on_conflict: {
     constraint: "barters_constraint",
     update_columns: "barters_update_column",
     where: "barters_bool_exp",
   },
   barters_order_by: {
+    chat_barter_metadata_aggregate: "chat_barter_metadata_aggregate_order_by",
     id: "order_by",
+    on_chain_state: "order_by",
+    room_active_chat_mappings_aggregate:
+      "room_active_chat_mapping_aggregate_order_by",
     state: "order_by",
     user1_offers: "order_by",
     user2_offers: "order_by",
@@ -39,6 +65,95 @@ export const AllTypesProps: Record<string, any> = {
     _inc: "barters_inc_input",
     _set: "barters_set_input",
     where: "barters_bool_exp",
+  },
+  chat_barter_metadata_aggregate_order_by: {
+    avg: "chat_barter_metadata_avg_order_by",
+    count: "order_by",
+    max: "chat_barter_metadata_max_order_by",
+    min: "chat_barter_metadata_min_order_by",
+    stddev: "chat_barter_metadata_stddev_order_by",
+    stddev_pop: "chat_barter_metadata_stddev_pop_order_by",
+    stddev_samp: "chat_barter_metadata_stddev_samp_order_by",
+    sum: "chat_barter_metadata_sum_order_by",
+    var_pop: "chat_barter_metadata_var_pop_order_by",
+    var_samp: "chat_barter_metadata_var_samp_order_by",
+    variance: "chat_barter_metadata_variance_order_by",
+  },
+  chat_barter_metadata_arr_rel_insert_input: {
+    data: "chat_barter_metadata_insert_input",
+    on_conflict: "chat_barter_metadata_on_conflict",
+  },
+  chat_barter_metadata_avg_order_by: {
+    barter_id: "order_by",
+  },
+  chat_barter_metadata_bool_exp: {
+    _and: "chat_barter_metadata_bool_exp",
+    _not: "chat_barter_metadata_bool_exp",
+    _or: "chat_barter_metadata_bool_exp",
+    barter: "barters_bool_exp",
+    barter_id: "Int_comparison_exp",
+    chat: "chats_bool_exp",
+    chat_client_generated_uuid: "String_comparison_exp",
+  },
+  chat_barter_metadata_constraint: "enum" as const,
+  chat_barter_metadata_insert_input: {
+    barter: "barters_obj_rel_insert_input",
+    chat: "chats_obj_rel_insert_input",
+  },
+  chat_barter_metadata_max_order_by: {
+    barter_id: "order_by",
+    chat_client_generated_uuid: "order_by",
+  },
+  chat_barter_metadata_min_order_by: {
+    barter_id: "order_by",
+    chat_client_generated_uuid: "order_by",
+  },
+  chat_barter_metadata_obj_rel_insert_input: {
+    data: "chat_barter_metadata_insert_input",
+    on_conflict: "chat_barter_metadata_on_conflict",
+  },
+  chat_barter_metadata_on_conflict: {
+    constraint: "chat_barter_metadata_constraint",
+    update_columns: "chat_barter_metadata_update_column",
+    where: "chat_barter_metadata_bool_exp",
+  },
+  chat_barter_metadata_order_by: {
+    barter: "barters_order_by",
+    barter_id: "order_by",
+    chat: "chats_order_by",
+    chat_client_generated_uuid: "order_by",
+  },
+  chat_barter_metadata_pk_columns_input: {},
+  chat_barter_metadata_select_column: "enum" as const,
+  chat_barter_metadata_stddev_order_by: {
+    barter_id: "order_by",
+  },
+  chat_barter_metadata_stddev_pop_order_by: {
+    barter_id: "order_by",
+  },
+  chat_barter_metadata_stddev_samp_order_by: {
+    barter_id: "order_by",
+  },
+  chat_barter_metadata_stream_cursor_input: {
+    initial_value: "chat_barter_metadata_stream_cursor_value_input",
+    ordering: "cursor_ordering",
+  },
+  chat_barter_metadata_stream_cursor_value_input: {},
+  chat_barter_metadata_sum_order_by: {
+    barter_id: "order_by",
+  },
+  chat_barter_metadata_update_column: "enum" as const,
+  chat_barter_metadata_updates: {
+    where: "chat_barter_metadata_bool_exp",
+  },
+  chat_barter_metadata_var_pop_order_by: {
+    barter_id: "order_by",
+  },
+  chat_barter_metadata_var_samp_order_by: {
+    barter_id: "order_by",
+  },
+  chat_barter_metadata_variance_order_by: {
+    barter_id: "order_by",
   },
   chat_media_messages_aggregate_order_by: {
     avg: "chat_media_messages_avg_order_by",
@@ -155,6 +270,7 @@ export const AllTypesProps: Record<string, any> = {
     _and: "chats_bool_exp",
     _not: "chats_bool_exp",
     _or: "chats_bool_exp",
+    chat_barter_metadatum: "chat_barter_metadata_bool_exp",
     chat_media_messages: "chat_media_messages_bool_exp",
     client_generated_uuid: "String_comparison_exp",
     created_at: "timestamptz_comparison_exp",
@@ -171,6 +287,7 @@ export const AllTypesProps: Record<string, any> = {
   },
   chats_constraint: "enum" as const,
   chats_insert_input: {
+    chat_barter_metadatum: "chat_barter_metadata_obj_rel_insert_input",
     chat_media_messages: "chat_media_messages_arr_rel_insert_input",
     created_at: "timestamptz",
     secure_transfer_transactions:
@@ -187,6 +304,7 @@ export const AllTypesProps: Record<string, any> = {
     where: "chats_bool_exp",
   },
   chats_order_by: {
+    chat_barter_metadatum: "chat_barter_metadata_order_by",
     chat_media_messages_aggregate: "chat_media_messages_aggregate_order_by",
     client_generated_uuid: "order_by",
     created_at: "order_by",
@@ -220,6 +338,14 @@ export const AllTypesProps: Record<string, any> = {
     insert_barters_one: {
       object: "barters_insert_input",
       on_conflict: "barters_on_conflict",
+    },
+    insert_chat_barter_metadata: {
+      objects: "chat_barter_metadata_insert_input",
+      on_conflict: "chat_barter_metadata_on_conflict",
+    },
+    insert_chat_barter_metadata_one: {
+      object: "chat_barter_metadata_insert_input",
+      on_conflict: "chat_barter_metadata_on_conflict",
     },
     insert_chat_media_messages: {
       objects: "chat_media_messages_insert_input",
@@ -273,6 +399,15 @@ export const AllTypesProps: Record<string, any> = {
     },
     update_barters_many: {
       updates: "barters_updates",
+    },
+    update_chat_barter_metadata: {
+      where: "chat_barter_metadata_bool_exp",
+    },
+    update_chat_barter_metadata_by_pk: {
+      pk_columns: "chat_barter_metadata_pk_columns_input",
+    },
+    update_chat_barter_metadata_many: {
+      updates: "chat_barter_metadata_updates",
     },
     update_chat_media_messages: {
       _inc: "chat_media_messages_inc_input",
@@ -335,6 +470,12 @@ export const AllTypesProps: Record<string, any> = {
       where: "barters_bool_exp",
     },
     barters_by_pk: {},
+    chat_barter_metadata: {
+      distinct_on: "chat_barter_metadata_select_column",
+      order_by: "chat_barter_metadata_order_by",
+      where: "chat_barter_metadata_bool_exp",
+    },
+    chat_barter_metadata_by_pk: {},
     chat_media_messages: {
       distinct_on: "chat_media_messages_select_column",
       order_by: "chat_media_messages_order_by",
@@ -366,38 +507,91 @@ export const AllTypesProps: Record<string, any> = {
     },
     simple_transactions_by_pk: {},
   },
+  room_active_chat_mapping_aggregate_order_by: {
+    avg: "room_active_chat_mapping_avg_order_by",
+    count: "order_by",
+    max: "room_active_chat_mapping_max_order_by",
+    min: "room_active_chat_mapping_min_order_by",
+    stddev: "room_active_chat_mapping_stddev_order_by",
+    stddev_pop: "room_active_chat_mapping_stddev_pop_order_by",
+    stddev_samp: "room_active_chat_mapping_stddev_samp_order_by",
+    sum: "room_active_chat_mapping_sum_order_by",
+    var_pop: "room_active_chat_mapping_var_pop_order_by",
+    var_samp: "room_active_chat_mapping_var_samp_order_by",
+    variance: "room_active_chat_mapping_variance_order_by",
+  },
+  room_active_chat_mapping_arr_rel_insert_input: {
+    data: "room_active_chat_mapping_insert_input",
+    on_conflict: "room_active_chat_mapping_on_conflict",
+  },
+  room_active_chat_mapping_avg_order_by: {
+    barter_id: "order_by",
+  },
   room_active_chat_mapping_bool_exp: {
     _and: "room_active_chat_mapping_bool_exp",
     _not: "room_active_chat_mapping_bool_exp",
     _or: "room_active_chat_mapping_bool_exp",
+    barter: "barters_bool_exp",
     barter_id: "Int_comparison_exp",
     room_id: "String_comparison_exp",
   },
   room_active_chat_mapping_constraint: "enum" as const,
   room_active_chat_mapping_inc_input: {},
-  room_active_chat_mapping_insert_input: {},
+  room_active_chat_mapping_insert_input: {
+    barter: "barters_obj_rel_insert_input",
+  },
+  room_active_chat_mapping_max_order_by: {
+    barter_id: "order_by",
+    room_id: "order_by",
+  },
+  room_active_chat_mapping_min_order_by: {
+    barter_id: "order_by",
+    room_id: "order_by",
+  },
   room_active_chat_mapping_on_conflict: {
     constraint: "room_active_chat_mapping_constraint",
     update_columns: "room_active_chat_mapping_update_column",
     where: "room_active_chat_mapping_bool_exp",
   },
   room_active_chat_mapping_order_by: {
+    barter: "barters_order_by",
     barter_id: "order_by",
     room_id: "order_by",
   },
   room_active_chat_mapping_pk_columns_input: {},
   room_active_chat_mapping_select_column: "enum" as const,
   room_active_chat_mapping_set_input: {},
+  room_active_chat_mapping_stddev_order_by: {
+    barter_id: "order_by",
+  },
+  room_active_chat_mapping_stddev_pop_order_by: {
+    barter_id: "order_by",
+  },
+  room_active_chat_mapping_stddev_samp_order_by: {
+    barter_id: "order_by",
+  },
   room_active_chat_mapping_stream_cursor_input: {
     initial_value: "room_active_chat_mapping_stream_cursor_value_input",
     ordering: "cursor_ordering",
   },
   room_active_chat_mapping_stream_cursor_value_input: {},
+  room_active_chat_mapping_sum_order_by: {
+    barter_id: "order_by",
+  },
   room_active_chat_mapping_update_column: "enum" as const,
   room_active_chat_mapping_updates: {
     _inc: "room_active_chat_mapping_inc_input",
     _set: "room_active_chat_mapping_set_input",
     where: "room_active_chat_mapping_bool_exp",
+  },
+  room_active_chat_mapping_var_pop_order_by: {
+    barter_id: "order_by",
+  },
+  room_active_chat_mapping_var_samp_order_by: {
+    barter_id: "order_by",
+  },
+  room_active_chat_mapping_variance_order_by: {
+    barter_id: "order_by",
   },
   secure_transfer_transactions_aggregate_order_by: {
     avg: "secure_transfer_transactions_avg_order_by",
@@ -622,6 +816,16 @@ export const AllTypesProps: Record<string, any> = {
       cursor: "barters_stream_cursor_input",
       where: "barters_bool_exp",
     },
+    chat_barter_metadata: {
+      distinct_on: "chat_barter_metadata_select_column",
+      order_by: "chat_barter_metadata_order_by",
+      where: "chat_barter_metadata_bool_exp",
+    },
+    chat_barter_metadata_by_pk: {},
+    chat_barter_metadata_stream: {
+      cursor: "chat_barter_metadata_stream_cursor_input",
+      where: "chat_barter_metadata_bool_exp",
+    },
     chat_media_messages: {
       distinct_on: "chat_media_messages_select_column",
       order_by: "chat_media_messages_order_by",
@@ -692,7 +896,10 @@ export const ReturnTypes: Record<string, any> = {
     refresh: "Boolean",
   },
   barters: {
+    chat_barter_metadata: "chat_barter_metadata",
     id: "Int",
+    on_chain_state: "String",
+    room_active_chat_mappings: "room_active_chat_mapping",
     state: "String",
     user1_offers: "String",
     user2_offers: "String",
@@ -700,6 +907,16 @@ export const ReturnTypes: Record<string, any> = {
   barters_mutation_response: {
     affected_rows: "Int",
     returning: "barters",
+  },
+  chat_barter_metadata: {
+    barter: "barters",
+    barter_id: "Int",
+    chat: "chats",
+    chat_client_generated_uuid: "String",
+  },
+  chat_barter_metadata_mutation_response: {
+    affected_rows: "Int",
+    returning: "chat_barter_metadata",
   },
   chat_media_messages: {
     chat: "chats",
@@ -713,6 +930,7 @@ export const ReturnTypes: Record<string, any> = {
     returning: "chat_media_messages",
   },
   chats: {
+    chat_barter_metadatum: "chat_barter_metadata",
     chat_media_messages: "chat_media_messages",
     client_generated_uuid: "String",
     created_at: "timestamptz",
@@ -734,6 +952,8 @@ export const ReturnTypes: Record<string, any> = {
   mutation_root: {
     insert_barters: "barters_mutation_response",
     insert_barters_one: "barters",
+    insert_chat_barter_metadata: "chat_barter_metadata_mutation_response",
+    insert_chat_barter_metadata_one: "chat_barter_metadata",
     insert_chat_media_messages: "chat_media_messages_mutation_response",
     insert_chat_media_messages_one: "chat_media_messages",
     insert_chats: "chats_mutation_response",
@@ -749,6 +969,9 @@ export const ReturnTypes: Record<string, any> = {
     update_barters: "barters_mutation_response",
     update_barters_by_pk: "barters",
     update_barters_many: "barters_mutation_response",
+    update_chat_barter_metadata: "chat_barter_metadata_mutation_response",
+    update_chat_barter_metadata_by_pk: "chat_barter_metadata",
+    update_chat_barter_metadata_many: "chat_barter_metadata_mutation_response",
     update_chat_media_messages: "chat_media_messages_mutation_response",
     update_chat_media_messages_by_pk: "chat_media_messages",
     update_chat_media_messages_many: "chat_media_messages_mutation_response",
@@ -769,6 +992,8 @@ export const ReturnTypes: Record<string, any> = {
   query_root: {
     barters: "barters",
     barters_by_pk: "barters",
+    chat_barter_metadata: "chat_barter_metadata",
+    chat_barter_metadata_by_pk: "chat_barter_metadata",
     chat_media_messages: "chat_media_messages",
     chat_media_messages_by_pk: "chat_media_messages",
     chats: "chats",
@@ -781,6 +1006,7 @@ export const ReturnTypes: Record<string, any> = {
     simple_transactions_by_pk: "simple_transactions",
   },
   room_active_chat_mapping: {
+    barter: "barters",
     barter_id: "Int",
     room_id: "String",
   },
@@ -818,6 +1044,9 @@ export const ReturnTypes: Record<string, any> = {
     barters: "barters",
     barters_by_pk: "barters",
     barters_stream: "barters",
+    chat_barter_metadata: "chat_barter_metadata",
+    chat_barter_metadata_by_pk: "chat_barter_metadata",
+    chat_barter_metadata_stream: "chat_barter_metadata",
     chat_media_messages: "chat_media_messages",
     chat_media_messages_by_pk: "chat_media_messages",
     chat_media_messages_stream: "chat_media_messages",
