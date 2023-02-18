@@ -23,6 +23,7 @@ insert_permissions:
       columns:
         - id
         - on_chain_state
+        - room_id
         - state
         - user1_offers
         - user2_offers
@@ -32,6 +33,7 @@ select_permissions:
       columns:
         - id
         - on_chain_state
+        - room_id
         - state
         - user1_offers
         - user2_offers
@@ -42,6 +44,7 @@ update_permissions:
       columns:
         - id
         - on_chain_state
+        - room_id
         - state
         - user1_offers
         - user2_offers
