@@ -1,10 +1,13 @@
 import type {
-  BarterOffers,  EnrichedMessage,
+  BarterOffers,
+  EnrichedMessage,
   MessageWithMetadata,
   SubscriptionType,
-  ToServer} from "@coral-xyz/common";
+  ToServer,
+} from "@coral-xyz/common";
 import {
   CHAT_MESSAGES,
+  EXECUTE_ACTIVE_BARTER,
   SUBSCRIBE,
   UNSUBSCRIBE,
   UPDATE_ACTIVE_BARTER,
@@ -64,6 +67,8 @@ export class SignalingManager {
     localOffers?: BarterOffers;
     remoteOffers?: BarterOffers;
   }) {}
+
+  public onBarterExecute(props: { barterId: string }) {}
 
   updateUuid(uuid: string, jwt: string) {
     this.signaling?.destroy();
@@ -158,6 +163,10 @@ export class SignalingManager {
 
     this.signaling?.on(UPDATE_ACTIVE_BARTER, (payload) => {
       this.onBarterUpdate(payload);
+    });
+
+    this.signaling?.on(EXECUTE_ACTIVE_BARTER, (payload) => {
+      this.onBarterExecute(payload);
     });
 
     this.signaling?.on(WS_READY, () => {

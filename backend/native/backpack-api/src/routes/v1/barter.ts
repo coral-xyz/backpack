@@ -1,14 +1,18 @@
 import type { BarterResponse } from "@coral-xyz/common";
 import express from "express";
 
-import { ensureHasRoomAccess, extractUserId } from "../../auth/middleware";
+import {
+  ensureHasRoomAccess,
+  ensureIsActiveBarter,
+  extractUserId,
+} from "../../auth/middleware";
 import {
   executeActiveBarter,
   getOrCreateBarter,
   updateActiveBarter,
 } from "../../db/barter";
 import { getFriendshipById } from "../../db/friendships";
-import { updateBarter } from "../../messaging/barter";
+import { executeBarterRealtime, updateBarter } from "../../messaging/barter";
 import { sendMessage } from "../../messaging/messaging";
 
 const router = express.Router();
@@ -54,45 +58,58 @@ router.get("/active", extractUserId, ensureHasRoomAccess, async (req, res) => {
   }
 });
 
-router.post("/active", extractUserId, ensureHasRoomAccess, async (req, res) => {
-  // @ts-ignore
-  const room: string = req.query.room;
-  const updatedOffer = req.body.updatedOffer;
-  // @ts-ignore
-  const uuid: string = req.id!;
+router.post(
+  "/active",
+  extractUserId,
+  ensureHasRoomAccess,
+  ensureIsActiveBarter,
+  async (req, res) => {
+    // @ts-ignore
+    const room: string = req.query.room;
+    const updatedOffer = req.body.updatedOffer;
+    // @ts-ignore
+    const uuid: string = req.id!;
 
-  const friendship = await getFriendshipById({ roomId: parseInt(room) });
-  if (!friendship) {
-    return res.status(411).json({});
+    const friendship = await getFriendshipById({ roomId: parseInt(room) });
+    if (!friendship) {
+      return res.status(411).json({});
+    }
+    const { user1, user2 } = friendship;
+    const userIndex = uuid === user1 ? "1" : "2";
+
+    // TODO: add validation atleast to updatedOffer.
+    // At the very least do zod validation to ensure type of updatedOffer is correct
+    const barter = await updateActiveBarter({
+      roomId: room,
+      userId: uuid,
+      offers: JSON.stringify(updatedOffer),
+      userIndex,
+    });
+    updateBarter(barter.id, { user1, user2 }, uuid, updatedOffer);
+
+    res.json(barter);
   }
-  const { user1, user2 } = friendship;
-  const userIndex = uuid === user1 ? "1" : "2";
-
-  // TODO: add validation atleast to updatedOffer.
-  // At the very least do zod validation to ensure type of updatedOffer is correct
-  const barter = await updateActiveBarter({
-    roomId: room,
-    userId: uuid,
-    offers: JSON.stringify(updatedOffer),
-    userIndex,
-  });
-  updateBarter(barter.id, { user1, user2 }, uuid, updatedOffer);
-
-  res.json(barter);
-});
+);
 
 router.post(
   "/execute",
   extractUserId,
   ensureHasRoomAccess,
+  ensureIsActiveBarter,
   async (req, res) => {
     // @ts-ignore
     const room: string = req.query.room;
     // @ts-ignore
-    const userId = req.id;
+    const userId: string = req.id;
+    const barterId: number = req.body.barterId;
     // TODO: send contract txn here, maybe check that the DB state looks the same as the contract state before sending.
     // @ts-ignore
     const client_generated_uuid: string = req.query.client_generated_uuid;
+    const friendship = await getFriendshipById({ roomId: parseInt(room) });
+    if (!friendship) {
+      return res.status(411).json({});
+    }
+    const { user1, user2 } = friendship;
 
     await executeActiveBarter({ roomId: room });
     await sendMessage({
@@ -102,12 +119,16 @@ router.post(
         message: `Barter`,
         message_kind: "barter",
         message_metadata: {
-          contract_address: "",
+          on_chain_state: "", //TODO: store on chain data address/escrow index here
+          barter_id: barterId,
+          state: "executed",
         },
       },
       type: "individual",
       userId,
     });
+
+    await executeBarterRealtime(barterId, { user1, user2 });
 
     res.json({});
   }

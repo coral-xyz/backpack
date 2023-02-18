@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import type { BarterOffers, BarterResponse} from "@coral-xyz/common";
-import { BACKEND_API_URL,Blockchain  } from "@coral-xyz/common";
+import type { BarterOffers, BarterResponse } from "@coral-xyz/common";
+import { BACKEND_API_URL, Blockchain } from "@coral-xyz/common";
 import { SignalingManager } from "@coral-xyz/react-common";
 import { useTokenMetadata } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 
+import { useChatContext } from "../ChatContext";
 import { ScrollBarImpl } from "../ScrollbarImpl";
 
 import { BarterProvider } from "./BarterContext";
@@ -15,6 +16,7 @@ export const BarterUi = ({ roomId }: { roomId: string }) => {
   const theme = useCustomTheme();
   const [selectNft, setSelectNft] = useState(false);
   const [barterState, setBarterState] = useState<BarterResponse | null>(null);
+  const { setOpenPlugin } = useChatContext();
 
   const getActiveBarter = async () => {
     try {
@@ -39,6 +41,11 @@ export const BarterUi = ({ roomId }: { roomId: string }) => {
           }));
         }
       };
+      SignalingManager.getInstance().onBarterExecute = (props: {
+        barterId: number;
+      }) => {
+        setOpenPlugin("");
+      };
     } catch (e) {
       console.error("could not get active barter");
     }
@@ -53,7 +60,11 @@ export const BarterUi = ({ roomId }: { roomId: string }) => {
   }
 
   return (
-    <BarterProvider setSelectNft={setSelectNft} room={roomId}>
+    <BarterProvider
+      barterId={barterState.id}
+      setSelectNft={setSelectNft}
+      room={roomId}
+    >
       <div>
         <ScrollBarImpl height={"50vh"}>
           <div

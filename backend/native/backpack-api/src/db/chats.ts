@@ -78,6 +78,9 @@ export const getChats = async ({
             media_link: true,
           },
         ],
+        chat_barter_metadatum: {
+          barter_id: true,
+        },
         simple_transactions: [
           {
             limit: 1,

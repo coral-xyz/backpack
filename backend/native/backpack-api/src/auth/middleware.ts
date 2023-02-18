@@ -3,6 +3,7 @@ import { DEFAULT_GROUP_CHATS } from "@coral-xyz/common";
 import { WHITELISTED_CHAT_COLLECTIONS } from "@coral-xyz/common/src/constants";
 import type { NextFunction, Request, Response } from "express";
 
+import { getActiveBarter } from "../db/barter";
 import {
   validateCentralizedGroupOwnership,
   validateCollectionOwnership,
@@ -78,6 +79,24 @@ export const ensureHasRoomAccess = async (
       return res.status(403).json({ msg: "you dont have access" });
     }
   }
+};
+
+export const ensureIsActiveBarter = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const barterId: string = req.body.barterId;
+  //@ts-ignore
+  const room: string = req.query.room;
+  const activeBarter = await getActiveBarter({
+    roomId: room,
+  });
+
+  if (activeBarter?.id?.toString() !== barterId.toString()) {
+    return res.status(403).json({ msg: "This isn't the active barter id" });
+  }
+  next();
 };
 
 export const extractUserId = async (

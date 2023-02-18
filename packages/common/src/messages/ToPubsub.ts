@@ -1,8 +1,7 @@
 import type {
   CHAT_MESSAGES,
-  MessageWithMetadata,
-  UPDATE_ACTIVE_BARTER,
-} from "./fromServer";
+ EXECUTE_BARTER,  MessageWithMetadata,
+  UPDATE_ACTIVE_BARTER } from "./fromServer";
 import type { BarterOffers } from "./index";
 
 export type ToPubsub =
@@ -16,5 +15,11 @@ export type ToPubsub =
         barterId: number;
         localOffers?: BarterOffers;
         remoteOffers?: BarterOffers;
+      };
+    }
+  | {
+      type: typeof EXECUTE_BARTER;
+      payload: {
+        barterId: number;
       };
     };

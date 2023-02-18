@@ -1,6 +1,7 @@
 import type { Blockchain } from "../types";
 
 import type { CHAT_MESSAGES, SUBSCRIBE, UNSUBSCRIBE } from "./fromServer";
+import { BarterOffers } from "./index";
 
 export type SubscriptionType = "collection" | "individual";
 export type SubscriptionMessage = {
@@ -33,7 +34,8 @@ export type MessageMetadata =
       contract_address: string;
     }
   | {
-      final_tx_signature: string;
+      on_chain_state: string;
+      barter_id: number;
       state: BarterState;
     };
 

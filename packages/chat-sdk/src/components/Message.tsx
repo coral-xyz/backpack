@@ -279,6 +279,8 @@ export const MessageLine = (props) => {
                         finalTxId={props.metadata.final_txn_signature}
                       />
                     </>
+                  ) : props.messageKind === "barter" ? (
+                    <>barter</>
                   ) : props.messageKind === "transaction" ? (
                     <>
                       <SimpleTransaction
@@ -420,6 +422,8 @@ export const MessageLine = (props) => {
                               finalTxId={props.metadata.final_txn_signature}
                             />
                           </>
+                        ) : props.messageKind === "barter" ? (
+                          <>barter</>
                         ) : props.messageKind === "transaction" ? (
                           <>
                             <SimpleTransaction

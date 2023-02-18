@@ -11,6 +11,29 @@ const chain = Chain(CHAT_HASURA_URL, {
   },
 });
 
+export const getActiveBarter = async ({ roomId }: { roomId: string }) => {
+  const response = await chain("query")({
+    room_active_chat_mapping: [
+      {
+        where: {
+          room_id: { _eq: roomId },
+        },
+      },
+      {
+        barter: {
+          user1_offers: true,
+          user2_offers: true,
+          state: true,
+          id: true,
+        },
+      },
+    ],
+  });
+  return {
+    id: response.room_active_chat_mapping[0]?.barter.id,
+  };
+};
+
 export const getOrCreateBarter = async ({
   roomId,
 }: {
@@ -134,13 +157,10 @@ export const executeActiveBarter = async ({ roomId }: { roomId: string }) => {
         affected_rows: true,
       },
     ],
-    update_room_active_chat_mapping: [
+    delete_room_active_chat_mapping: [
       {
         where: {
           room_id: { _eq: roomId },
-        },
-        _set: {
-          barter_id: null,
         },
       },
       {

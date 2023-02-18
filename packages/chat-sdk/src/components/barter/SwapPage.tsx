@@ -1,13 +1,19 @@
 import React, { Suspense } from "react";
 import type { BarterOffers } from "@coral-xyz/common";
-import { Blockchain } from "@coral-xyz/common";
+import { BACKEND_API_URL, Blockchain } from "@coral-xyz/common";
+import { SuccessButton } from "@coral-xyz/react-common";
 import { useTokenMetadata } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 
+import { useChatContext } from "../ChatContext";
+
 import { AddAssetsCard } from "./AddAssetsCard";
+import { useBarterContext } from "./BarterContext";
 
 export function SwapPage({ remoteSelection, localSelection }) {
   const theme = useCustomTheme();
+  const { roomId, setOpenPlugin } = useChatContext();
+  const { barterId } = useBarterContext();
   return (
     <div style={{ height: "100%" }}>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -39,6 +45,23 @@ export function SwapPage({ remoteSelection, localSelection }) {
           <RemoteSelection selection={remoteSelection} />
         </div>
       </div>
+      <SuccessButton
+        onClick={async () => {
+          await fetch(
+            `${BACKEND_API_URL}/barter/execute?room=${roomId}&type=individual`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                barterId,
+              }),
+            }
+          );
+          setOpenPlugin("");
+        }}
+      >
+        Execute
+      </SuccessButton>
     </div>
   );
 }
