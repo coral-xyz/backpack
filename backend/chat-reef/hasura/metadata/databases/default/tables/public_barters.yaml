@@ -22,14 +22,16 @@ insert_permissions:
       check: {}
       columns:
         - id
+        - on_chain_state
+        - state
         - user1_offers
         - user2_offers
-        - state
 select_permissions:
   - role: chat
     permission:
       columns:
         - id
+        - on_chain_state
         - state
         - user1_offers
         - user2_offers
@@ -39,6 +41,7 @@ update_permissions:
     permission:
       columns:
         - id
+        - on_chain_state
         - state
         - user1_offers
         - user2_offers

@@ -21,6 +21,7 @@ export const AllTypesProps: Record<string, any> = {
     _or: "barters_bool_exp",
     chat_barter_metadata: "chat_barter_metadata_bool_exp",
     id: "Int_comparison_exp",
+    on_chain_state: "String_comparison_exp",
     room_active_chat_mappings: "room_active_chat_mapping_bool_exp",
     state: "String_comparison_exp",
     user1_offers: "String_comparison_exp",
@@ -44,6 +45,7 @@ export const AllTypesProps: Record<string, any> = {
   barters_order_by: {
     chat_barter_metadata_aggregate: "chat_barter_metadata_aggregate_order_by",
     id: "order_by",
+    on_chain_state: "order_by",
     room_active_chat_mappings_aggregate:
       "room_active_chat_mapping_aggregate_order_by",
     state: "order_by",
@@ -896,6 +898,7 @@ export const ReturnTypes: Record<string, any> = {
   barters: {
     chat_barter_metadata: "chat_barter_metadata",
     id: "Int",
+    on_chain_state: "String",
     room_active_chat_mappings: "room_active_chat_mapping",
     state: "String",
     user1_offers: "String",

@@ -1084,6 +1084,7 @@ export type ValueTypes = {
       ValueTypes["chat_barter_metadata"]
     ];
     id?: boolean | `@${string}`;
+    on_chain_state?: boolean | `@${string}`;
     room_active_chat_mappings?: [
       {
         /** distinct select on columns */
@@ -1150,6 +1151,11 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
+    on_chain_state?:
+      | ValueTypes["String_comparison_exp"]
+      | undefined
+      | null
+      | Variable<any, string>;
     room_active_chat_mappings?:
       | ValueTypes["room_active_chat_mapping_bool_exp"]
       | undefined
@@ -1185,6 +1191,7 @@ export type ValueTypes = {
       | null
       | Variable<any, string>;
     id?: number | undefined | null | Variable<any, string>;
+    on_chain_state?: string | undefined | null | Variable<any, string>;
     room_active_chat_mappings?:
       | ValueTypes["room_active_chat_mapping_arr_rel_insert_input"]
       | undefined
@@ -1232,6 +1239,11 @@ export type ValueTypes = {
       | null
       | Variable<any, string>;
     id?: ValueTypes["order_by"] | undefined | null | Variable<any, string>;
+    on_chain_state?:
+      | ValueTypes["order_by"]
+      | undefined
+      | null
+      | Variable<any, string>;
     room_active_chat_mappings_aggregate?:
       | ValueTypes["room_active_chat_mapping_aggregate_order_by"]
       | undefined
@@ -1258,6 +1270,7 @@ export type ValueTypes = {
   /** input type for updating data in table "barters" */
   ["barters_set_input"]: {
     id?: number | undefined | null | Variable<any, string>;
+    on_chain_state?: string | undefined | null | Variable<any, string>;
     state?: string | undefined | null | Variable<any, string>;
     user1_offers?: string | undefined | null | Variable<any, string>;
     user2_offers?: string | undefined | null | Variable<any, string>;
@@ -1278,6 +1291,7 @@ export type ValueTypes = {
   /** Initial value of the column from where the streaming should start */
   ["barters_stream_cursor_value_input"]: {
     id?: number | undefined | null | Variable<any, string>;
+    on_chain_state?: string | undefined | null | Variable<any, string>;
     state?: string | undefined | null | Variable<any, string>;
     user1_offers?: string | undefined | null | Variable<any, string>;
     user2_offers?: string | undefined | null | Variable<any, string>;
@@ -4599,6 +4613,7 @@ export type ResolverInputTypes = {
       ResolverInputTypes["chat_barter_metadata"]
     ];
     id?: boolean | `@${string}`;
+    on_chain_state?: boolean | `@${string}`;
     room_active_chat_mappings?: [
       {
         /** distinct select on columns */
@@ -4640,6 +4655,10 @@ export type ResolverInputTypes = {
       | undefined
       | null;
     id?: ResolverInputTypes["Int_comparison_exp"] | undefined | null;
+    on_chain_state?:
+      | ResolverInputTypes["String_comparison_exp"]
+      | undefined
+      | null;
     room_active_chat_mappings?:
       | ResolverInputTypes["room_active_chat_mapping_bool_exp"]
       | undefined
@@ -4667,6 +4686,7 @@ export type ResolverInputTypes = {
       | undefined
       | null;
     id?: number | undefined | null;
+    on_chain_state?: string | undefined | null;
     room_active_chat_mappings?:
       | ResolverInputTypes["room_active_chat_mapping_arr_rel_insert_input"]
       | undefined
@@ -4702,6 +4722,7 @@ export type ResolverInputTypes = {
       | undefined
       | null;
     id?: ResolverInputTypes["order_by"] | undefined | null;
+    on_chain_state?: ResolverInputTypes["order_by"] | undefined | null;
     room_active_chat_mappings_aggregate?:
       | ResolverInputTypes["room_active_chat_mapping_aggregate_order_by"]
       | undefined
@@ -4719,6 +4740,7 @@ export type ResolverInputTypes = {
   /** input type for updating data in table "barters" */
   ["barters_set_input"]: {
     id?: number | undefined | null;
+    on_chain_state?: string | undefined | null;
     state?: string | undefined | null;
     user1_offers?: string | undefined | null;
     user2_offers?: string | undefined | null;
@@ -4733,6 +4755,7 @@ export type ResolverInputTypes = {
   /** Initial value of the column from where the streaming should start */
   ["barters_stream_cursor_value_input"]: {
     id?: number | undefined | null;
+    on_chain_state?: string | undefined | null;
     state?: string | undefined | null;
     user1_offers?: string | undefined | null;
     user2_offers?: string | undefined | null;
@@ -7069,6 +7092,7 @@ export type ModelTypes = {
     /** An array relationship */
     chat_barter_metadata: Array<ModelTypes["chat_barter_metadata"]>;
     id: number;
+    on_chain_state?: string | undefined;
     /** An array relationship */
     room_active_chat_mappings: Array<ModelTypes["room_active_chat_mapping"]>;
     state: string;
@@ -7084,6 +7108,7 @@ export type ModelTypes = {
       | ModelTypes["chat_barter_metadata_bool_exp"]
       | undefined;
     id?: ModelTypes["Int_comparison_exp"] | undefined;
+    on_chain_state?: ModelTypes["String_comparison_exp"] | undefined;
     room_active_chat_mappings?:
       | ModelTypes["room_active_chat_mapping_bool_exp"]
       | undefined;
@@ -7102,6 +7127,7 @@ export type ModelTypes = {
       | ModelTypes["chat_barter_metadata_arr_rel_insert_input"]
       | undefined;
     id?: number | undefined;
+    on_chain_state?: string | undefined;
     room_active_chat_mappings?:
       | ModelTypes["room_active_chat_mapping_arr_rel_insert_input"]
       | undefined;
@@ -7134,6 +7160,7 @@ export type ModelTypes = {
       | ModelTypes["chat_barter_metadata_aggregate_order_by"]
       | undefined;
     id?: ModelTypes["order_by"] | undefined;
+    on_chain_state?: ModelTypes["order_by"] | undefined;
     room_active_chat_mappings_aggregate?:
       | ModelTypes["room_active_chat_mapping_aggregate_order_by"]
       | undefined;
@@ -7149,6 +7176,7 @@ export type ModelTypes = {
   /** input type for updating data in table "barters" */
   ["barters_set_input"]: {
     id?: number | undefined;
+    on_chain_state?: string | undefined;
     state?: string | undefined;
     user1_offers?: string | undefined;
     user2_offers?: string | undefined;
@@ -7163,6 +7191,7 @@ export type ModelTypes = {
   /** Initial value of the column from where the streaming should start */
   ["barters_stream_cursor_value_input"]: {
     id?: number | undefined;
+    on_chain_state?: string | undefined;
     state?: string | undefined;
     user1_offers?: string | undefined;
     user2_offers?: string | undefined;
@@ -8432,6 +8461,7 @@ export type GraphQLTypes = {
     /** An array relationship */
     chat_barter_metadata: Array<GraphQLTypes["chat_barter_metadata"]>;
     id: number;
+    on_chain_state?: string | undefined;
     /** An array relationship */
     room_active_chat_mappings: Array<GraphQLTypes["room_active_chat_mapping"]>;
     state: string;
@@ -8447,6 +8477,7 @@ export type GraphQLTypes = {
       | GraphQLTypes["chat_barter_metadata_bool_exp"]
       | undefined;
     id?: GraphQLTypes["Int_comparison_exp"] | undefined;
+    on_chain_state?: GraphQLTypes["String_comparison_exp"] | undefined;
     room_active_chat_mappings?:
       | GraphQLTypes["room_active_chat_mapping_bool_exp"]
       | undefined;
@@ -8466,6 +8497,7 @@ export type GraphQLTypes = {
       | GraphQLTypes["chat_barter_metadata_arr_rel_insert_input"]
       | undefined;
     id?: number | undefined;
+    on_chain_state?: string | undefined;
     room_active_chat_mappings?:
       | GraphQLTypes["room_active_chat_mapping_arr_rel_insert_input"]
       | undefined;
@@ -8499,6 +8531,7 @@ export type GraphQLTypes = {
       | GraphQLTypes["chat_barter_metadata_aggregate_order_by"]
       | undefined;
     id?: GraphQLTypes["order_by"] | undefined;
+    on_chain_state?: GraphQLTypes["order_by"] | undefined;
     room_active_chat_mappings_aggregate?:
       | GraphQLTypes["room_active_chat_mapping_aggregate_order_by"]
       | undefined;
@@ -8515,6 +8548,7 @@ export type GraphQLTypes = {
   /** input type for updating data in table "barters" */
   ["barters_set_input"]: {
     id?: number | undefined;
+    on_chain_state?: string | undefined;
     state?: string | undefined;
     user1_offers?: string | undefined;
     user2_offers?: string | undefined;
@@ -8529,6 +8563,7 @@ export type GraphQLTypes = {
   /** Initial value of the column from where the streaming should start */
   ["barters_stream_cursor_value_input"]: {
     id?: number | undefined;
+    on_chain_state?: string | undefined;
     state?: string | undefined;
     user1_offers?: string | undefined;
     user2_offers?: string | undefined;
@@ -9811,6 +9846,7 @@ export const enum barters_constraint {
 /** select columns of table "barters" */
 export const enum barters_select_column {
   id = "id",
+  on_chain_state = "on_chain_state",
   state = "state",
   user1_offers = "user1_offers",
   user2_offers = "user2_offers",
@@ -9818,6 +9854,7 @@ export const enum barters_select_column {
 /** update columns of table "barters" */
 export const enum barters_update_column {
   id = "id",
+  on_chain_state = "on_chain_state",
   state = "state",
   user1_offers = "user1_offers",
   user2_offers = "user2_offers",
