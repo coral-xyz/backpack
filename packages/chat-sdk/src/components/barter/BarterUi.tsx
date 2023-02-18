@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import type { BarterOffers, BarterResponse } from "@coral-xyz/common";
 import { BACKEND_API_URL, Blockchain } from "@coral-xyz/common";
 import { SignalingManager } from "@coral-xyz/react-common";
-import { useTokenMetadata } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 
 import { useChatContext } from "../ChatContext";

@@ -4,13 +4,22 @@ import { BACKEND_API_URL, Blockchain } from "@coral-xyz/common";
 import { SuccessButton } from "@coral-xyz/react-common";
 import { useTokenMetadata } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
+import { v4 as uuidv4 } from "uuid";
 
 import { useChatContext } from "../ChatContext";
 
 import { AddAssetsCard } from "./AddAssetsCard";
 import { useBarterContext } from "./BarterContext";
 
-export function SwapPage({ remoteSelection, localSelection }) {
+export function SwapPage({
+  remoteSelection,
+  localSelection,
+  finalized,
+}: {
+  finalized?: boolean;
+  remoteSelection: BarterOffers;
+  localSelection: BarterOffers;
+}) {
   const theme = useCustomTheme();
   const { roomId, setOpenPlugin } = useChatContext();
   const { barterId } = useBarterContext();
@@ -30,7 +39,7 @@ export function SwapPage({ remoteSelection, localSelection }) {
           <br />
           <RemoteSelection selection={localSelection} />
           <br />
-          <AddAssetsCard />
+          {!finalized && <AddAssetsCard />}
         </div>
         <div
           style={{
@@ -54,6 +63,7 @@ export function SwapPage({ remoteSelection, localSelection }) {
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 barterId,
+                clientGeneratedUuid: uuidv4(),
               }),
             }
           );

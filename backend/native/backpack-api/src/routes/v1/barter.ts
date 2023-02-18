@@ -8,6 +8,7 @@ import {
 } from "../../auth/middleware";
 import {
   executeActiveBarter,
+  getBarter,
   getOrCreateBarter,
   updateActiveBarter,
 } from "../../db/barter";
@@ -29,6 +30,51 @@ router.get("/active", extractUserId, ensureHasRoomAccess, async (req, res) => {
       user2_offers: JSON.parse(barter.barter.user2_offers),
       state: barter.barter.state,
       id: barter.barter.id,
+    };
+    const friendship = await getFriendshipById({ roomId: parseInt(room) });
+    if (!friendship) {
+      return res.status(411).json({
+        msg: "Friendship doesnt exist",
+      });
+    }
+
+    const response: BarterResponse = {
+      id: parsedBarter.id,
+      state: parsedBarter.state,
+      localOffers:
+        friendship.user1 === uuid
+          ? parsedBarter.user1_offers
+          : parsedBarter.user2_offers,
+      remoteOffers:
+        friendship.user1 === uuid
+          ? parsedBarter.user2_offers
+          : parsedBarter.user1_offers,
+    };
+
+    res.json({
+      barter: response,
+    });
+  } catch (e) {
+    console.error(e);
+  }
+});
+
+router.get("/", extractUserId, async (req, res) => {
+  // @ts-ignore
+  const uuid: string = req.id!;
+  // @ts-ignore
+
+  const barterId: string = req.query.barterId!;
+  // @ts-ignore
+
+  const barter = await getBarter({ barterId });
+
+  try {
+    const parsedBarter = {
+      user1_offers: JSON.parse(barter.user1_offers),
+      user2_offers: JSON.parse(barter.user2_offers),
+      state: barter.state,
+      id: barter.id,
     };
     const friendship = await getFriendshipById({ roomId: parseInt(room) });
     if (!friendship) {
@@ -104,7 +150,7 @@ router.post(
     const barterId: number = req.body.barterId;
     // TODO: send contract txn here, maybe check that the DB state looks the same as the contract state before sending.
     // @ts-ignore
-    const client_generated_uuid: string = req.query.client_generated_uuid;
+    const client_generated_uuid: string = req.body.clientGeneratedUuid;
     const friendship = await getFriendshipById({ roomId: parseInt(room) });
     if (!friendship) {
       return res.status(411).json({});
@@ -115,7 +161,7 @@ router.post(
     await sendMessage({
       roomId: room,
       msg: {
-        client_generated_uuid: client_generated_uuid,
+        client_generated_uuid,
         message: `Barter`,
         message_kind: "barter",
         message_metadata: {

@@ -112,7 +112,10 @@ export const postChat = (
     ],
   })
     .then((x) => console.log(x))
-    .catch((e) => console.log(`Error while adding chat msg to DB ${e}`));
+    .catch((e) => {
+      console.log(`Error while adding chat msg to DB`);
+      console.log(e);
+    });
 };
 
 export const getChatsFromParentGuids = async (

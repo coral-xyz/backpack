@@ -3,8 +3,6 @@ import type { BarterState } from "@coral-xyz/common";
 
 import { CHAT_HASURA_URL, CHAT_JWT } from "../config";
 
-import { getFriendshipById } from "./friendships";
-
 const chain = Chain(CHAT_HASURA_URL, {
   headers: {
     Authorization: `Bearer ${CHAT_JWT}`,
@@ -31,6 +29,68 @@ export const getActiveBarter = async ({ roomId }: { roomId: string }) => {
   });
   return {
     id: response.room_active_chat_mapping[0]?.barter.id,
+  };
+};
+
+export const getBarter = async ({
+  barterId,
+}: {
+  barterId: string;
+}): Promise<{
+  user1_offers: string;
+  user2_offers: string;
+  state: string;
+  id: string;
+  room?: {
+    room_id: string;
+    user1: string;
+    user2: string;
+  };
+} | null> => {
+  const response = await chain("query")({
+    barters_by_pk: [
+      {
+        id: parseInt(barterId),
+      },
+      {
+        user1_offers: true,
+        user2_offers: true,
+        state: true,
+        id: true,
+        room_active_chat_mappings: [
+          {
+            limit: 1,
+          },
+          {
+            room: {
+              user1: true,
+              user2: true,
+              room: true,
+            },
+          },
+        ],
+      },
+    ],
+  });
+
+  const barterResponse = response.barters_by_pk;
+  const roomResponse =
+    response.room_active_chat_mapping[0]?.room_active_chat_mappings;
+
+  if (!barterResponse || !roomResponse) {
+    return null;
+  }
+
+  return {
+    user1_offers: barterResponse?.user1_offers,
+    user2_offers: barterResponse?.user2_offers,
+    state: barterResponse?.state,
+    id: barterResponse?.id,
+    room: {
+      room_id: roomResponse.room,
+      user1: roomResponse.user1,
+      user2: roomResponse.user2,
+    },
   };
 };
 

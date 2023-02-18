@@ -33,6 +33,7 @@ import {
   redeem,
 } from "../utils/secure-transfer/secureTransfer";
 
+import { BarterModal } from "./barter/BarterModal";
 import { useChatContext } from "./ChatContext";
 import { ReplyIcon } from "./Icons";
 import { MediaContent } from "./MediaContent";
@@ -280,7 +281,9 @@ export const MessageLine = (props) => {
                       />
                     </>
                   ) : props.messageKind === "barter" ? (
-                    <>barter</>
+                    <>
+                      <BarterModal barterId={props.metadata?.barter_id} />
+                    </>
                   ) : props.messageKind === "transaction" ? (
                     <>
                       <SimpleTransaction
@@ -423,7 +426,9 @@ export const MessageLine = (props) => {
                             />
                           </>
                         ) : props.messageKind === "barter" ? (
-                          <>barter</>
+                          <>
+                            <BarterModal barterId={props.metadata?.barter_id} />
+                          </>
                         ) : props.messageKind === "transaction" ? (
                           <>
                             <SimpleTransaction
