@@ -27,3 +27,7 @@ update_permissions:
         - room_id
       filter: {}
       check: null
+delete_permissions:
+  - role: chat
+    permission:
+      filter: {}
