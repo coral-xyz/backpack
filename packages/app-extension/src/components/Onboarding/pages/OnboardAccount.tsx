@@ -1,19 +1,11 @@
-// @ts-nocheck
 import { useEffect, useState } from "react";
 import type {
-  Blockchain,
   KeyringType,
   SignedWalletDescriptor,
   WalletDescriptor,
 } from "@coral-xyz/common";
-import {
-  getBlockchainFromPath,
-  getCreateMessage,
-  UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
-  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-} from "@coral-xyz/common";
+import { getCreateMessage } from "@coral-xyz/common";
 import { useBackgroundClient } from "@coral-xyz/recoil";
-import { ethers } from "ethers";
 
 import { useSignMessageForWallet } from "../../../hooks/useSignMessageForWallet";
 import { useSteps } from "../../../hooks/useSteps";
@@ -31,10 +23,8 @@ import { HardwareOnboard } from "./HardwareOnboard";
 import { InviteCodeForm } from "./InviteCodeForm";
 import { KeyringTypeSelector } from "./KeyringTypeSelector";
 import { NotificationsPermission } from "./NotificationsPermission";
-import { useOnboardingData } from "./OnboardingProvider";
+import { useOnboarding } from "./OnboardingProvider";
 import { UsernameForm } from "./UsernameForm";
-
-const { base58 } = ethers.utils;
 
 export const OnboardAccount = ({
   onWaiting,
@@ -55,7 +45,8 @@ export const OnboardAccount = ({
   const { step, nextStep, prevStep } = useSteps();
   const [openDrawer, setOpenDrawer] = useState(false);
   const { onboardingData, setOnboardingData, handleSelectBlockchain } =
-    useOnboardingData();
+    useOnboarding();
+  console.log("onboardingData", onboardingData);
   const {
     inviteCode,
     username,
@@ -65,6 +56,7 @@ export const OnboardAccount = ({
     mnemonic,
     blockchain,
     signedWalletDescriptors,
+    selectedBlockchains,
   } = onboardingData;
   const signMessageForWallet = useSignMessageForWallet(mnemonic);
 
@@ -74,14 +66,6 @@ export const OnboardAccount = ({
       signedWalletDescriptors: [],
     });
   }, [action, keyringType, mnemonic]);
-
-  const selectedBlockchains = [
-    ...new Set(
-      signedWalletDescriptors.map((s) =>
-        getBlockchainFromPath(s.derivationPath)
-      )
-    ),
-  ];
 
   const steps = [
     <InviteCodeForm
@@ -106,7 +90,7 @@ export const OnboardAccount = ({
       }}
     />,
     <KeyringTypeSelector
-      action={action!}
+      action={action}
       onNext={(keyringType: KeyringType) => {
         setOnboardingData({ keyringType });
         nextStep();
@@ -127,8 +111,8 @@ export const OnboardAccount = ({
       : []),
     <BlockchainSelector
       selectedBlockchains={selectedBlockchains}
-      onClick={(blockchain) => {
-        handleSelectBlockchain(
+      onClick={async (blockchain) => {
+        await handleSelectBlockchain(
           { blockchain, selectedBlockchains, background },
           () => {
             setOpenDrawer(true);

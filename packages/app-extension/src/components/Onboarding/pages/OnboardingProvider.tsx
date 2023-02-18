@@ -68,11 +68,11 @@ export type OnboardingData = {
   selectedBlockchains: Blockchain[];
 };
 
-const defaults = {
+const defaultState = {
   complete: false,
   inviteCode: undefined,
   username: "testing__",
-  action: "import", // TODO
+  action: "import",
   keyringType: null,
   blockchain: null,
   password: null,
@@ -83,23 +83,51 @@ const defaults = {
   selectedBlockchains: [],
 };
 
-const OnboardingContext = createContext();
+type IOnboardingContext = {
+  onboardingData: OnboardingData;
+  setOnboardingData: (data: Partial<OnboardingData>) => void;
+  handleSelectBlockchain: (data: any, cb: any) => Promise<void>;
+};
+
+const OnboardingContext = createContext<IOnboardingContext>({
+  onboardingData: defaultState,
+  // @ts-ignore
+  setOnboardingData: () => {},
+  // @ts-ignore
+  handleSelectBlockchain: () => {},
+});
 
 function OnboardingProvider({ children, ...props }: { children: any }) {
-  const [data, setData] = useState<OnboardingData>(defaults);
+  const [data, setData] = useState<OnboardingData>(defaultState);
 
   const setOnboardingData = (data: Partial<OnboardingData>) => {
     return setData((oldData) => ({
       ...oldData,
       ...data,
+      selectedBlockchains: data.signedWalletDescriptors
+        ? [
+            ...new Set(
+              data.signedWalletDescriptors.map((s: SignedWalletDescriptor) =>
+                getBlockchainFromPath(s.derivationPath)
+              )
+            ),
+          ]
+        : oldData.selectedBlockchains,
     }));
   };
 
   const handleSelectBlockchain = async (
-    { blockchain, selectedBlockchains, background }: any,
-    cb
+    { blockchain, background }: any,
+    cb: any
   ) => {
-    const { signedWalletDescriptors, mnemonic, keyringType, action } = data;
+    const {
+      selectedBlockchains,
+      signedWalletDescriptors,
+      mnemonic,
+      keyringType,
+      action,
+    } = data;
+
     if (selectedBlockchains.includes(blockchain)) {
       // Blockchain is being deselected
       setOnboardingData({
@@ -161,7 +189,7 @@ function OnboardingProvider({ children, ...props }: { children: any }) {
   );
 }
 
-function useOnboardingData() {
+function useOnboarding() {
   const context = useContext(OnboardingContext);
 
   if (context === undefined) {
@@ -171,4 +199,4 @@ function useOnboardingData() {
   return context;
 }
 
-export { OnboardingProvider, useOnboardingData };
+export { OnboardingProvider, useOnboarding };

@@ -5,11 +5,13 @@ import { Box } from "@mui/material";
 
 import { Header, HeaderIcon, SubtextParagraph } from "../../common";
 
+import type { OnboardingAction } from "./OnboardingProvider";
+
 export const KeyringTypeSelector = ({
   action,
   onNext,
 }: {
-  action: "create" | "import" | "recover";
+  action: OnboardingAction;
   onNext: (keyringType: KeyringType) => void;
 }) => {
   return (
@@ -58,7 +60,9 @@ export const KeyringTypeSelector = ({
       >
         <Box style={{ marginBottom: "16px" }}>
           <PrimaryButton
-            label={`${toTitleCase(action)} with recovery phrase`}
+            label={`${toTitleCase(
+              action as OnboardingAction
+            )} with recovery phrase`}
             onClick={() => onNext("mnemonic")}
           />
         </Box>

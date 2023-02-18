@@ -4,10 +4,12 @@ import { Box } from "@mui/material";
 import { SubtextParagraph } from "../../common";
 import { BackpackHeader } from "../../Locked";
 
+import type { OnboardingAction } from "./OnboardingProvider";
+
 export const CreateOrImportWallet = ({
   onNext,
 }: {
-  onNext: (action: "create" | "import") => void;
+  onNext: (action: OnboardingAction) => void;
 }) => {
   return (
     <div
