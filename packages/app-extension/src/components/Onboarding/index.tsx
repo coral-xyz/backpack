@@ -8,7 +8,11 @@ import {
   TWITTER_LINK,
 } from "@coral-xyz/common";
 import { DiscordIcon, List, ListItem } from "@coral-xyz/react-common";
-import { KeyringStoreStateEnum, useKeyringStoreState } from "@coral-xyz/recoil";
+import {
+  KeyringStoreStateEnum,
+  OnboardingProvider,
+  useKeyringStoreState,
+} from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { CallMade, Lock, Menu, Twitter } from "@mui/icons-material";
 import { Box, IconButton, ListItemText, Toolbar } from "@mui/material";
@@ -18,7 +22,6 @@ import { NAV_BAR_HEIGHT } from "../common/Layout/Nav";
 import WaitingRoom from "../common/WaitingRoom";
 
 import { OnboardAccount } from "./pages/OnboardAccount";
-import { OnboardingProvider } from "./pages/OnboardingProvider";
 import { RecoverAccount } from "./pages/RecoverAccount";
 
 export const Onboarding = ({

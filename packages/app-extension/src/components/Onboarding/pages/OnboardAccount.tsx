@@ -5,7 +5,7 @@ import type {
   WalletDescriptor,
 } from "@coral-xyz/common";
 import { getCreateMessage } from "@coral-xyz/common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
+import { useBackgroundClient, useOnboarding } from "@coral-xyz/recoil";
 
 import { useSignMessageForWallet } from "../../../hooks/useSignMessageForWallet";
 import { useSteps } from "../../../hooks/useSteps";
@@ -23,7 +23,6 @@ import { HardwareOnboard } from "./HardwareOnboard";
 import { InviteCodeForm } from "./InviteCodeForm";
 import { KeyringTypeSelector } from "./KeyringTypeSelector";
 import { NotificationsPermission } from "./NotificationsPermission";
-import { useOnboarding } from "./OnboardingProvider";
 import { UsernameForm } from "./UsernameForm";
 
 export const OnboardAccount = ({

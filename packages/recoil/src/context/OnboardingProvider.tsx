@@ -95,7 +95,7 @@ const OnboardingContext = createContext<IOnboardingContext>({
   handleSelectBlockchain: () => {},
 });
 
-function OnboardingProvider({ children, ...props }: { children: any }) {
+export function OnboardingProvider({ children, ...props }: { children: any }) {
   const [data, setData] = useState<OnboardingData>(defaultState);
 
   const setOnboardingData = (data: Partial<OnboardingData>) => {
@@ -188,7 +188,7 @@ function OnboardingProvider({ children, ...props }: { children: any }) {
   );
 }
 
-function useOnboarding() {
+export function useOnboarding() {
   const context = useContext(OnboardingContext);
 
   if (context === undefined) {
@@ -197,5 +197,3 @@ function useOnboarding() {
 
   return context;
 }
-
-export { OnboardingProvider, useOnboarding };
