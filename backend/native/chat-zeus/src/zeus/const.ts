@@ -23,6 +23,7 @@ export const AllTypesProps: Record<string, any> = {
     id: "Int_comparison_exp",
     on_chain_state: "String_comparison_exp",
     room_active_chat_mappings: "room_active_chat_mapping_bool_exp",
+    room_id: "String_comparison_exp",
     state: "String_comparison_exp",
     user1_offers: "String_comparison_exp",
     user2_offers: "String_comparison_exp",
@@ -48,6 +49,7 @@ export const AllTypesProps: Record<string, any> = {
     on_chain_state: "order_by",
     room_active_chat_mappings_aggregate:
       "room_active_chat_mapping_aggregate_order_by",
+    room_id: "order_by",
     state: "order_by",
     user1_offers: "order_by",
     user2_offers: "order_by",
@@ -904,6 +906,7 @@ export const ReturnTypes: Record<string, any> = {
     id: "Int",
     on_chain_state: "String",
     room_active_chat_mappings: "room_active_chat_mapping",
+    room_id: "String",
     state: "String",
     user1_offers: "String",
     user2_offers: "String",
