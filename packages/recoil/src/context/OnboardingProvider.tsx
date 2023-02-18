@@ -81,18 +81,22 @@ const defaultState = {
   selectedBlockchains: [],
 };
 
+type SelectBlockchainType = {
+  blockchain: Blockchain;
+  background: any;
+  onSelectImport: () => void;
+};
+
 type IOnboardingContext = {
   onboardingData: OnboardingData;
   setOnboardingData: (data: Partial<OnboardingData>) => void;
-  handleSelectBlockchain: (data: any) => Promise<void>;
+  handleSelectBlockchain: (data: SelectBlockchainType) => Promise<void>;
 };
 
 const OnboardingContext = createContext<IOnboardingContext>({
   onboardingData: defaultState,
-  // @ts-ignore
   setOnboardingData: () => {},
-  // @ts-ignore
-  handleSelectBlockchain: () => {},
+  handleSelectBlockchain: async () => {},
 });
 
 export function OnboardingProvider({ children, ...props }: { children: any }) {
@@ -118,7 +122,7 @@ export function OnboardingProvider({ children, ...props }: { children: any }) {
     blockchain,
     background,
     onSelectImport,
-  }: any) => {
+  }: SelectBlockchainType) => {
     const {
       selectedBlockchains,
       signedWalletDescriptors,
