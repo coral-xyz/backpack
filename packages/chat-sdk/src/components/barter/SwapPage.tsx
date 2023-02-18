@@ -1,5 +1,5 @@
-import React from "react";
-import type { BarterOffers} from "@coral-xyz/common";
+import React, { Suspense } from "react";
+import type { BarterOffers } from "@coral-xyz/common";
 import { Blockchain } from "@coral-xyz/common";
 import { useTokenMetadata } from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
@@ -56,7 +56,9 @@ function RemoteNfts({ selection }: { selection: BarterOffers }) {
   return (
     <div style={{ display: "flex" }}>
       {selection.map((s) => (
-        <RemoteNft mint={s.mint} />
+        <Suspense fallback={() => <></>}>
+          <RemoteNft mint={s.mint} />
+        </Suspense>
       ))}
     </div>
   );
@@ -75,5 +77,30 @@ function RemoteNft({ mint }: { mint: string }) {
 }
 
 function RemoteTokens({ selection }: { selection: BarterOffers }) {
-  return <div></div>;
+  return (
+    <div>
+      {selection.map((s) => (
+        <Suspense fallback={() => <></>}>
+          <RemoteToken mint={s.mint} amount={s.amount} />
+        </Suspense>
+      ))}
+    </div>
+  );
+}
+
+function RemoteToken({ mint, amount }: { mint: string; amount: number }) {
+  const tokenData = useTokenMetadata({
+    mintAddress: mint,
+    blockchain: Blockchain.SOLANA,
+  });
+  const theme = useCustomTheme();
+
+  return (
+    <div style={{ display: "flex" }}>
+      <img style={{ width: 30, height: 30 }} src={tokenData?.image} />
+      <div style={{ color: theme.custom.colors.background }}>
+        {amount} {tokenData.name}
+      </div>
+    </div>
+  );
 }
