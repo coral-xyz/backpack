@@ -30,6 +30,7 @@ import { HardwareOnboard } from "./HardwareOnboard";
 import { InviteCodeForm } from "./InviteCodeForm";
 import { KeyringTypeSelector } from "./KeyringTypeSelector";
 import { NotificationsPermission } from "./NotificationsPermission";
+import { OnboardingProvider, useOnboardingData } from "./OnboardingProvider";
 import { UsernameForm } from "./UsernameForm";
 
 const { base58 } = ethers.utils;
@@ -49,20 +50,20 @@ export const OnboardAccount = ({
   isAddingAccount?: boolean;
   isOnboarded?: boolean;
 }) => {
+  const { onboardingData, setOnboardingData } = useOnboardingData();
+  const {
+    inviteCode,
+    username,
+    action,
+    keyringType,
+    password,
+    mnemonic,
+    blockchain,
+    signedWalletDescriptors,
+  } = onboardingData;
   const background = useBackgroundClient();
   const { step, nextStep, prevStep } = useSteps();
-  const [inviteCode, setInviteCode] = useState<string | undefined>(undefined);
-  const [username, setUsername] = useState<string | null>(null);
-  const [action, setAction] = useState<"create" | "import">();
-  const [keyringType, setKeyringType] = useState<KeyringType | null>(null);
-  const [blockchain, setBlockchain] = useState<Blockchain | null>(null);
-  const [password, setPassword] = useState<string | null>(null);
-  const [mnemonic, setMnemonic] = useState<string | undefined>(undefined);
   const [openDrawer, setOpenDrawer] = useState(false);
-  const [signedWalletDescriptors, setSignedWalletDescriptors] = useState<
-    Array<SignedWalletDescriptor>
-  >([]);
-
   const signMessageForWallet = useSignMessageForWallet(mnemonic);
 
   const selectedBlockchains = [
@@ -77,25 +78,25 @@ export const OnboardAccount = ({
     // Reset blockchain keyrings on certain changes that invalidate the addresses
     // and signatures that they might contain
     // e.g. user has navigated backward through the onboarding flow
-    setSignedWalletDescriptors([]);
+    setOnboardingData({ signedWalletDescriptors: [] });
   }, [action, keyringType, mnemonic]);
 
   const handleBlockchainClick = async (blockchain: Blockchain) => {
     if (selectedBlockchains.includes(blockchain)) {
       // Blockchain is being deselected
-      setBlockchain(null);
-      setSignedWalletDescriptors(
-        signedWalletDescriptors.filter(
+      setOnboardingData({
+        blockchain: null,
+        signedWalletDescriptors: signedWalletDescriptors.filter(
           (s) => getBlockchainFromPath(s.derivationPath) !== blockchain
-        )
-      );
+        ),
+      });
     } else {
       // Blockchain is being selected
       if (keyringType === "ledger" || action === "import") {
         // If wallet is a ledger, step through the ledger onboarding flow
         // OR if action is an import then open the drawer with the import accounts
         // component
-        setBlockchain(blockchain);
+        setOnboardingData({ blockchain });
         setOpenDrawer(true);
       } else if (action === "create") {
         const walletDescriptor = await background.request({
@@ -113,13 +114,16 @@ export const OnboardAccount = ({
             [mnemonic, [walletDescriptor.derivationPath]],
           ],
         });
-        setSignedWalletDescriptors([
-          ...signedWalletDescriptors,
-          {
-            ...walletDescriptor,
-            signature,
-          },
-        ]);
+
+        setOnboardingData({
+          signedWalletDescriptors: [
+            ...signedWalletDescriptors,
+            {
+              ...walletDescriptor,
+              signature,
+            },
+          ],
+        });
       }
     }
   };
@@ -129,27 +133,27 @@ export const OnboardAccount = ({
       onClickWaiting={onWaiting}
       onClickRecover={onRecover}
       onSubmit={(inviteCode) => {
-        setInviteCode(inviteCode);
+        setOnboardingData({ inviteCode });
         nextStep();
       }}
     />,
     <UsernameForm
       inviteCode={inviteCode!}
       onNext={(username) => {
-        setUsername(username);
+        setOnboardingData({ username });
         nextStep();
       }}
     />,
     <CreateOrImportWallet
       onNext={(action) => {
-        setAction(action);
+        setOnboardingData({ action });
         nextStep();
       }}
     />,
     <KeyringTypeSelector
       action={action!}
       onNext={(keyringType: KeyringType) => {
-        setKeyringType(keyringType);
+        setOnboardingData({ keyringType });
         nextStep();
       }}
     />,
@@ -160,7 +164,7 @@ export const OnboardAccount = ({
             readOnly={action === "create"}
             buttonLabel={action === "create" ? "Next" : "Import"}
             onNext={(mnemonic) => {
-              setMnemonic(mnemonic);
+              setOnboardingData({ mnemonic });
               nextStep();
             }}
           />,
@@ -175,7 +179,7 @@ export const OnboardAccount = ({
       ? [
           <CreatePassword
             onNext={(password) => {
-              setPassword(password);
+              setOnboardingData({ password });
               nextStep();
             }}
           />,
@@ -196,67 +200,74 @@ export const OnboardAccount = ({
   }
 
   return (
-    <WithNav
-      navButtonLeft={
-        step > 0 && step !== steps.length - 1 ? (
-          <NavBackButton onClick={prevStep} />
-        ) : undefined
-      }
-      {...navProps}
-      // Only display the onboarding menu on the first step
-      navButtonRight={step === 0 ? navProps.navButtonRight : undefined}
-    >
-      {steps[step]}
-
-      <WithContaineredDrawer
-        containerRef={containerRef}
-        openDrawer={openDrawer}
-        setOpenDrawer={setOpenDrawer}
-        paperStyles={{
-          height: "calc(100% - 56px)",
-          borderTopLeftRadius: "12px",
-          borderTopRightRadius: "12px",
-        }}
+    <OnboardingProvider>
+      <WithNav
+        navButtonLeft={
+          step > 0 && step !== steps.length - 1 ? (
+            <NavBackButton onClick={prevStep} />
+          ) : undefined
+        }
+        {...navProps}
+        // Only display the onboarding menu on the first step
+        navButtonRight={step === 0 ? navProps.navButtonRight : undefined}
       >
-        {keyringType === "ledger" ? (
-          <HardwareOnboard
-            blockchain={blockchain!}
-            action={action!}
-            signMessage={(publicKey: string) => getCreateMessage(publicKey)}
-            signText={`Sign the message to authenticate with Backpack.`}
-            onComplete={(signedWalletDescriptor: SignedWalletDescriptor) => {
-              setSignedWalletDescriptors([
-                ...signedWalletDescriptors,
-                signedWalletDescriptor,
-              ]);
-              setOpenDrawer(false);
-            }}
-            onClose={() => setOpenDrawer(false)}
-          />
-        ) : (
-          <ImportWallets
-            blockchain={blockchain!}
-            mnemonic={mnemonic!}
-            allowMultiple={false}
-            onNext={async (walletDescriptors: Array<WalletDescriptor>) => {
-              // Should only be one public key path
-              const walletDescriptor = walletDescriptors[0];
-              const signature = await signMessageForWallet(
-                walletDescriptor,
-                getCreateMessage(walletDescriptor.publicKey)
-              );
-              setSignedWalletDescriptors([
-                ...signedWalletDescriptors,
-                {
-                  ...walletDescriptor,
-                  signature,
-                },
-              ]);
-              setOpenDrawer(false);
-            }}
-          />
-        )}
-      </WithContaineredDrawer>
-    </WithNav>
+        {steps[step]}
+
+        <WithContaineredDrawer
+          containerRef={containerRef}
+          openDrawer={openDrawer}
+          setOpenDrawer={setOpenDrawer}
+          paperStyles={{
+            height: "calc(100% - 56px)",
+            borderTopLeftRadius: "12px",
+            borderTopRightRadius: "12px",
+          }}
+        >
+          {keyringType === "ledger" ? (
+            <HardwareOnboard
+              blockchain={blockchain!}
+              // @ts-ignore
+              action={action!}
+              signMessage={(publicKey: string) => getCreateMessage(publicKey)}
+              signText={`Sign the message to authenticate with Backpack.`}
+              onClose={() => setOpenDrawer(false)}
+              onComplete={(signedWalletDescriptor: SignedWalletDescriptor) => {
+                setOnboardingData({
+                  signedWalletDescriptors: [
+                    ...signedWalletDescriptors,
+                    signedWalletDescriptor,
+                  ],
+                });
+                setOpenDrawer(false);
+              }}
+            />
+          ) : (
+            <ImportWallets
+              blockchain={blockchain!}
+              mnemonic={mnemonic!}
+              allowMultiple={false}
+              onNext={async (walletDescriptors: Array<WalletDescriptor>) => {
+                // Should only be one public key path
+                const walletDescriptor = walletDescriptors[0];
+                const signature = await signMessageForWallet(
+                  walletDescriptor,
+                  getCreateMessage(walletDescriptor.publicKey)
+                );
+                setOnboardingData({
+                  signedWalletDescriptors: [
+                    ...signedWalletDescriptors,
+                    {
+                      ...walletDescriptor,
+                      signature,
+                    },
+                  ],
+                });
+                setOpenDrawer(false);
+              }}
+            />
+          )}
+        </WithContaineredDrawer>
+      </WithNav>
+    </OnboardingProvider>
   );
 };

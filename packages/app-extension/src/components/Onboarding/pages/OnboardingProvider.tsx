@@ -1,8 +1,6 @@
 // TODO(peter) move all the RPC/onboarding function shit here & out of every individual screen (eventually)
-import type { KeyringType, SignedWalletDescriptor } from "@coral-xyz/common";
-
 import { createContext, useContext, useState } from "react";
-
+import type { KeyringType, SignedWalletDescriptor } from "@coral-xyz/common";
 import { Blockchain } from "@coral-xyz/common";
 
 type BlockchainSelectOption = {
@@ -65,7 +63,7 @@ const defaults = {
   complete: false,
   inviteCode: undefined,
   username: "testing__",
-  action: null,
+  action: "import", // TODO
   keyringType: null,
   blockchain: null,
   password: null,
@@ -79,11 +77,13 @@ const OnboardingContext = createContext<{
   onboardingData: OnboardingData;
   setOnboardingData: (data: Partial<OnboardingData>) => void;
 }>({
+  // @ts-ignore
   onboardingData: defaults,
   setOnboardingData: (_data: Partial<OnboardingData>) => {},
 });
 
 function OnboardingProvider({ children, ...props }: { children: JSX.Element }) {
+  // @ts-ignore
   const [data, setData] = useState<OnboardingData>(defaults);
   const setOnboardingData = (data: Partial<OnboardingData>) =>
     setData((oldData) => ({ ...oldData, ...data }));
