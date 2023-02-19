@@ -42,7 +42,7 @@ export function MessageInput({ setEmojiMenuOpen }: { setEmojiMenuOpen: any }) {
         style={{
           outline: "0px solid transparent",
           color: theme.custom.colors.fontColor,
-          fontSize: "15px",
+          fontSize: "14px",
         }}
         defaultValue={defaultValue}
       />
