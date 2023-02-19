@@ -40,12 +40,8 @@ export const getBarter = async ({
   user1_offers: string;
   user2_offers: string;
   state: string;
-  id: string;
-  room?: {
-    room_id: string;
-    user1: string;
-    user2: string;
-  };
+  id: number;
+  room_id: string;
 } | null> => {
   const response = await chain("query")({
     barters_by_pk: [
@@ -57,27 +53,14 @@ export const getBarter = async ({
         user2_offers: true,
         state: true,
         id: true,
-        room_active_chat_mappings: [
-          {
-            limit: 1,
-          },
-          {
-            room: {
-              user1: true,
-              user2: true,
-              room: true,
-            },
-          },
-        ],
+        room_id: true,
       },
     ],
   });
 
   const barterResponse = response.barters_by_pk;
-  const roomResponse =
-    response.room_active_chat_mapping[0]?.room_active_chat_mappings;
 
-  if (!barterResponse || !roomResponse) {
+  if (!barterResponse) {
     return null;
   }
 
@@ -85,12 +68,8 @@ export const getBarter = async ({
     user1_offers: barterResponse?.user1_offers,
     user2_offers: barterResponse?.user2_offers,
     state: barterResponse?.state,
-    id: barterResponse?.id,
-    room: {
-      room_id: roomResponse.room,
-      user1: roomResponse.user1,
-      user2: roomResponse.user2,
-    },
+    id: barterResponse?.id || 0,
+    room_id: barterResponse.room_id || "",
   };
 };
 
@@ -119,11 +98,13 @@ export const getOrCreateBarter = async ({
           user2_offers: true,
           state: true,
           id: true,
+          room_id: true,
         },
       },
     ],
   });
   if (!response.room_active_chat_mapping[0]) {
+    console.error("roomid is " + roomId);
     const { id } = await createBarter({ roomId });
     return {
       barter: {
@@ -150,6 +131,7 @@ export const createBarter = async ({
             data: {
               user1_offers: "[]",
               user2_offers: "[]",
+              room_id: roomId,
             },
           },
           room_id: roomId,

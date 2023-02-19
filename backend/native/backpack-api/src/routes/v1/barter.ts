@@ -1,3 +1,4 @@
+import { validateRoom } from "@coral-xyz/backend-common";
 import type { BarterResponse } from "@coral-xyz/common";
 import express from "express";
 
@@ -67,7 +68,19 @@ router.get("/", extractUserId, async (req, res) => {
   const barterId: string = req.query.barterId!;
   // @ts-ignore
 
-  const barter = await getBarter({ barterId });
+  const barter = await getBarter({ barterId: parseInt(barterId) });
+
+  if (!barter) {
+    return res.status(411).json({
+      msg: "Barter doesnt exist",
+    });
+  }
+
+  const room = barter.room_id;
+  const roomMetadata = await validateRoom(req.id!, room);
+  if (!roomMetadata) {
+    return res.status(403).json({ msg: "you dont have access to this room" });
+  }
 
   try {
     const parsedBarter = {
@@ -76,22 +89,16 @@ router.get("/", extractUserId, async (req, res) => {
       state: barter.state,
       id: barter.id,
     };
-    const friendship = await getFriendshipById({ roomId: parseInt(room) });
-    if (!friendship) {
-      return res.status(411).json({
-        msg: "Friendship doesnt exist",
-      });
-    }
 
     const response: BarterResponse = {
       id: parsedBarter.id,
       state: parsedBarter.state,
       localOffers:
-        friendship.user1 === uuid
+        roomMetadata.user1 === uuid
           ? parsedBarter.user1_offers
           : parsedBarter.user2_offers,
       remoteOffers:
-        friendship.user1 === uuid
+        roomMetadata.user1 === uuid
           ? parsedBarter.user2_offers
           : parsedBarter.user1_offers,
     };

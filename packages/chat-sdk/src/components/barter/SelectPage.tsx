@@ -23,7 +23,7 @@ export function SelectPage({
   currentSelection: BarterOffers;
   setBarterState: any;
 }) {
-  const { setSelectNft, room } = useBarterContext();
+  const { setSelectNft, room, barterId } = useBarterContext();
   const activeSolWallet = useActiveSolanaWallet();
   const [localSelection, setLocalSelection] =
     useState<BarterOffers>(currentSelection);
@@ -105,6 +105,7 @@ export function SelectPage({
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 updatedOffer: localSelection,
+                barterId,
               }),
             }
           );

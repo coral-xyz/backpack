@@ -81,6 +81,7 @@ export const postChat = (
       ? {
           chat_barter_metadatum: {
             data: {
+              //@ts-ignore
               barter_id: messageMetadata?.barter_id,
             },
           },

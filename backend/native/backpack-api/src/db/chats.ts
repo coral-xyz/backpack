@@ -79,7 +79,11 @@ export const getChats = async ({
           },
         ],
         chat_barter_metadatum: {
-          barter_id: true,
+          barter: {
+            id: true,
+            state: true,
+            on_chain_state: true,
+          },
         },
         simple_transactions: [
           {
@@ -131,6 +135,13 @@ export const getChats = async ({
           : chat.message_kind === "transaction"
           ? {
               final_tx_signature: chat.simple_transactions[0]?.txn_signature,
+            }
+          : chat.message_kind === "barter"
+          ? {
+              barter_id: chat.chat_barter_metadatum?.[0]?.barter?.id,
+              state: chat.chat_barter_metadatum?.[0]?.barter?.state,
+              on_chain_state:
+                chat.chat_barter_metadatum?.[0]?.barter?.on_chain_state,
             }
           : undefined,
     });
