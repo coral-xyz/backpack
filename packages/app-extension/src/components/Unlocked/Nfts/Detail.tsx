@@ -1,4 +1,6 @@
 import { type CSSProperties, useEffect, useState } from "react";
+import type {
+  Nft} from "@coral-xyz/common";
 import {
   AVATAR_BASE_URL,
   BACKEND_API_URL,
@@ -70,6 +72,33 @@ import {
 import { SendSolanaConfirmationCard } from "../Balances/TokensWidget/Solana";
 
 const logger = getLogger("app-extension/nft-detail");
+
+export async function updateLocalNftPfp(nft: Nft) {
+  //
+  // Only show mad lads on the lock screen in full screen view.
+  //
+  let lockScreenImageUrl;
+  if (isMadLads(nft)) {
+    window.localStorage.setItem(
+      "lock-screen-nft",
+      JSON.stringify({
+        nft,
+      })
+    );
+    lockScreenImageUrl = nft.lockScreenImageUrl!;
+  } else {
+    window.localStorage.removeItem("lock-screen-nft");
+    lockScreenImageUrl = nft.imageUrl;
+  }
+  // Note: this is probably a duplicate and we likely can just use whatever
+  //       the contact storage already has instead of storing this extra
+  //       image.
+  await storeImageInLocalStorage(
+    lockScreenImageUrl,
+    "lock-screen-nft-image",
+    true
+  );
+}
 
 export function NftsDetail({
   publicKey,
@@ -634,6 +663,9 @@ export function NftOptionsButton() {
 
   const onSetPfp = async () => {
     if (nft) {
+      //
+      // Store on server.
+      //
       const id = `${nft.blockchain}/${
         nft.blockchain === "solana" ? nft.mint : nft.id
       }`;
@@ -646,33 +678,17 @@ export function NftOptionsButton() {
         body: JSON.stringify({ avatar: id }),
       });
       await fetch(`${AVATAR_BASE_URL}/${username}?bust_cache=1`);
+
+      //
+      // Store locally.
+      //
+      await updateLocalNftPfp(nft);
       setNewAvatar({ id, url: nft.imageUrl });
 
       //
-      // Only show mad lads on the lock screen in full screen view.
+      // Cleanup component state.
       //
-      let lockScreenImageUrl;
-      if (isMadLads(nft)) {
-        window.localStorage.setItem(
-          "lock-screen-nft",
-          JSON.stringify({
-            nft,
-          })
-        );
-        lockScreenImageUrl = nft.lockScreenImageUrl!;
-      } else {
-        window.localStorage.removeItem("lock-screen-nft");
-        lockScreenImageUrl = nft.imageUrl;
-      }
       setAnchorEl(null);
-      // Note: this is probably a duplicate and we likely can just use whatever
-      //       the contact storage already has instead of storing this extra
-      //       image.
-      await storeImageInLocalStorage(
-        lockScreenImageUrl,
-        "lock-screen-nft-image",
-        true
-      );
     }
   };
 
