@@ -1,7 +1,7 @@
 import type { FromServer, ToServer } from "@coral-xyz/common";
 import {
   CHAT_MESSAGES,
-  EXECUTE_ACTIVE_BARTER,
+  EXECUTE_BARTER,
   UPDATE_ACTIVE_BARTER,
   WS_READY,
 } from "@coral-xyz/common";
@@ -70,8 +70,8 @@ export class Signaling extends EventEmitter {
         case UPDATE_ACTIVE_BARTER:
           this.emit(UPDATE_ACTIVE_BARTER, message.payload);
           break;
-        case EXECUTE_ACTIVE_BARTER:
-          this.emit(EXECUTE_ACTIVE_BARTER, message.payload);
+        case EXECUTE_BARTER:
+          this.emit(EXECUTE_BARTER, message.payload);
           break;
         case WS_READY:
           this.emit(SIGNALING_CONNECTED);

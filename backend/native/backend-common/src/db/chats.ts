@@ -79,11 +79,13 @@ export const postChat = (
   const barterMessageMutation =
     message_kind === "barter"
       ? {
-          chat_barter_metadatum: {
-            data: {
-              //@ts-ignore
-              barter_id: messageMetadata?.barter_id,
-            },
+          chat_barter_metadata: {
+            data: [
+              {
+                //@ts-ignore
+                barter_id: messageMetadata?.barter_id || "",
+              },
+            ],
           },
         }
       : {};

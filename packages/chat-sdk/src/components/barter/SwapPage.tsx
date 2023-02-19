@@ -54,7 +54,9 @@ export function SwapPage({
           <RemoteSelection selection={remoteSelection} />
         </div>
       </div>
+      <br />
       <SuccessButton
+        label={"Execute"}
         onClick={async () => {
           await fetch(
             `${BACKEND_API_URL}/barter/execute?room=${roomId}&type=individual`,
@@ -76,7 +78,7 @@ export function SwapPage({
   );
 }
 
-function RemoteSelection({ selection }: { selection: BarterOffers }) {
+export function RemoteSelection({ selection }: { selection: BarterOffers }) {
   return (
     <div>
       <RemoteNfts selection={selection.filter((x) => x.type === "NFT")} />

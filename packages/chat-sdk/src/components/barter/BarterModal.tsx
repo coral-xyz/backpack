@@ -1,18 +1,19 @@
-import React, { useEffect , useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { BarterResponse } from "@coral-xyz/common";
 import { BACKEND_API_URL } from "@coral-xyz/common";
+import { SuccessButton } from "@coral-xyz/react-common";
+import { useCustomTheme } from "@coral-xyz/themes";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Typography from "@mui/material/Typography";
 
-import { SwapPage } from "./SwapPage";
+import { RemoteSelection } from "./SwapPage";
 
 const style = {
   position: "absolute" as const,
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 400,
   bgcolor: "background.paper",
   border: "2px solid #000",
   boxShadow: 24,
@@ -24,7 +25,10 @@ export const BarterModal = ({ barterId }: { barterId: string }) => {
   return (
     <div style={{ textAlign: "center" }}>
       You negotiated a barter.{" "}
-      <div onClick={() => setModal(true)}> More details.</div>
+      <div onClick={() => setModal(true)}>
+        {" "}
+        <b> More details. </b>{" "}
+      </div>
       {modal && (
         <InternalModal modal={modal} setModal={setModal} barterId={barterId} />
       )}
@@ -38,10 +42,11 @@ function InternalModal({
   setModal,
 }: {
   barterId: string;
-  modal: bolean;
+  modal: boolean;
   setModal: any;
 }) {
   const [barterState, setBarterState] = useState<BarterResponse | null>(null);
+  const theme = useCustomTheme();
 
   const getBarter = async ({ barterId }: { barterId: string }) => {
     const res = await fetch(`${BACKEND_API_URL}/barter/?barterId=${barterId}`, {
@@ -66,19 +71,62 @@ function InternalModal({
         timeout: 500,
       }}
     >
-      <Box sx={style}>
-        <Typography id="transition-modal-title" variant="h6" component="h2">
+      <Box
+        sx={{
+          ...style,
+          background: theme.custom.colors.invertedTertiary,
+        }}
+      >
+        <Typography
+          id="transition-modal-title"
+          variant="h6"
+          component="h2"
+          style={{ color: theme.custom.colors.background }}
+        >
           Barter
         </Typography>
 
         {!barterState && "loading"}
         {barterState && (
-          <div>
-            <SwapPage
-              localSelection={barterState?.localOffers || []}
-              remoteSelection={barterState?.remoteOffers || []}
-              finalized={true}
-            />
+          <div style={{ display: "flex" }}>
+            <div style={{ flex: 1, marginRight: 20 }}>
+              <div
+                style={{
+                  fontSize: 25,
+                  padding: 10,
+                  color: theme.custom.colors.background,
+                }}
+              >
+                Your offer
+              </div>
+              <br />
+              <RemoteSelection selection={barterState?.localOffers || []} />
+              <SuccessButton
+                label={"Execute"}
+                onClick={() => {
+                  // send request to contract
+                }}
+              />
+            </div>
+            <div style={{ flex: 1 }}>
+              <div
+                style={{
+                  fontSize: 25,
+                  padding: 10,
+                  color: theme.custom.colors.background,
+                }}
+              >
+                Their offer
+              </div>
+              <br />
+              <RemoteSelection selection={barterState?.remoteOffers || []} />
+              <SuccessButton
+                label={"Execute"}
+                onClick={() => {
+                  // send request to contract
+                }}
+              />
+            </div>
           </div>
         )}
       </Box>

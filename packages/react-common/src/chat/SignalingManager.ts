@@ -7,9 +7,8 @@ import type {
 } from "@coral-xyz/common";
 import {
   CHAT_MESSAGES,
-  EXECUTE_ACTIVE_BARTER,
+  EXECUTE_BARTER,
   SUBSCRIBE,
-  UNSUBSCRIBE,
   UPDATE_ACTIVE_BARTER,
   WS_READY,
 } from "@coral-xyz/common";
@@ -165,7 +164,7 @@ export class SignalingManager {
       this.onBarterUpdate(payload);
     });
 
-    this.signaling?.on(EXECUTE_ACTIVE_BARTER, (payload) => {
+    this.signaling?.on(EXECUTE_BARTER, (payload) => {
       this.onBarterExecute(payload);
     });
 

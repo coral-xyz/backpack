@@ -78,13 +78,18 @@ export const getChats = async ({
             media_link: true,
           },
         ],
-        chat_barter_metadatum: {
-          barter: {
-            id: true,
-            state: true,
-            on_chain_state: true,
+        chat_barter_metadata: [
+          {
+            limit: 1,
           },
-        },
+          {
+            barter: {
+              id: true,
+              state: true,
+              on_chain_state: true,
+            },
+          },
+        ],
         simple_transactions: [
           {
             limit: 1,
@@ -138,10 +143,10 @@ export const getChats = async ({
             }
           : chat.message_kind === "barter"
           ? {
-              barter_id: chat.chat_barter_metadatum?.[0]?.barter?.id,
-              state: chat.chat_barter_metadatum?.[0]?.barter?.state,
+              barter_id: chat.chat_barter_metadata?.[0]?.barter?.id,
+              state: chat.chat_barter_metadata?.[0]?.barter?.state,
               on_chain_state:
-                chat.chat_barter_metadatum?.[0]?.barter?.on_chain_state,
+                chat.chat_barter_metadata?.[0]?.barter?.on_chain_state,
             }
           : undefined,
     });

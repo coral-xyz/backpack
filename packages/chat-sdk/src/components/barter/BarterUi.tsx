@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import type { BarterOffers, BarterResponse } from "@coral-xyz/common";
 import { BACKEND_API_URL, Blockchain } from "@coral-xyz/common";
-import { SignalingManager } from "@coral-xyz/react-common";
+import { Loading, SignalingManager } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 
+import { PLUGIN_HEIGHT_PERCENTAGE } from "../../utils/constants";
 import { useChatContext } from "../ChatContext";
 import { ScrollBarImpl } from "../ScrollbarImpl";
 
 import { BarterProvider } from "./BarterContext";
+import { BarterHeader } from "./BarterHeader";
 import { SelectPage } from "./SelectPage";
 import { SwapPage } from "./SwapPage";
 
@@ -43,7 +45,9 @@ export const BarterUi = ({ roomId }: { roomId: string }) => {
       SignalingManager.getInstance().onBarterExecute = (props: {
         barterId: number;
       }) => {
-        setOpenPlugin("");
+        if (props.barterId === json.barter.id) {
+          setOpenPlugin("");
+        }
       };
     } catch (e) {
       console.error("could not get active barter");
@@ -54,35 +58,37 @@ export const BarterUi = ({ roomId }: { roomId: string }) => {
     getActiveBarter();
   }, []);
 
-  if (!barterState) {
-    return "loading...";
-  }
-
   return (
     <BarterProvider
-      barterId={barterState.id}
+      barterId={barterState?.id || 0}
       setSelectNft={setSelectNft}
       room={roomId}
     >
       <div>
-        <ScrollBarImpl height={"50vh"}>
+        <ScrollBarImpl height={`${PLUGIN_HEIGHT_PERCENTAGE}vh`}>
           <div
             style={{
               height: "100%",
               background: theme.custom.colors.invertedTertiary,
             }}
           >
-            {!selectNft && (
-              <SwapPage
-                localSelection={barterState?.localOffers || []}
-                remoteSelection={barterState?.remoteOffers || []}
-              />
-            )}
-            {selectNft && (
-              <SelectPage
-                setBarterState={setBarterState}
-                currentSelection={barterState?.localOffers || []}
-              />
+            <BarterHeader />
+            {!barterState && <Loading />}
+            {barterState && (
+              <>
+                {!selectNft && (
+                  <SwapPage
+                    localSelection={barterState?.localOffers || []}
+                    remoteSelection={barterState?.remoteOffers || []}
+                  />
+                )}
+                {selectNft && (
+                  <SelectPage
+                    setBarterState={setBarterState}
+                    currentSelection={barterState?.localOffers || []}
+                  />
+                )}
+              </>
             )}
           </div>
         </ScrollBarImpl>

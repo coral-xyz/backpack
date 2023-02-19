@@ -9,6 +9,7 @@ import {
 import { useUser } from "@coral-xyz/recoil";
 
 import { MessagePluginRenderer } from "../MessagePluginRenderer";
+import { PLUGIN_HEIGHT_PERCENTAGE } from "../utils/constants";
 
 import type { MessagePlugins } from "./ChatContext";
 import { ChatProvider } from "./ChatContext";
@@ -207,7 +208,13 @@ export const ChatRoom = ({
           overflow: "hidden",
         }}
       >
-        <div style={{ height: !openPlugin ? "100vh" : "50vh" }}>
+        <div
+          style={{
+            height: !openPlugin
+              ? "100vh"
+              : `${100 - PLUGIN_HEIGHT_PERCENTAGE}vh`,
+          }}
+        >
           <FullScreenChat
             setLocalUnreadCount={setLocalUnreadCount}
             localUnreadCount={localUnreadCount}
@@ -217,7 +224,7 @@ export const ChatRoom = ({
             setMessageRef={setMessageRef}
           />
         </div>
-        <div style={{ height: "50vh" }}>
+        <div>
           <MessagePluginRenderer />
         </div>
       </div>
