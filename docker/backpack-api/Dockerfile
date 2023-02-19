@@ -12,10 +12,8 @@ COPY ["backend/native/zeus", "./backend/native/zeus"]
 COPY ["backend/native/chat-zeus", "./backend/native/chat-zeus"]
 COPY ["backend/native/tsconfig.json", "./backend/native/tsconfig.json"]
 
-RUN cd /base
-RUN yarn install
-RUN yarn run build
-RUN cd /base/backend/native/backpack-api && yarn run build
+RUN cd /base || yarn install && yarn run build
+ && cd /base/backend/native/backpack-api && yarn run build
 
 EXPOSE 8080
 
