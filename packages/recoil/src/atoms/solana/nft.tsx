@@ -143,9 +143,10 @@ export const solanaNftById = equalSelectorFamily<
         collectionName,
       };
       if (isMadLads(nft)) {
-        // TODO.
+        // TODO. We hack it below so that we can have something for testing.
         // @ts-ignore
-        nft.lockScreenImageUrl = nft.imageUrl;
+        nft.lockScreenImageUrl =
+          "https://user-images.githubusercontent.com/6990215/219967480-36e7d05d-3a63-41eb-a480-6475c562da24.jpeg";
       }
       return nft;
     },

@@ -1,6 +1,5 @@
 import { type CSSProperties, useEffect, useState } from "react";
-import type {
-  Nft} from "@coral-xyz/common";
+import type { Nft } from "@coral-xyz/common";
 import {
   AVATAR_BASE_URL,
   BACKEND_API_URL,
@@ -109,6 +108,7 @@ export function NftsDetail({
   connectionUrl: string;
   nftId: string;
 }) {
+  console.log("ARMANI HERE NFT ID", nftId);
   const theme = useCustomTheme();
   const background = useBackgroundClient();
   const onLive = useRecoilValue(isOneLive);
@@ -246,6 +246,8 @@ export function NftsDetail({
 }
 
 function Image({ nft }: { nft: any }) {
+  console.log("ARMANI HERE", nft);
+  const src = isMadLads(nft) ? nft.lockScreenImageUrl : nft.imageUrl;
   return (
     <div
       style={{
@@ -264,7 +266,7 @@ function Image({ nft }: { nft: any }) {
         loadingStyles={{
           minHeight: "343px",
         }}
-        src={nft.imageUrl}
+        src={src}
         removeOnError={true}
       />
     </div>
