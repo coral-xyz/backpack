@@ -70,6 +70,7 @@ export type Nft = {
   metadataCollectionId?: string;
   tokenId?: string; // Ethereum only.
   contractAddress?: string; // Ethereum only.
+  lockScreenImageUrl?: string; // MadLads only.
 };
 
 export type SolanaNft = Nft & {

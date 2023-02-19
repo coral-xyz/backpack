@@ -1,4 +1,5 @@
 import { type CSSProperties, useEffect, useState } from "react";
+import type { Nft } from "@coral-xyz/common";
 import {
   AVATAR_BASE_URL,
   BACKEND_API_URL,
@@ -6,6 +7,7 @@ import {
   confirmTransaction,
   explorerNftUrl,
   getLogger,
+  isMadLads,
   Solana,
   TAB_MESSAGES,
   toTitleCase,
@@ -13,6 +15,7 @@ import {
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
   WHITELISTED_CHAT_COLLECTIONS,
 } from "@coral-xyz/common";
+import { storeImageInLocalStorage } from "@coral-xyz/db";
 import {
   NegativeButton,
   PrimaryButton,
@@ -215,6 +218,7 @@ export function NftsDetail({
 }
 
 function Image({ nft }: { nft: any }) {
+  const src = isMadLads(nft) ? nft.lockScreenImageUrl : nft.imageUrl;
   return (
     <div
       style={{
@@ -233,7 +237,7 @@ function Image({ nft }: { nft: any }) {
         loadingStyles={{
           minHeight: "343px",
         }}
-        src={nft.imageUrl}
+        src={src}
         removeOnError={true}
       />
     </div>
@@ -579,7 +583,7 @@ function Attributes({ nft }: { nft: any }) {
 export function NftOptionsButton() {
   const theme = useCustomTheme();
   const background = useBackgroundClient();
-  const { username } = useUser();
+  const { uuid, username } = useUser();
   const setNewAvatar = useSetRecoilState(newAvatarAtom(username));
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -632,6 +636,14 @@ export function NftOptionsButton() {
 
   const onSetPfp = async () => {
     if (nft) {
+      //
+      // Cleanup component state.
+      //
+      setAnchorEl(null);
+
+      //
+      // Store on server.
+      //
       const id = `${nft.blockchain}/${
         nft.blockchain === "solana" ? nft.mint : nft.id
       }`;
@@ -644,6 +656,11 @@ export function NftOptionsButton() {
         body: JSON.stringify({ avatar: id }),
       });
       await fetch(`${AVATAR_BASE_URL}/${username}?bust_cache=1`);
+
+      //
+      // Store locally.
+      //
+      await updateLocalNftPfp(uuid, nft);
       setNewAvatar({ id, url: nft.imageUrl });
     }
   };
@@ -843,4 +860,40 @@ function BurnConfirmation({ onConfirm }: { onConfirm: () => void }) {
       </div>
     </div>
   );
+}
+
+export async function updateLocalNftPfp(uuid: string, nft: Nft) {
+  //
+  // Only show mad lads on the lock screen in full screen view.
+  //
+  let lockScreenImageUrl;
+  if (isMadLads(nft)) {
+    window.localStorage.setItem(
+      lockScreenKey(uuid),
+      JSON.stringify({
+        uuid,
+        nft,
+      })
+    );
+    lockScreenImageUrl = nft.lockScreenImageUrl!;
+  } else {
+    window.localStorage.removeItem(lockScreenKey(uuid));
+    lockScreenImageUrl = nft.imageUrl;
+  }
+  // Note: this is probably a duplicate and we likely can just use whatever
+  //       the contact storage already has instead of storing this extra
+  //       image.
+  await storeImageInLocalStorage(
+    lockScreenImageUrl,
+    lockScreenKeyImage(uuid),
+    true
+  );
+}
+
+export function lockScreenKey(uuid: string) {
+  return `${uuid}:lock-screen-nft`;
+}
+
+export function lockScreenKeyImage(uuid: string) {
+  return `${uuid}:lock-screen-nft-image`;
 }
