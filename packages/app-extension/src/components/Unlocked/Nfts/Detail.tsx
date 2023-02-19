@@ -108,7 +108,6 @@ export function NftsDetail({
   connectionUrl: string;
   nftId: string;
 }) {
-  console.log("ARMANI HERE NFT ID", nftId);
   const theme = useCustomTheme();
   const background = useBackgroundClient();
   const onLive = useRecoilValue(isOneLive);
@@ -246,7 +245,6 @@ export function NftsDetail({
 }
 
 function Image({ nft }: { nft: any }) {
-  console.log("ARMANI HERE", nft);
   const src = isMadLads(nft) ? nft.lockScreenImageUrl : nft.imageUrl;
   return (
     <div
