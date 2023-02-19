@@ -26,10 +26,8 @@ COPY ["packages/react-xnft-dom-renderer", "./packages/react-xnft-dom-renderer"]
 COPY ["packages/provider-core", "./packages/provider-core"]
 COPY ["packages/provider-injection", "./packages/provider-injection"]
 
-RUN cd /base
-RUN yarn install
-RUN yarn run build
-RUN cd /base/backend/native/xnft-api-server && yarn run build
+RUN cd /base || yarn install && yarn run build
+ && cd /base/backend/native/xnft-api-server && yarn run build
 ENV VAPID_PUBLIC_KEY=BDW-VH2Acel5JQXyL80lna43up_0HfXSg_7A5TwhJ9WX_MZPzr9DhNvR7tzH16LT1XPXWMfemZdYHl_wPUGT1DQ
 ENV VAPID_PRIVATE_KEY=LZ2o02-xNzos7djkyyQaWmfpDH0xXa646uGWqg7PPwE
 
