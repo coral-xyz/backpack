@@ -173,7 +173,7 @@ export const OnboardAccount = ({
         {keyringType === "ledger" ? (
           <HardwareOnboard
             blockchain={blockchain!}
-            // @ts-ignore
+            // @ts-expect-error not assignable to type string ...
             action={action}
             signMessage={(publicKey: string) => getCreateMessage(publicKey)}
             signText={`Sign the message to authenticate with Backpack.`}
