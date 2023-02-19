@@ -75,8 +75,8 @@ export type OnboardingData = {
 const defaultState = {
   complete: false,
   inviteCode: undefined,
-  username: "testing__",
-  action: "import",
+  username: null,
+  action: "create",
   keyringType: null,
   blockchain: null,
   password: null,
@@ -105,7 +105,12 @@ const OnboardingContext = createContext<IOnboardingContext>({
   handleSelectBlockchain: async () => {},
 });
 
-export function OnboardingProvider({ children, ...props }: { children: any }) {
+export function OnboardingProvider({
+  children,
+  ...props
+}: {
+  children: React.ReactNode;
+}): React.ReactNode {
   const [data, setData] = useState<OnboardingData>(defaultState);
 
   const setOnboardingData = useCallback((data: Partial<OnboardingData>) => {
@@ -189,7 +194,7 @@ export function OnboardingProvider({ children, ...props }: { children: any }) {
         }
       }
     },
-    []
+    [data]
   );
 
   const contextValue = useMemo(
