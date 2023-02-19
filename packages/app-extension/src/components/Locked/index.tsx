@@ -1,4 +1,6 @@
 import { useState } from "react";
+// @ts-ignore
+import { Text, View } from "react-native";
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
 import {
   Backpack,
@@ -61,6 +63,9 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
         height: "100%",
       }}
     >
+      <View style={{ backgroundColor: "yellow" }}>
+        <Text> Hello from react native</Text>
+      </View>
       <Box
         sx={{
           backgroundColor: theme.custom.colors.backgroundBackdrop,
