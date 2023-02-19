@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
-import {
-  Backpack,
+import {   Backpack,
   EmptyState,
+LocalImage ,
   PrimaryButton,
   ProxyImage,
   RedBackpack,
@@ -23,13 +23,23 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
   const theme = useCustomTheme();
   const background = useBackgroundClient();
   const user = useUser();
-  const avatarUrl = useAvatarUrl(120, user.username);
 
   const [migrationFailed, setMigrationFailed] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<boolean>(false);
+
+  const { nft } = (() => {
+    try {
+      return JSON.parse(
+        window.localStorage.getItem("lock-screen-nft") ??
+          JSON.stringify({ nft: undefined })
+      );
+    } catch {
+      return { nft: undefined };
+    }
+  })();
 
   const _onUnlock = async (e: any) => {
     e.preventDefault();
@@ -74,32 +84,21 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
         <Box>
           <LockedMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
           <div style={{ marginTop: "24px" }}>
-            <BackpackHeader />
+            <BackpackHeader
+              forceWhite={nft !== undefined}
+              style={{ zIndex: 2 }}
+            />
             <div
               style={{
                 position: "relative",
               }}
             >
-              <div style={{}}>
-                <ProxyImage
-                  src={avatarUrl}
-                  style={{
-                    height: "120px",
-                    width: "120px",
-                    borderRadius: "60px",
-                    position: "absolute",
-                    bottom: -152,
-                    transform: "translate(-50%, 0%)",
-                    transformOrigin: undefined,
-                    display: "inline",
-                  }}
-                />
-              </div>
+              <LockScreenAvatar nft={nft} user={user} />
             </div>
           </div>
         </Box>
 
-        <Box style={{ marginBottom: 74 }}>
+        <Box style={{ zIndex: 1, marginBottom: 74 }}>
           <form onSubmit={_onUnlock} noValidate>
             <Box sx={{ margin: "0 12px 12px 12px" }}>
               <TextInput
@@ -138,7 +137,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
           >
             <Typography
               sx={{
-                color: theme.custom.colors.secondary,
+                color: nft ? "white" : theme.custom.colors.secondary,
                 fontSize: "16px",
                 textAlign: "center",
                 cursor: "pointer",
@@ -156,6 +155,64 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
         <MigrationFailed />
       </WithDrawer>
     </Box>
+  );
+}
+
+function LockScreenAvatar({ nft, user }: { nft: any; user: any }) {
+  const avatarUrl = useAvatarUrl(120, user.username);
+  return (
+    <div style={{}}>
+      {nft ? (
+        <>
+          <div
+            style={{
+              position: "fixed",
+              left: 0,
+              right: 0,
+              top: 0,
+              bottom: 0,
+              background: "black",
+              opacity: 0.2,
+              zIndex: 1,
+            }}
+          />
+          <LocalImage
+            localKey={"lock-screen-nft-image"}
+            src={avatarUrl}
+            style={{
+              height: "100vh",
+              position: "fixed",
+              top: 0,
+              transform: "translate(-50%, 0%)",
+              transformOrigin: undefined,
+            }}
+            loadingStyles={{
+              position: "fixed",
+              left: 0,
+              right: 0,
+              top: 0,
+              bottom: 0,
+              transform: "inherit",
+            }}
+          />
+        </>
+      ) : (
+        <LocalImage
+          localKey={"lock-screen-nft-image"}
+          src={avatarUrl}
+          style={{
+            height: "120px",
+            width: "120px",
+            borderRadius: "60px",
+            position: "absolute",
+            bottom: -152,
+            transform: "translate(-50%, 0%)",
+            transformOrigin: undefined,
+            display: "inline",
+          }}
+        />
+      )}
+    </div>
   );
 }
 
@@ -179,8 +236,12 @@ function MigrationFailed() {
 
 export function BackpackHeader({
   disableUsername,
+  forceWhite,
+  style,
 }: {
   disableUsername?: boolean;
+  forceWhite?: boolean;
+  style?: React.CSSProperties;
 }) {
   const theme = useCustomTheme();
   const user = useUser();
@@ -192,6 +253,7 @@ export function BackpackHeader({
         marginRight: "auto",
         display: "block",
         position: "relative",
+        ...style,
       }}
     >
       <div style={{ display: "flex" }}>
@@ -203,14 +265,14 @@ export function BackpackHeader({
           }}
         />
       </div>
-      <Backpack fill={theme.custom.colors.fontColor} />
+      <Backpack fill={forceWhite ? "white" : theme.custom.colors.fontColor} />
       <Typography
         sx={{
           textAlign: "center",
           lineHeight: "24px",
           fontSize: "16px",
           fontWeight: "500",
-          color: theme.custom.colors.secondary,
+          color: forceWhite ? "white" : theme.custom.colors.secondary,
           marginTop: "8px",
         }}
       >

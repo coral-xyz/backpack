@@ -13,6 +13,7 @@ import {
   UI_RPC_METHOD_NAVIGATION_TO_ROOT,
   WHITELISTED_CHAT_COLLECTIONS,
 } from "@coral-xyz/common";
+import { storeImageInLocalStorage } from "@coral-xyz/db";
 import {
   NegativeButton,
   PrimaryButton,
@@ -645,6 +646,33 @@ export function NftOptionsButton() {
       });
       await fetch(`${AVATAR_BASE_URL}/${username}?bust_cache=1`);
       setNewAvatar({ id, url: nft.imageUrl });
+
+      //
+      // Only show mad lads on the lock screen in full screen view.
+      //
+      const isMadLadsNft = (() => {
+        // TODO: update this once the mint is done.
+        return nft.id === "7gbQXbKgRbhv8VqPR9LN5Euvbt5jMLsU67kSpXvp5d8F";
+      })();
+      if (isMadLadsNft) {
+        window.localStorage.setItem(
+          "lock-screen-nft",
+          JSON.stringify({
+            nft,
+          })
+        );
+      } else {
+        window.localStorage.removeItem("lock-screen-nft");
+      }
+      setAnchorEl(null);
+      // Note: this is probably a duplicate and we likely can just use whatever
+      //       the contact storage already has instead of storing this extra
+      //       image.
+      await storeImageInLocalStorage(
+        nft.imageUrl,
+        "lock-screen-nft-image",
+        true
+      );
     }
   };
 
