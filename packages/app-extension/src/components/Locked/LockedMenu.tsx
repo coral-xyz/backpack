@@ -37,6 +37,7 @@ export function LockedMenu({ menuOpen, setMenuOpen }: any) {
   return (
     <Toolbar
       sx={{
+        zIndex: 2,
         display: "flex",
         flexDirection: "row-reverse",
         paddingLeft: "16px",
