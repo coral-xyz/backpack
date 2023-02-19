@@ -55,7 +55,7 @@ export function UpdateProfilePicture({
   const [loading, setLoading] = useState(false);
   const _isAggregateWallets = useRecoilValue(isAggregateWallets);
   const avatarUrl = useAvatarUrl();
-  const { username } = useUser();
+  const { uuid, username } = useUser();
   const activeWallet = useActiveWallet();
   const setNewAvatar = useSetRecoilState(newAvatarAtom(username));
   const theme = useCustomTheme();
@@ -238,7 +238,7 @@ export function UpdateProfilePicture({
                 }),
               });
               await fetch(AVATAR_BASE_URL + "/" + username + "?bust_cache=1"); // bust edge cache
-              await updateLocalNftPfp(tempAvatar.nft!);
+              await updateLocalNftPfp(uuid, tempAvatar.nft!);
               setLoading(false);
               setNewAvatar(tempAvatar);
               setTempAvatar(null);

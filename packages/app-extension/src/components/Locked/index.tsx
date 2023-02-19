@@ -15,6 +15,7 @@ import { Error, Visibility, VisibilityOff } from "@mui/icons-material";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
 
 import { WithDrawer } from "../common/Layout/Drawer";
+import { lockScreenKey, lockScreenKeyImage } from "../Unlocked/Nfts/Detail";
 
 import { LockedMenu } from "./LockedMenu";
 
@@ -31,16 +32,18 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<boolean>(false);
 
-  const { nft } = (() => {
+  const { uuid, nft } = (() => {
     try {
       return JSON.parse(
-        window.localStorage.getItem("lock-screen-nft") ??
-          JSON.stringify({ nft: undefined })
+        window.localStorage.getItem(lockScreenKey(user.uuid)) ??
+          JSON.stringify({ uuid: undefined, nft: undefined })
       );
     } catch {
-      return { nft: undefined };
+      return { uuid: undefined, nft: undefined };
     }
   })();
+
+  const isFullScreen = uuid === user.uuid && nft !== undefined;
 
   const _onUnlock = async (e: any) => {
     e.preventDefault();
@@ -85,16 +88,17 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
         <Box>
           <LockedMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
           <div style={{ marginTop: "24px" }}>
-            <BackpackHeader
-              forceWhite={nft !== undefined}
-              style={{ zIndex: 2 }}
-            />
+            <BackpackHeader forceWhite={isFullScreen} style={{ zIndex: 2 }} />
             <div
               style={{
                 position: "relative",
               }}
             >
-              <LockScreenAvatar nft={nft} user={user} />
+              <LockScreenAvatar
+                isFullScreen={isFullScreen}
+                nft={nft}
+                user={user}
+              />
             </div>
           </div>
         </Box>
@@ -138,7 +142,7 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
           >
             <Typography
               sx={{
-                color: nft ? "white" : theme.custom.colors.secondary,
+                color: isFullScreen ? "white" : theme.custom.colors.secondary,
                 fontSize: "16px",
                 textAlign: "center",
                 cursor: "pointer",
@@ -159,11 +163,19 @@ export function Locked({ onUnlock }: { onUnlock?: () => Promise<void> }) {
   );
 }
 
-function LockScreenAvatar({ nft, user }: { nft: any; user: any }) {
+function LockScreenAvatar({
+  isFullScreen,
+  nft,
+  user,
+}: {
+  isFullScreen: boolean;
+  nft: any;
+  user: any;
+}) {
   const avatarUrl = useAvatarUrl(120, user.username);
   return (
     <div style={{}}>
-      {nft ? (
+      {isFullScreen ? (
         <>
           <div
             style={{
@@ -184,7 +196,7 @@ function LockScreenAvatar({ nft, user }: { nft: any; user: any }) {
             }}
           >
             <LocalImage
-              localKey={"lock-screen-nft-image"}
+              localKey={lockScreenKeyImage(user.uuid)}
               src={avatarUrl}
               style={{
                 height: "100vh",
@@ -206,7 +218,7 @@ function LockScreenAvatar({ nft, user }: { nft: any; user: any }) {
         </>
       ) : (
         <LocalImage
-          localKey={"lock-screen-nft-image"}
+          localKey={lockScreenKeyImage(user.uuid)}
           src={avatarUrl}
           style={{
             height: "120px",

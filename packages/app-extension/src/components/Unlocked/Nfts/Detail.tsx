@@ -583,7 +583,7 @@ function Attributes({ nft }: { nft: any }) {
 export function NftOptionsButton() {
   const theme = useCustomTheme();
   const background = useBackgroundClient();
-  const { username } = useUser();
+  const { uuid, username } = useUser();
   const setNewAvatar = useSetRecoilState(newAvatarAtom(username));
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -660,7 +660,7 @@ export function NftOptionsButton() {
       //
       // Store locally.
       //
-      await updateLocalNftPfp(nft);
+      await updateLocalNftPfp(uuid, nft);
       setNewAvatar({ id, url: nft.imageUrl });
     }
   };
@@ -862,21 +862,22 @@ function BurnConfirmation({ onConfirm }: { onConfirm: () => void }) {
   );
 }
 
-export async function updateLocalNftPfp(nft: Nft) {
+export async function updateLocalNftPfp(uuid: string, nft: Nft) {
   //
   // Only show mad lads on the lock screen in full screen view.
   //
   let lockScreenImageUrl;
   if (isMadLads(nft)) {
     window.localStorage.setItem(
-      "lock-screen-nft",
+      lockScreenKey(uuid),
       JSON.stringify({
+        uuid,
         nft,
       })
     );
     lockScreenImageUrl = nft.lockScreenImageUrl!;
   } else {
-    window.localStorage.removeItem("lock-screen-nft");
+    window.localStorage.removeItem(lockScreenKey(uuid));
     lockScreenImageUrl = nft.imageUrl;
   }
   // Note: this is probably a duplicate and we likely can just use whatever
@@ -884,7 +885,15 @@ export async function updateLocalNftPfp(nft: Nft) {
   //       image.
   await storeImageInLocalStorage(
     lockScreenImageUrl,
-    "lock-screen-nft-image",
+    lockScreenKeyImage(uuid),
     true
   );
+}
+
+export function lockScreenKey(uuid: string) {
+  return `${uuid}:lock-screen-nft`;
+}
+
+export function lockScreenKeyImage(uuid: string) {
+  return `${uuid}:lock-screen-nft-image`;
 }
