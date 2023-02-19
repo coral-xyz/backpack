@@ -139,5 +139,6 @@ export function isValidEventOrigin(event: Event): boolean {
 }
 
 export function isMadLads(nft: Nft) {
+  // TODO
   return nft.id === "7gbQXbKgRbhv8VqPR9LN5Euvbt5jMLsU67kSpXvp5d8F";
 }
