@@ -1,15 +1,14 @@
 table:
   name: chats
   schema: public
-object_relationships:
-  - name: chat_barter_metadatum
+array_relationships:
+  - name: chat_barter_metadata
     using:
       foreign_key_constraint_on:
         column: chat_client_generated_uuid
         table:
           name: chat_barter_metadata
           schema: public
-array_relationships:
   - name: chat_media_messages
     using:
       foreign_key_constraint_on:
