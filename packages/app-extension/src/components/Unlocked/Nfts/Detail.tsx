@@ -6,6 +6,7 @@ import {
   confirmTransaction,
   explorerNftUrl,
   getLogger,
+  isMadLads,
   Solana,
   TAB_MESSAGES,
   toTitleCase,
@@ -650,26 +651,25 @@ export function NftOptionsButton() {
       //
       // Only show mad lads on the lock screen in full screen view.
       //
-      const isMadLadsNft = (() => {
-        // TODO: update this once the mint is done.
-        return nft.id === "7gbQXbKgRbhv8VqPR9LN5Euvbt5jMLsU67kSpXvp5d8F";
-      })();
-      if (isMadLadsNft) {
+      let lockScreenImageUrl;
+      if (isMadLads(nft)) {
         window.localStorage.setItem(
           "lock-screen-nft",
           JSON.stringify({
             nft,
           })
         );
+        lockScreenImageUrl = nft.lockScreenImageUrl!;
       } else {
         window.localStorage.removeItem("lock-screen-nft");
+        lockScreenImageUrl = nft.imageUrl;
       }
       setAnchorEl(null);
       // Note: this is probably a duplicate and we likely can just use whatever
       //       the contact storage already has instead of storing this extra
       //       image.
       await storeImageInLocalStorage(
-        nft.imageUrl,
+        lockScreenImageUrl,
         "lock-screen-nft-image",
         true
       );

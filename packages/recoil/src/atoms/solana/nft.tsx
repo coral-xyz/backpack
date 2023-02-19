@@ -7,6 +7,7 @@ import type {
 import {
   Blockchain,
   externalResourceUri,
+  isMadLads,
   metadataAddress,
   UNKNOWN_NFT_ICON_SRC,
 } from "@coral-xyz/common";
@@ -141,6 +142,11 @@ export const solanaNftById = equalSelectorFamily<
           : [],
         collectionName,
       };
+      if (isMadLads(nft)) {
+        // TODO.
+        // @ts-ignore
+        nft.lockScreenImageUrl = nft.imageUrl;
+      }
       return nft;
     },
   equals: (m1, m2) => JSON.stringify(m1) === JSON.stringify(m2),
