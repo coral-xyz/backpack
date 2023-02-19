@@ -59,7 +59,7 @@ export type OnboardingData = {
   complete: boolean;
   inviteCode: string | undefined;
   username: string | null;
-  action: "create" | "import" | "recover" | string;
+  action: string;
   keyringType: KeyringType | null;
   blockchain: Blockchain | null;
   password: string | null;
@@ -109,8 +109,8 @@ export function OnboardingProvider({
   children,
   ...props
 }: {
-  children: React.ReactNode;
-}): React.ReactNode {
+  children: JSX.Element;
+}) {
   const [data, setData] = useState<OnboardingData>(defaultState);
 
   const setOnboardingData = useCallback((data: Partial<OnboardingData>) => {

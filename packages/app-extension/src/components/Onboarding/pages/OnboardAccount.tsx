@@ -5,9 +5,12 @@ import type {
   WalletDescriptor,
 } from "@coral-xyz/common";
 import { getCreateMessage } from "@coral-xyz/common";
-import { useBackgroundClient, useOnboarding } from "@coral-xyz/recoil";
+import {
+  useBackgroundClient,
+  useOnboarding,
+  useSignMessageForWallet,
+} from "@coral-xyz/recoil";
 
-import { useSignMessageForWallet } from "../../../hooks/useSignMessageForWallet";
 import { useSteps } from "../../../hooks/useSteps";
 import { CreatePassword } from "../../common/Account/CreatePassword";
 import { ImportWallets } from "../../common/Account/ImportWallets";
@@ -57,7 +60,6 @@ export const OnboardAccount = ({
     selectedBlockchains,
   } = onboardingData;
   const signMessageForWallet = useSignMessageForWallet(mnemonic);
-  console.log("onboardingData", onboardingData);
 
   useEffect(() => {
     // Reset blockchain keyrings on certain changes that invalidate the addresses

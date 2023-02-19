@@ -1,4 +1,4 @@
-import type { Blockchain, WalletDescriptor } from "@coral-xyz/common";
+import type { Blockchain } from "@coral-xyz/common";
 import type { StackScreenProps } from "@react-navigation/stack";
 
 import { useEffect, useState } from "react";
@@ -28,7 +28,6 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
   UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
-  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
   UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   XNFT_GG_LINK,
@@ -40,8 +39,6 @@ import {
 } from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
-import { Buffer } from "buffer";
-import { ethers } from "ethers";
 import { useForm } from "react-hook-form";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { v4 as uuidv4 } from "uuid";
@@ -144,28 +141,6 @@ function Network({
     </View>
   );
 }
-
-export const useSignMessageForWallet = (mnemonic?: string | true) => {
-  const background = useBackgroundClient();
-
-  const signMessageForWallet = async (
-    walletDescriptor: WalletDescriptor,
-    message: string
-  ) => {
-    const blockchain = getBlockchainFromPath(walletDescriptor.derivationPath);
-    return await background.request({
-      method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-      params: [
-        blockchain,
-        walletDescriptor.publicKey,
-        ethers.utils.base58.encode(Buffer.from(message, "utf-8")),
-        [mnemonic, [walletDescriptor.derivationPath]],
-      ],
-    });
-  };
-
-  return signMessageForWallet;
-};
 
 function getWaitlistId() {
   return undefined;

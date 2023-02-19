@@ -64,7 +64,7 @@ export const Onboarding = ({
 
   return (
     <OptionsContainer innerRef={containerRef}>
-      {action === "onboard" && (
+      {action === "onboard" ? (
         <OnboardingProvider>
           <OnboardAccount
             onRecover={() => setAction("recover")}
@@ -72,7 +72,7 @@ export const Onboarding = ({
             {...defaultProps}
           />
         </OnboardingProvider>
-      )}
+      ) : null}
       {action === "waiting" && <WaitingRoom />}
       {action === "recover" && (
         <RecoverAccount
