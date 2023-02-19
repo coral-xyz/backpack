@@ -1,4 +1,4 @@
-import type { Blockchain, WalletDescriptor } from "@coral-xyz/common";
+import type { Blockchain } from "@coral-xyz/common";
 import type { StackScreenProps } from "@react-navigation/stack";
 
 import { useEffect, useState } from "react";
@@ -20,7 +20,6 @@ import * as Linking from "expo-linking";
 import {
   BACKEND_API_URL,
   BACKPACK_FEATURE_XNFT,
-  getCreateMessage,
   getAuthMessage,
   getBlockchainFromPath,
   DISCORD_INVITE_LINK,
@@ -29,17 +28,17 @@ import {
   UI_RPC_METHOD_KEYRING_STORE_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_MNEMONIC_CREATE,
   UI_RPC_METHOD_KEYRING_VALIDATE_MNEMONIC,
-  UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
-  UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
   UI_RPC_METHOD_USERNAME_ACCOUNT_CREATE,
   UI_RPC_METHOD_KEYRING_STORE_KEEP_ALIVE,
   XNFT_GG_LINK,
 } from "@coral-xyz/common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
+import {
+  useBackgroundClient,
+  OnboardingProvider,
+  useOnboarding,
+} from "@coral-xyz/recoil";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
-import { Buffer } from "buffer";
-import { ethers } from "ethers";
 import { useForm } from "react-hook-form";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { v4 as uuidv4 } from "uuid";
@@ -84,9 +83,7 @@ import {
 } from "~components/index";
 import { useAuthentication } from "~hooks/useAuthentication";
 import { useTheme } from "~hooks/useTheme";
-import { OnboardingProvider, useOnboardingData } from "~lib/OnboardingProvider";
-
-const { base58 } = ethers.utils;
+import { maybeRender } from "~lib/index";
 
 function Cell({ children, style }: any): JSX.Element {
   return (
@@ -145,39 +142,6 @@ function Network({
   );
 }
 
-export const useSignMessageForWallet = (mnemonic?: string | true) => {
-  const background = useBackgroundClient();
-
-  const signMessageForWallet = async (
-    walletDescriptor: WalletDescriptor,
-    message: string
-  ) => {
-    const blockchain = getBlockchainFromPath(walletDescriptor.derivationPath);
-    return await background.request({
-      method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-      params: [
-        blockchain,
-        walletDescriptor.publicKey,
-        ethers.utils.base58.encode(Buffer.from(message, "utf-8")),
-        [mnemonic, [walletDescriptor.derivationPath]],
-      ],
-    });
-  };
-
-  return signMessageForWallet;
-};
-
-function maybeRender(
-  condition: boolean,
-  fn: () => JSX.Element
-): JSX.Element | null {
-  if (condition) {
-    return fn() as JSX.Element;
-  }
-
-  return null;
-}
-
 function getWaitlistId() {
   return undefined;
 }
@@ -230,9 +194,8 @@ function OnboardingCreateOrImportWalletScreen({
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "CreateOrImportWallet">) {
   const insets = useSafeAreaInsets();
-  const { setOnboardingData } = useOnboardingData();
+  const { setOnboardingData } = useOnboarding();
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [showDebug, setShowDebug] = useState(false);
 
   const handlePresentModalPress = () => {
     setIsModalVisible((last) => !last);
@@ -293,7 +256,7 @@ function OnboardingCreateOrImportWalletScreen({
 function OnboardingKeyringTypeSelectorScreen({
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "KeyringTypeSelector">) {
-  const { onboardingData, setOnboardingData } = useOnboardingData();
+  const { onboardingData, setOnboardingData } = useOnboarding();
   const { action } = onboardingData;
 
   return (
@@ -359,7 +322,7 @@ function OnboardingUsernameScreen({
   OnboardingStackParamList,
   "OnboardingUsername"
 >): JSX.Element {
-  const { onboardingData, setOnboardingData } = useOnboardingData();
+  const { onboardingData, setOnboardingData } = useOnboarding();
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -407,7 +370,7 @@ function OnboardingUsernameScreen({
 function OnboardingMnemonicInputScreen({
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "MnemonicInput">) {
-  const { onboardingData, setOnboardingData } = useOnboardingData();
+  const { onboardingData, setOnboardingData } = useOnboarding();
   const { action } = onboardingData;
   const readOnly = action === "create";
 
@@ -548,71 +511,8 @@ function OnboardingBlockchainSelectScreen({
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "SelectBlockchain">) {
   const background = useBackgroundClient();
-  const { onboardingData, setOnboardingData } = useOnboardingData();
-  const {
-    mnemonic,
-    action,
-    keyringType,
-    blockchainOptions,
-    signedWalletDescriptors,
-  } = onboardingData;
-
-  const selectedBlockchains = [
-    ...new Set(
-      signedWalletDescriptors.map((s) =>
-        getBlockchainFromPath(s.derivationPath)
-      )
-    ),
-  ];
-
-  const handleBlockchainClick = async (blockchain: Blockchain) => {
-    if (selectedBlockchains.includes(blockchain)) {
-      // Blockchain is being deselected
-      setOnboardingData({
-        blockchain: null,
-        signedWalletDescriptors: signedWalletDescriptors.filter(
-          (s) => getBlockchainFromPath(s.derivationPath) !== blockchain
-        ),
-      });
-    } else {
-      // Blockchain is being selected
-      if (keyringType === "ledger" || action === "import") {
-        // If wallet is a ledger, step through the ledger onboarding flow
-        // OR if action is an import then open the drawer with the import accounts
-        // component
-        setOnboardingData({ blockchain });
-      } else if (action === "create") {
-        const walletDescriptor = await background.request({
-          method: UI_RPC_METHOD_FIND_WALLET_DESCRIPTOR,
-          params: [blockchain, 0, mnemonic],
-        });
-
-        const params = [
-          blockchain,
-          walletDescriptor.publicKey,
-          base58.encode(
-            Buffer.from(getCreateMessage(walletDescriptor.publicKey), "utf-8")
-          ),
-          [mnemonic, [walletDescriptor.derivationPath]],
-        ];
-
-        const signature = await background.request({
-          method: UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
-          params,
-        });
-
-        setOnboardingData({
-          signedWalletDescriptors: [
-            ...signedWalletDescriptors,
-            {
-              ...walletDescriptor,
-              signature,
-            },
-          ],
-        });
-      }
-    }
-  };
+  const { onboardingData, handleSelectBlockchain } = useOnboarding();
+  const { blockchainOptions, selectedBlockchains } = onboardingData;
 
   return (
     <OnboardingScreen
@@ -633,7 +533,9 @@ function OnboardingBlockchainSelectScreen({
               selected={selectedBlockchains.includes(item.id)}
               enabled={item.enabled}
               label={item.label}
-              onSelect={handleBlockchainClick}
+              onSelect={(blockchain) =>
+                handleSelectBlockchain({ blockchain, background })
+              }
             />
           );
         }}
@@ -658,7 +560,7 @@ type CreatePasswordFormData = {
 function OnboardingCreatePasswordScreen({
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "CreatePassword">) {
-  const { setOnboardingData } = useOnboardingData();
+  const { setOnboardingData } = useOnboarding();
 
   const { control, handleSubmit, formState, watch } =
     useForm<CreatePasswordFormData>();
@@ -737,7 +639,7 @@ function OnboardingCreatePasswordScreen({
 function OnboardingImportAccountsScreen({
   navigation,
 }: StackScreenProps<OnboardingStackParamList, "ImportAccounts">) {
-  // const { onboardingData} = useOnboardingData();
+  // const { onboardingData} = useOnboarding();
   // const { mnemonic, blockchain } = onboardingData;
   // const allowMultiple = false;
 
@@ -768,7 +670,7 @@ function OnboardingCreateAccountLoadingScreen({
 >): JSX.Element {
   const background = useBackgroundClient();
   const { authenticate } = useAuthentication();
-  const { onboardingData } = useOnboardingData();
+  const { onboardingData } = useOnboarding();
   const [error, setError] = useState(null);
 
   const {

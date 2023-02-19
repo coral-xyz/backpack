@@ -9,7 +9,7 @@ export const KeyringTypeSelector = ({
   action,
   onNext,
 }: {
-  action: "create" | "import" | "recover";
+  action: "create" | "import" | "recover" | string;
   onNext: (keyringType: KeyringType) => void;
 }) => {
   return (

@@ -12,11 +12,13 @@ import {
   UI_RPC_METHOD_KEYRING_IMPORT_WALLET,
 } from "@coral-xyz/common";
 import { PrimaryButton, TextInput } from "@coral-xyz/react-common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
+import {
+  useBackgroundClient,
+  useSignMessageForWallet,
+} from "@coral-xyz/recoil";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { Box } from "@mui/material";
 
-import { useSignMessageForWallet } from "../../../../hooks/useSignMessageForWallet";
 import { useSteps } from "../../../../hooks/useSteps";
 import { Header } from "../../../common";
 import { ImportWallets } from "../../../common/Account/ImportWallets";

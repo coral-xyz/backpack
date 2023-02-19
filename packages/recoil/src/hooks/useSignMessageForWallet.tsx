@@ -3,8 +3,9 @@ import {
   getBlockchainFromPath,
   UI_RPC_METHOD_SIGN_MESSAGE_FOR_PUBLIC_KEY,
 } from "@coral-xyz/common";
-import { useBackgroundClient } from "@coral-xyz/recoil";
 import { ethers } from "ethers";
+
+import { useBackgroundClient } from "./";
 
 export const useSignMessageForWallet = (mnemonic?: string | true) => {
   const background = useBackgroundClient();
