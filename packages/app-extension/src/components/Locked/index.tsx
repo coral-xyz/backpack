@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { UI_RPC_METHOD_KEYRING_STORE_UNLOCK } from "@coral-xyz/common";
-import {   Backpack,
+import {
+  Backpack,
   EmptyState,
-LocalImage ,
+  LocalImage,
   PrimaryButton,
   ProxyImage,
   RedBackpack,
@@ -176,25 +177,32 @@ function LockScreenAvatar({ nft, user }: { nft: any; user: any }) {
               zIndex: 1,
             }}
           />
-          <LocalImage
-            localKey={"lock-screen-nft-image"}
-            src={avatarUrl}
+          <div
             style={{
-              height: "100vh",
               position: "fixed",
-              top: 0,
-              transform: "translate(-50%, 0%)",
-              transformOrigin: undefined,
+              inset: 0,
             }}
-            loadingStyles={{
-              position: "fixed",
-              left: 0,
-              right: 0,
-              top: 0,
-              bottom: 0,
-              transform: "inherit",
-            }}
-          />
+          >
+            <LocalImage
+              localKey={"lock-screen-nft-image"}
+              src={avatarUrl}
+              style={{
+                height: "100vh",
+                position: "absolute",
+                top: 0,
+                transform: "translate(-50%, 0%)",
+                transformOrigin: undefined,
+              }}
+              loadingStyles={{
+                position: "fixed",
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                transform: "inherit",
+              }}
+            />
+          </div>
         </>
       ) : (
         <LocalImage
