@@ -1502,18 +1502,6 @@ export type ValueTypes = {
     returning?: ValueTypes["chat_barter_metadata"];
     __typename?: boolean | `@${string}`;
   }>;
-  /** input type for inserting object relation for remote table "chat_barter_metadata" */
-  ["chat_barter_metadata_obj_rel_insert_input"]: {
-    data:
-      | ValueTypes["chat_barter_metadata_insert_input"]
-      | Variable<any, string>;
-    /** upsert condition */
-    on_conflict?:
-      | ValueTypes["chat_barter_metadata_on_conflict"]
-      | undefined
-      | null
-      | Variable<any, string>;
-  };
   /** on_conflict condition type for table "chat_barter_metadata" */
   ["chat_barter_metadata_on_conflict"]: {
     constraint:
@@ -1550,10 +1538,6 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
-  };
-  /** primary key columns input for table: chat_barter_metadata */
-  ["chat_barter_metadata_pk_columns_input"]: {
-    chat_client_generated_uuid: string | Variable<any, string>;
   };
   /** select columns of table "chat_barter_metadata" */
   ["chat_barter_metadata_select_column"]: chat_barter_metadata_select_column;
@@ -1957,8 +1941,40 @@ export type ValueTypes = {
   };
   /** columns and relationships of "chats" */
   ["chats"]: AliasType<{
-    /** An object relationship */
-    chat_barter_metadatum?: ValueTypes["chat_barter_metadata"];
+    chat_barter_metadata?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ValueTypes["chat_barter_metadata_select_column"]>
+          | undefined
+          | null
+          | Variable<any, string> /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null
+          | Variable<
+              any,
+              string
+            > /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null
+          | Variable<any, string> /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ValueTypes["chat_barter_metadata_order_by"]>
+          | undefined
+          | null
+          | Variable<any, string> /** filter the rows returned */;
+        where?:
+          | ValueTypes["chat_barter_metadata_bool_exp"]
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes["chat_barter_metadata"]
+    ];
     chat_media_messages?: [
       {
         /** distinct select on columns */
@@ -2090,7 +2106,7 @@ export type ValueTypes = {
       | undefined
       | null
       | Variable<any, string>;
-    chat_barter_metadatum?:
+    chat_barter_metadata?:
       | ValueTypes["chat_barter_metadata_bool_exp"]
       | undefined
       | null
@@ -2165,8 +2181,8 @@ export type ValueTypes = {
   ["chats_constraint"]: chats_constraint;
   /** input type for inserting data into table "chats" */
   ["chats_insert_input"]: {
-    chat_barter_metadatum?:
-      | ValueTypes["chat_barter_metadata_obj_rel_insert_input"]
+    chat_barter_metadata?:
+      | ValueTypes["chat_barter_metadata_arr_rel_insert_input"]
       | undefined
       | null
       | Variable<any, string>;
@@ -2236,8 +2252,8 @@ export type ValueTypes = {
   };
   /** Ordering options when selecting data from "chats". */
   ["chats_order_by"]: {
-    chat_barter_metadatum?:
-      | ValueTypes["chat_barter_metadata_order_by"]
+    chat_barter_metadata_aggregate?:
+      | ValueTypes["chat_barter_metadata_aggregate_order_by"]
       | undefined
       | null
       | Variable<any, string>;
@@ -2599,14 +2615,6 @@ export type ValueTypes = {
       },
       ValueTypes["chat_barter_metadata_mutation_response"]
     ];
-    update_chat_barter_metadata_by_pk?: [
-      {
-        pk_columns:
-          | ValueTypes["chat_barter_metadata_pk_columns_input"]
-          | Variable<any, string>;
-      },
-      ValueTypes["chat_barter_metadata"]
-    ];
     update_chat_barter_metadata_many?: [
       {
         /** updates to execute, in order */
@@ -2915,10 +2923,6 @@ export type ValueTypes = {
           | null
           | Variable<any, string>;
       },
-      ValueTypes["chat_barter_metadata"]
-    ];
-    chat_barter_metadata_by_pk?: [
-      { chat_client_generated_uuid: string | Variable<any, string> },
       ValueTypes["chat_barter_metadata"]
     ];
     chat_media_messages?: [
@@ -4208,10 +4212,6 @@ export type ValueTypes = {
       },
       ValueTypes["chat_barter_metadata"]
     ];
-    chat_barter_metadata_by_pk?: [
-      { chat_client_generated_uuid: string | Variable<any, string> },
-      ValueTypes["chat_barter_metadata"]
-    ];
     chat_barter_metadata_stream?: [
       {
         /** maximum number of rows returned in a single batch */
@@ -4925,15 +4925,6 @@ export type ResolverInputTypes = {
     returning?: ResolverInputTypes["chat_barter_metadata"];
     __typename?: boolean | `@${string}`;
   }>;
-  /** input type for inserting object relation for remote table "chat_barter_metadata" */
-  ["chat_barter_metadata_obj_rel_insert_input"]: {
-    data: ResolverInputTypes["chat_barter_metadata_insert_input"];
-    /** upsert condition */
-    on_conflict?:
-      | ResolverInputTypes["chat_barter_metadata_on_conflict"]
-      | undefined
-      | null;
-  };
   /** on_conflict condition type for table "chat_barter_metadata" */
   ["chat_barter_metadata_on_conflict"]: {
     constraint: ResolverInputTypes["chat_barter_metadata_constraint"];
@@ -4954,10 +4945,6 @@ export type ResolverInputTypes = {
       | ResolverInputTypes["order_by"]
       | undefined
       | null;
-  };
-  /** primary key columns input for table: chat_barter_metadata */
-  ["chat_barter_metadata_pk_columns_input"]: {
-    chat_client_generated_uuid: string;
   };
   /** select columns of table "chat_barter_metadata" */
   ["chat_barter_metadata_select_column"]: chat_barter_metadata_select_column;
@@ -5232,8 +5219,32 @@ export type ResolverInputTypes = {
   };
   /** columns and relationships of "chats" */
   ["chats"]: AliasType<{
-    /** An object relationship */
-    chat_barter_metadatum?: ResolverInputTypes["chat_barter_metadata"];
+    chat_barter_metadata?: [
+      {
+        /** distinct select on columns */
+        distinct_on?:
+          | Array<ResolverInputTypes["chat_barter_metadata_select_column"]>
+          | undefined
+          | null /** limit the number of rows returned */;
+        limit?:
+          | number
+          | undefined
+          | null /** skip the first n rows. Use only with order_by */;
+        offset?:
+          | number
+          | undefined
+          | null /** sort the rows by one or more columns */;
+        order_by?:
+          | Array<ResolverInputTypes["chat_barter_metadata_order_by"]>
+          | undefined
+          | null /** filter the rows returned */;
+        where?:
+          | ResolverInputTypes["chat_barter_metadata_bool_exp"]
+          | undefined
+          | null;
+      },
+      ResolverInputTypes["chat_barter_metadata"]
+    ];
     chat_media_messages?: [
       {
         /** distinct select on columns */
@@ -5331,7 +5342,7 @@ export type ResolverInputTypes = {
     _and?: Array<ResolverInputTypes["chats_bool_exp"]> | undefined | null;
     _not?: ResolverInputTypes["chats_bool_exp"] | undefined | null;
     _or?: Array<ResolverInputTypes["chats_bool_exp"]> | undefined | null;
-    chat_barter_metadatum?:
+    chat_barter_metadata?:
       | ResolverInputTypes["chat_barter_metadata_bool_exp"]
       | undefined
       | null;
@@ -5374,8 +5385,8 @@ export type ResolverInputTypes = {
   ["chats_constraint"]: chats_constraint;
   /** input type for inserting data into table "chats" */
   ["chats_insert_input"]: {
-    chat_barter_metadatum?:
-      | ResolverInputTypes["chat_barter_metadata_obj_rel_insert_input"]
+    chat_barter_metadata?:
+      | ResolverInputTypes["chat_barter_metadata_arr_rel_insert_input"]
       | undefined
       | null;
     chat_media_messages?:
@@ -5423,8 +5434,8 @@ export type ResolverInputTypes = {
   };
   /** Ordering options when selecting data from "chats". */
   ["chats_order_by"]: {
-    chat_barter_metadatum?:
-      | ResolverInputTypes["chat_barter_metadata_order_by"]
+    chat_barter_metadata_aggregate?:
+      | ResolverInputTypes["chat_barter_metadata_aggregate_order_by"]
       | undefined
       | null;
     chat_media_messages_aggregate?:
@@ -5701,12 +5712,6 @@ export type ResolverInputTypes = {
       },
       ResolverInputTypes["chat_barter_metadata_mutation_response"]
     ];
-    update_chat_barter_metadata_by_pk?: [
-      {
-        pk_columns: ResolverInputTypes["chat_barter_metadata_pk_columns_input"];
-      },
-      ResolverInputTypes["chat_barter_metadata"]
-    ];
     update_chat_barter_metadata_many?: [
       {
         /** updates to execute, in order */
@@ -5917,10 +5922,6 @@ export type ResolverInputTypes = {
           | undefined
           | null;
       },
-      ResolverInputTypes["chat_barter_metadata"]
-    ];
-    chat_barter_metadata_by_pk?: [
-      { chat_client_generated_uuid: string },
       ResolverInputTypes["chat_barter_metadata"]
     ];
     chat_media_messages?: [
@@ -6826,10 +6827,6 @@ export type ResolverInputTypes = {
       },
       ResolverInputTypes["chat_barter_metadata"]
     ];
-    chat_barter_metadata_by_pk?: [
-      { chat_client_generated_uuid: string },
-      ResolverInputTypes["chat_barter_metadata"]
-    ];
     chat_barter_metadata_stream?: [
       {
         /** maximum number of rows returned in a single batch */
@@ -7326,12 +7323,6 @@ export type ModelTypes = {
     /** data from the rows affected by the mutation */
     returning: Array<ModelTypes["chat_barter_metadata"]>;
   };
-  /** input type for inserting object relation for remote table "chat_barter_metadata" */
-  ["chat_barter_metadata_obj_rel_insert_input"]: {
-    data: ModelTypes["chat_barter_metadata_insert_input"];
-    /** upsert condition */
-    on_conflict?: ModelTypes["chat_barter_metadata_on_conflict"] | undefined;
-  };
   /** on_conflict condition type for table "chat_barter_metadata" */
   ["chat_barter_metadata_on_conflict"]: {
     constraint: ModelTypes["chat_barter_metadata_constraint"];
@@ -7344,10 +7335,6 @@ export type ModelTypes = {
     barter_id?: ModelTypes["order_by"] | undefined;
     chat?: ModelTypes["chats_order_by"] | undefined;
     chat_client_generated_uuid?: ModelTypes["order_by"] | undefined;
-  };
-  /** primary key columns input for table: chat_barter_metadata */
-  ["chat_barter_metadata_pk_columns_input"]: {
-    chat_client_generated_uuid: string;
   };
   ["chat_barter_metadata_select_column"]: chat_barter_metadata_select_column;
   /** order by stddev() on columns of table "chat_barter_metadata" */
@@ -7556,8 +7543,8 @@ export type ModelTypes = {
   };
   /** columns and relationships of "chats" */
   ["chats"]: {
-    /** An object relationship */
-    chat_barter_metadatum?: ModelTypes["chat_barter_metadata"] | undefined;
+    /** An array relationship */
+    chat_barter_metadata: Array<ModelTypes["chat_barter_metadata"]>;
     /** An array relationship */
     chat_media_messages: Array<ModelTypes["chat_media_messages"]>;
     client_generated_uuid: string;
@@ -7582,7 +7569,7 @@ export type ModelTypes = {
     _and?: Array<ModelTypes["chats_bool_exp"]> | undefined;
     _not?: ModelTypes["chats_bool_exp"] | undefined;
     _or?: Array<ModelTypes["chats_bool_exp"]> | undefined;
-    chat_barter_metadatum?:
+    chat_barter_metadata?:
       | ModelTypes["chat_barter_metadata_bool_exp"]
       | undefined;
     chat_media_messages?:
@@ -7610,8 +7597,8 @@ export type ModelTypes = {
   ["chats_constraint"]: chats_constraint;
   /** input type for inserting data into table "chats" */
   ["chats_insert_input"]: {
-    chat_barter_metadatum?:
-      | ModelTypes["chat_barter_metadata_obj_rel_insert_input"]
+    chat_barter_metadata?:
+      | ModelTypes["chat_barter_metadata_arr_rel_insert_input"]
       | undefined;
     chat_media_messages?:
       | ModelTypes["chat_media_messages_arr_rel_insert_input"]
@@ -7654,8 +7641,8 @@ export type ModelTypes = {
   };
   /** Ordering options when selecting data from "chats". */
   ["chats_order_by"]: {
-    chat_barter_metadatum?:
-      | ModelTypes["chat_barter_metadata_order_by"]
+    chat_barter_metadata_aggregate?:
+      | ModelTypes["chat_barter_metadata_aggregate_order_by"]
       | undefined;
     chat_media_messages_aggregate?:
       | ModelTypes["chat_media_messages_aggregate_order_by"]
@@ -7770,10 +7757,6 @@ export type ModelTypes = {
     update_chat_barter_metadata?:
       | ModelTypes["chat_barter_metadata_mutation_response"]
       | undefined;
-    /** update single row of the table: "chat_barter_metadata" */
-    update_chat_barter_metadata_by_pk?:
-      | ModelTypes["chat_barter_metadata"]
-      | undefined;
     /** update multiples rows of table: "chat_barter_metadata" */
     update_chat_barter_metadata_many?:
       | Array<ModelTypes["chat_barter_metadata_mutation_response"] | undefined>
@@ -7840,8 +7823,6 @@ export type ModelTypes = {
     barters_by_pk?: ModelTypes["barters"] | undefined;
     /** An array relationship */
     chat_barter_metadata: Array<ModelTypes["chat_barter_metadata"]>;
-    /** fetch data from the table: "chat_barter_metadata" using primary key columns */
-    chat_barter_metadata_by_pk?: ModelTypes["chat_barter_metadata"] | undefined;
     /** An array relationship */
     chat_media_messages: Array<ModelTypes["chat_media_messages"]>;
     /** fetch data from the table: "chat_media_messages" using primary key columns */
@@ -8406,8 +8387,6 @@ export type ModelTypes = {
     barters_stream: Array<ModelTypes["barters"]>;
     /** An array relationship */
     chat_barter_metadata: Array<ModelTypes["chat_barter_metadata"]>;
-    /** fetch data from the table: "chat_barter_metadata" using primary key columns */
-    chat_barter_metadata_by_pk?: ModelTypes["chat_barter_metadata"] | undefined;
     /** fetch data from the table in a streaming manner: "chat_barter_metadata" */
     chat_barter_metadata_stream: Array<ModelTypes["chat_barter_metadata"]>;
     /** An array relationship */
@@ -8720,12 +8699,6 @@ export type GraphQLTypes = {
     /** data from the rows affected by the mutation */
     returning: Array<GraphQLTypes["chat_barter_metadata"]>;
   };
-  /** input type for inserting object relation for remote table "chat_barter_metadata" */
-  ["chat_barter_metadata_obj_rel_insert_input"]: {
-    data: GraphQLTypes["chat_barter_metadata_insert_input"];
-    /** upsert condition */
-    on_conflict?: GraphQLTypes["chat_barter_metadata_on_conflict"] | undefined;
-  };
   /** on_conflict condition type for table "chat_barter_metadata" */
   ["chat_barter_metadata_on_conflict"]: {
     constraint: GraphQLTypes["chat_barter_metadata_constraint"];
@@ -8738,10 +8711,6 @@ export type GraphQLTypes = {
     barter_id?: GraphQLTypes["order_by"] | undefined;
     chat?: GraphQLTypes["chats_order_by"] | undefined;
     chat_client_generated_uuid?: GraphQLTypes["order_by"] | undefined;
-  };
-  /** primary key columns input for table: chat_barter_metadata */
-  ["chat_barter_metadata_pk_columns_input"]: {
-    chat_client_generated_uuid: string;
   };
   /** select columns of table "chat_barter_metadata" */
   ["chat_barter_metadata_select_column"]: chat_barter_metadata_select_column;
@@ -8962,8 +8931,8 @@ export type GraphQLTypes = {
   /** columns and relationships of "chats" */
   ["chats"]: {
     __typename: "chats";
-    /** An object relationship */
-    chat_barter_metadatum?: GraphQLTypes["chat_barter_metadata"] | undefined;
+    /** An array relationship */
+    chat_barter_metadata: Array<GraphQLTypes["chat_barter_metadata"]>;
     /** An array relationship */
     chat_media_messages: Array<GraphQLTypes["chat_media_messages"]>;
     client_generated_uuid: string;
@@ -8988,7 +8957,7 @@ export type GraphQLTypes = {
     _and?: Array<GraphQLTypes["chats_bool_exp"]> | undefined;
     _not?: GraphQLTypes["chats_bool_exp"] | undefined;
     _or?: Array<GraphQLTypes["chats_bool_exp"]> | undefined;
-    chat_barter_metadatum?:
+    chat_barter_metadata?:
       | GraphQLTypes["chat_barter_metadata_bool_exp"]
       | undefined;
     chat_media_messages?:
@@ -9017,8 +8986,8 @@ export type GraphQLTypes = {
   ["chats_constraint"]: chats_constraint;
   /** input type for inserting data into table "chats" */
   ["chats_insert_input"]: {
-    chat_barter_metadatum?:
-      | GraphQLTypes["chat_barter_metadata_obj_rel_insert_input"]
+    chat_barter_metadata?:
+      | GraphQLTypes["chat_barter_metadata_arr_rel_insert_input"]
       | undefined;
     chat_media_messages?:
       | GraphQLTypes["chat_media_messages_arr_rel_insert_input"]
@@ -9062,8 +9031,8 @@ export type GraphQLTypes = {
   };
   /** Ordering options when selecting data from "chats". */
   ["chats_order_by"]: {
-    chat_barter_metadatum?:
-      | GraphQLTypes["chat_barter_metadata_order_by"]
+    chat_barter_metadata_aggregate?:
+      | GraphQLTypes["chat_barter_metadata_aggregate_order_by"]
       | undefined;
     chat_media_messages_aggregate?:
       | GraphQLTypes["chat_media_messages_aggregate_order_by"]
@@ -9182,10 +9151,6 @@ export type GraphQLTypes = {
     update_chat_barter_metadata?:
       | GraphQLTypes["chat_barter_metadata_mutation_response"]
       | undefined;
-    /** update single row of the table: "chat_barter_metadata" */
-    update_chat_barter_metadata_by_pk?:
-      | GraphQLTypes["chat_barter_metadata"]
-      | undefined;
     /** update multiples rows of table: "chat_barter_metadata" */
     update_chat_barter_metadata_many?:
       | Array<
@@ -9256,10 +9221,6 @@ export type GraphQLTypes = {
     barters_by_pk?: GraphQLTypes["barters"] | undefined;
     /** An array relationship */
     chat_barter_metadata: Array<GraphQLTypes["chat_barter_metadata"]>;
-    /** fetch data from the table: "chat_barter_metadata" using primary key columns */
-    chat_barter_metadata_by_pk?:
-      | GraphQLTypes["chat_barter_metadata"]
-      | undefined;
     /** An array relationship */
     chat_media_messages: Array<GraphQLTypes["chat_media_messages"]>;
     /** fetch data from the table: "chat_media_messages" using primary key columns */
@@ -9848,10 +9809,6 @@ export type GraphQLTypes = {
     barters_stream: Array<GraphQLTypes["barters"]>;
     /** An array relationship */
     chat_barter_metadata: Array<GraphQLTypes["chat_barter_metadata"]>;
-    /** fetch data from the table: "chat_barter_metadata" using primary key columns */
-    chat_barter_metadata_by_pk?:
-      | GraphQLTypes["chat_barter_metadata"]
-      | undefined;
     /** fetch data from the table in a streaming manner: "chat_barter_metadata" */
     chat_barter_metadata_stream: Array<GraphQLTypes["chat_barter_metadata"]>;
     /** An array relationship */
@@ -10084,10 +10041,8 @@ type ZEUS_VARIABLES = {
   ["chat_barter_metadata_insert_input"]: ValueTypes["chat_barter_metadata_insert_input"];
   ["chat_barter_metadata_max_order_by"]: ValueTypes["chat_barter_metadata_max_order_by"];
   ["chat_barter_metadata_min_order_by"]: ValueTypes["chat_barter_metadata_min_order_by"];
-  ["chat_barter_metadata_obj_rel_insert_input"]: ValueTypes["chat_barter_metadata_obj_rel_insert_input"];
   ["chat_barter_metadata_on_conflict"]: ValueTypes["chat_barter_metadata_on_conflict"];
   ["chat_barter_metadata_order_by"]: ValueTypes["chat_barter_metadata_order_by"];
-  ["chat_barter_metadata_pk_columns_input"]: ValueTypes["chat_barter_metadata_pk_columns_input"];
   ["chat_barter_metadata_select_column"]: ValueTypes["chat_barter_metadata_select_column"];
   ["chat_barter_metadata_stddev_order_by"]: ValueTypes["chat_barter_metadata_stddev_order_by"];
   ["chat_barter_metadata_stddev_pop_order_by"]: ValueTypes["chat_barter_metadata_stddev_pop_order_by"];
