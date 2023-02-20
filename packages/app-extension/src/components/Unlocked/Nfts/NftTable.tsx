@@ -290,7 +290,7 @@ const ItemRow = function ({
 };
 
 const CustomCard = styled("div")(
-  ({ theme }: CustomTheme) =>
+  ({ theme }: { theme: CustomTheme }) =>
     ({ top, bottom }: { top: boolean; bottom: boolean }) => ({
       position: "relative",
       backgroundColor: "inherit",

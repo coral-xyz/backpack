@@ -69,7 +69,7 @@ export function AvatarHeader() {
   );
 }
 
-const AvatarWrapper = styled("div")(({ theme }: CustomTheme) => ({
+const AvatarWrapper = styled("div")(({ theme }: { theme: CustomTheme }) => ({
   position: "relative",
   background: theme.custom.colors.avatarIconBackground,
   borderRadius: "40px",

@@ -379,14 +379,16 @@ const Container = styled("div")(() => ({
   overflow: "hidden",
 }));
 
-const StyledProxyImage = styled(ProxyImage)(({ theme }: CustomTheme) => ({
-  "&:hover": {
-    border: `3px solid ${theme.custom.colors.avatarIconBackground}`,
-    cursor: "pointer",
-  },
-}));
+const StyledProxyImage = styled(ProxyImage)(
+  ({ theme }: { theme: CustomTheme }) => ({
+    "&:hover": {
+      border: `3px solid ${theme.custom.colors.avatarIconBackground}`,
+      cursor: "pointer",
+    },
+  })
+);
 
-const FakeDrawer = styled("div")(({ theme }: CustomTheme) => ({
+const FakeDrawer = styled("div")(({ theme }: { theme: CustomTheme }) => ({
   position: "relative",
   display: "flex",
   flexDirection: "column",
@@ -402,7 +404,7 @@ const FakeDrawer = styled("div")(({ theme }: CustomTheme) => ({
   zIndex: "0",
   overflow: "hidden",
 }));
-const ButtonsOverlay = styled("div")(({ theme }: CustomTheme) => ({
+const ButtonsOverlay = styled("div")(({ theme }: { theme: CustomTheme }) => ({
   position: "absolute",
   bottom: "0px",
   display: "flex",
@@ -423,7 +425,7 @@ const Avatar = styled(ProxyImage)(() => ({
   zIndex: 0,
 }));
 
-const AvatarWrapper = styled("div")(({ theme }: CustomTheme) => ({
+const AvatarWrapper = styled("div")(({ theme }: { theme: CustomTheme }) => ({
   boxSizing: "border-box",
   position: "relative",
   borderRadius: "50px",
