@@ -7,6 +7,7 @@ import {
 } from "@coral-xyz/common";
 import { updateFriendshipIfExists } from "@coral-xyz/db";
 import {
+  BubbleTopLabel,
   DangerButton,
   EmptyState,
   isFirstLastListItemStyle,
@@ -366,7 +367,7 @@ export function NotificationList({
               marginTop: "16px",
             }}
           >
-            <div style={{ color: "#99A4B4", padding: 10 }}>{date}</div>
+            <BubbleTopLabel text={date} />
             <List
               style={{
                 paddingTop: 0,
@@ -404,9 +405,9 @@ const getTimeStr = (timestamp: number) => {
   if (elapsedTimeSeconds / 60 < 60) {
     const min = Math.floor(elapsedTimeSeconds / 60);
     if (min === 1) {
-      return "1 minute";
+      return "1 min";
     } else {
-      return `${min} minutes`;
+      return `${min} mins`;
     }
   }
 
@@ -422,7 +423,7 @@ const getTimeStr = (timestamp: number) => {
   if (days === 1) {
     return `1 day`;
   }
-  return `${days} day`;
+  return `${days} days`;
 };
 
 function NotificationListItem({
@@ -454,7 +455,7 @@ function NotificationListItem({
   if (notification.xnft_id === "friend_requests_accept") {
     return (
       <FriendRequestListItem
-        title={"Friend Request Accepted"}
+        title={"Friend request accepted"}
         notification={notification}
         isFirst={isFirst}
         isLast={isLast}
