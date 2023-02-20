@@ -1,8 +1,6 @@
-import createStyles from "@mui/styles/createStyles";
-import _makeStyles from "@mui/styles/makeStyles";
-import useTheme from "@mui/styles/useTheme";
+import { styled as muiStyled, useTheme } from "@mui/material/styles";
 import type { CreateMUIStyled, Theme } from "@mui/system";
-import muiStyled from "@mui/system/styled";
+import { makeStyles as _makeStyles } from "tss-react/mui";
 
 export const HOVER_OPACITY = 0.8;
 
@@ -136,7 +134,7 @@ type CustomColors = {
   chatFadeGradientStart: string;
 };
 
-const baseTheme = createStyles({
+const baseTheme = _makeStyles()({
   typography: {
     fontFamily: ["Inter", "sans-serif"].join(","),
     // TODO: do we need all of these?
