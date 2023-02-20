@@ -6,8 +6,8 @@ import type {
   WalletDescriptor,
 } from "@coral-xyz/common";
 import { Blockchain, getAuthMessage } from "@coral-xyz/common";
+import { useSignMessageForWallet } from "@coral-xyz/recoil";
 
-import { useSignMessageForWallet } from "../../../hooks/useSignMessageForWallet";
 import { useSteps } from "../../../hooks/useSteps";
 import { CreatePassword } from "../../common/Account/CreatePassword";
 import { MnemonicInput } from "../../common/Account/MnemonicInput";

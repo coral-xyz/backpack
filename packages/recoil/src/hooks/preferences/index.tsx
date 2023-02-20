@@ -44,7 +44,7 @@ export function useConnectionUrls() {
   return useRecoilValue(atoms.connectionUrls);
 }
 
-export function useUser() {
+export function useUser(): { username: string; uuid: string; jwt: string } {
   return useRecoilValue(atoms.user);
 }
 

@@ -8,7 +8,11 @@ import {
   TWITTER_LINK,
 } from "@coral-xyz/common";
 import { DiscordIcon, List, ListItem } from "@coral-xyz/react-common";
-import { KeyringStoreStateEnum, useKeyringStoreState } from "@coral-xyz/recoil";
+import {
+  KeyringStoreStateEnum,
+  OnboardingProvider,
+  useKeyringStoreState,
+} from "@coral-xyz/recoil";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
 import { CallMade, Lock, Menu, Twitter } from "@mui/icons-material";
 import { Box, IconButton, ListItemText, Toolbar } from "@mui/material";
@@ -60,13 +64,15 @@ export const Onboarding = ({
 
   return (
     <OptionsContainer innerRef={containerRef}>
-      {action === "onboard" && (
-        <OnboardAccount
-          onRecover={() => setAction("recover")}
-          onWaiting={() => setAction("waiting")}
-          {...defaultProps}
-        />
-      )}
+      {action === "onboard" ? (
+        <OnboardingProvider>
+          <OnboardAccount
+            onRecover={() => setAction("recover")}
+            onWaiting={() => setAction("waiting")}
+            {...defaultProps}
+          />
+        </OnboardingProvider>
+      ) : null}
       {action === "waiting" && <WaitingRoom />}
       {action === "recover" && (
         <RecoverAccount

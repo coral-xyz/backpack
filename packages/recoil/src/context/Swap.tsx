@@ -123,12 +123,8 @@ export function SwapProvider({
 
   // Swap setttings
   const [[fromMint, toMint], setFromMintToMint] = useState([
-    token ? token.mint! : SOL_NATIVE_MINT,
-    token
-      ? token.mint! === USDC_MINT.toString()
-        ? SOL_NATIVE_MINT
-        : USDC_MINT
-      : USDC_MINT,
+    SOL_NATIVE_MINT,
+    USDC_MINT,
   ]);
   const [fromAmount, _setFromAmount] = useState<BigNumber | undefined>(
     undefined
@@ -137,7 +133,6 @@ export function SwapProvider({
 
   // Jupiter data
   const [routes, setRoutes] = useState<JupiterRoute[]>([]);
-
   const [transaction, setTransaction] = useState<string | undefined>(undefined);
   const [transactionFee, setTransactionFee] = useState<BigNumber | undefined>(
     undefined
@@ -222,6 +217,20 @@ export function SwapProvider({
 
   // Debounce fromAmount to avoid excessive Jupiter API requests
   const debouncedFromAmount = useDebounce(fromAmount);
+
+  useEffect(() => {
+    const defaultFromMint = token ? token.mint! : SOL_NATIVE_MINT;
+    const defaultToMint = token
+      ? token.mint! === USDC_MINT.toString()
+        ? // wSOL for output not native SOL because the Jupiter output mint will
+          // be wSOL, note this is unwrapped anyway because the `wrapUnwrapSOL`
+          // parameter is set in the API call
+          WSOL_MINT
+        : USDC_MINT
+      : USDC_MINT;
+
+    setFromMintToMint([defaultFromMint, defaultToMint]);
+  }, [token]);
 
   useEffect(() => {
     (async () => {

@@ -7,6 +7,7 @@ import {
 } from "@coral-xyz/common";
 import { updateFriendshipIfExists } from "@coral-xyz/db";
 import {
+  BubbleTopLabel,
   DangerButton,
   EmptyState,
   isFirstLastListItemStyle,
@@ -364,7 +365,7 @@ export function NotificationList({
               marginTop: "16px",
             }}
           >
-            <div style={{ color: "#99A4B4", padding: 10 }}>{date}</div>
+            <BubbleTopLabel text={date} />
             <List
               style={{
                 paddingTop: 0,
@@ -402,9 +403,9 @@ const getTimeStr = (timestamp: number) => {
   if (elapsedTimeSeconds / 60 < 60) {
     const min = Math.floor(elapsedTimeSeconds / 60);
     if (min === 1) {
-      return "1 minute";
+      return "1 min";
     } else {
-      return `${min} minutes`;
+      return `${min} mins`;
     }
   }
 
@@ -420,7 +421,7 @@ const getTimeStr = (timestamp: number) => {
   if (days === 1) {
     return `1 day`;
   }
-  return `${days} day`;
+  return `${days} days`;
 };
 
 function NotificationListItem({
@@ -452,7 +453,7 @@ function NotificationListItem({
   if (notification.xnft_id === "friend_requests_accept") {
     return (
       <FriendRequestListItem
-        title={"Friend Request Accepted"}
+        title={"Friend request accepted"}
         notification={notification}
         isFirst={isFirst}
         isLast={isLast}
@@ -538,7 +539,7 @@ function AcceptRejectRequest({ userId }: { userId: string }) {
       <div style={{ display: "flex", marginTop: 5 }}>
         <SuccessButton
           disabled={inProgress}
-          label={"Confirm"}
+          label={"Accept"}
           style={{
             marginRight: 8,
             height: 32,
@@ -555,7 +556,7 @@ function AcceptRejectRequest({ userId }: { userId: string }) {
               requested: 0,
               areFriends: 1,
             });
-            setFriendshipValue({
+            await setFriendshipValue({
               userId: userId,
               friendshipValue: {
                 requested: false,
@@ -575,7 +576,7 @@ function AcceptRejectRequest({ userId }: { userId: string }) {
             paddingRight: 10,
             borderRadius: 6,
           }}
-          label={"Delete"}
+          label={"Reject"}
           onClick={async (e: any) => {
             e.stopPropagation();
             setInProgress(true);
@@ -585,7 +586,7 @@ function AcceptRejectRequest({ userId }: { userId: string }) {
               areFriends: 0,
               remoteRequested: 0,
             });
-            setFriendshipValue({
+            await setFriendshipValue({
               userId: userId,
               friendshipValue: {
                 requested: false,
@@ -688,17 +689,6 @@ function FriendRequestListItem({
             <Typography className={classes.txBody}>@{user.username}</Typography>
             <AcceptRejectRequest userId={parseJson(notification.body).from} />
           </div>
-        </div>
-        <div>
-          {friendshipValue?.remoteRequested && !friendshipValue?.areFriends && (
-            <Badge
-              classes={{ badge: classes.customBadge }}
-              style={{ marginTop: 15, fontSize: 30 }}
-              variant={"dot"}
-              color={"primary"}
-              badgeContent={unreadCount}
-            ></Badge>
-          )}
         </div>
       </div>
     </ListItem>

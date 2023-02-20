@@ -614,13 +614,20 @@ const SearchInput = ({
 };
 
 const SearchResults = ({ searchResults }: { searchResults: any[] }) => {
+  // Don't show any friends because they will show up under contacts
+  // This would be better implemented on the server query because it messes
+  // with the limit, i.e. you could filter all the results from the limit
+  const filteredSearchResults = searchResults.filter(
+    (user) => !user.areFriends
+  );
+
   return (
     <div style={{ margin: "0 12px" }}>
-      {searchResults.length !== 0 && (
+      {filteredSearchResults.length !== 0 && (
         <div style={{ marginTop: 10 }}>
           <BubbleTopLabel text="Other people" />
           <AddressList
-            wallets={searchResults.map((user) => ({
+            wallets={filteredSearchResults.map((user) => ({
               username: user.username,
               image: user.image,
               uuid: user.id,

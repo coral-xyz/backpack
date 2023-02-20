@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import type { NftCollection } from "@coral-xyz/common";
+import type { Nft, NftCollection } from "@coral-xyz/common";
 import {
   AVATAR_BASE_URL,
   BACKEND_API_URL,
@@ -38,8 +38,10 @@ import {
 
 import { Scrollbar } from "../../../common/Layout/Scrollbar";
 import { _BalancesTableHead } from "../../Balances/Balances";
+import { updateLocalNftPfp } from "../../Nfts/Detail";
 
 type tempAvatar = {
+  nft?: Nft;
   url: string;
   id: string;
 };
@@ -53,7 +55,7 @@ export function UpdateProfilePicture({
   const [loading, setLoading] = useState(false);
   const _isAggregateWallets = useRecoilValue(isAggregateWallets);
   const avatarUrl = useAvatarUrl();
-  const { username } = useUser();
+  const { uuid, username } = useUser();
   const activeWallet = useActiveWallet();
   const setNewAvatar = useSetRecoilState(newAvatarAtom(username));
   const theme = useCustomTheme();
@@ -222,6 +224,9 @@ export function UpdateProfilePicture({
           }
           onClick={async () => {
             if (tempAvatar) {
+              if (!tempAvatar.nft) {
+                throw new Error("invariant violation");
+              }
               setLoading(true);
               await fetch(BACKEND_API_URL + "/users/avatar", {
                 headers: {
@@ -233,6 +238,7 @@ export function UpdateProfilePicture({
                 }),
               });
               await fetch(AVATAR_BASE_URL + "/" + username + "?bust_cache=1"); // bust edge cache
+              await updateLocalNftPfp(uuid, tempAvatar.nft!);
               setLoading(false);
               setNewAvatar(tempAvatar);
               setTempAvatar(null);
@@ -344,6 +350,7 @@ function RenderNFT({
                 : nft.id;
 
             setTempAvatar({
+              nft,
               url: nft.imageUrl,
               id: `${nft.blockchain}/${avatarId}`,
             });

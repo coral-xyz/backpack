@@ -25,7 +25,6 @@
       "@coral-xyz/db": ["../db"],
       "@coral-xyz/message-sdk": ["../message-sdk"],
       "@coral-xyz/react-common": ["../react-common"],
-      "@coral-xyz/react-xnft-dom-renderer": ["../react-xnft-dom-renderer"],
       "@coral-xyz/recoil": ["../recoil"],
       "@coral-xyz/themes": ["../themes"]
     }
@@ -37,7 +36,6 @@
     { "path": "../db" },
     { "path": "../message-sdk" },
     { "path": "../react-common" },
-    { "path": "../react-xnft-dom-renderer" },
     { "path": "../recoil" },
     { "path": "../themes" }
   ]

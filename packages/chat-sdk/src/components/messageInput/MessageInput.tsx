@@ -2,11 +2,11 @@ import { useContext, useMemo } from "react";
 import { RichMentionsContext, RichMentionsInput } from "react-rich-mentions";
 import { useUsersMetadata } from "@coral-xyz/react-common";
 import { styles, useCustomTheme } from "@coral-xyz/themes";
-import { CircularProgress, Hidden } from "@mui/material";
+import { CircularProgress } from "@mui/material";
 
 import { useChatContext } from "../ChatContext";
 
-const useStyles = styles((themes) => ({
+const useStyles = styles(() => ({
   input: {
     "&:hover": {
       cursor: "text",
@@ -46,7 +46,7 @@ export function MessageInput({
         style={{
           outline: "0px solid transparent",
           color: theme.custom.colors.fontColor,
-          fontSize: "15px",
+          fontSize: "14px",
         }}
         defaultValue={defaultValue}
       />
@@ -96,6 +96,7 @@ export const CustomAutoComplete = () => {
             color: theme.custom.colors.fontColor,
             border: "none",
             textAlign: "left",
+            alignItems: "center",
           }}
           key={item.ref}
           onClick={() => {
@@ -106,7 +107,7 @@ export const CustomAutoComplete = () => {
             style={{ height: 24, borderRadius: 12, marginRight: 8 }}
             src={users[item.id]?.image}
           />
-          <div style={{ fontSize: 15 }}>@{item.name}</div>
+          <div style={{ fontSize: 14 }}>@{item.name}</div>
         </button>
       ))}
       {activeSearch !== "" &&

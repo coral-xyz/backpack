@@ -7,7 +7,7 @@ import {
   BACKPACK_CONFIG_EXTENSION_KEY,
   BACKPACK_CONFIG_VERSION,
 } from "./generated-config";
-import type { Context, EventEmitter, RpcResponse, Sender } from "./types";
+import type { Context, EventEmitter, Nft, RpcResponse, Sender } from "./types";
 
 export * from "./api";
 export * from "./browser";
@@ -136,4 +136,9 @@ export function isValidEventOrigin(event: Event): boolean {
   }
 
   return false;
+}
+
+export function isMadLads(nft: Nft) {
+  // TODO
+  return nft.id === "FLMYJnabb2HvyGzE6EgXfLu4bHxugkwVyeEmSitisWKa";
 }
