@@ -36,9 +36,10 @@ export const BarterUi = ({ roomId }: { roomId: string }) => {
       }) => {
         if (updatedParams.barterId === json.barter.id) {
           setBarterState((s) => ({
-            ...s,
-            localOffers: updatedParams.localOffers || s?.localOffers,
-            remoteOffers: updatedParams.remoteOffers || s?.remoteOffers,
+            localOffers: updatedParams.localOffers || s?.localOffers || [],
+            remoteOffers: updatedParams.remoteOffers || s?.remoteOffers || [],
+            id: updatedParams.barterId,
+            state: s?.state || "in_progress",
           }));
         }
       };

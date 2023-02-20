@@ -179,7 +179,7 @@ function RemoteNft({ mint }: { mint: string }) {
           borderRadius: 8,
           width: "100%",
         }}
-        src={tokenData.image}
+        src={tokenData?.image}
         removeOnError={true}
       />
       <div
@@ -257,7 +257,7 @@ function RemoteToken({ mint, amount }: { mint: string; amount: number }) {
         }}
       >
         <div>
-          {amount} {tokenData.name}
+          {amount} {tokenData?.name}
         </div>
       </div>
     </div>

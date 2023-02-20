@@ -67,7 +67,7 @@ export class SignalingManager {
     remoteOffers?: BarterOffers;
   }) {}
 
-  public onBarterExecute(props: { barterId: string }) {}
+  public onBarterExecute(props: { barterId: number }) {}
 
   updateUuid(uuid: string, jwt: string) {
     this.signaling?.destroy();

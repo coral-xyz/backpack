@@ -26,6 +26,7 @@ COPY ["packages/provider-injection", "./packages/provider-injection"]
 
 COPY ["backend/native/zeus", "./backend/native/zeus"]
 COPY ["backend/native/chat-zeus", "./backend/native/chat-zeus"]
+COPY ["backend/native/backend-common", "./backend/native/backend-common"]
 COPY ["backend/native/tsconfig.json", "./backend/native/tsconfig.json"]
 
 RUN cd /base
