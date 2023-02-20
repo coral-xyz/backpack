@@ -18,7 +18,6 @@
     { "path": "packages/react-xnft-dom-renderer" },
     { "path": "packages/recoil" },
     { "path": "packages/themes" },
-    { "path": "packages/wallet-standard" },
-    { "path": "packages/xnft-cli" }
+    { "path": "packages/wallet-standard" }
   ]
 }

@@ -31,7 +31,6 @@
     "recoil": "^0.7.5"
   },
   "devDependencies": {
-    "@coral-xyz/xnft-cli": "*",
     "eslint-config-custom": "*",
     "typescript": "~4.9.3"
   },

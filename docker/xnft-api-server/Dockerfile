@@ -20,8 +20,6 @@ COPY ["packages/recoil", "./packages/recoil"]
 COPY ["packages/ledger-injection", "./packages/ledger-injection"]
 COPY ["packages/themes", "./packages/themes"]
 COPY ["packages/react-common", "./packages/react-common"]
-COPY ["packages/react-xnft", "./packages/react-xnft"]
-COPY ["packages/react-xnft-dom-renderer", "./packages/react-xnft-dom-renderer"]
 COPY ["packages/provider-core", "./packages/provider-core"]
 COPY ["packages/provider-injection", "./packages/provider-injection"]
 
